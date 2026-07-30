@@ -10,13 +10,14 @@ cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 DEFAULT_DIR="$HOME/Library/Application Support/PeachCommander/plugins"
 OUT_DIR="${1:-$DEFAULT_DIR}"
-ARCH="$(uname -m)"; TARGET="${ARCH}-apple-macos13.0"
+# Universal (arm64 + x86_64) plugin builds — see Tools/lib/pc-universal.sh.
+source "$ROOT/Tools/lib/pc-universal.sh"
 
 BUNDLE="$OUT_DIR/TaskManager.pfxplugin"
 rm -rf "$BUNDLE"
 mkdir -p "$BUNDLE/Contents/MacOS"
 cp "$ROOT/Plugins/TaskManager/Info.plist" "$BUNDLE/Contents/Info.plist"
-clang -dynamiclib -std=c11 -O2 -Wall \
+pc_clang -dynamiclib -std=c11 -O2 -Wall \
   -target "$TARGET" \
   -I "$ROOT/Plugins/SDK" \
   -o "$BUNDLE/Contents/MacOS/TaskManager" \

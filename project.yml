@@ -17,13 +17,16 @@ settings:
   DEVELOPMENT_TEAM: ""
   CODE_SIGNING_REQUIRED: NO
   CODE_SIGNING_ALLOWED: NO
-  # libssh2 (SFTP, F-214) — Homebrew keg. For distribution the dylib + its
-  # openssl@3 deps must be bundled with fixed install names (see make-dmg TODO).
-  LIBRARY_SEARCH_PATHS: $(inherited) /opt/homebrew/opt/libssh2/lib
+  # libssh2 (SFTP, F-214). Defaults to the Homebrew keg for normal dev builds.
+  # Tools/make-dmg.sh overrides it with build/universal-deps, whose layout mirrors
+  # a keg prefix but whose dylibs are arm64+x86_64 — a keg only ever holds the host
+  # architecture, so the universal release build cannot link against it.
+  PC_SSH2_PREFIX: /opt/homebrew/opt/libssh2
+  LIBRARY_SEARCH_PATHS: $(inherited) $(PC_SSH2_PREFIX)/lib
   # Global -I so the CSSH2 clang module resolves <libssh2.h> in every consumer
   # context (module builds use the importing target's clang flags).
-  OTHER_CFLAGS: $(inherited) -I/opt/homebrew/opt/libssh2/include
-  OTHER_SWIFT_FLAGS: $(inherited) -Xcc -I/opt/homebrew/opt/libssh2/include
+  OTHER_CFLAGS: $(inherited) -I$(PC_SSH2_PREFIX)/include
+  OTHER_SWIFT_FLAGS: $(inherited) -Xcc -I$(PC_SSH2_PREFIX)/include
 
 packages:
   Sparkle:
@@ -400,7 +403,7 @@ targets:
       HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CContrib/include
       CODE_SIGNING_ALLOWED: NO
 
-  # libssh2 wrapper module for SFTP (F-214). Headers come from the Homebrew keg.
+  # libssh2 wrapper module for SFTP (F-214). Headers come from PC_SSH2_PREFIX.
   CSSH2:
     type: library.static
     platform: macOS
@@ -411,7 +414,7 @@ targets:
       PRODUCT_NAME: CSSH2
       DEFINES_MODULE: YES
       MODULEMAP_FILE: Sources/CSSH2/include/module.modulemap
-      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CSSH2/include /opt/homebrew/opt/libssh2/include
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CSSH2/include $(PC_SSH2_PREFIX)/include
       CODE_SIGNING_ALLOWED: NO
 
   # Vendored tree-sitter grammars (parser.c + scanner.c compiled unconditionally,
@@ -532,7 +535,7 @@ targets:
       CODE_SIGNING_ALLOWED: NO
       ENABLE_PRIVATE_SYMBOLS: NO
       SWIFT_INCLUDE_PATHS: $(SRCROOT)/Sources/CSSH2/include
-      HEADER_SEARCH_PATHS: $(inherited) /opt/homebrew/opt/libssh2/include
+      HEADER_SEARCH_PATHS: $(inherited) $(PC_SSH2_PREFIX)/include
     info:
       path: Sources/PCNet/Info.plist
     dependencies:

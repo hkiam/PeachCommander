@@ -25,13 +25,30 @@ echo "==> Regenerating third-party notices…"
 # carries current open-source attributions (versions from Package.resolved).
 python3 Tools/generate-third-party-notices.py
 
-echo "==> Building ${CONFIG}..."
+echo "==> Regenerating the Xcode project…"
+# A release must never be packaged from a project file that has drifted from
+# project.yml — the build settings live there, and a stale .pbxproj silently
+# ignores them (that is how the first universal build still linked the
+# host-architecture keg).
+xcodegen generate
+
+echo "==> Preparing universal libssh2 + openssl…"
+# The app target is configured for arm64 + x86_64 (project.yml), but PCNet links
+# libssh2 and a Homebrew keg only holds the host architecture — so the x86_64 slice
+# cannot link against it. This stages 2-slice copies under build/universal-deps and
+# PC_SSH2_PREFIX below points the build at them instead of the keg.
+Tools/make-universal-deps.sh
+SSH2_PREFIX="$PWD/build/universal-deps"
+
+echo "==> Building ${CONFIG} (universal: arm64 + x86_64)..."
+# No ARCHS/ONLY_ACTIVE_ARCH override here on purpose: overriding them is what used
+# to reduce the shipped DMG to a single slice while the docs advertised universal.
 xcodebuild -project PeachCommander.xcodeproj \
   -scheme PeachCommander \
   -configuration "$CONFIG" \
   -derivedDataPath "$DERIVED" \
-  -destination "platform=macOS,arch=$(uname -m)" \
-  ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES \
+  -destination "platform=macOS" \
+  PC_SSH2_PREFIX="$SSH2_PREFIX" \
   CODE_SIGNING_ALLOWED=NO \
   build >/dev/null
 
@@ -53,8 +70,10 @@ PC_FRAMEWORKS_DIR="$PWD/$DERIVED/Build/Products/$CONFIG" \
 
 echo "==> Embedding libssh2 (SFTP) into Frameworks…"
 # Bundle libssh2 + openssl@3 with @rpath install names so SFTP works without
-# Homebrew on the target machine (F-214).
-Tools/bundle-libssh2.sh "$APP"
+# Homebrew on the target machine (F-214). Takes the universal copies the build
+# just linked against — the Homebrew kegs would put a single-architecture dylib
+# into a universal app and break SFTP on the other architecture.
+PC_SSH2_PREFIX="$SSH2_PREFIX" Tools/bundle-libssh2.sh "$APP"
 
 echo "==> Staging…"
 rm -rf "$STAGING" "$DMG"

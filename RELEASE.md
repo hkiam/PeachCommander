@@ -50,23 +50,39 @@ Steps:
   names via `Tools/bundle-libssh2.sh`, so SFTP works without Homebrew on the
   target machine (F-214), and ad-hoc re-signs what it rewrote.
 
-### Known gap: the DMG is single-architecture
+### How the universal build hangs together
 
-`make-dmg.sh` builds with `ARCHS="$(uname -m)"` and `ONLY_ACTIVE_ARCH=YES`, so the
-image contains **one** slice — `arm64` when built on the Apple Silicon
-`macos-26` runner or an Apple Silicon Mac. The app itself supports both
-architectures (deployment target macOS 13), but the packaged DMG as produced today
-is not a universal binary.
+The DMG is a genuine universal binary — `arm64` **and** `x86_64` in every Mach-O it
+carries. Three things have to line up for that, and each one silently degraded the
+result on its own before:
 
-Making it universal is not just a flag change: `bundle-libssh2.sh` copies the
-Homebrew `libssh2`/`openssl@3` dylibs, and a Homebrew keg is single-architecture.
-A universal app would need universal (or `lipo`-merged) copies of those libraries
-as well, otherwise SFTP breaks on the architecture the dylibs were not built for.
+1. **No `ARCHS` override.** `project.yml` already sets `ARCHS = arm64 x86_64` on the
+   app target; `make-dmg.sh` used to override it with `$(uname -m)`, which reduced
+   the shipped image to the build machine's slice.
+2. **Universal libssh2 + openssl.** `Tools/make-universal-deps.sh` stages 2-slice
+   dylibs under `build/universal-deps` and the build points at them through
+   `PC_SSH2_PREFIX`. A Homebrew keg only ever holds the host architecture, so
+   linking the `x86_64` slice against it fails outright — and bundling it would put
+   a single-architecture dylib inside a universal app, breaking SFTP on Intel.
+   The bottles come straight from Homebrew's registry (checksum verified) because
+   `brew fetch --bottle-tag` refuses a foreign architecture on an arm64 install.
+3. **Universal plugins.** Every `Tools/build-*-plugin*.sh` goes through
+   `Tools/lib/pc-universal.sh`. They used to compile for `$(uname -m)`, which meant
+   the app launched on Intel while *no plugin could load* — Git, Archive, WebDAV,
+   Disk Map and the rest just silently absent. `clang` takes several `-arch` flags
+   directly; `swiftc` accepts only one `-target`, so each slice is compiled
+   separately and merged with `lipo`.
 
-Note that `docs/content/website/index.md` and
-`docs/content/user-guide/installation.md` currently describe the download as a
-universal binary. **Either the build or that copy needs to change** — see the
-project's open items.
+Verify a packaged build rather than trusting it:
+
+```bash
+APP=build/dmg-derived/Build/Products/Release/PeachCommander.app
+find "$APP" -type f -exec sh -c 'a=$(lipo -archs "$1" 2>/dev/null) || exit 0
+  [ -n "$a" ] && case "$a" in *arm64*x86_64*|*x86_64*arm64*) ;; *) echo "SINGLE: $1 -> $a";; esac' _ {} \;
+```
+
+Silence means every slice is present. `PC_PLUGIN_ARCHS=arm64` builds plugins for one
+architecture when iterating locally.
 
 ## Cutting a release
 

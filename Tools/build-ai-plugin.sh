@@ -8,7 +8,8 @@ ROOT="$(pwd)"
 DEFAULT_DIR="$HOME/Library/Application Support/PeachCommander/plugins"
 OUT_DIR="${1:-$DEFAULT_DIR}"
 BUNDLE="$OUT_DIR/AIAssistant.ptxplugin"
-ARCH="$(uname -m)"; TARGET="${ARCH}-apple-macos13.0"
+# Universal (arm64 + x86_64) plugin builds — see Tools/lib/pc-universal.sh.
+source "$ROOT/Tools/lib/pc-universal.sh"
 
 # Locate the built PCAutomation.framework (+ sibling frameworks) to compile/link against.
 FWDIR="${PC_FRAMEWORKS_DIR:-}"
@@ -23,7 +24,7 @@ rm -rf "$BUNDLE"
 mkdir -p "$BUNDLE/Contents/MacOS"
 cp "$ROOT/Plugins/AIAssistant/Info.plist" "$BUNDLE/Contents/Info.plist"
 
-swiftc -emit-library -O \
+pc_swiftc -emit-library -O \
   -module-name AIAssistant \
   -target "$TARGET" \
   -framework AppKit \

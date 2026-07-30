@@ -9,9 +9,18 @@ APP="${1:?usage: bundle-libssh2.sh <path-to-.app>}"
 FW="$APP/Contents/Frameworks"
 mkdir -p "$FW"
 
-SSH2_LIB="$(brew --prefix libssh2 2>/dev/null)/lib"
-SSL_LIB="$(brew --prefix openssl@3 2>/dev/null)/lib"
-[ -d "$SSH2_LIB" ] || { echo "error: libssh2 keg not found (brew install libssh2)" >&2; exit 1; }
+# PC_SSH2_PREFIX (set by make-dmg.sh) points at build/universal-deps, which holds
+# arm64+x86_64 dylibs and carries openssl alongside libssh2 in one lib dir. Without
+# it, fall back to the Homebrew kegs — fine for a host-architecture-only build, but
+# note a keg is single-architecture, so a universal app needs the prefix.
+if [ -n "${PC_SSH2_PREFIX:-}" ] && [ -d "$PC_SSH2_PREFIX/lib" ]; then
+  SSH2_LIB="$PC_SSH2_PREFIX/lib"
+  SSL_LIB="$PC_SSH2_PREFIX/lib"
+else
+  SSH2_LIB="$(brew --prefix libssh2 2>/dev/null)/lib"
+  SSL_LIB="$(brew --prefix openssl@3 2>/dev/null)/lib"
+fi
+[ -d "$SSH2_LIB" ] || { echo "error: libssh2 not found (brew install libssh2, or set PC_SSH2_PREFIX)" >&2; exit 1; }
 
 SOURCES=(
   "$SSH2_LIB/libssh2.1.dylib"
