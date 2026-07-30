@@ -17,7 +17,7 @@ description: A fast, keyboard-driven, dual-panel file manager for macOS in the T
     <a class="pc-btn pc-btn--ghost" href="installation.html">Installation guide</a>
   </div>
   <p class="pc-hero__meta">
-    <span>macOS 13 or later</span><span>Universal — Apple Silicon &amp; Intel</span><span>Free &amp; open source</span>
+    <span>macOS 13 or later</span><span>Universal — Apple Silicon &amp; Intel</span><span>Open source, Apache 2.0</span>
   </p>
   <p class="pc-hero__meta js-pc-download-status"></p>
   <div class="pc-keys">
@@ -237,5 +237,6 @@ it needs Xcode and takes a couple of minutes.
 - **Coming from Total Commander:** [migration guide](migration-from-total-commander.md), including `wincmd.ini` import
 - **Extending it:** [write a plugin](tutorial-plugins.md) · [developer onboarding](dev-getting-started.md)
 - **Source and issues:** [the GitHub repository](https://github.com/hkiam/PeachCommander)
+- **License:** [Apache 2.0](https://github.com/hkiam/PeachCommander/blob/main/LICENSE) — free to use, modify and redistribute, including commercially. Third-party attributions are in [`THIRD_PARTY_NOTICES.md`](https://github.com/hkiam/PeachCommander/blob/main/THIRD_PARTY_NOTICES.md).
 
 *Peach Commander is under active development. Expect rough edges, and please report what you find.*

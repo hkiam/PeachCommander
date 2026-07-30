@@ -281,7 +281,9 @@ Peach Commander builds on excellent open-source work — **Sparkle**, **SwiftTre
 
 Thank you to every author and contributor of those projects — and to the Total Commander tradition that made a tool like this worth missing.
 
-> **Project license:** not yet finalized for this beta. A `LICENSE` file will be added; until then the third-party components remain under their own licenses as noted above.
+**Project license:** Peach Commander is licensed under the **[Apache License 2.0](LICENSE)** — see [`NOTICE`](NOTICE) for the attribution notice. You may use, modify and redistribute it, including commercially, provided you keep the license and notice and state your changes; it comes with no warranty. The third-party components listed above remain under their own licenses.
+
+The optional external tools the app can call (7-Zip/p7zip, The Unarchiver) are LGPL-licensed but are neither linked nor redistributed — they are found on `PATH` at runtime and run as separate processes.
 
 ## The name — Peach Commander 🍑
 
