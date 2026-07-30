@@ -27,19 +27,30 @@ To check your macOS version, choose the Apple menu ▸ **About This Mac**.
 
 You now have Peach Commander in your Applications folder like any other app.
 
-## First launch: right-click ▸ Open
+## First launch: allowing the app through Gatekeeper
 
-While the preview builds are still being signed and notarized with Apple, macOS Gatekeeper does not yet recognize the app and will refuse to open it on a normal double-click, showing a message like *"Peach Commander cannot be opened because the developer cannot be verified."* This is expected for a preview build and does **not** mean anything is wrong with the download.
+The beta builds are not signed or notarized with Apple, so macOS Gatekeeper does not recognize the app and will refuse to open it on a normal double-click, showing a message like *"Peach Commander cannot be opened because the developer cannot be verified."* This is expected for a beta build and does **not** mean anything is wrong with the download.
 
-Open it the first time this way:
+How you allow it depends on your macOS version, because Apple changed this in macOS 15.
+
+### macOS 15 Sequoia and later (including macOS 26)
+
+Control-clicking no longer works here — Apple removed that shortcut for software that is not signed or notarized. Use System Settings instead:
+
+1. Double-click **Peach Commander** once and dismiss the warning. This is what makes macOS offer the override in the next step.
+2. Open **System Settings ▸ Privacy & Security** and scroll down to the **Security** section.
+3. Next to the note about *"Peach Commander" was blocked*, click **Open Anyway**.
+4. Confirm with your password or Touch ID, then click **Open** in the final dialog.
+
+### macOS 13 Ventura and macOS 14 Sonoma
 
 1. In your **Applications** folder, **right-click** (or Control-click) the **Peach Commander** icon.
 2. Choose **Open** from the menu.
 3. In the dialog that appears, click **Open** again to confirm.
 
-You only need to do this once. After the first successful launch, macOS remembers your choice and you can open the app normally from then on — a double-click, Launchpad, or Spotlight all work.
+You only need to do this once, on either version. After the first successful launch, macOS remembers your choice and you can open the app normally from then on — a double-click, Launchpad, or Spotlight all work.
 
-> **Why the extra step?** Developer-ID signing and notarization — the process that lets macOS vouch for the app automatically — are being finalized for the 1.0 release. Once that's in place, this right-click step disappears and Peach Commander opens on a plain double-click like any other app.
+> **Why the extra step?** Developer-ID signing and notarization — the process that lets macOS vouch for the app automatically — are deliberately left out of the beta. Once they are in place, this step disappears and Peach Commander opens on a plain double-click like any other app.
 
 ## Grant Full Disk Access
 

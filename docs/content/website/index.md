@@ -210,7 +210,7 @@ Peach Commander is built to respect your data:
 
 Peach Commander is currently a **preview / pre-1.0 release**. It is honest, working software — but expect the occasional rough edge while we head toward 1.0:
 
-- Distributed **outside the App Store**. Developer-ID signing and notarization are being finalized, so a preview build may need a right-click → **Open** the first time.
+- Distributed **outside the App Store** and **not signed or notarized** during the beta, so macOS blocks it on first launch. On macOS 15 and later you allow it once under **System Settings ▸ Privacy & Security ▸ Open Anyway**; on macOS 13–14 a right-click → **Open** is enough. The [installation guide](installation.md) walks through both.
 - **Auto-update via Sparkle is planned but not yet enabled** — for now, you update by downloading a new build.
 - **Universal binary:** native on both Apple Silicon and Intel.
 - **Requires macOS 13 or later.**

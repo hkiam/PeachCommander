@@ -234,7 +234,10 @@ xcodebuild -scheme PeachCommander build
 
 **First run (unsigned build)**
 
-Because this preview build is not yet signed or notarized, Gatekeeper will warn the first time. Right-click the app ▸ **Open**, then confirm — you only need to do this once.
+Because the beta builds are not signed or notarized, Gatekeeper blocks the first launch. You only need to allow it once, but the way to do that depends on your macOS version:
+
+- **macOS 15 Sequoia and later** — double-click once, dismiss the warning, then go to **System Settings ▸ Privacy & Security** and click **Open Anyway**. Apple removed the Control-click shortcut for unsigned software in macOS 15, so right-clicking no longer helps here.
+- **macOS 13–14** — right-click the app ▸ **Open**, then confirm.
 
 ## 🧭 First steps
 
@@ -256,7 +259,7 @@ Coming from Total Commander? Keep the keys you know (**Configuration ▸ Keyboar
 
 ## ⚠️ Known limitations
 
-- Not yet code-signed or notarized (right-click ▸ Open on first launch).
+- Not code-signed or notarized during the beta — macOS blocks the first launch until you allow it once (System Settings ▸ Privacy & Security on macOS 15+, right-click ▸ Open on macOS 13–14).
 - Auto-update (Sparkle) is planned but not wired up yet.
 - Very large **ZIP64** archives aren't handled by the built-in reader.
 - Changing file **attributes over SFTP** has no effect in this version.
