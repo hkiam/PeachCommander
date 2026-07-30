@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kopírování souborů</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Kopírování souborů</h1>
+<p>Peach Commander je postaven kolem dvou panelů vedle sebe: jeden obsahuje soubory, se kterými pracujete, druhý je cíl. Kopírování vezme to, co je vybráno v aktivním panelu, a vloží kopii do složky zobrazené ve druhém panelu, přičemž originály ponechá na místě. Toto je nejrychlejší způsob, jak duplikovat soubory a složky mezi dvěma umístěními bez přetahování.</p>
+<h2 id="zkopirovani-vyberu-do-druheho-panelu">Zkopírování výběru do druhého panelu</h2>
+<ol>
+<li>V jednom panelu otevřete složku, která obsahuje položky, jež chcete zkopírovat.</li>
+<li>Ve druhém panelu otevřete složku, kam mají kopie směřovat.</li>
+<li>Vyberte soubory a složky ke zkopírování. Pokud není nic vybráno, použije se položka pod kurzorem.</li>
+<li>Stiskněte F5. Otevře se dialog kopírování s již vyplněnou cílovou cestou.</li>
+</ol>
+<p><img alt="Dialog kopírování s cílovou cestou a možnostmi" src="images/copy-dialog.png" />
+<em>(Obrázek: Dialog kopírování. Cílová cesta míří na druhý panel; možnostmi vyladíte kopírování.)</em></p>
+<ol start="5">
+<li>V případě potřeby upravte cíl a poté potvrzením zahajte kopírování.</li>
+</ol>
+<h2 id="moznosti-kopirovani">Možnosti kopírování</h2>
+<p>Než potvrdíte, můžete změnit chování kopírování:</p>
+<ul>
+<li><strong>Pouze novější soubory</strong> — přeskočí každou položku, jejíž kopie již existuje a je stejně stará nebo novější, takže se aktualizují jen změněné soubory.</li>
+<li><strong>Zachovat metadata</strong> — u kopií zachová data, oprávnění a další atributy souborů. Toto je ve výchozím nastavení zapnuto.</li>
+<li><strong>Omezení rychlosti</strong> — omezí přenosovou rychlost, aby rozsáhlé kopírování nezahltilo váš disk nebo síťové připojení.</li>
+<li><strong>Maska přejmenování</strong> — do cílového pole zadejte zástupný vzor (například <code>*.bak</code>) k přejmenování položek při kopírování.</li>
+</ul>
+<p>Úlohu můžete také namísto sledování odeslat do fronty na pozadí — viz Přenosy na pozadí.</p>
+<h2 id="prubeh">Průběh</h2>
+<p>Okno průběhu zobrazuje aktuální soubor a celkovou úlohu se samostatnými ukazateli, plus přenosovou rychlost. Kdykoli můžete pozastavit a obnovit nebo probíhající kopírování odeslat do správce přenosů na pozadí, abyste mohli během jeho dokončování dále pracovat.</p>
+<p><img alt="Dialog průběhu přenosu s ukazatelem průběhu, počty souborů a bajtů a tlačítky Pozastavit a Zrušit" src="images/progress-dialog.png" />
+<em>(Obrázek: Dialog průběhu zobrazený během kopírování nebo přesunu.)</em></p>
+<h2 id="reseni-souboru-ktere-jiz-existuji">Řešení souborů, které již existují</h2>
+<p>Pokud by kopírování nahradilo existující soubor, Peach Commander se zastaví a zeptá se, co dělat. Náhled obou souborů vám pomůže rozhodnout se.</p>
+<p><img alt="Dialog konfliktu přepsání porovnávající dva soubory" src="images/overwrite-dialog.png" />
+<em>(Obrázek: Dialog přepsání porovnává existující soubor s tím, který se kopíruje.)</em></p>
+<p>Vaše možnosti zahrnují:</p>
+<ul>
+<li><strong>Přepsat</strong> existující soubor nebo <strong>Přepsat vše</strong> k použití na každý zbývající konflikt.</li>
+<li><strong>Přeskočit</strong> tento soubor nebo <strong>Přeskočit vše</strong> u zbývajících konfliktů.</li>
+<li><strong>Přejmenovat</strong> příchozí kopii automaticky, aby byly zachovány oba soubory.</li>
+<li><strong>Připojit</strong> příchozí data na konec existujícího souboru.</li>
+<li>Přepsat pouze tehdy, když je zdroj <strong>novější</strong> nebo <strong>větší</strong> než existující soubor.</li>
+</ul>
+<h2 id="klavesove-zkratky">Klávesové zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Klávesa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Zkopírovat výběr do druhého panelu</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Zkopírovat ve stejné složce (vytvořit přejmenovanou kopii)</td>
+<td>Shift+F5</td>
+</tr>
+<tr>
+<td>Otevřít správce přenosů na pozadí</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Kopírování mezi dvěma umístěními na stejném disku používá rychlé klonování, pokud jej disk podporuje, takže se velké soubory zkopírují téměř okamžitě a spotřebují málo místa navíc.</li>
+<li>Složky se kopírují se vším, co je uvnitř.</li>
+<li>Chcete-li soubory přesunout namísto zkopírování, použijte F6. Ke sledování nebo správě úloh ve frontě otevřete správce přenosů na pozadí pomocí Cmd+Shift+B.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Přesun a přejmenování</a></li><li><a href="background-transfers.html">Přenosy na pozadí</a></li></ul></section>
+</main>
+</body>
+</html>

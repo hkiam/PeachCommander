@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Monitor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>System Monitor</h1>
+<p>Zásuvný modul System Monitor umístí živý přehled aktivity vašeho Macu přímo do záhlaví okna: malé čipy pro procesor, paměť, disk, síť a — tam, kde to hardware zpřístupňuje — GPU, baterii a senzory. Každý čip se aktualizuje jednou za sekundu; kliknutím na některý zobrazíte vyskakovací okno s grafem historie a podrobným rozpisem. Je to zásuvný modul, takže jej můžete povolit, nakonfigurovat nebo odebrat v nabídce <strong>Konfigurace ▸ Zásuvné moduly…</strong>.</p>
+<h2 id="cipy-v-zahlavi">Čipy v záhlaví</h2>
+<p>Když je zásuvný modul zapnutý, v záhlaví okna sedí řada kompaktních čipů. Každý čip tvoří barevná tečka, krátký popisek a živá hodnota (některé s vloženou minigrafikou sparkline):</p>
+<table>
+<thead>
+<tr>
+<th>Čip</th>
+<th>Ukazuje</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>Zatížení procesoru, s podrobností po jádrech</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>Použitá / celková paměť (plus wired, komprimovaná, swap)</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>Místo na spouštěcím svazku a propustnost čtení/zápisu</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>Rychlosti a celkové objemy stahování / odesílání</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>Využití GPU · nabití a stav baterie · otáčky ventilátorů a teploty</td>
+</tr>
+</tbody>
+</table>
+<p>Kliknutím na čip otevřete vyskakovací okno s velkou aktuální hodnotou, sparkline <strong>HISTORY</strong>, seznamem klíč/hodnota <strong>DETAILS</strong> a — u procesoru — seznamem <strong>CORE LOAD</strong> s pruhy pro jednotlivá jádra.</p>
+<h2 id="konfigurace">Konfigurace</h2>
+<p>Zvolte <strong>Příkazy ▸ System Monitor…</strong> (nebo otevřete <strong>Konfigurace ▸ Nastavení ▸ System Monitor</strong>) ke konfiguraci přehledu:</p>
+<ul>
+<li><strong>Zobrazit systémový monitor v záhlaví</strong> — hlavní vypínač čipů.</li>
+<li><strong>Profil</strong> — předvolby <em>Minimal</em>, <em>Medium</em> nebo <em>Maximal</em>, které vyberou rozumnou sadu modulů.</li>
+<li><strong>Tabulka modulů</strong> — každý modul (CPU, GPU, RAM, HDD, Net, Batt, Sens) zapnete nebo vypnete, zvolíte mu barvu a přetažením řádků nastavíte pořadí, v jakém se objeví v záhlaví. Moduly, které váš hardware neumí hlásit, se zobrazují jako <em>(n/a)</em>.</li>
+</ul>
+<p><img alt="Nastavení System Monitoru s tabulkou modulů, profily a barvami jednotlivých modulů" src="images/system-monitor.png" />
+<em>(Obrázek: zvolte, které moduly se objeví, jejich barvy a jejich pořadí.)</em></p>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Vše je měřeno, nikdy předstíráno: moduly, jejichž data hardware nezpřístupňuje (často GPU nebo senzory na některých Macích), zůstávají nedostupné, místo aby zobrazovaly vymyšlená čísla. Baterie je na stolních počítačích nedostupná.</li>
+<li>Vzorkování běží na časovači na pozadí jen tehdy, když je přehled viditelný, a pro grafy uchovává zhruba 30 minut historie.</li>
+<li>Vaše volby modulů, barvy a pořadí se ukládají s konfigurací aplikace.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="settings.html">Nastavení</a></li></ul></section>
+</main>
+</body>
+</html>

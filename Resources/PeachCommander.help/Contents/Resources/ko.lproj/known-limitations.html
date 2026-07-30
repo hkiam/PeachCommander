@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>알려진 제한 사항</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>알려진 제한 사항</h1>
+<p>Peach Commander는 많은 일을 하지만, 현재 버전에서 몇 가지 기능에는 솔직한 한계가 있습니다. 이를 미리 알아 두면 무언가 예상치 못하게 동작할 때 혼란을 줄일 수 있습니다. 이 페이지는 현재의 제약 사항과, 가능한 경우 간단한 해결 방법을 나열합니다.</p>
+<h2 id="_1">압축 파일</h2>
+<ul>
+<li><strong>매우 큰 ZIP 파일(ZIP64)은 기본 제공 리더로 열 수 없습니다.</strong> 표준 ZIP, TAR, gzip으로 압축된 TAR 압축 파일은 폴더로 바로 열립니다. ZIP64 압축 파일(약 65,000개 이상의 항목을 담거나 4 GB를 초과하는 압축 파일에 사용됨)은 기본 리더가 처리하는 범위를 벗어나므로 열리지 않거나 목록이 불완전하게 표시될 수 있습니다.</li>
+<li><strong>암호화된 ZIP 압축 파일</strong>(구형 ZipCrypto와 WinZip AES 모두)은 탐색을 지원하지만 암호를 묻습니다.</li>
+<li>CPIO, ISO, CAB, LZH, XAR, PAX 같은 다른 형식은 기본 리더가 아니라 헬퍼 도구를 통해 열립니다.</li>
+</ul>
+<h2 id="sftp-scp">네트워크(SFTP / SCP)</h2>
+<ul>
+<li><strong>이 버전에서는 SFTP를 통한 파일 속성 변경이 아무런 효과가 없습니다.</strong> SFTP/SCP를 통해 탐색, 다운로드, 업로드할 수 있지만, 원격 서버의 권한, 소유권, 타임스탬프를 변경하라는 요청은 조용히 무시됩니다. 그러한 변경은 서버 자체에서 하거나 다른 프로토콜을 통해 하십시오.</li>
+<li>SFTP 서버에 처음 연결할 때 그 호스트 키를 신뢰할지 묻습니다. 이후 Peach Commander는 이를 기억합니다(처음 사용 시 신뢰).</li>
+</ul>
+<h2 id="url">URL에서 다운로드</h2>
+<ul>
+<li><strong>Download from URL</strong> 명령(네트워크 메뉴)은 현재 이동 &gt; 데스크탑과 같은 단축키인 Cmd+Shift+D를 사용합니다. 둘 다 사용 가능할 때 메뉴가 충돌할 수 있으므로, 확실히 하려면 네트워크 메뉴에서 직접 다운로드를 시작하십시오.</li>
+</ul>
+<h2 id="_2">디렉토리 새로 고침</h2>
+<ul>
+<li><strong>패널은 외부 변경을 즉시가 아니라 짧은 지연 후에 감지합니다.</strong> Peach Commander는 약 2초마다 현재 폴더의 변경을 확인하므로, 다른 앱이 추가하거나 제거한 파일이 나타나는 데 잠시 걸릴 수 있습니다. 기다리고 싶지 않으면 F2 또는 Ctrl+R로 활성 패널을 수동으로 새로 고치십시오.</li>
+</ul>
+<h2 id="_3">기타 현재 제한 사항</h2>
+<ul>
+<li><strong>일부 매우 긴 절대 경로</strong>(전체 경로가 유난히 긴 깊게 중첩된 폴더)는 안정적으로 처리되지 않을 수 있습니다. 폴더 트리의 상단에 더 가깝게 작업하면 이를 피할 수 있습니다.</li>
+<li><strong>이 미리 보기 빌드는 서명되지 않았습니다.</strong> macOS Gatekeeper가 처음 열 때 앱이 확인되지 않은 개발자의 것이라고 경고할 수 있습니다. 앱을 마우스 오른쪽 버튼으로 클릭하고 열기를 선택한 다음 확인하여 실행하십시오. 이 빌드에서는 자동 업데이트를 아직 사용할 수 없습니다.</li>
+</ul>
+<h2 id="_4">단축키</h2>
+<table>
+<thead>
+<tr>
+<th>작업</th>
+<th>단축키</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>활성 패널 새로 고침</td>
+<td>F2 또는 Ctrl+R</td>
+</tr>
+<tr>
+<td>URL에서 다운로드</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">참고</h2>
+<p>이는 현재 버전의 제한 사항이며 이후 릴리스에서 개선될 것으로 예상됩니다. 여기에 설명되지 않은 동작을 만나면 문제 해결 항목을 참조하십시오.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="troubleshooting.html">문제 해결</a></li></ul></section>
+</main>
+</body>
+</html>

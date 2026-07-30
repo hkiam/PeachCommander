@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soukromí a zabezpečení</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Soukromí a zabezpečení</h1>
+<p>Peach Commander je vytvořen tak, aby vám nepřekážel a udržel vaše data na vašem Macu. Hesla jsou předávána klíčence macOS, informace o pádech nikdy neopustí váš počítač bez vašeho souhlasu a aplikace neshromažďuje žádnou analytiku používání. Toto téma vysvětluje, kde žijí vaše citlivé informace a jak udělit jediné systémové oprávnění, které správce souborů potřebuje k výkonu své práce.</p>
+<h2 id="kde-se-ukladaji-hesla">Kde se ukládají hesla</h2>
+<p>Jakékoli heslo nebo přístupovou frázi klíče, které uložíte — pro připojení FTP nebo SFTP, nebo k otevření heslem chráněného archivu — se zapíše do <strong>klíčenky</strong> macOS, téhož bezpečného úložiště, které systém používá pro vaše přihlášení k Wi-Fi a webům. Hesla se nikdy nezapisují do vlastních nastavení nebo souborů připojení Peach Commanderu v otevřené podobě.</p>
+<ol>
+<li>Když ukládáte heslo připojení nebo archivu, zvolte možnost jeho zapamatování.</li>
+<li>Heslo je uloženo ve vaší přihlašovací klíčence, chráněné vaším účtem.</li>
+<li>Chcete-li uložené heslo později prohlédnout nebo odstranit, otevřete aplikaci <strong>Klíčenka</strong> (v Aplikace ▸ Utility) a vyhledejte název připojení.</li>
+</ol>
+<h2 id="udeleni-uplneho-pristupu-k-disku">Udělení Úplného přístupu k disku</h2>
+<p>macOS udržuje některá umístění soukromá — data Mailu, Zpráv a jiných aplikací uvnitř vaší složky Knihovna — dokud výslovně nepovolíte přístup. Protože správce souborů je určen k tomu, aby dosáhl na každý soubor, Peach Commander žádá o <strong>Úplný přístup k disku</strong>. Aplikace stále funguje s omezeným přístupem, dokud jej neudělíte; jen neuvidíte tyto chráněné složky.</p>
+<ol>
+<li>Zvolte <strong>Příkazy ▸ Úplný přístup k disku…</strong>, nebo klepněte na <strong>Otevřít Nastavení systému</strong>, když se aplikace nabídne, že vás při spuštění provede.</li>
+<li>V <strong>Nastavení systému ▸ Soukromí a zabezpečení ▸ Úplný přístup k disku</strong> zapněte přepínač vedle Peach Commanderu.</li>
+<li>Pokud budete vyzváni, restartujte aplikaci.</li>
+</ol>
+<h2 id="zpravy-o-padech-zustavaji-mistni">Zprávy o pádech zůstávají místní</h2>
+<p>Pokud se aplikace neočekávaně ukončí, macOS zapíše zprávu o pádu do vaší vlastní diagnostické složky. Při dalším spuštění si jí Peach Commander všimne a nabídne, že vám pomůže podat hlášení o chybě — ale jen s vaším souhlasem.</p>
+<ul>
+<li>Můžete <strong>Zobrazit ve Finderu</strong> pro zobrazení zprávy, nebo <strong>Zkopírovat zprávu do schránky</strong> pro její vlastní vložení do hlášení o chybě.</li>
+<li>Nic se nikdy nepřenáší automaticky a není zapojena žádná služba třetí strany pro hlášení pádů.</li>
+</ul>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li><strong>Žádná telemetrie.</strong> Peach Commander nesleduje vaši aktivitu ani neodesílá analytiku používání kamkoli.</li>
+<li><strong>Omezený přístup je bezpečný.</strong> Pokud přeskočíte Úplný přístup k disku, aplikace stále prochází a spravuje soubory, které normálně vidíte; skryta jsou jen systémem chráněná umístění.</li>
+<li><strong>Vy ovládáte uložená hesla.</strong> Protože přihlašovací údaje žijí v klíčence, spravujete je a odvoláváte standardními nástroji macOS místo uvnitř aplikace.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Připojení k FTP a SFTP</a></li><li><a href="troubleshooting.html">Řešení potíží</a></li></ul></section>
+</main>
+</body>
+</html>

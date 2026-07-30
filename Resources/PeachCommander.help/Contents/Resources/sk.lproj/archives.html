@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Práca s archívmi</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Práca s archívmi</h1>
+<p>Peach Commander zaobchádza s archívmi ako s priečinkami. Môžete vstúpiť do archívu ZIP, TAR alebo iného podporovaného archívu, prehliadať jeho obsah a kopírovať z neho súbory — všetko bez predchádzajúceho rozbalenia na disk. Keď chcete vytvoriť archív, príkaz Zabaliť zoskupí váš výber do formátu ZIP, 7z, TAR alebo iného, s voliteľným šifrovaním a rozdelenými zväzkami. Je to praktické na zbalenie súborov na odoslanie, zmenšenie priečinka na uloženie alebo nazretie do stiahnutého súboru pred tým, ako sa zaviažete k rozbaleniu.</p>
+<h2 id="prehliadajte-archiv-ako-priecinok">Prehliadajte archív ako priečinok</h2>
+<ol>
+<li>V paneli presuňte kurzor na súbor archívu (napríklad <code>.zip</code> alebo <code>.tar.gz</code>).</li>
+<li>Stlačte Enter alebo Ctrl+PageDown na vstup, rovnako ako by ste otvorili priečinok.</li>
+<li>Prechádzajte obsah normálne. Stlačte Backspace alebo Ctrl+PageUp na návrat hore a opustenie archívu.</li>
+<li>Na vytiahnutie súborov ich vyberte a skopírujte (F5) do druhého panela.</li>
+</ol>
+<p><img alt="Prehliadanie vnútra archívu, akoby to bol priečinok" src="images/archive-browse.png" />
+<em>(Obrázok: otvorený archív zobrazený ako bežný zoznam priečinka, so súbormi pripravenými na kopírovanie.)</em></p>
+<p>ZIP, TAR a TAR komprimovaný gzipom sa čítajú priamo. Iné formáty ako CPIO, ISO, CAB, LZH, XAR a PAX sa čítajú cez vstavané systémové nástroje. Šifrované archívy ZIP (klasické aj AES) možno otvoriť, keď zadáte heslo.</p>
+<h2 id="zabalte-subory-do-noveho-archivu">Zabaľte súbory do nového archívu</h2>
+<ol>
+<li>Vyberte súbory a priečinky, ktoré chcete zahrnúť, v aktívnom paneli.</li>
+<li>Vyberte Súbor ▸ Zabaliť… alebo stlačte Alt+F5. (Na zabalenie a následné odstránenie originálov použite Alt+Shift+F5.)</li>
+<li>V dialógu vyberte formát archívu (ZIP, 7z, TAR, tar.gz, bzip2, xz alebo RAR), úroveň kompresie a kam ho uložiť.</li>
+<li>Voliteľne zapnite šifrovanie AES-256 a nastavte heslo, alebo rozdeľte archív na zväzky s pevnou veľkosťou.</li>
+<li>Potvrďte na vytvorenie archívu.</li>
+</ol>
+<p><img alt="Dialóg Zabaliť zobrazujúci formát, kompresiu, šifrovanie a možnosti rozdelenia" src="images/pack-dialog.png" />
+<em>(Obrázok: dialóg Zabaliť, kde vyberiete formát a nastavíte možnosti šifrovania a rozdelenia na zväzky.)</em></p>
+<h2 id="rozbalte-alebo-otestujte-archiv">Rozbaľte alebo otestujte archív</h2>
+<ol>
+<li>Umiestnite archív na rozbalenie do aktívneho panela a cieľový priečinok do druhého panela.</li>
+<li>Vyberte Súbor ▸ Rozbaliť… alebo stlačte Alt+F9, potom potvrďte cieľ.</li>
+<li>Na kontrolu archívu na poškodenie bez rozbalenia vyberte Súbor ▸ Otestovať archív.</li>
+</ol>
+<h2 id="upravte-zip-na-mieste">Upravte ZIP na mieste</h2>
+<p>Súbory môžete pridávať alebo odoberať vo vnútri existujúceho ZIP bez jeho rozbalenia. Otvorte ZIP ako priečinok, potom doň kopírujte súbory alebo mažte súbory ako obvykle — zmena sa zapíše priamo späť do archívu.</p>
+<h2 id="skratky">Skratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akcia</th>
+<th>Skratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vstúpiť do archívu pod kurzorom</td>
+<td>Enter alebo Ctrl+PageDown</td>
+</tr>
+<tr>
+<td>Opustiť archív (ísť hore)</td>
+<td>Backspace alebo Ctrl+PageUp</td>
+</tr>
+<tr>
+<td>Zabaliť</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Zabaliť a odstrániť originály</td>
+<td>Alt+Shift+F5</td>
+</tr>
+<tr>
+<td>Rozbaliť</td>
+<td>Alt+F9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Balenie do 7z, xz, bzip2 a RAR sa spolieha na externé nástroje. RAR konkrétne vyžaduje nainštalovaný proprietárny program RAR; bez neho tento formát nie je dostupný.</li>
+<li>Úprava ZIP na mieste prepíše celý archív, takže dátumy úprav súborov vo vnútri sa nezachovajú.</li>
+<li>Veľmi veľké jednotlivé položky sú pri rozbaľovaní obmedzené na 512 MiB. Rozbaľovanie možno zrušiť počas jeho behu.</li>
+<li>Extrémne veľké archívy (ZIP64) nie sú podporované.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopírovanie súborov</a></li></ul></section>
+</main>
+</body>
+</html>

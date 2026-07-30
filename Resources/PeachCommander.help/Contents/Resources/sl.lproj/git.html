@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>Vtičnik Git prikaže stanje odložišča Git kar znotraj podokna z datotekami — brez ločene aplikacije, brez terminala. Doda dva stolpca, ki prikazujeta stanje delovnega drevesa vsake datoteke in trenutno vejo, podmeni <strong>Git</strong> za vsakodnevne ukaze (stanje, priprava, uveljavitev, prenos, potisk) ter uporablja <code>git</code>, ki je že nameščen na vašem Macu. Ker gre za vtičnik, ga lahko izklopite ali odstranite v <strong>Konfiguracija ▸ Vtičniki…</strong>.</p>
+<h2 id="kaj-doda">Kaj doda</h2>
+<ul>
+<li><strong>Dva stolpca v seznamu datotek</strong> — <em>Git Status</em> in <em>Branch</em>. V odložišču vsaka datoteka prikaže kratko besedo o stanju (Spremenjeno, Dodano, Izbrisano, Nesledeno, Preimenovano, Kopirano, Spor, Prezrto ali Predelano), podokno pa prikaže trenutno vejo. Stolpca vklopite v <strong>Konfiguracija ▸ Stolpci…</strong> (glejte <a href="view-modes-and-sorting.md">Načini pogleda in razvrščanje</a>).</li>
+<li><strong>Meni Git</strong> — pod <strong>Ukazi ▸ Git</strong> in v priročnem meniju datoteke, z: <strong>Stanje Git…</strong>, <strong>Git dodaj (pripravi)</strong>, <strong>Git uveljavi…</strong>, <strong>Git potegni</strong> in <strong>Git potisni</strong>.</li>
+</ul>
+<p><img alt="Pogovorno okno Stanje Git, ki prikazuje trenutno vejo in spremenjene datoteke v odložišču" src="images/git-status.png" />
+<em>(Slika: Stanje Git prikaže vejo in vsako spremembo v delovnem drevesu.)</em></p>
+<h2 id="preverjanje-stanja">Preverjanje stanja</h2>
+<ol>
+<li>Postavite kazalec na datoteko ali mapo znotraj odložišča Git.</li>
+<li>Izberite <strong>Ukazi ▸ Git ▸ Stanje Git…</strong> (ali desni klik ▸ <strong>Git ▸ Stanje Git…</strong>).</li>
+<li>Pojavi se povzetek: trenutna veja (ali <em>(ločeno)</em>), nato bodisi <em>Delovno drevo je čisto.</em> bodisi seznam sprememb, kjer vsaka vrstica prikazuje stanje in pot datoteke.</li>
+</ol>
+<p>Če kazalec ni znotraj odložišča, vtičnik preprosto sporoči <em>Ni odložišče Git.</em></p>
+<h2 id="priprava-uveljavitev-prenos-potisk">Priprava, uveljavitev, prenos, potisk</h2>
+<ul>
+<li><strong>Git dodaj (pripravi)</strong> pripravi datoteko pod kazalcem (<code>git add</code>).</li>
+<li><strong>Git uveljavi…</strong> zahteva sporočilo uveljavitve, nato uveljavi vse spremembe (<code>git commit -a</code>). Prikaže se združen izpis, tako da natančno vidite, kaj se je zgodilo.</li>
+<li><strong>Git potegni</strong> izvede prenos samo s hitrim previjanjem (<code>git pull --ff-only</code>).</li>
+<li><strong>Git potisni</strong> potisne trenutno vejo (<code>git push</code>).</li>
+</ul>
+<p>Po ukazu, ki spremeni odložišče, se dejavno podokno osveži, tako da stolpca stanja ostaneta ažurna.</p>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Vtičnik uporablja sistemski Git na <code>/usr/bin/git</code>. Če Git ni nameščen, ukazi sporočijo, da Git ni na voljo. (Zagotovi ga namestitev orodij Xcode Command Line Tools.)</li>
+<li>Stanje odložišča se prebere enkrat na mapo in shrani v predpomnilnik, tako da drsenje po velikem odložišču ostane hitro; predpomnilnik se osveži po vsakem ukazu, ki spremeni drevo.</li>
+<li>Uveljavitev uporablja <code>git commit -a</code>, ki uveljavi sledene spremembe; povsem nove datoteke še vedno najprej potrebujejo <strong>Git dodaj (pripravi)</strong>.</li>
+<li>Glavi stolpcev <em>Git Status</em> in <em>Branch</em> se trenutno prikazujeta v angleščini tudi v drugih jezikih vmesnika; vrednosti in pogovorna okna so prevedeni.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="view-modes-and-sorting.html">Načini pogleda in razvrščanje</a></li></ul></section>
+</main>
+</body>
+</html>

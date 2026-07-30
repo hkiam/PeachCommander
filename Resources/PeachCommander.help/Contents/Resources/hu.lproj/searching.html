@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fájlok keresése</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Fájlok keresése</h1>
+<p>Amikor fájlokat kell felkutatnia bárhol a Macjén — név szerint, tartalmuk szerint, vagy méret és dátum szerint — használja a Fájlok keresése ablakot. Egy vagy több mappában (és azok almappáiban) keres, belenézhet szövegfájlokba és archívumokba, és lehetővé teszi, hogy mindent, amit talál, egyenesen egy panelbe küldjön, így úgy hasson az eredményeken, mintha egy közönséges mappa lenne.</p>
+<h2 id="fajlok-keresese-nev-szerint">Fájlok keresése név szerint</h2>
+<ol>
+<li>Abban a panelben, amely a keresni kívánt mappát mutatja, válassza a <strong>Parancsok &gt; Fájlok keresése…</strong> lehetőséget (vagy nyomja meg a Cmd+Shift+F-et).</li>
+<li>Az <strong>Általános</strong> lapon írjon be egy névmintát a <strong>Keresés</strong> mezőbe. Használhat helyettesítő karaktereket, mint a <code>*.pdf</code> vagy <code>jelentés_*.docx</code>. Több mappában egyszerre kereséshez sorolja fel őket a kezdőmappa mezőben pontosvesszővel (<code>;</code>) elválasztva.</li>
+<li>Kattintson a <strong>Start</strong>-ra. Az egyezések az alábbi eredménylistában jelennek meg, ahogy megtalálódnak.</li>
+<li>Kattintson duplán bármely eredményre, hogy arra a fájlra ugorjon az aktív panelben, vagy jelöljön ki egy eredményt és kattintson a <strong>Megtekintés</strong> (F3) gombra a beépített megjelenítőben való megnyitáshoz.</li>
+</ol>
+<p><img alt="A Fájlok keresése ablak az Általános lapon, a névmintát, mappát és eredménylistát mutatva" src="images/find-files-general.png" />
+<em>(Ábra: az Általános lap — keresés névminta szerint egy vagy több mappában.)</em></p>
+<h2 id="kereses-tartalom-meret-es-datum-szerint">Keresés tartalom, méret és dátum szerint</h2>
+<ol>
+<li>A fájlokon belüli kereséshez válassza a <strong>Szöveg keresése</strong> lehetőséget az Általános lapon, és írja be a keresendő szöveget. A beállítások lehetővé teszik, hogy <strong>kis- és nagybetűre érzékennyé</strong> tegye, csak <strong>egész szó</strong>-ra illesszen, a szöveget <strong>reguláris kifejezés</strong>-ként kezelje, <strong>hexadecimális tartalomkeresést</strong> végezzen, vagy olyan fájlokat találjon, amelyek <strong>nem tartalmazzák</strong> a szöveget.</li>
+<li>Váltson a <strong>Speciális</strong> lapra az eredmények <strong>méret</strong> szerinti szűkítéséhez (például <code>10K</code>-tól <code>5M</code>-ig), <strong>módosítási dátum</strong> tartomány szerint, vagy az utolsó N napban módosított fájlokra.</li>
+<li>Kapcsolja be a <strong>Keresés archívumokon belül</strong> lehetőséget a zip-családú archívumokon (zip, jar, war és hasonlók) belüli nézéshez.</li>
+<li>A keresés arra korlátozásához, amit már kiválasztott, kapcsolja be a <strong>Keresés csak a kijelölt elemekben</strong> lehetőséget indítás előtt.</li>
+</ol>
+<p><img alt="A Fájlok keresése ablak a Speciális lapon, a méret- és dátumszűrőket mutatva" src="images/find-files-advanced.png" />
+<em>(Ábra: a Speciális lap — szűrés méret, dátum és más attribútumok szerint.)</em></p>
+<p>Ha vannak bővítményei, amelyek tartalommezőket adnak (mint a képméretek), a <strong>Bővítmények</strong> lap lehetővé teszi, hogy megköveteljen egy mező egy feltételnek való megfelelését — például csak 1000 képpontnál szélesebb képeket.</p>
+<p><img alt="A Fájlok keresése ablak a Bővítmények lapon, egy tartalommező-feltételt mutatva" src="images/find-files-plugins.png" />
+<em>(Ábra: a Bővítmények lap — egyezés a bővítmények által biztosított tartalommezőkön.)</em></p>
+<h2 id="gyors-keresesek-a-spotlighttal">Gyors keresések a Spotlighttal</h2>
+<p>Olyan helyi mappákhoz, amelyeket a macOS már indexelt, kapcsolja be a <strong>Spotlight használata</strong> lehetőséget az Általános lapon a szinte azonnali eredményekért. A Spotlight az indexben keres a fájlok beolvasása helyett, így figyelmen kívül hagyja a reguláris kifejezéseket, az almappamélység-korlátokat és a csak-kijelölt hatókört.</p>
+<h2 id="az-eredmenyek-ujrafelhasznalasa-es-atadasa">Az eredmények újrafelhasználása és átadása</h2>
+<ul>
+<li>A <strong>Küldés a listadobozba</strong> minden eredményt az aktív panelbe helyez ideiglenes listaként, így az egész készletet egyszerre másolhatja, helyezheti át vagy törölheti.</li>
+<li>A <strong>Betöltés / Mentés</strong> lapon válassza a <strong>Mentés sablonként…</strong> lehetőséget az aktuális keresés (minták és beállítások) tárolásához és későbbi újbóli kiválasztásához a sablonlistából.</li>
+</ul>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyűparancs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A Fájlok keresése megnyitása</td>
+<td>Cmd+Shift+F vagy Option+F7</td>
+</tr>
+<tr>
+<td>A keresés indítása / leállítása</td>
+<td>Start gomb az ablakban</td>
+</tr>
+<tr>
+<td>A kijelölt eredmény megtekintése</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A tartalomkeresés helyi mappáknál teljes fájlokat olvas; más helyeken a nagyon nagy fájlok kimaradnak (nagyjából 16 MB, vagy 64 MB reguláris kifejezés használatakor).</li>
+<li>Az archívumokon belüli keresés a beágyazott archívumok négy szintjéig ereszkedik.</li>
+<li>A <strong>Mappák bevonása az eredményekbe</strong> azokat a mappákat is felsorolja, amelyek nevei egyeznek, nem csak a fájlokat.</li>
+<li>A Spotlight csak az indexelt helyi mappákat fedi le; hálózati helyekhez vagy mintaalapú egyezéshez hagyja kikapcsolva, és hagyja, hogy a Fájlok keresése beolvasson.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">Fájlok kijelölése</a></li><li><a href="quick-search-and-filter.html">Gyorskeresés és szűrő</a></li></ul></section>
+</main>
+</body>
+</html>

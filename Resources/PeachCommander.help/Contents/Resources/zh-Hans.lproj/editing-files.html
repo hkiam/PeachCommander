@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>编辑文件</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>编辑文件</h1>
+<p>当你需要更改文件而不仅仅是查看它时，Peach Commander 会用内置编辑器将其打开。文本和代码文件会在功能完整的编辑器中打开，具备语法高亮、查找和替换、代码中符号的大纲，以及用于快速导航的缩略图。二进制文件可以在独立的十六进制编辑器中打开，你可以在其中检查和更改单个字节。你无需离开应用即可进行快速编辑。</p>
+<h2 id="_1">编辑文本或代码文件</h2>
+<ol>
+<li>在任一面板中，将光标移到你想更改的文件上。</li>
+<li>按 F4，或选择“文件 ▸ 编辑”。文件会在编辑器窗口中打开。</li>
+<li>进行你的更改。如果文件是可识别的编程或数据格式，关键字、字符串和注释会被自动着色。</li>
+<li>按 Cmd+S（或单击“保存”）写入你的更改。首次保存会在文件旁保留一份原始文件的备份，因此你随时可以回退到它。</li>
+</ol>
+<p>若要在当前位置新建一个全新的文本文件，请按 Shift+F4。</p>
+<p><img alt="内置文本编辑器，显示语法高亮、符号大纲和缩略图" src="images/editor.png" />
+<em>（图：编辑器，带有语法高亮、左侧的符号大纲和右侧的缩略图。）</em></p>
+<h2 id="_2">查找、替换和导航</h2>
+<ul>
+<li>按 Cmd+F 打开查找栏。若要替换文本，打开查找栏并将其切换到替换视图，或单击工具栏中的“查找/替换”。</li>
+<li>单击“格式化 JSON/XML”，可将 JSON 或 XML 文档重新缩进为整洁易读的布局。</li>
+<li>单击“符号”（或按 Cmd+Shift+O），可显示一个侧边栏，列出代码中的类、函数和方法。单击某个条目可直接跳转到它。</li>
+<li>按 Cmd+L 跳转到指定行。</li>
+<li>按 Cmd+\ 在括号与其匹配的另一半之间跳转。</li>
+<li>单击地图按钮，可显示或隐藏缩略图——它是整个文件的缩放概览，你可以单击它进行滚动。</li>
+<li>如果文件是以默认文本编码以外的编码保存的，请使用工具栏中的“编码”菜单。</li>
+</ul>
+<h2 id="_3">逐字节编辑文件</h2>
+<ol>
+<li>在面板中选择文件。</li>
+<li>选择“文件 ▸ 以十六进制编辑”（或右键单击文件并选择“以十六进制编辑”）。</li>
+<li>输入十六进制数字以覆盖字节，或使用方向键在文件中移动。Backspace 和 Delete 会移除字节。</li>
+<li>按 Cmd+S 保存。与文本编辑器一样，会保留一份一次性的原始文件备份。</li>
+</ol>
+<h2 id="_4">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>按键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>编辑文件</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>创建并编辑新文本文件</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>保存</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>查找</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>显示/隐藏符号大纲</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>转到行</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>跳转到匹配的括号</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>撤销 / 重做（十六进制编辑器）</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">说明</h2>
+<ul>
+<li>语法高亮涵盖 JSON、C、C#、Java、JavaScript、TypeScript、Python 和 Rust。其他文件类型仍可正常打开和编辑，并带有基本着色，但详细的高亮和符号大纲仅对受支持的语言可用。</li>
+<li>符号大纲和“转到行”功能适用于文本编辑器。十六进制编辑器用于二进制检查和字节级编辑，而非文本。</li>
+<li>两个编辑器在你首次保存时都会保留一份原始文件的备份，因此意外的更改可通过恢复该备份轻松撤销。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">查看文件</a></li></ul></section>
+</main>
+</body>
+</html>

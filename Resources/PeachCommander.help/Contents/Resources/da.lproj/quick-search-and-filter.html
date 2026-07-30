@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hurtigsøgning og filter</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Hurtigsøgning og filter</h1>
+<p>Når en mappe indeholder hundredvis af emner, har du sjældent brug for at rulle. Peach Commander lader dig springe direkte til en fil ved at skrive dens navn (hurtigsøgning), skære listen ned til kun de emner, du bekymrer dig om (hurtigfilter), og vise eller skjule de punktfiler, macOS normalt holder ude af syne. Alle tre virker inde i det aktive panel uden at åbne en dialog.</p>
+<h2 id="spring-til-en-fil-ved-at-skrive-hurtigsgning">Spring til en fil ved at skrive (hurtigsøgning)</h2>
+<ol>
+<li>Klik på et filpanel, så det er aktivt.</li>
+<li>Begynd at skrive begyndelsen af et navn. Markøren springer til det første matchende emne.</li>
+<li>Fortsæt med at skrive for at forfine matchet, eller tryk på det samme bogstav igen for at cykle gennem emner, der starter med det bogstav.</li>
+<li>Den indtastede tekst ryddes efter en kort pause, så du kan starte en ny søgning når som helst.</li>
+</ol>
+<p>Som standard går almindelige bogstaver til kommandolinjen, og hurtigsøgning udløses med Ctrl+Option+bogstav (den klassiske adfærd). Du kan skifte hurtigsøgning til at reagere på almindelig skrivning i stedet, eller slå den fra, i konfigurationsindstillingerne.</p>
+<h2 id="filtrer-listen-hurtigfilter">Filtrér listen (hurtigfilter)</h2>
+<ol>
+<li>I det aktive panel skal du trykke på Ctrl+S for at slå hurtigfilteret til.</li>
+<li>Indtast en filtermaske. Panelet indsnævres live til matchende emner, mens du skriver.</li>
+<li>Tryk på Esc for at rydde filteret og vise alt igen.</li>
+</ol>
+<p>Filteret accepterer flere slags masker:</p>
+<ul>
+<li><strong>Almindelig tekst</strong> matcher ethvert navn, der indeholder det, du skrev (for eksempel viser <code>rapport</code> hvert emne med "rapport" hvor som helst i navnet).</li>
+<li><strong>Jokertegn</strong> bruger <code>*</code> (vilkårlige tegn) og <code>?</code> (ét tegn). Adskil flere masker med semikolon og tilføj udelukkelser efter en lodret streg, for eksempel <code>*.jpg;*.png|*thumb*</code> for at vise billeder, men skjule miniaturer.</li>
+<li><strong>Finder-mærker</strong> filtrerer efter mærkefarve: skriv <code>tag:red</code> (eller <code>#red</code>) for kun at vise rødmærkede emner, eller et bart <code>tag:</code> for at vise alt, der bærer et mærke.</li>
+</ul>
+<h2 id="vis-skjulte-filer">Vis skjulte filer</h2>
+<p>Tryk på Ctrl+H, eller vælg kommandoen fra Vis-menuen, for at skifte skjulte emner (navne der begynder med et punktum og systemskjulte filer). Indstillingen gælder det aktive panel og huskes mellem sessioner.</p>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Genvej</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hurtigsøgning (klassisk tilstand)</td>
+<td>Ctrl+Option+bogstav</td>
+</tr>
+<tr>
+<td>Hurtigfilter til/fra</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Ryd filter / annullér</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Vis/skjul skjulte filer</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Hurtigsøgning flytter kun markøren; hurtigfilter ændrer faktisk, hvilke emner der vises. Brug filteret, når du vil arbejde på en delmængde (for eksempel kun markere eller kopiere matchene).</li>
+<li>Filter- og skjulte filer-indstillingerne er pr. panel, så de to sider kan vise forskellige ting på én gang.</li>
+<li>Hurtigsøgning matcher navne fra begyndelsen; hurtigfilterets almindelig tekst-tilstand matcher hvor som helst i navnet. Brug et jokertegn som <code>*tekst*</code>, hvis du vil have filteret til at opføre sig på samme måde.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Find filer</a></li><li><a href="view-modes-and-sorting.html">Visningstilstande og sortering</a></li></ul></section>
+</main>
+</body>
+</html>

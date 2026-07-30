@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filværktøjer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Filværktøjer</h1>
+<p>Ud over kopiering og flytning indeholder Peach Commander et sæt daglige filværktøjer til at verificere, at filer er intakte, frigøre diskplads, dele store filer op i mindre stykker og konvertere filer til og fra tekstsikre formater. Du når dem alle fra menuen <strong>Fil</strong>, og de handler på det, du har markeret i det aktive panel (eller emnet under markøren, når intet er markeret). Dette emne dækker kontrolsummer, dubletfinderen, opdel/kombinér, kod/afkod og beregning af optaget plads.</p>
+<h2 id="opret-eller-verificer-kontrolsummer">Opret eller verificér kontrolsummer</h2>
+<p>Kontrolsummer lader dig bekræfte, at en fil er overført eller kopieret uden ødelæggelse, eller give en modtager en måde at kontrollere den kopi, de modtog.</p>
+<ol>
+<li>Markér de filer, du vil tage fingeraftryk af.</li>
+<li>Vælg <strong>Fil ▸ Opret kontrolsummer…</strong>, vælg en algoritme (CRC32, MD5, SHA-1, SHA-256 eller SHA-512), og gem kontrolsumsfilen.</li>
+<li>For at kontrollere filer senere skal du markere kontrolsumsfilen og vælge <strong>Fil ▸ Verificér kontrolsummer…</strong>. Peach Commander genberegner hver hash og rapporterer enhver fil, der ikke matcher.</li>
+</ol>
+<p>Kontrolsummer streames direkte over den aktuelle placering, så du kan oprette eller verificere dem selv for filer inde i arkiver eller på en FTP-server.</p>
+<h2 id="find-duplikerede-filer">Find duplikerede filer</h2>
+<p>Dubletfinderen finder identiske filer spredt over mapper, så du kan fjerne de ekstra kopier.</p>
+<ol>
+<li>Markér de mapper (eller filer), du vil scanne.</li>
+<li>Vælg <strong>Fil ▸ Find dubletter…</strong>. Peach Commander sammenligner kandidater og grupperer filer, der er byte-for-byte identiske.</li>
+<li>Gennemgå hver gruppe, markér de kopier, du ikke længere har brug for, og slet dem.</li>
+</ol>
+<p><img alt="Dubletfinderen viser grupper af identiske filer" src="images/duplicate-finder.png" />
+<em>(Figur: Dubletfinderen grupperer identiske filer, så du kan beholde én og fjerne resten.)</em></p>
+<h2 id="opdel-og-kombiner-filer">Opdel og kombinér filer</h2>
+<p>Opdeling bryder én stor fil op i en nummereret serie af mindre dele — praktisk til opbevarings- eller overførselsgrænser. Kombinering samler dem igen.</p>
+<ol>
+<li>For at opdele skal du markere en fil og vælge <strong>Fil ▸ Opdel fil…</strong>, og derefter indstille delstørrelsen. Delene skrives til det andet panels mappe.</li>
+<li>For at samle igen skal du markere den første del og vælge <strong>Fil ▸ Kombinér filer…</strong>. Den oprindelige fil genopbygges fra de nummererede stykker.</li>
+</ol>
+<h2 id="kod-og-afkod">Kod og afkod</h2>
+<p>Kodning omdanner en binær fil til almindelig tekst, så den overlever kanaler, der kun bærer tekst (for eksempel ældre e-mail eller indsætningsfelter). Afkodning vender det om.</p>
+<ol>
+<li>Markér en fil og vælg <strong>Fil ▸ Kod…</strong>, og vælg derefter et format — MIME (Base64), UUE (uuencode) eller XXE.</li>
+<li>For at gendanne originalen skal du markere den kodede fil og vælge <strong>Fil ▸ Afkod…</strong>. Formatet registreres automatisk.</li>
+</ol>
+<h2 id="beregn-optaget-plads">Beregn optaget plads</h2>
+<p>For at se, hvor meget plads en mappe eller markering faktisk bruger på disken, skal du markere emnerne og trykke på <strong>Ctrl+L</strong> (<strong>Fil ▸ Beregn optaget plads…</strong>). Peach Commander lægger hver fil indeni sammen, inklusive undermapper, og viser totalen.</p>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Tast</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Beregn optaget plads</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Kontrolsummer, opdel/kombinér og kod/afkod er rettet mod mere avancerede opgaver, men hver er en enkelt dialog med fornuftige standardindstillinger.</li>
+<li>Når et værktøj producerer nye filer (opdelte dele, en kodet fil, en kontrolsumsliste), skrives de til den mappe, der vises i det andet panel — indstil det panel til din tilsigtede destination først.</li>
+<li>Sletning af dubletter er permanent afhængigt af dine sletteindstillinger; gennemgå hver gruppe omhyggeligt, og behold mindst én kopi af alt, du stadig har brug for.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Sammenligning og synkronisering</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carte du disque</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Carte du disque</h1>
+<p>Carte du disque est une extension intégrée qui montre, d'un coup d'œil, ce qui occupe de l'espace dans un dossier ou sur tout un volume. Elle analyse le dossier que vous choisissez et dessine chaque élément dimensionné en proportion de l'espace qu'il occupe réellement sur le disque, de sorte que les plus gros gouffres d'espace ressortent immédiatement. Vous pouvez explorer les dossiers, voir comment votre analyse se réconcilie avec l'espace libre, purgeable et masqué du volume, et faire le ménage directement depuis la carte.</p>
+<h2 id="lancer-une-analyse">Lancer une analyse</h2>
+<ol>
+<li>Dans le panneau actif, allez au dossier (ou au volume) que vous voulez mesurer.</li>
+<li>Choisissez <strong>Commandes ▸ Carte du disque : analyser le dossier actuel</strong>.</li>
+<li>La vue Carte du disque s'ouvre à droite et analyse en arrière-plan, affichant un décompte en cours des éléments et des octets. Les gros dossiers se terminent en quelques secondes — l'analyse lit les métadonnées de répertoire en masse et travaille sur plusieurs cœurs de processeur.</li>
+</ol>
+<p><img alt="La Carte du disque montrant une treemap carrée d'un dossier, une barre de volume, une liste des plus gros fichiers et une légende par catégorie" src="images/disk-map.png" />
+<em>(Figure : la vue treemap, colorée par catégorie de fichier, avec la barre de volume en haut et la liste des plus gros fichiers à droite.)</em></p>
+<h2 id="lire-la-carte">Lire la carte</h2>
+<ul>
+<li>Chaque bloc (treemap) ou segment d'anneau (sunburst) est dimensionné selon la <strong>taille réelle sur le disque</strong> de l'élément, de sorte que l'image correspond à ce que rapportent le Finder et le système.</li>
+<li>Les blocs sont <strong>colorés par type de fichier</strong> — vidéo, images, audio, documents, code, archives, apps, images disque — avec une légende en bas. Vous pouvez passer à une <strong>carte de chaleur</strong> par taille dans les réglages.</li>
+<li><strong>Cliquez sur un dossier</strong> pour l'explorer ; le fil d'Ariane en haut montre où vous êtes, et le bouton <strong>◂</strong> remonte d'un niveau.</li>
+<li>Survolez n'importe quel bloc pour voir son chemin complet, sa taille et son nombre d'éléments.</li>
+</ul>
+<h2 id="deux-vues-treemap-et-sunburst">Deux vues : treemap et sunburst</h2>
+<p>Carte du disque propose deux visualisations, et vous pouvez basculer entre elles avec le bouton <strong>◎ / ▦</strong> dans l'en-tête ou sur la page des réglages :</p>
+<ul>
+<li><strong>Treemap</strong> — rectangles imbriqués, la plus dense pour repérer le plus gros fichier isolé.</li>
+<li><strong>Sunburst</strong> — anneaux concentriques (un par profondeur de dossier) autour du dossier courant, idéale pour voir comment l'espace se répartit dans une arborescence profonde.</li>
+</ul>
+<p><img alt="La vue sunburst de la Carte du disque montrant des anneaux concentriques pour la profondeur des dossiers" src="images/disk-map-sunburst.png" />
+<em>(Figure : la vue sunburst — le disque intérieur est le dossier courant et chaque anneau est un niveau plus profond.)</em></p>
+<h2 id="la-barre-de-volume">La barre de volume</h2>
+<p>La barre en haut réconcilie votre analyse avec tout le volume :</p>
+<ul>
+<li><strong>Analysé / Ce dossier</strong> — combien occupe le dossier analysé.</li>
+<li><strong>Masqué</strong> (à la racine du volume) ou <strong>Reste du volume</strong> (pour un sous-dossier) — tout ce qui n'est pas dans cette analyse, y compris les dossiers protégés par le système, les autres utilisateurs et les instantanés.</li>
+<li><strong>Purgeable</strong> — l'espace que macOS peut récupérer automatiquement, surtout les instantanés Time Machine locaux et les caches.</li>
+<li><strong>Libre</strong> — l'espace disponible dès maintenant.</li>
+</ul>
+<p>Lorsque le volume a des instantanés locaux, la barre affiche un élément <strong>· N instantanés (ⓘ)</strong> ; cliquez dessus pour une liste en lecture seule, avec une astuce pour les gérer dans Utilitaire de disque ou Time Machine. Carte du disque ne supprime jamais elle-même les instantanés.</p>
+<h2 id="les-plus-gros-fichiers">Les plus gros fichiers</h2>
+<p>Activez <strong>Afficher la liste des plus gros fichiers</strong> pour voir les plus gros fichiers du dossier courant classés par taille, chacun avec une pastille de couleur pour sa catégorie. Cliquez sur l'un d'eux pour le mettre en évidence sur la carte.</p>
+<h2 id="faire-le-menage-depuis-la-carte">Faire le ménage depuis la carte</h2>
+<p>Cliquez droit sur n'importe quel bloc pour des actions :</p>
+<ul>
+<li><strong>Ouvrir dans le panneau gauche</strong> / <strong>Ouvrir dans le panneau droit</strong> — révéler l'élément dans un panneau de fichiers.</li>
+<li><strong>Révéler dans le Finder</strong>.</li>
+<li><strong>Placer dans la corbeille</strong> — supprimer juste cet élément ; la carte se met à jour sans réanalyse complète.</li>
+</ul>
+<p>Pour retirer plusieurs éléments à la fois, utilisez le <strong>collecteur</strong> : clic droit ▸ <strong>Marquer pour le collecteur</strong> sur chaque élément, puis cliquez sur le bouton <strong>🗑 N</strong> de l'en-tête pour placer tout ce que vous avez marqué dans la corbeille en une seule étape confirmée.</p>
+<h2 id="reglages">Réglages</h2>
+<p>Carte du disque ajoute sa propre page à la fenêtre des Réglages (<strong>Configuration ▸ Réglages ▸ Carte du disque</strong>) :</p>
+<ul>
+<li><strong>Style de graphique</strong> — treemap ou sunburst.</li>
+<li><strong>Codage couleur</strong> — par type de fichier (catégorie) ou par taille (carte de chaleur).</li>
+<li><strong>Rester sur le volume de départ</strong> — ne pas traverser vers d'autres disques montés.</li>
+<li><strong>Afficher la barre de volume</strong> et <strong>Afficher la liste des plus gros fichiers</strong>.</li>
+</ul>
+<p>Les changements s'appliquent immédiatement à une Carte du disque ouverte.</p>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>Carte du disque mesure la taille <strong>allouée</strong> (sur le disque) et ne compte les fichiers <strong>à liens matériels</strong> qu'une seule fois, de sorte que ses totaux s'alignent sur l'espace utilisé du volume plutôt que de le surestimer.</li>
+<li>Par défaut, l'analyse reste sur le volume de départ, elle ne s'aventure donc pas dans d'autres disques montés ou partages réseau.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Extensions</a></li><li><a href="deleting-files.html">Supprimer des fichiers</a></li><li><a href="settings.html">Réglages</a></li></ul></section>
+</main>
+</body>
+</html>

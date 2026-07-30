@@ -1,0 +1,74 @@
+name: Release
+
+# Triggered by pushing a version tag (e.g. v1.2.0). Builds the app, packages a
+# DMG, and attaches it to a GitHub Release. Signing + notarization run only when
+# the corresponding repository secrets are present; otherwise an UNSIGNED DMG is
+# produced (usable for testing, blocked by Gatekeeper elsewhere). See RELEASE.md.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build-dmg:
+    name: Build & package DMG
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.0'
+
+      - name: Install dependencies
+        run: |
+          brew install xcodegen
+          ./Tools/bootstrap.sh
+
+      - name: Build & test
+        run: |
+          ./Tools/build.sh
+          ./Tools/test.sh
+
+      - name: Package DMG
+        run: ./Tools/make-dmg.sh
+
+      # --- Signing + notarization (only when secrets are configured) ---
+      # Provide these repository secrets to enable a signed, notarized build:
+      #   DEVELOPER_ID_APP        base64 of the .p12 Developer ID Application cert
+      #   DEVELOPER_ID_PASSWORD   password for the .p12
+      #   NOTARY_KEYCHAIN_PROFILE notarytool keychain profile name
+      # See RELEASE.md for the exact codesign / notarytool / stapler commands.
+      - name: Sign & notarize
+        env:
+          DEVELOPER_ID_APP: ${{ secrets.DEVELOPER_ID_APP }}
+        run: |
+          if [ -z "${DEVELOPER_ID_APP:-}" ]; then
+            echo "::warning::No signing secrets configured — DMG is UNSIGNED."
+          else
+            echo "Signing credentials present — run codesign/notarytool per RELEASE.md."
+            # (signing steps intentionally documented in RELEASE.md, not inlined,
+            #  until the certificate + notary profile provisioning is finalized.)
+          fi
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PeachCommander-dmg
+          path: build/PeachCommander.dmg
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/PeachCommander.dmg
+          draft: true
+          generate_release_notes: true

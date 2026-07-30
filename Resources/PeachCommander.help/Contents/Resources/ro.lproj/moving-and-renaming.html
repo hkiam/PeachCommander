@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mutare și redenumire</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Mutare și redenumire</h1>
+<p>Mutarea relochează fișierele și folderele în loc să le dubleze, iar redenumirea le schimbă numele fără a le atinge conținutul. Deoarece Peach Commander afișează două panouri alăturate, mutarea se reduce la a alege ceea ce doriți într-un panou și a-l trimite în folderul deschis în celălalt. De asemenea, puteți redenumi un element pe loc sau puteți da nume noi elementelor mutate din mers, folosind o mască cu metacaractere.</p>
+<h2 id="mutarea-fisierelor-in-celalalt-panou">Mutarea fișierelor în celălalt panou</h2>
+<ol>
+<li>În panoul sursă, deschideți folderul care conține elementele pe care doriți să le mutați, iar în celălalt panou deschideți folderul de destinație.</li>
+<li>Selectați fișierul sau folderul de mutat. Pentru a muta mai multe deodată, selectați-le mai întâi pe toate (consultați <em>Selectarea fișierelor</em>).</li>
+<li>Apăsați F6 sau alegeți <strong>Fișier &gt; Mutare</strong>.</li>
+<li>Verificați folderul țintă afișat în dialog și faceți clic pe <strong>OK</strong> (sau apăsați Return) pentru a începe mutarea.</li>
+</ol>
+<p><img alt="Dialogul de mutare care afișează câmpul căii țintă, opțiunile și o casetă de bifare pentru coadă" src="images/copy-dialog.png" />
+<em>(Figura: Dialogul de mutare folosește același câmp țintă ca și copierea — tastați o cale sau adăugați o mască cu metacaractere pentru a redenumi în timpul mutării.)</em></p>
+<p>Mutările pe același disc au loc aproape instantaneu. Când destinația este pe un alt disc, Peach Commander copiază elementele și abia apoi elimină originalele, numai după ce fiecare fișier a ajuns în siguranță.</p>
+<h2 id="redenumirea-pe-loc">Redenumirea pe loc</h2>
+<ol>
+<li>Selectați un singur fișier sau folder.</li>
+<li>Apăsați Shift+F6 sau alegeți <strong>Fișier &gt; Redenumire</strong>.</li>
+<li>Editați numele direct în panou, apoi apăsați Return pentru a confirma sau Esc pentru a anula.</li>
+</ol>
+<h2 id="redenumirea-in-timpul-mutarii">Redenumirea în timpul mutării</h2>
+<p>Câmpul țintă din dialogul de mutare acceptă o mască cu metacaractere, astfel încât puteți redenumi elementele pe măsură ce se mută:</p>
+<ol>
+<li>Selectați elementele și apăsați F6.</li>
+<li>În câmpul țintă, adăugați o mască de nume după folderul de destinație, de exemplu <code>/Users/you/Archive/*_backup.*</code>.</li>
+<li><code>*</code> reprezintă numele original, iar <code>.*</code> reprezintă extensia originală. Confirmați pentru a muta și redenumi într-un singur pas.</li>
+</ol>
+<h2 id="scurtaturi">Scurtături</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Scurtătură</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mutați în celălalt panou</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Redenumiți pe loc</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sfaturi">Sfaturi</h2>
+<ul>
+<li>Dialogul de mutare oferă același buton de opțiuni și aceeași casetă de bifare pentru coada din fundal ca și copierea, astfel încât puteți pune mutările mari în coadă și le puteți lăsa să ruleze în fundal.</li>
+<li>Mutarea în cadrul aceluiași disc este o operație rapidă, pe loc, deci este sigură pentru foldere foarte mari. O mutare între discuri durează mai mult, deoarece datele sunt copiate mai întâi, iar apoi sursa este ștearsă.</li>
+<li>Pentru a redenumi multe fișiere deodată cu numerotare, căutare și înlocuire sau tipare, folosiți în schimb instrumentul de redenumire multiplă (consultați <em>Redenumirea multiplă</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copierea fișierelor</a></li><li><a href="multi-rename.html">Redenumirea multor fișiere</a></li></ul></section>
+</main>
+</body>
+</html>

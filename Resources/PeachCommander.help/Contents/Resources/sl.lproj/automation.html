@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avtomatizacija (AppleScript in Bližnjice)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Avtomatizacija (AppleScript in Bližnjice)</h1>
+<p>Peach Commander je mogoče skriptirati, tako da ga lahko upravljate iz AppleScript in iz aplikacije Bližnjice. Peščica osnovnih glagolov skriptu omogoča krmarjenje po podoknih, izbiranje datotek po maski, kopiranje ali premikanje trenutnega izbora ter zagon katerega koli ukaza Peach Commander po njegovem identifikatorju — s ponovno uporabo natanko istih dejanj, ki jih uporabljajo meniji, tako da se skriptiran korak obnaša kot ročni. Priročno je za ponavljajoča se opravila: razvrščanje prenosov, pripravo izhoda gradnje ali vključitev koraka z datoteko v večjo Bližnjico.</p>
+<h2 id="ogled-slovarja">Ogled slovarja</h2>
+<ol>
+<li>Odprite <strong>Urejevalnik skriptov</strong> (v <code>/Programi/Pripomočki</code>).</li>
+<li>Izberite <strong>Okno ▸ Knjižnica</strong>, nato dvakrat kliknite <strong>Peach Commander</strong> (dodajte ga z <strong>+</strong>, če ni na seznamu).</li>
+<li>Slovar se odpre in našteje ukaze in lastnosti spodaj.</li>
+</ol>
+<p>Ko skript prvič upravlja Peach Commander, macOS zaprosi za dovoljenje (<strong>Sistemske nastavitve ▸ Zasebnost in varnost ▸ Avtomatizacija</strong>). Odobrite ga enkrat in kasnejši skripti se izvajajo brez vprašanja.</p>
+<h2 id="kaj-lahko-preberete">Kaj lahko preberete</h2>
+<table>
+<thead>
+<tr>
+<th>Lastnost</th>
+<th>Pomen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>Pot POSIX mape dejavnega podokna.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>Pot POSIX mape drugega podokna.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>Izbrani elementi v dejavnem podoknu (ali element pod kazalko).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="glagoli">Glagoli</h2>
+<table>
+<thead>
+<tr>
+<th>Ukaz</th>
+<th>Kaj naredi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;pot&gt;" [in left\|right]</code></td>
+<td>Odpri mapo v podoknu (privzeto: dejavno podokno).</td>
+</tr>
+<tr>
+<td><code>select "&lt;maska&gt;"</code></td>
+<td>Izberi elemente v dejavnem podoknu po maski z nadomestnimi znaki, npr. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;mapa&gt;"</code></td>
+<td>Kopiraj izbor dejavnega podokna v mapo.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;mapa&gt;"</code></td>
+<td>Premakni izbor dejavnega podokna v mapo.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Zaženi kateri koli ukaz po njegovem identifikatorju, npr. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Kopiranje in premikanje uporabljata isto vrsto prenosa v ozadju kot F5/F6, tako da se napredek in morebitni pozivi za prepis prikažejo natanko tako kot pri ročnem opravilu.</p>
+<h2 id="primer">Primer</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="uporaba-iz-bliznjic">Uporaba iz Bližnjic</h2>
+<p>V aplikaciji <strong>Bližnjice</strong> dodajte dejanje <strong>Zaženi AppleScript</strong> in prilepite skript, kot je zgornji. To vam omogoča vključitev koraka Peach Commander v večjo Bližnjico — na primer sproženo s spremembo mape ali tipko za bližnjico.</p>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Identifikator ukaza, ki ga posredujete v <code>run command</code>, je isti identifikator <code>cm_*</code>, prikazan v brskalniku ukazov (glejte <a href="start-menu.md">Meni Start in poljubni ukazi</a>).</li>
+<li>Skriptiranje vedno deluje na <strong>dejavnem</strong> podoknu; najprej uporabite <code>go to … in left</code> / <code>in right</code>, če potrebujete določeno stran.</li>
+<li>Peach Commander je aplikacija z enim oknom, tako da skripti ciljajo na obe podokni tega okna.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Meni Start in poljubni ukazi</a></li><li><a href="settings.html">Nastavitve</a></li></ul></section>
+</main>
+</body>
+</html>

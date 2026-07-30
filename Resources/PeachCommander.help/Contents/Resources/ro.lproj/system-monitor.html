@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Monitor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>System Monitor</h1>
+<p>Pluginul System Monitor afișează o citire în timp real a activității Mac-ului dvs. direct în bara de titlu a ferestrei: jetoane mici pentru procesor, memorie, disc, rețea și — acolo unde hardware-ul le expune — GPU, baterie și senzori. Fiecare jeton se actualizează o dată pe secundă; faceți clic pe unul pentru un pop-up cu un grafic de istoric și o defalcare detaliată. Fiind un plugin, îl puteți activa, configura sau elimina din <strong>Configurare ▸ Pluginuri…</strong>.</p>
+<h2 id="jetoanele-din-bara-de-titlu">Jetoanele din bara de titlu</h2>
+<p>Când pluginul este activat, un rând de jetoane compacte se află în bara de titlu. Fiecare jeton este un punct colorat, o etichetă scurtă și o valoare în timp real (unele cu o sparkline încorporată):</p>
+<table>
+<thead>
+<tr>
+<th>Jeton</th>
+<th>Arată</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>Încărcarea procesorului, cu detaliu pe nucleu</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>Memorie folosită / totală (plus cablată, comprimată, swap)</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>Spațiul volumului de pornire și debitul de citire/scriere</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>Rate și totaluri de descărcare / încărcare</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>Utilizarea GPU · încărcarea și starea bateriei · vitezele ventilatoarelor și temperaturile</td>
+</tr>
+</tbody>
+</table>
+<p>Faceți clic pe un jeton pentru a deschide un pop-up cu valoarea curentă mare, o sparkline <strong>HISTORY</strong>, o listă cheie/valoare <strong>DETAILS</strong> și — pentru procesor — o listă <strong>CORE LOAD</strong> cu bare pe nucleu.</p>
+<h2 id="configurarea">Configurarea</h2>
+<p>Alegeți <strong>Comenzi ▸ System Monitor…</strong> (sau deschideți <strong>Configurare ▸ Setări ▸ System Monitor</strong>) pentru a configura citirea:</p>
+<ul>
+<li><strong>Arată monitorul de sistem în bara de titlu</strong> — comutatorul principal de pornire/oprire pentru jetoane.</li>
+<li><strong>Profil</strong> — presetările <em>Minimal</em>, <em>Mediu</em> sau <em>Maximal</em> care aleg un set rezonabil de module.</li>
+<li><strong>Tabelul de module</strong> — activați sau dezactivați fiecare modul (CPU, GPU, RAM, HDD, Net, Batt, Sens), alegeți-i culoarea și trageți rândurile pentru a stabili ordinea în care apar în bara de titlu. Modulele pe care hardware-ul dvs. nu le poate raporta sunt afișate ca <em>(n/a)</em>.</li>
+</ul>
+<p><img alt="Setările System Monitor cu tabelul de module, profilurile și culorile pe modul" src="images/system-monitor.png" />
+<em>(Figura: alegeți ce module apar, culorile lor și ordinea lor.)</em></p>
+<h2 id="note">Note</h2>
+<ul>
+<li>Totul este măsurat, niciodată falsificat: modulele ale căror date hardware-ul nu le expune (adesea GPU sau senzorii pe unele Mac-uri) rămân indisponibile în loc să arate numere inventate. Bateria este indisponibilă pe desktopuri.</li>
+<li>Eșantionarea rulează pe un temporizator de fundal doar cât timp citirea este vizibilă și păstrează aproximativ 30 de minute de istoric pentru grafice.</li>
+<li>Alegerile dvs. de module, culorile și ordinea sunt salvate împreună cu configurația aplicației.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="settings.html">Setări</a></li></ul></section>
+</main>
+</body>
+</html>

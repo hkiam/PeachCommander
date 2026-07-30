@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>Il plugin Git mostra lo stato di un repository Git direttamente nel pannello dei file — senza un'app separata, senza terminale. Aggiunge due colonne che indicano lo stato dell'albero di lavoro di ciascun file e il ramo corrente, un sottomenu <strong>Git</strong> per i comandi di tutti i giorni (status, stage, commit, pull, push), ed esegue il <code>git</code> già installato sul vostro Mac. Trattandosi di un plugin, potete disattivarlo o rimuoverlo da <strong>Configurazione ▸ Plugin…</strong>.</p>
+<h2 id="cosa-aggiunge">Cosa aggiunge</h2>
+<ul>
+<li><strong>Due colonne nell'elenco dei file</strong> — <em>Git Status</em> e <em>Branch</em>. In un repository, ogni file mostra una breve parola di stato (Modificato, Aggiunto, Eliminato, Non tracciato, Rinominato, Copiato, Conflitto, Ignorato o Cambiato) e il pannello mostra il ramo corrente. Attivate le colonne da <strong>Configurazione ▸ Colonne…</strong> (vedi <a href="view-modes-and-sorting.md">Modalità di visualizzazione e ordinamento</a>).</li>
+<li><strong>Un menu Git</strong> — sotto <strong>Comandi ▸ Git</strong>, e nel menu del clic destro di un file, con: <strong>Git Status…</strong>, <strong>Git Add (stage)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> e <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="La finestra Git Status che mostra il ramo corrente e i file modificati nel repository" src="images/git-status.png" />
+<em>(Figura: Git Status riporta il ramo e ogni modifica nell'albero di lavoro.)</em></p>
+<h2 id="controllare-lo-stato">Controllare lo stato</h2>
+<ol>
+<li>Posizionate il cursore su un file o una cartella all'interno di un repository Git.</li>
+<li>Scegliete <strong>Comandi ▸ Git ▸ Git Status…</strong> (oppure clic destro ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>Compare un riepilogo: il ramo corrente (o <em>(detached)</em>), poi <em>Working tree clean.</em> oppure un elenco di modifiche, dove ogni riga mostra lo stato e il percorso del file.</li>
+</ol>
+<p>Se il cursore non si trova all'interno di un repository, il plugin dice semplicemente <em>Not a Git repository.</em></p>
+<h2 id="stage-commit-pull-push">Stage, commit, pull, push</h2>
+<ul>
+<li><strong>Git Add (stage)</strong> prepara (stage) il file sotto il cursore (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> richiede un messaggio di commit, poi esegue il commit di tutte le modifiche (<code>git commit -a</code>). L'output combinato viene mostrato così potete vedere esattamente cosa è successo.</li>
+<li><strong>Git Pull</strong> esegue un pull solo in fast-forward (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> invia il ramo corrente (<code>git push</code>).</li>
+</ul>
+<p>Dopo un comando che modifica il repository, il pannello attivo si aggiorna così le colonne di stato restano correnti.</p>
+<h2 id="note">Note</h2>
+<ul>
+<li>Il plugin usa il Git di sistema in <code>/usr/bin/git</code>. Se Git non è installato, i comandi segnalano che Git non è disponibile. (L'installazione degli Strumenti da riga di comando di Xcode lo fornisce.)</li>
+<li>Lo stato del repository viene letto una volta per cartella e messo in cache, così lo scorrimento di un repository grande resta veloce; la cache si aggiorna dopo qualsiasi comando che modifica l'albero.</li>
+<li>Il commit usa <code>git commit -a</code>, che esegue il commit delle modifiche tracciate; i file nuovi di zecca richiedono comunque prima <strong>Git Add (stage)</strong>.</li>
+<li>Le intestazioni delle colonne <em>Git Status</em> e <em>Branch</em> al momento compaiono in inglese anche nelle altre lingue dell'interfaccia; i valori e le finestre di dialogo sono localizzati.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="view-modes-and-sorting.html">Modalità di visualizzazione e ordinamento</a></li></ul></section>
+</main>
+</body>
+</html>

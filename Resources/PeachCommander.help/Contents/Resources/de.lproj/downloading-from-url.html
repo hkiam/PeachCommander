@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Von einer URL herunterladen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Von einer URL herunterladen</h1>
+<p>Peach Commander kann eine Datei direkt von einer HTTP- oder HTTPS-Webadresse in das aktive Panel holen, ohne einen Browser zu öffnen. Fügen Sie einen Link ein, bestätigen Sie den Namen, unter dem sie gespeichert wird, und der Download läuft von selbst — mit Fortsetzung, falls die Verbindung abbricht, Stapel-Downloads für viele Links auf einmal und optionaler Prüfsummenverifizierung, damit Sie sicher wissen, dass die Datei unversehrt angekommen ist.</p>
+<h2 id="eine-datei-herunterladen">Eine Datei herunterladen</h2>
+<ol>
+<li>Öffnen Sie den Panel-Ordner, in dem die Datei landen soll.</li>
+<li>Wählen Sie <strong>Netz ▸ Von URL herunterladen</strong> oder drücken Sie Cmd+Shift+D.</li>
+<li>Fügen Sie die Webadresse in das Feld <strong>URL(s)</strong> ein. Wenn Sie zuvor einen Link kopiert haben, wird er für Sie eingetragen.</li>
+<li>Prüfen Sie den Namen unter <strong>Speichern unter</strong> — er wird aus dem Link vorgeschlagen und Sie können ihn frei bearbeiten.</li>
+<li>Klicken Sie auf <strong>Herunterladen</strong>.</li>
+</ol>
+<p><img alt="Der Dialog „Von URL herunterladen&quot; mit einem Link, einem bearbeitbaren Dateinamen und Optionen" src="images/download-url.png" />
+<em>(Abbildung: Der Download-Dialog — einen Link einfügen, den Namen bearbeiten und optionale Verifizierung, Anmeldedaten, Header oder einen Proxy festlegen.)</em></p>
+<p>Standardmäßig läuft der Download <strong>im Hintergrund</strong>, sodass Sie in den Panels weiterarbeiten können, während er überträgt. Schalten Sie <strong>Im Hintergrund herunterladen</strong> aus, um darauf zu warten, oder aktivieren Sie <strong>Für später in die Warteschlange</strong>, um ihn einzurichten, ohne ihn schon zu starten.</p>
+<h2 id="mehrere-dateien-auf-einmal-herunterladen">Mehrere Dateien auf einmal herunterladen</h2>
+<p>Fügen Sie eine Webadresse pro Zeile in das Feld <strong>URL(s)</strong> ein. Wenn mehr als ein Link vorhanden ist, wird der Name jeder Datei automatisch aus ihrem Link abgeleitet und die Felder <strong>Speichern unter</strong> und <strong>Verifizieren</strong> pro Datei werden deaktiviert.</p>
+<h2 id="einen-unterbrochenen-download-fortsetzen">Einen unterbrochenen Download fortsetzen</h2>
+<p>Wenn eine Übertragung abgeschnitten wird, behält Peach Commander das bereits Empfangene in einer temporären <code>.part</code>-Datei. Wenn Sie denselben Download erneut starten, wird er dort fortgesetzt, wo er aufgehört hat, sofern der Server dies unterstützt, statt von vorne zu beginnen. Die <code>.part</code>-Datei wird erst in den endgültigen Namen umbenannt, wenn der Download erfolgreich abgeschlossen ist.</p>
+<h2 id="kurzbefehle">Kurzbefehle</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Kurzbefehl</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Von URL herunterladen</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tipps">Tipps</h2>
+<ul>
+<li><strong>Die Datei verifizieren.</strong> Fügen Sie bei einem einzelnen Download eine erwartete <strong>SHA-256</strong>-Prüfsumme in das Feld <strong>Verifizieren</strong> ein. Nach der Übertragung wird die Prüfsumme der Datei damit verglichen, sodass Sie darauf vertrauen können, dass die Datei mit dem übereinstimmt, was der Herausgeber angegeben hat.</li>
+<li><strong>Anmeldung erforderlich?</strong> Geben Sie in den <strong>Auth</strong>-Feldern einen Benutzernamen und ein Passwort für Websites ein, die Basisauthentifizierung verwenden. Für tokenbasierten Zugriff fügen Sie im Feld <strong>Header</strong> eine Zeile <code>Authorization: Bearer …</code> hinzu.</li>
+<li><strong>Benutzerdefinierte Header.</strong> Fügen Sie im Feld <strong>Header</strong> einen Header pro Zeile hinzu, zum Beispiel <code>Referer: …</code> oder <code>Cookie: …</code>, für Links, die nur mit bestimmten Anfrage-Headern funktionieren.</li>
+<li><strong>Proxy.</strong> Leiten Sie den Download über einen HTTP- oder SOCKS5-Proxy, indem Sie <strong>Proxy</strong>-Host, -Port und -Typ ausfüllen.</li>
+<li><strong>Nicht vertrauenswürdige Zertifikate.</strong> Aktivieren Sie <strong>Nicht vertrauenswürdiges Zertifikat zulassen</strong> nur für eine Website, der Sie vertrauen und die ein selbstsigniertes Zertifikat verwendet; dies deaktiviert die normale HTTPS-Sicherheitsprüfung für diesen Download.</li>
+<li><strong>Hinweis:</strong> Cmd+Shift+D wird an anderer Stelle auch zum Wechsel in den Schreibtisch-Ordner verwendet; wenn der Kurzbefehl diesen Dialog nicht öffnet, verwenden Sie stattdessen <strong>Netz ▸ Von URL herunterladen</strong> aus dem Menü.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="ftp-and-sftp.html">Verbindung mit FTP &amp; SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

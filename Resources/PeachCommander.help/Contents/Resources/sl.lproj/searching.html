@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iskanje datotek</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Iskanje datotek</h1>
+<p>Ko morate izslediti datoteke kjer koli na svojem Macu — po imenu, po tem, kaj vsebujejo, ali po velikosti in datumu — uporabite okno Poišči datoteke. Preišče eno ali več map (in njihove podmape), lahko pogleda znotraj besedilnih datotek in arhivov ter vam omogoča, da vse, kar najde, pošljete naravnost v podokno, tako da lahko na rezultatih delujete kot na običajni mapi.</p>
+<h2 id="poiscite-datoteke-po-imenu">Poiščite datoteke po imenu</h2>
+<ol>
+<li>V podoknu, ki prikazuje mapo, ki jo želite preiskati, izberite <strong>Ukazi &gt; Poišči datoteke…</strong> (ali pritisnite Cmd+Shift+F).</li>
+<li>Na zavihku <strong>Splošno</strong> vnesite vzorec imena v polje <strong>Poišči</strong>. Uporabite lahko nadomestne znake, kot sta <code>*.pdf</code> ali <code>poročilo_*.docx</code>. Za iskanje v več mapah naenkrat jih naštejte v polju začetne mape, ločene s podpičjem (<code>;</code>).</li>
+<li>Kliknite <strong>Začni</strong>. Ujemanja se pojavijo v seznamu rezultatov spodaj, ko so najdena.</li>
+<li>Dvakrat kliknite kateri koli rezultat, da skočite na to datoteko v dejavnem podoknu, ali izberite rezultat in kliknite <strong>Poglej</strong> (F3), da ga odprete v vgrajenem pregledovalniku.</li>
+</ol>
+<p><img alt="Okno Poišči datoteke na zavihku Splošno, ki prikazuje vzorec imena, mapo in seznam rezultatov" src="images/find-files-general.png" />
+<em>(Slika: zavihek Splošno — iskanje po vzorcu imena po eni ali več mapah.)</em></p>
+<h2 id="iskanje-po-vsebini-velikosti-in-datumu">Iskanje po vsebini, velikosti in datumu</h2>
+<ol>
+<li>Za iskanje znotraj datotek izberite <strong>Poišči besedilo</strong> na zavihku Splošno in vnesite besedilo za iskanje. Možnosti vam omogočajo, da ga naredite <strong>razlikuje velikost</strong>, ujema le <strong>celo besedo</strong>, obravnava besedilo kot <strong>regularni izraz</strong>, izvede <strong>šestnajstiško iskanje vsebine</strong> ali najde datoteke, ki besedila <strong>ne vsebujejo</strong>.</li>
+<li>Preklopite na zavihek <strong>Napredno</strong>, da zožite rezultate po <strong>velikosti</strong> (na primer od <code>10K</code> do <code>5M</code>), po obsegu <strong>datuma spremembe</strong>, ali na datoteke, spremenjene v zadnjih N dneh.</li>
+<li>Vklopite <strong>Išči znotraj arhivov</strong>, da pogledate v arhive družine zip (zip, jar, war in podobne).</li>
+<li>Za omejitev iskanja na to, kar ste že izbrali, pred začetkom vklopite <strong>Išči le v izbranih elementih</strong>.</li>
+</ol>
+<p><img alt="Okno Poišči datoteke na zavihku Napredno, ki prikazuje filtre velikosti in datuma" src="images/find-files-advanced.png" />
+<em>(Slika: zavihek Napredno — filtrirajte po velikosti, datumu in drugih atributih.)</em></p>
+<p>Če imate vtičnike, ki dodajo polja vsebine (kot so mere slik), vam zavihek <strong>Vtičniki</strong> omogoča zahtevati, da polje ustreza pogoju — na primer le slike, širše od 1000 slikovnih točk.</p>
+<p><img alt="Okno Poišči datoteke na zavihku Vtičniki, ki prikazuje pogoj na polju vsebine" src="images/find-files-plugins.png" />
+<em>(Slika: zavihek Vtičniki — ujemanje po poljih vsebine, ki jih zagotavljajo vtičniki.)</em></p>
+<h2 id="hitra-iskanja-s-spotlight">Hitra iskanja s Spotlight</h2>
+<p>Za lokalne mape, ki jih je macOS že indeksiral, vklopite <strong>Uporabi Spotlight</strong> na zavihku Splošno za skoraj takojšnje rezultate. Spotlight išče v indeksu namesto pregledovanja datotek, tako da prezre regularne izraze, omejitve globine podmap in obseg le-izbrano.</p>
+<h2 id="ponovna-uporaba-in-predaja-rezultatov">Ponovna uporaba in predaja rezultatov</h2>
+<ul>
+<li><strong>Pošlji v seznam</strong> postavi vsak rezultat v dejavno podokno kot začasni seznam, tako da lahko kopirate, premaknete ali izbrišete celoten nabor naenkrat.</li>
+<li>Na zavihku <strong>Naloži / Shrani</strong> izberite <strong>Shrani kot predlogo…</strong>, da shranite trenutno iskanje (vzorce in možnosti) in ga kasneje znova izberete s seznama predlog.</li>
+</ul>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Odpri Poišči datoteke</td>
+<td>Cmd+Shift+F ali Option+F7</td>
+</tr>
+<tr>
+<td>Začni / ustavi iskanje</td>
+<td>Gumb Začni v oknu</td>
+</tr>
+<tr>
+<td>Poglej izbrani rezultat</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Iskanje po vsebini bere celotne datoteke za lokalne mape; na drugih lokacijah so zelo velike datoteke preskočene (približno 16 MB, ali 64 MB pri uporabi regularnega izraza).</li>
+<li>Iskanje znotraj arhivov sestopi do štirih ravni vgnezdenih arhivov.</li>
+<li><strong>Vključi mape v rezultate</strong> našteje tudi mape, katerih imena se ujemajo, ne le datoteke.</li>
+<li>Spotlight pokriva le indeksirane lokalne mape; za omrežne lokacije ali ujemanje po vzorcu ga pustite izklopljenega in pustite, da Poišči datoteke pregleduje.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">Izbiranje datotek</a></li><li><a href="quick-search-and-filter.html">Hitro iskanje in filter</a></li></ul></section>
+</main>
+</body>
+</html>

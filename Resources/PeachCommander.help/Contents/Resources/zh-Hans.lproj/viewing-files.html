@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>查看文件</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>查看文件</h1>
+<p>Peach Commander 内置一个查看器，让你无需打开其他应用或更改文件即可查看文件内部。在光标下的项目上按 F3，查看器会立即打开，即使是非常大的文件也是如此。它会自动选择最佳的内容显示方式：可读文本、语法着色的代码、原始十六进制转储，或原尺寸图像。你也可以用 Quick View 在窗口内直接预览文件，或交给 macOS Quick Look。</p>
+<h2 id="_1">查看文件</h2>
+<ol>
+<li>将光标移到活动面板中的某个文件。</li>
+<li>按 F3（或从“文件”菜单选择“查看”）。查看器在自己的窗口中打开。</li>
+<li>用工具栏切换内容的显示方式：文本、代码、十六进制、图像或渲染。保持在自动设置可让 Peach Commander 自行决定。</li>
+<li>用箭头键、Page Up/Page Down 和滚动条滚动。对于长文本，打开缩略图（minimap）按钮以一目了然地查看和跳转整个文件。</li>
+<li>按 N 跳到下一个所选文件，或用 Esc 关闭窗口。</li>
+</ol>
+<p><img alt="右侧带缩略图的、显示文本文件的内置查看器" src="images/lister-text.png" />
+<em>(图：查看文本文件，工具栏中带有表示形式选择器和缩略图。)</em></p>
+<h2 id="_2">查找文本并更改编码</h2>
+<ul>
+<li>按 Ctrl+F 在文件内搜索。按 F3 跳到下一个匹配，Shift+F3 跳到上一个。</li>
+<li>如果文本看起来乱码，点按工具栏中的“编码”（或按 E），循环切换文本编码直到正确显示；自动设置通常能正确判断。</li>
+<li>按 W 切换长行的自动换行。</li>
+</ul>
+<h2 id="quick-view-quick-look">Quick View 与 Quick Look</h2>
+<p>Quick View 在你<em>未</em>使用的面板中显示实时预览，因此你可以在一侧继续浏览，同时在另一侧预览。</p>
+<ol>
+<li>按 Ctrl+Q。非活动面板变为预览区域。</li>
+<li>在活动面板中将光标移到不同文件上，逐一预览。</li>
+<li>再次按 Ctrl+Q，或按 Esc，让面板恢复为普通文件列表。</li>
+</ol>
+<p>要获得由 macOS 本身处理的快速全屏预览，按 Cmd+Y（Quick Look）。再次按 Cmd+Y 或 Space 将其关闭。</p>
+<h2 id="_3">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>查看光标下的文件</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>仅查看光标下的文件（忽略已标记文件）</td>
+<td>Shift+F3</td>
+</tr>
+<tr>
+<td>在外部查看器中打开</td>
+<td>Option+F3</td>
+</tr>
+<tr>
+<td>在查看器内查找</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>下一个 / 上一个匹配</td>
+<td>F3 / Shift+F3</td>
+</tr>
+<tr>
+<td>在另一面板中 Quick View</td>
+<td>Ctrl+Q</td>
+</tr>
+<tr>
+<td>Quick Look（macOS 预览）</td>
+<td>Cmd+Y</td>
+</tr>
+<tr>
+<td>关闭查看器或 Quick View</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">备注</h2>
+<ul>
+<li>查看器是只读的。要更改文件，请改用编辑器（参阅“编辑文件”）。</li>
+<li>非常大的文件也会毫无延迟地打开：文本以快速、可滚动的视图打开，十六进制视图无论多大都直接从磁盘流式读取。</li>
+<li>在文件夹上按 F3 会看到其内容和总大小的摘要，而非文件字节。</li>
+<li>渲染模式显示网页等带格式的内容；十六进制模式将原始字节与其字符并排显示，便于检查二进制文件。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">编辑文件</a></li><li><a href="searching.html">查找文件</a></li></ul></section>
+</main>
+</body>
+</html>

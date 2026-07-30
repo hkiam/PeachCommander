@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>故障排除</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>故障排除</h1>
+<p>本主题涵盖人们最常遇到的问题：macOS 阻止访问某些文件夹、某个文件夹似乎停留在旧内容上、安全 FTP 服务器拒绝连接，以及压缩为 RAR。每一节都会告诉你发生了什么以及如何修复。</p>
+<h2 id="macos">macOS 请求权限，或文件夹看起来是空的</h2>
+<p>某些位置 —— 例如你的 <code>~/Library</code> 文件夹、其他用户的文件夹和系统区域 —— 受 macOS 保护，在你授予访问权限之前保持隐藏。Peach Commander 会检测到这种情况，并提出引导你到正确的设置。</p>
+<ol>
+<li>出现提示时，选择打开系统设置，或自行打开。</li>
+<li>转到“隐私与安全性”，然后是“完全磁盘访问权限”。</li>
+<li>打开 Peach Commander 旁的开关。如果未列出，使用“添加”按钮把它加进去。</li>
+<li>退出并重新打开 Peach Commander，使新权限生效。</li>
+</ol>
+<p>Peach Commander 不在受限沙盒中运行，因此一旦授予完全磁盘访问权限，它就能像 Finder 一样浏览和管理文件。</p>
+<h2 id="_1">文件夹未显示最近更改</h2>
+<p>当磁盘上的文件发生变化时，面板通常会自行更新。如果某个文件夹被另一程序更改、位于网络宗卷上，或只是看起来过时，请手动刷新它。</p>
+<ol>
+<li>点按要更新的面板。</li>
+<li>按 F2（或 Ctrl+R）以重新读取该文件夹。</li>
+</ol>
+<p>网络和已挂载的宗卷并不总是向 macOS 报告更改，因此在那里手动刷新是可靠的解决办法。</p>
+<h2 id="ftps">FTPS 服务器无法连接</h2>
+<p>如果安全 FTP 连接失败，请检查连接详情中的这些设置：</p>
+<ul>
+<li>匹配服务器的安全模式：显式 FTPS（AUTH TLS）与隐式 FTPS（端口 990）不能互换。</li>
+<li>如果登录后连接停滞，在被动和主动传输模式之间切换 —— 防火墙后的大多数服务器需要被动模式。</li>
+<li>如果服务器使用自签名证书，你必须明确允许它；否则连接会被拒绝。</li>
+<li>确认主机、端口、用户名和密码，以及你的网络是否需要 SOCKS5 代理。</li>
+</ul>
+<h2 id="rar">压缩为 RAR 没有反应</h2>
+<p>Peach Commander 可以自行创建 ZIP、7z、TAR、TAR.GZ、BZ2 和 XZ 压缩包。RAR 不同：由于 RAR 是专有格式，创建 RAR 压缩包需要在你的 Mac 上安装单独的 RAR 命令行工具。没有它，压缩文件时（Option+F5）无法使用 RAR。要读取现有的 RAR 压缩包，你仍可像文件夹一样打开它们。如果你并不特别需要 RAR，请改选 ZIP 或 7z —— 两者都支持强大的 AES-256 加密和分卷。</p>
+<h2 id="_2">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>刷新活动文件夹</td>
+<td>F2 或 Ctrl+R</td>
+</tr>
+<tr>
+<td>连接到 FTP/FTPS 服务器</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>挂载网络共享</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>压缩所选文件</td>
+<td>Option+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">备注</h2>
+<ul>
+<li>密码和其他凭据仅存放在 macOS 钥匙串中，绝不放在明文配置文件里。</li>
+<li>挂载网络共享（Cmd+K，或 网络菜单 ▸ 挂载网络共享…）使用 macOS 本身所用的相同连接，因此它也会出现在 Finder 中。</li>
+<li>如果在刷新和重新启动后问题仍然存在，那可能是已知限制而非故障 —— 参阅“已知限制”。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">隐私与安全</a></li><li><a href="known-limitations.html">已知限制</a></li></ul></section>
+</main>
+</body>
+</html>

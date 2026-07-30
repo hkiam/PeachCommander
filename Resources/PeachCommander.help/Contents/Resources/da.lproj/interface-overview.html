@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hovedvinduet</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Hovedvinduet</h1>
+<p>Peach Commander viser to fillister side om side, så du kan se, hvor filer kommer fra, og hvor de skal hen, på samme tid. Det meste af dit arbejde sker i disse to paneler; bjælkerne omkring dem lader dig skifte drev, springe til en mappe og køre de almindelige filkommandoer uden at forlade tastaturet. Denne rundtur navngiver hver del af vinduet, så resten af hjælpen giver mening.</p>
+<p><img alt="Peach Commanders hovedvindue med sine to paneler og omgivende bjælker" src="images/main-window.png" />
+<em>(Figur: Hovedvinduet — to paneler med knapbjælken, drevbjælken og stibjælkerne ovenover og funktionstastbjælken nedenunder.)</em></p>
+<h2 id="de-to-paneler-og-det-aktive-panel">De to paneler og det aktive panel</h2>
+<p>Vinduet er delt op i et venstre panel og et højre panel, der hver viser indholdet af én mappe. Kun ét panel er aktivt ad gangen: det viser markøren (en fremhævet række), og dets stibjælke tegnes med en farvet baggrund. Kommandoer som kopiér og flyt handler altid på det aktive panel og sender filer til det andet.</p>
+<ol>
+<li>Klik et vilkårligt sted i et panel for at gøre det aktivt, eller tryk på Tab for at skifte mellem dem.</li>
+<li>Brug piletasterne til at flytte markøren op og ned i det aktive panel.</li>
+<li>Tryk på Enter på en mappe for at åbne den, eller på <code>..</code> øverst på listen for at gå et niveau op.</li>
+</ol>
+<h2 id="bjlker-omkring-panelerne">Bjælker omkring panelerne</h2>
+<ul>
+<li><strong>Knapbjælke</strong> (øverst): en række flade knapper til hyppige kommandoer. Klik på en knap for at køre dens kommando; højreklik på en knap for at redigere bjælken.</li>
+<li><strong>Drevbjælke</strong>: én knap pr. tilgængelig disk eller diskenhed, hver med en udskubningskontrol og dens frie plads. Klik på en diskenhed for at skifte det panel til den.</li>
+<li><strong>Stibjælke</strong>: viser den aktuelle mappe som en brødkrumme, der kan klikkes på. Klik på et segment for at springe direkte til den mappe, eller klik på stien for at skrive en placering.</li>
+<li><strong>Statusbjælke</strong> (under hver liste): et løbende resumé af panelet — hvor mange filer og mapper der er markeret og deres samlede størrelse.</li>
+<li><strong>Kommandolinje</strong> (nederst): et tekstfelt, hvor du kan skrive en shell-lignende kommando, der kører i den aktuelle mappe.</li>
+<li><strong>Funktionstastbjælke</strong> (allernederst): seks knapper mærket F3 Vis, F4 Redigér, F5 Kopiér, F6 Flyt, F7 Ny mappe og F8 Slet. Klik på en knap eller tryk på den matchende tast.</li>
+</ul>
+<p><img alt="Nærbillede af drevbjælken, der viser diskenhedsknapper og fri plads" src="images/drive-bar-crop.png" />
+<em>(Figur: Drevbjælken — én knap pr. diskenhed, med en udskubningskontrol og resterende fri plads.)</em></p>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Genvej</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Skift aktivt panel</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Åbn mappe / emne under markøren</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Gå en mappe op</td>
+<td>Backspace</td>
+</tr>
+<tr>
+<td>Vis fil</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Redigér fil</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Kopiér til det andet panel</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Flyt / omdøb til det andet panel</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Ny mappe</td>
+<td>F7</td>
+</tr>
+<tr>
+<td>Slet (til papirkurv)</td>
+<td>F8</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Funktionstastbjælken ommærker sig selv løbende, når du holder en modifikatortast nede. Hvis du for eksempel holder Shift nede, ændres F6 til en omdøb-på-stedet-handling, så knapperne altid viser, hvad tasterne vil gøre lige nu.</li>
+<li>Næsten enhver bjælke kan vises eller skjules. Se under menuerne Vis og Konfiguration for at slå knapbjælken, drevbjælken, kommandolinjen eller funktionstastbjælken til og fra eller for at stable de to paneler øverst og nederst i stedet for side om side.</li>
+<li>På mange Mac-tastaturer fungerer F-tasterne som medie- og lysstyrkekontroller som standard. Hold Fn-tasten nede sammen med F3-F8, eller slå "Brug tasterne F1, F2 osv. som standardfunktionstaster" til i Systemindstillinger for at bruge dem direkte.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="navigating.html">Bevæg dig rundt</a></li><li><a href="panels-and-tabs.html">Faner</a></li></ul></section>
+</main>
+</body>
+</html>

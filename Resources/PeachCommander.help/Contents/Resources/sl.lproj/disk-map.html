@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zemljevid diska</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Zemljevid diska</h1>
+<p>Zemljevid diska je vgrajen vtičnik, ki na prvi pogled prikaže, kaj zaseda prostor v mapi ali na celotnem nosilcu. Pregleda izbrano mapo in nariše vsak element z velikostjo, sorazmerno prostoru, ki ga dejansko zaseda na disku, tako da največji požiralci prostora takoj izstopajo. Poglabljate se lahko v mape, vidite, kako se vaš pregled ujema s prostim, izbrisljivim in skritim prostorom nosilca, ter pospravljate kar z zemljevida.</p>
+<h2 id="zacnite-pregled">Začnite pregled</h2>
+<ol>
+<li>V dejavnem podoknu pojdite v mapo (ali nosilec), ki jo želite izmeriti.</li>
+<li>Izberite <strong>Ukazi ▸ Zemljevid diska: Analiziraj trenutno mapo</strong>.</li>
+<li>Pogled Zemljevid diska se odpre na desni in pregleduje v ozadju, prikazuje tekoče štetje elementov in bajtov. Velike mape se končajo v nekaj sekundah — pregled bere metapodatke imenika v svežnjih in deluje na več jedrih procesorja.</li>
+</ol>
+<p><img alt="Zemljevid diska, ki prikazuje drevesni zemljevid mape, vrstico nosilca, seznam največjih datotek in legendo kategorij" src="images/disk-map.png" />
+<em>(Slika: pogled drevesnega zemljevida, obarvan po kategoriji datotek, z vrstico nosilca na vrhu in seznamom največjih datotek na desni.)</em></p>
+<h2 id="branje-zemljevida">Branje zemljevida</h2>
+<ul>
+<li>Vsak blok (drevesni zemljevid) ali segment obroča (sončni izbruh) ima velikost po <strong>dejanski velikosti na disku</strong> elementa, tako da se slika ujema s tem, kar poročata Finder in sistem.</li>
+<li>Bloki so <strong>obarvani po vrsti datoteke</strong> — video, slike, zvok, dokumenti, koda, arhivi, aplikacije, slike diskov — z legendo ob dnu. V nastavitvah lahko preklopite na <strong>toplotni zemljevid</strong> po velikosti.</li>
+<li><strong>Kliknite mapo</strong>, da se poglobite vanjo; drobtinice na vrhu prikazujejo, kje ste, gumb <strong>◂</strong> pa se pomakne navzgor.</li>
+<li>Postavite kazalec nad kateri koli blok, da vidite njegovo celotno pot, velikost in število elementov.</li>
+</ul>
+<h2 id="dva-pogleda-drevesni-zemljevid-in-soncni-izbruh">Dva pogleda: drevesni zemljevid in sončni izbruh</h2>
+<p>Zemljevid diska ponuja dve vizualizaciji, med katerima lahko preklapljate z gumbom <strong>◎ / ▦</strong> v glavi ali na strani nastavitev:</p>
+<ul>
+<li><strong>Drevesni zemljevid</strong> — vgnezdeni pravokotniki, najbolj gost za odkrivanje ene največje datoteke.</li>
+<li><strong>Sončni izbruh</strong> — koncentrični obroči (po eden na globino mape) okoli trenutne mape, najboljši za ogled, kako je prostor razporejen po globokem drevesu.</li>
+</ul>
+<p><img alt="Pogled sončnega izbruha Zemljevida diska, ki prikazuje koncentrične obroče za globino map" src="images/disk-map-sunburst.png" />
+<em>(Slika: pogled sončnega izbruha — notranji disk je trenutna mapa, vsak obroč pa je eno raven globlje.)</em></p>
+<h2 id="vrstica-nosilca">Vrstica nosilca</h2>
+<p>Vrstica na vrhu usklajuje vaš pregled s celotnim nosilcem:</p>
+<ul>
+<li><strong>Pregledano / Ta mapa</strong> — koliko zaseda analizirana mapa.</li>
+<li><strong>Skrito</strong> (na korenu nosilca) ali <strong>Preostanek nosilca</strong> (za podmapo) — vse, kar ni v tem pregledu, vključno z mapami, zaščitenimi s sistemom, drugimi uporabniki in posnetki.</li>
+<li><strong>Izbrisljivo</strong> — prostor, ki ga macOS lahko samodejno pridobi nazaj, večinoma lokalni posnetki Time Machine in predpomnilniki.</li>
+<li><strong>Prosto</strong> — prostor, ki je na voljo prav zdaj.</li>
+</ul>
+<p>Ko ima nosilec lokalne posnetke, vrstica prikaže element <strong>· N posnetkov (ⓘ)</strong>; kliknite ga za seznam samo za branje, z namigom, da jih upravljate v Diskovnem pripomočku ali Time Machine. Zemljevid diska nikoli sam ne izbriše posnetkov.</p>
+<h2 id="najvecje-datoteke">Največje datoteke</h2>
+<p>Vklopite <strong>Prikaži seznam največjih datotek</strong>, da vidite največje datoteke v trenutni mapi, razvrščene po velikosti, vsako z barvnim čipom svoje kategorije. Kliknite eno, da jo poudarite na zemljevidu.</p>
+<h2 id="pospravljanje-z-zemljevida">Pospravljanje z zemljevida</h2>
+<p>Kliknite z desno tipko kateri koli blok za dejanja:</p>
+<ul>
+<li><strong>Odpri v levem podoknu</strong> / <strong>Odpri v desnem podoknu</strong> — pokaži element v podoknu z datotekami.</li>
+<li><strong>Pokaži v Finderju</strong>.</li>
+<li><strong>Premakni v Koš</strong> — izbriši le ta element; zemljevid se posodobi brez popolnega ponovnega pregleda.</li>
+</ul>
+<p>Za odstranitev več elementov naenkrat uporabite <strong>zbiralnik</strong>: desni klik ▸ <strong>Označi za zbiralnik</strong> na vsakem elementu, nato kliknite gumb <strong>🗑 N</strong> v glavi, da premaknete vse, kar ste označili, v Koš v enem potrjenem koraku.</p>
+<h2 id="nastavitve">Nastavitve</h2>
+<p>Zemljevid diska doda svojo stran v okno Nastavitve (<strong>Konfiguracija ▸ Nastavitve ▸ Zemljevid diska</strong>):</p>
+<ul>
+<li><strong>Slog grafa</strong> — drevesni zemljevid ali sončni izbruh.</li>
+<li><strong>Barvno kodiranje</strong> — po vrsti datoteke (kategorija) ali po velikosti (toplotni zemljevid).</li>
+<li><strong>Ostani na začetnem nosilcu</strong> — ne prehajaj na druge priklopljene diske.</li>
+<li><strong>Prikaži vrstico nosilca</strong> in <strong>Prikaži seznam največjih datotek</strong>.</li>
+</ul>
+<p>Spremembe se za odprt Zemljevid diska uporabijo takoj.</p>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Zemljevid diska meri <strong>dodeljeno</strong> (na disku) velikost in šteje datoteke s <strong>trdimi povezavami</strong> le enkrat, tako da se njegove vsote ujemajo z uporabljenim prostorom nosilca, namesto da bi ga precenile.</li>
+<li>Privzeto pregled ostane na začetnem nosilcu, tako da ne zaide na druge priklopljene diske ali omrežne mape.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="deleting-files.html">Brisanje datotek</a></li><li><a href="settings.html">Nastavitve</a></li></ul></section>
+</main>
+</body>
+</html>

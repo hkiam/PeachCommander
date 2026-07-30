@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Primerjava in sinhronizacija</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Primerjava in sinhronizacija</h1>
+<p>Ko hranite dve kopiji iste mape — delovno mapo in varnostno kopijo, prenosnik in omrežno mapo, projekt in njegov arhiv — vam Peach Commander pomaga videti natanko, kaj se je spremenilo, in obe strani vrniti v korak. Sinhronizirate lahko dva imenika, primerjate posamezne datoteke vrstico za vrstico in pregledate datoteke bajt za bajtom, ko potrebujete gotovost do zadnjega znaka.</p>
+<h2 id="sinhronizirajte-dva-imenika">Sinhronizirajte dva imenika</h2>
+<ol>
+<li>Odprite mapo, ki jo želite sinhronizirati, v levem podoknu in mapo za primerjavo v desnem podoknu.</li>
+<li>Izberite <strong>Ukazi ▸ Sinhroniziraj imenike…</strong>. Poti obeh map se izpolnita iz vaših podoken.</li>
+<li>Nastavite, kako temeljita naj bo primerjava: vključi podmape, primerjaj <strong>po vsebini</strong> (ne le po datumu in velikosti), ali prezri datum spremembe.</li>
+<li>Dodajte masko filtra (na primer <code>*.jpg;*.png</code>), če želite sinhronizirati le določene datoteke.</li>
+<li>Preglejte mrežo rezultatov. Vsaka vrstica prikazuje datoteko na levi, puščico smeri na sredini in ujemajočo datoteko na desni. Puščice vam povedo, kaj se bo zgodilo: <strong>→</strong> kopira z leve na desno, <strong>←</strong> kopira z desne na levo, <strong>=</strong> pa pomeni, da sta oba enaka.</li>
+<li>Prilagodite posamezne vrstice, če se ne strinjate s predlagano smerjo, nato kliknite gumb za sinhronizacijo, da izvedete spremembe.</li>
+</ol>
+<p><img alt="Okno za sinhronizacijo imenikov z dvema potema map in mrežo rezultatov datotek s puščicami levo, enako in desno" src="images/sync-dialog.png" />
+<em>(Slika: okno Sinhroniziraj imenike primerja obe strani in predlaga smer kopiranja za vsako datoteko.)</em></p>
+<h2 id="primerjajte-dve-datoteki-po-vsebini">Primerjajte dve datoteki po vsebini</h2>
+<ol>
+<li>Izberite eno datoteko v vsakem podoknu (ali dve datoteki v istem podoknu).</li>
+<li>Izberite <strong>Datoteka ▸ Primerjaj po vsebini…</strong>.</li>
+<li>Obe datoteki se odpreta drug ob drugem s poudarjenimi razlikami. Uporabite gumba naslednji/prejšnji za preskakovanje med spremenjenimi bloki.</li>
+<li>Če vklopite način urejanja, lahko katero koli datoteko neposredno prilagodite in shranite spremembe.</li>
+</ol>
+<p><img alt="Okno za primerjavo, ki prikazuje dve besedilni datoteki drug ob drugem s poudarjenimi različnimi vrsticami" src="images/diff-window.png" />
+<em>(Slika: primerjava dveh besedilnih datotek; spremenjene vrstice so poudarjene na obeh straneh.)</em></p>
+<h2 id="primerjajte-datoteke-bajt-za-bajtom">Primerjajte datoteke bajt za bajtom</h2>
+<p>Ko dve datoteki izgledata enako, a morate dokazati, da sta res enaki (ali najti tisti en bajt, ki se razlikuje), uporabite dvojiško primerjavo. Prikaže obe datoteki v šestnajstiškem pogledu z označenimi neujemajočimi bajti, kar je idealno za preverjanje prenosov, preverjanje kodiranih podatkov ali potrjevanje natančne kopije.</p>
+<h2 id="primerjajte-sezname-imenikov">Primerjajte sezname imenikov</h2>
+<p>Za odkritje razlik med dvema odprtima mapama na prvi pogled izberite <strong>Izbor ▸ Primerjaj imenike</strong> (Shift+F2). Peach Commander označi datoteke, ki se razlikujejo ali manjkajo na drugi strani, tako da lahko na njih delujete z običajnimi ukazi kopiranja, premikanja in brisanja.</p>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primerjaj sezname imenikov (označi različne datoteke)</td>
+<td>Shift+F2</td>
+</tr>
+<tr>
+<td>Primerjaj po vsebini</td>
+<td>Datoteka ▸ Primerjaj po vsebini…</td>
+</tr>
+<tr>
+<td>Sinhroniziraj imenike</td>
+<td>Ukazi ▸ Sinhroniziraj imenike…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li><strong>Po vsebini proti po datumu/velikosti.</strong> Hitra primerjava ujema datoteke po velikosti in datumu spremembe, kar je hitro, a je mogoče prevarati, ko se časovni žigi razlikujejo za enake datoteke. Vklopite <strong>po vsebini</strong> za zanesljiv rezultat za ceno branja vsake datoteke.</li>
+<li><strong>Podmape in filtri.</strong> Okno za sinhronizacijo lahko sestopi v podmape in ga je mogoče omejiti z masko filtra, tako da lahko sinhronizirate le vrste datotek, ki vas zanimajo.</li>
+<li><strong>Vi ohranite nadzor.</strong> Sinhronizacija se nikoli ne izvaja sama — pregledate predlagane smeri v mreži rezultatov in lahko katero koli od njih spremenite, preden je karkoli kopirano.</li>
+<li><strong>Prednastavitve.</strong> Pogosto uporabljene nastavitve sinhronizacije je mogoče shraniti in ponovno uporabiti, tako da ne vnašate istih možnosti vsakič.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Preimenovanje mnogih datotek</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ladda ner från en URL</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Ladda ner från en URL</h1>
+<p>Peach Commander kan hämta en fil direkt från en HTTP- eller HTTPS-webbadress in i den aktiva panelen, utan att öppna en webbläsare. Klistra in en länk, bekräfta namnet den ska sparas under, och nedladdningen körs för sig själv – med återupptagning om anslutningen bryts, batchnedladdningar för många länkar samtidigt, och valfri kontrollsummeverifiering så att du vet att filen kom fram intakt.</p>
+<h2 id="ladda-ner-en-fil">Ladda ner en fil</h2>
+<ol>
+<li>Öppna panelmappen där du vill att filen ska hamna.</li>
+<li>Välj <strong>Nätverk &gt; Ladda ner från URL</strong>, eller tryck på Cmd+Shift+D.</li>
+<li>Klistra in webbadressen i rutan <strong>URL(er)</strong>. Om du kopierade en länk först fylls den i åt dig.</li>
+<li>Kontrollera namnet i <strong>Spara som</strong> – det föreslås från länken och du kan redigera det fritt.</li>
+<li>Klicka på <strong>Ladda ner</strong>.</li>
+</ol>
+<p><img alt="Dialogen Ladda ner från URL med en länk, ett redigerbart filnamn och alternativ" src="images/download-url.png" />
+<em>(Figur: Nedladdningsdialogen – klistra in en länk, redigera namnet, och ställ in valfri verifiering, inloggningsuppgifter, rubriker eller en proxy.)</em></p>
+<p>Som standard körs nedladdningen <strong>i bakgrunden</strong>, så att du kan fortsätta arbeta i panelerna medan den överförs. Stäng av <strong>Ladda ner i bakgrunden</strong> för att vänta på den, eller slå på <strong>Köa för senare</strong> för att ställa in den utan att starta den ännu.</p>
+<h2 id="ladda-ner-flera-filer-samtidigt">Ladda ner flera filer samtidigt</h2>
+<p>Klistra in en webbadress per rad i rutan <strong>URL(er)</strong>. När mer än en länk finns med härleds varje fils namn automatiskt från dess länk, och fälten <strong>Spara som</strong> och <strong>Verifiera</strong> per fil stängs av.</p>
+<h2 id="ateruppta-en-avbruten-nedladdning">Återuppta en avbruten nedladdning</h2>
+<p>Om en överföring bryts behåller Peach Commander det som redan tagits emot i en tillfällig <code>.part</code>-fil. Att starta samma nedladdning igen återupptar från där den stannade när servern stöder det, istället för att börja om. <code>.part</code>-filen döps om till det slutliga namnet först när nedladdningen slutförts framgångsrikt.</p>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ladda ner från URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li><strong>Verifiera filen.</strong> För en enskild nedladdning, klistra in en förväntad <strong>SHA-256</strong>-kontrollsumma i fältet <strong>Verifiera</strong>. Efter överföringen jämförs filens kontrollsumma mot den så att du kan lita på att filen matchar det utgivaren angav.</li>
+<li><strong>Krävs inloggning?</strong> Ange ett användarnamn och lösenord i fälten <strong>Auth</strong> för webbplatser som använder grundläggande autentisering. För tokenbaserad åtkomst, lägg till en rad <code>Authorization: Bearer …</code> i rutan <strong>Rubriker</strong>.</li>
+<li><strong>Egna rubriker.</strong> Lägg till en rubrik per rad i rutan <strong>Rubriker</strong>, till exempel <code>Referer: …</code> eller <code>Cookie: …</code>, för länkar som bara fungerar med specifika förfrågningsrubriker.</li>
+<li><strong>Proxy.</strong> Dirigera nedladdningen genom en HTTP- eller SOCKS5-proxy genom att fylla i <strong>Proxy</strong>-värd, port och typ.</li>
+<li><strong>Ej betrodda certifikat.</strong> Slå bara på <strong>Tillåt ej betrott certifikat</strong> för en webbplats du litar på som använder ett självsignerat certifikat; det inaktiverar den normala HTTPS-säkerhetskontrollen för den nedladdningen.</li>
+<li><strong>Obs:</strong> Cmd+Shift+D används även på annan plats för att gå till skrivbordsmappen; om kortkommandot inte öppnar den här dialogen, använd <strong>Nätverk &gt; Ladda ner från URL</strong> från menyn istället.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Ansluta till FTP och SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparer et synchroniser</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Comparer et synchroniser</h1>
+<p>Lorsque vous conservez deux copies d'un même dossier — un dossier de travail et une sauvegarde, un ordinateur portable et un partage réseau, un projet et son archive —, Peach Commander vous aide à voir exactement ce qui a changé et à remettre les deux côtés en phase. Vous pouvez synchroniser deux répertoires, comparer des fichiers individuels ligne par ligne, et inspecter des fichiers octet par octet lorsque vous avez besoin de certitude jusqu'au dernier caractère.</p>
+<h2 id="synchroniser-deux-repertoires">Synchroniser deux répertoires</h2>
+<ol>
+<li>Ouvrez le dossier que vous souhaitez synchroniser dans le panneau gauche et le dossier auquel le comparer dans le panneau droit.</li>
+<li>Choisissez <strong>Commandes ▸ Synchroniser les dossiers…</strong>. Les chemins des deux dossiers sont renseignés à partir de vos panneaux.</li>
+<li>Définissez le degré de minutie de la comparaison : inclure les sous-dossiers, comparer <strong>par contenu</strong> (pas seulement par date et taille), ou ignorer la date de modification.</li>
+<li>Ajoutez un masque de filtre (par exemple <code>*.jpg;*.png</code>) si vous ne voulez synchroniser que certains fichiers.</li>
+<li>Examinez la grille de résultats. Chaque ligne affiche un fichier à gauche, une flèche de direction au milieu, et le fichier correspondant à droite. Les flèches indiquent ce qui va se passer : <strong>→</strong> copie de gauche à droite, <strong>←</strong> copie de droite à gauche, et <strong>=</strong> signifie que les deux sont identiques.</li>
+<li>Ajustez des lignes individuelles si vous n'êtes pas d'accord avec une direction proposée, puis cliquez sur le bouton de synchronisation pour appliquer les modifications.</li>
+</ol>
+<p><img alt="La fenêtre de synchronisation des dossiers avec deux chemins de dossiers et une grille de résultats de fichiers comportant des flèches gauche, égal et droite" src="images/sync-dialog.png" />
+<em>(Figure : la fenêtre Synchroniser les dossiers compare les deux côtés et propose une direction de copie pour chaque fichier.)</em></p>
+<h2 id="comparer-deux-fichiers-par-contenu">Comparer deux fichiers par contenu</h2>
+<ol>
+<li>Sélectionnez un fichier dans chaque panneau (ou deux fichiers dans le même panneau).</li>
+<li>Choisissez <strong>Fichier ▸ Comparer par contenu…</strong>.</li>
+<li>Les deux fichiers s'ouvrent côte à côte avec leurs différences mises en évidence. Utilisez les commandes suivant/précédent pour passer d'un bloc modifié à l'autre.</li>
+<li>Si vous activez le mode édition, vous pouvez ajuster directement l'un ou l'autre fichier et enregistrer vos modifications.</li>
+</ol>
+<p><img alt="La fenêtre de comparaison affichant deux fichiers texte côte à côte avec les lignes différentes mises en évidence" src="images/diff-window.png" />
+<em>(Figure : comparaison de deux fichiers texte ; les lignes modifiées sont mises en évidence des deux côtés.)</em></p>
+<h2 id="comparer-des-fichiers-octet-par-octet">Comparer des fichiers octet par octet</h2>
+<p>Lorsque deux fichiers semblent identiques mais que vous devez prouver qu'ils le sont réellement (ou trouver le seul octet qui diffère), utilisez la comparaison binaire. Elle affiche les deux fichiers dans une vue hexadécimale avec les octets non concordants marqués, ce qui est idéal pour vérifier des téléchargements, contrôler des données encodées ou confirmer une copie exacte.</p>
+<h2 id="comparer-les-listes-de-repertoires">Comparer les listes de répertoires</h2>
+<p>Pour repérer d'un coup d'œil les différences entre deux dossiers ouverts, choisissez <strong>Sélection ▸ Comparer les dossiers</strong> (Shift+F2). Peach Commander marque les fichiers qui diffèrent ou qui manquent de l'autre côté, afin que vous puissiez agir dessus avec les commandes habituelles de copie, déplacement et suppression.</p>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Raccourci</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Comparer les listes de répertoires (marquer les fichiers différents)</td>
+<td>Shift+F2</td>
+</tr>
+<tr>
+<td>Comparer par contenu</td>
+<td>Fichier ▸ Comparer par contenu…</td>
+</tr>
+<tr>
+<td>Synchroniser les répertoires</td>
+<td>Commandes ▸ Synchroniser les dossiers…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li><strong>Par contenu ou par date/taille.</strong> Une comparaison rapide fait correspondre les fichiers par taille et date de modification, ce qui est rapide mais peut être trompé lorsque les horodatages diffèrent pour des fichiers identiques. Activez <strong>par contenu</strong> pour un résultat fiable, au prix de la lecture de chaque fichier.</li>
+<li><strong>Sous-dossiers et filtres.</strong> La fenêtre de synchronisation peut descendre dans les sous-dossiers et peut être limitée par un masque de filtre : vous pouvez ainsi synchroniser uniquement les types de fichiers qui vous intéressent.</li>
+<li><strong>Vous gardez le contrôle.</strong> La synchronisation ne s'exécute jamais toute seule — vous examinez les directions proposées dans la grille de résultats et pouvez en modifier n'importe laquelle avant qu'aucun fichier ne soit copié.</li>
+<li><strong>Préréglages.</strong> Les configurations de synchronisation fréquemment utilisées peuvent être enregistrées et réutilisées afin que vous n'ayez pas à ressaisir les mêmes options à chaque fois.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Renommer plusieurs fichiers</a></li></ul></section>
+</main>
+</body>
+</html>

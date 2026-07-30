@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>Git-insticksprogrammet visar tillståndet för ett Git-arkiv direkt i filpanelen — ingen separat app, ingen terminal. Det lägger till två kolumner som visar varje fils status i arbetsträdet och den aktuella grenen, en undermeny <strong>Git</strong> för de vardagliga kommandona (status, köa, checka in, hämta, skicka), och det använder det <code>git</code> som redan är installerat på din Mac. Det är ett insticksprogram, så du kan slå av det eller ta bort det i <strong>Konfiguration ▸ Insticksprogram…</strong>.</p>
+<h2 id="vad-det-tillfor">Vad det tillför</h2>
+<ul>
+<li><strong>Två fillistkolumner</strong> — <em>Git Status</em> och <em>Branch</em>. I ett arkiv visar varje fil ett kort statusord (Ändrad, Tillagd, Borttagen, Ospårad, Namnbytt, Kopierad, Konflikt, Ignorerad eller Förändrad) och panelen visar den aktuella grenen. Slå på kolumnerna i <strong>Konfiguration ▸ Kolumner…</strong> (se <a href="view-modes-and-sorting.md">Visningslägen och sortering</a>).</li>
+<li><strong>En Git-meny</strong> — under <strong>Kommandon ▸ Git</strong>, och i högerklicksmenyn för en fil, med: <strong>Git Status…</strong>, <strong>Git Add (köa)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> och <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="Dialogen Git Status som visar den aktuella grenen och de ändrade filerna i arkivet" src="images/git-status.png" />
+<em>(Figur: Git Status rapporterar grenen och varje ändring i arbetsträdet.)</em></p>
+<h2 id="kontrollera-statusen">Kontrollera statusen</h2>
+<ol>
+<li>Placera markören på en fil eller mapp inuti ett Git-arkiv.</li>
+<li>Välj <strong>Kommandon ▸ Git ▸ Git Status…</strong> (eller högerklicka ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>En sammanfattning visas: den aktuella grenen (eller <em>(detached)</em>), sedan antingen <em>Working tree clean.</em> eller en lista över ändringar, där varje rad visar statusen och filsökvägen.</li>
+</ol>
+<p>Om markören inte är inuti ett arkiv säger insticksprogrammet helt enkelt <em>Not a Git repository.</em></p>
+<h2 id="koa-checka-in-hamta-skicka">Köa, checka in, hämta, skicka</h2>
+<ul>
+<li><strong>Git Add (köa)</strong> köar filen under markören (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> ber om ett incheckningsmeddelande och checkar sedan in alla ändringar (<code>git commit -a</code>). Den kombinerade utdatan visas så att du kan se exakt vad som hände.</li>
+<li><strong>Git Pull</strong> gör en fast-forward-only-hämtning (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> skickar den aktuella grenen (<code>git push</code>).</li>
+</ul>
+<p>Efter ett kommando som ändrar arkivet uppdateras den aktiva panelen så att statuskolumnerna hålls aktuella.</p>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Insticksprogrammet använder systemets Git på <code>/usr/bin/git</code>. Om Git inte är installerat rapporterar kommandona att Git inte är tillgängligt. (Att installera Xcode Command Line Tools tillhandahåller det.)</li>
+<li>Arkivstatusen läses en gång per mapp och cachas, så att bläddring i ett stort arkiv förblir snabb; cachen uppdateras efter varje kommando som ändrar trädet.</li>
+<li>Incheckning använder <code>git commit -a</code>, som checkar in spårade ändringar; helt nya filer behöver fortfarande <strong>Git Add (köa)</strong> först.</li>
+<li>Kolumnrubrikerna <em>Git Status</em> och <em>Branch</em> visas för närvarande på engelska även i andra gränssnittsspråk; värdena och dialogerna är lokaliserade.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="view-modes-and-sorting.html">Visningslägen och sortering</a></li></ul></section>
+</main>
+</body>
+</html>

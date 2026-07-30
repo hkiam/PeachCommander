@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Monitor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>System Monitor</h1>
+<p>The System Monitor plugin puts a live readout of your Mac's activity right in the window's title bar: small chips for CPU, memory, disk, network, and — where the hardware exposes them — GPU, battery, and sensors. Each chip updates once a second; click one for a pop-up with a history graph and a detailed breakdown. It's a plugin, so you can enable, configure, or remove it in <strong>Configuration ▸ Plugins…</strong>.</p>
+<h2 id="the-title-bar-chips">The title-bar chips</h2>
+<p>When the plugin is on, a row of compact chips sits in the title bar. Each chip is a colored dot, a short label, and a live value (some with an inline sparkline):</p>
+<table>
+<thead>
+<tr>
+<th>Chip</th>
+<th>Shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>Processor load, with per-core detail</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>Memory used / total (plus wired, compressed, swap)</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>Boot-volume space and read/write throughput</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>Download / upload rates and totals</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>GPU utilization · battery charge &amp; state · fan speeds and temperatures</td>
+</tr>
+</tbody>
+</table>
+<p>Click a chip to open a pop-up with the big current value, a <strong>HISTORY</strong> sparkline, a <strong>DETAILS</strong> key/value list, and — for the CPU — a <strong>CORE LOAD</strong> list of per-core bars.</p>
+<h2 id="configure-it">Configure it</h2>
+<p>Choose <strong>Commands ▸ System Monitor…</strong> (or open <strong>Configuration ▸ Settings ▸ System Monitor</strong>) to configure the readout:</p>
+<ul>
+<li><strong>Show system monitor in title bar</strong> — the master on/off for the chips.</li>
+<li><strong>Profile</strong> — <em>Minimal</em>, <em>Medium</em>, or <em>Maximal</em> presets that pick a sensible set of modules.</li>
+<li><strong>The module table</strong> — turn each module (CPU, GPU, RAM, HDD, Net, Batt, Sens) on or off, choose its color, and drag rows to set the order they appear in the title bar. Modules your hardware can't report are shown as <em>(n/a)</em>.</li>
+</ul>
+<p><img alt="The System Monitor settings with its module table, profiles, and per-module colors" src="images/system-monitor.png" />
+<em>(Figure: choose which modules appear, their colors, and their order.)</em></p>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Everything is measured, never faked: modules whose data the hardware doesn't expose (often GPU or sensors on some Macs) stay unavailable rather than showing made-up numbers. Battery is unavailable on desktops.</li>
+<li>Sampling runs on a background timer only while the readout is visible, and keeps about 30 minutes of history for the graphs.</li>
+<li>Your module choices, colors, and order are saved with the app's configuration.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="settings.html">Settings</a></li></ul></section>
+</main>
+</body>
+</html>

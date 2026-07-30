@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>Il plugin Task Manager trasforma i processi in esecuzione sul vostro Mac in una cartella che potete sfogliare. Compare come un'unità <strong>TaskManager</strong> nella barra dei dischi; apritela e ogni processo è una riga che potete ordinare, esaminare come un file o terminare — usando gli stessi tasti che già usate per i file. Trattandosi di un plugin, potete disattivarlo o rimuoverlo da <strong>Configurazione ▸ Plugin…</strong>.</p>
+<h2 id="aprirlo">Aprirlo</h2>
+<ol>
+<li>Fate clic sulla voce <strong>📊 TaskManager</strong> nella barra dei dischi (si trova subito dopo il vostro disco di avvio).</li>
+<li>Il pannello si riempie con una riga per ogni processo in esecuzione. Il nome di ciascuna riga è il nome del processo seguito dal suo PID, per esempio <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="Task Manager che elenca i processi in esecuzione con le colonne PID, CPU, memoria e comando" src="images/task-manager.png" />
+<em>(Figura: i processi in esecuzione mostrati come un elenco di file che potete ordinare e su cui potete agire.)</em></p>
+<h2 id="cosa-significa-ogni-colonna">Cosa significa ogni colonna</h2>
+<p>Accanto alle solite colonne Dimensione (memoria) e Data (ora di avvio), Task Manager aggiunge colonne di processo:</p>
+<table>
+<thead>
+<tr>
+<th>Colonna</th>
+<th>Significato</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>Id del processo</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Uso recente del processore (serve un secondo aggiornamento perché compaia)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Numero di thread</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R in esecuzione · S in attesa · T fermato · Z zombie · I inattivo</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Proprietario</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>Id del processo padre</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>Riga di comando completa</td>
+</tr>
+</tbody>
+</table>
+<p>Ordinate per qualsiasi colonna (per esempio CPU % o Dimensione/memoria) proprio come fareste in una cartella normale.</p>
+<h2 id="esaminare-o-terminare-un-processo">Esaminare o terminare un processo</h2>
+<ul>
+<li><strong>Visualizza (F3)</strong> mostra un rapporto <em>Process Information</em>: nome, PID, padre, utente, stato, thread, memoria, CPU, ora di avvio, percorso dell'eseguibile e la riga di comando completa.</li>
+<li><strong>Elimina (F8)</strong> termina il processo. La prima eliminazione invia una <strong>chiusura</strong> garbata (SIGTERM); eliminando una seconda volta un processo ancora in esecuzione si passa a una <strong>chiusura forzata</strong> (SIGKILL). Il plugin non prende mai di mira il PID 1.</li>
+</ul>
+<h2 id="note">Note</h2>
+<ul>
+<li>I dettagli di base (PID, padre, utente, stato) sono leggibili per ogni processo, come <code>ps</code>. Memoria, thread e CPU possono essere letti solo per i <strong>vostri</strong> processi; gli altri processi mostrano quelle colonne vuote (richiedono privilegi elevati, un'aggiunta successiva).</li>
+<li>CPU % è una variazione tra due campionamenti, quindi è vuota finché il pannello non si aggiorna una seconda volta (il pannello si aggiorna all'incirca ogni due secondi).</li>
+<li>L'elenco è di sola lettura a parte la terminazione di un processo — non potete copiarvi dentro dei file.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="viewing-files.html">Visualizzazione dei file</a></li><li><a href="deleting-files.html">Eliminare i file</a></li></ul></section>
+</main>
+</body>
+</html>

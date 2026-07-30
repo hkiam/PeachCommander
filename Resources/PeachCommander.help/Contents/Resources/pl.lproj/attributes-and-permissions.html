@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atrybuty i uprawnienia</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Atrybuty i uprawnienia</h1>
+<p>Peach Commander pozwala sprawdzać i zmieniać niskopoziomowe metadane plików i folderów, które Finder w większości utrzymuje poza zasięgiem: uprawnienia POSIX odczytu/zapisu/wykonania, właściciela i grupę, daty modyfikacji i utworzenia, flagi macOS takie jak ukryty i zablokowany oraz atrybuty rozszerzone. Możesz też edytować listę kontroli dostępu (ACL) pliku dla szczegółowych reguł na użytkownika lub grupę, tworzyć dowiązania i aliasy wskazujące na inne elementy oraz dołączać własne komentarze. Te narzędzia są przeznaczone dla zaawansowanych użytkowników, którzy potrzebują precyzyjnej kontroli nad tym, jak elementy się zachowują i kto może ich dotykać.</p>
+<h2 id="zmien-atrybuty">Zmień atrybuty</h2>
+<ol>
+<li>Zaznacz jeden lub więcej elementów w aktywnym panelu.</li>
+<li>Wybierz <strong>Plik &gt; Zmień atrybuty…</strong>.</li>
+<li>Ustaw, czego potrzebujesz: przełącz pola odczytu/zapisu/wykonania dla właściciela, grupy i wszystkich (lub wpisz wartość ósemkową bezpośrednio), zmień właściciela lub grupę, przełącz flagi ukryty lub zablokowany oraz ustaw datę modyfikacji lub utworzenia. Użyj <strong>Użyj bieżącego</strong> dla bieżącego czasu lub skopiuj datę z innego pliku.</li>
+<li>Aby zastosować tę samą zmianę w całej zawartości folderu, włącz opcję rekurencyjną i wybierz, czy dotyczy plików, folderów, czy obu.</li>
+<li>Kliknij OK, aby uruchomić zmianę. Zmiany rekurencyjne działają jako zadanie w tle z paskiem postępu.</li>
+</ol>
+<p><img alt="Okno dialogowe Zmień atrybuty pokazujące siatkę uprawnień, flagi i pola dat" src="images/attributes-dialog.png" />
+<em>(Rysunek: okno dialogowe Zmień atrybuty. Mieszane wartości w wieloplikowym zaznaczeniu pokazują się jako myślnik, dopóki ich nie ustawisz.)</em></p>
+<h2 id="edytuj-acl">Edytuj ACL</h2>
+<p>W przypadku reguł wykraczających poza podstawowy model właściciel/grupa/wszyscy edytuj listę kontroli dostępu elementu.</p>
+<ol>
+<li>Otwórz <strong>Plik &gt; Zmień atrybuty…</strong> i otwórz stamtąd edytor ACL.</li>
+<li>Każdy wiersz to jedna reguła: użytkownik lub grupa, której dotyczy, czy zezwala, czy odmawia, oraz jakie uprawnienia (odczyt, zapis, usuwanie itd.) przyznaje.</li>
+<li>Dodawaj, usuwaj lub edytuj wiersze, a następnie zapisz, aby zapisać listę z powrotem do elementu.</li>
+</ol>
+<h2 id="tworz-dowiazania-aliasy-i-komentarze">Twórz dowiązania, aliasy i komentarze</h2>
+<ul>
+<li><strong>Plik &gt; Utwórz dowiązanie symboliczne…</strong> tworzy dowiązanie symboliczne (symlink) wskazujące na element pod kursorem według ścieżki.</li>
+<li><strong>Plik &gt; Utwórz dowiązanie twarde…</strong> tworzy dowiązanie twarde do tych samych danych pliku. Dowiązania twarde działają tylko dla plików na tym samym woluminie.</li>
+<li><strong>Plik &gt; Utwórz alias…</strong> tworzy alias macOS, za którym Finder również może podążać.</li>
+<li><strong>Plik &gt; Edytuj komentarz…</strong> (Ctrl+Z) otwiera edytor tekstu dla komentarza na plik. Komentarze można wyświetlać we własnej kolumnie i w podpowiedziach stanu.</li>
+</ul>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Edytuj komentarz</td>
+<td>Ctrl+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Zmiana właściciela lub grupy zazwyczaj wymaga uprawnień, których nie masz jako zwykły użytkownik; gdy to nastąpi, zmiana jest zgłaszana jako nieudana, a nie stosowana, a reszta Twoich zmian nadal przechodzi.</li>
+<li>Komentarze są przechowywane w pliku <code>descript.ion</code> obok Twoich elementów i mogą być również przechowywane jako komentarze Findera, w zależności od Twoich ustawień. Oba są odczytywane przy wyświetlaniu komentarza.</li>
+<li>Dowiązanie symboliczne i alias oba wskazują na cel, ale dowiązanie symboliczne przechowuje zwykłą ścieżkę, podczas gdy alias przechowuje odniesienie macOS, które nadal działa, jeśli cel zostanie przeniesiony lub zmieni nazwę. Dowiązanie twarde to druga nazwa tych samych danych pliku, a nie wskaźnik.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="file-utilities.html">Narzędzia plikowe</a></li></ul></section>
+</main>
+</body>
+</html>

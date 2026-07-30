@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anonymitet og sikkerhed</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Anonymitet og sikkerhed</h1>
+<p>Peach Commander er bygget til at holde sig ude af vejen og beholde dine data på din Mac. Adgangskoder overlades til macOS-nøgleringen, nedbrudsinformation forlader aldrig din computer uden dit samtykke, og appen indsamler ingen brugsanalyser. Dette emne forklarer, hvor dine følsomme oplysninger bor, og hvordan du giver den ene systemtilladelse, en filhåndtering har brug for til at gøre sit arbejde.</p>
+<h2 id="hvor-adgangskoder-gemmes">Hvor adgangskoder gemmes</h2>
+<p>Enhver adgangskode eller nøglepassphrase, du gemmer — for en FTP- eller SFTP-forbindelse, eller for at åbne et adgangskodebeskyttet arkiv — skrives til macOS-<strong>nøgleringen</strong>, det samme sikre lager, systemet bruger til dine Wi-Fi- og websteds-logins. Adgangskoder skrives aldrig til Peach Commanders egne indstillinger eller forbindelsesfiler i klartekst.</p>
+<ol>
+<li>Når du gemmer en forbindelses- eller arkivadgangskode, vælg muligheden for at huske den.</li>
+<li>Adgangskoden gemmes i din login-nøglering, beskyttet af din konto.</li>
+<li>For at gennemse eller fjerne en gemt adgangskode senere, åbn appen <strong>Nøglering</strong> (i Programmer ▸ Hjælpeprogrammer) og søg efter forbindelsesnavnet.</li>
+</ol>
+<h2 id="giv-fuld-diskadgang">Giv fuld diskadgang</h2>
+<p>macOS holder nogle placeringer private — Mail, Beskeder og andre apps' data inde i din Bibliotek-mappe — indtil du eksplicit tillader adgang. Fordi en filhåndtering er ment til at nå hver fil, beder Peach Commander om <strong>fuld diskadgang</strong>. Appen bliver ved med at virke med reduceret adgang, indtil du giver den; du vil bare ikke se de beskyttede mapper.</p>
+<ol>
+<li>Vælg <strong>Kommandoer ▸ Fuld diskadgang…</strong>, eller klik på <strong>Åbn Systemindstillinger</strong>, når appen tilbyder at vejlede dig ved start.</li>
+<li>I <strong>Systemindstillinger ▸ Anonymitet og sikkerhed ▸ Fuld diskadgang</strong> skal du slå kontakten til ved siden af Peach Commander.</li>
+<li>Genstart appen, hvis du bliver bedt om det.</li>
+</ol>
+<h2 id="nedbrudsrapporter-forbliver-lokale">Nedbrudsrapporter forbliver lokale</h2>
+<p>Hvis appen afsluttes uventet, skriver macOS en nedbrudsrapport til din egen diagnostikmappe. Ved næste start bemærker Peach Commander den og tilbyder at hjælpe dig med at indsende en fejlrapport — men kun med dit samtykke.</p>
+<ul>
+<li>Du kan <strong>Vis i Finder</strong> for at se rapporten, eller <strong>Kopier rapport til udklipsholder</strong> for selv at indsætte den i en fejlrapport.</li>
+<li>Intet overføres nogensinde automatisk, og der er ingen tredjeparts nedbrudsrapporteringstjeneste involveret.</li>
+</ul>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li><strong>Ingen telemetri.</strong> Peach Commander sporer ikke din aktivitet eller sender brugsanalyser nogen steder.</li>
+<li><strong>Reduceret adgang er sikkert.</strong> Hvis du springer fuld diskadgang over, gennemser og håndterer appen stadig de filer, du normalt kan se; kun systembeskyttede placeringer er skjult.</li>
+<li><strong>Du styrer gemte adgangskoder.</strong> Fordi loginoplysninger bor i nøgleringen, håndterer og tilbagekalder du dem med standard macOS-værktøjer i stedet for inde i appen.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Tilslutning til FTP og SFTP</a></li><li><a href="troubleshooting.html">Fejlfinding</a></li></ul></section>
+</main>
+</body>
+</html>

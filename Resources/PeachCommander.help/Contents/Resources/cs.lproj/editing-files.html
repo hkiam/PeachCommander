@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Úpravy souborů</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Úpravy souborů</h1>
+<p>Když potřebujete soubor změnit, a ne jen si jej prohlédnout, Peach Commander jej otevře ve vestavěném editoru. Textové a kódové soubory se otevírají v plnohodnotném editoru se zvýrazněním syntaxe, hledáním a nahrazováním, přehledem symbolů ve vašem kódu a minimapou pro rychlou navigaci. Binární soubory lze otevřít v samostatném hexadecimálním editoru, kde můžete zkoumat a měnit jednotlivé byty. K rychlé úpravě nikdy nemusíte opustit aplikaci.</p>
+<h2 id="uprava-textoveho-nebo-kodoveho-souboru">Úprava textového nebo kódového souboru</h2>
+<ol>
+<li>V kterémkoli panelu přesuňte kurzor na soubor, který chcete změnit.</li>
+<li>Stiskněte F4, nebo zvolte Soubor ▸ Upravit. Soubor se otevře v okně editoru.</li>
+<li>Proveďte změny. Pokud je soubor rozpoznaným programovacím nebo datovým formátem, klíčová slova, řetězce a komentáře se automaticky obarví.</li>
+<li>Stiskem Cmd+S (nebo klepnutím na Uložit) zapíšete své změny. První uložení uchová zálohu originálu vedle souboru, takže se k němu vždy můžete vrátit.</li>
+</ol>
+<p>Chcete-li vytvořit zcela nový textový soubor v aktuálním umístění, stiskněte Shift+F4.</p>
+<p><img alt="Vestavěný textový editor zobrazující zvýraznění syntaxe, přehled symbolů a minimapu" src="images/editor.png" />
+<em>(Obrázek: editor se zvýrazněním syntaxe, přehledem symbolů vlevo a minimapou vpravo.)</em></p>
+<h2 id="hledani-nahrazovani-a-navigace">Hledání, nahrazování a navigace</h2>
+<ul>
+<li>Stiskem Cmd+F otevřete lištu hledání. Chcete-li nahradit text, otevřete lištu hledání a přepněte ji na zobrazení nahrazování, nebo klepněte na Hledat/Nahradit na panelu nástrojů.</li>
+<li>Klepnutím na Formátovat JSON/XML znovu odsadíte dokument JSON nebo XML do čistého, čitelného rozvržení.</li>
+<li>Klepnutím na Symboly (nebo stiskem Cmd+Shift+O) zobrazíte postranní panel, který uvádí třídy, funkce a metody ve vašem kódu. Klepnutím na položku na ni přeskočíte přímo.</li>
+<li>Stiskem Cmd+L přeskočíte na konkrétní řádek.</li>
+<li>Stiskem Cmd+\ přeskakujete mezi závorkou a jejím odpovídajícím protějškem.</li>
+<li>Klepnutím na tlačítko mapy zobrazíte nebo skryjete minimapu, zmenšený přehled celého souboru, na který můžete klepnout pro rolování.</li>
+<li>Použijte nabídku Kódování na panelu nástrojů, pokud byl soubor uložen v jiném než výchozím kódování textu.</li>
+</ul>
+<h2 id="uprava-souboru-byte-po-bytu">Úprava souboru byte po bytu</h2>
+<ol>
+<li>Vyberte soubor v panelu.</li>
+<li>Zvolte Soubor ▸ Upravit jako hex (nebo klepněte na soubor pravým tlačítkem a zvolte Upravit jako hex).</li>
+<li>Psaním hexadecimálních číslic přepisujete byty, nebo se šipkami pohybujte souborem. Backspace a Delete odstraňují byty.</li>
+<li>Stiskem Cmd+S uložíte. Stejně jako u textového editoru se uchová jednorázová záloha originálu.</li>
+</ol>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Klávesa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Upravit soubor</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Vytvořit a upravit nový textový soubor</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>Uložit</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>Hledat</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>Zobrazit/skrýt přehled symbolů</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>Přejít na řádek</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>Přeskočit na odpovídající závorku</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>Zpět / Znovu (hex editor)</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Zvýraznění syntaxe pokrývá JSON, C, C#, Java, JavaScript, TypeScript, Python a Rust. Ostatní typy souborů se stále otevírají a upravují normálně se základním obarvením, ale podrobné zvýraznění a přehled symbolů jsou dostupné jen pro podporované jazyky.</li>
+<li>Přehled symbolů a Přejít na řádek platí pro textový editor. Hexadecimální editor je určen pro binární kontrolu a úpravy na úrovni bytů, ne pro text.</li>
+<li>Oba editory uchovávají zálohu původního souboru při prvním uložení, takže náhodnou změnu lze snadno vrátit obnovením té zálohy.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Prohlížení souborů</a></li></ul></section>
+</main>
+</body>
+</html>

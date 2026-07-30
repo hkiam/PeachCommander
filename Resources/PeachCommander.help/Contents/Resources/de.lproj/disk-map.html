@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Disk Map</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Disk Map</h1>
+<p>Disk Map ist ein integriertes Plugin, das auf einen Blick zeigt, was in einem Ordner oder auf einem gesamten Volume Speicherplatz belegt. Es scannt den von Ihnen gewählten Ordner und zeichnet jedes Element in einer Größe proportional zum tatsächlich belegten Speicherplatz, sodass die größten Speicherfresser sofort auffallen. Sie können in Ordner hineinzoomen, sehen, wie sich Ihr Scan mit dem freien, bereinigbaren und verborgenen Speicher des Volumes abgleicht, und direkt aus der Karte heraus aufräumen.</p>
+<h2 id="einen-scan-starten">Einen Scan starten</h2>
+<ol>
+<li>Wechseln Sie im aktiven Panel in den Ordner (oder das Volume), den Sie messen möchten.</li>
+<li>Wählen Sie <strong>Befehle ▸ Disk Map: Aktuellen Ordner analysieren</strong>.</li>
+<li>Die Disk-Map-Ansicht öffnet sich rechts und scannt im Hintergrund, wobei sie eine laufende Zählung von Elementen und Bytes anzeigt. Große Ordner sind in wenigen Sekunden fertig — der Scan liest Verzeichnismetadaten gebündelt und arbeitet über mehrere CPU-Kerne hinweg.</li>
+</ol>
+<p><img alt="Die Disk Map mit einem quadrierten Treemap eines Ordners, einer Volume-Leiste, einer Liste der größten Dateien und einer Kategorielegende" src="images/disk-map.png" />
+<em>(Abbildung: Die Treemap-Ansicht, nach Dateikategorie eingefärbt, mit der Volume-Leiste oben und der Liste der größten Dateien rechts.)</em></p>
+<h2 id="die-karte-lesen">Die Karte lesen</h2>
+<ul>
+<li>Jeder Block (Treemap) oder jedes Ringsegment (Sunburst) ist nach der <strong>tatsächlichen Größe auf der Festplatte</strong> des Elements bemessen, sodass das Bild dem entspricht, was Finder und System melden.</li>
+<li>Blöcke sind <strong>nach Dateityp eingefärbt</strong> — Video, Bilder, Audio, Dokumente, Code, Archive, Apps, Festplatten-Images — mit einer Legende am unteren Rand. In den Einstellungen können Sie zu einer Größen-<strong>Heatmap</strong> wechseln.</li>
+<li><strong>Klicken Sie auf einen Ordner</strong>, um in ihn hineinzuzoomen; die Brotkrümelleiste oben zeigt, wo Sie sich befinden, und die Schaltfläche <strong>◂</strong> springt eine Ebene zurück.</li>
+<li>Bewegen Sie den Zeiger über einen beliebigen Block, um seinen vollständigen Pfad, seine Größe und Elementanzahl zu sehen.</li>
+</ul>
+<h2 id="zwei-ansichten-treemap-und-sunburst">Zwei Ansichten: Treemap und Sunburst</h2>
+<p>Disk Map bietet zwei Visualisierungen, zwischen denen Sie mit der Schaltfläche <strong>◎ / ▦</strong> in der Kopfzeile oder auf der Einstellungsseite wechseln können:</p>
+<ul>
+<li><strong>Treemap</strong> — verschachtelte Rechtecke, am dichtesten zum Aufspüren der einzelnen größten Dateien.</li>
+<li><strong>Sunburst</strong> — konzentrische Ringe (einer pro Ordnertiefe) um den aktuellen Ordner, am besten geeignet, um zu sehen, wie Speicherplatz über einen tiefen Baum verteilt ist.</li>
+</ul>
+<p><img alt="Die Disk-Map-Sunburst-Ansicht mit konzentrischen Ringen für die Ordnertiefe" src="images/disk-map-sunburst.png" />
+<em>(Abbildung: Die Sunburst-Ansicht — die innere Scheibe ist der aktuelle Ordner und jeder Ring ist eine Ebene tiefer.)</em></p>
+<h2 id="die-volume-leiste">Die Volume-Leiste</h2>
+<p>Die Leiste am oberen Rand gleicht Ihren Scan mit dem gesamten Volume ab:</p>
+<ul>
+<li><strong>Gescannt / Dieser Ordner</strong> — wie viel der analysierte Ordner belegt.</li>
+<li><strong>Verborgen</strong> (im Volume-Stamm) oder <strong>Rest des Volumes</strong> (bei einem Unterordner) — alles, was nicht in diesem Scan enthalten ist, einschließlich systemgeschützter Ordner, anderer Benutzer und Schnappschüsse.</li>
+<li><strong>Bereinigbar</strong> — Speicher, den macOS automatisch zurückgewinnen kann, hauptsächlich lokale Time-Machine-Schnappschüsse und Caches.</li>
+<li><strong>Frei</strong> — momentan verfügbarer Speicher.</li>
+</ul>
+<p>Wenn das Volume lokale Schnappschüsse hat, zeigt die Leiste eine Schaltfläche <strong>· N Schnappschüsse (ⓘ)</strong>; klicken Sie darauf für eine schreibgeschützte Liste mit einem Hinweis, sie im Festplattendienstprogramm oder in Time Machine zu verwalten. Disk Map löscht Schnappschüsse niemals selbst.</p>
+<h2 id="grote-dateien">Größte Dateien</h2>
+<p>Aktivieren Sie <strong>Liste der größten Dateien anzeigen</strong>, um die größten Dateien im aktuellen Ordner nach Größe sortiert zu sehen, jede mit einem Farbchip für ihre Kategorie. Klicken Sie auf eine, um sie auf der Karte hervorzuheben.</p>
+<h2 id="aus-der-karte-heraus-aufraumen">Aus der Karte heraus aufräumen</h2>
+<p>Klicken Sie mit der rechten Maustaste auf einen beliebigen Block, um Aktionen zu erhalten:</p>
+<ul>
+<li><strong>Im linken Panel öffnen</strong> / <strong>Im rechten Panel öffnen</strong> — das Element in einem Datei-Panel anzeigen.</li>
+<li><strong>Im Finder anzeigen</strong>.</li>
+<li><strong>In den Papierkorb verschieben</strong> — nur dieses Element löschen; die Karte aktualisiert sich ohne vollständigen erneuten Scan.</li>
+</ul>
+<p>Um mehrere Elemente auf einmal zu entfernen, verwenden Sie den <strong>Collector</strong>: Klicken Sie bei jedem Element mit der rechten Maustaste ▸ <strong>Für Collector markieren</strong> und dann auf die Schaltfläche <strong>🗑 N</strong> in der Kopfzeile, um alles Markierte in einem bestätigten Schritt in den Papierkorb zu verschieben.</p>
+<h2 id="einstellungen">Einstellungen</h2>
+<p>Disk Map fügt dem Einstellungsfenster eine eigene Seite hinzu (<strong>Konfiguration ▸ Einstellungen ▸ Disk Map</strong>):</p>
+<ul>
+<li><strong>Diagrammstil</strong> — Treemap oder Sunburst.</li>
+<li><strong>Farbcodierung</strong> — nach Dateityp (Kategorie) oder nach Größe (Heatmap).</li>
+<li><strong>Auf dem Startvolume bleiben</strong> — nicht auf andere eingehängte Festplatten übergreifen.</li>
+<li><strong>Volume-Leiste anzeigen</strong> und <strong>Liste der größten Dateien anzeigen</strong>.</li>
+</ul>
+<p>Änderungen werden auf eine geöffnete Disk Map sofort angewendet.</p>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Disk Map misst die <strong>belegte</strong> Größe (auf der Festplatte) und zählt <strong>hartverknüpfte</strong> Dateien nur einmal, sodass ihre Summen mit dem belegten Speicher des Volumes übereinstimmen, statt zu viel zu zählen.</li>
+<li>Standardmäßig bleibt der Scan auf dem Startvolume, sodass er nicht auf andere eingehängte Festplatten oder Netzwerkfreigaben abschweift.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="deleting-files.html">Dateien löschen</a></li><li><a href="settings.html">Einstellungen</a></li></ul></section>
+</main>
+</body>
+</html>

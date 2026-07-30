@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navigera</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Navigera</h1>
+<p>Peach Commander visar två mappar sida vid sida, så det mesta av tiden går åt till att flytta en panel från mapp till mapp. Du kan öppna mappar, gå upp i hierarkin, spåra tillbaka var du har varit, skriva en sökväg direkt och hoppa rakt till vardagliga platser som Hem, Skrivbord och Hämtade filer. Varje åtgärd gäller den <em>aktiva</em> panelen — den med den markerade sökvägsraden.</p>
+<h2 id="oppna-mappar-och-ga-upp-igen">Öppna mappar och gå upp igen</h2>
+<ol>
+<li>Flytta markeringsraden med piltangenterna tills en mapp är markerad.</li>
+<li>Tryck på <strong>Enter</strong> (eller dubbelklicka) för att öppna den. Detta går även in i arkiv och öppnar filer med deras standardapp.</li>
+<li>Gå upp en nivå till den överordnade mappen med <strong>Ctrl+PageUp</strong> (eller <strong>Backspace</strong>).</li>
+<li>För att hoppa till toppen av den aktuella enheten, välj <strong>Gå ▸ Rot</strong>.</li>
+</ol>
+<h2 id="ga-bakat-och-framat">Gå bakåt och framåt</h2>
+<p>Peach Commander kommer ihåg de mappar du har besökt i varje panel, precis som en webbläsare.</p>
+<ul>
+<li>Tryck på <strong>Alt+Left</strong> för att gå tillbaka till föregående mapp, och <strong>Alt+Right</strong> för att gå framåt igen.</li>
+<li>Tryck på <strong>Alt+Down</strong> för att öppna en lista med senaste mappar och hoppa till någon av dem.</li>
+</ul>
+<h2 id="skriv-en-sokvag-eller-anvand-sokvagsraden">Skriv en sökväg eller använd sökvägsraden</h2>
+<p>Sökvägsraden överst i varje panel visar var du är och fungerar även som ett snabbt sätt att ta dig någonstans.</p>
+<p><img alt="Redigerbar sökvägsrad som visar den aktuella mappen som klickbara segment" src="images/path-bar-crop.png" />
+<em>(Bild: Sökvägsraden. Klicka på ett segment för att hoppa till den mappen, eller på pennan för att skriva en fullständig sökväg.)</em></p>
+<ul>
+<li>Klicka på ett segment av sökvägen (t.ex. en överordnad mapps namn) för att hoppa direkt dit.</li>
+<li>Klicka på pennan till höger på sökvägsraden för att göra den till ett textfält, skriv eller klistra sedan in valfri sökväg och tryck på Enter.</li>
+<li>Eller välj <strong>Arkiv ▸ Gå till mapp…</strong> (<strong>Cmd+Shift+G</strong>) för att skriva en sökväg var som helst ifrån.</li>
+</ul>
+<h2 id="hoppa-till-vanliga-platser">Hoppa till vanliga platser</h2>
+<p>Menyn <strong>Gå</strong> tar den aktiva panelen till de mappar du använder mest:</p>
+<ul>
+<li><strong>Hem</strong>, <strong>Skrivbord</strong>, <strong>Hämtade filer</strong>, <strong>Papperskorg</strong> och <strong>iCloud Drive</strong>.</li>
+<li><strong>iCloud Drive</strong> visas när det är inställt på din Mac.</li>
+</ul>
+<h2 id="vaxla-paneler-och-enheter">Växla paneler och enheter</h2>
+<ul>
+<li>Tryck på <strong>Tab</strong> för att flytta fokus mellan vänster och höger panel.</li>
+<li>Enhetsraden ovanför varje panel listar dina monterade volymer med ledigt utrymme; klicka på en volym för att växla den panelen till den.</li>
+<li>Tryck på <strong>Ctrl+U</strong> för att byta plats på de två panelerna (deras mappar byter sida); <strong>Ctrl+Shift+U</strong> byter dem tillsammans med deras flikar.</li>
+<li>Tryck på <strong>Ctrl+=</strong> för att rikta den andra panelen mot samma mapp som den aktiva (<em>mål = källa</em>) — behändigt strax före en kopiering eller flytt.</li>
+</ul>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Öppna mapp/fil under markören</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Gå till överordnad mapp</td>
+<td>Ctrl+PageUp (eller Backspace)</td>
+</tr>
+<tr>
+<td>Bakåt/framåt i historiken</td>
+<td>Alt+Left / Alt+Right</td>
+</tr>
+<tr>
+<td>Historiklista</td>
+<td>Alt+Down</td>
+</tr>
+<tr>
+<td>Gå till mapp… (skriv en sökväg)</td>
+<td>Cmd+Shift+G</td>
+</tr>
+<tr>
+<td>Hem</td>
+<td>Cmd+Shift+H</td>
+</tr>
+<tr>
+<td>Skrivbord</td>
+<td>Cmd+Shift+D</td>
+</tr>
+<tr>
+<td>Hämtade filer</td>
+<td>Option+Cmd+L</td>
+</tr>
+<tr>
+<td>Växla aktiv panel</td>
+<td>Tab</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Varje panel har sin egen historik, så Bakåt och Framåt påverkar bara den aktiva sidan.</li>
+<li>Om en inskriven sökväg inte är en giltig mapp behåller sökvägsraden i tysthet din senaste plats i stället för att navigera.</li>
+<li>Papperskorg och iCloud Drive i Gå-menyn har inget standardkortkommando, men du kan tilldela ett i <strong>Konfiguration ▸ Alternativ ▸ Tangentbord</strong>.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="interface-overview.html">Huvudfönstret</a></li><li><a href="favorites.html">Favoriter och snabblista</a></li></ul></section>
+</main>
+</body>
+</html>

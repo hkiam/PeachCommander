@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Billentyűzet és billentyűparancsok</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Billentyűzet és billentyűparancsok</h1>
+<p>A Peach Commandert billentyűzetről való vezérlésre építették. Két kész billentyűparancs-sémával érkezik, és lehetővé teszi bármely parancs újrahozzárendelését az ön által preferált billentyűkhöz. Ha egy klasszikus kétpaneles fájlkezelőtől jön, megtarthatja a már ismert billentyűket; ha inkább ismerős Mac-kombinációkat használna, váltson a macOS-sémára egy kattintással. Egy kereshető parancsböngésző lehetővé teszi, hogy felfedezze mindent, amit az app tud, és bármely parancsot név szerint futtasson.</p>
+<h2 id="billentyuzetsema-valtasa">Billentyűzetséma váltása</h2>
+<ol>
+<li>Nyissa meg a <strong>Konfiguráció</strong> menüt.</li>
+<li>Válassza a <strong>Billentyűzetséma</strong> lehetőséget, majd válasszon egyet:
+   - <strong>TC Classic</strong> (alapértelmezett) megtartja a hagyományos billentyűket, Ctrl-alapú kombinációkkal, mint a Ctrl+R egy panel frissítéséhez.
+   - <strong>macOS Native</strong> ugyanazokat a műveleteket ismerős Mac-billentyűkre képezi le, ahol értelme van, például a Cmd+C fájlok másolásához és a Cmd+F kereséshez.</li>
+<li>Egy pipa mutatja az aktív sémát. A változás azonnal életbe lép a menükben és a billentyűparancs-sávban.</li>
+</ol>
+<h2 id="billentyuparancsok-testreszabasa">Billentyűparancsok testreszabása</h2>
+<ol>
+<li>Válassza a <strong>Konfiguráció &gt; Billentyűparancsok…</strong> lehetőséget.</li>
+<li>Keressen meg egy parancsot a keresőmező segítségével, majd jelölje ki a sorát.</li>
+<li>Kattintson a <strong>Rögzítés…</strong> gombra és nyomja meg a kívánt billentyűkombinációt. Azonnal hozzárendelődik.</li>
+<li>Ha azt a kombinációt már egy másik parancs használta, egy értesítés megmondja, melyik parancstól vették el.</li>
+<li>Használja a <strong>Törlés</strong>-t egy parancs billentyűparancsának eltávolításához, vagy az <strong>Alapértelmezések visszaállítása</strong>-t az összes változtatása elvetéséhez és a séma eredeti billentyűihez való visszatéréshez.</li>
+</ol>
+<p><img alt="A billentyűparancs-szerkesztő felsorolja a parancsokat a hozzárendelt billentyűikkel" src="images/keys-editor.png" />
+<em>(Ábra: keressen egy parancsot, majd használja a Rögzítés, Törlés vagy Alapértelmezések visszaállítása lehetőséget a billentyűparancsa megváltoztatásához.)</em></p>
+<h2 id="az-osszes-parancs-bongeszese">Az összes parancs böngészése</h2>
+<ol>
+<li>Válassza a <strong>Konfiguráció &gt; Parancsböngésző…</strong> lehetőséget.</li>
+<li>Gépeljen a keresőmezőbe a név, kategória vagy leírás szerinti szűréshez.</li>
+<li>Kattintson duplán egy parancsra, vagy jelölje ki és kattintson a <strong>Futtatás</strong>-ra, hogy végrehajtsa az aktív panelen.</li>
+</ol>
+<p><img alt="A parancsböngésző a parancsok kereshető listáját mutatja" src="images/command-browser.png" />
+<em>(Ábra: minden parancs egyetlen kereshető listában, mindegyik rövid leírásával.)</em></p>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Menüútvonal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A klasszikus séma választása</td>
+<td>Konfiguráció &gt; Billentyűzetséma &gt; TC Classic</td>
+</tr>
+<tr>
+<td>A Mac-séma választása</td>
+<td>Konfiguráció &gt; Billentyűzetséma &gt; macOS Native</td>
+</tr>
+<tr>
+<td>Billentyűparancsok szerkesztése</td>
+<td>Konfiguráció &gt; Billentyűparancsok…</td>
+</tr>
+<tr>
+<td>Az összes parancs böngészése</td>
+<td>Konfiguráció &gt; Parancsböngésző…</td>
+</tr>
+<tr>
+<td>Az aktív panel frissítése</td>
+<td>F2 (szintén Ctrl+R)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>Az egyéni billentyűparancsai automatikusan mentődnek, és az aktív séma tetejére rétegződnek. A sémák váltása megtartja a személyes felülírásait.</li>
+<li>Az aktuális kontextusban nem elérhető parancsok halványan jelennek meg mind a billentyűparancs-szerkesztőben, mind a parancsböngészőben.</li>
+<li>A funkcióbillentyűk (F1–F12) közvetlen használatához kapcsolja be a <strong>Használja az F1, F2 stb. billentyűket standard funkcióbillentyűként</strong> lehetőséget a Rendszerbeállítások &gt; Billentyűzet alatt. Egyébként tartsa lenyomva az <strong>Fn</strong> billentyűt a funkcióbillentyűvel együtt.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts-reference.html">Billentyűparancs-referencia</a></li><li><a href="settings.html">Beállítások</a></li></ul></section>
+</main>
+</body>
+</html>

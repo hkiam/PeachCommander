@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstaller</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Uninstaller</h1>
+<p>Faire glisser une application vers la Corbeille laisse ses fichiers de support, caches, préférences et conteneurs éparpillés dans vos dossiers Bibliothèque. L'extension Uninstaller retire une application <strong>et</strong> ces restes : elle trouve tout ce que l'application a laissé derrière elle, vous en montre la liste avec une taille pour chacun, et place le tout dans la Corbeille une fois que vous confirmez. C'est une extension, vous pouvez donc la désactiver ou la retirer dans <strong>Configuration ▸ Extensions…</strong>.</p>
+<h2 id="desinstaller-une-application-sous-le-curseur">Désinstaller une application sous le curseur</h2>
+<ol>
+<li>Placez le curseur sur une application (<code>.app</code>) dans un panneau.</li>
+<li>Choisissez <strong>Fichier ▸ Désinstaller l'application…</strong>, ou clic droit ▸ <strong>Désinstaller l'application…</strong>, ou appuyez sur <strong>Cmd+Maj+U</strong>.</li>
+<li>La fenêtre de revue s'ouvre, listant l'application ainsi que chaque fichier apparenté qu'elle a trouvé, chacun étiqueté avec sa catégorie, son chemin et sa taille.</li>
+<li>Décochez tout ce que vous voulez conserver, puis cliquez sur <strong>Placer dans la Corbeille</strong> (ou <strong>Supprimer définitivement</strong>).</li>
+</ol>
+<p><img alt="La fenêtre de revue de désinstallation listant les fichiers restants d'une application avec des cases à cocher et des tailles" src="images/uninstaller.png" />
+<em>(Figure : passez en revue exactement ce qui sera retiré avant que quoi que ce soit ne soit supprimé.)</em></p>
+<h2 id="parcourir-toutes-les-applications-installees">Parcourir toutes les applications installées</h2>
+<p>Choisissez <strong>Commandes ▸ Désinstaller l'application…</strong> pour ouvrir une liste consultable des applications installées sur votre Mac, avec le nom, la taille et la date d'installation de chacune. Sélectionnez-en une (ou plusieurs), cliquez sur <strong>Désinstaller…</strong>, et vous arrivez dans la même fenêtre de revue. Vous pouvez filtrer la liste en saisissant dans le champ de recherche.</p>
+<h2 id="trouver-les-fichiers-restants">Trouver les fichiers restants</h2>
+<p>Choisissez <strong>Commandes ▸ Trouver les fichiers restants…</strong> pour rechercher les fichiers de support, caches et préférences appartenant à des applications que vous avez <strong>déjà</strong> supprimées. Passez-les en revue de la même manière et faites le ménage. Si rien n'est trouvé, l'extension vous le signale.</p>
+<h2 id="quelle-profondeur-danalyse">Quelle profondeur d'analyse</h2>
+<p>La fenêtre de revue dispose d'un contrôle de confiance :</p>
+<ul>
+<li><strong>Précis</strong> — fichiers ancrés à l'identifiant de paquet de l'application. Confiance élevée ; présélectionnés.</li>
+<li><strong>Étendu</strong> — ajoute les fichiers correspondant par nom ; laissés décochés pour que vous puissiez décider.</li>
+<li><strong>Approfondi</strong> — Étendu plus un balayage Spotlight pour tout ce qui mentionne l'application ; également laissé décoché.</li>
+</ul>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>Rien n'est supprimé directement par l'extension — les éléments passent par la Corbeille de l'application ou la suppression définitive, exactement comme toute autre opération sur fichiers. Retirer des fichiers dans <code>/Library</code> ou <code>/var</code> peut nécessiter un mot de passe administrateur.</li>
+<li>Avant de retirer, l'extension quitte l'application en cours d'exécution et décharge ses éléments d'arrière-plan (launchd), puis propose de nettoyer les dossiers de fournisseur désormais vides.</li>
+<li>Si l'application a été installée avec <strong>Homebrew</strong>, l'extension vous avertit et suggère <code>brew uninstall --cask</code> pour que Homebrew reste synchronisé. Les applications de l'App Store sont également signalées.</li>
+<li>Les correspondances Étendu et Approfondi sont de confiance plus faible par conception et commencent décochées — passez-les en revue avant de retirer. Certains éléments d'arrière-plan installés via l'API moderne des éléments d'ouverture ne peuvent pas être retirés ici.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Extensions</a></li><li><a href="deleting-files.html">Supprimer des fichiers</a></li></ul></section>
+</main>
+</body>
+</html>

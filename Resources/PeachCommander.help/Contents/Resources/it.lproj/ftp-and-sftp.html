@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connessione a FTP e SFTP</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Connessione a FTP e SFTP</h1>
+<p>Peach Commander può sfogliare i server remoti come se fossero cartelle ordinarie. Una volta connesso, un pannello mostra i file remoti e li copi, sposti, rinomini ed elimini con gli stessi tasti che usi in locale. Parla FTP semplice, FTPS sicuro e SFTP/SCP su SSH, così puoi raggiungere di tutto, da un classico host web a un server SSH irrobustito. Le connessioni salvate vivono nel gestore delle connessioni, e le password sono conservate in modo sicuro nel tuo portachiavi macOS invece che nella connessione stessa.</p>
+<h2 id="connettiti-a-un-server">Connettiti a un server</h2>
+<ol>
+<li>Apri il menu <strong>Rete</strong> e scegli <strong>Connessione FTP…</strong> (Ctrl+F) per aprire il gestore delle connessioni.</li>
+<li>Scegli una connessione salvata dall'elenco e fai clic su <strong>Connetti</strong>, o fai clic su <strong>Nuova</strong> per crearne una. Usa le cartelle nell'elenco per raggruppare le connessioni.</li>
+<li>Per una connessione veloce una tantum, scegli <strong>Rete &gt; Nuova connessione FTP…</strong> (Ctrl+N) e digita l'indirizzo direttamente.</li>
+<li>Inserisci la tua password quando richiesta; spunta l'opzione per salvarla e va nel tuo portachiavi per la prossima volta.</li>
+<li>Quando hai finito, scegli <strong>Rete &gt; Disconnetti FTP</strong> (Ctrl+Maiusc+F).</li>
+</ol>
+<p><img alt="Il gestore delle connessioni FTP che mostra l'elenco delle sessioni salvate con i pulsanti Nuova, Modifica ed Elimina" src="images/ftp-connection-manager.png" />
+<em>(Figura: il gestore delle connessioni contiene i tuoi server salvati; usa Nuova, Modifica ed Elimina per gestirli.)</em></p>
+<p>Quando configuri una connessione puoi scegliere il protocollo (FTP, FTPS con AUTH TLS esplicito, FTPS implicito sulla porta 990, o SFTP/SCP), la modalità passiva o attiva, le cartelle iniziali remota e locale, la codifica del testo e un intervallo keep-alive opzionale per impedire ai server inattivi di disconnetterti. Per SFTP puoi autenticarti con il tuo agente SSH, una password o un file di chiave privata, e puoi scegliere SCP per i trasferimenti. Le chiavi host SSH sconosciute sono considerate attendibili al primo uso; se la chiave di un server noto dovesse cambiare, la connessione viene rifiutata per proteggerti da manomissioni.</p>
+<h2 id="la-console-ftp">La console FTP</h2>
+<p>Per vedere esattamente cosa dice il server, apri la console FTP dal menu <strong>Rete</strong>. Mostra un registro in tempo reale del canale di controllo (la tua password è mascherata) e ti permette di digitare comandi FTP grezzi al server.</p>
+<p><img alt="La console FTP che mostra il registro del canale di controllo e un campo per i comandi grezzi" src="images/ftp-console.png" />
+<em>(Figura: la console FTP registra ogni scambio e accetta comandi grezzi, il che è comodo per la risoluzione dei problemi.)</em></p>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Scorciatoia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apri il gestore delle connessioni</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Nuova connessione</td>
+<td>Ctrl+N</td>
+</tr>
+<tr>
+<td>Disconnetti</td>
+<td>Ctrl+Maiusc+F</td>
+</tr>
+<tr>
+<td>Cambia modalità di trasferimento</td>
+<td>Ctrl+Maiusc+M</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>I download e gli upload interrotti possono riprendere da dove si erano fermati, invece di ricominciare.</li>
+<li>Per i server FTPS con un certificato autofirmato, attiva l'opzione per accettare un certificato non attendibile nelle impostazioni di quella connessione.</li>
+<li>Un proxy SOCKS5 può essere impostato per connessione per l'FTP semplice. Instradare una connessione FTPS crittografata attraverso un proxy non è supportato.</li>
+<li>Le connessioni FTP esistenti da Total Commander possono essere importate.</li>
+<li>SCP è usato solo per trasferire file; l'elenco, la rinomina e l'eliminazione passano sempre per SFTP.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="downloading-from-url.html">Scaricare da un URL</a></li><li><a href="network-shares.html">Condivisioni di rete</a></li></ul></section>
+</main>
+</body>
+</html>

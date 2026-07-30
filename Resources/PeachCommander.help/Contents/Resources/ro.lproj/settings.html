@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setări</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Setări</h1>
+<p>Fereastra Setări este locul unde adaptați Peach Commander la modul în care lucrați: ce bare apar, cum sunt afișate fișierele, cum se comportă operațiunile de copiere și ștergere, formatul de arhivă folosit când împachetați, comportamentul filelor, valorile implicite FTP, limba de afișare și altele. Setările sunt grupate în pagini, astfel încât să găsiți rapid o opțiune, iar fiecare modificare este salvată automat în folderul dvs. personal de configurare.</p>
+<h2 id="deschiderea-setarilor">Deschiderea Setărilor</h2>
+<ol>
+<li>Alegeți <strong>Peach Commander &gt; Setări…</strong>, sau apăsați Cmd+, (virgulă).</li>
+<li>Puteți de asemenea deschide aceeași fereastră din <strong>Configurare &gt; Opțiuni…</strong>.</li>
+<li>Alegeți o pagină din lista din stânga; opțiunile acelei pagini apar în dreapta.</li>
+<li>Ajustați controalele. Modificările intră în vigoare imediat, cu excepția cazului în care o notă de pe pagină spune altfel.</li>
+</ol>
+<p><img alt="Fereastra Setări care arată pagina Aspect cu casete de bifare pentru barele interfeței" src="images/settings-layout.png" />
+<em>(Figura: pagina Aspect controlează ce bare sunt afișate în jurul panourilor.)</em></p>
+<h2 id="paginile">Paginile</h2>
+<p>Fereastra are aceste pagini, în ordine:</p>
+<ul>
+<li><strong>Aspect</strong> — afișează sau ascunde bara de unități, bara de file, bara de cale și bara de stare.</li>
+<li><strong>Afișare</strong> — cum sunt listate fișierele și folderele, inclusiv formatul datei.</li>
+<li><strong>Pictograme</strong> — aspectul pictogramelor în listele de fișiere.</li>
+<li><strong>Operare</strong> — comportament general, cum ar fi ce se întâmplă când tastați într-un panou (căutare rapidă vs. linia de comandă).</li>
+<li><strong>Culori</strong> — culori personalizate ale panourilor, sau lăsați-le să urmeze tema curentă.</li>
+<li><strong>Confirmare</strong> — ce acțiuni vă cer mai întâi să confirmați, precum ștergerea.</li>
+<li><strong>Editare/Vizualizare</strong> — programele folosite pentru editarea și vizualizarea fișierelor și asocierile pe tip.</li>
+<li><strong>Copiere/Ștergere</strong> — păstrează metadatele fișierelor, folosește clonarea rapidă, copiază doar fișierele mai noi, verifică după copiere, trimite ștergerile în Coș și setează o limită de viteză opțională.</li>
+<li><strong>Zip/Arhivator</strong> — formatul de arhivă implicit și nivelul de compresie folosite când împachetați.</li>
+<li><strong>Pluginuri</strong> — activează sau dezactivează pluginurile instalate.</li>
+<li><strong>File</strong> — cum se deschid și se comportă filele de foldere.</li>
+<li><strong>FTP</strong> — valori implicite de rețea precum intervalul keep-alive.</li>
+<li><strong>Tastatură</strong> — examinează și schimbă comenzile rapide de tastatură.</li>
+<li><strong>Limbă</strong> — alege Implicit sistem, English sau Deutsch.</li>
+<li><strong>IA</strong> — configurează asistentul IA: model preferat, punct final și cheie cloud, autonomie și serverul MCP opțional (vedeți <a href="ai-assistant.md">Asistent IA</a>).</li>
+<li><strong>Diverse</strong> — deschide folderul de configurare în Finder.</li>
+</ul>
+<p>Pluginurile activate pot adăuga propriile pagini după cele încorporate — de exemplu <strong>Hartă disc</strong> și <strong>System Monitor</strong> — astfel încât opțiunile lor trăiesc în aceeași fereastră (vedeți <a href="plugins.md">Pluginuri</a>).</p>
+<p><img alt="Fereastra Setări care arată opțiunile paginii Afișare pentru listarea fișierelor" src="images/settings-display.png" />
+<em>(Figura: pagina Afișare controlează cum sunt listate fișierele și folderele.)</em></p>
+<p><img alt="Fereastra Setări care arată pagina Operare" src="images/settings-operation.png" />
+<em>(Figura: pagina Operare guvernează căutarea rapidă și comportamentul mausului.)</em></p>
+<h2 id="unde-sunt-stocate-setarile-dvs">Unde sunt stocate setările dvs.</h2>
+<p>Configurația dvs. este păstrată în fișiere text simplu în interiorul folderului dvs. personal Application Support, la <code>~/Library/Application Support/PeachCommander</code>. Pentru a-l deschide, mergeți la pagina <strong>Diverse</strong> și faceți clic pe <strong>Deschide folderul de configurare</strong>. Parolele FTP salvate nu sunt stocate în aceste fișiere; sunt păstrate în siguranță în inelul de chei macOS.</p>
+<p>Setările sunt scrise pe măsură ce le modificați. Puteți de asemenea forța o salvare oricând cu <strong>Configurare &gt; Salvează setările</strong> și stoca poziția curentă a ferestrei și aspectul panourilor cu <strong>Configurare &gt; Salvează poziția</strong>.</p>
+<h2 id="aducerea-setarilor-din-total-commander">Aducerea setărilor din Total Commander</h2>
+<p>Dacă treceți de la Total Commander pe Windows, puteți importa site-urile FTP salvate. Alegeți <strong>Configurare &gt; Importă wincmd.ini…</strong> și selectați fișierul de configurare FTP Total Commander. Conexiunile dvs. sunt adăugate în Peach Commander în aceeași ordine în care apăreau acolo.</p>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Comandă rapidă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deschide Setările</td>
+<td>Cmd+,</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Pagina <strong>Limbă</strong> oferă Implicit sistem, English și Deutsch. Schimbarea limbii intră în vigoare doar după ce reporniți Peach Commander.</li>
+<li>Culorile setate pe pagina <strong>Culori</strong> suprascriu tema; folosiți <strong>Resetează la valorile implicite</strong> acolo pentru a reveni la culorile temei.</li>
+<li>Peach Commander își stochează setările doar în propriul folder de configurare, astfel încât modificările dvs. nu afectează niciodată alte aplicații și sunt ușor de salvat prin copierea acelui folder.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="appearance.html">Aspect</a></li><li><a href="keyboard-shortcuts.html">Tastatură și comenzi rapide</a></li></ul></section>
+</main>
+</body>
+</html>

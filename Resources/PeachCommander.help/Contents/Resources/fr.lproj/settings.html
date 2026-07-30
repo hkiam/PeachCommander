@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Réglages</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Réglages</h1>
+<p>La fenêtre Réglages est l'endroit où vous adaptez Peach Commander à votre façon de travailler : quelles barres apparaissent, comment les fichiers sont affichés, comment se comportent les opérations de copie et de suppression, le format d'archive utilisé quand vous compressez, le comportement des onglets, les valeurs FTP par défaut, la langue d'affichage, et plus encore. Les réglages sont regroupés en pages pour que vous trouviez rapidement une option, et chaque changement est enregistré automatiquement dans votre dossier de configuration personnel.</p>
+<h2 id="ouvrir-les-reglages">Ouvrir les Réglages</h2>
+<ol>
+<li>Choisissez <strong>Peach Commander &gt; Réglages…</strong>, ou appuyez sur Cmd+, (virgule).</li>
+<li>Vous pouvez aussi ouvrir la même fenêtre depuis <strong>Configuration &gt; Options…</strong>.</li>
+<li>Choisissez une page dans la liste de gauche ; les options de cette page apparaissent à droite.</li>
+<li>Ajustez les contrôles. Les changements prennent effet immédiatement sauf si une note sur la page indique le contraire.</li>
+</ol>
+<p><img alt="La fenêtre Réglages montrant la page Disposition avec des cases pour les barres d'interface" src="images/settings-layout.png" />
+<em>(Figure : la page Disposition contrôle quelles barres sont affichées autour des panneaux.)</em></p>
+<h2 id="les-pages">Les pages</h2>
+<p>La fenêtre comporte ces pages, dans l'ordre :</p>
+<ul>
+<li><strong>Disposition</strong> — afficher ou masquer la barre de lecteurs, la barre d'onglets, la barre de chemin et la barre d'état.</li>
+<li><strong>Affichage</strong> — comment les fichiers et dossiers sont listés, y compris le format de date.</li>
+<li><strong>Icônes</strong> — l'apparence des icônes dans les listes de fichiers.</li>
+<li><strong>Fonctionnement</strong> — comportement général, comme ce qui se passe quand vous saisissez dans un panneau (recherche rapide ou ligne de commande).</li>
+<li><strong>Couleurs</strong> — couleurs personnalisées des panneaux, ou les laisser suivre le thème actuel.</li>
+<li><strong>Confirmation</strong> — quelles actions vous demandent d'abord de confirmer, comme la suppression.</li>
+<li><strong>Modifier/Afficher</strong> — les programmes utilisés pour modifier et afficher les fichiers, et les associations par type.</li>
+<li><strong>Copier/Supprimer</strong> — préserver les métadonnées des fichiers, utiliser le clonage rapide, ne copier que les fichiers plus récents, vérifier après copie, envoyer les suppressions à la corbeille et définir une limite de vitesse facultative.</li>
+<li><strong>Zip/Compresseur</strong> — le format d'archive et le niveau de compression par défaut utilisés quand vous compressez.</li>
+<li><strong>Extensions</strong> — activer ou désactiver les extensions installées.</li>
+<li><strong>Onglets</strong> — comment les onglets de dossiers s'ouvrent et se comportent.</li>
+<li><strong>FTP</strong> — valeurs réseau par défaut telles que l'intervalle keep-alive.</li>
+<li><strong>Clavier</strong> — consulter et changer les raccourcis clavier.</li>
+<li><strong>Langue</strong> — choisir Réglage système, English ou Deutsch.</li>
+<li><strong>IA</strong> — configurer l'assistant IA : modèle préféré, point de terminaison et clé cloud, autonomie et serveur MCP facultatif (voir <a href="ai-assistant.md">Assistant IA</a>).</li>
+<li><strong>Divers</strong> — ouvrir votre dossier de configuration dans le Finder.</li>
+</ul>
+<p>Les extensions activées peuvent ajouter leurs propres pages après les pages intégrées — par exemple <strong>Carte du disque</strong> et <strong>System Monitor</strong> — de sorte que leurs options vivent dans la même fenêtre (voir <a href="plugins.md">Extensions</a>).</p>
+<p><img alt="La fenêtre Réglages montrant les options de la page Affichage pour le listage des fichiers" src="images/settings-display.png" />
+<em>(Figure : la page Affichage contrôle comment les fichiers et dossiers sont listés.)</em></p>
+<p><img alt="La fenêtre Réglages montrant la page Fonctionnement" src="images/settings-operation.png" />
+<em>(Figure : la page Fonctionnement régit la recherche rapide et le comportement de la souris.)</em></p>
+<h2 id="ou-sont-stockes-vos-reglages">Où sont stockés vos réglages</h2>
+<p>Votre configuration est conservée dans des fichiers en texte brut à l'intérieur de votre dossier Application Support personnel, à <code>~/Library/Application Support/PeachCommander</code>. Pour l'ouvrir, allez à la page <strong>Divers</strong> et cliquez sur <strong>Ouvrir le dossier de configuration</strong>. Les mots de passe FTP enregistrés ne sont pas stockés dans ces fichiers ; ils sont conservés en sécurité dans le trousseau macOS.</p>
+<p>Les réglages sont écrits à mesure que vous les changez. Vous pouvez aussi forcer un enregistrement à tout moment avec <strong>Configuration &gt; Enregistrer les réglages</strong>, et mémoriser la position actuelle de la fenêtre et la disposition des panneaux avec <strong>Configuration &gt; Enregistrer la position</strong>.</p>
+<h2 id="recuperer-des-reglages-depuis-total-commander">Récupérer des réglages depuis Total Commander</h2>
+<p>Si vous migrez depuis Total Commander sous Windows, vous pouvez importer vos sites FTP enregistrés. Choisissez <strong>Configuration &gt; Importer wincmd.ini…</strong> et sélectionnez votre fichier de configuration FTP de Total Commander. Vos connexions sont ajoutées à Peach Commander dans le même ordre qu'elles y apparaissaient.</p>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Raccourci</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ouvrir les Réglages</td>
+<td>Cmd+,</td>
+</tr>
+</tbody>
+</table>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>La page <strong>Langue</strong> propose Réglage système, English et Deutsch. Changer de langue ne prend effet qu'après avoir redémarré Peach Commander.</li>
+<li>Les couleurs définies sur la page <strong>Couleurs</strong> remplacent le thème ; utilisez <strong>Réinitialiser aux valeurs par défaut</strong> là-bas pour revenir aux couleurs du thème.</li>
+<li>Peach Commander stocke ses réglages uniquement dans son propre dossier de configuration, de sorte que vos changements n'affectent jamais d'autres applications et sont faciles à sauvegarder en copiant ce dossier.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="appearance.html">Apparence</a></li><li><a href="keyboard-shortcuts.html">Clavier et raccourcis</a></li></ul></section>
+</main>
+</body>
+</html>

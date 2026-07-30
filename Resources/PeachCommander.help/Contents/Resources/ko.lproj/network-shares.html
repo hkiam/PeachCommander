@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>네트워크 공유</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>네트워크 공유</h1>
+<p>Peach Commander는 로컬 네트워크나 회사 네트워크의 파일 서버(SMB(Windows/Samba) 및 AFP 공유)에 연결하여, 그 내용을 자신의 Mac에 있는 폴더처럼 패널에 표시할 수 있습니다. 일단 공유가 연결되면, 공유와 다른 패널 사이의 복사를 포함하여 로컬에서 하는 것과 똑같이 그 안의 파일을 탐색하고, 복사하고, 이동하고, 이름을 바꾸고, 열 수 있습니다.</p>
+<h2 id="_1">서버에 연결</h2>
+<ol>
+<li>연결하려는 패널을 클릭합니다(연결된 공유가 활성 패널에서 열립니다).</li>
+<li>Cmd+K를 누르거나 <strong>네트워크 &gt; Network Neighborhood &gt; Mount Network Share…</strong>를 선택합니다.</li>
+<li><strong>서버에 연결</strong> 대화상자에 서버 주소를 입력합니다. 다음을 입력할 수 있습니다.
+   - SMB 주소, 예: <code>smb://fileserver/projects</code>
+   - AFP 주소, 예: <code>afp://fileserver/projects</code>
+   - Windows 스타일 경로, 예: <code>\\fileserver\projects</code>
+   - 일반 <code>server/share</code> 이름</li>
+<li>연결을 클릭합니다(또는 Return을 누릅니다). 서버가 이름과 암호를 필요로 하면 macOS가 표준 로그인 프롬프트를 표시합니다. 거기에 자격 증명을 입력하십시오.</li>
+<li>공유가 준비되면 활성 패널이 자동으로 그것을 엽니다. 다른 폴더와 마찬가지로 탐색하고 작업하십시오.</li>
+</ol>
+<h2 id="_2">연결 끊기</h2>
+<p>연결된 공유는 Mac에 마운트된 볼륨으로 나타납니다. 연결을 끊으려면 일반적인 macOS 방식으로 꺼내십시오. 예를 들어 Finder 사이드바에서나 Peach Commander의 드라이브 목록에서 할 수 있습니다.</p>
+<h2 id="_3">단축키</h2>
+<table>
+<thead>
+<tr>
+<th>작업</th>
+<th>단축키</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>네트워크 공유 마운트…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">참고</h2>
+<ul>
+<li>인증(사용자 이름, 암호, "키체인에 기억" 선택)은 표준 macOS 로그인 시트가 처리하므로, 저장된 서버 암호는 Finder에서와 똑같이 작동합니다.</li>
+<li>이해할 수 없는 주소를 입력하면 Peach Commander는 SMB/AFP 주소, Windows 스타일 경로, 또는 <code>server/share</code> 이름을 제공하도록 요청하며, 아무것도 마운트되지 않습니다.</li>
+<li>확인한 후 macOS가 공유를 마운트하는 동안 연결에 잠시 걸릴 수 있습니다. 사용할 수 있게 되는 즉시 패널이 그것으로 전환됩니다.</li>
+<li>이는 네트워크의 공유 드라이브에 연결합니다. 대신 FTP, FTPS, SFTP 서버에 도달하려면 아래 관련 항목을 참조하십시오.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">FTP 및 SFTP 연결</a></li></ul></section>
+</main>
+</body>
+</html>

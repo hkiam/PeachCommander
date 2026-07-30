@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modes d&#x27;affichage et tri</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Modes d&#x27;affichage et tri</h1>
+<p>Chaque panneau peut afficher son dossier dans la disposition qui convient à la tâche : une liste détaillée avec des colonnes, une liste compacte de noms sur plusieurs colonnes, une grille d'icônes, une galerie de grandes vignettes ou une arborescence de dossiers. Vous pouvez aussi trier la liste par nom, extension, taille ou date, choisir exactement quelles colonnes apparaissent, et activer le tri naturel (numérique) pour que les noms comportant des chiffres s'ordonnent comme vous vous y attendez. Le mode d'affichage, l'ordre de tri et les colonnes se règlent par panneau, si bien que les deux côtés peuvent avoir un aspect complètement différent.</p>
+<h2 id="changer-de-mode-daffichage">Changer de mode d'affichage</h2>
+<ol>
+<li>Cliquez sur le panneau que vous souhaitez modifier pour l'activer.</li>
+<li>Ouvrez le menu Affichage et choisissez un mode : <strong>Complet (Détails)</strong> pour la liste à colonnes, <strong>Bref (Colonnes)</strong> pour une liste dense de noms sur plusieurs colonnes, <strong>Icônes</strong> pour une grille d'icônes, <strong>Vignettes (Galerie)</strong> pour de grands aperçus, ou <strong>Arborescence</strong> pour une arborescence de dossiers.</li>
+<li>Pour passer rapidement d'un mode à l'autre sans ouvrir le menu, appuyez sur Cmd+Shift+M. Chaque pression passe au mode suivant.</li>
+</ol>
+<p><img alt="Un panneau montrant les différents modes d'affichage : détails, bref, icônes et galerie" src="images/view-modes.png" />
+<em>(Figure : le même dossier affiché sous forme de liste détaillée, de liste brève à colonnes, de grille d'icônes et de galerie de vignettes.)</em></p>
+<h2 id="trier-la-liste-de-fichiers">Trier la liste de fichiers</h2>
+<ol>
+<li>En vue Détails, cliquez sur un en-tête de colonne (Nom, Ext, Taille ou Date) pour trier selon celui-ci. Une petite flèche dans l'en-tête indique la colonne de tri courante et son sens.</li>
+<li>Cliquez de nouveau sur le même en-tête pour inverser l'ordre.</li>
+<li>Vous pouvez aussi choisir Affichage &gt; Trier par et sélectionner Nom, Extension, Taille, Date ou Non trié.</li>
+</ol>
+<p>Les dossiers sont toujours regroupés en haut, devant les fichiers, et l'entrée <code>..</code> qui vous fait remonter d'un niveau reste épinglée en première position. Le tri par nom ou extension est croissant par défaut (de A à Z) ; le tri par taille ou date affiche par défaut les éléments les plus récents ou les plus volumineux en premier.</p>
+<h2 id="choisir-quelles-colonnes-apparaissent">Choisir quelles colonnes apparaissent</h2>
+<ol>
+<li>Choisissez Configuration &gt; Colonnes….</li>
+<li>Activez ou désactivez des colonnes et définissez leur ordre. Les colonnes disponibles comprennent Nom, Ext, Taille, Date, Attr (attributs), Étiquettes et Commentaire.</li>
+<li>Appliquez vos modifications. Les colonnes affectent la vue Détails du panneau actif.</li>
+</ol>
+<p><img alt="La fenêtre de configuration des colonnes avec la liste des colonnes disponibles" src="images/columns-config.png" />
+<em>(Figure : choisissez quelles colonnes apparaissent dans la vue Détails et définissez leur ordre.)</em></p>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Raccourci</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Faire défiler les modes d'affichage</td>
+<td>Cmd+Shift+M</td>
+</tr>
+<tr>
+<td>Vue Bref (colonnes)</td>
+<td>Ctrl+F1</td>
+</tr>
+<tr>
+<td>Vue Complet (détails)</td>
+<td>Ctrl+F2</td>
+</tr>
+<tr>
+<td>Vue Vignettes (galerie)</td>
+<td>Ctrl+Shift+F1</td>
+</tr>
+<tr>
+<td>Vue Arborescence</td>
+<td>Ctrl+F8</td>
+</tr>
+<tr>
+<td>Trier par nom</td>
+<td>Ctrl+F3</td>
+</tr>
+<tr>
+<td>Trier par extension</td>
+<td>Ctrl+F4</td>
+</tr>
+<tr>
+<td>Trier par taille</td>
+<td>Ctrl+F5</td>
+</tr>
+<tr>
+<td>Trier par date</td>
+<td>Ctrl+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="astuces">Astuces</h2>
+<ul>
+<li>Le tri naturel (numérique) est activé par défaut, si bien que <code>file2</code> vient avant <code>file10</code> plutôt qu'après. Vous pouvez le désactiver dans Configuration &gt; Options, dans les réglages d'affichage.</li>
+<li>Vous pouvez élargir ou rétrécir une colonne en vue Détails en faisant glisser la séparation entre les en-têtes de colonnes.</li>
+<li>Le mode d'affichage, l'ordre de tri et le choix des colonnes sont mémorisés par panneau : vous pouvez ainsi garder un côté sous forme de liste détaillée et l'autre sous forme de galerie de photos.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="panels-and-tabs.html">Onglets</a></li><li><a href="quick-search-and-filter.html">Recherche rapide et filtre</a></li></ul></section>
+</main>
+</body>
+</html>

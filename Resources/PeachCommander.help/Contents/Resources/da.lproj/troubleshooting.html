@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fejlfinding</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Fejlfinding</h1>
+<p>Dette emne dækker de problemer, folk oftest støder på: macOS der blokerer adgang til visse mapper, en mappe der ser ud til at sidde fast på gammelt indhold, en sikker FTP-server der nægter at oprette forbindelse, og pakning til RAR. Hvert afsnit fortæller dig, hvad der sker, og hvordan du løser det.</p>
+<h2 id="macos-beder-om-tilladelse-eller-mapper-ser-tomme-ud">macOS beder om tilladelse, eller mapper ser tomme ud</h2>
+<p>Nogle placeringer — såsom din <code>~/Library</code>-mappe, andre brugeres mapper og systemområder — er beskyttet af macOS og forbliver skjult, indtil du giver adgang. Peach Commander opdager, når dette sker, og tilbyder at vejlede dig til den rigtige indstilling.</p>
+<ol>
+<li>Når du bliver bedt om det, vælg at åbne Systemindstillinger, eller åbn det selv.</li>
+<li>Gå til Anonymitet og sikkerhed, derefter Fuld diskadgang.</li>
+<li>Slå kontakten til ved siden af Peach Commander. Hvis den ikke er på listen, brug Tilføj-knappen for at tilføje den.</li>
+<li>Afslut og genåbn Peach Commander, så den nye tilladelse træder i kraft.</li>
+</ol>
+<p>Peach Commander kører ikke inde i en begrænset sandkasse, så når fuld diskadgang er givet, kan den gennemse og håndtere filer præcis som Finder.</p>
+<h2 id="en-mappe-viser-ikke-nylige-ndringer">En mappe viser ikke nylige ændringer</h2>
+<p>Paneler opdaterer normalt sig selv, når filer ændres på disken. Hvis en mappe blev ændret af et andet program, er på et netværksdiskområde, eller bare ser forældet ud, opdater den manuelt.</p>
+<ol>
+<li>Klik på det panel, du vil opdatere.</li>
+<li>Tryk på F2 (eller Ctrl+R) for at genlæse den mappe.</li>
+</ol>
+<p>Netværks- og monterede diskområder rapporterer ikke altid ændringer til macOS, så en manuel opdatering er den pålidelige løsning der.</p>
+<h2 id="en-ftps-server-vil-ikke-oprette-forbindelse">En FTPS-server vil ikke oprette forbindelse</h2>
+<p>Hvis en sikker FTP-forbindelse mislykkes, tjek disse indstillinger i forbindelsesdetaljerne:</p>
+<ul>
+<li>Match serverens sikkerhedstilstand: eksplicit FTPS (AUTH TLS) kontra implicit FTPS (port 990) er ikke udskiftelige.</li>
+<li>Hvis forbindelsen går i stå efter login, skift mellem passiv og aktiv overførselstilstand — de fleste servere bag en firewall har brug for passiv.</li>
+<li>Hvis serveren bruger et selvsigneret certifikat, skal du eksplicit tillade det; ellers afvises forbindelsen.</li>
+<li>Bekræft vært, port, brugernavn og adgangskode, og om en SOCKS5-proxy er påkrævet på dit netværk.</li>
+</ul>
+<h2 id="pakning-til-rar-gr-ingenting">Pakning til RAR gør ingenting</h2>
+<p>Peach Commander kan oprette ZIP-, 7z-, TAR-, TAR.GZ-, BZ2- og XZ-arkiver på egen hånd. RAR er anderledes: fordi RAR er et proprietært format, kræver oprettelse af RAR-arkiver et separat RAR-kommandolinjeværktøj installeret på din Mac. Uden det er RAR utilgængeligt, når du pakker filer (Option+F5). For at læse eksisterende RAR-arkiver kan du stadig åbne dem som en mappe. Hvis du ikke specifikt har brug for RAR, vælg i stedet ZIP eller 7z — begge understøtter stærk AES-256-kryptering og opdelte diskområder.</p>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Genvej</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Opdater den aktive mappe</td>
+<td>F2 eller Ctrl+R</td>
+</tr>
+<tr>
+<td>Opret forbindelse til en FTP/FTPS-server</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Montér et netværksshare</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>Pak de valgte filer</td>
+<td>Option+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Adgangskoder og andre loginoplysninger gemmes kun i macOS-nøgleringen, aldrig i klartekst-konfigurationsfiler.</li>
+<li>At montere et netværksshare (Cmd+K, eller Netværk-menuen ▸ Montér netværksshare…) bruger den samme forbindelse, macOS selv bruger, så det vil også dukke op i Finder.</li>
+<li>Hvis et problem vedvarer efter en opdatering og en genstart, kan det være en kendt begrænsning snarere end en fejl — se Kendte begrænsninger.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">Anonymitet og sikkerhed</a></li><li><a href="known-limitations.html">Kendte begrænsninger</a></li></ul></section>
+</main>
+</body>
+</html>

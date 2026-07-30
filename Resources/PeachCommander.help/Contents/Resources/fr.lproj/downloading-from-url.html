@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Télécharger depuis une URL</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Télécharger depuis une URL</h1>
+<p>Peach Commander peut récupérer un fichier directement depuis une adresse web HTTP ou HTTPS vers le panneau actif, sans ouvrir de navigateur. Collez un lien, confirmez le nom sous lequel il sera enregistré, et le téléchargement se déroule tout seul — avec reprise si la connexion tombe, téléchargements par lots pour plusieurs liens à la fois, et vérification facultative de la somme de contrôle pour que vous sachiez que le fichier est arrivé intact.</p>
+<h2 id="telecharger-un-fichier">Télécharger un fichier</h2>
+<ol>
+<li>Ouvrez le dossier du panneau où vous voulez que le fichier arrive.</li>
+<li>Choisissez <strong>Réseau &gt; Télécharger depuis une URL</strong>, ou appuyez sur Cmd+Maj+D.</li>
+<li>Collez l'adresse web dans le champ <strong>URL(s)</strong>. Si vous avez copié un lien au préalable, il est renseigné pour vous.</li>
+<li>Vérifiez le nom <strong>Enregistrer sous</strong> — il est suggéré à partir du lien et vous pouvez le modifier librement.</li>
+<li>Cliquez sur <strong>Télécharger</strong>.</li>
+</ol>
+<p><img alt="Le dialogue Télécharger depuis une URL avec un lien, un nom de fichier modifiable et des options" src="images/download-url.png" />
+<em>(Figure : le dialogue de téléchargement — collez un lien, modifiez le nom et réglez la vérification, les identifiants, les en-têtes ou un proxy facultatifs.)</em></p>
+<p>Par défaut, le téléchargement s'exécute <strong>en arrière-plan</strong>, vous pouvez donc continuer à travailler dans les panneaux pendant le transfert. Désactivez <strong>Télécharger en arrière-plan</strong> pour l'attendre, ou activez <strong>Mettre en file pour plus tard</strong> pour le configurer sans le démarrer encore.</p>
+<h2 id="telecharger-plusieurs-fichiers-a-la-fois">Télécharger plusieurs fichiers à la fois</h2>
+<p>Collez une adresse web par ligne dans le champ <strong>URL(s)</strong>. Lorsque plusieurs liens sont présents, le nom de chaque fichier est dérivé automatiquement de son lien, et les champs <strong>Enregistrer sous</strong> et <strong>Vérifier</strong> par fichier sont désactivés.</p>
+<h2 id="reprendre-un-telechargement-interrompu">Reprendre un téléchargement interrompu</h2>
+<p>Si un transfert est coupé, Peach Commander conserve ce qu'il a déjà reçu dans un fichier temporaire <code>.part</code>. Relancer le même téléchargement reprend là où il s'est arrêté chaque fois que le serveur le prend en charge, plutôt que de recommencer. Le fichier <code>.part</code> est renommé au nom final seulement une fois le téléchargement terminé avec succès.</p>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Raccourci</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Télécharger depuis une URL</td>
+<td>Cmd+Maj+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="astuces">Astuces</h2>
+<ul>
+<li><strong>Vérifiez le fichier.</strong> Pour un téléchargement unique, collez une somme de contrôle <strong>SHA-256</strong> attendue dans le champ <strong>Vérifier</strong>. Après le transfert, la somme de contrôle du fichier est comparée à celle-ci pour que vous puissiez avoir confiance que le fichier correspond à ce que l'éditeur a indiqué.</li>
+<li><strong>Connexion requise ?</strong> Saisissez un nom d'utilisateur et un mot de passe dans les champs <strong>Auth</strong> pour les sites utilisant l'authentification basique. Pour un accès par jeton, ajoutez une ligne <code>Authorization: Bearer …</code> dans le champ <strong>En-têtes</strong>.</li>
+<li><strong>En-têtes personnalisés.</strong> Ajoutez un en-tête par ligne dans le champ <strong>En-têtes</strong>, par exemple <code>Referer: …</code> ou <code>Cookie: …</code>, pour les liens qui ne fonctionnent qu'avec des en-têtes de requête spécifiques.</li>
+<li><strong>Proxy.</strong> Acheminez le téléchargement par un proxy HTTP ou SOCKS5 en renseignant l'hôte, le port et le type du <strong>Proxy</strong>.</li>
+<li><strong>Certificats non fiables.</strong> N'activez <strong>Autoriser un certificat non fiable</strong> que pour un site de confiance utilisant un certificat auto-signé ; cela désactive le contrôle de sécurité HTTPS normal pour ce téléchargement.</li>
+<li><strong>Remarque :</strong> Cmd+Maj+D est aussi utilisé ailleurs pour aller au dossier Bureau ; si le raccourci n'ouvre pas ce dialogue, utilisez plutôt <strong>Réseau &gt; Télécharger depuis une URL</strong> dans le menu.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Se connecter en FTP et SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

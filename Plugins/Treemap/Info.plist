@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string>Treemap</string>
+	<key>CFBundleName</key>
+	<string>Treemap</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>PCContributions</key>
+	<dict>
+		<key>commands</key>
+		<array>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.treemap.analyze</string>
+				<key>title</key>
+				<string>Disk Map: Analyze Current Folder</string>
+			</dict>
+		</array>
+		<key>menus</key>
+		<array>
+			<dict>
+				<key>command</key>
+				<string>plugin.treemap.analyze</string>
+				<key>group</key>
+				<string>5_diskmap</string>
+				<key>menu</key>
+				<string>Commands</string>
+				<key>order</key>
+				<integer>120</integer>
+			</dict>
+		</array>
+		<key>views</key>
+		<array>
+			<dict>
+				<key>container</key>
+				<string>sidebar</string>
+				<key>id</key>
+				<string>plugin.treemap.view</string>
+				<key>title</key>
+				<string>Disk Map</string>
+				<key>when</key>
+				<string>diskMapActive</string>
+			</dict>
+			<dict>
+				<key>container</key>
+				<string>settings</string>
+				<key>id</key>
+				<string>plugin.treemap.settings</string>
+				<key>title</key>
+				<string>Disk Map</string>
+			</dict>
+		</array>
+	</dict>
+	<key>PCPluginAPIVersion</key>
+	<integer>1</integer>
+	<key>PCPluginMinHostVersion</key>
+	<integer>1</integer>
+	<key>PCPluginName</key>
+	<string>Disk Map</string>
+	<key>PCPluginType</key>
+	<string>ptx</string>
+</dict>
+</plist>

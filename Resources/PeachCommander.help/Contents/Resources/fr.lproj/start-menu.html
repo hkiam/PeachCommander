@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le menu Démarrer et les commandes personnalisées</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Le menu Démarrer et les commandes personnalisées</h1>
+<p>Le menu <strong>Démarrer</strong> est votre propre menu personnel, situé dans la barre de menus à côté de Fichier, Édition et les autres. Il contient des commandes que vous définissez vous-même, de sorte que les actions que vous utilisez le plus souvent sont toujours à un clic. Dans la tradition des gestionnaires de fichiers classiques à deux panneaux, chaque entrée peut exécuter une commande intégrée, lancer un programme ou une application externe, ou sauter directement à un dossier. Peach Commander est livré avec le menu Démarrer vide et prêt à être rempli.</p>
+<h2 id="comment-ajouter-vos-propres-commandes">Comment ajouter vos propres commandes</h2>
+<ol>
+<li>Choisissez <strong>Démarrer &gt; Modifier le menu Démarrer…</strong>. Peach Commander ouvre votre fichier de commandes utilisateur (le créant avec un exemple commenté la première fois).</li>
+<li>Ajoutez une section par commande. Chaque section commence par un nom entre crochets, puis quelques clés simples :
+   - <strong>cmd</strong> — ce qu'il faut exécuter : un chemin de programme, une application, une commande intégrée <code>cm_</code>, ou une autre de vos commandes.
+   - <strong>param</strong> — paramètres passés à un programme. Les caractères de remplacement sont remplis à l'exécution de la commande : <code>%P</code> (dossier source), <code>%N</code> (fichier courant), <code>%T</code> (dossier de l'autre panneau), <code>%M</code> (fichier de l'autre panneau), <code>%S</code> (fichiers sélectionnés).
+   - <strong>path</strong> — le dossier de démarrage (par défaut, le dossier courant).
+   - <strong>menu</strong> — le titre affiché dans le menu Démarrer.
+   - <strong>key</strong> — un raccourci facultatif, p. ex. <code>C+S+B</code>.</li>
+<li>Enregistrez le fichier. Le menu Démarrer se met à jour tout seul la prochaine fois que Peach Commander devient actif, de sorte que vos nouvelles entrées apparaissent aussitôt.</li>
+</ol>
+<h2 id="astuces">Astuces</h2>
+<ul>
+<li>Pour ouvrir le dossier courant dans Terminal, définissez <strong>cmd</strong> sur <code>open</code>, <strong>param</strong> sur <code>-a Terminal %P</code> et <strong>menu</strong> sur <code>Ouvrir le Terminal ici</code>.</li>
+<li>Pointez <strong>cmd</strong> sur une commande <code>cm_</code> pour donner à une action intégrée sa propre entrée de menu Démarrer et son raccourci.</li>
+<li>L'ordre dans le fichier est l'ordre dans le menu, alors placez vos commandes les plus utilisées en haut.</li>
+</ul>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>Vous pouvez aussi remplacer toute la barre de menus par la vôtre. Choisissez <strong>Configuration &gt; Modifier le fichier de menu…</strong> pour ouvrir un fichier de menu initialisé à partir du menu intégré actuel, entièrement localisé ; modifiez-le librement et vos changements s'appliquent la prochaine fois que l'application est activée. Supprimez le fichier pour rétablir la barre de menus standard.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">La barre de boutons</a></li><li><a href="keyboard-shortcuts.html">Clavier et raccourcis</a></li></ul></section>
+</main>
+</body>
+</html>

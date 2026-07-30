@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Einstellungen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Einstellungen</h1>
+<p>Im Einstellungsfenster passen Sie Peach Commander an Ihre Arbeitsweise an: welche Leisten erscheinen, wie Dateien angezeigt werden, wie sich Kopier- und Löschvorgänge verhalten, welches Archivformat beim Packen verwendet wird, das Verhalten der Tabs, die FTP-Standardwerte, die Anzeigesprache und mehr. Die Einstellungen sind in Seiten gruppiert, damit Sie eine Option schnell finden, und jede Änderung wird automatisch in Ihrem persönlichen Konfigurationsordner gespeichert.</p>
+<h2 id="einstellungen-offnen">Einstellungen öffnen</h2>
+<ol>
+<li>Wählen Sie <strong>Peach Commander &gt; Einstellungen…</strong> oder drücken Sie Cmd+, (Komma).</li>
+<li>Sie können dasselbe Fenster auch über <strong>Konfiguration &gt; Optionen…</strong> öffnen.</li>
+<li>Wählen Sie eine Seite aus der Liste auf der linken Seite; die Optionen dieser Seite erscheinen rechts.</li>
+<li>Passen Sie die Steuerelemente an. Änderungen werden sofort wirksam, sofern ein Hinweis auf der Seite nichts anderes angibt.</li>
+</ol>
+<p><img alt="Das Einstellungsfenster mit der Seite Layout und Kontrollkästchen für die Oberflächenleisten" src="images/settings-layout.png" />
+<em>(Abbildung: Auf der Seite Layout legen Sie fest, welche Leisten rund um die Panels angezeigt werden.)</em></p>
+<h2 id="die-seiten">Die Seiten</h2>
+<p>Das Fenster enthält diese Seiten, in dieser Reihenfolge:</p>
+<ul>
+<li><strong>Layout</strong> — Laufwerksleiste, Tab-Leiste, Pfadleiste und Statusleiste ein- oder ausblenden.</li>
+<li><strong>Anzeige</strong> — wie Dateien und Ordner aufgelistet werden, einschließlich des Datumsformats.</li>
+<li><strong>Symbole</strong> — Erscheinungsbild der Symbole in den Dateilisten.</li>
+<li><strong>Bedienung</strong> — allgemeines Verhalten, etwa was geschieht, wenn Sie in einem Panel tippen (Schnellsuche versus Befehlszeile).</li>
+<li><strong>Farben</strong> — benutzerdefinierte Panel-Farben, oder dem aktuellen Thema folgen lassen.</li>
+<li><strong>Bestätigung</strong> — welche Aktionen zuerst eine Bestätigung verlangen, etwa das Löschen.</li>
+<li><strong>Bearbeiten/Ansehen</strong> — die Programme zum Bearbeiten und Ansehen von Dateien sowie die Zuordnungen pro Dateityp.</li>
+<li><strong>Kopieren/Löschen</strong> — Dateimetadaten bewahren, schnelles Klonen verwenden, nur neuere Dateien kopieren, nach dem Kopieren überprüfen, Löschungen in den Papierkorb legen und ein optionales Geschwindigkeitslimit festlegen.</li>
+<li><strong>Zip/Packer</strong> — das Standard-Archivformat und die Kompressionsstufe, die beim Packen verwendet werden.</li>
+<li><strong>Plugins</strong> — installierte Plugins ein- oder ausschalten.</li>
+<li><strong>Tabs</strong> — wie sich Ordner-Tabs öffnen und verhalten.</li>
+<li><strong>FTP</strong> — Netzwerk-Standardwerte wie das Keep-Alive-Intervall.</li>
+<li><strong>Tastatur</strong> — Tastenkürzel überprüfen und ändern.</li>
+<li><strong>Sprache</strong> — Systemstandard, English oder Deutsch wählen.</li>
+<li><strong>KI</strong> — den KI-Assistenten konfigurieren: bevorzugtes Modell, Cloud-Endpunkt und Schlüssel, Autonomie sowie der optionale MCP-Server (siehe <a href="ai-assistant.md">KI-Assistent</a>).</li>
+<li><strong>Sonstiges</strong> — Ihren Konfigurationsordner im Finder öffnen.</li>
+</ul>
+<p>Aktivierte Plugins können nach den integrierten Seiten eigene Seiten hinzufügen — zum Beispiel <strong>Disk Map</strong> und <strong>System Monitor</strong> —, sodass ihre Optionen im selben Fenster liegen (siehe <a href="plugins.md">Plugins</a>).</p>
+<p><img alt="Das Einstellungsfenster mit den Optionen der Seite Anzeige dazu, wie Dateien aufgelistet werden" src="images/settings-display.png" />
+<em>(Abbildung: Auf der Seite Anzeige legen Sie fest, wie Dateien und Ordner aufgelistet werden.)</em></p>
+<p><img alt="Das Einstellungsfenster mit der Seite Bedienung" src="images/settings-operation.png" />
+<em>(Abbildung: Die Seite Bedienung steuert das Verhalten von Schnellsuche und Maus.)</em></p>
+<h2 id="wo-ihre-einstellungen-gespeichert-werden">Wo Ihre Einstellungen gespeichert werden</h2>
+<p>Ihre Konfiguration wird in einfachen Textdateien in Ihrem persönlichen Application-Support-Ordner unter <code>~/Library/Application Support/PeachCommander</code> aufbewahrt. Um ihn zu öffnen, gehen Sie zur Seite <strong>Sonstiges</strong> und klicken Sie auf <strong>Konfigurationsordner öffnen</strong>. Gespeicherte FTP-Passwörter werden nicht in diesen Dateien abgelegt; sie werden sicher im macOS-Schlüsselbund aufbewahrt.</p>
+<p>Einstellungen werden geschrieben, während Sie sie ändern. Sie können jederzeit auch ein Speichern erzwingen mit <strong>Konfiguration &gt; Einstellungen sichern</strong> und die aktuelle Fensterposition und das Panel-Layout mit <strong>Konfiguration &gt; Position sichern</strong> ablegen.</p>
+<h2 id="einstellungen-aus-total-commander-ubernehmen">Einstellungen aus Total Commander übernehmen</h2>
+<p>Wenn Sie von Total Commander unter Windows umsteigen, können Sie Ihre gespeicherten FTP-Sites importieren. Wählen Sie <strong>Konfiguration &gt; wincmd.ini importieren…</strong> und wählen Sie Ihre Total-Commander-FTP-Konfigurationsdatei aus. Ihre Verbindungen werden in Peach Commander in derselben Reihenfolge hinzugefügt, in der sie dort erschienen.</p>
+<h2 id="tastenkurzel">Tastenkürzel</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Kürzel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Einstellungen öffnen</td>
+<td>Cmd+,</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Die Seite <strong>Sprache</strong> bietet Systemstandard, English und Deutsch. Eine Sprachänderung wird erst nach einem Neustart von Peach Commander wirksam.</li>
+<li>Auf der Seite <strong>Farben</strong> festgelegte Farben überschreiben das Thema; verwenden Sie dort <strong>Auf Standard zurücksetzen</strong>, um zu den Farben des Themas zurückzukehren.</li>
+<li>Peach Commander speichert seine Einstellungen nur in seinem eigenen Konfigurationsordner, sodass Ihre Änderungen niemals andere Apps betreffen und sich leicht sichern lassen, indem Sie diesen Ordner kopieren.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="appearance.html">Erscheinungsbild</a></li><li><a href="keyboard-shortcuts.html">Tastatur &amp; Kurzbefehle</a></li></ul></section>
+</main>
+</body>
+</html>

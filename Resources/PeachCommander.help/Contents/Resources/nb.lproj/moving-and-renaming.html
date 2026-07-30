@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flytte og gi nytt navn</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Flytte og gi nytt navn</h1>
+<p>Flytting flytter filer og mapper i stedet for å duplisere dem, og det å gi nytt navn endrer navnene deres uten å røre innholdet. Fordi Peach Commander viser to paneler side om side, er flytting bare et spørsmål om å velge det du vil ha i det ene panelet og sende det til mappen som er åpen i det andre. Du kan også gi et element nytt navn på stedet, eller gi flyttede elementer nye navn underveis ved hjelp av en jokertegnmaske.</p>
+<h2 id="flytt-filer-til-det-andre-panelet">Flytt filer til det andre panelet</h2>
+<ol>
+<li>I kildepanelet åpner du mappen som inneholder elementene du vil flytte, og åpner målmappen i det andre panelet.</li>
+<li>Merk filen eller mappen du vil flytte. For å flytte flere samtidig, merk dem alle først (se <em>Merke filer</em>).</li>
+<li>Trykk F6, eller velg <strong>Filer &gt; Flytt</strong>.</li>
+<li>Kontroller målmappen som vises i dialogen og klikk <strong>OK</strong> (eller trykk Return) for å starte flyttingen.</li>
+</ol>
+<p><img alt="Flyttedialogen som viser målstifeltet, alternativer og en avmerkingsboks for kø" src="images/copy-dialog.png" />
+<em>(Figur: Flyttedialogen bruker samme målfelt som kopiering — skriv inn en sti, eller legg til en jokertegnmaske for å gi nytt navn mens du flytter.)</em></p>
+<p>Flyttinger på samme disk skjer nesten øyeblikkelig. Når målet er på en annen disk, kopierer Peach Commander elementene og fjerner deretter originalene først etter at hver fil har kommet trygt frem.</p>
+<h2 id="gi-nytt-navn-pa-stedet">Gi nytt navn på stedet</h2>
+<ol>
+<li>Merk én enkelt fil eller mappe.</li>
+<li>Trykk Shift+F6, eller velg <strong>Filer &gt; Gi nytt navn</strong>.</li>
+<li>Rediger navnet direkte i panelet, og trykk deretter Return for å bekrefte eller Esc for å avbryte.</li>
+</ol>
+<h2 id="gi-nytt-navn-mens-du-flytter">Gi nytt navn mens du flytter</h2>
+<p>Målfeltet i flyttedialogen godtar en jokertegnmaske, slik at du kan gi elementer nytt navn mens de flyttes:</p>
+<ol>
+<li>Merk elementene og trykk F6.</li>
+<li>I målfeltet legger du til en navnemaske etter målmappen, for eksempel <code>/Users/du/Archive/*_backup.*</code>.</li>
+<li><code>*</code> står for det opprinnelige navnet og <code>.*</code> for den opprinnelige filendelsen. Bekreft for å flytte og gi nytt navn i ett steg.</li>
+</ol>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flytt til det andre panelet</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Gi nytt navn på stedet</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Flyttedialogen tilbyr den samme alternativknappen og avmerkingsboksen for bakgrunnskø som kopiering, så du kan sette store flyttinger i kø og la dem kjøre i bakgrunnen.</li>
+<li>Flytting innenfor samme disk er en rask operasjon på stedet, så den er trygg for svært store mapper. En flytting på tvers av disker tar lengre tid fordi dataene kopieres først, og deretter slettes kilden.</li>
+<li>For å gi mange filer nytt navn samtidig med nummerering, søk-og-erstatt eller mønstre, bruk Verktøy for flernavning i stedet (se <em>Flernavning</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiere filer</a></li><li><a href="multi-rename.html">Gi mange filer nytt navn</a></li></ul></section>
+</main>
+</body>
+</html>

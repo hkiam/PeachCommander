@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finne filer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Finne filer</h1>
+<p>Når du trenger å spore opp filer hvor som helst på Macen din — etter navn, etter hva de inneholder, eller etter størrelse og dato — bruk Finn filer-vinduet. Det søker i én eller flere mapper (og undermappene deres), kan se inni tekstfiler og arkiver, og lar deg sende alt det finner rett inn i et panel slik at du kan handle på resultatene som om de var en vanlig mappe.</p>
+<h2 id="finn-filer-etter-navn">Finn filer etter navn</h2>
+<ol>
+<li>I panelet som viser mappen du vil søke i, velg <strong>Kommandoer &gt; Finn filer…</strong> (eller trykk Cmd+Shift+F).</li>
+<li>På <strong>Generelt</strong>-fanen skriver du et navnemønster i <strong>Søk etter</strong>. Du kan bruke jokertegn som <code>*.pdf</code> eller <code>report_*.docx</code>. For å søke i flere mapper samtidig, list dem opp i startmappefeltet atskilt med et semikolon (<code>;</code>).</li>
+<li>Klikk <strong>Start</strong>. Treff vises i resultatlisten nedenfor etter hvert som de blir funnet.</li>
+<li>Dobbeltklikk på et resultat for å hoppe til den filen i det aktive panelet, eller merk et resultat og klikk <strong>Vis</strong> (F3) for å åpne det i den innebygde visningen.</li>
+</ol>
+<p><img alt="Finn filer-vinduet på Generelt-fanen, som viser navnemønsteret, mappen og resultatlisten" src="images/find-files-general.png" />
+<em>(Figur: Generelt-fanen — søk etter navnemønster på tvers av én eller flere mapper.)</em></p>
+<h2 id="sk-etter-innhold-strrelse-og-dato">Søk etter innhold, størrelse og dato</h2>
+<ol>
+<li>For å søke inni filer, velg <strong>Finn tekst</strong> på Generelt-fanen og skriv teksten du vil lete etter. Alternativer lar deg gjøre den <strong>Skiller mellom store og små bokstaver</strong>, samsvare bare med et <strong>Helt ord</strong>, behandle teksten som et <strong>Regulært uttrykk</strong>, gjøre et <strong>Heksadesimalt innholdssøk</strong>, eller finne filer som <strong>Ikke inneholder</strong> teksten.</li>
+<li>Bytt til <strong>Avansert</strong>-fanen for å snevre inn resultatene etter <strong>Størrelse</strong> (for eksempel <code>10K</code> til <code>5M</code>), etter <strong>endret dato</strong>-område, eller til filer som er endret de siste N dagene.</li>
+<li>Slå på <strong>Søk inni arkiver</strong> for å se i zip-familiens arkiver (zip, jar, war og lignende).</li>
+<li>For å begrense søket til det du allerede har valgt, slå på <strong>Søk bare i merkede elementer</strong> før du starter.</li>
+</ol>
+<p><img alt="Finn filer-vinduet på Avansert-fanen, som viser størrelse- og datofiltre" src="images/find-files-advanced.png" />
+<em>(Figur: Avansert-fanen — filtrer etter størrelse, dato og andre attributter.)</em></p>
+<p>Hvis du har programtillegg som legger til innholdsfelter (som bildedimensjoner), lar <strong>Programtillegg</strong>-fanen deg kreve at et felt samsvarer med en betingelse — for eksempel bare bilder bredere enn 1000 piksler.</p>
+<p><img alt="Finn filer-vinduet på Programtillegg-fanen, som viser en betingelse for et innholdsfelt" src="images/find-files-plugins.png" />
+<em>(Figur: Programtillegg-fanen — samsvar på innholdsfelter levert av programtillegg.)</em></p>
+<h2 id="raske-sk-med-spotlight">Raske søk med Spotlight</h2>
+<p>For lokale mapper som macOS allerede har indeksert, slå på <strong>Bruk Spotlight</strong> på Generelt-fanen for nesten øyeblikkelige resultater. Spotlight søker i indeksen i stedet for å skanne filer, så det ignorerer regulære uttrykk, dybdegrenser for undermapper og omfanget bare-merkede.</p>
+<h2 id="gjenbruk-og-overlever-resultatene-dine">Gjenbruk og overlever resultatene dine</h2>
+<ul>
+<li><strong>Send til liste</strong> plasserer hvert resultat i det aktive panelet som en midlertidig liste, slik at du kan kopiere, flytte eller slette hele settet på én gang.</li>
+<li>På <strong>Last inn / Lagre</strong>-fanen velger du <strong>Lagre som mal…</strong> for å lagre det gjeldende søket (mønstre og alternativer) og velge det igjen senere fra mal-listen.</li>
+</ul>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Åpne Finn filer</td>
+<td>Cmd+Shift+F eller Option+F7</td>
+</tr>
+<tr>
+<td>Start / stopp søket</td>
+<td>Start-knappen i vinduet</td>
+</tr>
+<tr>
+<td>Vis det merkede resultatet</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Innholdssøk leser hele filer for lokale mapper; på andre plasseringer hoppes svært store filer over (omtrent 16 MB, eller 64 MB når du bruker et regulært uttrykk).</li>
+<li>Søk inni arkiver stiger ned opptil fire nivåer av nestede arkiver.</li>
+<li><strong>Inkluder mapper i resultatene</strong> lister også opp mapper hvis navn samsvarer, ikke bare filer.</li>
+<li>Spotlight dekker bare indekserte lokale mapper; for nettverksplasseringer eller mønsterbasert samsvar, la det være av og la Finn filer skanne.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">Merke filer</a></li><li><a href="quick-search-and-filter.html">Hurtigsøk og filter</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy e sicurezza</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Privacy e sicurezza</h1>
+<p>Peach Commander è costruito per restare fuori dai piedi e mantenere i tuoi dati sul tuo Mac. Le password vengono affidate al portachiavi macOS, le informazioni sugli arresti anomali non lasciano mai il tuo computer senza il tuo consenso, e l'app non raccoglie alcuna analisi di utilizzo. Questo argomento spiega dove risiedono le tue informazioni sensibili e come concedere l'unica autorizzazione di sistema di cui un gestore di file ha bisogno per svolgere il suo lavoro.</p>
+<h2 id="dove-sono-conservate-le-password">Dove sono conservate le password</h2>
+<p>Qualsiasi password o passphrase di chiave che salvi — per una connessione FTP o SFTP, o per aprire un archivio protetto da password — viene scritta nel <strong>portachiavi</strong> macOS, lo stesso archivio sicuro che il sistema usa per i tuoi accessi Wi-Fi e ai siti web. Le password non vengono mai scritte nelle impostazioni o nei file di connessione di Peach Commander in chiaro.</p>
+<ol>
+<li>Quando salvi una password di connessione o di archivio, scegli l'opzione per ricordarla.</li>
+<li>La password è conservata nel tuo portachiavi di accesso, protetto dal tuo account.</li>
+<li>Per rivedere o rimuovere una password salvata più tardi, apri l'app <strong>Accesso Portachiavi</strong> (in Applicazioni ▸ Utility) e cerca il nome della connessione.</li>
+</ol>
+<h2 id="concedi-laccesso-completo-al-disco">Concedi l'Accesso completo al disco</h2>
+<p>macOS mantiene alcune posizioni private — i dati di Mail, Messaggi e altre app dentro la tua cartella Libreria — finché non consenti esplicitamente l'accesso. Poiché un gestore di file è pensato per raggiungere ogni file, Peach Commander richiede l'<strong>Accesso completo al disco</strong>. L'app continua a funzionare con accesso ridotto finché non glielo concedi; semplicemente non vedrai quelle cartelle protette.</p>
+<ol>
+<li>Scegli <strong>Comandi ▸ Accesso completo al disco…</strong>, o fai clic su <strong>Apri Impostazioni di Sistema</strong> quando l'app si offre di guidarti all'avvio.</li>
+<li>In <strong>Impostazioni di Sistema ▸ Privacy e sicurezza ▸ Accesso completo al disco</strong>, attiva l'interruttore accanto a Peach Commander.</li>
+<li>Riavvia l'app se richiesto.</li>
+</ol>
+<h2 id="i-rapporti-di-arresto-anomalo-restano-locali">I rapporti di arresto anomalo restano locali</h2>
+<p>Se l'app si chiude in modo inatteso, macOS scrive un rapporto di arresto anomalo nella tua cartella di diagnostica. Al lancio successivo Peach Commander lo nota e si offre di aiutarti a inviare una segnalazione di bug — ma solo con il tuo consenso.</p>
+<ul>
+<li>Puoi <strong>Mostra nel Finder</strong> per vedere il rapporto, o <strong>Copia rapporto negli appunti</strong> per incollarlo tu stesso in una segnalazione di bug.</li>
+<li>Nulla viene mai trasmesso automaticamente, e non è coinvolto alcun servizio di terze parti per la segnalazione degli arresti anomali.</li>
+</ul>
+<h2 id="note">Note</h2>
+<ul>
+<li><strong>Nessuna telemetria.</strong> Peach Commander non traccia la tua attività né invia analisi di utilizzo da nessuna parte.</li>
+<li><strong>L'accesso ridotto è sicuro.</strong> Se salti l'Accesso completo al disco, l'app sfoglia e gestisce comunque i file che normalmente puoi vedere; sono nascoste solo le posizioni protette dal sistema.</li>
+<li><strong>Tu controlli le password salvate.</strong> Poiché le credenziali risiedono nel portachiavi, le gestisci e le revochi con gli strumenti standard di macOS invece che dentro l'app.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Connessione a FTP e SFTP</a></li><li><a href="troubleshooting.html">Risoluzione dei problemi</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plugins</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Plugins</h1>
+<p>Plugins udvider Peach Commander med ekstra værktøjer, filformater og steder at gennemse. Et dusin plugins er indbygget, så du kan begynde at bruge dem med det samme, og du kan slå enkelte plugins til eller fra — eller installere nye — fra ét enkelt vindue. Brug plugins, når du vil have muligheder ud over daglig kopiering og gennemsyn: visualisere hvad der fylder en disk, oprette forbindelse til en WebDAV-server, tjekke tilstanden af et Git-lager, holde øje med systemaktivitet og mere.</p>
+<p>Plugins findes i nogle få varianter: nogle tilføjer et <strong>panel eller en sidebjælke</strong> (en visning), nogle tilføjer <strong>kolonner</strong> til fillisten, nogle tilføjer et <strong>sted, du navigerer ind i</strong> som et drev, og nogle lærer appen et nyt <strong>arkivformat</strong>. Hvert aktiveres uafhængigt.</p>
+<h2 id="hvad-de-indbyggede-plugins-tilfjer">Hvad de indbyggede plugins tilføjer</h2>
+<p>Flere plugins har deres eget detaljerede hjælpeemne — følg linket for hele historien:</p>
+<ul>
+<li><strong><a href="disk-map.md">Disk Map</a></strong> — visualiserer hvad der fylder en mappe eller et diskområde som et trækort eller en solstråle, afstemt mod ledig, rensbar og skjult plads, med en oprydningssamler.</li>
+<li><strong><a href="ai-assistant.md">AI Assistant</a></strong> — en valgfri assistent, der kan fjernes, og som opsummerer, omdøber, oversætter, tabellerer og organiserer filer i almindeligt sprog, på enheden eller via en skymodel.</li>
+<li><strong><a href="git.md">Git</a></strong> — viser hver fils status i arbejdstræet og den aktuelle gren som panelkolonner, og tilføjer en <strong>Git</strong>-menu til status, stage, commit, pull og push.</li>
+<li><strong><a href="system-monitor.md">System Monitor</a></strong> — en live aflæsning af CPU, hukommelse, disk, netværk (og, hvor tilgængeligt, GPU, batteri, sensorer) i vinduets titellinje, med detaljegrafer man kan klikke sig ind på.</li>
+<li><strong><a href="task-manager.md">Task Manager</a></strong> — monterer dine kørende processer som et drev <strong>TaskManager</strong>, der kan gennemses; sortér dem, granske dem som filer, eller afslut dem med Slet.</li>
+<li><strong><a href="uninstaller.md">Uninstaller</a></strong> — fjerner et program <strong>og</strong> de supportfiler, caches og indstillinger, det efterlader, efter at have vist dig præcis hvad der forsvinder.</li>
+</ul>
+<p>De resterende indbyggede plugins er mindre og behøver ikke en side for sig selv:</p>
+<ul>
+<li><strong>WebDAV</strong> — opret forbindelse til en WebDAV-server (<strong>Net ▸ WebDAV Connect…</strong>) og gennemse, upload, download, omdøb og slet på den, som var den en mappe. Adgangskoder opbevares i macOS-nøgleringen.</li>
+<li><strong>iCloud Drive</strong> — tilføjer et <em>iCloud Drive</em>-emne til drevlinjen, der springer direkte til din lokale iCloud Drive-mappe. Det vises kun, når iCloud Drive er sat op på din Mac.</li>
+<li><strong>Notes</strong> — behold en note ved siden af enhver fil eller mappe. Et lille <strong>●</strong>-mærke markerer emner, der har en; redigér noter i en forankret <strong>Notes</strong>-sidebjælke eller en fuld rich text-editor (<strong>Kommandoer ▸ Edit Note…</strong>), og gennemse dem alle med <strong>Notes Overview…</strong>.</li>
+<li><strong>Log Viewer</strong> — åbn en fil som en farvekodet, niveauklassificeret log, der følges live (<strong>Fil ▸ View as Log…</strong>), med filtre pr. niveau, søgning og understøttelse af almindelige logformater plus dine egne regex-formater. Håndterer multi-gigabyte-logfiler øjeblikkeligt.</li>
+<li><strong>AI Column</strong> — tilføjer en <em>AI Language</em>-kolonne, der registrerer hver tekstfils dominerende sprog på enheden (ved hjælp af Apples NaturalLanguage-framework — ikke en skymodel).</li>
+<li><strong>Arkivformater</strong> — lærer appen at gennemse og udpakke flere arkivtyper (7z, tar-familien, gzip/bzip2/xz/zstd og RAR hvor et hjælpeværktøj er installeret), som derefter åbner som mapper.</li>
+</ul>
+<h2 id="sla-plugins-til-eller-fra">Slå plugins til eller fra</h2>
+<ol>
+<li>Vælg Konfiguration ▸ Plugins… for at åbne pluginvinduet.</li>
+<li>Hvert installeret plugin vises på listen med navn, type og et "Aktiveret"-afkrydsningsfelt.</li>
+<li>Markér eller fjern markeringen i feltet for at aktivere eller deaktivere et plugin. Ændringer træder i kraft med det samme — aktiverede plugins tilføjer deres menuer, kolonner og funktioner; deaktiverede holder sig væk.</li>
+</ol>
+<p><img alt="Pluginvinduet der viser installerede plugins med afkrydsningsfelter og knapperne Installer og Fjern" src="images/plugins-window.png" />
+<em>(Figur: pluginvinduet, hvor du aktiverer, deaktiverer, installerer eller fjerner plugins.)</em></p>
+<h2 id="installer-et-nyt-plugin">Installer et nyt plugin</h2>
+<ol>
+<li>Vælg Konfiguration ▸ Plugins….</li>
+<li>Klik på <strong>Installer fra mappe…</strong>.</li>
+<li>Vælg en pluginpakke eller en <code>.zip</code>, der indeholder en, og bekræft. Pluginet tilføjes til listen og aktiveres.</li>
+</ol>
+<h2 id="fjern-et-plugin">Fjern et plugin</h2>
+<ol>
+<li>I pluginvinduet skal du markere pluginet på listen.</li>
+<li>Klik på <strong>Fjern</strong>. Indbyggede funktioner påvirkes ikke; kun det valgte plugin fjernes.</li>
+</ol>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Pluginlisten viser hvert plugins type og grænsefladeversion ved siden af navn og placering, så du kan bekræfte, hvad der er installeret.</li>
+<li>Hvis der ikke er installeret nogen plugins, viser vinduet en kort opfordring, der peger dig mod <strong>Installer fra mappe…</strong>.</li>
+<li>Nogle plugins tilføjer deres egne kolonner, menupunkter eller panelsteder kun mens de er aktiveret. Hvis en funktion, du forventede, mangler, tjek at pluginet er slået til her.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Diskkort</a></li><li><a href="ai-assistant.html">AI-assistent</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">Systemovervågning</a></li><li><a href="task-manager.html">Opgavehåndtering</a></li><li><a href="uninstaller.html">Afinstallering</a></li><li><a href="archives.html">Arbejde med arkiver</a></li><li><a href="ftp-and-sftp.html">Tilslutning til FTP og SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

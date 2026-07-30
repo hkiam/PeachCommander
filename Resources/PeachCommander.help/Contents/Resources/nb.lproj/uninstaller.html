@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstaller</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Uninstaller</h1>
+<p>Å dra en app til Papirkurven etterlater støttefilene, hurtiglagrene, innstillingene og beholderne dens spredt utover Library-mappene dine. Uninstaller-programtillegget fjerner et program <strong>og</strong> disse restene: det finner alt appen etterlot seg, viser deg listen med en størrelse for hvert element, og flytter alt til Papirkurven når du bekrefter. Det er et programtillegg, så du kan slå det av eller fjerne det i <strong>Konfigurasjon ▸ Programtillegg…</strong>.</p>
+<h2 id="avinstaller-en-app-under-markren">Avinstaller en app under markøren</h2>
+<ol>
+<li>Sett markøren på et program (<code>.app</code>) i et panel.</li>
+<li>Velg <strong>Fil ▸ Avinstaller program…</strong>, eller høyreklikk ▸ <strong>Avinstaller program…</strong>, eller trykk <strong>Cmd+Shift+U</strong>.</li>
+<li>Gjennomgangsvinduet åpnes og lister appen pluss hver relatert fil den fant, hver merket med sin kategori, sti og størrelse.</li>
+<li>Fjern merket for alt du vil beholde, og klikk deretter <strong>Flytt til Papirkurv</strong> (eller <strong>Slett permanent</strong>).</li>
+</ol>
+<p><img alt="Avinstalleringsvinduet som lister en apps gjenværende filer med avkrysningsruter og størrelser" src="images/uninstaller.png" />
+<em>(Figur: gå gjennom nøyaktig hva som skal fjernes før noe slettes.)</em></p>
+<h2 id="bla-gjennom-alle-installerte-apper">Bla gjennom alle installerte apper</h2>
+<p>Velg <strong>Kommandoer ▸ Avinstaller program…</strong> for å åpne en søkbar liste over appene som er installert på Mac-en din, med hver apps navn, størrelse og installasjonsdato. Velg en (eller flere), klikk <strong>Avinstaller…</strong>, og du havner i det samme gjennomgangsvinduet. Du kan filtrere listen ved å skrive i søkefeltet.</p>
+<h2 id="finn-gjenvrende-filer">Finn gjenværende filer</h2>
+<p>Velg <strong>Kommandoer ▸ Finn gjenværende filer…</strong> for å søke etter støttefiler, hurtiglagre og innstillinger som tilhører apper du <strong>allerede</strong> har slettet. Gå gjennom dem på samme måte og rydd dem bort. Hvis ingenting blir funnet, forteller programtillegget deg det.</p>
+<h2 id="hvor-grundig-skal-sket-vre">Hvor grundig skal søket være</h2>
+<p>Gjennomgangsvinduet har en tillitskontroll:</p>
+<ul>
+<li><strong>Presis</strong> – filer forankret til appens bundle-identifikator. Høy tillit; forhåndsvalgt.</li>
+<li><strong>Utvidet</strong> – legger til navnematchede filer; blir stående umerket så du kan bestemme.</li>
+<li><strong>Dyp</strong> – Utvidet pluss et Spotlight-søk etter alt annet som nevner appen; også stående umerket.</li>
+</ul>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Ingenting slettes direkte av programtillegget – elementer går gjennom appens Papirkurv eller permanent sletting, akkurat som enhver annen filoperasjon. Å fjerne filer i <code>/Library</code> eller <code>/var</code> kan kreve et administratorpassord.</li>
+<li>Før fjerning avslutter programtillegget appen som kjører og laster ut bakgrunnselementene dens (launchd), og tilbyr deretter å rydde opp i eventuelle nå tomme leverandørmapper.</li>
+<li>Hvis appen ble installert med <strong>Homebrew</strong>, advarer programtillegget deg og foreslår <code>brew uninstall --cask</code> slik at Homebrew holder seg synkronisert. App Store-apper noteres også.</li>
+<li>Utvidede og Dype treff har lavere tillit av design og starter umerket – gå gjennom dem før fjerning. Noen bakgrunnselementer installert via det moderne login-items-API-et kan ikke fjernes her.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="deleting-files.html">Slette filer</a></li></ul></section>
+</main>
+</body>
+</html>

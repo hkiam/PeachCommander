@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automation (AppleScript och Shortcuts)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Automation (AppleScript och Shortcuts)</h1>
+<p>Peach Commander är skriptbart, så du kan styra det från AppleScript och från appen Shortcuts. En handfull grundläggande verb låter ett skript navigera i panelerna, markera filer via en mask, kopiera eller flytta det aktuella urvalet, och köra vilket Peach Commander-kommando som helst via dess id – och återanvänder exakt samma åtgärder som menyerna använder, så ett skriptat steg beter sig som ett manuellt. Det är praktiskt för repetitiva sysslor: att sortera nedladdningar, förbereda en bygges utdata, eller koppla in ett filsteg i en större Shortcut.</p>
+<h2 id="se-ordlistan">Se ordlistan</h2>
+<ol>
+<li>Öppna <strong>Script Editor</strong> (i <code>/Applications/Utilities</code>).</li>
+<li>Välj <strong>Window ▸ Library</strong>, och dubbelklicka sedan på <strong>Peach Commander</strong> (lägg till det med <strong>+</strong> om det inte finns med i listan).</li>
+<li>Ordlistan öppnas och listar kommandona och egenskaperna nedan.</li>
+</ol>
+<p>Första gången ett skript styr Peach Commander ber macOS dig att tillåta det (<strong>System Settings ▸ Privacy &amp; Security ▸ Automation</strong>). Godkänn det en gång så körs senare skript utan att fråga.</p>
+<h2 id="vad-du-kan-lasa">Vad du kan läsa</h2>
+<table>
+<thead>
+<tr>
+<th>Egenskap</th>
+<th>Betydelse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>POSIX-sökväg till den aktiva panelens mapp.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>POSIX-sökväg till den andra panelens mapp.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>De markerade objekten i den aktiva panelen (eller objektet under markören).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="verben">Verben</h2>
+<table>
+<thead>
+<tr>
+<th>Kommando</th>
+<th>Vad det gör</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;path&gt;" [in left\|right]</code></td>
+<td>Öppna en mapp i en panel (standard: den aktiva panelen).</td>
+</tr>
+<tr>
+<td><code>select "&lt;mask&gt;"</code></td>
+<td>Markera objekt i den aktiva panelen via en jokermask, t.ex. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;folder&gt;"</code></td>
+<td>Kopiera den aktiva panelens urval till en mapp.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;folder&gt;"</code></td>
+<td>Flytta den aktiva panelens urval till en mapp.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Kör vilket kommando som helst via dess id, t.ex. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Kopiering och flytt använder samma bakgrundsöverföringskö som F5/F6, så förlopp och eventuella överskrivningsfrågor visas precis som vid en manuell operation.</p>
+<h2 id="exempel">Exempel</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="anvanda-det-fran-shortcuts">Använda det från Shortcuts</h2>
+<p>I appen <strong>Shortcuts</strong>, lägg till åtgärden <strong>Run AppleScript</strong> och klistra in ett skript som det ovan. Det låter dig vika in ett Peach Commander-steg i en större Shortcut – till exempel utlöst av en mappändring eller ett kortkommando.</p>
+<h2 id="anteckningar">Anteckningar</h2>
+<ul>
+<li>Kommando-id:t du skickar till <code>run command</code> är samma <code>cm_*</code>-id som visas i kommandowebbläsaren (se <a href="start-menu.md">Start-menyn och egna kommandon</a>).</li>
+<li>Skriptning agerar alltid på den <strong>aktiva</strong> panelen; använd <code>go to … in left</code> / <code>in right</code> först om du behöver en specifik sida.</li>
+<li>Peach Commander är en app med ett enda fönster, så skript riktar sig mot det fönstrets två paneler.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Start-menyn och egna kommandon</a></li><li><a href="settings.html">Inställningar</a></li></ul></section>
+</main>
+</body>
+</html>

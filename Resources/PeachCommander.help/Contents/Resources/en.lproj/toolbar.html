@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The button bar</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>The button bar</h1>
+<p>The button bar is the strip of icon buttons across the top of the window. Each button is a one-click shortcut you define yourself: run a built-in command, launch an external program or app, jump to a folder, or open a whole sub-bar of more buttons. It's the fastest way to put the actions you use most within reach, and you can tailor it to exactly the way you work.</p>
+<h2 id="customize-the-button-bar">Customize the button bar</h2>
+<ol>
+<li>Choose <strong>Configuration &gt; Customize Toolbar…</strong>, or right-click the bar and choose <strong>Edit Button Bar…</strong>.</li>
+<li>The list on the left shows the current buttons. Use <strong>+</strong> to add a button, <strong>—</strong> to add a separator, <strong>−</strong> to remove the selected button, and <strong>↑ / ↓</strong> to reorder.</li>
+<li>Select a button and fill in the form on the right:
+   - <strong>Command</strong> — type a built-in command, or click <strong>Choose…</strong> to pick one from a list. You can also enter the path to a program or app, a folder to open, or another button bar to use as a sub-bar.
+   - <strong>Caption</strong> — the label and tooltip shown for the button.
+   - <strong>Parameters</strong> and <strong>Start path</strong> — passed to external programs. Placeholders such as <code>%P</code> (source folder), <code>%N</code> (current file), and <code>%S</code> (selected files) are filled in when the button runs.
+   - <strong>Icon</strong> — choose an SF Symbol or use a file's or app's own icon; turn on <strong>icon-only</strong> to hide the caption.</li>
+<li>Click <strong>Save</strong>. The strip reloads immediately.</li>
+</ol>
+<p><img alt="The button bar across the top of the window with icon buttons" src="images/button-bar-crop.png" />
+<em>(Figure: The button bar sits above the file panels; each button runs a command, program, folder, or sub-bar.)</em></p>
+<h2 id="sub-bars-and-overflow">Sub-bars and overflow</h2>
+<p>A button can open a <em>sub-bar</em> — a second set of buttons layered over the first. Click it to descend; a <strong>◀</strong> button at the left returns you to the previous bar. When there are more buttons than fit the window width, the extras collapse behind a <strong>»</strong> chevron at the right end; click it to reach them.</p>
+<h2 id="drop-files-onto-a-button">Drop files onto a button</h2>
+<p>You can drag files or folders straight onto a button:</p>
+<ul>
+<li><strong>Folder button</strong> — the dropped items are copied into that folder in the background.</li>
+<li><strong>Program button</strong> — the program runs with the dropped items as its selection.</li>
+<li><strong>Command button</strong> — the command runs as usual.</li>
+</ul>
+<h2 id="vertical-button-bar">Vertical button bar</h2>
+<p>To move the strip from the top of the window to a column down the left side, choose <strong>View &gt; Vertical Button Bar</strong>. Choose it again to switch back to the horizontal strip.</p>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>The bar is stored in a standard button-bar file that's compatible with Total Commander, so bars you already have can be reused.</li>
+<li>No keyboard shortcuts are assigned to these actions by default, but you can add your own — see <a href="keyboard-shortcuts">Keyboard shortcuts</a>.</li>
+<li>A button with no icon and no command shows as a plain separator, handy for grouping related buttons.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts.html">Keyboard &amp; shortcuts</a></li><li><a href="settings.html">Settings</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Přejmenování mnoha souborů</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Přejmenování mnoha souborů</h1>
+<p>Nástroj hromadného přejmenování přejmenuje celou dávku souborů v jednom průchodu. Místo úpravy názvů jeden po druhém popíšete změnu jen jednou — vzor pojmenování, hledání a nahrazení, schéma číslování nebo změnu velikosti písmen — a Peach Commander ji použije na každý vybraný soubor. Živý náhled ukazuje přesně, jak se bude každý soubor jmenovat, dříve než se cokoli stane, a jediné Zpět vrátí původní názvy, pokud výsledek nebyl takový, jaký jste chtěli.</p>
+<h2 id="prejmenovani-davky-souboru">Přejmenování dávky souborů</h2>
+<ol>
+<li>Vyberte soubory, které chcete přejmenovat (viz <em>Výběr souborů</em>). Ovlivněny jsou pouze vybrané položky.</li>
+<li>Zvolte <strong>Příkazy &gt; Nástroj hromadného přejmenování…</strong>, nebo stiskněte Ctrl+M.</li>
+<li>Sestavte pravidlo přejmenování pomocí polí popsaných níže. Mřížka náhledu se při psaní aktualizuje a zobrazuje každý <strong>Starý název</strong> vedle jeho <strong>Nového názvu</strong>.</li>
+<li>Zkontrolujte náhled. Řádek zobrazený zvýrazňovací barvou označuje název, který nelze použít (například duplikát nebo nepovolený název), takže můžete pravidlo upravit.</li>
+<li>Když náhled vypadá správně, klepněte na <strong>Start</strong>. Pokud si to rozmyslíte, klepnutím na <strong>Zpět</strong> obnovíte původní názvy.</li>
+</ol>
+<p><img alt="Okno hromadného přejmenování s poli masky, možnostmi a mřížkou náhledu ze starého na nový" src="images/multi-rename.png" />
+<em>(Obrázek: mřížka náhledu se aktualizuje živě při úpravě pravidla přejmenování; na disku se nic nezmění, dokud neklepnete na Start.)</em></p>
+<h2 id="sestaveni-pravidla-prejmenovani">Sestavení pravidla přejmenování</h2>
+<ul>
+<li><strong>Maska přejmenování</strong> a <strong>Přípona</strong> — vzory, které sestaví nový název a příponu. Použijte tlačítka rychlého vložení, nebo zadejte zástupné symboly přímo: <code>[N]</code> pro původní název, <code>[N1-9]</code> pro rozsah znaků z něj, <code>[C]</code> pro čítač, <code>[d]</code> pro části data a času a <code>[P]</code> pro název nadřazené složky.</li>
+<li><strong>Hledat / Nahradit za</strong> — nahradit text uvnitř názvů. Zapněte <strong>Regex</strong> pro shodu podle vzoru, <strong>Rozlišovat velikost</strong> pro přesnou shodu velikosti písmen a <strong>Opakovat</strong> pro nahrazení každého výskytu.</li>
+<li><strong>Velikost písmen</strong> — převést názvy na malá písmena, VELKÁ PÍSMENA, První písmeno velké nebo Každé Slovo Velké.</li>
+<li><strong>Čítač</strong> — nastavte <strong>počáteční</strong> číslo, <strong>krok</strong> mezi soubory a na kolik <strong>číslic</strong> doplnit (například 001, 002, 003) všude, kde se objeví <code>[C]</code>.</li>
+</ul>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Otevřít nástroj hromadného přejmenování</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Použít přejmenování</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Zavřít okno</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tipy">Tipy</h2>
+<ul>
+<li>Na disk se nic nezapíše, dokud neklepnete na <strong>Start</strong>, takže můžete s pravidlem volně experimentovat a sledovat náhled.</li>
+<li>Po spuštění <strong>Zpět</strong> obrátí přejmenování v jediném kroku.</li>
+<li>Uložte pravidlo, které často používáte, jako <strong>Předvolbu</strong>, a příště ji vyberte z nabídky předvoleb, abyste vyplnili všechna pole najednou.</li>
+<li>Chcete-li přejmenovat jeden soubor nebo přejmenovat soubory při jejich přesunu, použijte místo toho přejmenování na místě nebo dialog přesunu (viz <em>Přesun a přejmenování</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Přesun a přejmenování</a></li></ul></section>
+</main>
+</body>
+</html>

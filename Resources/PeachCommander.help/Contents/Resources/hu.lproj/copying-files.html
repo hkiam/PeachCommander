@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fájlok másolása</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Fájlok másolása</h1>
+<p>A Peach Commander két, egymás mellett elhelyezett panelre épül: az egyik tartalmazza a fájlokat, amelyekkel dolgozik, a másik a célhely. A másolás fogja azt, ami az aktív panelen ki van jelölve, és egy másolatot helyez a másik panelen látható mappába, az eredetieket a helyükön hagyva. Ez a leggyorsabb módja annak, hogy fájlokat és mappákat sokszorozzon két hely között, húzás nélkül.</p>
+<h2 id="kijeloles-masolasa-a-masik-panelre">Kijelölés másolása a másik panelre</h2>
+<ol>
+<li>Az egyik panelen nyissa meg azt a mappát, amely a másolni kívánt elemeket tartalmazza.</li>
+<li>A másik panelen nyissa meg azt a mappát, ahová a másolatok kerüljenek.</li>
+<li>Jelölje ki a másolandó fájlokat és mappákat. Ha semmi sincs kijelölve, a program a kurzor alatti elemet használja.</li>
+<li>Nyomja meg az F5 billentyűt. Megnyílik a másolási párbeszédpanel, amelyben a célútvonal már ki van töltve.</li>
+</ol>
+<p><img alt="A másolási párbeszédpanel a célútvonallal és a beállításokkal" src="images/copy-dialog.png" />
+<em>(Ábra: A másolási párbeszédpanel. A célútvonal a másik panelre mutat; a beállításokkal finomhangolhatja a másolást.)</em></p>
+<ol start="5">
+<li>Szükség esetén módosítsa a célt, majd erősítse meg a másolás indításához.</li>
+</ol>
+<h2 id="masolasi-beallitasok">Másolási beállítások</h2>
+<p>A megerősítés előtt módosíthatja a másolás viselkedését:</p>
+<ul>
+<li><strong>Csak újabb fájlok</strong> – kihagy minden olyan elemet, amelynek a másolata már létezik és ugyanolyan korú vagy újabb, így csak a megváltozott fájlok frissülnek.</li>
+<li><strong>Metaadatok megőrzése</strong> – megtartja a dátumokat, jogosultságokat és egyéb fájlattribútumokat a másolatokon. Ez alapértelmezés szerint be van kapcsolva.</li>
+<li><strong>Sebességkorlát</strong> – korlátozza az átviteli sebességet, hogy egy nagy másolás ne terhelje túl a lemezt vagy a hálózati kapcsolatot.</li>
+<li><strong>Átnevezési maszk</strong> – írjon egy helyettesítő karakteres mintát a célmezőbe (például <code>*.bak</code>), hogy az elemeket másolás közben átnevezze.</li>
+</ul>
+<p>A feladatot a háttérsorba is elküldheti, ahelyett hogy figyelné – lásd a <strong>Háttérben futó átvitelek</strong> témát.</p>
+<h2 id="folyamat">Folyamat</h2>
+<p>Egy folyamatablak külön sávokon mutatja az aktuális fájlt és a teljes feladatot, valamint az átviteli sebességet. Bármikor szüneteltetheti és folytathatja, vagy a futó másolást elküldheti a háttérben futó átvitelek kezelőjének, hogy tovább dolgozhasson, amíg a művelet befejeződik.</p>
+<p><img alt="Az átviteli folyamat párbeszédpanele folyamatjelző sávval, fájl- és bájtszámlálóval, valamint Szüneteltetés és Megszakítás gombokkal" src="images/progress-dialog.png" />
+<em>(Ábra: A folyamatot jelző párbeszédpanel másolás vagy áthelyezés közben.)</em></p>
+<h2 id="mar-letezo-fajlok-kezelese">Már létező fájlok kezelése</h2>
+<p>Ha a másolás felülírna egy meglévő fájlt, a Peach Commander megáll, és rákérdez, mit tegyen. Mindkét fájl előnézete segít a döntésben.</p>
+<p><img alt="A felülírási ütközést mutató párbeszédpanel két fájl összehasonlításával" src="images/overwrite-dialog.png" />
+<em>(Ábra: A felülírási párbeszédpanel összehasonlítja a meglévő fájlt a másolandóval.)</em></p>
+<p>A választási lehetőségei többek között:</p>
+<ul>
+<li><strong>Felülírás</strong>: a meglévő fájl felülírása, vagy <strong>Az összes felülírása</strong>: ennek alkalmazása minden hátralévő ütközésre.</li>
+<li><strong>Kihagyás</strong>: ennek a fájlnak a kihagyása, vagy <strong>Az összes kihagyása</strong>: az összes hátralévő ütközés kihagyása.</li>
+<li><strong>Átnevezés</strong>: a beérkező másolat automatikus átnevezése, hogy mindkét fájl megmaradjon.</li>
+<li><strong>Hozzáfűzés</strong>: a beérkező adatok hozzáfűzése a meglévő fájl végéhez.</li>
+<li>Felülírás csak akkor, ha a forrás <strong>újabb</strong> vagy <strong>nagyobb</strong>, mint a meglévő fájl.</li>
+</ul>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyű</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kijelölés másolása a másik panelre</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Másolás ugyanabban a mappában (átnevezett másolat készítése)</td>
+<td>Shift+F5</td>
+</tr>
+<tr>
+<td>A háttérben futó átvitelek kezelőjének megnyitása</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>Ugyanazon a lemezen két hely közötti másoláskor a program gyors klónozást használ, ha a lemez támogatja, így a nagy fájlok szinte azonnal másolódnak, és alig foglalnak plusz helyet.</li>
+<li>A mappák a teljes tartalmukkal együtt másolódnak.</li>
+<li>Ha másolás helyett áthelyezni szeretné a fájlokat, használja az F6 billentyűt. A sorba állított feladatok figyeléséhez vagy kezeléséhez nyissa meg a háttérben futó átvitelek kezelőjét a Cmd+Shift+B billentyűvel.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Áthelyezés és átnevezés</a></li><li><a href="background-transfers.html">Háttérben futó átvitelek</a></li></ul></section>
+</main>
+</body>
+</html>

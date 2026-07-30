@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ricerca rapida e filtro</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Ricerca rapida e filtro</h1>
+<p>Quando una cartella contiene centinaia di elementi, raramente hai bisogno di scorrere. Peach Commander ti permette di saltare direttamente a un file digitandone il nome (ricerca rapida), ridurre l'elenco ai soli elementi che ti interessano (filtro rapido) e mostrare o nascondere i file con il punto che macOS di solito tiene nascosti. Tutti e tre funzionano dentro il pannello attivo senza aprire una finestra.</p>
+<h2 id="salta-a-un-file-digitando-ricerca-rapida">Salta a un file digitando (ricerca rapida)</h2>
+<ol>
+<li>Fai clic su un pannello dei file così che sia attivo.</li>
+<li>Inizia a digitare l'inizio di un nome. Il cursore salta al primo elemento corrispondente.</li>
+<li>Continua a digitare per affinare la corrispondenza, o premi di nuovo la stessa lettera per scorrere gli elementi che iniziano con quella lettera.</li>
+<li>Il testo digitato si cancella dopo una breve pausa, così puoi iniziare una nuova ricerca in qualsiasi momento.</li>
+</ol>
+<p>Per impostazione predefinita, le lettere semplici vanno alla riga di comando e la ricerca rapida si attiva con Ctrl+Opzione+lettera (il comportamento classico). Puoi impostare la ricerca rapida per rispondere invece alla digitazione semplice, o disattivarla, nelle impostazioni di configurazione.</p>
+<h2 id="filtra-lelenco-filtro-rapido">Filtra l'elenco (filtro rapido)</h2>
+<ol>
+<li>Nel pannello attivo, premi Ctrl+S per attivare il filtro rapido.</li>
+<li>Digita una maschera di filtro. Il pannello si restringe in tempo reale agli elementi corrispondenti mentre digiti.</li>
+<li>Premi Esc per cancellare il filtro e mostrare di nuovo tutto.</li>
+</ol>
+<p>Il filtro accetta diversi tipi di maschere:</p>
+<ul>
+<li><strong>Testo semplice</strong> corrisponde a qualsiasi nome che contiene ciò che hai digitato (per esempio, <code>report</code> mostra ogni elemento con "report" in un punto qualsiasi del nome).</li>
+<li><strong>Caratteri jolly</strong> usano <code>*</code> (qualsiasi carattere) e <code>?</code> (un carattere). Separa più maschere con un punto e virgola e aggiungi esclusioni dopo una barra verticale, per esempio <code>*.jpg;*.png|*thumb*</code> per mostrare le immagini ma nascondere le miniature.</li>
+<li><strong>Tag del Finder</strong> filtrano per colore del tag: digita <code>tag:red</code> (o <code>#red</code>) per mostrare solo gli elementi con tag rosso, o un semplice <code>tag:</code> per mostrare tutto ciò che porta un tag qualsiasi.</li>
+</ul>
+<h2 id="mostra-i-file-nascosti">Mostra i file nascosti</h2>
+<p>Premi Ctrl+H, o scegli il comando dal menu Vista, per commutare gli elementi nascosti (nomi che iniziano con un punto e file nascosti dal sistema). L'impostazione si applica al pannello attivo ed è ricordata tra le sessioni.</p>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Scorciatoia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ricerca rapida (modalità classica)</td>
+<td>Ctrl+Opzione+lettera</td>
+</tr>
+<tr>
+<td>Filtro rapido on/off</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Cancella filtro / annulla</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Mostra/nascondi file nascosti</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>La ricerca rapida sposta solo il cursore; il filtro rapido cambia effettivamente quali elementi sono elencati. Usa il filtro quando vuoi lavorare su un sottoinsieme (per esempio, selezionare o copiare solo le corrispondenze).</li>
+<li>Le impostazioni di filtro e file nascosti sono per pannello, così i due lati possono mostrare cose diverse contemporaneamente.</li>
+<li>La ricerca rapida corrisponde ai nomi dall'inizio; la modalità testo semplice del filtro rapido corrisponde in qualsiasi punto del nome. Usa un carattere jolly come <code>*testo*</code> se vuoi che il filtro si comporti allo stesso modo.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Trovare i file</a></li><li><a href="view-modes-and-sorting.html">Modalità di visualizzazione e ordinamento</a></li></ul></section>
+</main>
+</body>
+</html>

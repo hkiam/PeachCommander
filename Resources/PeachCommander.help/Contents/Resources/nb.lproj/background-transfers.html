@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bakgrunnsoverføringer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Bakgrunnsoverføringer</h1>
+<p>Store kopieringer, flyttinger, slettinger og nedlastinger trenger ikke å holde arbeidet ditt opp. Peach Commander kan kjøre dem i bakgrunnen og samle dem alle på ett sted: Bakgrunnsoverføringsbehandleren. Derfra ser du hver jobbs fremdrift og overføringshastighet, setter den på pause eller gjenopptar den, avbryter den, eller stiller jobber opp i kø for å starte senere. Fordi en bakgrunnsjobb kjører på egen hånd, stopper den deg aldri fra å bla, åpne filer eller starte neste overføring.</p>
+<h2 id="slik-gjr-du-det">Slik gjør du det</h2>
+<ol>
+<li>Start en kopiering, flytting, sletting eller nedlasting og velg å kjøre den i bakgrunnen. Jobben vises i Bakgrunnsoverføringsbehandleren.</li>
+<li>Åpne behandleren når som helst fra <strong>Kommandoer ▸ Bakgrunnsoverføringsbehandler…</strong> (eller trykk Cmd+Shift+B).</li>
+<li>Hver jobb viser en tittel, en fremdriftslinje og en direkte linje med filer ferdige, bytes overført og gjeldende hastighet.</li>
+<li>Bruk knappene per jobb for å <strong>Sette på pause</strong>, <strong>Gjenoppta</strong> eller <strong>Avbryte</strong> mens en jobb kjører.</li>
+<li>For jobber du har lagt til, men ikke startet ennå (jobber på vent), klikk <strong>Start</strong> på jobben, eller <strong>Start alle</strong> for å sette i gang hele ventelisten på én gang.</li>
+<li>Når alt du bryr deg om er fullført, klikk <strong>Fjern fullførte</strong> for å rydde opp i listen.</li>
+</ol>
+<p><img alt="Bakgrunnsoverføringsbehandleren som lister opp aktive og ventende jobber med fremdriftslinjer og Pause-, Gjenoppta- og Avbryt-knapper." src="images/transfer-manager.png" /></p>
+<p><em>Hver overføring er en rad du kan sette på pause, gjenoppta eller avbryte uavhengig.</em></p>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Åpne Bakgrunnsoverføringsbehandleren</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li><strong>Begrens hastigheten.</strong> For å hindre at en stor overføring metter forbindelsen eller disken din, sett en hastighetsgrense i kopidialogen før du starter jobben. Behandleren viser da den begrensede hastigheten direkte.</li>
+<li><strong>Sett i kø for senere.</strong> Jobber på vent ligger i listen uten å kjøre til du trykker Start (eller Start alle), slik at du kan klargjøre flere overføringer og sette dem i gang samlet.</li>
+<li><strong>Kjør flere samtidig.</strong> Jobber kjører uavhengig, så du kan sette en på pause mens en annen fortsetter.</li>
+</ul>
+<h2 id="merknader">Merknader</h2>
+<p>Fordi en bakgrunnsjobb kjører uten at du ser på, kan den ikke stoppe for å stille spørsmål. Hvis en fil allerede finnes på målet, overskriver bakgrunnsjobben den; hvis et enkelt element ikke kan overføres, hoppes det elementet over og jobben fortsetter. Når jobben er ferdig, samles eventuelle utelatte elementer i en feillogg slik at du kan se gjennom nøyaktig hva som gikk galt.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiere filer</a></li><li><a href="downloading-from-url.html">Laste ned fra en URL</a></li></ul></section>
+</main>
+</body>
+</html>

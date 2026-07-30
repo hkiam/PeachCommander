@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asystent AI</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Asystent AI</h1>
+<p>Asystent AI to opcjonalna, usuwalna wtyczka, która pomaga pracować z plikami w języku naturalnym. Potrafi podsumować lub wyjaśnić dokument, zaproponować lepszą nazwę pliku, przetłumaczyć lub sprawdzić tekst, zamienić dane w tabelę, a nawet uporządkować folder — i może wykonać za Ciebie operacje na plikach po uprzednim pokazaniu planu. Działa na urządzeniu z Apple Intelligence, gdy jest dostępne, lub możesz skierować go na model w chmurze. Ponieważ jest to wtyczka, możesz ją wyłączyć lub całkowicie usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>.</p>
+<h2 id="otwarcie-asystenta">Otwarcie asystenta</h2>
+<p>Wybierz <strong>Polecenia ▸ Asystent AI</strong>, aby wyświetlić asystenta w zadokowanym panelu po prawej stronie okna. Wpisz zapytanie i naciśnij Enter; asystent może czytać pliki, wyszukiwać informacje i — za Twoim potwierdzeniem — wprowadzać zmiany.</p>
+<p><img alt="Czat asystenta AI zadokowany obok paneli plików" src="images/ai-chat.png" />
+<em>(Rysunek: asystent AI, zadokowany po prawej, pracuje nad zapytaniem.)</em></p>
+<h2 id="akcje-prawego-przycisku-ai">Akcje prawego przycisku (AI ▸)</h2>
+<p>Najszybszym sposobem korzystania z asystenta jest podmenu <strong>AI ▸</strong> w menu prawego przycisku:</p>
+<ul>
+<li><strong>Na pliku</strong> — Podsumuj, Wyjaśnij, Zaproponuj nazwę, Przetłumacz na angielski, Sprawdź, Wykryj zadania i Utwórz tabelę.</li>
+<li><strong>Na tle panelu</strong> — Uporządkuj ten folder i Znajdź prawdopodobne duplikaty.</li>
+</ul>
+<p>Każda akcja <strong>AI ▸</strong> otwiera <strong>własny zatytułowany czat</strong> (na przykład <em>Podsumuj – raport.txt</em>), dzięki czemu różne zadania pozostają oddzielone, zamiast piętrzyć się w jednej długiej rozmowie. Gdy sam wpisujesz coś w polu wejściowym, to zapytanie kontynuuje bieżący czat.</p>
+<h2 id="zarzadzanie-czatami">Zarządzanie czatami</h2>
+<ul>
+<li>Użyj przełącznika czatów u góry panelu, aby przechodzić między rozmowami.</li>
+<li>Menu <strong>Usuń ▾</strong> oferuje <strong>Usuń ten czat</strong> i <strong>Usuń wszystkie czaty</strong>, dzięki czemu możesz wyczyścić wszystko naraz, gdy lista się wydłuży. Puste czaty są automatycznie usuwane po zamknięciu panelu.</li>
+</ul>
+<h2 id="zmiany-sa-najpierw-potwierdzane">Zmiany są najpierw potwierdzane</h2>
+<p>W przypadku wszystkiego, co modyfikuje pliki — przenoszenia, zmiany nazwy, zapisu, usuwania — asystent pokazuje <strong>plan i czeka na Twoje potwierdzenie</strong> przed działaniem. Możesz to zmienić w Ustawieniach, zwiększając autonomię asystenta, lub obniżyć ją do tylko do odczytu, aby nigdy niczego nie zmieniał.</p>
+<h2 id="ustawienia">Ustawienia</h2>
+<p>Otwórz <strong>Konfiguracja ▸ Ustawienia ▸ AI</strong>, aby skonfigurować asystenta na jednej stronie:</p>
+<ul>
+<li><strong>Preferowany model</strong> — Automatyczny (chmura, jeśli skonfigurowana, w przeciwnym razie na urządzeniu), Na urządzeniu (Apple Intelligence) lub Chmura.</li>
+<li><strong>Punkt końcowy chmury, model i klucz API</strong> — aby użyć modelu zgodnego z OpenAI zamiast tego na urządzeniu. Klucz jest przechowywany w pęku kluczy macOS, nigdy w plikach konfiguracji.</li>
+<li><strong>Autonomia asystenta</strong> — tylko do odczytu, potwierdzaj zmiany (domyślnie) lub autonomiczny.</li>
+<li><strong>Niestandardowy monit systemowy</strong> — opcjonalne instrukcje kształtujące odpowiedzi asystenta.</li>
+<li><strong>Serwer MCP</strong> — opcjonalny, tylko lokalny serwer, który pozwala zewnętrznemu agentowi sterować aplikacją; domyślnie wyłączony i chroniony tokenem.</li>
+</ul>
+<p><img alt="Strona AI w Ustawieniach z opcjami autonomii i serwera MCP" src="images/settings-ai.png" />
+<em>(Rysunek: wszystkie opcje asystenta znajdują się na jednej stronie AI w Ustawieniach.)</em></p>
+<h2 id="prywatnosc">Prywatność</h2>
+<ul>
+<li>Z Apple Intelligence asystent działa <strong>na Twoim Macu</strong>; nic nie opuszcza urządzenia.</li>
+<li>Model w chmurze jest używany <strong>tylko wtedy, gdy go skonfigurujesz</strong>, a jego klucz API jest przechowywany w pęku kluczy.</li>
+<li>Operacje zmieniające pliki są potwierdzane przed wykonaniem, chyba że celowo podniesiesz poziom autonomii.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="settings.html">Ustawienia</a></li><li><a href="privacy-and-security.html">Prywatność i bezpieczeństwo</a></li></ul></section>
+</main>
+</body>
+</html>

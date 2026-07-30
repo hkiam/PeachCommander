@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>复制文件</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>复制文件</h1>
+<p>Peach Commander 围绕两个并排面板构建：一个存放你正在处理的文件，另一个作为目标。复制会将活动面板中选中的内容以副本形式放入另一个面板所显示的文件夹，同时保留原文件不动。这是在两个位置之间复制文件和文件夹的最快方式，无需拖拽。</p>
+<h2 id="_1">将所选内容复制到另一个面板</h2>
+<ol>
+<li>在一个面板中，打开包含要复制项目的文件夹。</li>
+<li>在另一个面板中，打开副本应存放的文件夹。</li>
+<li>选择要复制的文件和文件夹。如果未选择任何内容，则使用光标所在的项目。</li>
+<li>按 F5。复制对话框会打开，其中已填入目标路径。</li>
+</ol>
+<p><img alt="复制对话框，显示目标路径和选项" src="images/copy-dialog.png" />
+<em>（图：复制对话框。目标路径指向另一个面板；使用选项可对复制进行微调。）</em></p>
+<ol start="5">
+<li>如有需要可调整目标位置，然后确认以开始复制。</li>
+</ol>
+<h2 id="_2">复制选项</h2>
+<p>在确认之前，你可以更改复制的行为方式：</p>
+<ul>
+<li><strong>仅较新文件</strong> —— 跳过任何副本已存在且年龄相同或更新的项目，因此只更新有改动的文件。</li>
+<li><strong>保留元数据</strong> —— 在副本上保留日期、权限和其他文件属性。此选项默认开启。</li>
+<li><strong>速度限制</strong> —— 限制传输速率，使大批量复制不会占满你的磁盘或网络连接。</li>
+<li><strong>重命名掩码</strong> —— 在目标字段中输入通配符模式（例如 <code>*.bak</code>），可在复制项目时对其重命名。</li>
+</ul>
+<p>你也可以将任务发送到后台队列，而不是一直盯着它——参见后台传输。</p>
+<h2 id="_3">进度</h2>
+<p>进度窗口会分别用两条进度条显示当前文件和整个任务，并显示传输速度。你可以随时暂停和继续，或将正在运行的复制任务发送到后台传输管理器，以便在它完成的同时继续工作。</p>
+<p><img alt="传输进度对话框，包含进度条、文件与字节计数，以及暂停和取消按钮" src="images/progress-dialog.png" />
+<em>（图：复制或移动过程中显示的进度对话框。）</em></p>
+<h2 id="_4">处理已存在的文件</h2>
+<p>如果复制会替换已有文件，Peach Commander 会停下来询问该如何处理。两个文件的预览可帮助你做出决定。</p>
+<p><img alt="对比两个文件的覆盖冲突对话框" src="images/overwrite-dialog.png" />
+<em>（图：覆盖对话框将已有文件与正在复制的文件进行对比。）</em></p>
+<p>你的选择包括：</p>
+<ul>
+<li><strong>覆盖</strong>已有文件，或选择<strong>全部覆盖</strong>以对所有剩余冲突执行该操作。</li>
+<li><strong>跳过</strong>此文件，或<strong>全部跳过</strong>剩余冲突。</li>
+<li>自动<strong>重命名</strong>传入的副本，以便同时保留两个文件。</li>
+<li>将传入的数据<strong>追加</strong>到已有文件的末尾。</li>
+<li>仅当源文件比已有文件<strong>更新</strong>或<strong>更大</strong>时才覆盖。</li>
+</ul>
+<h2 id="_5">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>按键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>将所选内容复制到另一个面板</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>在同一文件夹中复制（生成重命名的副本）</td>
+<td>Shift+F5</td>
+</tr>
+<tr>
+<td>打开后台传输管理器</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_6">说明</h2>
+<ul>
+<li>在同一磁盘上的两个位置之间复制时，若磁盘支持，则会使用快速克隆，因此大文件几乎瞬间完成复制，且几乎不占用额外空间。</li>
+<li>文件夹会连同其中的所有内容一起复制。</li>
+<li>若要移动文件而非复制，请使用 F6。若要查看或管理排队的任务，请用 Cmd+Shift+B 打开后台传输管理器。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">移动与重命名</a></li><li><a href="background-transfers.html">后台传输</a></li></ul></section>
+</main>
+</body>
+</html>

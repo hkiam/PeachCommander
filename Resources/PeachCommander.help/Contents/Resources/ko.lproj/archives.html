@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>압축 파일 다루기</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>압축 파일 다루기</h1>
+<p>Peach Commander는 압축 파일을 폴더처럼 취급합니다. 먼저 디스크에 풀지 않고도 ZIP, TAR 또는 기타 지원되는 압축 파일 안으로 들어가 내용을 탐색하고 파일을 꺼낼 수 있습니다. 압축 파일을 만들려면 Pack 명령이 선택 항목을 ZIP, 7z, TAR 또는 기타 형식으로 묶으며, 선택적 암호화와 분할 볼륨을 지원합니다. 이는 보낼 파일을 묶거나, 저장을 위해 폴더를 줄이거나, 추출을 확정하기 전에 다운로드 내부를 살짝 들여다볼 때 편리합니다.</p>
+<h2 id="_1">압축 파일을 폴더처럼 탐색</h2>
+<ol>
+<li>패널에서 커서를 압축 파일(예: <code>.zip</code> 또는 <code>.tar.gz</code>)로 이동합니다.</li>
+<li>폴더를 열 듯이 Enter 또는 Ctrl+PageDown을 눌러 안으로 들어갑니다.</li>
+<li>내용을 일반적으로 탐색합니다. Backspace 또는 Ctrl+PageUp을 누르면 위로 올라가 압축 파일을 벗어납니다.</li>
+<li>파일을 꺼내려면 파일을 선택하고 다른 패널로 복사(F5)합니다.</li>
+</ol>
+<p><img alt="압축 파일을 마치 폴더처럼 내부를 탐색하기" src="images/archive-browse.png" />
+<em>(그림: 일반 폴더 목록처럼 표시된, 열린 압축 파일. 파일을 꺼낼 준비가 되어 있습니다.)</em></p>
+<p>ZIP, TAR, gzip으로 압축된 TAR은 직접 읽습니다. CPIO, ISO, CAB, LZH, XAR, PAX 같은 다른 형식은 기본 제공 시스템 도구를 통해 읽습니다. 암호화된 ZIP 압축 파일(고전 방식과 AES 모두)은 암호를 입력하면 열 수 있습니다.</p>
+<h2 id="_2">파일을 새 압축 파일로 묶기</h2>
+<ol>
+<li>활성 패널에서 포함할 파일과 폴더를 선택합니다.</li>
+<li>파일 ▸ Pack…을 선택하거나 Alt+F5를 누릅니다. (묶은 다음 원본을 삭제하려면 Alt+Shift+F5를 사용합니다.)</li>
+<li>대화상자에서 압축 파일 형식(ZIP, 7z, TAR, tar.gz, bzip2, xz, RAR), 압축 수준, 저장 위치를 선택합니다.</li>
+<li>선택적으로 AES-256 암호화를 켜고 암호를 설정하거나, 압축 파일을 고정 크기 볼륨으로 분할합니다.</li>
+<li>확인하여 압축 파일을 만듭니다.</li>
+</ol>
+<p><img alt="형식, 압축, 암호화, 분할 옵션이 표시된 Pack 대화상자" src="images/pack-dialog.png" />
+<em>(그림: 형식을 선택하고 암호화 및 분할 볼륨 옵션을 설정하는 Pack 대화상자.)</em></p>
+<h2 id="_3">압축 파일 풀기 또는 검사하기</h2>
+<ol>
+<li>추출할 압축 파일을 활성 패널에, 대상 폴더를 다른 패널에 놓습니다.</li>
+<li>파일 ▸ Unpack…을 선택하거나 Alt+F9를 누른 다음 대상을 확인합니다.</li>
+<li>추출하지 않고 압축 파일의 손상 여부를 확인하려면 파일 ▸ Test Archive를 선택합니다.</li>
+</ol>
+<h2 id="zip">ZIP을 제자리에서 편집</h2>
+<p>기존 ZIP을 풀지 않고도 그 안의 파일을 추가하거나 제거할 수 있습니다. ZIP을 폴더로 연 다음, 평소처럼 파일을 복사해 넣거나 삭제하면 변경 내용이 곧바로 압축 파일에 기록됩니다.</p>
+<h2 id="_4">단축키</h2>
+<table>
+<thead>
+<tr>
+<th>작업</th>
+<th>단축키</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>커서 아래의 압축 파일로 들어가기</td>
+<td>Enter 또는 Ctrl+PageDown</td>
+</tr>
+<tr>
+<td>압축 파일 벗어나기(위로 가기)</td>
+<td>Backspace 또는 Ctrl+PageUp</td>
+</tr>
+<tr>
+<td>묶기(Pack)</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>묶고 원본 삭제</td>
+<td>Alt+Shift+F5</td>
+</tr>
+<tr>
+<td>풀기(Unpack)</td>
+<td>Alt+F9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">참고</h2>
+<ul>
+<li>7z, xz, bzip2, RAR로 묶는 것은 외부 도구에 의존합니다. 특히 RAR은 독점 RAR 프로그램이 설치되어 있어야 합니다. 없으면 해당 형식을 사용할 수 없습니다.</li>
+<li>ZIP을 제자리에서 편집하면 압축 파일 전체가 다시 기록되므로, 그 안의 파일 수정 타임스탬프는 보존되지 않습니다.</li>
+<li>개별 구성원이 매우 큰 경우 추출 시 512 MiB로 제한됩니다. 추출은 실행 중에 취소할 수 있습니다.</li>
+<li>매우 큰(ZIP64) 압축 파일은 지원되지 않습니다.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">파일 복사</a></li></ul></section>
+</main>
+</body>
+</html>

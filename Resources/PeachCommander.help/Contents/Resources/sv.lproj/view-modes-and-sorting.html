@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visningslägen och sortering</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Visningslägen och sortering</h1>
+<p>Varje panel kan visa sin mapp i den layout som passar uppgiften: en detaljerad lista med kolumner, en kompakt flerkolumnslista med namn, ett symbolrutnät, ett galleri med stora miniatyrer, eller ett mappträd. Du kan även sortera listan efter namn, filändelse, storlek eller datum, välja exakt vilka kolumner som visas, och slå på naturlig (numerisk) sortering så att namn med siffror ställer upp sig som du förväntar dig. Visningsläge, sorteringsordning och kolumner ställs in per panel, så de två sidorna kan se helt olika ut.</p>
+<h2 id="byt-visningslage">Byt visningsläge</h2>
+<ol>
+<li>Klicka på panelen du vill ändra så att den blir aktiv.</li>
+<li>Öppna Visa-menyn och välj ett läge: <strong>Fullständig (detaljer)</strong> för kolumnlistan, <strong>Kort (kolumner)</strong> för en tät flerkolumnslista med namn, <strong>Symboler</strong> för ett symbolrutnät, <strong>Miniatyrer (galleri)</strong> för stora förhandsvisningar, eller <strong>Träd</strong> för ett mappträd.</li>
+<li>För att snabbt bläddra igenom lägena utan att öppna menyn, tryck på Cmd+Shift+M. Varje tryck går till nästa läge.</li>
+</ol>
+<p><img alt="En panel som visar de olika visningslägena: detaljer, kort, symboler och galleri" src="images/view-modes.png" />
+<em>(Bild: Samma mapp visad som en detaljerad lista, en kort kolumnlista, ett symbolrutnät och ett galleri med miniatyrer.)</em></p>
+<h2 id="sortera-fillistan">Sortera fillistan</h2>
+<ol>
+<li>I detaljvyn, klicka på en kolumnrubrik (Namn, Ändelse, Storlek eller Datum) för att sortera efter den. En liten pil i rubriken visar den aktuella sorteringskolumnen och riktningen.</li>
+<li>Klicka på samma rubrik igen för att vända ordningen.</li>
+<li>Du kan även välja Visa &gt; Sortera efter och välja Namn, Filändelse, Storlek, Datum eller Osorterat.</li>
+</ol>
+<p>Mappar sorteras alltid tillsammans överst, före filer, och <code>..</code>-posten som tar dig upp en nivå står kvar fäst först. Sortering efter namn eller filändelse är stigande (A till Ö) som standard; sortering efter storlek eller datum är nyast eller störst först som standard.</p>
+<h2 id="valj-vilka-kolumner-som-visas">Välj vilka kolumner som visas</h2>
+<ol>
+<li>Välj Konfiguration &gt; Kolumner….</li>
+<li>Slå på eller av kolumner och ställ in deras ordning. Tillgängliga kolumner är Namn, Ändelse, Storlek, Datum, Attr (attribut), Taggar och Kommentar.</li>
+<li>Tillämpa dina ändringar. Kolumner påverkar den aktiva panelens detaljvy.</li>
+</ol>
+<p><img alt="Kolumnkonfigurationsfönstret med listan över tillgängliga kolumner" src="images/columns-config.png" />
+<em>(Bild: Välj vilka kolumner som visas i detaljvyn och ställ in deras ordning.)</em></p>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bläddra genom visningslägen</td>
+<td>Cmd+Shift+M</td>
+</tr>
+<tr>
+<td>Kort (kolumner)-vy</td>
+<td>Ctrl+F1</td>
+</tr>
+<tr>
+<td>Fullständig (detaljer)-vy</td>
+<td>Ctrl+F2</td>
+</tr>
+<tr>
+<td>Miniatyrer (galleri)-vy</td>
+<td>Ctrl+Shift+F1</td>
+</tr>
+<tr>
+<td>Trädvy</td>
+<td>Ctrl+F8</td>
+</tr>
+<tr>
+<td>Sortera efter namn</td>
+<td>Ctrl+F3</td>
+</tr>
+<tr>
+<td>Sortera efter filändelse</td>
+<td>Ctrl+F4</td>
+</tr>
+<tr>
+<td>Sortera efter storlek</td>
+<td>Ctrl+F5</td>
+</tr>
+<tr>
+<td>Sortera efter datum</td>
+<td>Ctrl+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Naturlig (numerisk) sortering är på som standard, så <code>file2</code> kommer före <code>file10</code> i stället för efter. Du kan stänga av den i Konfiguration &gt; Alternativ under visningsinställningarna.</li>
+<li>Du kan bredda eller smalna av en kolumn i detaljvyn genom att dra i avdelaren mellan kolumnrubrikerna.</li>
+<li>Visningsläge, sorteringsordning och kolumnval kommer ihåg per panel, så du kan ha den ena sidan som en detaljerad lista och den andra som ett fotogalleri.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="panels-and-tabs.html">Flikar</a></li><li><a href="quick-search-and-filter.html">Snabbsökning och filter</a></li></ul></section>
+</main>
+</body>
+</html>

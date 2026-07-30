@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filverktøy</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Filverktøy</h1>
+<p>Utover kopiering og flytting inkluderer Peach Commander et sett med hverdagslige filverktøy for å verifisere at filer er intakte, gjenvinne diskplass, dele opp store filer i mindre biter, og konvertere filer til og fra tekstsikre formater. Du når alle sammen fra <strong>Fil</strong>-menyen, og de handler på det du har merket i det aktive panelet (eller elementet under markøren når ingenting er merket). Dette emnet dekker sjekksummer, duplikatfinneren, del/kombiner, kod/dekod og beregning av opptatt plass.</p>
+<h2 id="opprett-eller-verifiser-sjekksummer">Opprett eller verifiser sjekksummer</h2>
+<p>Sjekksummer lar deg bekrefte at en fil ble lastet ned eller kopiert uten korrupsjon, eller gi en mottaker en måte å sjekke kopien de mottok på.</p>
+<ol>
+<li>Merk filene du vil ta fingeravtrykk av.</li>
+<li>Velg <strong>Fil ▸ Opprett sjekksummer…</strong>, velg en algoritme (CRC32, MD5, SHA-1, SHA-256 eller SHA-512), og lagre sjekksumfilen.</li>
+<li>For å sjekke filer senere, merk sjekksumfilen og velg <strong>Fil ▸ Verifiser sjekksummer…</strong>. Peach Commander beregner hver hash på nytt og rapporterer enhver fil som ikke stemmer.</li>
+</ol>
+<p>Sjekksummer strømmer direkte over gjeldende plassering, så du kan opprette eller verifisere dem selv for filer inne i arkiver eller på en FTP-server.</p>
+<h2 id="finn-duplikatfiler">Finn duplikatfiler</h2>
+<p>Duplikatfinneren finner identiske filer spredt over mapper slik at du kan fjerne de ekstra kopiene.</p>
+<ol>
+<li>Merk mappene (eller filene) du vil skanne.</li>
+<li>Velg <strong>Fil ▸ Finn duplikater…</strong>. Peach Commander sammenligner kandidater og grupperer filer som er byte-for-byte identiske.</li>
+<li>Se gjennom hver gruppe, merk kopiene du ikke lenger trenger, og slett dem.</li>
+</ol>
+<p><img alt="Duplikatfinneren som lister opp grupper av identiske filer" src="images/duplicate-finder.png" />
+<em>(Figur: Duplikatfinneren grupperer identiske filer slik at du kan beholde én og fjerne resten.)</em></p>
+<h2 id="del-og-kombiner-filer">Del og kombiner filer</h2>
+<p>Deling bryter én stor fil opp i en nummerert serie mindre deler — praktisk for lagrings- eller overføringsgrenser. Kombinering setter dem sammen igjen.</p>
+<ol>
+<li>For å dele, merk en fil og velg <strong>Fil ▸ Del fil…</strong>, og sett deretter delstørrelsen. Delene skrives til det andre panelets mappe.</li>
+<li>For å sette sammen igjen, merk den første delen og velg <strong>Fil ▸ Kombiner filer…</strong>. Originalfilen bygges opp igjen fra de nummererte bitene.</li>
+</ol>
+<h2 id="kod-og-dekod">Kod og dekod</h2>
+<p>Koding gjør en binærfil om til ren tekst slik at den overlever kanaler som bare bærer tekst (for eksempel eldre e-post eller innlimingsbokser). Dekoding reverserer det.</p>
+<ol>
+<li>Merk en fil og velg <strong>Fil ▸ Kod…</strong>, og velg deretter et format — MIME (Base64), UUE (uuencode) eller XXE.</li>
+<li>For å gjenopprette originalen, merk den kodede filen og velg <strong>Fil ▸ Dekod…</strong>. Formatet oppdages automatisk.</li>
+</ol>
+<h2 id="beregn-opptatt-plass">Beregn opptatt plass</h2>
+<p>For å se hvor mye plass en mappe eller et utvalg faktisk bruker på disken, merk elementene og trykk <strong>Ctrl+L</strong> (<strong>Fil ▸ Beregn opptatt plass…</strong>). Peach Commander summerer hver fil inni, inkludert undermapper, og viser totalen.</p>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Tast</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Beregn opptatt plass</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Sjekksummer, del/kombiner og kod/dekod er rettet mot mer avanserte oppgaver, men hver er en enkelt dialog med fornuftige standardverdier.</li>
+<li>Når et verktøy produserer nye filer (deler fra en oppdeling, en kodet fil, en sjekksumliste), skrives de til mappen som vises i det andre panelet — sett det panelet til ditt tiltenkte mål først.</li>
+<li>Å slette duplikater er permanent avhengig av sletteinnstillingene dine; se gjennom hver gruppe nøye og behold minst én kopi av alt du fortsatt trenger.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Sammenligne og synkronisere</a></li></ul></section>
+</main>
+</body>
+</html>

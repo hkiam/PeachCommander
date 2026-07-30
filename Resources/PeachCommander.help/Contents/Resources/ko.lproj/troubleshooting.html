@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>문제 해결</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>문제 해결</h1>
+<p>이 항목은 사람들이 가장 자주 겪는 문제를 다룹니다: macOS가 특정 폴더 접근을 차단하는 경우, 폴더가 옛 내용에 멈춘 것처럼 보이는 경우, 보안 FTP 서버가 연결을 거부하는 경우, 그리고 RAR로 압축하기. 각 절은 무슨 일이 일어나는지와 해결 방법을 알려 줍니다.</p>
+<h2 id="macos">macOS가 권한을 요청하거나 폴더가 비어 보임</h2>
+<p>일부 위치 — <code>~/Library</code> 폴더, 다른 사용자의 폴더, 시스템 영역 등 — 는 macOS가 보호하며 접근을 부여할 때까지 숨겨집니다. Peach Commander는 이런 경우를 감지하고 올바른 설정으로 안내하겠다고 제안합니다.</p>
+<ol>
+<li>안내가 나오면 시스템 설정을 열거나 직접 엽니다.</li>
+<li>개인정보 보호 및 보안으로 이동한 다음 전체 디스크 접근으로 갑니다.</li>
+<li>Peach Commander 옆 스위치를 켭니다. 목록에 없으면 추가 버튼으로 추가합니다.</li>
+<li>새 권한이 적용되도록 Peach Commander를 종료했다가 다시 엽니다.</li>
+</ol>
+<p>Peach Commander는 제한된 샌드박스 안에서 실행되지 않으므로, 전체 디스크 접근이 부여되면 Finder처럼 파일을 탐색하고 관리할 수 있습니다.</p>
+<h2 id="_1">폴더가 최근 변경 사항을 표시하지 않음</h2>
+<p>패널은 디스크에서 파일이 바뀌면 보통 스스로 갱신됩니다. 다른 프로그램이 폴더를 변경했거나, 네트워크 볼륨에 있거나, 그냥 오래돼 보이면 수동으로 새로 고칩니다.</p>
+<ol>
+<li>갱신하려는 패널을 클릭합니다.</li>
+<li>F2(또는 Ctrl+R)를 눌러 그 폴더를 다시 읽습니다.</li>
+</ol>
+<p>네트워크와 마운트된 볼륨은 항상 변경을 macOS에 알리지는 않으므로, 그런 경우 수동 새로 고침이 확실한 해결책입니다.</p>
+<h2 id="ftps">FTPS 서버가 연결되지 않음</h2>
+<p>보안 FTP 연결이 실패하면 연결 세부 정보에서 다음 설정을 확인하세요:</p>
+<ul>
+<li>서버의 보안 모드를 맞추세요: 명시적 FTPS(AUTH TLS)와 암시적 FTPS(포트 990)는 서로 바꿔 쓸 수 없습니다.</li>
+<li>로그인 후 연결이 멈추면 수동/능동 전송 모드를 전환하세요 — 방화벽 뒤 대부분의 서버는 수동이 필요합니다.</li>
+<li>서버가 자체 서명 인증서를 쓰면 명시적으로 허용해야 합니다. 그렇지 않으면 연결이 거부됩니다.</li>
+<li>호스트, 포트, 사용자 이름, 비밀번호, 그리고 네트워크에서 SOCKS5 프록시가 필요한지 확인하세요.</li>
+</ul>
+<h2 id="rar">RAR로 압축해도 아무 일이 없음</h2>
+<p>Peach Commander는 ZIP, 7z, TAR, TAR.GZ, BZ2, XZ 압축 파일을 자체적으로 만들 수 있습니다. RAR은 다릅니다: RAR은 독점 형식이므로 RAR 압축 파일을 만들려면 Mac에 별도의 RAR 명령줄 도구가 설치되어 있어야 합니다. 그것이 없으면 파일을 압축할 때(Option+F5) RAR을 사용할 수 없습니다. 기존 RAR 압축 파일을 읽는 것은 폴더처럼 열어 여전히 가능합니다. 굳이 RAR이 필요하지 않다면 ZIP이나 7z를 대신 고르세요 — 둘 다 강력한 AES-256 암호화와 분할 볼륨을 지원합니다.</p>
+<h2 id="_2">단축키</h2>
+<table>
+<thead>
+<tr>
+<th>동작</th>
+<th>단축키</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>활성 폴더 새로 고침</td>
+<td>F2 또는 Ctrl+R</td>
+</tr>
+<tr>
+<td>FTP/FTPS 서버에 연결</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>네트워크 공유 마운트</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>선택한 파일 압축</td>
+<td>Option+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">참고</h2>
+<ul>
+<li>비밀번호와 기타 자격 증명은 평문 구성 파일이 아니라 macOS 키체인에만 저장됩니다.</li>
+<li>네트워크 공유 마운트(Cmd+K, 또는 네트워크 메뉴 ▸ 네트워크 공유 마운트…)는 macOS 자체가 쓰는 것과 같은 연결을 사용하므로 Finder에도 나타납니다.</li>
+<li>새로 고침과 재시작 후에도 문제가 계속되면 결함이 아니라 알려진 제한일 수 있습니다 — 알려진 제한을 참조하세요.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">개인정보 보호 및 보안</a></li><li><a href="known-limitations.html">알려진 제한 사항</a></li></ul></section>
+</main>
+</body>
+</html>

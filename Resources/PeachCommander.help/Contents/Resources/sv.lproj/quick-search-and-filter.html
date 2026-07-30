@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snabbsökning och filter</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Snabbsökning och filter</h1>
+<p>När en mapp innehåller hundratals objekt behöver du sällan rulla. Peach Commander låter dig hoppa direkt till en fil genom att skriva dess namn (snabbsökning), banta listan till bara de objekt du bryr dig om (snabbfilter) och visa eller dölja de punktfiler som macOS normalt håller undan. Alla tre fungerar inuti den aktiva panelen utan att öppna en dialogruta.</p>
+<h2 id="hoppa-till-en-fil-genom-att-skriva-snabbsokning">Hoppa till en fil genom att skriva (snabbsökning)</h2>
+<ol>
+<li>Klicka på en filpanel så att den är aktiv.</li>
+<li>Börja skriva början på ett namn. Markören hoppar till det första matchande objektet.</li>
+<li>Fortsätt skriva för att förfina matchningen, eller tryck på samma bokstav igen för att bläddra bland objekt som börjar på den bokstaven.</li>
+<li>Den inskrivna texten rensas efter en kort paus, så du kan börja en ny sökning när som helst.</li>
+</ol>
+<p>Som standard går vanliga bokstäver till kommandoraden och snabbsökning utlöses med Ctrl+Option+bokstav (det klassiska beteendet). Du kan ändra så att snabbsökning svarar på vanlig inskrivning i stället, eller stänga av den, i Konfigurationsinställningarna.</p>
+<h2 id="filtrera-listan-snabbfilter">Filtrera listan (snabbfilter)</h2>
+<ol>
+<li>Tryck på Ctrl+S i den aktiva panelen för att slå på snabbfiltret.</li>
+<li>Skriv en filtermask. Panelen smalnas av i realtid till matchande objekt medan du skriver.</li>
+<li>Tryck på Esc för att rensa filtret och visa allt igen.</li>
+</ol>
+<p>Filtret godtar flera slags masker:</p>
+<ul>
+<li><strong>Vanlig text</strong> matchar valfritt namn som innehåller det du skrev (till exempel visar <code>report</code> alla objekt med "report" var som helst i namnet).</li>
+<li><strong>Jokertecken</strong> använder <code>*</code> (valfria tecken) och <code>?</code> (ett tecken). Separera flera masker med semikolon och lägg undantag efter ett lodrätt streck, till exempel <code>*.jpg;*.png|*thumb*</code> för att visa bilder men dölja miniatyrer.</li>
+<li><strong>Finder-taggar</strong> filtrerar på taggfärg: skriv <code>tag:red</code> (eller <code>#red</code>) för att visa endast rödtaggade objekt, eller enbart <code>tag:</code> för att visa allt som bär någon tagg.</li>
+</ul>
+<h2 id="visa-dolda-filer">Visa dolda filer</h2>
+<p>Tryck på Ctrl+H, eller välj kommandot från Visa-menyn, för att växla dolda objekt (namn som börjar med en punkt och systemdolda filer). Inställningen gäller den aktiva panelen och kommer ihåg mellan sessioner.</p>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Snabbsökning (klassiskt läge)</td>
+<td>Ctrl+Option+bokstav</td>
+</tr>
+<tr>
+<td>Snabbfilter på/av</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Rensa filter / avbryt</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Visa/dölj dolda filer</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Snabbsökning flyttar bara markören; snabbfilter ändrar faktiskt vilka objekt som listas. Använd filtret när du vill arbeta på en delmängd (till exempel markera eller kopiera bara matchningarna).</li>
+<li>Filter- och dolda-filer-inställningarna är per panel, så de två sidorna kan visa olika saker samtidigt.</li>
+<li>Snabbsökning matchar namn från början; snabbfiltrets vanliga textläge matchar var som helst i namnet. Använd ett jokertecken som <code>*text*</code> om du vill att filtret ska bete sig likadant.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Hitta filer</a></li><li><a href="view-modes-and-sorting.html">Visningslägen och sortering</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>卸载器</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>卸载器</h1>
+<p>将应用拖到废纸篓会把它的支持文件、缓存、偏好设置和容器散落在你的资源库文件夹各处。Uninstaller 插件会移除一个应用程序<strong>以及</strong>这些残留：它会找出应用留下的所有内容，向你显示带有各自大小的列表，并在你确认后将它们全部移到废纸篓。由于它是插件，你可以从 <strong>配置 ▸ 插件…</strong> 中将其停用或移除。</p>
+<h2 id="_1">卸载光标下的应用</h2>
+<ol>
+<li>将光标置于面板中的某个应用程序（<code>.app</code>）上。</li>
+<li>选择 <strong>文件 ▸ Uninstall Application…</strong>，或右键单击 ▸ <strong>Uninstall Application…</strong>，或按 <strong>Cmd+Shift+U</strong>。</li>
+<li>审查窗口会打开，列出该应用以及它找到的每个相关文件，每一项都标注其类别、路径和大小。</li>
+<li>取消勾选任何你想保留的项，然后点按 <strong>Move to Trash</strong>（或 <strong>Delete Permanently</strong>）。</li>
+</ol>
+<p><img alt="卸载审查窗口，列出某应用的残留文件，带有复选框和大小" src="images/uninstaller.png" />
+<em>（图：在删除任何内容之前，准确审查将被移除的内容。）</em></p>
+<h2 id="_2">浏览所有已安装的应用</h2>
+<p>选择 <strong>命令 ▸ Uninstall Application…</strong> 打开一份可搜索的列表，列出你 Mac 上已安装的应用，附每个应用的名称、大小和安装日期。选择一个（或多个），点按 <strong>Uninstall…</strong>，你会进入同一个审查窗口。你可以在搜索框中输入以筛选列表。</p>
+<h2 id="_3">查找残留文件</h2>
+<p>选择 <strong>命令 ▸ Find Leftover Files…</strong> 来扫描属于你<strong>已经</strong>删除的应用的支持文件、缓存和偏好设置。以同样的方式审查它们并清除。如果没有找到任何内容，插件会告知你。</p>
+<h2 id="_4">扫描的彻底程度</h2>
+<p>审查窗口有一个置信度控件：</p>
+<ul>
+<li><strong>Precise</strong> —— 锚定到应用捆绑标识符的文件。高置信度；预先选中。</li>
+<li><strong>Enhanced</strong> —— 加入按名称匹配的文件；保持未勾选，以便你自行决定。</li>
+<li><strong>Deep</strong> —— 在 Enhanced 的基础上再加一次 Spotlight 扫查，查找其他任何提及该应用的内容；同样保持未勾选。</li>
+</ul>
+<h2 id="_5">说明</h2>
+<ul>
+<li>插件不会直接删除任何内容 —— 项目会经过应用的废纸篓或永久删除，与任何其他文件操作完全一样。移除 <code>/Library</code> 或 <code>/var</code> 中的文件可能需要管理员密码。</li>
+<li>在移除之前，插件会退出正在运行的应用并卸载其后台（launchd）项，然后主动提出整理任何现已为空的供应商文件夹。</li>
+<li>如果该应用是用 <strong>Homebrew</strong> 安装的，插件会警告你并建议使用 <code>brew uninstall --cask</code>，以使 Homebrew 保持同步。App Store 应用也会被标注出来。</li>
+<li>Enhanced 和 Deep 的匹配在设计上置信度较低，且初始未勾选 —— 移除前请先审查。某些通过现代登录项 API 安装的后台项无法在此处移除。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="deleting-files.html">删除文件</a></li></ul></section>
+</main>
+</body>
+</html>

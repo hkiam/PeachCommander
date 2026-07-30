@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vtičniki</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Vtičniki</h1>
+<p>Vtičniki razširijo Peach Commander z dodatnimi orodji, oblikami datotek in mesti za brskanje. Ducat vtičnikov je vgrajenih, tako da jih lahko začnete uporabljati takoj, posamezne vtičnike pa lahko vklopite ali izklopite — ali namestite nove — iz enega samega okna. Vtičnike uporabite, ko želite zmožnosti onkraj vsakodnevnega kopiranja in brskanja: vizualizirati, kaj polni disk, se povezati s strežnikom WebDAV, preveriti stanje odložišča Git, spremljati sistemsko dejavnost in več.</p>
+<p>Vtičniki prihajajo v nekaj različicah: nekateri dodajo <strong>podokno ali stransko vrstico</strong> (pogled), nekateri dodajo <strong>stolpce</strong> v seznam datotek, nekateri dodajo <strong>mesto, v katero se pomaknete</strong>, kot je disk, nekateri pa aplikacijo naučijo nove <strong>oblike arhiva</strong>. Vsak se omogoči neodvisno.</p>
+<h2 id="kaj-dodajajo-vgrajeni-vticniki">Kaj dodajajo vgrajeni vtičniki</h2>
+<p>Več vtičnikov ima svojo podrobno temo pomoči — sledite povezavi za celotno zgodbo:</p>
+<ul>
+<li><strong><a href="disk-map.md">Zemljevid diska</a></strong> — vizualizira, kaj polni mapo ali nosilec, kot drevesni zemljevid ali sončni izbruh, usklajeno s prostim, izbrisljivim in skritim prostorom, z zbiralnikom za pospravljanje.</li>
+<li><strong><a href="ai-assistant.md">Pomočnik UI</a></strong> — izbirni pomočnik, ki ga je mogoče odstraniti in ki povzema, preimenuje, prevaja, ureja v tabele ter pospravlja datoteke v naravnem jeziku, na napravi ali prek modela v oblaku.</li>
+<li><strong><a href="git.md">Git</a></strong> — prikaže stanje delovnega drevesa vsake datoteke in trenutno vejo kot stolpca podokna ter doda meni <strong>Git</strong> za stanje, pripravo, uveljavitev, prenos in potisk.</li>
+<li><strong><a href="system-monitor.md">System Monitor</a></strong> — prikaz procesorja, pomnilnika, diska, omrežja (in, kjer je na voljo, GPE, baterije, senzorjev) v realnem času v naslovni vrstici okna, s podrobnimi grafi ob kliku.</li>
+<li><strong><a href="task-manager.md">Task Manager</a></strong> — priklopi vaše izvajajoče se procese kot disk <strong>TaskManager</strong>, po katerem lahko brskate; razvrstite jih, preučite kot datoteke ali jih končajte z Izbriši.</li>
+<li><strong><a href="uninstaller.md">Uninstaller</a></strong> — odstrani aplikacijo <strong>in</strong> podporne datoteke, predpomnilnike in nastavitve, ki jih pusti za seboj, potem ko vam natančno pokaže, kaj bo odšlo.</li>
+</ul>
+<p>Preostali vgrajeni vtičniki so manjši in ne potrebujejo svoje strani:</p>
+<ul>
+<li><strong>WebDAV</strong> — povežite se s strežnikom WebDAV (<strong>Omrežje ▸ Poveži WebDAV…</strong>) in po njem brskajte, nalagajte, prenašajte, preimenujte in brišite, kot da bi bila mapa. Gesla se hranijo v ključavnici macOS.</li>
+<li><strong>iCloud Drive</strong> — doda vnos <em>iCloud Drive</em> v vrstico diskov, ki skoči naravnost v vašo lokalno mapo iCloud Drive. Pojavi se le, kadar je iCloud Drive nastavljen na vašem Macu.</li>
+<li><strong>Notes</strong> — hranite zapisek poleg katere koli datoteke ali mape. Majhna značka <strong>●</strong> označuje elemente, ki ga imajo; zapiske urejajte v zasidrani stranski vrstici <strong>Notes</strong> ali v celotnem urejevalniku obogatenega besedila (<strong>Ukazi ▸ Uredi zapisek…</strong>) in po vseh brskajte s <strong>Pregled zapiskov…</strong>.</li>
+<li><strong>Log Viewer</strong> — odprite datoteko kot barvno kodiran dnevnik s klasificiranimi ravnmi in sledenjem v živo (<strong>Datoteka ▸ Poglej kot dnevnik…</strong>), s filtri po ravneh, iskanjem in podporo za pogoste oblike dnevnikov ter vaše lastne oblike z regularnimi izrazi. Takoj obvlada dnevnike velikosti več gigabajtov.</li>
+<li><strong>Stolpec UI</strong> — doda stolpec <em>Jezik UI</em>, ki na napravi zazna prevladujoči jezik vsake besedilne datoteke (z Applovim okvirom NaturalLanguage — ne z modelom v oblaku).</li>
+<li><strong>Oblike arhivov</strong> — aplikacijo naučijo brskanja in razširjanja več vrst arhivov (7z, družina tar, gzip/bzip2/xz/zstd in RAR, kjer je nameščeno pomožno orodje), ki se nato odpirajo kot mape.</li>
+</ul>
+<h2 id="vklop-ali-izklop-vticnikov">Vklop ali izklop vtičnikov</h2>
+<ol>
+<li>Izberite Konfiguracija ▸ Vtičniki…, da odprete okno vtičnikov.</li>
+<li>Vsak nameščen vtičnik se pojavi na seznamu z imenom, vrsto in potrditvenim poljem »Omogočeno«.</li>
+<li>Označite ali odznačite polje, da omogočite ali onemogočite vtičnik. Spremembe začnejo veljati takoj — omogočeni vtičniki dodajo svoje menije, stolpce in funkcije; onemogočeni se držijo ob strani.</li>
+</ol>
+<p><img alt="Okno vtičnikov, ki našteva nameščene vtičnike s potrditvenimi polji ter gumboma Namesti in Odstrani" src="images/plugins-window.png" />
+<em>(Slika: okno vtičnikov, kjer omogočate, onemogočate, nameščate ali odstranjujete vtičnike.)</em></p>
+<h2 id="namestitev-novega-vticnika">Namestitev novega vtičnika</h2>
+<ol>
+<li>Izberite Konfiguracija ▸ Vtičniki….</li>
+<li>Kliknite <strong>Namesti iz mape…</strong>.</li>
+<li>Izberite paket vtičnika ali <code>.zip</code>, ki ga vsebuje, in potrdite. Vtičnik se doda na seznam in omogoči.</li>
+</ol>
+<h2 id="odstranitev-vticnika">Odstranitev vtičnika</h2>
+<ol>
+<li>V oknu vtičnikov označite vtičnik na seznamu.</li>
+<li>Kliknite <strong>Odstrani</strong>. Vgrajene funkcije niso prizadete; odstrani se le izbrani vtičnik.</li>
+</ol>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Seznam vtičnikov prikazuje vrsto in različico vmesnika vsakega vtičnika poleg imena in lokacije, tako da lahko potrdite, kaj je nameščeno.</li>
+<li>Če ni nameščen noben vtičnik, okno prikaže kratko vabilo, ki vas usmeri k <strong>Namesti iz mape…</strong>.</li>
+<li>Nekateri vtičniki dodajo svoje stolpce, elemente menija ali mesta podokna le, medtem ko so omogočeni. Če pričakovana funkcija manjka, preverite, ali je vtičnik tu vklopljen.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Zemljevid diska</a></li><li><a href="ai-assistant.html">Pomočnik UI</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="archives.html">Delo z arhivi</a></li><li><a href="ftp-and-sftp.html">Povezovanje s FTP in SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

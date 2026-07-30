@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opgavehåndtering</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Opgavehåndtering</h1>
+<p>Task Manager-pluginet gør de kørende processer på din Mac til en mappe, du kan gennemse. Det vises som et <strong>TaskManager</strong>-drev i drevlinjen; åbn det, og hver proces er en række, du kan sortere, granske som en fil eller afslutte — med de samme taster, du allerede bruger til filer. Det er et plugin, så du kan slå det fra eller fjerne det i <strong>Konfiguration ▸ Plugins…</strong>.</p>
+<h2 id="abn-det">Åbn det</h2>
+<ol>
+<li>Klik på <strong>📊 TaskManager</strong>-emnet i drevlinjen (det sidder lige efter dit startdrev).</li>
+<li>Panelet fyldes med én række pr. kørende proces. Hver rækkes navn er procesnavnet efterfulgt af dens PID, for eksempel <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="Task Manager der viser kørende processer med kolonnerne PID, CPU, hukommelse og kommando" src="images/task-manager.png" />
+<em>(Figur: kørende processer vist som en filliste, du kan sortere og handle på.)</em></p>
+<h2 id="hvad-hver-kolonne-betyder">Hvad hver kolonne betyder</h2>
+<p>Ved siden af de sædvanlige kolonner Størrelse (hukommelse) og Dato (starttidspunkt) tilføjer Task Manager proceskolonner:</p>
+<table>
+<thead>
+<tr>
+<th>Kolonne</th>
+<th>Betydning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>Proces-id</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Nylig processorbrug (kræver en anden opdatering for at dukke op)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Antal tråde</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R kører · S sover · T stoppet · Z zombie · I inaktiv</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Ejer</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>Forældreprocessens id</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>Fuld kommandolinje</td>
+</tr>
+</tbody>
+</table>
+<p>Sortér efter enhver kolonne (for eksempel CPU % eller Størrelse/hukommelse), præcis som du ville gøre i en almindelig mappe.</p>
+<h2 id="granske-eller-afslutte-en-proces">Granske eller afslutte en proces</h2>
+<ul>
+<li><strong>Vis (F3)</strong> viser en rapport med <em>Procesoplysninger</em>: navn, PID, forælder, bruger, tilstand, tråde, hukommelse, CPU, starttidspunkt, sti til den eksekverbare fil og den fulde kommandolinje.</li>
+<li><strong>Slet (F8)</strong> afslutter processen. Den første sletning sender en pæn <strong>quit</strong> (SIGTERM); at slette en proces, der stadig kører, en anden gang eskalerer til en <strong>force quit</strong> (SIGKILL). Pluginet retter sig aldrig mod PID 1.</li>
+</ul>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Grundlæggende oplysninger (PID, forælder, bruger, tilstand) kan læses for hver proces, ligesom <code>ps</code>. Hukommelse, tråde og CPU kan kun læses for <strong>dine egne</strong> processer; andre processer viser de kolonner blanke (de kræver forhøjede rettigheder, en senere tilføjelse).</li>
+<li>CPU % er en ændring mellem to målinger, så den er blank, indtil panelet opdaterer en anden gang (panelet opdateres omtrent hvert andet sekund).</li>
+<li>Listen er skrivebeskyttet bortset fra at afslutte en proces — du kan ikke kopiere filer ind i den.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Visning af filer</a></li><li><a href="deleting-files.html">Sletning af filer</a></li></ul></section>
+</main>
+</body>
+</html>

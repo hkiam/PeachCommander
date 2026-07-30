@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatisering (AppleScript og Snarveier)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Automatisering (AppleScript og Snarveier)</h1>
+<p>Peach Commander kan skriptes, så du kan styre den fra AppleScript og fra Snarveier-appen. En håndfull kjerneverb lar et skript navigere i panelene, velge filer etter en maske, kopiere eller flytte det gjeldende utvalget og kjøre hvilken som helst Peach Commander-kommando etter id-en dens – ved å gjenbruke nøyaktig de samme handlingene som menyene bruker, slik at et skriptet trinn oppfører seg som et manuelt. Det er praktisk for repetitive gjøremål: å arkivere nedlastinger, klargjøre utdataene fra en bygging, eller å koble et fil-trinn inn i en større Snarvei.</p>
+<h2 id="se-ordlisten">Se ordlisten</h2>
+<ol>
+<li>Åpne <strong>Script Editor</strong> (i <code>/Programmer/Verktøy</code>).</li>
+<li>Velg <strong>Vindu ▸ Bibliotek</strong>, og dobbeltklikk deretter <strong>Peach Commander</strong> (legg den til med <strong>+</strong> hvis den ikke er oppført).</li>
+<li>Ordlisten åpnes og lister kommandoene og egenskapene nedenfor.</li>
+</ol>
+<p>Første gang et skript styrer Peach Commander, ber macOS deg tillate det (<strong>Systeminnstillinger ▸ Personvern og sikkerhet ▸ Automatisering</strong>). Godkjenn det én gang, og senere skript kjører uten spørsmål.</p>
+<h2 id="hva-du-kan-lese">Hva du kan lese</h2>
+<table>
+<thead>
+<tr>
+<th>Egenskap</th>
+<th>Betydning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>POSIX-banen til det aktive panelets mappe.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>POSIX-banen til det andre panelets mappe.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>De valgte elementene i det aktive panelet (eller elementet under markøren).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="verbene">Verbene</h2>
+<table>
+<thead>
+<tr>
+<th>Kommando</th>
+<th>Hva den gjør</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;bane&gt;" [in left\|right]</code></td>
+<td>Åpne en mappe i et panel (standard: det aktive panelet).</td>
+</tr>
+<tr>
+<td><code>select "&lt;maske&gt;"</code></td>
+<td>Velg elementer i det aktive panelet etter en jokertegnmaske, f.eks. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;mappe&gt;"</code></td>
+<td>Kopier det aktive panelets utvalg til en mappe.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;mappe&gt;"</code></td>
+<td>Flytt det aktive panelets utvalg til en mappe.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Kjør hvilken som helst kommando etter id-en dens, f.eks. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Kopier og flytt bruker den samme bakgrunnsoverføringskøen som F5/F6, så fremdrift og eventuelle overskrivingsspørsmål vises nøyaktig som ved en manuell operasjon.</p>
+<h2 id="eksempel">Eksempel</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="bruke-det-fra-snarveier">Bruke det fra Snarveier</h2>
+<p>I <strong>Snarveier</strong>-appen, legg til handlingen <strong>Kjør AppleScript</strong> og lim inn et skript som det over. Det lar deg folde et Peach Commander-trinn inn i en større Snarvei – for eksempel utløst av en mappeendring eller en hurtigtast.</p>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Kommando-id-en du sender til <code>run command</code> er den samme <code>cm_*</code>-id-en som vises i kommandoutforskeren (se <a href="start-menu.md">Startmenyen og egendefinerte kommandoer</a>).</li>
+<li>Skripting handler alltid på det <strong>aktive</strong> panelet; bruk <code>go to … in left</code> / <code>in right</code> først hvis du trenger en bestemt side.</li>
+<li>Peach Commander er en app med ett enkelt vindu, så skript retter seg mot dette vinduets to paneler.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Startmenyen og egendefinerte kommandoer</a></li><li><a href="settings.html">Innstillinger</a></li></ul></section>
+</main>
+</body>
+</html>

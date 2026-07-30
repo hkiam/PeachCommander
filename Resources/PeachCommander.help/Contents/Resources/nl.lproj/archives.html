@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Werken met archieven</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Werken met archieven</h1>
+<p>Peach Commander behandelt archieven als mappen. Je kunt een ZIP, TAR of ander ondersteund archief binnengaan, de inhoud doorbladeren en er bestanden uit kopiëren — allemaal zonder eerst naar schijf uit te pakken. Wil je een archief maken, dan bundelt de opdracht Inpakken je selectie in een ZIP, 7z, TAR of ander formaat, met optionele versleuteling en gesplitste volumes. Dit is handig om bestanden te bundelen om te versturen, een map te verkleinen voor opslag, of even in een download te kijken voordat je besluit uit te pakken.</p>
+<h2 id="een-archief-als-map-doorbladeren">Een archief als map doorbladeren</h2>
+<ol>
+<li>Zet in een paneel de cursor op een archiefbestand (bijvoorbeeld een <code>.zip</code> of <code>.tar.gz</code>).</li>
+<li>Druk op Return of Ctrl+PageDown om het binnen te gaan, net zoals je een map opent.</li>
+<li>Blader normaal door de inhoud. Druk op Backspace of Ctrl+PageUp om terug omhoog te gaan en het archief te verlaten.</li>
+<li>Om bestanden eruit te halen, selecteer je ze en kopieer je (F5) naar het andere paneel.</li>
+</ol>
+<p><img alt="In een archief bladeren alsof het een map is" src="images/archive-browse.png" />
+<em>(Afbeelding: Een geopend archief getoond als een gewone maplijst, met de bestanden klaar om eruit te kopiëren.)</em></p>
+<p>ZIP, TAR en met gzip gecomprimeerde TAR worden rechtstreeks gelezen. Andere formaten zoals CPIO, ISO, CAB, LZH, XAR en PAX worden via ingebouwde systeemhulpmiddelen gelezen. Versleutelde ZIP-archieven (zowel klassiek als AES) kunnen worden geopend zodra je het wachtwoord opgeeft.</p>
+<h2 id="bestanden-in-een-nieuw-archief-inpakken">Bestanden in een nieuw archief inpakken</h2>
+<ol>
+<li>Selecteer in het actieve paneel de bestanden en mappen die je wilt opnemen.</li>
+<li>Kies Bestand ▸ Inpakken… of druk op Alt+F5. (Om in te pakken en daarna de originelen te verwijderen, gebruik je Alt+Shift+F5.)</li>
+<li>Kies in het venster het archiefformaat (ZIP, 7z, TAR, tar.gz, bzip2, xz of RAR), het compressieniveau en waar het wordt bewaard.</li>
+<li>Zet eventueel AES-256-versleuteling aan en stel een wachtwoord in, of splits het archief in volumes van vaste grootte.</li>
+<li>Bevestig om het archief te maken.</li>
+</ol>
+<p><img alt="Het venster Inpakken met opties voor formaat, compressie, versleuteling en splitsen" src="images/pack-dialog.png" />
+<em>(Afbeelding: Het venster Inpakken, waar je het formaat kiest en versleuteling en gesplitste volumes instelt.)</em></p>
+<h2 id="een-archief-uitpakken-of-testen">Een archief uitpakken of testen</h2>
+<ol>
+<li>Zet het archief dat je wilt uitpakken in het actieve paneel en de bestemmingsmap in het andere paneel.</li>
+<li>Kies Bestand ▸ Uitpakken… of druk op Alt+F9, en bevestig de bestemming.</li>
+<li>Om een archief op schade te controleren zonder uit te pakken, kies je Bestand ▸ Archief testen.</li>
+</ol>
+<h2 id="een-zip-ter-plekke-bewerken">Een ZIP ter plekke bewerken</h2>
+<p>Je kunt bestanden in een bestaande ZIP toevoegen of verwijderen zonder hem uit te pakken. Open de ZIP als een map, en kopieer er dan bestanden in of verwijder bestanden zoals gebruikelijk — de wijziging wordt direct terug naar het archief geschreven.</p>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Sneltoets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Archief onder cursor binnengaan</td>
+<td>Return of Ctrl+PageDown</td>
+</tr>
+<tr>
+<td>Archief verlaten (omhoog)</td>
+<td>Backspace of Ctrl+PageUp</td>
+</tr>
+<tr>
+<td>Inpakken</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Inpakken en originelen verwijderen</td>
+<td>Alt+Shift+F5</td>
+</tr>
+<tr>
+<td>Uitpakken</td>
+<td>Alt+F9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Inpakken naar 7z, xz, bzip2 en RAR steunt op externe hulpmiddelen. RAR vereist met name dat het gesloten RAR-programma is geïnstalleerd; zonder dat is dat formaat niet beschikbaar.</li>
+<li>Een ZIP ter plekke bewerken herschrijft het hele archief, dus de wijzigingstijdstempels van bestanden erin blijven niet behouden.</li>
+<li>Zeer grote afzonderlijke leden worden bij uitpakken begrensd op 512 MiB. Uitpakken kan tijdens het uitvoeren worden geannuleerd.</li>
+<li>Extreem grote (ZIP64) archieven worden niet ondersteund.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Bestanden kopiëren</a></li></ul></section>
+</main>
+</body>
+</html>

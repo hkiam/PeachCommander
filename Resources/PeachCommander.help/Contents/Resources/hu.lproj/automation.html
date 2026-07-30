@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatizálás (AppleScript és Parancsok)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Automatizálás (AppleScript és Parancsok)</h1>
+<p>A Peach Commander szkriptelhető, így vezérelheti az AppleScriptből és a Parancsok alkalmazásból. Néhány alapvető ige lehetővé teszi, hogy egy szkript navigáljon a panelek között, maszk alapján jelöljön ki fájlokat, másolja vagy áthelyezze az aktuális kijelölést, és lefuttasson bármely Peach Commander-parancsot az azonosítója alapján – pontosan ugyanazokat a műveleteket használva újra, amelyeket a menük is, így egy szkriptelt lépés úgy viselkedik, mint egy kézi. Hasznos az ismétlődő teendőkhöz: letöltések rendszerezéséhez, egy build kimenetének előkészítéséhez vagy egy fájllépés beépítéséhez egy nagyobb Parancsba.</p>
+<h2 id="a-szotar-megtekintese">A szótár megtekintése</h2>
+<ol>
+<li>Nyissa meg a <strong>Script Editort</strong> (a <code>/Applications/Utilities</code> mappában).</li>
+<li>Válassza a <strong>Window ▸ Library</strong> menüpontot, majd kattintson duplán a <strong>Peach Commander</strong> elemre (adja hozzá a <strong>+</strong> gombbal, ha nincs a listán).</li>
+<li>Megnyílik a szótár, amely felsorolja az alábbi parancsokat és tulajdonságokat.</li>
+</ol>
+<p>Amikor egy szkript először vezérli a Peach Commandert, a macOS engedélyt kér erre (<strong>System Settings ▸ Privacy &amp; Security ▸ Automation</strong>). Hagyja jóvá egyszer, és a későbbi szkriptek rákérdezés nélkül futnak.</p>
+<h2 id="amit-kiolvashat">Amit kiolvashat</h2>
+<table>
+<thead>
+<tr>
+<th>Tulajdonság</th>
+<th>Jelentés</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>Az aktív panel mappájának POSIX-útvonala.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>A másik panel mappájának POSIX-útvonala.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>Az aktív panelen kijelölt elemek (vagy a kurzor alatti elem).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="az-igek">Az igék</h2>
+<table>
+<thead>
+<tr>
+<th>Parancs</th>
+<th>Mit csinál</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;path&gt;" [in left\|right]</code></td>
+<td>Megnyit egy mappát egy panelen (alapértelmezés: az aktív panel).</td>
+</tr>
+<tr>
+<td><code>select "&lt;mask&gt;"</code></td>
+<td>Az aktív panelen helyettesítő karakteres maszk alapján jelöl ki elemeket, pl. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;folder&gt;"</code></td>
+<td>Az aktív panel kijelölését egy mappába másolja.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;folder&gt;"</code></td>
+<td>Az aktív panel kijelölését egy mappába helyezi át.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Bármely parancsot lefuttat az azonosítója alapján, pl. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>A másolás és az áthelyezés ugyanazt a háttérben futó átviteli sort használja, mint az F5/F6, így a folyamat és bármely felülírási rákérdezés pontosan úgy jelenik meg, mint egy kézi művelet esetén.</p>
+<h2 id="pelda">Példa</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="hasznalat-a-parancsok-alkalmazasbol">Használat a Parancsok alkalmazásból</h2>
+<p>A <strong>Parancsok</strong> alkalmazásban adja hozzá a <strong>Run AppleScript</strong> műveletet, és illessze be egy fenti szkripthez hasonlót. Ezzel egy Peach Commander-lépést egy nagyobb Parancsba hajthat – amelyet például egy mappaváltozás vagy egy gyorsbillentyű indít el.</p>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A <code>run command</code> parancsnak átadott parancsazonosító ugyanaz a <code>cm_*</code> azonosító, amely a parancsböngészőben látható (lásd <a href="start-menu.md">A Start menü és az egyéni parancsok</a>).</li>
+<li>A szkriptelés mindig az <strong>aktív</strong> panelen hat; használja először a <code>go to … in left</code> / <code>in right</code> parancsot, ha egy adott oldalra van szüksége.</li>
+<li>A Peach Commander egyablakos alkalmazás, így a szkriptek ennek az ablaknak a két paneljét célozzák.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">A Start menü és egyéni parancsok</a></li><li><a href="settings.html">Beállítások</a></li></ul></section>
+</main>
+</body>
+</html>

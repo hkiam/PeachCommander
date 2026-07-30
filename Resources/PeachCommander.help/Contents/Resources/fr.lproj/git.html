@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>L'extension Git fait apparaître l'état d'un dépôt Git directement dans le panneau de fichiers — sans application séparée, sans terminal. Elle ajoute deux colonnes qui montrent le statut de chaque fichier dans l'arbre de travail et la branche courante, un sous-menu <strong>Git</strong> pour les commandes de tous les jours (statut, indexer, commit, pull, push), et elle utilise le <code>git</code> déjà installé sur votre Mac. C'est une extension, vous pouvez donc la désactiver ou la retirer dans <strong>Configuration ▸ Extensions…</strong>.</p>
+<h2 id="ce-quelle-ajoute">Ce qu'elle ajoute</h2>
+<ul>
+<li><strong>Deux colonnes dans la liste de fichiers</strong> — <em>Statut Git</em> et <em>Branche</em>. Dans un dépôt, chaque fichier affiche un mot de statut court (Modifié, Ajouté, Supprimé, Non suivi, Renommé, Copié, Conflit, Ignoré ou Changé) et le panneau affiche la branche courante. Activez les colonnes dans <strong>Configuration ▸ Colonnes…</strong> (voir <a href="view-modes-and-sorting.md">Modes d'affichage et tri</a>).</li>
+<li><strong>Un menu Git</strong> — sous <strong>Commandes ▸ Git</strong>, et dans le menu contextuel d'un fichier, avec : <strong>Statut Git…</strong>, <strong>Git Add (indexer)</strong>, <strong>Commit Git…</strong>, <strong>Git Pull</strong> et <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="La boîte de dialogue Statut Git montrant la branche courante et les fichiers modifiés du dépôt" src="images/git-status.png" />
+<em>(Figure : Statut Git indique la branche et chaque changement de l'arbre de travail.)</em></p>
+<h2 id="verifier-le-statut">Vérifier le statut</h2>
+<ol>
+<li>Placez le curseur sur un fichier ou un dossier à l'intérieur d'un dépôt Git.</li>
+<li>Choisissez <strong>Commandes ▸ Git ▸ Statut Git…</strong> (ou clic droit ▸ <strong>Git ▸ Statut Git…</strong>).</li>
+<li>Un résumé apparaît : la branche courante (ou <em>(détachée)</em>), puis soit <em>Arbre de travail propre.</em> soit une liste de changements, chaque ligne montrant le statut et le chemin du fichier.</li>
+</ol>
+<p>Si le curseur n'est pas à l'intérieur d'un dépôt, l'extension indique simplement <em>Pas un dépôt Git.</em></p>
+<h2 id="indexer-committer-pull-push">Indexer, committer, pull, push</h2>
+<ul>
+<li><strong>Git Add (indexer)</strong> indexe le fichier sous le curseur (<code>git add</code>).</li>
+<li><strong>Commit Git…</strong> demande un message de commit, puis committe tous les changements (<code>git commit -a</code>). La sortie combinée est affichée pour que vous voyiez exactement ce qui s'est passé.</li>
+<li><strong>Git Pull</strong> effectue un pull en fast-forward uniquement (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> pousse la branche courante (<code>git push</code>).</li>
+</ul>
+<p>Après une commande qui modifie le dépôt, le panneau actif se rafraîchit pour que les colonnes de statut restent à jour.</p>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>L'extension utilise le Git système à <code>/usr/bin/git</code>. Si Git n'est pas installé, les commandes signalent que Git n'est pas disponible. (L'installation des Xcode Command Line Tools le fournit.)</li>
+<li>Le statut du dépôt est lu une fois par dossier et mis en cache, si bien que le défilement d'un gros dépôt reste rapide ; le cache se rafraîchit après toute commande qui modifie l'arbre.</li>
+<li>Le commit utilise <code>git commit -a</code>, qui committe les changements suivis ; les fichiers tout neufs nécessitent d'abord <strong>Git Add (indexer)</strong>.</li>
+<li>Les en-têtes des colonnes <em>Statut Git</em> et <em>Branche</em> s'affichent actuellement en anglais même dans d'autres langues d'interface ; les valeurs et les boîtes de dialogue sont localisées.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Extensions</a></li><li><a href="view-modes-and-sorting.html">Modes d&#x27;affichage et tri</a></li></ul></section>
+</main>
+</body>
+</html>

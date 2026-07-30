@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatisering (AppleScript en Shortcuts)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Automatisering (AppleScript en Shortcuts)</h1>
+<p>Peach Commander is scriptbaar, dus je kunt het aansturen vanuit AppleScript en vanuit de app Shortcuts. Een handvol kernwerkwoorden laat een script door de panelen navigeren, bestanden op een masker selecteren, de huidige selectie kopiëren of verplaatsen, en elke Peach Commander-opdracht via zijn id uitvoeren — waarbij precies dezelfde acties als de menu's worden hergebruikt, zodat een scriptstap zich als een handmatige gedraagt. Handig voor terugkerende klusjes: downloads opbergen, de uitvoer van een build klaarzetten, of een bestandsstap in een grotere Shortcut inbouwen.</p>
+<h2 id="het-woordenboek-bekijken">Het woordenboek bekijken</h2>
+<ol>
+<li>Open <strong>Scripteditor</strong> (in <code>/Applications/Utilities</code>).</li>
+<li>Kies <strong>Venster ▸ Bibliotheek</strong> en dubbelklik op <strong>Peach Commander</strong> (voeg het toe met <strong>+</strong> als het er niet staat).</li>
+<li>Het woordenboek opent en toont de onderstaande opdrachten en eigenschappen.</li>
+</ol>
+<p>De eerste keer dat een script Peach Commander aanstuurt, vraagt macOS om toestemming (<strong>Systeeminstellingen ▸ Privacy en beveiliging ▸ Automatisering</strong>). Keur het één keer goed en latere scripts draaien zonder vraag.</p>
+<h2 id="wat-je-kunt-uitlezen">Wat je kunt uitlezen</h2>
+<table>
+<thead>
+<tr>
+<th>Eigenschap</th>
+<th>Betekenis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>POSIX-pad van de map van het actieve paneel.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>POSIX-pad van de map van het andere paneel.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>De geselecteerde items in het actieve paneel (of het item onder de cursor).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="de-werkwoorden">De werkwoorden</h2>
+<table>
+<thead>
+<tr>
+<th>Opdracht</th>
+<th>Wat het doet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;pad&gt;" [in left\|right]</code></td>
+<td>Open een map in een paneel (standaard: het actieve paneel).</td>
+</tr>
+<tr>
+<td><code>select "&lt;masker&gt;"</code></td>
+<td>Selecteer items in het actieve paneel op een jokermasker, bijv. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;map&gt;"</code></td>
+<td>Kopieer de selectie van het actieve paneel naar een map.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;map&gt;"</code></td>
+<td>Verplaats de selectie van het actieve paneel naar een map.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Voer elke opdracht uit via zijn id, bijv. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Kopiëren en verplaatsen gebruiken dezelfde achtergrondoverdrachtwachtrij als F5/F6, zodat voortgang en eventuele overschrijfvragen precies verschijnen als bij een handmatige bewerking.</p>
+<h2 id="voorbeeld">Voorbeeld</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="gebruik-vanuit-shortcuts">Gebruik vanuit Shortcuts</h2>
+<p>Voeg in de app <strong>Shortcuts</strong> de actie <strong>Voer AppleScript uit</strong> toe en plak een script zoals hierboven. Zo vouw je een Peach Commander-stap in een grotere Shortcut — bijvoorbeeld geactiveerd door een mapwijziging of een sneltoets.</p>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>De opdracht-id die je aan <code>run command</code> geeft, is dezelfde <code>cm_*</code>-id die in de opdrachtbrowser wordt getoond (zie <a href="start-menu.md">Het Start-menu en aangepaste opdrachten</a>).</li>
+<li>Scripting werkt altijd op het <strong>actieve</strong> paneel; gebruik eerst <code>go to … in left</code> / <code>in right</code> als je een specifieke kant nodig hebt.</li>
+<li>Peach Commander is een app met één venster, dus scripts richten zich op de twee panelen van dat venster.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Het Start-menu &amp; aangepaste opdrachten</a></li><li><a href="settings.html">Instellingen</a></li></ul></section>
+</main>
+</body>
+</html>

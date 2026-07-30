@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key><string>WebDAV</string>
+	<key>CFBundleExecutable</key><string>WebDAV</string>
+	<key>CFBundlePackageType</key><string>BNDL</string>
+	<key>CFBundleShortVersionString</key><string>1.0</string>
+	<key>CFBundleVersion</key><string>1</string>
+	<key>PCPluginType</key><string>pfx</string>
+	<key>PCPluginAPIVersion</key><integer>1</integer>
+	<key>PCPluginName</key><string>WebDAV Client</string>
+	<key>PCPluginMinHostVersion</key><integer>1</integer>
+	<key>PCContributions</key>
+	<dict>
+		<key>commands</key>
+		<array>
+			<dict>
+				<key>id</key><string>plugin.webdav.connect</string>
+				<key>title</key><string>WebDAV Connect…</string>
+				<key>category</key><string>Network</string>
+			</dict>
+		</array>
+		<key>menus</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.webdav.connect</string>
+				<key>menu</key><string>Net</string>
+				<key>group</key><string>5_plugins</string>
+				<key>order</key><integer>100</integer>
+			</dict>
+		</array>
+	</dict>
+</dict>
+</plist>

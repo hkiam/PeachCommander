@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Menu Start i polecenia niestandardowe</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Menu Start i polecenia niestandardowe</h1>
+<p>Menu <strong>Start</strong> to Twoje własne osobiste menu, znajdujące się na pasku menu obok Plik, Edycja i pozostałych. Zawiera polecenia, które sam definiujesz, dzięki czemu akcje, po które sięgasz najczęściej, są zawsze o jedno kliknięcie. W tradycji klasycznych dwupanelowych menedżerów plików każda pozycja może uruchomić wbudowane polecenie, uruchomić zewnętrzny program lub aplikację, albo przeskoczyć prosto do folderu. Peach Commander jest dostarczany z pustym menu Start, gotowym do wypełnienia przez Ciebie.</p>
+<h2 id="jak-dodac-wasne-polecenia">Jak dodać własne polecenia</h2>
+<ol>
+<li>Wybierz <strong>Start &gt; Zmień menu Start…</strong>. Peach Commander otwiera Twój plik poleceń użytkownika (tworząc go z zakomentowanym przykładem za pierwszym razem).</li>
+<li>Dodaj jedną sekcję na polecenie. Każda sekcja zaczyna się od nazwy w nawiasach kwadratowych, a następnie kilka prostych kluczy:
+   - <strong>cmd</strong> — co uruchomić: ścieżkę programu, aplikację, wbudowane polecenie <code>cm_</code>, lub inne z Twoich poleceń.
+   - <strong>param</strong> — parametry przekazywane do programu. Symbole zastępcze są wypełniane przy uruchomieniu polecenia: <code>%P</code> (folder źródłowy), <code>%N</code> (bieżący plik), <code>%T</code> (folder drugiego panelu), <code>%M</code> (plik drugiego panelu), <code>%S</code> (wybrane pliki).
+   - <strong>path</strong> — folder, w którym zacząć (domyślnie bieżący folder).
+   - <strong>menu</strong> — tytuł pokazywany w menu Start.
+   - <strong>key</strong> — opcjonalny skrót, np. <code>C+S+B</code>.</li>
+<li>Zapisz plik. Menu Start aktualizuje się samo następnym razem, gdy Peach Commander stanie się aktywny, więc Twoje nowe pozycje pojawiają się od razu.</li>
+</ol>
+<h2 id="wskazowki">Wskazówki</h2>
+<ul>
+<li>Aby otworzyć bieżący folder w Terminalu, ustaw <strong>cmd</strong> na <code>open</code>, <strong>param</strong> na <code>-a Terminal %P</code>, a <strong>menu</strong> na <code>Otwórz Terminal tutaj</code>.</li>
+<li>Skieruj <strong>cmd</strong> na polecenie <code>cm_</code>, aby dać wbudowanej akcji własną pozycję menu Start i skrót.</li>
+<li>Kolejność w pliku jest kolejnością w menu, więc umieść najczęściej używane polecenia na górze.</li>
+</ul>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Możesz również zastąpić cały pasek menu własnym. Wybierz <strong>Konfiguracja &gt; Edytuj plik menu…</strong>, aby otworzyć plik menu zaczerpnięty z bieżącego, w pełni zlokalizowanego wbudowanego menu; edytuj go swobodnie, a Twoje zmiany zostaną zastosowane następnym razem, gdy aplikacja zostanie aktywowana. Usuń plik, aby przywrócić standardowy pasek menu.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">Pasek przycisków</a></li><li><a href="keyboard-shortcuts.html">Klawiatura i skróty</a></li></ul></section>
+</main>
+</body>
+</html>

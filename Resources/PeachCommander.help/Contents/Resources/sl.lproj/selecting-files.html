@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Izbiranje datotek</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Izbiranje datotek</h1>
+<p>Preden kar koli kopirate, premaknete, izbrišete ali stisnete, najprej Peach Commanderju poveste, na katerih elementih naj dela. Element, na katerem je vaš kazalec, je vedno trenutni element, lahko pa tudi <em>označite</em> eno ali mnogo datotek in map, tako da se ukaz izvede na vseh naenkrat. Označeni elementi izstopajo z izrazito barvo imena v podoknu.</p>
+<h2 id="oznacevanje-datotek-in-map">Označevanje datotek in map</h2>
+<ol>
+<li>Kliknite vrstico, da nanjo premaknete kazalec. En sam klik izbere samo tisti element.</li>
+<li>Za označitev več elementov hkrati držite Cmd in kliknite vsakega ali držite Shift in kliknite, da označite obseg.</li>
+<li>Za označitev elementa pod kazalcem in pomik navzdol v enem gibu pritisnite Insert. Pritisnite ga večkrat, da hitro označite zaporedje zaporednih elementov. Tudi preslednica preklaplja oznako trenutnega elementa (in prikaže velikost mape).</li>
+<li>Za označitev vsega v podoknu izberite Označi &gt; Izberi vse (Ctrl+Num+) ali pritisnite Cmd+A. Izberite Označi &gt; Odznači vse (Ctrl+Num-), da počistite vse oznake.</li>
+</ol>
+<h2 id="izbira-ali-odznacitev-po-vzorcu">Izbira ali odznačitev po vzorcu</h2>
+<ol>
+<li>Izberite Označi &gt; Izberi skupino … (Num+), da dodate elemente, katerih imena se ujemajo z vzorcem, ali Označi &gt; Odznači skupino … (Num-), da ujemajoče se elemente odstranite iz trenutnih oznak.</li>
+<li>Vnesite masko z nadomestnimi znaki. Uporabite <code>*</code> za poljubne znake in <code>?</code> za posamezen znak. Več mask ločite s podpičjem, izjeme pa naštejte za navpično črto — na primer <code>*.jpg;*.png</code> označi vse slike, <code>*.*|*.bak</code> pa označi vse razen varnostnih kopij.</li>
+</ol>
+<p><img alt="Pogovorno okno Izberi skupino z masko z nadomestnimi znaki, vnešeno v polje vzorca" src="images/select-by-mask.png" />
+<em>(Slika: Označevanje datotek z masko z nadomestnimi znaki.)</em></p>
+<h2 id="obrni-ista-pripona-in-obnovitev">Obrni, ista pripona in obnovitev</h2>
+<ul>
+<li><strong>Obrni izbor</strong> (Num*, meni Označi) obrne vsako oznako: označeni elementi postanejo neoznačeni in obratno — priročno za »vse razen teh«.</li>
+<li><strong>Izberi vse z isto pripono</strong> (Alt+Num+, meni Označi) označi vsako datoteko, ki si deli pripono elementa pod kazalcem, tako da en pritisk tipke zajame na primer vse datoteke <code>.pdf</code>.</li>
+<li><strong>Obnovi izbor</strong> (Num/, meni Označi) prikliče nazaj vaš prejšnji nabor oznak — uporabno, če jih je ukaz počistil ali ste označili napačno skupino.</li>
+</ul>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Tipka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Preklop oznake, pomik navzdol</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Preklop oznake (trenutni element)</td>
+<td>Space</td>
+</tr>
+<tr>
+<td>Izberi vse / odznači vse</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Izberi vse (nadomestno)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Izberi skupino po maski</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Odznači skupino po maski</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Obrni izbor</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Izberi vse z isto pripono</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Obnovi prejšnji izbor</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Oznake in kazalec so neodvisni: premikanje kazalca s puščičnimi tipkami ne spremeni tega, kar je označeno.</li>
+<li>Vnosa nadrejene mape (<code>..</code>) nikoli ni mogoče označiti.</li>
+<li>Izberi skupino, Odznači skupino in Obrni izbor se ujemajo z imenom datoteke, tako da lahko mape vključite ali izpustite, odvisno od možnosti pogovornega okna.</li>
+<li>Ko se kopiranje, premik ali brisanje konča, se elementi, ki so bili uspešno obdelani, samodejno odznačijo, tisti, ki niso uspeli, pa ostanejo označeni, da jih lahko znova poskusite.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiranje datotek</a></li><li><a href="searching.html">Iskanje datotek</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>File utilities</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>File utilities</h1>
+<p>Beyond copying and moving, Peach Commander includes a set of everyday file utilities for verifying that files are intact, reclaiming disk space, breaking large files into smaller pieces, and converting files to and from text-safe formats. You reach all of them from the <strong>File</strong> menu, and they act on whatever you have selected in the active panel (or the item under the cursor when nothing is selected). This topic covers checksums, the duplicate finder, split/combine, encode/decode, and calculating occupied space.</p>
+<h2 id="create-or-verify-checksums">Create or verify checksums</h2>
+<p>Checksums let you confirm that a file downloaded or copied without corruption, or hand a recipient a way to check the copy they received.</p>
+<ol>
+<li>Select the files you want to fingerprint.</li>
+<li>Choose <strong>File ▸ Create Checksums…</strong>, pick an algorithm (CRC32, MD5, SHA-1, SHA-256, or SHA-512), and save the checksum file.</li>
+<li>To check files later, select the checksum file and choose <strong>File ▸ Verify Checksums…</strong>. Peach Commander recomputes each hash and reports any file that does not match.</li>
+</ol>
+<p>Checksums stream directly over the current location, so you can create or verify them even for files inside archives or on an FTP server.</p>
+<h2 id="find-duplicate-files">Find duplicate files</h2>
+<p>The duplicate finder locates identical files scattered across folders so you can remove the extra copies.</p>
+<ol>
+<li>Select the folders (or files) you want to scan.</li>
+<li>Choose <strong>File ▸ Find Duplicates…</strong>. Peach Commander compares candidates and groups files that are byte-for-byte identical.</li>
+<li>Review each group, mark the copies you no longer need, and delete them.</li>
+</ol>
+<p><img alt="The duplicate finder listing groups of identical files" src="images/duplicate-finder.png" />
+<em>(Figure: The duplicate finder groups identical files so you can keep one and remove the rest.)</em></p>
+<h2 id="split-and-combine-files">Split and combine files</h2>
+<p>Splitting breaks one large file into a numbered series of smaller parts — handy for storage or transfer limits. Combining reassembles them.</p>
+<ol>
+<li>To split, select a file and choose <strong>File ▸ Split File…</strong>, then set the part size. The parts are written to the other panel's folder.</li>
+<li>To reassemble, select the first part and choose <strong>File ▸ Combine Files…</strong>. The original file is rebuilt from the numbered pieces.</li>
+</ol>
+<h2 id="encode-and-decode">Encode and decode</h2>
+<p>Encoding turns a binary file into plain text so it survives channels that only carry text (for example, older email or paste boxes). Decoding reverses it.</p>
+<ol>
+<li>Select a file and choose <strong>File ▸ Encode…</strong>, then pick a format — MIME (Base64), UUE (uuencode), or XXE.</li>
+<li>To restore the original, select the encoded file and choose <strong>File ▸ Decode…</strong>. The format is detected automatically.</li>
+</ol>
+<h2 id="calculate-occupied-space">Calculate occupied space</h2>
+<p>To see how much room a folder or selection actually uses on disk, select the items and press <strong>Ctrl+L</strong> (<strong>File ▸ Calculate Occupied Space…</strong>). Peach Commander adds up every file inside, including subfolders, and shows the total.</p>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Calculate occupied space</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Checksums, split/combine, and encode/decode are aimed at more advanced tasks, but each is a single dialog with sensible defaults.</li>
+<li>When a utility produces new files (split parts, an encoded file, a checksum list), they are written to the folder shown in the other panel — set that panel to your intended destination first.</li>
+<li>Deleting duplicates is permanent depending on your delete settings; review each group carefully and keep at least one copy of anything you still need.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Comparing &amp; synchronizing</a></li></ul></section>
+</main>
+</body>
+</html>

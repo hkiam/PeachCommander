@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trabajar con archivos comprimidos</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Trabajar con archivos comprimidos</h1>
+<p>Peach Commander trata los archivos comprimidos como si fueran carpetas. Puede entrar en un ZIP, TAR u otro archivo comprimido compatible, examinar su contenido y copiar archivos hacia fuera, todo ello sin descomprimir antes en el disco. Cuando quiera crear un archivo comprimido, el comando Comprimir agrupa su selección en un ZIP, 7z, TAR u otro formato, con cifrado opcional y volúmenes divididos. Esto resulta útil para agrupar archivos y enviarlos, reducir una carpeta para su almacenamiento o echar un vistazo dentro de una descarga antes de decidirse a extraerla.</p>
+<h2 id="examinar-un-archivo-comprimido-como-una-carpeta">Examinar un archivo comprimido como una carpeta</h2>
+<ol>
+<li>En un panel, mueva el cursor hasta un archivo comprimido (por ejemplo, un <code>.zip</code> o un <code>.tar.gz</code>).</li>
+<li>Pulse Enter o Ctrl+PageDown para entrar en él, igual que abriría una carpeta.</li>
+<li>Navegue por el contenido con normalidad. Pulse Backspace o Ctrl+PageUp para volver hacia arriba y salir del archivo comprimido.</li>
+<li>Para extraer archivos, selecciónelos y cópielos (F5) al otro panel.</li>
+</ol>
+<p><img alt="Examinando el interior de un archivo comprimido como si fuera una carpeta" src="images/archive-browse.png" />
+<em>(Figura: Un archivo comprimido abierto mostrado como el listado de una carpeta normal, con sus archivos listos para copiarse hacia fuera.)</em></p>
+<p>Los formatos ZIP, TAR y TAR comprimido con gzip se leen directamente. Otros formatos como CPIO, ISO, CAB, LZH, XAR y PAX se leen mediante herramientas integradas del sistema. Los archivos ZIP cifrados (tanto clásicos como AES) pueden abrirse cuando proporciona la contraseña.</p>
+<h2 id="comprimir-archivos-en-un-nuevo-archivo-comprimido">Comprimir archivos en un nuevo archivo comprimido</h2>
+<ol>
+<li>Seleccione los archivos y carpetas que desea incluir en el panel activo.</li>
+<li>Elija Archivo ▸ Comprimir… o pulse Alt+F5. (Para comprimir y luego eliminar los originales, use Alt+Shift+F5.)</li>
+<li>En el cuadro de diálogo, elija el formato del archivo comprimido (ZIP, 7z, TAR, tar.gz, bzip2, xz o RAR), el nivel de compresión y dónde guardarlo.</li>
+<li>Opcionalmente, active el cifrado AES-256 y establezca una contraseña, o divida el archivo comprimido en volúmenes de tamaño fijo.</li>
+<li>Confirme para crear el archivo comprimido.</li>
+</ol>
+<p><img alt="El cuadro de diálogo Comprimir mostrando las opciones de formato, compresión, cifrado y división" src="images/pack-dialog.png" />
+<em>(Figura: El cuadro de diálogo Comprimir, donde elige el formato y define las opciones de cifrado y volúmenes divididos.)</em></p>
+<h2 id="descomprimir-o-comprobar-un-archivo-comprimido">Descomprimir o comprobar un archivo comprimido</h2>
+<ol>
+<li>Coloque el archivo comprimido que desea extraer en el panel activo y la carpeta de destino en el otro panel.</li>
+<li>Elija Archivo ▸ Descomprimir… o pulse Alt+F9 y, a continuación, confirme el destino.</li>
+<li>Para comprobar si un archivo comprimido está dañado sin extraerlo, elija Archivo ▸ Comprobar archivo comprimido.</li>
+</ol>
+<h2 id="editar-un-zip-sobre-la-marcha">Editar un ZIP sobre la marcha</h2>
+<p>Puede añadir o eliminar archivos dentro de un ZIP existente sin descomprimirlo. Abra el ZIP como una carpeta y, a continuación, copie archivos dentro o elimínelos como de costumbre: el cambio se escribe directamente de nuevo en el archivo comprimido.</p>
+<h2 id="atajos">Atajos</h2>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Entrar en el archivo comprimido bajo el cursor</td>
+<td>Enter o Ctrl+PageDown</td>
+</tr>
+<tr>
+<td>Salir del archivo comprimido (subir)</td>
+<td>Backspace o Ctrl+PageUp</td>
+</tr>
+<tr>
+<td>Comprimir</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Comprimir y eliminar originales</td>
+<td>Alt+Shift+F5</td>
+</tr>
+<tr>
+<td>Descomprimir</td>
+<td>Alt+F9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>Comprimir a 7z, xz, bzip2 y RAR depende de herramientas externas. RAR, en particular, requiere que el programa propietario RAR esté instalado; sin él, ese formato no está disponible.</li>
+<li>Editar un ZIP sobre la marcha reescribe todo el archivo comprimido, por lo que las marcas de tiempo de modificación de los archivos que contiene no se conservan.</li>
+<li>Los miembros individuales muy grandes están limitados a 512 MiB al extraer. La extracción puede cancelarse mientras se ejecuta.</li>
+<li>Los archivos comprimidos extremadamente grandes (ZIP64) no son compatibles.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copiar archivos</a></li></ul></section>
+</main>
+</body>
+</html>

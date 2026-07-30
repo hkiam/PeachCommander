@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstaller</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Uninstaller</h1>
+<p>Een app naar de Prullenmand slepen laat de bijbehorende ondersteuningsbestanden, caches, voorkeuren en containers verspreid over je Bibliotheek-mappen achter. De Uninstaller-plug-in verwijdert een applicatie <strong>én</strong> die overblijfselen: hij vindt alles wat de app heeft achtergelaten, toont je de lijst met een grootte per item en verplaatst het geheel naar de Prullenmand zodra je bevestigt. Het is een plug-in, dus je kunt hem uitschakelen of verwijderen via <strong>Configuratie ▸ Plug-ins…</strong>.</p>
+<h2 id="een-app-onder-de-cursor-deinstalleren">Een app onder de cursor deïnstalleren</h2>
+<ol>
+<li>Zet de cursor op een applicatie (<code>.app</code>) in een paneel.</li>
+<li>Kies <strong>Bestand ▸ Applicatie deïnstalleren…</strong>, of rechtsklik ▸ <strong>Applicatie deïnstalleren…</strong>, of druk op <strong>Cmd+Shift+U</strong>.</li>
+<li>Het beoordelingsvenster opent en toont de app plus elk gerelateerd bestand dat het vond, elk voorzien van categorie, pad en grootte.</li>
+<li>Verwijder het vinkje bij alles wat je wilt behouden en klik vervolgens op <strong>Verplaats naar Prullenmand</strong> (of <strong>Definitief verwijderen</strong>).</li>
+</ol>
+<p><img alt="Het beoordelingsvenster van de deïnstallatie met de achtergebleven bestanden van een app, aankruisvakken en groottes" src="images/uninstaller.png" />
+<em>(Afbeelding: bekijk precies wat er wordt verwijderd voordat er iets wordt gewist.)</em></p>
+<h2 id="alle-geinstalleerde-apps-doorbladeren">Alle geïnstalleerde apps doorbladeren</h2>
+<p>Kies <strong>Opdrachten ▸ Applicatie deïnstalleren…</strong> om een doorzoekbare lijst te openen van de apps die op je Mac zijn geïnstalleerd, met per app de naam, grootte en installatiedatum. Selecteer er een (of meerdere), klik op <strong>Deïnstalleren…</strong> en je belandt in hetzelfde beoordelingsvenster. Je kunt de lijst filteren door in het zoekveld te typen.</p>
+<h2 id="achtergebleven-bestanden-vinden">Achtergebleven bestanden vinden</h2>
+<p>Kies <strong>Opdrachten ▸ Achtergebleven bestanden zoeken…</strong> om te scannen naar ondersteuningsbestanden, caches en voorkeuren die horen bij apps die je <strong>al</strong> hebt verwijderd. Beoordeel ze op dezelfde manier en ruim ze op. Als er niets wordt gevonden, meldt de plug-in dat.</p>
+<h2 id="hoe-grondig-te-scannen">Hoe grondig te scannen</h2>
+<p>Het beoordelingsvenster heeft een betrouwbaarheidsregelaar:</p>
+<ul>
+<li><strong>Precise</strong> — bestanden die verankerd zijn aan de bundle-identifier van de app. Hoge betrouwbaarheid; vooraf geselecteerd.</li>
+<li><strong>Enhanced</strong> — voegt op naam gematchte bestanden toe; blijft onaangevinkt zodat jij kunt beslissen.</li>
+<li><strong>Deep</strong> — Enhanced plus een Spotlight-veegactie naar al het andere dat de app noemt; blijft eveneens onaangevinkt.</li>
+</ul>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Niets wordt rechtstreeks door de plug-in verwijderd — items gaan via de Prullenmand of de definitieve verwijdering van de app, precies als bij elke andere bestandsbewerking. Voor het verwijderen van bestanden in <code>/Library</code> of <code>/var</code> kan een beheerderswachtwoord nodig zijn.</li>
+<li>Voor het verwijderen sluit de plug-in de draaiende app af en ontlaadt hij de achtergronditems (launchd), en biedt vervolgens aan om eventueel nu lege leveranciersmappen op te ruimen.</li>
+<li>Als de app met <strong>Homebrew</strong> is geïnstalleerd, waarschuwt de plug-in je en stelt hij <code>brew uninstall --cask</code> voor, zodat Homebrew synchroon blijft. Ook App Store-apps worden vermeld.</li>
+<li>Enhanced- en Deep-matches zijn bewust minder betrouwbaar en beginnen onaangevinkt — beoordeel ze voordat je verwijdert. Sommige achtergronditems die via de moderne login-items-API zijn geïnstalleerd, kunnen hier niet worden verwijderd.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="deleting-files.html">Bestanden verwijderen</a></li></ul></section>
+</main>
+</body>
+</html>

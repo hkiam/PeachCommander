@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hibaelhárítás</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Hibaelhárítás</h1>
+<p>Ez a téma azokat a problémákat fedi le, amelyekkel az emberek a leggyakrabban találkoznak: a macOS blokkolja a hozzáférést bizonyos mappákhoz, egy mappa régi tartalmon ragadtnak tűnik, egy biztonságos FTP-kiszolgáló megtagadja a csatlakozást, és a RAR-ba tömörítés. Minden szakasz megmondja, mi történik és hogyan javítsa.</p>
+<h2 id="a-macos-engedelyt-ker-vagy-a-mappak-uresnek-latszanak">A macOS engedélyt kér, vagy a mappák üresnek látszanak</h2>
+<p>Egyes helyek — mint a <code>~/Library</code> mappája, más felhasználók mappái és rendszerterületek — a macOS által védettek, és rejtve maradnak, amíg nem ad hozzáférést. A Peach Commander észleli, amikor ez történik, és felajánlja, hogy a megfelelő beállításhoz vezeti.</p>
+<ol>
+<li>Amikor kéri, válassza a Rendszerbeállítások megnyitását, vagy nyissa meg maga.</li>
+<li>Menjen az Adatvédelem és biztonság, majd a Teljes lemez-hozzáférés részhez.</li>
+<li>Kapcsolja be a kapcsolót a Peach Commander mellett. Ha nincs a listán, használja a Hozzáadás gombot a hozzáadásához.</li>
+<li>Lépjen ki és nyissa meg újra a Peach Commandert, hogy az új engedély életbe lépjen.</li>
+</ol>
+<p>A Peach Commander nem fut korlátozott sandboxon belül, így a Teljes lemez-hozzáférés megadása után pontosan úgy böngészhet és kezelhet fájlokat, mint a Finder.</p>
+<h2 id="egy-mappa-nem-mutatja-a-legutobbi-valtozasokat">Egy mappa nem mutatja a legutóbbi változásokat</h2>
+<p>A panelek normálisan maguktól frissülnek, amikor a fájlok megváltoznak a lemezen. Ha egy mappát egy másik program változtatott meg, hálózati köteten van, vagy egyszerűen elavultnak tűnik, frissítse manuálisan.</p>
+<ol>
+<li>Kattintson a frissíteni kívánt panelre.</li>
+<li>Nyomja meg az F2-t (vagy Ctrl+R-t) az adott mappa újraolvasásához.</li>
+</ol>
+<p>A hálózati és csatolt kötetek nem mindig jelentik a változásokat a macOS-nek, így a manuális frissítés ott a megbízható megoldás.</p>
+<h2 id="egy-ftps-kiszolgalo-nem-csatlakozik">Egy FTPS-kiszolgáló nem csatlakozik</h2>
+<p>Ha egy biztonságos FTP-kapcsolat sikertelen, ellenőrizze ezeket a beállításokat a kapcsolat részleteiben:</p>
+<ul>
+<li>Egyeztesse a kiszolgáló biztonsági módját: az explicit FTPS (AUTH TLS) és az implicit FTPS (990-es port) nem felcserélhetők.</li>
+<li>Ha a kapcsolat elakad a bejelentkezés után, váltson a passzív és aktív átviteli mód között — a tűzfal mögötti legtöbb kiszolgálónak passzívra van szüksége.</li>
+<li>Ha a kiszolgáló önaláírt tanúsítványt használ, kifejezetten engedélyeznie kell; egyébként a kapcsolat elutasításra kerül.</li>
+<li>Erősítse meg a gazdagépet, portot, felhasználónevet és jelszót, és hogy a hálózatán szükséges-e egy SOCKS5-proxy.</li>
+</ul>
+<h2 id="a-rar-ba-tomorites-nem-csinal-semmit">A RAR-ba tömörítés nem csinál semmit</h2>
+<p>A Peach Commander önmagában képes ZIP, 7z, TAR, TAR.GZ, BZ2 és XZ archívumok létrehozására. A RAR más: mivel a RAR egy szabadalmaztatott formátum, a RAR-archívumok létrehozásához egy külön RAR parancssori eszköz telepítése szükséges a Macjén. Nélküle a RAR nem elérhető, amikor fájlokat tömörít (Option+F5). A meglévő RAR-archívumok olvasásához továbbra is megnyithatja őket mappaként. Ha nincs kifejezetten szüksége RAR-ra, válassza inkább a ZIP-et vagy 7z-t — mindkettő támogatja az erős AES-256 titkosítást és a felosztott köteteket.</p>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyűparancs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Az aktív mappa frissítése</td>
+<td>F2 vagy Ctrl+R</td>
+</tr>
+<tr>
+<td>Csatlakozás egy FTP/FTPS-kiszolgálóhoz</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Hálózati megosztás csatolása</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>A kijelölt fájlok tömörítése</td>
+<td>Option+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A jelszavak és más hitelesítő adatok csak a macOS kulcskarikában tárolódnak, soha nyílt szövegű konfigurációs fájlokban.</li>
+<li>Egy hálózati megosztás csatolása (Cmd+K, vagy Hálózat menü ▸ Hálózati megosztás csatolása…) ugyanazt a kapcsolatot használja, amelyet maga a macOS, így a Finderben is megjelenik.</li>
+<li>Ha egy probléma egy frissítés és újraindítás után is fennáll, lehet, hogy egy ismert korlátozásról van szó, nem hibáról — lásd Ismert korlátozások.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">Adatvédelem és biztonság</a></li><li><a href="known-limitations.html">Ismert korlátozások</a></li></ul></section>
+</main>
+</body>
+</html>

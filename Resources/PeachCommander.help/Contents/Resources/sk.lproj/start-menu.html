@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ponuka Štart a vlastné príkazy</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Ponuka Štart a vlastné príkazy</h1>
+<p>Ponuka <strong>Štart</strong> je vaša vlastná osobná ponuka, ktorá sedí v lište ponúk vedľa Súbor, Upraviť a ostatných. Obsahuje príkazy, ktoré si sami definujete, takže akcie, po ktorých siahate najčastejšie, sú vždy jedno kliknutie ďaleko. V tradícii klasických dvojpanelových správcov súborov môže každá položka spustiť vstavaný príkaz, spustiť externý program alebo aplikáciu, alebo skočiť rovno do priečinka. Peach Commander sa dodáva s prázdnou ponukou Štart pripravenou na to, aby ste ju naplnili.</p>
+<h2 id="ako-pridat-vlastne-prikazy">Ako pridať vlastné príkazy</h2>
+<ol>
+<li>Vyberte <strong>Štart &gt; Zmeniť ponuku Štart…</strong>. Peach Commander otvorí váš súbor používateľských príkazov (prvýkrát ho vytvorí s komentovaným príkladom).</li>
+<li>Pridajte jednu sekciu na príkaz. Každá sekcia začína názvom v hranatých zátvorkách, potom niekoľkými jednoduchými kľúčmi:
+   - <strong>cmd</strong> — čo spustiť: cestu programu, aplikáciu, vstavaný príkaz <code>cm_</code>, alebo iný z vašich príkazov.
+   - <strong>param</strong> — parametre odovzdané programu. Zástupné symboly sa vyplnia pri spustení príkazu: <code>%P</code> (zdrojový priečinok), <code>%N</code> (aktuálny súbor), <code>%T</code> (priečinok druhého panela), <code>%M</code> (súbor druhého panela), <code>%S</code> (vybrané súbory).
+   - <strong>path</strong> — priečinok, v ktorom začať (predvolene aktuálny priečinok).
+   - <strong>menu</strong> — názov zobrazený v ponuke Štart.
+   - <strong>key</strong> — voliteľná skratka, napríklad <code>C+S+B</code>.</li>
+<li>Uložte súbor. Ponuka Štart sa sama aktualizuje nabudúce, keď Peach Commander stane aktívnym, takže vaše nové položky sa objavia ihneď.</li>
+</ol>
+<h2 id="tipy">Tipy</h2>
+<ul>
+<li>Na otvorenie aktuálneho priečinka v Termináli nastavte <strong>cmd</strong> na <code>open</code>, <strong>param</strong> na <code>-a Terminal %P</code>, a <strong>menu</strong> na <code>Otvoriť Terminál tu</code>.</li>
+<li>Nasmerujte <strong>cmd</strong> na príkaz <code>cm_</code>, aby ste vstavanej akcii dali vlastnú položku ponuky Štart a skratku.</li>
+<li>Poradie v súbore je poradie v ponuke, takže dajte najpoužívanejšie príkazy hore.</li>
+</ul>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Celú lištu ponúk môžete tiež nahradiť vlastnou. Vyberte <strong>Konfigurácia &gt; Upraviť súbor ponuky…</strong> na otvorenie súboru ponuky zasiateho z aktuálnej, plne lokalizovanej vstavanej ponuky; upravte ho voľne a vaše zmeny sa použijú nabudúce, keď sa aplikácia aktivuje. Odstráňte súbor na obnovenie štandardnej lišty ponúk.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">Lišta tlačidiel</a></li><li><a href="keyboard-shortcuts.html">Klávesnica a skratky</a></li></ul></section>
+</main>
+</body>
+</html>

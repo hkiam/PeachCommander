@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Režimy zobrazení a řazení</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Režimy zobrazení a řazení</h1>
+<p>Každý panel může zobrazit svou složku v rozvržení, které se hodí k úloze: podrobný seznam se sloupci, kompaktní víceslupcový seznam názvů, mřížka ikon, galerie s velkými náhledy nebo strom složek. Můžete také řadit seznam podle názvu, typu souboru, velikosti nebo data, zvolit přesně, které sloupce se zobrazí, a zapnout přirozené (číselné) řazení, aby se názvy s čísly seřadily tak, jak očekáváte. Režim zobrazení, pořadí řazení a sloupce se nastavují pro každý panel, takže obě strany mohou vypadat zcela odlišně.</p>
+<h2 id="zmena-rezimu-zobrazeni">Změna režimu zobrazení</h2>
+<ol>
+<li>Klepnutím na panel, který chcete změnit, jej učiníte aktivním.</li>
+<li>Otevřete nabídku Zobrazení a zvolte režim: <strong>Úplný (Podrobnosti)</strong> pro seznam se sloupci, <strong>Stručný (Sloupce)</strong> pro hustý víceslupcový seznam názvů, <strong>Ikony</strong> pro mřížku ikon, <strong>Náhledy (Galerie)</strong> pro velké náhledy nebo <strong>Strom</strong> pro strom složek.</li>
+<li>Chcete-li rychle procházet režimy bez otevírání nabídky, stiskněte Cmd+Shift+M. Každý stisk přejde na další režim.</li>
+</ol>
+<p><img alt="Panel zobrazující různé režimy zobrazení: podrobnosti, stručný, ikony a galerie" src="images/view-modes.png" />
+<em>(Obrázek: tatáž složka zobrazená jako podrobný seznam, stručný seznam sloupců, mřížka ikon a galerie náhledů.)</em></p>
+<h2 id="razeni-seznamu-souboru">Řazení seznamu souborů</h2>
+<ol>
+<li>V zobrazení Podrobnosti klepnutím na záhlaví sloupce (Název, Typ, Velikost nebo Datum) řadíte podle něj. Malá šipka v záhlaví ukazuje aktuální sloupec a směr řazení.</li>
+<li>Opětovným klepnutím na totéž záhlaví obrátíte pořadí.</li>
+<li>Můžete také zvolit Zobrazení &gt; Řadit podle a vybrat Název, Typ souboru, Velikost, Datum nebo Neseřazeno.</li>
+</ol>
+<p>Složky se vždy řadí společně nahoře, před soubory, a položka <code>..</code>, která vás vezme o úroveň výš, se připne jako první. Řazení podle názvu nebo typu souboru je ve výchozím nastavení vzestupné (A až Ž); řazení podle velikosti nebo data je ve výchozím nastavení nejnovější nebo největší jako první.</p>
+<h2 id="volba-zobrazenych-sloupcu">Volba zobrazených sloupců</h2>
+<ol>
+<li>Zvolte Konfigurace &gt; Sloupce….</li>
+<li>Zapněte nebo vypněte sloupce a nastavte jejich pořadí. Dostupné sloupce zahrnují Název, Typ, Velikost, Datum, Atr (atributy), Štítky a Komentář.</li>
+<li>Použijte změny. Sloupce ovlivňují zobrazení Podrobnosti aktivního panelu.</li>
+</ol>
+<p><img alt="Okno konfigurace sloupců se seznamem dostupných sloupců" src="images/columns-config.png" />
+<em>(Obrázek: zvolte, které sloupce se zobrazí v zobrazení Podrobnosti, a nastavte jejich pořadí.)</em></p>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Procházet režimy zobrazení</td>
+<td>Cmd+Shift+M</td>
+</tr>
+<tr>
+<td>Stručné (sloupce) zobrazení</td>
+<td>Ctrl+F1</td>
+</tr>
+<tr>
+<td>Úplné (podrobnosti) zobrazení</td>
+<td>Ctrl+F2</td>
+</tr>
+<tr>
+<td>Zobrazení náhledů (galerie)</td>
+<td>Ctrl+Shift+F1</td>
+</tr>
+<tr>
+<td>Stromové zobrazení</td>
+<td>Ctrl+F8</td>
+</tr>
+<tr>
+<td>Řadit podle názvu</td>
+<td>Ctrl+F3</td>
+</tr>
+<tr>
+<td>Řadit podle typu souboru</td>
+<td>Ctrl+F4</td>
+</tr>
+<tr>
+<td>Řadit podle velikosti</td>
+<td>Ctrl+F5</td>
+</tr>
+<tr>
+<td>Řadit podle data</td>
+<td>Ctrl+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tipy">Tipy</h2>
+<ul>
+<li>Přirozené (číselné) řazení je ve výchozím nastavení zapnuté, takže <code>file2</code> je před <code>file10</code> místo za ním. Můžete jej vypnout v Konfigurace &gt; Možnosti v nastavení zobrazení.</li>
+<li>Sloupec můžete v zobrazení Podrobnosti rozšířit nebo zúžit přetažením dělicí čáry mezi záhlavími sloupců.</li>
+<li>Režim zobrazení, pořadí řazení a volba sloupců se pamatují pro každý panel, takže můžete mít jednu stranu jako podrobný seznam a druhou jako fotogalerii.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="panels-and-tabs.html">Karty</a></li><li><a href="quick-search-and-filter.html">Rychlé hledání a filtr</a></li></ul></section>
+</main>
+</body>
+</html>

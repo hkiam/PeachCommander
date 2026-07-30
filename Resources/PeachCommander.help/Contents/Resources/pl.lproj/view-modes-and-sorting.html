@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tryby widoku i sortowanie</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Tryby widoku i sortowanie</h1>
+<p>Każdy panel może pokazać swój folder w układzie, który pasuje do zadania: szczegółowa lista z kolumnami, zwarta wielokolumnowa lista nazw, siatka ikon, galeria dużych miniatur lub drzewo folderów. Możesz też sortować listę według nazwy, rozszerzenia, rozmiaru lub daty, wybrać dokładnie, które kolumny się pojawiają, oraz włączyć sortowanie naturalne (numeryczne), aby nazwy z liczbami ustawiały się tak, jak można się tego spodziewać. Tryb widoku, porządek sortowania i kolumny są ustawiane osobno dla każdego panelu, więc obie strony mogą wyglądać zupełnie inaczej.</p>
+<h2 id="przeaczanie-trybu-widoku">Przełączanie trybu widoku</h2>
+<ol>
+<li>Kliknij panel, który chcesz zmienić, aby stał się aktywny.</li>
+<li>Otwórz menu Widok i wybierz tryb: <strong>Pełny (Szczegóły)</strong> dla listy z kolumnami, <strong>Skrócony (Kolumny)</strong> dla gęstej wielokolumnowej listy nazw, <strong>Ikony</strong> dla siatki ikon, <strong>Miniatury (Galeria)</strong> dla dużych podglądów lub <strong>Drzewo</strong> dla drzewa folderów.</li>
+<li>Aby szybko przełączać się między trybami bez otwierania menu, naciśnij Cmd+Shift+M. Każde naciśnięcie przechodzi do następnego trybu.</li>
+</ol>
+<p><img alt="Panel pokazujący różne tryby widoku: szczegóły, skrócony, ikony i galeria" src="images/view-modes.png" />
+<em>(Rysunek: Ten sam folder pokazany jako szczegółowa lista, skrócona lista kolumn, siatka ikon oraz galeria miniatur.)</em></p>
+<h2 id="sortowanie-listy-plikow">Sortowanie listy plików</h2>
+<ol>
+<li>W widoku Szczegóły kliknij nagłówek kolumny (Nazwa, Rozsz., Rozmiar lub Data), aby posortować według niej. Mała strzałka w nagłówku pokazuje bieżącą kolumnę i kierunek sortowania.</li>
+<li>Kliknij ten sam nagłówek ponownie, aby odwrócić porządek.</li>
+<li>Możesz też wybrać Widok &gt; Sortuj według i wybrać Nazwa, Rozszerzenie, Rozmiar, Data lub Bez sortowania.</li>
+</ol>
+<p>Foldery zawsze sortują się razem na górze, przed plikami, a wpis <code>..</code>, który przenosi Cię o poziom wyżej, pozostaje przypięty jako pierwszy. Sortowanie według nazwy lub rozszerzenia domyślnie jest rosnące (od A do Z); sortowanie według rozmiaru lub daty domyślnie umieszcza najnowsze lub największe jako pierwsze.</p>
+<h2 id="wybor-kolumn-ktore-sie-pojawiaja">Wybór kolumn, które się pojawiają</h2>
+<ol>
+<li>Wybierz Konfiguracja &gt; Kolumny….</li>
+<li>Włączaj lub wyłączaj kolumny i ustawiaj ich kolejność. Dostępne kolumny to Nazwa, Rozsz., Rozmiar, Data, Atryb. (atrybuty), Etykiety i Komentarz.</li>
+<li>Zastosuj zmiany. Kolumny wpływają na widok Szczegóły aktywnego panelu.</li>
+</ol>
+<p><img alt="Okno konfiguracji kolumn z listą dostępnych kolumn" src="images/columns-config.png" />
+<em>(Rysunek: Wybierz, które kolumny pokazują się w widoku Szczegóły, i ustaw ich kolejność.)</em></p>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Przełączaj tryby widoku</td>
+<td>Cmd+Shift+M</td>
+</tr>
+<tr>
+<td>Widok skrócony (kolumny)</td>
+<td>Ctrl+F1</td>
+</tr>
+<tr>
+<td>Widok pełny (szczegóły)</td>
+<td>Ctrl+F2</td>
+</tr>
+<tr>
+<td>Widok miniatur (galeria)</td>
+<td>Ctrl+Shift+F1</td>
+</tr>
+<tr>
+<td>Widok drzewa</td>
+<td>Ctrl+F8</td>
+</tr>
+<tr>
+<td>Sortuj według nazwy</td>
+<td>Ctrl+F3</td>
+</tr>
+<tr>
+<td>Sortuj według rozszerzenia</td>
+<td>Ctrl+F4</td>
+</tr>
+<tr>
+<td>Sortuj według rozmiaru</td>
+<td>Ctrl+F5</td>
+</tr>
+<tr>
+<td>Sortuj według daty</td>
+<td>Ctrl+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="wskazowki">Wskazówki</h2>
+<ul>
+<li>Sortowanie naturalne (numeryczne) jest domyślnie włączone, więc <code>file2</code> znajduje się przed <code>file10</code>, a nie po nim. Możesz je wyłączyć w Konfiguracja &gt; Opcje w ustawieniach wyświetlania.</li>
+<li>W widoku Szczegóły możesz poszerzyć lub zwęzić kolumnę, przeciągając dzielnik między nagłówkami kolumn.</li>
+<li>Tryb widoku, porządek sortowania i wybór kolumn są zapamiętywane osobno dla każdego panelu, więc możesz jedną stronę zachować jako szczegółową listę, a drugą jako galerię zdjęć.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="panels-and-tabs.html">Karty</a></li><li><a href="quick-search-and-filter.html">Szybkie wyszukiwanie i filtr</a></li></ul></section>
+</main>
+</body>
+</html>

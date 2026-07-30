@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snelzoeken &amp; filter</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Snelzoeken &amp; filter</h1>
+<p>Wanneer een map honderden items bevat, hoef je zelden te scrollen. Met Peach Commander kun je direct naar een bestand springen door de naam te typen (snelzoeken), de lijst terugbrengen tot alleen de items die je interesseren (snelfilter), en de dotbestanden tonen of verbergen die macOS normaal uit het zicht houdt. Alle drie werken binnen het actieve paneel zonder een venster te openen.</p>
+<h2 id="naar-een-bestand-springen-door-te-typen-snelzoeken">Naar een bestand springen door te typen (snelzoeken)</h2>
+<ol>
+<li>Klik op een bestandspaneel zodat het actief is.</li>
+<li>Begin het begin van een naam te typen. De cursor springt naar het eerste overeenkomende item.</li>
+<li>Blijf typen om de overeenkomst te verfijnen, of druk nogmaals op dezelfde letter om door items te bladeren die met die letter beginnen.</li>
+<li>De getypte tekst wordt na een korte pauze gewist, zodat je op elk moment een nieuwe zoekopdracht kunt starten.</li>
+</ol>
+<p>Standaard gaan gewone letters naar de opdrachtregel en wordt snelzoeken geactiveerd met Ctrl+Option+letter (het klassieke gedrag). Je kunt snelzoeken zo instellen dat het in plaats daarvan op gewoon typen reageert, of het uitzetten, in de Configuratie-instellingen.</p>
+<h2 id="de-lijst-filteren-snelfilter">De lijst filteren (snelfilter)</h2>
+<ol>
+<li>Druk in het actieve paneel op Ctrl+S om het snelfilter aan te zetten.</li>
+<li>Typ een filtermasker. Het paneel wordt live versmald tot overeenkomende items terwijl je typt.</li>
+<li>Druk op Esc om het filter te wissen en weer alles te tonen.</li>
+</ol>
+<p>Het filter accepteert verschillende soorten maskers:</p>
+<ul>
+<li><strong>Platte tekst</strong> komt overeen met elke naam die bevat wat je hebt getypt (bijvoorbeeld toont <code>report</code> elk item met "report" ergens in de naam).</li>
+<li><strong>Jokertekens</strong> gebruiken <code>*</code> (willekeurige tekens) en <code>?</code> (één teken). Scheid meerdere maskers met een puntkomma en voeg uitsluitingen toe na een verticale streep, bijvoorbeeld <code>*.jpg;*.png|*thumb*</code> om afbeeldingen te tonen maar miniaturen te verbergen.</li>
+<li><strong>Finder-labels</strong> filteren op labelkleur: typ <code>tag:red</code> (of <code>#red</code>) om alleen rood-gelabelde items te tonen, of een kaal <code>tag:</code> om alles te tonen dat een label draagt.</li>
+</ul>
+<h2 id="verborgen-bestanden-tonen">Verborgen bestanden tonen</h2>
+<p>Druk op Ctrl+H, of kies de opdracht uit het menu Weergave, om verborgen items te wisselen (namen die met een punt beginnen en door het systeem verborgen bestanden). De instelling geldt voor het actieve paneel en wordt tussen sessies onthouden.</p>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Sneltoets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Snelzoeken (klassieke modus)</td>
+<td>Ctrl+Option+letter</td>
+</tr>
+<tr>
+<td>Snelfilter aan/uit</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Filter wissen / annuleren</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Verborgen bestanden tonen/verbergen</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Snelzoeken verplaatst alleen de cursor; snelfilter verandert daadwerkelijk welke items worden weergegeven. Gebruik het filter wanneer je op een subset wilt werken (bijvoorbeeld alleen de overeenkomsten selecteren of kopiëren).</li>
+<li>De filter- en verborgen-bestanden-instellingen zijn per paneel, zodat de twee kanten tegelijk verschillende dingen kunnen tonen.</li>
+<li>Snelzoeken vindt overeenkomsten van namen vanaf het begin; de platte-tekstmodus van het snelfilter vindt overeenkomsten overal in de naam. Gebruik een jokerteken zoals <code>*text*</code> als je wilt dat het filter zich op dezelfde manier gedraagt.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Bestanden vinden</a></li><li><a href="view-modes-and-sorting.html">Weergavemodi &amp; sorteren</a></li></ul></section>
+</main>
+</body>
+</html>

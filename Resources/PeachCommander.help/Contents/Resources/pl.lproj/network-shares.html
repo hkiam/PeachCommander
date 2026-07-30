@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Udziały sieciowe</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Udziały sieciowe</h1>
+<p>Peach Commander może łączyć się z serwerami plików w Twojej sieci lokalnej lub firmowej — udziałami SMB (Windows/Samba) i AFP — i wyświetlać ich zawartość w panelu tak jak folder na Twoim własnym Macu. Po połączeniu udziału możesz w nim przeglądać, kopiować, przenosić, zmieniać nazwy i otwierać pliki dokładnie tak jak lokalnie, w tym kopiować między udziałem a drugim panelem.</p>
+<h2 id="poacz-sie-z-serwerem">Połącz się z serwerem</h2>
+<ol>
+<li>Kliknij panel, z którym chcesz się połączyć (połączony udział otwiera się w aktywnym panelu).</li>
+<li>Naciśnij Cmd+K lub wybierz <strong>Sieć &gt; Otoczenie sieciowe &gt; Połącz udział sieciowy…</strong>.</li>
+<li>W oknie dialogowym <strong>Połącz z serwerem</strong> wpisz adres serwera. Możesz podać:
+   - adres SMB, na przykład <code>smb://fileserver/projects</code>
+   - adres AFP, na przykład <code>afp://fileserver/projects</code>
+   - ścieżkę w stylu Windows, na przykład <code>\\fileserver\projects</code>
+   - prostą nazwę <code>serwer/udział</code></li>
+<li>Kliknij Połącz (lub naciśnij Enter). Jeśli serwer wymaga nazwy i hasła, macOS pokazuje swoje zwykłe okno logowania — wprowadź tam swoje dane.</li>
+<li>Gdy udział jest gotowy, aktywny panel otwiera go automatycznie. Przeglądaj i pracuj z nim jak z każdym innym folderem.</li>
+</ol>
+<h2 id="rozacz">Rozłącz</h2>
+<p>Połączony udział pojawia się jako zamontowany wolumin na Twoim Macu. Aby go rozłączyć, wysuń go w zwykły sposób macOS — na przykład z paska bocznego Findera lub z listy urządzeń w Peach Commanderze.</p>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Połącz udział sieciowy…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Uwierzytelnianie (nazwa użytkownika, hasło i ewentualna opcja „zapamiętaj w moim pęku kluczy”) jest obsługiwane przez zwykłe okno logowania macOS, więc zapisane hasła serwerów działają jak w Finderze.</li>
+<li>Jeśli podasz adres, którego nie da się przeanalizować, Peach Commander prosi o adres SMB/AFP, ścieżkę w stylu Windows lub nazwę <code>serwer/udział</code>, a nic nie zostaje zamontowane.</li>
+<li>Po potwierdzeniu połączenie może chwilę potrwać, podczas gdy macOS montuje udział; panel przełącza się na niego, gdy tylko stanie się dostępny.</li>
+<li>To łączy z urządzeniami udostępnionymi w sieci. Aby zamiast tego dotrzeć do serwera FTP, FTPS lub SFTP, zobacz powiązany temat poniżej.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Łączenie z FTP i SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

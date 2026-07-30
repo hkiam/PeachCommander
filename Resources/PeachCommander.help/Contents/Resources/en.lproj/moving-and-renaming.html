@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moving &amp; renaming</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Moving &amp; renaming</h1>
+<p>Moving relocates files and folders instead of duplicating them, and renaming changes their names without touching their contents. Because Peach Commander shows two panels side by side, moving is just a matter of picking what you want in one panel and sending it to the folder open in the other. You can also rename an item in place, or give moved items new names on the fly using a wildcard mask.</p>
+<h2 id="move-files-to-the-other-panel">Move files to the other panel</h2>
+<ol>
+<li>In the source panel, open the folder that holds the items you want to move, and open the destination folder in the other panel.</li>
+<li>Select the file or folder to move. To move several at once, select them all first (see <em>Selecting files</em>).</li>
+<li>Press F6, or choose <strong>Files &gt; Move</strong>.</li>
+<li>Check the target folder shown in the dialog and click <strong>OK</strong> (or press Return) to start the move.</li>
+</ol>
+<p><img alt="The move dialog showing the target path field, options, and a queue checkbox" src="images/copy-dialog.png" />
+<em>(Figure: The move dialog uses the same target field as copy — type a path, or add a wildcard mask to rename as you move.)</em></p>
+<p>Moves on the same drive happen almost instantly. When the destination is on a different drive, Peach Commander copies the items and then removes the originals only after every file has arrived safely.</p>
+<h2 id="rename-in-place">Rename in place</h2>
+<ol>
+<li>Select a single file or folder.</li>
+<li>Press Shift+F6, or choose <strong>Files &gt; Rename</strong>.</li>
+<li>Edit the name directly in the panel, then press Return to confirm or Esc to cancel.</li>
+</ol>
+<h2 id="rename-while-moving">Rename while moving</h2>
+<p>The target field in the move dialog accepts a wildcard mask, so you can rename items as they move:</p>
+<ol>
+<li>Select the items and press F6.</li>
+<li>In the target field, add a name mask after the destination folder, for example <code>/Users/you/Archive/*_backup.*</code>.</li>
+<li><code>*</code> stands for the original name and <code>.*</code> for the original extension. Confirm to move and rename in one step.</li>
+</ol>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Move to the other panel</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Rename in place</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>The move dialog offers the same options button and background-queue checkbox as copying, so you can queue large moves and let them run in the background.</li>
+<li>Moving within the same drive is a fast in-place operation, so it is safe for very large folders. A cross-drive move takes longer because the data is copied first, then the source is deleted.</li>
+<li>To rename many files at once with numbering, search-and-replace, or patterns, use the Multi-Rename Tool instead (see <em>Multi-rename</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copying files</a></li><li><a href="multi-rename.html">Renaming many files</a></li></ul></section>
+</main>
+</body>
+</html>

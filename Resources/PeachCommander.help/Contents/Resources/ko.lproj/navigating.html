@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이리저리 이동하기</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>이리저리 이동하기</h1>
+<p>Peach Commander는 두 폴더를 나란히 표시하므로, 대부분의 시간은 한 패널을 폴더에서 폴더로 옮기는 데 씁니다. 폴더를 열고, 계층 구조에서 위로 올라가고, 지나온 곳을 되짚고, 경로를 직접 입력하고, 홈, 데스크탑, 다운로드 같은 일상적인 장소로 바로 이동할 수 있습니다. 모든 동작은 <em>활성</em> 패널, 즉 경로 막대가 강조된 패널에 작용합니다.</p>
+<h2 id="_1">폴더 열기 및 위로 올라가기</h2>
+<ol>
+<li>폴더가 강조될 때까지 화살표 키로 선택 막대를 이동합니다.</li>
+<li><strong>Enter</strong>를 눌러(또는 두 번 클릭하여) 엽니다. 이는 압축 파일에 들어가기도 하고 파일을 기본 앱으로 열기도 합니다.</li>
+<li>상위 폴더로 한 단계 위로 가려면 <strong>Ctrl+PageUp</strong>(또는 <strong>Backspace</strong>)을 누릅니다.</li>
+<li>현재 드라이브의 맨 위로 이동하려면 <strong>이동 ▸ Root</strong>를 선택합니다.</li>
+</ol>
+<h2 id="_2">뒤로 및 앞으로 가기</h2>
+<p>Peach Commander는 웹 브라우저처럼 각 패널에서 방문한 폴더를 기억합니다.</p>
+<ul>
+<li>이전 폴더로 돌아가려면 <strong>Alt+Left</strong>를, 다시 앞으로 가려면 <strong>Alt+Right</strong>를 누릅니다.</li>
+<li><strong>Alt+Down</strong>을 누르면 최근 폴더의 드롭다운 목록이 열리고 그중 어느 것으로든 이동할 수 있습니다.</li>
+</ul>
+<h2 id="_3">경로 입력 또는 경로 막대 사용</h2>
+<p>각 패널 상단을 가로지르는 경로 막대는 현재 위치를 보여주며 어딘가로 빠르게 가는 방법으로도 쓰입니다.</p>
+<p><img alt="현재 폴더를 클릭 가능한 세그먼트로 보여주는 편집 가능한 경로 막대" src="images/path-bar-crop.png" />
+<em>(그림: 경로 막대. 세그먼트를 클릭하면 그 폴더로 이동하고, 연필을 클릭하면 전체 경로를 입력합니다.)</em></p>
+<ul>
+<li>경로의 임의의 세그먼트(예: 상위 폴더 이름)를 클릭하면 바로 이동합니다.</li>
+<li>경로 막대 오른쪽의 연필을 클릭하면 텍스트 필드로 바뀌고, 임의의 경로를 입력하거나 붙여 넣고 Enter를 누릅니다.</li>
+<li>또는 <strong>파일 ▸ Go to Folder…</strong>(<strong>Cmd+Shift+G</strong>)를 선택하여 어디서든 경로를 입력합니다.</li>
+</ul>
+<h2 id="_4">공통 장소로 이동</h2>
+<p><strong>이동</strong> 메뉴는 활성 패널을 가장 많이 사용하는 폴더로 데려갑니다.</p>
+<ul>
+<li><strong>홈</strong>, <strong>데스크탑</strong>, <strong>다운로드</strong>, <strong>휴지통</strong>, <strong>iCloud Drive</strong>.</li>
+<li><strong>iCloud Drive</strong>는 Mac에 설정되어 있을 때 나타납니다.</li>
+</ul>
+<h2 id="_5">패널 및 드라이브 전환</h2>
+<ul>
+<li><strong>Tab</strong>을 눌러 왼쪽과 오른쪽 패널 사이로 포커스를 이동합니다.</li>
+<li>각 패널 위의 드라이브 막대는 마운트된 볼륨을 여유 공간과 함께 나열합니다. 볼륨을 클릭하면 해당 패널이 그것으로 전환됩니다.</li>
+<li><strong>Ctrl+U</strong>를 눌러 두 패널을 맞바꿉니다(폴더가 좌우로 바뀝니다). <strong>Ctrl+Shift+U</strong>는 탭과 함께 맞바꿉니다.</li>
+<li><strong>Ctrl+=</strong>를 눌러 다른 패널을 활성 패널과 같은 폴더로 맞춥니다(<em>대상 = 원본</em>). 복사나 이동 직전에 편리합니다.</li>
+</ul>
+<h2 id="_6">단축키</h2>
+<table>
+<thead>
+<tr>
+<th>작업</th>
+<th>단축키</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>커서 아래의 폴더/파일 열기</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>상위 폴더로 이동</td>
+<td>Ctrl+PageUp (또는 Backspace)</td>
+</tr>
+<tr>
+<td>기록에서 뒤로 / 앞으로</td>
+<td>Alt+Left / Alt+Right</td>
+</tr>
+<tr>
+<td>기록 드롭다운</td>
+<td>Alt+Down</td>
+</tr>
+<tr>
+<td>폴더로 이동…(경로 입력)</td>
+<td>Cmd+Shift+G</td>
+</tr>
+<tr>
+<td>홈</td>
+<td>Cmd+Shift+H</td>
+</tr>
+<tr>
+<td>데스크탑</td>
+<td>Cmd+Shift+D</td>
+</tr>
+<tr>
+<td>다운로드</td>
+<td>Option+Cmd+L</td>
+</tr>
+<tr>
+<td>활성 패널 전환</td>
+<td>Tab</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">팁</h2>
+<ul>
+<li>각 패널은 고유한 기록을 유지하므로, 뒤로와 앞으로는 활성 쪽에만 영향을 줍니다.</li>
+<li>입력한 경로가 유효한 폴더가 아니면, 경로 막대는 이동하지 않고 조용히 마지막 위치를 유지합니다.</li>
+<li>이동 메뉴의 휴지통과 iCloud Drive에는 기본 단축키가 없지만, <strong>설정 ▸ Options ▸ Keyboard</strong>에서 하나를 지정할 수 있습니다.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="interface-overview.html">주 창</a></li><li><a href="favorites.html">즐겨찾기 및 핫리스트</a></li></ul></section>
+</main>
+</body>
+</html>

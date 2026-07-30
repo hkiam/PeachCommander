@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI asistent</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>AI asistent</h1>
+<p>AI asistent je volitelný, odstranitelný zásuvný modul, který vám pomáhá pracovat se soubory pomocí přirozeného jazyka. Umí shrnout nebo vysvětlit dokument, navrhnout lepší název souboru, přeložit nebo zkorigovat text, převést data do tabulky a dokonce uspořádat složku — a po předchozím zobrazení plánu za vás dokáže provést i operace se soubory. Pokud je k dispozici, běží přímo v zařízení s Apple Intelligence, nebo jej můžete nasměrovat na cloudový model. Protože se jedná o zásuvný modul, můžete jej zcela vypnout nebo odstranit v nabídce <strong>Konfigurace ▸ Zásuvné moduly…</strong>.</p>
+<h2 id="otevreni-asistenta">Otevření asistenta</h2>
+<p>Volbou <strong>Příkazy ▸ AI asistent</strong> zobrazíte asistenta v ukotveném panelu na pravé straně okna. Napište požadavek a stiskněte Return; asistent umí číst soubory, vyhledávat informace a — s vaším potvrzením — provádět změny.</p>
+<p><img alt="Chat AI asistenta ukotvený vedle panelů souborů" src="images/ai-chat.png" />
+<em>(Obrázek: AI asistent ukotvený vpravo pracuje na požadavku.)</em></p>
+<h2 id="akce-z-mistni-nabidky-ai">Akce z místní nabídky (AI ▸)</h2>
+<p>Nejrychlejším způsobem použití asistenta je podnabídka <strong>AI ▸</strong> v místní nabídce (po kliknutí pravým tlačítkem):</p>
+<ul>
+<li><strong>Na souboru</strong> — Shrnout, Vysvětlit, Navrhnout název, Přeložit do angličtiny, Zkorigovat, Rozpoznat úkoly a Vytvořit tabulku.</li>
+<li><strong>Na pozadí panelu</strong> — Uspořádat tuto složku a Najít pravděpodobné duplikáty.</li>
+</ul>
+<p>Každá akce <strong>AI ▸</strong> otevře <strong>vlastní pojmenovaný chat</strong> (například <em>Shrnout – report.txt</em>), takže různé úlohy zůstávají oddělené, místo aby se hromadily do jedné dlouhé konverzace. Když do vstupního pole napíšete něco sami, tento požadavek pokračuje v aktuálním chatu.</p>
+<h2 id="sprava-chatu">Správa chatů</h2>
+<ul>
+<li>K přepínání mezi konverzacemi použijte přepínač chatů v horní části panelu.</li>
+<li>Nabídka <strong>Smazat ▾</strong> nabízí <strong>Smazat tento chat</strong> a <strong>Smazat všechny chaty</strong>, takže když se seznam prodlouží, můžete vše naráz vymazat. Prázdné chaty se při zavření panelu automaticky uklidí.</li>
+</ul>
+<h2 id="zmeny-jsou-nejprve-potvrzeny">Změny jsou nejprve potvrzeny</h2>
+<p>U čehokoli, co upravuje soubory — přesouvání, přejmenování, zápis, mazání — asistent zobrazí <strong>plán a před provedením čeká na vaše potvrzení</strong>. To můžete změnit v Nastavení zvýšením autonomie asistenta nebo ji snížit na režim jen pro čtení, aby nikdy nic neměnil.</p>
+<h2 id="nastaveni">Nastavení</h2>
+<p>Otevřete <strong>Konfigurace ▸ Nastavení ▸ AI</strong> ke konfiguraci asistenta na jediné stránce:</p>
+<ul>
+<li><strong>Preferovaný model</strong> — Automaticky (cloud, pokud je nakonfigurován, jinak v zařízení), V zařízení (Apple Intelligence) nebo Cloud.</li>
+<li><strong>Cloudový koncový bod, model a klíč API</strong> — pro použití modelu kompatibilního s OpenAI namísto modelu v zařízení. Klíč se ukládá do klíčenky macOS, nikdy do vašich konfiguračních souborů.</li>
+<li><strong>Autonomie asistenta</strong> — jen pro čtení, potvrzovat změny (výchozí) nebo autonomní.</li>
+<li><strong>Vlastní systémový prompt</strong> — volitelné instrukce, které formují způsob, jakým asistent odpovídá.</li>
+<li><strong>Server MCP</strong> — volitelný pouze lokální server, který umožňuje externímu agentovi řídit aplikaci; ve výchozím stavu vypnutý a chránitelný tokenem.</li>
+</ul>
+<p><img alt="Stránka AI v Nastavení s autonomií a možnostmi serveru MCP" src="images/settings-ai.png" />
+<em>(Obrázek: Všechny možnosti asistenta jsou na jedné stránce AI v Nastavení.)</em></p>
+<h2 id="soukromi">Soukromí</h2>
+<ul>
+<li>S Apple Intelligence běží asistent <strong>na vašem Macu</strong>; ze zařízení nic neodchází.</li>
+<li>Cloudový model se použije <strong>pouze pokud jej nakonfigurujete</strong> a jeho klíč API je uložen v klíčence.</li>
+<li>Akce měnící soubory jsou před spuštěním potvrzeny, pokud záměrně nezvýšíte úroveň autonomie.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="settings.html">Nastavení</a></li><li><a href="privacy-and-security.html">Soukromí a zabezpečení</a></li></ul></section>
+</main>
+</body>
+</html>

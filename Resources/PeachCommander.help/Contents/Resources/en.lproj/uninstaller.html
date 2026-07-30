@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstaller</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Uninstaller</h1>
+<p>Dragging an app to the Trash leaves its support files, caches, preferences, and containers scattered across your Library folders. The Uninstaller plugin removes an application <strong>and</strong> those leftovers: it finds everything the app left behind, shows you the list with a size for each, and moves it all to the Trash once you confirm. It's a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Plugins…</strong>.</p>
+<h2 id="uninstall-an-app-under-the-cursor">Uninstall an app under the cursor</h2>
+<ol>
+<li>Put the cursor on an application (<code>.app</code>) in a panel.</li>
+<li>Choose <strong>File ▸ Uninstall Application…</strong>, or right-click ▸ <strong>Uninstall Application…</strong>, or press <strong>Cmd+Shift+U</strong>.</li>
+<li>The review window opens, listing the app plus every related file it found, each labeled with its category, path, and size.</li>
+<li>Untick anything you want to keep, then click <strong>Move to Trash</strong> (or <strong>Delete Permanently</strong>).</li>
+</ol>
+<p><img alt="The uninstall review window listing an app's leftover files with checkboxes and sizes" src="images/uninstaller.png" />
+<em>(Figure: review exactly what will be removed before anything is deleted.)</em></p>
+<h2 id="browse-all-installed-apps">Browse all installed apps</h2>
+<p>Choose <strong>Commands ▸ Uninstall Application…</strong> to open a searchable list of the apps installed on your Mac, with each app's name, size, and install date. Select one (or several), click <strong>Uninstall…</strong>, and you land in the same review window. You can filter the list by typing in the search field.</p>
+<h2 id="find-leftover-files">Find leftover files</h2>
+<p>Choose <strong>Commands ▸ Find Leftover Files…</strong> to scan for support files, caches, and preferences that belong to apps you've <strong>already</strong> deleted. Review them the same way and clear them out. If nothing is found, the plugin tells you so.</p>
+<h2 id="how-thorough-to-scan">How thorough to scan</h2>
+<p>The review window has a confidence control:</p>
+<ul>
+<li><strong>Precise</strong> — files anchored to the app's bundle identifier. High confidence; pre-selected.</li>
+<li><strong>Enhanced</strong> — adds name-matched files; left unticked so you can decide.</li>
+<li><strong>Deep</strong> — Enhanced plus a Spotlight sweep for anything else mentioning the app; also left unticked.</li>
+</ul>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Nothing is deleted directly by the plugin — items go through the app's Trash or permanent-delete, exactly like any other file operation. Removing files in <code>/Library</code> or <code>/var</code> may require an administrator password.</li>
+<li>Before removing, the plugin quits the running app and unloads its background (launchd) items, then offers to tidy up any now-empty vendor folders.</li>
+<li>If the app was installed with <strong>Homebrew</strong>, the plugin warns you and suggests <code>brew uninstall --cask</code> so Homebrew stays in sync. App Store apps are noted too.</li>
+<li>Enhanced and Deep matches are lower-confidence by design and start unticked — review them before removing. Some background items installed via the modern login-items API can't be removed here.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="deleting-files.html">Deleting files</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy en beveiliging</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Privacy en beveiliging</h1>
+<p>Peach Commander is gebouwd om je niet in de weg te zitten en je gegevens op je Mac te houden. Wachtwoorden worden aan de macOS-sleutelhanger overgedragen, crashinformatie verlaat je computer nooit zonder jouw toestemming, en de app verzamelt geen gebruiksstatistieken. Dit onderwerp legt uit waar je gevoelige gegevens staan en hoe je de ene systeemtoestemming verleent die een bestandsbeheerder nodig heeft om zijn werk te doen.</p>
+<h2 id="waar-wachtwoorden-worden-bewaard">Waar wachtwoorden worden bewaard</h2>
+<p>Elk wachtwoord of sleutelwachtwoord dat je bewaart — voor een FTP- of SFTP-verbinding, of om een met wachtwoord beveiligd archief te openen — wordt weggeschreven naar de macOS-<strong>sleutelhanger</strong>, dezelfde beveiligde opslag die het systeem gebruikt voor je wifi- en website-aanmeldingen. Wachtwoorden worden nooit als platte tekst in de eigen instellingen of verbindingsbestanden van Peach Commander geschreven.</p>
+<ol>
+<li>Kies bij het bewaren van een verbindings- of archiefwachtwoord de optie om het te onthouden.</li>
+<li>Het wachtwoord wordt opgeslagen in je aanmeldsleutelhanger, beschermd door je account.</li>
+<li>Om een bewaard wachtwoord later te bekijken of te verwijderen, open je de app <strong>Sleutelhangertoegang</strong> (in Programma's ▸ Hulpprogramma's) en zoek je op de verbindingsnaam.</li>
+</ol>
+<h2 id="volledige-schijftoegang-verlenen">Volledige schijftoegang verlenen</h2>
+<p>macOS houdt sommige locaties privé — Mail, Berichten en de gegevens van andere apps in je Bibliotheek-map — totdat je expliciet toegang geeft. Omdat een bestandsbeheerder bij elk bestand hoort te kunnen, vraagt Peach Commander om <strong>Volledige schijftoegang</strong>. De app blijft werken met beperkte toegang totdat je die verleent; je ziet die beschermde mappen dan alleen niet.</p>
+<ol>
+<li>Kies <strong>Opdrachten ▸ Volledige schijftoegang…</strong>, of klik op <strong>Open Systeeminstellingen</strong> wanneer de app aanbiedt je bij het starten te begeleiden.</li>
+<li>Zet in <strong>Systeeminstellingen ▸ Privacy en beveiliging ▸ Volledige schijftoegang</strong> de schakelaar naast Peach Commander aan.</li>
+<li>Herstart de app als daarom wordt gevraagd.</li>
+</ol>
+<h2 id="crashrapporten-blijven-lokaal">Crashrapporten blijven lokaal</h2>
+<p>Als de app onverwacht stopt, schrijft macOS een crashrapport naar je eigen diagnostiekmap. Bij de volgende start merkt Peach Commander dit op en biedt aan je te helpen een foutrapport in te dienen — maar alleen met jouw toestemming.</p>
+<ul>
+<li>Je kunt <strong>Toon in Finder</strong> kiezen om het rapport te zien, of <strong>Kopieer rapport naar klembord</strong> om het zelf in een foutrapport te plakken.</li>
+<li>Er wordt nooit iets automatisch verzonden, en er is geen crashrapportagedienst van derden bij betrokken.</li>
+</ul>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li><strong>Geen telemetrie.</strong> Peach Commander volgt je activiteit niet en stuurt nergens gebruiksstatistieken heen.</li>
+<li><strong>Beperkte toegang is veilig.</strong> Sla je Volledige schijftoegang over, dan bladert en beheert de app nog steeds de bestanden die je normaal kunt zien; alleen systeembeschermde locaties blijven verborgen.</li>
+<li><strong>Jij beheert bewaarde wachtwoorden.</strong> Omdat inloggegevens in de sleutelhanger staan, beheer en herroep je ze met standaard macOS-hulpmiddelen in plaats van in de app.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Verbinden met FTP en SFTP</a></li><li><a href="troubleshooting.html">Probleemoplossing</a></li></ul></section>
+</main>
+</body>
+</html>

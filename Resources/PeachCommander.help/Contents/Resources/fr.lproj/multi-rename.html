@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Renommer plusieurs fichiers</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Renommer plusieurs fichiers</h1>
+<p>L'outil de renommage multiple renomme tout un lot de fichiers en une seule passe. Au lieu de modifier les noms un par un, vous décrivez la modification une seule fois — un motif de nommage, un rechercher-remplacer, un schéma de numérotation ou un changement de casse — et Peach Commander l'applique à chaque fichier sélectionné. Un aperçu en direct montre exactement le nom que portera chaque fichier avant que quoi que ce soit ne se produise, et une seule action Annuler rétablit les noms d'origine si le résultat ne vous convient pas.</p>
+<h2 id="renommer-un-lot-de-fichiers">Renommer un lot de fichiers</h2>
+<ol>
+<li>Sélectionnez les fichiers que vous souhaitez renommer (voir <em>Sélectionner des fichiers</em>). Seuls les éléments sélectionnés sont concernés.</li>
+<li>Choisissez <strong>Commandes &gt; Outil de renommage multiple…</strong>, ou appuyez sur Ctrl+M.</li>
+<li>Construisez votre règle de renommage à l'aide des champs décrits ci-dessous. La grille d'aperçu se met à jour au fur et à mesure que vous saisissez, affichant chaque <strong>Ancien nom</strong> à côté de son <strong>Nouveau nom</strong>.</li>
+<li>Vérifiez l'aperçu. Une ligne affichée dans une couleur de mise en évidence signale un nom qui ne peut pas être utilisé (par exemple, un doublon ou un nom interdit) afin que vous puissiez ajuster la règle.</li>
+<li>Lorsque l'aperçu vous convient, cliquez sur <strong>Démarrer</strong>. Si vous changez d'avis, cliquez sur <strong>Annuler</strong> pour restaurer les noms d'origine.</li>
+</ol>
+<p><img alt="La fenêtre de renommage multiple avec les champs de masque, les options et la grille d'aperçu ancien-vers-nouveau" src="images/multi-rename.png" />
+<em>(Figure : la grille d'aperçu se met à jour en direct au fur et à mesure que vous modifiez la règle de renommage ; rien n'est modifié sur le disque tant que vous n'avez pas cliqué sur Démarrer.)</em></p>
+<h2 id="construire-la-regle-de-renommage">Construire la règle de renommage</h2>
+<ul>
+<li><strong>Masque de renommage</strong> et <strong>Extension</strong> — des motifs qui construisent le nouveau nom et la nouvelle extension. Utilisez les boutons d'insertion rapide, ou saisissez directement les marqueurs : <code>[N]</code> pour le nom d'origine, <code>[N1-9]</code> pour une plage de caractères de celui-ci, <code>[C]</code> pour le compteur, <code>[d]</code> pour des éléments de date et d'heure, et <code>[P]</code> pour le nom du dossier parent.</li>
+<li><strong>Rechercher / Remplacer par</strong> — remplace du texte à l'intérieur des noms. Activez <strong>Regex</strong> pour la correspondance par motif, <strong>Sensible à la casse</strong> pour respecter la casse exacte, et <strong>Répéter</strong> pour remplacer chaque occurrence.</li>
+<li><strong>Casse</strong> — convertit les noms en minuscules, MAJUSCULES, Première lettre en majuscule, ou Chaque Mot En Majuscule.</li>
+<li><strong>Compteur</strong> — définissez le numéro de <strong>Départ</strong>, le <strong>Pas</strong> entre les fichiers, et le nombre de <strong>Chiffres</strong> de remplissage (par exemple, 001, 002, 003) partout où <code>[C]</code> apparaît.</li>
+</ul>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Raccourci</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ouvrir l'outil de renommage multiple</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Appliquer le renommage</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Fermer la fenêtre</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="astuces">Astuces</h2>
+<ul>
+<li>Rien n'est écrit sur le disque tant que vous n'avez pas cliqué sur <strong>Démarrer</strong> : vous pouvez donc expérimenter librement avec la règle et observer l'aperçu.</li>
+<li>Après une exécution, <strong>Annuler</strong> inverse le renommage en une seule étape.</li>
+<li>Enregistrez une règle que vous utilisez souvent en tant que <strong>Préréglage</strong>, puis choisissez-la dans le menu des préréglages la prochaine fois pour remplir tous les champs d'un coup.</li>
+<li>Pour renommer un seul fichier, ou pour renommer des fichiers au moment où vous les déplacez, utilisez plutôt le renommage sur place ou la boîte de dialogue de déplacement (voir <em>Déplacer et renommer</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Déplacer et renommer</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>系统监视器</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>系统监视器</h1>
+<p>System Monitor 插件把你 Mac 活动的实时读数直接放在窗口的标题栏中：CPU、内存、磁盘、网络等小徽章，以及 —— 在硬件提供相应数据时 —— GPU、电池和传感器。每个徽章每秒更新一次；单击其中一个可弹出带有历史图表和详细明细的窗口。由于它是插件，你可以从 <strong>配置 ▸ 插件…</strong> 中将其启用、配置或移除。</p>
+<h2 id="_1">标题栏徽章</h2>
+<p>当插件开启时，标题栏中会有一排紧凑的徽章。每个徽章由一个彩色圆点、一个简短标签和一个实时数值组成（有些还带有内嵌的迷你走势图）：</p>
+<table>
+<thead>
+<tr>
+<th>徽章</th>
+<th>显示</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>处理器负载，附每核心明细</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>已用/总内存（外加联动、已压缩、交换）</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>启动卷空间以及读/写吞吐量</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>下载/上传速率和总量</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>GPU 利用率 · 电池电量与状态 · 风扇转速和温度</td>
+</tr>
+</tbody>
+</table>
+<p>单击某个徽章可打开一个弹出窗口，其中有大号的当前数值、一条 <strong>HISTORY</strong> 走势图、一份 <strong>DETAILS</strong> 键/值列表，以及 —— 对于 CPU —— 一份按核心显示条形的 <strong>CORE LOAD</strong> 列表。</p>
+<h2 id="_2">配置它</h2>
+<p>选择 <strong>命令 ▸ System Monitor…</strong>（或打开 <strong>配置 ▸ 设置 ▸ System Monitor</strong>）来配置该读数：</p>
+<ul>
+<li><strong>在标题栏中显示系统监视器</strong> —— 徽章的总开关。</li>
+<li><strong>方案</strong> —— <em>Minimal</em>、<em>Medium</em> 或 <em>Maximal</em> 预设，为你选择一组合理的模块。</li>
+<li><strong>模块表格</strong> —— 开启或关闭每个模块（CPU、GPU、RAM、HDD、Net、Batt、Sens），选择其颜色，并拖动行来设置它们在标题栏中出现的顺序。你的硬件无法报告的模块会显示为 <em>(n/a)</em>。</li>
+</ul>
+<p><img alt="System Monitor 设置，包含其模块表格、方案和每个模块的颜色" src="images/system-monitor.png" />
+<em>（图：选择显示哪些模块、它们的颜色以及顺序。）</em></p>
+<h2 id="_3">说明</h2>
+<ul>
+<li>一切都经过实际测量，绝不伪造：硬件不提供其数据的模块（在某些 Mac 上通常是 GPU 或传感器）会保持不可用，而不会显示编造的数字。电池在台式机上不可用。</li>
+<li>采样仅在读数可见时通过后台计时器运行，并为图表保留约 30 分钟的历史记录。</li>
+<li>你的模块选择、颜色和顺序会随应用的配置一起保存。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="settings.html">设置</a></li></ul></section>
+</main>
+</body>
+</html>

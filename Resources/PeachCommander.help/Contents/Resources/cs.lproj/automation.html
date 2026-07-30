@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatizace (AppleScript a Zkratky)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Automatizace (AppleScript a Zkratky)</h1>
+<p>Peach Commander je skriptovatelný, takže jej můžete řídit z AppleScriptu a z aplikace Zkratky. Hrstka základních sloves umožňuje skriptu procházet panely, vybírat soubory podle masky, kopírovat nebo přesouvat aktuální výběr a spustit jakýkoli příkaz Peach Commanderu podle jeho id — přičemž znovu využívají přesně stejné akce, jaké používají nabídky, takže se skriptovaný krok chová jako ruční. Hodí se to na opakující se úkony: zakládání stažených souborů, přípravu výstupu sestavení nebo zapojení souborového kroku do většího průběhu Zkratek.</p>
+<h2 id="zobrazeni-slovniku">Zobrazení slovníku</h2>
+<ol>
+<li>Otevřete <strong>Editor skriptů</strong> (v <code>/Applications/Utilities</code>).</li>
+<li>Zvolte <strong>Okno ▸ Knihovna</strong> a poté dvakrát klikněte na <strong>Peach Commander</strong> (přidejte jej pomocí <strong>+</strong>, pokud není v seznamu).</li>
+<li>Otevře se slovník, který níže vypisuje příkazy a vlastnosti.</li>
+</ol>
+<p>Při prvním ovládání Peach Commanderu skriptem vás macOS požádá o povolení (<strong>Nastavení systému ▸ Soukromí a zabezpečení ▸ Automatizace</strong>). Jednou jej schvalte a pozdější skripty poběží bez dotazu.</p>
+<h2 id="co-lze-cist">Co lze číst</h2>
+<table>
+<thead>
+<tr>
+<th>Vlastnost</th>
+<th>Význam</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>Cesta POSIX ke složce aktivního panelu.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>Cesta POSIX ke složce druhého panelu.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>Vybrané položky v aktivním panelu (nebo položka pod kurzorem).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="slovesa">Slovesa</h2>
+<table>
+<thead>
+<tr>
+<th>Příkaz</th>
+<th>Co dělá</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;path&gt;" [in left\|right]</code></td>
+<td>Otevře složku v panelu (výchozí: aktivní panel).</td>
+</tr>
+<tr>
+<td><code>select "&lt;mask&gt;"</code></td>
+<td>Vybere položky v aktivním panelu podle zástupné masky, např. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;folder&gt;"</code></td>
+<td>Zkopíruje výběr aktivního panelu do složky.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;folder&gt;"</code></td>
+<td>Přesune výběr aktivního panelu do složky.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Spustí jakýkoli příkaz podle jeho id, např. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Copy a move používají stejnou frontu přenosů na pozadí jako F5/F6, takže průběh a případné dotazy na přepsání se zobrazují přesně jako u ruční operace.</p>
+<h2 id="priklad">Příklad</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="pouziti-z-aplikace-zkratky">Použití z aplikace Zkratky</h2>
+<p>V aplikaci <strong>Zkratky</strong> přidejte akci <strong>Spustit AppleScript</strong> a vložte skript jako ten výše. To vám umožní zapojit krok Peach Commanderu do větší Zkratky — například spouštěné změnou složky nebo klávesovou zkratkou.</p>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Id příkazu, které předáváte do <code>run command</code>, je stejné <code>cm_*</code> id zobrazené v prohlížeči příkazů (viz <a href="start-menu.md">Nabídka Start a vlastní příkazy</a>).</li>
+<li>Skriptování vždy působí na <strong>aktivní</strong> panel; pokud potřebujete konkrétní stranu, použijte nejprve <code>go to … in left</code> / <code>in right</code>.</li>
+<li>Peach Commander je aplikace s jedním oknem, takže skripty cílí na dva panely tohoto okna.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Nabídka Start a vlastní příkazy</a></li><li><a href="settings.html">Nastavení</a></li></ul></section>
+</main>
+</body>
+</html>

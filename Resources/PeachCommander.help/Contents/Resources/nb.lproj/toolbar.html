@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knappelinjen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Knappelinjen</h1>
+<p>Knappelinjen er stripen med ikonknapper langs toppen av vinduet. Hver knapp er en ettklikks snarvei du definerer selv: kjør en innebygd kommando, start et eksternt program eller en app, hopp til en mappe, eller åpne en hel underlinje med flere knapper. Det er den raskeste måten å sette handlingene du bruker mest innen rekkevidde, og du kan skreddersy den til akkurat måten du arbeider på.</p>
+<h2 id="tilpass-knappelinjen">Tilpass knappelinjen</h2>
+<ol>
+<li>Velg <strong>Konfigurasjon &gt; Tilpass verktøylinje…</strong>, eller høyreklikk linjen og velg <strong>Rediger knappelinje…</strong>.</li>
+<li>Listen til venstre viser de gjeldende knappene. Bruk <strong>+</strong> for å legge til en knapp, <strong>—</strong> for å legge til en skillelinje, <strong>−</strong> for å fjerne den valgte knappen, og <strong>↑ / ↓</strong> for å endre rekkefølge.</li>
+<li>Velg en knapp og fyll ut skjemaet til høyre:
+   - <strong>Kommando</strong> – skriv en innebygd kommando, eller klikk <strong>Velg…</strong> for å velge en fra en liste. Du kan også skrive inn banen til et program eller en app, en mappe å åpne, eller en annen knappelinje å bruke som underlinje.
+   - <strong>Tekst</strong> – etiketten og verktøytipset vist for knappen.
+   - <strong>Parametere</strong> og <strong>Startbane</strong> – sendt til eksterne programmer. Plassholdere som <code>%P</code> (kildemappe), <code>%N</code> (gjeldende fil) og <code>%S</code> (valgte filer) fylles inn når knappen kjører.
+   - <strong>Ikon</strong> – velg et SF Symbol eller bruk en fils eller apps eget ikon; slå på <strong>kun ikon</strong> for å skjule teksten.</li>
+<li>Klikk <strong>Lagre</strong>. Stripen lastes inn på nytt med en gang.</li>
+</ol>
+<p><img alt="Knappelinjen langs toppen av vinduet med ikonknapper" src="images/button-bar-crop.png" />
+<em>(Figur: Knappelinjen sitter over filpanelene; hver knapp kjører en kommando, et program, en mappe eller en underlinje.)</em></p>
+<h2 id="underlinjer-og-overflyt">Underlinjer og overflyt</h2>
+<p>En knapp kan åpne en <em>underlinje</em> – et andre sett med knapper lagt over det første. Klikk den for å stige ned; en <strong>◀</strong>-knapp til venstre tar deg tilbake til den forrige linjen. Når det er flere knapper enn som får plass i vindusbredden, kollapser de ekstra bak en <strong>»</strong>-vinkel i høyre ende; klikk den for å nå dem.</p>
+<h2 id="slipp-filer-pa-en-knapp">Slipp filer på en knapp</h2>
+<p>Du kan dra filer eller mapper rett på en knapp:</p>
+<ul>
+<li><strong>Mappeknapp</strong> – de slupne elementene kopieres inn i den mappen i bakgrunnen.</li>
+<li><strong>Programknapp</strong> – programmet kjører med de slupne elementene som utvalget sitt.</li>
+<li><strong>Kommandoknapp</strong> – kommandoen kjører som vanlig.</li>
+</ul>
+<h2 id="vertikal-knappelinje">Vertikal knappelinje</h2>
+<p>For å flytte stripen fra toppen av vinduet til en kolonne ned langs venstre side, velg <strong>Vis &gt; Vertikal knappelinje</strong>. Velg den igjen for å bytte tilbake til den horisontale stripen.</p>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Linjen lagres i en standard knappelinjefil som er kompatibel med Total Commander, så linjer du allerede har kan gjenbrukes.</li>
+<li>Ingen tastatursnarveier er tilordnet disse handlingene som standard, men du kan legge til dine egne – se <a href="keyboard-shortcuts">Tastatursnarveier</a>.</li>
+<li>En knapp uten ikon og uten kommando vises som en enkel skillelinje, praktisk for å gruppere beslektede knapper.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts.html">Tastatur og snarveier</a></li><li><a href="settings.html">Innstillinger</a></li></ul></section>
+</main>
+</body>
+</html>

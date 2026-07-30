@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key><string>Uninstaller</string>
+	<key>CFBundleExecutable</key><string>Uninstaller</string>
+	<key>CFBundlePackageType</key><string>BNDL</string>
+	<key>CFBundleShortVersionString</key><string>1.0</string>
+	<key>CFBundleVersion</key><string>1</string>
+	<key>PCPluginType</key><string>ptx</string>
+	<key>PCPluginAPIVersion</key><integer>1</integer>
+	<key>PCPluginName</key><string>Application Uninstaller</string>
+	<key>PCPluginMinHostVersion</key><integer>1</integer>
+	<key>PCContributions</key>
+	<dict>
+		<key>commands</key>
+		<array>
+			<dict>
+				<key>id</key><string>plugin.uninstaller.uninstall</string>
+				<key>title</key><string>Uninstall Application…</string>
+				<key>category</key><string>Tools</string>
+			</dict>
+			<dict>
+				<key>id</key><string>plugin.uninstaller.browse</string>
+				<key>title</key><string>Uninstall Application…</string>
+				<key>category</key><string>Tools</string>
+			</dict>
+			<dict>
+				<key>id</key><string>plugin.uninstaller.orphans</string>
+				<key>title</key><string>Find Leftover Files…</string>
+				<key>category</key><string>Tools</string>
+			</dict>
+		</array>
+		<key>menus</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.uninstaller.uninstall</string>
+				<key>menu</key><string>File</string>
+				<key>group</key><string>2_tools</string>
+				<key>order</key><integer>100</integer>
+				<key>when</key><string>cursorIsApp</string>
+			</dict>
+			<dict>
+				<key>command</key><string>plugin.uninstaller.browse</string>
+				<key>menu</key><string>Commands</string>
+				<key>group</key><string>2_tools</string>
+				<key>order</key><integer>100</integer>
+			</dict>
+			<dict>
+				<key>command</key><string>plugin.uninstaller.orphans</string>
+				<key>menu</key><string>Commands</string>
+				<key>group</key><string>2_tools</string>
+				<key>order</key><integer>101</integer>
+			</dict>
+		</array>
+		<key>contextMenus</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.uninstaller.uninstall</string>
+				<key>surface</key><string>panel.item</string>
+				<key>group</key><string>9_plugins</string>
+				<key>when</key><string>cursorIsApp</string>
+			</dict>
+		</array>
+		<key>keybindings</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.uninstaller.uninstall</string>
+				<key>key</key><string>cmd+shift+u</string>
+				<key>when</key><string>cursorIsApp</string>
+			</dict>
+		</array>
+	</dict>
+</dict>
+</plist>

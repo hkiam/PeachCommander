@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mappa del disco</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Mappa del disco</h1>
+<p>Mappa del disco è un plugin integrato che mostra, a colpo d'occhio, cosa sta occupando spazio in una cartella o su un intero volume. Analizza la cartella scelta e disegna ogni elemento dimensionato in proporzione allo spazio che occupa realmente sul disco, così i maggiori divoratori di spazio risaltano immediatamente. Potete addentrarvi nelle cartelle, vedere come la vostra analisi si concilia con lo spazio libero, eliminabile e nascosto del volume, e fare pulizia direttamente dalla mappa.</p>
+<h2 id="avviare-unanalisi">Avviare un'analisi</h2>
+<ol>
+<li>Nel pannello attivo, andate alla cartella (o al volume) da misurare.</li>
+<li>Scegliete <strong>Comandi ▸ Mappa del disco: analizza la cartella corrente</strong>.</li>
+<li>La vista Mappa del disco si apre a destra e analizza in background, mostrando un conteggio in tempo reale di elementi e byte. Le cartelle grandi si completano in pochi secondi — l'analisi legge in blocco i metadati delle directory e lavora su più core della CPU.</li>
+</ol>
+<p><img alt="La Mappa del disco che mostra un treemap squadrato di una cartella, una barra del volume, un elenco dei file più grandi e una legenda per categoria" src="images/disk-map.png" />
+<em>(Figura: la vista treemap, colorata per categoria di file, con la barra del volume in alto e l'elenco dei file più grandi a destra.)</em></p>
+<h2 id="leggere-la-mappa">Leggere la mappa</h2>
+<ul>
+<li>Ogni blocco (treemap) o segmento ad anello (sunburst) è dimensionato in base alla <strong>dimensione effettiva su disco</strong> dell'elemento, così l'immagine corrisponde a ciò che riportano il Finder e il sistema.</li>
+<li>I blocchi sono <strong>colorati per tipo di file</strong> — video, immagini, audio, documenti, codice, archivi, app, immagini disco — con una legenda lungo il bordo inferiore. Nelle impostazioni potete passare a una <strong>mappa di calore</strong> per dimensione.</li>
+<li><strong>Fate clic su una cartella</strong> per addentrarvi; il percorso in cima mostra dove vi trovate e il pulsante <strong>◂</strong> vi fa risalire.</li>
+<li>Passate il puntatore su un blocco qualsiasi per vederne il percorso completo, la dimensione e il conteggio degli elementi.</li>
+</ul>
+<h2 id="due-viste-treemap-e-sunburst">Due viste: treemap e sunburst</h2>
+<p>Mappa del disco offre due visualizzazioni e potete passare dall'una all'altra con il pulsante <strong>◎ / ▦</strong> nell'intestazione o nella pagina delle impostazioni:</p>
+<ul>
+<li><strong>Treemap</strong> — rettangoli annidati, i più densi per individuare i singoli file più grandi.</li>
+<li><strong>Sunburst</strong> — anelli concentrici (uno per ogni livello di profondità della cartella) attorno alla cartella corrente, i migliori per vedere come lo spazio è distribuito su un albero profondo.</li>
+</ul>
+<p><img alt="La vista sunburst di Mappa del disco che mostra anelli concentrici per la profondità delle cartelle" src="images/disk-map-sunburst.png" />
+<em>(Figura: la vista sunburst — il disco interno è la cartella corrente e ogni anello è un livello più profondo.)</em></p>
+<h2 id="la-barra-del-volume">La barra del volume</h2>
+<p>La barra in cima concilia la vostra analisi con l'intero volume:</p>
+<ul>
+<li><strong>Analizzato / Questa cartella</strong> — quanto occupa la cartella analizzata.</li>
+<li><strong>Nascosto</strong> (alla radice del volume) o <strong>Resto del volume</strong> (per una sottocartella) — tutto ciò che non è in questa analisi, incluse le cartelle protette dal sistema, gli altri utenti e le istantanee.</li>
+<li><strong>Eliminabile</strong> — spazio che macOS può recuperare automaticamente, per lo più istantanee locali di Time Machine e cache.</li>
+<li><strong>Libero</strong> — spazio disponibile in questo momento.</li>
+</ul>
+<p>Quando il volume ha istantanee locali, la barra mostra un elemento <strong>· N istantanee (ⓘ)</strong>; fateci clic per un elenco di sola lettura, con un suggerimento a gestirle in Utility Disco o Time Machine. Mappa del disco non elimina mai le istantanee da sé.</p>
+<h2 id="file-piu-grandi">File più grandi</h2>
+<p>Attivate <strong>Mostra l'elenco dei file più grandi</strong> per vedere i file più grandi nella cartella corrente ordinati per dimensione, ciascuno con un pallino colorato per la sua categoria. Fate clic su uno per evidenziarlo sulla mappa.</p>
+<h2 id="fare-pulizia-dalla-mappa">Fare pulizia dalla mappa</h2>
+<p>Fate clic destro su un blocco qualsiasi per le azioni:</p>
+<ul>
+<li><strong>Apri nel pannello sinistro</strong> / <strong>Apri nel pannello destro</strong> — mostra l'elemento in un pannello di file.</li>
+<li><strong>Mostra nel Finder</strong>.</li>
+<li><strong>Sposta nel Cestino</strong> — elimina solo quell'elemento; la mappa si aggiorna senza una nuova analisi completa.</li>
+</ul>
+<p>Per rimuovere più elementi in una volta, usate il <strong>Raccoglitore</strong>: clic destro ▸ <strong>Contrassegna per il Raccoglitore</strong> su ciascun elemento, poi fate clic sul pulsante <strong>🗑 N</strong> nell'intestazione per spostare tutto ciò che avete contrassegnato nel Cestino in un unico passaggio confermato.</p>
+<h2 id="impostazioni">Impostazioni</h2>
+<p>Mappa del disco aggiunge una propria pagina alla finestra delle Impostazioni (<strong>Configurazione ▸ Impostazioni ▸ Mappa del disco</strong>):</p>
+<ul>
+<li><strong>Stile del grafico</strong> — treemap o sunburst.</li>
+<li><strong>Codifica dei colori</strong> — per tipo di file (categoria) o per dimensione (mappa di calore).</li>
+<li><strong>Resta sul volume di partenza</strong> — non passare ad altri dischi montati.</li>
+<li><strong>Mostra la barra del volume</strong> e <strong>Mostra l'elenco dei file più grandi</strong>.</li>
+</ul>
+<p>Le modifiche si applicano immediatamente a una Mappa del disco aperta.</p>
+<h2 id="note">Note</h2>
+<ul>
+<li>Mappa del disco misura la dimensione <strong>allocata</strong> (su disco) e conta i file con <strong>collegamento fisico</strong> una sola volta, così i suoi totali coincidono con lo spazio usato del volume anziché sovrastimarlo.</li>
+<li>Per impostazione predefinita l'analisi resta sul volume di partenza, quindi non si sposterà su altri dischi montati o condivisioni di rete.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="deleting-files.html">Eliminare i file</a></li><li><a href="settings.html">Impostazioni</a></li></ul></section>
+</main>
+</body>
+</html>

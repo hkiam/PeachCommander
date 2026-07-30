@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatyzacja (AppleScript i Skróty)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Automatyzacja (AppleScript i Skróty)</h1>
+<p>Peach Commander można skryptować, więc możesz sterować nim z AppleScript i z aplikacji Skróty. Garść podstawowych czasowników pozwala skryptowi nawigować po panelach, wybierać pliki według maski, kopiować lub przenosić bieżący wybór oraz uruchamiać dowolne polecenie Peach Commandera po jego identyfikatorze — ponownie używając dokładnie tych samych akcji, których używają menu, dzięki czemu krok skryptowy zachowuje się jak ręczny. Jest to przydatne przy powtarzalnych zadaniach: porządkowaniu pobranych plików, przygotowywaniu wyniku kompilacji lub włączeniu kroku plikowego do większego Skrótu.</p>
+<h2 id="zobacz-sownik">Zobacz słownik</h2>
+<ol>
+<li>Otwórz <strong>Edytor skryptów</strong> (w <code>/Programy/Narzędzia</code>).</li>
+<li>Wybierz <strong>Okno ▸ Biblioteka</strong>, a następnie kliknij dwukrotnie <strong>Peach Commander</strong> (dodaj go przyciskiem <strong>+</strong>, jeśli nie jest wymieniony).</li>
+<li>Słownik się otworzy, wymieniając polecenia i właściwości poniżej.</li>
+</ol>
+<p>Przy pierwszym sterowaniu Peach Commanderem przez skrypt macOS poprosi o zezwolenie (<strong>Ustawienia systemowe ▸ Prywatność i bezpieczeństwo ▸ Automatyzacja</strong>). Zatwierdź to raz, a późniejsze skrypty działają bez pytania.</p>
+<h2 id="co-mozesz-odczytac">Co możesz odczytać</h2>
+<table>
+<thead>
+<tr>
+<th>Właściwość</th>
+<th>Znaczenie</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>Ścieżka POSIX folderu aktywnego panelu.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>Ścieżka POSIX folderu drugiego panelu.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>Zaznaczone elementy w aktywnym panelu (lub element pod kursorem).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="czasowniki">Czasowniki</h2>
+<table>
+<thead>
+<tr>
+<th>Polecenie</th>
+<th>Co robi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;ścieżka&gt;" [in left\|right]</code></td>
+<td>Otwórz folder w panelu (domyślnie: aktywny panel).</td>
+</tr>
+<tr>
+<td><code>select "&lt;maska&gt;"</code></td>
+<td>Zaznacz elementy w aktywnym panelu według maski z symbolami wieloznacznymi, np. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;folder&gt;"</code></td>
+<td>Skopiuj wybór aktywnego panelu do folderu.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;folder&gt;"</code></td>
+<td>Przenieś wybór aktywnego panelu do folderu.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Uruchom dowolne polecenie po jego identyfikatorze, np. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Kopiowanie i przenoszenie używają tej samej kolejki transferu w tle co F5/F6, więc postęp i ewentualne pytania o nadpisanie pojawiają się dokładnie tak, jak przy operacji ręcznej.</p>
+<h2 id="przykad">Przykład</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="uzywanie-z-aplikacji-skroty">Używanie z aplikacji Skróty</h2>
+<p>W aplikacji <strong>Skróty</strong> dodaj akcję <strong>Uruchom AppleScript</strong> i wklej skrypt taki jak powyżej. Pozwala to włączyć krok Peach Commandera do większego Skrótu — na przykład wyzwalanego zmianą folderu lub klawiszem skrótu.</p>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Identyfikator polecenia przekazywany do <code>run command</code> jest tym samym identyfikatorem <code>cm_*</code>, który pokazuje się w przeglądarce poleceń (zobacz <a href="start-menu.md">Menu Start i polecenia niestandardowe</a>).</li>
+<li>Skryptowanie zawsze działa na <strong>aktywnym</strong> panelu; użyj najpierw <code>go to … in left</code> / <code>in right</code>, jeśli potrzebujesz konkretnej strony.</li>
+<li>Peach Commander to aplikacja z jednym oknem, więc skrypty kierują się na oba panele tego okna.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Menu Start i polecenia niestandardowe</a></li><li><a href="settings.html">Ustawienia</a></li></ul></section>
+</main>
+</body>
+</html>

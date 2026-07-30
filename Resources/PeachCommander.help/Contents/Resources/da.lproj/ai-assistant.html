@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI-assistent</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>AI-assistent</h1>
+<p>AI-assistenten er et valgfrit plugin, der kan fjernes, og som hjælper dig med at arbejde med dine filer på almindeligt sprog. Den kan opsummere eller forklare et dokument, foreslå et bedre filnavn, oversætte eller korrekturlæse tekst, omdanne data til en tabel og endda organisere en mappe — og den kan udføre filhandlinger for dig, efter at den først har vist dig en plan. Den kører på enheden med Apple Intelligence, når det er tilgængeligt, eller du kan pege den mod en cloud-model. Fordi den er et plugin, kan du deaktivere eller fjerne den helt fra <strong>Konfiguration ▸ Plugins…</strong>.</p>
+<h2 id="abn-assistenten">Åbn assistenten</h2>
+<p>Vælg <strong>Kommandoer ▸ AI-assistent</strong> for at vise assistenten i et forankret panel til højre i vinduet. Skriv en anmodning, og tryk på Return; assistenten kan læse filer, slå ting op og — med din bekræftelse — foretage ændringer.</p>
+<p><img alt="AI-assistentens chat forankret ved siden af filpanelerne" src="images/ai-chat.png" />
+<em>(Figur: AI-assistenten, forankret til højre, arbejder på en anmodning.)</em></p>
+<h2 id="handlinger-via-hjreklik-ai">Handlinger via højreklik (AI ▸)</h2>
+<p>Den hurtigste måde at bruge assistenten på er undermenuen <strong>AI ▸</strong> i højrekliksmenuen:</p>
+<ul>
+<li><strong>På en fil</strong> — Opsummér, Forklar, Foreslå et navn, Oversæt til engelsk, Korrekturlæs, Registrér opgaver og Lav en tabel.</li>
+<li><strong>På panelets baggrund</strong> — Organisér denne mappe og Find sandsynlige dubletter.</li>
+</ul>
+<p>Hver <strong>AI ▸</strong>-handling åbner sin <strong>egen navngivne chat</strong> (for eksempel <em>Opsummér – report.txt</em>), så forskellige opgaver holdes adskilt i stedet for at hobe sig op i én lang samtale. Når du selv skriver i inputfeltet, fortsætter den anmodning den aktuelle chat.</p>
+<h2 id="handter-dine-chats">Håndtér dine chats</h2>
+<ul>
+<li>Brug chat-skifteren øverst i panelet til at bevæge dig mellem samtaler.</li>
+<li>Menuen <strong>Slet ▾</strong> tilbyder <strong>Slet denne chat</strong> og <strong>Slet alle chats</strong>, så du kan rydde alt på én gang, når listen bliver lang. Tomme chats ryddes op automatisk, når du lukker panelet.</li>
+</ul>
+<h2 id="ndringer-bekrftes-frst">Ændringer bekræftes først</h2>
+<p>For alt, der ændrer filer — flytning, omdøbning, skrivning, sletning — viser assistenten en <strong>plan og venter på din bekræftelse</strong>, før den handler. Du kan ændre dette i Indstillinger ved at hæve assistentens selvstændighed eller sænke den til skrivebeskyttet, så den aldrig ændrer noget.</p>
+<h2 id="indstillinger">Indstillinger</h2>
+<p>Åbn <strong>Konfiguration ▸ Indstillinger ▸ AI</strong> for at konfigurere assistenten på en enkelt side:</p>
+<ul>
+<li><strong>Foretrukken model</strong> — Automatisk (cloud hvis konfigureret, ellers på enheden), På enheden (Apple Intelligence) eller Cloud.</li>
+<li><strong>Cloud-slutpunkt, model og API-nøgle</strong> — for at bruge en OpenAI-kompatibel model i stedet for den på enheden. Nøglen gemmes i macOS-nøgleringen, aldrig i dine konfigurationsfiler.</li>
+<li><strong>Assistentens selvstændighed</strong> — skrivebeskyttet, bekræft ændringer (standarden) eller selvstændig.</li>
+<li><strong>Tilpasset systemprompt</strong> — valgfrie instruktioner, der former, hvordan assistenten svarer.</li>
+<li><strong>MCP-server</strong> — en valgfri server, der kun er lokal, og som lader en ekstern agent styre appen; slået fra som standard og kan beskyttes med et token.</li>
+</ul>
+<p><img alt="AI-siden i Indstillinger med indstillingerne for selvstændighed og MCP-serveren" src="images/settings-ai.png" />
+<em>(Figur: Alle assistentens indstillinger findes på én AI-side i Indstillinger.)</em></p>
+<h2 id="privatliv">Privatliv</h2>
+<ul>
+<li>Med Apple Intelligence kører assistenten <strong>på din Mac</strong>; intet forlader enheden.</li>
+<li>En cloud-model bruges <strong>kun, hvis du konfigurerer en</strong>, og dens API-nøgle opbevares i nøgleringen.</li>
+<li>Filændrende handlinger bekræftes, før de køres, medmindre du bevidst hæver selvstændighedsniveauet.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="settings.html">Indstillinger</a></li><li><a href="privacy-and-security.html">Anonymitet og sikkerhed</a></li></ul></section>
+</main>
+</body>
+</html>

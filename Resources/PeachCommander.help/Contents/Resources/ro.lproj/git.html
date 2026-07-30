@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>Pluginul Git aduce starea unui depozit Git direct în panoul de fișiere — fără o aplicație separată, fără terminal. Adaugă două coloane care arată starea din arborele de lucru a fiecărui fișier și ramura curentă, un submeniu <strong>Git</strong> pentru comenzile de zi cu zi (status, pregătire, commit, pull, push), și folosește <code>git</code>-ul deja instalat pe Mac-ul dvs. Fiind un plugin, îl puteți dezactiva sau elimina din <strong>Configurare ▸ Pluginuri…</strong>.</p>
+<h2 id="ce-adauga">Ce adaugă</h2>
+<ul>
+<li><strong>Două coloane în lista de fișiere</strong> — <em>Git Status</em> și <em>Branch</em>. Într-un depozit, fiecare fișier arată un cuvânt de stare scurt (Modificat, Adăugat, Șters, Neurmărit, Redenumit, Copiat, Conflict, Ignorat sau Schimbat), iar panoul arată ramura curentă. Activați coloanele în <strong>Configurare ▸ Coloane…</strong> (vedeți <a href="view-modes-and-sorting.md">Moduri de vizualizare și sortare</a>).</li>
+<li><strong>Un meniu Git</strong> — în <strong>Comenzi ▸ Git</strong>, și în meniul cu clic dreapta al unui fișier, cu: <strong>Git Status…</strong>, <strong>Git Add (pregătire)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> și <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="Dialogul Git Status care arată ramura curentă și fișierele modificate din depozit" src="images/git-status.png" />
+<em>(Figura: Git Status raportează ramura și fiecare modificare din arborele de lucru.)</em></p>
+<h2 id="verificarea-starii">Verificarea stării</h2>
+<ol>
+<li>Puneți cursorul pe un fișier sau folder din interiorul unui depozit Git.</li>
+<li>Alegeți <strong>Comenzi ▸ Git ▸ Git Status…</strong> (sau clic dreapta ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>Apare un rezumat: ramura curentă (sau <em>(detașat)</em>), apoi fie <em>Arbore de lucru curat.</em>, fie o listă de modificări, fiecare linie arătând starea și calea fișierului.</li>
+</ol>
+<p>Dacă cursorul nu este în interiorul unui depozit, pluginul spune pur și simplu <em>Nu este un depozit Git.</em></p>
+<h2 id="pregatire-commit-pull-push">Pregătire, commit, pull, push</h2>
+<ul>
+<li><strong>Git Add (pregătire)</strong> pregătește fișierul de sub cursor (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> cere un mesaj de commit, apoi înregistrează toate modificările (<code>git commit -a</code>). Ieșirea combinată este afișată, astfel încât să vedeți exact ce s-a întâmplat.</li>
+<li><strong>Git Pull</strong> face un pull doar de tip fast-forward (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> trimite ramura curentă (<code>git push</code>).</li>
+</ul>
+<p>După o comandă care modifică depozitul, panoul activ se reîmprospătează, astfel încât coloanele de stare rămân actuale.</p>
+<h2 id="note">Note</h2>
+<ul>
+<li>Pluginul folosește Git-ul de sistem de la <code>/usr/bin/git</code>. Dacă Git nu este instalat, comenzile raportează că Git nu este disponibil. (Instalarea Xcode Command Line Tools îl furnizează.)</li>
+<li>Starea depozitului este citită o singură dată pentru fiecare folder și memorată în cache, astfel încât parcurgerea unui depozit mare rămâne rapidă; cache-ul se reîmprospătează după orice comandă care modifică arborele.</li>
+<li>Commit folosește <code>git commit -a</code>, care înregistrează modificările urmărite; fișierele complet noi tot au nevoie mai întâi de <strong>Git Add (pregătire)</strong>.</li>
+<li>Antetele coloanelor <em>Git Status</em> și <em>Branch</em> apar deocamdată în engleză chiar și în alte limbi ale interfeței; valorile și dialogurile sunt localizate.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="view-modes-and-sorting.html">Moduri de vizualizare și sortare</a></li></ul></section>
+</main>
+</body>
+</html>

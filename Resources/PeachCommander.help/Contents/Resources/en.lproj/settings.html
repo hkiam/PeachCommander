@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Settings</h1>
+<p>The Settings window is where you tailor Peach Commander to the way you work: which bars appear, how files are displayed, how copy and delete operations behave, the archive format used when you pack, tab behavior, FTP defaults, the display language, and more. Settings are grouped into pages so you can find an option quickly, and every change is saved automatically to your personal configuration folder.</p>
+<h2 id="open-settings">Open Settings</h2>
+<ol>
+<li>Choose <strong>Peach Commander &gt; Settings…</strong>, or press Cmd+, (comma).</li>
+<li>You can also open the same window from <strong>Configuration &gt; Options…</strong>.</li>
+<li>Pick a page from the list on the left; the options for that page appear on the right.</li>
+<li>Adjust the controls. Changes take effect immediately unless a note on the page says otherwise.</li>
+</ol>
+<p><img alt="The Settings window showing the Layout page with checkboxes for the interface bars" src="images/settings-layout.png" />
+<em>(Figure: The Layout page controls which bars are shown around the panels.)</em></p>
+<h2 id="the-pages">The pages</h2>
+<p>The window has these pages, in order:</p>
+<ul>
+<li><strong>Layout</strong> — show or hide the drive bar, tab bar, path bar, and status bar.</li>
+<li><strong>Display</strong> — how files and folders are listed, including the date format.</li>
+<li><strong>Icons</strong> — icon appearance in the file lists.</li>
+<li><strong>Operation</strong> — general behavior, such as what happens when you type in a panel (quick search versus the command line).</li>
+<li><strong>Colors</strong> — custom panel colors, or leave them following the current theme.</li>
+<li><strong>Confirmation</strong> — which actions ask you to confirm first, such as deleting.</li>
+<li><strong>Edit/View</strong> — the programs used to edit and view files, and per-type associations.</li>
+<li><strong>Copy/Delete</strong> — preserve file metadata, use fast cloning, copy only newer files, verify after copying, send deletions to the Trash, and set an optional speed limit.</li>
+<li><strong>Zip/Packer</strong> — the default archive format and compression level used when you pack.</li>
+<li><strong>Plugins</strong> — turn installed plugins on or off.</li>
+<li><strong>Tabs</strong> — how folder tabs open and behave.</li>
+<li><strong>FTP</strong> — network defaults such as the keep-alive interval.</li>
+<li><strong>Keyboard</strong> — review and change keyboard shortcuts.</li>
+<li><strong>Language</strong> — choose System default, English, or Deutsch.</li>
+<li><strong>AI</strong> — configure the AI assistant: preferred model, cloud endpoint and key, autonomy, and the optional MCP server (see <a href="ai-assistant.md">AI Assistant</a>).</li>
+<li><strong>Misc</strong> — open your configuration folder in the Finder.</li>
+</ul>
+<p>Enabled plugins can add their own pages after the built-in ones — for example <strong>Disk Map</strong> and <strong>System Monitor</strong> — so their options live in the same window (see <a href="plugins.md">Plugins</a>).</p>
+<p><img alt="The Settings window showing the Display page options for how files are listed" src="images/settings-display.png" />
+<em>(Figure: The Display page controls how files and folders are listed.)</em></p>
+<p><img alt="The Settings window showing the Operation page" src="images/settings-operation.png" />
+<em>(Figure: The Operation page governs quick-search and mouse behavior.)</em></p>
+<h2 id="where-your-settings-are-stored">Where your settings are stored</h2>
+<p>Your configuration is kept in plain text files inside your personal Application Support folder, at <code>~/Library/Application Support/PeachCommander</code>. To open it, go to the <strong>Misc</strong> page and click <strong>Open Config Folder</strong>. Saved FTP passwords are not stored in these files; they are kept securely in the macOS Keychain.</p>
+<p>Settings are written as you change them. You can also force a save at any time with <strong>Configuration &gt; Save Settings</strong>, and store the current window position and panel layout with <strong>Configuration &gt; Save Position</strong>.</p>
+<h2 id="bringing-settings-over-from-total-commander">Bringing settings over from Total Commander</h2>
+<p>If you are moving from Total Commander on Windows, you can import your saved FTP sites. Choose <strong>Configuration &gt; Import wincmd.ini…</strong> and select your Total Commander FTP configuration file. Your connections are added to Peach Commander in the same order they appeared there.</p>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open Settings</td>
+<td>Cmd+,</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>The <strong>Language</strong> page offers System default, English, and Deutsch. Changing the language takes effect only after you restart Peach Commander.</li>
+<li>Colors set on the <strong>Colors</strong> page override the theme; use <strong>Reset to defaults</strong> there to return to the theme's colors.</li>
+<li>Peach Commander stores its settings only in its own configuration folder, so your changes never affect other apps and are easy to back up by copying that folder.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="appearance.html">Appearance</a></li><li><a href="keyboard-shortcuts.html">Keyboard &amp; shortcuts</a></li></ul></section>
+</main>
+</body>
+</html>

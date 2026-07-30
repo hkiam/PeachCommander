@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filverktyg</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Filverktyg</h1>
+<p>Utöver kopiering och flytt innehåller Peach Commander en uppsättning vardagliga filverktyg för att verifiera att filer är intakta, återvinna diskutrymme, bryta upp stora filer i mindre delar, och konvertera filer till och från textsäkra format. Du når dem alla från menyn <strong>Arkiv</strong>, och de agerar på det du har markerat i den aktiva panelen (eller objektet under markören när inget är markerat). Det här ämnet täcker kontrollsummor, dubblettsökaren, dela/kombinera, koda/avkoda, och beräkning av upptaget utrymme.</p>
+<h2 id="skapa-eller-verifiera-kontrollsummor">Skapa eller verifiera kontrollsummor</h2>
+<p>Kontrollsummor låter dig bekräfta att en fil laddades ner eller kopierades utan skada, eller ge en mottagare ett sätt att kontrollera kopian de fick.</p>
+<ol>
+<li>Markera filerna du vill ta fingeravtryck av.</li>
+<li>Välj <strong>Arkiv ▸ Skapa kontrollsummor…</strong>, välj en algoritm (CRC32, MD5, SHA-1, SHA-256 eller SHA-512), och spara kontrollsummefilen.</li>
+<li>För att kontrollera filer senare, markera kontrollsummefilen och välj <strong>Arkiv ▸ Verifiera kontrollsummor…</strong>. Peach Commander räknar om varje hash och rapporterar varje fil som inte matchar.</li>
+</ol>
+<p>Kontrollsummor strömmar direkt över den aktuella platsen, så du kan skapa eller verifiera dem även för filer inuti arkiv eller på en FTP-server.</p>
+<h2 id="hitta-dubblettfiler">Hitta dubblettfiler</h2>
+<p>Dubblettsökaren lokaliserar identiska filer utspridda över mappar så att du kan ta bort de extra kopiorna.</p>
+<ol>
+<li>Markera mapparna (eller filerna) du vill skanna.</li>
+<li>Välj <strong>Arkiv ▸ Hitta dubbletter…</strong>. Peach Commander jämför kandidater och grupperar filer som är byte-för-byte identiska.</li>
+<li>Granska varje grupp, markera kopiorna du inte längre behöver, och ta bort dem.</li>
+</ol>
+<p><img alt="Dubblettsökaren som listar grupper av identiska filer" src="images/duplicate-finder.png" />
+<em>(Figur: Dubblettsökaren grupperar identiska filer så att du kan behålla en och ta bort resten.)</em></p>
+<h2 id="dela-och-kombinera-filer">Dela och kombinera filer</h2>
+<p>Delning bryter upp en stor fil i en numrerad serie mindre delar – praktiskt för lagrings- eller överföringsgränser. Kombinering sätter ihop dem igen.</p>
+<ol>
+<li>För att dela, markera en fil och välj <strong>Arkiv ▸ Dela fil…</strong>, och ställ sedan in delstorleken. Delarna skrivs till den andra panelens mapp.</li>
+<li>För att sätta ihop igen, markera den första delen och välj <strong>Arkiv ▸ Kombinera filer…</strong>. Originalfilen byggs om från de numrerade bitarna.</li>
+</ol>
+<h2 id="koda-och-avkoda">Koda och avkoda</h2>
+<p>Kodning förvandlar en binärfil till vanlig text så att den överlever kanaler som bara bär text (till exempel äldre e-post eller inklistringsrutor). Avkodning vänder på det.</p>
+<ol>
+<li>Markera en fil och välj <strong>Arkiv ▸ Koda…</strong>, och välj sedan ett format – MIME (Base64), UUE (uuencode) eller XXE.</li>
+<li>För att återställa originalet, markera den kodade filen och välj <strong>Arkiv ▸ Avkoda…</strong>. Formatet upptäcks automatiskt.</li>
+</ol>
+<h2 id="berakna-upptaget-utrymme">Beräkna upptaget utrymme</h2>
+<p>För att se hur mycket plats en mapp eller ett urval faktiskt använder på disk, markera objekten och tryck på <strong>Ctrl+L</strong> (<strong>Arkiv ▸ Beräkna upptaget utrymme…</strong>). Peach Commander summerar varje fil inuti, inklusive undermappar, och visar totalsumman.</p>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Tangent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Beräkna upptaget utrymme</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anteckningar">Anteckningar</h2>
+<ul>
+<li>Kontrollsummor, dela/kombinera och koda/avkoda är inriktade på mer avancerade uppgifter, men var och en är en enda dialog med förnuftiga standardvärden.</li>
+<li>När ett verktyg producerar nya filer (deldelar, en kodad fil, en kontrollsummelista) skrivs de till mappen som visas i den andra panelen – ställ in den panelen till ditt avsedda mål först.</li>
+<li>Att ta bort dubbletter är permanent beroende på dina borttagningsinställningar; granska varje grupp noga och behåll minst en kopia av allt du fortfarande behöver.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Jämföra och synkronisera</a></li></ul></section>
+</main>
+</body>
+</html>

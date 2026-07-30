@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sieťové zdieľania</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Sieťové zdieľania</h1>
+<p>Peach Commander sa dokáže pripojiť k súborovým serverom vo vašej lokálnej alebo podnikovej sieti — zdieľaniam SMB (Windows/Samba) a AFP — a zobraziť ich obsah v paneli presne ako priečinok na vašom Macu. Keď je zdieľanie pripojené, môžete v ňom prehliadať, kopírovať, presúvať, premenúvať a otvárať súbory presne ako lokálne, vrátane kopírovania medzi zdieľaním a vaším druhým panelom.</p>
+<h2 id="pripojenie-k-serveru">Pripojenie k serveru</h2>
+<ol>
+<li>Kliknite na panel, ku ktorému sa chcete pripojiť (pripojené zdieľanie sa otvorí v aktívnom paneli).</li>
+<li>Stlačte Cmd+K, alebo vyberte <strong>Sieť &gt; Sieťové okolie &gt; Pripojiť sieťové zdieľanie…</strong>.</li>
+<li>V dialógu <strong>Pripojiť k serveru</strong> zadajte adresu servera. Môžete uviesť:
+   - adresu SMB, napríklad <code>smb://fileserver/projects</code>
+   - adresu AFP, napríklad <code>afp://fileserver/projects</code>
+   - cestu v štýle Windows, napríklad <code>\\fileserver\projects</code>
+   - jednoduchý názov <code>server/zdieľanie</code></li>
+<li>Kliknite na Pripojiť (alebo stlačte Enter). Ak server potrebuje meno a heslo, macOS zobrazí svoje obvyklé prihlasovacie okno — zadajte tam svoje údaje.</li>
+<li>Keď je zdieľanie pripravené, aktívny panel ho automaticky otvorí. Prehliadajte a pracujte s ním ako s ktorýmkoľvek iným priečinkom.</li>
+</ol>
+<h2 id="odpojenie">Odpojenie</h2>
+<p>Pripojené zdieľanie sa objaví ako pripojený zväzok na vašom Macu. Na jeho odpojenie ho vysuňte obvyklým spôsobom macOS — napríklad z bočného panela Finder alebo zo zoznamu zariadení v Peach Commanderi.</p>
+<h2 id="skratky">Skratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akcia</th>
+<th>Skratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pripojiť sieťové zdieľanie…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Overenie (používateľské meno, heslo a prípadná možnosť „zapamätať v mojom zväzku kľúčov") spracúva obvyklé prihlasovacie okno macOS, takže uložené heslá serverov fungujú ako vo Finderi.</li>
+<li>Ak zadáte adresu, ktorú nemožno rozobrať, Peach Commander požiada o adresu SMB/AFP, cestu v štýle Windows alebo názov <code>server/zdieľanie</code>, a nič sa nepripojí.</li>
+<li>Po potvrdení môže pripojenie chvíľu trvať, kým macOS pripojí zdieľanie; panel naň prepne, hneď ako bude dostupné.</li>
+<li>Toto sa pripája k zdieľaným zariadeniam v sieti. Na dosiahnutie servera FTP, FTPS alebo SFTP namiesto toho pozri súvisiacu tému nižšie.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Pripojenie k FTP a SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Monitor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>System Monitor</h1>
+<p>El complemento System Monitor coloca una lectura en tiempo real de la actividad de su Mac directamente en la barra de título de la ventana: pequeñas fichas para CPU, memoria, disco, red y —donde el hardware las expone— GPU, batería y sensores. Cada ficha se actualiza una vez por segundo; haga clic en una para obtener una ventana emergente con un gráfico de historial y un desglose detallado. Al ser un complemento, puede activarlo, configurarlo o eliminarlo desde <strong>Configuración ▸ Complementos…</strong>.</p>
+<h2 id="las-fichas-de-la-barra-de-titulo">Las fichas de la barra de título</h2>
+<p>Cuando el complemento está activado, una fila de fichas compactas se sitúa en la barra de título. Cada ficha es un punto de color, una etiqueta breve y un valor en vivo (algunas con una minigráfica en línea):</p>
+<table>
+<thead>
+<tr>
+<th>Ficha</th>
+<th>Muestra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>Carga del procesador, con detalle por núcleo</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>Memoria usada / total (más fija, comprimida, swap)</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>Espacio del volumen de arranque y rendimiento de lectura/escritura</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>Tasas y totales de descarga / subida</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>Uso de GPU · carga y estado de la batería · velocidades de ventilador y temperaturas</td>
+</tr>
+</tbody>
+</table>
+<p>Haga clic en una ficha para abrir una ventana emergente con el valor actual en grande, una minigráfica <strong>HISTORY</strong>, una lista clave/valor <strong>DETAILS</strong> y —para la CPU— una lista <strong>CORE LOAD</strong> con barras por núcleo.</p>
+<h2 id="configurarlo">Configurarlo</h2>
+<p>Elija <strong>Comandos ▸ System Monitor…</strong> (o abra <strong>Configuración ▸ Ajustes ▸ System Monitor</strong>) para configurar la lectura:</p>
+<ul>
+<li><strong>Mostrar el monitor del sistema en la barra de título</strong> — el interruptor principal de las fichas.</li>
+<li><strong>Perfil</strong> — los preajustes <em>Mínimo</em>, <em>Medio</em> o <em>Máximo</em>, que eligen un conjunto sensato de módulos.</li>
+<li><strong>La tabla de módulos</strong> — active o desactive cada módulo (CPU, GPU, RAM, HDD, Net, Batt, Sens), elija su color y arrastre las filas para fijar el orden en que aparecen en la barra de título. Los módulos que su hardware no puede informar se muestran como <em>(n/a)</em>.</li>
+</ul>
+<p><img alt="Los ajustes de System Monitor con su tabla de módulos, perfiles y colores por módulo" src="images/system-monitor.png" />
+<em>(Figura: elija qué módulos aparecen, sus colores y su orden.)</em></p>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>Todo se mide, nunca se inventa: los módulos cuyos datos el hardware no expone (a menudo GPU o sensores en algunos Mac) permanecen no disponibles en lugar de mostrar cifras inventadas. La batería no está disponible en equipos de escritorio.</li>
+<li>El muestreo se ejecuta en un temporizador en segundo plano solo mientras la lectura está visible, y conserva unos 30 minutos de historial para los gráficos.</li>
+<li>Su selección de módulos, colores y orden se guardan con la configuración de la app.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="settings.html">Ajustes</a></li></ul></section>
+</main>
+</body>
+</html>

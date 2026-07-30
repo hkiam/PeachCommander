@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key><string>Notes</string>
+	<key>CFBundleExecutable</key><string>Notes</string>
+	<key>CFBundlePackageType</key><string>BNDL</string>
+	<key>CFBundleShortVersionString</key><string>1.0</string>
+	<key>CFBundleVersion</key><string>1</string>
+	<key>PCPluginType</key><string>pdx</string>
+	<key>PCPluginAPIVersion</key><integer>1</integer>
+	<key>PCPluginName</key><string>Notes</string>
+	<key>PCPluginMinHostVersion</key><integer>1</integer>
+	<key>PCContributions</key>
+	<dict>
+		<key>commands</key>
+		<array>
+			<dict><key>id</key><string>plugin.notes.edit</string><key>title</key><string>Edit Note…</string><key>category</key><string>Notes</string></dict>
+			<dict><key>id</key><string>plugin.notes.overview</string><key>title</key><string>Notes Overview…</string><key>category</key><string>Notes</string></dict>
+		</array>
+		<key>menus</key>
+		<array>
+			<dict><key>command</key><string>plugin.notes.edit</string><key>menu</key><string>Commands</string><key>group</key><string>6_notes</string><key>order</key><integer>100</integer><key>when</key><string>cursorPath</string></dict>
+			<dict><key>command</key><string>plugin.notes.overview</string><key>menu</key><string>Commands</string><key>group</key><string>6_notes</string><key>order</key><integer>110</integer></dict>
+		</array>
+		<key>contextMenus</key>
+		<array>
+			<dict><key>command</key><string>plugin.notes.edit</string><key>surface</key><string>panel.item</string><key>group</key><string>9_plugins</string><key>when</key><string>cursorPath</string></dict>
+		</array>
+		<key>views</key>
+		<array>
+			<dict><key>id</key><string>plugin.notes.sidebar</string><key>container</key><string>sidebar</string><key>title</key><string>Notes</string></dict>
+		</array>
+	</dict>
+</dict>
+</plist>

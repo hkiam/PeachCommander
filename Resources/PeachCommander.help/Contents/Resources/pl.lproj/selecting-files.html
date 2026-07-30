@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zaznaczanie plików</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Zaznaczanie plików</h1>
+<p>Zanim skopiujesz, przeniesiesz, usuniesz lub spakujesz cokolwiek, najpierw mówisz Peach Commander, na których elementach ma wykonać operację. Element, na którym spoczywa kursor, jest zawsze elementem bieżącym, ale możesz też <em>zaznaczyć</em> jeden lub wiele plików i folderów, aby polecenie zadziałało na wszystkich naraz. Zaznaczone elementy wyróżniają się w panelu odmiennym kolorem nazwy.</p>
+<h2 id="zaznaczanie-plikow-i-folderow">Zaznaczanie plików i folderów</h2>
+<ol>
+<li>Kliknij wiersz, aby przenieść na niego kursor. Pojedyncze kliknięcie zaznacza tylko ten jeden element.</li>
+<li>Aby zaznaczyć kilka elementów naraz, przytrzymaj Cmd i kliknij każdy z nich, albo przytrzymaj Shift i kliknij, aby zaznaczyć zakres.</li>
+<li>Aby zaznaczyć element pod kursorem i zejść w dół jednym ruchem, naciśnij Insert. Naciskaj wielokrotnie, aby szybko zaznaczyć ciąg kolejnych elementów. Klawisz Spacja również przełącza zaznaczenie bieżącego elementu (i pokazuje rozmiar folderu).</li>
+<li>Aby zaznaczyć wszystko w panelu, wybierz Zaznacz &gt; Zaznacz wszystko (Ctrl+Num+) lub naciśnij Cmd+A. Wybierz Zaznacz &gt; Odznacz wszystko (Ctrl+Num-), aby usunąć wszystkie zaznaczenia.</li>
+</ol>
+<h2 id="zaznaczanie-lub-odznaczanie-wedug-wzorca">Zaznaczanie lub odznaczanie według wzorca</h2>
+<ol>
+<li>Wybierz Zaznacz &gt; Zaznacz grupę… (Num+), aby dodać elementy, których nazwy pasują do wzorca, lub Zaznacz &gt; Odznacz grupę… (Num-), aby usunąć pasujące elementy z bieżącego zaznaczenia.</li>
+<li>Wpisz maskę z symbolami wieloznacznymi. Użyj <code>*</code> dla dowolnych znaków i <code>?</code> dla pojedynczego znaku. Oddziel kilka masek średnikiem, a wyjątki wypisz po pionowej kresce — na przykład <code>*.jpg;*.png</code> zaznacza wszystkie obrazy, a <code>*.*|*.bak</code> zaznacza wszystko oprócz plików kopii zapasowych.</li>
+</ol>
+<p><img alt="Okno dialogowe Zaznacz grupę z maską wieloznaczną wpisaną w polu wzorca" src="images/select-by-mask.png" />
+<em>(Rysunek: Zaznaczanie plików według maski wieloznacznej.)</em></p>
+<h2 id="odwracanie-to-samo-rozszerzenie-i-przywracanie">Odwracanie, to samo rozszerzenie i przywracanie</h2>
+<ul>
+<li><strong>Odwróć zaznaczenie</strong> (Num*, menu Zaznacz) odwraca każde zaznaczenie: elementy zaznaczone stają się niezaznaczone i odwrotnie — przydatne dla „wszystko oprócz tych".</li>
+<li><strong>Zaznacz wszystkie z tym samym rozszerzeniem</strong> (Alt+Num+, menu Zaznacz) zaznacza każdy plik, który dzieli rozszerzenie z elementem pod kursorem, więc jedno naciśnięcie klawisza obejmuje na przykład wszystkie pliki <code>.pdf</code>.</li>
+<li><strong>Przywróć zaznaczenie</strong> (Num/, menu Zaznacz) przywraca poprzedni zestaw zaznaczeń — przydatne, jeśli polecenie je wyczyściło lub zaznaczyłeś niewłaściwą grupę.</li>
+</ul>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Klawisz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Przełącz zaznaczenie, przejdź w dół</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Przełącz zaznaczenie (bieżący element)</td>
+<td>Space</td>
+</tr>
+<tr>
+<td>Zaznacz wszystko / Odznacz wszystko</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Zaznacz wszystko (alternatywnie)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Zaznacz grupę według maski</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Odznacz grupę według maski</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Odwróć zaznaczenie</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Zaznacz wszystkie z tym samym rozszerzeniem</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Przywróć poprzednie zaznaczenie</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Zaznaczenia i kursor są niezależne: przesuwanie kursora klawiszami strzałek nie zmienia tego, co jest zaznaczone.</li>
+<li>Wpis folderu nadrzędnego (<code>..</code>) nigdy nie może zostać zaznaczony.</li>
+<li>Zaznacz grupę, Odznacz grupę i Odwróć zaznaczenie dopasowują się do nazwy pliku, więc możesz uwzględnić lub pominąć foldery w zależności od opcji okna dialogowego.</li>
+<li>Po zakończeniu kopiowania, przenoszenia lub usuwania elementy, które zostały pomyślnie obsłużone, są automatycznie odznaczane, a te, które się nie powiodły, pozostają zaznaczone, abyś mógł ponowić na nich operację.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiowanie plików</a></li><li><a href="searching.html">Wyszukiwanie plików</a></li></ul></section>
+</main>
+</body>
+</html>

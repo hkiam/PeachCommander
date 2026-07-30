@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Utilidades de archivos</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Utilidades de archivos</h1>
+<p>Más allá de copiar y mover, Peach Commander incluye un conjunto de utilidades de archivos cotidianas para verificar que los archivos están intactos, recuperar espacio en disco, dividir archivos grandes en fragmentos más pequeños y convertir archivos a formatos seguros para texto y viceversa. Puede acceder a todas ellas desde el menú <strong>Archivo</strong>, y actúan sobre lo que tenga seleccionado en el panel activo (o sobre el elemento situado bajo el cursor cuando no hay nada seleccionado). Este tema abarca las sumas de comprobación, el buscador de duplicados, dividir/combinar, codificar/descodificar y el cálculo del espacio ocupado.</p>
+<h2 id="crear-o-verificar-sumas-de-comprobacion">Crear o verificar sumas de comprobación</h2>
+<p>Las sumas de comprobación permiten confirmar que un archivo se descargó o se copió sin corrupción, o dar a un destinatario una forma de comprobar la copia que ha recibido.</p>
+<ol>
+<li>Seleccione los archivos de los que quiera obtener una huella.</li>
+<li>Elija <strong>Archivo ▸ Crear sumas de comprobación…</strong>, elija un algoritmo (CRC32, MD5, SHA-1, SHA-256 o SHA-512) y guarde el archivo de sumas de comprobación.</li>
+<li>Para comprobar los archivos más tarde, seleccione el archivo de sumas de comprobación y elija <strong>Archivo ▸ Verificar sumas de comprobación…</strong>. Peach Commander recalcula cada hash e informa de cualquier archivo que no coincida.</li>
+</ol>
+<p>Las sumas de comprobación se transmiten directamente sobre la ubicación actual, de modo que puede crearlas o verificarlas incluso para archivos dentro de archivos comprimidos o en un servidor FTP.</p>
+<h2 id="buscar-archivos-duplicados">Buscar archivos duplicados</h2>
+<p>El buscador de duplicados localiza archivos idénticos repartidos por varias carpetas para que pueda eliminar las copias sobrantes.</p>
+<ol>
+<li>Seleccione las carpetas (o los archivos) que desea analizar.</li>
+<li>Elija <strong>Archivo ▸ Buscar duplicados…</strong>. Peach Commander compara los candidatos y agrupa los archivos que son idénticos byte a byte.</li>
+<li>Revise cada grupo, marque las copias que ya no necesite y elimínelas.</li>
+</ol>
+<p><img alt="El buscador de duplicados con una lista de grupos de archivos idénticos" src="images/duplicate-finder.png" />
+<em>(Figura: El buscador de duplicados agrupa los archivos idénticos para que pueda conservar uno y eliminar el resto.)</em></p>
+<h2 id="dividir-y-combinar-archivos">Dividir y combinar archivos</h2>
+<p>Dividir descompone un archivo grande en una serie numerada de partes más pequeñas, práctico para límites de almacenamiento o de transferencia. Combinar las vuelve a ensamblar.</p>
+<ol>
+<li>Para dividir, seleccione un archivo y elija <strong>Archivo ▸ Dividir archivo…</strong> y, a continuación, defina el tamaño de las partes. Las partes se escriben en la carpeta del otro panel.</li>
+<li>Para reensamblar, seleccione la primera parte y elija <strong>Archivo ▸ Combinar archivos…</strong>. El archivo original se reconstruye a partir de los fragmentos numerados.</li>
+</ol>
+<h2 id="codificar-y-descodificar">Codificar y descodificar</h2>
+<p>Codificar convierte un archivo binario en texto sin formato para que sobreviva a los canales que solo transportan texto (por ejemplo, correos electrónicos antiguos o cuadros de pegado). Descodificar lo revierte.</p>
+<ol>
+<li>Seleccione un archivo y elija <strong>Archivo ▸ Codificar…</strong> y, a continuación, elija un formato: MIME (Base64), UUE (uuencode) o XXE.</li>
+<li>Para restaurar el original, seleccione el archivo codificado y elija <strong>Archivo ▸ Descodificar…</strong>. El formato se detecta automáticamente.</li>
+</ol>
+<h2 id="calcular-el-espacio-ocupado">Calcular el espacio ocupado</h2>
+<p>Para ver cuánto espacio ocupa realmente una carpeta o una selección en el disco, seleccione los elementos y pulse <strong>Ctrl+L</strong> (<strong>Archivo ▸ Calcular espacio ocupado…</strong>). Peach Commander suma todos los archivos que contiene, incluidas las subcarpetas, y muestra el total.</p>
+<h2 id="atajos">Atajos</h2>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Tecla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Calcular el espacio ocupado</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>Las sumas de comprobación, dividir/combinar y codificar/descodificar están orientadas a tareas más avanzadas, pero cada una es un único cuadro de diálogo con valores predeterminados sensatos.</li>
+<li>Cuando una utilidad produce archivos nuevos (partes de una división, un archivo codificado, una lista de sumas de comprobación), se escriben en la carpeta que se muestra en el otro panel: configure primero ese panel con el destino previsto.</li>
+<li>Eliminar duplicados es permanente según sus ajustes de eliminación; revise cada grupo con cuidado y conserve al menos una copia de todo lo que aún necesite.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Comparar y sincronizar</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zmiana nazw wielu plików</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Zmiana nazw wielu plików</h1>
+<p>Narzędzie masowej zmiany nazw zmienia nazwy całej partii plików w jednym przebiegu. Zamiast edytować nazwy pojedynczo, opisujesz zmianę raz — wzorzec nazewnictwa, wyszukiwanie i zamianę, schemat numeracji lub zmianę wielkości liter — a Peach Commander stosuje ją do każdego wybranego pliku. Podgląd na żywo pokazuje dokładnie, jak będzie się nazywał każdy plik, zanim cokolwiek się stanie, a pojedyncze Cofnij przywraca oryginalne nazwy, jeśli wynik nie był taki, jak chciałeś.</p>
+<h2 id="zmien-nazwy-partii-plikow">Zmień nazwy partii plików</h2>
+<ol>
+<li>Zaznacz pliki, których nazwy chcesz zmienić (zobacz <em>Zaznaczanie plików</em>). Dotyczy to tylko wybranych elementów.</li>
+<li>Wybierz <strong>Polecenia &gt; Narzędzie masowej zmiany nazw…</strong> lub naciśnij Ctrl+M.</li>
+<li>Zbuduj regułę zmiany nazw za pomocą pól opisanych poniżej. Siatka podglądu aktualizuje się w miarę pisania, pokazując każdą <strong>Starą nazwę</strong> obok jej <strong>Nowej nazwy</strong>.</li>
+<li>Sprawdź podgląd. Wiersz pokazany kolorem podświetlenia oznacza nazwę, której nie można użyć (na przykład duplikat lub niedozwoloną nazwę), więc możesz dostosować regułę.</li>
+<li>Gdy podgląd wygląda dobrze, kliknij <strong>Start</strong>. Jeśli zmienisz zdanie, kliknij <strong>Cofnij</strong>, aby przywrócić oryginalne nazwy.</li>
+</ol>
+<p><img alt="Okno masowej zmiany nazw z polami maski, opcjami i siatką podglądu od starej do nowej" src="images/multi-rename.png" />
+<em>(Rysunek: siatka podglądu aktualizuje się na żywo podczas edycji reguły zmiany nazw; nic nie zmienia się na dysku, dopóki nie klikniesz Start.)</em></p>
+<h2 id="budowanie-reguy-zmiany-nazw">Budowanie reguły zmiany nazw</h2>
+<ul>
+<li><strong>Maska zmiany nazwy</strong> i <strong>Rozszerzenie</strong> — wzorce budujące nową nazwę i rozszerzenie. Użyj przycisków szybkiego wstawiania lub wpisz symbole zastępcze bezpośrednio: <code>[N]</code> dla oryginalnej nazwy, <code>[N1-9]</code> dla zakresu znaków z niej, <code>[C]</code> dla licznika, <code>[d]</code> dla części daty i czasu oraz <code>[P]</code> dla nazwy folderu nadrzędnego.</li>
+<li><strong>Szukaj / Zamień na</strong> — zamień tekst wewnątrz nazw. Włącz <strong>Regex</strong> dla dopasowania wzorca, <strong>Uwzględnij wielkość</strong> dla dokładnego dopasowania wielkości liter i <strong>Powtarzaj</strong> dla zamiany każdego wystąpienia.</li>
+<li><strong>Wielkość liter</strong> — konwertuj nazwy na małe litery, WIELKIE LITERY, Pierwsza litera wielka lub Każde Słowo Wielką.</li>
+<li><strong>Licznik</strong> — ustaw <strong>początkowy</strong> numer, <strong>krok</strong> między plikami oraz do ilu <strong>cyfr</strong> uzupełniać (na przykład 001, 002, 003), wszędzie tam, gdzie pojawia się <code>[C]</code>.</li>
+</ul>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Otwórz narzędzie masowej zmiany nazw</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Zastosuj zmianę nazw</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Zamknij okno</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="wskazowki">Wskazówki</h2>
+<ul>
+<li>Nic nie jest zapisywane na dysku, dopóki nie klikniesz <strong>Start</strong>, więc możesz swobodnie eksperymentować z regułą i obserwować podgląd.</li>
+<li>Po uruchomieniu <strong>Cofnij</strong> odwraca zmianę nazw w jednym kroku.</li>
+<li>Zapisz regułę, której często używasz, jako <strong>Ustawienie wstępne</strong>, a następnie wybierz je z menu ustawień wstępnych następnym razem, aby wypełnić wszystkie pola naraz.</li>
+<li>Aby zmienić nazwę pojedynczego pliku lub zmienić nazwy plików podczas ich przenoszenia, użyj zamiast tego zmiany nazwy w miejscu lub okna dialogowego przenoszenia (zobacz <em>Przenoszenie i zmiana nazw</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Przenoszenie i zmiana nazw</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attributen &amp; machtigingen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Attributen &amp; machtigingen</h1>
+<p>Met Peach Commander kun je de metadata op laag niveau van bestanden en mappen inspecteren en wijzigen die Finder grotendeels buiten bereik houdt: POSIX-lees-/schrijf-/uitvoermachtigingen, de eigenaar en groep, de gewijzigde en aangemaakte datums, macOS-vlaggen zoals verborgen en vergrendeld, en uitgebreide attributen. Je kunt ook de toegangsbeheerlijst (ACL) van een bestand bewerken voor fijnmazige regels per gebruiker of per groep, koppelingen en aliassen maken die naar andere items verwijzen, en je eigen opmerkingen toevoegen. Deze hulpmiddelen zijn gericht op ervaren gebruikers die precieze controle nodig hebben over hoe items zich gedragen en wie ze mag aanraken.</p>
+<h2 id="attributen-wijzigen">Attributen wijzigen</h2>
+<ol>
+<li>Selecteer een of meer items in het actieve paneel.</li>
+<li>Kies <strong>Bestand &gt; Attributen wijzigen…</strong>.</li>
+<li>Stel in wat je nodig hebt: wissel de lees-/schrijf-/uitvoervakjes voor eigenaar, groep en iedereen (of typ direct een octale waarde), wijzig de eigenaar of groep, wissel de vlaggen verborgen of vergrendeld, en stel de gewijzigde of aangemaakte datum in. Gebruik <strong>Huidige gebruiken</strong> voor de huidige tijd, of kopieer een datum van een ander bestand.</li>
+<li>Om dezelfde wijziging door de inhoud van een map toe te passen, zet je de recursieve optie aan en kies je of deze bestanden, mappen of beide beïnvloedt.</li>
+<li>Klik op OK om de wijziging uit te voeren. Recursieve wijzigingen draaien als achtergrondtaak met een voortgangsbalk.</li>
+</ol>
+<p><img alt="Venster Attributen wijzigen met het machtigingenraster, vlaggen en datumvelden" src="images/attributes-dialog.png" />
+<em>(Afbeelding: Het venster Attributen wijzigen. Gemengde waarden over een selectie van meerdere bestanden worden als een streepje getoond totdat je ze instelt.)</em></p>
+<h2 id="een-acl-bewerken">Een ACL bewerken</h2>
+<p>Voor regels die verder gaan dan het basismodel eigenaar/groep/iedereen bewerk je de toegangsbeheerlijst van het item.</p>
+<ol>
+<li>Open <strong>Bestand &gt; Attributen wijzigen…</strong> en open van daaruit de ACL-editor.</li>
+<li>Elke rij is één regel: de gebruiker of groep waarop deze van toepassing is, of deze toestaat of weigert, en welke machtigingen (lezen, schrijven, verwijderen enzovoort) deze verleent.</li>
+<li>Voeg rijen toe, verwijder of bewerk ze, en bewaar vervolgens om de lijst terug naar het item te schrijven.</li>
+</ol>
+<h2 id="koppelingen-aliassen-en-opmerkingen-maken">Koppelingen, aliassen en opmerkingen maken</h2>
+<ul>
+<li><strong>Bestand &gt; Symbolische koppeling maken…</strong> maakt een symbolische koppeling (symlink) die via het pad naar het item onder de cursor verwijst.</li>
+<li><strong>Bestand &gt; Harde koppeling maken…</strong> maakt een harde koppeling naar dezelfde bestandsgegevens. Harde koppelingen werken alleen voor bestanden op hetzelfde volume.</li>
+<li><strong>Bestand &gt; Alias maken…</strong> maakt een macOS-alias die Finder ook kan volgen.</li>
+<li><strong>Bestand &gt; Opmerking bewerken…</strong> (Ctrl+Z) opent een teksteditor voor een opmerking per bestand. Opmerkingen kunnen in hun eigen kolom en in statustips worden getoond.</li>
+</ul>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Sneltoets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Opmerking bewerken</td>
+<td>Ctrl+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Het wijzigen van de eigenaar of groep vereist meestal privileges die je als normale gebruiker niet hebt; wanneer dat gebeurt, wordt de wijziging als mislukt gerapporteerd in plaats van toegepast, en gaan de rest van je wijzigingen alsnog door.</li>
+<li>Opmerkingen worden opgeslagen in een <code>descript.ion</code>-bestand naast je items en kunnen, afhankelijk van je instellingen, ook als Finder-opmerkingen worden bewaard. Beide worden gelezen bij het weergeven van een opmerking.</li>
+<li>Een symbolische koppeling en een alias verwijzen beide naar een doel, maar een symbolische koppeling slaat een gewoon pad op terwijl een alias een macOS-verwijzing opslaat die blijft werken als het doel wordt verplaatst of hernoemd. Een harde koppeling is een tweede naam voor dezelfde bestandsgegevens, geen verwijzing.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="file-utilities.html">Bestandshulpmiddelen</a></li></ul></section>
+</main>
+</body>
+</html>

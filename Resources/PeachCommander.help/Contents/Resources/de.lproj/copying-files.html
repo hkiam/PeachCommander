@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dateien kopieren</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Dateien kopieren</h1>
+<p>Peach Commander ist um zwei nebeneinanderliegende Panels herum aufgebaut: eines enthält die Dateien, mit denen Sie arbeiten, das andere ist das Ziel. Beim Kopieren wird das, was im aktiven Panel ausgewählt ist, dupliziert und in den im anderen Panel angezeigten Ordner gelegt, wobei die Originale an ihrem Platz bleiben. Dies ist der schnellste Weg, Dateien und Ordner zwischen zwei Orten zu duplizieren, ohne zu ziehen.</p>
+<h2 id="eine-auswahl-in-das-andere-panel-kopieren">Eine Auswahl in das andere Panel kopieren</h2>
+<ol>
+<li>Öffnen Sie in einem Panel den Ordner, der die zu kopierenden Elemente enthält.</li>
+<li>Öffnen Sie im anderen Panel den Ordner, in den die Kopien gehen sollen.</li>
+<li>Wählen Sie die zu kopierenden Dateien und Ordner aus. Ist nichts ausgewählt, wird das Element unter dem Cursor verwendet.</li>
+<li>Drücken Sie F5. Der Kopierdialog öffnet sich, wobei der Zielpfad bereits eingetragen ist.</li>
+</ol>
+<p><img alt="Der Kopierdialog mit dem Zielpfad und den Optionen" src="images/copy-dialog.png" />
+<em>(Abbildung: Der Kopierdialog. Der Zielpfad verweist auf das andere Panel; verwenden Sie die Optionen zur Feinabstimmung des Kopiervorgangs.)</em></p>
+<ol start="5">
+<li>Passen Sie bei Bedarf das Ziel an und bestätigen Sie dann, um den Kopiervorgang zu starten.</li>
+</ol>
+<h2 id="kopieroptionen">Kopieroptionen</h2>
+<p>Bevor Sie bestätigen, können Sie das Verhalten des Kopiervorgangs ändern:</p>
+<ul>
+<li><strong>Nur neuere Dateien</strong> – überspringt jedes Element, dessen Kopie bereits existiert und gleich alt oder neuer ist, sodass nur geänderte Dateien aktualisiert werden.</li>
+<li><strong>Metadaten erhalten</strong> – behält Daten, Berechtigungen und andere Dateiattribute bei den Kopien bei. Standardmäßig aktiviert.</li>
+<li><strong>Geschwindigkeitsbegrenzung</strong> – deckelt die Übertragungsrate, damit ein großer Kopiervorgang Ihre Festplatte oder Netzwerkverbindung nicht auslastet.</li>
+<li><strong>Umbenennungsmaske</strong> – geben Sie im Zielfeld ein Platzhaltermuster ein (zum Beispiel <code>*.bak</code>), um Elemente beim Kopieren umzubenennen.</li>
+</ul>
+<p>Sie können den Auftrag auch in die Hintergrundwarteschlange senden, statt ihm zuzusehen – siehe Hintergrundübertragungen.</p>
+<h2 id="fortschritt">Fortschritt</h2>
+<p>Ein Fortschrittsfenster zeigt mit getrennten Balken die aktuelle Datei und den Gesamtauftrag sowie die Übertragungsgeschwindigkeit. Sie können jederzeit pausieren und fortsetzen oder den laufenden Kopiervorgang an den Manager für Hintergrundübertragungen senden, um weiterzuarbeiten, während er zu Ende läuft.</p>
+<p><img alt="Der Übertragungsfortschritt-Dialog mit Fortschrittsbalken, Datei- und Byte-Zählern sowie Pause- und Abbrechen-Schaltflächen" src="images/progress-dialog.png" />
+<em>(Abbildung: Der Fortschrittsdialog während eines Kopier- oder Verschiebevorgangs.)</em></p>
+<h2 id="umgang-mit-bereits-vorhandenen-dateien">Umgang mit bereits vorhandenen Dateien</h2>
+<p>Würde eine Kopie eine vorhandene Datei ersetzen, hält Peach Commander an und fragt, was zu tun ist. Eine Vorschau beider Dateien hilft Ihnen bei der Entscheidung.</p>
+<p><img alt="Der Konfliktdialog beim Überschreiben, der zwei Dateien vergleicht" src="images/overwrite-dialog.png" />
+<em>(Abbildung: Der Überschreiben-Dialog vergleicht die vorhandene Datei mit der zu kopierenden.)</em></p>
+<p>Ihre Möglichkeiten umfassen:</p>
+<ul>
+<li>Die vorhandene Datei <strong>Überschreiben</strong> oder <strong>Alle überschreiben</strong>, um dies auf jeden verbleibenden Konflikt anzuwenden.</li>
+<li>Diese Datei <strong>Überspringen</strong> oder <strong>Alle überspringen</strong> verbleibenden Konflikte.</li>
+<li>Die eingehende Kopie automatisch <strong>Umbenennen</strong>, sodass beide Dateien erhalten bleiben.</li>
+<li>Die eingehenden Daten an das Ende der vorhandenen Datei <strong>Anhängen</strong>.</li>
+<li>Nur überschreiben, wenn die Quelle <strong>neuer</strong> oder <strong>größer</strong> als die vorhandene Datei ist.</li>
+</ul>
+<h2 id="tastenkurzel">Tastenkürzel</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Taste</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Auswahl in das andere Panel kopieren</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Im selben Ordner kopieren (umbenanntes Duplikat erstellen)</td>
+<td>Shift+F5</td>
+</tr>
+<tr>
+<td>Manager für Hintergrundübertragungen öffnen</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Das Kopieren zwischen zwei Orten auf derselben Festplatte nutzt einen schnellen Klon, sofern die Festplatte dies unterstützt, sodass große Dateien nahezu sofort kopiert werden und wenig zusätzlichen Speicherplatz benötigen.</li>
+<li>Ordner werden mit allem, was in ihnen enthalten ist, kopiert.</li>
+<li>Um Dateien zu verschieben, statt sie zu kopieren, verwenden Sie F6. Um eingereihte Aufträge zu beobachten oder zu verwalten, öffnen Sie den Manager für Hintergrundübertragungen mit Cmd+Shift+B.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="moving-and-renaming.html">Verschieben &amp; Umbenennen</a></li><li><a href="background-transfers.html">Hintergrundübertragungen</a></li></ul></section>
+</main>
+</body>
+</html>

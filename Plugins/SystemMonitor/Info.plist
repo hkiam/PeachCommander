@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key><string>SystemMonitor</string>
+	<key>CFBundleExecutable</key><string>SystemMonitor</string>
+	<key>CFBundlePackageType</key><string>BNDL</string>
+	<key>CFBundleShortVersionString</key><string>1.0</string>
+	<key>CFBundleVersion</key><string>1</string>
+	<key>PCPluginType</key><string>ptx</string>
+	<key>PCPluginAPIVersion</key><integer>1</integer>
+	<key>PCPluginName</key><string>System Monitor</string>
+	<key>PCPluginMinHostVersion</key><integer>1</integer>
+	<key>PCContributions</key>
+	<dict>
+		<key>views</key>
+		<array>
+			<dict>
+				<key>id</key><string>plugin.sysmon.titlebar</string>
+				<key>container</key><string>titlebar</string>
+				<key>title</key><string>System Monitor</string>
+			</dict>
+			<dict>
+				<key>id</key><string>plugin.sysmon.settings</string>
+				<key>container</key><string>settings</string>
+				<key>title</key><string>System Monitor</string>
+			</dict>
+		</array>
+		<key>commands</key>
+		<array>
+			<dict>
+				<key>id</key><string>plugin.sysmon.configure</string>
+				<key>title</key><string>System Monitor…</string>
+				<key>category</key><string>Commands</string>
+			</dict>
+		</array>
+		<key>menus</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.sysmon.configure</string>
+				<key>menu</key><string>Commands</string>
+				<key>group</key><string>6_sysmon</string>
+				<key>order</key><integer>130</integer>
+			</dict>
+		</array>
+	</dict>
+</dict>
+</plist>

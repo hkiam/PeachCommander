@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arbeide med arkiver</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Arbeide med arkiver</h1>
+<p>Peach Commander behandler arkiver som mapper. Du kan gå inn i et ZIP-, TAR- eller annet støttet arkiv, bla i innholdet og kopiere filer ut — alt uten å pakke ut til disken først. Når du vil opprette et arkiv, samler Pakk-kommandoen utvalget ditt i et ZIP-, 7z-, TAR- eller annet format, med valgfri kryptering og oppdelte volumer. Dette er praktisk for å samle filer for å sende, krympe en mappe for lagring, eller kikke inni en nedlasting før du forplikter deg til å pakke den ut.</p>
+<h2 id="bla-i-et-arkiv-som-en-mappe">Bla i et arkiv som en mappe</h2>
+<ol>
+<li>I et panel flytter du markøren til en arkivfil (for eksempel en <code>.zip</code> eller <code>.tar.gz</code>).</li>
+<li>Trykk Enter eller Ctrl+PageDown for å gå inn, akkurat som du ville åpnet en mappe.</li>
+<li>Naviger i innholdet normalt. Trykk Backspace eller Ctrl+PageUp for å gå tilbake opp og forlate arkivet.</li>
+<li>For å trekke filer ut, merk dem og kopier (F5) til det andre panelet.</li>
+</ol>
+<p><img alt="Bla inne i et arkiv som om det var en mappe" src="images/archive-browse.png" />
+<em>(Figur: Et åpnet arkiv vist som en vanlig mappeliste, med filene klare til å kopieres ut.)</em></p>
+<p>ZIP, TAR og gzip-komprimert TAR leses direkte. Andre formater som CPIO, ISO, CAB, LZH, XAR og PAX leses gjennom innebygde systemverktøy. Krypterte ZIP-arkiver (både klassiske og AES) kan åpnes når du oppgir passordet.</p>
+<h2 id="pakk-filer-inn-i-et-nytt-arkiv">Pakk filer inn i et nytt arkiv</h2>
+<ol>
+<li>Merk filene og mappene du vil inkludere i det aktive panelet.</li>
+<li>Velg Fil ▸ Pakk… eller trykk Alt+F5. (For å pakke og deretter slette originalene, bruk Alt+Shift+F5.)</li>
+<li>I dialogen velger du arkivformatet (ZIP, 7z, TAR, tar.gz, bzip2, xz eller RAR), komprimeringsnivået og hvor det skal lagres.</li>
+<li>Slå eventuelt på AES-256-kryptering og sett et passord, eller del arkivet opp i volumer med fast størrelse.</li>
+<li>Bekreft for å opprette arkivet.</li>
+</ol>
+<p><img alt="Pakk-dialogen som viser format, komprimering, kryptering og oppdelingsalternativer" src="images/pack-dialog.png" />
+<em>(Figur: Pakk-dialogen, der du velger formatet og angir kryptering og oppdelingsvolum-alternativer.)</em></p>
+<h2 id="pakk-ut-eller-test-et-arkiv">Pakk ut eller test et arkiv</h2>
+<ol>
+<li>Legg arkivet du vil pakke ut i det aktive panelet og målmappen i det andre panelet.</li>
+<li>Velg Fil ▸ Pakk ut… eller trykk Alt+F9, og bekreft deretter målet.</li>
+<li>For å sjekke et arkiv for skade uten å pakke det ut, velg Fil ▸ Test arkiv.</li>
+</ol>
+<h2 id="rediger-en-zip-pa-stedet">Rediger en ZIP på stedet</h2>
+<p>Du kan legge til eller fjerne filer inne i et eksisterende ZIP-arkiv uten å pakke det ut. Åpne ZIP-en som en mappe, og kopier deretter filer inn eller slett filer som vanlig — endringen skrives rett tilbake til arkivet.</p>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gå inn i arkiv under markøren</td>
+<td>Enter eller Ctrl+PageDown</td>
+</tr>
+<tr>
+<td>Forlat arkiv (gå opp)</td>
+<td>Backspace eller Ctrl+PageUp</td>
+</tr>
+<tr>
+<td>Pakk</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Pakk og slett originaler</td>
+<td>Alt+Shift+F5</td>
+</tr>
+<tr>
+<td>Pakk ut</td>
+<td>Alt+F9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Pakking til 7z, xz, bzip2 og RAR er avhengig av eksterne verktøy. RAR krever spesielt at det proprietære RAR-programmet er installert; uten det er det formatet utilgjengelig.</li>
+<li>Redigering av en ZIP på stedet skriver om hele arkivet, så tidsstempler for filendringer inni det bevares ikke.</li>
+<li>Svært store enkeltmedlemmer er begrenset til 512 MiB ved utpakking. Utpakking kan avbrytes mens den kjører.</li>
+<li>Ekstremt store (ZIP64) arkiver støttes ikke.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiere filer</a></li></ul></section>
+</main>
+</body>
+</html>

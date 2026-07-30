@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>De Task Manager-plug-in verandert de actieve processen op je Mac in een map die je kunt doorbladeren. Hij verschijnt als een <strong>TaskManager</strong>-schijf in de schijvenbalk; open hem en elk proces is een rij die je kunt sorteren, als een bestand inspecteren of beëindigen — met dezelfde toetsen die je al voor bestanden gebruikt. Het is een plug-in, dus je kunt hem uitschakelen of verwijderen via <strong>Configuratie ▸ Plug-ins…</strong>.</p>
+<h2 id="openen">Openen</h2>
+<ol>
+<li>Klik op de <strong>📊 TaskManager</strong>-vermelding in de schijvenbalk (die staat direct na je startschijf).</li>
+<li>Het paneel vult zich met één rij per actief proces. De naam van elke rij is de procesnaam gevolgd door de PID, bijvoorbeeld <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="Task Manager toont actieve processen met de kolommen PID, CPU, geheugen en command" src="images/task-manager.png" />
+<em>(Afbeelding: actieve processen getoond als een bestandslijst die je kunt sorteren en waarop je kunt handelen.)</em></p>
+<h2 id="wat-elke-kolom-betekent">Wat elke kolom betekent</h2>
+<p>Naast de gebruikelijke kolommen Grootte (geheugen) en Datum (starttijd) voegt Task Manager proceskolommen toe:</p>
+<table>
+<thead>
+<tr>
+<th>Kolom</th>
+<th>Betekenis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>Proces-id</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Recent processorgebruik (verschijnt pas na een tweede vernieuwing)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Aantal threads</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R actief · S slapend · T gestopt · Z zombie · I inactief</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Eigenaar</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>Proces-id van de ouder</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>Volledige opdrachtregel</td>
+</tr>
+</tbody>
+</table>
+<p>Sorteer op elke kolom (bijvoorbeeld CPU % of Grootte/geheugen), net zoals je in een gewone map zou doen.</p>
+<h2 id="een-proces-inspecteren-of-beeindigen">Een proces inspecteren of beëindigen</h2>
+<ul>
+<li><strong>Bekijken (F3)</strong> toont een rapport <em>Process Information</em>: naam, PID, ouder, gebruiker, status, threads, geheugen, CPU, starttijd, pad naar het uitvoerbare bestand en de volledige opdrachtregel.</li>
+<li><strong>Verwijderen (F8)</strong> beëindigt het proces. De eerste verwijdering stuurt een nette <strong>quit</strong> (SIGTERM); een proces dat nog draait een tweede keer verwijderen escaleert naar een <strong>force quit</strong> (SIGKILL). De plug-in richt zich nooit op PID 1.</li>
+</ul>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Basisgegevens (PID, ouder, gebruiker, status) zijn voor elk proces leesbaar, net als bij <code>ps</code>. Geheugen, threads en CPU kunnen alleen worden gelezen voor <strong>je eigen</strong> processen; bij andere processen blijven die kolommen leeg (ze vereisen verhoogde rechten, een latere toevoeging).</li>
+<li>CPU % is een verschil tussen twee metingen, dus het blijft leeg tot het paneel een tweede keer wordt vernieuwd (het paneel vernieuwt ongeveer elke twee seconden).</li>
+<li>De lijst is alleen-lezen, afgezien van het beëindigen van een proces — je kunt er geen bestanden naartoe kopiëren.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="viewing-files.html">Bestanden bekijken</a></li><li><a href="deleting-files.html">Bestanden verwijderen</a></li></ul></section>
+</main>
+</body>
+</html>

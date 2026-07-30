@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overførsel fra en URL</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Overførsel fra en URL</h1>
+<p>Peach Commander kan hente en fil direkte fra en HTTP- eller HTTPS-webadresse ind i det aktive panel uden at åbne en browser. Indsæt et link, bekræft det navn, den gemmes under, og overførslen kører for sig selv — med genoptagelse, hvis forbindelsen falder ud, batch-overførsler af mange links på én gang og valgfri kontrolsumsverifikation, så du ved, at filen ankom intakt.</p>
+<h2 id="overfr-en-fil">Overfør en fil</h2>
+<ol>
+<li>Åbn den panelmappe, hvor du vil have filen til at lande.</li>
+<li>Vælg <strong>Net &gt; Overfør fra URL</strong>, eller tryk på Cmd+Shift+D.</li>
+<li>Indsæt webadressen i feltet <strong>URL('er)</strong>. Hvis du kopierede et link først, udfyldes det for dig.</li>
+<li>Kontrollér navnet i <strong>Gem som</strong> — det foreslås ud fra linket, og du kan redigere det frit.</li>
+<li>Klik på <strong>Overfør</strong>.</li>
+</ol>
+<p><img alt="Dialogen Overfør fra URL med et link, et redigerbart filnavn og indstillinger" src="images/download-url.png" />
+<em>(Figur: Overførselsdialogen — indsæt et link, redigér navnet, og indstil valgfri verifikation, legitimationsoplysninger, headere eller en proxy.)</em></p>
+<p>Som standard kører overførslen <strong>i baggrunden</strong>, så du kan arbejde videre i panelerne, mens den overføres. Slå <strong>Overfør i baggrunden</strong> fra for at vente på den, eller slå <strong>Sæt i kø til senere</strong> til for at opsætte den uden at starte den endnu.</p>
+<h2 id="overfr-flere-filer-pa-en-gang">Overfør flere filer på én gang</h2>
+<p>Indsæt én webadresse pr. linje i feltet <strong>URL('er)</strong>. Når der er mere end ét link til stede, udledes hver fils navn automatisk fra dens link, og felterne <strong>Gem som</strong> og <strong>Verificér</strong> pr. fil slås fra.</p>
+<h2 id="genoptagelse-af-en-afbrudt-overfrsel">Genoptagelse af en afbrudt overførsel</h2>
+<p>Hvis en overførsel afbrydes, beholder Peach Commander det, den allerede har modtaget, i en midlertidig <code>.part</code>-fil. At starte den samme overførsel igen genoptager fra det sted, hvor den stoppede, når serveren understøtter det, i stedet for at starte forfra. <code>.part</code>-filen omdøbes til det endelige navn, først når overførslen er fuldført med succes.</p>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Genvej</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Overfør fra URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li><strong>Verificér filen.</strong> For en enkelt overførsel skal du indsætte en forventet <strong>SHA-256</strong>-kontrolsum i feltet <strong>Verificér</strong>. Efter overførslen sammenlignes filens kontrolsum med den, så du kan stole på, at filen matcher det, udgiveren angav.</li>
+<li><strong>Kræver login?</strong> Indtast et brugernavn og en adgangskode i felterne <strong>Auth</strong> for websteder, der bruger grundlæggende godkendelse. For token-baseret adgang skal du tilføje en linje med <code>Authorization: Bearer …</code> i feltet <strong>Headere</strong>.</li>
+<li><strong>Brugerdefinerede headere.</strong> Tilføj én header pr. linje i feltet <strong>Headere</strong>, for eksempel <code>Referer: …</code> eller <code>Cookie: …</code>, for links, der kun virker med bestemte anmodningsheadere.</li>
+<li><strong>Proxy.</strong> Dirigér overførslen gennem en HTTP- eller SOCKS5-proxy ved at udfylde <strong>Proxy</strong>-værten, -porten og -typen.</li>
+<li><strong>Utroværdige certifikater.</strong> Slå kun <strong>Tillad utroværdigt certifikat</strong> til for et websted, du stoler på, som bruger et selvsigneret certifikat; det deaktiverer det normale HTTPS-sikkerhedstjek for den overførsel.</li>
+<li><strong>Bemærk:</strong> Cmd+Shift+D bruges også andre steder til at gå til skrivebordsmappen; hvis genvejen ikke åbner denne dialog, skal du bruge <strong>Net &gt; Overfør fra URL</strong> fra menuen i stedet.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Tilslutning til FTP og SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

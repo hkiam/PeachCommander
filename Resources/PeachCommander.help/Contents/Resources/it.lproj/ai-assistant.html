@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistente AI</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Assistente AI</h1>
+<p>L'assistente AI è un plugin opzionale e rimovibile che vi aiuta a lavorare con i vostri file usando il linguaggio naturale. Può riassumere o spiegare un documento, suggerire un nome di file migliore, tradurre o correggere un testo, trasformare i dati in una tabella e persino organizzare una cartella — e può eseguire azioni sui file al posto vostro dopo avervi mostrato prima un piano. Funziona sul dispositivo con Apple Intelligence quando disponibile, oppure potete indirizzarlo verso un modello nel cloud. Trattandosi di un plugin, potete disattivarlo o rimuoverlo completamente da <strong>Configurazione ▸ Plugin…</strong>.</p>
+<h2 id="aprire-lassistente">Aprire l'assistente</h2>
+<p>Scegliete <strong>Comandi ▸ Assistente AI</strong> per mostrare l'assistente in un pannello agganciato sul lato destro della finestra. Digitate una richiesta e premete Return; l'assistente può leggere i file, cercare informazioni e — con la vostra conferma — apportare modifiche.</p>
+<p><img alt="La chat dell'assistente AI agganciata accanto ai pannelli dei file" src="images/ai-chat.png" />
+<em>(Figura: l'assistente AI, agganciato a destra, mentre lavora su una richiesta.)</em></p>
+<h2 id="azioni-del-menu-contestuale-ai">Azioni del menu contestuale (AI ▸)</h2>
+<p>Il modo più rapido per usare l'assistente è il sottomenu <strong>AI ▸</strong> nel menu del clic destro:</p>
+<ul>
+<li><strong>Su un file</strong> — Riassumi, Spiega, Suggerisci un nome, Traduci in inglese, Correggi, Rileva attività e Crea una tabella.</li>
+<li><strong>Sullo sfondo del pannello</strong> — Organizza questa cartella e Trova probabili duplicati.</li>
+</ul>
+<p>Ogni azione <strong>AI ▸</strong> apre una <strong>propria chat con titolo</strong> (ad esempio, <em>Riassumi – report.txt</em>), così le diverse attività restano separate invece di accumularsi in un'unica lunga conversazione. Quando digitate voi stessi nel campo di immissione, quella richiesta prosegue la chat corrente.</p>
+<h2 id="gestire-le-chat">Gestire le chat</h2>
+<ul>
+<li>Usate il selettore di chat in cima al pannello per passare da una conversazione all'altra.</li>
+<li>Il menu <strong>Elimina ▾</strong> offre <strong>Elimina questa chat</strong> ed <strong>Elimina tutte le chat</strong>, così potete cancellare tutto in una volta quando l'elenco diventa lungo. Le chat vuote vengono ripulite automaticamente alla chiusura del pannello.</li>
+</ul>
+<h2 id="le-modifiche-vengono-confermate-prima">Le modifiche vengono confermate prima</h2>
+<p>Per qualsiasi operazione che modifica i file — spostare, rinominare, scrivere, eliminare — l'assistente mostra un <strong>piano e attende la vostra conferma</strong> prima di agire. Potete cambiare questo comportamento nelle Impostazioni aumentando l'autonomia dell'assistente, oppure abbassarla a sola lettura in modo che non modifichi mai nulla.</p>
+<h2 id="impostazioni">Impostazioni</h2>
+<p>Aprite <strong>Configurazione ▸ Impostazioni ▸ AI</strong> per configurare l'assistente in un'unica pagina:</p>
+<ul>
+<li><strong>Modello preferito</strong> — Automatico (cloud se configurato, altrimenti sul dispositivo), Sul dispositivo (Apple Intelligence) o Cloud.</li>
+<li><strong>Endpoint cloud, modello e chiave API</strong> — per usare un modello compatibile con OpenAI invece di quello sul dispositivo. La chiave è archiviata nel Portachiavi di macOS, mai nei vostri file di configurazione.</li>
+<li><strong>Autonomia dell'assistente</strong> — sola lettura, conferma delle modifiche (impostazione predefinita) o autonoma.</li>
+<li><strong>Prompt di sistema personalizzato</strong> — istruzioni facoltative che modellano il modo in cui l'assistente risponde.</li>
+<li><strong>Server MCP</strong> — un server opzionale solo locale che consente a un agente esterno di pilotare l'app; disattivato per impostazione predefinita e proteggibile con un token.</li>
+</ul>
+<p><img alt="La pagina AI nelle Impostazioni con le opzioni di autonomia e del server MCP" src="images/settings-ai.png" />
+<em>(Figura: tutte le opzioni dell'assistente si trovano in un'unica pagina AI nelle Impostazioni.)</em></p>
+<h2 id="privacy">Privacy</h2>
+<ul>
+<li>Con Apple Intelligence l'assistente funziona <strong>sul vostro Mac</strong>; nulla lascia il dispositivo.</li>
+<li>Un modello nel cloud viene usato <strong>solo se ne configurate uno</strong>, e la sua chiave API è conservata nel Portachiavi.</li>
+<li>Le azioni che modificano i file vengono confermate prima di essere eseguite, a meno che non aumentiate deliberatamente il livello di autonomia.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="settings.html">Impostazioni</a></li><li><a href="privacy-and-security.html">Privacy e sicurezza</a></li></ul></section>
+</main>
+</body>
+</html>

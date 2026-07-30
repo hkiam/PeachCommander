@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<!-- Peach Commander AppleScript dictionary (F-296). Core verbs drive the same
+     seam the automation core uses; reads expose the two panels' folders and the
+     active selection. Also usable from the Shortcuts app via "Run AppleScript". -->
+<dictionary title="Peach Commander Terminology" xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <xi:include href="file:///System/Library/ScriptingDefinitions/CocoaStandard.sdef"
+              xpointer="xpointer(/dictionary/suite)"/>
+
+  <suite name="Peach Commander Suite" code="PchC"
+         description="Two-panel file-manager commands.">
+
+    <enumeration name="panel side" code="Psid">
+      <enumerator name="active" code="Pact" description="The active panel."/>
+      <enumerator name="left"   code="Plft" description="The left panel."/>
+      <enumerator name="right"  code="Prgt" description="The right panel."/>
+    </enumeration>
+
+    <class name="application" code="capp" description="Peach Commander." inherits="application">
+      <cocoa class="NSApplication"/>
+      <property name="active folder" code="PcAf" type="text" access="r"
+                description="POSIX path of the active panel's current folder.">
+        <cocoa key="scriptActiveFolder"/>
+      </property>
+      <property name="inactive folder" code="PcIf" type="text" access="r"
+                description="POSIX path of the other panel's current folder.">
+        <cocoa key="scriptInactiveFolder"/>
+      </property>
+      <property name="selection paths" code="PcSp" access="r"
+                description="POSIX paths currently selected in the active panel (or the item under the cursor).">
+        <type type="text" list="yes"/>
+        <cocoa key="scriptSelectionPaths"/>
+      </property>
+    </class>
+
+    <command name="go to" code="PchCgoto" description="Open a folder in a panel.">
+      <cocoa class="PCGoToCommand"/>
+      <direct-parameter type="text" description="POSIX path of the folder to open."/>
+      <parameter name="in" code="Ppnl" type="panel side" optional="yes"
+                 description="Which panel to navigate (default: active).">
+        <cocoa key="panel"/>
+      </parameter>
+      <result type="text" description="The panel's folder after navigating."/>
+    </command>
+
+    <command name="select" code="PchCsele"
+             description="Select items in the active panel by a wildcard mask.">
+      <cocoa class="PCSelectCommand"/>
+      <direct-parameter type="text" description="Wildcard mask, e.g. *.txt (use * for all)."/>
+      <result type="text" list="yes" description="POSIX paths now selected."/>
+    </command>
+
+    <command name="copy items" code="PchCcopy"
+             description="Copy the active panel's selection to a folder.">
+      <cocoa class="PCCopyCommand"/>
+      <parameter name="to" code="Pdst" type="text" description="Destination folder POSIX path.">
+        <cocoa key="destination"/>
+      </parameter>
+    </command>
+
+    <command name="move items" code="PchCmove"
+             description="Move the active panel's selection to a folder.">
+      <cocoa class="PCMoveCommand"/>
+      <parameter name="to" code="Pdst" type="text" description="Destination folder POSIX path.">
+        <cocoa key="destination"/>
+      </parameter>
+    </command>
+
+    <command name="run command" code="PchCrcmd"
+             description="Run a Peach Commander command by its id (cm_*).">
+      <cocoa class="PCRunCommand"/>
+      <direct-parameter type="text" description="The command id, e.g. cm_PackFiles."/>
+    </command>
+
+  </suite>
+</dictionary>

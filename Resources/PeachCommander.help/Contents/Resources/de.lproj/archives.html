@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mit Archiven arbeiten</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Mit Archiven arbeiten</h1>
+<p>Peach Commander behandelt Archive wie Ordner. Sie können in ein ZIP-, TAR- oder anderes unterstütztes Archiv hineingehen, dessen Inhalt durchsuchen und Dateien herauskopieren – ganz ohne vorher auf die Festplatte zu entpacken. Wenn Sie ein Archiv erstellen möchten, bündelt der Packen-Befehl Ihre Auswahl in ein ZIP-, 7z-, TAR- oder anderes Format, mit optionaler Verschlüsselung und aufgeteilten Volumes. Das ist praktisch, um Dateien zum Versenden zu bündeln, einen Ordner für die Aufbewahrung zu verkleinern oder in einen Download hineinzuschauen, bevor Sie sich zum Entpacken entscheiden.</p>
+<h2 id="ein-archiv-wie-einen-ordner-durchsuchen">Ein Archiv wie einen Ordner durchsuchen</h2>
+<ol>
+<li>Bewegen Sie in einem Panel den Cursor auf eine Archivdatei (zum Beispiel eine <code>.zip</code> oder <code>.tar.gz</code>).</li>
+<li>Drücken Sie Enter oder Ctrl+PageDown, um hineinzugehen, genau so, wie Sie einen Ordner öffnen würden.</li>
+<li>Navigieren Sie den Inhalt wie gewohnt. Drücken Sie Backspace oder Ctrl+PageUp, um wieder nach oben zu gehen und das Archiv zu verlassen.</li>
+<li>Um Dateien herauszuholen, wählen Sie sie aus und kopieren sie (F5) in das andere Panel.</li>
+</ol>
+<p><img alt="Durchsuchen eines Archivs, als wäre es ein Ordner" src="images/archive-browse.png" />
+<em>(Abbildung: Ein geöffnetes Archiv, angezeigt als gewöhnliche Ordnerauflistung, mit seinen Dateien bereit zum Herauskopieren.)</em></p>
+<p>ZIP, TAR und gzip-komprimiertes TAR werden direkt gelesen. Andere Formate wie CPIO, ISO, CAB, LZH, XAR und PAX werden über eingebaute Systemwerkzeuge gelesen. Verschlüsselte ZIP-Archive (sowohl klassisch als auch AES) lassen sich öffnen, wenn Sie das Passwort angeben.</p>
+<h2 id="dateien-in-ein-neues-archiv-packen">Dateien in ein neues Archiv packen</h2>
+<ol>
+<li>Wählen Sie im aktiven Panel die Dateien und Ordner aus, die Sie einbeziehen möchten.</li>
+<li>Wählen Sie Datei ▸ Packen… oder drücken Sie Alt+F5. (Um zu packen und anschließend die Originale zu löschen, verwenden Sie Alt+Shift+F5.)</li>
+<li>Wählen Sie im Dialog das Archivformat (ZIP, 7z, TAR, tar.gz, bzip2, xz oder RAR), die Komprimierungsstufe und den Speicherort.</li>
+<li>Aktivieren Sie optional die AES-256-Verschlüsselung und legen Sie ein Passwort fest, oder teilen Sie das Archiv in Volumes fester Größe auf.</li>
+<li>Bestätigen Sie, um das Archiv zu erstellen.</li>
+</ol>
+<p><img alt="Der Packen-Dialog mit Format-, Komprimierungs-, Verschlüsselungs- und Aufteilungsoptionen" src="images/pack-dialog.png" />
+<em>(Abbildung: Der Packen-Dialog, in dem Sie das Format wählen und Optionen für Verschlüsselung und aufgeteilte Volumes festlegen.)</em></p>
+<h2 id="ein-archiv-entpacken-oder-testen">Ein Archiv entpacken oder testen</h2>
+<ol>
+<li>Legen Sie das zu entpackende Archiv in das aktive Panel und den Zielordner in das andere Panel.</li>
+<li>Wählen Sie Datei ▸ Entpacken… oder drücken Sie Alt+F9 und bestätigen Sie dann das Ziel.</li>
+<li>Um ein Archiv ohne Entpacken auf Beschädigungen zu prüfen, wählen Sie Datei ▸ Archiv testen.</li>
+</ol>
+<h2 id="ein-zip-direkt-bearbeiten">Ein ZIP direkt bearbeiten</h2>
+<p>Sie können Dateien in einem bestehenden ZIP hinzufügen oder entfernen, ohne es zu entpacken. Öffnen Sie das ZIP wie einen Ordner und kopieren Sie dann wie gewohnt Dateien hinein oder löschen Sie welche – die Änderung wird direkt in das Archiv zurückgeschrieben.</p>
+<h2 id="tastenkurzel">Tastenkürzel</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Tastenkürzel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Archiv unter dem Cursor betreten</td>
+<td>Enter oder Ctrl+PageDown</td>
+</tr>
+<tr>
+<td>Archiv verlassen (nach oben gehen)</td>
+<td>Backspace oder Ctrl+PageUp</td>
+</tr>
+<tr>
+<td>Packen</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Packen und Originale löschen</td>
+<td>Alt+Shift+F5</td>
+</tr>
+<tr>
+<td>Entpacken</td>
+<td>Alt+F9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Das Packen nach 7z, xz, bzip2 und RAR ist auf externe Werkzeuge angewiesen. Insbesondere RAR erfordert die Installation des proprietären RAR-Programms; ohne dieses ist das Format nicht verfügbar.</li>
+<li>Das direkte Bearbeiten eines ZIP schreibt das gesamte Archiv neu, sodass die Änderungszeitstempel der darin enthaltenen Dateien nicht erhalten bleiben.</li>
+<li>Sehr große Einzelmitglieder werden beim Entpacken auf 512 MiB begrenzt. Das Entpacken kann während der Ausführung abgebrochen werden.</li>
+<li>Extrem große (ZIP64-)Archive werden nicht unterstützt.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="copying-files.html">Dateien kopieren</a></li></ul></section>
+</main>
+</body>
+</html>

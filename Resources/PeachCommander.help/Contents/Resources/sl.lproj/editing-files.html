@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Urejanje datotek</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Urejanje datotek</h1>
+<p>Ko morate datoteko spremeniti in ne samo pogledati, jo Peach Commander odpre v vgrajenem urejevalniku. Besedilne in kodne datoteke se odprejo v polnem urejevalniku s poudarjanjem skladnje, iskanjem in zamenjavo, orisom simbolov v vaši kodi in mini zemljevidom za hitro krmarjenje. Dvojiške datoteke je mogoče odpreti v ločenem šestnajstiškem urejevalniku, kjer lahko pregledujete in spreminjate posamezne bajte. Nikoli vam ni treba zapustiti aplikacije za hitro urejanje.</p>
+<h2 id="uredite-besedilno-ali-kodno-datoteko">Uredite besedilno ali kodno datoteko</h2>
+<ol>
+<li>V katerem koli podoknu premaknite kazalko na datoteko, ki jo želite spremeniti.</li>
+<li>Pritisnite F4 ali izberite Datoteka ▸ Uredi. Datoteka se odpre v oknu urejevalnika.</li>
+<li>Naredite spremembe. Če je datoteka prepoznana programska ali podatkovna oblika, se ključne besede, nizi in komentarji samodejno obarvajo.</li>
+<li>Pritisnite Cmd+S (ali kliknite Shrani), da zapišete spremembe. Prvo shranjevanje ohrani varnostno kopijo izvirnika poleg datoteke, tako da se lahko vedno vrnete nanjo.</li>
+</ol>
+<p>Za začetek povsem nove besedilne datoteke na trenutnem mestu pritisnite Shift+F4.</p>
+<p><img alt="Vgrajeni urejevalnik besedila, ki prikazuje poudarjanje skladnje, oris simbolov in mini zemljevid" src="images/editor.png" />
+<em>(Slika: urejevalnik s poudarjanjem skladnje, orisom simbolov na levi in mini zemljevidom na desni.)</em></p>
+<h2 id="iskanje-zamenjava-in-krmarjenje">Iskanje, zamenjava in krmarjenje</h2>
+<ul>
+<li>Pritisnite Cmd+F, da odprete iskalno vrstico. Za zamenjavo besedila odprite iskalno vrstico in jo preklopite na pogled zamenjave, ali kliknite Poišči/Zamenjaj v orodni vrstici.</li>
+<li>Kliknite Oblikuj JSON/XML, da ponovno zamaknete dokument JSON ali XML v čisto, berljivo postavitev.</li>
+<li>Kliknite Simboli (ali pritisnite Cmd+Shift+O), da prikažete stransko vrstico, ki našteje razrede, funkcije in metode v vaši kodi. Kliknite vnos, da neposredno skočite nanj.</li>
+<li>Pritisnite Cmd+L, da skočite na določeno vrstico.</li>
+<li>Pritisnite Cmd+\, da skočite med oklepajem in njegovim ujemajočim partnerjem.</li>
+<li>Kliknite gumb zemljevida, da prikažete ali skrijete mini zemljevid, pomanjšan pregled celotne datoteke, na katerega lahko kliknete za pomikanje.</li>
+<li>Uporabite meni Kodiranje v orodni vrstici, če je bila datoteka shranjena v drugem kot privzetem kodiranju besedila.</li>
+</ul>
+<h2 id="uredite-datoteko-bajt-za-bajtom">Uredite datoteko bajt za bajtom</h2>
+<ol>
+<li>Izberite datoteko v podoknu.</li>
+<li>Izberite Datoteka ▸ Uredi kot šestnajstiško (ali kliknite datoteko z desno tipko in izberite Uredi kot šestnajstiško).</li>
+<li>Vnesite šestnajstiške števke za prepis bajtov, ali uporabite puščice za pomikanje po datoteki. Backspace in Delete odstranita bajte.</li>
+<li>Pritisnite Cmd+S za shranjevanje. Tako kot pri urejevalniku besedila se ohrani enkratna varnostna kopija izvirnika.</li>
+</ol>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Uredi datoteko</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Ustvari in uredi novo besedilno datoteko</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>Shrani</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>Poišči</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>Prikaži/skrij oris simbolov</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>Pojdi na vrstico</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>Skoči na ujemajoči oklepaj</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>Razveljavi / Uveljavi (šestnajstiški urejevalnik)</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Poudarjanje skladnje pokriva JSON, C, C#, Java, JavaScript, TypeScript, Python in Rust. Druge vrste datotek se še vedno odprejo in urejajo običajno z osnovnim obarvanjem, a podrobno poudarjanje in oris simbolov sta na voljo le za podprte jezike.</li>
+<li>Oris simbolov in Pojdi na vrstico veljata za urejevalnik besedila. Šestnajstiški urejevalnik je namenjen dvojiškemu pregledu in urejanju na ravni bajtov, ne besedilu.</li>
+<li>Oba urejevalnika ohranita varnostno kopijo izvirne datoteke ob prvem shranjevanju, tako da je nenamerno spremembo enostavno razveljaviti z obnovitvijo te varnostne kopije.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Ogled datotek</a></li></ul></section>
+</main>
+</body>
+</html>

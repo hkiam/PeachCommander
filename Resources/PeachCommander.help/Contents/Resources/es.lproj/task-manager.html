@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>El complemento Task Manager convierte los procesos en ejecución de su Mac en una carpeta que puede explorar. Aparece como una unidad <strong>TaskManager</strong> en la barra de unidades; ábrala y cada proceso es una fila que puede ordenar, inspeccionar como un archivo o finalizar, usando las mismas teclas que ya utiliza para los archivos. Al ser un complemento, puede desactivarlo o eliminarlo desde <strong>Configuración ▸ Complementos…</strong>.</p>
+<h2 id="abrirlo">Abrirlo</h2>
+<ol>
+<li>Haga clic en la entrada <strong>📊 TaskManager</strong> de la barra de unidades (está justo después de su unidad de arranque).</li>
+<li>El panel se llena con una fila por cada proceso en ejecución. El nombre de cada fila es el nombre del proceso seguido de su PID, por ejemplo <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="El Task Manager listando procesos en ejecución con las columnas PID, CPU, memoria y comando" src="images/task-manager.png" />
+<em>(Figura: procesos en ejecución mostrados como una lista de archivos que puede ordenar y sobre la que puede actuar.)</em></p>
+<h2 id="que-significa-cada-columna">Qué significa cada columna</h2>
+<p>Junto a las columnas habituales de Tamaño (memoria) y Fecha (hora de inicio), Task Manager añade columnas de proceso:</p>
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>Identificador del proceso</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Uso reciente del procesador (necesita una segunda actualización para aparecer)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Número de hilos</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R en ejecución · S durmiendo · T detenido · Z zombi · I inactivo</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Propietario</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>Identificador del proceso padre</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>Línea de comandos completa</td>
+</tr>
+</tbody>
+</table>
+<p>Ordene por cualquier columna (por ejemplo CPU % o Tamaño/memoria) igual que lo haría en una carpeta normal.</p>
+<h2 id="inspeccionar-o-finalizar-un-proceso">Inspeccionar o finalizar un proceso</h2>
+<ul>
+<li><strong>Ver (F3)</strong> muestra un informe de <em>Información del proceso</em>: nombre, PID, padre, usuario, estado, hilos, memoria, CPU, hora de inicio, ruta del ejecutable y la línea de comandos completa.</li>
+<li><strong>Eliminar (F8)</strong> finaliza el proceso. La primera eliminación envía una <strong>salida</strong> ordenada (SIGTERM); eliminar por segunda vez un proceso que sigue en ejecución escala a una <strong>salida forzada</strong> (SIGKILL). El complemento nunca actúa sobre el PID 1.</li>
+</ul>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>Los detalles básicos (PID, padre, usuario, estado) se pueden leer para cualquier proceso, como con <code>ps</code>. La memoria, los hilos y la CPU solo se pueden leer para <strong>sus propios</strong> procesos; los demás procesos muestran esas columnas en blanco (requieren privilegios elevados, una ampliación posterior).</li>
+<li>CPU % es un cambio entre dos muestras, por lo que aparece en blanco hasta que el panel se actualiza por segunda vez (el panel se actualiza aproximadamente cada dos segundos).</li>
+<li>La lista es de solo lectura salvo por la finalización de un proceso: no puede copiar archivos dentro de ella.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="viewing-files.html">Ver archivos</a></li><li><a href="deleting-files.html">Eliminar archivos</a></li></ul></section>
+</main>
+</body>
+</html>

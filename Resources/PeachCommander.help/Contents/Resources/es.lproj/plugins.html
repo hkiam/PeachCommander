@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complementos</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Complementos</h1>
+<p>Los complementos amplían Peach Commander con herramientas, formatos de archivo y lugares que explorar adicionales. Una docena de complementos vienen integrados, así que puedes empezar a usarlos de inmediato, y puedes activar o desactivar complementos individuales —o instalar nuevos— desde una sola ventana. Usa complementos cuando quieras capacidades más allá del copiado y la exploración cotidianos: visualizar qué llena un disco, conectarte a un servidor WebDAV, comprobar el estado de un repositorio Git, vigilar la actividad del sistema y más.</p>
+<p>Los complementos vienen en unas cuantas variedades: algunos añaden un <strong>panel o barra lateral</strong> (una vista), algunos añaden <strong>columnas</strong> a la lista de archivos, algunos añaden un <strong>lugar en el que navegar</strong> como una unidad, y algunos enseñan a la app un nuevo <strong>formato de archivo comprimido</strong>. Cada uno se activa de forma independiente.</p>
+<h2 id="que-anaden-los-complementos-integrados">Qué añaden los complementos integrados</h2>
+<p>Varios complementos tienen su propio tema de ayuda detallado; sigue el enlace para conocer toda la historia:</p>
+<ul>
+<li><strong><a href="disk-map.md">Disk Map</a></strong> — visualiza qué llena una carpeta o volumen como un treemap o un diagrama de rayos, contrastado con el espacio libre, purgable y oculto, con un recopilador de limpieza.</li>
+<li><strong><a href="ai-assistant.md">AI Assistant</a></strong> — un asistente opcional y desinstalable que resume, renombra, traduce, tabula y ordena archivos en lenguaje sencillo, en el dispositivo o mediante un modelo en la nube.</li>
+<li><strong><a href="git.md">Git</a></strong> — muestra el estado del árbol de trabajo de cada archivo y la rama actual como columnas del panel, y añade un menú <strong>Git</strong> para estado, preparar, confirmar, pull y push.</li>
+<li><strong><a href="system-monitor.md">System Monitor</a></strong> — una lectura en tiempo real de CPU, memoria, disco, red (y, donde esté disponible, GPU, batería, sensores) en la barra de título de la ventana, con gráficos de detalle al hacer clic.</li>
+<li><strong><a href="task-manager.md">Task Manager</a></strong> — monta los procesos en ejecución como una unidad <strong>TaskManager</strong> explorable; ordénalos, inspecciónalos como archivos o finalízalos con Eliminar.</li>
+<li><strong><a href="uninstaller.md">Uninstaller</a></strong> — elimina una aplicación <strong>y</strong> los archivos de soporte, cachés y preferencias que deja atrás, tras mostrarte exactamente qué se va a ir.</li>
+</ul>
+<p>Los demás complementos integrados son más pequeños y no necesitan una página propia:</p>
+<ul>
+<li><strong>WebDAV</strong> — conéctate a un servidor WebDAV (<strong>Net ▸ Conectar a WebDAV…</strong>) y explora, sube, descarga, renombra y elimina en él como si fuera una carpeta. Las contraseñas se guardan en el Llavero de macOS.</li>
+<li><strong>iCloud Drive</strong> — añade una entrada <em>iCloud Drive</em> a la barra de unidades que salta directamente a tu carpeta local de iCloud Drive. Aparece solo cuando iCloud Drive está configurado en tu Mac.</li>
+<li><strong>Notes</strong> — guarda una nota junto a cualquier archivo o carpeta. Una pequeña insignia <strong>●</strong> marca los elementos que tienen una; edita las notas en una barra lateral <strong>Notes</strong> acoplada o en un editor de texto enriquecido completo (<strong>Comandos ▸ Editar nota…</strong>), y explóralas todas con <strong>Resumen de notas…</strong>.</li>
+<li><strong>Log Viewer</strong> — abre un archivo como un registro con código de colores, clasificado por nivel y con seguimiento en vivo (<strong>Archivo ▸ Ver como registro…</strong>), con filtros por nivel, búsqueda y compatibilidad con formatos de registro habituales además de tus propios formatos con expresiones regulares. Maneja registros de varios gigabytes al instante.</li>
+<li><strong>AI Column</strong> — añade una columna <em>Idioma IA</em> que detecta el idioma dominante de cada archivo de texto en el dispositivo (usando el framework NaturalLanguage de Apple, no un modelo en la nube).</li>
+<li><strong>Formatos de archivo comprimido</strong> — enseña a la app a explorar y extraer más tipos de archivo comprimido (7z, la familia tar, gzip/bzip2/xz/zstd, y RAR donde haya una herramienta auxiliar instalada), que luego se abren como carpetas.</li>
+</ul>
+<h2 id="activar-o-desactivar-complementos">Activar o desactivar complementos</h2>
+<ol>
+<li>Elige Configuración ▸ Complementos… para abrir la ventana de complementos.</li>
+<li>Cada complemento instalado aparece en la lista con su nombre, tipo y una casilla «Activado».</li>
+<li>Marca o desmarca la casilla para activar o desactivar un complemento. Los cambios surten efecto de inmediato: los complementos activados añaden sus menús, columnas y funciones; los desactivados se mantienen al margen.</li>
+</ol>
+<p><img alt="La ventana de complementos con la lista de complementos instalados, casillas de activación y los botones Instalar y Eliminar" src="images/plugins-window.png" />
+<em>(Figura: La ventana de complementos, donde activas, desactivas, instalas o eliminas complementos.)</em></p>
+<h2 id="instalar-un-nuevo-complemento">Instalar un nuevo complemento</h2>
+<ol>
+<li>Elige Configuración ▸ Complementos….</li>
+<li>Haz clic en <strong>Instalar desde carpeta…</strong>.</li>
+<li>Elige un paquete de complemento o un <code>.zip</code> que contenga uno, y confirma. El complemento se añade a la lista y se activa.</li>
+</ol>
+<h2 id="eliminar-un-complemento">Eliminar un complemento</h2>
+<ol>
+<li>En la ventana de complementos, selecciona el complemento de la lista.</li>
+<li>Haz clic en <strong>Eliminar</strong>. Las funciones integradas no se ven afectadas; solo se elimina el complemento seleccionado.</li>
+</ol>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>La lista de complementos muestra el tipo y la versión de interfaz de cada complemento junto a su nombre y ubicación, para que puedas confirmar qué hay instalado.</li>
+<li>Si no hay complementos instalados, la ventana muestra un breve mensaje que te dirige a <strong>Instalar desde carpeta…</strong>.</li>
+<li>Algunos complementos añaden sus propias columnas, elementos de menú o lugares del panel solo mientras están activados. Si falta una función que esperabas, comprueba aquí que su complemento esté activado.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Mapa de disco</a></li><li><a href="ai-assistant.html">Asistente de IA</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="archives.html">Trabajar con archivos comprimidos</a></li><li><a href="ftp-and-sftp.html">Conectarse a FTP y SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

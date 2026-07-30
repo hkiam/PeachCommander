@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Súborové nástroje</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Súborové nástroje</h1>
+<p>Okrem kopírovania a presúvania zahŕňa Peach Commander sadu každodenných súborových nástrojov na overovanie neporušenosti súborov, získavanie miesta na disku, rozbíjanie veľkých súborov na menšie časti a prevod súborov do a z textovo bezpečných formátov. Ku všetkým sa dostanete z ponuky <strong>Súbor</strong> a pôsobia na to, čo máte vybrané v aktívnom paneli (alebo na položku pod kurzorom, keď nie je nič vybrané). Táto téma pokrýva kontrolné súčty, hľadač duplikátov, rozdelenie/spojenie, kódovanie/dekódovanie a výpočet zabraného miesta.</p>
+<h2 id="vytvorenie-alebo-overenie-kontrolnych-suctov">Vytvorenie alebo overenie kontrolných súčtov</h2>
+<p>Kontrolné súčty umožňujú potvrdiť, že sa súbor stiahol alebo skopíroval bez poškodenia, alebo dať príjemcovi spôsob na overenie prijatej kópie.</p>
+<ol>
+<li>Vyberte súbory, ktoré chcete opatriť odtlačkom.</li>
+<li>Vyberte <strong>Súbor ▸ Vytvoriť kontrolné súčty…</strong>, vyberte algoritmus (CRC32, MD5, SHA-1, SHA-256 alebo SHA-512) a uložte súbor kontrolného súčtu.</li>
+<li>Na neskoršiu kontrolu súborov vyberte súbor kontrolného súčtu a vyberte <strong>Súbor ▸ Overiť kontrolné súčty…</strong>. Peach Commander znovu vypočíta každý hash a nahlási každý súbor, ktorý nezodpovedá.</li>
+</ol>
+<p>Kontrolné súčty sa počítajú priamo cez aktuálne umiestnenie, takže ich môžete vytvoriť alebo overiť aj pre súbory vnútri archívov alebo na serveri FTP.</p>
+<h2 id="hladanie-duplicitnych-suborov">Hľadanie duplicitných súborov</h2>
+<p>Hľadač duplikátov nájde rovnaké súbory rozptýlené po priečinkoch, takže môžete odstrániť nadbytočné kópie.</p>
+<ol>
+<li>Vyberte priečinky (alebo súbory), ktoré chcete prehľadať.</li>
+<li>Vyberte <strong>Súbor ▸ Nájsť duplikáty…</strong>. Peach Commander porovná kandidátov a zoskupí súbory, ktoré sú bajt po bajte rovnaké.</li>
+<li>Preskúmajte každú skupinu, označte kópie, ktoré už nepotrebujete, a odstráňte ich.</li>
+</ol>
+<p><img alt="Hľadač duplikátov uvádzajúci skupiny rovnakých súborov" src="images/duplicate-finder.png" />
+<em>(Obrázok: hľadač duplikátov zoskupuje rovnaké súbory, takže si jeden ponecháte a zvyšok odstránite.)</em></p>
+<h2 id="rozdelenie-a-spojenie-suborov">Rozdelenie a spojenie súborov</h2>
+<p>Rozdelenie rozbije jeden veľký súbor na očíslovanú sériu menších častí — praktické pri obmedzeniach úložiska alebo prenosu. Spojenie ich znovu poskladá.</p>
+<ol>
+<li>Na rozdelenie vyberte súbor a vyberte <strong>Súbor ▸ Rozdeliť súbor…</strong>, potom nastavte veľkosť časti. Časti sa zapíšu do priečinka druhého panela.</li>
+<li>Na opätovné poskladanie vyberte prvú časť a vyberte <strong>Súbor ▸ Spojiť súbory…</strong>. Pôvodný súbor sa znovu zostaví z očíslovaných častí.</li>
+</ol>
+<h2 id="kodovanie-a-dekodovanie">Kódovanie a dekódovanie</h2>
+<p>Kódovanie zmení binárny súbor na obyčajný text, aby prežil kanály, ktoré prenášajú iba text (napríklad staršie e-maily alebo polia na vkladanie). Dekódovanie to obráti.</p>
+<ol>
+<li>Vyberte súbor a vyberte <strong>Súbor ▸ Kódovať…</strong>, potom vyberte formát — MIME (Base64), UUE (uuencode) alebo XXE.</li>
+<li>Na obnovenie originálu vyberte kódovaný súbor a vyberte <strong>Súbor ▸ Dekódovať…</strong>. Formát sa zistí automaticky.</li>
+</ol>
+<h2 id="vypocet-zabraneho-miesta">Výpočet zabraného miesta</h2>
+<p>Na zobrazenie, koľko miesta priečinok alebo výber skutočne zaberá na disku, vyberte položky a stlačte <strong>Ctrl+L</strong> (<strong>Súbor ▸ Vypočítať zabrané miesto…</strong>). Peach Commander sčíta každý súbor vnútri, vrátane podpriečinkov, a zobrazí súčet.</p>
+<h2 id="skratky">Skratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akcia</th>
+<th>Klávesa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vypočítať zabrané miesto</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Kontrolné súčty, rozdelenie/spojenie a kódovanie/dekódovanie sú zamerané na pokročilejšie úlohy, ale každá je jediný dialóg s rozumnými predvolenými hodnotami.</li>
+<li>Keď nástroj vytvorí nové súbory (časti rozdelenia, kódovaný súbor, zoznam kontrolných súčtov), zapíšu sa do priečinka zobrazeného v druhom paneli — najprv nastavte tento panel na zamýšľaný cieľ.</li>
+<li>Mazanie duplikátov je trvalé v závislosti od vašich nastavení mazania; preskúmajte každú skupinu starostlivo a ponechajte si aspoň jednu kópiu všetkého, čo ešte potrebujete.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Porovnávanie a synchronizácia</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Start-menyn och egna kommandon</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Start-menyn och egna kommandon</h1>
+<p><strong>Start</strong>-menyn är din egen personliga meny, placerad i menyraden bredvid Arkiv, Redigera och de övriga. Den innehåller kommandon du definierar själv, så att de åtgärder du oftast tar till alltid är ett klick bort. I traditionen från klassiska tvåpanels-filhanterare kan varje post köra ett inbyggt kommando, starta ett externt program eller en app, eller hoppa direkt till en mapp. Peach Commander levereras med Start-menyn tom och redo för dig att fylla.</p>
+<h2 id="sa-har-lagger-du-till-egna-kommandon">Så här lägger du till egna kommandon</h2>
+<ol>
+<li>Välj <strong>Start &gt; Ändra Start-menyn…</strong>. Peach Commander öppnar din användarkommandofil (och skapar den med ett kommenterat exempel första gången).</li>
+<li>Lägg till ett avsnitt per kommando. Varje avsnitt börjar med ett namn inom hakparenteser, följt av några enkla nycklar:
+   - <strong>cmd</strong> — vad som ska köras: en programsökväg, en app, ett inbyggt <code>cm_</code>-kommando, eller ett annat av dina egna kommandon.
+   - <strong>param</strong> — parametrar som skickas till ett program. Platshållare fylls i när kommandot körs: <code>%P</code> (källmapp), <code>%N</code> (aktuell fil), <code>%T</code> (den andra panelens mapp), <code>%M</code> (den andra panelens fil), <code>%S</code> (markerade filer).
+   - <strong>path</strong> — mappen att starta i (standard är den aktuella mappen).
+   - <strong>menu</strong> — titeln som visas i Start-menyn.
+   - <strong>key</strong> — ett valfritt kortkommando, t.ex. <code>C+S+B</code>.</li>
+<li>Spara filen. Start-menyn uppdaterar sig själv nästa gång Peach Commander blir aktivt, så dina nya poster visas direkt.</li>
+</ol>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>För att öppna den aktuella mappen i Terminal, ställ in <strong>cmd</strong> på <code>open</code>, <strong>param</strong> på <code>-a Terminal %P</code> och <strong>menu</strong> på <code>Öppna terminal här</code>.</li>
+<li>Rikta <strong>cmd</strong> mot ett <code>cm_</code>-kommando för att ge en inbyggd åtgärd en egen Start-menypost och ett eget kortkommando.</li>
+<li>Ordningen i filen är ordningen i menyn, så lägg dina mest använda kommandon överst.</li>
+</ul>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Du kan även ersätta hela menyraden med din egen. Välj <strong>Konfiguration &gt; Redigera menyfil…</strong> för att öppna en menyfil som utgår från den aktuella, fullt lokaliserade inbyggda menyn; redigera fritt och dina ändringar tillämpas nästa gång appen aktiveras. Radera filen för att återställa den vanliga menyraden.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">Knappraden</a></li><li><a href="keyboard-shortcuts.html">Tangentbord och kortkommandon</a></li></ul></section>
+</main>
+</body>
+</html>

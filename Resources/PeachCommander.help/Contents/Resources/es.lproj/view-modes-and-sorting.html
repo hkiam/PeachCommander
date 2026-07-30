@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modos de vista y ordenación</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Modos de vista y ordenación</h1>
+<p>Cada panel puede mostrar su carpeta con la disposición que convenga a la tarea: una lista detallada con columnas, una lista compacta de nombres en varias columnas, una cuadrícula de iconos, una galería de miniaturas grandes, o un árbol de carpetas. También puedes ordenar la lista por nombre, extensión, tamaño o fecha, elegir exactamente qué columnas aparecen, y activar la ordenación natural (numérica) para que los nombres con números se alineen como esperas. El modo de vista, el orden y las columnas se ajustan por panel, así que los dos lados pueden verse completamente distintos.</p>
+<h2 id="cambiar-el-modo-de-vista">Cambiar el modo de vista</h2>
+<ol>
+<li>Haz clic en el panel que quieres cambiar para que quede activo.</li>
+<li>Abre el menú Visualización y elige un modo: <strong>Completa (Detalles)</strong> para la lista de columnas, <strong>Breve (Columnas)</strong> para una lista densa de nombres en varias columnas, <strong>Iconos</strong> para una cuadrícula de iconos, <strong>Miniaturas (Galería)</strong> para vistas previas grandes, o <strong>Árbol</strong> para un árbol de carpetas.</li>
+<li>Para recorrer rápidamente los modos sin abrir el menú, pulsa Cmd+Shift+M. Cada pulsación pasa al siguiente modo.</li>
+</ol>
+<p><img alt="Un panel mostrando los distintos modos de vista: detalles, breve, iconos y galería" src="images/view-modes.png" />
+<em>(Figura: La misma carpeta mostrada como una lista detallada, una lista breve de columnas, una cuadrícula de iconos y una galería de miniaturas.)</em></p>
+<h2 id="ordenar-la-lista-de-archivos">Ordenar la lista de archivos</h2>
+<ol>
+<li>En la vista de Detalles, haz clic en un encabezado de columna (Nombre, Ext, Tamaño o Fecha) para ordenar por él. Una pequeña flecha en el encabezado muestra la columna y la dirección de orden actuales.</li>
+<li>Haz clic de nuevo en el mismo encabezado para invertir el orden.</li>
+<li>También puedes elegir Visualización &gt; Ordenar por y elegir Nombre, Extensión, Tamaño, Fecha o Sin ordenar.</li>
+</ol>
+<p>Las carpetas siempre se ordenan juntas al principio, por delante de los archivos, y la entrada <code>..</code> que te sube un nivel queda fijada la primera. Ordenar por nombre o extensión es ascendente (A a Z) por omisión; ordenar por tamaño o fecha es primero lo más reciente o lo más grande por omisión.</p>
+<h2 id="elegir-que-columnas-aparecen">Elegir qué columnas aparecen</h2>
+<ol>
+<li>Elige Configuración &gt; Columnas….</li>
+<li>Activa o desactiva columnas y fija su orden. Las columnas disponibles incluyen Nombre, Ext, Tamaño, Fecha, Attr (atributos), Etiquetas y Comentario.</li>
+<li>Aplica tus cambios. Las columnas afectan a la vista de Detalles del panel activo.</li>
+</ol>
+<p><img alt="La ventana de configuración de columnas con la lista de columnas disponibles" src="images/columns-config.png" />
+<em>(Figura: Elige qué columnas se muestran en la vista de Detalles y fija su orden.)</em></p>
+<h2 id="atajos">Atajos</h2>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Recorrer los modos de vista</td>
+<td>Cmd+Shift+M</td>
+</tr>
+<tr>
+<td>Vista Breve (columnas)</td>
+<td>Ctrl+F1</td>
+</tr>
+<tr>
+<td>Vista Completa (detalles)</td>
+<td>Ctrl+F2</td>
+</tr>
+<tr>
+<td>Vista Miniaturas (galería)</td>
+<td>Ctrl+Shift+F1</td>
+</tr>
+<tr>
+<td>Vista Árbol</td>
+<td>Ctrl+F8</td>
+</tr>
+<tr>
+<td>Ordenar por nombre</td>
+<td>Ctrl+F3</td>
+</tr>
+<tr>
+<td>Ordenar por extensión</td>
+<td>Ctrl+F4</td>
+</tr>
+<tr>
+<td>Ordenar por tamaño</td>
+<td>Ctrl+F5</td>
+</tr>
+<tr>
+<td>Ordenar por fecha</td>
+<td>Ctrl+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="consejos">Consejos</h2>
+<ul>
+<li>La ordenación natural (numérica) está activada por omisión, así que <code>file2</code> va antes que <code>file10</code> en lugar de después. Puedes desactivarla en Configuración &gt; Opciones, en los ajustes de visualización.</li>
+<li>Puedes ensanchar o estrechar una columna en la vista de Detalles arrastrando el divisor entre los encabezados de columna.</li>
+<li>El modo de vista, el orden y la elección de columnas se recuerdan por panel, así que puedes mantener un lado como una lista detallada y el otro como una galería de fotos.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="panels-and-tabs.html">Pestañas</a></li><li><a href="quick-search-and-filter.html">Búsqueda rápida y filtro</a></li></ul></section>
+</main>
+</body>
+</html>

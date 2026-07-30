@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>按钮栏</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>按钮栏</h1>
+<p>按钮栏是窗口顶部横排的图标按钮。每个按钮都是你自己定义的一键快捷：运行内置命令、启动外部程序或应用、跳转到某个文件夹，或打开一整栏更多按钮的子栏。它是把你最常用的操作放到触手可及之处的最快方式，你可以精确地按自己的工作方式定制。</p>
+<h2 id="_1">定制按钮栏</h2>
+<ol>
+<li>选择 <strong>设置 &gt; 自定工具栏…</strong>，或右键点按该栏并选择 <strong>编辑按钮栏…</strong>。</li>
+<li>左侧列表显示当前按钮。用 <strong>+</strong> 添加按钮，用 <strong>—</strong> 添加分隔符，用 <strong>−</strong> 移除所选按钮，用 <strong>↑ / ↓</strong> 重新排序。</li>
+<li>选择一个按钮并填写右侧表单：
+   - <strong>命令</strong> —— 键入内置命令，或点按 <strong>选择…</strong> 从列表中选取。你也可以输入程序或应用的路径、要打开的文件夹，或用作子栏的另一个按钮栏。
+   - <strong>标题</strong> —— 为按钮显示的标签和工具提示。
+   - <strong>参数</strong> 和 <strong>起始路径</strong> —— 传给外部程序。像 <code>%P</code>（源文件夹）、<code>%N</code>（当前文件）和 <code>%S</code>（所选文件）这样的占位符在按钮运行时被填入。
+   - <strong>图标</strong> —— 选择一个 SF Symbol，或使用文件或应用自己的图标；打开 <strong>仅图标</strong> 以隐藏标题。</li>
+<li>点按 <strong>保存</strong>。该栏立即重新载入。</li>
+</ol>
+<p><img alt="窗口顶部带图标按钮的按钮栏" src="images/button-bar-crop.png" />
+<em>(图：按钮栏位于文件面板上方；每个按钮运行一个命令、程序、文件夹或子栏。)</em></p>
+<h2 id="_2">子栏与溢出</h2>
+<p>一个按钮可以打开一个<em>子栏</em> —— 叠加在第一栏之上的第二组按钮。点按它以进入；左侧的 <strong>◀</strong> 按钮让你返回上一栏。当按钮多于窗口宽度所能容纳时，多出的会折叠到右端的 <strong>»</strong> 尖角符号后面；点按它即可访问。</p>
+<h2 id="_3">把文件拖到按钮上</h2>
+<p>你可以把文件或文件夹直接拖到按钮上：</p>
+<ul>
+<li><strong>文件夹按钮</strong> —— 拖入的项目会在后台复制到该文件夹。</li>
+<li><strong>程序按钮</strong> —— 以拖入的项目为其选择内容运行程序。</li>
+<li><strong>命令按钮</strong> —— 命令照常运行。</li>
+</ul>
+<h2 id="_4">竖直按钮栏</h2>
+<p>要将该栏从窗口顶部移到左侧竖列，选择 <strong>显示 &gt; 竖直按钮栏</strong>。再次选择即可切回横排。</p>
+<h2 id="_5">备注</h2>
+<ul>
+<li>该栏存储于与 Total Commander 兼容的标准按钮栏文件中，因此你已有的栏可以复用。</li>
+<li>默认情况下这些操作不分配键盘快捷键，但你可以添加自己的 —— 参阅 <a href="keyboard-shortcuts">键盘快捷键</a>。</li>
+<li>没有图标也没有命令的按钮会显示为一个普通分隔符，便于把相关按钮分组。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts.html">键盘与快捷键</a></li><li><a href="settings.html">设置</a></li></ul></section>
+</main>
+</body>
+</html>

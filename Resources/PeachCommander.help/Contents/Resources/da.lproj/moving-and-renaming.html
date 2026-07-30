@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flytning og omdøbning</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Flytning og omdøbning</h1>
+<p>Flytning omplacerer filer og mapper i stedet for at duplikere dem, og omdøbning ændrer deres navne uden at røre deres indhold. Fordi Peach Commander viser to paneler side om side, er flytning bare et spørgsmål om at vælge det, du vil have, i ét panel og sende det til mappen, der er åben i det andet. Du kan også omdøbe et emne på stedet eller give flyttede emner nye navne undervejs ved hjælp af en jokertegnmaske.</p>
+<h2 id="flyt-filer-til-det-andet-panel">Flyt filer til det andet panel</h2>
+<ol>
+<li>I kildepanelet skal du åbne mappen med de emner, du vil flytte, og åbne målmappen i det andet panel.</li>
+<li>Vælg filen eller mappen, der skal flyttes. For at flytte flere på én gang, vælg dem alle først (se <em>Markering af filer</em>).</li>
+<li>Tryk på F6, eller vælg <strong>Filer &gt; Flyt</strong>.</li>
+<li>Kontrollér målmappen, der vises i dialogen, og klik på <strong>OK</strong> (eller tryk på Retur) for at starte flytningen.</li>
+</ol>
+<p><img alt="Flyt-dialogen der viser stifeltet, indstillinger og et køafkrydsningsfelt" src="images/copy-dialog.png" />
+<em>(Figur: flyt-dialogen bruger samme målfelt som kopiering — indtast en sti, eller tilføj en jokertegnmaske for at omdøbe, mens du flytter.)</em></p>
+<p>Flytninger på samme drev sker næsten øjeblikkeligt. Når målet er på et andet drev, kopierer Peach Commander emnerne og fjerner først originalerne, efter hver fil er ankommet sikkert.</p>
+<h2 id="omdb-pa-stedet">Omdøb på stedet</h2>
+<ol>
+<li>Vælg en enkelt fil eller mappe.</li>
+<li>Tryk på Shift+F6, eller vælg <strong>Filer &gt; Omdøb</strong>.</li>
+<li>Rediger navnet direkte i panelet, og tryk derefter på Retur for at bekræfte eller Esc for at annullere.</li>
+</ol>
+<h2 id="omdb-mens-du-flytter">Omdøb mens du flytter</h2>
+<p>Målfeltet i flyt-dialogen accepterer en jokertegnmaske, så du kan omdøbe emner, mens de flyttes:</p>
+<ol>
+<li>Vælg emnerne og tryk på F6.</li>
+<li>I målfeltet skal du tilføje en navnemaske efter målmappen, for eksempel <code>/Users/dig/Archive/*_backup.*</code>.</li>
+<li><code>*</code> står for det oprindelige navn og <code>.*</code> for den oprindelige filtype. Bekræft for at flytte og omdøbe i ét trin.</li>
+</ol>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Genvej</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flyt til det andet panel</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Omdøb på stedet</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Flyt-dialogen tilbyder samme indstillingsknap og baggrundskø-afkrydsningsfelt som kopiering, så du kan sætte store flytninger i kø og lade dem køre i baggrunden.</li>
+<li>Flytning inden for samme drev er en hurtig handling på stedet, så den er sikker for meget store mapper. En flytning på tværs af drev tager længere tid, fordi dataene kopieres først, og derefter slettes kilden.</li>
+<li>For at omdøbe mange filer på én gang med nummerering, søg-og-erstat eller mønstre, brug i stedet værktøjet til flerdobbelt omdøbning (se <em>Flerdobbelt omdøbning</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiering af filer</a></li><li><a href="multi-rename.html">Omdøbning af mange filer</a></li></ul></section>
+</main>
+</body>
+</html>

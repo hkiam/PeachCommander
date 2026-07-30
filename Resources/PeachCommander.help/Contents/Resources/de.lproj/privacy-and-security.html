@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datenschutz &amp; Sicherheit</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Datenschutz &amp; Sicherheit</h1>
+<p>Peach Commander ist so gebaut, dass es Ihnen nicht im Weg steht und Ihre Daten auf Ihrem Mac behält. Passwörter werden an den macOS-Schlüsselbund übergeben, Absturzinformationen verlassen Ihren Computer niemals ohne Ihre Zustimmung, und die App sammelt keine Nutzungsanalysen. Dieses Thema erklärt, wo Ihre vertraulichen Informationen liegen und wie Sie die eine Systemberechtigung erteilen, die ein Dateimanager benötigt, um seine Aufgabe zu erfüllen.</p>
+<h2 id="wo-passworter-gespeichert-werden">Wo Passwörter gespeichert werden</h2>
+<p>Jedes Passwort oder jede Schlüssel-Passphrase, die Sie speichern — für eine FTP- oder SFTP-Verbindung oder zum Öffnen eines passwortgeschützten Archivs — wird in den macOS-<strong>Schlüsselbund</strong> geschrieben, denselben sicheren Speicher, den das System für Ihre WLAN- und Website-Anmeldungen verwendet. Passwörter werden niemals im Klartext in die eigenen Einstellungen oder Verbindungsdateien von Peach Commander geschrieben.</p>
+<ol>
+<li>Wenn Sie ein Verbindungs- oder Archivpasswort speichern, wählen Sie die Option, es zu merken.</li>
+<li>Das Passwort wird in Ihrem Anmelde-Schlüsselbund gespeichert, geschützt durch Ihr Benutzerkonto.</li>
+<li>Um ein gespeichertes Passwort später zu überprüfen oder zu entfernen, öffnen Sie die App <strong>Schlüsselbundverwaltung</strong> (in Programme ▸ Dienstprogramme) und suchen Sie nach dem Verbindungsnamen.</li>
+</ol>
+<h2 id="vollstandigen-festplattenzugriff-erteilen">Vollständigen Festplattenzugriff erteilen</h2>
+<p>macOS hält einige Orte privat — die Daten von Mail, Nachrichten und anderen Apps innerhalb Ihres Library-Ordners — bis Sie den Zugriff ausdrücklich erlauben. Da ein Dateimanager jede Datei erreichen können soll, bittet Peach Commander um <strong>Vollständigen Festplattenzugriff</strong>. Die App funktioniert mit eingeschränktem Zugriff weiter, bis Sie ihn erteilen; Sie sehen lediglich jene geschützten Ordner nicht.</p>
+<ol>
+<li>Wählen Sie <strong>Befehle ▸ Vollständiger Festplattenzugriff…</strong> oder klicken Sie auf <strong>Systemeinstellungen öffnen</strong>, wenn die App Ihnen beim Start anbietet, Sie zu führen.</li>
+<li>Aktivieren Sie in <strong>Systemeinstellungen ▸ Datenschutz &amp; Sicherheit ▸ Vollständiger Festplattenzugriff</strong> den Schalter neben Peach Commander.</li>
+<li>Starten Sie die App neu, wenn Sie dazu aufgefordert werden.</li>
+</ol>
+<h2 id="absturzberichte-bleiben-lokal">Absturzberichte bleiben lokal</h2>
+<p>Wenn die App unerwartet beendet wird, schreibt macOS einen Absturzbericht in Ihren eigenen Diagnoseordner. Beim nächsten Start bemerkt Peach Commander ihn und bietet an, Ihnen beim Einreichen eines Fehlerberichts zu helfen — aber nur mit Ihrer Zustimmung.</p>
+<ul>
+<li>Sie können <strong>Im Finder anzeigen</strong> wählen, um den Bericht zu sehen, oder <strong>Bericht in die Zwischenablage kopieren</strong>, um ihn selbst in einen Fehlerbericht einzufügen.</li>
+<li>Es wird niemals etwas automatisch übertragen, und es ist kein Drittanbieter-Dienst zur Absturzberichterstattung beteiligt.</li>
+</ul>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li><strong>Keine Telemetrie.</strong> Peach Commander verfolgt Ihre Aktivität nicht und sendet keine Nutzungsanalysen irgendwohin.</li>
+<li><strong>Eingeschränkter Zugriff ist sicher.</strong> Wenn Sie den vollständigen Festplattenzugriff überspringen, durchsucht und verwaltet die App weiterhin die Dateien, die Sie normalerweise sehen können; nur systemgeschützte Orte werden ausgeblendet.</li>
+<li><strong>Sie steuern gespeicherte Passwörter.</strong> Da Anmeldedaten im Schlüsselbund liegen, verwalten und widerrufen Sie sie mit den Standardwerkzeugen von macOS anstatt innerhalb der App.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="ftp-and-sftp.html">Verbindung mit FTP &amp; SFTP</a></li><li><a href="troubleshooting.html">Fehlerbehebung</a></li></ul></section>
+</main>
+</body>
+</html>

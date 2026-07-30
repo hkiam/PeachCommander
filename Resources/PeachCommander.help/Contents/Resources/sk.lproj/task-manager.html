@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>Zásuvný modul Task Manager premení bežiace procesy na vašom Macu na priečinok, ktorý môžete prehliadať. Objaví sa ako disk <strong>TaskManager</strong> v lište diskov; otvorte ho a každý proces je riadok, ktorý môžete triediť, skúmať ako súbor alebo ukončiť — pomocou tých istých klávesov, ktoré už používate pre súbory. Keďže ide o zásuvný modul, môžete ho vypnúť alebo odstrániť v <strong>Konfigurácia ▸ Zásuvné moduly…</strong>.</p>
+<h2 id="otvorenie">Otvorenie</h2>
+<ol>
+<li>Kliknite na položku <strong>📊 TaskManager</strong> v lište diskov (sedí hneď za vaším spúšťacím diskom).</li>
+<li>Panel sa zaplní jedným riadkom na bežiaci proces. Názov každého riadka je názov procesu nasledovaný jeho PID, napríklad <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="Task Manager uvádzajúci bežiace procesy so stĺpcami PID, CPU, pamäť a príkaz" src="images/task-manager.png" />
+<em>(Obrázok: bežiace procesy zobrazené ako zoznam súborov, ktorý môžete triediť a nad ktorým môžete konať.)</em></p>
+<h2 id="co-znamena-kazdy-stlpec">Čo znamená každý stĺpec</h2>
+<p>Popri obvyklých stĺpcoch Veľkosť (pamäť) a Dátum (čas spustenia) pridáva Task Manager stĺpce procesov:</p>
+<table>
+<thead>
+<tr>
+<th>Stĺpec</th>
+<th>Význam</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>ID procesu</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Nedávne využitie procesora (objaví sa až po druhom obnovení)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Počet vlákien</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R beží · S spí · T zastavený · Z zombie · I nečinný</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Vlastník</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>ID nadradeného procesu</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>Úplný príkazový riadok</td>
+</tr>
+</tbody>
+</table>
+<p>Trieďte podľa ktoréhokoľvek stĺpca (napríklad CPU % alebo Veľkosť/pamäť) presne tak, ako by ste to robili v bežnom priečinku.</p>
+<h2 id="skumanie-alebo-ukoncenie-procesu">Skúmanie alebo ukončenie procesu</h2>
+<ul>
+<li><strong>Zobraziť (F3)</strong> zobrazí správu <em>Informácie o procese</em>: názov, PID, nadradený proces, používateľ, stav, vlákna, pamäť, CPU, čas spustenia, cesta k spustiteľnému súboru a úplný príkazový riadok.</li>
+<li><strong>Odstrániť (F8)</strong> ukončí proces. Prvé odstránenie odošle jemné <strong>ukončenie</strong> (SIGTERM); odstránenie procesu, ktorý stále beží, druhýkrát eskaluje na <strong>vynútené ukončenie</strong> (SIGKILL). Zásuvný modul nikdy nemieri na PID 1.</li>
+</ul>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Základné údaje (PID, nadradený proces, používateľ, stav) sú čitateľné pre každý proces, ako pri <code>ps</code>. Pamäť, vlákna a CPU sa dajú načítať iba pre <strong>vaše vlastné</strong> procesy; ostatné procesy zobrazia tieto stĺpce prázdne (vyžadujú zvýšené oprávnenia, neskorší doplnok).</li>
+<li>CPU % je zmena medzi dvoma vzorkami, takže zostáva prázdne, kým sa panel neobnoví druhýkrát (panel sa obnovuje zhruba každé dve sekundy).</li>
+<li>Zoznam je len na čítanie okrem ukončenia procesu — nemôžete doň kopírovať súbory.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="viewing-files.html">Zobrazenie súborov</a></li><li><a href="deleting-files.html">Odstraňovanie súborov</a></li></ul></section>
+</main>
+</body>
+</html>

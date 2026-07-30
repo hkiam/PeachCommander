@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Porównywanie i synchronizacja</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Porównywanie i synchronizacja</h1>
+<p>Gdy przechowujesz dwie kopie tego samego folderu — folder roboczy i kopię zapasową, laptop i udział sieciowy, projekt i jego archiwum — Peach Commander pomaga zobaczyć dokładnie, co się zmieniło, i przywrócić obie strony do zgodności. Możesz synchronizować dwa katalogi, porównywać poszczególne pliki wiersz po wierszu oraz sprawdzać pliki bajt po bajcie, gdy potrzebujesz pewności co do ostatniego znaku.</p>
+<h2 id="synchronizuj-dwa-katalogi">Synchronizuj dwa katalogi</h2>
+<ol>
+<li>Otwórz folder, który chcesz zsynchronizować, w lewym panelu, a folder do porównania z nim w prawym panelu.</li>
+<li>Wybierz <strong>Polecenia ▸ Synchronizuj katalogi…</strong>. Ścieżki obu folderów są wypełniane z Twoich paneli.</li>
+<li>Ustaw, jak dokładne ma być porównanie: uwzględnij podfoldery, porównuj <strong>według zawartości</strong> (nie tylko według daty i rozmiaru) lub ignoruj datę modyfikacji.</li>
+<li>Dodaj maskę filtra (na przykład <code>*.jpg;*.png</code>), jeśli chcesz synchronizować tylko określone pliki.</li>
+<li>Przejrzyj siatkę wyników. Każdy wiersz pokazuje plik po lewej, strzałkę kierunku pośrodku i pasujący plik po prawej. Strzałki mówią, co się stanie: <strong>→</strong> kopiuje z lewej na prawą, <strong>←</strong> kopiuje z prawej na lewą, a <strong>=</strong> oznacza, że oba są identyczne.</li>
+<li>Dostosuj poszczególne wiersze, jeśli nie zgadzasz się z sugerowanym kierunkiem, a następnie kliknij przycisk synchronizacji, aby przeprowadzić zmiany.</li>
+</ol>
+<p><img alt="Okno synchronizacji katalogów z dwiema ścieżkami folderów i siatką wyników plików ze strzałkami w lewo, równości i w prawo" src="images/sync-dialog.png" />
+<em>(Rysunek: okno Synchronizuj katalogi porównuje obie strony i proponuje kierunek kopiowania dla każdego pliku.)</em></p>
+<h2 id="porownaj-dwa-pliki-wedug-zawartosci">Porównaj dwa pliki według zawartości</h2>
+<ol>
+<li>Zaznacz jeden plik w każdym panelu (lub dwa pliki w tym samym panelu).</li>
+<li>Wybierz <strong>Plik ▸ Porównaj według zawartości…</strong>.</li>
+<li>Oba pliki otwierają się obok siebie z podświetlonymi różnicami. Użyj elementów sterujących następny/poprzedni, aby przeskakiwać między zmienionymi blokami.</li>
+<li>Jeśli włączysz tryb edycji, możesz dostosować dowolny plik bezpośrednio i zapisać zmiany.</li>
+</ol>
+<p><img alt="Okno porównania pokazujące dwa pliki tekstowe obok siebie z podświetlonymi różniącymi się wierszami" src="images/diff-window.png" />
+<em>(Rysunek: porównywanie dwóch plików tekstowych; zmienione wiersze są podświetlone po obu stronach.)</em></p>
+<h2 id="porownaj-pliki-bajt-po-bajcie">Porównaj pliki bajt po bajcie</h2>
+<p>Gdy dwa pliki wyglądają tak samo, ale musisz udowodnić, że są naprawdę identyczne (lub znaleźć ten jeden różniący się bajt), użyj porównania binarnego. Pokazuje oba pliki w widoku szesnastkowym z zaznaczonymi niepasującymi bajtami, co jest idealne do weryfikacji pobranych plików, sprawdzania zakodowanych danych lub potwierdzania dokładnej kopii.</p>
+<h2 id="porownaj-listy-katalogow">Porównaj listy katalogów</h2>
+<p>Aby dostrzec różnice między dwoma otwartymi folderami na pierwszy rzut oka, wybierz <strong>Zaznacz ▸ Porównaj katalogi</strong> (Shift+F2). Peach Commander oznaczy pliki, które się różnią lub brakuje ich po drugiej stronie, dzięki czemu możesz na nich działać zwykłymi poleceniami kopiowania, przenoszenia i usuwania.</p>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Porównaj listy katalogów (oznacz różniące się pliki)</td>
+<td>Shift+F2</td>
+</tr>
+<tr>
+<td>Porównaj według zawartości</td>
+<td>Plik ▸ Porównaj według zawartości…</td>
+</tr>
+<tr>
+<td>Synchronizuj katalogi</td>
+<td>Polecenia ▸ Synchronizuj katalogi…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li><strong>Według zawartości a według daty/rozmiaru.</strong> Szybkie porównanie dopasowuje pliki według rozmiaru i daty modyfikacji, co jest szybkie, ale można je oszukać, gdy znaczniki czasu różnią się dla identycznych plików. Włącz <strong>według zawartości</strong> dla wiarygodnego wyniku kosztem odczytu każdego pliku.</li>
+<li><strong>Podfoldery i filtry.</strong> Okno synchronizacji może schodzić do podfolderów i można je ograniczyć maską filtra, więc możesz synchronizować tylko interesujące Cię typy plików.</li>
+<li><strong>Zachowujesz kontrolę.</strong> Synchronizacja nigdy nie działa sama — przeglądasz proponowane kierunki w siatce wyników i możesz zmienić dowolny z nich, zanim cokolwiek zostanie skopiowane.</li>
+<li><strong>Ustawienia wstępne.</strong> Często używane konfiguracje synchronizacji można zapisać i użyć ponownie, dzięki czemu nie musisz za każdym razem wpisywać tych samych opcji.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Zmiana nazw wielu plików</a></li></ul></section>
+</main>
+</body>
+</html>

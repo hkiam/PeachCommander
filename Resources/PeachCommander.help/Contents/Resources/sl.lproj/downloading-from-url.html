@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prenašanje z naslova URL</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Prenašanje z naslova URL</h1>
+<p>Peach Commander lahko pridobi datoteko naravnost s spletnega naslova HTTP ali HTTPS v dejavno podokno, brez odpiranja brskalnika. Prilepite povezavo, potrdite ime, pod katerim bo shranjena, in prenos teče sam — z nadaljevanjem, če povezava pade, paketnimi prenosi več povezav naenkrat in izbirnim preverjanjem nadzorne vsote, tako da veste, da je datoteka prispela nedotaknjena.</p>
+<h2 id="prenesite-datoteko">Prenesite datoteko</h2>
+<ol>
+<li>Odprite mapo podokna, kamor želite, da datoteka pristane.</li>
+<li>Izberite <strong>Omrežje &gt; Prenesi z URL</strong> ali pritisnite Cmd+Shift+D.</li>
+<li>Prilepite spletni naslov v polje <strong>URL-ji</strong>. Če ste prej kopirali povezavo, se izpolni za vas.</li>
+<li>Preverite ime <strong>Shrani kot</strong> — predlagano je iz povezave in ga lahko prosto uredite.</li>
+<li>Kliknite <strong>Prenesi</strong>.</li>
+</ol>
+<p><img alt="Pogovorno okno Prenesi z URL s povezavo, uredljivim imenom datoteke in možnostmi" src="images/download-url.png" />
+<em>(Slika: pogovorno okno prenosa — prilepite povezavo, uredite ime in nastavite izbirno preverjanje, poverilnice, glave ali posrednika.)</em></p>
+<p>Privzeto prenos teče <strong>v ozadju</strong>, tako da lahko med prenosom nadaljujete delo v podoknih. Izklopite <strong>Prenesi v ozadju</strong>, da počakate nanj, ali vklopite <strong>V vrsto za kasneje</strong>, da ga nastavite, ne da bi ga še začeli.</p>
+<h2 id="prenesite-vec-datotek-naenkrat">Prenesite več datotek naenkrat</h2>
+<p>Prilepite en spletni naslov na vrstico v polje <strong>URL-ji</strong>. Ko je prisotnih več povezav, se ime vsake datoteke samodejno izpelje iz njene povezave, polji <strong>Shrani kot</strong> in <strong>Preveri</strong> za posamezne datoteke pa sta izklopljeni.</p>
+<h2 id="nadaljevanje-prekinjenega-prenosa">Nadaljevanje prekinjenega prenosa</h2>
+<p>Če je prenos prekinjen, Peach Commander ohrani, kar je že prejel, v začasni datoteki <code>.part</code>. Ponovni zagon istega prenosa nadaljuje od mesta, kjer se je ustavil, kadar koli strežnik to podpira, namesto da bi začel znova. Datoteka <code>.part</code> dobi končno ime šele, ko se prenos uspešno konča.</p>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prenesi z URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="nasveti">Nasveti</h2>
+<ul>
+<li><strong>Preverite datoteko.</strong> Za en prenos prilepite pričakovano nadzorno vsoto <strong>SHA-256</strong> v polje <strong>Preveri</strong>. Po prenosu se nadzorna vsota datoteke primerja z njo, tako da lahko zaupate, da se datoteka ujema s tem, kar je navedel izdajatelj.</li>
+<li><strong>Zahtevana prijava?</strong> Vnesite uporabniško ime in geslo v polji <strong>Pristnost</strong> za spletna mesta, ki uporabljajo osnovno preverjanje pristnosti. Za dostop na osnovi žetona dodajte vrstico <code>Authorization: Bearer …</code> v polje <strong>Glave</strong>.</li>
+<li><strong>Poljubne glave.</strong> Dodajte eno glavo na vrstico v polje <strong>Glave</strong>, na primer <code>Referer: …</code> ali <code>Cookie: …</code>, za povezave, ki delujejo le z določenimi glavami zahteve.</li>
+<li><strong>Posrednik.</strong> Usmerite prenos skozi posrednik HTTP ali SOCKS5 z izpolnitvijo gostitelja, vrat in vrste <strong>Posrednika</strong>.</li>
+<li><strong>Nezaupljiva potrdila.</strong> Vklopite <strong>Dovoli nezaupljivo potrdilo</strong> le za zaupanja vredno spletno mesto, ki uporablja samopodpisano potrdilo; to izklopi običajno varnostno preverjanje HTTPS za ta prenos.</li>
+<li><strong>Opomba:</strong> Cmd+Shift+D se drugje uporablja tudi za prehod v mapo Namizje; če bližnjica ne odpre tega pogovornega okna, uporabite namesto tega <strong>Omrežje &gt; Prenesi z URL</strong> iz menija.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Povezovanje s FTP in SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Delo z arhivi</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Delo z arhivi</h1>
+<p>Peach Commander obravnava arhive kot mape. Vstopite lahko v arhiv ZIP, TAR ali drugo podprto obliko, pregledate njegovo vsebino in iz njega kopirate datoteke — vse brez predhodnega razširjanja na disk. Ko želite ustvariti arhiv, ukaz Zapakiraj združi vaš izbor v obliko ZIP, 7z, TAR ali drugo, z izbirnim šifriranjem in razdeljenimi nosilci. To je priročno za pakiranje datotek za pošiljanje, krčenje mape za shranjevanje ali vpogled v preneseno datoteko, preden se odločite za razširjanje.</p>
+<h2 id="prebrskajte-arhiv-kot-mapo">Prebrskajte arhiv kot mapo</h2>
+<ol>
+<li>V podoknu premaknite kazalko na datoteko arhiva (na primer <code>.zip</code> ali <code>.tar.gz</code>).</li>
+<li>Pritisnite Enter ali Ctrl+PageDown, da vstopite, tako kot bi odprli mapo.</li>
+<li>Po vsebini se pomikajte običajno. Pritisnite Backspace ali Ctrl+PageUp, da se vrnete navzgor in zapustite arhiv.</li>
+<li>Za izvleček datotek jih izberite in kopirajte (F5) v drugo podokno.</li>
+</ol>
+<p><img alt="Brskanje po notranjosti arhiva, kot da bi bil mapa" src="images/archive-browse.png" />
+<em>(Slika: odprt arhiv, prikazan kot običajen seznam mape, z datotekami, pripravljenimi za kopiranje.)</em></p>
+<p>ZIP, TAR in z gzip stisnjen TAR se berejo neposredno. Druge oblike, kot so CPIO, ISO, CAB, LZH, XAR in PAX, se berejo prek vgrajenih sistemskih orodij. Šifrirane arhive ZIP (klasične in AES) je mogoče odpreti, ko navedete geslo.</p>
+<h2 id="zapakirajte-datoteke-v-nov-arhiv">Zapakirajte datoteke v nov arhiv</h2>
+<ol>
+<li>Izberite datoteke in mape, ki jih želite vključiti, v dejavnem podoknu.</li>
+<li>Izberite Datoteka ▸ Zapakiraj… ali pritisnite Alt+F5. (Za pakiranje in nato brisanje izvirnikov uporabite Alt+Shift+F5.)</li>
+<li>V pogovornem oknu izberite obliko arhiva (ZIP, 7z, TAR, tar.gz, bzip2, xz ali RAR), raven stiskanja in kam ga shraniti.</li>
+<li>Po želji vklopite šifriranje AES-256 in nastavite geslo, ali arhiv razdelite na nosilce fiksne velikosti.</li>
+<li>Potrdite, da ustvarite arhiv.</li>
+</ol>
+<p><img alt="Pogovorno okno Zapakiraj, ki prikazuje obliko, stiskanje, šifriranje in možnosti razdelitve" src="images/pack-dialog.png" />
+<em>(Slika: pogovorno okno Zapakiraj, kjer izberete obliko in nastavite možnosti šifriranja in razdelitve na nosilce.)</em></p>
+<h2 id="razsirite-ali-preizkusite-arhiv">Razširite ali preizkusite arhiv</h2>
+<ol>
+<li>Postavite arhiv za izvleček v dejavno podokno in ciljno mapo v drugo podokno.</li>
+<li>Izberite Datoteka ▸ Razširi… ali pritisnite Alt+F9, nato potrdite cilj.</li>
+<li>Za preverjanje arhiva glede poškodb brez izvlečka izberite Datoteka ▸ Preizkusi arhiv.</li>
+</ol>
+<h2 id="uredite-zip-na-mestu">Uredite ZIP na mestu</h2>
+<p>Datoteke lahko dodate ali odstranite znotraj obstoječega ZIP brez razširjanja. Odprite ZIP kot mapo, nato kopirajte datoteke vanj ali brišite datoteke kot običajno — sprememba se zapiše neposredno nazaj v arhiv.</p>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vstopi v arhiv pod kazalko</td>
+<td>Enter ali Ctrl+PageDown</td>
+</tr>
+<tr>
+<td>Zapusti arhiv (pojdi navzgor)</td>
+<td>Backspace ali Ctrl+PageUp</td>
+</tr>
+<tr>
+<td>Zapakiraj</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Zapakiraj in izbriši izvirnike</td>
+<td>Alt+Shift+F5</td>
+</tr>
+<tr>
+<td>Razširi</td>
+<td>Alt+F9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Pakiranje v 7z, xz, bzip2 in RAR se opira na zunanja orodja. RAR zlasti zahteva namestitev lastniškega programa RAR; brez njega ta oblika ni na voljo.</li>
+<li>Urejanje ZIP na mestu prepiše celoten arhiv, tako da datumi spremembe datotek v njem niso ohranjeni.</li>
+<li>Zelo veliki posamezni elementi so pri izvlečku omejeni na 512 MiB. Izvleček je mogoče preklicati med izvajanjem.</li>
+<li>Izjemno veliki arhivi (ZIP64) niso podprti.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiranje datotek</a></li></ul></section>
+</main>
+</body>
+</html>

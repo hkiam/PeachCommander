@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lišta tlačítek</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Lišta tlačítek</h1>
+<p>Lišta tlačítek je pruh ikonových tlačítek podél horní části okna. Každé tlačítko je zkratka na jedno klepnutí, kterou si sami definujete: spustit vestavěný příkaz, spustit externí program nebo aplikaci, přeskočit do složky, nebo otevřít celou podlištu dalších tlačítek. Je to nejrychlejší způsob, jak mít akce, které používáte nejvíce, na dosah, a můžete ji přizpůsobit přesně způsobu, jakým pracujete.</p>
+<h2 id="prizpusobeni-listy-tlacitek">Přizpůsobení lišty tlačítek</h2>
+<ol>
+<li>Zvolte <strong>Konfigurace &gt; Přizpůsobit lištu nástrojů…</strong>, nebo klepněte na lištu pravým tlačítkem a zvolte <strong>Upravit lištu tlačítek…</strong>.</li>
+<li>Seznam vlevo zobrazuje aktuální tlačítka. Použijte <strong>+</strong> pro přidání tlačítka, <strong>—</strong> pro přidání oddělovače, <strong>−</strong> pro odebrání vybraného tlačítka a <strong>↑ / ↓</strong> pro změnu pořadí.</li>
+<li>Vyberte tlačítko a vyplňte formulář vpravo:
+   - <strong>Příkaz</strong> — zadejte vestavěný příkaz, nebo klepněte na <strong>Vybrat…</strong> pro výběr ze seznamu. Můžete také zadat cestu programu nebo aplikace, složku k otevření, nebo jinou lištu tlačítek k použití jako podlišta.
+   - <strong>Popisek</strong> — štítek a nápověda zobrazené pro tlačítko.
+   - <strong>Parametry</strong> a <strong>Počáteční cesta</strong> — předané externím programům. Zástupné symboly jako <code>%P</code> (zdrojová složka), <code>%N</code> (aktuální soubor) a <code>%S</code> (vybrané soubory) se vyplní při spuštění tlačítka.
+   - <strong>Ikona</strong> — zvolte SF Symbol nebo použijte vlastní ikonu souboru či aplikace; zapněte <strong>jen ikona</strong> pro skrytí popisku.</li>
+<li>Klepněte na <strong>Uložit</strong>. Pruh se ihned znovu načte.</li>
+</ol>
+<p><img alt="Lišta tlačítek podél horní části okna s ikonovými tlačítky" src="images/button-bar-crop.png" />
+<em>(Obrázek: lišta tlačítek se nachází nad panely souborů; každé tlačítko spouští příkaz, program, složku nebo podlištu.)</em></p>
+<h2 id="podlisty-a-preteceni">Podlišty a přetečení</h2>
+<p>Tlačítko může otevřít <em>podlištu</em> — druhou sadu tlačítek přeloženou přes první. Klepnutím na ni sestoupíte; tlačítko <strong>◀</strong> vlevo vás vrátí na předchozí lištu. Když je tlačítek více, než se vejde do šířky okna, ta navíc se sbalí za šipku <strong>»</strong> na pravém konci; klepnutím na ni se k nim dostanete.</p>
+<h2 id="pretazeni-souboru-na-tlacitko">Přetažení souborů na tlačítko</h2>
+<p>Soubory nebo složky můžete přetáhnout přímo na tlačítko:</p>
+<ul>
+<li><strong>Tlačítko složky</strong> — přetažené položky se zkopírují do té složky na pozadí.</li>
+<li><strong>Tlačítko programu</strong> — program se spustí s přetaženými položkami jako svým výběrem.</li>
+<li><strong>Tlačítko příkazu</strong> — příkaz se spustí jako obvykle.</li>
+</ul>
+<h2 id="svisla-lista-tlacitek">Svislá lišta tlačítek</h2>
+<p>Chcete-li přesunout pruh z horní části okna do sloupce podél levé strany, zvolte <strong>Zobrazení &gt; Svislá lišta tlačítek</strong>. Zvolte ji znovu pro návrat k vodorovnému pruhu.</p>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Lišta je uložena ve standardním souboru lišty tlačítek kompatibilním s Total Commanderem, takže lišty, které už máte, lze znovu použít.</li>
+<li>Těmto akcím není ve výchozím nastavení přiřazena žádná klávesová zkratka, ale můžete přidat vlastní — viz <a href="keyboard-shortcuts">Klávesové zkratky</a>.</li>
+<li>Tlačítko bez ikony a bez příkazu se zobrazí jako prostý oddělovač, praktický pro seskupení souvisejících tlačítek.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts.html">Klávesnice a zkratky</a></li><li><a href="settings.html">Nastavení</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pripojenie k FTP a SFTP</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Pripojenie k FTP a SFTP</h1>
+<p>Peach Commander dokáže prehliadať vzdialené servery, akoby to boli bežné priečinky. Po pripojení jeden panel zobrazuje vzdialené súbory a vy ich kopírujete, presúvate, premenúvate a mažete tými istými klávesmi, aké používate lokálne. Hovorí obyčajným FTP, zabezpečeným FTPS a SFTP/SCP cez SSH, takže dosiahnete na čokoľvek od klasického webhostingu po spevnený server SSH. Uložené pripojenia žijú v správcovi pripojení a heslá sú bezpečne uchované vo vašom zväzku kľúčov macOS, nie v samotnom pripojení.</p>
+<h2 id="pripojenie-k-serveru">Pripojenie k serveru</h2>
+<ol>
+<li>Otvorte ponuku <strong>Sieť</strong> a vyberte <strong>Pripojenie FTP…</strong> (Ctrl+F) na otvorenie správcu pripojení.</li>
+<li>Vyberte uložené pripojenie zo zoznamu a kliknite na <strong>Pripojiť</strong>, alebo kliknite na <strong>Nové</strong> na jeho vytvorenie. Použite priečinky v zozname na zoskupenie pripojení.</li>
+<li>Pre rýchle jednorazové pripojenie vyberte <strong>Sieť &gt; Nové pripojenie FTP…</strong> (Ctrl+N) a zadajte adresu priamo.</li>
+<li>Zadajte heslo, keď budete vyzvaní; zaškrtnite možnosť jeho uloženia a uloží sa do vášho zväzku kľúčov na nabudúce.</li>
+<li>Keď skončíte, vyberte <strong>Sieť &gt; Odpojiť FTP</strong> (Ctrl+Shift+F).</li>
+</ol>
+<p><img alt="Správca pripojení FTP zobrazujúci zoznam uložených relácií s tlačidlami Nové, Upraviť a Odstrániť" src="images/ftp-connection-manager.png" />
+<em>(Obrázok: správca pripojení uchováva vaše uložené servery; použite Nové, Upraviť a Odstrániť na ich spravovanie.)</em></p>
+<p>Pri nastavovaní pripojenia môžete vybrať protokol (FTP, FTPS s explicitným AUTH TLS, implicitný FTPS na porte 990, alebo SFTP/SCP), pasívny alebo aktívny režim, vzdialený a lokálny počiatočný priečinok, kódovanie textu a voliteľný interval keep-alive, ktorý zabráni nečinným serverom, aby vás odpojili. Pri SFTP sa môžete overiť svojím agentom SSH, heslom alebo súborom súkromného kľúča a na prenosy môžete vybrať SCP. Neznáme hostiteľské kľúče SSH sú pri prvom použití považované za dôveryhodné; ak sa kľúč známeho servera niekedy zmení, pripojenie sa odmietne, aby vás ochránilo pred manipuláciou.</p>
+<h2 id="konzola-ftp">Konzola FTP</h2>
+<p>Na zobrazenie, čo presne server hovorí, otvorte konzolu FTP z ponuky <strong>Sieť</strong>. Zobrazuje živý protokol riadiaceho kanála (vaše heslo je maskované) a umožňuje zadávať serveru surové príkazy FTP.</p>
+<p><img alt="Konzola FTP zobrazujúca protokol riadiaceho kanála a pole na surové príkazy" src="images/ftp-console.png" />
+<em>(Obrázok: konzola FTP zaznamenáva každú výmenu a prijíma surové príkazy, čo je praktické na riešenie problémov.)</em></p>
+<h2 id="skratky">Skratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akcia</th>
+<th>Skratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Otvoriť správcu pripojení</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Nové pripojenie</td>
+<td>Ctrl+N</td>
+</tr>
+<tr>
+<td>Odpojiť</td>
+<td>Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Zmeniť režim prenosu</td>
+<td>Ctrl+Shift+M</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Prerušené sťahovania a nahrávania môžu pokračovať tam, kde skončili, namiesto začatia odznova.</li>
+<li>Pri serveroch FTPS so samopodpísaným certifikátom zapnite v nastaveniach daného pripojenia možnosť prijať nedôveryhodný certifikát.</li>
+<li>Proxy SOCKS5 možno nastaviť pre každé pripojenie pri obyčajnom FTP. Smerovanie šifrovaného pripojenia FTPS cez proxy nie je podporované.</li>
+<li>Existujúce pripojenia FTP z Total Commanderu možno importovať.</li>
+<li>SCP sa používa iba na prenos súborov; výpis, premenovanie a mazanie idú vždy cez SFTP.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="downloading-from-url.html">Sťahovanie z URL</a></li><li><a href="network-shares.html">Sieťové zdieľania</a></li></ul></section>
+</main>
+</body>
+</html>

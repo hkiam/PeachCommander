@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La barra de botones</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>La barra de botones</h1>
+<p>La barra de botones es la tira de botones con iconos en la parte superior de la ventana. Cada botón es un atajo de un clic que defines tú mismo: ejecutar un comando integrado, iniciar un programa o app externos, saltar a una carpeta, o abrir toda una subbarra con más botones. Es la forma más rápida de tener a mano las acciones que más usas, y puedes adaptarla exactamente a tu manera de trabajar.</p>
+<h2 id="personalizar-la-barra-de-botones">Personalizar la barra de botones</h2>
+<ol>
+<li>Elige <strong>Configuración &gt; Personalizar barra de herramientas…</strong>, o haz clic derecho en la barra y elige <strong>Editar barra de botones…</strong>.</li>
+<li>La lista de la izquierda muestra los botones actuales. Usa <strong>+</strong> para añadir un botón, <strong>—</strong> para añadir un separador, <strong>−</strong> para quitar el botón seleccionado, y <strong>↑ / ↓</strong> para reordenar.</li>
+<li>Selecciona un botón y rellena el formulario de la derecha:
+   - <strong>Comando</strong> — escribe un comando integrado, o haz clic en <strong>Elegir…</strong> para escoger uno de una lista. También puedes introducir la ruta de un programa o app, una carpeta a abrir, u otra barra de botones para usar como subbarra.
+   - <strong>Título</strong> — la etiqueta y la información sobre herramientas del botón.
+   - <strong>Parámetros</strong> y <strong>Ruta inicial</strong> — se pasan a los programas externos. Los marcadores como <code>%P</code> (carpeta de origen), <code>%N</code> (archivo actual) y <code>%S</code> (archivos seleccionados) se rellenan al ejecutar el botón.
+   - <strong>Icono</strong> — elige un SF Symbol o usa el icono propio de un archivo o app; activa <strong>solo icono</strong> para ocultar el título.</li>
+<li>Haz clic en <strong>Guardar</strong>. La tira se recarga de inmediato.</li>
+</ol>
+<p><img alt="La barra de botones en la parte superior de la ventana con botones de iconos" src="images/button-bar-crop.png" />
+<em>(Figura: La barra de botones se sitúa encima de los paneles de archivos; cada botón ejecuta un comando, un programa, una carpeta o una subbarra.)</em></p>
+<h2 id="subbarras-y-desbordamiento">Subbarras y desbordamiento</h2>
+<p>Un botón puede abrir una <em>subbarra</em>: un segundo conjunto de botones superpuesto al primero. Haz clic en él para bajar; un botón <strong>◀</strong> a la izquierda te devuelve a la barra anterior. Cuando hay más botones de los que caben en el ancho de la ventana, los sobrantes se pliegan tras una comilla angular <strong>»</strong> en el extremo derecho; haz clic en ella para alcanzarlos.</p>
+<h2 id="soltar-archivos-sobre-un-boton">Soltar archivos sobre un botón</h2>
+<p>Puedes arrastrar archivos o carpetas directamente sobre un botón:</p>
+<ul>
+<li><strong>Botón de carpeta</strong> — los elementos soltados se copian en esa carpeta en segundo plano.</li>
+<li><strong>Botón de programa</strong> — el programa se ejecuta con los elementos soltados como su selección.</li>
+<li><strong>Botón de comando</strong> — el comando se ejecuta como de costumbre.</li>
+</ul>
+<h2 id="barra-de-botones-vertical">Barra de botones vertical</h2>
+<p>Para mover la tira de la parte superior de la ventana a una columna en el lado izquierdo, elige <strong>Visualización &gt; Barra de botones vertical</strong>. Elígela de nuevo para volver a la tira horizontal.</p>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>La barra se guarda en un archivo de barra de botones estándar compatible con Total Commander, así que las barras que ya tengas pueden reutilizarse.</li>
+<li>No hay atajos de teclado asignados a estas acciones por omisión, pero puedes añadir los tuyos: consulta <a href="keyboard-shortcuts">Atajos de teclado</a>.</li>
+<li>Un botón sin icono y sin comando se muestra como un separador simple, útil para agrupar botones relacionados.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts.html">Teclado y atajos</a></li><li><a href="settings.html">Ajustes</a></li></ul></section>
+</main>
+</body>
+</html>

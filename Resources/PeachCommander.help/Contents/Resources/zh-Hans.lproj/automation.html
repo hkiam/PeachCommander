@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自动化（AppleScript 与快捷指令）</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>自动化（AppleScript 与快捷指令）</h1>
+<p>Peach Commander 支持脚本编写，因此你可以通过 AppleScript 和“快捷指令”应用来驱动它。少量核心动词让脚本能够导航面板、按掩码选择文件、复制或移动当前选中内容，并按 id 运行任意 Peach Commander 命令——它复用的正是菜单所使用的相同操作，因此脚本化的步骤与手动操作行为一致。它非常适合重复性琐事：整理下载内容、暂存构建输出，或将某个文件步骤接入一个更大的快捷指令中。</p>
+<h2 id="_1">查看词典</h2>
+<ol>
+<li>打开 <strong>脚本编辑器</strong>（位于 <code>/Applications/Utilities</code> 中）。</li>
+<li>选择 <strong>窗口 ▸ 资源库</strong>，然后双击 <strong>Peach Commander</strong>（如未列出，请用 <strong>+</strong> 添加它）。</li>
+<li>词典随即打开，列出下面的命令和属性。</li>
+</ol>
+<p>脚本首次控制 Peach Commander 时，macOS 会请求你允许它（<strong>系统设置 ▸ 隐私与安全性 ▸ 自动化</strong>）。批准一次后，之后的脚本运行时便不再提示。</p>
+<h2 id="_2">你可以读取的内容</h2>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>活动面板文件夹的 POSIX 路径。</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>另一个面板文件夹的 POSIX 路径。</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>活动面板中选中的项目（或光标下的项目）。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">动词</h2>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;path&gt;" [in left\|right]</code></td>
+<td>在某个面板中打开文件夹（默认：活动面板）。</td>
+</tr>
+<tr>
+<td><code>select "&lt;mask&gt;"</code></td>
+<td>按通配符掩码在活动面板中选择项目，例如 <code>*.pdf</code>。</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;folder&gt;"</code></td>
+<td>将活动面板的选中内容复制到某个文件夹。</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;folder&gt;"</code></td>
+<td>将活动面板的选中内容移动到某个文件夹。</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>按 id 运行任意命令，例如 <code>cm_PackFiles</code>。</td>
+</tr>
+</tbody>
+</table>
+<p>复制和移动使用与 F5/F6 相同的后台传输队列，因此进度和任何覆盖提示的显示方式与手动操作完全一致。</p>
+<h2 id="_4">示例</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="_5">从快捷指令中使用</h2>
+<p>在 <strong>快捷指令</strong> 应用中，添加 <strong>运行 AppleScript</strong> 操作，并粘贴一段如上所示的脚本。这样你就可以将一个 Peach Commander 步骤融入更大的快捷指令中——例如，由文件夹更改或某个热键触发。</p>
+<h2 id="_6">说明</h2>
+<ul>
+<li>你传给 <code>run command</code> 的命令 id 与命令浏览器中显示的 <code>cm_*</code> id 相同（参见<a href="start-menu.md">启动菜单与自定义命令</a>）。</li>
+<li>脚本始终作用于<strong>活动</strong>面板；如果你需要指定某一侧，请先使用 <code>go to … in left</code> / <code>in right</code>。</li>
+<li>Peach Commander 是单窗口应用，因此脚本针对的是该窗口的两个面板。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">开始菜单与自定义命令</a></li><li><a href="settings.html">设置</a></li></ul></section>
+</main>
+</body>
+</html>

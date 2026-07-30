@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Omrežne mape</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Omrežne mape</h1>
+<p>Peach Commander se lahko poveže z datotečnimi strežniki v vašem lokalnem ali podjetniškem omrežju — mapami SMB (Windows/Samba) in AFP — ter prikaže njihovo vsebino v podoknu natanko kot mapo na vašem Macu. Ko je mapa povezana, lahko v njej brskate, kopirate, premikate, preimenujete in odpirate datoteke natanko kot lokalno, vključno s kopiranjem med mapo in vašim drugim podoknom.</p>
+<h2 id="povezovanje-s-streznikom">Povezovanje s strežnikom</h2>
+<ol>
+<li>Kliknite podokno, s katerim se želite povezati (povezana mapa se odpre v dejavnem podoknu).</li>
+<li>Pritisnite Cmd+K, ali izberite <strong>Omrežje &gt; Omrežna soseščina &gt; Poveži omrežno mapo…</strong>.</li>
+<li>V pogovornem oknu <strong>Poveži s strežnikom</strong> vnesite naslov strežnika. Navedete lahko:
+   - naslov SMB, na primer <code>smb://fileserver/projects</code>
+   - naslov AFP, na primer <code>afp://fileserver/projects</code>
+   - pot v slogu Windows, na primer <code>\\fileserver\projects</code>
+   - preprosto ime <code>strežnik/mapa</code></li>
+<li>Kliknite Poveži (ali pritisnite Enter). Če strežnik potrebuje ime in geslo, macOS prikaže svoje običajno okno za prijavo — tam vnesite svoje podatke.</li>
+<li>Ko je mapa pripravljena, jo dejavno podokno samodejno odpre. Brskajte in delajte z njo kot s katero koli drugo mapo.</li>
+</ol>
+<h2 id="prekinitev-povezave">Prekinitev povezave</h2>
+<p>Povezana mapa se pojavi kot priklopljen nosilec na vašem Macu. Za prekinitev povezave jo izvrzite na običajen način macOS — na primer iz stranske vrstice Finder ali s seznama naprav v Peach Commander.</p>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Poveži omrežno mapo…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Preverjanje pristnosti (uporabniško ime, geslo in morebitna možnost »zapomni si v moji ključavnici«) obravnava običajno okno za prijavo macOS, tako da shranjena gesla strežnikov delujejo kot v Finderju.</li>
+<li>Če navedete naslov, ki ga ni mogoče razčleniti, Peach Commander prosi za naslov SMB/AFP, pot v slogu Windows ali ime <code>strežnik/mapa</code>, in nič ni priklopljeno.</li>
+<li>Po potrditvi lahko povezava traja trenutek, medtem ko macOS priklaplja mapo; podokno preklopi nanjo, takoj ko postane na voljo.</li>
+<li>To se poveže s skupnimi napravami v omrežju. Za dosego strežnika FTP, FTPS ali SFTP glejte sorodno temo spodaj.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Povezovanje s FTP in SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

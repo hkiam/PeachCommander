@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programtillegg</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Programtillegg</h1>
+<p>Programtillegg utvider Peach Commander med ekstra verktøy, filformater og steder å bla i. Et dusin programtillegg er innebygd, så du kan begynne å bruke dem med en gang, og du kan slå enkelte programtillegg på eller av – eller installere nye – fra ett enkelt vindu. Bruk programtillegg når du vil ha muligheter utover daglig kopiering og bla: visualisere hva som fyller en disk, koble til en WebDAV-server, sjekke tilstanden til et Git-depot, overvåke systemaktivitet og mer.</p>
+<p>Programtillegg finnes i noen få varianter: noen legger til et <strong>panel eller sidefelt</strong> (en visning), noen legger til <strong>kolonner</strong> i fillisten, noen legger til et <strong>sted du navigerer inn i</strong> som en stasjon, og noen lærer appen et nytt <strong>arkivformat</strong>. Hvert aktiveres uavhengig.</p>
+<h2 id="hva-de-innebygde-programtilleggene-legger-til">Hva de innebygde programtilleggene legger til</h2>
+<p>Flere programtillegg har sitt eget detaljerte hjelpeemne – følg lenken for hele historien:</p>
+<ul>
+<li><strong><a href="disk-map.md">Disk Map</a></strong> – visualiserer hva som fyller en mappe eller et volum som et trekart eller en solstråle, avstemt mot ledig, ryddbar og skjult plass, med en oppryddingssamler.</li>
+<li><strong><a href="ai-assistant.md">AI Assistant</a></strong> – en valgfri assistent du kan fjerne, som oppsummerer, gir nytt navn til, oversetter, tabellerer og rydder filer i vanlig språk, på enheten eller via en skymodell.</li>
+<li><strong><a href="git.md">Git</a></strong> – viser hver fils status i arbeidstreet og gjeldende gren som panelkolonner, og legger til en <strong>Git</strong>-meny for status, klargjøring, innsjekking, pull og push.</li>
+<li><strong><a href="system-monitor.md">System Monitor</a></strong> – en sanntidsavlesning av CPU, minne, disk, nettverk (og, der tilgjengelig, GPU, batteri, sensorer) i vinduets tittellinje, med detaljgrafer du kan klikke deg inn på.</li>
+<li><strong><a href="task-manager.md">Task Manager</a></strong> – monterer prosessene dine som kjører som en <strong>TaskManager</strong>-stasjon du kan bla i; sorter dem, gransk dem som filer, eller avslutt dem med Slett.</li>
+<li><strong><a href="uninstaller.md">Uninstaller</a></strong> – fjerner et program <strong>og</strong> støttefilene, hurtiglagrene og innstillingene det etterlater seg, etter å ha vist deg nøyaktig hva som forsvinner.</li>
+</ul>
+<p>De resterende innebygde programtilleggene er mindre og trenger ikke en egen side:</p>
+<ul>
+<li><strong>WebDAV</strong> – koble til en WebDAV-server (<strong>Nettverk ▸ WebDAV-tilkobling…</strong>) og bla, last opp, last ned, gi nytt navn og slett på den som om den var en mappe. Passord holdes i macOS-nøkkelringen.</li>
+<li><strong>iCloud</strong> – legger til en <em>iCloud Drive</em>-oppføring i stasjonslinjen som hopper rett til din lokale iCloud Drive-mappe. Den vises bare når iCloud Drive er satt opp på Mac-en din.</li>
+<li><strong>Notes</strong> – behold et notat ved siden av en hvilken som helst fil eller mappe. Et lite <strong>●</strong>-merke markerer elementer som har ett; rediger notater i et forankret <strong>Notes</strong>-sidefelt eller en fullstendig rik-tekst-redigerer (<strong>Kommandoer ▸ Rediger notat…</strong>), og bla gjennom dem alle med <strong>Notatoversikt…</strong>.</li>
+<li><strong>Log Viewer</strong> – åpne en fil som en fargekodet, nivåklassifisert logg med sanntidsfølging (<strong>Fil ▸ Vis som logg…</strong>), med filtre per nivå, søk og støtte for vanlige loggformater pluss dine egne regex-formater. Håndterer logger på flere gigabyte umiddelbart.</li>
+<li><strong>AI Column</strong> – legger til en <em>AI Language</em>-kolonne som oppdager hver tekstfils dominerende språk på enheten (ved hjelp av Apples NaturalLanguage-rammeverk – ikke en skymodell).</li>
+<li><strong>Arkivformater</strong> – lærer appen å bla i og pakke ut flere arkivtyper (7z, tar-familien, gzip/bzip2/xz/zstd, og RAR der et hjelpeverktøy er installert), som deretter åpnes som mapper.</li>
+</ul>
+<h2 id="sla-programtillegg-pa-eller-av">Slå programtillegg på eller av</h2>
+<ol>
+<li>Velg Konfigurasjon ▸ Programtillegg… for å åpne programtilleggsvinduet.</li>
+<li>Hvert installerte programtillegg vises i listen med navn, type og en «Aktivert»-avkrysningsrute.</li>
+<li>Merk eller fjern merket i ruten for å aktivere eller deaktivere et programtillegg. Endringer trer i kraft med en gang – aktiverte programtillegg legger til menyene, kolonnene og funksjonene sine; deaktiverte holder seg unna.</li>
+</ol>
+<p><img alt="Programtilleggsvinduet som lister installerte programtillegg med avkrysningsruter og knappene Installer og Fjern" src="images/plugins-window.png" />
+<em>(Figur: Programtilleggsvinduet, der du aktiverer, deaktiverer, installerer eller fjerner programtillegg.)</em></p>
+<h2 id="installer-et-nytt-programtillegg">Installer et nytt programtillegg</h2>
+<ol>
+<li>Velg Konfigurasjon ▸ Programtillegg….</li>
+<li>Klikk på <strong>Installer fra mappe…</strong>.</li>
+<li>Velg en programtilleggspakke eller en <code>.zip</code> som inneholder en, og bekreft. Programtillegget legges til i listen og aktiveres.</li>
+</ol>
+<h2 id="fjern-et-programtillegg">Fjern et programtillegg</h2>
+<ol>
+<li>I programtilleggsvinduet, merk programtillegget i listen.</li>
+<li>Klikk på <strong>Fjern</strong>. Innebygde funksjoner påvirkes ikke; bare det valgte programtillegget fjernes.</li>
+</ol>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Programtilleggslisten viser hvert programtilleggs type og grensesnittsversjon ved siden av navn og plassering, så du kan bekrefte hva som er installert.</li>
+<li>Hvis ingen programtillegg er installert, viser vinduet en kort oppfordring som peker deg mot <strong>Installer fra mappe…</strong>.</li>
+<li>Noen programtillegg legger til sine egne kolonner, menyvalg eller panelsteder bare mens de er aktivert. Om en funksjon du forventet mangler, sjekk at programtillegget er slått på her.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Diskkart</a></li><li><a href="ai-assistant.html">AI Assistant</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="archives.html">Arbeide med arkiver</a></li><li><a href="ftp-and-sftp.html">Koble til FTP og SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

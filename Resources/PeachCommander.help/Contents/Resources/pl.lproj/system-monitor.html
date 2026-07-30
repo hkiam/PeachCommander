@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Monitor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>System Monitor</h1>
+<p>Wtyczka System Monitor umieszcza podgląd aktywności Twojego Maca w czasie rzeczywistym bezpośrednio na pasku tytułu okna: małe wskaźniki dla procesora, pamięci, dysku, sieci oraz — tam, gdzie sprzęt je udostępnia — GPU, baterii i czujników. Każdy wskaźnik aktualizuje się raz na sekundę; kliknij go, aby otworzyć okienko z wykresem historii i szczegółowym rozbiciem. Jest to wtyczka, więc możesz ją włączyć, skonfigurować lub usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>.</p>
+<h2 id="wskazniki-na-pasku-tytuu">Wskaźniki na pasku tytułu</h2>
+<p>Gdy wtyczka jest włączona, na pasku tytułu znajduje się rząd kompaktowych wskaźników. Każdy wskaźnik to kolorowa kropka, krótka etykieta i wartość na żywo (niektóre z wbudowanym wykresem iskrowym):</p>
+<table>
+<thead>
+<tr>
+<th>Wskaźnik</th>
+<th>Pokazuje</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>Obciążenie procesora, ze szczegółami dla każdego rdzenia</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>Pamięć użyta / całkowita (plus zablokowana, skompresowana, swap)</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>Miejsce na woluminie startowym oraz przepustowość odczytu/zapisu</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>Prędkości i sumy pobierania / wysyłania</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>Wykorzystanie GPU · poziom i stan naładowania baterii · prędkości wentylatorów i temperatury</td>
+</tr>
+</tbody>
+</table>
+<p>Kliknij wskaźnik, aby otworzyć okienko z dużą bieżącą wartością, wykresem iskrowym <strong>HISTORIA</strong>, listą klucz/wartość <strong>SZCZEGÓŁY</strong> oraz — dla procesora — listą <strong>OBCIĄŻENIE RDZENI</strong> z paskami dla każdego rdzenia.</p>
+<h2 id="skonfiguruj">Skonfiguruj</h2>
+<p>Wybierz <strong>Polecenia ▸ System Monitor…</strong> (lub otwórz <strong>Konfiguracja ▸ Ustawienia ▸ System Monitor</strong>), aby skonfigurować podgląd:</p>
+<ul>
+<li><strong>Pokaż monitor systemu na pasku tytułu</strong> — główny wyłącznik wskaźników.</li>
+<li><strong>Profil</strong> — ustawienia gotowe <em>Minimalny</em>, <em>Średni</em> lub <em>Maksymalny</em>, które wybierają sensowny zestaw modułów.</li>
+<li><strong>Tabela modułów</strong> — włącz lub wyłącz każdy moduł (CPU, GPU, RAM, HDD, Net, Batt, Sens), wybierz jego kolor i przeciągnij wiersze, aby ustawić kolejność ich pojawiania się na pasku tytułu. Moduły, których Twój sprzęt nie może raportować, są pokazywane jako <em>(n/d)</em>.</li>
+</ul>
+<p><img alt="Ustawienia System Monitor z tabelą modułów, profilami i kolorami dla poszczególnych modułów" src="images/system-monitor.png" />
+<em>(Rysunek: wybierz, które moduły się pojawiają, ich kolory i kolejność.)</em></p>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Wszystko jest mierzone, nigdy nie fałszowane: moduły, których danych sprzęt nie udostępnia (często GPU lub czujniki na niektórych Macach), pozostają niedostępne, zamiast pokazywać zmyślone liczby. Bateria jest niedostępna na komputerach stacjonarnych.</li>
+<li>Próbkowanie działa na timerze w tle tylko wtedy, gdy podgląd jest widoczny, i przechowuje około 30 minut historii dla wykresów.</li>
+<li>Twój wybór modułów, kolory i kolejność są zapisywane wraz z konfiguracją aplikacji.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="settings.html">Ustawienia</a></li></ul></section>
+</main>
+</body>
+</html>

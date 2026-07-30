@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attributter og tilladelser</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Attributter og tilladelser</h1>
+<p>Peach Commander lader dig inspicere og ændre de lavniveaumetadata for filer og mapper, som Finder for det meste holder uden for rækkevidde: POSIX-tilladelser til læsning/skrivning/kørsel, ejeren og gruppen, ændrings- og oprettelsesdatoerne, macOS-flag såsom skjult og låst samt udvidede attributter. Du kan også redigere en fils adgangskontrolliste (ACL) for finkornede regler pr. bruger eller pr. gruppe, oprette links og aliasser, der peger på andre emner, og vedhæfte dine egne kommentarer. Disse værktøjer er rettet mod avancerede brugere, der har brug for præcis kontrol over, hvordan emner opfører sig, og hvem der kan røre dem.</p>
+<h2 id="ndr-attributter">Ændr attributter</h2>
+<ol>
+<li>Markér et eller flere emner i det aktive panel.</li>
+<li>Vælg <strong>Fil &gt; Skift attributter…</strong>.</li>
+<li>Indstil det, du har brug for: slå felterne for læsning/skrivning/kørsel til og fra for ejer, gruppe og alle (eller indtast en oktalværdi direkte), skift ejer eller gruppe, vend de skjulte eller låste flag og indstil ændrings- eller oprettelsesdatoen. Brug <strong>Brug aktuel</strong> for det nuværende tidspunkt, eller kopiér en dato fra en anden fil.</li>
+<li>For at anvende den samme ændring gennem en mappes indhold skal du slå den rekursive indstilling til og vælge, om den påvirker filer, mapper eller begge.</li>
+<li>Klik på OK for at køre ændringen. Rekursive ændringer kører som en baggrundsopgave med en fremdriftsbjælke.</li>
+</ol>
+<p><img alt="Dialogen Skift attributter med tilladelsesgitteret, flagene og datofelterne" src="images/attributes-dialog.png" />
+<em>(Figur: Dialogen Skift attributter. Blandede værdier på tværs af en markering med flere filer vises som en bindestreg, indtil du indstiller dem.)</em></p>
+<h2 id="rediger-en-acl">Redigér en ACL</h2>
+<p>For regler ud over den grundlæggende model med ejer/gruppe/alle skal du redigere emnets adgangskontrolliste.</p>
+<ol>
+<li>Åbn <strong>Fil &gt; Skift attributter…</strong> og åbn ACL-redigeringen derfra.</li>
+<li>Hver række er én regel: den bruger eller gruppe, den gælder for, om den tillader eller nægter, og hvilke tilladelser (læsning, skrivning, sletning og så videre) den giver.</li>
+<li>Tilføj, fjern eller redigér rækker, og gem derefter for at skrive listen tilbage til emnet.</li>
+</ol>
+<h2 id="opret-links-aliasser-og-kommentarer">Opret links, aliasser og kommentarer</h2>
+<ul>
+<li><strong>Fil &gt; Opret symbolsk link…</strong> laver et symbolsk link (symlink), der peger på emnet under markøren via sti.</li>
+<li><strong>Fil &gt; Opret hårdt link…</strong> laver et hårdt link til de samme fildata. Hårde links virker kun for filer på samme diskenhed.</li>
+<li><strong>Fil &gt; Opret alias…</strong> laver et macOS-alias, som Finder også kan følge.</li>
+<li><strong>Fil &gt; Redigér kommentar…</strong> (Ctrl+Z) åbner en teksteditor til en kommentar pr. fil. Kommentarer kan vises i deres egen kolonne og i statustips.</li>
+</ul>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Genvej</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Redigér kommentar</td>
+<td>Ctrl+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Ændring af ejeren eller gruppen kræver normalt privilegier, du ikke har som almindelig bruger; når det sker, rapporteres ændringen som mislykket i stedet for at blive anvendt, og resten af dine ændringer gennemføres stadig.</li>
+<li>Kommentarer gemmes i en <code>descript.ion</code>-fil ved siden af dine emner og kan også opbevares som Finder-kommentarer, afhængigt af dine indstillinger. Begge læses, når en kommentar vises.</li>
+<li>Et symbolsk link og et alias peger begge på et mål, men et symbolsk link gemmer en almindelig sti, mens et alias gemmer en macOS-reference, der bliver ved med at virke, hvis målet flyttes eller omdøbes. Et hårdt link er et andet navn for de samme fildata, ikke en peger.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="file-utilities.html">Filværktøjer</a></li></ul></section>
+</main>
+</body>
+</html>

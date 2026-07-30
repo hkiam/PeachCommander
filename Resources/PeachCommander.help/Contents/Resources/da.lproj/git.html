@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>Git-pluginet viser tilstanden af et Git-lager direkte i filpanelet — ingen separat app, ingen terminal. Det tilføjer to kolonner, der viser hver fils status i arbejdstræet og den aktuelle gren, en <strong>Git</strong>-undermenu til de daglige kommandoer (status, stage, commit, pull, push), og det bruger den <code>git</code>, der allerede er installeret på din Mac. Det er et plugin, så du kan slå det fra eller fjerne det i <strong>Konfiguration ▸ Plugins…</strong>.</p>
+<h2 id="hvad-det-tilfjer">Hvad det tilføjer</h2>
+<ul>
+<li><strong>To kolonner i fillisten</strong> — <em>Git Status</em> og <em>Branch</em>. I et lager viser hver fil et kort statusord (Ændret, Tilføjet, Slettet, Usporet, Omdøbt, Kopieret, Konflikt, Ignoreret eller Forandret), og panelet viser den aktuelle gren. Slå kolonnerne til i <strong>Konfiguration ▸ Kolonner…</strong> (se <a href="view-modes-and-sorting.md">View modes &amp; sorting</a>).</li>
+<li><strong>En Git-menu</strong> — under <strong>Kommandoer ▸ Git</strong> og i højrekliksmenuen for en fil, med: <strong>Git Status…</strong>, <strong>Git Add (stage)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> og <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="Git Status-dialogen der viser den aktuelle gren og de ændrede filer i lageret" src="images/git-status.png" />
+<em>(Figur: Git Status rapporterer grenen og hver ændring i arbejdstræet.)</em></p>
+<h2 id="tjek-status">Tjek status</h2>
+<ol>
+<li>Placér markøren på en fil eller mappe inde i et Git-lager.</li>
+<li>Vælg <strong>Kommandoer ▸ Git ▸ Git Status…</strong> (eller højreklik ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>En opsummering vises: den aktuelle gren (eller <em>(detached)</em>), derefter enten <em>Working tree clean.</em> eller en liste over ændringer, hvor hver linje viser status og filstien.</li>
+</ol>
+<p>Hvis markøren ikke er inde i et lager, siger pluginet blot <em>Not a Git repository.</em></p>
+<h2 id="stage-commit-pull-push">Stage, commit, pull, push</h2>
+<ul>
+<li><strong>Git Add (stage)</strong> stager filen under markøren (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> beder om en commit-besked og committer derefter alle ændringer (<code>git commit -a</code>). Det samlede output vises, så du kan se præcis, hvad der skete.</li>
+<li><strong>Git Pull</strong> udfører en fast-forward-only pull (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> pusher den aktuelle gren (<code>git push</code>).</li>
+</ul>
+<p>Efter en kommando, der ændrer lageret, opdateres det aktive panel, så statuskolonnerne forbliver aktuelle.</p>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Pluginet bruger systemets Git på <code>/usr/bin/git</code>. Hvis Git ikke er installeret, rapporterer kommandoerne, at Git ikke er tilgængelig. (Installering af Xcode Command Line Tools leverer den.)</li>
+<li>Lagerets status læses én gang pr. mappe og caches, så det forbliver hurtigt at rulle gennem et stort lager; cachen opdateres efter enhver kommando, der ændrer træet.</li>
+<li>Commit bruger <code>git commit -a</code>, som committer sporede ændringer; helt nye filer skal stadig igennem <strong>Git Add (stage)</strong> først.</li>
+<li>Kolonneoverskrifterne <em>Git Status</em> og <em>Branch</em> vises i øjeblikket på engelsk selv i andre grænsefladesprog; værdierne og dialogerne er lokaliseret.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="view-modes-and-sorting.html">Visningstilstande og sortering</a></li></ul></section>
+</main>
+</body>
+</html>

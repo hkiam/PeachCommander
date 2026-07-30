@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Známá omezení</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Známá omezení</h1>
+<p>Peach Commander toho zvládá hodně, ale několik funkcí má v aktuální verzi upřímné meze. Znát je předem ušetří zmatek, když se něco chová nečekaně. Tato stránka uvádí aktuální omezení a, kde je to možné, jednoduché obejití.</p>
+<h2 id="archivy">Archivy</h2>
+<ul>
+<li><strong>Velmi velké soubory ZIP (ZIP64) nelze otevřít vestavěnou čtečkou.</strong> Standardní ZIP, TAR a TAR komprimovaný gzipem se otevírají přímo jako složky. Archivy ZIP64 — používané, když archiv obsahuje více než zhruba 65 000 položek nebo překračuje 4 GB — jsou mimo to, co zvládá nativní čtečka, takže se mohou nezdařit otevřít nebo vypsat neúplně.</li>
+<li><strong>Šifrované archivy ZIP</strong> (jak starší ZipCrypto, tak WinZip AES) jsou podporovány pro procházení, ale budete požádáni o heslo.</li>
+<li>Jiné formáty jako CPIO, ISO, CAB, LZH, XAR a PAX se otevírají přes pomocný nástroj místo nativní čtečky.</li>
+</ul>
+<h2 id="sit-sftp-scp">Síť (SFTP / SCP)</h2>
+<ul>
+<li><strong>Změna atributů souborů přes SFTP nemá v této verzi žádný efekt.</strong> Můžete procházet, stahovat a nahrávat přes SFTP/SCP, ale požadavky na změnu oprávnění, vlastnictví nebo časových značek na vzdáleném serveru jsou tiše ignorovány. Tyto změny proveďte na samotném serveru, nebo přes jiný protokol.</li>
+<li>Při prvním připojení k serveru SFTP budete požádáni, abyste důvěřovali jeho hostitelskému klíči. Peach Commander si jej poté pamatuje (důvěra při prvním použití).</li>
+</ul>
+<h2 id="stahovani-z-url">Stahování z URL</h2>
+<ul>
+<li>Příkaz <strong>Stáhnout z URL</strong> (nabídka Síť) aktuálně používá zkratku Cmd+Shift+D, což je stejná zkratka jako Přejít &gt; Plocha. Když jsou dostupné oba, nabídky mohou kolidovat — pro jistotu spusťte stahování přímo z nabídky Síť.</li>
+</ul>
+<h2 id="obnoveni-slozky">Obnovení složky</h2>
+<ul>
+<li><strong>Panel si všimne vnějších změn s krátkým zpožděním, ne okamžitě.</strong> Peach Commander kontroluje aktuální složku na změny zhruba každé 2 sekundy, takže soubor přidaný nebo odebraný jinou aplikací se může chvíli objevovat. Pokud nechcete čekat, obnovte aktivní panel ručně klávesou F2 nebo Ctrl+R.</li>
+</ul>
+<h2 id="dalsi-aktualni-meze">Další aktuální meze</h2>
+<ul>
+<li><strong>Některé velmi dlouhé absolutní cesty</strong> (hluboko vnořené složky, jejichž celá cesta je neobvykle dlouhá) nemusí být zpracovány spolehlivě. Práce blíže vrcholu stromu složek tomu předchází.</li>
+<li><strong>Toto sestavení náhledu není podepsané.</strong> Gatekeeper v macOS může varovat, že aplikace je od neidentifikovaného vývojáře, když ji poprvé otevřete. Klepněte na aplikaci pravým tlačítkem a zvolte Otevřít, poté potvrďte, abyste ji spustili. Automatické aktualizace v tomto sestavení zatím nejsou dostupné.</li>
+</ul>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Obnovit aktivní panel</td>
+<td>F2 nebo Ctrl+R</td>
+</tr>
+<tr>
+<td>Stáhnout z URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<p>Toto jsou omezení aktuální verze a očekává se, že se v pozdějších vydáních zlepší. Pokud narazíte na chování zde nepopsané, viz téma řešení potíží.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="troubleshooting.html">Řešení potíží</a></li></ul></section>
+</main>
+</body>
+</html>

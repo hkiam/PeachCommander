@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nabídka Start a vlastní příkazy</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Nabídka Start a vlastní příkazy</h1>
+<p>Nabídka <strong>Start</strong> je vaše vlastní osobní nabídka, sedící v panelu nabídek vedle Soubor, Úpravy a ostatních. Obsahuje příkazy, které si sami definujete, takže akce, po kterých saháte nejčastěji, jsou vždy jedno klepnutí daleko. V tradici klasických dvoupanelových správců souborů může každá položka spustit vestavěný příkaz, spustit externí program nebo aplikaci, nebo přeskočit rovnou do složky. Peach Commander se dodává s prázdnou nabídkou Start připravenou k tomu, abyste ji naplnili.</p>
+<h2 id="jak-pridat-vlastni-prikazy">Jak přidat vlastní příkazy</h2>
+<ol>
+<li>Zvolte <strong>Start &gt; Upravit nabídku Start…</strong>. Peach Commander otevře váš soubor uživatelských příkazů (poprvé jej vytvoří s okomentovaným příkladem).</li>
+<li>Přidejte jednu sekci na příkaz. Každá sekce začíná názvem v hranatých závorkách, poté několika jednoduchými klíči:
+   - <strong>cmd</strong> — co spustit: cestu programu, aplikaci, vestavěný příkaz <code>cm_</code>, nebo jiný z vašich příkazů.
+   - <strong>param</strong> — parametry předané programu. Zástupné symboly se vyplní při spuštění příkazu: <code>%P</code> (zdrojová složka), <code>%N</code> (aktuální soubor), <code>%T</code> (složka druhého panelu), <code>%M</code> (soubor druhého panelu), <code>%S</code> (vybrané soubory).
+   - <strong>path</strong> — složka, ve které začít (výchozí je aktuální složka).
+   - <strong>menu</strong> — titulek zobrazený v nabídce Start.
+   - <strong>key</strong> — volitelná zkratka, například <code>C+S+B</code>.</li>
+<li>Uložte soubor. Nabídka Start se sama aktualizuje, když se Peach Commander příště stane aktivním, takže vaše nové položky se objeví ihned.</li>
+</ol>
+<h2 id="tipy">Tipy</h2>
+<ul>
+<li>Chcete-li otevřít aktuální složku v Terminálu, nastavte <strong>cmd</strong> na <code>open</code>, <strong>param</strong> na <code>-a Terminal %P</code> a <strong>menu</strong> na <code>Otevřít Terminál zde</code>.</li>
+<li>Namiřte <strong>cmd</strong> na příkaz <code>cm_</code>, abyste vestavěné akci dali vlastní položku nabídky Start a zkratku.</li>
+<li>Pořadí v souboru je pořadím v nabídce, takže dejte nejpoužívanější příkazy nahoru.</li>
+</ul>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Můžete také nahradit celý panel nabídek vlastním. Zvolte <strong>Konfigurace &gt; Upravit soubor nabídky…</strong> pro otevření souboru nabídky vysetého z aktuální, plně lokalizované vestavěné nabídky; upravte jej volně a vaše změny se použijí, když se aplikace příště aktivuje. Smazáním souboru obnovíte standardní panel nabídek.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">Lišta tlačítek</a></li><li><a href="keyboard-shortcuts.html">Klávesnice a zkratky</a></li></ul></section>
+</main>
+</body>
+</html>

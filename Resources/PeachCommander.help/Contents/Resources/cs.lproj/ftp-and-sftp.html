@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Připojení k FTP a SFTP</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Připojení k FTP a SFTP</h1>
+<p>Peach Commander umí procházet vzdálené servery, jako by to byly běžné složky. Po připojení jeden panel zobrazuje vzdálené soubory a vy je kopírujete, přesouváte, přejmenováváte a mažete stejnými klávesami jako místně. Mluví prostým FTP, zabezpečeným FTPS a SFTP/SCP přes SSH, takže dosáhnete na cokoli od klasického webhostingu po zpevněný SSH server. Uložená připojení žijí ve správci připojení a hesla jsou bezpečně uchována ve vaší klíčence macOS, nikoli v samotném připojení.</p>
+<h2 id="pripojeni-k-serveru">Připojení k serveru</h2>
+<ol>
+<li>Otevřete nabídku <strong>Síť</strong> a zvolte <strong>Připojení FTP…</strong> (Ctrl+F) pro otevření správce připojení.</li>
+<li>Vyberte uložené připojení ze seznamu a klepněte na <strong>Připojit</strong>, nebo klepněte na <strong>Nové</strong> pro vytvoření. Použijte složky v seznamu k seskupení připojení.</li>
+<li>Pro rychlé jednorázové připojení zvolte <strong>Síť &gt; Nové připojení FTP…</strong> (Ctrl+N) a zadejte adresu přímo.</li>
+<li>Zadejte heslo, když budete vyzváni; zaškrtněte možnost jeho uložení a uloží se do vaší klíčenky na příště.</li>
+<li>Až budete hotovi, zvolte <strong>Síť &gt; Odpojit FTP</strong> (Ctrl+Shift+F).</li>
+</ol>
+<p><img alt="Správce připojení FTP zobrazující seznam uložených relací s tlačítky Nové, Upravit a Smazat" src="images/ftp-connection-manager.png" />
+<em>(Obrázek: správce připojení uchovává vaše uložené servery; použijte Nové, Upravit a Smazat k jejich správě.)</em></p>
+<p>Při nastavování připojení můžete zvolit protokol (FTP, FTPS s explicitním AUTH TLS, implicitní FTPS na portu 990 nebo SFTP/SCP), pasivní nebo aktivní režim, vzdálenou a místní počáteční složku, kódování textu a volitelný interval keep-alive, který zabrání nečinným serverům, aby vás odpojily. U SFTP se můžete ověřit svým agentem SSH, heslem nebo souborem soukromého klíče a pro přenosy můžete zvolit SCP. Neznámé hostitelské klíče SSH jsou při prvním použití považovány za důvěryhodné; pokud se klíč známého serveru někdy změní, připojení je odmítnuto, aby vás ochránilo před manipulací.</p>
+<h2 id="konzole-ftp">Konzole FTP</h2>
+<p>Chcete-li vidět přesně, co server říká, otevřete konzoli FTP z nabídky <strong>Síť</strong>. Zobrazuje živý protokol řídicího kanálu (vaše heslo je maskováno) a umožňuje zadávat serveru surové příkazy FTP.</p>
+<p><img alt="Konzole FTP zobrazující protokol řídicího kanálu a pole pro surové příkazy" src="images/ftp-console.png" />
+<em>(Obrázek: konzole FTP zaznamenává každou výměnu a přijímá surové příkazy, což je praktické pro řešení potíží.)</em></p>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Otevřít správce připojení</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Nové připojení</td>
+<td>Ctrl+N</td>
+</tr>
+<tr>
+<td>Odpojit</td>
+<td>Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Změnit režim přenosu</td>
+<td>Ctrl+Shift+M</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Přerušená stahování a nahrávání mohou pokračovat tam, kde skončila, místo aby začínala znovu.</li>
+<li>U serverů FTPS s podepsaným vlastním certifikátem zapněte v nastavení daného připojení možnost přijmout nedůvěryhodný certifikát.</li>
+<li>Proxy SOCKS5 lze nastavit pro každé připojení u prostého FTP. Směrování šifrovaného připojení FTPS přes proxy není podporováno.</li>
+<li>Existující připojení FTP z Total Commanderu lze importovat.</li>
+<li>SCP se používá jen k přenosu souborů; výpis, přejmenování a mazání jdou vždy přes SFTP.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="downloading-from-url.html">Stahování z URL</a></li><li><a href="network-shares.html">Síťová sdílení</a></li></ul></section>
+</main>
+</body>
+</html>

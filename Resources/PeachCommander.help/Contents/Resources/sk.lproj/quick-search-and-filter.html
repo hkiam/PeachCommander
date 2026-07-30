@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rýchle hľadanie a filter</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Rýchle hľadanie a filter</h1>
+<p>Keď priečinok obsahuje stovky položiek, málokedy potrebujete posúvať. Peach Commander vám umožňuje skočiť rovno na súbor napísaním jeho názvu (rýchle hľadanie), zúžiť zoznam len na položky, ktoré vás zaujímajú (rýchly filter), a zobraziť alebo skryť bodkové súbory, ktoré macOS zvyčajne drží mimo dohľadu. Všetky tri fungujú vnútri aktívneho panela bez otvárania dialógu.</p>
+<h2 id="skok-na-subor-pisanim-rychle-hladanie">Skok na súbor písaním (rýchle hľadanie)</h2>
+<ol>
+<li>Kliknite na panel súborov, aby bol aktívny.</li>
+<li>Začnite písať začiatok názvu. Kurzor skočí na prvú zhodnú položku.</li>
+<li>Pokračujte v písaní na spresnenie zhody, alebo stlačte to isté písmeno znova na prechádzanie položkami, ktoré začínajú tým písmenom.</li>
+<li>Napísaný text sa po krátkej pauze vymaže, takže nové hľadanie môžete začať kedykoľvek.</li>
+</ol>
+<p>Predvolene obyčajné písmená idú do príkazového riadka a rýchle hľadanie sa spúšťa pomocou Ctrl+Option+písmeno (klasické správanie). Rýchle hľadanie môžete prepnúť tak, aby reagovalo na obyčajné písanie, alebo ho vypnúť, v nastaveniach konfigurácie.</p>
+<h2 id="filtrovanie-zoznamu-rychly-filter">Filtrovanie zoznamu (rýchly filter)</h2>
+<ol>
+<li>V aktívnom paneli stlačte Ctrl+S na zapnutie rýchleho filtra.</li>
+<li>Zadajte masku filtra. Panel sa počas písania naživo zúži na zhodné položky.</li>
+<li>Stlačte Esc na vymazanie filtra a opätovné zobrazenie všetkého.</li>
+</ol>
+<p>Filter prijíma niekoľko druhov masiek:</p>
+<ul>
+<li><strong>Obyčajný text</strong> sa zhoduje s ktorýmkoľvek názvom, ktorý obsahuje to, čo ste napísali (napríklad <code>správa</code> zobrazí každú položku so slovom „správa" kdekoľvek v názve).</li>
+<li><strong>Zástupné znaky</strong> používajú <code>*</code> (ľubovoľné znaky) a <code>?</code> (jeden znak). Oddeľte viac masiek bodkočiarkou a pridajte výnimky za zvislú čiaru, napríklad <code>*.jpg;*.png|*thumb*</code> na zobrazenie obrázkov, ale skrytie miniatúr.</li>
+<li><strong>Štítky Finder</strong> filtrujú podľa farby štítka: napíšte <code>tag:red</code> (alebo <code>#red</code>) na zobrazenie len položiek s červeným štítkom, alebo holé <code>tag:</code> na zobrazenie všetkého, čo nesie akýkoľvek štítok.</li>
+</ul>
+<h2 id="zobrazenie-skrytych-suborov">Zobrazenie skrytých súborov</h2>
+<p>Stlačte Ctrl+H, alebo vyberte príkaz z ponuky Zobraziť, na prepnutie skrytých položiek (názvy začínajúce bodkou a systémovo skryté súbory). Nastavenie platí pre aktívny panel a pamätá sa medzi reláciami.</p>
+<h2 id="skratky">Skratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akcia</th>
+<th>Skratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rýchle hľadanie (klasický režim)</td>
+<td>Ctrl+Option+písmeno</td>
+</tr>
+<tr>
+<td>Rýchly filter zap./vyp.</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Vymazať filter / zrušiť</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Zobraziť/skryť skryté súbory</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Rýchle hľadanie iba posúva kurzor; rýchly filter skutočne mení, ktoré položky sú uvedené. Filter použite, keď chcete pracovať na podmnožine (napríklad vybrať alebo skopírovať len zhody).</li>
+<li>Nastavenia filtra a skrytých súborov platia pre každý panel, takže obe strany môžu zobrazovať rôzne veci naraz.</li>
+<li>Rýchle hľadanie zhoduje názvy od začiatku; režim obyčajného textu rýchleho filtra zhoduje kdekoľvek v názve. Použite zástupný znak ako <code>*text*</code>, ak chcete, aby sa filter správal rovnako.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Hľadanie súborov</a></li><li><a href="view-modes-and-sorting.html">Režimy zobrazenia a triedenie</a></li></ul></section>
+</main>
+</body>
+</html>

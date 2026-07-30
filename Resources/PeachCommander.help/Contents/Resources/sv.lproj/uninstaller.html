@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstaller</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Uninstaller</h1>
+<p>Att dra en app till papperskorgen lämnar dess stödfiler, cacheminnen, inställningar och behållare utspridda över dina Library-mappar. Uninstaller-insticksprogrammet tar bort ett program <strong>och</strong> de kvarlämnade filerna: det hittar allt appen lämnat efter sig, visar dig listan med en storlek för varje objekt och flyttar allt till papperskorgen när du bekräftar. Det är ett insticksprogram, så du kan slå av det eller ta bort det i <strong>Konfiguration ▸ Insticksprogram…</strong>.</p>
+<h2 id="avinstallera-en-app-under-markoren">Avinstallera en app under markören</h2>
+<ol>
+<li>Placera markören på ett program (<code>.app</code>) i en panel.</li>
+<li>Välj <strong>Arkiv ▸ Avinstallera program…</strong>, eller högerklicka ▸ <strong>Avinstallera program…</strong>, eller tryck på <strong>Cmd+Shift+U</strong>.</li>
+<li>Granskningsfönstret öppnas och listar appen plus varje relaterad fil den hittade, var och en märkt med sin kategori, sökväg och storlek.</li>
+<li>Avmarkera allt du vill behålla och klicka sedan på <strong>Flytta till papperskorgen</strong> (eller <strong>Ta bort permanent</strong>).</li>
+</ol>
+<p><img alt="Granskningsfönstret för avinstallation som listar en apps kvarlämnade filer med kryssrutor och storlekar" src="images/uninstaller.png" />
+<em>(Figur: granska exakt vad som kommer att tas bort innan något raderas.)</em></p>
+<h2 id="bladdra-bland-alla-installerade-appar">Bläddra bland alla installerade appar</h2>
+<p>Välj <strong>Kommandon ▸ Avinstallera program…</strong> för att öppna en sökbar lista över de appar som är installerade på din Mac, med varje apps namn, storlek och installationsdatum. Markera en (eller flera), klicka på <strong>Avinstallera…</strong>, och du landar i samma granskningsfönster. Du kan filtrera listan genom att skriva i sökfältet.</p>
+<h2 id="hitta-kvarlamnade-filer">Hitta kvarlämnade filer</h2>
+<p>Välj <strong>Kommandon ▸ Hitta kvarlämnade filer…</strong> för att söka efter stödfiler, cacheminnen och inställningar som tillhör appar du <strong>redan</strong> har tagit bort. Granska dem på samma sätt och rensa bort dem. Om ingenting hittas talar insticksprogrammet om det för dig.</p>
+<h2 id="hur-grundligt-att-soka">Hur grundligt att söka</h2>
+<p>Granskningsfönstret har en tillförlitlighetskontroll:</p>
+<ul>
+<li><strong>Precise</strong> — filer förankrade i appens paketidentifierare. Hög tillförlitlighet; förvalda.</li>
+<li><strong>Enhanced</strong> — lägger till namnmatchade filer; lämnade omarkerade så att du kan bestämma.</li>
+<li><strong>Deep</strong> — Enhanced plus en Spotlight-svepning efter allt annat som nämner appen; också lämnat omarkerat.</li>
+</ul>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Ingenting raderas direkt av insticksprogrammet — objekt går genom appens papperskorg eller permanenta radering, precis som vilken annan filåtgärd som helst. Att ta bort filer i <code>/Library</code> eller <code>/var</code> kan kräva ett administratörslösenord.</li>
+<li>Innan borttagning avslutar insticksprogrammet den app som körs och lastar ur dess bakgrundsobjekt (launchd), och erbjuder sedan att städa upp eventuella nu tomma leverantörsmappar.</li>
+<li>Om appen installerades med <strong>Homebrew</strong> varnar insticksprogrammet dig och föreslår <code>brew uninstall --cask</code> så att Homebrew hålls synkroniserat. App Store-appar noteras också.</li>
+<li>Matchningarna Enhanced och Deep är avsiktligt av lägre tillförlitlighet och börjar omarkerade — granska dem innan du tar bort. Vissa bakgrundsobjekt som installerats via det moderna API:et för inloggningsobjekt kan inte tas bort här.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="deleting-files.html">Ta bort filer</a></li></ul></section>
+</main>
+</body>
+</html>

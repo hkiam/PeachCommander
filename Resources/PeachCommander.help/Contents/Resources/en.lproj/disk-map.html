@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Disk Map</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Disk Map</h1>
+<p>Disk Map is a built-in plugin that shows, at a glance, what is using space in a folder or on a whole volume. It scans the folder you choose and draws every item sized in proportion to the space it actually occupies on disk, so the biggest space hogs stand out immediately. You can drill into folders, see how your scan reconciles against the volume's free, purgeable, and hidden space, and clean up right from the map.</p>
+<h2 id="start-a-scan">Start a scan</h2>
+<ol>
+<li>In the active panel, go to the folder (or volume) you want to measure.</li>
+<li>Choose <strong>Commands ▸ Disk Map: Analyze Current Folder</strong>.</li>
+<li>The Disk Map view opens on the right and scans in the background, showing a running count of items and bytes. Large folders finish in a few seconds — the scan reads directory metadata in bulk and works across several CPU cores.</li>
+</ol>
+<p><img alt="The Disk Map showing a squarified treemap of a folder, a volume bar, a largest-files list, and a category legend" src="images/disk-map.png" />
+<em>(Figure: The treemap view, coloured by file category, with the volume bar on top and the largest-files list on the right.)</em></p>
+<h2 id="read-the-map">Read the map</h2>
+<ul>
+<li>Each block (treemap) or ring segment (sunburst) is sized by the item's <strong>actual on-disk size</strong>, so the picture matches what the Finder and the system report.</li>
+<li>Blocks are <strong>coloured by file type</strong> — video, images, audio, documents, code, archives, apps, disk images — with a legend along the bottom. You can switch to a size <strong>heatmap</strong> in the settings.</li>
+<li><strong>Click a folder</strong> to drill into it; the breadcrumb at the top shows where you are, and the <strong>◂</strong> button steps back up.</li>
+<li>Hover over any block to see its full path, size, and item count.</li>
+</ul>
+<h2 id="two-views-treemap-and-sunburst">Two views: treemap and sunburst</h2>
+<p>Disk Map offers two visualizations, and you can switch between them with the <strong>◎ / ▦</strong> button in the header or on the settings page:</p>
+<ul>
+<li><strong>Treemap</strong> — nested rectangles, densest for spotting the single largest files.</li>
+<li><strong>Sunburst</strong> — concentric rings (one per folder depth) around the current folder, best for seeing how space is distributed across a deep tree.</li>
+</ul>
+<p><img alt="The Disk Map sunburst view showing concentric rings for folder depth" src="images/disk-map-sunburst.png" />
+<em>(Figure: The sunburst view — the inner disc is the current folder and each ring is one level deeper.)</em></p>
+<h2 id="the-volume-bar">The volume bar</h2>
+<p>The bar across the top reconciles your scan against the whole volume:</p>
+<ul>
+<li><strong>Scanned / This folder</strong> — how much the analysed folder occupies.</li>
+<li><strong>Hidden</strong> (at the volume root) or <strong>Rest of volume</strong> (for a subfolder) — everything not in this scan, including system-protected folders, other users, and snapshots.</li>
+<li><strong>Purgeable</strong> — space macOS can reclaim automatically, mostly local Time Machine snapshots and caches.</li>
+<li><strong>Free</strong> — space available right now.</li>
+</ul>
+<p>When the volume has local snapshots, the bar shows a <strong>· N snapshots (ⓘ)</strong> affordance; click it for a read-only list, with a hint to manage them in Disk Utility or Time Machine. Disk Map never deletes snapshots itself.</p>
+<h2 id="largest-files">Largest files</h2>
+<p>Turn on <strong>Show the largest-files list</strong> to see the biggest files in the current folder ranked by size, each with a colour chip for its category. Click one to highlight it on the map.</p>
+<h2 id="clean-up-from-the-map">Clean up from the map</h2>
+<p>Right-click any block for actions:</p>
+<ul>
+<li><strong>Open in Left Panel</strong> / <strong>Open in Right Panel</strong> — reveal the item in a file panel.</li>
+<li><strong>Reveal in Finder</strong>.</li>
+<li><strong>Move to Trash</strong> — delete just that item; the map updates without a full re-scan.</li>
+</ul>
+<p>To remove several items at once, use the <strong>Collector</strong>: right-click ▸ <strong>Mark for Collector</strong> on each item, then click the <strong>🗑 N</strong> button in the header to move everything you marked to the Trash in one confirmed step.</p>
+<h2 id="settings">Settings</h2>
+<p>Disk Map adds its own page to the Settings window (<strong>Configuration ▸ Settings ▸ Disk Map</strong>):</p>
+<ul>
+<li><strong>Chart style</strong> — treemap or sunburst.</li>
+<li><strong>Color coding</strong> — by file type (category) or by size (heatmap).</li>
+<li><strong>Stay on the starting volume</strong> — don't cross into other mounted disks.</li>
+<li><strong>Show the volume bar</strong> and <strong>Show the largest-files list</strong>.</li>
+</ul>
+<p>Changes apply to an open Disk Map immediately.</p>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Disk Map measures <strong>allocated</strong> (on-disk) size and counts <strong>hard-linked</strong> files only once, so its totals line up with the volume's used space rather than overcounting.</li>
+<li>By default the scan stays on the starting volume, so it won't wander into other mounted disks or network shares.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="deleting-files.html">Deleting files</a></li><li><a href="settings.html">Settings</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Assistant</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>AI Assistant</h1>
+<p>AI-assistenten er et valgfritt programtillegg du kan fjerne, som hjelper deg å arbeide med filene dine i vanlig språk. Den kan oppsummere eller forklare et dokument, foreslå et bedre filnavn, oversette eller korrekturlese tekst, gjøre data om til en tabell og til og med organisere en mappe – og den kan utføre filhandlinger for deg etter først å ha vist deg en plan. Den kjører på enheten med Apple Intelligence når det er tilgjengelig, eller du kan peke den mot en skymodell. Fordi det er et programtillegg, kan du deaktivere eller fjerne det helt fra <strong>Konfigurasjon ▸ Programtillegg…</strong>.</p>
+<h2 id="apne-assistenten">Åpne assistenten</h2>
+<p>Velg <strong>Kommandoer ▸ AI Assistant</strong> for å vise assistenten i et forankret panel til høyre i vinduet. Skriv en forespørsel og trykk Return; assistenten kan lese filer, slå opp ting og – med din bekreftelse – gjøre endringer.</p>
+<p><img alt="AI-assistentens chat forankret ved siden av filpanelene" src="images/ai-chat.png" />
+<em>(Figur: AI-assistenten, forankret til høyre, arbeider med en forespørsel.)</em></p>
+<h2 id="hyreklikkhandlinger-ai">Høyreklikkhandlinger (AI ▸)</h2>
+<p>Den raskeste måten å bruke assistenten på er undermenyen <strong>AI ▸</strong> i høyreklikkmenyen:</p>
+<ul>
+<li><strong>På en fil</strong> – Oppsummer, Forklar, Foreslå et navn, Oversett til engelsk, Korrekturles, Finn oppgaver og Lag en tabell.</li>
+<li><strong>På panelbakgrunnen</strong> – Organiser denne mappen og Finn sannsynlige duplikater.</li>
+</ul>
+<p>Hver <strong>AI ▸</strong>-handling åpner sin <strong>egen navngitte chat</strong> (for eksempel <em>Oppsummer – rapport.txt</em>), slik at ulike oppgaver holder seg atskilt i stedet for å hope seg opp i én lang samtale. Når du selv skriver i inndatafeltet, fortsetter forespørselen den gjeldende chatten.</p>
+<h2 id="behandle-chattene-dine">Behandle chattene dine</h2>
+<ul>
+<li>Bruk chat-velgeren øverst i panelet for å bevege deg mellom samtaler.</li>
+<li><strong>Slett ▾</strong>-menyen tilbyr <strong>Slett denne chatten</strong> og <strong>Slett alle chatter</strong>, så du kan tømme alt på én gang når listen blir lang. Tomme chatter ryddes automatisk bort når du lukker panelet.</li>
+</ul>
+<h2 id="endringer-bekreftes-frst">Endringer bekreftes først</h2>
+<p>For alt som endrer filer – flytting, navnebytte, skriving, sletting – viser assistenten en <strong>plan og venter på din bekreftelse</strong> før den handler. Du kan endre dette i Innstillinger ved å heve assistentens autonomi, eller senke den til skrivebeskyttet slik at den aldri endrer noe.</p>
+<h2 id="innstillinger">Innstillinger</h2>
+<p>Åpne <strong>Konfigurasjon ▸ Innstillinger ▸ AI</strong> for å sette opp assistenten på én enkelt side:</p>
+<ul>
+<li><strong>Foretrukket modell</strong> – Automatisk (sky hvis konfigurert, ellers på enheten), På enheten (Apple Intelligence) eller Sky.</li>
+<li><strong>Skyendepunkt, modell og API-nøkkel</strong> – for å bruke en OpenAI-kompatibel modell i stedet for den på enheten. Nøkkelen lagres i macOS-nøkkelringen, aldri i konfigurasjonsfilene dine.</li>
+<li><strong>Assistentens autonomi</strong> – skrivebeskyttet, bekreft endringer (standard) eller autonom.</li>
+<li><strong>Egendefinert systemledetekst</strong> – valgfrie instruksjoner som former hvordan assistenten svarer.</li>
+<li><strong>MCP-server</strong> – en valgfri, kun-lokal server som lar en ekstern agent styre appen; av som standard og kan beskyttes med et token.</li>
+</ul>
+<p><img alt="AI-siden i Innstillinger med autonomi og MCP-servervalgene" src="images/settings-ai.png" />
+<em>(Figur: Alle assistentvalg bor på én AI-side i Innstillinger.)</em></p>
+<h2 id="personvern">Personvern</h2>
+<ul>
+<li>Med Apple Intelligence kjører assistenten <strong>på din Mac</strong>; ingenting forlater enheten.</li>
+<li>En skymodell brukes <strong>bare hvis du konfigurerer en</strong>, og API-nøkkelen dens holdes i nøkkelringen.</li>
+<li>Filendrende handlinger bekreftes før de kjører, med mindre du bevisst hever autonominivået.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="settings.html">Innstillinger</a></li><li><a href="privacy-and-security.html">Personvern og sikkerhet</a></li></ul></section>
+</main>
+</body>
+</html>

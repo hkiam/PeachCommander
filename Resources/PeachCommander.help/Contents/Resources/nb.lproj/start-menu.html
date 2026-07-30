@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Startmenyen og egendefinerte kommandoer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Startmenyen og egendefinerte kommandoer</h1>
+<p><strong>Start</strong>-menyen er din egen personlige meny, som sitter i menylinjen ved siden av Arkiv, Rediger og resten. Den holder kommandoer du definerer selv, så handlingene du oftest griper etter alltid er ett klikk unna. I tradisjonen fra klassiske topanels filbehandlere kan hver oppføring kjøre en innebygd kommando, starte et eksternt program eller en app, eller hoppe rett til en mappe. Peach Commander leveres med Startmenyen tom og klar for at du skal fylle den.</p>
+<h2 id="hvordan-legge-til-dine-egne-kommandoer">Hvordan legge til dine egne kommandoer</h2>
+<ol>
+<li>Velg <strong>Start &gt; Endre Startmeny…</strong>. Peach Commander åpner brukerkommandofilen din (og oppretter den med et kommentert eksempel første gang).</li>
+<li>Legg til én seksjon per kommando. Hver seksjon starter med et navn i hakeparenteser, deretter noen få enkle nøkler:
+   - <strong>cmd</strong> – hva som skal kjøres: en programbane, en app, en innebygd <code>cm_</code>-kommando, eller en annen av dine egne kommandoer.
+   - <strong>param</strong> – parametere sendt til et program. Plassholdere fylles inn når kommandoen kjører: <code>%P</code> (kildemappe), <code>%N</code> (gjeldende fil), <code>%T</code> (det andre panelets mappe), <code>%M</code> (det andre panelets fil), <code>%S</code> (valgte filer).
+   - <strong>path</strong> – mappen å starte i (standard er den gjeldende mappen).
+   - <strong>menu</strong> – tittelen vist i Startmenyen.
+   - <strong>key</strong> – en valgfri snarvei, f.eks. <code>C+S+B</code>.</li>
+<li>Lagre filen. Startmenyen oppdaterer seg selv neste gang Peach Commander blir aktiv, så de nye oppføringene dine dukker opp med en gang.</li>
+</ol>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>For å åpne den gjeldende mappen i Terminal, sett <strong>cmd</strong> til <code>open</code>, <strong>param</strong> til <code>-a Terminal %P</code>, og <strong>menu</strong> til <code>Åpne Terminal her</code>.</li>
+<li>Pek <strong>cmd</strong> mot en <code>cm_</code>-kommando for å gi en innebygd handling sin egen Startmeny-oppføring og snarvei.</li>
+<li>Rekkefølgen i filen er rekkefølgen i menyen, så sett de mest brukte kommandoene dine øverst.</li>
+</ul>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Du kan også erstatte hele menylinjen med din egen. Velg <strong>Konfigurasjon &gt; Rediger menyfil…</strong> for å åpne en menyfil sådd fra den gjeldende, fullt lokaliserte innebygde menyen; rediger den fritt og endringene dine gjelder neste gang appen aktiveres. Slett filen for å gjenopprette den vanlige menylinjen.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">Knappelinjen</a></li><li><a href="keyboard-shortcuts.html">Tastatur og snarveier</a></li></ul></section>
+</main>
+</body>
+</html>

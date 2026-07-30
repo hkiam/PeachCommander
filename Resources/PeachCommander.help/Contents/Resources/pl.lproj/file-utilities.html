@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Narzędzia plikowe</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Narzędzia plikowe</h1>
+<p>Poza kopiowaniem i przenoszeniem Peach Commander zawiera zestaw codziennych narzędzi plikowych do weryfikacji nienaruszoności plików, odzyskiwania miejsca na dysku, dzielenia dużych plików na mniejsze części oraz konwertowania plików do i z formatów bezpiecznych dla tekstu. Do wszystkich dotrzesz z menu <strong>Plik</strong> i działają one na tym, co zaznaczyłeś w aktywnym panelu (lub na elemencie pod kursorem, gdy nic nie jest zaznaczone). Ten temat obejmuje sumy kontrolne, wyszukiwarkę duplikatów, dzielenie/łączenie, kodowanie/dekodowanie i obliczanie zajmowanego miejsca.</p>
+<h2 id="utworz-lub-zweryfikuj-sumy-kontrolne">Utwórz lub zweryfikuj sumy kontrolne</h2>
+<p>Sumy kontrolne pozwalają potwierdzić, że plik pobrał się lub skopiował bez uszkodzenia, albo dać odbiorcy sposób na sprawdzenie otrzymanej kopii.</p>
+<ol>
+<li>Zaznacz pliki, które chcesz opatrzyć odciskiem.</li>
+<li>Wybierz <strong>Plik ▸ Utwórz sumy kontrolne…</strong>, wybierz algorytm (CRC32, MD5, SHA-1, SHA-256 lub SHA-512) i zapisz plik sumy kontrolnej.</li>
+<li>Aby sprawdzić pliki później, zaznacz plik sumy kontrolnej i wybierz <strong>Plik ▸ Zweryfikuj sumy kontrolne…</strong>. Peach Commander ponownie oblicza każdy skrót i zgłasza każdy plik, który nie pasuje.</li>
+</ol>
+<p>Sumy kontrolne są liczone bezpośrednio po bieżącej lokalizacji, więc możesz je tworzyć lub weryfikować nawet dla plików wewnątrz archiwów lub na serwerze FTP.</p>
+<h2 id="znajdz-duplikaty-plikow">Znajdź duplikaty plików</h2>
+<p>Wyszukiwarka duplikatów lokalizuje identyczne pliki rozproszone po folderach, dzięki czemu możesz usunąć nadmiarowe kopie.</p>
+<ol>
+<li>Zaznacz foldery (lub pliki), które chcesz przeskanować.</li>
+<li>Wybierz <strong>Plik ▸ Znajdź duplikaty…</strong>. Peach Commander porównuje kandydatów i grupuje pliki, które są identyczne bajt w bajt.</li>
+<li>Przejrzyj każdą grupę, oznacz kopie, których już nie potrzebujesz, i usuń je.</li>
+</ol>
+<p><img alt="Wyszukiwarka duplikatów wymieniająca grupy identycznych plików" src="images/duplicate-finder.png" />
+<em>(Rysunek: wyszukiwarka duplikatów grupuje identyczne pliki, dzięki czemu możesz zachować jeden i usunąć resztę.)</em></p>
+<h2 id="podziel-i-poacz-pliki">Podziel i połącz pliki</h2>
+<p>Dzielenie rozbija jeden duży plik na ponumerowaną serię mniejszych części — przydatne przy ograniczeniach przechowywania lub transferu. Łączenie ponownie je składa.</p>
+<ol>
+<li>Aby podzielić, zaznacz plik i wybierz <strong>Plik ▸ Podziel plik…</strong>, a następnie ustaw rozmiar części. Części są zapisywane do folderu drugiego panelu.</li>
+<li>Aby ponownie złożyć, zaznacz pierwszą część i wybierz <strong>Plik ▸ Połącz pliki…</strong>. Oryginalny plik jest odbudowywany z ponumerowanych części.</li>
+</ol>
+<h2 id="koduj-i-dekoduj">Koduj i dekoduj</h2>
+<p>Kodowanie zamienia plik binarny na zwykły tekst, aby przetrwał kanały, które przenoszą tylko tekst (na przykład starszy e-mail lub pola wklejania). Dekodowanie to odwraca.</p>
+<ol>
+<li>Zaznacz plik i wybierz <strong>Plik ▸ Koduj…</strong>, a następnie wybierz format — MIME (Base64), UUE (uuencode) lub XXE.</li>
+<li>Aby przywrócić oryginał, zaznacz zakodowany plik i wybierz <strong>Plik ▸ Dekoduj…</strong>. Format jest wykrywany automatycznie.</li>
+</ol>
+<h2 id="oblicz-zajmowane-miejsce">Oblicz zajmowane miejsce</h2>
+<p>Aby zobaczyć, ile miejsca folder lub zaznaczenie faktycznie zajmuje na dysku, zaznacz elementy i naciśnij <strong>Ctrl+L</strong> (<strong>Plik ▸ Oblicz zajmowane miejsce…</strong>). Peach Commander sumuje każdy plik wewnątrz, w tym podfoldery, i pokazuje sumę.</p>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Klawisz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Oblicz zajmowane miejsce</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Sumy kontrolne, dzielenie/łączenie i kodowanie/dekodowanie są ukierunkowane na bardziej zaawansowane zadania, ale każde jest pojedynczym oknem dialogowym z rozsądnymi wartościami domyślnymi.</li>
+<li>Gdy narzędzie tworzy nowe pliki (części podziału, zakodowany plik, listę sum kontrolnych), są one zapisywane do folderu pokazanego w drugim panelu — najpierw ustaw ten panel na zamierzone miejsce docelowe.</li>
+<li>Usuwanie duplikatów jest trwałe w zależności od Twoich ustawień usuwania; przejrzyj każdą grupę uważnie i zachowaj przynajmniej jedną kopię wszystkiego, czego jeszcze potrzebujesz.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Porównywanie i synchronizacja</a></li></ul></section>
+</main>
+</body>
+</html>

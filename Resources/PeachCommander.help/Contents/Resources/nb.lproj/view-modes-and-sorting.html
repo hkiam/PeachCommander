@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visningsmoduser og sortering</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Visningsmoduser og sortering</h1>
+<p>Hvert panel kan vise mappen sin i den layouten som passer oppgaven: en detaljert liste med kolonner, en kompakt flerkolonnesliste med navn, et ikonrutenett, et galleri med store miniatyrer, eller et mappetre. Du kan også sortere listen etter navn, filtype, størrelse eller dato, velge nøyaktig hvilke kolonner som vises, og slå på naturlig (numerisk) sortering slik at navn med tall stiller seg opp som du forventer. Visningsmodus, sorteringsrekkefølge og kolonner settes per panel, så de to sidene kan se helt forskjellige ut.</p>
+<h2 id="bytt-visningsmodus">Bytt visningsmodus</h2>
+<ol>
+<li>Klikk på panelet du vil endre slik at det blir aktivt.</li>
+<li>Åpne Vis-menyen og velg en modus: <strong>Full (Detaljer)</strong> for kolonnelisten, <strong>Kort (Kolonner)</strong> for en tett flerkolonnesliste med navn, <strong>Ikoner</strong> for et ikonrutenett, <strong>Miniatyrer (Galleri)</strong> for store forhåndsvisninger, eller <strong>Tre</strong> for et mappetre.</li>
+<li>For å bla raskt gjennom modusene uten å åpne menyen, trykk Cmd+Shift+M. Hvert trykk går til neste modus.</li>
+</ol>
+<p><img alt="Et panel som viser de ulike visningsmodusene: detaljer, kort, ikoner og galleri" src="images/view-modes.png" />
+<em>(Figur: Den samme mappen vist som en detaljert liste, en kort kolonneliste, et ikonrutenett og et galleri med miniatyrer.)</em></p>
+<h2 id="sorter-fillisten">Sorter fillisten</h2>
+<ol>
+<li>I Detaljer-visningen, klikk på en kolonneoverskrift (Navn, Type, Størrelse eller Dato) for å sortere etter den. En liten pil i overskriften viser den gjeldende sorteringskolonnen og retningen.</li>
+<li>Klikk på den samme overskriften igjen for å snu rekkefølgen.</li>
+<li>Du kan også velge Vis &gt; Sorter etter og velge Navn, Filtype, Størrelse, Dato eller Usortert.</li>
+</ol>
+<p>Mapper sorteres alltid sammen øverst, foran filer, og <code>..</code>-oppføringen som tar deg opp ett nivå blir festet først. Sortering etter navn eller filtype er stigende (A til Å) som standard; sortering etter størrelse eller dato er nyest eller størst først som standard.</p>
+<h2 id="velg-hvilke-kolonner-som-vises">Velg hvilke kolonner som vises</h2>
+<ol>
+<li>Velg Konfigurasjon &gt; Kolonner….</li>
+<li>Slå kolonner på eller av og sett rekkefølgen deres. Tilgjengelige kolonner inkluderer Navn, Type, Størrelse, Dato, Attr (attributter), Etiketter og Kommentar.</li>
+<li>Bruk endringene. Kolonner påvirker det aktive panelets Detaljer-visning.</li>
+</ol>
+<p><img alt="Kolonnekonfigurasjonsvinduet med listen over tilgjengelige kolonner" src="images/columns-config.png" />
+<em>(Figur: Velg hvilke kolonner som vises i Detaljer-visningen og sett rekkefølgen deres.)</em></p>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bla gjennom visningsmoduser</td>
+<td>Cmd+Shift+M</td>
+</tr>
+<tr>
+<td>Kort (kolonner)-visning</td>
+<td>Ctrl+F1</td>
+</tr>
+<tr>
+<td>Full (detaljer)-visning</td>
+<td>Ctrl+F2</td>
+</tr>
+<tr>
+<td>Miniatyrer (galleri)-visning</td>
+<td>Ctrl+Shift+F1</td>
+</tr>
+<tr>
+<td>Tre-visning</td>
+<td>Ctrl+F8</td>
+</tr>
+<tr>
+<td>Sorter etter navn</td>
+<td>Ctrl+F3</td>
+</tr>
+<tr>
+<td>Sorter etter filtype</td>
+<td>Ctrl+F4</td>
+</tr>
+<tr>
+<td>Sorter etter størrelse</td>
+<td>Ctrl+F5</td>
+</tr>
+<tr>
+<td>Sorter etter dato</td>
+<td>Ctrl+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Naturlig (numerisk) sortering er på som standard, så <code>file2</code> kommer før <code>file10</code> i stedet for etter. Du kan slå den av i Konfigurasjon &gt; Alternativer under visningsinnstillingene.</li>
+<li>Du kan gjøre en kolonne bredere eller smalere i Detaljer-visningen ved å dra i skillelinjen mellom kolonneoverskriftene.</li>
+<li>Visningsmodus, sorteringsrekkefølge og kolonnevalg huskes per panel, så du kan ha den ene siden som en detaljert liste og den andre som et fotogalleri.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="panels-and-tabs.html">Faner</a></li><li><a href="quick-search-and-filter.html">Hurtigsøk og filter</a></li></ul></section>
+</main>
+</body>
+</html>

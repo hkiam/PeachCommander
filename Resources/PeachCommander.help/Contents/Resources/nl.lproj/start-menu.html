@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Het Start-menu &amp; aangepaste opdrachten</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Het Start-menu &amp; aangepaste opdrachten</h1>
+<p>Het menu <strong>Start</strong> is je eigen persoonlijke menu, dat in de menubalk staat naast Bestand, Bewerken en de rest. Het bevat opdrachten die je zelf definieert, zodat de acties waar je het vaakst naar grijpt altijd op één klik afstand zijn. In de traditie van klassieke bestandsbeheerders met twee panelen kan elk item een ingebouwde opdracht uitvoeren, een extern programma of app starten, of direct naar een map springen. Peach Commander wordt geleverd met een leeg Start-menu, klaar om door jou te worden gevuld.</p>
+<h2 id="zo-voeg-je-je-eigen-opdrachten-toe">Zo voeg je je eigen opdrachten toe</h2>
+<ol>
+<li>Kies <strong>Start &gt; Start-menu wijzigen…</strong>. Peach Commander opent je bestand met gebruikersopdrachten (en maakt het de eerste keer aan met een becommentarieerd voorbeeld).</li>
+<li>Voeg één sectie per opdracht toe. Elke sectie begint met een naam tussen vierkante haken, gevolgd door een paar eenvoudige sleutels:
+   - <strong>cmd</strong> — wat er wordt uitgevoerd: een programmapad, een app, een ingebouwde <code>cm_</code>-opdracht, of een andere van je eigen opdrachten.
+   - <strong>param</strong> — parameters die aan een programma worden doorgegeven. Plaatsaanduidingen worden ingevuld wanneer de opdracht wordt uitgevoerd: <code>%P</code> (bronmap), <code>%N</code> (huidig bestand), <code>%T</code> (map van het andere paneel), <code>%M</code> (bestand van het andere paneel), <code>%S</code> (geselecteerde bestanden).
+   - <strong>path</strong> — de map om in te beginnen (standaard de huidige map).
+   - <strong>menu</strong> — de titel die in het Start-menu wordt getoond.
+   - <strong>key</strong> — een optionele sneltoets, bijv. <code>C+S+B</code>.</li>
+<li>Bewaar het bestand. Het Start-menu wordt vanzelf bijgewerkt zodra Peach Commander de volgende keer actief wordt, zodat je nieuwe items meteen verschijnen.</li>
+</ol>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Om de huidige map in Terminal te openen, stel je <strong>cmd</strong> in op <code>open</code>, <strong>param</strong> op <code>-a Terminal %P</code> en <strong>menu</strong> op <code>Open Terminal Here</code>.</li>
+<li>Richt <strong>cmd</strong> op een <code>cm_</code>-opdracht om een ingebouwde actie zijn eigen Start-menu-item en sneltoets te geven.</li>
+<li>De volgorde in het bestand is de volgorde in het menu, dus plaats je meest gebruikte opdrachten bovenaan.</li>
+</ul>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Je kunt ook de hele menubalk door je eigen versie vervangen. Kies <strong>Configuratie &gt; Menubestand bewerken…</strong> om een menubestand te openen dat is gevuld vanuit het huidige, volledig gelokaliseerde ingebouwde menu; bewerk het vrij en je wijzigingen worden toegepast zodra de app de volgende keer wordt geactiveerd. Verwijder het bestand om de standaardmenubalk te herstellen.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">De knoppenbalk</a></li><li><a href="keyboard-shortcuts.html">Toetsenbord en sneltoetsen</a></li></ul></section>
+</main>
+</body>
+</html>

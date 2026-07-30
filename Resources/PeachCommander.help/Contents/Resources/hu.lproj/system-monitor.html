@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Monitor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>System Monitor</h1>
+<p>A System Monitor bővítmény a Mac tevékenységének valós idejű kijelzését helyezi közvetlenül az ablak címsorába: kis chipek a processzorhoz, memóriához, lemezhez, hálózathoz, és — ahol a hardver közzéteszi őket — GPU-hoz, akkumulátorhoz és érzékelőkhöz. Minden chip másodpercenként egyszer frissül; kattintson egyre egy előugró ablakért, amely egy előzménygrafikont és részletes bontást mutat. Mivel bővítményről van szó, a <strong>Konfiguráció ▸ Bővítmények…</strong> menüpontból engedélyezheti, konfigurálhatja vagy eltávolíthatja.</p>
+<h2 id="a-cimsor-chipjei">A címsor chipjei</h2>
+<p>Amikor a bővítmény be van kapcsolva, kompakt chipek sora ül a címsorban. Minden chip egy színes pontból, egy rövid feliratból és egy élő értékből áll (némelyik beágyazott sparkline-nal):</p>
+<table>
+<thead>
+<tr>
+<th>Chip</th>
+<th>Mit mutat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>Processzorterhelés, magonkénti részletezéssel</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>Használt / teljes memória (plusz drótozott, tömörített, swap)</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>Az indítókötet helye és olvasási/írási átvitele</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>Letöltési / feltöltési sebesség és összegek</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>GPU-kihasználtság · akkumulátortöltés és -állapot · ventilátorfordulatszámok és hőmérsékletek</td>
+</tr>
+</tbody>
+</table>
+<p>Kattintson egy chipre egy előugró ablak megnyitásához, amelyben a nagy aktuális érték, egy <strong>HISTORY</strong> sparkline, egy <strong>DETAILS</strong> kulcs/érték lista, és — a CPU esetében — egy <strong>CORE LOAD</strong> lista magonkénti sávokkal található.</p>
+<h2 id="konfiguralas">Konfigurálás</h2>
+<p>Válassza a <strong>Parancsok ▸ System Monitor…</strong> lehetőséget (vagy nyissa meg a <strong>Konfiguráció ▸ Beállítások ▸ System Monitor</strong> oldalt) a kijelzés konfigurálásához:</p>
+<ul>
+<li><strong>Rendszermonitor megjelenítése a címsorban</strong> — a chipek fő be/ki kapcsolója.</li>
+<li><strong>Profil</strong> — <em>Minimális</em>, <em>Közepes</em> vagy <em>Maximális</em> előbeállítások, amelyek a modulok ésszerű készletét választják ki.</li>
+<li><strong>A modultábla</strong> — kapcsolja be vagy ki az egyes modulokat (CPU, GPU, RAM, HDD, Net, Batt, Sens), válassza ki a színüket, és húzza a sorokat, hogy beállítsa a címsorban való megjelenésük sorrendjét. Azok a modulok, amelyeket a hardver nem tud jelenteni, <em>(n/a)</em> jelöléssel jelennek meg.</li>
+</ul>
+<p><img alt="A System Monitor beállításai a modultáblával, a profilokkal és a modulonkénti színekkel" src="images/system-monitor.png" />
+<em>(Ábra: válassza ki, mely modulok jelenjenek meg, a színeiket és a sorrendjüket.)</em></p>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>Minden mért, sosem koholt: azok a modulok, amelyek adatait a hardver nem teszi közzé (gyakran a GPU vagy az érzékelők egyes Maceken), inkább elérhetetlenek maradnak, mintsem kitalált számokat mutassanak. Asztali gépeken az akkumulátor nem érhető el.</li>
+<li>A mintavétel csak egy háttéridőzítőn fut, amíg a kijelzés látható, és körülbelül 30 percnyi előzményt tart meg a grafikonokhoz.</li>
+<li>A modulválasztásai, színei és sorrendje az app konfigurációjával együtt mentődnek.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="settings.html">Beállítások</a></li></ul></section>
+</main>
+</body>
+</html>

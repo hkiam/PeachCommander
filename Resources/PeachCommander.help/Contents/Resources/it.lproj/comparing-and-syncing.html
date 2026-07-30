@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confronto e sincronizzazione</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Confronto e sincronizzazione</h1>
+<p>Quando mantenete due copie della stessa cartella — una cartella di lavoro e un backup, un portatile e una condivisione di rete, un progetto e il suo archivio — Peach Commander vi aiuta a vedere esattamente cosa è cambiato e a riportare i due lati in sincronia. Potete sincronizzare due directory, confrontare i singoli file riga per riga e ispezionare i file byte per byte quando avete bisogno di certezza fino all'ultimo carattere.</p>
+<h2 id="sincronizzare-due-directory">Sincronizzare due directory</h2>
+<ol>
+<li>Aprite la cartella da sincronizzare nel pannello sinistro e la cartella con cui confrontarla nel pannello destro.</li>
+<li>Scegliete <strong>Comandi ▸ Sincronizza directory…</strong>. I due percorsi delle cartelle vengono compilati dai vostri pannelli.</li>
+<li>Impostate quanto deve essere approfondito il confronto: includere le sottocartelle, confrontare <strong>per contenuto</strong> (non solo per data e dimensione) o ignorare la data di modifica.</li>
+<li>Aggiungete una maschera di filtro (ad esempio <code>*.jpg;*.png</code>) se volete sincronizzare solo determinati file.</li>
+<li>Esaminate la griglia dei risultati. Ogni riga mostra un file a sinistra, una freccia di direzione al centro e il file corrispondente a destra. Le frecce indicano cosa accadrà: <strong>→</strong> copia da sinistra a destra, <strong>←</strong> copia da destra a sinistra e <strong>=</strong> significa che i due sono identici.</li>
+<li>Modificate le singole righe se non siete d'accordo con una direzione suggerita, poi fate clic sul pulsante di sincronizzazione per eseguire le modifiche.</li>
+</ol>
+<p><img alt="La finestra di sincronizzazione delle directory con due percorsi di cartella e una griglia di risultati di file con frecce sinistra, uguale e destra" src="images/sync-dialog.png" />
+<em>(Figura: la finestra Sincronizza directory confronta entrambi i lati e propone una direzione di copia per ogni file.)</em></p>
+<h2 id="confrontare-due-file-per-contenuto">Confrontare due file per contenuto</h2>
+<ol>
+<li>Selezionate un file in ciascun pannello (oppure due file nello stesso pannello).</li>
+<li>Scegliete <strong>File ▸ Confronta per contenuto…</strong>.</li>
+<li>I due file si aprono affiancati con le loro differenze evidenziate. Usate i controlli successivo/precedente per saltare tra i blocchi modificati.</li>
+<li>Se attivate la modalità di modifica, potete regolare direttamente uno dei due file e salvare le vostre modifiche.</li>
+</ol>
+<p><img alt="La finestra di confronto che mostra due file di testo affiancati con le righe divergenti evidenziate" src="images/diff-window.png" />
+<em>(Figura: confronto di due file di testo; le righe modificate sono evidenziate su entrambi i lati.)</em></p>
+<h2 id="confrontare-i-file-byte-per-byte">Confrontare i file byte per byte</h2>
+<p>Quando due file sembrano uguali ma dovete dimostrare che sono davvero identici (o trovare l'unico byte che differisce), usate il confronto binario. Mostra entrambi i file in una vista esadecimale con i byte non corrispondenti contrassegnati, il che è ideale per verificare i download, controllare dati codificati o confermare una copia esatta.</p>
+<h2 id="confrontare-gli-elenchi-delle-directory">Confrontare gli elenchi delle directory</h2>
+<p>Per individuare a colpo d'occhio le differenze tra due cartelle aperte, scegliete <strong>Seleziona ▸ Confronta directory</strong> (Shift+F2). Peach Commander contrassegna i file che differiscono o che mancano sull'altro lato, così potete agire su di essi con i consueti comandi di copia, spostamento ed eliminazione.</p>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Scorciatoia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Confrontare gli elenchi delle directory (contrassegnare i file divergenti)</td>
+<td>Shift+F2</td>
+</tr>
+<tr>
+<td>Confrontare per contenuto</td>
+<td>File ▸ Confronta per contenuto…</td>
+</tr>
+<tr>
+<td>Sincronizzare le directory</td>
+<td>Comandi ▸ Sincronizza directory…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li><strong>Per contenuto vs. per data/dimensione.</strong> Un confronto rapido abbina i file per dimensione e data di modifica, il che è veloce ma può essere ingannato quando le date differiscono per file identici. Attivate <strong>per contenuto</strong> per un risultato affidabile, al costo della lettura di ogni file.</li>
+<li><strong>Sottocartelle e filtri.</strong> La finestra di sincronizzazione può scendere nelle sottocartelle e può essere limitata con una maschera di filtro, così potete sincronizzare solo i tipi di file che vi interessano.</li>
+<li><strong>Restate al comando.</strong> La sincronizzazione non viene mai eseguita da sola — esaminate le direzioni proposte nella griglia dei risultati e potete modificarne qualsiasi prima che venga copiato alcunché.</li>
+<li><strong>Preimpostazioni.</strong> Le configurazioni di sincronizzazione usate di frequente possono essere salvate e riutilizzate così non dovete reinserire le stesse opzioni ogni volta.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Rinominare molti file</a></li></ul></section>
+</main>
+</body>
+</html>

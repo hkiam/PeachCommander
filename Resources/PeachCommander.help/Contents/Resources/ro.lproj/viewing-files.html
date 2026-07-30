@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vizualizarea fișierelor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Vizualizarea fișierelor</h1>
+<p>Peach Commander are un vizualizator integrat care vă permite să priviți în interiorul unui fișier fără a deschide altă aplicație sau a modifica fișierul. Apăsați F3 pe elementul de sub cursor, iar vizualizatorul se deschide instantaneu, chiar și pentru fișiere foarte mari. El alege automat cel mai bun mod de a afișa conținutul: text lizibil, cod colorat sintactic, un afișaj hexazecimal brut sau o imagine la dimensiune completă. Puteți de asemenea previzualiza un fișier chiar în fereastră folosind Quick View sau îl puteți preda către macOS Quick Look.</p>
+<h2 id="vizualizarea-unui-fisier">Vizualizarea unui fișier</h2>
+<ol>
+<li>Deplasați cursorul pe un fișier din panoul activ.</li>
+<li>Apăsați F3 (sau alegeți Vizualizare din meniul Fișier). Vizualizatorul se deschide în propria sa fereastră.</li>
+<li>Folosiți bara de instrumente pentru a comuta modul de afișare a conținutului: Text, Cod, Hex, Imagine sau Randat. Lăsați-l pe setarea automată pentru ca Peach Commander să decidă.</li>
+<li>Derulați cu tastele săgeți, Page Up/Page Down și bara de derulare. Pentru text lung, activați butonul de minihartă pentru a vedea și a naviga dintr-o privire prin întregul fișier.</li>
+<li>Apăsați N pentru a sări la următorul fișier selectat sau închideți fereastra cu Esc.</li>
+</ol>
+<p><img alt="Vizualizatorul integrat afișând un fișier text cu miniharta în dreapta" src="images/lister-text.png" />
+<em>(Figura: Vizualizarea unui fișier text, cu selectorul de reprezentare și miniharta în bara de instrumente.)</em></p>
+<h2 id="gasirea-textului-si-schimbarea-codificarii">Găsirea textului și schimbarea codificării</h2>
+<ul>
+<li>Apăsați Ctrl+F pentru a căuta în interiorul fișierului. Apăsați F3 pentru a sări la următoarea potrivire și Shift+F3 pentru cea anterioară.</li>
+<li>Dacă textul pare deteriorat, faceți clic pe Codificare în bara de instrumente (sau apăsați E) pentru a parcurge codificările de text până când se citește corect; setarea automată reușește de obicei.</li>
+<li>Apăsați W pentru a comuta încadrarea cuvintelor pentru liniile lungi.</li>
+</ul>
+<h2 id="quick-view-si-quick-look">Quick View și Quick Look</h2>
+<p>Quick View afișează o previzualizare în timp real în panoul pe care <em>nu</em> îl folosiți, astfel încât să puteți continua să navigați pe o parte în timp ce previzualizați pe cealaltă.</p>
+<ol>
+<li>Apăsați Ctrl+Q. Panoul inactiv se transformă într-o zonă de previzualizare.</li>
+<li>Deplasați cursorul peste diferite fișiere din panoul activ pentru a previzualiza fiecare.</li>
+<li>Apăsați din nou Ctrl+Q sau Esc pentru a readuce panoul la o listă normală de fișiere.</li>
+</ol>
+<p>Pentru o previzualizare rapidă pe tot ecranul gestionată de macOS însuși, apăsați Cmd+Y (Quick Look). Apăsați din nou Cmd+Y sau Space pentru a o închide.</p>
+<h2 id="scurtaturi">Scurtături</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Scurtătură</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vizualizați fișierul de sub cursor</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Vizualizați doar fișierul de sub cursor (ignorați fișierele marcate)</td>
+<td>Shift+F3</td>
+</tr>
+<tr>
+<td>Deschideți într-un vizualizator extern</td>
+<td>Option+F3</td>
+</tr>
+<tr>
+<td>Găsiți în vizualizator</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Următoarea / precedenta potrivire</td>
+<td>F3 / Shift+F3</td>
+</tr>
+<tr>
+<td>Quick View în celălalt panou</td>
+<td>Ctrl+Q</td>
+</tr>
+<tr>
+<td>Quick Look (previzualizare macOS)</td>
+<td>Cmd+Y</td>
+</tr>
+<tr>
+<td>Închideți vizualizatorul sau Quick View</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Vizualizatorul este doar-citire. Pentru a modifica un fișier, folosiți în schimb editorul (consultați Editarea fișierelor).</li>
+<li>Fișierele foarte mari se deschid fără întârziere: textul deschide o vizualizare rapidă, care se poate derula, iar vizualizarea hex se transmite direct de pe disc, la orice dimensiune.</li>
+<li>Apăsați F3 pe un folder pentru a vedea un rezumat al conținutului său și dimensiunea totală în loc de octeții fișierului.</li>
+<li>Modul Randat afișează conținut formatat, cum ar fi pagini web; modul hex afișează octeții bruți alături de caracterele lor, ceea ce este util pentru inspectarea fișierelor binare.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Editarea fișierelor</a></li><li><a href="searching.html">Găsirea fișierelor</a></li></ul></section>
+</main>
+</body>
+</html>

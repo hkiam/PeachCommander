@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Felsökning</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Felsökning</h1>
+<p>Det här ämnet täcker de problem folk oftast stöter på: macOS som blockerar åtkomst till vissa mappar, en mapp som verkar fastna på gammalt innehåll, en säker FTP-server som vägrar ansluta, och packning till RAR. Varje avsnitt berättar vad som händer och hur du åtgärdar det.</p>
+<h2 id="macos-ber-om-behorighet-eller-mappar-ser-tomma-ut">macOS ber om behörighet, eller mappar ser tomma ut</h2>
+<p>Vissa platser — som din <code>~/Library</code>-mapp, andra användares mappar och systemområden — skyddas av macOS och förblir dolda tills du beviljar åtkomst. Peach Commander upptäcker när detta händer och erbjuder sig att vägleda dig till rätt inställning.</p>
+<ol>
+<li>Vid uppmaningen, välj att öppna Systeminställningar, eller öppna det själv.</li>
+<li>Gå till Integritet och säkerhet och sedan Fullständig diskåtkomst.</li>
+<li>Slå på reglaget bredvid Peach Commander. Om det inte finns med, använd knappen Lägg till för att lägga till det.</li>
+<li>Avsluta och öppna Peach Commander igen så att den nya behörigheten träder i kraft.</li>
+</ol>
+<p>Peach Commander körs inte i en begränsad sandlåda, så när Fullständig diskåtkomst har beviljats kan det bläddra och hantera filer precis som Finder.</p>
+<h2 id="en-mapp-visar-inte-de-senaste-andringarna">En mapp visar inte de senaste ändringarna</h2>
+<p>Paneler uppdaterar sig normalt själva när filer ändras på disken. Om en mapp ändrades av ett annat program, ligger på en nätverksvolym eller helt enkelt ser inaktuell ut, uppdatera den manuellt.</p>
+<ol>
+<li>Klicka på panelen du vill uppdatera.</li>
+<li>Tryck på F2 (eller Ctrl+R) för att läsa om den mappen.</li>
+</ol>
+<p>Nätverks- och monterade volymer rapporterar inte alltid ändringar till macOS, så där är en manuell uppdatering den pålitliga lösningen.</p>
+<h2 id="en-ftps-server-ansluter-inte">En FTPS-server ansluter inte</h2>
+<p>Om en säker FTP-anslutning misslyckas, kontrollera dessa inställningar i anslutningsuppgifterna:</p>
+<ul>
+<li>Matcha serverns säkerhetsläge: explicit FTPS (AUTH TLS) och implicit FTPS (port 990) är inte utbytbara.</li>
+<li>Om anslutningen hänger sig efter inloggning, växla mellan passivt och aktivt överföringsläge — de flesta servrar bakom en brandvägg behöver passivt.</li>
+<li>Om servern använder ett självsignerat certifikat måste du uttryckligen tillåta det; annars nekas anslutningen.</li>
+<li>Bekräfta värd, port, användarnamn och lösenord, samt om en SOCKS5-proxy krävs i ditt nätverk.</li>
+</ul>
+<h2 id="packning-till-rar-gor-ingenting">Packning till RAR gör ingenting</h2>
+<p>Peach Commander kan skapa ZIP-, 7z-, TAR-, TAR.GZ-, BZ2- och XZ-arkiv på egen hand. RAR är annorlunda: eftersom RAR är ett proprietärt format kräver skapandet av RAR-arkiv ett separat RAR-kommandoradsverktyg installerat på din Mac. Utan det är RAR inte tillgängligt när du packar filer (Option+F5). För att läsa befintliga RAR-arkiv kan du ändå öppna dem som en mapp. Om du inte specifikt behöver RAR, välj ZIP eller 7z i stället — båda stöder stark AES-256-kryptering och delade volymer.</p>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Uppdatera den aktiva mappen</td>
+<td>F2 eller Ctrl+R</td>
+</tr>
+<tr>
+<td>Anslut till en FTP/FTPS-server</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Montera en nätverksresurs</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>Packa de markerade filerna</td>
+<td>Option+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Lösenord och andra inloggningsuppgifter lagras endast i macOS nyckelring, aldrig i klartextkonfigurationsfiler.</li>
+<li>Att montera en nätverksresurs (Cmd+K, eller Nätverk-menyn ▸ Montera nätverksresurs…) använder samma anslutning som macOS självt använder, så den visas även i Finder.</li>
+<li>Om ett problem kvarstår efter en uppdatering och en omstart kan det vara en känd begränsning snarare än ett fel — se Kända begränsningar.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">Integritet och säkerhet</a></li><li><a href="known-limitations.html">Kända begränsningar</a></li></ul></section>
+</main>
+</body>
+</html>

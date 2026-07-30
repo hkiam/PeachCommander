@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatisierung (AppleScript &amp; Kurzbefehle)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Automatisierung (AppleScript &amp; Kurzbefehle)</h1>
+<p>Peach Commander ist skriptfähig und lässt sich per AppleScript sowie aus der App „Kurzbefehle" steuern. Einige Kern-Verben erlauben es einem Skript, die Panels zu navigieren, Dateien per Maske auszuwählen, die aktuelle Auswahl zu kopieren oder zu verschieben und jeden Peach-Commander-Befehl über seine ID auszuführen — und zwar über dieselben Aktionen wie die Menüs, sodass sich ein skriptierter Schritt genau wie ein manueller verhält. Praktisch für wiederkehrende Aufgaben: Downloads einsortieren, Build-Ausgaben bereitstellen oder einen Datei-Schritt in einen größeren Kurzbefehl einbauen.</p>
+<h2 id="das-dictionary-ansehen">Das Dictionary ansehen</h2>
+<ol>
+<li>Öffnen Sie den <strong>Skripteditor</strong> (in <code>/Programme/Dienstprogramme</code>).</li>
+<li>Wählen Sie <strong>Fenster ▸ Bibliothek</strong> und doppelklicken Sie auf <strong>Peach Commander</strong> (mit <strong>+</strong> hinzufügen, falls nicht aufgeführt).</li>
+<li>Das Dictionary öffnet sich und listet die unten stehenden Befehle und Eigenschaften.</li>
+</ol>
+<p>Wenn ein Skript Peach Commander zum ersten Mal steuert, fragt macOS um Erlaubnis (<strong>Systemeinstellungen ▸ Datenschutz &amp; Sicherheit ▸ Automation</strong>). Einmal bestätigt, laufen spätere Skripte ohne Rückfrage.</p>
+<h2 id="was-sie-auslesen-konnen">Was Sie auslesen können</h2>
+<table>
+<thead>
+<tr>
+<th>Eigenschaft</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>POSIX-Pfad des Ordners im aktiven Panel.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>POSIX-Pfad des Ordners im anderen Panel.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>Die ausgewählten Objekte im aktiven Panel (oder das Objekt unter dem Cursor).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="die-verben">Die Verben</h2>
+<table>
+<thead>
+<tr>
+<th>Befehl</th>
+<th>Wirkung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;pfad&gt;" [in left\|right]</code></td>
+<td>Einen Ordner in einem Panel öffnen (Standard: aktives Panel).</td>
+</tr>
+<tr>
+<td><code>select "&lt;maske&gt;"</code></td>
+<td>Objekte im aktiven Panel per Wildcard-Maske auswählen, z. B. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;ordner&gt;"</code></td>
+<td>Die Auswahl des aktiven Panels in einen Ordner kopieren.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;ordner&gt;"</code></td>
+<td>Die Auswahl des aktiven Panels in einen Ordner verschieben.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Einen beliebigen Befehl über seine ID ausführen, z. B. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Kopieren und Verschieben nutzen dieselbe Hintergrund-Übertragungsqueue wie F5/F6 — Fortschritt und etwaige Überschreiben-Rückfragen erscheinen also genau wie bei einem manuellen Vorgang.</p>
+<h2 id="beispiel">Beispiel</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="nutzung-aus-kurzbefehle">Nutzung aus Kurzbefehle</h2>
+<p>Fügen Sie in der App <strong>Kurzbefehle</strong> die Aktion <strong>AppleScript ausführen</strong> hinzu und setzen Sie ein Skript wie oben ein. So bauen Sie einen Peach-Commander-Schritt in einen größeren Kurzbefehl ein — etwa ausgelöst durch eine Ordneränderung oder einen Tastaturkurzbefehl.</p>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Die ID, die Sie an <code>run command</code> übergeben, ist dieselbe <code>cm_*</code>-ID, die auch im Befehlsbrowser angezeigt wird (siehe <a href="start-menu.md">Das Start-Menü &amp; eigene Befehle</a>).</li>
+<li>Skripte wirken immer auf das <strong>aktive</strong> Panel; navigieren Sie bei Bedarf zuerst mit <code>go to … in left</code> / <code>in right</code> auf die gewünschte Seite.</li>
+<li>Peach Commander ist eine App mit einem Fenster, daher sprechen Skripte die zwei Panels dieses Fensters an.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="start-menu.html">Das Start-Menü &amp; eigene Befehle</a></li><li><a href="settings.html">Einstellungen</a></li></ul></section>
+</main>
+</body>
+</html>

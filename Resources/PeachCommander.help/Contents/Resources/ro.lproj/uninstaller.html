@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstaller</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Uninstaller</h1>
+<p>Tragerea unei aplicații în Coș lasă fișierele ei de suport, cache-urile, preferințele și containerele împrăștiate prin folderele Library. Pluginul Uninstaller elimină o aplicație <strong>și</strong> acele resturi: găsește tot ce a lăsat aplicația în urmă, vă arată lista cu o dimensiune pentru fiecare și mută totul în Coș după ce confirmați. Fiind un plugin, îl puteți dezactiva sau elimina din <strong>Configurare ▸ Pluginuri…</strong>.</p>
+<h2 id="dezinstalarea-unei-aplicatii-de-sub-cursor">Dezinstalarea unei aplicații de sub cursor</h2>
+<ol>
+<li>Puneți cursorul pe o aplicație (<code>.app</code>) dintr-un panou.</li>
+<li>Alegeți <strong>Fișier ▸ Dezinstalează aplicația…</strong>, sau clic dreapta ▸ <strong>Dezinstalează aplicația…</strong>, sau apăsați <strong>Cmd+Shift+U</strong>.</li>
+<li>Fereastra de examinare se deschide, listând aplicația plus fiecare fișier asociat pe care l-a găsit, fiecare etichetat cu categoria, calea și dimensiunea sa.</li>
+<li>Debifați orice doriți să păstrați, apoi faceți clic pe <strong>Mută în Coș</strong> (sau <strong>Șterge definitiv</strong>).</li>
+</ol>
+<p><img alt="Fereastra de examinare a dezinstalării care listează fișierele rămase ale unei aplicații cu casete de bifare și dimensiuni" src="images/uninstaller.png" />
+<em>(Figura: examinați exact ce va fi eliminat înainte ca ceva să fie șters.)</em></p>
+<h2 id="parcurgerea-tuturor-aplicatiilor-instalate">Parcurgerea tuturor aplicațiilor instalate</h2>
+<p>Alegeți <strong>Comenzi ▸ Dezinstalează aplicația…</strong> pentru a deschide o listă căutabilă a aplicațiilor instalate pe Mac-ul dvs., cu numele, dimensiunea și data instalării fiecărei aplicații. Selectați una (sau mai multe), faceți clic pe <strong>Dezinstalează…</strong> și ajungeți în aceeași fereastră de examinare. Puteți filtra lista tastând în câmpul de căutare.</p>
+<h2 id="gasirea-fisierelor-ramase">Găsirea fișierelor rămase</h2>
+<p>Alegeți <strong>Comenzi ▸ Găsește fișierele rămase…</strong> pentru a scana după fișiere de suport, cache-uri și preferințe care aparțin aplicațiilor pe care le-ați <strong>șters deja</strong>. Examinați-le în același mod și eliminați-le. Dacă nu se găsește nimic, pluginul vă spune acest lucru.</p>
+<h2 id="cat-de-amanuntit-sa-scanati">Cât de amănunțit să scanați</h2>
+<p>Fereastra de examinare are un control al încrederii:</p>
+<ul>
+<li><strong>Precis</strong> — fișiere ancorate la identificatorul de pachet al aplicației. Încredere ridicată; preselectate.</li>
+<li><strong>Îmbunătățit</strong> — adaugă fișiere potrivite după nume; lăsate nebifate ca să puteți decide.</li>
+<li><strong>Profund</strong> — Îmbunătățit plus o baleiere Spotlight după orice altceva care menționează aplicația; de asemenea lăsate nebifate.</li>
+</ul>
+<h2 id="note">Note</h2>
+<ul>
+<li>Nimic nu este șters direct de plugin — elementele trec prin Coșul aplicației sau ștergerea permanentă, exact ca orice altă operațiune cu fișiere. Eliminarea fișierelor din <code>/Library</code> sau <code>/var</code> poate necesita o parolă de administrator.</li>
+<li>Înainte de eliminare, pluginul închide aplicația care rulează și descarcă elementele ei de fundal (launchd), apoi oferă să facă ordine în orice folder de furnizor rămas gol.</li>
+<li>Dacă aplicația a fost instalată cu <strong>Homebrew</strong>, pluginul vă avertizează și sugerează <code>brew uninstall --cask</code> pentru ca Homebrew să rămână sincronizat. Aplicațiile din App Store sunt de asemenea semnalate.</li>
+<li>Potrivirile Îmbunătățit și Profund au, prin proiectare, o încredere mai scăzută și pornesc nebifate — examinați-le înainte de eliminare. Unele elemente de fundal instalate prin API-ul modern de elemente de conectare nu pot fi eliminate aici.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="deleting-files.html">Ștergerea fișierelor</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapa disku</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Mapa disku</h1>
+<p>Mapa disku je vstavaný zásuvný modul, ktorý na prvý pohľad ukazuje, čo využíva miesto v priečinku alebo na celom zväzku. Naskenuje priečinok, ktorý vyberiete, a nakreslí každú položku s veľkosťou úmernou miestu, ktoré skutočne zaberá na disku, takže najväčší žrúti miesta okamžite vyniknú. Môžete sa ponoriť do priečinkov, vidieť, ako sa váš sken zhoduje s voľným, vyčistiteľným a skrytým miestom zväzku, a upratovať priamo z mapy.</p>
+<h2 id="spustite-sken">Spustite sken</h2>
+<ol>
+<li>V aktívnom paneli prejdite do priečinka (alebo zväzku), ktorý chcete zmerať.</li>
+<li>Vyberte <strong>Príkazy ▸ Mapa disku: Analyzovať aktuálny priečinok</strong>.</li>
+<li>Zobrazenie Mapa disku sa otvorí vpravo a skenuje na pozadí, zobrazuje priebežný počet položiek a bajtov. Veľké priečinky sa dokončia za pár sekúnd — sken číta metaúdaje adresára hromadne a pracuje na viacerých jadrách procesora.</li>
+</ol>
+<p><img alt="Mapa disku zobrazujúca stromovú mapu priečinka, pruh zväzku, zoznam najväčších súborov a legendu kategórií" src="images/disk-map.png" />
+<em>(Obrázok: zobrazenie stromovej mapy, zafarbené podľa kategórie súboru, s pruhom zväzku hore a zoznamom najväčších súborov vpravo.)</em></p>
+<h2 id="citanie-mapy">Čítanie mapy</h2>
+<ul>
+<li>Každý blok (stromová mapa) alebo segment prstenca (slnečný lúč) má veľkosť podľa <strong>skutočnej veľkosti na disku</strong> položky, takže obraz sa zhoduje s tým, čo hlási Finder a systém.</li>
+<li>Bloky sú <strong>zafarbené podľa typu súboru</strong> — video, obrázky, zvuk, dokumenty, kód, archívy, aplikácie, obrazy diskov — s legendou dole. V nastaveniach môžete prepnúť na <strong>tepelnú mapu</strong> podľa veľkosti.</li>
+<li><strong>Kliknite na priečinok</strong> na ponorenie sa doň; navigačná stopa hore ukazuje, kde ste, a tlačidlo <strong>◂</strong> ide o úroveň vyššie.</li>
+<li>Umiestnite kurzor nad ktorýkoľvek blok, aby ste videli jeho úplnú cestu, veľkosť a počet položiek.</li>
+</ul>
+<h2 id="dve-zobrazenia-stromova-mapa-a-slnecny-luc">Dve zobrazenia: stromová mapa a slnečný lúč</h2>
+<p>Mapa disku ponúka dve vizualizácie, medzi ktorými môžete prepínať tlačidlom <strong>◎ / ▦</strong> v hlavičke alebo na stránke nastavení:</p>
+<ul>
+<li><strong>Stromová mapa</strong> — vnorené obdĺžniky, najhustejšie na odhalenie jedného najväčšieho súboru.</li>
+<li><strong>Slnečný lúč</strong> — sústredné prstence (jeden na hĺbku priečinka) okolo aktuálneho priečinka, najlepšie na zobrazenie, ako je miesto rozdelené v hlbokom strome.</li>
+</ul>
+<p><img alt="Zobrazenie slnečného lúča Mapy disku zobrazujúce sústredné prstence pre hĺbku priečinkov" src="images/disk-map-sunburst.png" />
+<em>(Obrázok: zobrazenie slnečného lúča — vnútorný disk je aktuálny priečinok a každý prstenec je o úroveň hlbšie.)</em></p>
+<h2 id="pruh-zvazku">Pruh zväzku</h2>
+<p>Pruh hore zhoduje váš sken s celým zväzkom:</p>
+<ul>
+<li><strong>Naskenované / Tento priečinok</strong> — koľko zaberá analyzovaný priečinok.</li>
+<li><strong>Skryté</strong> (v koreni zväzku) alebo <strong>Zvyšok zväzku</strong> (pre podpriečinok) — všetko, čo nie je v tomto skene, vrátane priečinkov chránených systémom, iných používateľov a snímok.</li>
+<li><strong>Vyčistiteľné</strong> — miesto, ktoré macOS môže automaticky získať späť, väčšinou lokálne snímky Time Machine a vyrovnávacie pamäte.</li>
+<li><strong>Voľné</strong> — miesto dostupné práve teraz.</li>
+</ul>
+<p>Keď má zväzok lokálne snímky, pruh zobrazí položku <strong>· N snímok (ⓘ)</strong>; kliknite na ňu pre zoznam iba na čítanie, s tipom na ich spravovanie v Diskovej utilite alebo Time Machine. Mapa disku nikdy sama nemaže snímky.</p>
+<h2 id="najvacsie-subory">Najväčšie súbory</h2>
+<p>Zapnite <strong>Zobraziť zoznam najväčších súborov</strong>, aby ste videli najväčšie súbory v aktuálnom priečinku zoradené podľa veľkosti, každý s farebným čipom svojej kategórie. Kliknite na jeden na jeho zvýraznenie na mape.</p>
+<h2 id="upratovanie-z-mapy">Upratovanie z mapy</h2>
+<p>Kliknite pravým tlačidlom na ktorýkoľvek blok pre akcie:</p>
+<ul>
+<li><strong>Otvoriť v ľavom paneli</strong> / <strong>Otvoriť v pravom paneli</strong> — zobraziť položku v paneli súborov.</li>
+<li><strong>Zobraziť vo Finderi</strong>.</li>
+<li><strong>Presunúť do Koša</strong> — odstrániť iba tú položku; mapa sa aktualizuje bez úplného opätovného skenu.</li>
+</ul>
+<p>Na odstránenie viacerých položiek naraz použite <strong>zberač</strong>: pravý klik ▸ <strong>Označiť pre zberač</strong> na každej položke, potom kliknite na tlačidlo <strong>🗑 N</strong> v hlavičke na presun všetkého, čo ste označili, do Koša v jednom potvrdenom kroku.</p>
+<h2 id="nastavenia">Nastavenia</h2>
+<p>Mapa disku pridáva vlastnú stránku do okna Nastavenia (<strong>Konfigurácia ▸ Nastavenia ▸ Mapa disku</strong>):</p>
+<ul>
+<li><strong>Štýl grafu</strong> — stromová mapa alebo slnečný lúč.</li>
+<li><strong>Farebné kódovanie</strong> — podľa typu súboru (kategória) alebo podľa veľkosti (tepelná mapa).</li>
+<li><strong>Zostať na počiatočnom zväzku</strong> — neprechádzať na iné pripojené disky.</li>
+<li><strong>Zobraziť pruh zväzku</strong> a <strong>Zobraziť zoznam najväčších súborov</strong>.</li>
+</ul>
+<p>Zmeny sa na otvorenú Mapu disku aplikujú okamžite.</p>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Mapa disku meria <strong>pridelenú</strong> (na disku) veľkosť a počíta súbory s <strong>pevnými odkazmi</strong> iba raz, takže jej súčty sa zhodujú s použitým miestom zväzku namiesto jeho preceňovania.</li>
+<li>Predvolene sken zostáva na počiatočnom zväzku, takže nezablúdi na iné pripojené disky alebo sieťové zdieľania.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="deleting-files.html">Odstraňovanie súborov</a></li><li><a href="settings.html">Nastavenia</a></li></ul></section>
+</main>
+</body>
+</html>

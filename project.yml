@@ -1,0 +1,639 @@
+name: PeachCommander
+options:
+  bundleId: com.peachcommander.app
+  minimumXcodegenVersion: 2.40.0
+  deploymentTarget:
+    macOS: "13.0"
+  fileGroups: []
+  xcodeVersion: "16.0"
+  defaultXcodeScheme: PeachCommander
+  developmentLanguage: en
+  knownRegions:
+    - en
+    - de
+
+settings:
+  BASE_SDK: macosx14.0
+  DEVELOPMENT_TEAM: ""
+  CODE_SIGNING_REQUIRED: NO
+  CODE_SIGNING_ALLOWED: NO
+  # libssh2 (SFTP, F-214) — Homebrew keg. For distribution the dylib + its
+  # openssl@3 deps must be bundled with fixed install names (see make-dmg TODO).
+  LIBRARY_SEARCH_PATHS: $(inherited) /opt/homebrew/opt/libssh2/lib
+  # Global -I so the CSSH2 clang module resolves <libssh2.h> in every consumer
+  # context (module builds use the importing target's clang flags).
+  OTHER_CFLAGS: $(inherited) -I/opt/homebrew/opt/libssh2/include
+  OTHER_SWIFT_FLAGS: $(inherited) -Xcc -I/opt/homebrew/opt/libssh2/include
+
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle.git
+    exactVersion: "2.6.3"
+  SwiftTreeSitter:
+    url: https://github.com/ChimeHQ/SwiftTreeSitter
+    branch: main
+  Neon:
+    url: https://github.com/ChimeHQ/Neon
+    branch: main
+  TreeSitterJSON:
+    url: https://github.com/tree-sitter/tree-sitter-json
+    branch: master
+  TreeSitterC:
+    url: https://github.com/tree-sitter/tree-sitter-c
+    branch: master
+  TreeSitterJava:
+    url: https://github.com/tree-sitter/tree-sitter-java
+    branch: master
+
+targets:
+  PCFoundation:
+    type: framework
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/PCFoundation
+    settings:
+      PRODUCT_NAME: PCFoundation
+      CODE_SIGNING_ALLOWED: NO
+      ENABLE_PRIVATE_SYMBOLS: NO
+    info:
+      path: Sources/PCFoundation/Info.plist
+
+  PCVFS:
+    type: framework
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/PCVFS
+    settings:
+      PRODUCT_NAME: PCVFS
+      CODE_SIGNING_ALLOWED: NO
+      ENABLE_PRIVATE_SYMBOLS: NO
+    info:
+      path: Sources/PCVFS/Info.plist
+    dependencies:
+      - target: PCFoundation
+
+  PCCommands:
+    type: framework
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/PCCommands
+    settings:
+      PRODUCT_NAME: PCCommands
+      CODE_SIGNING_ALLOWED: NO
+      ENABLE_PRIVATE_SYMBOLS: NO
+    info:
+      path: Sources/PCCommands/Info.plist
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+
+  PCOperations:
+    type: framework
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/PCOperations
+    settings:
+      PRODUCT_NAME: PCOperations
+      CODE_SIGNING_ALLOWED: NO
+      ENABLE_PRIVATE_SYMBOLS: NO
+    info:
+      path: Sources/PCOperations/Info.plist
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+
+  PCAutomation:
+    type: framework
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/PCAutomation
+    settings:
+      PRODUCT_NAME: PCAutomation
+      CODE_SIGNING_ALLOWED: NO
+      ENABLE_PRIVATE_SYMBOLS: NO
+    info:
+      path: Sources/PCAutomation/Info.plist
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+
+  PCArchive:
+    type: framework
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/PCArchive
+    settings:
+      PRODUCT_NAME: PCArchive
+      CODE_SIGNING_ALLOWED: NO
+      ENABLE_PRIVATE_SYMBOLS: NO
+    info:
+      path: Sources/PCArchive/Info.plist
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+
+  PCApp:
+    type: application
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/PCApp
+      - path: Resources/TreeSitterQueries
+        buildPhase: resources
+      - path: Resources/Licenses
+        buildPhase: resources
+      - path: Resources/ThirdPartyNotices.json
+        buildPhase: resources
+      - path: Resources/PeachCommander.help
+        buildPhase: resources
+        # Generated from docs/content/help/ by docs/scripts/build-helpbook.py.
+        # Opened via the Help menu (CFBundleHelpBookName in Info.plist).
+      - path: Resources/PeachCommander.sdef
+        buildPhase: resources
+        # AppleScript dictionary (F-296); wired via NSAppleScriptEnabled + OSAScriptingDefinition.
+    settings:
+      PRODUCT_NAME: PeachCommander
+      MACOSX_DEPLOYMENT_TARGET: "13.0"
+      ARCHS: arm64 x86_64
+      VALID_ARCHS: arm64 x86_64
+      SDKROOT: macosx
+      DEVELOPMENT_TEAM: ""
+      CODE_SIGNING_REQUIRED: NO
+      CODE_SIGNING_ALLOWED: NO
+      ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      SWIFT_EMIT_LOC_STRINGS: YES
+      LOCALIZED_STRING_SWIFTUI_SUPPORT: YES
+      SWIFT_INCLUDE_PATHS: $(SRCROOT)/Sources/CPFX/include $(SRCROOT)/Sources/CContrib/include $(SRCROOT)/Sources/CTreeSitterJS/include $(SRCROOT)/Sources/CTreeSitterPython/include $(SRCROOT)/Sources/CTreeSitterRust/include $(SRCROOT)/Sources/CTreeSitterCSharp/include $(SRCROOT)/Sources/CTreeSitterTypeScript/include
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+      - target: PCCommands
+      - target: PCOperations
+      - target: PCArchive
+      - target: PCAutomation
+      - target: PCPluginHost
+      - target: PCNet
+      - target: CSSH2
+      - target: CPFX
+      - target: CContrib
+      - target: CTreeSitterJS
+      - target: CTreeSitterPython
+      - target: CTreeSitterRust
+      - target: CTreeSitterCSharp
+      - target: CTreeSitterTypeScript
+      - package: SwiftTreeSitter
+        product: SwiftTreeSitter
+      - package: Neon
+        product: Neon
+      - package: TreeSitterJSON
+        product: TreeSitterJSON
+      - package: TreeSitterC
+        product: TreeSitterC
+      - package: TreeSitterJava
+        product: TreeSitterJava
+    frameworks:
+      - AppKit
+      - CoreServices
+      - Security
+      - Network
+      - WebKit
+      - AppIntents
+    info:
+      path: Sources/PCApp/Info.plist
+      properties:
+        CFBundleName: PeachCommander
+        CFBundleIdentifier: com.peachcommander.app
+        CFBundleVersion: "1"
+        CFBundleShortVersionString: "0.1.0"
+        CFBundlePackageType: APPL
+        CFBundleHelpBookFolder: PeachCommander.help
+        CFBundleHelpBookName: Peach Commander Help
+        CFBundleSignature: ?????
+        NSPrincipalClass: NSApplication
+        NSAppleScriptEnabled: true
+        OSAScriptingDefinition: PeachCommander.sdef
+        LSMinimumSystemVersion: "13.0"
+        NSHighResolutionCapable: true
+        NSSupportsAutomaticTermination: true
+        NSAppleEventsUsageDescription: Peach Commander needs to send Apple events to control other applications.
+        NSDocumentsDirectoryUsageDescription: Peach Commander needs to access documents to manage files.
+        NSDownloadsDirectoryUsageDescription: Peach Commander needs to access downloads to manage files.
+        NSDesktopDirectoryUsageDescription: Peach Commander needs to access the desktop to manage files.
+        NSNetworkVolumesUsageDescription: Peach Commander needs to access network volumes.
+        NSRemovableVolumesUsageDescription: Peach Commander needs to access removable volumes.
+        NSMicrophoneUsageDescription: Peach Commander uses the microphone for voice input in the AI assistant.
+        NSSpeechRecognitionUsageDescription: Peach Commander transcribes your speech for voice input in the AI assistant.
+
+  PCFoundationTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCFoundationTests
+    settings:
+      PRODUCT_NAME: PCFoundationTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
+      - target: PCCommands
+    frameworks:
+      - XCTest
+
+  PCVFSTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCVFSTests
+    settings:
+      PRODUCT_NAME: PCVFSTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+      - target: PCCommands
+    frameworks:
+      - XCTest
+
+  PCCommandsTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCCommandsTests
+    settings:
+      PRODUCT_NAME: PCCommandsTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
+      - target: PCCommands
+    frameworks:
+      - XCTest
+
+  PCOperationsTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCOperationsTests
+    settings:
+      PRODUCT_NAME: PCOperationsTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+      - target: PCOperations
+    frameworks:
+      - XCTest
+
+  PCAutomationTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCAutomationTests
+    settings:
+      PRODUCT_NAME: PCAutomationTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCAutomation
+    frameworks:
+      - XCTest
+
+  PCArchiveTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCArchiveTests
+    settings:
+      PRODUCT_NAME: PCArchiveTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+      - target: PCArchive
+    frameworks:
+      - XCTest
+
+  CPluginGuard:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/CPluginGuard
+    settings:
+      PRODUCT_NAME: CPluginGuard
+      DEFINES_MODULE: YES
+      MODULEMAP_FILE: Sources/CPluginGuard/include/module.modulemap
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CPluginGuard/include
+      CODE_SIGNING_ALLOWED: NO
+
+  CPCX:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/CPCX
+    settings:
+      PRODUCT_NAME: CPCX
+      DEFINES_MODULE: YES
+      MODULEMAP_FILE: Sources/CPCX/include/module.modulemap
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CPCX/include
+      CODE_SIGNING_ALLOWED: NO
+
+  CPDX:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/CPDX
+    settings:
+      PRODUCT_NAME: CPDX
+      DEFINES_MODULE: YES
+      MODULEMAP_FILE: Sources/CPDX/include/module.modulemap
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CPDX/include
+      CODE_SIGNING_ALLOWED: NO
+
+  CPLX:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/CPLX
+    settings:
+      PRODUCT_NAME: CPLX
+      DEFINES_MODULE: YES
+      MODULEMAP_FILE: Sources/CPLX/include/module.modulemap
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CPLX/include
+      CODE_SIGNING_ALLOWED: NO
+
+  CPFX:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/CPFX
+    settings:
+      PRODUCT_NAME: CPFX
+      DEFINES_MODULE: YES
+      MODULEMAP_FILE: Sources/CPFX/include/module.modulemap
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CPFX/include
+      CODE_SIGNING_ALLOWED: NO
+
+  CContrib:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/CContrib
+    settings:
+      PRODUCT_NAME: CContrib
+      DEFINES_MODULE: YES
+      MODULEMAP_FILE: Sources/CContrib/include/module.modulemap
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CContrib/include
+      CODE_SIGNING_ALLOWED: NO
+
+  # libssh2 wrapper module for SFTP (F-214). Headers come from the Homebrew keg.
+  CSSH2:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/CSSH2
+    settings:
+      PRODUCT_NAME: CSSH2
+      DEFINES_MODULE: YES
+      MODULEMAP_FILE: Sources/CSSH2/include/module.modulemap
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CSSH2/include /opt/homebrew/opt/libssh2/include
+      CODE_SIGNING_ALLOWED: NO
+
+  # Vendored tree-sitter grammars (parser.c + scanner.c compiled unconditionally,
+  # unlike their upstream SwiftPM manifests which drop scanner.c).
+  CTreeSitterJS:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/CTreeSitterJS
+    settings:
+      PRODUCT_NAME: CTreeSitterJS
+      DEFINES_MODULE: YES
+      MODULEMAP_FILE: Sources/CTreeSitterJS/include/module.modulemap
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CTreeSitterJS $(SRCROOT)/Sources/CTreeSitterJS/include
+      CODE_SIGNING_ALLOWED: NO
+
+  CTreeSitterPython:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/CTreeSitterPython
+    settings:
+      PRODUCT_NAME: CTreeSitterPython
+      DEFINES_MODULE: YES
+      MODULEMAP_FILE: Sources/CTreeSitterPython/include/module.modulemap
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CTreeSitterPython $(SRCROOT)/Sources/CTreeSitterPython/include
+      CODE_SIGNING_ALLOWED: NO
+
+  CTreeSitterRust:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/CTreeSitterRust
+    settings:
+      PRODUCT_NAME: CTreeSitterRust
+      DEFINES_MODULE: YES
+      MODULEMAP_FILE: Sources/CTreeSitterRust/include/module.modulemap
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CTreeSitterRust $(SRCROOT)/Sources/CTreeSitterRust/include
+      CODE_SIGNING_ALLOWED: NO
+
+  CTreeSitterCSharp:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/CTreeSitterCSharp
+    settings:
+      PRODUCT_NAME: CTreeSitterCSharp
+      DEFINES_MODULE: YES
+      MODULEMAP_FILE: Sources/CTreeSitterCSharp/include/module.modulemap
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CTreeSitterCSharp $(SRCROOT)/Sources/CTreeSitterCSharp/include
+      CODE_SIGNING_ALLOWED: NO
+
+  CTreeSitterTypeScript:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/CTreeSitterTypeScript
+    settings:
+      PRODUCT_NAME: CTreeSitterTypeScript
+      DEFINES_MODULE: YES
+      MODULEMAP_FILE: Sources/CTreeSitterTypeScript/include/module.modulemap
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CTreeSitterTypeScript $(SRCROOT)/Sources/CTreeSitterTypeScript/include
+      CODE_SIGNING_ALLOWED: NO
+
+  PCPluginHost:
+    type: framework
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/PCPluginHost
+    settings:
+      PRODUCT_NAME: PCPluginHost
+      CODE_SIGNING_ALLOWED: NO
+      ENABLE_PRIVATE_SYMBOLS: NO
+      OTHER_LDFLAGS: $(inherited) -lCPluginGuard
+      SWIFT_INCLUDE_PATHS: $(SRCROOT)/Sources/CPCX/include $(SRCROOT)/Sources/CPDX/include $(SRCROOT)/Sources/CPLX/include $(SRCROOT)/Sources/CPFX/include $(SRCROOT)/Sources/CContrib/include $(SRCROOT)/Sources/CPluginGuard/include
+    info:
+      path: Sources/PCPluginHost/Info.plist
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+      - target: CPCX
+      - target: CPDX
+      - target: CPLX
+      - target: CPFX
+      - target: CContrib
+      - target: CPluginGuard
+
+  PCPluginHostTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCPluginHostTests
+    settings:
+      PRODUCT_NAME: PCPluginHostTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+      - target: PCPluginHost
+    frameworks:
+      - XCTest
+
+  PCNet:
+    type: framework
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Sources/PCNet
+    settings:
+      PRODUCT_NAME: PCNet
+      CODE_SIGNING_ALLOWED: NO
+      ENABLE_PRIVATE_SYMBOLS: NO
+      SWIFT_INCLUDE_PATHS: $(SRCROOT)/Sources/CSSH2/include
+      HEADER_SEARCH_PATHS: $(inherited) /opt/homebrew/opt/libssh2/include
+    info:
+      path: Sources/PCNet/Info.plist
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+      - target: CSSH2
+
+  PCNetTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCNetTests
+    settings:
+      PRODUCT_NAME: PCNetTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+      - target: PCNet
+    frameworks:
+      - XCTest
+
+  PCPerfTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCPerfTests
+    settings:
+      PRODUCT_NAME: PCPerfTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+      - target: PCCommands
+    frameworks:
+      - XCTest
+
+  PCUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCUITests
+    settings:
+      PRODUCT_NAME: PCUITests
+      # The XCUITest runner is a real .app macOS launches, so it must be signed
+      # (ad-hoc is enough locally) — unlike the unit tests, it can't be unsigned,
+      # and a signed bundle needs an Info.plist.
+      CODE_SIGNING_ALLOWED: YES
+      CODE_SIGNING_REQUIRED: NO
+      CODE_SIGN_IDENTITY: "-"
+      GENERATE_INFOPLIST_FILE: YES
+      TEST_TARGET_NAME: PCApp
+    dependencies:
+      - target: PCApp
+    frameworks:
+      - XCTest
+
+schemes:
+  PeachCommander:
+    build:
+      targets:
+        PCApp: all
+    test:
+      gatherCoverageData: true
+      configuration: Debug
+      targets:
+        - PCFoundationTests
+        - PCVFSTests
+        - PCCommandsTests
+        - PCOperationsTests
+        - PCArchiveTests
+        - PCAutomationTests
+        - PCPluginHostTests
+        - PCNetTests
+
+  AllTests:
+    build:
+      targets:
+        PCApp: all
+    test:
+      gatherCoverageData: true
+      configuration: Debug
+      targets:
+        - PCFoundationTests
+        - PCVFSTests
+        - PCCommandsTests
+        - PCOperationsTests
+        - PCArchiveTests
+        - PCAutomationTests
+        - PCPluginHostTests
+        - PCNetTests
+        - PCPerfTests
+
+  UITests:
+    build:
+      targets:
+        PCApp: all
+    test:
+      configuration: Debug
+      targets:
+        - PCUITests

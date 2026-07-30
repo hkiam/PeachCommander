@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>Zásuvný modul Task Manager promění běžící procesy vašeho Macu ve složku, kterou můžete procházet. Objeví se jako disk <strong>TaskManager</strong> v liště disků; otevřete jej a každý proces je řádek, který můžete řadit, zkoumat jako soubor nebo ukončit — pomocí stejných kláves, jaké již používáte pro soubory. Je to zásuvný modul, takže jej můžete vypnout nebo odebrat v nabídce <strong>Konfigurace ▸ Zásuvné moduly…</strong>.</p>
+<h2 id="otevreni">Otevření</h2>
+<ol>
+<li>Klepněte na položku <strong>📊 TaskManager</strong> v liště disků (sedí hned za vaším spouštěcím diskem).</li>
+<li>Panel se naplní jedním řádkem na každý běžící proces. Název každého řádku tvoří název procesu následovaný jeho PID, například <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="Task Manager uvádějící běžící procesy se sloupci PID, CPU, paměť a příkaz" src="images/task-manager.png" />
+<em>(Obrázek: běžící procesy zobrazené jako seznam souborů, který můžete řadit a nad nímž můžete provádět akce.)</em></p>
+<h2 id="co-znamena-kazdy-sloupec">Co znamená každý sloupec</h2>
+<p>Vedle obvyklých sloupců Velikost (paměť) a Datum (čas spuštění) přidává Task Manager sloupce procesů:</p>
+<table>
+<thead>
+<tr>
+<th>Sloupec</th>
+<th>Význam</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>ID procesu</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Nedávné využití procesoru (objeví se až po druhém obnovení)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Počet vláken</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R běžící · S spící · T zastavený · Z zombie · I nečinný</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Vlastník</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>ID rodičovského procesu</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>Úplný příkazový řádek</td>
+</tr>
+</tbody>
+</table>
+<p>Řaďte podle kteréhokoli sloupce (například CPU % nebo Velikost/paměť) stejně jako v běžné složce.</p>
+<h2 id="zkoumani-nebo-ukonceni-procesu">Zkoumání nebo ukončení procesu</h2>
+<ul>
+<li><strong>Zobrazit (F3)</strong> zobrazí report <em>Process Information</em>: název, PID, rodiče, uživatele, stav, vlákna, paměť, CPU, čas spuštění, cestu ke spustitelnému souboru a úplný příkazový řádek.</li>
+<li><strong>Smazat (F8)</strong> ukončí proces. První smazání pošle šetrné <strong>ukončení</strong> (SIGTERM); smazání procesu, který stále běží, podruhé eskaluje na <strong>vynucené ukončení</strong> (SIGKILL). Zásuvný modul nikdy necílí na PID 1.</li>
+</ul>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Základní údaje (PID, rodič, uživatel, stav) jsou čitelné u každého procesu, jako u <code>ps</code>. Paměť, vlákna a CPU lze číst pouze u <strong>vašich vlastních</strong> procesů; ostatní procesy zobrazují tyto sloupce prázdné (vyžadují zvýšená oprávnění, což bude přidáno později).</li>
+<li>CPU % je změna mezi dvěma vzorky, takže je prázdné, dokud se panel neobnoví podruhé (panel se obnovuje zhruba každé dvě sekundy).</li>
+<li>Seznam je pouze pro čtení kromě ukončení procesu — nelze do něj kopírovat soubory.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="viewing-files.html">Prohlížení souborů</a></li><li><a href="deleting-files.html">Mazání souborů</a></li></ul></section>
+</main>
+</body>
+</html>

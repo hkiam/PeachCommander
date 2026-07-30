@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wtyczki</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Wtyczki</h1>
+<p>Wtyczki rozszerzają Peach Commander o dodatkowe narzędzia, formaty plików i miejsca do przeglądania. Kilkanaście wtyczek jest wbudowanych, więc możesz zacząć ich używać od razu, a poszczególne wtyczki możesz włączać lub wyłączać — albo instalować nowe — z jednego okna. Używaj wtyczek, gdy chcesz możliwości wykraczające poza codzienne kopiowanie i przeglądanie: wizualizować, co zapełnia dysk, łączyć się z serwerem WebDAV, sprawdzać stan repozytorium Git, obserwować aktywność systemu i więcej.</p>
+<p>Wtyczki występują w kilku odmianach: niektóre dodają <strong>panel lub pasek boczny</strong> (widok), niektóre dodają <strong>kolumny</strong> do listy plików, niektóre dodają <strong>miejsce, do którego wchodzisz</strong>, jak dysk, a niektóre uczą aplikację nowego <strong>formatu archiwum</strong>. Każda jest włączana niezależnie.</p>
+<h2 id="co-dodaja-wbudowane-wtyczki">Co dodają wbudowane wtyczki</h2>
+<p>Kilka wtyczek ma własny szczegółowy temat pomocy — kliknij łącze, aby poznać całą historię:</p>
+<ul>
+<li><strong><a href="disk-map.md">Mapa dysku</a></strong> — wizualizuje, co zapełnia folder lub wolumin, jako mapę drzewa lub wykres słoneczny, uzgodnione z wolnym, możliwym do wyczyszczenia i ukrytym miejscem, z kolekcjonerem do sprzątania.</li>
+<li><strong><a href="ai-assistant.md">Asystent AI</a></strong> — opcjonalny, usuwalny asystent, który podsumowuje, zmienia nazwy, tłumaczy, tworzy tabele i porządkuje pliki w języku naturalnym, na urządzeniu lub przez model w chmurze.</li>
+<li><strong><a href="git.md">Git</a></strong> — pokazuje stan każdego pliku w drzewie roboczym oraz bieżącą gałąź jako kolumny panelu i dodaje menu <strong>Git</strong> dla statusu, dodawania do przechowalni, commita, pulla i pusha.</li>
+<li><strong><a href="system-monitor.md">System Monitor</a></strong> — podgląd procesora, pamięci, dysku, sieci (a tam, gdzie dostępne, GPU, baterii, czujników) w czasie rzeczywistym na pasku tytułu okna, z klikalnymi wykresami szczegółów.</li>
+<li><strong><a href="task-manager.md">Task Manager</a></strong> — montuje Twoje działające procesy jako przeglądalny dysk <strong>TaskManager</strong>; sortuj je, badaj jak pliki lub kończ klawiszem Usuń.</li>
+<li><strong><a href="uninstaller.md">Uninstaller</a></strong> — usuwa aplikację <strong>oraz</strong> pliki pomocnicze, pamięci podręczne i preferencje, które po sobie zostawia, po pokazaniu Ci dokładnie, co zniknie.</li>
+</ul>
+<p>Pozostałe wbudowane wtyczki są mniejsze i nie potrzebują własnej strony:</p>
+<ul>
+<li><strong>WebDAV</strong> — połącz się z serwerem WebDAV (<strong>Sieć ▸ Połącz z WebDAV…</strong>) i przeglądaj, wysyłaj, pobieraj, zmieniaj nazwy oraz usuwaj na nim tak, jakby był folderem. Hasła są przechowywane w pęku kluczy macOS.</li>
+<li><strong>iCloud Drive</strong> — dodaje pozycję <em>iCloud Drive</em> do paska dysków, która przechodzi prosto do Twojego lokalnego folderu iCloud Drive. Pojawia się tylko wtedy, gdy iCloud Drive jest skonfigurowany na Twoim Macu.</li>
+<li><strong>Notes</strong> — trzymaj notatkę obok dowolnego pliku lub folderu. Mały znacznik <strong>●</strong> oznacza pozycje, które ją mają; edytuj notatki w zadokowanym pasku bocznym <strong>Notes</strong> lub w pełnym edytorze tekstu sformatowanego (<strong>Polecenia ▸ Edytuj notatkę…</strong>) i przeglądaj je wszystkie za pomocą <strong>Przegląd notatek…</strong>.</li>
+<li><strong>Log Viewer</strong> — otwórz plik jako pokolorowany, sklasyfikowany według poziomów, śledzony na żywo dziennik (<strong>Plik ▸ Pokaż jako dziennik…</strong>), z filtrami dla poszczególnych poziomów, wyszukiwaniem i obsługą typowych formatów dzienników oraz własnych formatów wyrażeń regularnych. Obsługuje wielogigabajtowe dzienniki natychmiast.</li>
+<li><strong>AI Column</strong> — dodaje kolumnę <em>AI Language</em>, która wykrywa dominujący język każdego pliku tekstowego na urządzeniu (używając frameworka NaturalLanguage firmy Apple — nie modelu w chmurze).</li>
+<li><strong>Formaty archiwów</strong> — uczą aplikację przeglądania i wypakowywania większej liczby typów archiwów (7z, rodzina tar, gzip/bzip2/xz/zstd oraz RAR tam, gdzie zainstalowane jest narzędzie pomocnicze), które następnie otwierają się jak foldery.</li>
+</ul>
+<h2 id="waczanie-lub-wyaczanie-wtyczek">Włączanie lub wyłączanie wtyczek</h2>
+<ol>
+<li>Wybierz Konfiguracja ▸ Wtyczki…, aby otworzyć okno wtyczek.</li>
+<li>Każda zainstalowana wtyczka pojawia się na liście z nazwą, typem i polem „Włączona”.</li>
+<li>Zaznacz lub odznacz pole, aby włączyć lub wyłączyć wtyczkę. Zmiany wchodzą w życie od razu — włączone wtyczki dodają swoje menu, kolumny i funkcje; wyłączone trzymają się z boku.</li>
+</ol>
+<p><img alt="Okno wtyczek wymieniające zainstalowane wtyczki z polami wyboru i przyciskami Zainstaluj i Usuń" src="images/plugins-window.png" />
+<em>(Rysunek: okno wtyczek, w którym włączasz, wyłączasz, instalujesz lub usuwasz wtyczki.)</em></p>
+<h2 id="zainstaluj-nowa-wtyczke">Zainstaluj nową wtyczkę</h2>
+<ol>
+<li>Wybierz Konfiguracja ▸ Wtyczki….</li>
+<li>Kliknij <strong>Zainstaluj z folderu…</strong>.</li>
+<li>Wybierz pakiet wtyczki lub <code>.zip</code>, który go zawiera, i potwierdź. Wtyczka zostaje dodana do listy i włączona.</li>
+</ol>
+<h2 id="usun-wtyczke">Usuń wtyczkę</h2>
+<ol>
+<li>W oknie wtyczek oznacz wtyczkę na liście.</li>
+<li>Kliknij <strong>Usuń</strong>. Funkcje wbudowane nie są naruszone; usuwana jest tylko wybrana wtyczka.</li>
+</ol>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Lista wtyczek pokazuje typ i wersję interfejsu każdej wtyczki obok nazwy i lokalizacji, więc możesz potwierdzić, co jest zainstalowane.</li>
+<li>Jeśli żadna wtyczka nie jest zainstalowana, okno pokazuje krótką zachętę kierującą Cię do <strong>Zainstaluj z folderu…</strong>.</li>
+<li>Niektóre wtyczki dodają własne kolumny, pozycje menu lub miejsca panelu tylko wtedy, gdy są włączone. Jeśli oczekiwana funkcja jest nieobecna, sprawdź, czy wtyczka jest tutaj włączona.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Mapa dysku</a></li><li><a href="ai-assistant.html">Asystent AI</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="archives.html">Praca z archiwami</a></li><li><a href="ftp-and-sftp.html">Łączenie z FTP i SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

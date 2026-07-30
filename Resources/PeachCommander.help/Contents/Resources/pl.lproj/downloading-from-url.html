@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pobieranie z adresu URL</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Pobieranie z adresu URL</h1>
+<p>Peach Commander może pobrać plik prosto z adresu internetowego HTTP lub HTTPS do aktywnego panelu, bez otwierania przeglądarki. Wklej łącze, potwierdź nazwę, pod którą zostanie zapisany, a pobieranie przebiega samo — ze wznawianiem, jeśli połączenie zostanie zerwane, pobieraniem wsadowym wielu łączy naraz i opcjonalną weryfikacją sumy kontrolnej, dzięki której wiesz, że plik dotarł nienaruszony.</p>
+<h2 id="pobierz-plik">Pobierz plik</h2>
+<ol>
+<li>Otwórz folder panelu, w którym chcesz umieścić plik.</li>
+<li>Wybierz <strong>Sieć &gt; Pobierz z adresu URL</strong> lub naciśnij Cmd+Shift+D.</li>
+<li>Wklej adres internetowy w polu <strong>Adres(y) URL</strong>. Jeśli wcześniej skopiowałeś łącze, jest ono wypełniane za Ciebie.</li>
+<li>Sprawdź nazwę <strong>Zapisz jako</strong> — jest sugerowana na podstawie łącza i możesz ją dowolnie edytować.</li>
+<li>Kliknij <strong>Pobierz</strong>.</li>
+</ol>
+<p><img alt="Okno dialogowe Pobierz z adresu URL z łączem, edytowalną nazwą pliku i opcjami" src="images/download-url.png" />
+<em>(Rysunek: okno dialogowe pobierania — wklej łącze, edytuj nazwę i ustaw opcjonalną weryfikację, dane uwierzytelniające, nagłówki lub serwer proxy.)</em></p>
+<p>Domyślnie pobieranie działa <strong>w tle</strong>, więc możesz kontynuować pracę w panelach podczas transferu. Wyłącz <strong>Pobierz w tle</strong>, aby na nie czekać, lub włącz <strong>Dodaj do kolejki na później</strong>, aby skonfigurować je bez rozpoczynania.</p>
+<h2 id="pobierz-kilka-plikow-naraz">Pobierz kilka plików naraz</h2>
+<p>Wklej jeden adres internetowy w wierszu w polu <strong>Adres(y) URL</strong>. Gdy obecnych jest więcej niż jedno łącze, nazwa każdego pliku jest wyprowadzana automatycznie z jego łącza, a pola <strong>Zapisz jako</strong> i <strong>Weryfikuj</strong> dla poszczególnych plików są wyłączane.</p>
+<h2 id="wznawianie-przerwanego-pobierania">Wznawianie przerwanego pobierania</h2>
+<p>Jeśli transfer zostanie przerwany, Peach Commander zachowuje to, co już otrzymał, w tymczasowym pliku <code>.part</code>. Ponowne uruchomienie tego samego pobierania wznawia je od miejsca, w którym się zatrzymało, ilekroć serwer to obsługuje, zamiast zaczynać od nowa. Plik <code>.part</code> otrzymuje ostateczną nazwę dopiero po pomyślnym zakończeniu pobierania.</p>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pobierz z adresu URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="wskazowki">Wskazówki</h2>
+<ul>
+<li><strong>Zweryfikuj plik.</strong> W przypadku pojedynczego pobierania wklej oczekiwaną sumę kontrolną <strong>SHA-256</strong> w polu <strong>Weryfikuj</strong>. Po transferze suma kontrolna pliku jest z nią porównywana, dzięki czemu możesz zaufać, że plik odpowiada temu, co podał wydawca.</li>
+<li><strong>Wymagane logowanie?</strong> Wprowadź nazwę użytkownika i hasło w polach <strong>Uwierz.</strong> dla witryn korzystających z uwierzytelniania podstawowego. W przypadku dostępu opartego na tokenie dodaj wiersz <code>Authorization: Bearer …</code> w polu <strong>Nagłówki</strong>.</li>
+<li><strong>Niestandardowe nagłówki.</strong> Dodaj jeden nagłówek w wierszu w polu <strong>Nagłówki</strong>, na przykład <code>Referer: …</code> lub <code>Cookie: …</code>, dla łączy, które działają tylko z określonymi nagłówkami żądania.</li>
+<li><strong>Serwer proxy.</strong> Przekieruj pobieranie przez serwer proxy HTTP lub SOCKS5, wypełniając host, port i typ <strong>Proxy</strong>.</li>
+<li><strong>Niezaufane certyfikaty.</strong> Włącz <strong>Zezwól na niezaufany certyfikat</strong> tylko dla zaufanej witryny używającej certyfikatu z podpisem własnym; wyłącza to normalną kontrolę bezpieczeństwa HTTPS dla tego pobierania.</li>
+<li><strong>Uwaga:</strong> Cmd+Shift+D jest również używany w innym miejscu do przejścia do folderu Biurko; jeśli skrót nie otwiera tego okna dialogowego, użyj zamiast tego <strong>Sieć &gt; Pobierz z adresu URL</strong> z menu.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Łączenie z FTP i SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

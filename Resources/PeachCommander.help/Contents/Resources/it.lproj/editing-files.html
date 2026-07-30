@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modificare i file</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Modificare i file</h1>
+<p>Quando avete bisogno di modificare un file invece di limitarvi a guardarlo, Peach Commander lo apre in un editor integrato. I file di testo e di codice si aprono in un editor completo con evidenziazione della sintassi, ricerca e sostituzione, una struttura dei simboli del vostro codice e una minimappa per una navigazione rapida. I file binari possono essere aperti in un editor esadecimale separato, dove potete ispezionare e modificare i singoli byte. Non dovete mai lasciare l'app per una rapida modifica.</p>
+<h2 id="modificare-un-file-di-testo-o-di-codice">Modificare un file di testo o di codice</h2>
+<ol>
+<li>In uno dei pannelli, spostate il cursore sul file da modificare.</li>
+<li>Premete F4, oppure scegliete File ▸ Modifica. Il file si apre nella finestra dell'editor.</li>
+<li>Apportate le vostre modifiche. Se il file è in un formato di programmazione o di dati riconosciuto, parole chiave, stringhe e commenti vengono colorati automaticamente.</li>
+<li>Premete Cmd+S (o fate clic su Salva) per scrivere le modifiche. Il primo salvataggio conserva un backup dell'originale accanto al file, così potete sempre tornare a esso.</li>
+</ol>
+<p>Per iniziare un file di testo nuovo di zecca nella posizione corrente, premete Shift+F4.</p>
+<p><img alt="L'editor di testo integrato che mostra l'evidenziazione della sintassi, la struttura dei simboli e la minimappa" src="images/editor.png" />
+<em>(Figura: l'editor con l'evidenziazione della sintassi, la struttura dei simboli a sinistra e la minimappa a destra.)</em></p>
+<h2 id="trovare-sostituire-e-navigare">Trovare, sostituire e navigare</h2>
+<ul>
+<li>Premete Cmd+F per aprire la barra di ricerca. Per sostituire il testo, aprite la barra di ricerca e passate alla vista di sostituzione, oppure fate clic su Trova/Sostituisci nella barra degli strumenti.</li>
+<li>Fate clic su Formatta JSON/XML per reindentare un documento JSON o XML in una disposizione pulita e leggibile.</li>
+<li>Fate clic su Simboli (o premete Cmd+Shift+O) per mostrare una barra laterale che elenca le classi, le funzioni e i metodi del vostro codice. Fate clic su una voce per saltare direttamente a essa.</li>
+<li>Premete Cmd+L per saltare a una riga specifica.</li>
+<li>Premete Cmd+\ per saltare tra una parentesi e la sua corrispondente.</li>
+<li>Fate clic sul pulsante della mappa per mostrare o nascondere la minimappa, una panoramica in scala dell'intero file su cui potete fare clic per scorrere.</li>
+<li>Usate il menu Codifica nella barra degli strumenti se il file è stato salvato in una codifica di testo diversa da quella predefinita.</li>
+</ul>
+<h2 id="modificare-un-file-byte-per-byte">Modificare un file byte per byte</h2>
+<ol>
+<li>Selezionate il file in un pannello.</li>
+<li>Scegliete File ▸ Modifica come esadecimale (oppure fate clic destro sul file e scegliete Modifica come esadecimale).</li>
+<li>Digitate cifre esadecimali per sovrascrivere i byte, oppure usate i tasti freccia per muovervi nel file. Backspace e Delete rimuovono i byte.</li>
+<li>Premete Cmd+S per salvare. Come per l'editor di testo, viene conservato un backup una tantum dell'originale.</li>
+</ol>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Tasto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Modificare il file</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Creare e modificare un nuovo file di testo</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>Salvare</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>Trovare</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>Mostrare/nascondere la struttura dei simboli</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>Andare a una riga</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>Saltare alla parentesi corrispondente</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>Annulla / ripristina (editor esadecimale)</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>L'evidenziazione della sintassi copre JSON, C, C#, Java, JavaScript, TypeScript, Python e Rust. Gli altri tipi di file si aprono e si modificano comunque normalmente con una colorazione di base, ma l'evidenziazione dettagliata e la struttura dei simboli sono disponibili solo per i linguaggi supportati.</li>
+<li>La struttura dei simboli e la funzione Vai alla riga si applicano all'editor di testo. L'editor esadecimale è pensato per l'ispezione binaria e le modifiche a livello di byte, non per il testo.</li>
+<li>Entrambi gli editor conservano un backup del file originale la prima volta che salvate, così una modifica accidentale è facile da annullare ripristinando quel backup.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Visualizzazione dei file</a></li></ul></section>
+</main>
+</body>
+</html>

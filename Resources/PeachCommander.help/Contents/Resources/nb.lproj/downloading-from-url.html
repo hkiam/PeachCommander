@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laste ned fra en URL</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Laste ned fra en URL</h1>
+<p>Peach Commander kan hente en fil rett fra en HTTP- eller HTTPS-webadresse inn i det aktive panelet, uten å åpne en nettleser. Lim inn en lenke, bekreft navnet den lagres under, og nedlastingen kjører for seg selv – med gjenopptaking hvis forbindelsen faller, satsvise nedlastinger av mange lenker samtidig, og valgfri kontrollsummverifisering slik at du vet at filen kom intakt frem.</p>
+<h2 id="last-ned-en-fil">Last ned en fil</h2>
+<ol>
+<li>Åpne panelmappen der du vil at filen skal lande.</li>
+<li>Velg <strong>Nettverk &gt; Last ned fra URL</strong>, eller trykk Cmd+Shift+D.</li>
+<li>Lim inn webadressen i <strong>URL(er)</strong>-boksen. Hvis du kopierte en lenke først, fylles den inn for deg.</li>
+<li>Sjekk <strong>Lagre som</strong>-navnet – det foreslås fra lenken, og du kan endre det fritt.</li>
+<li>Klikk <strong>Last ned</strong>.</li>
+</ol>
+<p><img alt="Last ned fra URL-dialogen med en lenke, redigerbart filnavn og valg" src="images/download-url.png" />
+<em>(Figur: Nedlastingsdialogen – lim inn en lenke, rediger navnet, og sett valgfri verifisering, opplysninger, hoder eller en proxy.)</em></p>
+<p>Som standard kjører nedlastingen <strong>i bakgrunnen</strong>, så du kan fortsette å arbeide i panelene mens den overføres. Slå av <strong>Last ned i bakgrunnen</strong> for å vente på den, eller slå på <strong>Sett i kø til senere</strong> for å sette den opp uten å starte den ennå.</p>
+<h2 id="last-ned-flere-filer-samtidig">Last ned flere filer samtidig</h2>
+<p>Lim inn én webadresse per linje i <strong>URL(er)</strong>-boksen. Når mer enn én lenke er til stede, utledes hver fils navn automatisk fra lenken sin, og de per-fil <strong>Lagre som</strong>- og <strong>Verifiser</strong>-feltene slås av.</p>
+<h2 id="gjenoppta-en-avbrutt-nedlasting">Gjenoppta en avbrutt nedlasting</h2>
+<p>Hvis en overføring blir kuttet av, beholder Peach Commander det den allerede har mottatt i en midlertidig <code>.part</code>-fil. Å starte den samme nedlastingen igjen gjenopptar fra der den stanset når tjeneren støtter det, i stedet for å begynne på nytt. <code>.part</code>-filen får det endelige navnet bare når nedlastingen fullføres.</p>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Last ned fra URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li><strong>Verifiser filen.</strong> For en enkelt nedlasting, lim inn en forventet <strong>SHA-256</strong>-kontrollsum i <strong>Verifiser</strong>-feltet. Etter overføringen sammenlignes filens kontrollsum mot den, så du kan stole på at filen matcher det utgiveren oppga.</li>
+<li><strong>Kreves innlogging?</strong> Skriv inn et brukernavn og passord i <strong>Auth</strong>-feltene for nettsteder som bruker grunnleggende autentisering. For token-basert tilgang, legg til en <code>Authorization: Bearer …</code>-linje i <strong>Hoder</strong>-boksen.</li>
+<li><strong>Egendefinerte hoder.</strong> Legg til ett hode per linje i <strong>Hoder</strong>-boksen, for eksempel <code>Referer: …</code> eller <code>Cookie: …</code>, for lenker som bare virker med bestemte forespørselshoder.</li>
+<li><strong>Proxy.</strong> Rut nedlastingen gjennom en HTTP- eller SOCKS5-proxy ved å fylle inn <strong>Proxy</strong>-verten, porten og typen.</li>
+<li><strong>Uklarerte sertifikater.</strong> Slå bare på <strong>Tillat uklarert sertifikat</strong> for et nettsted du stoler på som bruker et selvsignert sertifikat; det slår av den vanlige HTTPS-sikkerhetssjekken for den nedlastingen.</li>
+<li><strong>Merk:</strong> Cmd+Shift+D brukes også andre steder for å gå til Skrivebord-mappen; hvis snarveien ikke åpner denne dialogen, bruk <strong>Nettverk &gt; Last ned fra URL</strong> fra menyen i stedet.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Koble til FTP og SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

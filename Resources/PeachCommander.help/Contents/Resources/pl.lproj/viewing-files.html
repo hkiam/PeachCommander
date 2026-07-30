@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Podgląd plików</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Podgląd plików</h1>
+<p>Peach Commander ma wbudowaną przeglądarkę, która pozwala zajrzeć do wnętrza pliku bez otwierania innej aplikacji ani zmiany pliku. Naciśnij F3 na elemencie pod kursorem, a przeglądarka otwiera się natychmiast, nawet dla bardzo dużych plików. Automatycznie wybiera najlepszy sposób pokazania zawartości: czytelny tekst, kod z kolorowaniem składni, surowy zrzut szesnastkowy lub obraz w pełnym rozmiarze. Możesz również podejrzeć plik prosto w oknie za pomocą Szybkiego podglądu, albo przekazać go do Quick Look w macOS.</p>
+<h2 id="wyswietl-plik">Wyświetl plik</h2>
+<ol>
+<li>Przesuń kursor na plik w aktywnym panelu.</li>
+<li>Naciśnij F3 (lub wybierz Wyświetl w menu Plik). Przeglądarka otwiera się we własnym oknie.</li>
+<li>Użyj paska narzędzi, aby przełączać sposób pokazania zawartości: Tekst, Kod, Szesnastkowy, Obraz lub Renderowany. Pozostaw ustawienie automatyczne, aby pozwolić Peach Commanderowi zdecydować.</li>
+<li>Przewijaj strzałkami, Page Up/Page Down i paskiem przewijania. Przy długim tekście włącz przycisk minimapy, aby widzieć cały plik i szybko się po nim poruszać.</li>
+<li>Naciśnij N, aby przeskoczyć do następnego wybranego pliku, lub zamknij okno klawiszem Esc.</li>
+</ol>
+<p><img alt="Wbudowana przeglądarka pokazująca plik tekstowy z minimapą po prawej" src="images/lister-text.png" />
+<em>(Rysunek: podgląd pliku tekstowego, z selektorem reprezentacji i minimapą na pasku narzędzi.)</em></p>
+<h2 id="znajdz-tekst-i-zmien-kodowanie">Znajdź tekst i zmień kodowanie</h2>
+<ul>
+<li>Naciśnij Ctrl+F, aby wyszukać wewnątrz pliku. Naciśnij F3, aby przeskoczyć do następnego dopasowania, i Shift+F3 do poprzedniego.</li>
+<li>Jeśli tekst wygląda na zniekształcony, kliknij Kodowanie na pasku narzędzi (lub naciśnij E), aby przełączać kodowania tekstu, dopóki nie odczyta się poprawnie; ustawienie automatyczne zwykle trafia.</li>
+<li>Naciśnij W, aby przełączyć zawijanie wierszy dla długich linii.</li>
+</ul>
+<h2 id="szybki-podglad-i-quick-look">Szybki podgląd i Quick Look</h2>
+<p>Szybki podgląd pokazuje podgląd na żywo w panelu, którego <em>nie</em> używasz, dzięki czemu możesz kontynuować przeglądanie po jednej stronie, podglądając po drugiej.</p>
+<ol>
+<li>Naciśnij Ctrl+Q. Nieaktywny panel zmienia się w obszar podglądu.</li>
+<li>Przesuwaj kursor po różnych plikach w aktywnym panelu, aby podejrzeć każdy z nich.</li>
+<li>Naciśnij Ctrl+Q ponownie, lub Esc, aby przywrócić panelowi normalną listę plików.</li>
+</ol>
+<p>Aby uzyskać szybki podgląd pełnoekranowy obsługiwany przez sam macOS, naciśnij Cmd+Y (Quick Look). Naciśnij Cmd+Y lub Spację ponownie, aby go zamknąć.</p>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wyświetl plik pod kursorem</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Wyświetl tylko plik pod kursorem (ignoruj oznaczone pliki)</td>
+<td>Shift+F3</td>
+</tr>
+<tr>
+<td>Otwórz w zewnętrznej przeglądarce</td>
+<td>Option+F3</td>
+</tr>
+<tr>
+<td>Znajdź w przeglądarce</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Następne / poprzednie dopasowanie</td>
+<td>F3 / Shift+F3</td>
+</tr>
+<tr>
+<td>Szybki podgląd w drugim panelu</td>
+<td>Ctrl+Q</td>
+</tr>
+<tr>
+<td>Quick Look (podgląd macOS)</td>
+<td>Cmd+Y</td>
+</tr>
+<tr>
+<td>Zamknij przeglądarkę lub Szybki podgląd</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Przeglądarka jest tylko do odczytu. Aby zmienić plik, użyj zamiast tego edytora (zobacz Edycja plików).</li>
+<li>Bardzo duże pliki otwierają się bez opóźnienia: tekst otwiera szybki, przewijalny widok, a widok szesnastkowy jest strumieniowany prosto z dysku przy dowolnym rozmiarze.</li>
+<li>Naciśnij F3 na folderze, aby zobaczyć podsumowanie jego zawartości i całkowity rozmiar zamiast bajtów pliku.</li>
+<li>Tryb Renderowany wyświetla sformatowaną zawartość, taką jak strony internetowe; tryb szesnastkowy pokazuje surowe bajty obok ich znaków, co jest przydatne do badania plików binarnych.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Edycja plików</a></li><li><a href="searching.html">Wyszukiwanie plików</a></li></ul></section>
+</main>
+</body>
+</html>

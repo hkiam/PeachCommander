@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trovare i file</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Trovare i file</h1>
+<p>Quando devi rintracciare file ovunque sul tuo Mac — per nome, per ciò che contengono, o per dimensione e data — usa la finestra Trova file. Cerca in una o più cartelle (e nelle loro sottocartelle), può guardare dentro file di testo e archivi e ti permette di inviare tutto ciò che trova direttamente in un pannello, così puoi agire sui risultati come se fossero una cartella ordinaria.</p>
+<h2 id="trova-file-per-nome">Trova file per nome</h2>
+<ol>
+<li>Nel pannello che mostra la cartella in cui vuoi cercare, scegli <strong>Comandi &gt; Trova file…</strong> (o premi Cmd+Maiusc+F).</li>
+<li>Nella scheda <strong>Generale</strong>, digita uno schema di nome in <strong>Cerca</strong>. Puoi usare caratteri jolly come <code>*.pdf</code> o <code>report_*.docx</code>. Per cercare in più cartelle in una volta, elencale nel campo della cartella iniziale separate da un punto e virgola (<code>;</code>).</li>
+<li>Fai clic su <strong>Avvia</strong>. Le corrispondenze compaiono nell'elenco dei risultati sotto man mano che vengono trovate.</li>
+<li>Fai doppio clic su un risultato qualsiasi per saltare a quel file nel pannello attivo, o seleziona un risultato e fai clic su <strong>Visualizza</strong> (F3) per aprirlo nel visualizzatore integrato.</li>
+</ol>
+<p><img alt="La finestra Trova file nella scheda Generale, che mostra lo schema del nome, la cartella e l'elenco dei risultati" src="images/find-files-general.png" />
+<em>(Figura: la scheda Generale — cerca per schema di nome in una o più cartelle.)</em></p>
+<h2 id="cerca-per-contenuto-dimensione-e-data">Cerca per contenuto, dimensione e data</h2>
+<ol>
+<li>Per cercare dentro i file, seleziona <strong>Trova testo</strong> nella scheda Generale e digita il testo da cercare. Le opzioni ti permettono di renderlo <strong>Distingui maiuscole</strong>, corrispondere solo a una <strong>Parola intera</strong>, trattare il testo come un'<strong>Espressione regolare</strong>, fare una <strong>Ricerca contenuto esadecimale</strong> o trovare file <strong>Non contenenti</strong> il testo.</li>
+<li>Passa alla scheda <strong>Avanzate</strong> per restringere i risultati per <strong>Dimensione</strong> (per esempio da <code>10K</code> a <code>5M</code>), per intervallo di <strong>data di modifica</strong>, o ai file modificati negli ultimi N giorni.</li>
+<li>Attiva <strong>Cerca dentro gli archivi</strong> per guardare negli archivi della famiglia zip (zip, jar, war e simili).</li>
+<li>Per limitare la ricerca a ciò che hai già scelto, attiva <strong>Cerca solo negli elementi selezionati</strong> prima di avviare.</li>
+</ol>
+<p><img alt="La finestra Trova file nella scheda Avanzate, che mostra i filtri di dimensione e data" src="images/find-files-advanced.png" />
+<em>(Figura: la scheda Avanzate — filtra per dimensione, data e altri attributi.)</em></p>
+<p>Se hai plugin che aggiungono campi di contenuto (come le dimensioni delle immagini), la scheda <strong>Plugin</strong> ti permette di richiedere che un campo corrisponda a una condizione — per esempio, solo immagini più larghe di 1000 pixel.</p>
+<p><img alt="La finestra Trova file nella scheda Plugin, che mostra una condizione su un campo di contenuto" src="images/find-files-plugins.png" />
+<em>(Figura: la scheda Plugin — corrispondenza su campi di contenuto forniti dai plugin.)</em></p>
+<h2 id="ricerche-veloci-con-spotlight">Ricerche veloci con Spotlight</h2>
+<p>Per le cartelle locali che macOS ha già indicizzato, attiva <strong>Usa Spotlight</strong> nella scheda Generale per risultati quasi istantanei. Spotlight cerca nell'indice invece di scansionare i file, quindi ignora le espressioni regolari, i limiti di profondità delle sottocartelle e l'ambito solo-selezione.</p>
+<h2 id="riutilizza-e-trasferisci-i-risultati">Riutilizza e trasferisci i risultati</h2>
+<ul>
+<li><strong>Invia all'elenco</strong> colloca ogni risultato nel pannello attivo come elenco temporaneo, così puoi copiare, spostare o eliminare l'intero insieme in una volta.</li>
+<li>Nella scheda <strong>Carica / Salva</strong>, scegli <strong>Salva come modello…</strong> per memorizzare la ricerca corrente (schemi e opzioni) e sceglierla di nuovo più tardi dall'elenco dei modelli.</li>
+</ul>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Scorciatoia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apri Trova file</td>
+<td>Cmd+Maiusc+F o Opzione+F7</td>
+</tr>
+<tr>
+<td>Avvia / arresta la ricerca</td>
+<td>Pulsante Avvia nella finestra</td>
+</tr>
+<tr>
+<td>Visualizza il risultato selezionato</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>La ricerca per contenuto legge i file interi per le cartelle locali; su altre posizioni i file molto grandi vengono saltati (circa 16 MB, o 64 MB quando si usa un'espressione regolare).</li>
+<li>La ricerca dentro gli archivi scende fino a quattro livelli di archivi annidati.</li>
+<li><strong>Includi cartelle nei risultati</strong> elenca anche le cartelle i cui nomi corrispondono, non solo i file.</li>
+<li>Spotlight copre solo le cartelle locali indicizzate; per posizioni di rete o corrispondenza basata su schemi, lascialo disattivato e lascia che Trova file scansioni.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">Selezione dei file</a></li><li><a href="quick-search-and-filter.html">Ricerca rapida e filtro</a></li></ul></section>
+</main>
+</body>
+</html>

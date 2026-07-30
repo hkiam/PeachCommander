@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rychlé hledání a filtr</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Rychlé hledání a filtr</h1>
+<p>Když složka obsahuje stovky položek, jen zřídka potřebujete rolovat. Peach Commander umožňuje přeskočit rovnou na soubor napsáním jeho názvu (rychlé hledání), zúžit seznam jen na položky, které vás zajímají (rychlý filtr), a zobrazit nebo skrýt tečkové soubory, které macOS obvykle drží mimo dohled. Všechny tři fungují uvnitř aktivního panelu bez otevírání dialogu.</p>
+<h2 id="preskok-na-soubor-psanim-rychle-hledani">Přeskok na soubor psaním (rychlé hledání)</h2>
+<ol>
+<li>Klepnutím na souborový panel jej učiníte aktivním.</li>
+<li>Začněte psát začátek názvu. Kurzor přeskočí na první odpovídající položku.</li>
+<li>Pokračujte v psaní pro zpřesnění shody, nebo stiskněte totéž písmeno znovu pro procházení položek začínajících tímto písmenem.</li>
+<li>Napsaný text se po krátké pauze vymaže, takže nové hledání můžete začít kdykoli.</li>
+</ol>
+<p>Ve výchozím nastavení jdou obyčejná písmena do příkazového řádku a rychlé hledání se spouští pomocí Ctrl+Option+písmeno (klasické chování). Rychlé hledání můžete přepnout tak, aby reagovalo na obyčejné psaní, nebo jej vypnout, v nastavení konfigurace.</p>
+<h2 id="filtrovani-seznamu-rychly-filtr">Filtrování seznamu (rychlý filtr)</h2>
+<ol>
+<li>V aktivním panelu stiskem Ctrl+S zapněte rychlý filtr.</li>
+<li>Zadejte masku filtru. Panel se za psaní živě zúží na odpovídající položky.</li>
+<li>Stiskem Esc filtr vymažete a znovu zobrazíte vše.</li>
+</ol>
+<p>Filtr přijímá několik druhů masek:</p>
+<ul>
+<li><strong>Prostý text</strong> odpovídá jakémukoli názvu, který obsahuje to, co jste napsali (například <code>zprava</code> zobrazí každou položku se slovem „zprava“ kdekoli v názvu).</li>
+<li><strong>Zástupné znaky</strong> používají <code>*</code> (libovolné znaky) a <code>?</code> (jeden znak). Více masek oddělte středníkem a výjimky přidejte za svislou čáru, například <code>*.jpg;*.png|*thumb*</code> pro zobrazení obrázků, ale skrytí náhledů.</li>
+<li><strong>Štítky Finderu</strong> filtrují podle barvy štítku: napište <code>tag:red</code> (nebo <code>#red</code>) pro zobrazení jen položek s červeným štítkem, nebo samotné <code>tag:</code> pro zobrazení všeho, co nese jakýkoli štítek.</li>
+</ul>
+<h2 id="zobrazeni-skrytych-souboru">Zobrazení skrytých souborů</h2>
+<p>Stiskem Ctrl+H, nebo volbou příkazu z nabídky Zobrazení, přepnete skryté položky (názvy začínající tečkou a systémově skryté soubory). Nastavení platí pro aktivní panel a pamatuje se mezi relacemi.</p>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rychlé hledání (klasický režim)</td>
+<td>Ctrl+Option+písmeno</td>
+</tr>
+<tr>
+<td>Rychlý filtr zap./vyp.</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Vymazat filtr / zrušit</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Zobrazit/skrýt skryté soubory</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Rychlé hledání pouze pohybuje kurzorem; rychlý filtr skutečně mění, které položky jsou uvedeny. Filtr použijte, když chcete pracovat s podmnožinou (například vybrat nebo zkopírovat jen shody).</li>
+<li>Nastavení filtru a skrytých souborů jsou pro každý panel, takže obě strany mohou zobrazovat různé věci současně.</li>
+<li>Rychlé hledání porovnává názvy od začátku; režim prostého textu rychlého filtru porovnává kdekoli v názvu. Použijte zástupný znak jako <code>*text*</code>, chcete-li, aby se filtr choval stejně.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Hledání souborů</a></li><li><a href="view-modes-and-sorting.html">Režimy zobrazení a řazení</a></li></ul></section>
+</main>
+</body>
+</html>

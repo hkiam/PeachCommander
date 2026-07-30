@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Assistant</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>AI Assistant</h1>
+<p>The AI assistant is an optional, removable plugin that helps you work with your files in plain language. It can summarize or explain a document, suggest a better file name, translate or proofread text, turn data into a table, and even organize a folder — and it can carry out file actions for you after showing you a plan first. It runs on-device with Apple Intelligence when available, or you can point it at a cloud model. Because it is a plugin, you can disable or remove it entirely from <strong>Configuration ▸ Plugins…</strong>.</p>
+<h2 id="open-the-assistant">Open the assistant</h2>
+<p>Choose <strong>Commands ▸ AI Assistant</strong> to show the assistant in a docked panel on the right of the window. Type a request and press Return; the assistant can read files, look things up, and — with your confirmation — make changes.</p>
+<p><img alt="The AI assistant chat docked beside the file panels" src="images/ai-chat.png" />
+<em>(Figure: The AI assistant, docked on the right, working on a request.)</em></p>
+<h2 id="right-click-actions-ai">Right-click actions (AI ▸)</h2>
+<p>The quickest way to use the assistant is the <strong>AI ▸</strong> submenu in the right-click menu:</p>
+<ul>
+<li><strong>On a file</strong> — Summarize, Explain, Suggest a name, Translate to English, Proofread, Detect tasks, and Make a table.</li>
+<li><strong>On the panel background</strong> — Organize this folder and Find likely duplicates.</li>
+</ul>
+<p>Each <strong>AI ▸</strong> action opens its <strong>own titled chat</strong> (for example, <em>Summarize – report.txt</em>), so different tasks stay separate instead of piling into one long conversation. When you type into the input field yourself, that request continues the current chat.</p>
+<h2 id="manage-your-chats">Manage your chats</h2>
+<ul>
+<li>Use the chat switcher at the top of the panel to move between conversations.</li>
+<li>The <strong>Delete ▾</strong> menu offers <strong>Delete this chat</strong> and <strong>Delete all chats</strong>, so you can clear everything at once when the list gets long. Empty chats are cleaned up automatically when you close the panel.</li>
+</ul>
+<h2 id="changes-are-confirmed-first">Changes are confirmed first</h2>
+<p>For anything that modifies files — moving, renaming, writing, deleting — the assistant shows a <strong>plan and waits for your confirmation</strong> before acting. You can change this in Settings by raising the assistant's autonomy, or lower it to read-only so it never changes anything.</p>
+<h2 id="settings">Settings</h2>
+<p>Open <strong>Configuration ▸ Settings ▸ AI</strong> to configure the assistant on a single page:</p>
+<ul>
+<li><strong>Preferred model</strong> — Automatic (cloud if configured, otherwise on-device), On-device (Apple Intelligence), or Cloud.</li>
+<li><strong>Cloud endpoint, model, and API key</strong> — to use an OpenAI-compatible model instead of the on-device one. The key is stored in the macOS Keychain, never in your configuration files.</li>
+<li><strong>Assistant autonomy</strong> — read-only, confirm changes (the default), or autonomous.</li>
+<li><strong>Custom system prompt</strong> — optional instructions that shape how the assistant replies.</li>
+<li><strong>MCP server</strong> — an optional local-only server that lets an external agent drive the app; off by default and protectable with a token.</li>
+</ul>
+<p><img alt="The AI page in Settings with autonomy and the MCP server options" src="images/settings-ai.png" />
+<em>(Figure: All assistant options live on one AI page in Settings.)</em></p>
+<h2 id="privacy">Privacy</h2>
+<ul>
+<li>With Apple Intelligence the assistant runs <strong>on your Mac</strong>; nothing leaves the device.</li>
+<li>A cloud model is used <strong>only if you configure one</strong>, and its API key is kept in the Keychain.</li>
+<li>File-changing actions are confirmed before they run unless you deliberately raise the autonomy level.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="settings.html">Settings</a></li><li><a href="privacy-and-security.html">Privacy &amp; security</a></li></ul></section>
+</main>
+</body>
+</html>

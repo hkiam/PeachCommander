@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tilslutning til FTP og SFTP</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Tilslutning til FTP og SFTP</h1>
+<p>Peach Commander kan gennemse fjernservere, som var de almindelige mapper. Når du er tilsluttet, viser det ene panel fjernfilerne, og du kopierer, flytter, omdøber og sletter dem med de samme taster, du bruger lokalt. Den taler almindelig FTP, sikker FTPS og SFTP/SCP over SSH, så du kan nå alt fra en klassisk webhost til en hærdet SSH-server. Gemte forbindelser bor i forbindelseshåndteringen, og adgangskoder opbevares sikkert i din macOS-nøglering frem for i selve forbindelsen.</p>
+<h2 id="tilslut-til-en-server">Tilslut til en server</h2>
+<ol>
+<li>Åbn menuen <strong>Net</strong> og vælg <strong>FTP-tilslutning…</strong> (Ctrl+F) for at åbne forbindelseshåndteringen.</li>
+<li>Vælg en gemt forbindelse fra listen og klik på <strong>Tilslut</strong>, eller klik på <strong>Ny</strong> for at oprette en. Brug mapper på listen til at gruppere forbindelser.</li>
+<li>For en hurtig engangsforbindelse skal du vælge <strong>Net &gt; FTP ny forbindelse…</strong> (Ctrl+N) og skrive adressen direkte.</li>
+<li>Indtast din adgangskode, når du bliver bedt om det; sæt flueben ved indstillingen om at gemme den, og den lægges i din nøglering til næste gang.</li>
+<li>Når du er færdig, skal du vælge <strong>Net &gt; FTP afbryd forbindelse</strong> (Ctrl+Shift+F).</li>
+</ol>
+<p><img alt="FTP-forbindelseshåndteringen viser listen over gemte sessioner med knapperne Ny, Redigér og Slet" src="images/ftp-connection-manager.png" />
+<em>(Figur: Forbindelseshåndteringen indeholder dine gemte servere; brug Ny, Redigér og Slet til at håndtere dem.)</em></p>
+<p>Når du opsætter en forbindelse, kan du vælge protokollen (FTP, FTPS med eksplicit AUTH TLS, implicit FTPS på port 990 eller SFTP/SCP), passiv eller aktiv tilstand, de eksterne og lokale startmapper, tekstkodning og et valgfrit keep-alive-interval, der forhindrer inaktive servere i at smide dig af. For SFTP kan du godkende med din SSH-agent, en adgangskode eller en privat nøglefil, og du kan vælge SCP til overførsler. Ukendte SSH-værtsnøgler stoles på ved første brug; hvis en kendt servers nøgle nogensinde ændres, afvises forbindelsen for at beskytte dig mod manipulation.</p>
+<h2 id="ftp-konsollen">FTP-konsollen</h2>
+<p>For at se præcis, hvad serveren siger, skal du åbne FTP-konsollen fra menuen <strong>Net</strong>. Den viser en løbende log over kontrolkanalen (din adgangskode maskeres) og lader dig skrive rå FTP-kommandoer til serveren.</p>
+<p><img alt="FTP-konsollen viser kontrolkanal-loggen og et felt til rå kommandoer" src="images/ftp-console.png" />
+<em>(Figur: FTP-konsollen logger hver udveksling og accepterer rå kommandoer, hvilket er praktisk til fejlfinding.)</em></p>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Genvej</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Åbn forbindelseshåndtering</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Ny forbindelse</td>
+<td>Ctrl+N</td>
+</tr>
+<tr>
+<td>Afbryd forbindelse</td>
+<td>Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Skift overførselstilstand</td>
+<td>Ctrl+Shift+M</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Afbrudte overførsler og uploads kan genoptage, hvor de slap, i stedet for at starte forfra.</li>
+<li>For FTPS-servere med et selvsigneret certifikat skal du slå indstillingen om at acceptere et utroværdigt certifikat til i den forbindelses indstillinger.</li>
+<li>En SOCKS5-proxy kan indstilles pr. forbindelse for almindelig FTP. Det er ikke understøttet at dirigere en krypteret FTPS-forbindelse gennem en proxy.</li>
+<li>Eksisterende FTP-forbindelser fra Total Commander kan importeres.</li>
+<li>SCP bruges kun til overførsel af filer; visning, omdøbning og sletning går altid over SFTP.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="downloading-from-url.html">Overførsel fra en URL</a></li><li><a href="network-shares.html">Netværksshares</a></li></ul></section>
+</main>
+</body>
+</html>

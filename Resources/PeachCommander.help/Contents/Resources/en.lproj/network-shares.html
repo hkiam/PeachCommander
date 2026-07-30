@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Network shares</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Network shares</h1>
+<p>Peach Commander can connect to file servers on your local network or company network — SMB (Windows/Samba) and AFP shares — and show their contents in a panel just like a folder on your own Mac. Once a share is connected, you can browse, copy, move, rename, and open files across it exactly as you would locally, including copying between the share and your other panel.</p>
+<h2 id="connect-to-a-server">Connect to a server</h2>
+<ol>
+<li>Click the panel you want to connect (the connected share opens in the active panel).</li>
+<li>Press Cmd+K, or choose <strong>Net &gt; Network Neighborhood &gt; Mount Network Share…</strong>.</li>
+<li>In the <strong>Connect to Server</strong> dialog, type the server address. You can enter:
+   - an SMB address, for example <code>smb://fileserver/projects</code>
+   - an AFP address, for example <code>afp://fileserver/projects</code>
+   - a Windows-style path, for example <code>\\fileserver\projects</code>
+   - a plain <code>server/share</code> name</li>
+<li>Click Connect (or press Return). If the server needs a name and password, macOS shows its standard sign-in prompt — enter your credentials there.</li>
+<li>When the share is ready, the active panel opens it automatically. Browse and work with it like any other folder.</li>
+</ol>
+<h2 id="disconnect">Disconnect</h2>
+<p>A connected share appears as a mounted volume on your Mac. To disconnect it, eject it the usual macOS way — for example from the Finder sidebar, or from the drive list in Peach Commander.</p>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mount network share…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Authentication (user name, password, and any "remember this in my keychain" choice) is handled by the standard macOS sign-in sheet, so saved server passwords work the same as they do in the Finder.</li>
+<li>If you enter an address that can't be understood, Peach Commander asks you to provide an SMB/AFP address, a Windows-style path, or a <code>server/share</code> name, and nothing is mounted.</li>
+<li>After you confirm, connecting can take a moment while macOS mounts the share; the panel switches to it as soon as it becomes available.</li>
+<li>This connects to shared drives on a network. To reach an FTP, FTPS, or SFTP server instead, see the related topic below.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Connecting to FTP &amp; SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sammenligne og synkronisere</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Sammenligne og synkronisere</h1>
+<p>Når du beholder to kopier av samme mappe — en arbeidsmappe og en sikkerhetskopi, en bærbar og en nettverksdeling, et prosjekt og dets arkiv — hjelper Peach Commander deg å se nøyaktig hva som endret seg og bringe de to sidene tilbake i takt. Du kan synkronisere to kataloger, sammenligne enkeltfiler linje for linje, og inspisere filer byte for byte når du trenger visshet ned til siste tegn.</p>
+<h2 id="synkroniser-to-kataloger">Synkroniser to kataloger</h2>
+<ol>
+<li>Åpne mappen du vil synkronisere i venstre panel og mappen du vil sammenligne den mot i høyre panel.</li>
+<li>Velg <strong>Kommandoer ▸ Synkroniser kataloger…</strong>. De to mappestiene fylles inn fra panelene dine.</li>
+<li>Angi hvor grundig sammenligningen skal være: inkluder undermapper, sammenlign <strong>etter innhold</strong> (ikke bare etter dato og størrelse), eller ignorer endringsdatoen.</li>
+<li>Legg til en filtermaske (for eksempel <code>*.jpg;*.png</code>) hvis du bare vil synkronisere visse filer.</li>
+<li>Se gjennom resultatrutenettet. Hver rad viser en fil til venstre, en retningspil i midten og den samsvarende filen til høyre. Pilene forteller deg hva som vil skje: <strong>→</strong> kopierer fra venstre til høyre, <strong>←</strong> kopierer fra høyre til venstre, og <strong>=</strong> betyr at de to er identiske.</li>
+<li>Juster enkeltrader hvis du er uenig i en foreslått retning, og klikk deretter synkroniser-knappen for å gjennomføre endringene.</li>
+</ol>
+<p><img alt="Synkroniser kataloger-vinduet med to mappestier og et resultatrutenett av filer med venstre-, likhets- og høyrepiler" src="images/sync-dialog.png" />
+<em>(Figur: Synkroniser kataloger-vinduet sammenligner begge sider og foreslår en kopieringsretning for hver fil.)</em></p>
+<h2 id="sammenlign-to-filer-etter-innhold">Sammenlign to filer etter innhold</h2>
+<ol>
+<li>Merk én fil i hvert panel (eller to filer i samme panel).</li>
+<li>Velg <strong>Fil ▸ Sammenlign etter innhold…</strong>.</li>
+<li>De to filene åpnes side om side med forskjellene uthevet. Bruk neste/forrige-kontrollene for å hoppe mellom endrede blokker.</li>
+<li>Hvis du slår på redigeringsmodus, kan du justere begge filene direkte og lagre endringene dine.</li>
+</ol>
+<p><img alt="Sammenligningsvinduet som viser to tekstfiler side om side med avvikende linjer uthevet" src="images/diff-window.png" />
+<em>(Figur: Sammenligning av to tekstfiler; endrede linjer uthevet på begge sider.)</em></p>
+<h2 id="sammenlign-filer-byte-for-byte">Sammenlign filer byte for byte</h2>
+<p>Når to filer ser like ut, men du trenger å bevise at de virkelig er identiske (eller finne den ene byten som avviker), bruk den binære sammenligningen. Den viser begge filene i en heksadesimalvisning med ikke-samsvarende bytes markert, noe som er ideelt for å verifisere nedlastinger, sjekke kodede data eller bekrefte en nøyaktig kopi.</p>
+<h2 id="sammenlign-kataloglister">Sammenlign kataloglister</h2>
+<p>For å oppdage forskjeller mellom to åpne mapper med ett blikk, velg <strong>Merk ▸ Sammenlign kataloger</strong> (Shift+F2). Peach Commander merker filene som avviker eller mangler på den andre siden, slik at du kan handle på dem med de vanlige kopier-, flytt- og slett-kommandoene.</p>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sammenlign kataloglister (merk avvikende filer)</td>
+<td>Shift+F2</td>
+</tr>
+<tr>
+<td>Sammenlign etter innhold</td>
+<td>Fil ▸ Sammenlign etter innhold…</td>
+</tr>
+<tr>
+<td>Synkroniser kataloger</td>
+<td>Kommandoer ▸ Synkroniser kataloger…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li><strong>Etter innhold kontra etter dato/størrelse.</strong> En rask sammenligning samsvarer filer etter størrelse og endringsdato, noe som er raskt, men kan lures når tidsstempler avviker for identiske filer. Slå på <strong>etter innhold</strong> for et pålitelig resultat på bekostning av å lese hver fil.</li>
+<li><strong>Undermapper og filtre.</strong> Synkroniseringsvinduet kan stige ned i undermapper og kan begrenses med en filtermaske, slik at du kan synkronisere bare filtypene du bryr deg om.</li>
+<li><strong>Du har kontrollen.</strong> Synkronisering kjører aldri av seg selv — du ser gjennom de foreslåtte retningene i resultatrutenettet og kan endre hvilken som helst av dem før noe kopieres.</li>
+<li><strong>Forhåndsinnstillinger.</strong> Ofte brukte synkroniseringsoppsett kan lagres og gjenbrukes slik at du ikke skriver inn de samme alternativene hver gang.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Gi mange filer nytt navn</a></li></ul></section>
+</main>
+</body>
+</html>

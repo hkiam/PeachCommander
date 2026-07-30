@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacidad y seguridad</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Privacidad y seguridad</h1>
+<p>Peach Commander está hecho para no estorbar y mantener tus datos en tu Mac. Las contraseñas se entregan al llavero de macOS, la información de fallos nunca sale de tu ordenador sin tu permiso, y la app no recopila estadísticas de uso. Este tema explica dónde reside tu información sensible y cómo conceder el único permiso del sistema que un gestor de archivos necesita para hacer su trabajo.</p>
+<h2 id="donde-se-guardan-las-contrasenas">Dónde se guardan las contraseñas</h2>
+<p>Cualquier contraseña o frase de acceso que guardes —para una conexión FTP o SFTP, o para abrir un archivo comprimido protegido con contraseña— se escribe en el <strong>llavero</strong> de macOS, el mismo almacén seguro que el sistema usa para tus inicios de sesión de Wi-Fi y sitios web. Las contraseñas nunca se escriben en texto plano en la configuración ni en los archivos de conexión de Peach Commander.</p>
+<ol>
+<li>Cuando guardes una contraseña de conexión o de archivo comprimido, elige la opción de recordarla.</li>
+<li>La contraseña se guarda en tu llavero de inicio de sesión, protegido por tu cuenta.</li>
+<li>Para revisar o eliminar una contraseña guardada más tarde, abre la app <strong>Acceso a Llaveros</strong> (en Aplicaciones ▸ Utilidades) y busca el nombre de la conexión.</li>
+</ol>
+<h2 id="conceder-acceso-total-al-disco">Conceder acceso total al disco</h2>
+<p>macOS mantiene privadas algunas ubicaciones —Mail, Mensajes y los datos de otras apps dentro de tu carpeta Biblioteca— hasta que permites el acceso explícitamente. Como un gestor de archivos está pensado para llegar a cada archivo, Peach Commander solicita <strong>Acceso total al disco</strong>. La app sigue funcionando con acceso reducido hasta que lo concedes; simplemente no verás esas carpetas protegidas.</p>
+<ol>
+<li>Elige <strong>Comandos ▸ Acceso total al disco…</strong>, o haz clic en <strong>Abrir Ajustes del Sistema</strong> cuando la app se ofrezca a guiarte al iniciar.</li>
+<li>En <strong>Ajustes del Sistema ▸ Privacidad y seguridad ▸ Acceso total al disco</strong>, activa el interruptor junto a Peach Commander.</li>
+<li>Reinicia la app si se te pide.</li>
+</ol>
+<h2 id="los-informes-de-fallos-permanecen-locales">Los informes de fallos permanecen locales</h2>
+<p>Si la app se cierra inesperadamente, macOS escribe un informe de fallo en tu propia carpeta de diagnósticos. En el siguiente inicio Peach Commander lo detecta y se ofrece a ayudarte a presentar un informe de error, pero solo con tu consentimiento.</p>
+<ul>
+<li>Puedes usar <strong>Mostrar en el Finder</strong> para ver el informe, o <strong>Copiar informe al portapapeles</strong> para pegarlo tú mismo en un informe de error.</li>
+<li>Nunca se transmite nada automáticamente, y no interviene ningún servicio de informes de fallos de terceros.</li>
+</ul>
+<h2 id="notas">Notas</h2>
+<ul>
+<li><strong>Sin telemetría.</strong> Peach Commander no rastrea tu actividad ni envía estadísticas de uso a ningún sitio.</li>
+<li><strong>El acceso reducido es seguro.</strong> Si omites el Acceso total al disco, la app sigue explorando y gestionando los archivos que normalmente puedes ver; solo se ocultan las ubicaciones protegidas por el sistema.</li>
+<li><strong>Tú controlas las contraseñas guardadas.</strong> Como las credenciales residen en el llavero, las gestionas y revocas con las herramientas estándar de macOS en lugar de dentro de la app.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Conectarse a FTP y SFTP</a></li><li><a href="troubleshooting.html">Resolución de problemas</a></li></ul></section>
+</main>
+</body>
+</html>

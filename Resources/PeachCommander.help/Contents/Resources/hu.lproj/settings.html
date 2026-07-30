@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beállítások</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Beállítások</h1>
+<p>A Beállítások ablak az a hely, ahol a Peach Commandert a munkamódjához igazítja: mely sávok jelennek meg, hogyan jelennek meg a fájlok, hogyan viselkednek a másolási és törlési műveletek, a tömörítéskor használt archívumformátum, a lapok viselkedése, az FTP-alapértékek, a megjelenítési nyelv és több. A beállítások oldalakba vannak csoportosítva, így gyorsan megtalálhat egy lehetőséget, és minden változtatás automatikusan mentődik a személyes konfigurációs mappájába.</p>
+<h2 id="a-beallitasok-megnyitasa">A Beállítások megnyitása</h2>
+<ol>
+<li>Válassza a <strong>Peach Commander &gt; Beállítások…</strong> lehetőséget, vagy nyomja meg a Cmd+, (vessző) billentyűt.</li>
+<li>Ugyanezt az ablakot a <strong>Konfiguráció &gt; Lehetőségek…</strong> alól is megnyithatja.</li>
+<li>Válasszon egy oldalt a bal oldali listából; az adott oldal lehetőségei a jobb oldalon jelennek meg.</li>
+<li>Állítsa be a vezérlőket. A változtatások azonnal életbe lépnek, hacsak egy megjegyzés az oldalon mást nem mond.</li>
+</ol>
+<p><img alt="A Beállítások ablak az Elrendezés oldalt mutatja jelölőnégyzetekkel a felület sávjaihoz" src="images/settings-layout.png" />
+<em>(Ábra: az Elrendezés oldal vezérli, mely sávok jelennek meg a panelek körül.)</em></p>
+<h2 id="az-oldalak">Az oldalak</h2>
+<p>Az ablaknak ezek az oldalai vannak, sorrendben:</p>
+<ul>
+<li><strong>Elrendezés</strong> — a meghajtósáv, lapsáv, útvonalsáv és állapotsáv megjelenítése vagy elrejtése.</li>
+<li><strong>Megjelenítés</strong> — hogyan listázódnak a fájlok és mappák, beleértve a dátumformátumot.</li>
+<li><strong>Ikonok</strong> — az ikonok megjelenése a fájllistákban.</li>
+<li><strong>Működés</strong> — általános viselkedés, például mi történik, amikor gépel egy panelben (gyorskeresés vs. parancssor).</li>
+<li><strong>Színek</strong> — egyéni panelszínek, vagy hagyja őket az aktuális témát követni.</li>
+<li><strong>Megerősítés</strong> — mely műveletek kérnek először megerősítést, mint a törlés.</li>
+<li><strong>Szerkesztés/Megtekintés</strong> — a fájlok szerkesztéséhez és megtekintéséhez használt programok és a típusonkénti társítások.</li>
+<li><strong>Másolás/Törlés</strong> — fájlmetaadatok megőrzése, gyors klónozás használata, csak újabb fájlok másolása, ellenőrzés másolás után, törlések küldése a Kukába, és egy opcionális sebességkorlát beállítása.</li>
+<li><strong>Zip/Tömörítő</strong> — az alapértelmezett archívumformátum és tömörítési szint, amelyet tömörítéskor használ.</li>
+<li><strong>Bővítmények</strong> — a telepített bővítmények be- vagy kikapcsolása.</li>
+<li><strong>Lapok</strong> — hogyan nyílnak meg és viselkednek a mappalapok.</li>
+<li><strong>FTP</strong> — hálózati alapértékek, mint a keep-alive időköz.</li>
+<li><strong>Billentyűzet</strong> — a billentyűparancsok áttekintése és módosítása.</li>
+<li><strong>Nyelv</strong> — válasszon Rendszer alapértelmezett, English vagy Deutsch közül.</li>
+<li><strong>MI</strong> — az MI-asszisztens beállítása: preferált modell, felhő végpont és kulcs, autonómia, és az opcionális MCP-kiszolgáló (lásd <a href="ai-assistant.md">Asszisztens MI</a>).</li>
+<li><strong>Egyéb</strong> — a konfigurációs mappa megnyitása a Finderben.</li>
+</ul>
+<p>Az engedélyezett bővítmények saját oldalakat adhatnak a beépítettek után — például <strong>Lemeztérkép</strong> és <strong>System Monitor</strong> — így a lehetőségeik ugyanabban az ablakban élnek (lásd <a href="plugins.md">Bővítmények</a>).</p>
+<p><img alt="A Beállítások ablak a Megjelenítés oldal lehetőségeit mutatja a fájlok listázásához" src="images/settings-display.png" />
+<em>(Ábra: a Megjelenítés oldal vezérli, hogyan listázódnak a fájlok és mappák.)</em></p>
+<p><img alt="A Beállítások ablak a Működés oldalt mutatja" src="images/settings-operation.png" />
+<em>(Ábra: a Működés oldal irányítja a gyorskeresést és az egér viselkedését.)</em></p>
+<h2 id="hol-tarolodnak-a-beallitasai">Hol tárolódnak a beállításai</h2>
+<p>A konfigurációja egyszerű szövegfájlokban tárolódik a személyes Application Support mappáján belül, a <code>~/Library/Application Support/PeachCommander</code> alatt. A megnyitásához menjen az <strong>Egyéb</strong> oldalra és kattintson a <strong>Konfigurációs mappa megnyitása</strong> gombra. A mentett FTP-jelszavak nem ezekben a fájlokban tárolódnak; biztonságosan a macOS kulcskarikában vannak.</p>
+<p>A beállítások írásra kerülnek, ahogy megváltoztatja őket. Bármikor kikényszeríthet egy mentést is a <strong>Konfiguráció &gt; Beállítások mentése</strong> lehetőséggel, és tárolhatja az aktuális ablakhelyzetet és panelelrendezést a <strong>Konfiguráció &gt; Pozíció mentése</strong> lehetőséggel.</p>
+<h2 id="beallitasok-athozatala-a-total-commanderbol">Beállítások áthozatala a Total Commanderből</h2>
+<p>Ha a Windows-os Total Commanderről vált, importálhatja a mentett FTP-oldalait. Válassza a <strong>Konfiguráció &gt; wincmd.ini importálása…</strong> lehetőséget és válassza ki a Total Commander FTP-konfigurációs fájlját. A kapcsolatai ugyanabban a sorrendben adódnak hozzá a Peach Commanderhez, ahogy ott megjelentek.</p>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyűparancs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A Beállítások megnyitása</td>
+<td>Cmd+,</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A <strong>Nyelv</strong> oldal Rendszer alapértelmezett, English és Deutsch közül kínál. A nyelv megváltoztatása csak a Peach Commander újraindítása után lép életbe.</li>
+<li>A <strong>Színek</strong> oldalon beállított színek felülírják a témát; ott használja az <strong>Alapértelmezések visszaállítása</strong>-t a téma színeihez való visszatéréshez.</li>
+<li>A Peach Commander a beállításait csak a saját konfigurációs mappájában tárolja, így a változtatásai soha nem érintenek más appokat, és könnyen biztonsági mentés készíthető róluk a mappa másolásával.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="appearance.html">Megjelenés</a></li><li><a href="keyboard-shortcuts.html">Billentyűzet és billentyűparancsok</a></li></ul></section>
+</main>
+</body>
+</html>

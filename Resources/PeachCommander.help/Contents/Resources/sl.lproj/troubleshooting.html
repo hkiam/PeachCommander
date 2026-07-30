@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Odpravljanje težav</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Odpravljanje težav</h1>
+<p>Ta tema pokriva težave, na katere ljudje najpogosteje naletijo: macOS blokira dostop do določenih map, mapa, ki se zdi obtičala pri stari vsebini, varni strežnik FTP, ki zavrača povezavo, in pakiranje v RAR. Vsak razdelek vam pove, kaj se dogaja in kako to popraviti.</p>
+<h2 id="macos-prosi-za-dovoljenje-ali-mape-izgledajo-prazne">macOS prosi za dovoljenje, ali mape izgledajo prazne</h2>
+<p>Nekatere lokacije — kot so vaša mapa <code>~/Library</code>, mape drugih uporabnikov in sistemska območja — so zaščitene z macOS in ostanejo skrite, dokler ne podelite dostopa. Peach Commander zazna, kdaj se to zgodi, in ponudi, da vas usmeri k pravi nastavitvi.</p>
+<ol>
+<li>Ko ste pozvani, izberite odpiranje Sistemskih nastavitev, ali jih odprite sami.</li>
+<li>Pojdite v Zasebnost in varnost, nato Popolni dostop do diska.</li>
+<li>Vklopite stikalo ob Peach Commander. Če ni na seznamu, uporabite gumb Dodaj, da ga dodate.</li>
+<li>Zaprite in znova odprite Peach Commander, da novo dovoljenje začne veljati.</li>
+</ol>
+<p>Peach Commander ne teče znotraj omejenega peskovnika, tako da lahko po podelitvi Popolnega dostopa do diska brska in upravlja datoteke natanko kot Finder.</p>
+<h2 id="mapa-ne-prikazuje-nedavnih-sprememb">Mapa ne prikazuje nedavnih sprememb</h2>
+<p>Podokna se običajno sama posodobijo, ko se datoteke spremenijo na disku. Če je mapo spremenil drug program, je na omrežnem nosilcu, ali preprosto izgleda zastarela, jo osvežite ročno.</p>
+<ol>
+<li>Kliknite podokno, ki ga želite posodobiti.</li>
+<li>Pritisnite F2 (ali Ctrl+R), da znova preberete to mapo.</li>
+</ol>
+<p>Omrežni in priklopljeni nosilci ne poročajo vedno o spremembah macOS, tako da je ročna osvežitev tam zanesljiva rešitev.</p>
+<h2 id="streznik-ftps-se-ne-poveze">Strežnik FTPS se ne poveže</h2>
+<p>Če varna povezava FTP spodleti, preverite te nastavitve v podrobnostih povezave:</p>
+<ul>
+<li>Uskladite varnostni način strežnika: izrecni FTPS (AUTH TLS) proti implicitnemu FTPS (vrata 990) nista zamenljiva.</li>
+<li>Če se povezava po prijavi zatakne, preklopite med pasivnim in aktivnim načinom prenosa — večina strežnikov za požarnim zidom potrebuje pasivnega.</li>
+<li>Če strežnik uporablja samopodpisano potrdilo, ga morate izrecno dovoliti; sicer je povezava zavrnjena.</li>
+<li>Potrdite gostitelja, vrata, uporabniško ime in geslo, in ali je v vašem omrežju potreben posrednik SOCKS5.</li>
+</ul>
+<h2 id="pakiranje-v-rar-ne-naredi-nicesar">Pakiranje v RAR ne naredi ničesar</h2>
+<p>Peach Commander lahko sam ustvari arhive ZIP, 7z, TAR, TAR.GZ, BZ2 in XZ. RAR je drugačen: ker je RAR lastniška oblika, ustvarjanje arhivov RAR zahteva ločeno orodje ukazne vrstice RAR, nameščeno na vašem Macu. Brez njega RAR ni na voljo, ko pakirate datoteke (Option+F5). Za branje obstoječih arhivov RAR jih lahko še vedno odprete kot mapo. Če ne potrebujete prav RAR, izberite namesto tega ZIP ali 7z — oba podpirata močno šifriranje AES-256 in razdeljene nosilce.</p>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Osveži dejavno mapo</td>
+<td>F2 ali Ctrl+R</td>
+</tr>
+<tr>
+<td>Poveži se s strežnikom FTP/FTPS</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Priklopi omrežno mapo</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>Zapakiraj izbrane datoteke</td>
+<td>Option+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Gesla in druge poverilnice so shranjene le v ključavnici macOS, nikoli v konfiguracijskih datotekah v navadnem besedilu.</li>
+<li>Priklop omrežne mape (Cmd+K, ali meni Omrežje ▸ Priklopi omrežno mapo…) uporablja isto povezavo, ki jo uporablja macOS sam, tako da se pojavi tudi v Finderju.</li>
+<li>Če težava vztraja po osvežitvi in ponovnem zagonu, gre morda za znano omejitev in ne za napako — glejte Znane omejitve.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">Zasebnost in varnost</a></li><li><a href="known-limitations.html">Znane omejitve</a></li></ul></section>
+</main>
+</body>
+</html>

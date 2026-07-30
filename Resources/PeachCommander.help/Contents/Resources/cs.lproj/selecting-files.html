@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Výběr souborů</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Výběr souborů</h1>
+<p>Než něco zkopírujete, přesunete, smažete nebo zabalíte, nejprve řeknete Peach Commanderu, na které položky má působit. Položka, na níž kurzor stojí, je vždy aktuální položkou, ale můžete také <em>označit</em> jeden nebo více souborů a složek, aby se příkaz provedl na všech najednou. Označené položky se v panelu odlišují výraznou barvou názvu.</p>
+<h2 id="oznaceni-souboru-a-slozek">Označení souborů a složek</h2>
+<ol>
+<li>Klepnutím na řádek na něj přesunete kurzor. Jedno klepnutí vybere pouze tuto jednu položku.</li>
+<li>Chcete-li označit několik položek najednou, podržte Cmd a klepněte na každou, nebo podržte Shift a klepnutím označte rozsah.</li>
+<li>Chcete-li označit položku pod kurzorem a zároveň sestoupit dolů, stiskněte Insert. Opakovaným stiskem rychle označíte řadu po sobě jdoucích položek. Mezerník rovněž přepíná označení aktuální položky (a zobrazuje velikost složky).</li>
+<li>Chcete-li označit vše v panelu, zvolte Výběr &gt; Vybrat vše (Ctrl+Num+), nebo stiskněte Cmd+A. Zvolte Výběr &gt; Zrušit výběr všeho (Ctrl+Num-) pro zrušení všech označení.</li>
+</ol>
+<h2 id="vyber-nebo-zruseni-podle-vzoru">Výběr nebo zrušení podle vzoru</h2>
+<ol>
+<li>Zvolte Výběr &gt; Vybrat skupinu… (Num+) pro přidání položek, jejichž názvy odpovídají vzoru, nebo Výběr &gt; Zrušit výběr skupiny… (Num-) pro odebrání odpovídajících položek z aktuálních označení.</li>
+<li>Zadejte masku se zástupnými znaky. Použijte <code>*</code> pro libovolné znaky a <code>?</code> pro jeden znak. Více masek oddělte středníkem a výjimky uveďte za svislou čárou — například <code>*.jpg;*.png</code> označí všechny obrázky a <code>*.*|*.bak</code> označí vše kromě záložních souborů.</li>
+</ol>
+<p><img alt="Dialog Vybrat skupinu s maskou se zástupnými znaky zadanou v poli vzoru" src="images/select-by-mask.png" />
+<em>(Obrázek: označování souborů maskou se zástupnými znaky.)</em></p>
+<h2 id="invertovat-stejna-pripona-a-obnovit">Invertovat, stejná přípona a obnovit</h2>
+<ul>
+<li><strong>Invertovat výběr</strong> (Num*, nabídka Výběr) obrátí každé označení: označené položky se stanou neoznačenými a naopak — praktické pro „vše kromě těchto“.</li>
+<li><strong>Vybrat vše se stejnou příponou</strong> (Alt+Num+, nabídka Výběr) označí každý soubor, který sdílí příponu položky pod kurzorem, takže jeden stisk zachytí například všechny soubory <code>.pdf</code>.</li>
+<li><strong>Obnovit výběr</strong> (Num/, nabídka Výběr) vrátí zpět vaši předchozí sadu označení — užitečné, pokud je příkaz zrušil nebo jste označili špatnou skupinu.</li>
+</ul>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Klávesa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Přepnout označení, sestoupit dolů</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Přepnout označení (aktuální položka)</td>
+<td>Mezerník</td>
+</tr>
+<tr>
+<td>Vybrat vše / Zrušit výběr všeho</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Vybrat vše (alternativa)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Vybrat skupinu podle masky</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Zrušit výběr skupiny podle masky</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Invertovat výběr</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Vybrat vše se stejnou příponou</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Obnovit předchozí výběr</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Označení a kurzor jsou nezávislé: pohyb kurzoru šipkami nemění, co je označeno.</li>
+<li>Položku nadřazené složky (<code>..</code>) nelze nikdy označit.</li>
+<li>Vybrat skupinu, Zrušit výběr skupiny a Invertovat výběr se shodují podle názvu souboru, takže můžete zahrnout nebo vynechat složky podle možností dialogu.</li>
+<li>Po dokončení kopírování, přesunu nebo mazání se úspěšně zpracované položky automaticky odznačí, zatímco ty, které selhaly, zůstanou označené, abyste je mohli zopakovat.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopírování souborů</a></li><li><a href="searching.html">Hledání souborů</a></li></ul></section>
+</main>
+</body>
+</html>

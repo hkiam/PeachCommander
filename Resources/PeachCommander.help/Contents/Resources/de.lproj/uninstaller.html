@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstaller</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Uninstaller</h1>
+<p>Wenn Sie eine App in den Papierkorb ziehen, bleiben ihre Support-Dateien, Caches, Einstellungen und Container über Ihre Library-Ordner verstreut zurück. Das Uninstaller-Plugin entfernt eine Anwendung <strong>und</strong> diese Überreste: Es findet alles, was die App hinterlassen hat, zeigt Ihnen die Liste mit einer Größenangabe für jedes Element und verschiebt alles in den Papierkorb, sobald Sie bestätigen. Da es sich um ein Plugin handelt, können Sie es über <strong>Konfiguration ▸ Plugins…</strong> ausschalten oder entfernen.</p>
+<h2 id="eine-app-unter-dem-cursor-deinstallieren">Eine App unter dem Cursor deinstallieren</h2>
+<ol>
+<li>Setzen Sie den Cursor auf eine Anwendung (<code>.app</code>) in einem Panel.</li>
+<li>Wählen Sie <strong>Datei ▸ Anwendung deinstallieren…</strong> oder Rechtsklick ▸ <strong>Anwendung deinstallieren…</strong> oder drücken Sie <strong>Cmd+Shift+U</strong>.</li>
+<li>Das Prüffenster öffnet sich und listet die App sowie jede verwandte Datei auf, die es gefunden hat, jeweils mit ihrer Kategorie, ihrem Pfad und ihrer Größe.</li>
+<li>Entfernen Sie das Häkchen bei allem, was Sie behalten möchten, und klicken Sie dann auf <strong>In den Papierkorb verschieben</strong> (oder <strong>Endgültig löschen</strong>).</li>
+</ol>
+<p><img alt="Das Prüffenster der Deinstallation mit den Überresten einer App, Kontrollkästchen und Größenangaben" src="images/uninstaller.png" />
+<em>(Abbildung: Prüfen Sie genau, was entfernt wird, bevor etwas gelöscht wird.)</em></p>
+<h2 id="alle-installierten-apps-durchsuchen">Alle installierten Apps durchsuchen</h2>
+<p>Wählen Sie <strong>Befehle ▸ Anwendung deinstallieren…</strong>, um eine durchsuchbare Liste der auf Ihrem Mac installierten Apps zu öffnen, jeweils mit Name, Größe und Installationsdatum. Wählen Sie eine (oder mehrere) aus, klicken Sie auf <strong>Deinstallieren…</strong>, und Sie gelangen in dasselbe Prüffenster. Sie können die Liste filtern, indem Sie in das Suchfeld tippen.</p>
+<h2 id="ubrig-gebliebene-dateien-finden">Übrig gebliebene Dateien finden</h2>
+<p>Wählen Sie <strong>Befehle ▸ Übrig gebliebene Dateien finden…</strong>, um nach Support-Dateien, Caches und Einstellungen zu suchen, die zu Apps gehören, die Sie <strong>bereits</strong> gelöscht haben. Prüfen Sie sie auf dieselbe Weise und räumen Sie sie weg. Wird nichts gefunden, teilt Ihnen das Plugin dies mit.</p>
+<h2 id="wie-grundlich-gescannt-wird">Wie gründlich gescannt wird</h2>
+<p>Das Prüffenster verfügt über eine Konfidenz-Steuerung:</p>
+<ul>
+<li><strong>Präzise</strong> — Dateien, die an die Bundle-ID der App gebunden sind. Hohe Konfidenz; vorausgewählt.</li>
+<li><strong>Erweitert</strong> — fügt namensgleiche Dateien hinzu; ohne Häkchen belassen, damit Sie entscheiden können.</li>
+<li><strong>Tief</strong> — Erweitert plus ein Spotlight-Durchlauf nach allem anderen, das die App erwähnt; ebenfalls ohne Häkchen belassen.</li>
+</ul>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Nichts wird vom Plugin direkt gelöscht — Elemente durchlaufen den Papierkorb oder das endgültige Löschen der App, genau wie jeder andere Dateivorgang. Das Entfernen von Dateien in <code>/Library</code> oder <code>/var</code> kann ein Administratorkennwort erfordern.</li>
+<li>Vor dem Entfernen beendet das Plugin die laufende App und entlädt ihre Hintergrundelemente (launchd), und bietet dann an, nun leere Hersteller-Ordner aufzuräumen.</li>
+<li>Wurde die App mit <strong>Homebrew</strong> installiert, warnt Sie das Plugin und schlägt <code>brew uninstall --cask</code> vor, damit Homebrew synchron bleibt. App-Store-Apps werden ebenfalls vermerkt.</li>
+<li>Erweitert- und Tief-Treffer sind absichtlich von geringerer Konfidenz und starten ohne Häkchen — prüfen Sie sie vor dem Entfernen. Einige Hintergrundelemente, die über die moderne Anmeldeobjekt-API installiert wurden, können hier nicht entfernt werden.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="deleting-files.html">Dateien löschen</a></li></ul></section>
+</main>
+</body>
+</html>

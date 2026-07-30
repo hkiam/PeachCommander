@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>Das Git-Plugin bringt den Zustand eines Git-Repositorys direkt in das Datei-Panel — keine separate App, kein Terminal. Es fügt zwei Spalten hinzu, die den Arbeitsbaum-Status jeder Datei und den aktuellen Branch anzeigen, ein Untermenü <strong>Git</strong> für die alltäglichen Befehle (Status, bereitstellen, committen, pull, push), und es verwendet das <code>git</code>, das bereits auf Ihrem Mac installiert ist. Da es sich um ein Plugin handelt, können Sie es über <strong>Konfiguration ▸ Plugins…</strong> ausschalten oder entfernen.</p>
+<h2 id="was-es-hinzufugt">Was es hinzufügt</h2>
+<ul>
+<li><strong>Zwei Spalten in der Dateiliste</strong> — <em>Git Status</em> und <em>Branch</em>. In einem Repository zeigt jede Datei ein kurzes Statuswort (Geändert, Hinzugefügt, Gelöscht, Nicht verfolgt, Umbenannt, Kopiert, Konflikt, Ignoriert oder Verändert), und das Panel zeigt den aktuellen Branch. Schalten Sie die Spalten unter <strong>Konfiguration ▸ Spalten…</strong> ein (siehe <a href="view-modes-and-sorting.md">Ansichtsmodi &amp; Sortierung</a>).</li>
+<li><strong>Ein Git-Menü</strong> — unter <strong>Befehle ▸ Git</strong> sowie im Rechtsklick-Menü einer Datei, mit: <strong>Git Status…</strong>, <strong>Git Add (bereitstellen)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> und <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="Der Git-Status-Dialog mit dem aktuellen Branch und den geänderten Dateien im Repository" src="images/git-status.png" />
+<em>(Abbildung: Git Status meldet den Branch und jede Änderung im Arbeitsbaum.)</em></p>
+<h2 id="den-status-prufen">Den Status prüfen</h2>
+<ol>
+<li>Setzen Sie den Cursor auf eine Datei oder einen Ordner innerhalb eines Git-Repositorys.</li>
+<li>Wählen Sie <strong>Befehle ▸ Git ▸ Git Status…</strong> (oder Rechtsklick ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>Eine Zusammenfassung erscheint: der aktuelle Branch (oder <em>(losgelöst)</em>), dann entweder <em>Arbeitsbaum sauber.</em> oder eine Liste der Änderungen, wobei jede Zeile den Status und den Dateipfad zeigt.</li>
+</ol>
+<p>Befindet sich der Cursor nicht innerhalb eines Repositorys, meldet das Plugin schlicht <em>Kein Git-Repository.</em></p>
+<h2 id="bereitstellen-committen-pull-push">Bereitstellen, committen, pull, push</h2>
+<ul>
+<li><strong>Git Add (bereitstellen)</strong> stellt die Datei unter dem Cursor bereit (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> fragt nach einer Commit-Nachricht und committet dann alle Änderungen (<code>git commit -a</code>). Die gesammelte Ausgabe wird angezeigt, sodass Sie genau sehen, was geschehen ist.</li>
+<li><strong>Git Pull</strong> führt einen reinen Fast-Forward-Pull aus (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> pusht den aktuellen Branch (<code>git push</code>).</li>
+</ul>
+<p>Nach einem Befehl, der das Repository verändert, aktualisiert sich das aktive Panel, damit die Statusspalten aktuell bleiben.</p>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Das Plugin verwendet das System-Git unter <code>/usr/bin/git</code>. Ist Git nicht installiert, melden die Befehle, dass Git nicht verfügbar ist. (Die Installation der Xcode Command Line Tools stellt es bereit.)</li>
+<li>Der Repository-Status wird pro Ordner einmal gelesen und zwischengespeichert, sodass das Scrollen in einem großen Repository schnell bleibt; der Cache wird nach jedem Befehl, der den Baum verändert, aktualisiert.</li>
+<li>Commit verwendet <code>git commit -a</code>, was verfolgte Änderungen committet; brandneue Dateien benötigen weiterhin zuerst <strong>Git Add (bereitstellen)</strong>.</li>
+<li>Die Spaltenüberschriften <em>Git Status</em> und <em>Branch</em> erscheinen derzeit auch in anderen Oberflächensprachen auf Englisch; die Werte und Dialoge sind lokalisiert.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="view-modes-and-sorting.html">Ansichtsmodi &amp; Sortierung</a></li></ul></section>
+</main>
+</body>
+</html>

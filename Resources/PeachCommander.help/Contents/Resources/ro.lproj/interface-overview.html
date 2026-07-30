@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fereastra principală</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Fereastra principală</h1>
+<p>Peach Commander afișează două liste de fișiere alăturate, astfel încât să puteți vedea în același timp de unde vin fișierele și încotro se îndreaptă. Cea mai mare parte a muncii se desfășoară în aceste două panouri; barele din jurul lor vă permit să comutați între discuri, să săriți la un folder și să rulați comenzile obișnuite cu fișiere fără a lăsa tastatura. Acest tur denumește fiecare parte a ferestrei, astfel încât restul ajutorului să aibă sens.</p>
+<p><img alt="Fereastra principală Peach Commander cu cele două panouri și barele înconjurătoare" src="images/main-window.png" />
+<em>(Figura: Fereastra principală — două panouri cu bara de butoane, bara de discuri și barele de cale deasupra, iar bara tastelor funcționale dedesubt.)</em></p>
+<h2 id="cele-doua-panouri-si-panoul-activ">Cele două panouri și panoul activ</h2>
+<p>Fereastra este împărțită într-un panou stâng și un panou drept, fiecare afișând conținutul unui folder. Doar un singur panou este activ la un moment dat: acesta afișează cursorul (un rând evidențiat), iar bara sa de cale este desenată cu un fundal colorat. Comenzi precum copierea și mutarea acționează întotdeauna asupra panoului activ și trimit fișierele către celălalt.</p>
+<ol>
+<li>Faceți clic oriunde într-un panou pentru a-l activa sau apăsați Tab pentru a comuta între ele.</li>
+<li>Folosiți tastele săgeți pentru a deplasa cursorul în sus și în jos în panoul activ.</li>
+<li>Apăsați Enter pe un folder pentru a-l deschide sau pe <code>..</code> din partea de sus a listei pentru a urca un nivel.</li>
+</ol>
+<h2 id="barele-din-jurul-panourilor">Barele din jurul panourilor</h2>
+<ul>
+<li><strong>Bara de butoane</strong> (sus): un rând de butoane plate pentru comenzi frecvente. Faceți clic pe un buton pentru a rula comanda sa; faceți clic dreapta pe un buton pentru a edita bara.</li>
+<li><strong>Bara de discuri</strong>: câte un buton pentru fiecare disc sau volum disponibil, fiecare cu un control de ejectare și spațiul liber. Faceți clic pe un volum pentru a comuta acel panou la el.</li>
+<li><strong>Bara de cale</strong>: afișează folderul curent ca o cale de navigare pe care se poate face clic. Faceți clic pe un segment pentru a sări direct la acel folder sau faceți clic pe cale pentru a tasta o locație.</li>
+<li><strong>Bara de stare</strong> (sub fiecare listă): un rezumat curent al panoului — câte fișiere și foldere sunt selectate și dimensiunea lor totală.</li>
+<li><strong>Linia de comandă</strong> (jos): un câmp de text în care puteți tasta o comandă în stil shell, care rulează în folderul curent.</li>
+<li><strong>Bara tastelor funcționale</strong> (jos de tot): șase butoane etichetate F3 Vizualizare, F4 Editare, F5 Copiere, F6 Mutare, F7 Folder nou și F8 Ștergere. Faceți clic pe un buton sau apăsați tasta corespunzătoare.</li>
+</ul>
+<p><img alt="Prim-plan al barei de discuri cu butoanele de volum și spațiul liber" src="images/drive-bar-crop.png" />
+<em>(Figura: Bara de discuri — câte un buton pentru fiecare volum, cu un control de ejectare și spațiul liber rămas.)</em></p>
+<h2 id="scurtaturi">Scurtături</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Scurtătură</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Comutați panoul activ</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Deschideți folderul / elementul de sub cursor</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Urcați un folder</td>
+<td>Backspace</td>
+</tr>
+<tr>
+<td>Vizualizați fișierul</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Editați fișierul</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Copiați în celălalt panou</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Mutați / redenumiți în celălalt panou</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Folder nou</td>
+<td>F7</td>
+</tr>
+<tr>
+<td>Ștergeți (la Coșul de gunoi)</td>
+<td>F8</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Bara tastelor funcționale se reetichetează în timp real când țineți apăsat un modificator. Ținând apăsat Shift, de exemplu, schimbă F6 într-o acțiune de redenumire pe loc, astfel încât butoanele afișează întotdeauna ce vor face tastele în acel moment.</li>
+<li>Aproape fiecare bară poate fi afișată sau ascunsă. Uitați-vă în meniurile Vizualizare și Configurare pentru a activa și dezactiva bara de butoane, bara de discuri, linia de comandă sau bara tastelor funcționale ori pentru a stivui cele două panouri sus și jos în loc de alăturat.</li>
+<li>Pe multe tastaturi Mac, tastele F acționează în mod implicit ca elemente de control media și de luminozitate. Țineți apăsată tasta Fn împreună cu F3-F8 sau activați „Folosiți tastele F1, F2 etc. ca taste funcționale standard” în Setări de sistem pentru a le folosi direct.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="navigating.html">Deplasarea prin foldere</a></li><li><a href="panels-and-tabs.html">File</a></li></ul></section>
+</main>
+</body>
+</html>

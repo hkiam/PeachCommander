@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Afficher des fichiers</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Afficher des fichiers</h1>
+<p>Peach Commander dispose d'un lecteur intégré qui vous permet de regarder à l'intérieur d'un fichier sans ouvrir une autre application ni modifier le fichier. Appuyez sur F3 sur l'élément sous le curseur et le lecteur s'ouvre instantanément, même pour de très gros fichiers. Il choisit automatiquement la meilleure façon d'afficher le contenu : texte lisible, code coloré, vidage hexadécimal brut, ou image en taille réelle. Vous pouvez aussi prévisualiser un fichier directement dans la fenêtre avec l'Aperçu rapide, ou le confier à Coup d'œil de macOS.</p>
+<h2 id="afficher-un-fichier">Afficher un fichier</h2>
+<ol>
+<li>Placez le curseur sur un fichier dans le panneau actif.</li>
+<li>Appuyez sur F3 (ou choisissez Afficher dans le menu Fichier). Le lecteur s'ouvre dans sa propre fenêtre.</li>
+<li>Utilisez la barre d'outils pour changer la façon dont le contenu est affiché : Texte, Code, Hexa, Image ou Rendu. Laissez-la sur le réglage automatique pour laisser Peach Commander décider.</li>
+<li>Faites défiler avec les flèches, Page préc./Page suiv. et la barre de défilement. Pour un long texte, activez le bouton minicarte pour voir et parcourir tout le fichier d'un coup d'œil.</li>
+<li>Appuyez sur N pour sauter au fichier sélectionné suivant, ou fermez la fenêtre avec Échap.</li>
+</ol>
+<p><img alt="Le lecteur intégré affichant un fichier texte avec la minicarte à droite" src="images/lister-text.png" />
+<em>(Figure : affichage d'un fichier texte, avec le sélecteur de représentation et la minicarte dans la barre d'outils.)</em></p>
+<h2 id="rechercher-du-texte-et-changer-lencodage">Rechercher du texte et changer l'encodage</h2>
+<ul>
+<li>Appuyez sur Ctrl+F pour rechercher dans le fichier. Appuyez sur F3 pour sauter à la correspondance suivante et Maj+F3 pour la précédente.</li>
+<li>Si le texte semble déformé, cliquez sur Encodage dans la barre d'outils (ou appuyez sur E) pour faire défiler les encodages jusqu'à ce qu'il se lise correctement ; le réglage automatique est généralement juste.</li>
+<li>Appuyez sur W pour basculer le retour à la ligne pour les lignes longues.</li>
+</ul>
+<h2 id="apercu-rapide-et-coup-dil">Aperçu rapide et Coup d'œil</h2>
+<p>L'Aperçu rapide affiche un aperçu en direct dans le panneau que vous n'utilisez <em>pas</em>, de sorte que vous pouvez continuer à naviguer d'un côté tout en prévisualisant de l'autre.</p>
+<ol>
+<li>Appuyez sur Ctrl+Q. Le panneau inactif devient une zone d'aperçu.</li>
+<li>Déplacez le curseur sur différents fichiers dans le panneau actif pour prévisualiser chacun.</li>
+<li>Appuyez de nouveau sur Ctrl+Q, ou sur Échap, pour rendre au panneau une liste de fichiers normale.</li>
+</ol>
+<p>Pour un aperçu plein écran rapide géré par macOS lui-même, appuyez sur Cmd+Y (Coup d'œil). Appuyez de nouveau sur Cmd+Y ou Espace pour le fermer.</p>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Raccourci</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Afficher le fichier sous le curseur</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Afficher seulement le fichier sous le curseur (ignorer les fichiers marqués)</td>
+<td>Maj+F3</td>
+</tr>
+<tr>
+<td>Ouvrir dans un lecteur externe</td>
+<td>Option+F3</td>
+</tr>
+<tr>
+<td>Rechercher dans le lecteur</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Correspondance suivante / précédente</td>
+<td>F3 / Maj+F3</td>
+</tr>
+<tr>
+<td>Aperçu rapide dans l'autre panneau</td>
+<td>Ctrl+Q</td>
+</tr>
+<tr>
+<td>Coup d'œil (aperçu macOS)</td>
+<td>Cmd+Y</td>
+</tr>
+<tr>
+<td>Fermer le lecteur ou l'Aperçu rapide</td>
+<td>Échap</td>
+</tr>
+</tbody>
+</table>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>Le lecteur est en lecture seule. Pour modifier un fichier, utilisez plutôt l'éditeur (voir Modifier des fichiers).</li>
+<li>Les très gros fichiers s'ouvrent sans délai : le texte ouvre une vue rapide et défilable, et la vue hexa est diffusée directement depuis le disque quelle que soit la taille.</li>
+<li>Appuyez sur F3 sur un dossier pour voir un résumé de son contenu et sa taille totale au lieu des octets d'un fichier.</li>
+<li>Le mode Rendu affiche du contenu formaté tel que des pages web ; le mode hexa montre les octets bruts côte à côte avec leurs caractères, ce qui est pratique pour inspecter des fichiers binaires.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Modifier des fichiers</a></li><li><a href="searching.html">Rechercher des fichiers</a></li></ul></section>
+</main>
+</body>
+</html>

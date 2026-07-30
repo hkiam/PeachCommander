@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Búsqueda rápida y filtro</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Búsqueda rápida y filtro</h1>
+<p>Cuando una carpeta contiene cientos de elementos, rara vez necesitas desplazarte. Peach Commander te permite saltar directamente a un archivo escribiendo su nombre (búsqueda rápida), reducir la lista solo a los elementos que te interesan (filtro rápido), y mostrar u ocultar los archivos con punto que macOS normalmente mantiene fuera de la vista. Los tres funcionan dentro del panel activo sin abrir un diálogo.</p>
+<h2 id="saltar-a-un-archivo-escribiendo-busqueda-rapida">Saltar a un archivo escribiendo (búsqueda rápida)</h2>
+<ol>
+<li>Haz clic en un panel de archivos para que esté activo.</li>
+<li>Empieza a escribir el principio de un nombre. El cursor salta al primer elemento coincidente.</li>
+<li>Sigue escribiendo para afinar la coincidencia, o pulsa de nuevo la misma letra para recorrer los elementos que empiezan por esa letra.</li>
+<li>El texto escrito se borra tras una breve pausa, así que puedes iniciar una nueva búsqueda en cualquier momento.</li>
+</ol>
+<p>Por omisión, las letras normales van a la línea de comandos y la búsqueda rápida se activa con Ctrl+Option+letra (el comportamiento clásico). Puedes cambiar la búsqueda rápida para que responda a la escritura normal, o desactivarla, en los ajustes de Configuración.</p>
+<h2 id="filtrar-la-lista-filtro-rapido">Filtrar la lista (filtro rápido)</h2>
+<ol>
+<li>En el panel activo, pulsa Ctrl+S para activar el filtro rápido.</li>
+<li>Escribe una máscara de filtro. El panel se reduce en directo a los elementos coincidentes mientras escribes.</li>
+<li>Pulsa Esc para borrar el filtro y volver a mostrar todo.</li>
+</ol>
+<p>El filtro admite varios tipos de máscara:</p>
+<ul>
+<li><strong>Texto plano</strong> coincide con cualquier nombre que contenga lo que escribiste (por ejemplo, <code>report</code> muestra todo elemento con «report» en cualquier parte de su nombre).</li>
+<li><strong>Comodines</strong> usan <code>*</code> (cualquier carácter) y <code>?</code> (un carácter). Separa varias máscaras con un punto y coma y añade exclusiones tras una barra vertical, por ejemplo <code>*.jpg;*.png|*thumb*</code> para mostrar imágenes pero ocultar miniaturas.</li>
+<li><strong>Etiquetas del Finder</strong> filtran por color de etiqueta: escribe <code>tag:red</code> (o <code>#red</code>) para mostrar solo elementos con etiqueta roja, o solo <code>tag:</code> para mostrar todo lo que lleve alguna etiqueta.</li>
+</ul>
+<h2 id="mostrar-archivos-ocultos">Mostrar archivos ocultos</h2>
+<p>Pulsa Ctrl+H, o elige el comando en el menú Visualización, para alternar los elementos ocultos (nombres que empiezan por un punto y archivos ocultos del sistema). El ajuste se aplica al panel activo y se recuerda entre sesiones.</p>
+<h2 id="atajos">Atajos</h2>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Búsqueda rápida (modo clásico)</td>
+<td>Ctrl+Option+letra</td>
+</tr>
+<tr>
+<td>Filtro rápido activado/desactivado</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Borrar filtro / cancelar</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Mostrar/ocultar archivos ocultos</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>La búsqueda rápida solo mueve el cursor; el filtro rápido cambia realmente qué elementos se listan. Usa el filtro cuando quieras trabajar sobre un subconjunto (por ejemplo, seleccionar o copiar solo las coincidencias).</li>
+<li>Los ajustes de filtro y de archivos ocultos son por panel, así que los dos lados pueden mostrar cosas distintas a la vez.</li>
+<li>La búsqueda rápida coincide con los nombres desde el principio; el modo de texto plano del filtro rápido coincide en cualquier parte del nombre. Usa un comodín como <code>*texto*</code> si quieres que el filtro se comporte igual.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Buscar archivos</a></li><li><a href="view-modes-and-sorting.html">Modos de vista y ordenación</a></li></ul></section>
+</main>
+</body>
+</html>

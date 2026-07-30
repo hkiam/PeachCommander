@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Selecting files</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Selecting files</h1>
+<p>Before you copy, move, delete, or pack anything, you first tell Peach Commander which items to act on. The item your cursor sits on is always the current item, but you can also <em>mark</em> one or many files and folders so a command runs on all of them at once. Marked items stand out with a distinct name color in the panel.</p>
+<h2 id="mark-files-and-folders">Mark files and folders</h2>
+<ol>
+<li>Click a row to move the cursor to it. A single click selects just that one item.</li>
+<li>To mark several items at once, hold Cmd and click each one, or hold Shift and click to mark a range.</li>
+<li>To mark the item under the cursor and step down in one motion, press Insert. Press it repeatedly to mark a run of consecutive items quickly. The Spacebar also toggles the current item's mark (and shows a folder's size).</li>
+<li>To mark everything in the panel, choose Mark &gt; Select All (Ctrl+Num+), or press Cmd+A. Choose Mark &gt; Unselect All (Ctrl+Num-) to clear all marks.</li>
+</ol>
+<h2 id="select-or-unselect-by-a-pattern">Select or unselect by a pattern</h2>
+<ol>
+<li>Choose Mark &gt; Select Group… (Num+) to add items whose names match a pattern, or Mark &gt; Unselect Group… (Num-) to remove matching items from the current marks.</li>
+<li>Type a wildcard mask. Use <code>*</code> for any characters and <code>?</code> for a single character. Separate several masks with a semicolon, and list exceptions after a vertical bar — for example <code>*.jpg;*.png</code> marks all images, and <code>*.*|*.bak</code> marks everything except backup files.</li>
+</ol>
+<p><img alt="The Select Group dialog with a wildcard mask typed into the pattern field" src="images/select-by-mask.png" />
+<em>(Figure: Marking files by a wildcard mask.)</em></p>
+<h2 id="invert-same-extension-and-restore">Invert, same extension, and restore</h2>
+<ul>
+<li><strong>Invert Selection</strong> (Num*, Mark menu) flips every mark: marked items become unmarked and vice versa — handy for "everything except these".</li>
+<li><strong>Select All with Same Extension</strong> (Alt+Num+, Mark menu) marks every file that shares the extension of the item under the cursor, so one keystroke grabs all <code>.pdf</code> files, for example.</li>
+<li><strong>Restore Selection</strong> (Num/, Mark menu) brings back your previous set of marks — useful if a command cleared them or you marked the wrong group.</li>
+</ul>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Toggle mark, move down</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Toggle mark (current item)</td>
+<td>Space</td>
+</tr>
+<tr>
+<td>Select all / Unselect all</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Select all (alternative)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Select group by mask</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Unselect group by mask</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Invert selection</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Select all with same extension</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Restore previous selection</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Marks and the cursor are independent: moving the cursor with the arrow keys does not change what is marked.</li>
+<li>The parent-folder entry (<code>..</code>) can never be marked.</li>
+<li>Select Group, Unselect Group, and Invert Selection match on the file name, so you can include or leave out folders depending on the dialog's options.</li>
+<li>After a copy, move, or delete finishes, items that were handled successfully are unmarked automatically, while any that failed stay marked so you can retry them.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copying files</a></li><li><a href="searching.html">Finding files</a></li></ul></section>
+</main>
+</body>
+</html>

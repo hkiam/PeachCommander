@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>Das Task-Manager-Plugin verwandelt die laufenden Prozesse auf Ihrem Mac in einen Ordner, den Sie durchsuchen können. Es erscheint als Laufwerk <strong>TaskManager</strong> in der Laufwerksleiste; öffnen Sie es, und jeder Prozess ist eine Zeile, die Sie sortieren, wie eine Datei untersuchen oder beenden können — mit denselben Tasten, die Sie bereits für Dateien verwenden. Da es sich um ein Plugin handelt, können Sie es über <strong>Konfiguration ▸ Plugins…</strong> ausschalten oder entfernen.</p>
+<h2 id="offnen">Öffnen</h2>
+<ol>
+<li>Klicken Sie auf den Eintrag <strong>📊 TaskManager</strong> in der Laufwerksleiste (er sitzt direkt hinter Ihrem Startlaufwerk).</li>
+<li>Das Panel füllt sich mit einer Zeile pro laufendem Prozess. Der Name jeder Zeile ist der Prozessname gefolgt von seiner PID, zum Beispiel <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="Der Task Manager listet laufende Prozesse mit den Spalten PID, CPU, Speicher und Befehl auf" src="images/task-manager.png" />
+<em>(Abbildung: Laufende Prozesse, dargestellt als Dateiliste, die Sie sortieren und bearbeiten können.)</em></p>
+<h2 id="was-jede-spalte-bedeutet">Was jede Spalte bedeutet</h2>
+<p>Neben den üblichen Spalten Größe (Speicher) und Datum (Startzeit) fügt der Task Manager Prozessspalten hinzu:</p>
+<table>
+<thead>
+<tr>
+<th>Spalte</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>Prozess-ID</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Kürzliche Prozessornutzung (erscheint erst nach einer zweiten Aktualisierung)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Anzahl der Threads</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R laufend · S schlafend · T gestoppt · Z Zombie · I untätig</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Eigentümer</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>Prozess-ID des übergeordneten Prozesses</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>Vollständige Befehlszeile</td>
+</tr>
+</tbody>
+</table>
+<p>Sortieren Sie nach jeder beliebigen Spalte (zum Beispiel CPU % oder Größe/Speicher), genau wie in einem normalen Ordner.</p>
+<h2 id="einen-prozess-untersuchen-oder-beenden">Einen Prozess untersuchen oder beenden</h2>
+<ul>
+<li><strong>Ansehen (F3)</strong> zeigt einen <em>Prozessinformationen</em>-Bericht: Name, PID, übergeordneter Prozess, Benutzer, Status, Threads, Speicher, CPU, Startzeit, Pfad der ausführbaren Datei und die vollständige Befehlszeile.</li>
+<li><strong>Löschen (F8)</strong> beendet den Prozess. Das erste Löschen sendet ein sanftes <strong>Beenden</strong> (SIGTERM); das erneute Löschen eines noch laufenden Prozesses eskaliert zu einem <strong>erzwungenen Beenden</strong> (SIGKILL). Das Plugin zielt niemals auf PID 1.</li>
+</ul>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Grundlegende Details (PID, übergeordneter Prozess, Benutzer, Status) sind für jeden Prozess lesbar, wie bei <code>ps</code>. Speicher, Threads und CPU können nur für <strong>Ihre eigenen</strong> Prozesse gelesen werden; andere Prozesse zeigen diese Spalten leer (sie erfordern erhöhte Rechte, eine spätere Ergänzung).</li>
+<li>CPU % ist eine Änderung zwischen zwei Messungen, daher bleibt es leer, bis das Panel ein zweites Mal aktualisiert (das Panel aktualisiert sich etwa alle zwei Sekunden).</li>
+<li>Die Liste ist bis auf das Beenden eines Prozesses schreibgeschützt — Sie können keine Dateien hineinkopieren.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Dateien ansehen</a></li><li><a href="deleting-files.html">Dateien löschen</a></li></ul></section>
+</main>
+</body>
+</html>

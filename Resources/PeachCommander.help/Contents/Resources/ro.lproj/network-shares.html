@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Partajări de rețea</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Partajări de rețea</h1>
+<p>Peach Commander se poate conecta la serverele de fișiere din rețeaua dvs. locală sau de întreprindere — partajări SMB (Windows/Samba) și AFP — și afișa conținutul lor într-un panou exact ca un folder de pe propriul Mac. Odată ce o partajare este conectată, puteți parcurge, copia, muta, redenumi și deschide fișiere în ea exact ca local, inclusiv copierea între partajare și celălalt panou al dvs.</p>
+<h2 id="conectarea-la-un-server">Conectarea la un server</h2>
+<ol>
+<li>Faceți clic pe panoul la care doriți să vă conectați (partajarea conectată se deschide în panoul activ).</li>
+<li>Apăsați Cmd+K, sau alegeți <strong>Rețea &gt; Vecinătate de rețea &gt; Conectează partajare de rețea…</strong>.</li>
+<li>În dialogul <strong>Conectare la server</strong>, tastați adresa serverului. Puteți indica:
+   - o adresă SMB, de exemplu <code>smb://fileserver/projects</code>
+   - o adresă AFP, de exemplu <code>afp://fileserver/projects</code>
+   - o cale în stil Windows, de exemplu <code>\\fileserver\projects</code>
+   - un simplu nume <code>server/partajare</code></li>
+<li>Faceți clic pe Conectează (sau apăsați Enter). Dacă serverul are nevoie de nume și parolă, macOS afișează fereastra sa obișnuită de autentificare — introduceți acolo datele dvs.</li>
+<li>Când partajarea este gata, panoul activ o deschide automat. Parcurgeți și lucrați cu ea ca cu orice alt folder.</li>
+</ol>
+<h2 id="deconectare">Deconectare</h2>
+<p>O partajare conectată apare ca un volum montat pe Mac-ul dvs. Pentru a o deconecta, ejectați-o în modul obișnuit macOS — de exemplu din bara laterală Finder sau din lista de dispozitive din Peach Commander.</p>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Comandă rapidă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Conectează partajare de rețea…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Autentificarea (nume de utilizator, parolă și o eventuală opțiune „reține în inelul meu de chei") este gestionată de fereastra obișnuită de autentificare macOS, astfel încât parolele de server salvate funcționează ca în Finder.</li>
+<li>Dacă indicați o adresă care nu poate fi analizată, Peach Commander cere o adresă SMB/AFP, o cale în stil Windows sau un nume <code>server/partajare</code>, și nimic nu este montat.</li>
+<li>După ce confirmați, conexiunea poate dura un moment în timp ce macOS montează partajarea; panoul comută la ea de îndată ce devine disponibilă.</li>
+<li>Aceasta se conectează la dispozitive partajate într-o rețea. Pentru a ajunge în schimb la un server FTP, FTPS sau SFTP, vedeți subiectul înrudit de mai jos.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Conectarea la FTP și SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

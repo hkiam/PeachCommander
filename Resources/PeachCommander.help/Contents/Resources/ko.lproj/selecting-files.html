@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파일 선택</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>파일 선택</h1>
+<p>무언가를 복사·이동·삭제하거나 압축하기 전에, 먼저 Peach Commander에 어떤 항목에 대해 작업할지 알려 줍니다. 커서가 놓인 항목은 항상 현재 항목이지만, 하나 또는 여러 파일과 폴더를 <em>표시</em>해 명령이 그 모두에 한 번에 실행되게 할 수도 있습니다. 표시된 항목은 패널에서 뚜렷한 이름 색으로 눈에 띕니다.</p>
+<h2 id="_1">파일과 폴더 표시</h2>
+<ol>
+<li>행을 클릭해 커서를 옮깁니다. 한 번 클릭하면 그 항목 하나만 선택됩니다.</li>
+<li>여러 항목을 한꺼번에 표시하려면 Cmd를 누른 채 각각 클릭하거나, Shift를 누른 채 클릭해 범위를 표시합니다.</li>
+<li>커서 아래 항목을 표시하면서 한 동작으로 아래로 내려가려면 Insert를 누릅니다. 반복해서 누르면 연속된 항목을 빠르게 표시합니다. Spacebar도 현재 항목의 표시를 전환합니다(그리고 폴더 크기를 보여 줍니다).</li>
+<li>패널의 모든 항목을 표시하려면 선택 &gt; 모두 선택(Ctrl+Num+)을 선택하거나 Cmd+A를 누릅니다. 선택 &gt; 모두 선택 해제(Ctrl+Num-)로 모든 표시를 지웁니다.</li>
+</ol>
+<h2 id="_2">패턴으로 선택 또는 선택 해제</h2>
+<ol>
+<li>선택 &gt; 그룹 선택…(Num+)을 선택해 이름이 패턴과 일치하는 항목을 추가하거나, 선택 &gt; 그룹 선택 해제…(Num-)로 일치 항목을 현재 표시에서 제거합니다.</li>
+<li>와일드카드 마스크를 입력합니다. <code>*</code>는 임의의 문자, <code>?</code>는 문자 하나입니다. 여러 마스크는 세미콜론으로 구분하고 예외는 세로 막대 뒤에 나열합니다 — 예: <code>*.jpg;*.png</code>는 모든 이미지를 표시하고, <code>*.*|*.bak</code>는 백업 파일을 제외한 모두를 표시합니다.</li>
+</ol>
+<p><img alt="패턴 필드에 와일드카드 마스크를 입력한 그룹 선택 대화 상자" src="images/select-by-mask.png" />
+<em>(그림: 와일드카드 마스크로 파일 표시하기.)</em></p>
+<h2 id="_3">반전, 같은 확장자, 복원</h2>
+<ul>
+<li><strong>선택 반전</strong>(Num*, 선택 메뉴)은 모든 표시를 뒤집습니다. 표시된 항목은 해제되고 그 반대도 마찬가지입니다 — "이것들만 빼고 전부"에 편리합니다.</li>
+<li><strong>같은 확장자 모두 선택</strong>(Alt+Num+, 선택 메뉴)은 커서 아래 항목과 확장자가 같은 모든 파일을 표시하므로, 예를 들어 한 번의 키 입력으로 모든 <code>.pdf</code> 파일을 잡습니다.</li>
+<li><strong>선택 복원</strong>(Num/, 선택 메뉴)은 이전 표시 집합을 되돌립니다 — 명령이 표시를 지웠거나 잘못된 그룹을 표시했을 때 유용합니다.</li>
+</ul>
+<h2 id="_4">단축키</h2>
+<table>
+<thead>
+<tr>
+<th>동작</th>
+<th>키</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>표시 전환, 아래로 이동</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>표시 전환(현재 항목)</td>
+<td>Space</td>
+</tr>
+<tr>
+<td>모두 선택 / 모두 선택 해제</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>모두 선택(대안)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>마스크로 그룹 선택</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>마스크로 그룹 선택 해제</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>선택 반전</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>같은 확장자 모두 선택</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>이전 선택 복원</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">참고</h2>
+<ul>
+<li>표시와 커서는 독립적입니다. 화살표 키로 커서를 옮겨도 표시된 항목은 바뀌지 않습니다.</li>
+<li>상위 폴더 항목(<code>..</code>)은 표시할 수 없습니다.</li>
+<li>그룹 선택, 그룹 선택 해제, 선택 반전은 파일 이름을 기준으로 일치하므로, 대화 상자의 옵션에 따라 폴더를 포함하거나 제외할 수 있습니다.</li>
+<li>복사·이동·삭제가 끝나면 성공적으로 처리된 항목은 자동으로 표시가 해제되고, 실패한 항목은 다시 시도할 수 있도록 표시된 채로 남습니다.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">파일 복사</a></li><li><a href="searching.html">파일 찾기</a></li></ul></section>
+</main>
+</body>
+</html>

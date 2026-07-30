@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文件实用工具</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>文件实用工具</h1>
+<p>除了复制和移动，Peach Commander 还包含一组日常文件实用工具，用于验证文件完整、回收磁盘空间、将大文件拆分成较小的碎片，以及在文本安全格式之间转换文件。你可以从 <strong>文件</strong> 菜单中使用它们全部，它们作用于你在活动面板中选中的任何内容（未选中时则作用于光标下的项目）。本主题涵盖校验和、重复文件查找器、拆分/合并、编码/解码，以及计算占用空间。</p>
+<h2 id="_1">创建或验证校验和</h2>
+<p>校验和让你可以确认文件下载或复制时没有损坏，或者向接收方提供一种方式来检查他们收到的副本。</p>
+<ol>
+<li>选择你想生成指纹的文件。</li>
+<li>选择 <strong>文件 ▸ 创建校验和…</strong>，选取一种算法（CRC32、MD5、SHA-1、SHA-256 或 SHA-512），并保存校验和文件。</li>
+<li>若要稍后检查文件，选择校验和文件并选择 <strong>文件 ▸ 验证校验和…</strong>。Peach Commander 会重新计算每个哈希，并报告任何不匹配的文件。</li>
+</ol>
+<p>校验和直接在当前位置上进行流式处理，因此即使对压缩包内或 FTP 服务器上的文件，你也可以创建或验证它们。</p>
+<h2 id="_2">查找重复文件</h2>
+<p>重复文件查找器会定位散落在各个文件夹中的相同文件，以便你移除多余的副本。</p>
+<ol>
+<li>选择你想扫描的文件夹（或文件）。</li>
+<li>选择 <strong>文件 ▸ 查找重复项…</strong>。Peach Commander 会比较候选文件，并将逐字节完全相同的文件分组。</li>
+<li>查看每个组，标记你不再需要的副本，然后将它们删除。</li>
+</ol>
+<p><img alt="重复文件查找器，列出各组相同的文件" src="images/duplicate-finder.png" />
+<em>（图：重复文件查找器将相同的文件分组，以便你保留一个并移除其余的。）</em></p>
+<h2 id="_3">拆分和合并文件</h2>
+<p>拆分会将一个大文件分成一系列带编号的较小部分——适应存储或传输限制时很方便。合并则将它们重新组装起来。</p>
+<ol>
+<li>若要拆分，选择一个文件并选择 <strong>文件 ▸ 拆分文件…</strong>，然后设置每部分的大小。各部分会写入另一个面板的文件夹。</li>
+<li>若要重新组装，选择第一个部分并选择 <strong>文件 ▸ 合并文件…</strong>。原始文件会从带编号的碎片中重建。</li>
+</ol>
+<h2 id="_4">编码和解码</h2>
+<p>编码会将二进制文件转成纯文本，使其能够通过只能承载文本的通道（例如较旧的电子邮件或粘贴框）而幸存。解码则将其逆转。</p>
+<ol>
+<li>选择一个文件并选择 <strong>文件 ▸ 编码…</strong>，然后选取一种格式——MIME（Base64）、UUE（uuencode）或 XXE。</li>
+<li>若要恢复原始文件，选择已编码的文件并选择 <strong>文件 ▸ 解码…</strong>。格式会被自动检测。</li>
+</ol>
+<h2 id="_5">计算占用空间</h2>
+<p>若要查看某个文件夹或所选内容在磁盘上实际占用多少空间，选择这些项目并按 <strong>Ctrl+L</strong>（<strong>文件 ▸ 计算占用空间…</strong>）。Peach Commander 会累加其中的每个文件，包括子文件夹，并显示总计。</p>
+<h2 id="_6">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>按键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>计算占用空间</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">说明</h2>
+<ul>
+<li>校验和、拆分/合并以及编码/解码面向较为进阶的任务，但每一项都是一个带有合理默认值的单一对话框。</li>
+<li>当某个实用工具生成新文件（拆分部分、编码文件、校验和列表）时，它们会写入另一个面板所显示的文件夹——请先将该面板设置为你想要的目标位置。</li>
+<li>删除重复项是否为永久删除取决于你的删除设置；请仔细查看每个组，并为你仍然需要的任何内容至少保留一份副本。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">比较与同步</a></li></ul></section>
+</main>
+</body>
+</html>

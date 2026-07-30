@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La barre de boutons</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>La barre de boutons</h1>
+<p>La barre de boutons est la bande de boutons à icônes en haut de la fenêtre. Chaque bouton est un raccourci en un clic que vous définissez vous-même : exécuter une commande intégrée, lancer un programme ou une application externe, sauter à un dossier, ou ouvrir toute une sous-barre de boutons supplémentaires. C'est le moyen le plus rapide de mettre à portée les actions que vous utilisez le plus, et vous pouvez l'adapter exactement à votre façon de travailler.</p>
+<h2 id="personnaliser-la-barre-de-boutons">Personnaliser la barre de boutons</h2>
+<ol>
+<li>Choisissez <strong>Configuration &gt; Personnaliser la barre d'outils…</strong>, ou cliquez droit sur la barre et choisissez <strong>Modifier la barre de boutons…</strong>.</li>
+<li>La liste de gauche montre les boutons actuels. Utilisez <strong>+</strong> pour ajouter un bouton, <strong>—</strong> pour ajouter un séparateur, <strong>−</strong> pour retirer le bouton sélectionné, et <strong>↑ / ↓</strong> pour réordonner.</li>
+<li>Sélectionnez un bouton et remplissez le formulaire de droite :
+   - <strong>Commande</strong> — saisissez une commande intégrée, ou cliquez sur <strong>Choisir…</strong> pour en sélectionner une dans une liste. Vous pouvez aussi saisir le chemin d'un programme ou d'une application, un dossier à ouvrir, ou une autre barre de boutons à utiliser comme sous-barre.
+   - <strong>Légende</strong> — l'étiquette et l'infobulle affichées pour le bouton.
+   - <strong>Paramètres</strong> et <strong>Chemin de départ</strong> — passés aux programmes externes. Les caractères de remplacement tels que <code>%P</code> (dossier source), <code>%N</code> (fichier courant) et <code>%S</code> (fichiers sélectionnés) sont remplis à l'exécution du bouton.
+   - <strong>Icône</strong> — choisissez un symbole SF ou utilisez l'icône d'un fichier ou d'une application ; activez <strong>icône seule</strong> pour masquer la légende.</li>
+<li>Cliquez sur <strong>Enregistrer</strong>. La bande se recharge immédiatement.</li>
+</ol>
+<p><img alt="La barre de boutons en haut de la fenêtre avec des boutons à icônes" src="images/button-bar-crop.png" />
+<em>(Figure : la barre de boutons se trouve au-dessus des panneaux de fichiers ; chaque bouton exécute une commande, un programme, un dossier ou une sous-barre.)</em></p>
+<h2 id="sous-barres-et-debordement">Sous-barres et débordement</h2>
+<p>Un bouton peut ouvrir une <em>sous-barre</em> — un second jeu de boutons superposé au premier. Cliquez dessus pour descendre ; un bouton <strong>◀</strong> à gauche vous ramène à la barre précédente. Quand il y a plus de boutons que la largeur de la fenêtre ne peut en contenir, les surnuméraires se replient derrière un chevron <strong>»</strong> à l'extrémité droite ; cliquez dessus pour les atteindre.</p>
+<h2 id="deposer-des-fichiers-sur-un-bouton">Déposer des fichiers sur un bouton</h2>
+<p>Vous pouvez glisser des fichiers ou des dossiers directement sur un bouton :</p>
+<ul>
+<li><strong>Bouton de dossier</strong> — les éléments déposés sont copiés dans ce dossier en arrière-plan.</li>
+<li><strong>Bouton de programme</strong> — le programme s'exécute avec les éléments déposés comme sélection.</li>
+<li><strong>Bouton de commande</strong> — la commande s'exécute normalement.</li>
+</ul>
+<h2 id="barre-de-boutons-verticale">Barre de boutons verticale</h2>
+<p>Pour déplacer la bande du haut de la fenêtre vers une colonne le long du côté gauche, choisissez <strong>Affichage &gt; Barre de boutons verticale</strong>. Choisissez-la à nouveau pour revenir à la bande horizontale.</p>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>La barre est stockée dans un fichier de barre de boutons standard compatible avec Total Commander, de sorte que les barres que vous avez déjà peuvent être réutilisées.</li>
+<li>Aucun raccourci clavier n'est assigné à ces actions par défaut, mais vous pouvez ajouter les vôtres — voir <a href="keyboard-shortcuts">Raccourcis clavier</a>.</li>
+<li>Un bouton sans icône et sans commande s'affiche comme un simple séparateur, pratique pour regrouper des boutons liés.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts.html">Clavier et raccourcis</a></li><li><a href="settings.html">Réglages</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Personvern og sikkerhet</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Personvern og sikkerhet</h1>
+<p>Peach Commander er bygget for å holde seg unna og beholde dataene dine på din Mac. Passord overlates til macOS-nøkkelringen, krasjinformasjon forlater aldri datamaskinen din uten ditt samtykke, og appen samler ingen bruksanalyse. Dette emnet forklarer hvor den følsomme informasjonen din bor og hvordan du gir den ene systemtillatelsen en filbehandler trenger for å gjøre jobben sin.</p>
+<h2 id="hvor-passord-lagres">Hvor passord lagres</h2>
+<p>Ethvert passord eller nøkkelpassfrase du lagrer – for en FTP- eller SFTP-tilkobling, eller for å åpne et passordbeskyttet arkiv – skrives til macOS-<strong>nøkkelringen</strong>, den samme sikre lagringen systemet bruker for Wi-Fi- og nettstedsinnloggingene dine. Passord skrives aldri til Peach Commanders egne innstillinger eller tilkoblingsfiler i klartekst.</p>
+<ol>
+<li>Når du lagrer et tilkoblings- eller arkivpassord, velg valget om å huske det.</li>
+<li>Passordet lagres i innloggingsnøkkelringen din, beskyttet av kontoen din.</li>
+<li>For å se gjennom eller fjerne et lagret passord senere, åpne <strong>Nøkkelringtilgang</strong>-appen (i Programmer ▸ Verktøy) og søk etter tilkoblingsnavnet.</li>
+</ol>
+<h2 id="gi-full-disktilgang">Gi Full disktilgang</h2>
+<p>macOS holder noen steder private – Mail, Meldinger og andre appers data inne i Bibliotek-mappen din – til du eksplisitt tillater tilgang. Fordi en filbehandler er ment å nå hver fil, ber Peach Commander om <strong>Full disktilgang</strong>. Appen fortsetter å virke med redusert tilgang til du gir den; du ser bare ikke de beskyttede mappene.</p>
+<ol>
+<li>Velg <strong>Kommandoer ▸ Full disktilgang…</strong>, eller klikk <strong>Åpne Systeminnstillinger</strong> når appen tilbyr å veilede deg ved oppstart.</li>
+<li>I <strong>Systeminnstillinger ▸ Personvern og sikkerhet ▸ Full disktilgang</strong>, slå på bryteren ved siden av Peach Commander.</li>
+<li>Start appen på nytt hvis du blir bedt om det.</li>
+</ol>
+<h2 id="krasjrapporter-holder-seg-lokale">Krasjrapporter holder seg lokale</h2>
+<p>Hvis appen avslutter uventet, skriver macOS en krasjrapport til din egen diagnostikkmappe. Ved neste oppstart merker Peach Commander den og tilbyr å hjelpe deg med å sende inn en feilrapport – men bare med ditt samtykke.</p>
+<ul>
+<li>Du kan <strong>Vis i Finder</strong> for å se rapporten, eller <strong>Kopier rapport til utklippstavlen</strong> for å lime den inn i en feilrapport selv.</li>
+<li>Ingenting overføres noen gang automatisk, og det er ingen tredjeparts krasjrapporteringstjeneste involvert.</li>
+</ul>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li><strong>Ingen telemetri.</strong> Peach Commander sporer ikke aktiviteten din eller sender bruksanalyse noe sted.</li>
+<li><strong>Redusert tilgang er trygt.</strong> Hopper du over Full disktilgang, blar og behandler appen fortsatt filene du normalt kan se; bare systembeskyttede steder er skjult.</li>
+<li><strong>Du styrer lagrede passord.</strong> Fordi opplysninger bor i nøkkelringen, behandler og tilbakekaller du dem med standard macOS-verktøy i stedet for inne i appen.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Koble til FTP og SFTP</a></li><li><a href="troubleshooting.html">Feilsøking</a></li></ul></section>
+</main>
+</body>
+</html>

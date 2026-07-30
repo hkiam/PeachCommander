@@ -1,0 +1,57 @@
+---
+title: Urejanje datotek
+slug: editing-files
+section: Ogled in urejanje
+order: 72
+related: [viewing-files]
+---
+
+Ko morate datoteko spremeniti in ne samo pogledati, jo Peach Commander odpre v vgrajenem urejevalniku. Besedilne in kodne datoteke se odprejo v polnem urejevalniku s poudarjanjem skladnje, iskanjem in zamenjavo, orisom simbolov v vaši kodi in mini zemljevidom za hitro krmarjenje. Dvojiške datoteke je mogoče odpreti v ločenem šestnajstiškem urejevalniku, kjer lahko pregledujete in spreminjate posamezne bajte. Nikoli vam ni treba zapustiti aplikacije za hitro urejanje.
+
+## Uredite besedilno ali kodno datoteko
+
+1. V katerem koli podoknu premaknite kazalko na datoteko, ki jo želite spremeniti.
+2. Pritisnite F4 ali izberite Datoteka ▸ Uredi. Datoteka se odpre v oknu urejevalnika.
+3. Naredite spremembe. Če je datoteka prepoznana programska ali podatkovna oblika, se ključne besede, nizi in komentarji samodejno obarvajo.
+4. Pritisnite Cmd+S (ali kliknite Shrani), da zapišete spremembe. Prvo shranjevanje ohrani varnostno kopijo izvirnika poleg datoteke, tako da se lahko vedno vrnete nanjo.
+
+Za začetek povsem nove besedilne datoteke na trenutnem mestu pritisnite Shift+F4.
+
+![Vgrajeni urejevalnik besedila, ki prikazuje poudarjanje skladnje, oris simbolov in mini zemljevid](screenshots/editor.png)
+*(Slika: urejevalnik s poudarjanjem skladnje, orisom simbolov na levi in mini zemljevidom na desni.)*
+
+## Iskanje, zamenjava in krmarjenje
+
+- Pritisnite Cmd+F, da odprete iskalno vrstico. Za zamenjavo besedila odprite iskalno vrstico in jo preklopite na pogled zamenjave, ali kliknite Poišči/Zamenjaj v orodni vrstici.
+- Kliknite Oblikuj JSON/XML, da ponovno zamaknete dokument JSON ali XML v čisto, berljivo postavitev.
+- Kliknite Simboli (ali pritisnite Cmd+Shift+O), da prikažete stransko vrstico, ki našteje razrede, funkcije in metode v vaši kodi. Kliknite vnos, da neposredno skočite nanj.
+- Pritisnite Cmd+L, da skočite na določeno vrstico.
+- Pritisnite Cmd+\, da skočite med oklepajem in njegovim ujemajočim partnerjem.
+- Kliknite gumb zemljevida, da prikažete ali skrijete mini zemljevid, pomanjšan pregled celotne datoteke, na katerega lahko kliknete za pomikanje.
+- Uporabite meni Kodiranje v orodni vrstici, če je bila datoteka shranjena v drugem kot privzetem kodiranju besedila.
+
+## Uredite datoteko bajt za bajtom
+
+1. Izberite datoteko v podoknu.
+2. Izberite Datoteka ▸ Uredi kot šestnajstiško (ali kliknite datoteko z desno tipko in izberite Uredi kot šestnajstiško).
+3. Vnesite šestnajstiške števke za prepis bajtov, ali uporabite puščice za pomikanje po datoteki. Backspace in Delete odstranita bajte.
+4. Pritisnite Cmd+S za shranjevanje. Tako kot pri urejevalniku besedila se ohrani enkratna varnostna kopija izvirnika.
+
+## Bližnjice
+
+| Dejanje | Bližnjica |
+|---|---|
+| Uredi datoteko | F4 |
+| Ustvari in uredi novo besedilno datoteko | Shift+F4 |
+| Shrani | Cmd+S |
+| Poišči | Cmd+F |
+| Prikaži/skrij oris simbolov | Cmd+Shift+O |
+| Pojdi na vrstico | Cmd+L |
+| Skoči na ujemajoči oklepaj | Cmd+\ |
+| Razveljavi / Uveljavi (šestnajstiški urejevalnik) | Cmd+Z / Cmd+Shift+Z |
+
+## Opombe
+
+- Poudarjanje skladnje pokriva JSON, C, C#, Java, JavaScript, TypeScript, Python in Rust. Druge vrste datotek se še vedno odprejo in urejajo običajno z osnovnim obarvanjem, a podrobno poudarjanje in oris simbolov sta na voljo le za podprte jezike.
+- Oris simbolov in Pojdi na vrstico veljata za urejevalnik besedila. Šestnajstiški urejevalnik je namenjen dvojiškemu pregledu in urejanju na ravni bajtov, ne besedilu.
+- Oba urejevalnika ohranita varnostno kopijo izvirne datoteke ob prvem shranjevanju, tako da je nenamerno spremembo enostavno razveljaviti z obnovitvijo te varnostne kopije.

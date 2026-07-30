@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI-assistent</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>AI-assistent</h1>
+<p>AI-assistenten är ett valfritt, borttagbart insticksprogram som hjälper dig att arbeta med dina filer på vanligt språk. Den kan sammanfatta eller förklara ett dokument, föreslå ett bättre filnamn, översätta eller korrekturläsa text, förvandla data till en tabell och till och med organisera en mapp – och den kan utföra filåtgärder åt dig efter att först ha visat dig en plan. Den körs på enheten med Apple Intelligence när det är tillgängligt, eller så kan du rikta den mot en molnmodell. Eftersom det är ett insticksprogram kan du inaktivera eller ta bort det helt från <strong>Konfiguration ▸ Insticksprogram…</strong>.</p>
+<h2 id="oppna-assistenten">Öppna assistenten</h2>
+<p>Välj <strong>Kommandon ▸ AI-assistent</strong> för att visa assistenten i en dockad panel till höger i fönstret. Skriv en förfrågan och tryck på Return; assistenten kan läsa filer, slå upp saker och – med din bekräftelse – göra ändringar.</p>
+<p><img alt="AI-assistentens chatt dockad bredvid filpanelerna" src="images/ai-chat.png" />
+<em>(Figur: AI-assistenten, dockad till höger, arbetar med en förfrågan.)</em></p>
+<h2 id="hogerklicksatgarder-ai">Högerklicksåtgärder (AI ▸)</h2>
+<p>Det snabbaste sättet att använda assistenten är undermenyn <strong>AI ▸</strong> i högerklicksmenyn:</p>
+<ul>
+<li><strong>På en fil</strong> – Sammanfatta, Förklara, Föreslå ett namn, Översätt till engelska, Korrekturläs, Identifiera uppgifter och Skapa en tabell.</li>
+<li><strong>På panelens bakgrund</strong> – Organisera den här mappen och Hitta troliga dubbletter.</li>
+</ul>
+<p>Varje <strong>AI ▸</strong>-åtgärd öppnar sin <strong>egen namngivna chatt</strong> (till exempel <em>Sammanfatta – report.txt</em>), så att olika uppgifter hålls åtskilda istället för att staplas i en enda lång konversation. När du själv skriver i inmatningsfältet fortsätter den förfrågan den aktuella chatten.</p>
+<h2 id="hantera-dina-chattar">Hantera dina chattar</h2>
+<ul>
+<li>Använd chattväxlaren högst upp i panelen för att flytta mellan konversationer.</li>
+<li>Menyn <strong>Ta bort ▾</strong> erbjuder <strong>Ta bort den här chatten</strong> och <strong>Ta bort alla chattar</strong>, så att du kan rensa allt på en gång när listan blir lång. Tomma chattar rensas bort automatiskt när du stänger panelen.</li>
+</ul>
+<h2 id="andringar-bekraftas-forst">Ändringar bekräftas först</h2>
+<p>För allt som ändrar filer – flytta, byta namn, skriva, ta bort – visar assistenten en <strong>plan och väntar på din bekräftelse</strong> innan den agerar. Du kan ändra detta i Inställningar genom att höja assistentens autonomi, eller sänka den till skrivskyddat läge så att den aldrig ändrar något.</p>
+<h2 id="installningar">Inställningar</h2>
+<p>Öppna <strong>Konfiguration ▸ Inställningar ▸ AI</strong> för att konfigurera assistenten på en enda sida:</p>
+<ul>
+<li><strong>Föredragen modell</strong> – Automatisk (moln om konfigurerat, annars på enheten), På enheten (Apple Intelligence) eller Moln.</li>
+<li><strong>Molnslutpunkt, modell och API-nyckel</strong> – för att använda en OpenAI-kompatibel modell istället för den på enheten. Nyckeln lagras i macOS Keychain, aldrig i dina konfigurationsfiler.</li>
+<li><strong>Assistentens autonomi</strong> – skrivskyddad, bekräfta ändringar (standard) eller autonom.</li>
+<li><strong>Anpassad systemprompt</strong> – valfria instruktioner som formar hur assistenten svarar.</li>
+<li><strong>MCP-server</strong> – en valfri, endast lokal server som låter en extern agent styra appen; avstängd som standard och kan skyddas med en token.</li>
+</ul>
+<p><img alt="AI-sidan i Inställningar med alternativen för autonomi och MCP-server" src="images/settings-ai.png" />
+<em>(Figur: Alla assistentalternativ finns på en enda AI-sida i Inställningar.)</em></p>
+<h2 id="integritet">Integritet</h2>
+<ul>
+<li>Med Apple Intelligence körs assistenten <strong>på din Mac</strong>; ingenting lämnar enheten.</li>
+<li>En molnmodell används <strong>endast om du konfigurerar en</strong>, och dess API-nyckel förvaras i Keychain.</li>
+<li>Filändrande åtgärder bekräftas innan de körs såvida du inte medvetet höjer autonominivån.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="settings.html">Inställningar</a></li><li><a href="privacy-and-security.html">Integritet och säkerhet</a></li></ul></section>
+</main>
+</body>
+</html>

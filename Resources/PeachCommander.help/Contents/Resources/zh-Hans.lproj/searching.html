@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>查找文件</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>查找文件</h1>
+<p>当你需要在 Mac 上任何位置找出文件时 —— 按名称、按内容，或按大小和日期 —— 使用“查找文件”窗口。它可搜索一个或多个文件夹（及其子文件夹），能查看文本文件和压缩包内部，并让你把找到的一切直接送入面板，从而像操作普通文件夹一样处理结果。</p>
+<h2 id="_1">按名称查找文件</h2>
+<ol>
+<li>在显示要搜索文件夹的面板中，选择 <strong>命令 &gt; 查找文件…</strong>（或按 Cmd+Shift+F）。</li>
+<li>在 <strong>常规</strong> 标签页的 <strong>搜索</strong> 中键入名称模式。可使用 <code>*.pdf</code> 或 <code>report_*.docx</code> 这样的通配符。要一次搜索多个文件夹，在起始文件夹字段中用分号（<code>;</code>）分隔列出它们。</li>
+<li>点按 <strong>开始</strong>。匹配项在找到时出现在下方的结果列表中。</li>
+<li>双击任意结果以在活动面板中跳到该文件，或选择一个结果并点按 <strong>查看</strong>（F3）在内置查看器中打开它。</li>
+</ol>
+<p><img alt="显示名称模式、文件夹和结果列表的“查找文件”窗口常规标签页" src="images/find-files-general.png" />
+<em>(图：常规标签页 —— 在一个或多个文件夹中按名称模式搜索。)</em></p>
+<h2 id="_2">按内容、大小和日期搜索</h2>
+<ol>
+<li>要在文件内部搜索，在常规标签页选择 <strong>查找文本</strong> 并键入要查找的文本。选项可让其 <strong>区分大小写</strong>、只匹配 <strong>完整单词</strong>、将文本视为 <strong>正则表达式</strong>、执行 <strong>十六进制内容搜索</strong>，或查找 <strong>不包含</strong> 该文本的文件。</li>
+<li>切换到 <strong>高级</strong> 标签页，按 <strong>大小</strong>（例如 <code>10K</code> 到 <code>5M</code>）、按 <strong>修改日期</strong> 范围，或按最近 N 天内更改的文件来缩小结果。</li>
+<li>打开 <strong>在压缩包内搜索</strong>，以查看 zip 系列压缩包（zip、jar、war 等）内部。</li>
+<li>要将搜索限制为你已选中的内容，在开始前打开 <strong>仅在所选项目中搜索</strong>。</li>
+</ol>
+<p><img alt="显示大小和日期筛选的“查找文件”窗口高级标签页" src="images/find-files-advanced.png" />
+<em>(图：高级标签页 —— 按大小、日期和其他属性筛选。)</em></p>
+<p>如果你有添加内容字段（例如图像尺寸）的插件，<strong>插件</strong> 标签页可让你要求某字段满足某条件 —— 例如只找宽度大于 1000 像素的图像。</p>
+<p><img alt="显示内容字段条件的“查找文件”窗口插件标签页" src="images/find-files-plugins.png" />
+<em>(图：插件标签页 —— 按插件提供的内容字段匹配。)</em></p>
+<h2 id="spotlight">用 Spotlight 快速搜索</h2>
+<p>对于 macOS 已建立索引的本地文件夹，在常规标签页打开 <strong>使用 Spotlight</strong> 以获得近乎即时的结果。Spotlight 搜索索引而非扫描文件，因此它会忽略正则表达式、子文件夹深度限制以及仅所选范围。</p>
+<h2 id="_3">复用并交接结果</h2>
+<ul>
+<li><strong>送入列表框</strong> 会把每个结果作为临时列表放入活动面板，以便你一次复制、移动或删除整组。</li>
+<li>在 <strong>载入 / 保存</strong> 标签页，选择 <strong>另存为模板…</strong> 以存储当前搜索（模式和选项），稍后从模板列表中再次选取。</li>
+</ul>
+<h2 id="_4">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>打开“查找文件”</td>
+<td>Cmd+Shift+F 或 Option+F7</td>
+</tr>
+<tr>
+<td>开始 / 停止搜索</td>
+<td>窗口中的“开始”按钮</td>
+</tr>
+<tr>
+<td>查看所选结果</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">备注</h2>
+<ul>
+<li>内容搜索会读取本地文件夹的整个文件；在其他位置会跳过非常大的文件（约 16 MB，使用正则表达式时约 64 MB）。</li>
+<li>在压缩包内搜索会下探至多四层嵌套压缩包。</li>
+<li><strong>结果中包含文件夹</strong> 也会列出名称匹配的文件夹，而不仅是文件。</li>
+<li>Spotlight 仅覆盖已建立索引的本地文件夹；对于网络位置或基于模式的匹配，请将其关闭，让“查找文件”进行扫描。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">选择文件</a></li><li><a href="quick-search-and-filter.html">快速搜索与筛选</a></li></ul></section>
+</main>
+</body>
+</html>

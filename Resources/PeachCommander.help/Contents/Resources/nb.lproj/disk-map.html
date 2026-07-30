@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diskkart</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Diskkart</h1>
+<p>Diskkart er et innebygd programtillegg som med ett blikk viser hva som bruker plass i en mappe eller på et helt volum. Det skanner mappen du velger og tegner hvert element i størrelse proporsjonalt med plassen det faktisk opptar på disken, slik at de største plassslukerne skiller seg ut umiddelbart. Du kan bore deg inn i mapper, se hvordan skanningen din stemmer overens med volumets ledige, tømbare og skjulte plass, og rydde opp rett fra kartet.</p>
+<h2 id="start-en-skanning">Start en skanning</h2>
+<ol>
+<li>I det aktive panelet går du til mappen (eller volumet) du vil måle.</li>
+<li>Velg <strong>Kommandoer ▸ Diskkart: Analyser gjeldende mappe</strong>.</li>
+<li>Diskkart-visningen åpnes til høyre og skanner i bakgrunnen, og viser en løpende telling av elementer og bytes. Store mapper blir ferdige på noen få sekunder — skanningen leser katalogmetadata i bulk og arbeider på tvers av flere CPU-kjerner.</li>
+</ol>
+<p><img alt="Diskkartet som viser et kvadratisert tremapp av en mappe, en volumlinje, en liste over de største filene og en kategoriforklaring" src="images/disk-map.png" />
+<em>(Figur: Tremapp-visningen, farget etter filkategori, med volumlinjen på toppen og listen over de største filene til høyre.)</em></p>
+<h2 id="les-kartet">Les kartet</h2>
+<ul>
+<li>Hver blokk (tremapp) eller ringsegment (soleksplosjon) har størrelse etter elementets <strong>faktiske størrelse på disken</strong>, så bildet stemmer med det Finder og systemet rapporterer.</li>
+<li>Blokker er <strong>farget etter filtype</strong> — video, bilder, lyd, dokumenter, kode, arkiver, apper, diskbilder — med en forklaring langs bunnen. Du kan bytte til et størrelses-<strong>varmekart</strong> i innstillingene.</li>
+<li><strong>Klikk på en mappe</strong> for å bore deg inn i den; smulestien øverst viser hvor du er, og <strong>◂</strong>-knappen går tilbake opp.</li>
+<li>Hold pekeren over en hvilken som helst blokk for å se dens fulle sti, størrelse og elementantall.</li>
+</ul>
+<h2 id="to-visninger-tremapp-og-soleksplosjon">To visninger: tremapp og soleksplosjon</h2>
+<p>Diskkart tilbyr to visualiseringer, og du kan bytte mellom dem med <strong>◎ / ▦</strong>-knappen i overskriften eller på innstillingssiden:</p>
+<ul>
+<li><strong>Tremapp</strong> — nestede rektangler, tettest for å oppdage de enkeltvis største filene.</li>
+<li><strong>Soleksplosjon</strong> — konsentriske ringer (én per mappedybde) rundt gjeldende mappe, best for å se hvordan plass er fordelt over et dypt tre.</li>
+</ul>
+<p><img alt="Diskkartets soleksplosjonsvisning som viser konsentriske ringer for mappedybde" src="images/disk-map-sunburst.png" />
+<em>(Figur: Soleksplosjonsvisningen — den indre skiven er gjeldende mappe og hver ring er ett nivå dypere.)</em></p>
+<h2 id="volumlinjen">Volumlinjen</h2>
+<p>Linjen på toppen stemmer skanningen din av mot hele volumet:</p>
+<ul>
+<li><strong>Skannet / Denne mappen</strong> — hvor mye den analyserte mappen opptar.</li>
+<li><strong>Skjult</strong> (ved volumroten) eller <strong>Resten av volumet</strong> (for en undermappe) — alt som ikke er i denne skanningen, inkludert systembeskyttede mapper, andre brukere og øyeblikksbilder.</li>
+<li><strong>Tømbar</strong> — plass macOS kan gjenvinne automatisk, for det meste lokale Time Machine-øyeblikksbilder og hurtiglagre.</li>
+<li><strong>Ledig</strong> — plass tilgjengelig akkurat nå.</li>
+</ul>
+<p>Når volumet har lokale øyeblikksbilder, viser linjen en <strong>· N øyeblikksbilder (ⓘ)</strong>-funksjon; klikk på den for en skrivebeskyttet liste, med et hint om å administrere dem i Diskverktøy eller Time Machine. Diskkart sletter aldri øyeblikksbilder selv.</p>
+<h2 id="strste-filer">Største filer</h2>
+<p>Slå på <strong>Vis listen over de største filene</strong> for å se de største filene i gjeldende mappe rangert etter størrelse, hver med en fargebrikke for sin kategori. Klikk på en for å utheve den på kartet.</p>
+<h2 id="rydd-opp-fra-kartet">Rydd opp fra kartet</h2>
+<p>Høyreklikk på en hvilken som helst blokk for handlinger:</p>
+<ul>
+<li><strong>Åpne i venstre panel</strong> / <strong>Åpne i høyre panel</strong> — vis elementet i et filpanel.</li>
+<li><strong>Vis i Finder</strong>.</li>
+<li><strong>Flytt til Papirkurv</strong> — slett bare det elementet; kartet oppdateres uten en full ny skanning.</li>
+</ul>
+<p>For å fjerne flere elementer på én gang, bruk <strong>Samleren</strong>: høyreklikk ▸ <strong>Merk for Samleren</strong> på hvert element, og klikk deretter <strong>🗑 N</strong>-knappen i overskriften for å flytte alt du merket til Papirkurven i ett bekreftet steg.</p>
+<h2 id="innstillinger">Innstillinger</h2>
+<p>Diskkart legger til sin egen side i Innstillinger-vinduet (<strong>Konfigurasjon ▸ Innstillinger ▸ Diskkart</strong>):</p>
+<ul>
+<li><strong>Diagramstil</strong> — tremapp eller soleksplosjon.</li>
+<li><strong>Fargekoding</strong> — etter filtype (kategori) eller etter størrelse (varmekart).</li>
+<li><strong>Bli på startvolumet</strong> — ikke kryss over til andre monterte disker.</li>
+<li><strong>Vis volumlinjen</strong> og <strong>Vis listen over de største filene</strong>.</li>
+</ul>
+<p>Endringer trer i kraft på et åpent Diskkart umiddelbart.</p>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Diskkart måler <strong>allokert</strong> størrelse (på disken) og teller <strong>hardlenkede</strong> filer bare én gang, slik at totalene stemmer overens med volumets brukte plass i stedet for å telle for mye.</li>
+<li>Som standard blir skanningen på startvolumet, så den vandrer ikke inn i andre monterte disker eller nettverksdelinger.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="deleting-files.html">Slette filer</a></li><li><a href="settings.html">Innstillinger</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copierea fișierelor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Copierea fișierelor</h1>
+<p>Peach Commander este construit în jurul a două panouri alăturate: unul conține fișierele cu care lucrați, celălalt este destinația. Copierea preia tot ceea ce este selectat în panoul activ și pune un duplicat în folderul afișat în celălalt panou, lăsând originalele pe loc. Este cel mai rapid mod de a duplica fișiere și foldere între două locații fără a le trage cu mouse-ul.</p>
+<h2 id="copierea-unei-selectii-in-celalalt-panou">Copierea unei selecții în celălalt panou</h2>
+<ol>
+<li>Într-un panou, deschideți folderul care conține elementele pe care doriți să le copiați.</li>
+<li>În celălalt panou, deschideți folderul unde ar trebui să ajungă copiile.</li>
+<li>Selectați fișierele și folderele de copiat. Dacă nu este nimic selectat, se folosește elementul de sub cursor.</li>
+<li>Apăsați F5. Se deschide dialogul de copiere, afișând calea de destinație deja completată.</li>
+</ol>
+<p><img alt="Dialogul de copiere cu calea de destinație și opțiunile" src="images/copy-dialog.png" />
+<em>(Figura: Dialogul de copiere. Calea țintă indică celălalt panou; folosiți opțiunile pentru a ajusta fin copierea.)</em></p>
+<ol start="5">
+<li>Ajustați destinația dacă este necesar, apoi confirmați pentru a începe copierea.</li>
+</ol>
+<h2 id="optiuni-de-copiere">Opțiuni de copiere</h2>
+<p>Înainte de a confirma, puteți schimba modul în care se comportă copierea:</p>
+<ul>
+<li><strong>Doar fișierele mai noi</strong> — omite orice element a cărui copie există deja și este de aceeași vârstă sau mai nouă, astfel încât se actualizează doar fișierele modificate.</li>
+<li><strong>Păstrarea metadatelor</strong> — păstrează pe copii datele, permisiunile și alte atribute ale fișierelor. Aceasta este activată în mod implicit.</li>
+<li><strong>Limită de viteză</strong> — plafonează rata de transfer, astfel încât o copiere mare să nu satureze discul sau conexiunea de rețea.</li>
+<li><strong>Mască de redenumire</strong> — tastați un tipar cu metacaractere în câmpul țintă (de exemplu <code>*.bak</code>) pentru a redenumi elementele pe măsură ce sunt copiate.</li>
+</ul>
+<p>De asemenea, puteți trimite sarcina în coada din fundal în loc să o urmăriți — consultați Transferurile în fundal.</p>
+<h2 id="progres">Progres</h2>
+<p>O fereastră de progres afișează fișierul curent și sarcina generală cu bare separate, plus viteza de transfer. Puteți întrerupe și relua oricând sau puteți trimite copierea în curs către managerul de transferuri în fundal pentru a continua să lucrați până se finalizează.</p>
+<p><img alt="Dialogul de progres al transferului cu o bară de progres, contoare de fișiere și octeți și butoanele Pauză și Anulare" src="images/progress-dialog.png" />
+<em>(Figura: Dialogul de progres afișat în timpul unei copieri sau mutări.)</em></p>
+<h2 id="gestionarea-fisierelor-care-exista-deja">Gestionarea fișierelor care există deja</h2>
+<p>Dacă o copiere ar înlocui un fișier existent, Peach Commander se oprește și întreabă ce să facă. O previzualizare a ambelor fișiere vă ajută să decideți.</p>
+<p><img alt="Dialogul de conflict la suprascriere care compară două fișiere" src="images/overwrite-dialog.png" />
+<em>(Figura: Dialogul de suprascriere compară fișierul existent cu cel care este copiat.)</em></p>
+<p>Opțiunile dumneavoastră includ:</p>
+<ul>
+<li><strong>Suprascrieți</strong> fișierul existent sau <strong>Suprascrieți toate</strong> pentru a aplica aceasta la fiecare conflict rămas.</li>
+<li><strong>Omiteți</strong> acest fișier sau <strong>Omiteți toate</strong> conflictele rămase.</li>
+<li><strong>Redenumiți</strong> automat copia care sosește, astfel încât ambele fișiere să fie păstrate.</li>
+<li><strong>Adăugați</strong> datele care sosesc la sfârșitul fișierului existent.</li>
+<li>Suprascrieți doar când sursa este <strong>mai nouă</strong> sau <strong>mai mare</strong> decât fișierul existent.</li>
+</ul>
+<h2 id="scurtaturi">Scurtături</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Tastă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Copiați selecția în celălalt panou</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Copiați în același folder (creați un duplicat redenumit)</td>
+<td>Shift+F5</td>
+</tr>
+<tr>
+<td>Deschideți managerul de transferuri în fundal</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Copierea între două locații de pe același disc folosește o clonare rapidă atunci când discul o acceptă, astfel încât fișierele mari se copiază aproape instantaneu și folosesc puțin spațiu suplimentar.</li>
+<li>Folderele sunt copiate cu tot ce se află în ele.</li>
+<li>Pentru a muta fișierele în loc să le copiați, folosiți F6. Pentru a urmări sau gestiona sarcinile din coadă, deschideți managerul de transferuri în fundal cu Cmd+Shift+B.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Mutare și redenumire</a></li><li><a href="background-transfers.html">Transferuri în fundal</a></li></ul></section>
+</main>
+</body>
+</html>

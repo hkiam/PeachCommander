@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>开始菜单与自定义命令</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>开始菜单与自定义命令</h1>
+<p><strong>开始</strong> 菜单是你自己的个人菜单，与文件、编辑等并列位于菜单栏中。它容纳你自己定义的命令，让你最常用的操作始终一键可达。秉承经典双面板文件管理器的传统，每个条目都可以运行内置命令、启动外部程序或应用，或直接跳转到某个文件夹。Peach Commander 出厂时开始菜单为空，等待你来填充。</p>
+<h2 id="_1">如何添加自己的命令</h2>
+<ol>
+<li>选择 <strong>开始 &gt; 更改开始菜单…</strong>。Peach Commander 会打开你的用户命令文件（首次会用带注释的示例创建它）。</li>
+<li>每个命令添加一个小节。每个小节以方括号中的名称开头，随后是几个简单的键：
+   - <strong>cmd</strong> —— 要运行的内容：程序路径、应用、内置 <code>cm_</code> 命令，或你自己的另一条命令。
+   - <strong>param</strong> —— 传给程序的参数。命令运行时会填入占位符：<code>%P</code>（源文件夹）、<code>%N</code>（当前文件）、<code>%T</code>（另一面板的文件夹）、<code>%M</code>（另一面板的文件）、<code>%S</code>（所选文件）。
+   - <strong>path</strong> —— 起始文件夹（默认为当前文件夹）。
+   - <strong>menu</strong> —— 在开始菜单中显示的标题。
+   - <strong>key</strong> —— 可选快捷键，例如 <code>C+S+B</code>。</li>
+<li>保存文件。开始菜单会在 Peach Commander 下次变为活动时自行更新，因此你的新条目会立即出现。</li>
+</ol>
+<h2 id="_2">提示</h2>
+<ul>
+<li>要在终端中打开当前文件夹，将 <strong>cmd</strong> 设为 <code>open</code>、<strong>param</strong> 设为 <code>-a Terminal %P</code>、<strong>menu</strong> 设为 <code>在此打开终端</code>。</li>
+<li>将 <strong>cmd</strong> 指向某个 <code>cm_</code> 命令，即可为内置操作赋予专属的开始菜单条目和快捷键。</li>
+<li>文件中的顺序即菜单中的顺序，因此把最常用的命令放在最上面。</li>
+</ul>
+<h2 id="_3">备注</h2>
+<ul>
+<li>你也可以用自己的菜单替换整个菜单栏。选择 <strong>设置 &gt; 编辑菜单文件…</strong> 打开一个从当前完全本地化的内置菜单生成的菜单文件；自由编辑，你的更改会在应用下次激活时生效。删除该文件即可恢复标准菜单栏。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">按钮栏</a></li><li><a href="keyboard-shortcuts.html">键盘与快捷键</a></li></ul></section>
+</main>
+</body>
+</html>

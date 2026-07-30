@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prohlížení souborů</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Prohlížení souborů</h1>
+<p>Peach Commander má vestavěný prohlížeč, který umožňuje nahlédnout dovnitř souboru bez otevírání jiné aplikace nebo změny souboru. Stiskněte F3 na položce pod kurzorem a prohlížeč se okamžitě otevře, i pro velmi velké soubory. Automaticky zvolí nejlepší způsob zobrazení obsahu: čitelný text, kód s barevnou syntaxí, surový hexadecimální výpis nebo obrázek v plné velikosti. Můžete také zobrazit náhled souboru přímo v okně pomocí Rychlého náhledu, nebo jej předat funkci Quick Look v macOS.</p>
+<h2 id="zobrazeni-souboru">Zobrazení souboru</h2>
+<ol>
+<li>Přesuňte kurzor na soubor v aktivním panelu.</li>
+<li>Stiskněte F3 (nebo zvolte Zobrazit v nabídce Soubor). Prohlížeč se otevře ve vlastním okně.</li>
+<li>Pomocí panelu nástrojů přepínejte, jak se obsah zobrazuje: Text, Kód, Hex, Obrázek nebo Vykreslený. Ponechte automatické nastavení, ať rozhodne Peach Commander.</li>
+<li>Rolujte šipkami, Page Up/Page Down a posuvníkem. U dlouhého textu zapněte tlačítko minimapy, abyste viděli celý soubor a rychle se v něm pohybovali.</li>
+<li>Stiskem N přeskočíte na další vybraný soubor, nebo okno zavřete klávesou Esc.</li>
+</ol>
+<p><img alt="Vestavěný prohlížeč zobrazující textový soubor s minimapou vpravo" src="images/lister-text.png" />
+<em>(Obrázek: prohlížení textového souboru, s voličem reprezentace a minimapou na panelu nástrojů.)</em></p>
+<h2 id="hledani-textu-a-zmena-kodovani">Hledání textu a změna kódování</h2>
+<ul>
+<li>Stiskem Ctrl+F hledáte uvnitř souboru. Stiskem F3 přeskočíte na další shodu a Shift+F3 na předchozí.</li>
+<li>Pokud text vypadá zkomoleně, klepněte na Kódování na panelu nástrojů (nebo stiskněte E) pro procházení kódování textu, dokud se nečte správně; automatické nastavení to obvykle trefí.</li>
+<li>Stiskem W přepnete zalamování slov u dlouhých řádků.</li>
+</ul>
+<h2 id="rychly-nahled-a-quick-look">Rychlý náhled a Quick Look</h2>
+<p>Rychlý náhled zobrazuje živý náhled v panelu, který <em>nepoužíváte</em>, takže můžete pokračovat v prohlížení na jedné straně a zobrazovat náhled na druhé.</p>
+<ol>
+<li>Stiskněte Ctrl+Q. Neaktivní panel se změní na oblast náhledu.</li>
+<li>Přesouvejte kurzor na různé soubory v aktivním panelu, abyste zobrazili náhled každého.</li>
+<li>Stiskem Ctrl+Q znovu, nebo Esc, vrátíte panelu normální seznam souborů.</li>
+</ol>
+<p>Pro rychlý celoobrazovkový náhled zpracovaný přímo macOS stiskněte Cmd+Y (Quick Look). Opětovným stiskem Cmd+Y nebo mezerníku jej zavřete.</p>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Zobrazit soubor pod kurzorem</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Zobrazit jen soubor pod kurzorem (ignorovat označené soubory)</td>
+<td>Shift+F3</td>
+</tr>
+<tr>
+<td>Otevřít v externím prohlížeči</td>
+<td>Option+F3</td>
+</tr>
+<tr>
+<td>Hledat v prohlížeči</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Další / předchozí shoda</td>
+<td>F3 / Shift+F3</td>
+</tr>
+<tr>
+<td>Rychlý náhled v druhém panelu</td>
+<td>Ctrl+Q</td>
+</tr>
+<tr>
+<td>Quick Look (náhled macOS)</td>
+<td>Cmd+Y</td>
+</tr>
+<tr>
+<td>Zavřít prohlížeč nebo Rychlý náhled</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Prohlížeč je jen pro čtení. Chcete-li soubor změnit, použijte místo toho editor (viz Úpravy souborů).</li>
+<li>Velmi velké soubory se otevírají bez prodlevy: text otevře rychlé rolovatelné zobrazení a hexadecimální zobrazení se čte přímo z disku při jakékoli velikosti.</li>
+<li>Stiskem F3 na složce uvidíte souhrn jejího obsahu a celkovou velikost místo bytů souboru.</li>
+<li>Režim Vykreslený zobrazuje formátovaný obsah jako webové stránky; hexadecimální režim ukazuje surové byty vedle jejich znaků, což je praktické pro zkoumání binárních souborů.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Úpravy souborů</a></li><li><a href="searching.html">Hledání souborů</a></li></ul></section>
+</main>
+</body>
+</html>

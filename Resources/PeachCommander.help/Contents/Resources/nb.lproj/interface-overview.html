@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hovedvinduet</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Hovedvinduet</h1>
+<p>Peach Commander viser to fillister side om side, slik at du kan se hvor filer kommer fra og hvor de skal, samtidig. Det meste av arbeidet ditt skjer i disse to panelene; linjene rundt dem lar deg bytte disk, hoppe til en mappe og kjøre de vanlige filkommandoene uten å slippe tastaturet. Denne omvisningen gir navn til hver del av vinduet, slik at resten av hjelpen gir mening.</p>
+<p><img alt="Hovedvinduet i Peach Commander med sine to paneler og linjene rundt" src="images/main-window.png" />
+<em>(Figur: Hovedvinduet — to paneler med knapperaden, disklinjen og stilinjene over og funksjonstastlinjen under.)</em></p>
+<h2 id="de-to-panelene-og-det-aktive-panelet">De to panelene og det aktive panelet</h2>
+<p>Vinduet er delt i et venstre panel og et høyre panel, hvert med innholdet i én mappe. Bare ett panel er aktivt om gangen: det viser markøren (en uthevet rad) og stilinjen tegnes med en farget bakgrunn. Kommandoer som kopier og flytt handler alltid på det aktive panelet og sender filer til det andre.</p>
+<ol>
+<li>Klikk hvor som helst i et panel for å gjøre det aktivt, eller trykk Tab for å bytte mellom dem.</li>
+<li>Bruk piltastene for å flytte markøren opp og ned i det aktive panelet.</li>
+<li>Trykk Enter på en mappe for å åpne den, eller på <code>..</code> øverst i listen for å gå opp ett nivå.</li>
+</ol>
+<h2 id="linjer-rundt-panelene">Linjer rundt panelene</h2>
+<ul>
+<li><strong>Knapperad</strong> (øverst): en rad med flate knapper for hyppige kommandoer. Klikk på en knapp for å kjøre kommandoen; høyreklikk på en knapp for å redigere raden.</li>
+<li><strong>Disklinje</strong>: én knapp per tilgjengelig disk eller volum, hver med en utløserkontroll og ledig plass. Klikk på et volum for å bytte panelet til det.</li>
+<li><strong>Stilinje</strong>: viser gjeldende mappe som et klikkbart smulesti. Klikk på et segment for å hoppe rett til den mappen, eller klikk på stien for å skrive inn en plassering.</li>
+<li><strong>Statuslinje</strong> (under hver liste): et løpende sammendrag av panelet — hvor mange filer og mapper som er merket, og deres samlede størrelse.</li>
+<li><strong>Kommandolinje</strong> (nederst): et tekstfelt der du kan skrive en kommando i skall-stil som kjøres i gjeldende mappe.</li>
+<li><strong>Funksjonstastlinje</strong> (helt nederst): seks knapper merket F3 Vis, F4 Rediger, F5 Kopier, F6 Flytt, F7 NyMappe og F8 Slett. Klikk på en knapp eller trykk den tilsvarende tasten.</li>
+</ul>
+<p><img alt="Nærbilde av disklinjen som viser volumknapper og ledig plass" src="images/drive-bar-crop.png" />
+<em>(Figur: Disklinjen — én knapp per volum, med en utløserkontroll og gjenværende ledig plass.)</em></p>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bytt aktivt panel</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Åpne mappe / element under markøren</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Gå opp én mappe</td>
+<td>Backspace</td>
+</tr>
+<tr>
+<td>Vis fil</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Rediger fil</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Kopier til det andre panelet</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Flytt / gi nytt navn til det andre panelet</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Ny mappe</td>
+<td>F7</td>
+</tr>
+<tr>
+<td>Slett (til Papirkurv)</td>
+<td>F8</td>
+</tr>
+</tbody>
+</table>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Funksjonstastlinjen omdøper seg selv i sanntid når du holder inne en modifikatortast. Ved å holde Shift endres for eksempel F6 til en gi-nytt-navn-på-stedet-handling, slik at knappene alltid viser hva tastene vil gjøre akkurat nå.</li>
+<li>Nesten alle linjer kan vises eller skjules. Se under Vis- og Konfigurasjon-menyene for å slå knapperaden, disklinjen, kommandolinjen eller funksjonstastlinjen av og på, eller for å stable de to panelene øverst og nederst i stedet for side om side.</li>
+<li>På mange Mac-tastaturer fungerer F-tastene som medie- og lysstyrkekontroller som standard. Hold Fn-tasten sammen med F3-F8, eller slå på "Bruk F1-, F2-tastene osv. som standard funksjonstaster" i Systeminnstillinger, for å bruke dem direkte.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="navigating.html">Bevege seg rundt</a></li><li><a href="panels-and-tabs.html">Faner</a></li></ul></section>
+</main>
+</body>
+</html>

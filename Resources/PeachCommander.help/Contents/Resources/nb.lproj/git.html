@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>Git-programtillegget viser tilstanden til et Git-depot rett i filpanelet – ingen egen app, ingen terminal. Det legger til to kolonner som viser hver fils status i arbeidstreet og gjeldende gren, en <strong>Git</strong>-undermeny for de daglige kommandoene (status, klargjøring, innsjekking, pull, push), og det bruker <code>git</code> som allerede er installert på Mac-en din. Det er et programtillegg, så du kan slå det av eller fjerne det i <strong>Konfigurasjon ▸ Programtillegg…</strong>.</p>
+<h2 id="hva-det-legger-til">Hva det legger til</h2>
+<ul>
+<li><strong>To kolonner i fillisten</strong> – <em>Git Status</em> og <em>Branch</em>. I et depot viser hver fil et kort statusord (Endret, Lagt til, Slettet, Usporet, Omdøpt, Kopiert, Konflikt, Ignorert eller Forandret) og panelet viser gjeldende gren. Slå på kolonnene i <strong>Konfigurasjon ▸ Kolonner…</strong> (se <a href="view-modes-and-sorting.md">Visningsmoduser og sortering</a>).</li>
+<li><strong>En Git-meny</strong> – under <strong>Kommandoer ▸ Git</strong>, og i høyreklikkmenyen til en fil, med: <strong>Git Status…</strong>, <strong>Git Add (stage)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> og <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="Git Status-dialogen som viser gjeldende gren og de endrede filene i depotet" src="images/git-status.png" />
+<em>(Figur: Git Status rapporterer grenen og hver endring i arbeidstreet.)</em></p>
+<h2 id="sjekk-statusen">Sjekk statusen</h2>
+<ol>
+<li>Sett markøren på en fil eller mappe inne i et Git-depot.</li>
+<li>Velg <strong>Kommandoer ▸ Git ▸ Git Status…</strong> (eller høyreklikk ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>Et sammendrag vises: gjeldende gren (eller <em>(frakoblet)</em>), deretter enten <em>Arbeidstreet er rent.</em> eller en liste over endringer, der hver linje viser statusen og filstien.</li>
+</ol>
+<p>Hvis markøren ikke er inne i et depot, sier programtillegget ganske enkelt <em>Ikke et Git-depot.</em></p>
+<h2 id="klargjr-sjekk-inn-pull-og-push">Klargjør, sjekk inn, pull og push</h2>
+<ul>
+<li><strong>Git Add (stage)</strong> klargjør filen under markøren (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> ber om en innsjekkingsmelding og sjekker deretter inn alle endringer (<code>git commit -a</code>). Den kombinerte utdataen vises, så du kan se nøyaktig hva som skjedde.</li>
+<li><strong>Git Pull</strong> gjør en pull med kun fast-forward (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> dytter gjeldende gren (<code>git push</code>).</li>
+</ul>
+<p>Etter en kommando som endrer depotet, oppdateres det aktive panelet slik at statuskolonnene holder seg oppdaterte.</p>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Programtillegget bruker systemets Git på <code>/usr/bin/git</code>. Hvis Git ikke er installert, rapporterer kommandoene at Git ikke er tilgjengelig. (Å installere Xcode Command Line Tools gir deg det.)</li>
+<li>Depotstatus leses én gang per mappe og bufres, så det å bla i et stort depot forblir raskt; bufferet oppdateres etter enhver kommando som endrer treet.</li>
+<li>Innsjekking bruker <code>git commit -a</code>, som sjekker inn sporede endringer; helt nye filer trenger fortsatt <strong>Git Add (stage)</strong> først.</li>
+<li>Kolonneoverskriftene <em>Git Status</em> og <em>Branch</em> vises for øyeblikket på engelsk selv i andre grensesnittspråk; verdiene og dialogene er oversatt.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="view-modes-and-sorting.html">Visningsmoduser og sortering</a></li></ul></section>
+</main>
+</body>
+</html>

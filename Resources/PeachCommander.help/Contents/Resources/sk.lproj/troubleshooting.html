@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riešenie problémov</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Riešenie problémov</h1>
+<p>Táto téma pokrýva problémy, na ktoré ľudia narážajú najčastejšie: macOS blokujúci prístup k určitým priečinkom, priečinok, ktorý sa zdá zaseknutý na starom obsahu, zabezpečený server FTP, ktorý odmieta pripojenie, a balenie do RAR. Každá sekcia vám povie, čo sa deje a ako to opraviť.</p>
+<h2 id="macos-ziada-o-povolenie-alebo-priecinky-vyzeraju-prazdne">macOS žiada o povolenie, alebo priečinky vyzerajú prázdne</h2>
+<p>Niektoré umiestnenia — ako váš priečinok <code>~/Library</code>, priečinky iných používateľov a systémové oblasti — sú chránené macOS a zostávajú skryté, kým neudelíte prístup. Peach Commander zistí, keď sa to stane, a ponúkne, že vás nasmeruje na správne nastavenie.</p>
+<ol>
+<li>Keď budete vyzvaní, vyberte otvoriť Systémové nastavenia, alebo ich otvorte sami.</li>
+<li>Prejdite na Súkromie a bezpečnosť, potom Úplný prístup k disku.</li>
+<li>Zapnite prepínač vedľa Peach Commanderu. Ak nie je v zozname, použite tlačidlo Pridať na jeho pridanie.</li>
+<li>Ukončite a znovu otvorte Peach Commander, aby sa nové povolenie prejavilo.</li>
+</ol>
+<p>Peach Commander nebeží vnútri obmedzenej karantény, takže po udelení Úplného prístupu k disku môže prehliadať a spravovať súbory presne ako Finder.</p>
+<h2 id="priecinok-nezobrazuje-nedavne-zmeny">Priečinok nezobrazuje nedávne zmeny</h2>
+<p>Panely sa normálne aktualizujú samy, keď sa súbory zmenia na disku. Ak bol priečinok zmenený iným programom, je na sieťovom zväzku, alebo jednoducho vyzerá zastaraný, obnovte ho manuálne.</p>
+<ol>
+<li>Kliknite na panel, ktorý chcete aktualizovať.</li>
+<li>Stlačte F2 (alebo Ctrl+R) na opätovné prečítanie toho priečinka.</li>
+</ol>
+<p>Sieťové a pripojené zväzky nehlásia vždy zmeny do macOS, takže manuálne obnovenie je tam spoľahlivé riešenie.</p>
+<h2 id="server-ftps-sa-nepripoji">Server FTPS sa nepripojí</h2>
+<p>Ak zabezpečené pripojenie FTP zlyhá, skontrolujte tieto nastavenia v podrobnostiach pripojenia:</p>
+<ul>
+<li>Zosúlaďte režim zabezpečenia servera: explicitný FTPS (AUTH TLS) oproti implicitnému FTPS (port 990) nie sú zameniteľné.</li>
+<li>Ak sa pripojenie po prihlásení zasekne, prepnite medzi pasívnym a aktívnym režimom prenosu — väčšina serverov za firewallom potrebuje pasívny.</li>
+<li>Ak server používa samopodpísaný certifikát, musíte ho výslovne povoliť; inak sa pripojenie odmietne.</li>
+<li>Potvrďte hostiteľa, port, používateľské meno a heslo, a či je vo vašej sieti potrebné proxy SOCKS5.</li>
+</ul>
+<h2 id="balenie-do-rar-nic-nerobi">Balenie do RAR nič nerobí</h2>
+<p>Peach Commander dokáže sám vytvárať archívy ZIP, 7z, TAR, TAR.GZ, BZ2 a XZ. RAR je iný: keďže RAR je proprietárny formát, vytváranie archívov RAR vyžaduje samostatný nástroj príkazového riadka RAR nainštalovaný na vašom Macu. Bez neho je RAR nedostupný, keď balíte súbory (Option+F5). Na čítanie existujúcich archívov RAR ich stále môžete otvoriť ako priečinok. Ak nepotrebujete práve RAR, vyberte namiesto toho ZIP alebo 7z — oba podporujú silné šifrovanie AES-256 a rozdelené zväzky.</p>
+<h2 id="skratky">Skratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akcia</th>
+<th>Skratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Obnoviť aktívny priečinok</td>
+<td>F2 alebo Ctrl+R</td>
+</tr>
+<tr>
+<td>Pripojiť sa k serveru FTP/FTPS</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Pripojiť sieťové zdieľanie</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>Zabaliť vybrané súbory</td>
+<td>Option+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Heslá a iné poverenia sú uložené len vo zväzku kľúčov macOS, nikdy v konfiguračných súboroch v otvorenom texte.</li>
+<li>Pripojenie sieťového zdieľania (Cmd+K, alebo ponuka Sieť ▸ Pripojiť sieťové zdieľanie…) používa to isté pripojenie, ktoré používa samotný macOS, takže sa objaví aj vo Finderi.</li>
+<li>Ak problém pretrváva po obnovení a reštarte, môže ísť o známe obmedzenie, nie o poruchu — pozri Známe obmedzenia.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">Súkromie a bezpečnosť</a></li><li><a href="known-limitations.html">Známe obmedzenia</a></li></ul></section>
+</main>
+</body>
+</html>

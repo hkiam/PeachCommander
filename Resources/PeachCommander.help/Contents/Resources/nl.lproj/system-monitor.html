@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Monitor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>System Monitor</h1>
+<p>De System Monitor-plug-in plaatst een live-uitlezing van de activiteit van je Mac direct in de titelbalk van het venster: kleine chips voor CPU, geheugen, schijf, netwerk en — waar de hardware ze biedt — GPU, batterij en sensoren. Elke chip wordt eens per seconde bijgewerkt; klik op er een voor een pop-up met een geschiedenisgrafiek en een gedetailleerd overzicht. Het is een plug-in, dus je kunt hem inschakelen, configureren of verwijderen via <strong>Configuratie ▸ Plug-ins…</strong>.</p>
+<h2 id="de-chips-in-de-titelbalk">De chips in de titelbalk</h2>
+<p>Als de plug-in aanstaat, staat er een rij compacte chips in de titelbalk. Elke chip bestaat uit een gekleurde stip, een kort label en een live-waarde (sommige met een ingebedde sparkline):</p>
+<table>
+<thead>
+<tr>
+<th>Chip</th>
+<th>Toont</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>Processorbelasting, met detail per core</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>Gebruikt / totaal geheugen (plus wired, gecomprimeerd, swap)</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>Ruimte op het startvolume en lees-/schrijfdoorvoer</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>Download- / uploadsnelheden en -totalen</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>GPU-gebruik · batterijlading &amp; -status · ventilatorsnelheden en temperaturen</td>
+</tr>
+</tbody>
+</table>
+<p>Klik op een chip om een pop-up te openen met de grote huidige waarde, een <strong>HISTORY</strong>-sparkline, een sleutel/waarde-lijst met <strong>DETAILS</strong> en — voor de CPU — een lijst <strong>CORE LOAD</strong> met balken per core.</p>
+<h2 id="configureren">Configureren</h2>
+<p>Kies <strong>Opdrachten ▸ System Monitor…</strong> (of open <strong>Configuratie ▸ Instellingen ▸ System Monitor</strong>) om de uitlezing te configureren:</p>
+<ul>
+<li><strong>Systeemmonitor in titelbalk tonen</strong> — de hoofdschakelaar aan/uit voor de chips.</li>
+<li><strong>Profiel</strong> — de voorinstellingen <em>Minimaal</em>, <em>Gemiddeld</em> of <em>Maximaal</em> die een zinvolle set modules kiezen.</li>
+<li><strong>De moduletabel</strong> — schakel elke module (CPU, GPU, RAM, HDD, Net, Batt, Sens) in of uit, kies de kleur ervan en sleep rijen om de volgorde te bepalen waarin ze in de titelbalk verschijnen. Modules die je hardware niet kan rapporteren, worden getoond als <em>(n/a)</em>.</li>
+</ul>
+<p><img alt="De instellingen van System Monitor met de moduletabel, profielen en kleuren per module" src="images/system-monitor.png" />
+<em>(Afbeelding: kies welke modules verschijnen, hun kleuren en hun volgorde.)</em></p>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Alles wordt gemeten, nooit verzonnen: modules waarvan de hardware de gegevens niet biedt (vaak GPU of sensoren op sommige Macs) blijven onbeschikbaar in plaats van verzonnen getallen te tonen. Batterij is niet beschikbaar op desktops.</li>
+<li>Het bemonsteren draait op een achtergrondtimer, alleen zolang de uitlezing zichtbaar is, en bewaart ongeveer 30 minuten geschiedenis voor de grafieken.</li>
+<li>Je modulekeuzes, kleuren en volgorde worden bewaard bij de configuratie van de app.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="settings.html">Instellingen</a></li></ul></section>
+</main>
+</body>
+</html>

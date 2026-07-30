@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recherche rapide et filtre</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Recherche rapide et filtre</h1>
+<p>Lorsqu'un dossier contient des centaines d'éléments, vous n'avez que rarement besoin de faire défiler. Peach Commander vous permet d'accéder directement à un fichier en saisissant son nom (recherche rapide), de réduire la liste aux seuls éléments qui vous intéressent (filtre rapide), et d'afficher ou de masquer les fichiers cachés que macOS garde normalement hors de vue. Les trois fonctionnent dans le panneau actif sans ouvrir de boîte de dialogue.</p>
+<h2 id="acceder-a-un-fichier-en-le-saisissant-recherche-rapide">Accéder à un fichier en le saisissant (recherche rapide)</h2>
+<ol>
+<li>Cliquez sur un panneau de fichiers pour l'activer.</li>
+<li>Commencez à saisir le début d'un nom. Le curseur saute au premier élément correspondant.</li>
+<li>Continuez à saisir pour affiner la correspondance, ou appuyez de nouveau sur la même lettre pour parcourir les éléments qui commencent par cette lettre.</li>
+<li>Le texte saisi s'efface après une courte pause, ce qui vous permet de lancer une nouvelle recherche à tout moment.</li>
+</ol>
+<p>Par défaut, les lettres simples vont dans la ligne de commande et la recherche rapide se déclenche avec Ctrl+Option+lettre (le comportement classique). Vous pouvez faire réagir la recherche rapide à la saisie simple, ou la désactiver, dans les réglages de Configuration.</p>
+<h2 id="filtrer-la-liste-filtre-rapide">Filtrer la liste (filtre rapide)</h2>
+<ol>
+<li>Dans le panneau actif, appuyez sur Ctrl+S pour activer le filtre rapide.</li>
+<li>Saisissez un masque de filtre. Le panneau se réduit en direct aux éléments correspondants au fur et à mesure que vous saisissez.</li>
+<li>Appuyez sur Esc pour effacer le filtre et afficher de nouveau tout.</li>
+</ol>
+<p>Le filtre accepte plusieurs sortes de masques :</p>
+<ul>
+<li><strong>Le texte simple</strong> correspond à tout nom qui contient ce que vous avez saisi (par exemple, <code>report</code> affiche tout élément comportant « report » n'importe où dans son nom).</li>
+<li><strong>Les caractères génériques</strong> utilisent <code>*</code> (n'importe quels caractères) et <code>?</code> (un caractère). Séparez plusieurs masques par un point-virgule et ajoutez les exclusions après une barre verticale, par exemple <code>*.jpg;*.png|*thumb*</code> pour afficher les images mais masquer les vignettes.</li>
+<li><strong>Les étiquettes du Finder</strong> filtrent par couleur d'étiquette : saisissez <code>tag:red</code> (ou <code>#red</code>) pour n'afficher que les éléments étiquetés en rouge, ou un simple <code>tag:</code> pour afficher tout ce qui porte une étiquette.</li>
+</ul>
+<h2 id="afficher-les-fichiers-caches">Afficher les fichiers cachés</h2>
+<p>Appuyez sur Ctrl+H, ou choisissez la commande dans le menu Affichage, pour basculer l'affichage des éléments cachés (noms commençant par un point et fichiers cachés par le système). Le réglage s'applique au panneau actif et est mémorisé d'une session à l'autre.</p>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Raccourci</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Recherche rapide (mode classique)</td>
+<td>Ctrl+Option+lettre</td>
+</tr>
+<tr>
+<td>Activer/désactiver le filtre rapide</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Effacer le filtre / annuler</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Afficher/masquer les fichiers cachés</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>La recherche rapide ne fait que déplacer le curseur ; le filtre rapide, lui, change réellement quels éléments sont listés. Utilisez le filtre lorsque vous voulez travailler sur un sous-ensemble (par exemple, sélectionner ou copier uniquement les correspondances).</li>
+<li>Les réglages du filtre et des fichiers cachés sont propres à chaque panneau, de sorte que les deux côtés peuvent afficher des choses différentes en même temps.</li>
+<li>La recherche rapide fait correspondre les noms depuis le début ; le mode texte simple du filtre fait correspondre n'importe où dans le nom. Utilisez un caractère générique comme <code>*text*</code> si vous voulez que le filtre se comporte de la même manière.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Rechercher des fichiers</a></li><li><a href="view-modes-and-sorting.html">Modes d&#x27;affichage et tri</a></li></ul></section>
+</main>
+</body>
+</html>

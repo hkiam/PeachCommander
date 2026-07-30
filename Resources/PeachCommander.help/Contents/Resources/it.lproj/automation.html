@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automazione (AppleScript e Comandi rapidi)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Automazione (AppleScript e Comandi rapidi)</h1>
+<p>Peach Commander è programmabile, quindi potete pilotarlo da AppleScript e dall'app Comandi rapidi. Un piccolo insieme di verbi principali consente a uno script di navigare nei pannelli, selezionare i file tramite una maschera, copiare o spostare la selezione corrente ed eseguire qualsiasi comando di Peach Commander tramite il suo id — riutilizzando esattamente le stesse azioni usate dai menu, così un passaggio da script si comporta come uno manuale. È comodo per le operazioni ripetitive: archiviare i download, preparare l'output di una build o inserire un passaggio sui file in un Comando rapido più ampio.</p>
+<h2 id="consultare-il-dizionario">Consultare il dizionario</h2>
+<ol>
+<li>Aprite <strong>Editor di script</strong> (in <code>/Applications/Utilities</code>).</li>
+<li>Scegliete <strong>Finestra ▸ Libreria</strong>, poi fate doppio clic su <strong>Peach Commander</strong> (aggiungetelo con <strong>+</strong> se non è elencato).</li>
+<li>Si apre il dizionario, che elenca i comandi e le proprietà riportati di seguito.</li>
+</ol>
+<p>La prima volta che uno script controlla Peach Commander, macOS vi chiede di consentirlo (<strong>Impostazioni di Sistema ▸ Privacy e Sicurezza ▸ Automazione</strong>). Approvatelo una volta e gli script successivi verranno eseguiti senza richieste.</p>
+<h2 id="cosa-potete-leggere">Cosa potete leggere</h2>
+<table>
+<thead>
+<tr>
+<th>Proprietà</th>
+<th>Significato</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>Percorso POSIX della cartella del pannello attivo.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>Percorso POSIX della cartella dell'altro pannello.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>Gli elementi selezionati nel pannello attivo (o l'elemento sotto il cursore).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="i-verbi">I verbi</h2>
+<table>
+<thead>
+<tr>
+<th>Comando</th>
+<th>Cosa fa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;path&gt;" [in left\|right]</code></td>
+<td>Apre una cartella in un pannello (predefinito: il pannello attivo).</td>
+</tr>
+<tr>
+<td><code>select "&lt;mask&gt;"</code></td>
+<td>Seleziona gli elementi nel pannello attivo tramite una maschera con caratteri jolly, ad es. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;folder&gt;"</code></td>
+<td>Copia la selezione del pannello attivo in una cartella.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;folder&gt;"</code></td>
+<td>Sposta la selezione del pannello attivo in una cartella.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Esegue qualsiasi comando tramite il suo id, ad es. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>La copia e lo spostamento usano la stessa coda di trasferimenti in background di F5/F6, quindi l'avanzamento e le eventuali richieste di sovrascrittura appaiono esattamente come per un'operazione manuale.</p>
+<h2 id="esempio">Esempio</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="usarlo-da-comandi-rapidi">Usarlo da Comandi rapidi</h2>
+<p>Nell'app <strong>Comandi rapidi</strong>, aggiungete l'azione <strong>Esegui AppleScript</strong> e incollate uno script come quello sopra. Questo vi permette di inserire un passaggio di Peach Commander in un Comando rapido più ampio — ad esempio, attivato da una modifica di una cartella o da un tasto di scelta rapida.</p>
+<h2 id="note">Note</h2>
+<ul>
+<li>L'id del comando che passate a <code>run command</code> è lo stesso id <code>cm_*</code> mostrato nel browser dei comandi (vedi <a href="start-menu.md">Il menu Avvio e i comandi personalizzati</a>).</li>
+<li>Lo scripting agisce sempre sul pannello <strong>attivo</strong>; usate prima <code>go to … in left</code> / <code>in right</code> se avete bisogno di un lato specifico.</li>
+<li>Peach Commander è un'app a finestra singola, quindi gli script agiscono sui due pannelli di quella finestra.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Il menu Avvio e i comandi personalizzati</a></li><li><a href="settings.html">Impostazioni</a></li></ul></section>
+</main>
+</body>
+</html>

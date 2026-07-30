@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wyszukiwanie plików</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Wyszukiwanie plików</h1>
+<p>Gdy potrzebujesz wytropić pliki gdziekolwiek na swoim Macu — po nazwie, po tym, co zawierają, lub po rozmiarze i dacie — użyj okna Znajdź pliki. Przeszukuje ono jeden lub więcej folderów (i ich podfoldery), potrafi zaglądać do wnętrza plików tekstowych i archiwów oraz pozwala wysłać wszystko, co znajdzie, prosto do panelu, dzięki czemu możesz działać na wynikach jak na zwykłym folderze.</p>
+<h2 id="znajdz-pliki-po-nazwie">Znajdź pliki po nazwie</h2>
+<ol>
+<li>W panelu pokazującym folder, który chcesz przeszukać, wybierz <strong>Polecenia &gt; Znajdź pliki…</strong> (lub naciśnij Cmd+Shift+F).</li>
+<li>Na karcie <strong>Ogólne</strong> wpisz wzorzec nazwy w polu <strong>Szukaj</strong>. Możesz używać symboli wieloznacznych, takich jak <code>*.pdf</code> lub <code>raport_*.docx</code>. Aby przeszukać kilka folderów naraz, wymień je w polu folderu początkowego rozdzielone średnikiem (<code>;</code>).</li>
+<li>Kliknij <strong>Start</strong>. Dopasowania pojawiają się na liście wyników poniżej w miarę ich znajdowania.</li>
+<li>Kliknij dwukrotnie dowolny wynik, aby przeskoczyć do tego pliku w aktywnym panelu, lub zaznacz wynik i kliknij <strong>Wyświetl</strong> (F3), aby otworzyć go we wbudowanej przeglądarce.</li>
+</ol>
+<p><img alt="Okno Znajdź pliki na karcie Ogólne, pokazujące wzorzec nazwy, folder i listę wyników" src="images/find-files-general.png" />
+<em>(Rysunek: karta Ogólne — wyszukiwanie według wzorca nazwy w jednym lub kilku folderach.)</em></p>
+<h2 id="szukaj-wedug-zawartosci-rozmiaru-i-daty">Szukaj według zawartości, rozmiaru i daty</h2>
+<ol>
+<li>Aby szukać wewnątrz plików, wybierz <strong>Znajdź tekst</strong> na karcie Ogólne i wpisz tekst do wyszukania. Opcje pozwalają uczynić go <strong>z uwzględnieniem wielkości</strong>, dopasować tylko <strong>całe słowo</strong>, traktować tekst jako <strong>wyrażenie regularne</strong>, wykonać <strong>szesnastkowe wyszukiwanie zawartości</strong> lub znaleźć pliki <strong>niezawierające</strong> tekstu.</li>
+<li>Przełącz na kartę <strong>Zaawansowane</strong>, aby zawęzić wyniki według <strong>rozmiaru</strong> (na przykład od <code>10K</code> do <code>5M</code>), według zakresu <strong>daty modyfikacji</strong> lub do plików zmienionych w ciągu ostatnich N dni.</li>
+<li>Włącz <strong>Szukaj wewnątrz archiwów</strong>, aby zaglądać do archiwów rodziny zip (zip, jar, war i podobnych).</li>
+<li>Aby ograniczyć wyszukiwanie do tego, co już wybrałeś, włącz <strong>Szukaj tylko w zaznaczonych elementach</strong> przed startem.</li>
+</ol>
+<p><img alt="Okno Znajdź pliki na karcie Zaawansowane, pokazujące filtry rozmiaru i daty" src="images/find-files-advanced.png" />
+<em>(Rysunek: karta Zaawansowane — filtruj według rozmiaru, daty i innych atrybutów.)</em></p>
+<p>Jeśli masz wtyczki dodające pola zawartości (jak wymiary obrazów), karta <strong>Wtyczki</strong> pozwala wymagać, aby pole spełniało warunek — na przykład tylko obrazy szersze niż 1000 pikseli.</p>
+<p><img alt="Okno Znajdź pliki na karcie Wtyczki, pokazujące warunek na polu zawartości" src="images/find-files-plugins.png" />
+<em>(Rysunek: karta Wtyczki — dopasowanie na polach zawartości dostarczanych przez wtyczki.)</em></p>
+<h2 id="szybkie-wyszukiwania-ze-spotlight">Szybkie wyszukiwania ze Spotlight</h2>
+<p>W przypadku folderów lokalnych, które macOS już zindeksował, włącz <strong>Użyj Spotlight</strong> na karcie Ogólne, aby uzyskać niemal natychmiastowe wyniki. Spotlight przeszukuje indeks zamiast skanować pliki, więc ignoruje wyrażenia regularne, limity głębokości podfolderów i zakres tylko-zaznaczone.</p>
+<h2 id="ponowne-uzycie-i-przekazanie-wynikow">Ponowne użycie i przekazanie wyników</h2>
+<ul>
+<li><strong>Wyślij do listy</strong> umieszcza każdy wynik w aktywnym panelu jako tymczasową listę, dzięki czemu możesz skopiować, przenieść lub usunąć cały zestaw naraz.</li>
+<li>Na karcie <strong>Wczytaj / Zapisz</strong> wybierz <strong>Zapisz jako szablon…</strong>, aby zapamiętać bieżące wyszukiwanie (wzorce i opcje) i wybrać je ponownie później z listy szablonów.</li>
+</ul>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Otwórz Znajdź pliki</td>
+<td>Cmd+Shift+F lub Option+F7</td>
+</tr>
+<tr>
+<td>Rozpocznij / zatrzymaj wyszukiwanie</td>
+<td>Przycisk Start w oknie</td>
+</tr>
+<tr>
+<td>Wyświetl zaznaczony wynik</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Wyszukiwanie zawartości odczytuje całe pliki dla folderów lokalnych; w innych lokalizacjach bardzo duże pliki są pomijane (około 16 MB, lub 64 MB przy użyciu wyrażenia regularnego).</li>
+<li>Wyszukiwanie wewnątrz archiwów schodzi do czterech poziomów zagnieżdżonych archiwów.</li>
+<li><strong>Uwzględnij foldery w wynikach</strong> wymienia również foldery, których nazwy pasują, nie tylko pliki.</li>
+<li>Spotlight obejmuje tylko zindeksowane foldery lokalne; w przypadku lokalizacji sieciowych lub dopasowania opartego na wzorcach pozostaw go wyłączonym i pozwól, aby Znajdź pliki skanowało.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">Zaznaczanie plików</a></li><li><a href="quick-search-and-filter.html">Szybkie wyszukiwanie i filtr</a></li></ul></section>
+</main>
+</body>
+</html>

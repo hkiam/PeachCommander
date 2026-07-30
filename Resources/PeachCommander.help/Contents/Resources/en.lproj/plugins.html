@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plugins</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Plugins</h1>
+<p>Plugins extend Peach Commander with extra tools, file formats, and places to browse. A dozen plugins come built in, so you can start using them right away, and you can turn individual plugins on or off — or install new ones — from a single window. Use plugins when you want capabilities beyond everyday copying and browsing: visualizing what fills a disk, connecting to a WebDAV server, checking the state of a Git repository, watching system activity, and more.</p>
+<p>Plugins come in a few flavors: some add a <strong>panel or sidebar</strong> (a view), some add <strong>columns</strong> to the file list, some add a <strong>place you navigate into</strong> like a drive, and some teach the app a new <strong>archive format</strong>. Each is enabled independently.</p>
+<h2 id="what-the-built-in-plugins-add">What the built-in plugins add</h2>
+<p>Several plugins have their own detailed help topic — follow the link for the full story:</p>
+<ul>
+<li><strong><a href="disk-map.md">Disk Map</a></strong> — visualizes what fills a folder or volume as a treemap or sunburst, reconciled against free, purgeable, and hidden space, with a cleanup collector.</li>
+<li><strong><a href="ai-assistant.md">AI Assistant</a></strong> — an optional, removable assistant that summarizes, renames, translates, tabulates, and tidies files in plain language, on-device or via a cloud model.</li>
+<li><strong><a href="git.md">Git</a></strong> — shows each file's working-tree status and the current branch as panel columns, and adds a <strong>Git</strong> menu for status, stage, commit, pull, and push.</li>
+<li><strong><a href="system-monitor.md">System Monitor</a></strong> — a live readout of CPU, memory, disk, network (and, where available, GPU, battery, sensors) in the window title bar, with click-through detail graphs.</li>
+<li><strong><a href="task-manager.md">Task Manager</a></strong> — mounts your running processes as a browsable <strong>TaskManager</strong> drive; sort them, inspect them like files, or end them with Delete.</li>
+<li><strong><a href="uninstaller.md">Uninstaller</a></strong> — removes an application <strong>and</strong> the support files, caches, and preferences it leaves behind, after showing you exactly what will go.</li>
+</ul>
+<p>The remaining built-in plugins are smaller and don't need a page of their own:</p>
+<ul>
+<li><strong>WebDAV</strong> — connect to a WebDAV server (<strong>Net ▸ WebDAV Connect…</strong>) and browse, upload, download, rename, and delete on it as if it were a folder. Passwords are kept in the macOS Keychain.</li>
+<li><strong>iCloud Drive</strong> — adds an <em>iCloud Drive</em> entry to the drive bar that jumps straight to your local iCloud Drive folder. It appears only when iCloud Drive is set up on your Mac.</li>
+<li><strong>Notes</strong> — keep a note beside any file or folder. A small <strong>●</strong> badge marks items that have one; edit notes in a docked <strong>Notes</strong> sidebar or a full rich-text editor (<strong>Commands ▸ Edit Note…</strong>), and browse them all with <strong>Notes Overview…</strong>.</li>
+<li><strong>Log Viewer</strong> — open a file as a color-coded, level-classified, live-tailing log (<strong>File ▸ View as Log…</strong>), with per-level filters, search, and support for common log formats plus your own regex formats. Handles multi-gigabyte logs instantly.</li>
+<li><strong>AI Column</strong> — adds an <em>AI Language</em> column that detects each text file's dominant language on-device (using Apple's NaturalLanguage framework — not a cloud model).</li>
+<li><strong>Archive formats</strong> — teaches the app to browse and extract more archive types (7z, tar family, gzip/bzip2/xz/zstd, and RAR where a helper tool is installed), which then open like folders.</li>
+</ul>
+<h2 id="turn-plugins-on-or-off">Turn plugins on or off</h2>
+<ol>
+<li>Choose Configuration ▸ Plugins… to open the plugin window.</li>
+<li>Each installed plugin appears in the list with its name, type, and an Enabled checkbox.</li>
+<li>Select or clear the checkbox to enable or disable a plugin. Changes take effect immediately — enabled plugins add their menus, columns, and features; disabled ones stay out of the way.</li>
+</ol>
+<p><img alt="The plugin window listing installed plugins with enable checkboxes and Install and Remove buttons" src="images/plugins-window.png" />
+<em>(Figure: The plugin window, where you enable, disable, install, or remove plugins.)</em></p>
+<h2 id="install-a-new-plugin">Install a new plugin</h2>
+<ol>
+<li>Choose Configuration ▸ Plugins….</li>
+<li>Click <strong>Install from Folder…</strong>.</li>
+<li>Choose a plugin bundle or a <code>.zip</code> containing one, then confirm. The plugin is added to the list and enabled.</li>
+</ol>
+<h2 id="remove-a-plugin">Remove a plugin</h2>
+<ol>
+<li>In the plugin window, select the plugin in the list.</li>
+<li>Click <strong>Remove</strong>. Built-in features are unaffected; only the selected plugin is removed.</li>
+</ol>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>The plugin list shows each plugin's type and interface version alongside its name and location, so you can confirm what is installed.</li>
+<li>If no plugins are installed, the window shows a short prompt pointing you to <strong>Install from Folder…</strong>.</li>
+<li>Some plugins add their own columns, menu items, or panel places only while they are enabled. If a feature you expected is missing, check that its plugin is turned on here.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Disk Map</a></li><li><a href="ai-assistant.html">AI Assistant</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="archives.html">Working with archives</a></li><li><a href="ftp-and-sftp.html">Connecting to FTP &amp; SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

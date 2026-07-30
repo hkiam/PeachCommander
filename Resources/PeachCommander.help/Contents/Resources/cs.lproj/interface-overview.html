@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hlavní okno</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Hlavní okno</h1>
+<p>Peach Commander zobrazuje dva seznamy souborů vedle sebe, takže vidíte současně, odkud soubory přicházejí a kam míří. Většina vaší práce probíhá v těchto dvou panelech; lišty kolem nich umožňují přepínat disky, přeskočit do složky a spouštět běžné souborové příkazy bez opuštění klávesnice. Tento přehled pojmenovává každou část okna, aby zbytek nápovědy dával smysl.</p>
+<p><img alt="Hlavní okno Peach Commanderu s jeho dvěma panely a okolními lištami" src="images/main-window.png" />
+<em>(Obrázek: hlavní okno — dva panely s lištou tlačítek, lištou disků a lištami cesty nahoře a lištou funkčních kláves dole.)</em></p>
+<h2 id="dva-panely-a-aktivni-panel">Dva panely a aktivní panel</h2>
+<p>Okno je rozděleno na levý a pravý panel, každý zobrazuje obsah jedné složky. Vždy je aktivní jen jeden panel: zobrazuje kurzor (zvýrazněný řádek) a jeho lišta cesty je vykreslena s barevným pozadím. Příkazy jako kopírovat a přesunout vždy působí na aktivní panel a odesílají soubory do druhého.</p>
+<ol>
+<li>Klepnutím kamkoli do panelu jej učiníte aktivním, nebo přepínejte mezi nimi klávesou Tab.</li>
+<li>Šipkami posouvejte kurzor nahoru a dolů v aktivním panelu.</li>
+<li>Stiskem Enter na složce ji otevřete, nebo na <code>..</code> v horní části seznamu přejdete o úroveň výš.</li>
+</ol>
+<h2 id="listy-kolem-panelu">Lišty kolem panelů</h2>
+<ul>
+<li><strong>Lišta tlačítek</strong> (nahoře): řada plochých tlačítek pro časté příkazy. Klepnutím na tlačítko spustíte jeho příkaz; klepnutím pravým tlačítkem lištu upravíte.</li>
+<li><strong>Lišta disků</strong>: jedno tlačítko pro každý dostupný disk nebo svazek, každé s ovladačem vysunutí a svým volným místem. Klepnutím na svazek jej v panelu přepnete.</li>
+<li><strong>Lišta cesty</strong>: zobrazuje aktuální složku jako klikatelnou drobečkovou navigaci. Klepnutím na segment přeskočíte přímo do té složky, nebo klepnutím na cestu zadáte umístění.</li>
+<li><strong>Stavová lišta</strong> (pod každým seznamem): průběžný souhrn panelu — kolik souborů a složek je vybráno a jejich celková velikost.</li>
+<li><strong>Příkazový řádek</strong> (dole): textové pole, do kterého lze zadat příkaz ve stylu shellu, jenž se spustí v aktuální složce.</li>
+<li><strong>Lišta funkčních kláves</strong> (úplně dole): šest tlačítek označených F3 Zobrazit, F4 Upravit, F5 Kopírovat, F6 Přesunout, F7 NováSložka a F8 Smazat. Klepněte na tlačítko nebo stiskněte odpovídající klávesu.</li>
+</ul>
+<p><img alt="Detail lišty disků zobrazující tlačítka svazků a volné místo" src="images/drive-bar-crop.png" />
+<em>(Obrázek: lišta disků — jedno tlačítko pro svazek, s ovladačem vysunutí a zbývajícím volným místem.)</em></p>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Přepnout aktivní panel</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Otevřít složku / položku pod kurzorem</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Přejít o složku výš</td>
+<td>Backspace</td>
+</tr>
+<tr>
+<td>Zobrazit soubor</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Upravit soubor</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Kopírovat do druhého panelu</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Přesunout / přejmenovat do druhého panelu</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Nová složka</td>
+<td>F7</td>
+</tr>
+<tr>
+<td>Smazat (do Koše)</td>
+<td>F8</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Lišta funkčních kláves se za běhu přeznačí, když podržíte modifikátor. Podržením Shift se například F6 změní na akci přejmenování na místě, takže tlačítka vždy ukazují, co klávesy právě udělají.</li>
+<li>Téměř každou lištu lze zobrazit nebo skrýt. V nabídkách Zobrazení a Konfigurace zapnete a vypnete lištu tlačítek, lištu disků, příkazový řádek nebo lištu funkčních kláves, případně naskládáte oba panely nad sebe místo vedle sebe.</li>
+<li>Na mnoha klávesnicích Mac fungují klávesy F ve výchozím nastavení jako ovládání médií a jasu. Podržte klávesu Fn spolu s F3–F8, nebo zapněte „Používat klávesy F1, F2 atd. jako standardní funkční klávesy“ v Nastavení systému, abyste je používali přímo.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="navigating.html">Pohyb v aplikaci</a></li><li><a href="panels-and-tabs.html">Karty</a></li></ul></section>
+</main>
+</body>
+</html>

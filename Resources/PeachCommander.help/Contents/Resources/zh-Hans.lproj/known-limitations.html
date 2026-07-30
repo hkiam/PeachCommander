@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>已知限制</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>已知限制</h1>
+<p>Peach Commander 功能繁多，但在当前版本中，少数功能有一些实实在在的限制。事先了解这些，能在某些行为出乎意料时免去困惑。本页列出当前的约束，并在可能的情况下给出简单的变通方法。</p>
+<h2 id="_1">压缩包</h2>
+<ul>
+<li><strong>内置阅读器无法打开超大的 ZIP 文件（ZIP64）。</strong> 标准的 ZIP、TAR 和 gzip 压缩的 TAR 压缩包可直接作为文件夹打开。ZIP64 压缩包——在压缩包包含约 65,000 个以上项目或超过 4 GB 时使用——超出了原生阅读器的处理范围，因此它们可能无法打开或列出不完整。</li>
+<li><strong>加密的 ZIP 压缩包</strong>（较旧的 ZipCrypto 和 WinZip AES 两种）都支持浏览，但会要求你输入密码。</li>
+<li>其他格式如 CPIO、ISO、CAB、LZH、XAR 和 PAX 通过辅助工具打开，而非原生阅读器。</li>
+</ul>
+<h2 id="sftp-scp">网络（SFTP / SCP）</h2>
+<ul>
+<li><strong>在此版本中，通过 SFTP 更改文件属性没有任何效果。</strong> 你可以通过 SFTP/SCP 浏览、下载和上传，但在远程服务器上更改权限、所有权或时间戳的请求会被静默忽略。请在服务器本身上，或通过其他协议进行这些更改。</li>
+<li>首次连接到 SFTP 服务器时，会要求你信任其主机密钥。此后 Peach Commander 会记住它（首次使用时信任）。</li>
+</ul>
+<h2 id="url">从 URL 下载</h2>
+<ul>
+<li><strong>从 URL 下载</strong> 命令（网络菜单）目前使用快捷键 Cmd+Shift+D，它与“转到 &gt; 桌面”是同一个快捷键。当两者都可用时，菜单可能冲突——为保险起见，请直接从网络菜单开始下载。</li>
+</ul>
+<h2 id="_2">目录刷新</h2>
+<ul>
+<li><strong>面板会在短暂延迟后而非即时地注意到外部更改。</strong> Peach Commander 大约每 2 秒检查一次当前文件夹的更改，因此由另一个应用添加或移除的文件可能需要片刻才会出现。如果你不想等待，请用 F2 或 Ctrl+R 手动刷新活动面板。</li>
+</ul>
+<h2 id="_3">其他当前限制</h2>
+<ul>
+<li><strong>某些非常长的绝对路径</strong>（完整路径异常长的深度嵌套文件夹）可能无法可靠处理。在更靠近文件夹树顶部的位置工作可避免这一点。</li>
+<li><strong>此预览版未签名。</strong> 首次打开时，macOS Gatekeeper 可能会警告该应用来自身份不明的开发者。右键单击应用并选择“打开”，然后确认，即可运行它。此版本尚不支持自动更新。</li>
+</ul>
+<h2 id="_4">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>刷新活动面板</td>
+<td>F2 或 Ctrl+R</td>
+</tr>
+<tr>
+<td>从 URL 下载</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">说明</h2>
+<p>这些是当前版本的限制，预计在后续发布中会有所改善。如果你遇到此处未描述的行为，请参见故障排除主题。</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="troubleshooting.html">故障排除</a></li></ul></section>
+</main>
+</body>
+</html>

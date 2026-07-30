@@ -1,0 +1,393 @@
+# Screenshot capture specs — drives Tools/vm/capture.py.
+# Each entry: id, script (automation verbs, one per line), optional crop [x,y,w,h]
+# (framebuffer is 1024x768), dark: also capture a dark variant, settle: seconds to
+# wait after launch, plus feature/alt/caption/pages metadata for the index.
+#
+# Automation verbs (DEBUG -AutomationScript): left/right <path>, active l|r,
+# focus <name>, enter, wait <ms>, cmd <cm_Name>, view <path>, settingspage <Page>,
+# findtab <0..3>, overwritedlg, hotlistmanage, syncdemo <l>|<r>.
+#
+# Reliable, fully-scriptable states are listed here. A few states that need
+# multi-step UI interaction (hex/image viewer sub-modes, the diff window, the ACL
+# sub-sheet, the transient progress dialog) are captured in a later manual pass.
+
+_preamble: &main
+  - left /Users/admin/pc-demo/Documents
+  - right /Users/admin/pc-demo/Projects/peach-app/src
+  - active l
+  - focus report.txt
+  - wait 600
+
+screenshots:
+  - id: main-window
+    feature: dual-pane
+    alt: "The Peach Commander main window with two file panels"
+    caption: "The dual-pane main window."
+    pages: [introduction, interface-overview]
+    dark: true
+    script: *main
+
+  - id: button-bar-crop
+    feature: button-bar
+    alt: "The button bar toolbar"
+    caption: "The button bar."
+    pages: [toolbar, interface-overview]
+    crop: [0, 64, 1024, 30]
+    script: *main
+
+  - id: tab-bar-crop
+    feature: tabs
+    alt: "The per-panel tab bar"
+    caption: "Tabs sit above each panel."
+    pages: [panels-and-tabs]
+    crop: [0, 95, 512, 26]
+    script: *main
+
+  - id: drive-bar-crop
+    feature: drive-bar
+    alt: "The drive bar showing volumes"
+    caption: "The drive bar lists mounted volumes."
+    pages: [interface-overview, navigating]
+    crop: [0, 118, 512, 26]
+    script: *main
+
+  - id: path-bar-crop
+    feature: path-bar
+    alt: "The editable breadcrumb path bar"
+    caption: "Click a segment in the path bar to jump there."
+    pages: [navigating, interface-overview]
+    crop: [0, 144, 512, 26]
+    script: *main
+
+  - id: view-modes
+    feature: view-modes
+    alt: "Panel shown in thumbnail view"
+    caption: "Thumbnail view mode."
+    pages: [view-modes-and-sorting]
+    script:
+      - left /Users/admin/pc-demo/Images
+      - active l
+      - wait 400
+      - cmd cm_SrcThumbs
+      - wait 600
+
+  - id: columns-config
+    feature: columns
+    alt: "The Configure Columns dialog"
+    caption: "Choose which columns appear and their widths."
+    pages: [view-modes-and-sorting]
+    script: [*main, cmd cm_ConfigColumns, wait 800]
+
+  - id: select-by-mask
+    feature: selection
+    alt: "The Select by mask dialog"
+    caption: "Select files by a wildcard mask."
+    pages: [selecting-files]
+    script: [*main, cmd cm_SelectByMask, wait 700]
+
+  - id: copy-dialog
+    feature: copy
+    alt: "The copy dialog"
+    caption: "The copy dialog (F5) with its options."
+    pages: [copying-files]
+    script: [*main, cmd cm_Copy, wait 800]
+
+  - id: overwrite-dialog
+    feature: overwrite-resolution
+    alt: "The overwrite conflict dialog"
+    caption: "Resolving a file-overwrite conflict."
+    pages: [copying-files]
+    script: [*main, overwritedlg, wait 800]
+
+  - id: transfer-manager
+    feature: transfer-manager
+    alt: "The background transfer manager window"
+    caption: "The background transfer manager."
+    pages: [copying-files]
+    script: [*main, cmd cm_TransferManager, wait 800]
+
+  - id: attributes-dialog
+    feature: attributes-acl
+    alt: "The change attributes dialog"
+    caption: "Changing POSIX permissions and flags."
+    pages: [attributes-and-permissions]
+    script: [*main, cmd cm_SetAttrib, wait 800]
+
+  - id: duplicate-finder
+    feature: find-duplicates
+    alt: "The duplicate file finder window"
+    caption: "Finding duplicate files."
+    pages: [file-utilities]
+    script: [*main, cmd cm_FindDuplicates, wait 800]
+
+  - id: multi-rename
+    feature: multi-rename
+    alt: "The multi-rename tool with a live preview"
+    caption: "The Multi-Rename tool with a live preview."
+    pages: [multi-rename]
+    script:
+      - left /Users/admin/pc-demo/Documents
+      - active l
+      - focus report.txt
+      - wait 400
+      - cmd cm_MultiRenameFiles
+      - wait 900
+
+  - id: sync-dialog
+    feature: compare-sync
+    alt: "The synchronize directories window"
+    caption: "Synchronizing two directories."
+    pages: [comparing-and-syncing]
+    script:
+      - syncdemo /Users/admin/pc-demo/Documents|/Users/admin/pc-demo/Archives
+      - wait 1000
+
+  - id: archive-browse
+    feature: archive-browse
+    alt: "Browsing inside a zip archive"
+    caption: "An archive opened like a folder."
+    pages: [archives]
+    script:
+      - left /Users/admin/pc-demo/Archives
+      - active l
+      - focus documents.zip
+      - wait 400
+      - enter
+      - wait 800
+
+  - id: pack-dialog
+    feature: archive-pack
+    alt: "The pack files dialog"
+    caption: "Creating an archive."
+    pages: [archives]
+    script:
+      - left /Users/admin/pc-demo/Documents
+      - active l
+      - focus report.txt
+      - wait 400
+      - cmd cm_PackFiles
+      - wait 800
+
+  - id: find-files-general
+    feature: find-files
+    alt: "The Find Files dialog, General tab"
+    caption: "Find Files — the General tab."
+    pages: [searching]
+    script: [*main, findtab 0, wait 800]
+
+  - id: find-files-advanced
+    feature: find-files
+    alt: "The Find Files dialog, Advanced tab"
+    caption: "Find Files — size, date and attribute filters."
+    pages: [searching]
+    script: [*main, findtab 1, wait 800]
+
+  - id: find-files-plugins
+    feature: find-files
+    alt: "The Find Files dialog, Plugins tab"
+    caption: "Find Files — plugin content criteria."
+    pages: [searching]
+    script: [*main, findtab 2, wait 800]
+
+  - id: ftp-connection-manager
+    feature: ftp
+    alt: "The FTP connection manager"
+    caption: "Managing saved network connections."
+    pages: [ftp-and-sftp]
+    dark: true
+    script: [*main, cmd cm_FtpConnect, wait 900]
+
+  - id: ftp-console
+    feature: ftp-console
+    alt: "The FTP protocol console"
+    caption: "The FTP console shows live protocol traffic."
+    pages: [ftp-and-sftp]
+    script: [*main, cmd cm_FtpRawCommand, wait 800]
+
+  - id: download-url
+    feature: http-download
+    alt: "The Download from URL dialog"
+    caption: "Downloading a file from a URL."
+    pages: [downloading-from-url]
+    script: [*main, cmd cm_DownloadFromURL, wait 800]
+
+  - id: lister-text
+    feature: lister-viewer
+    alt: "A text file open in the viewer"
+    caption: "The built-in file viewer (F3)."
+    pages: [viewing-files]
+    dark: true
+    script:
+      - view /Users/admin/pc-demo/Documents/notes.md
+      - wait 900
+
+  - id: editor
+    feature: editor
+    alt: "A source file open in the editor with syntax highlighting"
+    caption: "The editor with syntax highlighting (F4)."
+    pages: [editing-files]
+    dark: true
+    script:
+      - left /Users/admin/pc-demo/Projects/peach-app/src
+      - active l
+      - focus main.swift
+      - wait 400
+      - cmd cm_Edit
+      - wait 1000
+
+  - id: command-browser
+    feature: command-system
+    alt: "The command browser listing all commands"
+    caption: "Every command is searchable in the command browser."
+    pages: [keyboard-shortcuts]
+    script: [*main, cmd cm_CommandBrowser, wait 800]
+
+  - id: keys-editor
+    feature: keyboard-shortcuts
+    alt: "The keyboard shortcut editor"
+    caption: "Customizing keyboard shortcuts."
+    pages: [keyboard-shortcuts]
+    script: [*main, cmd cm_ConfigKeys, wait 800]
+
+  - id: settings-layout
+    feature: settings
+    alt: "Settings — Layout page"
+    caption: "Settings — the Layout page."
+    pages: [settings]
+    script: [*main, settingspage Layout, wait 800]
+
+  - id: settings-display
+    feature: settings
+    alt: "Settings — Display page"
+    caption: "Settings — the Display page."
+    pages: [settings]
+    script: [*main, settingspage Display, wait 800]
+
+  - id: settings-operation
+    feature: settings
+    alt: "Settings — Operation page"
+    caption: "Settings — the Operation page."
+    pages: [settings]
+    script: [*main, settingspage Operation, wait 800]
+
+  - id: settings-ai
+    feature: ai-assistant
+    alt: "Settings — the unified AI page (model, cloud, autonomy, system prompt, MCP)"
+    caption: "All assistant options live on one AI page in Settings."
+    pages: [settings, ai-assistant]
+    script: [*main, settingspage AI, wait 800]
+
+  - id: settings-colors
+    feature: theming
+    alt: "Settings — Colors page"
+    caption: "Settings — appearance and colors."
+    pages: [appearance]
+    dark: true
+    script: [*main, settingspage Colors, wait 800]
+
+  - id: plugins-window
+    feature: plugins-user
+    alt: "The plugins manager window"
+    caption: "Enabling and installing plugins."
+    pages: [plugins]
+    script: [*main, cmd cm_ConfigPlugins, wait 800]
+
+  - id: hotlist-manager
+    feature: hotlist
+    alt: "The favorites / hotlist manager"
+    caption: "Organizing favorite folders."
+    pages: [favorites]
+    script: [*main, hotlistmanage, wait 800]
+
+  - id: help-viewer
+    feature: help
+    alt: "Peach Commander Help open in the macOS Help Viewer"
+    caption: "The built-in help opens in Help Viewer from the Help menu."
+    pages: [introduction]
+    settle: 18
+    script: [*main, help, wait 4000]
+
+  - id: ai-chat
+    feature: ai-assistant
+    alt: "The AI assistant chat window"
+    caption: "The AI assistant chat (Commands ▸ AI Assistant)."
+    pages: [ai-assistant]
+    settle: 14
+    script:
+      - left /Users/admin/pc-demo/Documents
+      - active l
+      - wait 500
+      - contribcmd plugin.ai.toggle
+      - wait 3000
+
+  - id: system-monitor
+    feature: system-monitor
+    alt: "The System Monitor plugin's settings window (metrics, thresholds, refresh)"
+    caption: "System Monitor — choose which metrics ride in the status bar."
+    pages: [system-monitor]
+    settle: 12
+    script: [*main, contribcmd plugin.sysmon.configure, wait 2500]
+
+  - id: task-manager
+    feature: task-manager
+    alt: "The Task Manager plugin mounted as a virtual volume listing running processes"
+    caption: "Task Manager — running processes browsed as a virtual file system."
+    pages: [task-manager]
+    settle: 12
+    script:
+      - left /Users/admin/pc-demo/Documents
+      - active l
+      - wait 500
+      - pfxmount TaskManager
+      - wait 2500
+
+  - id: git-status
+    feature: git
+    alt: "The Git plugin's Git Status dialog showing the branch and changed files"
+    caption: "Git Status — branch and working-tree changes for the repo under the cursor."
+    pages: [git]
+    settle: 12
+    script:
+      - left /Users/admin/pc-demo/Projects/peach-app/src
+      - active l
+      - focus main.swift
+      - wait 500
+      - contribcmd plugin.git.status
+      - wait 2000
+
+  - id: uninstaller
+    feature: uninstaller
+    alt: "The Uninstaller plugin's review window listing an app and its leftover files with sizes"
+    caption: "Uninstaller — review every file before it is removed."
+    pages: [uninstaller]
+    settle: 14
+    script:
+      - left /Users/admin/Applications
+      - active l
+      - focus Peachy Player.app
+      - wait 500
+      - contribcmd plugin.uninstaller.uninstall
+      - wait 3000
+
+# NOTE: the AI assistant is now an external plugin (AIAssistant.ptxplugin), so the chat
+# is opened with `contribcmd plugin.ai.toggle` rather than the old `aichat` verb.
+# The Disk Map screenshots (disk-map, disk-map-sunburst) are produced by rendering the
+# plugin's own DiskMapView offscreen (see Plugins/Treemap) rather than by VM capture,
+# because the treemap sidebar isn't reachable through the automation verbs; they are
+# recorded in screenshot-index.yml as status: captured.
+
+  - id: diff-window
+    feature: compare-content
+    alt: "The text compare window showing differences between two files"
+    caption: "Comparing two text files side by side."
+    pages: [comparing-and-syncing]
+    settle: 6
+    script: [*main, "diffdemo /Users/admin/pc-demo/Documents/report.txt|/Users/admin/pc-demo/Documents/readme.txt", wait 1000]
+
+  - id: progress-dialog
+    feature: background-transfers
+    alt: "The transfer progress dialog with a progress bar and file counts"
+    caption: "The progress dialog shown during a copy or move."
+    pages: [copying-files]
+    settle: 6
+    script: [*main, progressdemo, wait 1000]

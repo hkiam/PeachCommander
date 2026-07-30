@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Przenoszenie i zmiana nazw</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Przenoszenie i zmiana nazw</h1>
+<p>Przenoszenie przemieszcza pliki i foldery, zamiast je powielać, a zmiana nazwy zmienia ich nazwy bez naruszania zawartości. Ponieważ Peach Commander pokazuje dwa panele obok siebie, przenoszenie sprowadza się do wybrania tego, co chcesz, w jednym panelu i wysłania tego do folderu otwartego w drugim. Możesz też zmienić nazwę elementu w miejscu lub nadać przenoszonym elementom nowe nazwy w locie za pomocą maski wieloznacznej.</p>
+<h2 id="przenoszenie-plikow-do-drugiego-panelu">Przenoszenie plików do drugiego panelu</h2>
+<ol>
+<li>W panelu źródłowym otwórz folder zawierający elementy, które chcesz przenieść, a w drugim panelu otwórz folder docelowy.</li>
+<li>Zaznacz plik lub folder do przeniesienia. Aby przenieść kilka naraz, najpierw zaznacz je wszystkie (zobacz <em>Zaznaczanie plików</em>).</li>
+<li>Naciśnij F6 lub wybierz <strong>Plik &gt; Przenieś</strong>.</li>
+<li>Sprawdź folder docelowy pokazany w oknie dialogowym i kliknij <strong>OK</strong> (lub naciśnij Return), aby rozpocząć przenoszenie.</li>
+</ol>
+<p><img alt="Okno dialogowe przenoszenia z polem ścieżki docelowej, opcjami i polem wyboru kolejki" src="images/copy-dialog.png" />
+<em>(Rysunek: Okno dialogowe przenoszenia używa tego samego pola docelowego co kopiowanie — wpisz ścieżkę lub dodaj maskę wieloznaczną, aby zmienić nazwę podczas przenoszenia.)</em></p>
+<p>Przenoszenie na tym samym dysku odbywa się niemal natychmiast. Gdy miejsce docelowe znajduje się na innym dysku, Peach Commander kopiuje elementy, a następnie usuwa oryginały dopiero po bezpiecznym dotarciu każdego pliku.</p>
+<h2 id="zmiana-nazwy-w-miejscu">Zmiana nazwy w miejscu</h2>
+<ol>
+<li>Zaznacz pojedynczy plik lub folder.</li>
+<li>Naciśnij Shift+F6 lub wybierz <strong>Plik &gt; Zmień nazwę</strong>.</li>
+<li>Edytuj nazwę bezpośrednio w panelu, a następnie naciśnij Return, aby potwierdzić, lub Esc, aby anulować.</li>
+</ol>
+<h2 id="zmiana-nazwy-podczas-przenoszenia">Zmiana nazwy podczas przenoszenia</h2>
+<p>Pole docelowe w oknie dialogowym przenoszenia przyjmuje maskę wieloznaczną, więc możesz zmieniać nazwy elementów w trakcie przenoszenia:</p>
+<ol>
+<li>Zaznacz elementy i naciśnij F6.</li>
+<li>W polu docelowym dodaj maskę nazwy po folderze docelowym, na przykład <code>/Users/you/Archive/*_backup.*</code>.</li>
+<li><code>*</code> oznacza oryginalną nazwę, a <code>.*</code> oryginalne rozszerzenie. Potwierdź, aby przenieść i zmienić nazwę w jednym kroku.</li>
+</ol>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Przenieś do drugiego panelu</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Zmień nazwę w miejscu</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="wskazowki">Wskazówki</h2>
+<ul>
+<li>Okno dialogowe przenoszenia oferuje ten sam przycisk opcji i pole wyboru kolejki w tle co kopiowanie, więc możesz kolejkować duże przenoszenia i pozwolić im działać w tle.</li>
+<li>Przenoszenie w obrębie tego samego dysku to szybka operacja w miejscu, więc jest bezpieczne dla bardzo dużych folderów. Przenoszenie między dyskami trwa dłużej, ponieważ dane są najpierw kopiowane, a potem źródło jest usuwane.</li>
+<li>Aby zmienić nazwy wielu plików naraz z numeracją, funkcją wyszukaj-i-zamień lub wzorcami, użyj zamiast tego Narzędzia zmiany nazw wielu plików (zobacz <em>Zmiana nazw wielu plików</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiowanie plików</a></li><li><a href="multi-rename.html">Zmiana nazw wielu plików</a></li></ul></section>
+</main>
+</body>
+</html>

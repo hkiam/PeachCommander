@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veel bestanden hernoemen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Veel bestanden hernoemen</h1>
+<p>Het Multi-hernoemhulpmiddel hernoemt een hele reeks bestanden in één keer. In plaats van namen een voor een te bewerken, beschrijf je de wijziging één keer — een naampatroon, een zoeken-en-vervangen, een nummeringsschema, of een wijziging van hoofdlettergebruik — en past Peach Commander die toe op elk geselecteerd bestand. Een live voorbeeld toont precies hoe elk bestand gaat heten voordat er iets gebeurt, en één keer Ongedaan maken zet de oorspronkelijke namen terug als het resultaat niet is wat je wilde.</p>
+<h2 id="een-reeks-bestanden-hernoemen">Een reeks bestanden hernoemen</h2>
+<ol>
+<li>Selecteer de bestanden die je wilt hernoemen (zie <em>Bestanden selecteren</em>). Alleen de geselecteerde items worden beïnvloed.</li>
+<li>Kies <strong>Opdrachten &gt; Multi-hernoemhulpmiddel…</strong>, of druk op Ctrl+M.</li>
+<li>Bouw je hernoemregel op met de hieronder beschreven velden. Het voorbeeldraster wordt bijgewerkt terwijl je typt, en toont elke <strong>Oude naam</strong> naast de <strong>Nieuwe naam</strong>.</li>
+<li>Controleer het voorbeeld. Een rij in een markeerkleur signaleert een naam die niet kan worden gebruikt (bijvoorbeeld een duplicaat of een ongeldige naam) zodat je de regel kunt aanpassen.</li>
+<li>Wanneer het voorbeeld er goed uitziet, klik je op <strong>Start</strong>. Als je van gedachten verandert, klik je op <strong>Ongedaan maken</strong> om de oorspronkelijke namen te herstellen.</li>
+</ol>
+<p><img alt="Het Multi-hernoemvenster met de maskervelden, opties en het voorbeeldraster van oud naar nieuw" src="images/multi-rename.png" />
+<em>(Afbeelding: Het voorbeeldraster wordt live bijgewerkt terwijl je de hernoemregel bewerkt; er wordt niets op schijf gewijzigd totdat je op Start klikt.)</em></p>
+<h2 id="de-hernoemregel-opbouwen">De hernoemregel opbouwen</h2>
+<ul>
+<li><strong>Hernoemmasker</strong> en <strong>Extensie</strong> — patronen die de nieuwe naam en extensie opbouwen. Gebruik de snelinvoegknoppen, of typ plaatsaanduidingen direct: <code>[N]</code> voor de oorspronkelijke naam, <code>[N1-9]</code> voor een bereik van tekens eruit, <code>[C]</code> voor de teller, <code>[d]</code> voor datum- en tijddelen, en <code>[P]</code> voor de naam van de bovenliggende map.</li>
+<li><strong>Zoeken naar / Vervangen door</strong> — vervang tekst in de namen. Zet <strong>Regex</strong> aan voor patroonherkenning, <strong>Hoofdlettergevoelig</strong> om exact hoofdlettergebruik te matchen, en <strong>Herhalen</strong> om elk voorkomen te vervangen.</li>
+<li><strong>Hoofdletters</strong> — zet namen om naar kleine letters, HOOFDLETTERS, Eerste letter als hoofdletter, of Elk Woord Met Hoofdletter.</li>
+<li><strong>Teller</strong> — stel het <strong>Start</strong>-nummer in, de <strong>Stap</strong> tussen bestanden, en met hoeveel <strong>Cijfers</strong> je aanvult (bijvoorbeeld 001, 002, 003) overal waar <code>[C]</code> verschijnt.</li>
+</ul>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Sneltoets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open het Multi-hernoemhulpmiddel</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Pas de hernoeming toe</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Sluit het venster</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Er wordt niets op schijf geschreven totdat je op <strong>Start</strong> klikt, dus je kunt vrijelijk met de regel experimenteren en het voorbeeld bekijken.</li>
+<li>Na een uitvoering keert <strong>Ongedaan maken</strong> de hernoeming in één stap om.</li>
+<li>Bewaar een regel die je vaak gebruikt als een <strong>Voorinstelling</strong>, en kies die dan de volgende keer uit het voorinstellingenmenu om alle velden in één keer in te vullen.</li>
+<li>Om een enkel bestand te hernoemen, of om bestanden te hernoemen terwijl je ze verplaatst, gebruik je in plaats daarvan hernoemen ter plaatse of het verplaatsvenster (zie <em>Verplaatsen &amp; hernoemen</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Verplaatsen &amp; hernoemen</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>视图模式与排序</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>视图模式与排序</h1>
+<p>每个面板都能以适合当前任务的布局显示文件夹：带列的详细列表、仅含名称的紧凑多列列表、图标网格、大缩略图画廊，或文件夹树。你还可以按名称、扩展名、大小或日期排序，精确选择显示哪些列，并开启自然（数字）排序，让含数字的名称按你预期的顺序排列。视图模式、排序顺序和列都是按面板设置的，因此两侧看起来可以完全不同。</p>
+<h2 id="_1">切换视图模式</h2>
+<ol>
+<li>点按要更改的面板使其活动。</li>
+<li>打开“显示”菜单并选择一种模式：列列表用 <strong>完整（详细）</strong>、仅名称的密集多列列表用 <strong>简要（列）</strong>、图标网格用 <strong>图标</strong>、大预览用 <strong>缩略图（画廊）</strong>、文件夹树用 <strong>树</strong>。</li>
+<li>要不打开菜单而快速切换模式，按 Cmd+Shift+M。每按一次移到下一模式。</li>
+</ol>
+<p><img alt="显示详细、简要、图标和画廊等不同视图模式的面板" src="images/view-modes.png" />
+<em>(图：同一文件夹以详细列表、简要列列表、图标网格和缩略图画廊显示。)</em></p>
+<h2 id="_2">排序文件列表</h2>
+<ol>
+<li>在详细视图中，点按列标题（名称、扩展名、大小或日期）以按其排序。标题中的小箭头显示当前排序列和方向。</li>
+<li>再次点按同一标题以反转顺序。</li>
+<li>你也可以选择 显示 &gt; 排序方式，并选取名称、扩展名、大小、日期或不排序。</li>
+</ol>
+<p>文件夹总是与文件分开排在最前，带你上移一级的 <code>..</code> 条目始终固定在最前。按名称或扩展名排序默认为升序（A 到 Z）；按大小或日期排序默认为最新或最大在前。</p>
+<h2 id="_3">选择显示哪些列</h2>
+<ol>
+<li>选择 设置 &gt; 列…。</li>
+<li>开启或关闭各列并设置其顺序。可用列包括名称、扩展名、大小、日期、Attr（属性）、标签和注释。</li>
+<li>应用更改。列影响活动面板的详细视图。</li>
+</ol>
+<p><img alt="带可用列列表的列配置窗口" src="images/columns-config.png" />
+<em>(图：选择在详细视图中显示哪些列并设置其顺序。)</em></p>
+<h2 id="_4">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>循环切换视图模式</td>
+<td>Cmd+Shift+M</td>
+</tr>
+<tr>
+<td>简要（列）视图</td>
+<td>Ctrl+F1</td>
+</tr>
+<tr>
+<td>完整（详细）视图</td>
+<td>Ctrl+F2</td>
+</tr>
+<tr>
+<td>缩略图（画廊）视图</td>
+<td>Ctrl+Shift+F1</td>
+</tr>
+<tr>
+<td>树视图</td>
+<td>Ctrl+F8</td>
+</tr>
+<tr>
+<td>按名称排序</td>
+<td>Ctrl+F3</td>
+</tr>
+<tr>
+<td>按扩展名排序</td>
+<td>Ctrl+F4</td>
+</tr>
+<tr>
+<td>按大小排序</td>
+<td>Ctrl+F5</td>
+</tr>
+<tr>
+<td>按日期排序</td>
+<td>Ctrl+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">提示</h2>
+<ul>
+<li>自然（数字）排序默认开启，因此 <code>file2</code> 排在 <code>file10</code> 之前而不是之后。你可以在 设置 &gt; 选项 的显示设置中将其关闭。</li>
+<li>在详细视图中，通过拖动列标题之间的分隔线可以加宽或收窄某一列。</li>
+<li>视图模式、排序顺序和列选择按面板记住，因此你可以让一侧保持详细列表，另一侧作为照片画廊。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="panels-and-tabs.html">标签页</a></li><li><a href="quick-search-and-filter.html">快速搜索与筛选</a></li></ul></section>
+</main>
+</body>
+</html>

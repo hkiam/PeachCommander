@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Selezione dei file</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Selezione dei file</h1>
+<p>Prima di copiare, spostare, eliminare o comprimere qualcosa, indichi prima a Peach Commander su quali elementi agire. L'elemento su cui si trova il cursore è sempre l'elemento corrente, ma puoi anche <em>contrassegnare</em> uno o più file e cartelle in modo che un comando venga eseguito su tutti in una volta. Gli elementi contrassegnati si distinguono con un colore del nome diverso nel pannello.</p>
+<h2 id="contrassegna-file-e-cartelle">Contrassegna file e cartelle</h2>
+<ol>
+<li>Fai clic su una riga per spostarvi il cursore. Un singolo clic seleziona solo quell'elemento.</li>
+<li>Per contrassegnare più elementi in una volta, tieni premuto Cmd e fai clic su ciascuno, oppure tieni premuto Maiusc e fai clic per contrassegnare un intervallo.</li>
+<li>Per contrassegnare l'elemento sotto il cursore e scendere in un solo movimento, premi Ins. Premilo ripetutamente per contrassegnare rapidamente una serie di elementi consecutivi. Anche la barra spaziatrice commuta il contrassegno dell'elemento corrente (e mostra la dimensione di una cartella).</li>
+<li>Per contrassegnare tutto nel pannello, scegli Seleziona &gt; Seleziona tutto (Ctrl+Num+), o premi Cmd+A. Scegli Seleziona &gt; Deseleziona tutto (Ctrl+Num-) per cancellare tutti i contrassegni.</li>
+</ol>
+<h2 id="seleziona-o-deseleziona-in-base-a-uno-schema">Seleziona o deseleziona in base a uno schema</h2>
+<ol>
+<li>Scegli Seleziona &gt; Seleziona gruppo… (Num+) per aggiungere elementi i cui nomi corrispondono a uno schema, o Seleziona &gt; Deseleziona gruppo… (Num-) per rimuovere gli elementi corrispondenti dai contrassegni correnti.</li>
+<li>Digita una maschera con caratteri jolly. Usa <code>*</code> per qualsiasi carattere e <code>?</code> per un singolo carattere. Separa più maschere con un punto e virgola ed elenca le eccezioni dopo una barra verticale — per esempio <code>*.jpg;*.png</code> contrassegna tutte le immagini, e <code>*.*|*.bak</code> contrassegna tutto tranne i file di backup.</li>
+</ol>
+<p><img alt="La finestra Seleziona gruppo con una maschera a caratteri jolly digitata nel campo dello schema" src="images/select-by-mask.png" />
+<em>(Figura: contrassegnare i file con una maschera a caratteri jolly.)</em></p>
+<h2 id="inverti-stessa-estensione-e-ripristina">Inverti, stessa estensione e ripristina</h2>
+<ul>
+<li><strong>Inverti selezione</strong> (Num*, menu Seleziona) capovolge ogni contrassegno: gli elementi contrassegnati diventano non contrassegnati e viceversa — comodo per "tutto tranne questi".</li>
+<li><strong>Seleziona tutti con la stessa estensione</strong> (Alt+Num+, menu Seleziona) contrassegna ogni file che condivide l'estensione dell'elemento sotto il cursore, così una sola pressione prende, per esempio, tutti i file <code>.pdf</code>.</li>
+<li><strong>Ripristina selezione</strong> (Num/, menu Seleziona) riporta il tuo precedente insieme di contrassegni — utile se un comando li ha cancellati o hai contrassegnato il gruppo sbagliato.</li>
+</ul>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Tasto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Commuta contrassegno, scendi</td>
+<td>Ins</td>
+</tr>
+<tr>
+<td>Commuta contrassegno (elemento corrente)</td>
+<td>Spazio</td>
+</tr>
+<tr>
+<td>Seleziona tutto / Deseleziona tutto</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Seleziona tutto (alternativa)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Seleziona gruppo per maschera</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Deseleziona gruppo per maschera</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Inverti selezione</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Seleziona tutti con la stessa estensione</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Ripristina selezione precedente</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>I contrassegni e il cursore sono indipendenti: spostare il cursore con i tasti freccia non cambia ciò che è contrassegnato.</li>
+<li>La voce della cartella superiore (<code>..</code>) non può mai essere contrassegnata.</li>
+<li>Seleziona gruppo, Deseleziona gruppo e Inverti selezione corrispondono al nome del file, quindi puoi includere o lasciare fuori le cartelle a seconda delle opzioni della finestra.</li>
+<li>Dopo che una copia, uno spostamento o un'eliminazione termina, gli elementi gestiti con successo vengono deselezionati automaticamente, mentre quelli falliti restano contrassegnati così puoi riprovarli.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copiare i file</a></li><li><a href="searching.html">Trovare i file</a></li></ul></section>
+</main>
+</body>
+</html>

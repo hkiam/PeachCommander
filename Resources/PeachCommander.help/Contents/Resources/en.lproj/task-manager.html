@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>The Task Manager plugin turns the running processes on your Mac into a folder you can browse. It appears as a <strong>TaskManager</strong> drive in the drive bar; open it and every process is a row you can sort, inspect like a file, or end — using the same keys you already use for files. It's a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Plugins…</strong>.</p>
+<h2 id="open-it">Open it</h2>
+<ol>
+<li>Click the <strong>📊 TaskManager</strong> entry in the drive bar (it sits right after your boot drive).</li>
+<li>The panel fills with one row per running process. Each row's name is the process name followed by its PID, for example <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="The Task Manager listing running processes with PID, CPU, memory, and command columns" src="images/task-manager.png" />
+<em>(Figure: running processes shown as a file list you can sort and act on.)</em></p>
+<h2 id="what-each-column-means">What each column means</h2>
+<p>Alongside the usual Size (memory) and Date (start time) columns, Task Manager adds process columns:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>Process id</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Recent processor use (needs a second refresh to appear)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Thread count</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R running · S sleeping · T stopped · Z zombie · I idle</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Owner</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>Parent process id</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>Full command line</td>
+</tr>
+</tbody>
+</table>
+<p>Sort by any column (for example CPU % or Size/memory) just as you would in a normal folder.</p>
+<h2 id="inspect-or-end-a-process">Inspect or end a process</h2>
+<ul>
+<li><strong>View (F3)</strong> shows a <em>Process Information</em> report: name, PID, parent, user, state, threads, memory, CPU, start time, executable path, and the full command line.</li>
+<li><strong>Delete (F8)</strong> ends the process. The first delete sends a graceful <strong>quit</strong> (SIGTERM); deleting a process that's still running a second time escalates to a <strong>force quit</strong> (SIGKILL). The plugin never targets PID 1.</li>
+</ul>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Basic details (PID, parent, user, state) are readable for every process, like <code>ps</code>. Memory, threads, and CPU can only be read for <strong>your own</strong> processes; other processes show those columns blank (they need elevated privileges, a later addition).</li>
+<li>CPU % is a change between two samples, so it's blank until the panel refreshes a second time (the panel refreshes roughly every two seconds).</li>
+<li>The list is read-only apart from ending a process — you can't copy files into it.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Viewing files</a></li><li><a href="deleting-files.html">Deleting files</a></li></ul></section>
+</main>
+</body>
+</html>

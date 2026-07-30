@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fehlerbehebung</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Fehlerbehebung</h1>
+<p>Dieses Thema behandelt die Probleme, auf die Menschen am häufigsten stoßen: macOS blockiert den Zugriff auf bestimmte Ordner, ein Ordner scheint bei alten Inhalten festzuhängen, ein sicherer FTP-Server verweigert die Verbindung und das Packen nach RAR. Jeder Abschnitt erklärt, was geschieht und wie Sie es beheben.</p>
+<h2 id="macos-fragt-nach-berechtigung-oder-ordner-sehen-leer-aus">macOS fragt nach Berechtigung, oder Ordner sehen leer aus</h2>
+<p>Einige Orte — etwa Ihr <code>~/Library</code>-Ordner, die Ordner anderer Benutzer und Systembereiche — sind von macOS geschützt und bleiben verborgen, bis Sie den Zugriff gewähren. Peach Commander erkennt, wenn dies geschieht, und bietet an, Sie zur richtigen Einstellung zu führen.</p>
+<ol>
+<li>Wählen Sie bei der Nachfrage, die Systemeinstellungen zu öffnen, oder öffnen Sie sie selbst.</li>
+<li>Gehen Sie zu Datenschutz &amp; Sicherheit und dann zu Festplattenvollzugriff.</li>
+<li>Schalten Sie den Schalter neben Peach Commander ein. Falls es nicht aufgeführt ist, verwenden Sie die Schaltfläche Hinzufügen, um es hinzuzufügen.</li>
+<li>Beenden Sie Peach Commander und öffnen Sie es erneut, damit die neue Berechtigung wirksam wird.</li>
+</ol>
+<p>Peach Commander läuft nicht in einer eingeschränkten Sandbox, sodass es nach Erteilung des Festplattenvollzugriffs Dateien genauso durchsuchen und verwalten kann wie der Finder.</p>
+<h2 id="ein-ordner-zeigt-keine-jungsten-anderungen">Ein Ordner zeigt keine jüngsten Änderungen</h2>
+<p>Panels aktualisieren sich normalerweise von selbst, wenn sich Dateien auf der Festplatte ändern. Wenn ein Ordner von einem anderen Programm geändert wurde, auf einem Netzwerkvolume liegt oder schlicht veraltet aussieht, aktualisieren Sie ihn manuell.</p>
+<ol>
+<li>Klicken Sie auf das Panel, das Sie aktualisieren möchten.</li>
+<li>Drücken Sie F2 (oder Ctrl+R), um diesen Ordner erneut einzulesen.</li>
+</ol>
+<p>Netzwerk- und eingebundene Volumes melden Änderungen nicht immer an macOS, sodass eine manuelle Aktualisierung dort die verlässliche Lösung ist.</p>
+<h2 id="ein-ftps-server-verbindet-sich-nicht">Ein FTPS-Server verbindet sich nicht</h2>
+<p>Wenn eine sichere FTP-Verbindung fehlschlägt, prüfen Sie diese Einstellungen in den Verbindungsdetails:</p>
+<ul>
+<li>Stimmen Sie den Sicherheitsmodus des Servers ab: explizites FTPS (AUTH TLS) und implizites FTPS (Port 990) sind nicht austauschbar.</li>
+<li>Wenn die Verbindung nach der Anmeldung stockt, wechseln Sie zwischen passivem und aktivem Übertragungsmodus — die meisten Server hinter einer Firewall benötigen passiv.</li>
+<li>Wenn der Server ein selbstsigniertes Zertifikat verwendet, müssen Sie es ausdrücklich zulassen; andernfalls wird die Verbindung abgelehnt.</li>
+<li>Bestätigen Sie Host, Port, Benutzername und Passwort sowie, ob in Ihrem Netzwerk ein SOCKS5-Proxy erforderlich ist.</li>
+</ul>
+<h2 id="das-packen-nach-rar-bewirkt-nichts">Das Packen nach RAR bewirkt nichts</h2>
+<p>Peach Commander kann ZIP-, 7z-, TAR-, TAR.GZ-, BZ2- und XZ-Archive selbst erstellen. RAR ist anders: Da RAR ein proprietäres Format ist, erfordert das Erstellen von RAR-Archiven ein separates RAR-Kommandozeilenwerkzeug, das auf Ihrem Mac installiert ist. Ohne dieses ist RAR nicht verfügbar, wenn Sie Dateien packen (Option+F5). Um vorhandene RAR-Archive zu lesen, können Sie sie weiterhin wie einen Ordner öffnen. Wenn Sie nicht speziell RAR benötigen, wählen Sie stattdessen ZIP oder 7z — beide unterstützen starke AES-256-Verschlüsselung und aufgeteilte Volumes.</p>
+<h2 id="tastenkurzel">Tastenkürzel</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Kürzel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aktiven Ordner aktualisieren</td>
+<td>F2 oder Ctrl+R</td>
+</tr>
+<tr>
+<td>Mit einem FTP/FTPS-Server verbinden</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Ein Netzwerkfreigabe einbinden</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>Die ausgewählten Dateien packen</td>
+<td>Option+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Passwörter und andere Anmeldedaten werden nur im macOS-Schlüsselbund gespeichert, niemals in einfachen Konfigurationsdateien.</li>
+<li>Das Einbinden einer Netzwerkfreigabe (Cmd+K oder Netz ▸ Netzwerkfreigabe einbinden…) verwendet dieselbe Verbindung, die macOS selbst nutzt, sodass sie auch im Finder erscheint.</li>
+<li>Wenn ein Problem nach einer Aktualisierung und einem Neustart bestehen bleibt, kann es sich um eine bekannte Einschränkung statt um einen Fehler handeln — siehe Bekannte Einschränkungen.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="privacy-and-security.html">Datenschutz &amp; Sicherheit</a></li><li><a href="known-limitations.html">Bekannte Einschränkungen</a></li></ul></section>
+</main>
+</body>
+</html>

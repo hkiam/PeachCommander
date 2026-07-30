@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stahování z URL</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Stahování z URL</h1>
+<p>Peach Commander umí stáhnout soubor přímo z webové adresy HTTP nebo HTTPS do aktivního panelu, aniž byste otevírali prohlížeč. Vložte odkaz, potvrďte název, pod kterým bude uložen, a stahování běží samo — s obnovením při výpadku spojení, dávkovým stahováním mnoha odkazů naráz a volitelným ověřením kontrolního součtu, abyste věděli, že soubor dorazil neporušený.</p>
+<h2 id="stazeni-souboru">Stažení souboru</h2>
+<ol>
+<li>Otevřete složku panelu, kam chcete soubor umístit.</li>
+<li>Zvolte <strong>Síť &gt; Stáhnout z URL</strong> nebo stiskněte Cmd+Shift+D.</li>
+<li>Vložte webovou adresu do pole <strong>URL</strong>. Pokud jste odkaz předtím zkopírovali, vyplní se za vás.</li>
+<li>Zkontrolujte název <strong>Uložit jako</strong> — je navržen z odkazu a můžete jej volně upravit.</li>
+<li>Klikněte na <strong>Stáhnout</strong>.</li>
+</ol>
+<p><img alt="Dialog Stáhnout z URL s odkazem, upravitelným názvem souboru a možnostmi" src="images/download-url.png" />
+<em>(Obrázek: Dialog stahování — vložte odkaz, upravte název a nastavte volitelné ověření, přihlašovací údaje, hlavičky nebo proxy.)</em></p>
+<p>Ve výchozím nastavení běží stahování <strong>na pozadí</strong>, takže můžete během přenosu dále pracovat v panelech. Vypnutím <strong>Stahovat na pozadí</strong> na něj počkáte, nebo zapnutím <strong>Zařadit na později</strong> jej nastavíte, aniž byste jej zatím spustili.</p>
+<h2 id="stazeni-nekolika-souboru-naraz">Stažení několika souborů naráz</h2>
+<p>Vložte do pole <strong>URL</strong> jednu webovou adresu na řádek. Když je přítomno více odkazů, název každého souboru se odvodí automaticky z jeho odkazu a pole <strong>Uložit jako</strong> a <strong>Ověřit</strong> pro jednotlivé soubory se vypnou.</p>
+<h2 id="obnoveni-preruseneho-stahovani">Obnovení přerušeného stahování</h2>
+<p>Pokud je přenos přerušen, Peach Commander ponechá to, co již přijal, v dočasném souboru <code>.part</code>. Opětovné spuštění téhož stahování naváže tam, kde přestalo, kdykoli to server podporuje, místo aby začínalo znovu. Soubor <code>.part</code> se přejmenuje na konečný název až po úspěšném dokončení stahování.</p>
+<h2 id="klavesove-zkratky">Klávesové zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stáhnout z URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tipy">Tipy</h2>
+<ul>
+<li><strong>Ověřte soubor.</strong> U jednotlivého stahování vložte do pole <strong>Ověřit</strong> očekávaný kontrolní součet <strong>SHA-256</strong>. Po přenosu se kontrolní součet souboru porovná s ním, takže můžete věřit, že soubor odpovídá tomu, co vydavatel uvedl.</li>
+<li><strong>Vyžadováno přihlášení?</strong> Zadejte uživatelské jméno a heslo do polí <strong>Ověření</strong> u webů, které používají základní autentizaci. Pro přístup založený na tokenu přidejte do pole <strong>Hlavičky</strong> řádek <code>Authorization: Bearer …</code>.</li>
+<li><strong>Vlastní hlavičky.</strong> Přidejte jednu hlavičku na řádek do pole <strong>Hlavičky</strong>, například <code>Referer: …</code> nebo <code>Cookie: …</code>, pro odkazy, které fungují jen s konkrétními hlavičkami požadavku.</li>
+<li><strong>Proxy.</strong> Nasměrujte stahování přes proxy HTTP nebo SOCKS5 vyplněním hostitele, portu a typu <strong>Proxy</strong>.</li>
+<li><strong>Nedůvěryhodné certifikáty.</strong> Volbu <strong>Povolit nedůvěryhodný certifikát</strong> zapněte pouze pro web, kterému důvěřujete a který používá vlastnoručně podepsaný certifikát; u daného stahování vypne běžnou bezpečnostní kontrolu HTTPS.</li>
+<li><strong>Poznámka:</strong> Cmd+Shift+D se používá i jinde pro přechod do složky Plocha; pokud zkratka tento dialog neotevře, použijte místo toho z nabídky <strong>Síť &gt; Stáhnout z URL</strong>.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Připojení k FTP a SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

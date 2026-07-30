@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redenumirea multor fișiere</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Redenumirea multor fișiere</h1>
+<p>Instrumentul de redenumire multiplă redenumește un întreg lot de fișiere într-o singură trecere. În loc să editați numele unul câte unul, descrieți modificarea o dată — un tipar de denumire, o căutare-și-înlocuire, o schemă de numerotare sau o schimbare a majusculelor — iar Peach Commander o aplică fiecărui fișier selectat. O previzualizare live arată exact cum se va numi fiecare fișier înainte să se întâmple ceva, iar un singur Anulează pune numele originale înapoi dacă rezultatul nu a fost cel dorit.</p>
+<h2 id="redenumiti-un-lot-de-fisiere">Redenumiți un lot de fișiere</h2>
+<ol>
+<li>Selectați fișierele pe care doriți să le redenumiți (vedeți <em>Selectarea fișierelor</em>). Doar elementele selectate sunt afectate.</li>
+<li>Alegeți <strong>Comenzi &gt; Instrument de redenumire multiplă…</strong> sau apăsați Ctrl+M.</li>
+<li>Construiți regula de redenumire folosind câmpurile descrise mai jos. Grila de previzualizare se actualizează pe măsură ce tastați, arătând fiecare <strong>Nume vechi</strong> lângă <strong>Numele nou</strong>.</li>
+<li>Verificați previzualizarea. Un rând afișat într-o culoare de evidențiere semnalează un nume care nu poate fi folosit (de exemplu, un duplicat sau un nume nepermis), astfel încât să puteți ajusta regula.</li>
+<li>Când previzualizarea arată corect, faceți clic pe <strong>Start</strong>. Dacă vă răzgândiți, faceți clic pe <strong>Anulează</strong> pentru a restaura numele originale.</li>
+</ol>
+<p><img alt="Fereastra de redenumire multiplă cu câmpurile de mască, opțiunile și grila de previzualizare de la vechi la nou" src="images/multi-rename.png" />
+<em>(Figura: grila de previzualizare se actualizează live pe măsură ce editați regula de redenumire; nimic nu se schimbă pe disc până nu faceți clic pe Start.)</em></p>
+<h2 id="construirea-regulii-de-redenumire">Construirea regulii de redenumire</h2>
+<ul>
+<li><strong>Mască de redenumire</strong> și <strong>Extensie</strong> — tipare care construiesc numele și extensia noi. Folosiți butoanele de inserare rapidă, sau tastați direct substituenții: <code>[N]</code> pentru numele original, <code>[N1-9]</code> pentru un interval de caractere din el, <code>[C]</code> pentru contor, <code>[d]</code> pentru părți de dată și oră și <code>[P]</code> pentru numele folderului părinte.</li>
+<li><strong>Caută / Înlocuiește cu</strong> — înlocuiește text în interiorul numelor. Activați <strong>Regex</strong> pentru potrivirea tiparelor, <strong>Sensibil la majuscule</strong> pentru a potrivi exact majusculele și <strong>Repetă</strong> pentru a înlocui fiecare apariție.</li>
+<li><strong>Majuscule</strong> — convertiți numele în minuscule, MAJUSCULE, Prima literă majusculă sau Fiecare Cuvânt Majuscul.</li>
+<li><strong>Contor</strong> — setați numărul de <strong>Start</strong>, <strong>Pasul</strong> dintre fișiere și câte <strong>Cifre</strong> de completat (de exemplu, 001, 002, 003) oriunde apare <code>[C]</code>.</li>
+</ul>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Comandă rapidă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deschide instrumentul de redenumire multiplă</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Aplică redenumirea</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Închide fereastra</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sfaturi">Sfaturi</h2>
+<ul>
+<li>Nimic nu se scrie pe disc până nu faceți clic pe <strong>Start</strong>, astfel încât puteți experimenta liber cu regula și urmări previzualizarea.</li>
+<li>După o rulare, <strong>Anulează</strong> inversează redenumirea într-un singur pas.</li>
+<li>Salvați o regulă pe care o folosiți des ca <strong>Presetare</strong>, apoi alegeți-o din meniul de presetări data viitoare pentru a completa toate câmpurile deodată.</li>
+<li>Pentru a redenumi un singur fișier, sau pentru a redenumi fișiere pe măsură ce le mutați, folosiți în schimb redenumirea pe loc sau dialogul de mutare (vedeți <em>Mutare și redenumire</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Mutare și redenumire</a></li></ul></section>
+</main>
+</body>
+</html>

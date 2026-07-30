@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lemeztérkép</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Lemeztérkép</h1>
+<p>A Lemeztérkép egy beépített bővítmény, amely egy pillantással megmutatja, mi foglal helyet egy mappában vagy egy egész köteten. Beolvassa a kiválasztott mappát, és minden elemet a lemezen ténylegesen elfoglalt helyével arányos méretben rajzol, így a legnagyobb helyfalók azonnal kiemelkednek. Belemélyedhet a mappákba, láthatja, hogyan egyeztethető a beolvasás a kötet szabad, kiüríthető és rejtett helyével, és takaríthat közvetlenül a térképről.</p>
+<h2 id="beolvasas-inditasa">Beolvasás indítása</h2>
+<ol>
+<li>Az aktív panelben menjen a mappához (vagy kötethez), amelyet mérni szeretne.</li>
+<li>Válassza a <strong>Parancsok ▸ Lemeztérkép: Aktuális mappa elemzése</strong> lehetőséget.</li>
+<li>A Lemeztérkép nézet a jobb oldalon nyílik meg, és a háttérben olvas be, folyamatosan mutatva az elemek és bájtok számát. A nagy mappák néhány másodperc alatt végeznek — a beolvasás tömegesen olvassa a könyvtármetaadatokat, és több processzormagon dolgozik.</li>
+</ol>
+<p><img alt="A Lemeztérkép egy mappa fatérképét, egy kötetsávot, egy legnagyobb fájlok listát és egy kategórialegendát mutat" src="images/disk-map.png" />
+<em>(Ábra: a fatérkép nézet, fájlkategória szerint színezve, a kötetsávval felül és a legnagyobb fájlok listával jobbra.)</em></p>
+<h2 id="a-terkep-olvasasa">A térkép olvasása</h2>
+<ul>
+<li>Minden blokk (fatérkép) vagy gyűrűszegmens (napkitörés) az elem <strong>tényleges lemezen lévő mérete</strong> szerint méretezett, így a kép megegyezik azzal, amit a Finder és a rendszer jelent.</li>
+<li>A blokkok <strong>fájltípus szerint színezettek</strong> — videó, képek, hang, dokumentumok, kód, archívumok, appok, lemezképek — legendával alul. A beállításokban méret szerinti <strong>hőtérképre</strong> válthat.</li>
+<li><strong>Kattintson egy mappára</strong>, hogy belemélyedjen; a felül lévő morzsaút mutatja, hol van, a <strong>◂</strong> gomb pedig visszalép egy szintet.</li>
+<li>Vigye a mutatót bármely blokk fölé, hogy lássa a teljes útvonalát, méretét és elemszámát.</li>
+</ul>
+<h2 id="ket-nezet-faterkep-es-napkitores">Két nézet: fatérkép és napkitörés</h2>
+<p>A Lemeztérkép két vizualizációt kínál, amelyek között a fejlécben vagy a beállítások oldalon lévő <strong>◎ / ▦</strong> gombbal válthat:</p>
+<ul>
+<li><strong>Fatérkép</strong> — beágyazott téglalapok, a legsűrűbb az egyetlen legnagyobb fájl felderítéséhez.</li>
+<li><strong>Napkitörés</strong> — koncentrikus gyűrűk (egy mappamélységenként) az aktuális mappa körül, a legjobb annak megtekintésére, hogyan oszlik el a hely egy mély fában.</li>
+</ul>
+<p><img alt="A Lemeztérkép napkitörés nézete koncentrikus gyűrűket mutat a mappamélységhez" src="images/disk-map-sunburst.png" />
+<em>(Ábra: a napkitörés nézet — a belső korong az aktuális mappa, és minden gyűrű egy szinttel mélyebb.)</em></p>
+<h2 id="a-kotetsav">A kötetsáv</h2>
+<p>A felül lévő sáv egyezteti a beolvasást az egész kötettel:</p>
+<ul>
+<li><strong>Beolvasott / Ez a mappa</strong> — mennyit foglal el az elemzett mappa.</li>
+<li><strong>Rejtett</strong> (a kötet gyökerénél) vagy <strong>A kötet többi része</strong> (almappához) — minden, ami nincs ebben a beolvasásban, beleértve a rendszer által védett mappákat, más felhasználókat és pillanatképeket.</li>
+<li><strong>Kiüríthető</strong> — hely, amelyet a macOS automatikusan visszanyerhet, főleg helyi Time Machine pillanatképek és gyorsítótárak.</li>
+<li><strong>Szabad</strong> — hely, amely most azonnal elérhető.</li>
+</ul>
+<p>Amikor a kötetnek helyi pillanatképei vannak, a sáv egy <strong>· N pillanatkép (ⓘ)</strong> elemet mutat; kattintson rá egy csak olvasható listáért, egy tipppel a Lemezkezelőben vagy a Time Machine-ben való kezelésükhöz. A Lemeztérkép soha nem töröl pillanatképeket magától.</p>
+<h2 id="legnagyobb-fajlok">Legnagyobb fájlok</h2>
+<p>Kapcsolja be a <strong>Legnagyobb fájlok listájának megjelenítése</strong> lehetőséget, hogy lássa a legnagyobb fájlokat az aktuális mappában méret szerint rangsorolva, mindegyiket a kategóriája színes jelzőjével. Kattintson egyre a térképen való kiemeléséhez.</p>
+<h2 id="takaritas-a-terkeprol">Takarítás a térképről</h2>
+<p>Kattintson jobb gombbal bármely blokkra műveletekért:</p>
+<ul>
+<li><strong>Megnyitás a bal panelben</strong> / <strong>Megnyitás a jobb panelben</strong> — az elem megjelenítése egy fájlpanelben.</li>
+<li><strong>Megjelenítés a Finderben</strong>.</li>
+<li><strong>Áthelyezés a Kukába</strong> — csak azt az elemet törli; a térkép teljes újraolvasás nélkül frissül.</li>
+</ul>
+<p>Több elem egyszerre eltávolításához használja a <strong>gyűjtőt</strong>: jobb kattintás ▸ <strong>Megjelölés a gyűjtőnek</strong> minden elemen, majd kattintson a fejlécben lévő <strong>🗑 N</strong> gombra, hogy egy megerősített lépésben a Kukába helyezze mindazt, amit megjelölt.</p>
+<h2 id="beallitasok">Beállítások</h2>
+<p>A Lemeztérkép saját oldalt ad a Beállítások ablakhoz (<strong>Konfiguráció ▸ Beállítások ▸ Lemeztérkép</strong>):</p>
+<ul>
+<li><strong>Diagramstílus</strong> — fatérkép vagy napkitörés.</li>
+<li><strong>Színkódolás</strong> — fájltípus (kategória) vagy méret (hőtérkép) szerint.</li>
+<li><strong>Maradjon a kiinduló köteten</strong> — ne lépjen át más csatolt lemezekre.</li>
+<li><strong>Kötetsáv megjelenítése</strong> és <strong>Legnagyobb fájlok listájának megjelenítése</strong>.</li>
+</ul>
+<p>A változtatások egy nyitott Lemeztérképre azonnal vonatkoznak.</p>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A Lemeztérkép a <strong>lefoglalt</strong> (lemezen lévő) méretet méri, és a <strong>kemény hivatkozású</strong> fájlokat csak egyszer számolja, így összegei a kötet használt helyével esnek egybe, ahelyett hogy túlszámolnák.</li>
+<li>Alapértelmezetten a beolvasás a kiinduló köteten marad, így nem kóborol más csatolt lemezekre vagy hálózati megosztásokra.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="deleting-files.html">Fájlok törlése</a></li><li><a href="settings.html">Beállítások</a></li></ul></section>
+</main>
+</body>
+</html>

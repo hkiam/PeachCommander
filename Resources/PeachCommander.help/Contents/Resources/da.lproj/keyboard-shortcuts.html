@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tastatur og genveje</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Tastatur og genveje</h1>
+<p>Peach Commander er bygget til at blive styret fra tastaturet. Den leveres med to færdiglavede genvejsskemaer og lader dig ombinde enhver kommando til de taster, du foretrækker. Hvis du kommer fra en klassisk topanels filhåndtering, kan du beholde de taster, du allerede kender; hvis du hellere vil bruge velkendte Mac-kombinationer, skift til macOS-skemaet med ét klik. En søgbar kommandooversigt lader dig opdage alt, hvad appen kan, og køre enhver kommando efter navn.</p>
+<h2 id="skift-tastaturskema">Skift tastaturskema</h2>
+<ol>
+<li>Åbn menuen <strong>Konfiguration</strong>.</li>
+<li>Vælg <strong>Tastaturskema</strong>, og vælg derefter et:
+   - <strong>TC Classic</strong> (standard) beholder de traditionelle taster, med Ctrl-baserede kombinationer såsom Ctrl+R for at opdatere et panel.
+   - <strong>macOS Native</strong> knytter de samme handlinger til velkendte Mac-taster, hvor det giver mening, for eksempel Cmd+C for at kopiere filer og Cmd+F for at søge.</li>
+<li>Et flueben viser det aktive skema. Ændringen træder i kraft med det samme på tværs af menuerne og genvejslinjen.</li>
+</ol>
+<h2 id="tilpas-genveje">Tilpas genveje</h2>
+<ol>
+<li>Vælg <strong>Konfiguration &gt; Tastaturgenveje…</strong>.</li>
+<li>Find en kommando ved hjælp af søgefeltet, og vælg derefter dens række.</li>
+<li>Klik på <strong>Optag…</strong> og tryk på den tastekombination, du vil have. Den tildeles med det samme.</li>
+<li>Hvis den kombination allerede blev brugt af en anden kommando, fortæller en meddelelse, hvilken kommando den blev taget fra.</li>
+<li>Brug <strong>Ryd</strong> for at fjerne en kommandos genvej, eller <strong>Gendan standardindstillinger</strong> for at kassere alle dine ændringer og vende tilbage til skemaets oprindelige taster.</li>
+</ol>
+<p><img alt="Tastaturgenveje-editoren der viser kommandoer med deres tildelte taster" src="images/keys-editor.png" />
+<em>(Figur: søg efter en kommando, og brug derefter Optag, Ryd eller Gendan standardindstillinger for at ændre dens genvej.)</em></p>
+<h2 id="gennemse-alle-kommandoer">Gennemse alle kommandoer</h2>
+<ol>
+<li>Vælg <strong>Konfiguration &gt; Kommandooversigt…</strong>.</li>
+<li>Skriv i søgefeltet for at filtrere efter navn, kategori eller beskrivelse.</li>
+<li>Dobbeltklik på en kommando, eller vælg den og klik på <strong>Kør</strong>, for at udføre den på det aktive panel.</li>
+</ol>
+<p><img alt="Kommandooversigten der viser en søgbar liste over kommandoer" src="images/command-browser.png" />
+<em>(Figur: hver kommando i én søgbar liste, med en kort beskrivelse af hver.)</em></p>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Menusti</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vælg det klassiske skema</td>
+<td>Konfiguration &gt; Tastaturskema &gt; TC Classic</td>
+</tr>
+<tr>
+<td>Vælg Mac-skemaet</td>
+<td>Konfiguration &gt; Tastaturskema &gt; macOS Native</td>
+</tr>
+<tr>
+<td>Rediger genveje</td>
+<td>Konfiguration &gt; Tastaturgenveje…</td>
+</tr>
+<tr>
+<td>Gennemse alle kommandoer</td>
+<td>Konfiguration &gt; Kommandooversigt…</td>
+</tr>
+<tr>
+<td>Opdater det aktive panel</td>
+<td>F2 (også Ctrl+R)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Dine tilpassede genveje gemmes automatisk og lægges oven på det aktive skema. At skifte skema beholder dine personlige tilsidesættelser.</li>
+<li>Kommandoer, der ikke er tilgængelige i den aktuelle kontekst, vises nedtonet i både genvejseditoren og kommandooversigten.</li>
+<li>For at bruge funktionstasterne (F1–F12) direkte, slå <strong>Brug F1-, F2- osv.-tasterne som standardfunktionstaster</strong> til i Systemindstillinger &gt; Tastatur. Ellers hold <strong>Fn</strong>-tasten sammen med funktionstasten.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts-reference.html">Oversigt over tastaturgenveje</a></li><li><a href="settings.html">Indstillinger</a></li></ul></section>
+</main>
+</body>
+</html>

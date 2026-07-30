@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Netwerkshares</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Netwerkshares</h1>
+<p>Peach Commander kan verbinding maken met bestandsservers op je lokale netwerk of bedrijfsnetwerk — SMB- (Windows/Samba) en AFP-shares — en de inhoud ervan in een paneel tonen, net als een map op je eigen Mac. Zodra een share verbonden is, kun je erin bladeren en bestanden kopiëren, verplaatsen, hernoemen en openen, precies zoals lokaal, inclusief kopiëren tussen de share en je andere paneel.</p>
+<h2 id="verbinding-maken-met-een-server">Verbinding maken met een server</h2>
+<ol>
+<li>Klik op het paneel dat je wilt verbinden (de verbonden share opent in het actieve paneel).</li>
+<li>Druk op Cmd+K, of kies <strong>Netwerk &gt; Netwerkomgeving &gt; Netwerkshare koppelen…</strong>.</li>
+<li>Typ in het venster <strong>Verbind met server</strong> het serveradres. Je kunt invoeren:
+   - een SMB-adres, bijvoorbeeld <code>smb://fileserver/projects</code>
+   - een AFP-adres, bijvoorbeeld <code>afp://fileserver/projects</code>
+   - een Windows-pad, bijvoorbeeld <code>\\fileserver\projects</code>
+   - een gewone <code>server/share</code>-naam</li>
+<li>Klik op Verbind (of druk op Return). Als de server een naam en wachtwoord nodig heeft, toont macOS zijn standaard inlogvenster — voer daar je gegevens in.</li>
+<li>Zodra de share klaar is, opent het actieve paneel deze automatisch. Blader en werk ermee zoals met elke andere map.</li>
+</ol>
+<h2 id="verbinding-verbreken">Verbinding verbreken</h2>
+<p>Een verbonden share verschijnt als een gekoppeld volume op je Mac. Om de verbinding te verbreken, werp je het op de gebruikelijke macOS-manier uit — bijvoorbeeld vanuit de Finder-navigatiekolom of vanuit de schijvenlijst in Peach Commander.</p>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Sneltoets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Netwerkshare koppelen…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Authenticatie (gebruikersnaam, wachtwoord en de keuze "bewaar in mijn sleutelhanger") wordt afgehandeld door het standaard macOS-inlogvenster, dus opgeslagen serverwachtwoorden werken net als in de Finder.</li>
+<li>Als je een adres invoert dat niet begrepen kan worden, vraagt Peach Commander om een SMB/AFP-adres, een Windows-pad of een <code>server/share</code>-naam, en wordt er niets gekoppeld.</li>
+<li>Na je bevestiging kan verbinden even duren terwijl macOS de share koppelt; het paneel schakelt erover zodra deze beschikbaar is.</li>
+<li>Dit maakt verbinding met gedeelde schijven op een netwerk. Zie het gerelateerde onderwerp hieronder om in plaats daarvan een FTP-, FTPS- of SFTP-server te bereiken.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Verbinden met FTP en SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

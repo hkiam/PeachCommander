@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attribut och behörigheter</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Attribut och behörigheter</h1>
+<p>Peach Commander låter dig granska och ändra den lågnivåmetadata för filer och mappar som Finder mest håller utom räckhåll: POSIX-behörigheter för läsning/skrivning/körning, ägare och grupp, ändrings- och skapelsedatum, macOS-flaggor som dold och låst, samt utökade attribut. Du kan även redigera en fils åtkomstkontrollista (ACL) för finkorniga regler per användare eller per grupp, skapa länkar och alias som pekar mot andra objekt, och bifoga dina egna kommentarer. Dessa verktyg riktar sig till avancerade användare som behöver exakt kontroll över hur objekt beter sig och vem som kan röra dem.</p>
+<h2 id="andra-attribut">Ändra attribut</h2>
+<ol>
+<li>Markera ett eller flera objekt i den aktiva panelen.</li>
+<li>Välj <strong>Arkiv &gt; Ändra attribut…</strong>.</li>
+<li>Ställ in det du behöver: växla rutorna för läsa/skriva/köra för ägare, grupp och alla (eller skriv in ett oktalt värde direkt), ändra ägare eller grupp, växla flaggorna dold eller låst, och ställ in ändrings- eller skapelsedatum. Använd <strong>Använd aktuellt</strong> för aktuell tid, eller kopiera ett datum från en annan fil.</li>
+<li>För att tillämpa samma ändring genom en mapps innehåll, slå på det rekursiva alternativet och välj om det ska påverka filer, mappar eller båda.</li>
+<li>Klicka på OK för att köra ändringen. Rekursiva ändringar körs som en bakgrundsuppgift med en förloppsstapel.</li>
+</ol>
+<p><img alt="Dialogen Ändra attribut med behörighetsrutnätet, flaggorna och datumfälten" src="images/attributes-dialog.png" />
+<em>(Figur: Dialogen Ändra attribut. Blandade värden i ett flerfilsurval visas som ett streck tills du ställer in dem.)</em></p>
+<h2 id="redigera-en-acl">Redigera en ACL</h2>
+<p>För regler bortom den grundläggande modellen med ägare/grupp/alla redigerar du objektets åtkomstkontrollista.</p>
+<ol>
+<li>Öppna <strong>Arkiv &gt; Ändra attribut…</strong> och öppna ACL-redigeraren därifrån.</li>
+<li>Varje rad är en regel: användaren eller gruppen den gäller för, om den tillåter eller nekar, och vilka behörigheter (läsa, skriva, ta bort och så vidare) den ger.</li>
+<li>Lägg till, ta bort eller redigera rader, och spara sedan för att skriva tillbaka listan till objektet.</li>
+</ol>
+<h2 id="skapa-lankar-alias-och-kommentarer">Skapa länkar, alias och kommentarer</h2>
+<ul>
+<li><strong>Arkiv &gt; Skapa symbolisk länk…</strong> skapar en symbolisk länk (symlink) som pekar mot objektet under markören via sökväg.</li>
+<li><strong>Arkiv &gt; Skapa hård länk…</strong> skapar en hård länk till samma fildata. Hårda länkar fungerar bara för filer på samma volym.</li>
+<li><strong>Arkiv &gt; Skapa alias…</strong> skapar ett macOS-alias som Finder också kan följa.</li>
+<li><strong>Arkiv &gt; Redigera kommentar…</strong> (Ctrl+Z) öppnar en textredigerare för en kommentar per fil. Kommentarer kan visas i en egen kolumn och i statustips.</li>
+</ul>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Redigera kommentar</td>
+<td>Ctrl+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anteckningar">Anteckningar</h2>
+<ul>
+<li>Att ändra ägare eller grupp kräver vanligtvis behörigheter du inte har som vanlig användare; när det händer rapporteras ändringen som misslyckad snarare än tillämpad, och resten av dina ändringar går ändå igenom.</li>
+<li>Kommentarer lagras i en <code>descript.ion</code>-fil bredvid dina objekt och kan även behållas som Finder-kommentarer, beroende på dina inställningar. Båda läses när en kommentar visas.</li>
+<li>En symbolisk länk och ett alias pekar båda mot ett mål, men en symbolisk länk lagrar en vanlig sökväg medan ett alias lagrar en macOS-referens som fortsätter fungera om målet flyttas eller byter namn. En hård länk är ett andra namn för samma fildata, inte en pekare.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="file-utilities.html">Filverktyg</a></li></ul></section>
+</main>
+</body>
+</html>

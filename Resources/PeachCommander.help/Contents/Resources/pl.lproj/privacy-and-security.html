@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prywatność i bezpieczeństwo</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Prywatność i bezpieczeństwo</h1>
+<p>Peach Commander jest zbudowany tak, aby nie wchodzić w drogę i trzymać Twoje dane na Twoim Macu. Hasła są przekazywane do pęku kluczy macOS, informacje o awariach nigdy nie opuszczają Twojego komputera bez Twojej zgody, a aplikacja nie zbiera żadnej analityki użycia. Ten temat wyjaśnia, gdzie żyją Twoje wrażliwe informacje i jak przyznać jedyne uprawnienie systemowe, którego menedżer plików potrzebuje do wykonywania swojej pracy.</p>
+<h2 id="gdzie-przechowywane-sa-hasa">Gdzie przechowywane są hasła</h2>
+<p>Każde hasło lub frazę klucza, którą zapiszesz — dla połączenia FTP lub SFTP, albo do otwarcia archiwum chronionego hasłem — jest zapisywane w <strong>pęku kluczy</strong> macOS, tym samym bezpiecznym magazynie, którego system używa dla Twoich logowań do Wi-Fi i witryn. Hasła nigdy nie są zapisywane w ustawieniach ani plikach połączeń Peach Commandera w postaci jawnej.</p>
+<ol>
+<li>Gdy zapisujesz hasło połączenia lub archiwum, wybierz opcję jego zapamiętania.</li>
+<li>Hasło jest przechowywane w Twoim pęku kluczy logowania, chronionym przez Twoje konto.</li>
+<li>Aby przejrzeć lub usunąć zapisane hasło później, otwórz aplikację <strong>Dostęp do pęku kluczy</strong> (w Programy ▸ Narzędzia) i wyszukaj nazwę połączenia.</li>
+</ol>
+<h2 id="przyznaj-peny-dostep-do-dysku">Przyznaj Pełny dostęp do dysku</h2>
+<p>macOS utrzymuje niektóre lokalizacje jako prywatne — dane Mail, Wiadomości i innych aplikacji wewnątrz Twojego folderu Biblioteka — dopóki wyraźnie nie zezwolisz na dostęp. Ponieważ menedżer plików ma dosięgać każdego pliku, Peach Commander prosi o <strong>Pełny dostęp do dysku</strong>. Aplikacja nadal działa z ograniczonym dostępem, dopóki go nie przyznasz; po prostu nie zobaczysz tych chronionych folderów.</p>
+<ol>
+<li>Wybierz <strong>Polecenia ▸ Pełny dostęp do dysku…</strong>, lub kliknij <strong>Otwórz Ustawienia systemowe</strong>, gdy aplikacja zaoferuje poprowadzenie Cię przy uruchomieniu.</li>
+<li>W <strong>Ustawienia systemowe ▸ Prywatność i bezpieczeństwo ▸ Pełny dostęp do dysku</strong> włącz przełącznik obok Peach Commandera.</li>
+<li>Uruchom ponownie aplikację, jeśli zostaniesz poproszony.</li>
+</ol>
+<h2 id="raporty-o-awariach-pozostaja-lokalne">Raporty o awariach pozostają lokalne</h2>
+<p>Jeśli aplikacja nieoczekiwanie się zamknie, macOS zapisuje raport o awarii w Twoim własnym folderze diagnostyki. Przy następnym uruchomieniu Peach Commander go zauważa i oferuje pomoc w złożeniu raportu o błędzie — ale tylko za Twoją zgodą.</p>
+<ul>
+<li>Możesz <strong>Pokaż w Finderze</strong>, aby zobaczyć raport, lub <strong>Skopiuj raport do schowka</strong>, aby samodzielnie wkleić go do raportu o błędzie.</li>
+<li>Nic nigdy nie jest przesyłane automatycznie i nie ma zaangażowanej żadnej usługi raportowania awarii innej firmy.</li>
+</ul>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li><strong>Brak telemetrii.</strong> Peach Commander nie śledzi Twojej aktywności ani nie wysyła analityki użycia nigdzie.</li>
+<li><strong>Ograniczony dostęp jest bezpieczny.</strong> Jeśli pominiesz Pełny dostęp do dysku, aplikacja nadal przegląda i zarządza plikami, które normalnie widzisz; ukryte są tylko lokalizacje chronione przez system.</li>
+<li><strong>Ty kontrolujesz zapisane hasła.</strong> Ponieważ dane uwierzytelniające żyją w pęku kluczy, zarządzasz nimi i unieważniasz je standardowymi narzędziami macOS, a nie wewnątrz aplikacji.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Łączenie z FTP i SFTP</a></li><li><a href="troubleshooting.html">Rozwiązywanie problemów</a></li></ul></section>
+</main>
+</body>
+</html>

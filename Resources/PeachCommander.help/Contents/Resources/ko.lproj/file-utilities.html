@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파일 유틸리티</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>파일 유틸리티</h1>
+<p>복사와 이동을 넘어, Peach Commander에는 파일이 온전한지 검증하고, 디스크 공간을 되찾고, 큰 파일을 작은 조각으로 나누고, 파일을 텍스트 안전 형식으로 상호 변환하는 일상적인 파일 유틸리티 모음이 있습니다. 이 모두는 <strong>파일</strong> 메뉴에서 접근하며, 활성 패널에서 선택한 것(또는 아무것도 선택되지 않았을 때 커서 아래의 항목)에 작용합니다. 이 항목에서는 체크섬, 중복 찾기, 분할/결합, 인코딩/디코딩, 점유 공간 계산을 다룹니다.</p>
+<h2 id="_1">체크섬 만들기 또는 검증</h2>
+<p>체크섬을 사용하면 파일이 손상 없이 다운로드되거나 복사되었는지 확인하거나, 받는 사람에게 받은 사본을 검사할 방법을 건넬 수 있습니다.</p>
+<ol>
+<li>지문을 만들 파일을 선택합니다.</li>
+<li><strong>파일 ▸ Create Checksums…</strong>를 선택하고, 알고리즘(CRC32, MD5, SHA-1, SHA-256, SHA-512)을 선택한 다음, 체크섬 파일을 저장합니다.</li>
+<li>나중에 파일을 검사하려면 체크섬 파일을 선택하고 <strong>파일 ▸ Verify Checksums…</strong>를 선택합니다. Peach Commander는 각 해시를 다시 계산하고 일치하지 않는 파일을 보고합니다.</li>
+</ol>
+<p>체크섬은 현재 위치에서 직접 스트리밍되므로, 압축 파일 내부나 FTP 서버의 파일에 대해서도 만들거나 검증할 수 있습니다.</p>
+<h2 id="_2">중복 파일 찾기</h2>
+<p>중복 찾기는 여러 폴더에 흩어진 동일한 파일을 찾아내므로 여분의 사본을 제거할 수 있습니다.</p>
+<ol>
+<li>스캔할 폴더(또는 파일)를 선택합니다.</li>
+<li><strong>파일 ▸ Find Duplicates…</strong>를 선택합니다. Peach Commander는 후보를 비교하고 바이트 단위로 동일한 파일을 그룹화합니다.</li>
+<li>각 그룹을 검토하고, 더 이상 필요하지 않은 사본을 표시한 다음 삭제합니다.</li>
+</ol>
+<p><img alt="동일한 파일 그룹을 나열하는 중복 찾기" src="images/duplicate-finder.png" />
+<em>(그림: 중복 찾기는 동일한 파일을 그룹화하여 하나는 남기고 나머지는 제거할 수 있게 합니다.)</em></p>
+<h2 id="_3">파일 분할 및 결합</h2>
+<p>분할은 하나의 큰 파일을 번호가 매겨진 일련의 작은 조각으로 나눕니다. 저장 또는 전송 제한에 편리합니다. 결합은 이를 다시 조립합니다.</p>
+<ol>
+<li>분할하려면 파일을 선택하고 <strong>파일 ▸ Split File…</strong>를 선택한 다음, 조각 크기를 설정합니다. 조각은 다른 패널의 폴더에 기록됩니다.</li>
+<li>다시 조립하려면 첫 번째 조각을 선택하고 <strong>파일 ▸ Combine Files…</strong>를 선택합니다. 번호가 매겨진 조각에서 원본 파일이 다시 만들어집니다.</li>
+</ol>
+<h2 id="_4">인코딩 및 디코딩</h2>
+<p>인코딩은 이진 파일을 일반 텍스트로 바꿔, 텍스트만 전달하는 채널(예: 오래된 이메일이나 붙여넣기 상자)에서도 살아남게 합니다. 디코딩은 이를 되돌립니다.</p>
+<ol>
+<li>파일을 선택하고 <strong>파일 ▸ Encode…</strong>를 선택한 다음, 형식을 선택합니다 — MIME(Base64), UUE(uuencode), 또는 XXE.</li>
+<li>원본을 복원하려면 인코딩된 파일을 선택하고 <strong>파일 ▸ Decode…</strong>를 선택합니다. 형식은 자동으로 감지됩니다.</li>
+</ol>
+<h2 id="_5">점유 공간 계산</h2>
+<p>폴더나 선택 항목이 디스크에서 실제로 얼마나 많은 공간을 사용하는지 보려면, 항목을 선택하고 <strong>Ctrl+L</strong>(<strong>파일 ▸ Calculate Occupied Space…</strong>)을 누릅니다. Peach Commander는 하위 폴더를 포함하여 내부의 모든 파일을 합산하고 총계를 보여줍니다.</p>
+<h2 id="_6">단축키</h2>
+<table>
+<thead>
+<tr>
+<th>작업</th>
+<th>키</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>점유 공간 계산</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">참고</h2>
+<ul>
+<li>체크섬, 분할/결합, 인코딩/디코딩은 더 고급 작업을 대상으로 하지만, 각각은 합리적인 기본값을 가진 단일 대화상자입니다.</li>
+<li>유틸리티가 새 파일(분할 조각, 인코딩된 파일, 체크섬 목록)을 생성할 때는 다른 패널에 표시된 폴더에 기록됩니다. 먼저 그 패널을 의도한 대상으로 설정하십시오.</li>
+<li>삭제 설정에 따라 중복 삭제는 영구적입니다. 각 그룹을 주의 깊게 검토하고, 여전히 필요한 것은 최소한 하나의 사본을 유지하십시오.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">비교 및 동기화</a></li></ul></section>
+</main>
+</body>
+</html>

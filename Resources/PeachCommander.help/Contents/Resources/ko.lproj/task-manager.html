@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>Task Manager 플러그인은 Mac에서 실행 중인 프로세스를 탐색할 수 있는 폴더로 바꿉니다. 드라이브 막대에 <strong>TaskManager</strong> 드라이브로 나타나며, 이를 열면 모든 프로세스가 한 행이 되어 파일에 이미 쓰는 것과 같은 키로 정렬하고, 파일처럼 살펴보고, 종료할 수 있습니다. 플러그인이므로 <strong>설정 ▸ 플러그인…</strong>에서 끄거나 제거할 수 있습니다.</p>
+<h2 id="_1">열기</h2>
+<ol>
+<li>드라이브 막대의 <strong>📊 TaskManager</strong> 항목을 클릭합니다(부팅 드라이브 바로 다음에 자리합니다).</li>
+<li>패널이 실행 중인 프로세스마다 한 행으로 채워집니다. 각 행의 이름은 프로세스 이름 뒤에 PID가 붙습니다. 예를 들어 <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="PID, CPU, 메모리, 명령 열과 함께 실행 중인 프로세스를 나열하는 Task Manager" src="images/task-manager.png" />
+<em>(그림: 정렬하고 동작을 취할 수 있는 파일 목록으로 표시된 실행 중인 프로세스.)</em></p>
+<h2 id="_2">각 열의 의미</h2>
+<p>일반적인 크기(메모리)와 날짜(시작 시간) 열과 함께 Task Manager는 프로세스 열을 더합니다:</p>
+<table>
+<thead>
+<tr>
+<th>열</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>프로세스 id</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>최근 프로세서 사용량(나타나려면 두 번째 새로 고침이 필요)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>스레드 수</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R 실행 중 · S 대기 · T 정지 · Z 좀비 · I 유휴</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>소유자</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>부모 프로세스 id</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>전체 명령줄</td>
+</tr>
+</tbody>
+</table>
+<p>일반 폴더에서와 마찬가지로 아무 열(예: CPU % 또는 크기/메모리)로나 정렬할 수 있습니다.</p>
+<h2 id="_3">프로세스 살펴보기 또는 종료</h2>
+<ul>
+<li><strong>보기(F3)</strong>는 <em>프로세스 정보</em> 보고서를 보여줍니다: 이름, PID, 부모, 사용자, 상태, 스레드, 메모리, CPU, 시작 시간, 실행 파일 경로, 전체 명령줄.</li>
+<li><strong>삭제(F8)</strong>는 프로세스를 종료합니다. 첫 삭제는 정상적인 <strong>종료</strong>(SIGTERM)를 보냅니다. 여전히 실행 중인 프로세스를 두 번째로 삭제하면 <strong>강제 종료</strong>(SIGKILL)로 확대됩니다. 플러그인은 결코 PID 1을 대상으로 하지 않습니다.</li>
+</ul>
+<h2 id="_4">참고</h2>
+<ul>
+<li>기본 세부 정보(PID, 부모, 사용자, 상태)는 <code>ps</code>처럼 모든 프로세스에서 읽을 수 있습니다. 메모리, 스레드, CPU는 <strong>자신의</strong> 프로세스에서만 읽을 수 있으며, 다른 프로세스는 그 열을 비워 둡니다(상승된 권한이 필요하며, 이는 나중에 추가될 예정입니다).</li>
+<li>CPU %는 두 샘플 사이의 변화이므로, 패널이 두 번째로 새로 고쳐질 때까지 비어 있습니다(패널은 대략 2초마다 새로 고쳐집니다).</li>
+<li>목록은 프로세스 종료를 제외하면 읽기 전용입니다 — 그 안으로 파일을 복사할 수 없습니다.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">플러그인</a></li><li><a href="viewing-files.html">파일 보기</a></li><li><a href="deleting-files.html">파일 삭제</a></li></ul></section>
+</main>
+</body>
+</html>

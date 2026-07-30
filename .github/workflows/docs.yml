@@ -1,0 +1,40 @@
+name: Docs
+
+# Quality gate for the documentation system (DOCUMENTATION.md).
+# Runs on changes to the docs sources, the SDK headers (API reference), or the
+# scripts — validates links/images/terminology/coverage, regenerates derived
+# outputs, and builds both the Apple Help Book and the MkDocs site (strict).
+
+on:
+  push:
+    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings]
+  pull_request:
+    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings]
+
+jobs:
+  docs:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install tooling
+        run: python3 -m pip install --quiet markdown pyyaml pygments mkdocs-material
+      - name: Regenerate derived outputs (must be committed & up to date)
+        run: |
+          python3 docs/scripts/gen-api-reference.py
+          python3 docs/scripts/gen-overviews.py
+          if ! git diff --quiet -- docs/content/reference FEATURES.md; then
+            echo "::error::Generated docs are stale — run gen-api-reference.py and gen-overviews.py and commit."
+            git --no-pager diff --stat -- docs/content/reference FEATURES.md
+            exit 1
+          fi
+      - name: Quality gate
+        run: python3 docs/scripts/check-docs.py
+      - name: Translation coverage gate (UI + Help must be kept in every language)
+        run: python3 docs/scripts/check-translations.py
+      - name: Build Apple Help Book (all languages)
+        run: python3 docs/scripts/build-helpbook.py --all
+      - name: Build documentation site (all languages, strict)
+        run: python3 docs/scripts/build-site.py
