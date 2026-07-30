@@ -18,7 +18,9 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16.0'
+          # Range, not a hard pin: runner images drop old point releases
+          # (16.0 was removed). Matches bootstrap.sh's "Xcode 16+".
+          xcode-version: '^16.0'
 
       - name: Install dependencies
         run: |
