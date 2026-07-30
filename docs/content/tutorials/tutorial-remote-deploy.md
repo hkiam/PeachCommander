@@ -98,6 +98,6 @@ When the deploy is done, choose **Net > FTP Disconnect** (Ctrl+Shift+F). Your sa
 
 ## Notes
 
-- Peach Commander is pre-1.0. If you are running a preview build that is not yet notarized, the first launch may need a right-click → **Open** to get past macOS Gatekeeper.
+- Peach Commander is pre-1.0. The beta builds are not notarized, so the first launch has to be allowed once — under **System Settings ▸ Privacy & Security** on macOS 15 and later, or with a right-click → **Open** on macOS 13–14. See [installing Peach Commander](installation.md).
 - Remote passwords are only ever stored in your macOS Keychain, and the app sends no telemetry.
 - Existing FTP connections from Total Commander can be imported, so you may not have to re-enter servers you already use.
