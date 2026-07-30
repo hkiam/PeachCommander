@@ -7,11 +7,12 @@ echo "=== Peach Commander Tests ==="
 
 cd "$(dirname "$0")/.."
 
-# Ensure project is generated
-if [ ! -f "PeachCommander.xcodeproj" ]; then
-    echo "Project not found, generating..."
-    xcodegen generate
-fi
+# Always regenerate: project.yml is the source of truth and the .pbxproj is not
+# tracked, so a stale one silently ignores build-setting changes. (This used to be
+# guarded by `[ ! -f PeachCommander.xcodeproj ]`, which is a directory — the test
+# was always true, so it regenerated anyway while claiming "Project not found".)
+echo "Generating Xcode project from project.yml..."
+xcodegen generate
 
 # Run tests for all test targets
 echo "Running tests..."

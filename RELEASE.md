@@ -116,29 +116,63 @@ redeploy of the site is needed.
 
 ## Signing & notarization
 
-Not implemented yet. The workflow has a placeholder step that warns when no
-signing secrets are present and otherwise does nothing. Wiring it up needs:
+The pipeline is wired up but **inactive until you add the secrets** — with none
+present it prints a warning and produces the same unsigned DMG as before. Nothing
+else needs changing; add the secrets and the next release is signed and notarized.
+
+> **Not yet exercised against a real certificate.** The scripts, the keychain
+> import and the unsigned fall-through are tested; the Developer ID signature and
+> the notary submission have never run, because that needs credentials. Expect to
+> iterate once on the first signed release.
+
+### Secrets
+
+Signing — both required, or the build stays unsigned:
 
 | Secret | Contents |
 | --- | --- |
-| `DEVELOPER_ID_APP` | base64 of the *Developer ID Application* `.p12` certificate |
+| `DEVELOPER_ID_APP` | base64 of the *Developer ID Application* `.p12` (`base64 -i cert.p12 \| pbcopy`) |
 | `DEVELOPER_ID_PASSWORD` | password for that `.p12` |
-| `NOTARY_KEYCHAIN_PROFILE` | `notarytool` keychain profile name |
 
-The steps a signed release has to perform, in order:
+Notarization — an App Store Connect API key (preferred for CI):
 
-1. Import the `.p12` into a temporary keychain.
-2. `codesign --force --options runtime --timestamp --deep --sign "Developer ID Application: …"`
-   over the app — note the plugins in `Contents/PlugIns` and the dylibs in
-   `Contents/Frameworks` are signed as part of this pass, replacing the ad-hoc
-   signatures `bundle-libssh2.sh` applied.
-3. `xcrun notarytool submit build/PeachCommander.dmg --keychain-profile "…" --wait`
-4. `xcrun stapler staple build/PeachCommander.dmg`
-5. `spctl -a -t open --context context:primary-signature -v build/PeachCommander.dmg`
-   to verify Gatekeeper accepts the result.
+| Secret | Contents |
+| --- | --- |
+| `NOTARY_KEY` | the whole `.p8` private key, including its BEGIN/END lines |
+| `NOTARY_KEY_ID` | the key's Key ID |
+| `NOTARY_ISSUER_ID` | the issuer UUID |
 
-Until that exists, `docs/content/user-guide/installation.md` documents the
-right-click → **Open** workaround for users, and auto-update via Sparkle stays
+…or an Apple ID instead, if you prefer: `NOTARY_APPLE_ID`, `NOTARY_PASSWORD` (an
+**app-specific** password, not the account password) and `NOTARY_TEAM_ID`.
+
+A `notarytool` *keychain profile* is deliberately not supported. A profile lives in
+a local keychain and cannot be handed to a fresh runner — the workflow used to
+document a `NOTARY_KEYCHAIN_PROFILE` secret, which could never have worked in CI.
+
+### How it runs
+
+1. **Import Developer ID certificate** (`release.yml`) — creates a throwaway
+   keychain, imports the `.p12`, and resolves the identity hash. This runs *before*
+   packaging on purpose: the app is signed on its way into the image, so a
+   certificate arriving later would leave the shipped app unsigned.
+2. **`Tools/codesign-app.sh`**, called by `make-dmg.sh` once the plugins and dylibs
+   are in place. Signs inside-out — the 3 embedded dylibs, the 8 frameworks, then
+   each plugin in `Contents/PlugIns`, then the bundle itself with
+   `--options runtime --timestamp` and `Resources/PeachCommander.entitlements`
+   (no App Sandbox, library validation relaxed for third-party plugins; ADR-006).
+   `--deep` is *not* used: Apple documents it as unsuitable for distribution
+   signing, and it would push the app's entitlements onto nested code.
+3. **`make-dmg.sh`** signs the finished disk image too, so Gatekeeper can judge the
+   download itself and notarytool has something to staple to.
+4. **`Tools/notarize.sh`** submits with `--wait`, staples the ticket, then verifies
+   with `stapler validate` and `spctl --assess`. A rejection fails the job rather
+   than shipping an image Gatekeeper will refuse.
+
+Both scripts no-op when their credentials are missing, so they are safe to keep in
+the pipeline and safe to run locally.
+
+Until a signed release exists, `docs/content/user-guide/installation.md` documents
+the right-click → **Open** workaround for users, and auto-update via Sparkle stays
 disabled (`Sparkle/` is gitignored; the feed is not published).
 
 ## Version numbers
