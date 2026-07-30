@@ -75,6 +75,11 @@ echo "==> Embedding libssh2 (SFTP) into Frameworks…"
 # into a universal app and break SFTP on the other architecture.
 PC_SSH2_PREFIX="$SSH2_PREFIX" Tools/bundle-libssh2.sh "$APP"
 
+# Sign here, not after the image exists: whatever is copied into the DMG below is
+# what users run, so the app has to be signed first. No-op without
+# PC_CODESIGN_IDENTITY, which keeps the unsigned build path unchanged.
+Tools/codesign-app.sh "$APP"
+
 echo "==> Staging…"
 rm -rf "$STAGING" "$DMG"
 mkdir -p "$STAGING"
@@ -89,4 +94,13 @@ hdiutil create \
   "$DMG" >/dev/null
 
 rm -rf "$STAGING"
+
+# The image itself is signed too, so Gatekeeper can evaluate the download before
+# anything is copied out of it, and so notarytool has something to attach a ticket
+# to. Again a no-op when no identity is configured.
+if [ -n "${PC_CODESIGN_IDENTITY:-}" ]; then
+  echo "==> Signing the disk image…"
+  codesign --force --timestamp --sign "$PC_CODESIGN_IDENTITY" "$DMG"
+fi
+
 echo "==> Done: $DMG ($(du -h "$DMG" | cut -f1))"
