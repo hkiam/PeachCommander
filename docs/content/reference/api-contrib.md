@@ -61,6 +61,7 @@ contrib.h — Peach Commander plugin contributions, behavior ABI (SPEC-013).
 ## Full header
 
 ```c
+// SPDX-License-Identifier: Apache-2.0
 /*
  * contrib.h — Peach Commander plugin contributions, behavior ABI (SPEC-013).
  *
