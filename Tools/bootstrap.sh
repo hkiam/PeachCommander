@@ -7,12 +7,23 @@ echo "=== Peach Commander Bootstrap ==="
 
 # Check for Xcode
 if ! xcodebuild -version &>/dev/null; then
-    echo "ERROR: Xcode not found. Please install Xcode 16+ from the App Store."
+    echo "ERROR: Xcode not found. Please install Xcode 26+ from the App Store."
     exit 1
 fi
 
 XCODE_VERSION=$(xcodebuild -version | head -n1 | sed 's/Xcode //')
 echo "Xcode version: $XCODE_VERSION"
+
+# Enforce the major version rather than only reporting it: on Xcode 16 the
+# bootstrap used to succeed and the build then failed much later with confusing
+# errors (Swift 6.0 rejects the existentials in PCVFS, and the macOS 26 SDK APIs
+# behind @available(macOS 26) are missing).
+XCODE_MAJOR="${XCODE_VERSION%%.*}"
+if [ "${XCODE_MAJOR:-0}" -lt 26 ] 2>/dev/null; then
+    echo "ERROR: Xcode 26 or newer is required (found $XCODE_VERSION)."
+    echo "       The sources use Swift 6.3 syntax and the macOS 26 SDK."
+    exit 1
+fi
 
 # Check for xcodegen
 if ! command -v xcodegen &>/dev/null; then

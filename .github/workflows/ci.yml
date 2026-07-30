@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -25,8 +25,11 @@ jobs:
           xcode-version: '^26.0'
 
       - name: Install dependencies
+        # libssh2 is explicit on purpose: CSSH2 resolves <libssh2.h> from the
+        # Homebrew keg (nothing is vendored), and the runner image only happens to
+        # carry it today. Don't build on an incidental preinstall.
         run: |
-          brew install xcodegen
+          brew install xcodegen libssh2
           ./Tools/bootstrap.sh
 
       - name: Build project

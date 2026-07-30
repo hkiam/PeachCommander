@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -30,8 +30,11 @@ jobs:
           xcode-version: '^26.0'
 
       - name: Install dependencies
+        # libssh2 (+ its openssl@3 dependency) must really be present here: beyond
+        # compiling CSSH2, Tools/bundle-libssh2.sh copies the dylibs out of the kegs
+        # into Contents/Frameworks and hard-fails if they are missing.
         run: |
-          brew install xcodegen
+          brew install xcodegen libssh2
           ./Tools/bootstrap.sh
 
       - name: Build & test
