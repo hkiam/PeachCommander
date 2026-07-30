@@ -3,14 +3,71 @@ title: Peach Commander
 description: A fast, keyboard-driven, dual-panel file manager for macOS in the Total Commander tradition — with built-in FTP/SFTP/WebDAV, archives as folders, deep search, and plugins.
 ---
 
-# Peach Commander
-
-**The fast, keyboard-driven, dual-panel file manager for macOS — one app that replaces a drawer full of file utilities.**
+<div class="pc-hero" data-pc-release="hkiam/PeachCommander">
+  <img class="pc-hero__icon" src="assets/peachcommander-icon.png" alt="The Peach Commander app icon">
+  <h1>Peach Commander</h1>
+  <p class="pc-hero__tagline">
+    The fast, keyboard-driven, dual-panel file manager for macOS —
+    <strong>one app that replaces a drawer full of file utilities.</strong>
+  </p>
+  <div class="pc-actions">
+    <a class="pc-btn pc-btn--primary js-pc-download-btn"
+       href="https://github.com/hkiam/PeachCommander/releases/latest">Download for macOS</a>
+    <a class="pc-btn pc-btn--ghost" href="https://github.com/hkiam/PeachCommander">View on GitHub</a>
+    <a class="pc-btn pc-btn--ghost" href="installation.html">Installation guide</a>
+  </div>
+  <p class="pc-hero__meta">
+    <span>macOS 13 or later</span><span>Universal — Apple Silicon &amp; Intel</span><span>Free &amp; open source</span>
+  </p>
+  <p class="pc-hero__meta js-pc-download-status"></p>
+  <div class="pc-keys">
+    <span class="pc-keys__item"><kbd>Tab</kbd> switch panel</span>
+    <span class="pc-keys__item"><kbd>F3</kbd> view</span>
+    <span class="pc-keys__item"><kbd>F4</kbd> edit</span>
+    <span class="pc-keys__item"><kbd>F5</kbd> copy</span>
+    <span class="pc-keys__item"><kbd>F6</kbd> move</span>
+    <span class="pc-keys__item"><kbd>F7</kbd> new folder</span>
+    <span class="pc-keys__item"><kbd>F8</kbd> delete</span>
+  </div>
+</div>
 
 Peach Commander puts two folders side by side and every operation under your fingertips. Copy with F5, move with F6, switch panels with Tab, and reach roughly 150 named commands without ever lifting your hands from the keyboard. It is built in the Total Commander tradition and made for people who move a lot of files — and it wires that workflow straight into the Mac you already use. Hit a remote server, crack open an archive, and rename a thousand files at once, all inside one native window.
 
 ![Peach Commander main window with two file panels](screenshots/main-window.png)
 *Two folders side by side — the whole workflow lives in one window, and the keyboard drives all of it.*
+
+<div class="pc-grid">
+  <div class="pc-card">
+    <div class="pc-card__icon">⚡️</div>
+    <h3>Fast on huge folders</h3>
+    <p>Bulk metadata reads, streaming views, and clone-copy on APFS — low memory use even in directories with tens of thousands of files.</p>
+  </div>
+  <div class="pc-card">
+    <div class="pc-card__icon">⌨️</div>
+    <h3>Keyboard-first</h3>
+    <p>Around 150 named commands, all searchable and rebindable, in two schemes: TC-classic or macOS-native.</p>
+  </div>
+  <div class="pc-card">
+    <div class="pc-card__icon">🌐</div>
+    <h3>Remote as local</h3>
+    <p>FTP, FTPS, SFTP/SCP, WebDAV, and SOCKS5 built in — a server browses exactly like a folder on your Mac.</p>
+  </div>
+  <div class="pc-card">
+    <div class="pc-card__icon">🗜️</div>
+    <h3>Archives as folders</h3>
+    <p>Step into zip, 7z, tar, and rar. Edit in place, pack with AES-256, split into volumes.</p>
+  </div>
+  <div class="pc-card">
+    <div class="pc-card__icon">🍎</div>
+    <h3>Genuinely native</h3>
+    <p>Real AppKit with Quick Look, Finder tags, Services, and the Share sheet — not a web view in a window.</p>
+  </div>
+  <div class="pc-card">
+    <div class="pc-card__icon">🧩</div>
+    <h3>Five kinds of plugins</h3>
+    <p>Packers, file systems, viewers, content columns, and tools — with a Swift/C SDK to write your own.</p>
+  </div>
+</div>
 
 ---
 
@@ -158,9 +215,27 @@ Peach Commander is currently a **preview / pre-1.0 release**. It is honest, work
 - **Universal binary:** native on both Apple Silicon and Intel.
 - **Requires macOS 13 or later.**
 
-**[Download the preview build](#)**
+<div class="pc-download" data-pc-release="hkiam/PeachCommander">
+  <div class="pc-actions">
+    <a class="pc-btn pc-btn--primary js-pc-download-btn"
+       href="https://github.com/hkiam/PeachCommander/releases/latest">Download for macOS</a>
+    <a class="pc-btn pc-btn--ghost"
+       href="https://github.com/hkiam/PeachCommander/releases">All releases</a>
+  </div>
+  <p class="pc-download__status js-pc-download-status">
+    Disk images are built and attached automatically by the release workflow.
+  </p>
+</div>
 
-- Documentation: [the Peach Commander docs site](#)
-- Source and issues: [the GitHub repository](#)
+Every build is produced by the project's own release pipeline and attached to its
+[GitHub release](https://github.com/hkiam/PeachCommander/releases) as a disk image.
+Prefer to compile it yourself? See
+[installation &amp; build](https://github.com/hkiam/PeachCommander#-installation--build) —
+it needs Xcode and takes a couple of minutes.
+
+- **Getting started:** [installing Peach Commander](installation.md) · [your first two-folder workflow](tutorial-two-folders.md)
+- **Coming from Total Commander:** [migration guide](migration-from-total-commander.md), including `wincmd.ini` import
+- **Extending it:** [write a plugin](tutorial-plugins.md) · [developer onboarding](dev-getting-started.md)
+- **Source and issues:** [the GitHub repository](https://github.com/hkiam/PeachCommander)
 
 *Peach Commander is under active development. Expect rough edges, and please report what you find.*

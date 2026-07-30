@@ -26,6 +26,8 @@ HELP_DE = REPO / "docs/help-de"
 ASSETS = REPO / "docs/assets"
 BUILD = REPO / "build/site"
 SITE = BUILD / "site"
+REPO_SLUG = "hkiam/PeachCommander"
+REPO_URL = f"https://github.com/{REPO_SLUG}"
 FRONT_RE = re.compile(r'^---\s*\n(.*?)\n---\s*\n', re.DOTALL)
 IMG_RE = re.compile(r'(!\[[^\]]*\]\()screenshots/([^)]+)(\))')
 
@@ -37,6 +39,8 @@ MKDOCS_YML = """site_name: {site_name}
 site_description: A fast, keyboard-driven, dual-panel file manager for macOS.
 theme:
   name: material
+  logo: assets/peachcommander-icon.png
+  favicon: assets/peachcommander-icon.png
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -47,9 +51,19 @@ theme:
   features: [navigation.instant, navigation.tracking, navigation.top, navigation.sections,
              search.suggest, search.highlight, content.code.copy, toc.follow]
 use_directory_urls: false
+extra_css:
+  - assets/website/peach.css
+extra_javascript:
+  - assets/website/download.js
 extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: {repo_url}
+      name: Peach Commander on GitHub
   alternate:
 {alternate}
+repo_url: {repo_url}
+repo_name: {repo_slug}
 markdown_extensions:
   - admonition
   - attr_list
@@ -101,6 +115,12 @@ def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
     (docs / "assets").mkdir()
     if (ASSETS / "screenshots").exists():
         shutil.copytree(ASSETS / "screenshots", docs / "assets/screenshots")
+    # Website theme (peach.css) + the release-aware download button (download.js),
+    # wired up through extra_css/extra_javascript, plus the icon used as logo/favicon.
+    if (ASSETS / "website").exists():
+        shutil.copytree(ASSETS / "website", docs / "assets/website")
+    if (ASSETS / "peachcommander-icon.png").exists():
+        shutil.copy2(ASSETS / "peachcommander-icon.png", docs / "assets")
 
     md_files = sorted(sources.rglob("*.md")) if recursive else sorted(sources.glob("*.md"))
     pages = []  # (section, order, title, out_name)
@@ -138,7 +158,8 @@ def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
     alt_lines = "\n".join(
         f"    - name: {n}\n      link: {link}\n      lang: {lang}" for n, link, lang in alternate)
     (work / "mkdocs.yml").write_text(
-        MKDOCS_YML.format(site_name=site_name, nav="\n".join(nav_lines), alternate=alt_lines),
+        MKDOCS_YML.format(site_name=site_name, nav="\n".join(nav_lines), alternate=alt_lines,
+                          repo_url=REPO_URL, repo_slug=REPO_SLUG),
         encoding="utf-8")
 
     cmd = [mkdocs, "build", "-f", str(work / "mkdocs.yml"), "-d", str(out_dir)]
