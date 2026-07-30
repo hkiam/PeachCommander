@@ -29,7 +29,11 @@ HEADERS = [
     ("contrib.h", "Contributions ABI (contrib)", "Run declared commands and build declared views; unified host-services table. Orthogonal to the file-op ABIs.", 60),
 ]
 
-TOP_COMMENT_RE = re.compile(r'^\s*/\*(.*?)\*/', re.DOTALL)
+# The header's leading /* … */ block is the page intro. Skip any `//` line comments
+# in front of it — the SPDX-License-Identifier lives on line 1, where licence
+# scanners expect it, and anchoring strictly at the start of file silently fell back
+# to the short `blurb` and dropped ~100 lines of API documentation.
+TOP_COMMENT_RE = re.compile(r'^(?:[ \t]*//[^\n]*\n)*\s*/\*(.*?)\*/', re.DOTALL)
 DEFINE_RE = re.compile(r'^#define\s+(PC_[A-Z0-9_]+)\s+(.+?)\s*(?:/\*(.*?)\*/|//(.*))?$')
 CALLBACK_RE = re.compile(r'\(\s*\*\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)\s*\(')
 PROTO_RE = re.compile(r'^\s*[A-Za-z_][\w\s\*]*?\b([A-Z][A-Za-z0-9_]+)\s*\([^;]*\)\s*;')
