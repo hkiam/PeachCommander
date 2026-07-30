@@ -76,7 +76,7 @@ public final class PCXArchive {
     /// Run a plugin operation under the in-process crash guard (F-230): rethrows the
     /// operation's own error, or throws `.crashed` if the plugin faulted (after
     /// which it is quarantined and further calls fail fast).
-    private func guarded<T>(_ body: () throws -> T) throws -> T {
+    private func guarded<T>(_ body: @escaping () throws -> T) throws -> T {
         guard let outcome: Result<T, Error> = callGuard.guarded(pluginID, { Result { try body() } }) else {
             throw PCXError.crashed
         }
