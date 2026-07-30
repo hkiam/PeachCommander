@@ -17,23 +17,28 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-read -r SHORT BUILD <<EOF
-$(python3 - <<'PY'
-import sys, yaml
-with open("project.yml") as fh:
-    doc = yaml.safe_load(fh)
-try:
-    props = doc["targets"]["PCApp"]["info"]["properties"]
-except (KeyError, TypeError):
-    sys.exit("error: could not read targets.PCApp.info.properties from project.yml")
-short = props.get("CFBundleShortVersionString")
-build = props.get("CFBundleVersion")
-if not short:
-    sys.exit("error: CFBundleShortVersionString missing from project.yml")
-print(short, build or "?")
-PY
-)
-EOF
+# Read the two keys straight out of project.yml. Deliberately no PyYAML: this gate
+# runs before any dependency is installed, and the runner's system python3 has no
+# yaml module — importing it made the check fail while *reporting* an empty version,
+# i.e. blaming the tag for a missing module.
+version_key() {  # version_key <key>
+  sed -n "s/^[[:space:]]*$1:[[:space:]]*\"\{0,1\}\([^\"]*\)\"\{0,1\}[[:space:]]*$/\1/p" project.yml
+}
+
+SHORT="$(version_key CFBundleShortVersionString)"
+BUILD="$(version_key CFBundleVersion)"
+
+# Never fall through with an empty value — that produced a misleading mismatch.
+if [ -z "$SHORT" ]; then
+  echo "error: could not read CFBundleShortVersionString from project.yml" >&2
+  exit 1
+fi
+if [ "$(printf '%s\n' "$SHORT" | wc -l | tr -d ' ')" != "1" ]; then
+  echo "error: CFBundleShortVersionString is ambiguous in project.yml:" >&2
+  printf '  %s\n' $SHORT >&2
+  exit 1
+fi
+[ -n "$BUILD" ] || BUILD="?"
 
 TAG="${1:-${GITHUB_REF_NAME:-}}"
 
