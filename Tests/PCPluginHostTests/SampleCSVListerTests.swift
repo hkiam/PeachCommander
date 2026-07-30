@@ -23,11 +23,45 @@ final class SampleCSVListerTests: XCTestCase {
             .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
     }
 
+    // MARK: - The plugin dylib, built once for the whole class
+    //
+    // Deliberately NOT per test. Each test used to compile the plugin into its own
+    // UUID directory and dlopen it, leaving one resident copy per test method:
+    // PluginLibrary only dlcloses plugins that export PcSafeToUnload, and the sample
+    // plugins do not. With four tests the process ended up with four copies of the
+    // same Swift module, and the ObjC runtime said so every single run:
+    //
+    //   objc[…]: Class _TtC15SampleCSVLister13CSVListerView is implemented in both
+    //   …/samplecsv-A/libsamplecsv.dylib and …/samplecsv-B/libsamplecsv.dylib.
+    //   This may cause spurious casting failures and mysterious crashes.
+    //
+    // Since these tests assert that the handle really is an NSView, "spurious casting
+    // failures" is precisely the failure mode they would hit. Building once removes
+    // the duplicate entirely; the per-test `dir` still isolates the CSV fixtures.
+    private static var libDir: URL?
+    private static var cachedLib: PluginLibrary?
+    private static var buildAttempted = false
+
+    override class func tearDown() {
+        if let d = libDir { try? FileManager.default.removeItem(at: d) }
+        super.tearDown()
+    }
+
+    /// The shared library, or nil when swiftc is unavailable (the tests then skip).
     private func buildPlugin() throws -> PluginLibrary? {
+        if Self.buildAttempted { return Self.cachedLib }
+        Self.buildAttempted = true
+
         let swiftc = "/usr/bin/swiftc"
         guard FileManager.default.isExecutableFile(atPath: swiftc) else { return nil }
+
+        let libDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("samplecsv-lib-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: libDir, withIntermediateDirectories: true)
+        Self.libDir = libDir
+
         let src = repoRoot.appendingPathComponent("Plugins/SampleCSVLister/sample_csv_lister.swift")
-        let out = dir.appendingPathComponent("libsamplecsv.dylib")
+        let out = libDir.appendingPathComponent("libsamplecsv.dylib")
         #if arch(arm64)
         let target = "arm64-apple-macos13.0"
         #else
@@ -47,6 +81,7 @@ final class SampleCSVListerTests: XCTestCase {
             path: out.path, required: PLXSymbols.required, optional: PLXSymbols.optional) else {
             XCTFail("open failed"); return nil
         }
+        Self.cachedLib = lib
         return lib
     }
 
