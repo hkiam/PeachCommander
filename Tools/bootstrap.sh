@@ -38,6 +38,16 @@ else
     echo "xcodegen already installed"
 fi
 
+# libssh2 — SFTP (F-214). Not optional for building: CSSH2 resolves <libssh2.h>
+# from the keg and no header is vendored, so without it the build fails much later
+# with confusing errors. ci.yml installs it explicitly for the same reason.
+if ! brew --prefix libssh2 >/dev/null 2>&1 || [ ! -d "$(brew --prefix libssh2)/include" ]; then
+    echo "libssh2 not found, installing via Homebrew..."
+    brew install libssh2
+else
+    echo "libssh2 already installed"
+fi
+
 # Generate Xcode project
 echo "Generating Xcode project..."
 cd "$(dirname "$0")/.."
