@@ -1,0 +1,16 @@
+# Keep the two forms above as the only issue types, so reports arrive with the
+# macOS version and architecture already filled in.
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/hkiam/PeachCommander/security/advisories/new
+    about: Report privately instead of opening a public issue.
+  - name: Documentation
+    url: https://hkiam.github.io/PeachCommander/
+    about: Installation, first steps, tutorials and the plugin SDK reference.
+  # The docs page, not the README anchor: GitHub's slug for "## ⚠️ Known limitations"
+  # keeps the emoji's invisible variation selector, so the fragment is unlinkable in
+  # practice.
+  - name: Known limitations
+    url: https://hkiam.github.io/PeachCommander/known-limitations.html
+    about: Check whether the behaviour is already a documented beta limitation.

@@ -1,0 +1,123 @@
+name: Bug report
+description: Something behaves incorrectly, crashes, or does not work as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Peach Commander is in beta, so rough edges are
+        expected — reporting them is exactly what moves it forward.
+
+        **Found something security-relevant?** Please don't file it here — use
+        [private reporting](https://github.com/hkiam/PeachCommander/security/advisories/new)
+        instead.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you saw, and what you expected instead.
+      placeholder: |
+        Copying a folder onto an SFTP server stops at ~90% and the transfer manager
+        keeps showing "in progress". I expected it to finish or report an error.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: >
+        Numbered steps someone else can follow. If it only happens with particular
+        files (very large, unusual names, specific archive formats), say so — that is
+        often the whole cause.
+      placeholder: |
+        1. Point the left panel at ~/Downloads
+        2. Connect the right panel to an SFTP server
+        3. Select a folder with ~5000 files, press F5
+        4. Watch the transfer manager
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Peach Commander version
+      description: "Peach Commander ▸ About, or the version of the DMG you installed."
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      description: " ▸ About This Mac."
+      placeholder: "macOS 15.6 Sequoia"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: arch
+    attributes:
+      label: Which Mac?
+      description: >
+        A real share of issues affect only one architecture — the release is a
+        universal binary and both slices are shipped, so this genuinely narrows it down.
+      options:
+        - Apple Silicon (M-series)
+        - Intel
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of the app?
+      options:
+        - Panels / navigation / tabs
+        - File operations (copy, move, delete, transfer manager)
+        - Archives (zip, 7z, tar, rar)
+        - Network (FTP, FTPS, SFTP, WebDAV, downloader)
+        - Search / find files
+        - Viewer (F3) or editor (F4)
+        - Power tools (multi-rename, sync, compare, duplicates, checksums)
+        - Plugins
+        - AI assistant
+        - Settings / keyboard / button bar
+        - Installation or first launch
+        - Something else
+    validations:
+      required: true
+
+  - type: input
+    id: plugin
+    attributes:
+      label: Plugin involved?
+      description: >
+        If it happens inside a plugin (Git, Archive, WebDAV, Disk Map, …) name it.
+        Leave empty if not applicable or unknown.
+      placeholder: "Git"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Crash report or log output
+      description: >
+        For a crash, the report from Console ▸ Crash Reports helps a lot. Crash reports
+        stay local — nothing is uploaded automatically, so it has to be pasted here.
+        Please remove anything private first; paths can reveal more than you expect.
+      render: text
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues for the same problem.
+          required: true
+        - label: >
+            I checked Help ▸ Known limitations in the app (or the README) in case this
+            is already documented.
+          required: false

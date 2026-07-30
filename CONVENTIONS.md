@@ -2,7 +2,11 @@
 
 ## Language & toolchain
 
-- Swift 5.10+, macOS 13.0 deployment target (Ventura), Xcode 16+.
+- **Xcode 26+ required to build** (`Tools/bootstrap.sh` enforces it): the sources use
+  Swift 6.3 syntax and macOS 26 SDK APIs behind `@available(macOS 26)`. Swift 6.0
+  rejects the existentials in PCVFS, so Xcode 16 cannot compile the project.
+- Deployment target stays **macOS 13.0** (Ventura) — that is what the app *runs* on,
+  and releases ship a universal arm64 + x86_64 binary.
 - UI: **AppKit** (NSWindow/NSView/NSTableView). SwiftUI is allowed ONLY for simple
   auxiliary dialogs (About, small sheets) — never for panels, Lister, or anything
   performance-relevant. See ADR-001.

@@ -1,0 +1,73 @@
+name: Feature request
+description: Something missing, or a Total Commander habit that has no equivalent yet.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        "The thing I miss from Total Commander is…" is a perfectly good issue — that
+        kind of report is what the app was built from in the first place.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: >
+        Describe the task, not only the feature. Knowing the workflow often reveals a
+        better fit than the mechanism you had in mind — and sometimes something that
+        already exists under a different name.
+      placeholder: |
+        I regularly compare a local build folder against a release on a server and
+        only want to push the files that actually differ.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like it to do?
+      placeholder: >
+        Synchronize directories should offer a "newer only, ignore timestamps within
+        2 s" mode, because SFTP servers round mtimes.
+    validations:
+      required: true
+
+  - type: input
+    id: prior-art
+    attributes:
+      label: How does another tool solve it?
+      description: >
+        Total Commander, Finder, Forklift, a command-line tool — a concrete reference
+        (menu path, option name, screenshot) is worth a lot.
+      placeholder: "Total Commander: Commands ▸ Synchronize dirs, 'ignore date' checkbox"
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of the app?
+      options:
+        - Panels / navigation / tabs
+        - File operations
+        - Archives
+        - Network (FTP, FTPS, SFTP, WebDAV)
+        - Search / find files
+        - Viewer or editor
+        - Power tools (multi-rename, sync, compare, duplicates, checksums)
+        - Plugins / SDK
+        - AI assistant
+        - Settings / keyboard / button bar
+        - Something else
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues for the same request.
+          required: true
+        - label: >
+            I checked whether it already exists — the command browser (roughly 150 named
+            commands) is searchable, and the docs site has a search box.
+          required: false

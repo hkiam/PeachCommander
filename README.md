@@ -271,9 +271,12 @@ Full list: **Help ▸ Known limitations** inside the app.
 
 Pull requests, feature requests, bug reports, and discussions are all welcome — this is exactly the stage where feedback shapes the app.
 
-- 🐛 **Bugs:** open an issue with steps to reproduce and your macOS version.
+Start with [`CONTRIBUTING.md`](CONTRIBUTING.md): how to build (Xcode 26+), run the tests, and the docs gates CI enforces.
+
+- 🐛 **Bugs:** [open an issue](https://github.com/hkiam/PeachCommander/issues/new/choose) — the form asks for your macOS version and whether you're on Apple Silicon or Intel, which narrows a surprising number of problems down immediately.
 - 💡 **Ideas:** feature requests and "the thing I miss from Total Commander is…" are gold.
-- 🔧 **Code:** see [`CONVENTIONS.md`](CONVENTIONS.md) and [`WORKFLOW.md`](WORKFLOW.md) for project layout, code style, and how a work unit flows.
+- 🔒 **Security:** please report privately — see [`SECURITY.md`](SECURITY.md).
+- 🔧 **Code:** [`CONVENTIONS.md`](CONVENTIONS.md) covers project layout and code style. (`WORKFLOW.md` is an operating protocol for AI-assisted sessions, not something a human contributor needs to follow.)
 
 ## 📄 Open source & credits
 
