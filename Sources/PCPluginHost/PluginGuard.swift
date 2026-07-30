@@ -14,6 +14,17 @@ import Foundation
 import CPluginGuard
 import PCFoundation
 
+/// Heap box holding the work closure, so the C trampoline can invoke it through a
+/// raw `void *`. Deliberately a class (not a stack value + `withoutActuallyEscaping`):
+/// `siglongjmp` unwinds out of the closure without running the calling frame's ARC
+/// cleanup, which leaves a retain on the closure context behind. That tripped
+/// `withoutActuallyEscaping`'s escape check and trapped the process — turning the
+/// crash this guard exists to survive into a hard abort (F-230).
+private final class GuardThunk {
+    let run: () -> Void
+    init(_ run: @escaping () -> Void) { self.run = run }
+}
+
 public final class PluginGuard: @unchecked Sendable {
     /// Shared guard used by the plugin adapters.
     public static let shared = PluginGuard()
@@ -43,24 +54,25 @@ public final class PluginGuard: @unchecked Sendable {
     /// Run `work` (a plugin call) under the fatal-signal guard. Returns `work`'s
     /// result, or nil — quarantining `id` — if the plugin crashed or is already
     /// quarantined (F-230).
-    public func guarded<T>(_ id: String, _ work: () -> T) -> T? {
+    public func guarded<T>(_ id: String, _ work: @escaping () -> T) -> T? {
         if isQuarantined(id) { return nil }
         var result: T?
-        // A no-argument closure the C trampoline can invoke through a raw pointer.
-        // pc_guard_call runs it synchronously, so it never truly escapes.
-        let signo: Int32 = withoutActuallyEscaping({ result = work() }) { thunk in
-            var thunk = thunk
-            return withUnsafeMutablePointer(to: &thunk) { ptr in
-                pc_guard_call({ raw in
-                    raw!.assumingMemoryBound(to: (() -> Void).self).pointee()
-                }, UnsafeMutableRawPointer(ptr))
-            }
-        }
+        // +1 retained by hand: on the crash path the release below is never reached,
+        // so the box is intentionally leaked rather than freed from a frame that
+        // siglongjmp already abandoned.
+        let raw = Unmanaged.passRetained(GuardThunk { result = work() }).toOpaque()
+        let signo = pc_guard_call({ ptr in
+            Unmanaged<GuardThunk>.fromOpaque(ptr!).takeUnretainedValue().run()
+        }, raw)
         if signo != 0 {
+            // Leak `raw`: the guarded call faulted mid-flight, so its ARC state is
+            // not provably consistent and releasing could double-free. One box per
+            // crashed plugin, which is then quarantined for the rest of the session.
             quarantine(id)
             PCFoundationLogger.logger.error("Plugin \(id, privacy: .public) crashed (signal \(signo)); quarantined")
             return nil
         }
+        Unmanaged<GuardThunk>.fromOpaque(raw).release()
         return result
     }
 }
