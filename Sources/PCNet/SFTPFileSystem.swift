@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SFTPFileSystem.swift - VirtualFileSystem adapter over a libssh2 SFTP session
 // (F-214). Mirrors FTPFileSystem so a panel browses/transfers over SFTP exactly
 // like FTP. Reads/writes are buffered in memory for v1.

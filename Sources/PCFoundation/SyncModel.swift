@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SyncModel - "Synchronize Directories" classification model
 // A pure, deterministic decision function: given already-walked metadata for
 // matching relative paths on a left and right tree, decide the sync action

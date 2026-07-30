@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # codesign-app.sh — sign a built PeachCommander.app for Developer ID distribution.
 #
 # Usage: codesign-app.sh <path-to-.app>

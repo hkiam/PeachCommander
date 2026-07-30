@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // RenamePresetStore.swift - Persists named multi-rename presets as JSON (F-176).
 //
 // Mirrors the search-template store: a preset is just a name plus the window's

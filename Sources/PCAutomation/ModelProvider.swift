@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ModelProvider.swift - the LLM abstraction the agent talks to.
 //
 // A provider turns a conversation + the available tools into the model's next move:

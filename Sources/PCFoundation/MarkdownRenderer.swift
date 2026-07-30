@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MarkdownRenderer.swift - Minimal CommonMark-ish Markdown -> HTML converter.
 //
 // Used by the F3 lister to render .md files. Covers the common constructs found

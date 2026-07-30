@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DownloadURLWindowController.swift - wget-style "Download from URL" dialog (F-330).
 //
 // Collects one or more URLs (one per line) and, for a single URL, a cleaned,

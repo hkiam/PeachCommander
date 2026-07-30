@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // systemmonitor.swift — compact live system-monitor chips in the window titlebar,
 // each opening a native NSPopover with details. External "ptx" plugin: it
 // contributes a view to the host "titlebar" container (Info.plist) and does all

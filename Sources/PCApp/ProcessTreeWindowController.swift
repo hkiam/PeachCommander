@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ProcessTreeWindowController.swift - Process hierarchy window for a TaskManager-
 // like mount (any PFX content mount exposing "pid" + "ppid" fields).
 //

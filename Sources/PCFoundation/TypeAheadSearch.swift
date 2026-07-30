@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TypeAheadSearch.swift - Cursor "type to jump" matching in a panel (TODOS #64).
 //
 // Given the visible names, a typed query and a start index, find the next name that

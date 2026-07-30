@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AssociationsPageView.swift - Options "Edit/View" page: a grid editor for the
 // per-extension viewer/editor associations (F-273). Columns: Extension | Open in
 // viewer | Open in editor. A blank app cell means "use the built-in". Every edit

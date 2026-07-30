@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // UUCodec.swift - uuencode / xxencode encode+decode for the Encode/Decode
 // feature (SPEC-016 §5, F-096). Pure Foundation, no UI.
 //

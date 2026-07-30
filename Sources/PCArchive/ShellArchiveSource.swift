@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ShellArchiveSource.swift - libarchive-backed archive browsing via bsdtar (F-130).
 //
 // ArchiveFS reads zip and tar natively; this fallback backend hands the remaining

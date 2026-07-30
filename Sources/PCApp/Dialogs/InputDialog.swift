@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // InputDialog.swift - Generic single-line text input dialog (I04)
 //
 // A reusable modal prompt used by file operations (rename, mkdir, etc.) that

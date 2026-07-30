@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SkillCatalog.swift - named AI actions ("Mit KI…") for the context menu.
 //
 // A skill is just a titled prompt template targeting the file(s) under the cursor.

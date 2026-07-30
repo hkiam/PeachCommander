@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-all-plugins.sh — build every shipping plugin bundle into a target directory.
 #
 # Default target is the user plugins dir; make-dmg.sh passes the app bundle's

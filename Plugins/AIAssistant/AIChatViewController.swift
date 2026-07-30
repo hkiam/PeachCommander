@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AIChatViewController.swift - the AI assistant, as an embeddable view.
 //
 // The chat lives in a docked side panel (right column of the main window), not a

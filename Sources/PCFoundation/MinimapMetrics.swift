@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MinimapMetrics.swift - Per-line indent/length metrics for the editor/viewer
 // minimap. Pure text scanning, so it is unit-tested here; MinimapView (PCApp) draws
 // a block per line from these metrics.

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PCCommands - Command Registry for Peach Commander
 // This module provides the command registry with TC-compatible command names.
 

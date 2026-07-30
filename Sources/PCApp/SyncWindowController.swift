@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SyncWindowController.swift - Synchronize Directories (I12 T05/T06, F-192)
 //
 // Dialog: two directory lines, a file mask, the comparison options (with

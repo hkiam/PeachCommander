@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ArchiveFSTests.swift - Exercises ArchiveFS as a VirtualFileSystem, backed
 // by zips built on the fly with the system `/usr/bin/zip` tool.
 

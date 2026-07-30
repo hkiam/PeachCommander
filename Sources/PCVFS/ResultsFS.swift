@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ResultsFS.swift - A flat, read-only `VirtualFileSystem` over a fixed list
 // of real local paths (the "Feed to Listbox" search-results target).
 //

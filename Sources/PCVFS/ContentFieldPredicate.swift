@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ContentFieldPredicate.swift - Search by content-plugin field (SPEC-012 §5, F-157).
 //
 // A single "field OP value" condition (e.g. `fileinfo.width > 1000`) plus a helper

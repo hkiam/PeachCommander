@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ParamExpander - Total-Commander %-parameter expansion engine
 // Expands the %P/%N/%T/%M/%S/%L/%F/%D/%W/%% parameter tokens Total Commander
 // recognizes in toolbar button commands and user (Start-menu) commands, given

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-sample-content.sh — assemble the SampleContentPlugin.pdxplugin bundle (I16 T04).
 # Usage: Tools/build-sample-content.sh [output-dir]   (default: build/plugins)
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // KeymapMenu.swift - Apply the active keymap to the main menu (I13 T06).
 //
 // The keymap is the single source for shortcut display: menu items whose command

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FTPProtocolLog.swift - Raw FTP protocol log + logging transport decorator (F-217).
 //
 // Captures every control command sent and reply received so the app can show a

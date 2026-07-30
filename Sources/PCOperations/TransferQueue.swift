@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TransferQueue.swift - Runs a file operation and emits a coalesced event stream
 // (SPEC-004 §1). Cancellation/pause go through the shared OperationControl.
 

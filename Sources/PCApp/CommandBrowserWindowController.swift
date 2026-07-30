@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // CommandBrowserWindowController.swift - Searchable command list (I13 T01, F-255).
 //
 // Lists every registered command (name, category, help) with a live search filter.

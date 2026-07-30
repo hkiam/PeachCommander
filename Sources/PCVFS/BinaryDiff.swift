@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // BinaryDiff.swift - Byte-level comparison of two files for the hex compare view.
 //
 // Streams both inputs in chunks (so multi-GB files never load into memory), counts

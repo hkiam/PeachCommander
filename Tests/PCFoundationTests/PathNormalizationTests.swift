@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PathNormalizationTests.swift - Unicode NFC/NFD name handling (F-100).
 
 import XCTest

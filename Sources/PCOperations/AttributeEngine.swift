@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AttributeEngine.swift - Apply permission/date changes over the VFS (SPEC-016 §2).
 //
 // Sets POSIX permissions and/or the modification date on a set of paths, optionally

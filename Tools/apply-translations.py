@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """apply-translations.py - Merge translation dictionaries into the String Catalog.
 
 Reads Tools/translations/<lang>.json ({ english_key: translated_value }) for each

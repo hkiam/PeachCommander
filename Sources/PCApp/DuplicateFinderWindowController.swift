@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DuplicateFinderWindowController.swift - Grouped results UI for the duplicate
 // finder (I17-T05). The engine (DuplicateFinder) returns byte-identical groups;
 // this window shows them as a tree (group → its copies), lets the user tick which

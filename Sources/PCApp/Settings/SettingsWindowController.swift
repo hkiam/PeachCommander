@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SettingsWindowController.swift - Settings (Options) dialog for I05
 //
 // A "dumb" synchronous view: it is constructed with a snapshot of the

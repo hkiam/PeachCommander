@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /*
  * pcx.h — Peach Commander packer plugins (PCX), a WCX port (SPEC-012 §2, F-231).
  *

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PanelCells.swift - Reusable cell and row views for the panel list
 //
 // DirectoryCellView renders the Name column (icon + text) and drives the async

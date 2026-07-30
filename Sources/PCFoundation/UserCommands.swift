@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // UserCommands.swift - User command model (Total Commander's usercmd.ini analog).
 //
 // usercmd.ini holds one INI section per user-defined command. The section name

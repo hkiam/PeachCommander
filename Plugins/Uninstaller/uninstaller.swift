@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // uninstaller.swift — "Uninstall Application" as an external contribution plugin.
 //
 // Self-contained: brings its own residual-file scan and review window, and talks

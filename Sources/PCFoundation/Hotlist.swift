@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Hotlist.swift - Directory hotlist model (SPEC-003 §7, I06-T03).
 //
 // A flat, ordered list of title→path bookmarks persisted in hotlist.ini under a

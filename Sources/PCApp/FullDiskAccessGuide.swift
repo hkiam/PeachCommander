@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FullDiskAccessGuide.swift - Full Disk Access detection & onboarding (F-299)
 //
 // A file manager needs to reach TCC-protected locations (Mail, Messages, other

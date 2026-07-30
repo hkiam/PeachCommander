@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // CommandLineView.swift - Bottom command line (SPEC-001 §5, I06-T05).
 //
 // A cwd prompt + editable field. Enter executes (via onExecute), Tab completes the

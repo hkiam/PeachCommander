@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SplitCombineEngine.swift - Split a file into parts / combine them back (SPEC-016 §3).
 //
 // Split streams the source through the VFS into fixed-size .001/.002/… parts and

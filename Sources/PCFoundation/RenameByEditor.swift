@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // RenameByEditor.swift - Edit selected names in a text editor (F-174).
 //
 // The multi-rename "edit in editor" round-trip: export one `old<TAB>new` line per

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-sample-packer.sh — assemble the SamplePacker.pcxplugin bundle (I14 T04).
 # Usage: Tools/build-sample-packer.sh [output-dir]   (default: build/plugins)
 

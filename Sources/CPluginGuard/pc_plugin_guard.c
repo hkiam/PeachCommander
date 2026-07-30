@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // pc_plugin_guard.c - Fatal-signal guard for plugin C calls (F-230).
 
 #include "pc_plugin_guard.h"

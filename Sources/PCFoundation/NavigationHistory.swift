@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // NavigationHistory.swift - Per-panel back/forward path history (SPEC-003 §7).
 //
 // A bounded ring (default 50) with a current index. Pushing a new path truncates

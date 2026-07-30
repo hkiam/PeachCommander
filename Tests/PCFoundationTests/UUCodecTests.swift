@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // UUCodecTests.swift - Round-trip + cross-check for uuencode/xxencode (F-096).
 
 import XCTest

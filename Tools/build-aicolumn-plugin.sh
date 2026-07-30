@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # Build AIColumn.pdxplugin — an on-device ML panel column (dominant language via
 # NaturalLanguage). A content-field (PDX) plugin; no host frameworks needed.
 set -euo pipefail

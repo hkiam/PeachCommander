@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """check-docs.py — documentation quality gate + coverage matrix.
 
 Validates the SSOT docs and emits docs/generated/coverage-report.md:

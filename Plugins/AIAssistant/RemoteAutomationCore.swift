@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // RemoteAutomationCore.swift — an AutomationCore backed by the host's contrib C-ABI.
 //
 // The AI assistant runs inside a removable plugin bundle; it does NOT own the file

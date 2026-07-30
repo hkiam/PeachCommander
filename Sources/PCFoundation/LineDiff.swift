@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // LineDiff - Myers O(ND) line diff engine for side-by-side comparison
 // A pure, deterministic diff engine used by the file comparison viewer.
 // Depends on Foundation only (no AppKit / no Foundation-UI).

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # run-test.sh - Drive one Peach Commander test run inside a fresh macOS VM.
 #
 # Each run starts from a pristine clone of the golden VM (copy-on-write, seconds),

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // LocalFS.swift - The local-disk VirtualFileSystem (SPEC-006 §3).
 //
 // This is the reference VFS implementation and the first consumer of the

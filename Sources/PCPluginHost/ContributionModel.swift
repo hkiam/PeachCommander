@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ContributionModel.swift - Typed model + parser for a plugin's declarative
 // contributions (SPEC-013 §"Manifest: PCContributions").
 //

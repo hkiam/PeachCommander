@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ContributionRegistry.swift - Single source of truth for plugin UI contributions.
 //
 // Aggregates the declared contributions of every ENABLED plugin (parsed from

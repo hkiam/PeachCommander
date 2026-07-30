@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DownloadNameTests.swift - filename suggestion + sanitization for downloads (F-330).
 
 import XCTest

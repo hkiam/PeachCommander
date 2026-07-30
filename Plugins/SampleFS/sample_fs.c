@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /*
  * sample_fs.c - Minimal PFX (file-system) sample plugin over an in-memory tree.
  *

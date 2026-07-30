@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // NeonEditorHighlighter.swift - Incremental tree-sitter highlighting for the
 // editor's live NSTextView, driven by Neon. Neon owns the parse tree and
 // re-highlights only the affected ranges as the user types (scaling to large

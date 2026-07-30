@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ZipWriter.swift - A pure-Swift, dependency-free ZIP writer producing the
 // classic (non-zip64) local-file-header / central-directory / EOCD layout
 // that `ZipReader` in this module understands (I09 counterpart).

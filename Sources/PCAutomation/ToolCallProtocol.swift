@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ToolCallProtocol.swift - a text convention that makes any text model tool-capable.
 //
 // On-device / small models (and plain cloud text endpoints) don't all expose native

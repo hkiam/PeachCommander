@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DirectorySizeCalculatorTests.swift - Unit tests for DirectorySizeCalculator
 
 import XCTest

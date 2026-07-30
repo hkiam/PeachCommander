@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ShellOutputWindow.swift - Shows captured output of a command-line run (I06-T05).
 
 import AppKit

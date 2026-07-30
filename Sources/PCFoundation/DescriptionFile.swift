@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DescriptionFile.swift - descript.ion comment file (SPEC-016 §7).
 //
 // Total Commander stores per-file comments in a "descript.ion" file in each

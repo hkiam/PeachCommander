@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ContribHostBridge.swift - App-side bridge for the contribution behavior ABI.
 //
 // Builds the unified PcHostServices C-callback table (Plugins/SDK/contrib.h) from

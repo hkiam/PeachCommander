@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SFTPSupportTests.swift - Proves libssh2 links + loads at runtime (F-214).
 
 import XCTest

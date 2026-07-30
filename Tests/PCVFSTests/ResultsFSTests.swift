@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ResultsFSTests.swift - Tests for `ResultsFS`, the flat read-only VFS over
 // a fixed list of real local paths used to feed search results into a
 // panel/listbox.

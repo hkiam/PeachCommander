@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MkDirEngine.swift - Create directories: nested `a/b/c` and multi `d1|d2`
 // (SPEC-004 §8).
 

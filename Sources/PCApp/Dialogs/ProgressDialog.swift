@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ProgressDialog.swift - Live progress window for file operations (I04)
 //
 // Shown (non-app-modal) while a TransferQueue runs, so an interactive

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FileAssociationsTests.swift - Per-extension viewer/editor associations (F-273).
 
 import XCTest

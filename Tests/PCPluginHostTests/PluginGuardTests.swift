@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginGuardTests.swift - in-process crash guard + quarantine (F-230).
 //
 // Builds a tiny C dylib exporting a crashing function and a normal one, then

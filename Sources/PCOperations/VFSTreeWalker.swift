@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // VFSTreeWalker.swift - Recursively collect files in a VFS subtree.
 //
 // Shared by the duplicate finder and the branch view (SPEC-016 §-, SPEC-008 §4).

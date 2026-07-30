@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SampleContentPluginTests.swift - End-to-end run through the real SampleContentPlugin
 // C plugin (Plugins/SampleContentPlugin/sample_content.c) via the PDX adapter.
 

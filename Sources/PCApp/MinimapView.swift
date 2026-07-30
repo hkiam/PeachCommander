@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MinimapView.swift - A scaled overview of the whole file next to the editor/viewer:
 // each line is drawn as a small block (indentation + length) so the code's shape is
 // recognizable; a viewport rectangle shows the visible region; click/drag scrolls.

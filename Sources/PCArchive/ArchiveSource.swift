@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ArchiveSource.swift - Format-agnostic archive backend for ArchiveFS.
 //
 // ArchiveFS builds one in-memory tree model over any backend that can enumerate

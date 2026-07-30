@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FSEventsWatcher.swift - Directory change watcher using polling
 //
 // This module provides a directory change watcher that uses periodic polling

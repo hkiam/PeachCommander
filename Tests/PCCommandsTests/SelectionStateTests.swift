@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SelectionStateTests.swift - Unit tests for SelectionState
 //
 // Exhaustive tests for every row of SPEC-003 §2/§4 tables, encoding correct

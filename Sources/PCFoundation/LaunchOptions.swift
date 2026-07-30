@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // LaunchOptions.swift - Command-line launch parameters (TC-inspired subset).
 //
 // Sensible, macOS-adapted parameters (cf. Total Commander's command-line

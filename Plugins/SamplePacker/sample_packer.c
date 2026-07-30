@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /*
  * sample_packer.c — a minimal Peach Commander PCX packer plugin (SPEC-012 §7, T04).
  *

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ZipReader.swift - A pure-Swift, read-only ZIP central-directory parser and
 // DEFLATE/store extractor (I09).
 //

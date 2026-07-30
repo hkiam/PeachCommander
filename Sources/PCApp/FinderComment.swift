@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FinderComment.swift - Read/write the macOS Finder comment (F-023).
 //
 // The Finder comment is stored in the `com.apple.metadata:kMDItemFinderComment`

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MultiRenameEngine - Total-Commander-style multi-rename tool engine.
 // A pure Foundation implementation of the placeholder/transform "mask"
 // language used to batch-rename files: mask token expansion, search &

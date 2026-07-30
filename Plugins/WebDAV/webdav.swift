@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // webdav.swift — WebDAV as an external PFX file-system plugin.
 //
 // Implements the PFX "connect" facet: an interactive connect (prompt for URL +

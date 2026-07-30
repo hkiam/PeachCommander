@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MultiRenameWindowController.swift - Multi-Rename dialog (Ctrl+M)
 //
 // A dumb view: reports control values via callbacks and draws whatever

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginConfig.swift - Plugin enable/disable state + extension associations (I14 T02/T03).
 //
 // The persisted `plugins.ini` model (pure, testable, no IO):

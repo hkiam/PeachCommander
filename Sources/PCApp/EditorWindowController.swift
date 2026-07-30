@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // EditorWindowController.swift - Built-in text/code editor (TODOS #25).
 //
 // An NSTextView-based editor: selection, undo, copy/paste and the system find bar

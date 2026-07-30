@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // NWFTPTransport.swift - Live FTP transport over Network.framework (SPEC-011 §1).
 //
 // Implements the FTPControlTransport / FTPDataTransport seam with real TCP

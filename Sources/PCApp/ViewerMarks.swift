@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ViewerMarks.swift - "Mark All" occurrence highlighting for the byte-oriented
 // Lister's own custom-drawn text/code views (TextListerView, CodeListerView).
 // Those views are NOT NSTextView-backed, so they can't reuse TextMarkController;

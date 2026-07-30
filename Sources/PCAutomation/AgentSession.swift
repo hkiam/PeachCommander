@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AgentSession.swift - the agent orchestration loop.
 //
 // One conversation with a ModelProvider that drives the file manager through the

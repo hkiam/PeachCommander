@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PCXArchiveTests.swift - PCX adapter driven against a clang-built C fake plugin.
 //
 // Compiles a tiny PCX plugin (implementing the required C ABI over pcx.h) at

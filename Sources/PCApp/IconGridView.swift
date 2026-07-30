@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // IconGridView.swift - Custom-drawn icon/thumbnail grid for the panel (TODOS #58).
 //
 // A self-contained grid view (consistent with the app's other custom views:

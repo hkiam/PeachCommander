@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // HTTPDownloaderTests.swift - HTTP download + resume against a local server (F-330).
 //
 // Self-contained: starts a `python3 -m http.server` (Range-capable since 3.7) on a

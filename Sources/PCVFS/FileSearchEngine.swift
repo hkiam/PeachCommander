@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FileSearchEngine.swift - Recursive file search over a `VirtualFileSystem`,
 // streaming matches as they are found (SPEC "Find Files" feature).
 //

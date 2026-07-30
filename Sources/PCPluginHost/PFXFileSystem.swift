@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PFXFileSystem.swift - VirtualFileSystem backed by a PFX (file-system) plugin.
 //
 // Adapts a loaded PFX plugin's WFX-style, whole-file C ABI to the host's async

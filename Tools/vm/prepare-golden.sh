@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # prepare-golden.sh - One-time setup of the "golden" macOS test VM.
 #
 # The cirruslabs macos-tahoe-base image already ships with SSH enabled

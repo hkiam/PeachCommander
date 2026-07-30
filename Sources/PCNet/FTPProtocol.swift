@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FTPProtocol.swift - Pure parsing of FTP control-channel replies (SPEC-011 §3).
 //
 // The tricky, error-prone parts of an FTP client are reply framing (single vs.

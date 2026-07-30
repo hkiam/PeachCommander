@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # Build AIAssistant.ptxplugin — the removable AI assistant plugin. Links the host's
 # PCAutomation.framework (the AI brain: AgentSession, providers, native tool-calling);
 # the file-manager access goes through the contrib C-ABI (RemoteAutomationCore).

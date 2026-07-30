@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MemoryStore.swift — a tiny long-term memory for the assistant (KI-04).
 //
 // The chat's sessions persist a conversation; this is cross-session knowledge the

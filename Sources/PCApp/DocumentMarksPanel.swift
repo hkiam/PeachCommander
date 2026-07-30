@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DocumentMarksPanel.swift - Composition object that owns the docked marks
 // panel and the horizontal split with the content view, shared by the editor
 // and the viewer (previously each carried an identical copy of this wiring,

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PanelDateFormatter.swift - Configurable Date column formatting (F-031).
 //
 // The file panel's Date column uses a user-configurable Unicode date pattern

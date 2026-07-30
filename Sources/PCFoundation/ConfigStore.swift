@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ConfigStore.swift - Thread-safe, comment-preserving config storage.
 //
 // Wraps an INIDocument behind an actor: typed accessors, per-change

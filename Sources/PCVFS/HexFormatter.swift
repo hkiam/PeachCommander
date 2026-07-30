@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // HexFormatter.swift - Hex-dump row rendering for the Lister hex mode
 // (I07). Pure formatting: given a chunk of bytes and its file offset,
 // produces one classic hex-dump line (offset, hex columns, ASCII gutter).

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // RenameValidator.swift - Validate a single new file name for in-place rename (TODOS #40).
 //
 // Pure checks for the Shift+F6 rename dialog: a name must be non-empty, must not be

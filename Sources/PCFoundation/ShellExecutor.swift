@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ShellExecutor - runs shell command lines and handles `cd` specially.
 import Foundation
 

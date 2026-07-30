@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TransferManager.swift - App-wide background transfer queue (TODOS #135).
 //
 // Total-Commander-style background transfer manager: file operations (copy/move/

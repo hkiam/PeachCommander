@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // QuickLookController.swift - Native Quick Look preview panel (TODOS I18, F-290).
 //
 // Shows the shared QLPreviewPanel for the selected (or cursor) local files, the way

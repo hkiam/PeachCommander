@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /*
  * taskmanager.c — TaskManager / Activity Monitor as an external PFX plugin.
  *

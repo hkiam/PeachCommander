@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-sample-lister.sh — assemble the SampleLister.plxplugin bundle (I16 T02).
 # Usage: Tools/build-sample-lister.sh [output-dir]   (default: build/plugins)
 

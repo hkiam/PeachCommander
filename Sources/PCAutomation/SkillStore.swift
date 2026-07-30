@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SkillStore.swift - user-editable "AI ▸" skills.
 //
 // Skills are data (title + prompt template), so users/teams can add their own

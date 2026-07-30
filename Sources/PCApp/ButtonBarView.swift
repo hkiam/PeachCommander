@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ButtonBarView.swift - Toolbar button strip (I13 T04, F-253)
 //
 // Renders a TC .bar as a horizontal strip of icon/text buttons. Clicking a button

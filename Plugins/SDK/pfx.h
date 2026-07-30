@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /*
  * pfx.h — Peach Commander file-system plugins (PFX ↔ Total Commander WFX).
  *

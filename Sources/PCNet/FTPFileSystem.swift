@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FTPFileSystem.swift - VirtualFileSystem adapter over an FTP session (SPEC-011 §1).
 //
 // Bridges the FTP command layer (FTPControlConnection) to the app's VFS so a

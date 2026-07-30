@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // BinaryHeuristic.swift - Decide whether a byte sample looks binary vs text.
 //
 // Shared by the Lister's text/hex auto-mode and the Compare-by-Content auto pick:

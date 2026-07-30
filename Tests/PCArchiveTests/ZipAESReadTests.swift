@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ZipAESReadTests.swift - Reading WinZip AES (AE-2) encrypted zips created by 7z (F-136).
 
 import XCTest

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FileProperties.swift - Pure model + reader for the file Properties dialog (I03-T07)
 //
 // This file is intentionally AppKit-free so it can be unit-tested in isolation

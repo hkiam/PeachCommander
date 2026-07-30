@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // WhenExpression.swift - Small boolean expression language for contribution
 // visibility/enablement (SPEC-013 §"when expression language").
 //

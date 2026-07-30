@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // logconfig.swift — persisted configuration for the Log Viewer plugin.
 //
 // Settings (per-level colours + display options; log formats are added in a later

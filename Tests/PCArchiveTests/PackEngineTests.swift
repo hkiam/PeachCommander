@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PackEngineTests.swift - Round-trips PackEngine across formats, AES passwords,
 // and multi-volume splits, verifying with the system extractors.
 

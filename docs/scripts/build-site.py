@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """build-site.py — build the documentation website(s) with MkDocs Material.
 
 Single-source: the same Markdown that feeds the in-app Help Book renders here into a

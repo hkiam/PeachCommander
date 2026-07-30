@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FileSlice.swift - Random access into a local file via mmap, for the Lister
 // viewer (I07). Supports files up to disk size without reading them fully
 // into memory: the file is memory-mapped once and slices are read directly

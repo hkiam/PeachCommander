@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // treemap.swift — "Disk Map" on-demand disk-usage explorer plugin.
 //
 // The user starts an analysis via the Commands menu (plugin.treemap.analyze) on the

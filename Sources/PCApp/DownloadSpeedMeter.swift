@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DownloadSpeedMeter.swift - smoothed throughput for the download progress UI (F-330).
 
 import Foundation

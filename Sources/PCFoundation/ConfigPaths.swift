@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ConfigPaths.swift - Resolves the on-disk configuration root and well-known
 // file locations within it (see docs/architecture/configuration.md, ADR-007).
 

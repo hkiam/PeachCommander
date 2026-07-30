@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PanelController+Operations.swift - F5/F6/F7/F8 file operations (I04).
 //
 // Presents the target/confirm dialogs, runs a TransferQueue with a live progress

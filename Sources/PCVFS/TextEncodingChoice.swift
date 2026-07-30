@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TextEncodingChoice.swift - The text encodings the Lister lets the user pick.
 //
 // The text viewer auto-detects an encoding by default (EncodingDetector); this is

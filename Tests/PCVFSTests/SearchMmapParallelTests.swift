@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SearchMmapParallelTests.swift - uncapped mmap content search + parallel
 // correctness for FileSearchEngine (F-151).
 

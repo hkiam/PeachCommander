@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """build-helpbook.py — render docs/content/help/*.md into an Apple Help Book.
 
 Single-source: the same Markdown topics that feed the website (see DOCUMENTATION.md)

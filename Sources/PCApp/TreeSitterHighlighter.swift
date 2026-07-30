@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TreeSitterHighlighter.swift - One-shot tree-sitter highlighting for read-only
 // NSTextView content (the viewer's text/code path, and the editor's fallback
 // when Neon isn't driving). Languages come from TreeSitterLanguages; the editor

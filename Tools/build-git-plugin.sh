@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-git-plugin.sh — build Git.pdxplugin (PDX content plugin adding Git Status
 # and Branch columns via the system git). Installs into the app's plugins dir.
 set -euo pipefail

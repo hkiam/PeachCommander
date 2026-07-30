@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // EncodeDecodeEngine.swift - Base64 encode/decode of files over the VFS (SPEC-016 §5).
 //
 // Reads a file through the VFS, transforms it, and writes the result back through

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SearchNotContainingTests.swift - Inverted content search ("NOT containing").
 
 import XCTest

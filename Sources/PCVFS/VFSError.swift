@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // VFSError.swift - Typed errors for the VFS layer (SPEC-006 §1).
 
 import Foundation

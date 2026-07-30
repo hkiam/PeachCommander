@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SamplePackerTests.swift - End-to-end round trip through the real SamplePacker
 // C plugin (Plugins/SamplePacker/sample_packer.c) via the PCX adapter.
 

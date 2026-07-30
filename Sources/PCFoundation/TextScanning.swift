@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TextScanning.swift - Small, language-agnostic text helpers for the editor/viewer:
 // bracket matching and identifier extraction. Pure Foundation, so they are unit-tested
 // here (used by PCApp's editor and viewer text views).

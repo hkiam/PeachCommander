@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // WorkspaceCodecTests.swift - Round-trips the Workspaces tab serialization.
 
 import XCTest

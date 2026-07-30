@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PackEngine.swift - Create archives in multiple formats with optional AES
 // encryption and multi-volume splitting, by driving the system packers
 // (7z / tar / zip / rar). F-132 / F-136 / F-138.

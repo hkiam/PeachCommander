@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Tests for the MCP protocol adapter over the Automation Core (reuses FakeBridge
 // from DefaultAutomationCoreTests). Verifies JSON-RPC framing, tools/list, tools/call,
 // and the gated write -> pc_confirm flow.

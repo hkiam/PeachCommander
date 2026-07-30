@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SelectionSummaryFormatterTests - Unit tests for SelectionSummaryFormatter
 
 import XCTest

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ByteSearch.swift - Parse a hex query and find a byte pattern (hex editor find/replace).
 //
 // Pure helpers: turn "48 65 6C" (or "48656c") into bytes, and locate a pattern in a

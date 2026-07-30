@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PathCompleter - filesystem path completion for a command-line entry field.
 import Foundation
 

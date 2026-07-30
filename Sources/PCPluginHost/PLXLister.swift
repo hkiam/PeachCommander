@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PLXLister.swift - PLX lister plugin adapter (I16 T01).
 //
 // Drives a loaded PLX plugin's C ABI (plx.h via the CPLX module): load a file into

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SearchTemplateTests.swift - Round-trip + query-mapping tests for saved search
 // templates and their JSON store.
 

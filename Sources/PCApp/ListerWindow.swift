@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ListerWindow.swift - File viewer (Lister, F3) — SPEC-005.
 //
 // Text and Hex modes use custom virtual-scrolling views backed by a FileSlice

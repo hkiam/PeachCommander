@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AutomationHostBridge.swift - the minimal host capability surface the Automation
 // Core needs. PCApp conforms to this (it owns the panels, op engine, config and
 // command registry); DefaultAutomationCore drives it. Keeping the bridge in terms

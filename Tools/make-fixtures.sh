@@ -1,4 +1,5 @@
 #!/bin/bash
+# SPDX-License-Identifier: Apache-2.0
 # make-fixtures.sh - Generate test fixtures for performance testing
 #
 # Creates:

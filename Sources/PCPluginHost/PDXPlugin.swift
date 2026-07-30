@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PDXPlugin.swift - PDX content plugin adapter (I16 T03).
 //
 // Drives a loaded PDX plugin's C ABI (pdx.h via the CPDX module): enumerate the

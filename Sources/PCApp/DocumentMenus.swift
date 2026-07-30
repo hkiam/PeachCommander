@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DocumentMenus.swift - One source of truth for the menu taxonomy shared by the
 // text Editor and the file Viewer (and reusable by the hex editor / compare
 // windows). Both windows expose the SAME top-level menus (File / Edit / View /

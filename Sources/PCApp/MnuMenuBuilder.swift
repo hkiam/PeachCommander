@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MnuMenuBuilder.swift - Build live NSMenus from a parsed TC .mnu (F-257).
 //
 // Walks a MenuFile tree and produces the "command" menus for the main bar, using

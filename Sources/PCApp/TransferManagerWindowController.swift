@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TransferManagerWindowController.swift - Background transfer manager window (TODOS #135).
 //
 // Lists the TransferManager's jobs as rows with a progress bar, live throughput,

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // WinZipAES.swift - Decrypt WinZip AES (AE-1/AE-2) zip entries (F-136).
 //
 // Layout of an AES-encrypted entry body: salt | 2-byte password verifier |

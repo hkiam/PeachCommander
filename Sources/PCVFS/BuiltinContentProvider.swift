@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // BuiltinContentProvider.swift - Standard file columns as content fields (I16 T04).
 //
 // Exposes the everyday file attributes (name, size, extension, modification date)

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SyncPresetStore.swift - Persists named directory-sync presets as JSON (F-194).
 //
 // A preset is a reusable comparison profile: the SyncOptions plus the file mask

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PFXFileSystemTests.swift - Host PFX file-system adapter driven through the real
 // SampleFS C plugin (Plugins/SampleFS/sample_fs.c): directory enumeration,
 // empty/absent dirs, buffer-safe names, and mid-stream cancellation (F-232).

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DriveBarView.swift - Per-panel row of drive/volume buttons (TODOS #9).
 //
 // A horizontal strip of drive "chips" above each panel's path bar: a "★" chip

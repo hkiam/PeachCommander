@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // VFSConformanceTests.swift - Reusable VFS protocol conformance battery
 // (SPEC-006 §6). `runVFSConformance` exercises the `VirtualFileSystem`
 // contract end-to-end against any writable filesystem rooted at `root`; it

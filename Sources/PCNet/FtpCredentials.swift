@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FtpCredentials.swift - Map a connection site to its Keychain secret.
 //
 // The site model (ftp-sites.ini) never holds a password; it is stored in a

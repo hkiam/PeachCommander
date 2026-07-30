@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // LinkMaker.swift - Create symbolic links, hard links, and Finder aliases (F-093).
 //
 // Link creation is inherently local (it does not apply to archives or network

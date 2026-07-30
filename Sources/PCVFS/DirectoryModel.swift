@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DirectoryModel.swift - Directory listing model with sorting and filtering
 //
 // This actor holds the full entry array and provides immutable snapshots

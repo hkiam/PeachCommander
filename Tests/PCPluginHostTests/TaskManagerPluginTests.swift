@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TaskManagerPluginTests.swift - The external TaskManager PFX plugin
 // (Plugins/TaskManager/taskmanager.c) driven through the host adapter: it must
 // expose a non-local "TaskManager" volume, publish its process content columns,

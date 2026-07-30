@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TarReadTests.swift - Native tar / tar.gz browsing through ArchiveFS.
 
 import XCTest

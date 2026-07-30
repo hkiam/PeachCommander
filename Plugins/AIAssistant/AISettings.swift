@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AISettings.swift — plugin-owned config model (aichat/config.json).
 //
 // The ASSISTANT-specific preferences (preferred model, custom system prompt) live in

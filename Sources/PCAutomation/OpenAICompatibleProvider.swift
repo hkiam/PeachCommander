@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // OpenAICompatibleProvider.swift - a cloud / local-server model provider.
 //
 // Talks to any OpenAI-compatible /chat/completions endpoint (OpenAI, Anthropic via a

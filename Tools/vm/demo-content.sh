@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # demo-content.sh - Create a consistent, privacy-clean sample tree in the guest,
 # used as the panel content for all documentation screenshots. Idempotent.
 #

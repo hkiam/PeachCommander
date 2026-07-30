@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // sample_csv_lister.swift — a Swift PLX lister plugin (SPEC-012 §3, I16 T02).
 //
 // Renders a .csv file as a real NSTableView, proving the PLX host can embed a

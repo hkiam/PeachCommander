@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // NWFTPActiveTransport.swift - Active-mode FTP data channel (F-212).
 //
 // In active mode the *client* listens and the server connects back (PORT/EPRT),

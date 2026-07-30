@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // archive.swift — read-only archive browser as a PCX packer plugin.
 //
 // Implements the WCX-style PCX C-ABI (OpenArchive → ReadHeaderEx/ProcessFile loop

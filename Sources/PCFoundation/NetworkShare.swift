@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // NetworkShare.swift - Normalise a typed network location into a mountable URL (TODOS #36).
 //
 // Accepts smb/afp/nfs/cifs URLs, Windows UNC paths (\\server\share\dir), //server/share

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ChecksumFile.swift - Parse/generate checksum files (SPEC-016 §6).
 //
 // Two on-disk conventions are supported:

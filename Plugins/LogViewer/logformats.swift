@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // logformats.swift — pluggable log-line formats + auto-detection.
 //
 // A LogFormat describes how to split a physical line into (timestamp, level,

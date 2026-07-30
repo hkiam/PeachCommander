@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MainMenuUITests.swift - XCUITest scaffold: drives the real app via Accessibility.
 //
 // Native, repeatable UI automation (menus, windows, buttons) — no screenshots or

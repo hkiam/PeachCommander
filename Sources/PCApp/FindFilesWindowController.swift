@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FindFilesWindowController.swift - "Find Files" dialog (Alt+F7)
 //
 // A dumb, non-modal view: it collects a query from the user and reports it

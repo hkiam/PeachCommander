@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ArchiveFS.swift - A read-only VirtualFileSystem backed by an `ArchiveSource` (I09).
 //
 // Archives do not have to contain explicit directory entries (many tools omit

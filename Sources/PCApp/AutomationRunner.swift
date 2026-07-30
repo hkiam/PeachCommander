@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AutomationRunner.swift - DEBUG-only scripted automation of the running app.
 //
 // Enabled with the launch flag `-AutomationScript <path>` (DEBUG builds only).

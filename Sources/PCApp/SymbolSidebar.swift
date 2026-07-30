@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SymbolSidebar.swift - The collapsible symbol-outline sidebar shared by the file
 // viewer and the editor: a filter field over a hierarchical NSOutlineView of a file's
 // definitions. Parsing runs on a background queue (serialized) so large files don't

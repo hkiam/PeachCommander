@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FTPListing.swift - Parsers for FTP directory listings (SPEC-011 §3).
 //
 // FTP has no standard listing format, so a client must cope with several:

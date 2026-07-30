@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # notarize.sh — submit a signed DMG to Apple's notary service, staple the ticket,
 # and verify Gatekeeper accepts the result.
 #

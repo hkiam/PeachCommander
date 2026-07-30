@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DuplicateFinder.swift - Find byte-identical files over the VFS (SPEC-008 §4).
 //
 // Two-tier detection to avoid hashing everything: first group by size (cheap

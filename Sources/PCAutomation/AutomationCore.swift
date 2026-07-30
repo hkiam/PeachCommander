@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AutomationCore.swift - the seam every automation consumer talks to.
 //
 // PCApp implements this (it owns the panels, op engine, command registry and

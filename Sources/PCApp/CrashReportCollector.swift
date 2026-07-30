@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // CrashReportCollector.swift - Local crash-report detection (I20-T?, F-313)
 //
 // On launch, checks the system DiagnosticReports directory for crash logs

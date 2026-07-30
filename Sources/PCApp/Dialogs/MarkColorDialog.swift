@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MarkColorDialog.swift - The "Mark All" dialog for editor + viewer. Beyond the
 // search term it lets the user pick which highlight color the occurrences get,
 // from the shared MarkPalette — including creating a new custom color via the

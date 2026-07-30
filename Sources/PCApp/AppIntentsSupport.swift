@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AppIntentsSupport.swift — native App Intents for Shortcuts / Siri / Spotlight (F-296).
 //
 // Same core verbs as the AppleScript dictionary, exposed as first-class App Intents so

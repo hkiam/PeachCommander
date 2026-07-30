@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ColumnsConfigWindowController.swift - Configure the panel's visible columns.
 //
 // Lists every available field (built-in + enabled plugin content fields) as a

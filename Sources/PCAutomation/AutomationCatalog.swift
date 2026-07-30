@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AutomationCatalog.swift - the versioned catalogue of automation tools.
 //
 // Each tool is a named, typed operation the file manager can perform. The catalogue

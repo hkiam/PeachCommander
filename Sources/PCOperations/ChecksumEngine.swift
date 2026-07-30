@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ChecksumEngine.swift - Compute/verify file checksums over the VFS (SPEC-016 §6).
 //
 // Streams files through a ChecksumHasher via the VirtualFileSystem, so checksums

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // HostAutomationBridge.swift - the PCApp implementation of AutomationHostBridge.
 //
 // Wires the Automation Core to the real file manager: panels, the background op

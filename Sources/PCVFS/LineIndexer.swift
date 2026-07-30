@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // LineIndexer.swift - Byte-offset line indexing for the Lister text mode
 // (I07). Scans raw bytes once to find where each line begins, without
 // decoding text, so it works uniformly regardless of the file's encoding.

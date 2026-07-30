@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DirCompareMarkerTests - Unit tests for DirCompareMarker
 
 import XCTest

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Renderers.swift — colour coding + the two Disk Map visualisations.
 //
 // Colour coding: files are grouped into a handful of curated categories (media, docs,

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ContributionMenus.swift - Inject plugin menu contributions into the menu bar
 // and validate their `when` enablement on open.
 //

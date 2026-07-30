@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ACLEntry.swift - Model + parser for macOS access-control-list entries (F-298).
 //
 // macOS ACLs are surfaced by `/bin/ls -le` as one line per entry:

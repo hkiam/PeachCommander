@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ACLEditorWindowController.swift - GUI editor for macOS ACLs (F-298).
 //
 // Reads the current access-control list of a path via `/bin/ls -led`, edits it as a

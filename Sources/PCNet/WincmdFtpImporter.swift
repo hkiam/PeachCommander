@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // WincmdFtpImporter.swift - Import Total Commander FTP sites (F-276).
 //
 // TC stores FTP connections in `wcx_ftp.ini` (NOT wincmd.ini), one [section] per

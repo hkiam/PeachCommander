@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MCPServer.swift - a Model Context Protocol adapter over the Automation Core.
 //
 // Exposes the file manager's automation tools to external agents (Claude Code,

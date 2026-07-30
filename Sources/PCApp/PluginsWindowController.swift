@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginsWindowController.swift - Plugins options page (I14 T05, F-235).
 //
 // Lists installed plugins (enabled checkbox, name, type, API version, path) with

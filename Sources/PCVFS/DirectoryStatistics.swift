@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DirectoryStatistics.swift - Recursive directory summary for the Lister (F3 on a dir).
 //
 // Pressing F3 on a directory should show a summary (name, file/folder counts, total

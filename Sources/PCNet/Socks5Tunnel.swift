@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Socks5Tunnel.swift - SOCKS5 CONNECT tunneling over NWConnection (F-212).
 //
 // NWConnection has no native proxy support, so this performs the SOCKS5 handshake

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SymbolOutline.swift - Extracts a file's definitions (classes / functions /
 // methods / …) via tree-sitter "tags" queries, then nests/queries them with the
 // tree-sitter-independent SymbolTree (in PCFoundation, where it is unit-tested).
