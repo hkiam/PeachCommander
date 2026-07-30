@@ -1,0 +1,62 @@
+name: Pages
+
+# Publishes the documentation website (docs/scripts/build-site.py) to GitHub Pages:
+# the marketing homepage from docs/content/website/index.md at the root, the full
+# English docs alongside it, and each translated Help as a subsite under /<lang>/.
+#
+# Pure Python — no Xcode, so this runs on Linux rather than a macOS runner.
+# The quality gates for the same content live in docs.yml; this workflow only
+# builds and deploys what is already on main.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/**
+      - .github/workflows/pages.yml
+  workflow_dispatch: {}
+
+# Read the repo, mint an OIDC token for the Pages deployment.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; let a newer commit supersede an in-flight one.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install tooling
+        run: python3 -m pip install --quiet pyyaml mkdocs-material
+
+      - name: Build documentation site (all languages, strict)
+        run: python3 docs/scripts/build-site.py
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/site/site
+
+  deploy:
+    name: Deploy to Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

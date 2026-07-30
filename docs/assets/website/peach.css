@@ -1,0 +1,283 @@
+/* peach.css — Peach Commander website theme.
+ *
+ * Layered on top of MkDocs Material (see docs/scripts/build-site.py, which stages
+ * this file into every language workspace and wires it up via `extra_css`).
+ * Palette is taken from Design/AppIcon.svg so the site matches the app icon.
+ *
+ * Everything here is additive: the Material defaults still drive the docs pages,
+ * and only the `.pc-*` blocks used by docs/content/website/index.md are new.
+ */
+
+:root {
+  --pc-peach-50:  #fff5ef;
+  --pc-peach-100: #ffe8db;
+  --pc-peach-200: #ffd0b5;
+  --pc-peach-400: #ff9d68;
+  --pc-peach-500: #ff7a3d;
+  --pc-peach-600: #ea5f2a;
+  --pc-clay-700:  #b9432d;
+  --pc-clay-800:  #8f2f1f;
+  --pc-rose-500:  #ff5f68;
+  --pc-ink-900:   #151a21;
+  --pc-ink-800:   #21272f;
+  --pc-ink-700:   #343a40;
+}
+
+/* --- Material palette: peach in light, warmer peach in dark ---------------- */
+
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        var(--pc-clay-700);
+  --md-primary-fg-color--light: var(--pc-peach-500);
+  --md-primary-fg-color--dark:  var(--pc-clay-800);
+  --md-accent-fg-color:         var(--pc-peach-600);
+  --md-typeset-a-color:         var(--pc-clay-700);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        var(--pc-ink-900);
+  --md-primary-fg-color--light: var(--pc-peach-400);
+  --md-primary-fg-color--dark:  #0e1217;
+  --md-accent-fg-color:         var(--pc-peach-400);
+  --md-typeset-a-color:         var(--pc-peach-400);
+}
+
+/* --- Hero ------------------------------------------------------------------ */
+
+/* Breaks out of Material's content column to sit edge to edge. The negative
+   margins mirror .md-content__inner's own padding. */
+.pc-hero {
+  margin: -1.2rem -.8rem 2.4rem;
+  padding: 3.4rem 1.2rem 2.6rem;
+  border-radius: 0 0 1.4rem 1.4rem;
+  text-align: center;
+  background:
+    radial-gradient(120% 140% at 50% -20%, var(--pc-peach-100) 0%, transparent 60%),
+    linear-gradient(180deg, var(--pc-peach-50) 0%, transparent 100%);
+}
+
+[data-md-color-scheme="slate"] .pc-hero {
+  background:
+    radial-gradient(120% 140% at 50% -20%, rgba(255, 122, 61, .20) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(255, 122, 61, .07) 0%, transparent 100%);
+}
+
+.pc-hero__icon {
+  width: 132px;
+  height: 132px;
+  margin: 0 auto .9rem;
+  display: block;
+  filter: drop-shadow(0 10px 22px rgba(143, 47, 31, .28));
+}
+
+/* The <h1> is the page title; inside the hero it should read as a wordmark and
+   lose Material's default top margin and underline treatment. */
+.pc-hero h1 {
+  margin: 0 0 .35rem;
+  font-size: 2.9rem;
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: var(--pc-clay-800);
+}
+
+[data-md-color-scheme="slate"] .pc-hero h1 {
+  color: var(--pc-peach-200);
+}
+
+.pc-hero__tagline {
+  max-width: 34rem;
+  margin: 0 auto 1.1rem;
+  font-size: .95rem;
+  line-height: 1.65;
+  color: var(--md-default-fg-color--light);
+}
+
+.pc-hero__tagline strong { color: var(--md-default-fg-color); }
+
+/* Requirement chips under the buttons. */
+.pc-hero__meta {
+  margin: 1rem 0 0;
+  font-size: .7rem;
+  letter-spacing: .02em;
+  color: var(--md-default-fg-color--light);
+}
+
+.pc-hero__meta span + span::before {
+  content: "·";
+  margin: 0 .5rem;
+  opacity: .55;
+}
+
+/* --- Buttons --------------------------------------------------------------- */
+
+.pc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.pc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .62rem 1.25rem;
+  border-radius: 2rem;
+  font-size: .78rem;
+  font-weight: 700;
+  text-decoration: none !important;
+  border: 1px solid transparent;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+
+.pc-btn:hover { transform: translateY(-1px); }
+.pc-btn:focus-visible { outline: 2px solid var(--pc-peach-500); outline-offset: 3px; }
+
+.pc-btn--primary {
+  background: linear-gradient(135deg, var(--pc-peach-500), var(--pc-clay-700));
+  color: #fff !important;
+  box-shadow: 0 6px 18px rgba(185, 67, 45, .32);
+}
+
+.pc-btn--primary:hover { box-shadow: 0 10px 24px rgba(185, 67, 45, .40); }
+
+/* Set by download.js when no published build exists yet. */
+.pc-btn--primary.is-unavailable {
+  background: var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color--light) !important;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.pc-btn--ghost {
+  background: transparent;
+  color: var(--md-default-fg-color) !important;
+  border-color: var(--md-default-fg-color--lighter);
+}
+
+.pc-btn--ghost:hover {
+  border-color: var(--pc-peach-500);
+  color: var(--pc-clay-700) !important;
+}
+
+[data-md-color-scheme="slate"] .pc-btn--ghost:hover { color: var(--pc-peach-400) !important; }
+
+/* --- Keyboard motif -------------------------------------------------------- */
+
+/* The app is keyboard-first, so the hero shows the keys you actually live on.
+   pymdownx.keys renders ++f5++ into .keys; this restyles it as a real keycap. */
+.pc-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.1rem;
+  justify-content: center;
+  margin: 1.8rem auto 0;
+  font-size: .68rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.pc-keys__item { display: inline-flex; align-items: center; gap: .4rem; }
+
+.pc-keys kbd,
+.pc-keys .keys kbd {
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-bottom-width: 2px;
+  border-radius: .3rem;
+  box-shadow: none;
+  padding: .1rem .42rem;
+  font-size: .68rem;
+  font-weight: 700;
+}
+
+/* --- Feature grid ---------------------------------------------------------- */
+
+.pc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: .9rem;
+  margin: 1.6rem 0 2rem;
+}
+
+.pc-card {
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: .7rem;
+  background: var(--md-default-bg-color);
+  transition: border-color .15s ease, transform .15s ease;
+}
+
+.pc-card:hover {
+  border-color: var(--pc-peach-400);
+  transform: translateY(-2px);
+}
+
+.pc-card__icon { font-size: 1.3rem; line-height: 1; }
+
+.pc-card h3 {
+  margin: .5rem 0 .35rem !important;
+  font-size: .84rem;
+  font-weight: 700;
+}
+
+.pc-card p {
+  margin: 0;
+  font-size: .74rem;
+  line-height: 1.6;
+  color: var(--md-default-fg-color--light);
+}
+
+/* --- Screenshots ----------------------------------------------------------- */
+
+/* Frame the product shots so they read as a window rather than a raw bitmap. */
+.md-typeset .pc-hero__shot img,
+.md-typeset p > img {
+  border-radius: .6rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  box-shadow: 0 14px 38px rgba(21, 26, 33, .16);
+}
+
+[data-md-color-scheme="slate"] .md-typeset p > img {
+  box-shadow: 0 14px 38px rgba(0, 0, 0, .45);
+}
+
+.pc-hero__shot { margin: 2.2rem auto 0; max-width: 52rem; }
+
+/* Material renders the line after an image as its caption (*text*). */
+.md-typeset p > img + em,
+.md-typeset p > em:only-child {
+  display: block;
+  margin-top: .5rem;
+  font-size: .68rem;
+  color: var(--md-default-fg-color--light);
+}
+
+/* --- Download panel -------------------------------------------------------- */
+
+.pc-download {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-left: 3px solid var(--pc-peach-500);
+  border-radius: .7rem;
+  background: var(--md-code-bg-color);
+}
+
+.pc-download h2 { margin-top: 0 !important; }
+
+.pc-download__status {
+  margin: .6rem 0 0;
+  font-size: .72rem;
+  color: var(--md-default-fg-color--light);
+}
+
+/* --- Small screens --------------------------------------------------------- */
+
+@media screen and (max-width: 44.9375em) {
+  .pc-hero { padding: 2.4rem .8rem 2rem; }
+  .pc-hero h1 { font-size: 2.1rem; }
+  .pc-hero__icon { width: 104px; height: 104px; }
+  .pc-btn { width: 100%; justify-content: center; }
+}
