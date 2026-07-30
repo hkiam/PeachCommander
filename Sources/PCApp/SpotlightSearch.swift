@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SpotlightSearch.swift - Optional Spotlight-backed file search (backlog item 25).
 //
 // An alternative to the recursive VFS walk for local, indexed folders: builds an

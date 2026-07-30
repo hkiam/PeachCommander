@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # make-dmg.sh - Build a distributable DMG of Peach Commander.
 #
 # Builds the app in the given configuration (default: Release), stages it next

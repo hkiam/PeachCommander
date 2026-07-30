@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PathResolver.swift - Resolve a user-typed path for direct navigation (TODOS #13).
 //
 // Expands a leading ~, resolves a relative path against the panel's current

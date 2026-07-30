@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """capture.py — reproducible documentation screenshots via the VM harness.
 
 Reads docs/metadata/screenshot-specs.yml, boots a throwaway macOS VM (a clone of

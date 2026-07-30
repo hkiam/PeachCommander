@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ZipWriterTests.swift - Round-trips ZipWriter output through ZipReader
 // (and, for integrity, through the system `unzip -t`), covering deflate and
 // store paths, nested directories, an explicit directory entry, and an

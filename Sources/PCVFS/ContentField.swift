@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ContentField.swift - Generic content-field interface (SPEC-012 §5, I16).
 //
 // A uniform way to expose extra, computed columns for a file — the internal

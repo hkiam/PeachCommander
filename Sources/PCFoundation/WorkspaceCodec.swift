@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // WorkspaceCodec.swift - (De)serialize a panel's tab list to a single string,
 // used to persist named Workspaces (backlog item). Kept here (not in the app
 // target) so the round-trip is unit-testable.

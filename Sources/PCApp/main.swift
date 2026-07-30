@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // main.swift - Entry point for PeachCommander
 
 import AppKit

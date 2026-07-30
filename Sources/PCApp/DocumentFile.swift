@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DocumentFile.swift - Shared save/close helpers for the editable document
 // windows (text editor, hex editor), which previously each carried an identical
 // copy of the one-time `.bak` backup, the save-error alert, and the

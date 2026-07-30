@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TabBarView.swift - Per-panel tab bar view for Peach Commander (SPEC iteration I06 T01).
 //
 // Displays the set of open tabs for a single panel as a horizontal row of

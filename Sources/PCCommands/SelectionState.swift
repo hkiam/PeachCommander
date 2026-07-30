@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SelectionState.swift - Selection state machine for Peach Commander
 //
 // Implements the TC-compatible selection model:

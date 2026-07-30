@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SymbolTree.swift - Pure (tree-sitter-independent) building and querying of a
 // nested definition outline. The app's SymbolOutline runs a tree-sitter "tags"
 // query to produce flat `Def`s, then uses `SymbolTree` to nest, merge, filter and

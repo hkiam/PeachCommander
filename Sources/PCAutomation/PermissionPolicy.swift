@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PermissionPolicy.swift - the capability/autonomy model shared by every consumer
 // of the Automation Core (the in-app AI agent, the MCP server, the future Python
 // plugin). Permissions and auditing live here, in one place, so no consumer can

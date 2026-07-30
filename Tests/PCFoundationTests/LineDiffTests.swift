@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Golden tests for the Myers line-diff engine (LineDiff).
 
 import XCTest

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PackOptionsDialog.swift - Choose archive format + AES password + split size
 // when packing (F-132/F-136). Emits an archive name and PackOptions.
 

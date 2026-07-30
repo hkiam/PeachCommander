@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DiffWindowController.swift - Compare Files by Content (I12 T02, F-190)
 //
 // Read-only side-by-side line diff. The two files share a single NSTableView

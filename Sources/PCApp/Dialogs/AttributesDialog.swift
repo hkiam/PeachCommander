@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AttributesDialog.swift - Change POSIX permissions via checkboxes (TODOS #39).
 //
 // A 3×3 grid of read/write/execute checkboxes for owner/group/other (instead of a

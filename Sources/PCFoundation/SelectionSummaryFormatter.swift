@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SelectionSummaryFormatter - Total-Commander-style status-bar summary
 // A pure, locale-aware formatter for the panel status bar's selection
 // summary (file counts and byte sizes).

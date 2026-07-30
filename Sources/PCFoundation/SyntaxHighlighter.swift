@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SyntaxHighlighter.swift - Lightweight source tokenizer for the viewer (TODOS #19).
 //
 // A single-pass, language-parameterised lexer that emits spans for comments,

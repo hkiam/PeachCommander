@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SyntaxTheme.swift - The single source of truth for syntax-highlight token
 // colors, shared by the editor (NSTextView) and the viewer's code view
 // (CodeListerView), which previously each carried an identical copy.

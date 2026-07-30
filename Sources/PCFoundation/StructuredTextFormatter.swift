@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // StructuredTextFormatter.swift - Pretty-print JSON and XML for the viewer (TODOS #20/#21).
 //
 // Pure formatting over Foundation (JSONSerialization / XMLDocument): returns a

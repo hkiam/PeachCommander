@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // HexEditorWindowController.swift - Editable hex editor (TODOS #26, UI).
 //
 // A caret-based hex grid over a HexDocument: type hex digits to overwrite (or insert,

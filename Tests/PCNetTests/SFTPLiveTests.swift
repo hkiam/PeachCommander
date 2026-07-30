@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SFTPLiveTests.swift - End-to-end SFTP against the public Rebex test server
 // (test.rebex.net, demo/password, read-only). Network-dependent (F-214).
 

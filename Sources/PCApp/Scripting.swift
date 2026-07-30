@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Scripting.swift — AppleScript support (F-296).
 //
 // A thin adapter that exposes the file manager's core verbs and reads to AppleScript

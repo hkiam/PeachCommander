@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // notes.swift — "Sticky notes" as an external plugin (Notes.pdxplugin).
 //
 // Two facets on one bundle: a PDX content field ("Note") that marks folders/files

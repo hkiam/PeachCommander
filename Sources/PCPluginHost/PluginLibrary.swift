@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginLibrary.swift - dlopen/dlsym symbol resolution + version handshake (I14 T02).
 //
 // Opens a plugin dylib with RTLD_LOCAL|RTLD_NOW, resolves its required and optional

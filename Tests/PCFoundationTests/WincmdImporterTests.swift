@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // WincmdImporterTests.swift - wincmd.ini hotlist + button bar import (F-276).
 
 import XCTest

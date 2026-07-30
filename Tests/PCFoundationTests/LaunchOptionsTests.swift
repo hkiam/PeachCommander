@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // LaunchOptionsTests.swift - Command-line launch parameter parsing.
 
 import XCTest

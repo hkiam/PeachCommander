@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """generate-third-party-notices.py — assemble the app's open-source attributions.
 
 Produces (all committed to the repo, like the localization catalog):

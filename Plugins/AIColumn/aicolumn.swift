@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // aicolumn.swift — AIColumn.pdxplugin: an on-device ML panel column (KI-05).
 //
 // A content-field (PDX) plugin that adds an "AI Language" column: for a text file it

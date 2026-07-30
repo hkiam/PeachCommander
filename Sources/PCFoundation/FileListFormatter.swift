@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FileListFormatter.swift - Render a directory listing as text (SPEC-016 §9).
 //
 // Shared by "Copy File Details", "Export File List", and "Print File List" so the

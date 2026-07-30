@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ViewContainerRegistry.swift - Generic named mount points for plugin views.
 //
 // Host areas that can host a plugin view register under a name ("sidebar",

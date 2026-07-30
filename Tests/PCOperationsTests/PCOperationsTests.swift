@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PCOperationsTests.swift - Integration tests for the file-operation engine.
 //
 // SAFETY: every test operates only under a unique temp directory created in

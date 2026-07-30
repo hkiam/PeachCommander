@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TarReader.swift - Read-only tar / tar.gz backend for ArchiveFS (native browse).
 //
 // Parses a POSIX ustar / GNU tar stream into members. A gzip-wrapped stream

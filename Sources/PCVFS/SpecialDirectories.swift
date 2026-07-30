@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SpecialDirectories.swift - Standard "go to" locations for the panel header (TODOS #65).
 //
 // The common destinations (Home, Desktop, Documents, Downloads, Applications, Root),

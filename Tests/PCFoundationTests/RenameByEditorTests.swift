@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // RenameByEditorTests.swift - Edit-names-in-editor round-trip (F-174).
 
 import XCTest

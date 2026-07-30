@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // CopyEngine.swift - Recursive local copy with progress, cancel/pause and
 // metadata preservation (SPEC-004 §1/§3).
 //

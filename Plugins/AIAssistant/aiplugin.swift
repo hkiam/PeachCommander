@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // aiplugin.swift — AIAssistant.ptxplugin entry points (contrib.h behavior ABI).
 //
 // The removable AI assistant. PcMakeView builds the full chat panel (moved here from

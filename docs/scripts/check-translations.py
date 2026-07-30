@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """check-translations.py — localization coverage gate for UI + Help.
 
 English (docs/content/help + the base strings in Localizable.xcstrings) is the source

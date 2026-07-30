@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """gen-overviews.py — generate derived overview docs from the metadata.
 
 Outputs (regenerable, never hand-edited):

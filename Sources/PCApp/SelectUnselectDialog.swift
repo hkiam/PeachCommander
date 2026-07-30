@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SelectUnselectDialog.swift - Select/Unselect group dialogs (Num+/Num-)
 //
 // TC "Select group" / "Unselect group": a wildcard mask field (prefilled with

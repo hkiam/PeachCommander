@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DetectString.swift - Total Commander "detect string" parser + evaluator for Peach Commander
 //
 // Implements SPEC-012 §6, feature F-238.

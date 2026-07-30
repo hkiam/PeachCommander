@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // LiveServerTests.swift - End-to-end FTP + SFTP against a real local daemon.
 //
 // Opt-in (network + a running server): set PC_NET_LIVE=1. Config via env with

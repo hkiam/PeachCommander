@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // IconLoader.swift - Asynchronous file-icon pipeline for panel lists
 //
 // SPEC-002 §7: icon modes none/standard/all; by-type icons cached by UTType;

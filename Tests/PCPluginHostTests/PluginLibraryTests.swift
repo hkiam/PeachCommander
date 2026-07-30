@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginLibraryTests.swift - dlopen/dlsym host tests using clang-built C fixtures.
 //
 // Each test compiles a tiny C dylib at runtime (clang -dynamiclib) exposing a

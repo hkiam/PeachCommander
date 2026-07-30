@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MenuFileTests.swift - Total Commander .mnu menu parsing/serialize (F-257).
 
 import XCTest

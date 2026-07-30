@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ChatComposer.swift - build the message actually sent to the model from the user's
 // text plus file-manager context, so the assistant is grounded in the active panel
 // and any explicitly attached files without the user typing paths. (ki.md: the AI

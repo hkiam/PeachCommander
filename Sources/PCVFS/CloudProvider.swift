@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // CloudProvider.swift - Cloud / network "places" surfaced as volumes.
 //
 // This is the host-side seam for mounting cloud storage as a drive, mirroring

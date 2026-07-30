@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ArchiveExtractor.swift - Extract every member of an archive (any VirtualFileSystem,
 // e.g. ArchiveFS) to a destination directory, preserving its folder structure.
 // Backs the "Unpack" (cm_UnpackFiles) command; the destination prompt/progress UI

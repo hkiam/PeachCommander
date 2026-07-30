@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SplitInfo.swift - Metadata for split files (SPEC-016 §3).
 //
 // When a file is split into .001/.002/… parts, a sidecar "<name>.crc" file records

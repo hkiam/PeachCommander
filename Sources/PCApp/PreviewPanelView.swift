@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PreviewPanelView.swift - Collapsible right-hand info/preview sidebar (backlog).
 //
 // Three modes via a segmented control: Info (a Quick Look preview + metadata of

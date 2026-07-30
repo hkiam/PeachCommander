@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FtpSite.swift - Connection site model + ftp-sites.ini round-trip + URL parsing.
 //
 // SPEC-011 §2 (connection manager) and §6 (secrets): a site stores everything

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-sample-csv-lister.sh — build the SampleCSVLister.plxplugin bundle (I16 T02).
 #
 # This PLX plugin is written in Swift and returns a real NSView (an NSTableView),

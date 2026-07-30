@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /*
  * pc_common.h — Peach Commander plugin SDK, common definitions (SPEC-012 §1, §7).
  *

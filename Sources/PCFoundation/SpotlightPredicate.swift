@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SpotlightPredicate.swift - Build an NSMetadataQuery predicate from a name mask
 // (+ optional content text). Split out of the app target so the predicate string
 // is unit-testable without a live Spotlight index.

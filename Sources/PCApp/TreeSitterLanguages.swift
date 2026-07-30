@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TreeSitterLanguages.swift - Registry mapping a file extension to a tree-sitter
 // LanguageConfiguration (grammar + highlight query), shared by the one-shot
 // highlighter (viewer) and Neon's incremental highlighter (editor).

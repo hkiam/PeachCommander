@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // BinaryCompareWindowController.swift - Compare files as hex (TODOS #7, SPEC-010).
 //
 // Side-by-side hex dump of two files in a single virtual NSTableView (one row per

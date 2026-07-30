@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // OccurrenceFinderTests.swift - Occurrence matching for the editor's mark-all.
 
 import XCTest

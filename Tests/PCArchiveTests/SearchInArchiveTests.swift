@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SearchInArchiveTests.swift - FileSearchEngine descending into zip-family
 // archives via an ArchiveFS opener (search-in-archives option).
 

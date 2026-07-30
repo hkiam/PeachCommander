@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FtpConnectionManagerWindowController.swift - Saved FTP sites manager (I15, cm_FtpConnect).
 //
 // Lists the sites from ftp-sites.ini on the left, a detail form on the right

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // NetProxy.swift - Shared proxy configuration for HTTP downloads + FTP (F-212/F-330).
 
 import Foundation

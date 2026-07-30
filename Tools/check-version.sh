@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # check-version.sh — verify a release tag matches the version the app reports.
 #
 # Usage: check-version.sh [tag]

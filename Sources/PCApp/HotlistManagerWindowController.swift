@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // HotlistManagerWindowController.swift - Organize the directory hotlist (F-061).
 //
 // A table of the hotlist bookmarks with inline-editable Title and Path columns

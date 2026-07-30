@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TextScanningTests.swift - Unit tests for BracketMatcher and IdentifierScanner.
 
 import XCTest

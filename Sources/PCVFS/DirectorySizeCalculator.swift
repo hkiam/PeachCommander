@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DirectorySizeCalculator.swift - Asynchronous, cancellable directory size computation
 //
 // Computes the total byte size of a directory tree (SPEC-002 §5 "space on dir").

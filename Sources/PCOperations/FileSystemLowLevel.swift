@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FileSystemLowLevel.swift - lstat-based helpers shared by the engines
 //
 // Uses lstat semantics throughout so symbolic links are treated as links, never

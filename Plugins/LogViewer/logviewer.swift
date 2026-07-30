@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // logviewer.swift — the Log Viewer as an external contribution plugin.
 //
 // PcRunCommand opens a specialised log-file window (level-classified, colour-coded,

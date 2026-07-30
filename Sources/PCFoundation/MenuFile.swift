@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MenuFile.swift - Total Commander-style `.mnu` main-menu format, parser + writer.
 //
 // TC main menus are a Windows-resource-like grammar of nested POPUP blocks:

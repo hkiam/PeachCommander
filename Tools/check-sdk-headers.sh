@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # check-sdk-headers.sh — verify the plugin SDK C headers compile standalone (I14 T01).
 # Each header must be self-contained C11 with no missing includes.
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginConfigTests.swift - plugins.ini model + PluginManager integration.
 
 import XCTest

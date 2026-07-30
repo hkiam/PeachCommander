@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginManifest.swift - Plugin manifest model, validation, and pluginst.inf parsing
 //
 // Implements SPEC-012 §1, §8 (feature F-235): the plugin manifest read from a

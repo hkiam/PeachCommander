@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SpotlightPredicateTests.swift - Predicate construction for Spotlight search.
 
 import XCTest

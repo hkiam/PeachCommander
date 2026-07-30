@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AppleFoundationModelsProvider.swift - the on-device (local) model provider.
 //
 // Uses Apple's FoundationModels framework (macOS 26+, Apple Silicon) so the default

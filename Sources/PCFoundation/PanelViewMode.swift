@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PanelViewMode.swift - Per-panel view modes + grid geometry (TODOS #58).
 //
 // The panel can render as a detail list (current), a brief multi-column name list,

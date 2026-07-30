@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ButtonBarEditorWindowController.swift - In-app editor for the toolbar (.bar) (TODOS).
 //
 // Replaces "open the .bar file in some external program". A list of the current

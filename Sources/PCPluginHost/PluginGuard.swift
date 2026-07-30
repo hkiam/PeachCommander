@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginGuard.swift - In-process crash guard + quarantine for plugin calls (F-230).
 //
 // Wraps a synchronous plugin C call so a fatal signal from a misbehaving plugin

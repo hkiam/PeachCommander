@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AppMenu.swift - Main menu bar, wired to the command registry
 //
 // Every menu item carries its cm_* command name in `representedObject`; the

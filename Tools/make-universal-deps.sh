@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # make-universal-deps.sh — assemble universal (arm64 + x86_64) libssh2 + openssl@3
 # into build/universal-deps, for the universal release build (F-214).
 #

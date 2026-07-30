@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // INIDocument.swift - Comment- and order-preserving INI document model
 //
 // Parses classic INI text (`[Section]`, `key=value`, `;` comments, blank lines)

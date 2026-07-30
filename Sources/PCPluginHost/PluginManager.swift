@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginManager.swift - Discovery + enable/disable + associations (I14 T02/T03).
 //
 // Ties PluginHost.discover to the persisted PluginConfig: it knows which plugins

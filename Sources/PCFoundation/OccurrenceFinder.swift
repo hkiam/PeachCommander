@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // OccurrenceFinder.swift - Find all (non-overlapping) occurrences of a term in a
 // string as NSRanges. Pure + testable; used by the editor's "mark all" feature.
 

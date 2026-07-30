@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // CloudProviderTests.swift - Cloud provider availability + volume mapping.
 
 import XCTest

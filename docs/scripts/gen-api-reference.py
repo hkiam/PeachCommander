@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """gen-api-reference.py — generate the plugin ABI reference from the real headers.
 
 The public plugin ABI is defined by the C headers in Plugins/SDK/. This script

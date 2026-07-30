@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // OverwriteRules.swift - Pure decision rules for the overwrite dialog (F-086).
 //
 // The conditional "…All Older / …All Larger" blanket choices and Auto-Rename

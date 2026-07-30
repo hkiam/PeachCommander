@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PathBarView.swift - Editable breadcrumb path bar for Peach Commander.
 //
 // Shows the current directory as clickable breadcrumb segments (each navigates

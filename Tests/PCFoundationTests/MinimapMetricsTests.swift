@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MinimapMetricsTests.swift - Unit tests for the minimap's per-line metrics.
 
 import XCTest

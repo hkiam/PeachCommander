@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FTPTransport.swift - Transport seam for the FTP client (SPEC-011 §3).
 //
 // The FTP command choreography (FTPControlConnection) is written against these

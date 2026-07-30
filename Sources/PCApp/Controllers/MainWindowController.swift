@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MainWindowController.swift - Main window controller for Peach Commander
 //
 // Dual-pane layout (NSSplitView), path bars, per-panel status bars, and the

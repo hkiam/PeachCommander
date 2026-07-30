@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DriveBarModel.swift - Which volumes the drive-button bar shows, and which is current.
 //
 // Pure selection/ordering logic for the per-panel drive bar (TODOS #9): hide hidden

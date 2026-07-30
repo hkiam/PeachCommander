@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // WincmdImporter.swift - Import a subset of Total Commander's wincmd.ini (F-276).
 //
 // TC users migrating to Peach Commander can bring over two things that map cleanly

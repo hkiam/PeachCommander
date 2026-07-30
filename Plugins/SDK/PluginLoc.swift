@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginLoc.swift - Shared localization helper for PeachCommander plugins.
 //
 // Add this file to a plugin's swiftc sources (see Tools/build-*-plugin.sh) and wrap

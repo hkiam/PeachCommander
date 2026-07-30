@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Volume.swift - Volume management for Peach Commander
 //
 // Provides volume information, free space calculation, and mount/unmount operations

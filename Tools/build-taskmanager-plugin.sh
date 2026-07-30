@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-taskmanager-plugin.sh — build the external TaskManager PFX plugin bundle.
 #
 # TaskManager is a plain C plugin (libproc/sysctl), so it compiles with clang

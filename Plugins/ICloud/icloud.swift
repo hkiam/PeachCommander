@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // icloud.swift — iCloud Drive as an external PFX file-system plugin.
 //
 // iCloud Drive syncs to a local folder, so this plugin implements only the PFX

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FileSystemPlugin.swift - PFX "file system" plugin API (in-process realization).
 //
 // A file-system plugin exposes a VirtualFileSystem to be mounted like a drive

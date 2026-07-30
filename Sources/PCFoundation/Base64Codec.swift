@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Base64Codec.swift - Base64 encode/decode for the Encode/Decode feature (SPEC-016 §5).
 //
 // Thin, well-defined wrapper over Foundation so callers get a stable API with

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SFTPSupport.swift - libssh2 integration probe + shared helpers (F-214).
 
 import Foundation

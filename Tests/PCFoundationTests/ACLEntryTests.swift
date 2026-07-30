@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ACLEntryTests.swift - parser + round-trip for macOS ACL entries (F-298).
 
 import XCTest

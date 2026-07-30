@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MarksPanelView.swift - The docked "Mark All" results panel shown at the bottom
 // of the viewer/editor window (inside a horizontal NSSplitView). Replaces the
 // old free-floating marks windows. Each search ("Mark All") becomes its own tab;

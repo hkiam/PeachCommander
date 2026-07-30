@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ArchiveEditor.swift - In-place edits of a zip by full rewrite (F-133).
 //
 // The zip format has no cheap in-place delete/rename, so these operations read

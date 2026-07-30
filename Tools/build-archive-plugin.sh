@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-archive-plugin.sh — build Archive.pcxplugin (read-only PCX packer backed
 # by the system libarchive via /usr/bin/tar). Installs into the app's plugins dir.
 set -euo pipefail

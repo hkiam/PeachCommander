@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SecretStore.swift - Secure credential storage (SPEC-011 §6, configuration.md).
 //
 // FTP/SFTP passwords and key passphrases must live in the Keychain only, never in

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AppleNativeToolSession.swift - native FoundationModels tool-calling for the on-device
 // Apple model, replacing the fragile text convention for that provider.
 //

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DownloadName.swift - Suggest + sanitize a filename for an HTTP download (F-330).
 //
 // wget-style: derive a clean, safe filename from the URL (or a server-provided

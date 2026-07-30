@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /*
  * pc_plugin_guard.h - In-process crash guard for plugin C calls (F-230).
  *

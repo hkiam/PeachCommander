@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // HexDocument.swift - Editable byte buffer with undo/redo for the hex editor (TODOS #26).
 //
 // Backs the hex editor: overwrite, insert and delete bytes, each recorded as a

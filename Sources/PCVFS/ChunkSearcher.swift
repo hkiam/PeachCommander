@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ChunkSearcher.swift - Plain byte-string search for the Lister (I07),
 // both in-memory (for a decoded/visible window) and streamed over a whole
 // file via FileSlice so a multi-gigabyte file can be searched without

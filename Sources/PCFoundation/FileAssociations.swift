@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FileAssociations.swift - Per-extension viewer/editor associations (F-273).
 //
 // A tiny, human-editable INI with two sections mapping a lowercased file

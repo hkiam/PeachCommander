@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """Helper for finishing Help translations in-session: for a language <code>, print the
 section-name map it already uses (English section -> translated, so new pages stay
 consistent) and the ordered list of MISSING slugs (present in English, absent in

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ViewerLogicTests.swift - Unit tests for the pure viewer-support logic
 // (FileSlice, LineIndexer, EncodingDetector, HexFormatter, ChunkSearcher)
 // built for the Lister (I07).

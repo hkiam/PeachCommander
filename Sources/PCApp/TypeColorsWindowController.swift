@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TypeColorsWindowController.swift - GUI editor for by-file-type row colours (F-032).
 //
 // The panel colours files by wildcard mask through a `Display.TypeColors` config

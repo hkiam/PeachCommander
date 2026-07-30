@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // LineIndexerStreamTests.swift - streaming line-offset scan for huge files (F-112).
 
 import XCTest

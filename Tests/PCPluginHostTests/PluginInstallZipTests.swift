@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginInstallZipTests.swift - Locating the plugin bundle inside an unpacked
 // .zip tree, incl. pluginst.inf precedence (F-235).
 

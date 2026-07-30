@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PosixPermissions.swift - POSIX permission model for Change Attributes (SPEC-016 §2).
 //
 // Converts between the numeric mode, the symbolic "rwxr-xr-x" form, and octal

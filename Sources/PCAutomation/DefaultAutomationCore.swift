@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DefaultAutomationCore.swift - the executable Automation Core.
 //
 // Enforces the PermissionPolicy (refuse / confirm / allow), implements

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PanelListView.swift - View-based NSTableView for directory listing
 //
 // TC-style file list: columns Name(+icon)/Ext/Size/Date/Attr, dense rows,

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ImageInfoProvider.swift - Built-in "content" fields for images (SPEC-012 §5, I16-T04).
 //
 // Reads image metadata (pixel dimensions, colour model, DPI) via ImageIO without

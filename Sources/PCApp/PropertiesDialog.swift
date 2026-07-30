@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PropertiesDialog.swift - Read-only "Properties" dialog (Alt+Enter, I03-T07)
 //
 // Renders a `PCVFS.FileProperties` value in a simple label/value grid, TC-style.

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SearchTemplate.swift - Named, reusable "Find Files" criteria, persisted as JSON.
 //
 // A template captures the *reusable* part of a search (masks, content, options) but

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // logsettings.swift — the Log Viewer's pane in the host Settings dialog.
 //
 // Contributed via the `views` (container "settings") entry in Info.plist and built

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PCFoundation - Core utilities for Peach Commander
 // This module contains shared utilities: logging, ByteSize formatter,
 // path helpers, WildcardMask matcher, etc.

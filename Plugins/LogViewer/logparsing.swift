@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // logparsing.swift — log level/timestamp detection + filtering (self-contained
 // copy for the external Log Viewer plugin; mirrors the former core LogParsing).
 

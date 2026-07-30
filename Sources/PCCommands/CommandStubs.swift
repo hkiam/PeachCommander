@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // CommandStubs.swift - Not-yet-implemented command placeholders (I13 T01).
 //
 // Every TC command referenced by a menu item or a shipped keyboard scheme must

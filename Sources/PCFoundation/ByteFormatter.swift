@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ByteFormatter.swift - Render a byte range as text in various clipboard formats.
 //
 // Backs the hex viewer's "copy as…" (SPEC-005, TODOS #5): copy selected/looked-at

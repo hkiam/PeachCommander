@@ -1,4 +1,5 @@
 #!/bin/bash
+# SPDX-License-Identifier: Apache-2.0
 # sync-plugin-sdk.sh - Refresh the distributable SwiftPM SDK headers (F-236).
 #
 # Copies the canonical plugin ABI headers from Plugins/SDK/ into the

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # pc-universal.sh — shared helpers so the external plugin bundles are built
 # universal (arm64 + x86_64), matching the app itself.
 #

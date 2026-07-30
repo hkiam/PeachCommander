@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // notes_wysiwyg.swift — a true bidirectional WYSIWYG markdown editor for notes.
 //
 // The note is edited as formatted rich text (bold/italic/code, H1–H3 headings,

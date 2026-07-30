@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SFTPSession.swift - A blocking libssh2 SFTP client, serialized onto a dedicated
 // queue and exposed as async methods (F-214). Backs SFTPFileSystem.
 //

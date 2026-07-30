@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Keymap.swift - Keyboard-remapping engine (TC key-scheme model, F-254).
 //
 // Models Total Commander's key-scheme system with layered precedence:

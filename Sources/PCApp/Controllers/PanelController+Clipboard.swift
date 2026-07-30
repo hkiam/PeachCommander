@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PanelController+Clipboard.swift - Clipboard (Cmd+C/X/V) and F4 edit (I04 T07/T08).
 //
 // Writes Finder-compatible file URLs to the general pasteboard. A cut is a copy

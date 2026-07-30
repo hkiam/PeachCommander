@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MCPClient.swift — a client for EXTERNAL MCP servers (KI-01).
 //
 // The mirror of MCPServer: instead of exposing our tools to other agents, this lets

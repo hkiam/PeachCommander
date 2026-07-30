@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SampleListerTests.swift - End-to-end run through the real SampleLister C plugin
 // (Plugins/SampleLister/sample_lister.c) via the PLX adapter.
 

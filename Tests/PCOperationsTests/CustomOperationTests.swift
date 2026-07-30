@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // CustomOperationTests.swift - The .custom OperationKind runs app-supplied work
 // through the transfer queue (F-138: background pack/unpack).
 

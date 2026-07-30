@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // OccupiedSpaceCalculator.swift - "Occupied space" of a selection (SPEC-016 §1, Ctrl+L).
 //
 // Sums the byte size of a set of local paths: a file contributes its own size, a

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginHostTests.swift - Discovery/validation tests with on-disk fixtures.
 
 import XCTest

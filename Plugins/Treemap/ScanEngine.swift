@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ScanEngine.swift — the fast disk-usage scanner behind Disk Map.
 //
 // Speed is the primary goal, so this deliberately avoids Foundation's per-file

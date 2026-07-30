@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // StatusBarView.swift - Status bar per panel for Peach Commander
 //
 // Shows:

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginHost.swift - Plugin bundle discovery & validation (SPEC-012 §1, I14 T02).
 //
 // The non-dynamic-loading half of the host: it scans plugin directories for

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // WorkspaceStore.swift - Named panel layouts (Workspaces backlog item).
 //
 // A workspace captures both panels' open tabs (path + sort + lock + cursor) and

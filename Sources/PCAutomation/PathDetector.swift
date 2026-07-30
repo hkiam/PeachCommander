@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PathDetector.swift - find absolute file paths in model/tool text so the chat can
 // render them as clickable links (reveal / open in the file manager). Pure + testable.
 

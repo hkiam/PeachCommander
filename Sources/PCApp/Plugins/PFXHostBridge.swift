@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PFXHostBridge.swift - App-side bridge & adapter for external PFX file-system plugins.
 //
 // PFXHostBridge builds the PfxHostServices C-callback table from a FileSystemHost

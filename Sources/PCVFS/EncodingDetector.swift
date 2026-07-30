@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // EncodingDetector.swift - Cheap text-encoding heuristic for the Lister
 // (I07). Used to pick a default encoding for text mode before the user
 // overrides it via the encoding menu.

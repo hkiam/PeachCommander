@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // HostEventBus.swift - the concrete multiplexing event bus behind AutomationCore.events().
 //
 // The host emits typed HostEvents here; every subscriber gets its own AsyncStream.

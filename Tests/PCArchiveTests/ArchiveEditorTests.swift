@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ArchiveEditorTests.swift - Rewrite-based in-archive delete/rename (F-133).
 
 import XCTest

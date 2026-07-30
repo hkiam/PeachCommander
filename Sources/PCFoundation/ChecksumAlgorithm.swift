@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ChecksumAlgorithm.swift - File checksum algorithms (SPEC-016 §6).
 //
 // Pure, streamable hashing used by the create/verify-checksum feature. CRC32 is

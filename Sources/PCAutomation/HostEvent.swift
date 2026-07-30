@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // HostEvent.swift - the unified host event bus payload.
 //
 // Peach Commander has no single event bus today (only scattered AsyncStreams in

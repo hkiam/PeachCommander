@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PrivilegedRunner.swift - Run a shell command as administrator (F-099)
 //
 // The TC-style "as administrator" flow. When a file operation fails because the

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PreviewToggleHandle.swift - A thin, always-visible strip at the window's right
 // edge that shows/hides the preview panel. A chevron points left (‹) when the
 // panel is collapsed ("click to show") and right (›) when it is open ("click to

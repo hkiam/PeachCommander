@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # check-keymap.sh — validate the shipped key-scheme files (I13 T06 AC).
 #
 # For every cm_ command referenced in a scheme file:

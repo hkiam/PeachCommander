@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ArchiveExtractorTests.swift - Extract a nested zip (built with ZipWriter) through
 // ArchiveFS and verify every member lands on disk with the right content.
 

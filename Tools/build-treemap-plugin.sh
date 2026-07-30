@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-treemap-plugin.sh — build the Treemap.ptxplugin bundle (external view
 # contribution). Installs into the app's plugins dir by default.
 set -euo pipefail

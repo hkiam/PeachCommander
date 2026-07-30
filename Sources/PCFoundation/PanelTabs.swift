@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PanelTabs.swift - Per-panel tab model (SPEC iteration I06 T01).
 //
 // A pure, testable model tracking the set of open tabs for a single panel and

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ContribPlugin.swift - Host wrapper for a loaded plugin's contribution behavior
 // ABI (Plugins/SDK/contrib.h). Resolves the id-based entry points and exposes
 // typed calls: run a declared command / build a declared view, passing a

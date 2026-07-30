@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // OverwriteResolver.swift - Interactive overwrite/error resolver (I04)
 //
 // Bridges the pure PCOperations `OperationResolver` protocol to NSAlert so a

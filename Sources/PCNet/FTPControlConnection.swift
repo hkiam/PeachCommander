@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FTPControlConnection.swift - FTP command choreography (SPEC-011 §3).
 //
 // Drives a login + the common file operations over an FTPControlTransport. This

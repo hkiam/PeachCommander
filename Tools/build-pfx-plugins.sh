@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-pfx-plugins.sh — build the external PFX file-system plugin bundles
 # (WebDAV, iCloud Drive). Installs into the app's plugins dir by default; pass an
 # output dir to build elsewhere.

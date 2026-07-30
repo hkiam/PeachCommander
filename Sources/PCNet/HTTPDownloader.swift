@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // HTTPDownloader.swift - wget-style HTTP(S) file download with resume (F-330).
 //
 // Streams a URL to a file on disk (constant memory) via URLSession, resuming a

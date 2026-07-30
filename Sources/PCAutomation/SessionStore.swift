@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SessionStore.swift - persistence + management of AI chat sessions.
 //
 // ki.md: the assistant opens several sessions, renames them, saves them historically,

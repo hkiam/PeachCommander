@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // VFSRegistry.swift - Scheme -> filesystem registry (SPEC-006 §2).
 
 import Foundation

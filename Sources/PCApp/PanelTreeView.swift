@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PanelTreeView.swift - Optional folder-tree column beside a panel's file list (F-015).
 //
 // TC's Ctrl+F8 "separate tree": a narrow NSOutlineView docked at the leading edge of

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PluginTitleLocalizer.swift - Localize plugin contribution titles through the
 // plugin's OWN bundle.
 //

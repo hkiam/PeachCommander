@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ToolPlugin.swift - ToolHost: the host-services seam for action plugins.
 //
 // The base set of host services an action/tool needs (cursor, selection,

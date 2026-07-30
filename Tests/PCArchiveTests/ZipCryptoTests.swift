@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ZipCryptoTests.swift - Reading traditional-ZipCrypto (password) archives,
 // built on the fly with `/usr/bin/zip -P` (F-136).
 

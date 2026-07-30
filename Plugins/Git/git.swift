@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // git.swift — "Git Status" / "Branch" columns as an external PDX content plugin.
 //
 // Implements the PDX content C-ABI (ContentGetSupportedField / ContentGetValue) on

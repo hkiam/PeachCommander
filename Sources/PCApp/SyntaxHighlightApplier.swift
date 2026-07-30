@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SyntaxHighlightApplier.swift - Applies syntax-highlight token colors to an
 // NSTextStorage, shared by the editor and the viewer's read-only text/code view.
 // Centralizes the char-index → UTF-16 offset remapping so token ranges land on

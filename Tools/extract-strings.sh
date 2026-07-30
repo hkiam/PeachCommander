@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # extract-strings.sh - Refresh the app's String Catalog from source.
 #
 # Builds PCApp (which emits per-file .stringsdata via SWIFT_EMIT_LOC_STRINGS) and

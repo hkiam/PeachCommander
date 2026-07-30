@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // VFSNavigator.swift - Per-tab navigation stack of (fs, path) (SPEC-006 §2).
 
 import Foundation

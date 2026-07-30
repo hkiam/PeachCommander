@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // CommentStore.swift - Read/write per-file comments via descript.ion (SPEC-016 §7).
 //
 // Comments live in a "descript.ion" file in the same directory as the files they

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // WincmdFtpImporterTests.swift - TC wcx_ftp.ini site import (F-276).
 
 import XCTest

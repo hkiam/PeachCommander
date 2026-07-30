@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // XMLTree.swift - Parse XML into a display tree for the collapsible viewer (TODOS #21).
 //
 // Builds an element tree (name, ordered attributes, leaf text, children) from XML via

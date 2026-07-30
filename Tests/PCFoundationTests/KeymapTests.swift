@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // KeymapTests.swift - Tests for the keyboard-remapping engine (F-254).
 
 import XCTest

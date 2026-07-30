@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-logviewer-plugin.sh — build the LogViewer.ptxplugin bundle (external
 # contribution: a windowed log viewer). Installs into the app's plugins dir.
 set -euo pipefail

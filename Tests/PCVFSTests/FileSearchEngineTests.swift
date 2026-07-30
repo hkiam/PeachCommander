@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FileSearchEngineTests.swift - Tests for `FileSearchEngine` against a
 // temporary on-disk tree, driven through `LocalFS` (the same VFS the
 // engine is meant to walk in production).

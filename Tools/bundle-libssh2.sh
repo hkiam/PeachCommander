@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # bundle-libssh2.sh — embed libssh2 + its openssl@3 deps into an .app so SFTP
 # (F-214) works on machines without Homebrew. Copies the dylibs into
 # Contents/Frameworks, rewrites every install name to @rpath, and re-signs

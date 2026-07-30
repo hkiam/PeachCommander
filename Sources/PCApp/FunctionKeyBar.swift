@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FunctionKeyBar.swift - Total Commander-style function-key bar (F-004).
 //
 // A row of clickable buttons at the very bottom of the window (F3 View … F8

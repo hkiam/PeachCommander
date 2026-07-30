@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DirCompareMarker - "Compare Directories" panel-marking model
 // A pure, deterministic implementation of Total Commander's cm_CompareDirs
 // semantics: given the contents of two panels, decide which files should be

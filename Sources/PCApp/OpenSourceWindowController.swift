@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // OpenSourceWindowController.swift - "Open Source & Third-Party Software" window.
 //
 // A searchable list of every bundled open-source component (name / version /

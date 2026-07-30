@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Execution tests for DefaultAutomationCore against a fake host bridge:
 // policy gating (refuse/confirm/allow), plan-then-confirm, dispatch, and events.
 

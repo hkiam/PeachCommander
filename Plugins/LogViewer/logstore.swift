@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // logstore.swift — memory-mapped, lazily-indexed backing store for the Log Viewer.
 //
 // Opens a log file with mmap (instant regardless of size) and builds a line-offset

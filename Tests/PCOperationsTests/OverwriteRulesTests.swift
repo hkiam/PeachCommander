@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // OverwriteRulesTests.swift - Conditional overwrite + auto-rename rules (F-086).
 
 import XCTest

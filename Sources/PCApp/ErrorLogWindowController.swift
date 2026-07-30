@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ErrorLogWindowController.swift - End-of-operation error log (F-089).
 //
 // A file operation that ran with "continue on error" (Skip All, or per-file

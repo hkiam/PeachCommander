@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // CopyRenameMask.swift - Wildcard rename mask for copy/move targets (F-080).
 //
 // Total Commander lets the F5/F6 target field end in a wildcard mask (e.g.

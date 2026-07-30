@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-uninstaller-plugin.sh — build the Uninstaller.ptxplugin bundle (external
 # PTX tool plugin). Installs into the app's plugins dir by default; pass an
 # output dir to build elsewhere.

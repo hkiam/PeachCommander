@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DeleteEngine.swift - Trash (batched) and permanent recursive delete
 // (SPEC-004 §7). Symlink-safe: never descends into symlinked directories.
 

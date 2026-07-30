@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ColumnSet.swift - Custom column-set model + INI persistence (SPEC-002 §3, F-024).
 //
 // A named, ordered set of columns the user can show in a panel. Each column binds

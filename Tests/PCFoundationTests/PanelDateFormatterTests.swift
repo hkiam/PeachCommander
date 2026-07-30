@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PanelDateFormatterTests.swift - Configurable Date column formatting (F-031).
 
 import XCTest

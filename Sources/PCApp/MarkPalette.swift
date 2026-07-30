@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MarkPalette.swift - The shared, user-extensible highlight palette for the
 // "Mark All" feature (editor + viewer). A fixed set of built-in colors plus
 // any number of user-defined ones the user creates from the Mark dialog. Custom

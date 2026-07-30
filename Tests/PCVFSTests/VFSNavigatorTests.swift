@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // VFSNavigatorTests.swift - Tests for the per-tab (fs, path) navigation
 // stack (SPEC-006 §2).
 

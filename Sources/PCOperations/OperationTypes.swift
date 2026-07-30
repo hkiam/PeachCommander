@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // OperationTypes.swift - Shared value types for the file-operation engine
 //
 // SPEC-004 §1. Pure Foundation (no AppKit). All engines are VFS-adjacent but the

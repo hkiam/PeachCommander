@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PCXArchive.swift - PCX packer plugin adapter (I14 T03).
 //
 // Drives a loaded PCX plugin's C ABI (pcx.h via the CPCX module) to browse and

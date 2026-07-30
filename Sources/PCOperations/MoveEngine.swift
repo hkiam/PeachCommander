@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MoveEngine.swift - Move/rename with same-volume rename(2) fast path and
 // cross-device copy+delete fallback (SPEC-004 §2).
 

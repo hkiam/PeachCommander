@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // DetectStringTests.swift - Tests for the TC detect-string parser + evaluator
 //
 // Covers SPEC-012 §6, feature F-238.

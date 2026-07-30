@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-notes-plugin.sh — build Notes.pdxplugin (per-path/global notes: indicator
 # column + editor/overview windows). Installs into the app's plugins dir.
 set -euo pipefail

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // MCPSocketServer.swift - a loopback TCP transport for the MCP protocol adapter.
 //
 // A GUI app can't be an stdio MCP server (stdio is for a client-spawned subprocess),

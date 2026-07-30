@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ZipReaderTests.swift - Exercises ZipReader against zips built on the fly
 // with the system `/usr/bin/zip` tool (default deflate, forced store via
 // `-0`, nested directories, and a larger deflate-compressible payload).

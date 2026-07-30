@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /*
  * sample_lister.c — a minimal Peach Commander PLX lister plugin (SPEC-012 §3, T02).
  *

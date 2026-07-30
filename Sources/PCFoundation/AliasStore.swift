@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AliasStore.swift - Command-line aliases (F-256).
 //
 // User-defined shortcuts for the panel command line, read from `aliases.ini`

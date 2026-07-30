@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Tests for the agent orchestration loop, using a scripted mock provider and a
 // DefaultAutomationCore over the FakeBridge (from DefaultAutomationCoreTests).
 

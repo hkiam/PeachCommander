@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // XPathQuery.swift - Evaluate an XPath expression against XML for the viewer (TODOS #21).
 //
 // Thin wrapper over Foundation's XMLDocument.nodes(forXPath:) that returns each

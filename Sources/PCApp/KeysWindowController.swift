@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // KeysWindowController.swift - Keyboard shortcut editor (I13 T06, F-254).
 //
 // A grid of commands with their current shortcut. Selecting a row and pressing

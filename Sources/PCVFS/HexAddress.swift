@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // HexAddress.swift - Parse a user-entered address/offset for the viewer's "Go To".
 //
 // Accepts hex with a 0x / $ prefix or an `h` suffix, otherwise decimal. Used by the

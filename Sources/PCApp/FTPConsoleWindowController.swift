@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FTPConsoleWindowController.swift - FTP protocol log + custom-command console (F-217).
 //
 // Shows the live raw FTP control-channel traffic (commands sent, replies received)

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PlaceholderModelProvider.swift - the "no model configured yet" provider.
 //
 // Used when no real model is available (Apple Intelligence not set up and no cloud

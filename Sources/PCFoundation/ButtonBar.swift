@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ButtonBar.swift - Total Commander `.bar` (button bar) format, parser + writer.
 //
 // TC button bars are INI files with a single [Buttonbar] section:

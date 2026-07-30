@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TreemapConfig.swift — persisted preferences + the Settings pane for Disk Map.
 //
 // Like SystemMonitor/LogViewer, the plugin owns its config as JSON under the host's

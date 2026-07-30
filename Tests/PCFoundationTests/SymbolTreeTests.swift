@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // SymbolTreeTests.swift - Unit tests for the tree-sitter-independent symbol-outline
 // logic (nesting, same-name merge, filter, enclosing path, find, dedup).
 

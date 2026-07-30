@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PCXArchiveFS.swift - Read-only VirtualFileSystem backed by a PCX plugin (I14 T03).
 //
 // Mirrors PCArchive.ArchiveFS but serves listing/stat/reads from a plugin-driven

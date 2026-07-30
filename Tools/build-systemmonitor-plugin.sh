@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
 # build-systemmonitor-plugin.sh — build SystemMonitor.ptxplugin (titlebar system
 # monitor: CPU/Memory/Network/Battery/Disk chips + detail popovers).
 set -euo pipefail

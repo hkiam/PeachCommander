@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // FilePropertiesTests.swift - Unit tests for the pure FileProperties model/reader (I03-T07)
 
 import XCTest

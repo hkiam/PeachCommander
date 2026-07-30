@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // TextMarkController.swift - Notepad++-style "mark all" for an NSTextView
 // (viewer + editor). Highlights every occurrence of a term in a palette color
 // (cycled so different terms get different colors), counts them, lets you jump

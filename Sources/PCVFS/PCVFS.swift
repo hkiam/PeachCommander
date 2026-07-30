@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // PCVFS - Virtual File System protocol and local FS implementation
 // This module defines the VFS protocol and a concrete LocalDirectoryLister
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Tests for the Automation Core contract: the permission model, the tool catalogue,
 // and its JSON-schema export. Pure-value tests, no host.
 

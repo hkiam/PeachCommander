@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ConfigStoreTests.swift - Unit tests for ConfigStore and ConfigPaths
 
 import XCTest

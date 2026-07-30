@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // AliasStoreTests.swift - Command-line alias parsing + expansion (F-256).
 
 import XCTest

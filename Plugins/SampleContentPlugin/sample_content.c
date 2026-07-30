@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /*
  * sample_content.c — a minimal Peach Commander PDX content plugin (SPEC-012 §5, T04).
  *
