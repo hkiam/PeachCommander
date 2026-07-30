@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fájlok megtekintése</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Fájlok megtekintése</h1>
+<p>A Peach Commander beépített megjelenítővel rendelkezik, amely lehetővé teszi, hogy belenézzen egy fájlba anélkül, hogy másik appot nyitna meg vagy megváltoztatná a fájlt. Nyomja meg az F3-at a kurzor alatti elemen, és a megjelenítő azonnal megnyílik, még nagyon nagy fájloknál is. Automatikusan kiválasztja a tartalom megjelenítésének legjobb módját: olvasható szöveg, szintaxisszínezett kód, nyers hexadecimális kiíratás vagy teljes méretű kép. Egy fájlt előnézhet közvetlenül az ablakon belül is a Gyorsnézet segítségével, vagy átadhatja a macOS Quick Looknak.</p>
+<h2 id="fajl-megtekintese">Fájl megtekintése</h2>
+<ol>
+<li>Vigye a kurzort egy fájlra az aktív panelben.</li>
+<li>Nyomja meg az F3-at (vagy válassza a Megtekintés lehetőséget a Fájl menüben). A megjelenítő a saját ablakában nyílik meg.</li>
+<li>Használja az eszköztárat a tartalom megjelenítési módjának váltásához: Szöveg, Kód, Hex, Kép vagy Renderelt. Hagyja az automatikus beállításon, hogy a Peach Commander döntsön.</li>
+<li>Görgessen a nyílbillentyűkkel, a Page Up/Page Down-nal és a görgetősávval. Hosszú szövegnél kapcsolja be a minitérkép gombot, hogy egy pillantással lássa és bejárja az egész fájlt.</li>
+<li>Nyomja meg az N-t a következő kijelölt fájlra ugráshoz, vagy zárja be az ablakot az Esc-cel.</li>
+</ol>
+<p><img alt="A beépített megjelenítő egy szövegfájlt mutat a minitérképpel jobbra" src="images/lister-text.png" />
+<em>(Ábra: egy szövegfájl megtekintése, a megjelenítésválasztóval és a minitérképpel az eszköztárban.)</em></p>
+<h2 id="szoveg-keresese-es-a-kodolas-megvaltoztatasa">Szöveg keresése és a kódolás megváltoztatása</h2>
+<ul>
+<li>Nyomja meg a Ctrl+F-et a fájlon belüli kereséshez. Nyomja meg az F3-at a következő találatra ugráshoz, a Shift+F3-at az előzőhöz.</li>
+<li>Ha a szöveg zavarosnak tűnik, kattintson a Kódolás gombra az eszköztárban (vagy nyomja meg az E-t) a szövegkódolások végigjárásához, amíg helyesen nem olvasható; az automatikus beállítás általában eltalálja.</li>
+<li>Nyomja meg a W-t a hosszú sorok sortörésének átkapcsolásához.</li>
+</ul>
+<h2 id="gyorsnezet-es-quick-look">Gyorsnézet és Quick Look</h2>
+<p>A Gyorsnézet élő előnézetet mutat abban a panelben, amelyet <em>nem</em> használ, így folytathatja a böngészést az egyik oldalon, miközben a másikon előnéz.</p>
+<ol>
+<li>Nyomja meg a Ctrl+Q-t. Az inaktív panel előnézeti területté válik.</li>
+<li>Vigye a kurzort különböző fájlok fölé az aktív panelben mindegyik előnézetéhez.</li>
+<li>Nyomja meg a Ctrl+Q-t újra, vagy az Esc-et, hogy a panelt normál fájllistává állítsa vissza.</li>
+</ol>
+<p>Egy gyors, magától a macOS által kezelt teljes képernyős előnézethez nyomja meg a Cmd+Y-t (Quick Look). Nyomja meg a Cmd+Y-t vagy a szóközt újra a bezárásához.</p>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyűparancs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kurzor alatti fájl megtekintése</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Csak a kurzor alatti fájl megtekintése (megjelölt fájlok mellőzése)</td>
+<td>Shift+F3</td>
+</tr>
+<tr>
+<td>Megnyitás külső megjelenítőben</td>
+<td>Option+F3</td>
+</tr>
+<tr>
+<td>Keresés a megjelenítőben</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Következő / előző találat</td>
+<td>F3 / Shift+F3</td>
+</tr>
+<tr>
+<td>Gyorsnézet a másik panelben</td>
+<td>Ctrl+Q</td>
+</tr>
+<tr>
+<td>Quick Look (macOS előnézet)</td>
+<td>Cmd+Y</td>
+</tr>
+<tr>
+<td>A megjelenítő vagy a Gyorsnézet bezárása</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A megjelenítő csak olvasható. Egy fájl megváltoztatásához használja inkább a szerkesztőt (lásd Fájlok szerkesztése).</li>
+<li>A nagyon nagy fájlok késleltetés nélkül nyílnak meg: a szöveg egy gyors, görgethető nézetet nyit, a hex nézet pedig közvetlenül a lemezről streamel bármilyen méretben.</li>
+<li>Nyomja meg az F3-at egy mappán, hogy a tartalmának összefoglalóját és teljes méretét lássa a fájlbájtok helyett.</li>
+<li>A Renderelt mód formázott tartalmat jelenít meg, például weboldalakat; a hex mód a nyers bájtokat mutatja a karaktereik mellett, ami hasznos bináris fájlok vizsgálatához.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Fájlok szerkesztése</a></li><li><a href="searching.html">Fájlok keresése</a></li></ul></section>
+</main>
+</body>
+</html>

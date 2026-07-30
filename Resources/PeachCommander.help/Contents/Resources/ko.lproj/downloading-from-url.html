@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>URL에서 다운로드</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>URL에서 다운로드</h1>
+<p>Peach Commander는 브라우저를 열지 않고도 HTTP 또는 HTTPS 웹 주소에서 파일을 활성 패널로 바로 가져올 수 있습니다. 링크를 붙여 넣고, 저장될 이름을 확인하면 다운로드가 스스로 실행됩니다. 연결이 끊기면 이어받기, 여러 링크를 한 번에 처리하는 일괄 다운로드, 그리고 파일이 온전히 도착했음을 알 수 있는 선택적 체크섬 검증을 지원합니다.</p>
+<h2 id="_1">파일 다운로드</h2>
+<ol>
+<li>파일을 받을 패널 폴더를 엽니다.</li>
+<li><strong>네트워크 &gt; Download from URL</strong>을 선택하거나 Cmd+Shift+D를 누릅니다.</li>
+<li>웹 주소를 <strong>URL</strong> 상자에 붙여 넣습니다. 링크를 먼저 복사했다면 자동으로 채워집니다.</li>
+<li><strong>다른 이름으로 저장</strong> 이름을 확인합니다. 링크에서 제안되며 자유롭게 편집할 수 있습니다.</li>
+<li><strong>다운로드</strong>를 클릭합니다.</li>
+</ol>
+<p><img alt="링크, 편집 가능한 파일 이름, 옵션이 있는 URL에서 다운로드 대화상자" src="images/download-url.png" />
+<em>(그림: 다운로드 대화상자 — 링크를 붙여 넣고, 이름을 편집하고, 선택적 검증, 자격 증명, 헤더, 프록시를 설정합니다.)</em></p>
+<p>기본적으로 다운로드는 <strong>백그라운드에서</strong> 실행되므로, 전송되는 동안 패널에서 계속 작업할 수 있습니다. 기다리려면 <strong>백그라운드에서 다운로드</strong>를 끄고, 아직 시작하지 않고 설정만 하려면 <strong>나중을 위해 대기</strong>를 켜십시오.</p>
+<h2 id="_2">여러 파일을 한 번에 다운로드</h2>
+<p><strong>URL</strong> 상자에 한 줄에 하나씩 웹 주소를 붙여 넣습니다. 링크가 두 개 이상이면 각 파일의 이름이 링크에서 자동으로 파생되며, 파일별 <strong>다른 이름으로 저장</strong>과 <strong>검증</strong> 필드는 꺼집니다.</p>
+<h2 id="_3">중단된 다운로드 이어받기</h2>
+<p>전송이 끊기면 Peach Commander는 이미 받은 내용을 임시 <code>.part</code> 파일에 보관합니다. 같은 다운로드를 다시 시작하면, 서버가 지원할 때마다 처음부터 다시 시작하는 대신 멈춘 지점부터 이어받습니다. <code>.part</code> 파일은 다운로드가 성공적으로 끝난 후에야 최종 이름으로 바뀝니다.</p>
+<h2 id="_4">단축키</h2>
+<table>
+<thead>
+<tr>
+<th>작업</th>
+<th>단축키</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>URL에서 다운로드</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">팁</h2>
+<ul>
+<li><strong>파일을 검증하십시오.</strong> 단일 다운로드의 경우, 예상되는 <strong>SHA-256</strong> 체크섬을 <strong>검증</strong> 필드에 붙여 넣으십시오. 전송 후 파일의 체크섬이 이와 비교되므로, 파일이 게시자가 명시한 것과 일치함을 신뢰할 수 있습니다.</li>
+<li><strong>로그인이 필요한가요?</strong> 기본 인증을 사용하는 사이트의 경우 <strong>인증</strong> 필드에 사용자 이름과 암호를 입력하십시오. 토큰 기반 접근의 경우 <strong>헤더</strong> 상자에 <code>Authorization: Bearer …</code> 줄을 추가하십시오.</li>
+<li><strong>사용자 지정 헤더.</strong> 특정 요청 헤더에서만 동작하는 링크의 경우, <strong>헤더</strong> 상자에 한 줄에 하나씩 헤더를 추가하십시오(예: <code>Referer: …</code> 또는 <code>Cookie: …</code>).</li>
+<li><strong>프록시.</strong> <strong>프록시</strong> 호스트, 포트, 유형을 채워 HTTP 또는 SOCKS5 프록시를 통해 다운로드를 라우팅하십시오.</li>
+<li><strong>신뢰할 수 없는 인증서.</strong> 자체 서명된 인증서를 사용하는 신뢰하는 사이트에 대해서만 <strong>신뢰할 수 없는 인증서 허용</strong>을 켜십시오. 이는 해당 다운로드에 대한 일반적인 HTTPS 보안 검사를 비활성화합니다.</li>
+<li><strong>참고:</strong> Cmd+Shift+D는 데스크탑 폴더로 이동하는 데도 다른 곳에서 사용됩니다. 단축키가 이 대화상자를 열지 않으면, 대신 메뉴에서 <strong>네트워크 &gt; Download from URL</strong>을 사용하십시오.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">FTP 및 SFTP 연결</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copiare i file</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Copiare i file</h1>
+<p>Peach Commander è costruito attorno a due pannelli affiancati: uno contiene i file su cui state lavorando, l'altro è la destinazione. La copia prende ciò che è selezionato nel pannello attivo e ne colloca un duplicato nella cartella mostrata nell'altro pannello, lasciando gli originali al loro posto. È il modo più rapido per duplicare file e cartelle tra due posizioni senza trascinare.</p>
+<h2 id="copiare-una-selezione-nellaltro-pannello">Copiare una selezione nell'altro pannello</h2>
+<ol>
+<li>In un pannello, aprite la cartella che contiene gli elementi da copiare.</li>
+<li>Nell'altro pannello, aprite la cartella in cui devono andare le copie.</li>
+<li>Selezionate i file e le cartelle da copiare. Se non è selezionato nulla, viene usato l'elemento sotto il cursore.</li>
+<li>Premete F5. Si apre la finestra di copia, che mostra il percorso di destinazione già compilato.</li>
+</ol>
+<p><img alt="La finestra di copia con il percorso di destinazione e le opzioni" src="images/copy-dialog.png" />
+<em>(Figura: la finestra di copia. Il percorso di destinazione punta all'altro pannello; usate le opzioni per regolare con precisione la copia.)</em></p>
+<ol start="5">
+<li>Modificate la destinazione se necessario, poi confermate per avviare la copia.</li>
+</ol>
+<h2 id="opzioni-di-copia">Opzioni di copia</h2>
+<p>Prima di confermare, potete modificare il comportamento della copia:</p>
+<ul>
+<li><strong>Solo file più recenti</strong> — salta ogni elemento la cui copia esiste già ed è della stessa età o più recente, così vengono aggiornati solo i file modificati.</li>
+<li><strong>Conserva i metadati</strong> — mantiene date, permessi e altri attributi dei file sulle copie. È attiva per impostazione predefinita.</li>
+<li><strong>Limite di velocità</strong> — limita la velocità di trasferimento affinché una copia di grandi dimensioni non saturi il disco o la connessione di rete.</li>
+<li><strong>Maschera di rinomina</strong> — digitate un pattern con caratteri jolly nel campo di destinazione (ad esempio <code>*.bak</code>) per rinominare gli elementi durante la copia.</li>
+</ul>
+<p>Potete anche inviare l'operazione alla coda in background invece di seguirla — vedi Trasferimenti in background.</p>
+<h2 id="avanzamento">Avanzamento</h2>
+<p>Una finestra di avanzamento mostra il file corrente e l'operazione complessiva con barre separate, oltre alla velocità di trasferimento. Potete mettere in pausa e riprendere in qualsiasi momento, oppure inviare la copia in corso al gestore dei trasferimenti in background per continuare a lavorare mentre viene completata.</p>
+<p><img alt="La finestra di avanzamento del trasferimento con una barra di avanzamento, conteggi di file e byte, e i pulsanti Pausa e Annulla" src="images/progress-dialog.png" />
+<em>(Figura: la finestra di avanzamento mostrata durante una copia o uno spostamento.)</em></p>
+<h2 id="gestione-dei-file-gia-esistenti">Gestione dei file già esistenti</h2>
+<p>Se una copia dovesse sostituire un file esistente, Peach Commander si ferma e chiede cosa fare. Un'anteprima di entrambi i file vi aiuta a decidere.</p>
+<p><img alt="La finestra di conflitto per la sovrascrittura che confronta due file" src="images/overwrite-dialog.png" />
+<em>(Figura: la finestra di sovrascrittura confronta il file esistente con quello in fase di copia.)</em></p>
+<p>Le vostre scelte comprendono:</p>
+<ul>
+<li><strong>Sovrascrivi</strong> il file esistente, oppure <strong>Sovrascrivi tutto</strong> per applicarlo a ogni conflitto rimanente.</li>
+<li><strong>Salta</strong> questo file, oppure <strong>Salta tutto</strong> i conflitti rimanenti.</li>
+<li><strong>Rinomina</strong> automaticamente la copia in arrivo così che entrambi i file vengano mantenuti.</li>
+<li><strong>Accoda</strong> i dati in arrivo alla fine del file esistente.</li>
+<li>Sovrascrivi solo quando l'origine è <strong>più recente</strong> o <strong>più grande</strong> del file esistente.</li>
+</ul>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Tasto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Copiare la selezione nell'altro pannello</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Copiare nella stessa cartella (creare un duplicato rinominato)</td>
+<td>Shift+F5</td>
+</tr>
+<tr>
+<td>Aprire il gestore dei trasferimenti in background</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Copiare tra due posizioni sullo stesso disco usa una clonazione rapida quando il disco la supporta, così i file di grandi dimensioni vengono copiati quasi istantaneamente e usano poco spazio aggiuntivo.</li>
+<li>Le cartelle vengono copiate con tutto il loro contenuto.</li>
+<li>Per spostare i file invece di copiarli, usate F6. Per seguire o gestire le operazioni in coda, aprite il gestore dei trasferimenti in background con Cmd+Shift+B.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Spostamento e rinomina</a></li><li><a href="background-transfers.html">Trasferimenti in background</a></li></ul></section>
+</main>
+</body>
+</html>

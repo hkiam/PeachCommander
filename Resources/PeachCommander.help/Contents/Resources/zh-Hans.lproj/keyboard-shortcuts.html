@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>键盘与快捷键</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>键盘与快捷键</h1>
+<p>Peach Commander 生来就是为键盘驱动而打造的。它内置了两套现成的快捷键方案，并让你可以将任何命令重新绑定到你偏好的按键上。如果你是从经典的双面板文件管理器过来的，可以保留你已经熟悉的按键；如果你更愿意使用熟悉的 Mac 组合键，只需单击一下即可切换到 macOS 方案。一个可搜索的命令浏览器让你能够发现应用能做的一切，并按名称运行任何命令。</p>
+<h2 id="_1">切换键盘方案</h2>
+<ol>
+<li>打开 <strong>配置</strong> 菜单。</li>
+<li>选择 <strong>键盘方案</strong>，然后选取其中之一：
+   - <strong>TC Classic</strong>（默认）保留传统按键，采用基于 Ctrl 的组合，例如用 Ctrl+R 刷新面板。
+   - <strong>macOS Native</strong> 在合理之处将相同的操作映射到熟悉的 Mac 按键上，例如用 Cmd+C 复制文件、用 Cmd+F 搜索。</li>
+<li>勾选标记显示当前活动的方案。更改会立即在菜单和快捷键栏中生效。</li>
+</ol>
+<h2 id="_2">自定义快捷键</h2>
+<ol>
+<li>选择 <strong>配置 &gt; 键盘快捷键…</strong>。</li>
+<li>使用搜索字段找到某个命令，然后选中它所在的行。</li>
+<li>单击 <strong>录制…</strong> 并按下你想要的组合键。它会立即被分配。</li>
+<li>如果该组合已被另一个命令使用，会有提示告知你它是从哪个命令那里占用来的。</li>
+<li>使用 <strong>清除</strong> 移除某个命令的快捷键，或使用 <strong>恢复默认值</strong> 放弃你所有的更改并返回到方案的原始按键。</li>
+</ol>
+<p><img alt="键盘快捷键编辑器，列出命令及其分配的按键" src="images/keys-editor.png" />
+<em>（图：搜索某个命令，然后使用“录制”、“清除”或“恢复默认值”来更改其快捷键。）</em></p>
+<h2 id="_3">浏览所有命令</h2>
+<ol>
+<li>选择 <strong>配置 &gt; 命令浏览器…</strong>。</li>
+<li>在搜索字段中输入内容，以按名称、类别或描述进行筛选。</li>
+<li>双击某个命令，或选中它并单击 <strong>运行</strong>，即可在活动面板上执行它。</li>
+</ol>
+<p><img alt="命令浏览器，显示可搜索的命令列表" src="images/command-browser.png" />
+<em>（图：所有命令集于一个可搜索的列表中，每个命令都有简短的描述。）</em></p>
+<h2 id="_4">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>菜单路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>选择经典方案</td>
+<td>配置 &gt; 键盘方案 &gt; TC Classic</td>
+</tr>
+<tr>
+<td>选择 Mac 方案</td>
+<td>配置 &gt; 键盘方案 &gt; macOS Native</td>
+</tr>
+<tr>
+<td>编辑快捷键</td>
+<td>配置 &gt; 键盘快捷键…</td>
+</tr>
+<tr>
+<td>浏览所有命令</td>
+<td>配置 &gt; 命令浏览器…</td>
+</tr>
+<tr>
+<td>刷新活动面板</td>
+<td>F2（也可用 Ctrl+R）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">说明</h2>
+<ul>
+<li>你的自定义快捷键会被自动保存，并叠加在当前活动的方案之上。切换方案时会保留你的个人覆盖设置。</li>
+<li>在当前上下文中不可用的命令，会在快捷键编辑器和命令浏览器中显示为灰色。</li>
+<li>若要直接使用功能键（F1–F12），请在“系统设置 &gt; 键盘”中打开 <strong>将 F1、F2 等键用作标准功能键</strong>。否则，请与功能键一同按住 <strong>Fn</strong> 键。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts-reference.html">键盘快捷键参考</a></li><li><a href="settings.html">设置</a></li></ul></section>
+</main>
+</body>
+</html>

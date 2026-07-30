@@ -1,0 +1,542 @@
+# Screenshot registry (see DOCUMENTATION.md §5). Regenerate via Tools/vm/capture.py.
+screenshots:
+- id: main-window
+  path: docs/assets/screenshots/main-window.png
+  feature: dual-pane
+  pages: &id001
+  - introduction
+  - interface-overview
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Peach Commander main window with two file panels
+  caption: The dual-pane main window.
+- id: main-window-dark
+  path: docs/assets/screenshots/main-window-dark.png
+  feature: dual-pane
+  pages: *id001
+  theme: dark
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Peach Commander main window with two file panels
+  caption: The dual-pane main window.
+- id: button-bar-crop
+  path: docs/assets/screenshots/button-bar-crop.png
+  feature: button-bar
+  pages:
+  - toolbar
+  - interface-overview
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The button bar toolbar
+  caption: The button bar.
+- id: tab-bar-crop
+  path: docs/assets/screenshots/tab-bar-crop.png
+  feature: tabs
+  pages:
+  - panels-and-tabs
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The per-panel tab bar
+  caption: Tabs sit above each panel.
+- id: drive-bar-crop
+  path: docs/assets/screenshots/drive-bar-crop.png
+  feature: drive-bar
+  pages:
+  - interface-overview
+  - navigating
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The drive bar showing volumes
+  caption: The drive bar lists mounted volumes.
+- id: path-bar-crop
+  path: docs/assets/screenshots/path-bar-crop.png
+  feature: path-bar
+  pages:
+  - navigating
+  - interface-overview
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The editable breadcrumb path bar
+  caption: Click a segment in the path bar to jump there.
+- id: view-modes
+  path: docs/assets/screenshots/view-modes.png
+  feature: view-modes
+  pages:
+  - view-modes-and-sorting
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: Panel shown in thumbnail view
+  caption: Thumbnail view mode.
+- id: columns-config
+  path: docs/assets/screenshots/columns-config.png
+  feature: columns
+  pages:
+  - view-modes-and-sorting
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Configure Columns dialog
+  caption: Choose which columns appear and their widths.
+- id: select-by-mask
+  path: docs/assets/screenshots/select-by-mask.png
+  feature: selection
+  pages:
+  - selecting-files
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Select by mask dialog
+  caption: Select files by a wildcard mask.
+- id: copy-dialog
+  path: docs/assets/screenshots/copy-dialog.png
+  feature: copy
+  pages:
+  - copying-files
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The copy dialog
+  caption: The copy dialog (F5) with its options.
+- id: overwrite-dialog
+  path: docs/assets/screenshots/overwrite-dialog.png
+  feature: overwrite-resolution
+  pages:
+  - copying-files
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The overwrite conflict dialog
+  caption: Resolving a file-overwrite conflict.
+- id: transfer-manager
+  path: docs/assets/screenshots/transfer-manager.png
+  feature: transfer-manager
+  pages:
+  - copying-files
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The background transfer manager window
+  caption: The background transfer manager.
+- id: attributes-dialog
+  path: docs/assets/screenshots/attributes-dialog.png
+  feature: attributes-acl
+  pages:
+  - attributes-and-permissions
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The change attributes dialog
+  caption: Changing POSIX permissions and flags.
+- id: duplicate-finder
+  path: docs/assets/screenshots/duplicate-finder.png
+  feature: find-duplicates
+  pages:
+  - file-utilities
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The duplicate file finder window
+  caption: Finding duplicate files.
+- id: multi-rename
+  path: docs/assets/screenshots/multi-rename.png
+  feature: multi-rename
+  pages:
+  - multi-rename
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The multi-rename tool with a live preview
+  caption: The Multi-Rename tool with a live preview.
+- id: sync-dialog
+  path: docs/assets/screenshots/sync-dialog.png
+  feature: compare-sync
+  pages:
+  - comparing-and-syncing
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The synchronize directories window
+  caption: Synchronizing two directories.
+- id: archive-browse
+  path: docs/assets/screenshots/archive-browse.png
+  feature: archive-browse
+  pages:
+  - archives
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: Browsing inside a zip archive
+  caption: An archive opened like a folder.
+- id: pack-dialog
+  path: docs/assets/screenshots/pack-dialog.png
+  feature: archive-pack
+  pages:
+  - archives
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The pack files dialog
+  caption: Creating an archive.
+- id: find-files-general
+  path: docs/assets/screenshots/find-files-general.png
+  feature: find-files
+  pages:
+  - searching
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Find Files dialog, General tab
+  caption: Find Files — the General tab.
+- id: find-files-advanced
+  path: docs/assets/screenshots/find-files-advanced.png
+  feature: find-files
+  pages:
+  - searching
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Find Files dialog, Advanced tab
+  caption: Find Files — size, date and attribute filters.
+- id: find-files-plugins
+  path: docs/assets/screenshots/find-files-plugins.png
+  feature: find-files
+  pages:
+  - searching
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Find Files dialog, Plugins tab
+  caption: Find Files — plugin content criteria.
+- id: ftp-connection-manager
+  path: docs/assets/screenshots/ftp-connection-manager.png
+  feature: ftp
+  pages: &id002
+  - ftp-and-sftp
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The FTP connection manager
+  caption: Managing saved network connections.
+- id: ftp-connection-manager-dark
+  path: docs/assets/screenshots/ftp-connection-manager-dark.png
+  feature: ftp
+  pages: *id002
+  theme: dark
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The FTP connection manager
+  caption: Managing saved network connections.
+- id: ftp-console
+  path: docs/assets/screenshots/ftp-console.png
+  feature: ftp-console
+  pages:
+  - ftp-and-sftp
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The FTP protocol console
+  caption: The FTP console shows live protocol traffic.
+- id: download-url
+  path: docs/assets/screenshots/download-url.png
+  feature: http-download
+  pages:
+  - downloading-from-url
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Download from URL dialog
+  caption: Downloading a file from a URL.
+- id: lister-text
+  path: docs/assets/screenshots/lister-text.png
+  feature: lister-viewer
+  pages: &id003
+  - viewing-files
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: A text file open in the viewer
+  caption: The built-in file viewer (F3).
+- id: lister-text-dark
+  path: docs/assets/screenshots/lister-text-dark.png
+  feature: lister-viewer
+  pages: *id003
+  theme: dark
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: A text file open in the viewer
+  caption: The built-in file viewer (F3).
+- id: editor
+  path: docs/assets/screenshots/editor.png
+  feature: editor
+  pages: &id004
+  - editing-files
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: A source file open in the editor with syntax highlighting
+  caption: The editor with syntax highlighting (F4).
+- id: editor-dark
+  path: docs/assets/screenshots/editor-dark.png
+  feature: editor
+  pages: *id004
+  theme: dark
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: A source file open in the editor with syntax highlighting
+  caption: The editor with syntax highlighting (F4).
+- id: command-browser
+  path: docs/assets/screenshots/command-browser.png
+  feature: command-system
+  pages:
+  - keyboard-shortcuts
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The command browser listing all commands
+  caption: Every command is searchable in the command browser.
+- id: keys-editor
+  path: docs/assets/screenshots/keys-editor.png
+  feature: keyboard-shortcuts
+  pages:
+  - keyboard-shortcuts
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The keyboard shortcut editor
+  caption: Customizing keyboard shortcuts.
+- id: settings-layout
+  path: docs/assets/screenshots/settings-layout.png
+  feature: settings
+  pages:
+  - settings
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: Settings — Layout page
+  caption: Settings — the Layout page.
+- id: settings-display
+  path: docs/assets/screenshots/settings-display.png
+  feature: settings
+  pages:
+  - settings
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: Settings — Display page
+  caption: Settings — the Display page.
+- id: settings-operation
+  path: docs/assets/screenshots/settings-operation.png
+  feature: settings
+  pages:
+  - settings
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: Settings — Operation page
+  caption: Settings — the Operation page.
+- id: settings-colors
+  path: docs/assets/screenshots/settings-colors.png
+  feature: theming
+  pages: &id005
+  - appearance
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: Settings — Colors page
+  caption: Settings — appearance and colors.
+- id: settings-colors-dark
+  path: docs/assets/screenshots/settings-colors-dark.png
+  feature: theming
+  pages: *id005
+  theme: dark
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: Settings — Colors page
+  caption: Settings — appearance and colors.
+- id: plugins-window
+  path: docs/assets/screenshots/plugins-window.png
+  feature: plugins-user
+  pages:
+  - plugins
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The plugins manager window
+  caption: Enabling and installing plugins.
+- id: hotlist-manager
+  path: docs/assets/screenshots/hotlist-manager.png
+  feature: hotlist
+  pages:
+  - favorites
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The favorites / hotlist manager
+  caption: Organizing favorite folders.
+- id: help-viewer
+  path: docs/assets/screenshots/help-viewer.png
+  feature: help
+  pages:
+  - introduction
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: Peach Commander Help open in the macOS Help Viewer
+  caption: The built-in help opens in Help Viewer from the Help menu.
+- id: ai-chat
+  path: docs/assets/screenshots/ai-chat.png
+  feature: ai-assistant
+  pages:
+  - ai-assistant
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The AI assistant chat window
+  caption: The AI assistant chat (Commands ▸ AI Assistant).
+- id: settings-ai
+  path: docs/assets/screenshots/settings-ai.png
+  feature: ai-assistant
+  pages:
+  - settings
+  - ai-assistant
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: Settings — the unified AI page (model, cloud, autonomy, system prompt, MCP)
+  caption: All assistant options live on one AI page in Settings.
+- id: disk-map
+  path: docs/assets/screenshots/disk-map.png
+  feature: disk-map
+  pages:
+  - disk-map
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Disk Map treemap with a volume bar, largest-files list and category legend
+  caption: The Disk Map treemap view.
+- id: disk-map-sunburst
+  path: docs/assets/screenshots/disk-map-sunburst.png
+  feature: disk-map
+  pages:
+  - disk-map
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Disk Map sunburst view of concentric rings
+  caption: The Disk Map sunburst view.
+- id: diff-window
+  path: docs/assets/screenshots/diff-window.png
+  feature: compare-content
+  pages:
+  - comparing-and-syncing
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The text compare window showing differences between two files
+  caption: Comparing two text files side by side.
+- id: progress-dialog
+  path: docs/assets/screenshots/progress-dialog.png
+  feature: background-transfers
+  pages:
+  - copying-files
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The transfer progress dialog with a progress bar and file counts
+  caption: The progress dialog shown during a copy or move.
+- id: system-monitor
+  path: docs/assets/screenshots/system-monitor.png
+  feature: system-monitor
+  pages:
+  - system-monitor
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The System Monitor plugin's settings window (metrics, thresholds, refresh)
+  caption: System Monitor — choose which metrics ride in the status bar.
+- id: task-manager
+  path: docs/assets/screenshots/task-manager.png
+  feature: task-manager
+  pages:
+  - task-manager
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Task Manager plugin mounted as a virtual volume listing running processes
+  caption: Task Manager — running processes browsed as a virtual file system.
+- id: git-status
+  path: docs/assets/screenshots/git-status.png
+  feature: git
+  pages:
+  - git
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Git plugin's Git Status dialog showing the branch and changed files
+  caption: Git Status — branch and working-tree changes for the repo under the cursor.
+- id: uninstaller
+  path: docs/assets/screenshots/uninstaller.png
+  feature: uninstaller
+  pages:
+  - uninstaller
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: The Uninstaller plugin's review window listing an app and its leftover files
+    with sizes
+  caption: Uninstaller — review every file before it is removed.

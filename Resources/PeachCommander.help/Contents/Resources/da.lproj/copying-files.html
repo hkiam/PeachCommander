@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kopiering af filer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Kopiering af filer</h1>
+<p>Peach Commander er bygget op omkring to paneler side om side: det ene indeholder de filer, du arbejder med, det andet er destinationen. Kopiering tager det, der er markeret i det aktive panel, og lægger en kopi i den mappe, der vises i det andet panel, mens originalerne bliver liggende. Dette er den hurtigste måde at duplikere filer og mapper mellem to placeringer på uden at trække.</p>
+<h2 id="kopier-en-markering-til-det-andet-panel">Kopiér en markering til det andet panel</h2>
+<ol>
+<li>Åbn i det ene panel den mappe, der indeholder de emner, du vil kopiere.</li>
+<li>Åbn i det andet panel den mappe, hvor kopierne skal placeres.</li>
+<li>Markér de filer og mapper, der skal kopieres. Hvis intet er markeret, bruges emnet under markøren.</li>
+<li>Tryk på F5. Kopieringsdialogen åbner og viser destinationsstien allerede udfyldt.</li>
+</ol>
+<p><img alt="Kopieringsdialogen med destinationsstien og indstillinger" src="images/copy-dialog.png" />
+<em>(Figur: Kopieringsdialogen. Målstien peger mod det andet panel; brug indstillingerne til at finjustere kopieringen.)</em></p>
+<ol start="5">
+<li>Justér destinationen om nødvendigt, og bekræft derefter for at starte kopieringen.</li>
+</ol>
+<h2 id="kopieringsindstillinger">Kopieringsindstillinger</h2>
+<p>Inden du bekræfter, kan du ændre, hvordan kopieringen opfører sig:</p>
+<ul>
+<li><strong>Kun nyere filer</strong> — springer ethvert emne over, hvis kopi allerede findes og er lige så gammel eller nyere, så kun ændrede filer opdateres.</li>
+<li><strong>Bevar metadata</strong> — beholder datoer, tilladelser og andre filattributter på kopierne. Dette er slået til som standard.</li>
+<li><strong>Hastighedsgrænse</strong> — begrænser overførselshastigheden, så en stor kopiering ikke overbelaster din disk eller netværksforbindelse.</li>
+<li><strong>Omdøbningsmaske</strong> — indtast et jokertegnmønster i målfeltet (for eksempel <code>*.bak</code>) for at omdøbe emner, mens de kopieres.</li>
+</ul>
+<p>Du kan også sende jobbet til baggrundskøen i stedet for at holde øje med det — se Baggrundsoverførsler.</p>
+<h2 id="fremdrift">Fremdrift</h2>
+<p>Et fremdriftsvindue viser den aktuelle fil og det samlede job med separate bjælker samt overførselshastigheden. Du kan når som helst sætte på pause og genoptage eller sende den igangværende kopiering til baggrundsoverførsels-håndteringen for at arbejde videre, mens den fuldføres.</p>
+<p><img alt="Overførselsfremdriftsdialogen med en fremdriftsbjælke, fil- og byte-tællere samt knapperne Pause og Annullér" src="images/progress-dialog.png" />
+<em>(Figur: Fremdriftsdialogen, der vises under en kopiering eller flytning.)</em></p>
+<h2 id="handtering-af-filer-der-allerede-findes">Håndtering af filer, der allerede findes</h2>
+<p>Hvis en kopiering ville erstatte en eksisterende fil, stopper Peach Commander og spørger, hvad der skal ske. En forhåndsvisning af begge filer hjælper dig med at beslutte.</p>
+<p><img alt="Overskrivningskonflikt-dialogen, der sammenligner to filer" src="images/overwrite-dialog.png" />
+<em>(Figur: Overskrivningsdialogen sammenligner den eksisterende fil med den, der kopieres.)</em></p>
+<p>Dine valg omfatter:</p>
+<ul>
+<li><strong>Overskriv</strong> den eksisterende fil, eller <strong>Overskriv alle</strong> for at anvende dette på hver resterende konflikt.</li>
+<li><strong>Spring over</strong> denne fil, eller <strong>Spring alle over</strong> for de resterende konflikter.</li>
+<li><strong>Omdøb</strong> den indkommende kopi automatisk, så begge filer beholdes.</li>
+<li><strong>Tilføj</strong> de indkommende data til slutningen af den eksisterende fil.</li>
+<li>Overskriv kun, når kilden er <strong>nyere</strong> eller <strong>større</strong> end den eksisterende fil.</li>
+</ul>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Tast</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kopiér markering til det andet panel</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Kopiér i samme mappe (lav en omdøbt kopi)</td>
+<td>Shift+F5</td>
+</tr>
+<tr>
+<td>Åbn baggrundsoverførsels-håndteringen</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Kopiering mellem to placeringer på samme disk bruger en hurtig klon, når disken understøtter det, så store filer kopieres næsten øjeblikkeligt og bruger kun lidt ekstra plads.</li>
+<li>Mapper kopieres med alt, hvad de indeholder.</li>
+<li>For at flytte filer i stedet for at kopiere dem, brug F6. For at holde øje med eller håndtere job i køen, åbn baggrundsoverførsels-håndteringen med Cmd+Shift+B.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Flytning og omdøbning</a></li><li><a href="background-transfers.html">Baggrundsoverførsler</a></li></ul></section>
+</main>
+</body>
+</html>

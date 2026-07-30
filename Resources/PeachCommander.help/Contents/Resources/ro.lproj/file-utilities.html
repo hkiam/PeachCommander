@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Utilitare de fișiere</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Utilitare de fișiere</h1>
+<p>Dincolo de copiere și mutare, Peach Commander include un set de utilitare de fișiere zilnice pentru verificarea integrității fișierelor, recuperarea spațiului pe disc, împărțirea fișierelor mari în bucăți mai mici și conversia fișierelor în și din formate sigure pentru text. Ajungeți la toate din meniul <strong>Fișier</strong> și acționează asupra a ceea ce ați selectat în panoul activ (sau asupra elementului de sub cursor când nimic nu este selectat). Acest subiect acoperă sumele de control, căutătorul de duplicate, împărțirea/combinarea, codificarea/decodificarea și calcularea spațiului ocupat.</p>
+<h2 id="crearea-sau-verificarea-sumelor-de-control">Crearea sau verificarea sumelor de control</h2>
+<p>Sumele de control vă permit să confirmați că un fișier s-a descărcat sau copiat fără corupere, sau să oferiți unui destinatar un mod de a verifica copia primită.</p>
+<ol>
+<li>Selectați fișierele pe care doriți să le amprentați.</li>
+<li>Alegeți <strong>Fișier ▸ Creează sume de control…</strong>, alegeți un algoritm (CRC32, MD5, SHA-1, SHA-256 sau SHA-512) și salvați fișierul cu suma de control.</li>
+<li>Pentru a verifica fișierele mai târziu, selectați fișierul cu suma de control și alegeți <strong>Fișier ▸ Verifică sumele de control…</strong>. Peach Commander recalculează fiecare hash și raportează orice fișier care nu se potrivește.</li>
+</ol>
+<p>Sumele de control sunt calculate direct pe locația curentă, astfel încât le puteți crea sau verifica chiar și pentru fișiere din interiorul arhivelor sau de pe un server FTP.</p>
+<h2 id="gasirea-fisierelor-duplicate">Găsirea fișierelor duplicate</h2>
+<p>Căutătorul de duplicate localizează fișierele identice împrăștiate prin foldere, astfel încât să puteți elimina copiile suplimentare.</p>
+<ol>
+<li>Selectați folderele (sau fișierele) pe care doriți să le scanați.</li>
+<li>Alegeți <strong>Fișier ▸ Găsește duplicate…</strong>. Peach Commander compară candidații și grupează fișierele care sunt identice octet cu octet.</li>
+<li>Examinați fiecare grup, marcați copiile de care nu mai aveți nevoie și ștergeți-le.</li>
+</ol>
+<p><img alt="Căutătorul de duplicate care listează grupuri de fișiere identice" src="images/duplicate-finder.png" />
+<em>(Figura: căutătorul de duplicate grupează fișierele identice, astfel încât să păstrați unul și să eliminați restul.)</em></p>
+<h2 id="impartirea-si-combinarea-fisierelor">Împărțirea și combinarea fișierelor</h2>
+<p>Împărțirea rupe un fișier mare într-o serie numerotată de bucăți mai mici — utilă pentru limitele de stocare sau transfer. Combinarea le reasamblează.</p>
+<ol>
+<li>Pentru a împărți, selectați un fișier și alegeți <strong>Fișier ▸ Împarte fișierul…</strong>, apoi setați dimensiunea bucății. Bucățile sunt scrise în folderul celuilalt panou.</li>
+<li>Pentru a reasambla, selectați prima bucată și alegeți <strong>Fișier ▸ Combină fișiere…</strong>. Fișierul original este reconstruit din bucățile numerotate.</li>
+</ol>
+<h2 id="codificarea-si-decodificarea">Codificarea și decodificarea</h2>
+<p>Codificarea transformă un fișier binar în text simplu pentru a supraviețui canalelor care transportă doar text (de exemplu, e-mail mai vechi sau casete de lipire). Decodificarea o inversează.</p>
+<ol>
+<li>Selectați un fișier și alegeți <strong>Fișier ▸ Codifică…</strong>, apoi alegeți un format — MIME (Base64), UUE (uuencode) sau XXE.</li>
+<li>Pentru a restaura originalul, selectați fișierul codificat și alegeți <strong>Fișier ▸ Decodifică…</strong>. Formatul este detectat automat.</li>
+</ol>
+<h2 id="calcularea-spatiului-ocupat">Calcularea spațiului ocupat</h2>
+<p>Pentru a vedea cât spațiu ocupă efectiv un folder sau o selecție pe disc, selectați elementele și apăsați <strong>Ctrl+L</strong> (<strong>Fișier ▸ Calculează spațiul ocupat…</strong>). Peach Commander adună fiecare fișier din interior, inclusiv subfolderele, și arată totalul.</p>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Tastă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Calculează spațiul ocupat</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Sumele de control, împărțirea/combinarea și codificarea/decodificarea sunt îndreptate spre sarcini mai avansate, dar fiecare este un singur dialog cu valori implicite rezonabile.</li>
+<li>Când un utilitar produce fișiere noi (bucăți de împărțire, un fișier codificat, o listă de sume de control), acestea sunt scrise în folderul afișat în celălalt panou — setați mai întâi acel panou la destinația dorită.</li>
+<li>Ștergerea duplicatelor este permanentă în funcție de setările dvs. de ștergere; examinați fiecare grup cu atenție și păstrați cel puțin o copie a tot ce încă aveți nevoie.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Comparare și sincronizare</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A gombsáv</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>A gombsáv</h1>
+<p>A gombsáv az ikongombok csíkja az ablak teteje mentén. Minden gomb egy egykattintásos billentyűparancs, amelyet ön határoz meg: futtasson egy beépített parancsot, indítson el egy külső programot vagy appot, ugorjon egy mappára, vagy nyisson meg egy egész algombsávot további gombokkal. Ez a leggyorsabb mód, hogy a leggyakrabban használt műveleteket kéznél tartsa, és pontosan a munkamódjához igazíthatja.</p>
+<h2 id="a-gombsav-testreszabasa">A gombsáv testreszabása</h2>
+<ol>
+<li>Válassza a <strong>Konfiguráció &gt; Eszköztár testreszabása…</strong> lehetőséget, vagy kattintson jobb gombbal a sávra és válassza a <strong>Gombsáv szerkesztése…</strong> lehetőséget.</li>
+<li>A bal oldali lista mutatja az aktuális gombokat. Használja a <strong>+</strong>-t egy gomb hozzáadásához, a <strong>—</strong>-t egy elválasztó hozzáadásához, a <strong>−</strong>-t a kijelölt gomb eltávolításához, és a <strong>↑ / ↓</strong>-t az átrendezéshez.</li>
+<li>Jelöljön ki egy gombot és töltse ki a jobb oldali űrlapot:
+   - <strong>Parancs</strong> — írjon be egy beépített parancsot, vagy kattintson a <strong>Választás…</strong> gombra egy listából való kiválasztáshoz. Beírhatja egy program vagy app útvonalát, egy megnyitandó mappát, vagy egy másik gombsávot algombsávként való használatra is.
+   - <strong>Felirat</strong> — a gombhoz megjelenő címke és eszközbuborék.
+   - <strong>Paraméterek</strong> és <strong>Kezdőútvonal</strong> — külső programoknak átadva. A helyőrzők, mint a <code>%P</code> (forrásmappa), <code>%N</code> (aktuális fájl) és <code>%S</code> (kijelölt fájlok), a gomb futásakor töltődnek ki.
+   - <strong>Ikon</strong> — válasszon egy SF Symbolt vagy használja egy fájl vagy app saját ikonját; kapcsolja be a <strong>csak ikon</strong> lehetőséget a felirat elrejtéséhez.</li>
+<li>Kattintson a <strong>Mentés</strong>-re. A csík azonnal újratöltődik.</li>
+</ol>
+<p><img alt="A gombsáv az ablak teteje mentén ikongombokkal" src="images/button-bar-crop.png" />
+<em>(Ábra: a gombsáv a fájlpanelek fölött helyezkedik el; minden gomb egy parancsot, programot, mappát vagy algombsávot futtat.)</em></p>
+<h2 id="algombsavok-es-tulcsordulas">Algombsávok és túlcsordulás</h2>
+<p>Egy gomb megnyithat egy <em>algombsávot</em> — egy második gombkészletet az első fölé rétegezve. Kattintson rá a leereszkedéshez; egy <strong>◀</strong> gomb balra visszaviszi az előző sávhoz. Amikor több gomb van, mint amennyi az ablak szélességébe fér, a többlet egy <strong>»</strong> jel mögé zsugorodik a jobb végén; kattintson rá az eléréséhez.</p>
+<h2 id="fajlok-ejtese-egy-gombra">Fájlok ejtése egy gombra</h2>
+<p>Fájlokat vagy mappákat egyenesen egy gombra húzhat:</p>
+<ul>
+<li><strong>Mappagomb</strong> — az ejtett elemek a háttérben abba a mappába másolódnak.</li>
+<li><strong>Programgomb</strong> — a program az ejtett elemekkel mint kijelölésével fut.</li>
+<li><strong>Parancsgomb</strong> — a parancs a szokásos módon fut.</li>
+</ul>
+<h2 id="fuggoleges-gombsav">Függőleges gombsáv</h2>
+<p>A csík az ablak tetejéről a bal oldal menti oszlopba mozgatásához válassza a <strong>Nézet &gt; Függőleges gombsáv</strong> lehetőséget. Válassza újra a vízszintes csíkra való visszaváltáshoz.</p>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A sáv egy standard gombsávfájlban tárolódik, amely kompatibilis a Total Commanderrel, így a már meglévő sávok újrahasznosíthatók.</li>
+<li>Ezekhez a műveletekhez alapértelmezetten nincs billentyűparancs rendelve, de hozzáadhatja a sajátjait — lásd <a href="keyboard-shortcuts">Billentyűparancsok</a>.</li>
+<li>Az ikon és parancs nélküli gomb egyszerű elválasztóként jelenik meg, hasznos a kapcsolódó gombok csoportosításához.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts.html">Billentyűzet és billentyűparancsok</a></li><li><a href="settings.html">Beállítások</a></li></ul></section>
+</main>
+</body>
+</html>

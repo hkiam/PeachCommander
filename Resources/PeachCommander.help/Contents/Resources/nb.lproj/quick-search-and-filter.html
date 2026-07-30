@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hurtigsøk og filter</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Hurtigsøk og filter</h1>
+<p>Når en mappe inneholder hundrevis av elementer, trenger du sjelden å rulle. Peach Commander lar deg hoppe rett til en fil ved å skrive navnet (hurtigsøk), skjære listen ned til bare elementene du bryr deg om (hurtigfilter), og vise eller skjule punktfilene macOS normalt holder skjult. Alle tre fungerer inne i det aktive panelet uten å åpne en dialog.</p>
+<h2 id="hopp-til-en-fil-ved-a-skrive-hurtigsk">Hopp til en fil ved å skrive (hurtigsøk)</h2>
+<ol>
+<li>Klikk på et filpanel slik at det blir aktivt.</li>
+<li>Begynn å skrive begynnelsen av et navn. Markøren hopper til det første samsvarende elementet.</li>
+<li>Fortsett å skrive for å forfine treffet, eller trykk samme bokstav igjen for å bla gjennom elementer som begynner med den bokstaven.</li>
+<li>Den innskrevne teksten fjernes etter en kort pause, slik at du kan starte et nytt søk når som helst.</li>
+</ol>
+<p>Som standard går rene bokstaver til kommandolinjen, og hurtigsøk utløses med Ctrl+Option+bokstav (den klassiske oppførselen). Du kan bytte hurtigsøk til å svare på ren skriving i stedet, eller slå det av, i Konfigurasjon-innstillingene.</p>
+<h2 id="filtrer-listen-hurtigfilter">Filtrer listen (hurtigfilter)</h2>
+<ol>
+<li>I det aktive panelet trykker du Ctrl+S for å slå på hurtigfilteret.</li>
+<li>Skriv en filtermaske. Panelet snevres inn i sanntid til samsvarende elementer mens du skriver.</li>
+<li>Trykk Esc for å fjerne filteret og vise alt igjen.</li>
+</ol>
+<p>Filteret godtar flere typer masker:</p>
+<ul>
+<li><strong>Ren tekst</strong> samsvarer med ethvert navn som inneholder det du skrev (for eksempel viser <code>report</code> hvert element med "report" hvor som helst i navnet).</li>
+<li><strong>Jokertegn</strong> bruker <code>*</code> (et hvilket som helst antall tegn) og <code>?</code> (ett tegn). Skill flere masker med et semikolon og legg til unntak etter en loddrett strek, for eksempel <code>*.jpg;*.png|*thumb*</code> for å vise bilder, men skjule miniatyrbilder.</li>
+<li><strong>Finder-etiketter</strong> filtrerer etter etikettfarge: skriv <code>tag:red</code> (eller <code>#red</code>) for å vise bare rødmerkede elementer, eller et bart <code>tag:</code> for å vise alt som bærer en etikett.</li>
+</ul>
+<h2 id="vis-skjulte-filer">Vis skjulte filer</h2>
+<p>Trykk Ctrl+H, eller velg kommandoen fra Vis-menyen, for å veksle skjulte elementer (navn som begynner med et punktum og systemskjulte filer). Innstillingen gjelder det aktive panelet og huskes mellom økter.</p>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hurtigsøk (klassisk modus)</td>
+<td>Ctrl+Option+bokstav</td>
+</tr>
+<tr>
+<td>Hurtigfilter på/av</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Fjern filter / avbryt</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Vis/skjul skjulte filer</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Hurtigsøk flytter bare markøren; hurtigfilter endrer faktisk hvilke elementer som listes opp. Bruk filteret når du vil arbeide på et delsett (for eksempel merke eller kopiere bare treffene).</li>
+<li>Filter- og skjulte-filer-innstillingene er per panel, så de to sidene kan vise ulike ting samtidig.</li>
+<li>Hurtigsøk samsvarer med navn fra begynnelsen; hurtigfilterets ren-tekst-modus samsvarer hvor som helst i navnet. Bruk et jokertegn som <code>*text*</code> hvis du vil at filteret skal oppføre seg på samme måte.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Finne filer</a></li><li><a href="view-modes-and-sorting.html">Visningsmoduser og sortering</a></li></ul></section>
+</main>
+</body>
+</html>

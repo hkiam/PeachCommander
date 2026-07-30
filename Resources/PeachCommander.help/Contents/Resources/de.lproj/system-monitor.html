@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Monitor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>System Monitor</h1>
+<p>Das System-Monitor-Plugin blendet eine Live-Anzeige der Aktivität Ihres Macs direkt in die Titelleiste des Fensters ein: kleine Chips für CPU, Speicher, Festplatte, Netzwerk und — sofern die Hardware sie bereitstellt — GPU, Batterie und Sensoren. Jeder Chip wird einmal pro Sekunde aktualisiert; klicken Sie auf einen, um ein Pop-up mit einem Verlaufsdiagramm und einer detaillierten Aufschlüsselung zu erhalten. Da es sich um ein Plugin handelt, können Sie es über <strong>Konfiguration ▸ Plugins…</strong> aktivieren, konfigurieren oder entfernen.</p>
+<h2 id="die-chips-in-der-titelleiste">Die Chips in der Titelleiste</h2>
+<p>Wenn das Plugin eingeschaltet ist, sitzt eine Reihe kompakter Chips in der Titelleiste. Jeder Chip besteht aus einem farbigen Punkt, einer kurzen Beschriftung und einem Live-Wert (einige mit einer eingebetteten Sparkline):</p>
+<table>
+<thead>
+<tr>
+<th>Chip</th>
+<th>Zeigt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>Prozessorauslastung, mit Detail pro Kern</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>Belegter / gesamter Speicher (plus verdrahtet, komprimiert, Swap)</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>Speicherplatz des Startvolumes und Lese-/Schreibdurchsatz</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>Download-/Upload-Raten und -Summen</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>GPU-Auslastung · Batterieladung &amp; -zustand · Lüfterdrehzahlen und Temperaturen</td>
+</tr>
+</tbody>
+</table>
+<p>Klicken Sie auf einen Chip, um ein Pop-up mit dem großen aktuellen Wert, einer <strong>HISTORY</strong>-Sparkline, einer <strong>DETAILS</strong>-Schlüssel/Wert-Liste und — bei der CPU — einer <strong>CORE LOAD</strong>-Liste mit Balken pro Kern zu öffnen.</p>
+<h2 id="konfigurieren">Konfigurieren</h2>
+<p>Wählen Sie <strong>Befehle ▸ System Monitor…</strong> (oder öffnen Sie <strong>Konfiguration ▸ Einstellungen ▸ System Monitor</strong>), um die Anzeige zu konfigurieren:</p>
+<ul>
+<li><strong>System-Monitor in Titelleiste anzeigen</strong> — der Hauptschalter für die Chips.</li>
+<li><strong>Profil</strong> — die Voreinstellungen <em>Minimal</em>, <em>Mittel</em> oder <em>Maximal</em>, die eine sinnvolle Auswahl an Modulen treffen.</li>
+<li><strong>Die Modultabelle</strong> — schalten Sie jedes Modul (CPU, GPU, RAM, HDD, Net, Batt, Sens) ein oder aus, wählen Sie seine Farbe und ziehen Sie Zeilen, um die Reihenfolge festzulegen, in der sie in der Titelleiste erscheinen. Module, die Ihre Hardware nicht melden kann, werden als <em>(n/a)</em> angezeigt.</li>
+</ul>
+<p><img alt="Die System-Monitor-Einstellungen mit der Modultabelle, den Profilen und den Farben pro Modul" src="images/system-monitor.png" />
+<em>(Abbildung: Wählen Sie, welche Module erscheinen, ihre Farben und ihre Reihenfolge.)</em></p>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Alles wird gemessen, niemals vorgetäuscht: Module, deren Daten die Hardware nicht bereitstellt (oft GPU oder Sensoren bei manchen Macs), bleiben nicht verfügbar, statt erfundene Zahlen zu zeigen. Auf Desktops ist die Batterie nicht verfügbar.</li>
+<li>Die Abtastung läuft nur über einen Hintergrund-Timer, solange die Anzeige sichtbar ist, und bewahrt etwa 30 Minuten Verlauf für die Diagramme.</li>
+<li>Ihre Modulauswahl, Farben und Reihenfolge werden mit der Konfiguration der App gespeichert.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="settings.html">Einstellungen</a></li></ul></section>
+</main>
+</body>
+</html>

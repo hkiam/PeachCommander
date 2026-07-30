@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>Плагін Git показує стан репозиторію Git прямо в панелі файлів — без окремого застосунку, без термінала. Він додає два стовпці, що показують стан кожного файлу в робочому дереві та поточну гілку, підменю <strong>Git</strong> для щоденних команд (стан, індексування, коміт, pull, push), і використовує <code>git</code>, уже встановлений на вашому Mac. Це плагін, тож ви можете вимкнути чи вилучити його в <strong>Конфігурація ▸ Плагіни…</strong>.</p>
+<h2 id="_1">Що він додає</h2>
+<ul>
+<li><strong>Два стовпці списку файлів</strong> — <em>Git Status</em> і <em>Branch</em>. У репозиторії кожен файл показує коротке слово стану (Modified, Added, Deleted, Untracked, Renamed, Copied, Conflict, Ignored чи Changed), а панель показує поточну гілку. Увімкніть ці стовпці в <strong>Конфігурація ▸ Стовпці…</strong> (див. <a href="view-modes-and-sorting.md">Режими вигляду та сортування</a>).</li>
+<li><strong>Меню Git</strong> — під <strong>Команди ▸ Git</strong> і в контекстному меню файлу, з пунктами: <strong>Git Status…</strong>, <strong>Git Add (stage)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> і <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="Діалог Git Status, що показує поточну гілку та змінені файли в репозиторії" src="images/git-status.png" />
+<em>(Малюнок: Git Status повідомляє гілку та кожну зміну в робочому дереві.)</em></p>
+<h2 id="_2">Перевірка стану</h2>
+<ol>
+<li>Поставте курсор на файл чи теку всередині репозиторію Git.</li>
+<li>Виберіть <strong>Команди ▸ Git ▸ Git Status…</strong> (або клацніть правою кнопкою ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>З'являється зведення: поточна гілка (або <em>(detached)</em>), а потім або <em>Working tree clean.</em>, або список змін, кожен рядок якого показує стан і шлях до файлу.</li>
+</ol>
+<p>Якщо курсор не всередині репозиторію, плагін просто каже <em>Not a Git repository.</em></p>
+<h2 id="pull-push">Індексування, коміт, pull, push</h2>
+<ul>
+<li><strong>Git Add (stage)</strong> індексує файл під курсором (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> запитує повідомлення коміту, а потім комітить усі зміни (<code>git commit -a</code>). Показується об'єднаний вивід, тож ви бачите, що саме сталося.</li>
+<li><strong>Git Pull</strong> виконує pull лише з перемотуванням уперед (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> надсилає поточну гілку (<code>git push</code>).</li>
+</ul>
+<p>Після команди, що змінює репозиторій, активна панель оновлюється, тож стовпці стану лишаються актуальними.</p>
+<h2 id="_3">Примітки</h2>
+<ul>
+<li>Плагін використовує системний Git за адресою <code>/usr/bin/git</code>. Якщо Git не встановлено, команди повідомляють, що Git недоступний. (Його надає встановлення Xcode Command Line Tools.)</li>
+<li>Стан репозиторію читається один раз на теку та кешується, тож прокручування великого репозиторію лишається швидким; кеш оновлюється після будь-якої команди, що змінює дерево.</li>
+<li>Коміт використовує <code>git commit -a</code>, який комітить відстежувані зміни; зовсім нові файли все ще потрібно спершу <strong>Git Add (stage)</strong>.</li>
+<li>Заголовки стовпців <em>Git Status</em> і <em>Branch</em> наразі показуються англійською навіть в інших мовах інтерфейсу; значення та діалоги локалізовані.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Плагіни</a></li><li><a href="view-modes-and-sorting.html">Режими вигляду та сортування</a></li></ul></section>
+</main>
+</body>
+</html>

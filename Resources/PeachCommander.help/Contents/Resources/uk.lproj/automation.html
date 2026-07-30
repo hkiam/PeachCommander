@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Автоматизація (AppleScript і Швидкі команди)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Автоматизація (AppleScript і Швидкі команди)</h1>
+<p>Peach Commander підтримує сценарії, тож ви можете керувати ним з AppleScript і з застосунку Швидкі команди. Жменька основних дієслів дозволяє сценарію переміщатися панелями, вибирати файли за маскою, копіювати чи переміщати поточний вибір і запускати будь-яку команду Peach Commander за її ідентифікатором — повторно використовуючи саме ті дії, які використовують меню, тож крок сценарію поводиться як ручний. Це зручно для повторюваних справ: упорядкування завантажень, підготовки виводу збірки чи вбудовування кроку з файлом у більшу Швидку команду.</p>
+<h2 id="_1">Перегляд словника</h2>
+<ol>
+<li>Відкрийте <strong>Редактор сценаріїв</strong> (у <code>/Програми/Утиліти</code>).</li>
+<li>Виберіть <strong>Вікно ▸ Бібліотека</strong>, потім двічі клацніть <strong>Peach Commander</strong> (додайте його кнопкою <strong>+</strong>, якщо його немає в списку).</li>
+<li>Словник відкриється, перелічуючи команди та властивості нижче.</li>
+</ol>
+<p>Уперше, коли сценарій керує Peach Commander, macOS попросить дозволити це (<strong>Системні параметри ▸ Конфіденційність і безпека ▸ Автоматизація</strong>). Схваліть це раз, і пізніші сценарії працюють без запиту.</p>
+<h2 id="_2">Що можна прочитати</h2>
+<table>
+<thead>
+<tr>
+<th>Властивість</th>
+<th>Значення</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>Шлях POSIX теки активної панелі.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>Шлях POSIX теки другої панелі.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>Вибрані елементи в активній панелі (або елемент під курсором).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">Дієслова</h2>
+<table>
+<thead>
+<tr>
+<th>Команда</th>
+<th>Що робить</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;шлях&gt;" [in left\|right]</code></td>
+<td>Відкрити теку в панелі (за замовчуванням: активна панель).</td>
+</tr>
+<tr>
+<td><code>select "&lt;маска&gt;"</code></td>
+<td>Вибрати елементи в активній панелі за маскою з символами підстановки, напр. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;тека&gt;"</code></td>
+<td>Скопіювати вибір активної панелі до теки.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;тека&gt;"</code></td>
+<td>Перемістити вибір активної панелі до теки.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Запустити будь-яку команду за її ідентифікатором, напр. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Копіювання та переміщення використовують ту саму фонову чергу передавання, що й F5/F6, тож поступ і будь-які запити про перезапис з'являються саме так, як для ручної операції.</p>
+<h2 id="_4">Приклад</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="_5">Використання зі Швидких команд</h2>
+<p>У застосунку <strong>Швидкі команди</strong> додайте дію <strong>Запустити AppleScript</strong> і вставте сценарій, як наведений вище. Це дозволяє вбудувати крок Peach Commander у більшу Швидку команду — наприклад, запущену зміною теки чи гарячою клавішею.</p>
+<h2 id="_6">Примітки</h2>
+<ul>
+<li>Ідентифікатор команди, який ви передаєте до <code>run command</code>, — це той самий ідентифікатор <code>cm_*</code>, що показаний у переглядачі команд (див. <a href="start-menu.md">Меню Пуск і власні команди</a>).</li>
+<li>Сценарій завжди діє на <strong>активну</strong> панель; використайте спершу <code>go to … in left</code> / <code>in right</code>, якщо вам потрібна конкретна сторона.</li>
+<li>Peach Commander — застосунок з одним вікном, тож сценарії націлюються на дві панелі цього вікна.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Меню Пуск і власні команди</a></li><li><a href="settings.html">Налаштування</a></li></ul></section>
+</main>
+</body>
+</html>

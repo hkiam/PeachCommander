@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zobrazenie súborov</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Zobrazenie súborov</h1>
+<p>Peach Commander má vstavaný prehliadač, ktorý vám umožňuje nazrieť do súboru bez otvárania inej aplikácie alebo zmeny súboru. Stlačte F3 na položke pod kurzorom a prehliadač sa okamžite otvorí, aj pri veľmi veľkých súboroch. Automaticky vyberie najlepší spôsob zobrazenia obsahu: čitateľný text, kód s farebnou syntaxou, surový šestnástkový výpis alebo obrázok v plnej veľkosti. Náhľad súboru môžete zobraziť aj priamo v okne pomocou Rýchleho zobrazenia, alebo ho odovzdať funkcii Quick Look v macOS.</p>
+<h2 id="zobrazenie-suboru">Zobrazenie súboru</h2>
+<ol>
+<li>Presuňte kurzor na súbor v aktívnom paneli.</li>
+<li>Stlačte F3 (alebo vyberte Zobraziť v ponuke Súbor). Prehliadač sa otvorí vo vlastnom okne.</li>
+<li>Použite panel nástrojov na prepínanie, ako sa obsah zobrazuje: Text, Kód, Hex, Obrázok alebo Vykreslené. Nechajte automatické nastavenie, nech rozhodne Peach Commander.</li>
+<li>Posúvajte šípkami, Page Up/Page Down a posuvníkom. Pri dlhom texte zapnite tlačidlo minimapy na zobrazenie celého súboru a rýchly pohyb v ňom.</li>
+<li>Stlačte N na skok na ďalší vybraný súbor, alebo zatvorte okno klávesom Esc.</li>
+</ol>
+<p><img alt="Vstavaný prehliadač zobrazujúci textový súbor s minimapou vpravo" src="images/lister-text.png" />
+<em>(Obrázok: zobrazenie textového súboru, s voličom reprezentácie a minimapou na paneli nástrojov.)</em></p>
+<h2 id="hladanie-textu-a-zmena-kodovania">Hľadanie textu a zmena kódovania</h2>
+<ul>
+<li>Stlačte Ctrl+F na hľadanie vnútri súboru. Stlačte F3 na skok na ďalšiu zhodu a Shift+F3 na predchádzajúcu.</li>
+<li>Ak text vyzerá skreslene, kliknite na Kódovanie na paneli nástrojov (alebo stlačte E) na prechádzanie kódovaní textu, kým sa nečíta správne; automatické nastavenie to zvyčajne trafí.</li>
+<li>Stlačte W na prepnutie zalamovania slov pri dlhých riadkoch.</li>
+</ul>
+<h2 id="rychle-zobrazenie-a-quick-look">Rýchle zobrazenie a Quick Look</h2>
+<p>Rýchle zobrazenie ukazuje živý náhľad v paneli, ktorý <em>nepoužívate</em>, takže môžete pokračovať v prehliadaní na jednej strane a náhľade na druhej.</p>
+<ol>
+<li>Stlačte Ctrl+Q. Neaktívny panel sa zmení na oblasť náhľadu.</li>
+<li>Presúvajte kurzor na rôzne súbory v aktívnom paneli na náhľad každého.</li>
+<li>Stlačte Ctrl+Q znova, alebo Esc, na vrátenie panela na normálny zoznam súborov.</li>
+</ol>
+<p>Na rýchly celoobrazovkový náhľad spracovaný priamo macOS stlačte Cmd+Y (Quick Look). Stlačte Cmd+Y alebo medzerník znova na jeho zatvorenie.</p>
+<h2 id="skratky">Skratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akcia</th>
+<th>Skratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Zobraziť súbor pod kurzorom</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Zobraziť len súbor pod kurzorom (ignorovať označené súbory)</td>
+<td>Shift+F3</td>
+</tr>
+<tr>
+<td>Otvoriť v externom prehliadači</td>
+<td>Option+F3</td>
+</tr>
+<tr>
+<td>Hľadať v prehliadači</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Ďalšia / predchádzajúca zhoda</td>
+<td>F3 / Shift+F3</td>
+</tr>
+<tr>
+<td>Rýchle zobrazenie v druhom paneli</td>
+<td>Ctrl+Q</td>
+</tr>
+<tr>
+<td>Quick Look (náhľad macOS)</td>
+<td>Cmd+Y</td>
+</tr>
+<tr>
+<td>Zatvoriť prehliadač alebo Rýchle zobrazenie</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Prehliadač je len na čítanie. Na zmenu súboru použite namiesto toho editor (pozri Úprava súborov).</li>
+<li>Veľmi veľké súbory sa otvárajú bez oneskorenia: text otvorí rýchle posúvateľné zobrazenie a šestnástkové zobrazenie sa číta priamo z disku pri akejkoľvek veľkosti.</li>
+<li>Stlačte F3 na priečinku na zobrazenie súhrnu jeho obsahu a celkovej veľkosti namiesto bajtov súboru.</li>
+<li>Režim Vykreslené zobrazuje formátovaný obsah ako webové stránky; šestnástkový režim ukazuje surové bajty vedľa ich znakov, čo je praktické na skúmanie binárnych súborov.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Úprava súborov</a></li><li><a href="searching.html">Hľadanie súborov</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vergleichen &amp; Synchronisieren</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Vergleichen &amp; Synchronisieren</h1>
+<p>Wenn Sie zwei Kopien desselben Ordners führen – einen Arbeitsordner und ein Backup, einen Laptop und eine Netzwerkfreigabe, ein Projekt und dessen Archiv –, hilft Ihnen Peach Commander dabei, genau zu sehen, was sich geändert hat, und die beiden Seiten wieder in Einklang zu bringen. Sie können zwei Verzeichnisse synchronisieren, einzelne Dateien Zeile für Zeile vergleichen und Dateien Byte für Byte untersuchen, wenn Sie Gewissheit bis zum letzten Zeichen benötigen.</p>
+<h2 id="zwei-verzeichnisse-synchronisieren">Zwei Verzeichnisse synchronisieren</h2>
+<ol>
+<li>Öffnen Sie den zu synchronisierenden Ordner im linken Panel und den Vergleichsordner im rechten Panel.</li>
+<li>Wählen Sie <strong>Befehle ▸ Verzeichnisse synchronisieren…</strong>. Die beiden Ordnerpfade werden aus Ihren Panels übernommen.</li>
+<li>Legen Sie fest, wie gründlich der Vergleich sein soll: Unterordner einbeziehen, <strong>nach Inhalt</strong> vergleichen (nicht nur nach Datum und Größe) oder das Änderungsdatum ignorieren.</li>
+<li>Fügen Sie eine Filtermaske hinzu (zum Beispiel <code>*.jpg;*.png</code>), wenn Sie nur bestimmte Dateien synchronisieren möchten.</li>
+<li>Prüfen Sie das Ergebnisraster. Jede Zeile zeigt eine Datei links, einen Richtungspfeil in der Mitte und die passende Datei rechts. Die Pfeile geben an, was passieren wird: <strong>→</strong> kopiert von links nach rechts, <strong>←</strong> kopiert von rechts nach links, und <strong>=</strong> bedeutet, dass beide identisch sind.</li>
+<li>Passen Sie einzelne Zeilen an, wenn Sie mit einer vorgeschlagenen Richtung nicht einverstanden sind, und klicken Sie dann auf die Schaltfläche zum Synchronisieren, um die Änderungen durchzuführen.</li>
+</ol>
+<p><img alt="Das Fenster „Verzeichnisse synchronisieren&quot; mit zwei Ordnerpfaden und einem Ergebnisraster von Dateien mit Links-, Gleichheits- und Rechtspfeilen" src="images/sync-dialog.png" />
+<em>(Abbildung: Das Fenster „Verzeichnisse synchronisieren" vergleicht beide Seiten und schlägt für jede Datei eine Kopierrichtung vor.)</em></p>
+<h2 id="zwei-dateien-nach-inhalt-vergleichen">Zwei Dateien nach Inhalt vergleichen</h2>
+<ol>
+<li>Wählen Sie in jedem Panel eine Datei aus (oder zwei Dateien im selben Panel).</li>
+<li>Wählen Sie <strong>Datei ▸ Nach Inhalt vergleichen…</strong>.</li>
+<li>Die beiden Dateien werden nebeneinander mit hervorgehobenen Unterschieden geöffnet. Verwenden Sie die Vor-/Zurück-Steuerung, um zwischen geänderten Blöcken zu springen.</li>
+<li>Wenn Sie den Bearbeitungsmodus aktivieren, können Sie jede Datei direkt anpassen und Ihre Änderungen speichern.</li>
+</ol>
+<p><img alt="Das Vergleichsfenster zeigt zwei Textdateien nebeneinander mit hervorgehobenen abweichenden Zeilen" src="images/diff-window.png" />
+<em>(Abbildung: Zwei Textdateien im Vergleich; geänderte Zeilen sind auf beiden Seiten hervorgehoben.)</em></p>
+<h2 id="dateien-byte-fur-byte-vergleichen">Dateien Byte für Byte vergleichen</h2>
+<p>Wenn zwei Dateien gleich aussehen, Sie aber nachweisen müssen, dass sie wirklich identisch sind (oder das eine abweichende Byte finden möchten), verwenden Sie den binären Vergleich. Er zeigt beide Dateien in einer Hex-Ansicht mit markierten abweichenden Bytes, was ideal ist, um Downloads zu überprüfen, kodierte Daten zu kontrollieren oder eine exakte Kopie zu bestätigen.</p>
+<h2 id="verzeichnisauflistungen-vergleichen">Verzeichnisauflistungen vergleichen</h2>
+<p>Um Unterschiede zwischen zwei geöffneten Ordnern auf einen Blick zu erkennen, wählen Sie <strong>Markieren ▸ Verzeichnisse vergleichen</strong> (Shift+F2). Peach Commander markiert die Dateien, die sich unterscheiden oder auf der anderen Seite fehlen, sodass Sie sie mit den üblichen Kopier-, Verschiebe- und Löschbefehlen bearbeiten können.</p>
+<h2 id="tastenkurzel">Tastenkürzel</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Tastenkürzel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Verzeichnisauflistungen vergleichen (abweichende Dateien markieren)</td>
+<td>Shift+F2</td>
+</tr>
+<tr>
+<td>Nach Inhalt vergleichen</td>
+<td>Datei ▸ Nach Inhalt vergleichen…</td>
+</tr>
+<tr>
+<td>Verzeichnisse synchronisieren</td>
+<td>Befehle ▸ Verzeichnisse synchronisieren…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li><strong>Nach Inhalt vs. nach Datum/Größe.</strong> Ein schneller Vergleich gleicht Dateien nach Größe und Änderungsdatum ab, was schnell ist, aber sich täuschen lässt, wenn die Zeitstempel bei identischen Dateien abweichen. Aktivieren Sie <strong>nach Inhalt</strong> für ein verlässliches Ergebnis, um den Preis, jede Datei lesen zu müssen.</li>
+<li><strong>Unterordner und Filter.</strong> Das Synchronisierungsfenster kann in Unterordner absteigen und lässt sich mit einer Filtermaske einschränken, sodass Sie genau die Dateitypen synchronisieren können, die Ihnen wichtig sind.</li>
+<li><strong>Sie behalten die Kontrolle.</strong> Das Synchronisieren läuft nie von selbst – Sie prüfen die vorgeschlagenen Richtungen im Ergebnisraster und können jede davon ändern, bevor etwas kopiert wird.</li>
+<li><strong>Voreinstellungen.</strong> Häufig verwendete Synchronisierungskonfigurationen können gespeichert und wiederverwendet werden, sodass Sie nicht jedes Mal dieselben Optionen erneut eingeben müssen.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="multi-rename.html">Viele Dateien umbenennen</a></li></ul></section>
+</main>
+</body>
+</html>

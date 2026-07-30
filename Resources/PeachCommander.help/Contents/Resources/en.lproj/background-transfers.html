@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Background transfers</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Background transfers</h1>
+<p>Large copies, moves, deletes, and downloads don't have to hold up your work. Peach Commander can run them in the background and collect them all in one place: the Background Transfer Manager. From there you watch each job's progress and transfer speed, pause or resume it, cancel it, or line jobs up to start later. Because a background job runs on its own, it never stops you from browsing, opening files, or starting the next transfer.</p>
+<h2 id="how-to">How to</h2>
+<ol>
+<li>Start a copy, move, delete, or download and choose to run it in the background. The job appears in the Background Transfer Manager.</li>
+<li>Open the manager any time from <strong>Commands ▸ Background Transfer Manager…</strong> (or press Cmd+Shift+B).</li>
+<li>Each job shows a title, a progress bar, and a live line with files done, bytes transferred, and current speed.</li>
+<li>Use the per-job buttons to <strong>Pause</strong>, <strong>Resume</strong>, or <strong>Cancel</strong> while a job is running.</li>
+<li>For jobs you added but haven't started yet (held jobs), click <strong>Start</strong> on the job, or <strong>Start All</strong> to launch the whole waiting list at once.</li>
+<li>When everything you care about has finished, click <strong>Clear Finished</strong> to tidy the list.</li>
+</ol>
+<p><img alt="The Background Transfer Manager listing active and waiting jobs with progress bars and Pause, Resume, and Cancel buttons." src="images/transfer-manager.png" /></p>
+<p><em>Each transfer is a row you can pause, resume, or cancel independently.</em></p>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open the Background Transfer Manager</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li><strong>Limit the speed.</strong> To keep a big transfer from saturating your connection or disk, set a speed limit in the copy dialog before you start the job. The manager then shows the throttled rate live.</li>
+<li><strong>Queue for later.</strong> Held jobs sit in the list without running until you press Start (or Start All), so you can stage several transfers and kick them off together.</li>
+<li><strong>Run several at once.</strong> Jobs run independently, so you can pause one while another keeps going.</li>
+</ul>
+<h2 id="notes">Notes</h2>
+<p>Because a background job runs without you watching, it can't stop to ask questions. If a file already exists at the destination, the background job overwrites it; if an individual item can't be transferred, that item is skipped and the job keeps going. When the job finishes, any skipped items are collected in an error log so you can review exactly what went wrong.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copying files</a></li><li><a href="downloading-from-url.html">Downloading from a URL</a></li></ul></section>
+</main>
+</body>
+</html>

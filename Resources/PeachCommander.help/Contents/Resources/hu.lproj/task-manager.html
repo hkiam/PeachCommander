@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>A Task Manager bővítmény a Macen futó folyamatokat egy böngészhető mappává alakítja. Egy <strong>TaskManager</strong> meghajtóként jelenik meg a meghajtósávban; nyissa meg, és minden folyamat egy sor, amelyet rendezhet, fájlként vizsgálhat vagy bezárhat — ugyanazokkal a billentyűkkel, amelyeket már a fájlokhoz is használ. Mivel bővítményről van szó, a <strong>Konfiguráció ▸ Bővítmények…</strong> menüpontból kikapcsolhatja vagy eltávolíthatja.</p>
+<h2 id="megnyitas">Megnyitás</h2>
+<ol>
+<li>Kattintson a <strong>📊 TaskManager</strong> bejegyzésre a meghajtósávban (közvetlenül az indítómeghajtó után ül).</li>
+<li>A panel megtelik, soronként egy futó folyamattal. Minden sor neve a folyamat neve, majd a PID-je, például <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="A Task Manager felsorolja a futó folyamatokat a PID, CPU, memória és parancs oszlopokkal" src="images/task-manager.png" />
+<em>(Ábra: a futó folyamatok fájllistaként megjelenítve, amelyet rendezhet és amelyen műveleteket végezhet.)</em></p>
+<h2 id="mit-jelent-az-egyes-oszlopok">Mit jelent az egyes oszlopok</h2>
+<p>A szokásos Méret (memória) és Dátum (indítási idő) oszlopok mellett a Task Manager folyamatoszlopokat ad hozzá:</p>
+<table>
+<thead>
+<tr>
+<th>Oszlop</th>
+<th>Jelentés</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>Folyamatazonosító</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Legutóbbi processzorhasználat (egy második frissítés kell a megjelenéséhez)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Szálak száma</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R fut · S alszik · T leállítva · Z zombi · I tétlen</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Tulajdonos</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>Szülőfolyamat azonosítója</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>Teljes parancssor</td>
+</tr>
+</tbody>
+</table>
+<p>Rendezzen bármely oszlop szerint (például CPU % vagy Méret/memória), pontosan úgy, ahogy egy normál mappában tenné.</p>
+<h2 id="egy-folyamat-vizsgalata-vagy-bezarasa">Egy folyamat vizsgálata vagy bezárása</h2>
+<ul>
+<li>A <strong>Megtekintés (F3)</strong> egy <em>Folyamatinformáció</em> jelentést mutat: név, PID, szülő, felhasználó, állapot, szálak, memória, CPU, indítási idő, a futtatható fájl útvonala és a teljes parancssor.</li>
+<li>A <strong>Törlés (F8)</strong> bezárja a folyamatot. Az első törlés egy kíméletes <strong>kilépést</strong> küld (SIGTERM); egy még futó folyamat második törlése egy <strong>kényszerített kilépésre</strong> (SIGKILL) fokozódik. A bővítmény soha nem célozza az 1-es PID-et.</li>
+</ul>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>Az alapvető adatok (PID, szülő, felhasználó, állapot) minden folyamatra olvashatók, mint a <code>ps</code> esetében. A memória, a szálak és a CPU csak a <strong>saját</strong> folyamataira olvasható; más folyamatok ezeket az oszlopokat üresen mutatják (emelt szintű jogosultságokat igényelnek, egy későbbi kiegészítés).</li>
+<li>A CPU % két mintavétel közötti változás, ezért üres marad, amíg a panel másodszor is nem frissül (a panel körülbelül kétmásodpercenként frissül).</li>
+<li>A lista a folyamatok bezárásán kívül csak olvasható — nem másolhat bele fájlokat.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="viewing-files.html">Fájlok megtekintése</a></li><li><a href="deleting-files.html">Fájlok törlése</a></li></ul></section>
+</main>
+</body>
+</html>

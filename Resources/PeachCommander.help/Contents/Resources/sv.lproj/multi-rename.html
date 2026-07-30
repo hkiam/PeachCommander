@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Byta namn på många filer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Byta namn på många filer</h1>
+<p>Verktyget för massnamnbyte byter namn på en hel bunt filer i en enda omgång. Istället för att redigera namn ett i taget beskriver du ändringen en gång – ett namngivningsmönster, en sök-och-ersätt, ett numreringsschema eller en ändring av bokstävers skiftläge – och Peach Commander tillämpar den på varje markerad fil. En liveförhandsvisning visar exakt vad varje fil kommer att heta innan något händer, och ett enda Ångra sätter tillbaka de ursprungliga namnen om resultatet inte blev vad du ville.</p>
+<h2 id="byt-namn-pa-en-bunt-filer">Byt namn på en bunt filer</h2>
+<ol>
+<li>Markera filerna du vill byta namn på (se <em>Markera filer</em>). Endast de markerade objekten påverkas.</li>
+<li>Välj <strong>Kommandon &gt; Verktyg för massnamnbyte…</strong>, eller tryck på Ctrl+M.</li>
+<li>Bygg din namnbytesregel med hjälp av fälten som beskrivs nedan. Förhandsvisningsrutnätet uppdateras medan du skriver och visar varje <strong>Gammalt namn</strong> bredvid sitt <strong>Nytt namn</strong>.</li>
+<li>Kontrollera förhandsvisningen. En rad som visas i en markeringsfärg flaggar ett namn som inte kan användas (till exempel en dubblett eller ett otillåtet namn) så att du kan justera regeln.</li>
+<li>När förhandsvisningen ser rätt ut, klicka på <strong>Starta</strong>. Om du ändrar dig, klicka på <strong>Ångra</strong> för att återställa de ursprungliga namnen.</li>
+</ol>
+<p><img alt="Fönstret för massnamnbyte med maskfälten, alternativen och förhandsvisningsrutnätet gammalt-till-nytt" src="images/multi-rename.png" />
+<em>(Figur: Förhandsvisningsrutnätet uppdateras live medan du redigerar namnbytesregeln; ingenting ändras på disk förrän du klickar på Starta.)</em></p>
+<h2 id="bygga-namnbytesregeln">Bygga namnbytesregeln</h2>
+<ul>
+<li><strong>Namnbytesmask</strong> och <strong>Filtillägg</strong> – mönster som bygger det nya namnet och filtillägget. Använd snabbinsättningsknapparna, eller skriv platshållare direkt: <code>[N]</code> för det ursprungliga namnet, <code>[N1-9]</code> för ett intervall av tecken från det, <code>[C]</code> för räknaren, <code>[d]</code> för datum- och tidsdelar, och <code>[P]</code> för den överordnade mappens namn.</li>
+<li><strong>Sök efter / Ersätt med</strong> – ersätt text inuti namnen. Slå på <strong>Regex</strong> för mönstermatchning, <strong>Skiftlägeskänslig</strong> för att matcha exakt skiftläge, och <strong>Upprepa</strong> för att ersätta varje förekomst.</li>
+<li><strong>Skiftläge</strong> – konvertera namn till gemener, VERSALER, Första bokstaven versal, eller Varje Ord Versalt.</li>
+<li><strong>Räknare</strong> – ställ in <strong>Start</strong>-numret, <strong>Steget</strong> mellan filer, och hur många <strong>Siffror</strong> att fylla ut till (till exempel 001, 002, 003) varhelst <code>[C]</code> förekommer.</li>
+</ul>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Öppna Verktyget för massnamnbyte</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Tillämpa namnbytet</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Stäng fönstret</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Ingenting skrivs till disk förrän du klickar på <strong>Starta</strong>, så du kan experimentera fritt med regeln och titta på förhandsvisningen.</li>
+<li>Efter en körning vänder <strong>Ångra</strong> namnbytet i ett steg.</li>
+<li>Spara en regel du använder ofta som en <strong>Förinställning</strong>, och välj den sedan från förinställningsmenyn nästa gång för att fylla i alla fält på en gång.</li>
+<li>För att byta namn på en enskild fil, eller för att byta namn på filer medan du flyttar dem, använd namnbyte på plats eller flyttdialogen istället (se <em>Flytta och byta namn</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Flytta och byta namn</a></li></ul></section>
+</main>
+</body>
+</html>

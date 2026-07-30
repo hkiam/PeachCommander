@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Utilitaires de fichiers</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Utilitaires de fichiers</h1>
+<p>Au-delà de la copie et du déplacement, Peach Commander comprend un ensemble d'utilitaires de fichiers pour le quotidien : vérifier que les fichiers sont intacts, récupérer de l'espace disque, découper de gros fichiers en morceaux plus petits, et convertir des fichiers vers et depuis des formats sûrs pour le texte. Vous y accédez tous depuis le menu <strong>Fichier</strong>, et ils agissent sur ce que vous avez sélectionné dans le panneau actif (ou sur l'élément sous le curseur lorsque rien n'est sélectionné). Ce sujet couvre les sommes de contrôle, le détecteur de doublons, le découpage/assemblage, l'encodage/décodage et le calcul de l'espace occupé.</p>
+<h2 id="creer-ou-verifier-des-sommes-de-controle">Créer ou vérifier des sommes de contrôle</h2>
+<p>Les sommes de contrôle vous permettent de confirmer qu'un fichier a été téléchargé ou copié sans corruption, ou de fournir à un destinataire un moyen de vérifier la copie qu'il a reçue.</p>
+<ol>
+<li>Sélectionnez les fichiers dont vous souhaitez calculer l'empreinte.</li>
+<li>Choisissez <strong>Fichier ▸ Créer des sommes de contrôle…</strong>, choisissez un algorithme (CRC32, MD5, SHA-1, SHA-256 ou SHA-512), et enregistrez le fichier de somme de contrôle.</li>
+<li>Pour vérifier des fichiers plus tard, sélectionnez le fichier de somme de contrôle et choisissez <strong>Fichier ▸ Vérifier les sommes de contrôle…</strong>. Peach Commander recalcule chaque empreinte et signale tout fichier qui ne correspond pas.</li>
+</ol>
+<p>Les sommes de contrôle sont diffusées en flux directement sur l'emplacement courant : vous pouvez donc les créer ou les vérifier même pour des fichiers à l'intérieur d'archives ou sur un serveur FTP.</p>
+<h2 id="trouver-les-fichiers-en-double">Trouver les fichiers en double</h2>
+<p>Le détecteur de doublons repère les fichiers identiques éparpillés dans plusieurs dossiers afin que vous puissiez supprimer les copies superflues.</p>
+<ol>
+<li>Sélectionnez les dossiers (ou fichiers) que vous souhaitez analyser.</li>
+<li>Choisissez <strong>Fichier ▸ Trouver les doublons…</strong>. Peach Commander compare les candidats et regroupe les fichiers identiques octet par octet.</li>
+<li>Examinez chaque groupe, marquez les copies dont vous n'avez plus besoin, et supprimez-les.</li>
+</ol>
+<p><img alt="Le détecteur de doublons répertoriant des groupes de fichiers identiques" src="images/duplicate-finder.png" />
+<em>(Figure : le détecteur de doublons regroupe les fichiers identiques afin que vous puissiez en conserver un et retirer les autres.)</em></p>
+<h2 id="decouper-et-assembler-des-fichiers">Découper et assembler des fichiers</h2>
+<p>Le découpage divise un gros fichier en une série numérotée de parties plus petites — pratique face aux limites de stockage ou de transfert. L'assemblage les réunit de nouveau.</p>
+<ol>
+<li>Pour découper, sélectionnez un fichier et choisissez <strong>Fichier ▸ Découper le fichier…</strong>, puis définissez la taille des parties. Les parties sont écrites dans le dossier de l'autre panneau.</li>
+<li>Pour réassembler, sélectionnez la première partie et choisissez <strong>Fichier ▸ Assembler les fichiers…</strong>. Le fichier d'origine est reconstruit à partir des morceaux numérotés.</li>
+</ol>
+<h2 id="encoder-et-decoder">Encoder et décoder</h2>
+<p>L'encodage transforme un fichier binaire en texte brut afin qu'il survive aux canaux qui ne transportent que du texte (par exemple, les anciens courriers électroniques ou les zones de collage). Le décodage fait l'inverse.</p>
+<ol>
+<li>Sélectionnez un fichier et choisissez <strong>Fichier ▸ Encoder…</strong>, puis choisissez un format — MIME (Base64), UUE (uuencode) ou XXE.</li>
+<li>Pour restaurer l'original, sélectionnez le fichier encodé et choisissez <strong>Fichier ▸ Décoder…</strong>. Le format est détecté automatiquement.</li>
+</ol>
+<h2 id="calculer-lespace-occupe">Calculer l'espace occupé</h2>
+<p>Pour voir combien de place un dossier ou une sélection utilise réellement sur le disque, sélectionnez les éléments et appuyez sur <strong>Ctrl+L</strong> (<strong>Fichier ▸ Calculer l'espace occupé…</strong>). Peach Commander additionne tous les fichiers à l'intérieur, y compris les sous-dossiers, et affiche le total.</p>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Touche</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Calculer l'espace occupé</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>Les sommes de contrôle, le découpage/assemblage et l'encodage/décodage visent des tâches plus avancées, mais chacun se présente comme une seule boîte de dialogue avec des valeurs par défaut sensées.</li>
+<li>Lorsqu'un utilitaire produit de nouveaux fichiers (parties de découpage, fichier encodé, liste de sommes de contrôle), ceux-ci sont écrits dans le dossier affiché dans l'autre panneau — réglez d'abord ce panneau sur la destination souhaitée.</li>
+<li>La suppression des doublons est définitive selon vos réglages de suppression ; examinez chaque groupe avec soin et conservez au moins une copie de tout ce dont vous avez encore besoin.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Comparer et synchroniser</a></li></ul></section>
+</main>
+</body>
+</html>

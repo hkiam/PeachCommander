@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Premenovanie mnohých súborov</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Premenovanie mnohých súborov</h1>
+<p>Nástroj hromadného premenovania premenuje celú dávku súborov v jednom prechode. Namiesto úpravy názvov po jednom opíšete zmenu raz — vzor pomenovania, hľadanie a nahradenie, schému číslovania alebo zmenu veľkosti písmen — a Peach Commander ju použije na každý vybraný súbor. Živý náhľad ukazuje presne, ako sa bude volať každý súbor, skôr než sa čokoľvek stane, a jediné Späť vráti pôvodné názvy, ak výsledok nebol taký, aký ste chceli.</p>
+<h2 id="premenovanie-davky-suborov">Premenovanie dávky súborov</h2>
+<ol>
+<li>Vyberte súbory, ktoré chcete premenovať (pozri <em>Výber súborov</em>). Ovplyvnené sú iba vybrané položky.</li>
+<li>Vyberte <strong>Príkazy &gt; Nástroj hromadného premenovania…</strong> alebo stlačte Ctrl+M.</li>
+<li>Zostavte pravidlo premenovania pomocou polí opísaných nižšie. Mriežka náhľadu sa počas písania aktualizuje a zobrazuje každý <strong>Starý názov</strong> vedľa jeho <strong>Nového názvu</strong>.</li>
+<li>Skontrolujte náhľad. Riadok zobrazený farbou zvýraznenia označuje názov, ktorý nemožno použiť (napríklad duplikát alebo nepovolený názov), takže môžete upraviť pravidlo.</li>
+<li>Keď náhľad vyzerá správne, kliknite na <strong>Štart</strong>. Ak si to rozmyslíte, kliknite na <strong>Späť</strong> na obnovenie pôvodných názvov.</li>
+</ol>
+<p><img alt="Okno hromadného premenovania s poliami masky, možnosťami a mriežkou náhľadu zo starého na nový" src="images/multi-rename.png" />
+<em>(Obrázok: mriežka náhľadu sa aktualizuje naživo počas úpravy pravidla premenovania; nič sa nezmení na disku, kým nekliknete na Štart.)</em></p>
+<h2 id="zostavenie-pravidla-premenovania">Zostavenie pravidla premenovania</h2>
+<ul>
+<li><strong>Maska premenovania</strong> a <strong>Prípona</strong> — vzory, ktoré zostavia nový názov a príponu. Použite tlačidlá rýchleho vloženia, alebo zadajte zástupné symboly priamo: <code>[N]</code> pre pôvodný názov, <code>[N1-9]</code> pre rozsah znakov z neho, <code>[C]</code> pre počítadlo, <code>[d]</code> pre časti dátumu a času a <code>[P]</code> pre názov nadradeného priečinka.</li>
+<li><strong>Hľadať / Nahradiť za</strong> — nahradiť text vnútri názvov. Zapnite <strong>Regex</strong> pre zhodu podľa vzoru, <strong>Rozlišovať veľkosť</strong> pre presnú zhodu veľkosti písmen a <strong>Opakovať</strong> pre nahradenie každého výskytu.</li>
+<li><strong>Veľkosť písmen</strong> — previesť názvy na malé písmená, VEĽKÉ PÍSMENÁ, Prvé písmeno veľké alebo Každé Slovo Veľké.</li>
+<li><strong>Počítadlo</strong> — nastavte <strong>počiatočné</strong> číslo, <strong>krok</strong> medzi súbormi a na koľko <strong>číslic</strong> doplniť (napríklad 001, 002, 003) všade, kde sa objaví <code>[C]</code>.</li>
+</ul>
+<h2 id="skratky">Skratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akcia</th>
+<th>Skratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Otvoriť nástroj hromadného premenovania</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Použiť premenovanie</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Zatvoriť okno</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tipy">Tipy</h2>
+<ul>
+<li>Nič sa nezapíše na disk, kým nekliknete na <strong>Štart</strong>, takže môžete s pravidlom voľne experimentovať a sledovať náhľad.</li>
+<li>Po spustení <strong>Späť</strong> obráti premenovanie v jednom kroku.</li>
+<li>Uložte pravidlo, ktoré často používate, ako <strong>Predvoľbu</strong>, potom ju nabudúce vyberte z ponuky predvolieb na vyplnenie všetkých polí naraz.</li>
+<li>Na premenovanie jedného súboru alebo premenovanie súborov počas ich presúvania použite namiesto toho premenovanie na mieste alebo dialóg presunu (pozri <em>Presun a premenovanie</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Presúvanie a premenovávanie</a></li></ul></section>
+</main>
+</body>
+</html>

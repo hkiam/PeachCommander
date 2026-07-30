@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hartă disc</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Hartă disc</h1>
+<p>Hartă disc este un plugin încorporat care arată, dintr-o privire, ce folosește spațiu într-un folder sau pe un întreg volum. Scanează folderul pe care îl alegeți și desenează fiecare element dimensionat proporțional cu spațiul pe care îl ocupă efectiv pe disc, astfel încât cei mai mari devoratori de spațiu ies imediat în evidență. Puteți intra în adâncimea folderelor, vedea cum se reconciliază scanarea dvs. cu spațiul liber, purjabil și ascuns al volumului și face curățenie direct de pe hartă.</p>
+<h2 id="incepeti-o-scanare">Începeți o scanare</h2>
+<ol>
+<li>În panoul activ, mergeți la folderul (sau volumul) pe care doriți să-l măsurați.</li>
+<li>Alegeți <strong>Comenzi ▸ Hartă disc: Analizează folderul curent</strong>.</li>
+<li>Vizualizarea Hartă disc se deschide în dreapta și scanează în fundal, arătând o numărătoare curentă de elemente și octeți. Folderele mari se termină în câteva secunde — scanarea citește metadatele directorului în masă și lucrează pe mai multe nuclee de procesor.</li>
+</ol>
+<p><img alt="Hartă disc care arată o hartă arborescentă a unui folder, o bară de volum, o listă a celor mai mari fișiere și o legendă de categorii" src="images/disk-map.png" />
+<em>(Figura: vizualizarea hărții arborescente, colorată după categoria fișierului, cu bara de volum deasupra și lista celor mai mari fișiere în dreapta.)</em></p>
+<h2 id="citirea-hartii">Citirea hărții</h2>
+<ul>
+<li>Fiecare bloc (hartă arborescentă) sau segment de inel (explozie solară) este dimensionat după <strong>dimensiunea reală pe disc</strong> a elementului, astfel încât imaginea se potrivește cu ceea ce raportează Finder și sistemul.</li>
+<li>Blocurile sunt <strong>colorate după tipul fișierului</strong> — video, imagini, audio, documente, cod, arhive, aplicații, imagini de disc — cu o legendă în partea de jos. În setări puteți comuta la o <strong>hartă termică</strong> după dimensiune.</li>
+<li><strong>Faceți clic pe un folder</strong> pentru a intra în el; firimiturile din partea de sus arată unde vă aflați, iar butonul <strong>◂</strong> urcă un nivel.</li>
+<li>Treceți cu cursorul peste orice bloc pentru a-i vedea calea completă, dimensiunea și numărul de elemente.</li>
+</ul>
+<h2 id="doua-vizualizari-harta-arborescenta-si-explozie-solara">Două vizualizări: hartă arborescentă și explozie solară</h2>
+<p>Hartă disc oferă două vizualizări, între care puteți comuta cu butonul <strong>◎ / ▦</strong> din antet sau de pe pagina de setări:</p>
+<ul>
+<li><strong>Hartă arborescentă</strong> — dreptunghiuri imbricate, cea mai densă pentru depistarea celui mai mare fișier individual.</li>
+<li><strong>Explozie solară</strong> — inele concentrice (unul per adâncime de folder) în jurul folderului curent, cea mai bună pentru a vedea cum este distribuit spațiul într-un arbore adânc.</li>
+</ul>
+<p><img alt="Vizualizarea explozie solară a Hărții disc care arată inele concentrice pentru adâncimea folderelor" src="images/disk-map-sunburst.png" />
+<em>(Figura: vizualizarea explozie solară — discul interior este folderul curent, iar fiecare inel este un nivel mai adânc.)</em></p>
+<h2 id="bara-de-volum">Bara de volum</h2>
+<p>Bara din partea de sus reconciliază scanarea dvs. cu întregul volum:</p>
+<ul>
+<li><strong>Scanat / Acest folder</strong> — cât ocupă folderul analizat.</li>
+<li><strong>Ascuns</strong> (la rădăcina volumului) sau <strong>Restul volumului</strong> (pentru un subfolder) — tot ce nu este în această scanare, inclusiv folderele protejate de sistem, alți utilizatori și instantaneele.</li>
+<li><strong>Purjabil</strong> — spațiu pe care macOS îl poate recupera automat, mai ales instantanee Time Machine locale și cache-uri.</li>
+<li><strong>Liber</strong> — spațiu disponibil chiar acum.</li>
+</ul>
+<p>Când volumul are instantanee locale, bara arată un element <strong>· N instantanee (ⓘ)</strong>; faceți clic pe el pentru o listă doar-citire, cu un indiciu de a le gestiona în Utilitar disc sau Time Machine. Hartă disc nu șterge niciodată instantaneele ea însăși.</p>
+<h2 id="cele-mai-mari-fisiere">Cele mai mari fișiere</h2>
+<p>Activați <strong>Arată lista celor mai mari fișiere</strong> pentru a vedea cele mai mari fișiere din folderul curent clasate după dimensiune, fiecare cu un jeton de culoare pentru categoria sa. Faceți clic pe unul pentru a-l evidenția pe hartă.</p>
+<h2 id="curatenie-de-pe-harta">Curățenie de pe hartă</h2>
+<p>Faceți clic dreapta pe orice bloc pentru acțiuni:</p>
+<ul>
+<li><strong>Deschide în panoul stâng</strong> / <strong>Deschide în panoul drept</strong> — dezvăluie elementul într-un panou de fișiere.</li>
+<li><strong>Dezvăluie în Finder</strong>.</li>
+<li><strong>Mută în Coș</strong> — șterge doar acel element; harta se actualizează fără o rescanare completă.</li>
+</ul>
+<p>Pentru a elimina mai multe elemente deodată, folosiți <strong>colectorul</strong>: clic dreapta ▸ <strong>Marchează pentru colector</strong> pe fiecare element, apoi faceți clic pe butonul <strong>🗑 N</strong> din antet pentru a muta tot ce ați marcat în Coș într-un singur pas confirmat.</p>
+<h2 id="setari">Setări</h2>
+<p>Hartă disc adaugă propria pagină la fereastra Setări (<strong>Configurare ▸ Setări ▸ Hartă disc</strong>):</p>
+<ul>
+<li><strong>Stil de grafic</strong> — hartă arborescentă sau explozie solară.</li>
+<li><strong>Codificare pe culori</strong> — după tipul fișierului (categorie) sau după dimensiune (hartă termică).</li>
+<li><strong>Rămâi pe volumul de pornire</strong> — nu trece pe alte discuri montate.</li>
+<li><strong>Arată bara de volum</strong> și <strong>Arată lista celor mai mari fișiere</strong>.</li>
+</ul>
+<p>Modificările se aplică imediat unei Hărți disc deschise.</p>
+<h2 id="note">Note</h2>
+<ul>
+<li>Hartă disc măsoară dimensiunea <strong>alocată</strong> (pe disc) și numără fișierele cu <strong>legături hard</strong> doar o dată, astfel încât totalurile ei se aliniază cu spațiul folosit al volumului în loc să-l supraevalueze.</li>
+<li>Implicit, scanarea rămâne pe volumul de pornire, astfel încât nu va rătăci pe alte discuri montate sau partajări de rețea.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="deleting-files.html">Ștergerea fișierelor</a></li><li><a href="settings.html">Setări</a></li></ul></section>
+</main>
+</body>
+</html>

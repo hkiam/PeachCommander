@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>重命名多个文件</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>重命名多个文件</h1>
+<p>多重命名工具一次性重命名一整批文件。你无需逐个编辑名称，只需将更改描述一次——一个命名模式、一次查找替换、一套编号方案，或字母大小写的更改——Peach Commander 就会将其应用到每个选中的文件。在任何操作发生之前，实时预览会精确显示每个文件将被命名为什么，而一次撤销就能在结果不如你所愿时把原始名称还原回来。</p>
+<h2 id="_1">重命名一批文件</h2>
+<ol>
+<li>选择你想重命名的文件（参见<em>选择文件</em>）。只有选中的项目会受影响。</li>
+<li>选择 <strong>命令 &gt; 多重命名工具…</strong>，或按 Ctrl+M。</li>
+<li>使用下面描述的字段构建你的重命名规则。预览网格会随你的输入而更新，将每个 <strong>旧名称</strong> 显示在其 <strong>新名称</strong> 旁边。</li>
+<li>检查预览。以高亮颜色显示的行标示出无法使用的名称（例如重复或非法的名称），以便你调整规则。</li>
+<li>当预览看起来正确时，单击 <strong>开始</strong>。如果你改变主意，单击 <strong>撤销</strong> 以恢复原始名称。</li>
+</ol>
+<p><img alt="多重命名窗口，包含掩码字段、选项，以及从旧到新的预览网格" src="images/multi-rename.png" />
+<em>（图：预览网格随你编辑重命名规则而实时更新；在你单击“开始”之前，磁盘上不会有任何更改。）</em></p>
+<h2 id="_2">构建重命名规则</h2>
+<ul>
+<li><strong>重命名掩码</strong> 和 <strong>扩展名</strong> —— 用于构建新名称和扩展名的模式。使用快速插入按钮，或直接输入占位符：<code>[N]</code> 表示原始名称，<code>[N1-9]</code> 表示从中取一段字符，<code>[C]</code> 表示计数器，<code>[d]</code> 表示日期和时间部分，<code>[P]</code> 表示上级文件夹名称。</li>
+<li><strong>查找 / 替换为</strong> —— 替换名称内部的文本。打开 <strong>正则</strong> 进行模式匹配，打开 <strong>区分大小写</strong> 以精确匹配字母大小写，打开 <strong>重复</strong> 以替换每一处出现。</li>
+<li><strong>大小写</strong> —— 将名称转换为小写、大写、首字母大写，或每个单词首字母大写。</li>
+<li><strong>计数器</strong> —— 设置 <strong>起始</strong> 编号、文件之间的 <strong>步长</strong>，以及要补齐到多少 <strong>位数</strong>（例如 001、002、003），凡是出现 <code>[C]</code> 的地方都会应用。</li>
+</ul>
+<h2 id="_3">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>打开多重命名工具</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>应用重命名</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>关闭窗口</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">提示</h2>
+<ul>
+<li>在你单击 <strong>开始</strong> 之前不会向磁盘写入任何内容，因此你可以自由试验规则并观察预览。</li>
+<li>运行之后，<strong>撤销</strong> 可一步逆转重命名。</li>
+<li>将你常用的规则保存为 <strong>预设</strong>，下次从预设菜单中选取它，即可一次性填入所有字段。</li>
+<li>若要重命名单个文件，或在移动文件时重命名，请改用就地重命名或移动对话框（参见<em>移动与重命名</em>）。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">移动与重命名</a></li></ul></section>
+</main>
+</body>
+</html>

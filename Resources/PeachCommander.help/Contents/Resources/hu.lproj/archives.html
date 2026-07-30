@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Munka az archívumokkal</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Munka az archívumokkal</h1>
+<p>A Peach Commander úgy kezeli az archívumokat, mint a mappákat. Beléphet egy ZIP, TAR vagy más támogatott archívumba, böngészheti a tartalmát, és fájlokat másolhat ki belőle – mindezt anélkül, hogy először a lemezre kicsomagolná. Amikor archívumot szeretne létrehozni, a Csomagolás parancs a kijelölését egy ZIP, 7z, TAR vagy más formátumú fájlba köti, opcionális titkosítással és felosztott kötetekkel. Ez hasznos fájlok küldésre való összeállításához, egy mappa tárolás céljából történő zsugorításához vagy egy letöltésbe való bekukkantáshoz, mielőtt a kicsomagolás mellett döntene.</p>
+<h2 id="archivum-bongeszese-mappakent">Archívum böngészése mappaként</h2>
+<ol>
+<li>Egy panelen vigye a kurzort egy archívumfájlra (például egy <code>.zip</code> vagy <code>.tar.gz</code> fájlra).</li>
+<li>Nyomja meg az Enter vagy a Ctrl+PageDown billentyűt a belépéshez, ugyanúgy, ahogy egy mappát nyitna meg.</li>
+<li>Böngésszen a tartalomban a szokásos módon. Nyomja meg a Backspace vagy a Ctrl+PageUp billentyűt a visszalépéshez és az archívum elhagyásához.</li>
+<li>Fájlok kihúzásához jelölje ki őket, és másolja (F5) a másik panelre.</li>
+</ol>
+<p><img alt="Archívumon belüli böngészés, mintha mappa lenne" src="images/archive-browse.png" />
+<em>(Ábra: Egy megnyitott archívum közönséges mappalistaként megjelenítve, fájljai készen a kimásolásra.)</em></p>
+<p>A ZIP, a TAR és a gzip-tömörítésű TAR közvetlenül olvasható. Más formátumokat, például a CPIO, ISO, CAB, LZH, XAR és PAX típusúakat a beépített rendszereszközökön keresztül olvassa a program. A titkosított ZIP-archívumok (mind a klasszikus, mind az AES) megnyithatók, ha megadja a jelszót.</p>
+<h2 id="fajlok-csomagolasa-uj-archivumba">Fájlok csomagolása új archívumba</h2>
+<ol>
+<li>Jelölje ki a bevonni kívánt fájlokat és mappákat az aktív panelen.</li>
+<li>Válassza a Fájl ▸ Csomagolás… menüpontot, vagy nyomja meg az Alt+F5 billentyűt. (A csomagoláshoz és az eredetik ezt követő törléséhez használja az Alt+Shift+F5 billentyűt.)</li>
+<li>A párbeszédpanelen válassza ki az archívumformátumot (ZIP, 7z, TAR, tar.gz, bzip2, xz vagy RAR), a tömörítési szintet és a mentés helyét.</li>
+<li>Opcionálisan kapcsolja be az AES-256 titkosítást és adjon meg egy jelszót, vagy ossza fel az archívumot rögzített méretű kötetekre.</li>
+<li>Erősítse meg az archívum létrehozásához.</li>
+</ol>
+<p><img alt="A Csomagolás párbeszédpanel a formátum, a tömörítés, a titkosítás és a felosztás beállításaival" src="images/pack-dialog.png" />
+<em>(Ábra: A Csomagolás párbeszédpanel, ahol kiválasztja a formátumot, és beállítja a titkosítást és a felosztott kötetek lehetőségeit.)</em></p>
+<h2 id="archivum-kicsomagolasa-vagy-tesztelese">Archívum kicsomagolása vagy tesztelése</h2>
+<ol>
+<li>Helyezze a kicsomagolni kívánt archívumot az aktív panelre, a célmappát pedig a másik panelre.</li>
+<li>Válassza a Fájl ▸ Kicsomagolás… menüpontot, vagy nyomja meg az Alt+F9 billentyűt, majd erősítse meg a célt.</li>
+<li>Ha egy archívumot sérülés szempontjából szeretne ellenőrizni kicsomagolás nélkül, válassza a Fájl ▸ Archívum tesztelése menüpontot.</li>
+</ol>
+<h2 id="zip-szerkesztese-helyben">ZIP szerkesztése helyben</h2>
+<p>Egy meglévő ZIP-en belül fájlokat adhat hozzá vagy távolíthat el kicsomagolás nélkül. Nyissa meg a ZIP-et mappaként, majd másoljon be fájlokat, vagy töröljön fájlokat a szokásos módon – a változás egyenesen visszaíródik az archívumba.</p>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyűparancs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Belépés a kurzor alatti archívumba</td>
+<td>Enter vagy Ctrl+PageDown</td>
+</tr>
+<tr>
+<td>Archívum elhagyása (felfelé lépés)</td>
+<td>Backspace vagy Ctrl+PageUp</td>
+</tr>
+<tr>
+<td>Csomagolás</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Csomagolás és az eredetik törlése</td>
+<td>Alt+Shift+F5</td>
+</tr>
+<tr>
+<td>Kicsomagolás</td>
+<td>Alt+F9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A 7z, xz, bzip2 és RAR formátumba csomagolás külső eszközökre támaszkodik. A RAR különösen megköveteli a védett RAR program telepítését; enélkül ez a formátum nem érhető el.</li>
+<li>A ZIP helyben történő szerkesztése az egész archívumot újraírja, így a benne lévő fájlok módosítási időbélyegei nem őrződnek meg.</li>
+<li>A nagyon nagy egyes tagok kicsomagoláskor 512 MiB-ra vannak korlátozva. A kicsomagolás futás közben megszakítható.</li>
+<li>A rendkívül nagy (ZIP64) archívumok nem támogatottak.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Fájlok másolása</a></li></ul></section>
+</main>
+</body>
+</html>

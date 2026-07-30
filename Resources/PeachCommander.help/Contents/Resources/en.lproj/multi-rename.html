@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Renaming many files</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Renaming many files</h1>
+<p>The Multi-Rename Tool renames a whole batch of files in one pass. Instead of editing names one at a time, you describe the change once — a naming pattern, a search-and-replace, a numbering scheme, or a change of letter case — and Peach Commander applies it to every selected file. A live preview shows exactly what each file will be called before anything happens, and a single Undo puts the original names back if the result is not what you wanted.</p>
+<h2 id="rename-a-batch-of-files">Rename a batch of files</h2>
+<ol>
+<li>Select the files you want to rename (see <em>Selecting files</em>). Only the selected items are affected.</li>
+<li>Choose <strong>Commands &gt; Multi-Rename Tool…</strong>, or press Ctrl+M.</li>
+<li>Build your rename rule using the fields described below. The preview grid updates as you type, showing each <strong>Old name</strong> next to its <strong>New name</strong>.</li>
+<li>Check the preview. A row shown in a highlight color flags a name that cannot be used (for example, a duplicate or an illegal name) so you can adjust the rule.</li>
+<li>When the preview looks right, click <strong>Start</strong>. If you change your mind, click <strong>Undo</strong> to restore the original names.</li>
+</ol>
+<p><img alt="The Multi-Rename window with the mask fields, options, and the old-to-new preview grid" src="images/multi-rename.png" />
+<em>(Figure: The preview grid updates live as you edit the rename rule; nothing is changed on disk until you click Start.)</em></p>
+<h2 id="building-the-rename-rule">Building the rename rule</h2>
+<ul>
+<li><strong>Rename mask</strong> and <strong>Extension</strong> — patterns that build the new name and extension. Use the quick-insert buttons, or type placeholders directly: <code>[N]</code> for the original name, <code>[N1-9]</code> for a range of characters from it, <code>[C]</code> for the counter, <code>[d]</code> for date and time parts, and <code>[P]</code> for the parent folder name.</li>
+<li><strong>Search for / Replace with</strong> — replace text inside the names. Turn on <strong>Regex</strong> for pattern matching, <strong>Case sensitive</strong> to match exact letter case, and <strong>Repeat</strong> to replace every occurrence.</li>
+<li><strong>Case</strong> — convert names to lowercase, UPPERCASE, First letter capitalized, or Every Word capitalized.</li>
+<li><strong>Counter</strong> — set the <strong>Start</strong> number, the <strong>Step</strong> between files, and how many <strong>Digits</strong> to pad to (for example, 001, 002, 003) wherever <code>[C]</code> appears.</li>
+</ul>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open the Multi-Rename Tool</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Apply the rename</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Close the window</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Nothing is written to disk until you click <strong>Start</strong>, so you can experiment freely with the rule and watch the preview.</li>
+<li>After a run, <strong>Undo</strong> reverses the rename in one step.</li>
+<li>Save a rule you use often as a <strong>Preset</strong>, then pick it from the preset menu next time to fill in all the fields at once.</li>
+<li>To rename a single file, or to rename files as you move them, use in-place rename or the move dialog instead (see <em>Moving &amp; renaming</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Moving &amp; renaming</a></li></ul></section>
+</main>
+</body>
+</html>

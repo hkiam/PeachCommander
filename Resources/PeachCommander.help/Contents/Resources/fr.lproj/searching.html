@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rechercher des fichiers</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Rechercher des fichiers</h1>
+<p>Lorsque vous devez retrouver des fichiers n'importe où sur votre Mac — par nom, par ce qu'ils contiennent, ou par taille et date —, utilisez la fenêtre Rechercher des fichiers. Elle explore un ou plusieurs dossiers (et leurs sous-dossiers), peut regarder à l'intérieur des fichiers texte et des archives, et vous permet d'envoyer directement tout ce qu'elle trouve dans un panneau, afin que vous puissiez agir sur les résultats comme s'il s'agissait d'un dossier ordinaire.</p>
+<h2 id="rechercher-des-fichiers-par-nom">Rechercher des fichiers par nom</h2>
+<ol>
+<li>Dans le panneau affichant le dossier que vous souhaitez explorer, choisissez <strong>Commandes &gt; Rechercher des fichiers…</strong> (ou appuyez sur Cmd+Shift+F).</li>
+<li>Dans l'onglet <strong>Général</strong>, saisissez un motif de nom dans <strong>Rechercher</strong>. Vous pouvez utiliser des caractères génériques tels que <code>*.pdf</code> ou <code>report_*.docx</code>. Pour explorer plusieurs dossiers à la fois, indiquez-les dans le champ du dossier de départ, séparés par un point-virgule (<code>;</code>).</li>
+<li>Cliquez sur <strong>Démarrer</strong>. Les correspondances apparaissent dans la liste de résultats ci-dessous au fur et à mesure qu'elles sont trouvées.</li>
+<li>Double-cliquez sur un résultat pour accéder à ce fichier dans le panneau actif, ou sélectionnez un résultat et cliquez sur <strong>Afficher</strong> (F3) pour l'ouvrir dans le visualiseur intégré.</li>
+</ol>
+<p><img alt="La fenêtre Rechercher des fichiers sur l'onglet Général, affichant le motif de nom, le dossier et la liste de résultats" src="images/find-files-general.png" />
+<em>(Figure : l'onglet Général — rechercher par motif de nom dans un ou plusieurs dossiers.)</em></p>
+<h2 id="rechercher-par-contenu-taille-et-date">Rechercher par contenu, taille et date</h2>
+<ol>
+<li>Pour rechercher à l'intérieur des fichiers, sélectionnez <strong>Rechercher un texte</strong> dans l'onglet Général et saisissez le texte à trouver. Des options vous permettent de le rendre <strong>Sensible à la casse</strong>, de ne faire correspondre qu'un <strong>Mot entier</strong>, de traiter le texte comme une <strong>Expression régulière</strong>, d'effectuer une <strong>Recherche de contenu hexadécimal</strong>, ou de trouver les fichiers <strong>Ne contenant pas</strong> le texte.</li>
+<li>Passez à l'onglet <strong>Avancé</strong> pour restreindre les résultats par <strong>Taille</strong> (par exemple de <code>10K</code> à <code>5M</code>), par plage de <strong>date de modification</strong>, ou aux fichiers modifiés au cours des N derniers jours.</li>
+<li>Activez <strong>Rechercher dans les archives</strong> pour regarder à l'intérieur des archives de la famille zip (zip, jar, war et similaires).</li>
+<li>Pour limiter la recherche à ce que vous avez déjà choisi, activez <strong>Rechercher uniquement dans les éléments sélectionnés</strong> avant de démarrer.</li>
+</ol>
+<p><img alt="La fenêtre Rechercher des fichiers sur l'onglet Avancé, affichant les filtres de taille et de date" src="images/find-files-advanced.png" />
+<em>(Figure : l'onglet Avancé — filtrer par taille, date et autres attributs.)</em></p>
+<p>Si vous avez des extensions qui ajoutent des champs de contenu (comme les dimensions d'une image), l'onglet <strong>Extensions</strong> vous permet d'exiger qu'un champ satisfasse une condition — par exemple, uniquement les images de plus de 1000 pixels de large.</p>
+<p><img alt="La fenêtre Rechercher des fichiers sur l'onglet Extensions, affichant une condition de champ de contenu" src="images/find-files-plugins.png" />
+<em>(Figure : l'onglet Extensions — faire correspondre sur des champs de contenu fournis par une extension.)</em></p>
+<h2 id="recherches-rapides-avec-spotlight">Recherches rapides avec Spotlight</h2>
+<p>Pour les dossiers locaux que macOS a déjà indexés, activez <strong>Utiliser Spotlight</strong> dans l'onglet Général pour des résultats quasi instantanés. Spotlight interroge l'index au lieu de parcourir les fichiers : il ignore donc les expressions régulières, les limites de profondeur des sous-dossiers et la portée « sélection uniquement ».</p>
+<h2 id="reutiliser-et-transmettre-vos-resultats">Réutiliser et transmettre vos résultats</h2>
+<ul>
+<li><strong>Envoyer dans la liste</strong> place chaque résultat dans le panneau actif sous forme de liste temporaire, afin que vous puissiez copier, déplacer ou supprimer l'ensemble d'un coup.</li>
+<li>Dans l'onglet <strong>Charger / Enregistrer</strong>, choisissez <strong>Enregistrer comme modèle…</strong> pour conserver la recherche actuelle (motifs et options) et la reprendre plus tard dans la liste des modèles.</li>
+</ul>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Raccourci</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ouvrir Rechercher des fichiers</td>
+<td>Cmd+Shift+F ou Option+F7</td>
+</tr>
+<tr>
+<td>Démarrer / arrêter la recherche</td>
+<td>Bouton Démarrer dans la fenêtre</td>
+</tr>
+<tr>
+<td>Afficher le résultat sélectionné</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>La recherche de contenu lit les fichiers entiers pour les dossiers locaux ; sur les autres emplacements, les fichiers très volumineux sont ignorés (environ 16 Mo, ou 64 Mo avec une expression régulière).</li>
+<li>La recherche à l'intérieur des archives descend jusqu'à quatre niveaux d'archives imbriquées.</li>
+<li><strong>Inclure les dossiers dans les résultats</strong> répertorie aussi les dossiers dont le nom correspond, pas seulement les fichiers.</li>
+<li>Spotlight ne couvre que les dossiers locaux indexés ; pour les emplacements réseau ou la correspondance par motif, laissez-le désactivé et laissez Rechercher des fichiers parcourir.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">Sélectionner des fichiers</a></li><li><a href="quick-search-and-filter.html">Recherche rapide et filtre</a></li></ul></section>
+</main>
+</body>
+</html>

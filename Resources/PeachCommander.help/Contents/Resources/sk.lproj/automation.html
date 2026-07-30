@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatizácia (AppleScript a Skratky)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Automatizácia (AppleScript a Skratky)</h1>
+<p>Peach Commander možno skriptovať, takže ho môžete ovládať z AppleScript a z aplikácie Skratky. Hŕstka základných slovies umožňuje skriptu navigovať v paneloch, vybrať súbory podľa masky, kopírovať alebo presúvať aktuálny výber a spustiť ľubovoľný príkaz Peach Commander podľa jeho identifikátora — opätovným použitím presne tých istých akcií, ktoré používajú ponuky, takže skriptovaný krok sa správa ako manuálny. Je to praktické pri opakujúcich sa úlohách: triedenie stiahnutých súborov, príprava výstupu zostavenia alebo zapojenie kroku so súborom do väčšej Skratky.</p>
+<h2 id="zobrazenie-slovnika">Zobrazenie slovníka</h2>
+<ol>
+<li>Otvorte <strong>Editor skriptov</strong> (v <code>/Aplikácie/Nástroje</code>).</li>
+<li>Vyberte <strong>Okno ▸ Knižnica</strong>, potom dvakrát kliknite na <strong>Peach Commander</strong> (pridajte ho pomocou <strong>+</strong>, ak nie je v zozname).</li>
+<li>Slovník sa otvorí a uvedie príkazy a vlastnosti nižšie.</li>
+</ol>
+<p>Prvýkrát, keď skript ovláda Peach Commander, macOS vás požiada o povolenie (<strong>Systémové nastavenia ▸ Súkromie a bezpečnosť ▸ Automatizácia</strong>). Schváľte to raz a neskoršie skripty bežia bez opýtania.</p>
+<h2 id="co-mozete-precitat">Čo môžete prečítať</h2>
+<table>
+<thead>
+<tr>
+<th>Vlastnosť</th>
+<th>Význam</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>Cesta POSIX priečinka aktívneho panela.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>Cesta POSIX priečinka druhého panela.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>Vybrané položky v aktívnom paneli (alebo položka pod kurzorom).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="slovesa">Slovesá</h2>
+<table>
+<thead>
+<tr>
+<th>Príkaz</th>
+<th>Čo robí</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;cesta&gt;" [in left\|right]</code></td>
+<td>Otvoriť priečinok v paneli (predvolene: aktívny panel).</td>
+</tr>
+<tr>
+<td><code>select "&lt;maska&gt;"</code></td>
+<td>Vybrať položky v aktívnom paneli podľa masky so zástupnými znakmi, napr. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;priečinok&gt;"</code></td>
+<td>Skopírovať výber aktívneho panela do priečinka.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;priečinok&gt;"</code></td>
+<td>Presunúť výber aktívneho panela do priečinka.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Spustiť ľubovoľný príkaz podľa jeho identifikátora, napr. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Kopírovanie a presúvanie používajú tú istú frontu prenosu na pozadí ako F5/F6, takže priebeh a prípadné výzvy na prepísanie sa zobrazujú presne ako pri manuálnej operácii.</p>
+<h2 id="priklad">Príklad</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="pouzitie-zo-skratiek">Použitie zo Skratiek</h2>
+<p>V aplikácii <strong>Skratky</strong> pridajte akciu <strong>Spustiť AppleScript</strong> a vložte skript ako ten vyššie. To vám umožní zapojiť krok Peach Commander do väčšej Skratky — napríklad spustenej zmenou priečinka alebo klávesovou skratkou.</p>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Identifikátor príkazu, ktorý odovzdáte do <code>run command</code>, je ten istý identifikátor <code>cm_*</code> zobrazený v prehliadači príkazov (pozri <a href="start-menu.md">Ponuka Štart a vlastné príkazy</a>).</li>
+<li>Skriptovanie vždy pôsobí na <strong>aktívny</strong> panel; najprv použite <code>go to … in left</code> / <code>in right</code>, ak potrebujete konkrétnu stranu.</li>
+<li>Peach Commander je aplikácia s jedným oknom, takže skripty cielia na dva panely toho okna.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Ponuka Štart a vlastné príkazy</a></li><li><a href="settings.html">Nastavenia</a></li></ul></section>
+</main>
+</body>
+</html>

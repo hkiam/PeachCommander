@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nätverksresurser</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Nätverksresurser</h1>
+<p>Peach Commander kan ansluta till filservrar i ditt lokala nätverk eller företagsnätverk — SMB- (Windows/Samba) och AFP-resurser — och visa deras innehåll i en panel precis som en mapp på din egen Mac. När en resurs är ansluten kan du bläddra, kopiera, flytta, byta namn på och öppna filer i den precis som lokalt, inklusive att kopiera mellan resursen och din andra panel.</p>
+<h2 id="anslut-till-en-server">Anslut till en server</h2>
+<ol>
+<li>Klicka på den panel du vill ansluta (den anslutna resursen öppnas i den aktiva panelen).</li>
+<li>Tryck på Cmd+K, eller välj <strong>Nätverk &gt; Nätverksomgivning &gt; Montera nätverksresurs…</strong>.</li>
+<li>Skriv serveradressen i dialogrutan <strong>Anslut till server</strong>. Du kan ange:
+   - en SMB-adress, till exempel <code>smb://fileserver/projects</code>
+   - en AFP-adress, till exempel <code>afp://fileserver/projects</code>
+   - en sökväg i Windows-stil, till exempel <code>\\fileserver\projects</code>
+   - ett enkelt <code>server/resurs</code>-namn</li>
+<li>Klicka på Anslut (eller tryck på Return). Om servern kräver namn och lösenord visar macOS sin vanliga inloggningsruta — ange dina uppgifter där.</li>
+<li>När resursen är klar öppnar den aktiva panelen den automatiskt. Bläddra och arbeta med den som med vilken annan mapp som helst.</li>
+</ol>
+<h2 id="koppla-fran">Koppla från</h2>
+<p>En ansluten resurs visas som en monterad volym på din Mac. För att koppla från den matar du ut den på vanligt macOS-sätt — till exempel från Finders sidofält eller från enhetslistan i Peach Commander.</p>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Montera nätverksresurs…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Autentisering (användarnamn, lösenord och valet "spara i min nyckelring") hanteras av den vanliga macOS-inloggningsrutan, så sparade serverlösenord fungerar som i Finder.</li>
+<li>Om du anger en adress som inte kan tolkas ber Peach Commander dig om en SMB/AFP-adress, en sökväg i Windows-stil eller ett <code>server/resurs</code>-namn, och inget monteras.</li>
+<li>Efter din bekräftelse kan anslutningen ta en stund medan macOS monterar resursen; panelen växlar till den så snart den blir tillgänglig.</li>
+<li>Detta ansluter till delade enheter i ett nätverk. Se det relaterade ämnet nedan för att i stället nå en FTP-, FTPS- eller SFTP-server.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Ansluta till FTP och SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atributi in dovoljenja</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Atributi in dovoljenja</h1>
+<p>Peach Commander vam omogoča pregledovanje in spreminjanje nizkonivojskih metapodatkov datotek in map, ki jih Finder večinoma drži zunaj dosega: dovoljenja POSIX za branje/pisanje/izvajanje, lastnika in skupino, datuma spremembe in ustvarjanja, zastavice macOS, kot sta skrit in zaklenjen, ter razširjene atribute. Uredite lahko tudi seznam za nadzor dostopa (ACL) datoteke za podrobna pravila na uporabnika ali skupino, ustvarite povezave in vzdevke, ki kažejo na druge elemente, ter pripnete lastne komentarje. Ta orodja so namenjena naprednim uporabnikom, ki potrebujejo natančen nadzor nad tem, kako se elementi obnašajo in kdo se jih lahko dotakne.</p>
+<h2 id="spreminjanje-atributov">Spreminjanje atributov</h2>
+<ol>
+<li>Izberite enega ali več elementov v dejavnem podoknu.</li>
+<li>Izberite <strong>Datoteka &gt; Spremeni atribute…</strong>.</li>
+<li>Nastavite, kar potrebujete: preklopite polja za branje/pisanje/izvajanje za lastnika, skupino in vse (ali vnesite osmiško vrednost neposredno), spremenite lastnika ali skupino, preklopite zastavici skrit ali zaklenjen ter nastavite datum spremembe ali ustvarjanja. Uporabite <strong>Uporabi trenutni</strong> za trenutni čas, ali kopirajte datum iz druge datoteke.</li>
+<li>Za uporabo iste spremembe skozi vsebino mape vklopite rekurzivno možnost in izberite, ali vpliva na datoteke, mape ali oboje.</li>
+<li>Kliknite V redu, da izvedete spremembo. Rekurzivne spremembe se izvajajo kot opravilo v ozadju z vrstico napredka.</li>
+</ol>
+<p><img alt="Pogovorno okno Spremeni atribute, ki prikazuje mrežo dovoljenj, zastavice in polja datumov" src="images/attributes-dialog.png" />
+<em>(Slika: pogovorno okno Spremeni atribute. Mešane vrednosti v izboru več datotek se prikažejo kot pomišljaj, dokler jih ne nastavite.)</em></p>
+<h2 id="urejanje-acl">Urejanje ACL</h2>
+<p>Za pravila zunaj osnovnega modela lastnik/skupina/vsi uredite seznam za nadzor dostopa elementa.</p>
+<ol>
+<li>Odprite <strong>Datoteka &gt; Spremeni atribute…</strong> in od tam odprite urejevalnik ACL.</li>
+<li>Vsaka vrstica je eno pravilo: uporabnik ali skupina, na katero se nanaša, ali dovoljuje ali zavrača, in katera dovoljenja (branje, pisanje, brisanje itd.) podeljuje.</li>
+<li>Dodajajte, odstranjujte ali urejajte vrstice, nato shranite, da seznam zapišete nazaj v element.</li>
+</ol>
+<h2 id="ustvarjanje-povezav-vzdevkov-in-komentarjev">Ustvarjanje povezav, vzdevkov in komentarjev</h2>
+<ul>
+<li><strong>Datoteka &gt; Ustvari simbolno povezavo…</strong> ustvari simbolno povezavo (symlink), ki po poti kaže na element pod kazalko.</li>
+<li><strong>Datoteka &gt; Ustvari trdo povezavo…</strong> ustvari trdo povezavo do istih podatkov datoteke. Trde povezave delujejo le za datoteke na istem nosilcu.</li>
+<li><strong>Datoteka &gt; Ustvari vzdevek…</strong> ustvari vzdevek macOS, ki mu lahko sledi tudi Finder.</li>
+<li><strong>Datoteka &gt; Uredi komentar…</strong> (Ctrl+Z) odpre urejevalnik besedila za komentar na datoteko. Komentarje je mogoče prikazati v lastnem stolpcu in v namigih stanja.</li>
+</ul>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Uredi komentar</td>
+<td>Ctrl+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Spreminjanje lastnika ali skupine običajno zahteva pravice, ki jih kot običajen uporabnik nimate; ko se to zgodi, se sprememba prijavi kot neuspešna namesto uporabljena, preostale vaše spremembe pa še vedno gredo skozi.</li>
+<li>Komentarji so shranjeni v datoteki <code>descript.ion</code> poleg vaših elementov in jih je mogoče hraniti tudi kot komentarje Finder, odvisno od vaših nastavitev. Oba se bereta pri prikazu komentarja.</li>
+<li>Simbolna povezava in vzdevek oba kažeta na cilj, vendar simbolna povezava shrani navadno pot, medtem ko vzdevek shrani sklic macOS, ki še naprej deluje, če se cilj premakne ali preimenuje. Trda povezava je drugo ime za iste podatke datoteke, ne kazalec.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="file-utilities.html">Datotečni pripomočki</a></li></ul></section>
+</main>
+</body>
+</html>

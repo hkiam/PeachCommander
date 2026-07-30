@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hitta filer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Hitta filer</h1>
+<p>När du behöver spåra upp filer var som helst på din Mac — efter namn, efter innehåll, eller efter storlek och datum — använd fönstret Hitta filer. Det söker i en eller flera mappar (och deras undermappar), kan titta inuti textfiler och arkiv, och låter dig skicka allt det hittar direkt in i en panel så att du kan agera på resultaten som om de vore en vanlig mapp.</p>
+<h2 id="hitta-filer-efter-namn">Hitta filer efter namn</h2>
+<ol>
+<li>I panelen som visar mappen du vill söka i, välj <strong>Kommandon &gt; Hitta filer…</strong> (eller tryck på Cmd+Shift+F).</li>
+<li>På fliken <strong>Allmänt</strong>, skriv ett namnmönster i <strong>Sök efter</strong>. Du kan använda jokertecken som <code>*.pdf</code> eller <code>report_*.docx</code>. För att söka i flera mappar samtidigt, lista dem i startmappsfältet åtskilda med semikolon (<code>;</code>).</li>
+<li>Klicka på <strong>Starta</strong>. Matchningar visas i resultatlistan nedan allteftersom de hittas.</li>
+<li>Dubbelklicka på ett resultat för att hoppa till den filen i den aktiva panelen, eller markera ett resultat och klicka på <strong>Visa</strong> (F3) för att öppna det i den inbyggda visaren.</li>
+</ol>
+<p><img alt="Fönstret Hitta filer på fliken Allmänt, som visar namnmönster, mapp och resultatlista" src="images/find-files-general.png" />
+<em>(Bild: Fliken Allmänt — sök efter namnmönster i en eller flera mappar.)</em></p>
+<h2 id="sok-efter-innehall-storlek-och-datum">Sök efter innehåll, storlek och datum</h2>
+<ol>
+<li>För att söka inuti filer, markera <strong>Hitta text</strong> på fliken Allmänt och skriv texten att leta efter. Alternativ låter dig göra den <strong>Skiftlägeskänslig</strong>, matcha endast ett <strong>Helt ord</strong>, behandla texten som ett <strong>Reguljärt uttryck</strong>, göra en <strong>Hexadecimal innehållssökning</strong>, eller hitta filer som <strong>Inte innehåller</strong> texten.</li>
+<li>Växla till fliken <strong>Avancerat</strong> för att smalna av resultaten efter <strong>Storlek</strong> (till exempel <code>10K</code> till <code>5M</code>), efter <strong>ändringsdatum</strong>-intervall, eller till filer ändrade de senaste N dagarna.</li>
+<li>Slå på <strong>Sök inuti arkiv</strong> för att titta inuti arkiv av zip-familjen (zip, jar, war och liknande).</li>
+<li>För att begränsa sökningen till det du redan valt, slå på <strong>Sök endast i markerade objekt</strong> innan du startar.</li>
+</ol>
+<p><img alt="Fönstret Hitta filer på fliken Avancerat, som visar storleks- och datumfilter" src="images/find-files-advanced.png" />
+<em>(Bild: Fliken Avancerat — filtrera efter storlek, datum och andra attribut.)</em></p>
+<p>Om du har insticksprogram som lägger till innehållsfält (som bildmått) låter fliken <strong>Insticksprogram</strong> dig kräva att ett fält matchar ett villkor — till exempel endast bilder bredare än 1000 pixlar.</p>
+<p><img alt="Fönstret Hitta filer på fliken Insticksprogram, som visar ett innehållsfältvillkor" src="images/find-files-plugins.png" />
+<em>(Bild: Fliken Insticksprogram — matcha på innehållsfält från insticksprogram.)</em></p>
+<h2 id="snabba-sokningar-med-spotlight">Snabba sökningar med Spotlight</h2>
+<p>För lokala mappar som macOS redan har indexerat, slå på <strong>Använd Spotlight</strong> på fliken Allmänt för nästan omedelbara resultat. Spotlight söker i indexet i stället för att söka igenom filer, så det ignorerar reguljära uttryck, undermappsdjupgränser och endast-markerade-omfånget.</p>
+<h2 id="ateranvand-och-lamna-over-dina-resultat">Återanvänd och lämna över dina resultat</h2>
+<ul>
+<li><strong>Skicka till lista</strong> placerar varje resultat i den aktiva panelen som en tillfällig lista, så att du kan kopiera, flytta eller radera hela uppsättningen på en gång.</li>
+<li>På fliken <strong>Läs in / Spara</strong>, välj <strong>Spara som mall…</strong> för att lagra den aktuella sökningen (mönster och alternativ) och välja den igen senare från mall-listan.</li>
+</ul>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Öppna Hitta filer</td>
+<td>Cmd+Shift+F eller Option+F7</td>
+</tr>
+<tr>
+<td>Starta / stoppa sökningen</td>
+<td>Starta-knappen i fönstret</td>
+</tr>
+<tr>
+<td>Visa det markerade resultatet</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Innehållssökning läser hela filer för lokala mappar; på andra platser hoppas mycket stora filer över (ungefär 16 MB, eller 64 MB när ett reguljärt uttryck används).</li>
+<li>Sökning inuti arkiv går ner upp till fyra nivåer av nästlade arkiv.</li>
+<li><strong>Inkludera mappar i resultaten</strong> listar även mappar vars namn matchar, inte bara filer.</li>
+<li>Spotlight täcker endast indexerade lokala mappar; för nätverksplatser eller mönsterbaserad matchning, lämna det av och låt Hitta filer söka igenom.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">Markera filer</a></li><li><a href="quick-search-and-filter.html">Snabbsökning och filter</a></li></ul></section>
+</main>
+</body>
+</html>

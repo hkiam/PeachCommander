@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feilsøking</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Feilsøking</h1>
+<p>Dette emnet dekker problemene folk støter oftest på: macOS som blokkerer tilgang til visse mapper, en mappe som ser ut til å ha satt seg fast på gammelt innhold, en sikker FTP-tjener som nekter å koble til, og pakking til RAR. Hver seksjon forteller deg hva som skjer og hvordan du løser det.</p>
+<h2 id="macos-ber-om-tillatelse-eller-mapper-ser-tomme-ut">macOS ber om tillatelse, eller mapper ser tomme ut</h2>
+<p>Noen steder – som <code>~/Library</code>-mappen din, andre brukeres mapper og systemområder – er beskyttet av macOS og holder seg skjult til du gir tilgang. Peach Commander oppdager når dette skjer og tilbyr å veilede deg til riktig innstilling.</p>
+<ol>
+<li>Når du blir bedt om det, velg å åpne Systeminnstillinger, eller åpne det selv.</li>
+<li>Gå til Personvern og sikkerhet, deretter Full disktilgang.</li>
+<li>Slå på bryteren ved siden av Peach Commander. Hvis den ikke er oppført, bruk Legg til-knappen for å legge den til.</li>
+<li>Avslutt og gjenåpne Peach Commander slik at den nye tillatelsen trer i kraft.</li>
+</ol>
+<p>Peach Commander kjører ikke inne i en begrenset sandkasse, så når Full disktilgang er gitt kan den bla i og behandle filer akkurat som Finder.</p>
+<h2 id="en-mappe-viser-ikke-nylige-endringer">En mappe viser ikke nylige endringer</h2>
+<p>Paneler oppdaterer normalt seg selv når filer endres på disken. Hvis en mappe ble endret av et annet program, er på et nettverksvolum, eller bare ser utdatert ut, oppdater den manuelt.</p>
+<ol>
+<li>Klikk på panelet du vil oppdatere.</li>
+<li>Trykk F2 (eller Ctrl+R) for å lese den mappen på nytt.</li>
+</ol>
+<p>Nettverks- og monterte volumer rapporterer ikke alltid endringer til macOS, så en manuell oppdatering er den pålitelige løsningen der.</p>
+<h2 id="en-ftps-tjener-vil-ikke-koble-til">En FTPS-tjener vil ikke koble til</h2>
+<p>Hvis en sikker FTP-tilkobling mislykkes, sjekk disse innstillingene i tilkoblingsdetaljene:</p>
+<ul>
+<li>Match tjenerens sikkerhetsmodus: eksplisitt FTPS (AUTH TLS) kontra implisitt FTPS (port 990) er ikke utbyttbare.</li>
+<li>Hvis tilkoblingen stopper opp etter innlogging, bytt mellom passiv og aktiv overføringsmodus – de fleste tjenere bak en brannmur trenger passiv.</li>
+<li>Hvis tjeneren bruker et selvsignert sertifikat, må du eksplisitt tillate det; ellers avvises tilkoblingen.</li>
+<li>Bekreft vert, port, brukernavn og passord, og om en SOCKS5-proxy kreves på nettverket ditt.</li>
+</ul>
+<h2 id="pakking-til-rar-gjr-ingenting">Pakking til RAR gjør ingenting</h2>
+<p>Peach Commander kan opprette ZIP-, 7z-, TAR-, TAR.GZ-, BZ2- og XZ-arkiver på egen hånd. RAR er annerledes: fordi RAR er et proprietært format, krever oppretting av RAR-arkiver et separat RAR-kommandolinjeverktøy installert på din Mac. Uten det er RAR utilgjengelig når du pakker filer (Tilvalg+F5). For å lese eksisterende RAR-arkiver kan du fortsatt åpne dem som en mappe. Hvis du ikke trenger RAR spesifikt, velg ZIP eller 7z i stedet – begge støtter sterk AES-256-kryptering og delte volumer.</p>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Oppdater den aktive mappen</td>
+<td>F2 eller Ctrl+R</td>
+</tr>
+<tr>
+<td>Koble til en FTP/FTPS-tjener</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Monter en nettverksressurs</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>Pakk de valgte filene</td>
+<td>Tilvalg+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Passord og andre opplysninger lagres bare i macOS-nøkkelringen, aldri i klartekst-konfigurasjonsfiler.</li>
+<li>Å montere en nettverksressurs (Cmd+K, eller Nettverk-menyen ▸ Monter nettverksressurs…) bruker den samme tilkoblingen macOS selv bruker, så den vil også dukke opp i Finder.</li>
+<li>Hvis et problem vedvarer etter en oppdatering og en omstart, kan det være en kjent begrensning i stedet for en feil – se Kjente begrensninger.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">Personvern og sikkerhet</a></li><li><a href="known-limitations.html">Kjente begrensninger</a></li></ul></section>
+</main>
+</body>
+</html>

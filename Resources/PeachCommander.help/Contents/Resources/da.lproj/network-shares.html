@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Netværksshares</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Netværksshares</h1>
+<p>Peach Commander kan oprette forbindelse til filservere på dit lokale netværk eller virksomhedsnetværk — SMB- (Windows/Samba) og AFP-shares — og vise deres indhold i et panel præcis som en mappe på din egen Mac. Når et share er forbundet, kan du gennemse, kopiere, flytte, omdøbe og åbne filer i det præcis som lokalt, inklusive at kopiere mellem sharet og dit andet panel.</p>
+<h2 id="opret-forbindelse-til-en-server">Opret forbindelse til en server</h2>
+<ol>
+<li>Klik på det panel, du vil oprette forbindelse til (det forbundne share åbner i det aktive panel).</li>
+<li>Tryk på Cmd+K, eller vælg <strong>Netværk &gt; Netværkskvarter &gt; Opret forbindelse til netværksshare…</strong>.</li>
+<li>I dialogen <strong>Opret forbindelse til server</strong> skal du indtaste serveradressen. Du kan angive:
+   - en SMB-adresse, for eksempel <code>smb://fileserver/projects</code>
+   - en AFP-adresse, for eksempel <code>afp://fileserver/projects</code>
+   - en sti i Windows-stil, for eksempel <code>\\fileserver\projects</code>
+   - et simpelt <code>server/share</code>-navn</li>
+<li>Klik på Opret forbindelse (eller tryk på Retur). Hvis serveren har brug for navn og adgangskode, viser macOS sit sædvanlige loginvindue — indtast dine oplysninger der.</li>
+<li>Når sharet er klar, åbner det aktive panel det automatisk. Gennemse og arbejd med det som med enhver anden mappe.</li>
+</ol>
+<h2 id="afbryd-forbindelsen">Afbryd forbindelsen</h2>
+<p>Et forbundet share vises som et monteret diskområde på din Mac. For at afbryde forbindelsen skal du skubbe det ud på den sædvanlige macOS-måde — for eksempel fra Finder-sidebjælken eller fra enhedslisten i Peach Commander.</p>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Genvej</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Opret forbindelse til netværksshare…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Godkendelse (brugernavn, adgangskode og en valgfri "husk i min nøglering"-mulighed) håndteres af det sædvanlige macOS-loginvindue, så gemte serveradgangskoder virker som i Finder.</li>
+<li>Hvis du angiver en adresse, der ikke kan tolkes, beder Peach Commander om en SMB/AFP-adresse, en sti i Windows-stil eller et <code>server/share</code>-navn, og intet monteres.</li>
+<li>Efter du bekræfter, kan forbindelsen tage et øjeblik, mens macOS monterer sharet; panelet skifter til det, så snart det bliver tilgængeligt.</li>
+<li>Dette opretter forbindelse til delte enheder på et netværk. For i stedet at nå en FTP-, FTPS- eller SFTP-server, se det relaterede emne nedenfor.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Tilslutning til FTP og SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

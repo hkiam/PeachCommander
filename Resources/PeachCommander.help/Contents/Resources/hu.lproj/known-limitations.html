@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ismert korlátozások</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Ismert korlátozások</h1>
+<p>A Peach Commander sokat tud, de néhány funkciónak őszinte határai vannak a jelenlegi verzióban. Ha ezeket előre ismeri, elkerüli a zavart, amikor valami váratlanul viselkedik. Ez az oldal felsorolja a jelenlegi korlátozásokat, és ahol lehetséges, egy egyszerű megkerülő megoldást.</p>
+<h2 id="archivumok">Archívumok</h2>
+<ul>
+<li><strong>A nagyon nagy ZIP-fájlokat (ZIP64) nem tudja megnyitni a beépített olvasó.</strong> A szabványos ZIP, TAR és gzip-tömörített TAR archívumok közvetlenül mappaként nyílnak meg. A ZIP64 archívumok — amelyeket akkor használnak, amikor egy archívum több mint körülbelül 65 000 elemet tartalmaz vagy meghaladja a 4 GB-ot — kívül esnek azon, amit a natív olvasó kezel, így előfordulhat, hogy nem nyílnak meg vagy hiányosan listázódnak.</li>
+<li><strong>A titkosított ZIP-archívumok</strong> (a régebbi ZipCrypto és a WinZip AES egyaránt) böngészésre támogatottak, de a jelszót kérni fogja.</li>
+<li>Más formátumok, mint a CPIO, ISO, CAB, LZH, XAR és PAX, egy segédeszközön keresztül nyílnak meg a natív olvasó helyett.</li>
+</ul>
+<h2 id="halozat-sftp-scp">Hálózat (SFTP / SCP)</h2>
+<ul>
+<li><strong>A fájlattribútumok SFTP-n keresztüli megváltoztatásának nincs hatása ebben a verzióban.</strong> Böngészhet, letölthet és feltölthet SFTP/SCP-n keresztül, de a jogosultságok, tulajdonlás vagy időbélyegek megváltoztatására irányuló kéréseket egy távoli kiszolgálón csendben figyelmen kívül hagyja. Ezeket a változtatásokat magán a kiszolgálón végezze, vagy egy másik protokollon keresztül.</li>
+<li>Egy SFTP-kiszolgálóhoz való első csatlakozáskor megkérik, hogy bízzon a gazdakulcsában. A Peach Commander ezután megjegyzi (első használatkori bizalom).</li>
+</ul>
+<h2 id="letoltes-url-rol">Letöltés URL-ről</h2>
+<ul>
+<li>A <strong>Letöltés URL-ről</strong> parancs (Hálózat menü) jelenleg a Cmd+Shift+D billentyűparancsot használja, ami ugyanaz a billentyűparancs, mint az Ugrás &gt; Asztal. Amikor mindkettő elérhető, a menük ütközhetnek — a biztonság kedvéért indítsa a letöltést közvetlenül a Hálózat menüből.</li>
+</ul>
+<h2 id="mappafrissites">Mappafrissítés</h2>
+<ul>
+<li><strong>Egy panel enyhe késleltetéssel, nem azonnal veszi észre a külső változásokat.</strong> A Peach Commander körülbelül 2 másodpercenként ellenőrzi az aktuális mappát változások szempontjából, így egy másik app által hozzáadott vagy eltávolított fájl megjelenése eltarthat egy pillanatig. Ha nem akar várni, frissítse az aktív panelt manuálisan az F2-vel vagy Ctrl+R-rel.</li>
+</ul>
+<h2 id="egyeb-jelenlegi-hatarok">Egyéb jelenlegi határok</h2>
+<ul>
+<li><strong>Néhány nagyon hosszú abszolút útvonal</strong> (mélyen beágyazott mappák, amelyek teljes útvonala szokatlanul hosszú) esetleg nem kezelhető megbízhatóan. A mappafa teteje közelében dolgozva ez elkerülhető.</li>
+<li><strong>Ez az előnézeti verzió nincs aláírva.</strong> A macOS Gatekeeper figyelmeztethet, hogy az app egy nem azonosított fejlesztőtől származik, amikor először nyitja meg. Kattintson jobb gombbal az appra és válassza a Megnyitás lehetőséget, majd erősítse meg a futtatásához. Az automatikus frissítések még nem érhetők el ebben a verzióban.</li>
+</ul>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyűparancs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aktív panel frissítése</td>
+<td>F2 vagy Ctrl+R</td>
+</tr>
+<tr>
+<td>Letöltés URL-ről</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<p>Ezek a jelenlegi verzió korlátozásai, és várhatóan javulnak a későbbi kiadásokban. Ha itt nem leírt viselkedésbe ütközik, lásd a hibaelhárítási témát.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="troubleshooting.html">Hibaelhárítás</a></li></ul></section>
+</main>
+</body>
+</html>

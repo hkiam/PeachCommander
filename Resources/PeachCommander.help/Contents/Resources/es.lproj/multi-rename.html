@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cambiar el nombre de muchos archivos</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Cambiar el nombre de muchos archivos</h1>
+<p>La Herramienta de cambio de nombre múltiple renombra todo un lote de archivos en una sola pasada. En lugar de editar los nombres uno a uno, describes el cambio una vez —un patrón de nombres, un buscar y reemplazar, un esquema de numeración o un cambio de mayúsculas y minúsculas— y Peach Commander lo aplica a cada archivo seleccionado. Una vista previa en directo muestra exactamente cómo se llamará cada archivo antes de que ocurra nada, y un solo Deshacer restaura los nombres originales si el resultado no es el que querías.</p>
+<h2 id="renombrar-un-lote-de-archivos">Renombrar un lote de archivos</h2>
+<ol>
+<li>Selecciona los archivos que quieres renombrar (consulta <em>Seleccionar archivos</em>). Solo se ven afectados los elementos seleccionados.</li>
+<li>Elige <strong>Comandos &gt; Herramienta de cambio de nombre múltiple…</strong>, o pulsa Ctrl+M.</li>
+<li>Construye tu regla de cambio de nombre con los campos descritos abajo. La cuadrícula de vista previa se actualiza mientras escribes, mostrando cada <strong>Nombre antiguo</strong> junto a su <strong>Nombre nuevo</strong>.</li>
+<li>Revisa la vista previa. Una fila mostrada en un color destacado señala un nombre que no puede usarse (por ejemplo, un duplicado o un nombre no válido) para que ajustes la regla.</li>
+<li>Cuando la vista previa se vea bien, haz clic en <strong>Iniciar</strong>. Si cambias de opinión, haz clic en <strong>Deshacer</strong> para restaurar los nombres originales.</li>
+</ol>
+<p><img alt="La ventana de cambio de nombre múltiple con los campos de máscara, las opciones y la cuadrícula de vista previa de antiguo a nuevo" src="images/multi-rename.png" />
+<em>(Figura: La cuadrícula de vista previa se actualiza en directo a medida que editas la regla; nada se modifica en el disco hasta que haces clic en Iniciar.)</em></p>
+<h2 id="construir-la-regla-de-cambio-de-nombre">Construir la regla de cambio de nombre</h2>
+<ul>
+<li><strong>Máscara de nombre</strong> y <strong>Extensión</strong> — patrones que construyen el nuevo nombre y la extensión. Usa los botones de inserción rápida o escribe los marcadores directamente: <code>[N]</code> para el nombre original, <code>[N1-9]</code> para un rango de caracteres de este, <code>[C]</code> para el contador, <code>[d]</code> para partes de fecha y hora, y <code>[P]</code> para el nombre de la carpeta principal.</li>
+<li><strong>Buscar / Reemplazar por</strong> — reemplaza texto dentro de los nombres. Activa <strong>Regex</strong> para coincidencia por patrones, <strong>Distinguir mayúsculas</strong> para coincidir exactamente y <strong>Repetir</strong> para reemplazar todas las apariciones.</li>
+<li><strong>Mayúsculas/minúsculas</strong> — convierte los nombres a minúsculas, MAYÚSCULAS, Primera letra en mayúscula o Cada Palabra En Mayúscula.</li>
+<li><strong>Contador</strong> — define el número de <strong>Inicio</strong>, el <strong>Paso</strong> entre archivos y cuántos <strong>Dígitos</strong> rellenar (por ejemplo, 001, 002, 003) donde aparezca <code>[C]</code>.</li>
+</ul>
+<h2 id="atajos">Atajos</h2>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir la Herramienta de cambio de nombre múltiple</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Aplicar el cambio de nombre</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Cerrar la ventana</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="consejos">Consejos</h2>
+<ul>
+<li>Nada se escribe en el disco hasta que haces clic en <strong>Iniciar</strong>, así que puedes experimentar libremente con la regla y observar la vista previa.</li>
+<li>Tras una ejecución, <strong>Deshacer</strong> revierte el cambio de nombre en un solo paso.</li>
+<li>Guarda una regla que uses a menudo como <strong>Ajuste preestablecido</strong> y elígela luego en el menú de ajustes para rellenar todos los campos de una vez.</li>
+<li>Para renombrar un solo archivo, o para renombrar archivos al moverlos, usa el cambio de nombre in situ o el diálogo de mover (consulta <em>Mover y cambiar de nombre</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Mover y cambiar de nombre</a></li></ul></section>
+</main>
+</body>
+</html>

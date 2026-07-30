@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meniul Start și comenzile personalizate</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Meniul Start și comenzile personalizate</h1>
+<p>Meniul <strong>Start</strong> este propriul dvs. meniu personal, care stă în bara de meniu lângă Fișier, Editare și restul. Conține comenzi pe care le definiți dvs., astfel încât acțiunile la care apelați cel mai des sunt întotdeauna la un clic distanță. În tradiția managerelor de fișiere clasice cu două panouri, fiecare intrare poate rula o comandă încorporată, lansa un program sau o aplicație externă, sau sări direct la un folder. Peach Commander vine cu meniul Start gol și gata să fie umplut de dvs.</p>
+<h2 id="cum-sa-adaugati-propriile-comenzi">Cum să adăugați propriile comenzi</h2>
+<ol>
+<li>Alegeți <strong>Start &gt; Modifică meniul Start…</strong>. Peach Commander deschide fișierul dvs. de comenzi de utilizator (creându-l cu un exemplu comentat prima dată).</li>
+<li>Adăugați o secțiune per comandă. Fiecare secțiune începe cu un nume în paranteze drepte, apoi câteva chei simple:
+   - <strong>cmd</strong> — ce să ruleze: o cale de program, o aplicație, o comandă încorporată <code>cm_</code>, sau o altă comandă de-a dvs.
+   - <strong>param</strong> — parametri transmiși unui program. Substituenții se completează când comanda rulează: <code>%P</code> (folderul sursă), <code>%N</code> (fișierul curent), <code>%T</code> (folderul celuilalt panou), <code>%M</code> (fișierul celuilalt panou), <code>%S</code> (fișierele selectate).
+   - <strong>path</strong> — folderul de pornire (implicit folderul curent).
+   - <strong>menu</strong> — titlul afișat în meniul Start.
+   - <strong>key</strong> — o comandă rapidă opțională, de ex. <code>C+S+B</code>.</li>
+<li>Salvați fișierul. Meniul Start se actualizează singur data viitoare când Peach Commander devine activ, astfel încât intrările dvs. noi apar imediat.</li>
+</ol>
+<h2 id="sfaturi">Sfaturi</h2>
+<ul>
+<li>Pentru a deschide folderul curent în Terminal, setați <strong>cmd</strong> la <code>open</code>, <strong>param</strong> la <code>-a Terminal %P</code>, și <strong>menu</strong> la <code>Deschide Terminal aici</code>.</li>
+<li>Îndreptați <strong>cmd</strong> spre o comandă <code>cm_</code> pentru a da unei acțiuni încorporate propria intrare de meniu Start și comandă rapidă.</li>
+<li>Ordinea în fișier este ordinea în meniu, deci puneți comenzile cele mai folosite în partea de sus.</li>
+</ul>
+<h2 id="note">Note</h2>
+<ul>
+<li>Puteți de asemenea înlocui întreaga bară de meniu cu a dvs. Alegeți <strong>Configurare &gt; Editează fișierul de meniu…</strong> pentru a deschide un fișier de meniu inițiat din meniul încorporat curent, complet localizat; editați-l liber, iar modificările dvs. se aplică data viitoare când aplicația este activată. Ștergeți fișierul pentru a restaura bara de meniu standard.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">Bara de butoane</a></li><li><a href="keyboard-shortcuts.html">Tastatură și comenzi rapide</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>从 URL 下载</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>从 URL 下载</h1>
+<p>Peach Commander 可以将文件直接从 HTTP 或 HTTPS 网址获取到活动面板中，而无需打开浏览器。粘贴一个链接，确认它将以何种名称保存，下载就会自行运行——支持连接中断时续传、一次批量下载多个链接，以及可选的校验和验证，让你知道文件是否完整到达。</p>
+<h2 id="_1">下载文件</h2>
+<ol>
+<li>打开你希望文件落地的面板文件夹。</li>
+<li>选择 <strong>网络 &gt; 从 URL 下载</strong>，或按 Cmd+Shift+D。</li>
+<li>将网址粘贴到 <strong>URL</strong> 框中。如果你先前复制了一个链接，它会为你自动填入。</li>
+<li>检查 <strong>另存为</strong> 名称——它是根据链接建议的，你可以随意编辑。</li>
+<li>单击 <strong>下载</strong>。</li>
+</ol>
+<p><img alt="从 URL 下载对话框，带有链接、可编辑的文件名和选项" src="images/download-url.png" />
+<em>（图：下载对话框——粘贴链接、编辑名称，并设置可选的验证、凭据、请求头或代理。）</em></p>
+<p>默认情况下，下载会<strong>在后台</strong>运行，因此你可以在传输的同时继续在面板中工作。关闭 <strong>在后台下载</strong> 可等待它完成，或打开 <strong>排队稍后处理</strong> 以设置好但暂不开始。</p>
+<h2 id="_2">一次下载多个文件</h2>
+<p>在 <strong>URL</strong> 框中每行粘贴一个网址。当存在多个链接时，每个文件的名称都会自动从其链接推导得出，并且逐文件的 <strong>另存为</strong> 和 <strong>验证</strong> 字段会被关闭。</p>
+<h2 id="_3">续传被中断的下载</h2>
+<p>如果传输被中断，Peach Commander 会将已接收到的内容保留在一个临时的 <code>.part</code> 文件中。再次开始同一下载时，只要服务器支持，就会从停止处续传，而不是从头开始。只有在下载成功完成后，<code>.part</code> 文件才会被重命名为最终名称。</p>
+<h2 id="_4">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>从 URL 下载</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">提示</h2>
+<ul>
+<li><strong>验证文件。</strong> 对于单个下载，将预期的 <strong>SHA-256</strong> 校验和粘贴到 <strong>验证</strong> 字段中。传输完成后，文件的校验和会与之比对，这样你就可以相信文件与发布者所列的内容相符。</li>
+<li><strong>需要登录？</strong> 对于使用基本认证的站点，在 <strong>认证</strong> 字段中输入用户名和密码。对于基于令牌的访问，在 <strong>请求头</strong> 框中添加一行 <code>Authorization: Bearer …</code>。</li>
+<li><strong>自定义请求头。</strong> 在 <strong>请求头</strong> 框中每行添加一个请求头，例如 <code>Referer: …</code> 或 <code>Cookie: …</code>，用于那些只有配合特定请求头才能工作的链接。</li>
+<li><strong>代理。</strong> 通过填写 <strong>代理</strong> 主机、端口和类型，将下载经由 HTTP 或 SOCKS5 代理路由。</li>
+<li><strong>不受信任的证书。</strong> 仅对你信任但使用自签名证书的站点打开 <strong>允许不受信任的证书</strong>；它会为该下载禁用正常的 HTTPS 安全检查。</li>
+<li><strong>注意：</strong> Cmd+Shift+D 在其他地方也用于转到“桌面”文件夹；如果该快捷键未打开此对话框，请改用菜单中的 <strong>网络 &gt; 从 URL 下载</strong>。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">连接到 FTP 与 SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

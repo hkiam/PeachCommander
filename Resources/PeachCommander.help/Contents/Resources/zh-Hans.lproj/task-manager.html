@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>任务管理器</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>任务管理器</h1>
+<p>Task Manager 插件把你 Mac 上正在运行的进程变成一个你可以浏览的文件夹。它在驱动器栏中显示为一个 <strong>TaskManager</strong> 驱动器；打开它，每个进程都是一行，你可以对其排序、像文件一样查看，或结束它 —— 使用你已经用于文件的相同按键。由于它是插件，你可以从 <strong>配置 ▸ 插件…</strong> 中将其停用或移除。</p>
+<h2 id="_1">打开它</h2>
+<ol>
+<li>在驱动器栏中单击 <strong>📊 TaskManager</strong> 条目（它就在你的启动驱动器之后）。</li>
+<li>面板会填满，每个正在运行的进程占一行。每行的名称是进程名后跟其 PID，例如 <code>Finder (462)</code>。</li>
+</ol>
+<p><img alt="Task Manager 列出正在运行的进程，带有 PID、CPU、内存和命令列" src="images/task-manager.png" />
+<em>（图：以文件列表形式显示的正在运行的进程，你可以对其排序和操作。）</em></p>
+<h2 id="_2">每列的含义</h2>
+<p>除了通常的大小（内存）和日期（启动时间）列之外，Task Manager 还添加了进程列：</p>
+<table>
+<thead>
+<tr>
+<th>列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>进程 id</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>近期处理器使用率（需要第二次刷新后才会出现）</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>线程数</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R 运行 · S 睡眠 · T 已停止 · Z 僵尸 · I 空闲</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>所有者</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>父进程 id</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>完整命令行</td>
+</tr>
+</tbody>
+</table>
+<p>像在普通文件夹中一样，可以按任意列排序（例如 CPU % 或 大小/内存）。</p>
+<h2 id="_3">查看或结束进程</h2>
+<ul>
+<li><strong>查看（F3）</strong> 会显示一份 <em>Process Information</em> 报告：名称、PID、父进程、用户、状态、线程、内存、CPU、启动时间、可执行文件路径以及完整命令行。</li>
+<li><strong>删除（F8）</strong> 会结束进程。第一次删除会发送一个温和的 <strong>退出</strong>（SIGTERM）；对仍在运行的进程再次删除会升级为 <strong>强制退出</strong>（SIGKILL）。插件绝不会针对 PID 1。</li>
+</ul>
+<h2 id="_4">说明</h2>
+<ul>
+<li>基本详情（PID、父进程、用户、状态）对每个进程都可读，就像 <code>ps</code> 一样。内存、线程和 CPU 只能读取<strong>你自己的</strong>进程；其他进程的这些列会显示为空白（它们需要提升的权限，这是后续会添加的功能）。</li>
+<li>CPU % 是两次采样之间的变化量，因此在面板第二次刷新之前它是空白的（面板大约每两秒刷新一次）。</li>
+<li>除结束进程外，该列表是只读的 —— 你无法将文件复制到其中。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="viewing-files.html">查看文件</a></li><li><a href="deleting-files.html">删除文件</a></li></ul></section>
+</main>
+</body>
+</html>

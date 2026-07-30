@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.0'
+
+      - name: Install dependencies
+        run: |
+          brew install xcodegen
+          ./Tools/bootstrap.sh
+
+      - name: Build project
+        run: |
+          ./Tools/build.sh
+
+      - name: Run tests
+        run: |
+          ./Tools/test.sh

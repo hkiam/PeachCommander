@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redigera filer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Redigera filer</h1>
+<p>När du behöver ändra en fil snarare än bara titta på den öppnar Peach Commander den i en inbyggd redigerare. Text- och kodfiler öppnas i en fullständig redigerare med syntaxfärgning, sök och ersätt, en översikt över symbolerna i din kod, och en minikarta för snabb navigering. Binärfiler kan öppnas i en separat hex-redigerare, där du kan granska och ändra enskilda byte. Du behöver aldrig lämna appen för att göra en snabb ändring.</p>
+<h2 id="redigera-en-text-eller-kodfil">Redigera en text- eller kodfil</h2>
+<ol>
+<li>Flytta markören till filen du vill ändra i endera panelen.</li>
+<li>Tryck på F4, eller välj Arkiv ▸ Redigera. Filen öppnas i redigeringsfönstret.</li>
+<li>Gör dina ändringar. Om filen är ett igenkänt programmerings- eller dataformat färgas nyckelord, strängar och kommentarer automatiskt.</li>
+<li>Tryck på Cmd+S (eller klicka på Spara) för att skriva dina ändringar. Den första sparningen behåller en säkerhetskopia av originalet bredvid filen, så att du alltid kan falla tillbaka på den.</li>
+</ol>
+<p>För att starta en helt ny textfil på den aktuella platsen, tryck på Shift+F4.</p>
+<p><img alt="Den inbyggda textredigeraren som visar syntaxfärgning, symbolöversikten och minikartan" src="images/editor.png" />
+<em>(Figur: Redigeraren med syntaxfärgning, symbolöversikten till vänster och minikartan till höger.)</em></p>
+<h2 id="sok-ersatt-och-navigera">Sök, ersätt och navigera</h2>
+<ul>
+<li>Tryck på Cmd+F för att öppna sökfältet. För att ersätta text, öppna sökfältet och växla det till ersättningsvyn, eller klicka på Sök/Ersätt i verktygsfältet.</li>
+<li>Klicka på Formatera JSON/XML för att indentera om ett JSON- eller XML-dokument till en ren, läsbar layout.</li>
+<li>Klicka på Symboler (eller tryck på Cmd+Shift+O) för att visa en sidopanel som listar klasserna, funktionerna och metoderna i din kod. Klicka på en post för att hoppa direkt till den.</li>
+<li>Tryck på Cmd+L för att hoppa till en specifik rad.</li>
+<li>Tryck på Cmd+\ för att hoppa mellan en klammer och dess matchande partner.</li>
+<li>Klicka på kartknappen för att visa eller dölja minikartan, en skalad översikt över hela filen som du kan klicka på för att rulla.</li>
+<li>Använd menyn Kodning i verktygsfältet om filen sparades i något annat än standardtextkodningen.</li>
+</ul>
+<h2 id="redigera-en-fil-byte-for-byte">Redigera en fil byte för byte</h2>
+<ol>
+<li>Markera filen i en panel.</li>
+<li>Välj Arkiv ▸ Redigera som hex (eller högerklicka på filen och välj Redigera som hex).</li>
+<li>Skriv hex-siffror för att skriva över byte, eller använd piltangenterna för att röra dig genom filen. Backspace och Delete tar bort byte.</li>
+<li>Tryck på Cmd+S för att spara. Precis som med textredigeraren behålls en engångssäkerhetskopia av originalet.</li>
+</ol>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Tangent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Redigera fil</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Skapa och redigera en ny textfil</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>Spara</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>Sök</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>Visa/dölj symbolöversikt</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>Gå till rad</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>Hoppa till matchande klammer</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>Ångra / gör om (hex-redigerare)</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anteckningar">Anteckningar</h2>
+<ul>
+<li>Syntaxfärgning täcker JSON, C, C#, Java, JavaScript, TypeScript, Python och Rust. Andra filtyper öppnas och redigeras ändå normalt med grundläggande färgning, men detaljerad färgning och symbolöversikten är endast tillgängliga för de språk som stöds.</li>
+<li>Symbolöversikten och funktionen Gå till rad gäller textredigeraren. Hex-redigeraren är avsedd för binärgranskning och redigeringar på byte-nivå, inte för text.</li>
+<li>Båda redigerarna behåller en säkerhetskopia av originalfilen första gången du sparar, så att en oavsiktlig ändring är lätt att ångra genom att återställa den säkerhetskopian.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Visa filer</a></li></ul></section>
+</main>
+</body>
+</html>

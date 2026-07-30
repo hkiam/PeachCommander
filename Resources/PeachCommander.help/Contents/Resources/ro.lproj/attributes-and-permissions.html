@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atribute și permisiuni</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Atribute și permisiuni</h1>
+<p>Peach Commander vă permite să inspectați și să modificați metadatele de nivel scăzut ale fișierelor și folderelor pe care Finder le ține în cea mai mare parte în afara accesului: permisiunile POSIX de citire/scriere/execuție, proprietarul și grupul, datele de modificare și creare, indicatoarele macOS precum ascuns și blocat, și atributele extinse. Puteți de asemenea edita lista de control al accesului (ACL) a unui fișier pentru reguli detaliate per utilizator sau per grup, crea legături și alias-uri care indică spre alte elemente și atașa propriile comentarii. Aceste instrumente sunt destinate utilizatorilor avansați care au nevoie de control precis asupra modului în care se comportă elementele și cine le poate atinge.</p>
+<h2 id="modificarea-atributelor">Modificarea atributelor</h2>
+<ol>
+<li>Selectați unul sau mai multe elemente în panoul activ.</li>
+<li>Alegeți <strong>Fișier &gt; Modifică atribute…</strong>.</li>
+<li>Setați ce aveți nevoie: comutați casetele de citire/scriere/execuție pentru proprietar, grup și toți (sau tastați direct o valoare octală), schimbați proprietarul sau grupul, comutați indicatoarele ascuns sau blocat și setați data de modificare sau creare. Folosiți <strong>Folosește curentul</strong> pentru ora curentă, sau copiați o dată dintr-un alt fișier.</li>
+<li>Pentru a aplica aceeași modificare prin conținutul unui folder, activați opțiunea recursivă și alegeți dacă afectează fișierele, folderele sau ambele.</li>
+<li>Faceți clic pe OK pentru a executa modificarea. Modificările recursive rulează ca o sarcină de fundal cu o bară de progres.</li>
+</ol>
+<p><img alt="Dialogul Modifică atribute care arată grila de permisiuni, indicatoarele și câmpurile de dată" src="images/attributes-dialog.png" />
+<em>(Figura: dialogul Modifică atribute. Valorile mixte dintr-o selecție de mai multe fișiere apar ca o liniuță până le setați.)</em></p>
+<h2 id="editarea-unui-acl">Editarea unui ACL</h2>
+<p>Pentru reguli dincolo de modelul de bază proprietar/grup/toți, editați lista de control al accesului a elementului.</p>
+<ol>
+<li>Deschideți <strong>Fișier &gt; Modifică atribute…</strong> și deschideți editorul ACL de acolo.</li>
+<li>Fiecare rând este o regulă: utilizatorul sau grupul căruia i se aplică, dacă permite sau refuză și ce permisiuni (citire, scriere, ștergere etc.) acordă.</li>
+<li>Adăugați, eliminați sau editați rânduri, apoi salvați pentru a scrie lista înapoi în element.</li>
+</ol>
+<h2 id="crearea-de-legaturi-alias-uri-si-comentarii">Crearea de legături, alias-uri și comentarii</h2>
+<ul>
+<li><strong>Fișier &gt; Creează legătură simbolică…</strong> creează o legătură simbolică (symlink) care indică spre elementul de sub cursor prin cale.</li>
+<li><strong>Fișier &gt; Creează legătură hard…</strong> creează o legătură hard către aceleași date de fișier. Legăturile hard funcționează doar pentru fișiere de pe același volum.</li>
+<li><strong>Fișier &gt; Creează alias…</strong> creează un alias macOS pe care Finder îl poate de asemenea urma.</li>
+<li><strong>Fișier &gt; Editează comentariul…</strong> (Ctrl+Z) deschide un editor de text pentru un comentariu per fișier. Comentariile pot fi afișate în propria coloană și în sfaturile de stare.</li>
+</ul>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Comandă rapidă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Editează comentariul</td>
+<td>Ctrl+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Schimbarea proprietarului sau a grupului necesită de obicei privilegii pe care nu le aveți ca utilizator obișnuit; când se întâmplă asta, modificarea este raportată ca eșuată în loc de aplicată, iar restul modificărilor dvs. trec în continuare.</li>
+<li>Comentariile sunt stocate într-un fișier <code>descript.ion</code> alături de elementele dvs. și pot fi de asemenea păstrate ca comentarii Finder, în funcție de setările dvs. Ambele sunt citite la afișarea unui comentariu.</li>
+<li>O legătură simbolică și un alias indică ambele spre o țintă, dar o legătură simbolică stochează o cale simplă, în timp ce un alias stochează o referință macOS care continuă să funcționeze dacă ținta este mutată sau redenumită. O legătură hard este un al doilea nume pentru aceleași date de fișier, nu un indicator.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="file-utilities.html">Utilitare de fișiere</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bestanden bekijken</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Bestanden bekijken</h1>
+<p>Peach Commander heeft een ingebouwde viewer waarmee je in een bestand kunt kijken zonder een andere app te openen of het bestand te wijzigen. Druk op F3 op het item onder de cursor en de viewer opent onmiddellijk, zelfs voor zeer grote bestanden. Hij kiest automatisch de beste manier om de inhoud te tonen: leesbare tekst, syntaxgekleurde code, een ruwe hex-dump, of een afbeelding op ware grootte. Je kunt ook een voorbeeld van een bestand direct in het venster bekijken met Quick View, of het aan macOS Quick Look overhandigen.</p>
+<h2 id="een-bestand-bekijken">Een bestand bekijken</h2>
+<ol>
+<li>Verplaats de cursor naar een bestand in het actieve paneel.</li>
+<li>Druk op F3 (of kies Bekijken in het menu Bestand). De viewer opent in zijn eigen venster.</li>
+<li>Gebruik de werkbalk om te wisselen hoe de inhoud wordt getoond: Tekst, Code, Hex, Afbeelding of Weergegeven. Laat het op de automatische instelling staan om Peach Commander te laten beslissen.</li>
+<li>Scroll met de pijltoetsen, Page Up/Page Down en de schuifbalk. Voor lange tekst zet je de minimapknop aan om het hele bestand in één oogopslag te zien en erdoorheen te springen.</li>
+<li>Druk op N om naar het volgende geselecteerde bestand te springen, of sluit het venster met Esc.</li>
+</ol>
+<p><img alt="De ingebouwde viewer die een tekstbestand toont met de minimap rechts" src="images/lister-text.png" />
+<em>(Afbeelding: Een tekstbestand bekijken, met de representatiekiezer en minimap in de werkbalk.)</em></p>
+<h2 id="tekst-vinden-en-de-codering-wijzigen">Tekst vinden en de codering wijzigen</h2>
+<ul>
+<li>Druk op Ctrl+F om binnen het bestand te zoeken. Druk op F3 om naar de volgende overeenkomst te springen en Shift+F3 voor de vorige.</li>
+<li>Als tekst er verminkt uitziet, klik je op Codering in de werkbalk (of druk je op E) om door tekstcoderingen te bladeren tot het correct leest; de automatische instelling krijgt het meestal goed.</li>
+<li>Druk op W om regelterugloop voor lange regels te wisselen.</li>
+</ul>
+<h2 id="quick-view-en-quick-look">Quick View en Quick Look</h2>
+<p>Quick View toont een live voorbeeld in het paneel dat je <em>niet</em> gebruikt, zodat je aan de ene kant kunt blijven bladeren terwijl je aan de andere kant een voorbeeld bekijkt.</p>
+<ol>
+<li>Druk op Ctrl+Q. Het inactieve paneel verandert in een voorbeeldgebied.</li>
+<li>Verplaats de cursor over verschillende bestanden in het actieve paneel om er van elk een voorbeeld te zien.</li>
+<li>Druk nogmaals op Ctrl+Q, of op Esc, om het paneel terug te brengen naar een normale bestandslijst.</li>
+</ol>
+<p>Voor een snel schermvullend voorbeeld dat door macOS zelf wordt verzorgd, druk je op Cmd+Y (Quick Look). Druk nogmaals op Cmd+Y of Space om het te sluiten.</p>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Sneltoets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bestand onder cursor bekijken</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Alleen het bestand onder de cursor bekijken (gemarkeerde bestanden negeren)</td>
+<td>Shift+F3</td>
+</tr>
+<tr>
+<td>Openen in een externe viewer</td>
+<td>Option+F3</td>
+</tr>
+<tr>
+<td>Zoeken binnen de viewer</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Volgende / vorige overeenkomst</td>
+<td>F3 / Shift+F3</td>
+</tr>
+<tr>
+<td>Quick View in het andere paneel</td>
+<td>Ctrl+Q</td>
+</tr>
+<tr>
+<td>Quick Look (macOS-voorbeeld)</td>
+<td>Cmd+Y</td>
+</tr>
+<tr>
+<td>Sluit de viewer of Quick View</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>De viewer is alleen-lezen. Om een bestand te wijzigen, gebruik je in plaats daarvan de editor (zie Bestanden bewerken).</li>
+<li>Zeer grote bestanden openen zonder vertraging: tekst opent een snelle, scrollbare weergave en de hex-weergave streamt bij elke grootte rechtstreeks van schijf.</li>
+<li>Druk op F3 op een map om in plaats van bestandsbytes een samenvatting van de inhoud en totale grootte te zien.</li>
+<li>De modus Weergegeven toont opgemaakte inhoud zoals webpagina's; de hex-modus toont de ruwe bytes naast hun tekens, wat handig is om binaire bestanden te inspecteren.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Bestanden bewerken</a></li><li><a href="searching.html">Bestanden vinden</a></li></ul></section>
+</main>
+</body>
+</html>

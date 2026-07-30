@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schnellsuche &amp; Filter</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Schnellsuche &amp; Filter</h1>
+<p>Wenn ein Ordner Hunderte von Objekten enthält, müssen Sie selten scrollen. Peach Commander ermöglicht es Ihnen, durch Eingabe des Namens direkt zu einer Datei zu springen (Schnellsuche), die Liste auf genau die Objekte einzugrenzen, die Sie interessieren (Schnellfilter), sowie die Dotfiles ein- oder auszublenden, die macOS normalerweise verborgen hält. Alle drei Funktionen arbeiten innerhalb des aktiven Panels, ohne dass ein Dialog geöffnet wird.</p>
+<h2 id="durch-tippen-zu-einer-datei-springen-schnellsuche">Durch Tippen zu einer Datei springen (Schnellsuche)</h2>
+<ol>
+<li>Klicken Sie auf ein Dateipanel, damit es aktiv ist.</li>
+<li>Beginnen Sie, den Anfang eines Namens zu tippen. Der Cursor springt zum ersten passenden Objekt.</li>
+<li>Tippen Sie weiter, um die Übereinstimmung zu verfeinern, oder drücken Sie denselben Buchstaben erneut, um durch Objekte zu blättern, die mit diesem Buchstaben beginnen.</li>
+<li>Der getippte Text wird nach einer kurzen Pause gelöscht, sodass Sie jederzeit eine neue Suche starten können.</li>
+</ol>
+<p>Standardmäßig gelangen einfache Buchstaben in die Befehlszeile, und die Schnellsuche wird mit Ctrl+Option+Buchstabe ausgelöst (das klassische Verhalten). Sie können die Schnellsuche so umstellen, dass sie stattdessen auf einfaches Tippen reagiert, oder sie ausschalten, in den Konfigurationseinstellungen.</p>
+<h2 id="die-liste-filtern-schnellfilter">Die Liste filtern (Schnellfilter)</h2>
+<ol>
+<li>Drücken Sie im aktiven Panel Ctrl+S, um den Schnellfilter einzuschalten.</li>
+<li>Tippen Sie eine Filtermaske. Das Panel grenzt sich beim Tippen live auf passende Objekte ein.</li>
+<li>Drücken Sie Esc, um den Filter zu löschen und wieder alles anzuzeigen.</li>
+</ol>
+<p>Der Filter akzeptiert mehrere Arten von Masken:</p>
+<ul>
+<li><strong>Einfacher Text</strong> passt auf jeden Namen, der das Getippte enthält (zum Beispiel zeigt <code>report</code> jedes Objekt an, das „report" irgendwo im Namen trägt).</li>
+<li><strong>Platzhalter</strong> verwenden <code>*</code> (beliebige Zeichen) und <code>?</code> (ein Zeichen). Trennen Sie mehrere Masken mit einem Semikolon und fügen Sie Ausschlüsse nach einem senkrechten Strich hinzu, zum Beispiel <code>*.jpg;*.png|*thumb*</code>, um Bilder anzuzeigen, aber Miniaturbilder auszublenden.</li>
+<li><strong>Finder-Tags</strong> filtern nach Tag-Farbe: Tippen Sie <code>tag:red</code> (oder <code>#red</code>), um nur rot markierte Objekte anzuzeigen, oder ein bloßes <code>tag:</code>, um alles anzuzeigen, das irgendein Tag trägt.</li>
+</ul>
+<h2 id="verborgene-dateien-anzeigen">Verborgene Dateien anzeigen</h2>
+<p>Drücken Sie Ctrl+H oder wählen Sie den Befehl aus dem Menü Ansicht, um verborgene Objekte umzuschalten (Namen, die mit einem Punkt beginnen, sowie systemseitig verborgene Dateien). Die Einstellung gilt für das aktive Panel und wird zwischen Sitzungen gespeichert.</p>
+<h2 id="tastaturkurzel">Tastaturkürzel</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Tastaturkürzel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Schnellsuche (klassischer Modus)</td>
+<td>Ctrl+Option+Buchstabe</td>
+</tr>
+<tr>
+<td>Schnellfilter ein/aus</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Filter löschen / abbrechen</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Verborgene Dateien ein-/ausblenden</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Die Schnellsuche bewegt nur den Cursor; der Schnellfilter ändert tatsächlich, welche Objekte aufgelistet werden. Nutzen Sie den Filter, wenn Sie an einer Teilmenge arbeiten möchten (etwa nur die Treffer markieren oder kopieren).</li>
+<li>Die Filter- und Verborgene-Dateien-Einstellungen gelten pro Panel, sodass die beiden Seiten gleichzeitig Unterschiedliches anzeigen können.</li>
+<li>Die Schnellsuche passt auf Namen ab dem Anfang; der Einfacher-Text-Modus des Schnellfilters passt an beliebiger Stelle im Namen. Verwenden Sie einen Platzhalter wie <code>*text*</code>, wenn der Filter sich genauso verhalten soll.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="searching.html">Dateien finden</a></li><li><a href="view-modes-and-sorting.html">Ansichtsmodi &amp; Sortierung</a></li></ul></section>
+</main>
+</body>
+</html>

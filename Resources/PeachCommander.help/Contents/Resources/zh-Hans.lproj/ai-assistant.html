@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 助手</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>AI 助手</h1>
+<p>AI 助手是一个可选、可移除的插件，帮助你用自然语言处理文件。它可以总结或解释文档、建议更合适的文件名、翻译或校对文本、将数据整理成表格，甚至整理文件夹——并且在先向你展示一份计划后，可以替你执行文件操作。它会在 Apple Intelligence 可用时于设备本地运行，你也可以将其指向某个云端模型。由于它是插件，你可以从 <strong>配置 ▸ 插件…</strong> 中将其停用或彻底移除。</p>
+<h2 id="_1">打开助手</h2>
+<p>选择 <strong>命令 ▸ AI Assistant</strong>，即可在窗口右侧的停靠面板中显示助手。输入请求并按 Return；助手可以读取文件、查找信息，并在你确认后进行更改。</p>
+<p><img alt="停靠在文件面板旁边的 AI 助手聊天" src="images/ai-chat.png" />
+<em>（图：停靠在右侧的 AI 助手，正在处理一项请求。）</em></p>
+<h2 id="ai">右键操作（AI ▸）</h2>
+<p>使用助手最快捷的方式是右键菜单中的 <strong>AI ▸</strong> 子菜单：</p>
+<ul>
+<li><strong>在文件上</strong> —— 总结、解释、建议名称、翻译成英文、校对、检测任务和生成表格。</li>
+<li><strong>在面板背景上</strong> —— 整理此文件夹和查找可能的重复文件。</li>
+</ul>
+<p>每个 <strong>AI ▸</strong> 操作都会打开<strong>各自带标题的聊天</strong>（例如 <em>Summarize – report.txt</em>），因此不同任务会保持独立，而不会堆积到一段冗长的对话中。当你自己在输入框中输入内容时，该请求会延续当前聊天。</p>
+<h2 id="_2">管理你的聊天</h2>
+<ul>
+<li>使用面板顶部的聊天切换器在多个对话之间移动。</li>
+<li><strong>Delete ▾</strong> 菜单提供 <strong>删除此聊天</strong> 和 <strong>删除所有聊天</strong>，因此当列表变长时你可以一次性清空。关闭面板时，空的聊天会被自动清理。</li>
+</ul>
+<h2 id="_3">更改会先经过确认</h2>
+<p>对于任何会修改文件的操作——移动、重命名、写入、删除——助手都会显示一份<strong>计划并等待你的确认</strong>后再执行。你可以在设置中提高助手的自主级别来更改此行为，或将其降低为只读，使其永不做出任何更改。</p>
+<h2 id="_4">设置</h2>
+<p>打开 <strong>配置 ▸ 设置 ▸ AI</strong>，可在单个页面上配置助手：</p>
+<ul>
+<li><strong>首选模型</strong> —— 自动（如已配置则用云端，否则用设备本地）、设备本地（Apple Intelligence）或云端。</li>
+<li><strong>云端端点、模型和 API 密钥</strong> —— 用于使用兼容 OpenAI 的模型代替设备本地模型。密钥存储在 macOS 钥匙串中，绝不会存入你的配置文件。</li>
+<li><strong>助手自主级别</strong> —— 只读、确认更改（默认）或自主。</li>
+<li><strong>自定义系统提示</strong> —— 可选指令，用于塑造助手回复的方式。</li>
+<li><strong>MCP 服务器</strong> —— 一个可选的仅本地服务器，允许外部代理驱动此应用；默认关闭，可用令牌加以保护。</li>
+</ul>
+<p><img alt="设置中的 AI 页面，包含自主级别和 MCP 服务器选项" src="images/settings-ai.png" />
+<em>（图：所有助手选项都集中在设置中的一个 AI 页面上。）</em></p>
+<h2 id="_5">隐私</h2>
+<ul>
+<li>使用 Apple Intelligence 时，助手在<strong>你的 Mac 上</strong>运行；没有任何内容离开设备。</li>
+<li>只有在<strong>你配置了云端模型时</strong>才会使用它，其 API 密钥保存在钥匙串中。</li>
+<li>除非你有意提高自主级别，否则修改文件的操作都会在运行前经过确认。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="settings.html">设置</a></li><li><a href="privacy-and-security.html">隐私与安全</a></li></ul></section>
+</main>
+</body>
+</html>

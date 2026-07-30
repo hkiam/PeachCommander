@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>Git 플러그인은 Git 저장소의 상태를 파일 패널 안에 바로 드러내 줍니다 — 별도의 앱도, 터미널도 필요 없습니다. 각 파일의 작업 트리 상태와 현재 브랜치를 보여주는 두 개의 열, 일상적인 명령(상태, 스테이징, 커밋, 풀, 푸시)을 위한 <strong>Git</strong> 하위 메뉴를 더하며, Mac에 이미 설치된 <code>git</code>을 사용합니다. 플러그인이므로 <strong>설정 ▸ 플러그인…</strong>에서 끄거나 제거할 수 있습니다.</p>
+<h2 id="_1">무엇을 더하는가</h2>
+<ul>
+<li><strong>두 개의 파일 목록 열</strong> — <em>Git Status</em>와 <em>Branch</em>. 저장소 안에서 각 파일은 짧은 상태 단어(수정됨, 추가됨, 삭제됨, 추적 안 됨, 이름 변경됨, 복사됨, 충돌, 무시됨, 변경됨)를 보여주고, 패널은 현재 브랜치를 표시합니다. <strong>설정 ▸ 열…</strong>에서 열을 켜세요(참조: <a href="view-modes-and-sorting.md">보기 모드 및 정렬</a>).</li>
+<li><strong>Git 메뉴</strong> — <strong>명령 ▸ Git</strong> 아래, 그리고 파일의 마우스 오른쪽 버튼 메뉴에 있으며, <strong>Git Status…</strong>, <strong>Git Add (stage)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong>, <strong>Git Push</strong>를 담고 있습니다.</li>
+</ul>
+<p><img alt="현재 브랜치와 저장소에서 변경된 파일을 보여주는 Git Status 대화상자" src="images/git-status.png" />
+<em>(그림: Git Status는 브랜치와 작업 트리의 모든 변경을 보고합니다.)</em></p>
+<h2 id="_2">상태 확인</h2>
+<ol>
+<li>Git 저장소 안의 파일이나 폴더에 커서를 놓습니다.</li>
+<li><strong>명령 ▸ Git ▸ Git Status…</strong>를 선택합니다(또는 마우스 오른쪽 버튼 클릭 ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>요약이 나타납니다: 현재 브랜치(또는 <em>(분리됨)</em>), 그다음 <em>작업 트리가 깨끗합니다.</em> 또는 변경 목록으로, 각 줄은 상태와 파일 경로를 보여줍니다.</li>
+</ol>
+<p>커서가 저장소 안에 있지 않으면 플러그인은 단순히 <em>Git 저장소가 아닙니다.</em>라고 알립니다.</p>
+<h2 id="_3">스테이징, 커밋, 풀, 푸시</h2>
+<ul>
+<li><strong>Git Add (stage)</strong>는 커서 아래의 파일을 스테이징합니다(<code>git add</code>).</li>
+<li><strong>Git Commit…</strong>은 커밋 메시지를 물은 다음 모든 변경을 커밋합니다(<code>git commit -a</code>). 결합된 출력이 표시되어 정확히 무슨 일이 일어났는지 볼 수 있습니다.</li>
+<li><strong>Git Pull</strong>은 빠른 전진 전용 풀을 수행합니다(<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong>는 현재 브랜치를 푸시합니다(<code>git push</code>).</li>
+</ul>
+<p>저장소를 변경하는 명령 후에는 활성 패널이 새로 고쳐져 상태 열이 최신 상태로 유지됩니다.</p>
+<h2 id="_4">참고</h2>
+<ul>
+<li>플러그인은 <code>/usr/bin/git</code>의 시스템 Git을 사용합니다. Git이 설치되어 있지 않으면 명령은 Git을 사용할 수 없다고 보고합니다. (Xcode Command Line Tools를 설치하면 제공됩니다.)</li>
+<li>저장소 상태는 폴더당 한 번 읽혀 캐시되므로 큰 저장소를 스크롤해도 빠르게 유지됩니다. 트리를 변경하는 명령 후에는 캐시가 새로 고쳐집니다.</li>
+<li>커밋은 <code>git commit -a</code>를 사용하여 추적된 변경을 커밋합니다. 완전히 새로운 파일은 여전히 먼저 <strong>Git Add (stage)</strong>가 필요합니다.</li>
+<li><em>Git Status</em>와 <em>Branch</em> 열 머리글은 현재 다른 인터페이스 언어에서도 영어로 표시됩니다. 값과 대화상자는 현지화되어 있습니다.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">플러그인</a></li><li><a href="view-modes-and-sorting.html">보기 모드 및 정렬</a></li></ul></section>
+</main>
+</body>
+</html>

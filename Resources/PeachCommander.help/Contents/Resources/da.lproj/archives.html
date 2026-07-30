@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arbejde med arkiver</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Arbejde med arkiver</h1>
+<p>Peach Commander behandler arkiver som mapper. Du kan træde ind i et ZIP-, TAR- eller andet understøttet arkiv, gennemse dets indhold og kopiere filer ud — alt sammen uden at pakke ud til disken først. Når du vil oprette et arkiv, samler Pak-kommandoen din markering i et ZIP-, 7z-, TAR- eller andet format, med valgfri kryptering og opdelte diskenheder. Dette er praktisk til at samle filer, der skal sendes, til at skrumpe en mappe til opbevaring eller til at kigge ind i en overførsel, før du forpligter dig til at pakke den ud.</p>
+<h2 id="gennemse-et-arkiv-som-en-mappe">Gennemse et arkiv som en mappe</h2>
+<ol>
+<li>Flyt markøren til en arkivfil i et panel (for eksempel en <code>.zip</code> eller <code>.tar.gz</code>).</li>
+<li>Tryk på Enter eller Ctrl+PageDown for at træde ind, præcis som du ville åbne en mappe.</li>
+<li>Naviger i indholdet på normal vis. Tryk på Backspace eller Ctrl+PageUp for at gå tilbage op og forlade arkivet.</li>
+<li>For at trække filer ud skal du markere dem og kopiere (F5) til det andet panel.</li>
+</ol>
+<p><img alt="Gennemsyn inde i et arkiv, som om det var en mappe" src="images/archive-browse.png" />
+<em>(Figur: Et åbnet arkiv vist som en almindelig mappeliste, med dets filer klar til at kopiere ud.)</em></p>
+<p>ZIP, TAR og gzip-komprimeret TAR læses direkte. Andre formater såsom CPIO, ISO, CAB, LZH, XAR og PAX læses via indbyggede systemværktøjer. Krypterede ZIP-arkiver (både klassiske og AES) kan åbnes, når du angiver adgangskoden.</p>
+<h2 id="pak-filer-ind-i-et-nyt-arkiv">Pak filer ind i et nyt arkiv</h2>
+<ol>
+<li>Markér de filer og mapper, du vil inkludere, i det aktive panel.</li>
+<li>Vælg Fil ▸ Pak… eller tryk på Alt+F5. (For at pakke og derefter slette originalerne, brug Alt+Shift+F5.)</li>
+<li>I dialogen skal du vælge arkivformatet (ZIP, 7z, TAR, tar.gz, bzip2, xz eller RAR), komprimeringsniveauet og hvor det skal gemmes.</li>
+<li>Slå eventuelt AES-256-kryptering til og angiv en adgangskode, eller opdel arkivet i diskenheder af fast størrelse.</li>
+<li>Bekræft for at oprette arkivet.</li>
+</ol>
+<p><img alt="Pak-dialogen med indstillinger for format, komprimering, kryptering og opdeling" src="images/pack-dialog.png" />
+<em>(Figur: Pak-dialogen, hvor du vælger formatet og indstiller kryptering og opdelte diskenheder.)</em></p>
+<h2 id="pak-et-arkiv-ud-eller-test-det">Pak et arkiv ud eller test det</h2>
+<ol>
+<li>Placér det arkiv, du vil pakke ud, i det aktive panel og destinationsmappen i det andet panel.</li>
+<li>Vælg Fil ▸ Pak ud… eller tryk på Alt+F9, og bekræft derefter destinationen.</li>
+<li>For at kontrollere et arkiv for skader uden at pakke det ud, vælg Fil ▸ Test arkiv.</li>
+</ol>
+<h2 id="rediger-en-zip-pa-stedet">Redigér en ZIP på stedet</h2>
+<p>Du kan tilføje eller fjerne filer inde i et eksisterende ZIP-arkiv uden at pakke det ud. Åbn ZIP-arkivet som en mappe, og kopiér derefter filer ind eller slet filer som sædvanligt — ændringen skrives direkte tilbage til arkivet.</p>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Genvej</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gå ind i arkiv under markøren</td>
+<td>Enter eller Ctrl+PageDown</td>
+</tr>
+<tr>
+<td>Forlad arkiv (gå op)</td>
+<td>Backspace eller Ctrl+PageUp</td>
+</tr>
+<tr>
+<td>Pak</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Pak og slet originaler</td>
+<td>Alt+Shift+F5</td>
+</tr>
+<tr>
+<td>Pak ud</td>
+<td>Alt+F9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Pakning til 7z, xz, bzip2 og RAR er afhængig af eksterne værktøjer. Især RAR kræver, at det proprietære RAR-program er installeret; uden det er det format ikke tilgængeligt.</li>
+<li>Redigering af en ZIP på stedet omskriver hele arkivet, så filernes ændringstidsstempler indeni bevares ikke.</li>
+<li>Meget store enkeltmedlemmer begrænses til 512 MiB ved udpakning. Udpakning kan annulleres, mens den kører.</li>
+<li>Ekstremt store arkiver (ZIP64) understøttes ikke.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiering af filer</a></li></ul></section>
+</main>
+</body>
+</html>

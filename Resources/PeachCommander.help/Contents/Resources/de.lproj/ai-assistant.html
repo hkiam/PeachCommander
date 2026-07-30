@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KI-Assistent</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>KI-Assistent</h1>
+<p>Der KI-Assistent ist ein optionales, entfernbares Plugin, das Ihnen dabei hilft, in natürlicher Sprache mit Ihren Dateien zu arbeiten. Er kann ein Dokument zusammenfassen oder erläutern, einen besseren Dateinamen vorschlagen, Text übersetzen oder Korrektur lesen, Daten in eine Tabelle umwandeln und sogar einen Ordner organisieren – und er kann Dateiaktionen für Sie ausführen, nachdem er Ihnen zuvor einen Plan gezeigt hat. Er läuft direkt auf dem Gerät mit Apple Intelligence, sofern verfügbar, oder Sie können ihn auf ein Cloud-Modell verweisen. Da es sich um ein Plugin handelt, können Sie es über <strong>Konfiguration ▸ Plugins…</strong> vollständig deaktivieren oder entfernen.</p>
+<h2 id="den-assistenten-offnen">Den Assistenten öffnen</h2>
+<p>Wählen Sie <strong>Befehle ▸ KI-Assistent</strong>, um den Assistenten in einem angedockten Panel rechts im Fenster anzuzeigen. Geben Sie eine Anfrage ein und drücken Sie die Eingabetaste; der Assistent kann Dateien lesen, Dinge nachschlagen und – mit Ihrer Bestätigung – Änderungen vornehmen.</p>
+<p><img alt="Der Chat des KI-Assistenten, angedockt neben den Datei-Panels" src="images/ai-chat.png" />
+<em>(Abbildung: Der KI-Assistent, rechts angedockt, arbeitet an einer Anfrage.)</em></p>
+<h2 id="aktionen-im-rechtsklick-menu-ki">Aktionen im Rechtsklick-Menü (KI ▸)</h2>
+<p>Am schnellsten nutzen Sie den Assistenten über das Untermenü <strong>KI ▸</strong> im Rechtsklick-Menü:</p>
+<ul>
+<li><strong>Auf einer Datei</strong> – Zusammenfassen, Erläutern, Namen vorschlagen, Ins Englische übersetzen, Korrektur lesen, Aufgaben erkennen und Tabelle erstellen.</li>
+<li><strong>Auf dem Panel-Hintergrund</strong> – Diesen Ordner organisieren und Mögliche Duplikate finden.</li>
+</ul>
+<p>Jede <strong>KI ▸</strong>-Aktion öffnet ihren <strong>eigenen benannten Chat</strong> (zum Beispiel <em>Zusammenfassen – report.txt</em>), sodass verschiedene Aufgaben getrennt bleiben und sich nicht zu einer langen Konversation aufstauen. Wenn Sie selbst in das Eingabefeld tippen, setzt diese Anfrage den aktuellen Chat fort.</p>
+<h2 id="ihre-chats-verwalten">Ihre Chats verwalten</h2>
+<ul>
+<li>Verwenden Sie den Chat-Umschalter oben im Panel, um zwischen Konversationen zu wechseln.</li>
+<li>Das Menü <strong>Löschen ▾</strong> bietet <strong>Diesen Chat löschen</strong> und <strong>Alle Chats löschen</strong>, sodass Sie alles auf einmal leeren können, wenn die Liste lang wird. Leere Chats werden automatisch bereinigt, wenn Sie das Panel schließen.</li>
+</ul>
+<h2 id="anderungen-werden-zuerst-bestatigt">Änderungen werden zuerst bestätigt</h2>
+<p>Bei allem, was Dateien verändert – Verschieben, Umbenennen, Schreiben, Löschen –, zeigt der Assistent einen <strong>Plan und wartet auf Ihre Bestätigung</strong>, bevor er handelt. Sie können dies in den Einstellungen ändern, indem Sie die Autonomie des Assistenten erhöhen, oder sie auf schreibgeschützt senken, sodass er niemals etwas ändert.</p>
+<h2 id="einstellungen">Einstellungen</h2>
+<p>Öffnen Sie <strong>Konfiguration ▸ Einstellungen ▸ KI</strong>, um den Assistenten auf einer einzigen Seite zu konfigurieren:</p>
+<ul>
+<li><strong>Bevorzugtes Modell</strong> – Automatisch (Cloud, falls konfiguriert, andernfalls auf dem Gerät), Auf dem Gerät (Apple Intelligence) oder Cloud.</li>
+<li><strong>Cloud-Endpunkt, Modell und API-Schlüssel</strong> – um ein OpenAI-kompatibles Modell anstelle des lokalen zu verwenden. Der Schlüssel wird im macOS-Schlüsselbund gespeichert, niemals in Ihren Konfigurationsdateien.</li>
+<li><strong>Autonomie des Assistenten</strong> – schreibgeschützt, Änderungen bestätigen (Standard) oder autonom.</li>
+<li><strong>Eigener System-Prompt</strong> – optionale Anweisungen, die beeinflussen, wie der Assistent antwortet.</li>
+<li><strong>MCP-Server</strong> – ein optionaler, nur lokal verfügbarer Server, der einem externen Agenten die Steuerung der App ermöglicht; standardmäßig deaktiviert und durch ein Token schützbar.</li>
+</ul>
+<p><img alt="Die KI-Seite in den Einstellungen mit den Optionen für Autonomie und MCP-Server" src="images/settings-ai.png" />
+<em>(Abbildung: Alle Assistentenoptionen befinden sich auf einer einzigen KI-Seite in den Einstellungen.)</em></p>
+<h2 id="datenschutz">Datenschutz</h2>
+<ul>
+<li>Mit Apple Intelligence läuft der Assistent <strong>auf Ihrem Mac</strong>; nichts verlässt das Gerät.</li>
+<li>Ein Cloud-Modell wird <strong>nur verwendet, wenn Sie eines konfigurieren</strong>, und sein API-Schlüssel wird im Schlüsselbund aufbewahrt.</li>
+<li>Dateiverändernde Aktionen werden vor ihrer Ausführung bestätigt, sofern Sie die Autonomiestufe nicht bewusst erhöhen.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="settings.html">Einstellungen</a></li><li><a href="privacy-and-security.html">Datenschutz &amp; Sicherheit</a></li></ul></section>
+</main>
+</body>
+</html>

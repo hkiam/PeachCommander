@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verschieben &amp; Umbenennen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Verschieben &amp; Umbenennen</h1>
+<p>Verschieben verlagert Dateien und Ordner, statt sie zu duplizieren, und Umbenennen ändert ihre Namen, ohne ihren Inhalt anzutasten. Da Peach Commander zwei Panels nebeneinander anzeigt, ist Verschieben lediglich eine Sache des Auswählens dessen, was Sie in einem Panel möchten, und des Sendens an den im anderen Panel geöffneten Ordner. Sie können ein Element auch an Ort und Stelle umbenennen oder verschobenen Elementen mithilfe einer Platzhaltermaske im Handumdrehen neue Namen geben.</p>
+<h2 id="dateien-ins-andere-panel-verschieben">Dateien ins andere Panel verschieben</h2>
+<ol>
+<li>Öffnen Sie im Quell-Panel den Ordner, der die zu verschiebenden Elemente enthält, und öffnen Sie den Zielordner im anderen Panel.</li>
+<li>Wählen Sie die zu verschiebende Datei oder den Ordner aus. Um mehrere auf einmal zu verschieben, wählen Sie sie zuerst alle aus (siehe <em>Dateien auswählen</em>).</li>
+<li>Drücken Sie F6 oder wählen Sie <strong>Datei &gt; Verschieben</strong>.</li>
+<li>Prüfen Sie den im Dialog angezeigten Zielordner und klicken Sie auf <strong>OK</strong> (oder drücken Sie Return), um das Verschieben zu starten.</li>
+</ol>
+<p><img alt="Der Verschieben-Dialog mit dem Zielpfadfeld, Optionen und einem Warteschlangen-Kontrollkästchen" src="images/copy-dialog.png" />
+<em>(Abbildung: Der Verschieben-Dialog verwendet dasselbe Zielfeld wie das Kopieren — geben Sie einen Pfad ein oder fügen Sie eine Platzhaltermaske hinzu, um beim Verschieben umzubenennen.)</em></p>
+<p>Verschiebevorgänge auf demselben Laufwerk geschehen nahezu sofort. Wenn sich das Ziel auf einem anderen Laufwerk befindet, kopiert Peach Commander die Elemente und entfernt die Originale erst, nachdem jede Datei sicher angekommen ist.</p>
+<h2 id="an-ort-und-stelle-umbenennen">An Ort und Stelle umbenennen</h2>
+<ol>
+<li>Wählen Sie eine einzelne Datei oder einen Ordner aus.</li>
+<li>Drücken Sie Shift+F6 oder wählen Sie <strong>Datei &gt; Umbenennen</strong>.</li>
+<li>Bearbeiten Sie den Namen direkt im Panel und drücken Sie dann Return zum Bestätigen oder Esc zum Abbrechen.</li>
+</ol>
+<h2 id="beim-verschieben-umbenennen">Beim Verschieben umbenennen</h2>
+<p>Das Zielfeld im Verschieben-Dialog akzeptiert eine Platzhaltermaske, sodass Sie Elemente beim Verschieben umbenennen können:</p>
+<ol>
+<li>Wählen Sie die Elemente aus und drücken Sie F6.</li>
+<li>Fügen Sie im Zielfeld hinter dem Zielordner eine Namensmaske hinzu, zum Beispiel <code>/Users/you/Archive/*_backup.*</code>.</li>
+<li><code>*</code> steht für den ursprünglichen Namen und <code>.*</code> für die ursprüngliche Erweiterung. Bestätigen Sie, um in einem Schritt zu verschieben und umzubenennen.</li>
+</ol>
+<h2 id="kurzbefehle">Kurzbefehle</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Kurzbefehl</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ins andere Panel verschieben</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>An Ort und Stelle umbenennen</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tipps">Tipps</h2>
+<ul>
+<li>Der Verschieben-Dialog bietet dieselbe Optionen-Schaltfläche und dasselbe Hintergrund-Warteschlangen-Kontrollkästchen wie das Kopieren, sodass Sie große Verschiebevorgänge in die Warteschlange stellen und im Hintergrund laufen lassen können.</li>
+<li>Das Verschieben innerhalb desselben Laufwerks ist ein schneller Vorgang an Ort und Stelle und daher auch für sehr große Ordner unbedenklich. Ein laufwerksübergreifendes Verschieben dauert länger, weil die Daten zuerst kopiert und dann die Quelle gelöscht wird.</li>
+<li>Um viele Dateien auf einmal mit Nummerierung, Suchen-und-Ersetzen oder Mustern umzubenennen, verwenden Sie stattdessen das Mehrfach-Umbenennen-Werkzeug (siehe <em>Mehrfach-Umbenennen</em>).</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="copying-files.html">Dateien kopieren</a></li><li><a href="multi-rename.html">Viele Dateien umbenennen</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Porovnávanie a synchronizácia</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Porovnávanie a synchronizácia</h1>
+<p>Keď udržiavate dve kópie toho istého priečinka — pracovný priečinok a zálohu, notebook a sieťové zdieľanie, projekt a jeho archív — Peach Commander vám pomôže vidieť presne, čo sa zmenilo, a vrátiť obe strany do súladu. Môžete synchronizovať dva adresáre, porovnávať jednotlivé súbory riadok po riadku a kontrolovať súbory bajt po bajte, keď potrebujete istotu až po posledný znak.</p>
+<h2 id="synchronizujte-dva-adresare">Synchronizujte dva adresáre</h2>
+<ol>
+<li>Otvorte priečinok, ktorý chcete synchronizovať, v ľavom paneli a priečinok na porovnanie v pravom paneli.</li>
+<li>Vyberte <strong>Príkazy ▸ Synchronizovať adresáre…</strong>. Cesty oboch priečinkov sa vyplnia z vašich panelov.</li>
+<li>Nastavte, aké dôkladné má byť porovnanie: zahrnúť podpriečinky, porovnávať <strong>podľa obsahu</strong> (nielen podľa dátumu a veľkosti), alebo ignorovať dátum úpravy.</li>
+<li>Pridajte masku filtra (napríklad <code>*.jpg;*.png</code>), ak chcete synchronizovať iba určité súbory.</li>
+<li>Preskúmajte mriežku výsledkov. Každý riadok zobrazuje súbor vľavo, šípku smeru v strede a zhodujúci sa súbor vpravo. Šípky vám hovoria, čo sa stane: <strong>→</strong> kopíruje zľava doprava, <strong>←</strong> kopíruje sprava doľava a <strong>=</strong> znamená, že oba sú rovnaké.</li>
+<li>Upravte jednotlivé riadky, ak nesúhlasíte s navrhovaným smerom, potom kliknite na tlačidlo synchronizácie na vykonanie zmien.</li>
+</ol>
+<p><img alt="Okno synchronizácie adresárov s dvoma cestami priečinkov a mriežkou výsledkov súborov so šípkami vľavo, rovnosti a vpravo" src="images/sync-dialog.png" />
+<em>(Obrázok: okno Synchronizovať adresáre porovnáva obe strany a navrhuje smer kopírovania pre každý súbor.)</em></p>
+<h2 id="porovnajte-dva-subory-podla-obsahu">Porovnajte dva súbory podľa obsahu</h2>
+<ol>
+<li>Vyberte jeden súbor v každom paneli (alebo dva súbory v tom istom paneli).</li>
+<li>Vyberte <strong>Súbor ▸ Porovnať podľa obsahu…</strong>.</li>
+<li>Oba súbory sa otvoria vedľa seba so zvýraznenými rozdielmi. Použite ovládacie prvky ďalší/predchádzajúci na preskakovanie medzi zmenenými blokmi.</li>
+<li>Ak zapnete režim úprav, môžete ktorýkoľvek súbor priamo upraviť a uložiť zmeny.</li>
+</ol>
+<p><img alt="Okno porovnania zobrazujúce dva textové súbory vedľa seba so zvýraznenými odlišnými riadkami" src="images/diff-window.png" />
+<em>(Obrázok: porovnávanie dvoch textových súborov; zmenené riadky sú zvýraznené na oboch stranách.)</em></p>
+<h2 id="porovnajte-subory-bajt-po-bajte">Porovnajte súbory bajt po bajte</h2>
+<p>Keď dva súbory vyzerajú rovnako, ale musíte dokázať, že sú naozaj rovnaké (alebo nájsť ten jeden bajt, ktorý sa líši), použite binárne porovnanie. Zobrazí oba súbory v šestnástkovom zobrazení s označenými nezhodnými bajtmi, čo je ideálne na overovanie stiahnutí, kontrolu kódovaných údajov alebo potvrdenie presnej kópie.</p>
+<h2 id="porovnajte-zoznamy-adresarov">Porovnajte zoznamy adresárov</h2>
+<p>Na zbadanie rozdielov medzi dvoma otvorenými priečinkami na prvý pohľad vyberte <strong>Výber ▸ Porovnať adresáre</strong> (Shift+F2). Peach Commander označí súbory, ktoré sa líšia alebo chýbajú na druhej strane, takže na nich môžete konať bežnými príkazmi kopírovania, presúvania a mazania.</p>
+<h2 id="skratky">Skratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akcia</th>
+<th>Skratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Porovnať zoznamy adresárov (označiť odlišné súbory)</td>
+<td>Shift+F2</td>
+</tr>
+<tr>
+<td>Porovnať podľa obsahu</td>
+<td>Súbor ▸ Porovnať podľa obsahu…</td>
+</tr>
+<tr>
+<td>Synchronizovať adresáre</td>
+<td>Príkazy ▸ Synchronizovať adresáre…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li><strong>Podľa obsahu vs. podľa dátumu/veľkosti.</strong> Rýchle porovnanie zhoduje súbory podľa veľkosti a dátumu úpravy, čo je rýchle, ale možno oklamať, keď sa časové značky líšia pre rovnaké súbory. Zapnite <strong>podľa obsahu</strong> pre spoľahlivý výsledok za cenu čítania každého súboru.</li>
+<li><strong>Podpriečinky a filtre.</strong> Okno synchronizácie môže zostúpiť do podpriečinkov a možno ho obmedziť maskou filtra, takže môžete synchronizovať iba typy súborov, ktoré vás zaujímajú.</li>
+<li><strong>Zostávate pod kontrolou.</strong> Synchronizácia nikdy nebeží sama — preskúmate navrhované smery v mriežke výsledkov a ktorýkoľvek z nich môžete zmeniť pred tým, ako sa čokoľvek skopíruje.</li>
+<li><strong>Predvoľby.</strong> Často používané nastavenia synchronizácie možno uložiť a znovu použiť, takže nezadávate tie isté možnosti zakaždým.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Premenovanie mnohých súborov</a></li></ul></section>
+</main>
+</body>
+</html>

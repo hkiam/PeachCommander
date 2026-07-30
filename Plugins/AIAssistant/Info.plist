@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string>AIAssistant</string>
+	<key>CFBundleName</key>
+	<string>AIAssistant</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>PCContributions</key>
+	<dict>
+		<key>commands</key>
+		<array>
+			<dict><key>category</key><string>Commands</string><key>id</key><string>plugin.ai.toggle</string><key>title</key><string>AI Assistant</string></dict>
+			<dict><key>category</key><string>AI</string><key>id</key><string>plugin.ai.skill.summarize</string><key>title</key><string>Summarize</string></dict>
+			<dict><key>category</key><string>AI</string><key>id</key><string>plugin.ai.skill.explain</string><key>title</key><string>Explain</string></dict>
+			<dict><key>category</key><string>AI</string><key>id</key><string>plugin.ai.skill.suggest-rename</string><key>title</key><string>Suggest a name</string></dict>
+			<dict><key>category</key><string>AI</string><key>id</key><string>plugin.ai.skill.translate</string><key>title</key><string>Translate to English</string></dict>
+			<dict><key>category</key><string>AI</string><key>id</key><string>plugin.ai.skill.check</string><key>title</key><string>Proofread</string></dict>
+			<dict><key>category</key><string>AI</string><key>id</key><string>plugin.ai.skill.detect-tasks</string><key>title</key><string>Detect tasks</string></dict>
+			<dict><key>category</key><string>AI</string><key>id</key><string>plugin.ai.skill.make-table</string><key>title</key><string>Make a table</string></dict>
+			<dict><key>category</key><string>AI</string><key>id</key><string>plugin.ai.folderskill.organize</string><key>title</key><string>Organize this folder</string></dict>
+			<dict><key>category</key><string>AI</string><key>id</key><string>plugin.ai.folderskill.find-duplicates</string><key>title</key><string>Find likely duplicates</string></dict>
+		</array>
+		<key>menus</key>
+		<array>
+			<dict>
+				<key>command</key>
+				<string>plugin.ai.toggle</string>
+				<key>group</key>
+				<string>6_ai</string>
+				<key>menu</key>
+				<string>Commands</string>
+				<key>order</key>
+				<integer>125</integer>
+			</dict>
+		</array>
+		<key>contextMenus</key>
+		<array>
+			<dict><key>command</key><string>plugin.ai.skill.summarize</string><key>surface</key><string>panel.item</string><key>submenu</key><string>AI</string><key>group</key><string>6_ai</string><key>order</key><integer>10</integer></dict>
+			<dict><key>command</key><string>plugin.ai.skill.explain</string><key>surface</key><string>panel.item</string><key>submenu</key><string>AI</string><key>group</key><string>6_ai</string><key>order</key><integer>20</integer></dict>
+			<dict><key>command</key><string>plugin.ai.skill.suggest-rename</string><key>surface</key><string>panel.item</string><key>submenu</key><string>AI</string><key>group</key><string>6_ai</string><key>order</key><integer>30</integer></dict>
+			<dict><key>command</key><string>plugin.ai.skill.translate</string><key>surface</key><string>panel.item</string><key>submenu</key><string>AI</string><key>group</key><string>6_ai</string><key>order</key><integer>40</integer></dict>
+			<dict><key>command</key><string>plugin.ai.skill.check</string><key>surface</key><string>panel.item</string><key>submenu</key><string>AI</string><key>group</key><string>6_ai</string><key>order</key><integer>50</integer></dict>
+			<dict><key>command</key><string>plugin.ai.skill.detect-tasks</string><key>surface</key><string>panel.item</string><key>submenu</key><string>AI</string><key>group</key><string>6_ai</string><key>order</key><integer>60</integer></dict>
+			<dict><key>command</key><string>plugin.ai.skill.make-table</string><key>surface</key><string>panel.item</string><key>submenu</key><string>AI</string><key>group</key><string>6_ai</string><key>order</key><integer>70</integer></dict>
+			<dict><key>command</key><string>plugin.ai.folderskill.organize</string><key>surface</key><string>panel.background</string><key>submenu</key><string>AI</string><key>group</key><string>6_ai</string><key>order</key><integer>10</integer></dict>
+			<dict><key>command</key><string>plugin.ai.folderskill.find-duplicates</string><key>surface</key><string>panel.background</string><key>submenu</key><string>AI</string><key>group</key><string>6_ai</string><key>order</key><integer>20</integer></dict>
+		</array>
+		<key>views</key>
+		<array>
+			<dict>
+				<key>container</key>
+				<string>sidebar</string>
+				<key>id</key>
+				<string>plugin.ai.view</string>
+				<key>title</key>
+				<string>AI</string>
+			</dict>
+		</array>
+	</dict>
+	<key>PCPluginAPIVersion</key>
+	<integer>1</integer>
+	<key>PCPluginMinHostVersion</key>
+	<integer>1</integer>
+	<key>PCPluginName</key>
+	<string>AI Assistant</string>
+	<key>PCPluginType</key>
+	<string>ptx</string>
+</dict>
+</plist>

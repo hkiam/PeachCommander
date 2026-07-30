@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>Task Manager-insticksprogrammet förvandlar de processer som körs på din Mac till en mapp du kan bläddra i. Det visas som en <strong>TaskManager</strong>-enhet i enhetsraden; öppna den och varje process är en rad du kan sortera, granska som en fil eller avsluta — med samma tangenter som du redan använder för filer. Det är ett insticksprogram, så du kan slå av det eller ta bort det i <strong>Konfiguration ▸ Insticksprogram…</strong>.</p>
+<h2 id="oppna-det">Öppna det</h2>
+<ol>
+<li>Klicka på posten <strong>📊 TaskManager</strong> i enhetsraden (den sitter direkt efter din startenhet).</li>
+<li>Panelen fylls med en rad per process som körs. Varje rads namn är processnamnet följt av dess PID, till exempel <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="Task Manager som listar processer som körs med kolumnerna PID, CPU, minne och kommando" src="images/task-manager.png" />
+<em>(Figur: processer som körs visas som en fillista du kan sortera och agera på.)</em></p>
+<h2 id="vad-varje-kolumn-betyder">Vad varje kolumn betyder</h2>
+<p>Vid sidan av de vanliga kolumnerna Storlek (minne) och Datum (starttid) lägger Task Manager till processkolumner:</p>
+<table>
+<thead>
+<tr>
+<th>Kolumn</th>
+<th>Betydelse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>Process-id</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Nyligen processoranvändning (behöver en andra uppdatering för att visas)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Antal trådar</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R körs · S sover · T stoppad · Z zombie · I inaktiv</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Ägare</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>Överordnad process-id</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>Fullständig kommandorad</td>
+</tr>
+</tbody>
+</table>
+<p>Sortera efter valfri kolumn (till exempel CPU % eller Storlek/minne) precis som du skulle göra i en vanlig mapp.</p>
+<h2 id="granska-eller-avsluta-en-process">Granska eller avsluta en process</h2>
+<ul>
+<li><strong>Visa (F3)</strong> visar en rapport med <em>Processinformation</em>: namn, PID, överordnad, användare, tillstånd, trådar, minne, CPU, starttid, sökväg till körbar fil och den fullständiga kommandoraden.</li>
+<li><strong>Ta bort (F8)</strong> avslutar processen. Den första borttagningen skickar en artig <strong>quit</strong> (SIGTERM); att ta bort en process som fortfarande körs en andra gång trappar upp till en <strong>force quit</strong> (SIGKILL). Insticksprogrammet riktar sig aldrig mot PID 1.</li>
+</ul>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Grundläggande uppgifter (PID, överordnad, användare, tillstånd) är läsbara för varje process, som <code>ps</code>. Minne, trådar och CPU kan bara läsas för <strong>dina egna</strong> processer; andra processer visar dessa kolumner tomma (de kräver förhöjda behörigheter, ett senare tillägg).</li>
+<li>CPU % är en förändring mellan två sampel, så den är tom tills panelen uppdateras en andra gång (panelen uppdateras ungefär varannan sekund).</li>
+<li>Listan är skrivskyddad förutom att avsluta en process — du kan inte kopiera filer till den.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="viewing-files.html">Visa filer</a></li><li><a href="deleting-files.html">Ta bort filer</a></li></ul></section>
+</main>
+</body>
+</html>

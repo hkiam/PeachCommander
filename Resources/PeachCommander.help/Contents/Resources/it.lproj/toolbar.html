@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La barra dei pulsanti</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>La barra dei pulsanti</h1>
+<p>La barra dei pulsanti è la striscia di pulsanti a icone in cima alla finestra. Ogni pulsante è una scorciatoia con un solo clic che definisci tu stesso: esegui un comando integrato, avvia un programma o un'app esterna, salta a una cartella, o apri un'intera sotto-barra di altri pulsanti. È il modo più rapido di mettere a portata di mano le azioni che usi di più, e puoi adattarla esattamente al tuo modo di lavorare.</p>
+<h2 id="personalizza-la-barra-dei-pulsanti">Personalizza la barra dei pulsanti</h2>
+<ol>
+<li>Scegli <strong>Configurazione &gt; Personalizza barra strumenti…</strong>, o fai clic destro sulla barra e scegli <strong>Modifica barra pulsanti…</strong>.</li>
+<li>L'elenco a sinistra mostra i pulsanti correnti. Usa <strong>+</strong> per aggiungere un pulsante, <strong>—</strong> per aggiungere un separatore, <strong>−</strong> per rimuovere il pulsante selezionato, e <strong>↑ / ↓</strong> per riordinare.</li>
+<li>Seleziona un pulsante e compila il modulo a destra:
+   - <strong>Comando</strong> — digita un comando integrato, o fai clic su <strong>Scegli…</strong> per selezionarne uno da un elenco. Puoi anche inserire il percorso di un programma o un'app, una cartella da aprire, o un'altra barra dei pulsanti da usare come sotto-barra.
+   - <strong>Didascalia</strong> — l'etichetta e il suggerimento mostrati per il pulsante.
+   - <strong>Parametri</strong> e <strong>Percorso iniziale</strong> — passati ai programmi esterni. I segnaposto come <code>%P</code> (cartella di origine), <code>%N</code> (file corrente) e <code>%S</code> (file selezionati) vengono riempiti quando il pulsante viene eseguito.
+   - <strong>Icona</strong> — scegli un SF Symbol o usa l'icona propria di un file o un'app; attiva <strong>solo icona</strong> per nascondere la didascalia.</li>
+<li>Fai clic su <strong>Salva</strong>. La striscia si ricarica subito.</li>
+</ol>
+<p><img alt="La barra dei pulsanti in cima alla finestra con pulsanti a icone" src="images/button-bar-crop.png" />
+<em>(Figura: la barra dei pulsanti si trova sopra i pannelli dei file; ogni pulsante esegue un comando, un programma, una cartella o una sotto-barra.)</em></p>
+<h2 id="sotto-barre-e-overflow">Sotto-barre e overflow</h2>
+<p>Un pulsante può aprire una <em>sotto-barra</em> — un secondo insieme di pulsanti sovrapposto al primo. Fai clic su di esso per scendere; un pulsante <strong>◀</strong> a sinistra ti riporta alla barra precedente. Quando ci sono più pulsanti di quanti ne stiano nella larghezza della finestra, quelli in eccesso si comprimono dietro un chevron <strong>»</strong> all'estremità destra; fai clic su di esso per raggiungerli.</p>
+<h2 id="trascina-file-su-un-pulsante">Trascina file su un pulsante</h2>
+<p>Puoi trascinare file o cartelle direttamente su un pulsante:</p>
+<ul>
+<li><strong>Pulsante cartella</strong> — gli elementi rilasciati vengono copiati in quella cartella in background.</li>
+<li><strong>Pulsante programma</strong> — il programma viene eseguito con gli elementi rilasciati come sua selezione.</li>
+<li><strong>Pulsante comando</strong> — il comando viene eseguito normalmente.</li>
+</ul>
+<h2 id="barra-dei-pulsanti-verticale">Barra dei pulsanti verticale</h2>
+<p>Per spostare la striscia dalla cima della finestra a una colonna lungo il lato sinistro, scegli <strong>Vista &gt; Barra dei pulsanti verticale</strong>. Scegliila di nuovo per tornare alla striscia orizzontale.</p>
+<h2 id="note">Note</h2>
+<ul>
+<li>La barra è conservata in un file di barra pulsanti standard compatibile con Total Commander, così le barre che hai già possono essere riutilizzate.</li>
+<li>A queste azioni non è assegnata alcuna scorciatoia da tastiera per impostazione predefinita, ma puoi aggiungere le tue — vedi <a href="keyboard-shortcuts">Scorciatoie da tastiera</a>.</li>
+<li>Un pulsante senza icona e senza comando compare come un semplice separatore, comodo per raggruppare pulsanti correlati.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts.html">Tastiera e scorciatoie</a></li><li><a href="settings.html">Impostazioni</a></li></ul></section>
+</main>
+</body>
+</html>

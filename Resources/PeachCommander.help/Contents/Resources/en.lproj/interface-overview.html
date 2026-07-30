@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The main window</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>The main window</h1>
+<p>Peach Commander shows two file lists side by side so you can see where files are coming from and where they are going at the same time. Most of your work happens in these two panels; the bars around them let you switch drives, jump to a folder, and run the common file commands without leaving the keyboard. This tour names each part of the window so the rest of the help makes sense.</p>
+<p><img alt="The Peach Commander main window with its two panels and surrounding bars" src="images/main-window.png" />
+<em>(Figure: The main window — two panels with the button bar, drive bar, and path bars above and the function-key bar below.)</em></p>
+<h2 id="the-two-panels-and-the-active-panel">The two panels and the active panel</h2>
+<p>The window is split into a left panel and a right panel, each showing the contents of one folder. Only one panel is active at a time: it shows the cursor (a highlighted row) and its path bar is drawn with a colored background. Commands like copy and move always act on the active panel and send files to the other one.</p>
+<ol>
+<li>Click anywhere in a panel to make it active, or press Tab to switch between them.</li>
+<li>Use the arrow keys to move the cursor up and down the active panel.</li>
+<li>Press Enter on a folder to open it, or on <code>..</code> at the top of the list to go up one level.</li>
+</ol>
+<h2 id="bars-around-the-panels">Bars around the panels</h2>
+<ul>
+<li><strong>Button bar</strong> (top): a row of flat buttons for frequent commands. Click a button to run its command; right-click a button to edit the bar.</li>
+<li><strong>Drive bar</strong>: one button per available disk or volume, each with an eject control and its free space. Click a volume to switch that panel to it.</li>
+<li><strong>Path bar</strong>: shows the current folder as a clickable breadcrumb. Click a segment to jump straight to that folder, or click the path to type a location.</li>
+<li><strong>Status bar</strong> (below each list): a running summary of the panel — how many files and folders are selected and their total size.</li>
+<li><strong>Command line</strong> (bottom): a text field where you can type a shell-style command that runs in the current folder.</li>
+<li><strong>Function-key bar</strong> (very bottom): six buttons labeled F3 View, F4 Edit, F5 Copy, F6 Move, F7 NewFolder, and F8 Delete. Click a button or press the matching key.</li>
+</ul>
+<p><img alt="Close-up of the drive bar showing volume buttons and free space" src="images/drive-bar-crop.png" />
+<em>(Figure: The drive bar — one button per volume, with an eject control and remaining free space.)</em></p>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Switch active panel</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Open folder / item under cursor</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Go up one folder</td>
+<td>Backspace</td>
+</tr>
+<tr>
+<td>View file</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Edit file</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Copy to other panel</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Move / rename to other panel</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>New folder</td>
+<td>F7</td>
+</tr>
+<tr>
+<td>Delete (to Trash)</td>
+<td>F8</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>The function-key bar re-labels itself live when you hold a modifier. Holding Shift, for example, changes F6 to a rename-in-place action, so the buttons always show what the keys will do right now.</li>
+<li>Almost every bar can be shown or hidden. Look under the View and Configuration menus to turn the button bar, drive bar, command line, or function-key bar on and off, or to stack the two panels top and bottom instead of side by side.</li>
+<li>On many Mac keyboards the F-keys act as media and brightness controls by default. Hold the Fn key together with F3-F8, or turn on "Use F1, F2, etc. keys as standard function keys" in System Settings, to use them directly.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="navigating.html">Moving around</a></li><li><a href="panels-and-tabs.html">Tabs</a></li></ul></section>
+</main>
+</body>
+</html>

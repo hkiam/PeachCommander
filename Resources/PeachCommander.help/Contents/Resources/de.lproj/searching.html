@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dateien finden</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Dateien finden</h1>
+<p>Wenn Sie Dateien irgendwo auf Ihrem Mac aufspüren müssen — nach Namen, nach Inhalt oder nach Größe und Datum — verwenden Sie das Fenster Dateien suchen. Es durchsucht einen oder mehrere Ordner (und deren Unterordner), kann in Textdateien und Archive hineinschauen und ermöglicht es Ihnen, alles Gefundene direkt in ein Panel zu senden, sodass Sie mit den Ergebnissen arbeiten können, als wären sie ein gewöhnlicher Ordner.</p>
+<h2 id="dateien-nach-namen-finden">Dateien nach Namen finden</h2>
+<ol>
+<li>Wählen Sie im Panel, das den zu durchsuchenden Ordner anzeigt, <strong>Befehle &gt; Dateien suchen…</strong> (oder drücken Sie Cmd+Shift+F).</li>
+<li>Tippen Sie auf dem Tab <strong>Allgemein</strong> ein Namensmuster in <strong>Suchen nach</strong>. Sie können Platzhalter wie <code>*.pdf</code> oder <code>report_*.docx</code> verwenden. Um mehrere Ordner gleichzeitig zu durchsuchen, listen Sie sie im Startordner-Feld getrennt durch ein Semikolon (<code>;</code>) auf.</li>
+<li>Klicken Sie auf <strong>Start</strong>. Treffer erscheinen in der Ergebnisliste darunter, sobald sie gefunden werden.</li>
+<li>Doppelklicken Sie auf ein beliebiges Ergebnis, um im aktiven Panel zu dieser Datei zu springen, oder wählen Sie ein Ergebnis aus und klicken Sie auf <strong>Ansehen</strong> (F3), um es im eingebauten Betrachter zu öffnen.</li>
+</ol>
+<p><img alt="Das Fenster Dateien suchen auf dem Tab Allgemein, das das Namensmuster, den Ordner und die Ergebnisliste zeigt" src="images/find-files-general.png" />
+<em>(Abbildung: Der Tab Allgemein — Suche nach Namensmuster über einen oder mehrere Ordner.)</em></p>
+<h2 id="nach-inhalt-groe-und-datum-suchen">Nach Inhalt, Größe und Datum suchen</h2>
+<ol>
+<li>Um innerhalb von Dateien zu suchen, wählen Sie <strong>Text suchen</strong> auf dem Tab Allgemein und tippen Sie den zu suchenden Text. Optionen ermöglichen es Ihnen, ihn <strong>Groß-/Kleinschreibung beachten</strong> zu lassen, nur ein <strong>ganzes Wort</strong> zu treffen, den Text als <strong>regulären Ausdruck</strong> zu behandeln, eine <strong>Hex-Inhaltssuche</strong> durchzuführen oder Dateien zu finden, die den Text <strong>nicht enthalten</strong>.</li>
+<li>Wechseln Sie zum Tab <strong>Erweitert</strong>, um Ergebnisse nach <strong>Größe</strong> (zum Beispiel <code>10K</code> bis <code>5M</code>), nach <strong>Änderungsdatum</strong>-Bereich oder auf Dateien einzugrenzen, die in den letzten N Tagen geändert wurden.</li>
+<li>Schalten Sie <strong>In Archiven suchen</strong> ein, um innerhalb von Archiven der Zip-Familie (zip, jar, war und ähnliche) zu suchen.</li>
+<li>Um die Suche auf das bereits Ausgewählte zu beschränken, schalten Sie <strong>Nur in ausgewählten Objekten suchen</strong> ein, bevor Sie starten.</li>
+</ol>
+<p><img alt="Das Fenster Dateien suchen auf dem Tab Erweitert, das Größen- und Datumsfilter zeigt" src="images/find-files-advanced.png" />
+<em>(Abbildung: Der Tab Erweitert — filtern nach Größe, Datum und anderen Attributen.)</em></p>
+<p>Wenn Sie Plugins haben, die Inhaltsfelder hinzufügen (etwa Bildabmessungen), ermöglicht der Tab <strong>Plugins</strong> Ihnen, zu verlangen, dass ein Feld eine Bedingung erfüllt — zum Beispiel nur Bilder, die breiter als 1000 Pixel sind.</p>
+<p><img alt="Das Fenster Dateien suchen auf dem Tab Plugins, das eine Inhaltsfeld-Bedingung zeigt" src="images/find-files-plugins.png" />
+<em>(Abbildung: Der Tab Plugins — Treffer anhand von Plugin-bereitgestellten Inhaltsfeldern.)</em></p>
+<h2 id="schnelle-suchen-mit-spotlight">Schnelle Suchen mit Spotlight</h2>
+<p>Für lokale Ordner, die macOS bereits indiziert hat, schalten Sie <strong>Spotlight verwenden</strong> auf dem Tab Allgemein ein, um nahezu sofortige Ergebnisse zu erhalten. Spotlight durchsucht den Index anstatt Dateien zu scannen, sodass es reguläre Ausdrücke, Begrenzungen der Unterordnertiefe und den Nur-Auswahl-Geltungsbereich ignoriert.</p>
+<h2 id="ergebnisse-wiederverwenden-und-ubergeben">Ergebnisse wiederverwenden und übergeben</h2>
+<ul>
+<li><strong>An Listenfeld übergeben</strong> platziert jedes Ergebnis als temporäre Liste in das aktive Panel, sodass Sie den gesamten Satz auf einmal kopieren, verschieben oder löschen können.</li>
+<li>Wählen Sie auf dem Tab <strong>Laden / Speichern</strong> die Option <strong>Als Vorlage speichern…</strong>, um die aktuelle Suche (Muster und Optionen) zu speichern und sie später wieder aus der Vorlagenliste auszuwählen.</li>
+</ul>
+<h2 id="tastaturkurzel">Tastaturkürzel</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Tastaturkürzel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dateien suchen öffnen</td>
+<td>Cmd+Shift+F oder Option+F7</td>
+</tr>
+<tr>
+<td>Suche starten / stoppen</td>
+<td>Start-Schaltfläche im Fenster</td>
+</tr>
+<tr>
+<td>Ausgewähltes Ergebnis ansehen</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Die Inhaltssuche liest bei lokalen Ordnern ganze Dateien; an anderen Orten werden sehr große Dateien übersprungen (etwa 16 MB, oder 64 MB bei Verwendung eines regulären Ausdrucks).</li>
+<li>Das Suchen innerhalb von Archiven steigt bis zu vier Ebenen verschachtelter Archive hinab.</li>
+<li><strong>Ordner in Ergebnisse einbeziehen</strong> listet auch Ordner auf, deren Namen passen, nicht nur Dateien.</li>
+<li>Spotlight deckt nur indizierte lokale Ordner ab; für Netzwerkorte oder musterbasierte Treffer lassen Sie es aus und überlassen das Scannen der Funktion Dateien suchen.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="selecting-files.html">Dateien auswählen</a></li><li><a href="quick-search-and-filter.html">Schnellsuche &amp; Filter</a></li></ul></section>
+</main>
+</body>
+</html>

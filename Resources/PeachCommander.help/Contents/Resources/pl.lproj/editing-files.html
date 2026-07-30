@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edycja plików</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Edycja plików</h1>
+<p>Gdy potrzebujesz zmienić plik, a nie tylko go obejrzeć, Peach Commander otwiera go we wbudowanym edytorze. Pliki tekstowe i kodu otwierają się w pełnym edytorze z podświetlaniem składni, wyszukiwaniem i zamianą, konspektem symboli w kodzie oraz minimapą do szybkiej nawigacji. Pliki binarne można otworzyć w osobnym edytorze szesnastkowym, gdzie możesz sprawdzać i zmieniać poszczególne bajty. Nigdy nie musisz opuszczać aplikacji, aby dokonać szybkiej edycji.</p>
+<h2 id="edytuj-plik-tekstowy-lub-kodu">Edytuj plik tekstowy lub kodu</h2>
+<ol>
+<li>W dowolnym panelu przesuń kursor na plik, który chcesz zmienić.</li>
+<li>Naciśnij F4 lub wybierz Plik ▸ Edytuj. Plik otwiera się w oknie edytora.</li>
+<li>Wprowadź zmiany. Jeśli plik jest rozpoznanym formatem programowania lub danych, słowa kluczowe, ciągi i komentarze są automatycznie kolorowane.</li>
+<li>Naciśnij Cmd+S (lub kliknij Zapisz), aby zapisać zmiany. Pierwszy zapis zachowuje kopię zapasową oryginału obok pliku, więc zawsze możesz do niej wrócić.</li>
+</ol>
+<p>Aby utworzyć zupełnie nowy plik tekstowy w bieżącej lokalizacji, naciśnij Shift+F4.</p>
+<p><img alt="Wbudowany edytor tekstu pokazujący podświetlanie składni, konspekt symboli i minimapę" src="images/editor.png" />
+<em>(Rysunek: edytor z podświetlaniem składni, konspektem symboli po lewej i minimapą po prawej.)</em></p>
+<h2 id="wyszukiwanie-zamiana-i-nawigacja">Wyszukiwanie, zamiana i nawigacja</h2>
+<ul>
+<li>Naciśnij Cmd+F, aby otworzyć pasek wyszukiwania. Aby zamienić tekst, otwórz pasek wyszukiwania i przełącz go na widok zamiany, lub kliknij Znajdź/Zamień na pasku narzędzi.</li>
+<li>Kliknij Formatuj JSON/XML, aby ponownie wciąć dokument JSON lub XML do czystego, czytelnego układu.</li>
+<li>Kliknij Symbole (lub naciśnij Cmd+Shift+O), aby wyświetlić pasek boczny wymieniający klasy, funkcje i metody w kodzie. Kliknij wpis, aby przeskoczyć do niego bezpośrednio.</li>
+<li>Naciśnij Cmd+L, aby przeskoczyć do konkretnego wiersza.</li>
+<li>Naciśnij Cmd+\, aby przeskakiwać między nawiasem a jego pasującym odpowiednikiem.</li>
+<li>Kliknij przycisk mapy, aby pokazać lub ukryć minimapę, skalowany przegląd całego pliku, w który możesz kliknąć, aby przewinąć.</li>
+<li>Użyj menu Kodowanie na pasku narzędzi, jeśli plik został zapisany w innym niż domyślne kodowaniu tekstu.</li>
+</ul>
+<h2 id="edytuj-plik-bajt-po-bajcie">Edytuj plik bajt po bajcie</h2>
+<ol>
+<li>Zaznacz plik w panelu.</li>
+<li>Wybierz Plik ▸ Edytuj jako szesnastkowy (lub kliknij plik prawym przyciskiem i wybierz Edytuj jako szesnastkowy).</li>
+<li>Wpisuj cyfry szesnastkowe, aby nadpisywać bajty, lub użyj strzałek, aby poruszać się po pliku. Backspace i Delete usuwają bajty.</li>
+<li>Naciśnij Cmd+S, aby zapisać. Podobnie jak w edytorze tekstu, zachowywana jest jednorazowa kopia zapasowa oryginału.</li>
+</ol>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Klawisz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Edytuj plik</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Utwórz i edytuj nowy plik tekstowy</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>Zapisz</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>Znajdź</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>Pokaż/ukryj konspekt symboli</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>Przejdź do wiersza</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>Przeskocz do pasującego nawiasu</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>Cofnij / Ponów (edytor szesnastkowy)</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Podświetlanie składni obejmuje JSON, C, C#, Java, JavaScript, TypeScript, Python i Rust. Inne typy plików nadal otwierają się i edytują normalnie z podstawowym kolorowaniem, ale szczegółowe podświetlanie i konspekt symboli są dostępne tylko dla obsługiwanych języków.</li>
+<li>Konspekt symboli i Przejdź do wiersza dotyczą edytora tekstu. Edytor szesnastkowy jest przeznaczony do inspekcji binarnej i edycji na poziomie bajtów, a nie do tekstu.</li>
+<li>Oba edytory zachowują kopię zapasową oryginalnego pliku przy pierwszym zapisie, więc przypadkową zmianę łatwo cofnąć, przywracając tę kopię.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Podgląd plików</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nettverksressurser</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Nettverksressurser</h1>
+<p>Peach Commander kan koble til filtjenere i det lokale nettverket ditt eller bedriftsnettverket – SMB- (Windows/Samba) og AFP-ressurser – og vise innholdet deres i et panel akkurat som en mappe på din egen Mac. Når en ressurs er koblet til, kan du bla, kopiere, flytte, gi nytt navn og åpne filer i den akkurat som lokalt, inkludert å kopiere mellom ressursen og det andre panelet ditt.</p>
+<h2 id="koble-til-en-tjener">Koble til en tjener</h2>
+<ol>
+<li>Klikk på panelet du vil koble til (den tilkoblede ressursen åpnes i det aktive panelet).</li>
+<li>Trykk Cmd+K, eller velg <strong>Nettverk &gt; Nettverksnabolag &gt; Koble til nettverksressurs…</strong>.</li>
+<li>I dialogen <strong>Koble til tjener</strong>, skriv tjeneradressen. Du kan angi:
+   - en SMB-adresse, for eksempel <code>smb://fileserver/projects</code>
+   - en AFP-adresse, for eksempel <code>afp://fileserver/projects</code>
+   - en bane i Windows-stil, for eksempel <code>\\fileserver\projects</code>
+   - et enkelt <code>tjener/ressurs</code>-navn</li>
+<li>Klikk på Koble til (eller trykk Return). Hvis tjeneren trenger navn og passord, viser macOS sitt vanlige innloggingsvindu – skriv inn opplysningene dine der.</li>
+<li>Når ressursen er klar, åpner det aktive panelet den automatisk. Bla og arbeid med den som med en hvilken som helst annen mappe.</li>
+</ol>
+<h2 id="koble-fra">Koble fra</h2>
+<p>En tilkoblet ressurs vises som et montert volum på din Mac. For å koble fra den, mater du den ut på vanlig macOS-måte – for eksempel fra Finder-sidepanelet eller fra enhetslisten i Peach Commander.</p>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Koble til nettverksressurs…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Autentisering (brukernavn, passord og et eventuelt «husk i nøkkelringen min»-valg) håndteres av det vanlige macOS-innloggingsvinduet, så lagrede tjenerpassord fungerer som i Finder.</li>
+<li>Hvis du angir en adresse som ikke kan tolkes, ber Peach Commander deg om en SMB/AFP-adresse, en bane i Windows-stil eller et <code>tjener/ressurs</code>-navn, og ingenting monteres.</li>
+<li>Etter at du bekrefter, kan tilkoblingen ta et øyeblikk mens macOS monterer ressursen; panelet bytter til den så snart den blir tilgjengelig.</li>
+<li>Dette kobler til delte enheter i et nettverk. For å nå en FTP-, FTPS- eller SFTP-tjener i stedet, se det relaterte emnet nedenfor.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Koble til FTP og SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

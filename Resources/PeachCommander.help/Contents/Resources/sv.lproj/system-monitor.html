@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Monitor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>System Monitor</h1>
+<p>System Monitor-insticksprogrammet placerar en avläsning i realtid av din Macs aktivitet direkt i fönstrets namnlist: små brickor för CPU, minne, disk, nätverk och — där maskinvaran exponerar dem — GPU, batteri och sensorer. Varje bricka uppdateras en gång i sekunden; klicka på en för ett popup-fönster med en historikgraf och en detaljerad uppdelning. Det är ett insticksprogram, så du kan aktivera, konfigurera eller ta bort det i <strong>Konfiguration ▸ Insticksprogram…</strong>.</p>
+<h2 id="brickorna-i-namnlisten">Brickorna i namnlisten</h2>
+<p>När insticksprogrammet är på sitter en rad kompakta brickor i namnlisten. Varje bricka är en färgad punkt, en kort etikett och ett värde i realtid (vissa med en inbäddad sparkline):</p>
+<table>
+<thead>
+<tr>
+<th>Bricka</th>
+<th>Visar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>Processorbelastning, med detaljer per kärna</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>Använt/totalt minne (plus wired, komprimerat, swap)</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>Utrymme på startvolymen och läs/skriv-genomströmning</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>Ned-/uppladdningshastigheter och totaler</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>GPU-utnyttjande · batteriladdning och tillstånd · fläkthastigheter och temperaturer</td>
+</tr>
+</tbody>
+</table>
+<p>Klicka på en bricka för att öppna ett popup-fönster med det stora aktuella värdet, en <strong>HISTORY</strong>-sparkline, en <strong>DETAILS</strong>-lista med nyckel/värde och — för CPU:n — en <strong>CORE LOAD</strong>-lista med staplar per kärna.</p>
+<h2 id="konfigurera-det">Konfigurera det</h2>
+<p>Välj <strong>Kommandon ▸ System Monitor…</strong> (eller öppna <strong>Konfiguration ▸ Inställningar ▸ System Monitor</strong>) för att konfigurera avläsningen:</p>
+<ul>
+<li><strong>Visa systemövervakaren i namnlisten</strong> — huvudströmbrytaren av/på för brickorna.</li>
+<li><strong>Profil</strong> — förinställningarna <em>Minimal</em>, <em>Medium</em> eller <em>Maximal</em> som väljer en rimlig uppsättning moduler.</li>
+<li><strong>Modultabellen</strong> — slå av eller på varje modul (CPU, GPU, RAM, HDD, Net, Batt, Sens), välj dess färg och dra rader för att ställa in ordningen de visas i namnlisten. Moduler som din maskinvara inte kan rapportera visas som <em>(n/a)</em>.</li>
+</ul>
+<p><img alt="Inställningarna för System Monitor med sin modultabell, profiler och färger per modul" src="images/system-monitor.png" />
+<em>(Figur: välj vilka moduler som visas, deras färger och deras ordning.)</em></p>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Allt mäts, aldrig förfalskas: moduler vars data maskinvaran inte exponerar (ofta GPU eller sensorer på vissa Mac-datorer) förblir otillgängliga i stället för att visa påhittade siffror. Batteri är otillgängligt på stationära datorer.</li>
+<li>Sampling körs på en bakgrundstimer endast medan avläsningen är synlig, och behåller ungefär 30 minuters historik för graferna.</li>
+<li>Dina modulval, färger och ordning sparas med appens konfiguration.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="settings.html">Inställningar</a></li></ul></section>
+</main>
+</body>
+</html>

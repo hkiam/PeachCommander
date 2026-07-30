@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visa filer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Visa filer</h1>
+<p>Peach Commander har en inbyggd visare som låter dig titta inuti en fil utan att öppna en annan app eller ändra filen. Tryck på F3 på objektet under markören så öppnas visaren direkt, även för mycket stora filer. Den väljer automatiskt bästa sättet att visa innehållet: läsbar text, syntaxfärgad kod, en rå hexadecimal dump, eller en bild i full storlek. Du kan även förhandsvisa en fil direkt i fönstret med Quick View, eller lämna den till macOS Quick Look.</p>
+<h2 id="visa-en-fil">Visa en fil</h2>
+<ol>
+<li>Flytta markören till en fil i den aktiva panelen.</li>
+<li>Tryck på F3 (eller välj Visa i Arkiv-menyn). Visaren öppnas i ett eget fönster.</li>
+<li>Använd verktygsfältet för att växla hur innehållet visas: Text, Kod, Hex, Bild eller Renderad. Låt det stå på det automatiska läget för att låta Peach Commander avgöra.</li>
+<li>Rulla med piltangenterna, Page Up/Page Down och rullningslisten. För lång text, slå på miniatyrkartsknappen för att se och hoppa runt i hela filen med en blick.</li>
+<li>Tryck på N för att hoppa till nästa markerade fil, eller stäng fönstret med Esc.</li>
+</ol>
+<p><img alt="Den inbyggda visaren som visar en textfil med miniatyrkartan till höger" src="images/lister-text.png" />
+<em>(Bild: Att visa en textfil, med representationsväljaren och miniatyrkartan i verktygsfältet.)</em></p>
+<h2 id="hitta-text-och-andra-teckenkodning">Hitta text och ändra teckenkodning</h2>
+<ul>
+<li>Tryck på Ctrl+F för att söka i filen. Tryck på F3 för att hoppa till nästa träff och Shift+F3 för föregående.</li>
+<li>Om texten ser förvrängd ut, klicka på Teckenkodning i verktygsfältet (eller tryck på E) för att bläddra genom teckenkodningar tills den läses korrekt; det automatiska läget brukar träffa rätt.</li>
+<li>Tryck på W för att växla radbrytning för långa rader.</li>
+</ul>
+<h2 id="quick-view-och-quick-look">Quick View och Quick Look</h2>
+<p>Quick View visar en direkt förhandsvisning i den panel du <em>inte</em> använder, så att du kan fortsätta bläddra på ena sidan medan du förhandsvisar på den andra.</p>
+<ol>
+<li>Tryck på Ctrl+Q. Den inaktiva panelen blir ett förhandsvisningsområde.</li>
+<li>Flytta markören över olika filer i den aktiva panelen för att förhandsvisa var och en.</li>
+<li>Tryck på Ctrl+Q igen, eller Esc, för att återställa panelen till en vanlig fillista.</li>
+</ol>
+<p>För en snabb helskärmsförhandsvisning som macOS själv hanterar, tryck på Cmd+Y (Quick Look). Tryck på Cmd+Y eller Space igen för att stänga den.</p>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Visa fil under markören</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Visa endast filen under markören (ignorera markerade filer)</td>
+<td>Shift+F3</td>
+</tr>
+<tr>
+<td>Öppna i en extern visare</td>
+<td>Option+F3</td>
+</tr>
+<tr>
+<td>Sök inuti visaren</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Nästa / föregående träff</td>
+<td>F3 / Shift+F3</td>
+</tr>
+<tr>
+<td>Quick View i den andra panelen</td>
+<td>Ctrl+Q</td>
+</tr>
+<tr>
+<td>Quick Look (macOS-förhandsvisning)</td>
+<td>Cmd+Y</td>
+</tr>
+<tr>
+<td>Stäng visaren eller Quick View</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Visaren är skrivskyddad. För att ändra en fil, använd redigeraren i stället (se Redigera filer).</li>
+<li>Mycket stora filer öppnas utan fördröjning: text öppnas i en snabb, rullningsbar vy och hexvyn strömmar direkt från disken oavsett storlek.</li>
+<li>Tryck på F3 på en mapp för att se en sammanfattning av dess innehåll och totala storlek i stället för filbytes.</li>
+<li>Renderat läge visar formaterat innehåll som webbsidor; hexläge visar de råa byten sida vid sida med deras tecken, vilket är behändigt för att granska binärfiler.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Redigera filer</a></li><li><a href="searching.html">Hitta filer</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bestanden bewerken</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Bestanden bewerken</h1>
+<p>Wanneer je een bestand wilt wijzigen in plaats van er alleen naar te kijken, opent Peach Commander het in een ingebouwde editor. Tekst- en codebestanden openen in een volledige editor met syntaxkleuring, zoeken en vervangen, een overzicht van de symbolen in je code, en een minimap voor snelle navigatie. Binaire bestanden kunnen in een aparte hex-editor worden geopend, waar je individuele bytes kunt inspecteren en wijzigen. Je hoeft de app nooit te verlaten om een snelle bewerking te doen.</p>
+<h2 id="een-tekst-of-codebestand-bewerken">Een tekst- of codebestand bewerken</h2>
+<ol>
+<li>Verplaats in een van beide panelen de cursor naar het bestand dat je wilt wijzigen.</li>
+<li>Druk op F4, of kies Bestand ▸ Bewerken. Het bestand opent in het editorvenster.</li>
+<li>Breng je wijzigingen aan. Als het bestand een herkend programmeer- of gegevensformaat is, worden sleutelwoorden, tekenreeksen en opmerkingen automatisch gekleurd.</li>
+<li>Druk op Cmd+S (of klik op Bewaar) om je wijzigingen weg te schrijven. De eerste opslag houdt een back-up van het origineel naast het bestand, zodat je er altijd op kunt terugvallen.</li>
+</ol>
+<p>Om een gloednieuw tekstbestand op de huidige locatie te starten, druk je op Shift+F4.</p>
+<p><img alt="De ingebouwde teksteditor met syntaxkleuring, het symbooloverzicht en de minimap" src="images/editor.png" />
+<em>(Afbeelding: De editor met syntaxkleuring, het symbooloverzicht links en de minimap rechts.)</em></p>
+<h2 id="zoeken-vervangen-en-navigeren">Zoeken, vervangen en navigeren</h2>
+<ul>
+<li>Druk op Cmd+F om de zoekbalk te openen. Om tekst te vervangen, open je de zoekbalk en schakel je over naar de vervangweergave, of klik je op Zoeken/Vervangen in de werkbalk.</li>
+<li>Klik op JSON/XML opmaken om een JSON- of XML-document opnieuw in te springen tot een nette, leesbare indeling.</li>
+<li>Klik op Symbolen (of druk op Cmd+Shift+O) om een zijbalk te tonen die de klassen, functies en methoden in je code opsomt. Klik op een item om er direct naartoe te springen.</li>
+<li>Druk op Cmd+L om naar een specifieke regel te springen.</li>
+<li>Druk op Cmd+\ om te springen tussen een haakje en zijn bijbehorende partner.</li>
+<li>Klik op de kaartknop om de minimap te tonen of te verbergen, een geschaald overzicht van het hele bestand waarop je kunt klikken om te scrollen.</li>
+<li>Gebruik het menu Codering in de werkbalk als het bestand is opgeslagen in iets anders dan de standaard tekstcodering.</li>
+</ul>
+<h2 id="een-bestand-byte-voor-byte-bewerken">Een bestand byte voor byte bewerken</h2>
+<ol>
+<li>Selecteer het bestand in een paneel.</li>
+<li>Kies Bestand ▸ Bewerken als hex (of klik met de rechtermuisknop op het bestand en kies Bewerken als hex).</li>
+<li>Typ hex-cijfers om bytes te overschrijven, of gebruik de pijltoetsen om door het bestand te bewegen. Backspace en Delete verwijderen bytes.</li>
+<li>Druk op Cmd+S om te bewaren. Net als bij de teksteditor wordt er een eenmalige back-up van het origineel bewaard.</li>
+</ol>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Toets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bestand bewerken</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Een nieuw tekstbestand maken en bewerken</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>Bewaren</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>Zoeken</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>Symbooloverzicht tonen/verbergen</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>Ga naar regel</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>Naar bijbehorend haakje springen</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>Ongedaan maken / opnieuw (hex-editor)</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Syntaxkleuring dekt JSON, C, C#, Java, JavaScript, TypeScript, Python en Rust. Andere bestandstypen openen en bewerken nog steeds normaal met basiskleuring, maar gedetailleerde kleuring en het symbooloverzicht zijn alleen beschikbaar voor de ondersteunde talen.</li>
+<li>Het symbooloverzicht en de functie Ga naar regel gelden voor de teksteditor. De hex-editor is bedoeld voor binaire inspectie en bewerkingen op byteniveau, niet voor tekst.</li>
+<li>Beide editors bewaren de eerste keer dat je opslaat een back-up van het oorspronkelijke bestand, zodat een onbedoelde wijziging eenvoudig ongedaan te maken is door die back-up te herstellen.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Bestanden bekijken</a></li></ul></section>
+</main>
+</body>
+</html>

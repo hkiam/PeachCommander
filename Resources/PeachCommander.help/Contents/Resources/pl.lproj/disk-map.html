@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapa dysku</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Mapa dysku</h1>
+<p>Mapa dysku to wbudowana wtyczka, która pokazuje na pierwszy rzut oka, co zajmuje miejsce w folderze lub na całym woluminie. Skanuje wybrany folder i rysuje każdy element o rozmiarze proporcjonalnym do miejsca, które faktycznie zajmuje na dysku, dzięki czemu największe pożeracze miejsca od razu się wyróżniają. Możesz wchodzić w foldery, zobaczyć, jak Twój skan uzgadnia się z wolnym, możliwym do wyczyszczenia i ukrytym miejscem woluminu, oraz sprzątać bezpośrednio z mapy.</p>
+<h2 id="rozpocznij-skanowanie">Rozpocznij skanowanie</h2>
+<ol>
+<li>W aktywnym panelu przejdź do folderu (lub woluminu), który chcesz zmierzyć.</li>
+<li>Wybierz <strong>Polecenia ▸ Mapa dysku: Analizuj bieżący folder</strong>.</li>
+<li>Widok Mapy dysku otwiera się po prawej i skanuje w tle, pokazując bieżącą liczbę elementów i bajtów. Duże foldery kończą się w kilka sekund — skan odczytuje metadane katalogu zbiorczo i działa na kilku rdzeniach procesora.</li>
+</ol>
+<p><img alt="Mapa dysku pokazująca mapę drzewa folderu, pasek woluminu, listę największych plików i legendę kategorii" src="images/disk-map.png" />
+<em>(Rysunek: widok mapy drzewa, pokolorowany według kategorii pliku, z paskiem woluminu na górze i listą największych plików po prawej.)</em></p>
+<h2 id="odczytaj-mape">Odczytaj mapę</h2>
+<ul>
+<li>Każdy blok (mapa drzewa) lub segment pierścienia (wykres słoneczny) ma rozmiar według <strong>rzeczywistego rozmiaru na dysku</strong> elementu, więc obraz odpowiada temu, co raportują Finder i system.</li>
+<li>Bloki są <strong>pokolorowane według typu pliku</strong> — wideo, obrazy, dźwięk, dokumenty, kod, archiwa, aplikacje, obrazy dysków — z legendą na dole. W ustawieniach możesz przełączyć na <strong>mapę cieplną</strong> według rozmiaru.</li>
+<li><strong>Kliknij folder</strong>, aby w niego wejść; ścieżka nawigacyjna na górze pokazuje, gdzie jesteś, a przycisk <strong>◂</strong> cofa o poziom wyżej.</li>
+<li>Najedź na dowolny blok, aby zobaczyć jego pełną ścieżkę, rozmiar i liczbę elementów.</li>
+</ul>
+<h2 id="dwa-widoki-mapa-drzewa-i-wykres-soneczny">Dwa widoki: mapa drzewa i wykres słoneczny</h2>
+<p>Mapa dysku oferuje dwie wizualizacje, między którymi możesz przełączać przyciskiem <strong>◎ / ▦</strong> w nagłówku lub na stronie ustawień:</p>
+<ul>
+<li><strong>Mapa drzewa</strong> — zagnieżdżone prostokąty, najgęstsza do wypatrzenia pojedynczego największego pliku.</li>
+<li><strong>Wykres słoneczny</strong> — koncentryczne pierścienie (jeden na głębokość folderu) wokół bieżącego folderu, najlepszy do zobaczenia, jak miejsce rozkłada się w głębokim drzewie.</li>
+</ul>
+<p><img alt="Widok wykresu słonecznego Mapy dysku pokazujący koncentryczne pierścienie dla głębokości folderów" src="images/disk-map-sunburst.png" />
+<em>(Rysunek: widok wykresu słonecznego — wewnętrzny dysk to bieżący folder, a każdy pierścień to jeden poziom głębiej.)</em></p>
+<h2 id="pasek-woluminu">Pasek woluminu</h2>
+<p>Pasek na górze uzgadnia Twój skan z całym woluminem:</p>
+<ul>
+<li><strong>Zeskanowane / Ten folder</strong> — ile zajmuje analizowany folder.</li>
+<li><strong>Ukryte</strong> (w katalogu głównym woluminu) lub <strong>Reszta woluminu</strong> (dla podfolderu) — wszystko, co nie jest w tym skanie, w tym foldery chronione przez system, inni użytkownicy i migawki.</li>
+<li><strong>Możliwe do wyczyszczenia</strong> — miejsce, które macOS może automatycznie odzyskać, głównie lokalne migawki Time Machine i pamięci podręczne.</li>
+<li><strong>Wolne</strong> — miejsce dostępne od razu.</li>
+</ul>
+<p>Gdy wolumin ma lokalne migawki, pasek pokazuje element <strong>· N migawek (ⓘ)</strong>; kliknij go, aby uzyskać listę tylko do odczytu, ze wskazówką, aby zarządzać nimi w Narzędziu dyskowym lub Time Machine. Mapa dysku nigdy sama nie usuwa migawek.</p>
+<h2 id="najwieksze-pliki">Największe pliki</h2>
+<p>Włącz <strong>Pokaż listę największych plików</strong>, aby zobaczyć największe pliki w bieżącym folderze uszeregowane według rozmiaru, każdy z kolorowym znacznikiem swojej kategorii. Kliknij jeden, aby podświetlić go na mapie.</p>
+<h2 id="sprzataj-z-mapy">Sprzątaj z mapy</h2>
+<p>Kliknij prawym przyciskiem dowolny blok, aby uzyskać akcje:</p>
+<ul>
+<li><strong>Otwórz w lewym panelu</strong> / <strong>Otwórz w prawym panelu</strong> — pokaż element w panelu plików.</li>
+<li><strong>Pokaż w Finderze</strong>.</li>
+<li><strong>Przenieś do Kosza</strong> — usuń tylko ten element; mapa aktualizuje się bez pełnego ponownego skanowania.</li>
+</ul>
+<p>Aby usunąć kilka elementów naraz, użyj <strong>kolekcjonera</strong>: kliknij prawym przyciskiem ▸ <strong>Oznacz dla kolekcjonera</strong> na każdym elemencie, a następnie kliknij przycisk <strong>🗑 N</strong> w nagłówku, aby przenieść wszystko, co oznaczyłeś, do Kosza w jednym potwierdzonym kroku.</p>
+<h2 id="ustawienia">Ustawienia</h2>
+<p>Mapa dysku dodaje własną stronę do okna Ustawień (<strong>Konfiguracja ▸ Ustawienia ▸ Mapa dysku</strong>):</p>
+<ul>
+<li><strong>Styl wykresu</strong> — mapa drzewa lub wykres słoneczny.</li>
+<li><strong>Kodowanie kolorów</strong> — według typu pliku (kategoria) lub według rozmiaru (mapa cieplna).</li>
+<li><strong>Pozostań na woluminie początkowym</strong> — nie przechodź na inne zamontowane dyski.</li>
+<li><strong>Pokaż pasek woluminu</strong> i <strong>Pokaż listę największych plików</strong>.</li>
+</ul>
+<p>Zmiany są stosowane do otwartej Mapy dysku natychmiast.</p>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Mapa dysku mierzy rozmiar <strong>przydzielony</strong> (na dysku) i liczy pliki z <strong>dowiązaniami twardymi</strong> tylko raz, więc jej sumy pokrywają się z użytym miejscem woluminu, zamiast je zawyżać.</li>
+<li>Domyślnie skan pozostaje na woluminie początkowym, więc nie zawędruje na inne zamontowane dyski ani udziały sieciowe.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="deleting-files.html">Usuwanie plików</a></li><li><a href="settings.html">Ustawienia</a></li></ul></section>
+</main>
+</body>
+</html>

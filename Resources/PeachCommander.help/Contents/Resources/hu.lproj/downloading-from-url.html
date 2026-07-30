@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Letöltés URL-ről</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Letöltés URL-ről</h1>
+<p>A Peach Commander egy fájlt közvetlenül egy HTTP- vagy HTTPS-webcímről tud letölteni az aktív panelbe, böngésző megnyitása nélkül. Illesszen be egy hivatkozást, erősítse meg a nevet, amely alatt mentődik, és a letöltés magától fut — folytatással, ha a kapcsolat megszakad, kötegelt letöltésekkel sok hivatkozáshoz egyszerre, és opcionális ellenőrzőösszeg-ellenőrzéssel, hogy tudja, a fájl sértetlenül érkezett meg.</p>
+<h2 id="fajl-letoltese">Fájl letöltése</h2>
+<ol>
+<li>Nyissa meg a panel mappáját, ahová a fájlt szeretné.</li>
+<li>Válassza a <strong>Hálózat &gt; Letöltés URL-ről</strong> lehetőséget, vagy nyomja meg a Cmd+Shift+D-t.</li>
+<li>Illessze be a webcímet az <strong>URL(-ek)</strong> mezőbe. Ha előbb másolt egy hivatkozást, kitöltődik önnek.</li>
+<li>Ellenőrizze a <strong>Mentés másként</strong> nevet — a hivatkozásból javasolt, és szabadon szerkesztheti.</li>
+<li>Kattintson a <strong>Letöltés</strong>-re.</li>
+</ol>
+<p><img alt="A Letöltés URL-ről párbeszéd egy hivatkozással, szerkeszthető fájlnévvel és beállításokkal" src="images/download-url.png" />
+<em>(Ábra: a letöltés párbeszéd — illesszen be egy hivatkozást, szerkessze a nevet, és állítson be opcionális ellenőrzést, hitelesítő adatokat, fejléceket vagy proxyt.)</em></p>
+<p>Alapértelmezetten a letöltés <strong>a háttérben</strong> fut, így folytathatja a munkát a panelekben az átvitel közben. Kapcsolja ki a <strong>Letöltés a háttérben</strong> lehetőséget, hogy megvárja, vagy kapcsolja be a <strong>Sorba állítás későbbre</strong> lehetőséget a beállításához anélkül, hogy még elindítaná.</p>
+<h2 id="tobb-fajl-letoltese-egyszerre">Több fájl letöltése egyszerre</h2>
+<p>Illesszen be egy webcímet soronként az <strong>URL(-ek)</strong> mezőbe. Ha egynél több hivatkozás van jelen, minden fájl neve automatikusan a hivatkozásából származik, a fájlonkénti <strong>Mentés másként</strong> és <strong>Ellenőrzés</strong> mezők pedig ki vannak kapcsolva.</p>
+<h2 id="egy-megszakadt-letoltes-folytatasa">Egy megszakadt letöltés folytatása</h2>
+<p>Ha egy átvitel megszakad, a Peach Commander megtartja, amit már fogadott, egy ideiglenes <code>.part</code> fájlban. Ugyanazon letöltés újbóli indítása onnan folytatja, ahol megállt, amikor csak a kiszolgáló támogatja, ahelyett hogy elölről kezdené. A <code>.part</code> fájl csak akkor kapja meg a végleges nevet, amikor a letöltés sikeresen befejeződik.</p>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyűparancs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Letöltés URL-ről</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tippek">Tippek</h2>
+<ul>
+<li><strong>Ellenőrizze a fájlt.</strong> Egyetlen letöltéshez illesszen be egy várt <strong>SHA-256</strong> ellenőrzőösszeget az <strong>Ellenőrzés</strong> mezőbe. Az átvitel után a fájl ellenőrzőösszege ehhez hasonlítódik, így megbízhat abban, hogy a fájl megegyezik azzal, amit a kiadó felsorolt.</li>
+<li><strong>Bejelentkezés szükséges?</strong> Adjon meg egy felhasználónevet és jelszót a <strong>Hitelesítés</strong> mezőkben az alap hitelesítést használó oldalakhoz. Token alapú hozzáféréshez adjon hozzá egy <code>Authorization: Bearer …</code> sort a <strong>Fejlécek</strong> mezőbe.</li>
+<li><strong>Egyéni fejlécek.</strong> Adjon hozzá egy fejlécet soronként a <strong>Fejlécek</strong> mezőbe, például <code>Referer: …</code> vagy <code>Cookie: …</code>, olyan hivatkozásokhoz, amelyek csak bizonyos kérésfejlécekkel működnek.</li>
+<li><strong>Proxy.</strong> Irányítsa a letöltést egy HTTP- vagy SOCKS5-proxyn keresztül a <strong>Proxy</strong> gazdagép, port és típus kitöltésével.</li>
+<li><strong>Nem megbízható tanúsítványok.</strong> Csak egy megbízható, önaláírt tanúsítványt használó oldalhoz kapcsolja be a <strong>Nem megbízható tanúsítvány engedélyezése</strong> lehetőséget; ez kikapcsolja a normál HTTPS-biztonsági ellenőrzést az adott letöltéshez.</li>
+<li><strong>Megjegyzés:</strong> A Cmd+Shift+D máshol is használatos az Asztal mappához ugráshoz; ha a billentyűparancs nem nyitja meg ezt a párbeszédet, használja helyette a <strong>Hálózat &gt; Letöltés URL-ről</strong> lehetőséget a menüből.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Csatlakozás FTP-hez és SFTP-hez</a></li></ul></section>
+</main>
+</body>
+</html>

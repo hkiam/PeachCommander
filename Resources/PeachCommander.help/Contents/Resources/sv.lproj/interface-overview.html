@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Huvudfönstret</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Huvudfönstret</h1>
+<p>Peach Commander visar två fillistor sida vid sida så att du samtidigt kan se var filer kommer ifrån och vart de är på väg. Det mesta av ditt arbete sker i dessa två paneler; fälten runt dem låter dig byta enhet, hoppa till en mapp, och köra de vanliga filkommandona utan att lämna tangentbordet. Den här rundturen namnger varje del av fönstret så att resten av hjälpen blir begriplig.</p>
+<p><img alt="Peach Commanders huvudfönster med sina två paneler och omgivande fält" src="images/main-window.png" />
+<em>(Figur: Huvudfönstret – två paneler med knappfältet, enhetsfältet och sökvägsfälten ovanför och funktionstangentsfältet nedanför.)</em></p>
+<h2 id="de-tva-panelerna-och-den-aktiva-panelen">De två panelerna och den aktiva panelen</h2>
+<p>Fönstret är delat i en vänster panel och en höger panel, som var och en visar innehållet i en mapp. Endast en panel är aktiv åt gången: den visar markören (en markerad rad) och dess sökvägsfält ritas med en färgad bakgrund. Kommandon som kopiera och flytta agerar alltid på den aktiva panelen och skickar filer till den andra.</p>
+<ol>
+<li>Klicka var som helst i en panel för att göra den aktiv, eller tryck på Tab för att växla mellan dem.</li>
+<li>Använd piltangenterna för att flytta markören upp och ned i den aktiva panelen.</li>
+<li>Tryck på Enter på en mapp för att öppna den, eller på <code>..</code> högst upp i listan för att gå upp en nivå.</li>
+</ol>
+<h2 id="falt-runt-panelerna">Fält runt panelerna</h2>
+<ul>
+<li><strong>Knappfält</strong> (överst): en rad platta knappar för vanliga kommandon. Klicka på en knapp för att köra dess kommando; högerklicka på en knapp för att redigera fältet.</li>
+<li><strong>Enhetsfält</strong>: en knapp per tillgänglig disk eller volym, var och en med en utmatningskontroll och sitt lediga utrymme. Klicka på en volym för att byta den panelen till den.</li>
+<li><strong>Sökvägsfält</strong>: visar den aktuella mappen som en klickbar brödsmula. Klicka på ett segment för att hoppa direkt till den mappen, eller klicka på sökvägen för att skriva en plats.</li>
+<li><strong>Statusfält</strong> (under varje lista): en löpande sammanfattning av panelen – hur många filer och mappar som är markerade och deras totala storlek.</li>
+<li><strong>Kommandorad</strong> (nederst): ett textfält där du kan skriva ett skalliknande kommando som körs i den aktuella mappen.</li>
+<li><strong>Funktionstangentsfält</strong> (allra nederst): sex knappar märkta F3 Visa, F4 Redigera, F5 Kopiera, F6 Flytta, F7 NyMapp och F8 Ta bort. Klicka på en knapp eller tryck på den matchande tangenten.</li>
+</ul>
+<p><img alt="Närbild av enhetsfältet som visar volymknappar och ledigt utrymme" src="images/drive-bar-crop.png" />
+<em>(Figur: Enhetsfältet – en knapp per volym, med en utmatningskontroll och återstående ledigt utrymme.)</em></p>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Byt aktiv panel</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Öppna mapp/objekt under markören</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Gå upp en mapp</td>
+<td>Backspace</td>
+</tr>
+<tr>
+<td>Visa fil</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Redigera fil</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Kopiera till den andra panelen</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Flytta/byt namn till den andra panelen</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Ny mapp</td>
+<td>F7</td>
+</tr>
+<tr>
+<td>Ta bort (till papperskorgen)</td>
+<td>F8</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anteckningar">Anteckningar</h2>
+<ul>
+<li>Funktionstangentsfältet märker om sig självt live när du håller ned en modifierare. Att hålla ned Shift ändrar till exempel F6 till en åtgärd för att byta namn på plats, så att knapparna alltid visar vad tangenterna gör just nu.</li>
+<li>Nästan varje fält kan visas eller döljas. Titta under menyerna Visa och Konfiguration för att slå av och på knappfältet, enhetsfältet, kommandoraden eller funktionstangentsfältet, eller för att stapla de två panelerna överst och nederst istället för sida vid sida.</li>
+<li>På många Mac-tangentbord fungerar F-tangenterna som media- och ljusstyrkekontroller som standard. Håll ned Fn-tangenten tillsammans med F3–F8, eller slå på "Använd F1-, F2- osv. tangenter som standardfunktionstangenter" i Systeminställningar, för att använda dem direkt.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="navigating.html">Navigera</a></li><li><a href="panels-and-tabs.html">Flikar</a></li></ul></section>
+</main>
+</body>
+</html>

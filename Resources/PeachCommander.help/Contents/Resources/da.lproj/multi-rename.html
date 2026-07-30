@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Omdøbning af mange filer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Omdøbning af mange filer</h1>
+<p>Værktøjet til flerdobbelt omdøbning omdøber en hel bunke filer i én omgang. I stedet for at redigere navne ét ad gangen beskriver du ændringen én gang — et navnemønster, en søg-og-erstat, et nummereringsskema eller en ændring af bogstavstørrelse — og Peach Commander anvender den på hver valgt fil. En live forhåndsvisning viser præcis, hvad hver fil vil hedde, før noget sker, og en enkelt Fortryd sætter de oprindelige navne tilbage, hvis resultatet ikke var, som du ønskede.</p>
+<h2 id="omdb-en-bunke-filer">Omdøb en bunke filer</h2>
+<ol>
+<li>Vælg de filer, du vil omdøbe (se <em>Markering af filer</em>). Kun de valgte emner påvirkes.</li>
+<li>Vælg <strong>Kommandoer &gt; Værktøj til flerdobbelt omdøbning…</strong>, eller tryk på Ctrl+M.</li>
+<li>Byg din omdøbningsregel ved hjælp af felterne beskrevet nedenfor. Forhåndsvisningsgitteret opdateres, mens du skriver, og viser hvert <strong>Gammelt navn</strong> ved siden af dets <strong>Nye navn</strong>.</li>
+<li>Kontrollér forhåndsvisningen. En række vist i en fremhævningsfarve markerer et navn, der ikke kan bruges (for eksempel et duplikat eller et ulovligt navn), så du kan justere reglen.</li>
+<li>Når forhåndsvisningen ser rigtig ud, klik på <strong>Start</strong>. Hvis du ombestemmer dig, klik på <strong>Fortryd</strong> for at gendanne de oprindelige navne.</li>
+</ol>
+<p><img alt="Vinduet til flerdobbelt omdøbning med maskefelterne, indstillinger og gammel-til-ny forhåndsvisningsgitteret" src="images/multi-rename.png" />
+<em>(Figur: forhåndsvisningsgitteret opdateres live, mens du redigerer omdøbningsreglen; intet ændres på disken, før du klikker på Start.)</em></p>
+<h2 id="opbygning-af-omdbningsreglen">Opbygning af omdøbningsreglen</h2>
+<ul>
+<li><strong>Omdøbningsmaske</strong> og <strong>Filtype</strong> — mønstre der bygger det nye navn og filtype. Brug hurtigindsæt-knapperne, eller indtast pladsholdere direkte: <code>[N]</code> for det oprindelige navn, <code>[N1-9]</code> for et interval af tegn fra det, <code>[C]</code> for tælleren, <code>[d]</code> for dato- og tidsdele og <code>[P]</code> for navnet på den overordnede mappe.</li>
+<li><strong>Søg efter / Erstat med</strong> — erstat tekst inde i navnene. Slå <strong>Regex</strong> til for mønstermatching, <strong>Forskel på store/små</strong> for at matche præcis bogstavstørrelse og <strong>Gentag</strong> for at erstatte hver forekomst.</li>
+<li><strong>Bogstavstørrelse</strong> — konverter navne til små bogstaver, STORE BOGSTAVER, Første bogstav med stort eller Hvert Ord Med Stort.</li>
+<li><strong>Tæller</strong> — angiv <strong>Start</strong>-nummeret, <strong>Trin</strong> mellem filer og hvor mange <strong>Cifre</strong> der skal udfyldes til (for eksempel 001, 002, 003), hvor som helst <code>[C]</code> optræder.</li>
+</ul>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Genvej</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Åbn værktøjet til flerdobbelt omdøbning</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Anvend omdøbningen</td>
+<td>Retur</td>
+</tr>
+<tr>
+<td>Luk vinduet</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Intet skrives til disken, før du klikker på <strong>Start</strong>, så du kan eksperimentere frit med reglen og se forhåndsvisningen.</li>
+<li>Efter en kørsel omgør <strong>Fortryd</strong> omdøbningen i ét trin.</li>
+<li>Gem en regel, du bruger ofte, som en <strong>forudindstilling</strong>, og vælg den derefter fra forudindstillingsmenuen næste gang for at udfylde alle felterne på én gang.</li>
+<li>For at omdøbe en enkelt fil eller omdøbe filer, mens du flytter dem, brug i stedet omdøbning på stedet eller flyt-dialogen (se <em>Flytning og omdøbning</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Flytning og omdøbning</a></li></ul></section>
+</main>
+</body>
+</html>

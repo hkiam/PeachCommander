@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파일 찾기</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>파일 찾기</h1>
+<p>Mac 어디에 있든 파일을 찾아야 할 때 — 이름으로, 내용으로, 또는 크기와 날짜로 — 파일 찾기 창을 사용하세요. 하나 이상의 폴더(그리고 그 하위 폴더)를 검색하고, 텍스트 파일과 압축 파일 내부를 들여다볼 수 있으며, 찾은 모든 것을 패널로 바로 보내 결과를 일반 폴더처럼 다룰 수 있습니다.</p>
+<h2 id="_1">이름으로 파일 찾기</h2>
+<ol>
+<li>검색하려는 폴더를 표시하는 패널에서 <strong>명령 &gt; 파일 찾기…</strong>를 선택합니다(또는 Cmd+Shift+F).</li>
+<li><strong>일반</strong> 탭의 <strong>검색 대상</strong>에 이름 패턴을 입력합니다. <code>*.pdf</code>나 <code>report_*.docx</code> 같은 와일드카드를 쓸 수 있습니다. 여러 폴더를 한 번에 검색하려면 시작 폴더 필드에 세미콜론(<code>;</code>)으로 구분해 나열합니다.</li>
+<li><strong>시작</strong>을 클릭합니다. 찾는 대로 아래 결과 목록에 일치 항목이 나타납니다.</li>
+<li>결과를 두 번 클릭하면 활성 패널에서 그 파일로 이동하고, 결과를 선택하고 <strong>보기</strong>(F3)를 클릭하면 기본 제공 뷰어에서 엽니다.</li>
+</ol>
+<p><img alt="이름 패턴, 폴더, 결과 목록을 보여 주는 파일 찾기 창의 일반 탭" src="images/find-files-general.png" />
+<em>(그림: 일반 탭 — 하나 이상의 폴더에서 이름 패턴으로 검색.)</em></p>
+<h2 id="_2">내용, 크기, 날짜로 검색</h2>
+<ol>
+<li>파일 내부를 검색하려면 일반 탭에서 <strong>텍스트 찾기</strong>를 선택하고 찾을 텍스트를 입력합니다. 옵션으로 <strong>대소문자 구분</strong>, <strong>온전한 단어</strong>만 일치, 텍스트를 <strong>정규식</strong>으로 처리, <strong>16진수 내용 검색</strong>, 또는 텍스트를 <strong>포함하지 않는</strong> 파일 찾기를 할 수 있습니다.</li>
+<li><strong>고급</strong> 탭으로 전환해 <strong>크기</strong>(예: <code>10K</code>~<code>5M</code>), <strong>수정 날짜</strong> 범위, 또는 최근 N일 내에 변경된 파일로 결과를 좁힙니다.</li>
+<li><strong>압축 파일 내부 검색</strong>을 켜면 zip 계열 압축 파일(zip, jar, war 등) 안을 들여다봅니다.</li>
+<li>이미 선택한 것으로 검색을 제한하려면 시작 전에 <strong>선택한 항목만 검색</strong>을 켭니다.</li>
+</ol>
+<p><img alt="크기와 날짜 필터를 보여 주는 파일 찾기 창의 고급 탭" src="images/find-files-advanced.png" />
+<em>(그림: 고급 탭 — 크기, 날짜, 기타 속성으로 필터링.)</em></p>
+<p>내용 필드를 더하는 플러그인(예: 이미지 크기)이 있으면 <strong>플러그인</strong> 탭에서 필드가 조건과 일치하도록 요구할 수 있습니다 — 예를 들어 폭이 1000픽셀보다 큰 이미지만.</p>
+<p><img alt="내용 필드 조건을 보여 주는 파일 찾기 창의 플러그인 탭" src="images/find-files-plugins.png" />
+<em>(그림: 플러그인 탭 — 플러그인이 제공하는 내용 필드로 일치.)</em></p>
+<h2 id="spotlight">Spotlight로 빠른 검색</h2>
+<p>macOS가 이미 색인한 로컬 폴더의 경우, 일반 탭에서 <strong>Spotlight 사용</strong>을 켜면 거의 즉각적인 결과를 얻습니다. Spotlight는 파일을 훑는 대신 색인을 검색하므로 정규식, 하위 폴더 깊이 제한, 선택 항목만 범위는 무시합니다.</p>
+<h2 id="_3">결과 재사용 및 넘기기</h2>
+<ul>
+<li><strong>목록 상자로 보내기</strong>는 모든 결과를 임시 목록으로 활성 패널에 넣어, 전체 집합을 한 번에 복사·이동·삭제할 수 있게 합니다.</li>
+<li><strong>불러오기 / 저장</strong> 탭에서 <strong>템플릿으로 저장…</strong>을 선택하면 현재 검색(패턴과 옵션)을 저장하고 나중에 템플릿 목록에서 다시 고를 수 있습니다.</li>
+</ul>
+<h2 id="_4">단축키</h2>
+<table>
+<thead>
+<tr>
+<th>동작</th>
+<th>단축키</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>파일 찾기 열기</td>
+<td>Cmd+Shift+F 또는 Option+F7</td>
+</tr>
+<tr>
+<td>검색 시작 / 중지</td>
+<td>창의 시작 버튼</td>
+</tr>
+<tr>
+<td>선택한 결과 보기</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">참고</h2>
+<ul>
+<li>내용 검색은 로컬 폴더의 경우 파일 전체를 읽습니다. 다른 위치에서는 매우 큰 파일을 건너뜁니다(대략 16MB, 정규식 사용 시 64MB).</li>
+<li>압축 파일 내부 검색은 중첩된 압축 파일을 최대 4단계까지 내려갑니다.</li>
+<li><strong>결과에 폴더 포함</strong>은 파일뿐 아니라 이름이 일치하는 폴더도 나열합니다.</li>
+<li>Spotlight는 색인된 로컬 폴더만 다룹니다. 네트워크 위치나 패턴 기반 일치에는 꺼 두고 파일 찾기가 훑도록 하세요.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">파일 선택</a></li><li><a href="quick-search-and-filter.html">빠른 검색 및 필터</a></li></ul></section>
+</main>
+</body>
+</html>

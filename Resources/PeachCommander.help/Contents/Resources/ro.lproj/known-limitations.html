@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Limitări cunoscute</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Limitări cunoscute</h1>
+<p>Peach Commander face multe, dar câteva funcții au limite oneste în versiunea curentă. Cunoașterea lor în avans scutește confuzia când ceva se comportă neașteptat. Această pagină listează constrângerile curente și, unde este posibil, o soluție simplă.</p>
+<h2 id="arhive">Arhive</h2>
+<ul>
+<li><strong>Fișierele ZIP foarte mari (ZIP64) nu pot fi deschise de cititorul încorporat.</strong> Arhivele ZIP, TAR și TAR comprimate cu gzip standard se deschid direct ca foldere. Arhivele ZIP64 — folosite când o arhivă conține mai mult de aproximativ 65.000 de elemente sau depășește 4 GB — sunt în afara a ceea ce gestionează cititorul nativ, astfel încât pot eșua să se deschidă sau să se listeze incomplet.</li>
+<li><strong>Arhivele ZIP criptate</strong> (atât ZipCrypto mai vechi, cât și WinZip AES) sunt acceptate pentru parcurgere, dar vi se va cere parola.</li>
+<li>Alte formate precum CPIO, ISO, CAB, LZH, XAR și PAX se deschid printr-un instrument ajutător în loc de cititorul nativ.</li>
+</ul>
+<h2 id="retea-sftp-scp">Rețea (SFTP / SCP)</h2>
+<ul>
+<li><strong>Schimbarea atributelor de fișier peste SFTP nu are efect în această versiune.</strong> Puteți parcurge, descărca și încărca peste SFTP/SCP, dar cererile de a schimba permisiunile, proprietatea sau marcajele de timp pe un server la distanță sunt ignorate în tăcere. Faceți acele modificări pe serverul însuși, sau printr-un alt protocol.</li>
+<li>La prima conexiune la un server SFTP vi se va cere să aveți încredere în cheia sa gazdă. Peach Commander o reține după aceea (încredere la prima utilizare).</li>
+</ul>
+<h2 id="descarcare-de-la-un-url">Descărcare de la un URL</h2>
+<ul>
+<li>Comanda <strong>Descarcă de la URL</strong> (meniul Rețea) folosește în prezent comanda rapidă Cmd+Shift+D, care este aceeași comandă rapidă ca Salt &gt; Birou. Când ambele sunt disponibile, meniurile pot intra în conflict — porniți descărcarea direct din meniul Rețea pentru siguranță.</li>
+</ul>
+<h2 id="reimprospatarea-folderelor">Reîmprospătarea folderelor</h2>
+<ul>
+<li><strong>Un panou observă modificările externe cu o mică întârziere, nu instantaneu.</strong> Peach Commander verifică folderul curent pentru modificări aproximativ la fiecare 2 secunde, astfel încât un fișier adăugat sau eliminat de o altă aplicație poate dura un moment până să apară. Dacă nu doriți să așteptați, reîmprospătați panoul activ manual cu F2 sau Ctrl+R.</li>
+</ul>
+<h2 id="alte-limite-curente">Alte limite curente</h2>
+<ul>
+<li><strong>Unele căi absolute foarte lungi</strong> (foldere imbricate adânc a căror cale completă este neobișnuit de lungă) pot să nu fie gestionate în mod fiabil. Lucrul mai aproape de vârful arborelui de foldere evită acest lucru.</li>
+<li><strong>Această versiune de previzualizare nu este semnată.</strong> Gatekeeper macOS poate avertiza că aplicația este de la un dezvoltator neidentificat prima dată când o deschideți. Faceți clic dreapta pe aplicație și alegeți Deschide, apoi confirmați, pentru a o rula. Actualizările automate nu sunt încă disponibile în această versiune.</li>
+</ul>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Comandă rapidă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reîmprospătează panoul activ</td>
+<td>F2 sau Ctrl+R</td>
+</tr>
+<tr>
+<td>Descarcă de la URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<p>Acestea sunt limitări ale versiunii curente și se așteaptă să se îmbunătățească în versiunile ulterioare. Dacă întâlniți un comportament nedescris aici, vedeți subiectul de depanare.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="troubleshooting.html">Depanare</a></li></ul></section>
+</main>
+</body>
+</html>

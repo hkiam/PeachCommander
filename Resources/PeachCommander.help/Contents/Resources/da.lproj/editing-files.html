@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redigering af filer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Redigering af filer</h1>
+<p>Når du har brug for at ændre en fil frem for blot at se på den, åbner Peach Commander den i en indbygget editor. Tekst- og kodefiler åbner i en fuld editor med syntaksfremhævning, søg og erstat, et overblik over symbolerne i din kode og et minikort til hurtig navigation. Binære filer kan åbnes i en separat hex-editor, hvor du kan inspicere og ændre individuelle bytes. Du behøver aldrig at forlade appen for at foretage en hurtig redigering.</p>
+<h2 id="rediger-en-tekst-eller-kodefil">Redigér en tekst- eller kodefil</h2>
+<ol>
+<li>Flyt markøren i et af panelerne til den fil, du vil ændre.</li>
+<li>Tryk på F4, eller vælg Fil ▸ Redigér. Filen åbner i editorvinduet.</li>
+<li>Foretag dine ændringer. Hvis filen er et genkendt programmerings- eller dataformat, farves nøgleord, strenge og kommentarer automatisk.</li>
+<li>Tryk på Cmd+S (eller klik på Gem) for at skrive dine ændringer. Den første lagring beholder en backup af originalen ved siden af filen, så du altid kan falde tilbage til den.</li>
+</ol>
+<p>For at starte en helt ny tekstfil på den aktuelle placering skal du trykke på Shift+F4.</p>
+<p><img alt="Den indbyggede teksteditor med syntaksfremhævning, symboloverblikket og minikortet" src="images/editor.png" />
+<em>(Figur: Editoren med syntaksfremhævning, symboloverblikket til venstre og minikortet til højre.)</em></p>
+<h2 id="sg-erstat-og-naviger">Søg, erstat og naviger</h2>
+<ul>
+<li>Tryk på Cmd+F for at åbne søgebjælken. For at erstatte tekst skal du åbne søgebjælken og skifte den til erstat-visningen eller klikke på Søg/Erstat i værktøjslinjen.</li>
+<li>Klik på Formatér JSON/XML for at genindrykke et JSON- eller XML-dokument til et rent, læsbart layout.</li>
+<li>Klik på Symboler (eller tryk på Cmd+Shift+O) for at vise en sidebjælke, der viser klasserne, funktionerne og metoderne i din kode. Klik på en post for at springe direkte til den.</li>
+<li>Tryk på Cmd+L for at springe til en bestemt linje.</li>
+<li>Tryk på Cmd+\ for at springe mellem en parentes og dens matchende makker.</li>
+<li>Klik på kortknappen for at vise eller skjule minikortet, et skaleret overblik over hele filen, som du kan klikke på for at rulle.</li>
+<li>Brug menuen Kodning i værktøjslinjen, hvis filen blev gemt i noget andet end standardtekstkodningen.</li>
+</ul>
+<h2 id="rediger-en-fil-byte-for-byte">Redigér en fil byte for byte</h2>
+<ol>
+<li>Markér filen i et panel.</li>
+<li>Vælg Fil ▸ Redigér som hex (eller højreklik på filen og vælg Redigér som hex).</li>
+<li>Skriv hexcifre for at overskrive bytes, eller brug piletasterne til at bevæge dig gennem filen. Backspace og Delete fjerner bytes.</li>
+<li>Tryk på Cmd+S for at gemme. Som med teksteditoren beholdes en engangsbackup af originalen.</li>
+</ol>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Tast</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Redigér fil</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Opret og redigér en ny tekstfil</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>Gem</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>Søg</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>Vis/skjul symboloverblik</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>Gå til linje</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>Spring til matchende parentes</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>Fortryd / gentag (hex-editor)</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Syntaksfremhævning dækker JSON, C, C#, Java, JavaScript, TypeScript, Python og Rust. Andre filtyper åbner og redigeres stadig normalt med grundlæggende farvning, men detaljeret fremhævning og symboloverblikket er kun tilgængelige for de understøttede sprog.</li>
+<li>Symboloverblikket og funktionerne Gå til linje gælder for teksteditoren. Hex-editoren er beregnet til binær inspektion og redigering på byteniveau, ikke til tekst.</li>
+<li>Begge editorer beholder en backup af den oprindelige fil, første gang du gemmer, så en utilsigtet ændring er let at fortryde ved at gendanne den backup.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Visning af filer</a></li></ul></section>
+</main>
+</body>
+</html>

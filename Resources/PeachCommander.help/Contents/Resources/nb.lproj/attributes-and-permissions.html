@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attributter og tillatelser</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Attributter og tillatelser</h1>
+<p>Peach Commander lar deg inspisere og endre lavnivå-metadataene til filer og mapper som Finder stort sett holder utenfor rekkevidde: POSIX les/skriv/kjør-tillatelser, eieren og gruppen, endret- og opprettet-datoene, macOS-flagg som skjult og låst, og utvidede attributter. Du kan også redigere en fils tilgangskontrolliste (ACL) for finkornede regler per bruker eller per gruppe, opprette lenker og aliaser som peker mot andre elementer, og legge ved dine egne kommentarer. Disse verktøyene er rettet mot avanserte brukere som trenger presis kontroll over hvordan elementer oppfører seg og hvem som kan røre dem.</p>
+<h2 id="endre-attributter">Endre attributter</h2>
+<ol>
+<li>Merk ett eller flere elementer i det aktive panelet.</li>
+<li>Velg <strong>Fil &gt; Endre attributter…</strong>.</li>
+<li>Angi det du trenger: veksle les/skriv/kjør-boksene for eier, gruppe og alle (eller skriv inn en oktal verdi direkte), endre eier eller gruppe, snu skjult- eller låst-flaggene, og sett endret- eller opprettet-datoen. Bruk <strong>Bruk gjeldende</strong> for gjeldende tidspunkt, eller kopier en dato fra en annen fil.</li>
+<li>For å bruke den samme endringen gjennom en mappes innhold, slå på det rekursive alternativet og velg om det påvirker filer, mapper eller begge.</li>
+<li>Klikk OK for å kjøre endringen. Rekursive endringer kjøres som en bakgrunnsoppgave med en fremdriftslinje.</li>
+</ol>
+<p><img alt="Endre attributter-dialogen som viser tillatelsesrutenettet, flaggene og datofeltene" src="images/attributes-dialog.png" />
+<em>(Figur: Endre attributter-dialogen. Blandede verdier på tvers av et utvalg med flere filer vises som en strek til du angir dem.)</em></p>
+<h2 id="rediger-en-acl">Rediger en ACL</h2>
+<p>For regler utover den grunnleggende eier/gruppe/alle-modellen, rediger elementets tilgangskontrolliste.</p>
+<ol>
+<li>Åpne <strong>Fil &gt; Endre attributter…</strong> og åpne ACL-redigeringsprogrammet derfra.</li>
+<li>Hver rad er én regel: brukeren eller gruppen den gjelder for, om den tillater eller nekter, og hvilke tillatelser (les, skriv, slett og så videre) den gir.</li>
+<li>Legg til, fjern eller rediger rader, og lagre deretter for å skrive listen tilbake til elementet.</li>
+</ol>
+<h2 id="opprett-lenker-aliaser-og-kommentarer">Opprett lenker, aliaser og kommentarer</h2>
+<ul>
+<li><strong>Fil &gt; Opprett symbolsk lenke…</strong> lager en symbolsk lenke (symlink) som peker mot elementet under markøren via sti.</li>
+<li><strong>Fil &gt; Opprett hard lenke…</strong> lager en hard lenke til de samme fildataene. Harde lenker fungerer bare for filer på samme volum.</li>
+<li><strong>Fil &gt; Opprett alias…</strong> lager et macOS-alias som Finder også kan følge.</li>
+<li><strong>Fil &gt; Rediger kommentar…</strong> (Ctrl+Z) åpner et tekstredigeringsprogram for en kommentar per fil. Kommentarer kan vises i sin egen kolonne og i statustips.</li>
+</ul>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rediger kommentar</td>
+<td>Ctrl+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Å endre eier eller gruppe krever vanligvis privilegier du ikke har som en vanlig bruker; når det skjer, rapporteres endringen som mislykket i stedet for å bli brukt, og resten av endringene dine går fortsatt gjennom.</li>
+<li>Kommentarer lagres i en <code>descript.ion</code>-fil ved siden av elementene dine og kan også beholdes som Finder-kommentarer, avhengig av innstillingene dine. Begge leses når en kommentar vises.</li>
+<li>En symbolsk lenke og et alias peker begge mot et mål, men en symbolsk lenke lagrer en ren sti mens et alias lagrer en macOS-referanse som fortsetter å fungere hvis målet flyttes eller får nytt navn. En hard lenke er et andre navn for de samme fildataene, ikke en peker.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="file-utilities.html">Filverktøy</a></li></ul></section>
+</main>
+</body>
+</html>

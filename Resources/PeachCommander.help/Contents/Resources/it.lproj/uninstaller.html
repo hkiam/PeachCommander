@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstaller</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Uninstaller</h1>
+<p>Trascinare un'app nel Cestino lascia i suoi file di supporto, le cache, le preferenze e i container sparsi nelle vostre cartelle Libreria. Il plugin Uninstaller rimuove un'applicazione <strong>e</strong> quei residui: trova tutto ciò che l'app ha lasciato dietro di sé, vi mostra l'elenco con una dimensione per ciascun elemento e sposta il tutto nel Cestino dopo la vostra conferma. Trattandosi di un plugin, potete disattivarlo o rimuoverlo da <strong>Configurazione ▸ Plugin…</strong>.</p>
+<h2 id="disinstallare-unapp-sotto-il-cursore">Disinstallare un'app sotto il cursore</h2>
+<ol>
+<li>Posizionate il cursore su un'applicazione (<code>.app</code>) in un pannello.</li>
+<li>Scegliete <strong>File ▸ Disinstalla applicazione…</strong>, oppure clic destro ▸ <strong>Disinstalla applicazione…</strong>, oppure premete <strong>Cmd+Shift+U</strong>.</li>
+<li>Si apre la finestra di revisione, che elenca l'app più ogni file correlato trovato, ciascuno etichettato con la sua categoria, il percorso e la dimensione.</li>
+<li>Deselezionate ciò che volete conservare, poi fate clic su <strong>Sposta nel Cestino</strong> (o <strong>Elimina definitivamente</strong>).</li>
+</ol>
+<p><img alt="La finestra di revisione della disinstallazione che elenca i file residui di un'app con caselle di selezione e dimensioni" src="images/uninstaller.png" />
+<em>(Figura: rivedete esattamente cosa verrà rimosso prima che qualcosa venga eliminato.)</em></p>
+<h2 id="sfogliare-tutte-le-app-installate">Sfogliare tutte le app installate</h2>
+<p>Scegliete <strong>Comandi ▸ Disinstalla applicazione…</strong> per aprire un elenco ricercabile delle app installate sul vostro Mac, con nome, dimensione e data di installazione di ciascuna app. Selezionatene una (o diverse), fate clic su <strong>Disinstalla…</strong> e arriverete alla stessa finestra di revisione. Potete filtrare l'elenco digitando nel campo di ricerca.</p>
+<h2 id="trovare-i-file-residui">Trovare i file residui</h2>
+<p>Scegliete <strong>Comandi ▸ Trova file residui…</strong> per cercare i file di supporto, le cache e le preferenze che appartengono ad app che avete <strong>già</strong> eliminato. Rivedeteli allo stesso modo e ripuliteli. Se non viene trovato nulla, il plugin ve lo dice.</p>
+<h2 id="quanto-approfondire-la-scansione">Quanto approfondire la scansione</h2>
+<p>La finestra di revisione ha un controllo di confidenza:</p>
+<ul>
+<li><strong>Precise</strong> — file ancorati all'identificatore di bundle dell'app. Alta confidenza; preselezionati.</li>
+<li><strong>Enhanced</strong> — aggiunge i file corrispondenti per nome; lasciati deselezionati così potete decidere.</li>
+<li><strong>Deep</strong> — Enhanced più una scansione Spotlight per qualsiasi altra cosa che menziona l'app; anch'essi lasciati deselezionati.</li>
+</ul>
+<h2 id="note">Note</h2>
+<ul>
+<li>Nulla viene eliminato direttamente dal plugin — gli elementi passano per il Cestino o l'eliminazione definitiva dell'app, esattamente come qualsiasi altra operazione sui file. La rimozione di file in <code>/Library</code> o <code>/var</code> può richiedere una password di amministratore.</li>
+<li>Prima della rimozione, il plugin chiude l'app in esecuzione e scarica i suoi elementi in background (launchd), poi propone di riordinare eventuali cartelle di fornitori ora vuote.</li>
+<li>Se l'app è stata installata con <strong>Homebrew</strong>, il plugin vi avvisa e suggerisce <code>brew uninstall --cask</code> così Homebrew resta sincronizzato. Anche le app dell'App Store vengono segnalate.</li>
+<li>Le corrispondenze Enhanced e Deep sono a confidenza inferiore per progettazione e partono deselezionate — rivedetele prima di rimuoverle. Alcuni elementi in background installati tramite la moderna API degli elementi di login non possono essere rimossi qui.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="deleting-files.html">Eliminare i file</a></li></ul></section>
+</main>
+</body>
+</html>

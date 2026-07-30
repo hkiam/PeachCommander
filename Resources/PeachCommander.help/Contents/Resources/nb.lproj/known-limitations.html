@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kjente begrensninger</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Kjente begrensninger</h1>
+<p>Peach Commander gjør mye, men noen få funksjoner har ærlige grenser i den gjeldende versjonen. Å vite om disse på forhånd sparer forvirring når noe oppfører seg uventet. Denne siden lister de gjeldende begrensningene og, der det er mulig, en enkel omvei.</p>
+<h2 id="arkiver">Arkiver</h2>
+<ul>
+<li><strong>Svært store ZIP-filer (ZIP64) kan ikke åpnes av den innebygde leseren.</strong> Standard ZIP, TAR og gzip-komprimert TAR åpnes direkte som mapper. ZIP64-arkiver – brukt når et arkiv holder mer enn omtrent 65 000 elementer eller overstiger 4 GB – er utenfor det den innfødte leseren håndterer, så de kan mislykkes i å åpne eller listes ufullstendig.</li>
+<li><strong>Krypterte ZIP-arkiver</strong> (både eldre ZipCrypto og WinZip AES) støttes for bla, men du blir bedt om passordet.</li>
+<li>Andre formater som CPIO, ISO, CAB, LZH, XAR og PAX åpnes gjennom et hjelpeverktøy i stedet for den innfødte leseren.</li>
+</ul>
+<h2 id="nettverk-sftp-scp">Nettverk (SFTP / SCP)</h2>
+<ul>
+<li><strong>Å endre filattributter over SFTP har ingen effekt i denne versjonen.</strong> Du kan bla, laste ned og laste opp over SFTP/SCP, men forespørsler om å endre tillatelser, eierskap eller tidsstempler på en fjerntjener ignoreres stille. Gjør de endringene på selve tjeneren, eller over en annen protokoll.</li>
+<li>Ved første tilkobling til en SFTP-tjener blir du bedt om å klarere vertsnøkkelen dens. Peach Commander husker den etter det (klarering ved første bruk).</li>
+</ul>
+<h2 id="laste-ned-fra-en-url">Laste ned fra en URL</h2>
+<ul>
+<li><strong>Last ned fra URL</strong>-kommandoen (Nettverk-menyen) bruker for tiden snarveien Cmd+Shift+D, som er den samme snarveien som Gå &gt; Skrivebord. Når begge er tilgjengelige kan menyene kollidere – start nedlastingen fra Nettverk-menyen direkte for å være sikker.</li>
+</ul>
+<h2 id="mappeoppdatering">Mappeoppdatering</h2>
+<ul>
+<li><strong>Et panel merker eksterne endringer med en kort forsinkelse, ikke øyeblikkelig.</strong> Peach Commander sjekker den gjeldende mappen for endringer omtrent hvert 2. sekund, så en fil lagt til eller fjernet av en annen app kan ta et øyeblikk å dukke opp. Vil du ikke vente, oppdater det aktive panelet manuelt med F2 eller Ctrl+R.</li>
+</ul>
+<h2 id="andre-gjeldende-grenser">Andre gjeldende grenser</h2>
+<ul>
+<li><strong>Noen svært lange absolutte baner</strong> (dypt nestede mapper hvis fulle bane er uvanlig lang) håndteres kanskje ikke pålitelig. Å arbeide nærmere toppen av mappetreet unngår dette.</li>
+<li><strong>Denne forhåndsversjonen er usignert.</strong> macOS Gatekeeper kan advare om at appen er fra en uidentifisert utvikler første gang du åpner den. Høyreklikk appen og velg Åpne, og bekreft deretter, for å kjøre den. Automatiske oppdateringer er ennå ikke tilgjengelige i denne versjonen.</li>
+</ul>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Oppdater aktivt panel</td>
+<td>F2 eller Ctrl+R</td>
+</tr>
+<tr>
+<td>Last ned fra URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="merknader">Merknader</h2>
+<p>Dette er begrensninger i den gjeldende versjonen og forventes å bli bedre i senere utgivelser. Hvis du støter på atferd som ikke er beskrevet her, se feilsøkingsemnet.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="troubleshooting.html">Feilsøking</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Áthelyezés és átnevezés</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Áthelyezés és átnevezés</h1>
+<p>Az áthelyezés áthelyezi a fájlokat és mappákat ahelyett, hogy duplikálná őket, az átnevezés pedig megváltoztatja a nevüket a tartalmuk érintése nélkül. Mivel a Peach Commander két panelt mutat egymás mellett, az áthelyezés csak annyi, hogy kiválasztja, amit szeretne az egyik panelben, és elküldi a másikban nyitott mappába. Egy elemet helyben is átnevezhet, vagy az áthelyezett elemeknek menet közben új neveket adhat helyettesítő karakteres maszkkal.</p>
+<h2 id="fajlok-athelyezese-a-masik-panelre">Fájlok áthelyezése a másik panelre</h2>
+<ol>
+<li>A forráspanelben nyissa meg a mappát, amely az áthelyezni kívánt elemeket tartalmazza, és nyissa meg a célmappát a másik panelben.</li>
+<li>Jelölje ki az áthelyezendő fájlt vagy mappát. Több egyszerre áthelyezéséhez először jelölje ki mindet (lásd <em>Fájlok kijelölése</em>).</li>
+<li>Nyomja meg az F6-ot, vagy válassza a <strong>Fájlok &gt; Áthelyezés</strong> lehetőséget.</li>
+<li>Ellenőrizze a párbeszédben megjelenő célmappát, és kattintson az <strong>OK</strong>-ra (vagy nyomja meg az Entert) az áthelyezés elindításához.</li>
+</ol>
+<p><img alt="Az áthelyezés párbeszéd a célútvonal-mezővel, beállításokkal és egy sor jelölőnégyzettel" src="images/copy-dialog.png" />
+<em>(Ábra: az áthelyezés párbeszéd ugyanazt a célmezőt használja, mint a másolás — írjon be egy útvonalat, vagy adjon hozzá egy helyettesítő karakteres maszkot az áthelyezés közbeni átnevezéshez.)</em></p>
+<p>Az azonos meghajtón belüli áthelyezések szinte azonnal megtörténnek. Ha a cél másik meghajtón van, a Peach Commander átmásolja az elemeket, és csak azután távolítja el az eredetieket, hogy minden fájl biztonságosan megérkezett.</p>
+<h2 id="atnevezes-helyben">Átnevezés helyben</h2>
+<ol>
+<li>Jelöljön ki egyetlen fájlt vagy mappát.</li>
+<li>Nyomja meg a Shift+F6-ot, vagy válassza a <strong>Fájlok &gt; Átnevezés</strong> lehetőséget.</li>
+<li>Szerkessze a nevet közvetlenül a panelben, majd nyomja meg az Entert a megerősítéshez vagy az Esc-et a megszakításhoz.</li>
+</ol>
+<h2 id="atnevezes-athelyezes-kozben">Átnevezés áthelyezés közben</h2>
+<p>Az áthelyezés párbeszéd célmezője elfogad egy helyettesítő karakteres maszkot, így átnevezheti az elemeket, ahogy áthelyeződnek:</p>
+<ol>
+<li>Jelölje ki az elemeket és nyomja meg az F6-ot.</li>
+<li>A célmezőben adjon hozzá egy névmaszkot a célmappa után, például <code>/Users/ön/Archive/*_backup.*</code>.</li>
+<li>A <code>*</code> az eredeti nevet, a <code>.*</code> az eredeti kiterjesztést jelöli. Erősítse meg az áthelyezéshez és átnevezéshez egy lépésben.</li>
+</ol>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyűparancs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Áthelyezés a másik panelre</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Átnevezés helyben</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tippek">Tippek</h2>
+<ul>
+<li>Az áthelyezés párbeszéd ugyanazt a beállításgombot és háttérsor-jelölőnégyzetet kínálja, mint a másolás, így nagy áthelyezéseket sorba állíthat és futni hagyhatja őket a háttérben.</li>
+<li>Az azonos meghajtón belüli áthelyezés gyors, helyben végzett művelet, így nagyon nagy mappákhoz is biztonságos. A meghajtók közötti áthelyezés tovább tart, mert az adatok először átmásolódnak, majd a forrás törlődik.</li>
+<li>Sok fájl egyszerre átnevezéséhez számozással, keresés-és-cserével vagy mintákkal használja inkább a Többszörös átnevezés eszközt (lásd <em>Többszörös átnevezés</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Fájlok másolása</a></li><li><a href="multi-rename.html">Sok fájl átnevezése</a></li></ul></section>
+</main>
+</body>
+</html>

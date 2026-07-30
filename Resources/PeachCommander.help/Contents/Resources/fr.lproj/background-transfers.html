@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transferts en arrière-plan</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Transferts en arrière-plan</h1>
+<p>Les copies, déplacements, suppressions et téléchargements volumineux n'ont pas à interrompre votre travail. Peach Commander peut les exécuter en arrière-plan et les rassembler en un seul endroit : le gestionnaire de transferts en arrière-plan. De là, vous suivez la progression et la vitesse de transfert de chaque tâche, la mettez en pause ou la reprenez, l'annulez, ou mettez des tâches en file d'attente pour les démarrer plus tard. Comme une tâche en arrière-plan s'exécute de manière autonome, elle ne vous empêche jamais de naviguer, d'ouvrir des fichiers ou de lancer le transfert suivant.</p>
+<h2 id="marche-a-suivre">Marche à suivre</h2>
+<ol>
+<li>Lancez une copie, un déplacement, une suppression ou un téléchargement et choisissez de l'exécuter en arrière-plan. La tâche apparaît dans le gestionnaire de transferts en arrière-plan.</li>
+<li>Ouvrez le gestionnaire à tout moment depuis <strong>Commandes ▸ Gestionnaire de transferts en arrière-plan…</strong> (ou appuyez sur Cmd+Shift+B).</li>
+<li>Chaque tâche affiche un titre, une barre de progression et une ligne en direct indiquant les fichiers terminés, les octets transférés et la vitesse actuelle.</li>
+<li>Utilisez les boutons de chaque tâche pour <strong>Mettre en pause</strong>, <strong>Reprendre</strong> ou <strong>Annuler</strong> pendant qu'une tâche est en cours.</li>
+<li>Pour les tâches que vous avez ajoutées mais pas encore démarrées (tâches en attente), cliquez sur <strong>Démarrer</strong> sur la tâche, ou sur <strong>Tout démarrer</strong> pour lancer d'un coup toute la liste d'attente.</li>
+<li>Lorsque tout ce qui vous intéresse est terminé, cliquez sur <strong>Effacer les tâches terminées</strong> pour ranger la liste.</li>
+</ol>
+<p><img alt="Le gestionnaire de transferts en arrière-plan répertoriant les tâches actives et en attente avec des barres de progression et des boutons Mettre en pause, Reprendre et Annuler." src="images/transfer-manager.png" /></p>
+<p><em>Chaque transfert est une ligne que vous pouvez mettre en pause, reprendre ou annuler indépendamment.</em></p>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Raccourci</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ouvrir le gestionnaire de transferts en arrière-plan</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="astuces">Astuces</h2>
+<ul>
+<li><strong>Limitez la vitesse.</strong> Pour éviter qu'un gros transfert ne sature votre connexion ou votre disque, définissez une limite de vitesse dans la boîte de dialogue de copie avant de lancer la tâche. Le gestionnaire affiche alors le débit bridé en direct.</li>
+<li><strong>Mettez en file d'attente pour plus tard.</strong> Les tâches en attente restent dans la liste sans s'exécuter jusqu'à ce que vous appuyiez sur Démarrer (ou Tout démarrer) : vous pouvez ainsi préparer plusieurs transferts et les lancer ensemble.</li>
+<li><strong>Exécutez-en plusieurs à la fois.</strong> Les tâches s'exécutent indépendamment : vous pouvez donc en mettre une en pause pendant qu'une autre continue.</li>
+</ul>
+<h2 id="remarques">Remarques</h2>
+<p>Comme une tâche en arrière-plan s'exécute sans que vous la surveilliez, elle ne peut pas s'arrêter pour poser des questions. Si un fichier existe déjà à la destination, la tâche en arrière-plan l'écrase ; si un élément individuel ne peut pas être transféré, cet élément est ignoré et la tâche continue. Une fois la tâche terminée, tous les éléments ignorés sont regroupés dans un journal d'erreurs afin que vous puissiez examiner exactement ce qui n'a pas fonctionné.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copier des fichiers</a></li><li><a href="downloading-from-url.html">Télécharger depuis une URL</a></li></ul></section>
+</main>
+</body>
+</html>

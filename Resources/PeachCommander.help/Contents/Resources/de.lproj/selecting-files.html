@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dateien auswählen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Dateien auswählen</h1>
+<p>Bevor Sie etwas kopieren, verschieben, löschen oder packen, teilen Sie Peach Commander zuerst mit, auf welche Objekte eine Aktion angewendet werden soll. Das Objekt, auf dem Ihr Cursor sitzt, ist immer das aktuelle Objekt, aber Sie können auch eine oder viele Dateien und Ordner <em>markieren</em>, sodass ein Befehl auf sie alle gleichzeitig angewendet wird. Markierte Objekte heben sich durch eine eigene Namensfarbe im Panel hervor.</p>
+<h2 id="dateien-und-ordner-markieren">Dateien und Ordner markieren</h2>
+<ol>
+<li>Klicken Sie auf eine Zeile, um den Cursor darauf zu bewegen. Ein einfacher Klick wählt nur dieses eine Objekt aus.</li>
+<li>Um mehrere Objekte gleichzeitig zu markieren, halten Sie Cmd gedrückt und klicken Sie auf jedes einzelne, oder halten Sie Shift gedrückt und klicken Sie, um einen Bereich zu markieren.</li>
+<li>Um das Objekt unter dem Cursor zu markieren und in einer Bewegung nach unten zu wandern, drücken Sie Insert. Drücken Sie es wiederholt, um schnell eine Folge aufeinanderfolgender Objekte zu markieren. Die Leertaste schaltet ebenfalls die Markierung des aktuellen Objekts um (und zeigt die Größe eines Ordners an).</li>
+<li>Um alles im Panel zu markieren, wählen Sie Markieren &gt; Alle auswählen (Ctrl+Num+) oder drücken Sie Cmd+A. Wählen Sie Markieren &gt; Auswahl aufheben (Ctrl+Num-), um alle Markierungen zu entfernen.</li>
+</ol>
+<h2 id="nach-einem-muster-auswahlen-oder-abwahlen">Nach einem Muster auswählen oder abwählen</h2>
+<ol>
+<li>Wählen Sie Markieren &gt; Gruppe auswählen… (Num+), um Objekte hinzuzufügen, deren Namen einem Muster entsprechen, oder Markieren &gt; Gruppe abwählen… (Num-), um passende Objekte aus den aktuellen Markierungen zu entfernen.</li>
+<li>Tippen Sie eine Platzhaltermaske. Verwenden Sie <code>*</code> für beliebige Zeichen und <code>?</code> für ein einzelnes Zeichen. Trennen Sie mehrere Masken mit einem Semikolon und listen Sie Ausnahmen nach einem senkrechten Strich auf — zum Beispiel markiert <code>*.jpg;*.png</code> alle Bilder, und <code>*.*|*.bak</code> markiert alles außer Sicherungsdateien.</li>
+</ol>
+<p><img alt="Der Dialog Gruppe auswählen mit einer in das Musterfeld getippten Platzhaltermaske" src="images/select-by-mask.png" />
+<em>(Abbildung: Dateien anhand einer Platzhaltermaske markieren.)</em></p>
+<h2 id="umkehren-gleiche-erweiterung-und-wiederherstellen">Umkehren, gleiche Erweiterung und wiederherstellen</h2>
+<ul>
+<li><strong>Auswahl umkehren</strong> (Num*, Menü Markieren) kehrt jede Markierung um: markierte Objekte werden unmarkiert und umgekehrt — praktisch für „alles außer diesen".</li>
+<li><strong>Alle mit gleicher Erweiterung auswählen</strong> (Alt+Num+, Menü Markieren) markiert jede Datei, die die Erweiterung des Objekts unter dem Cursor teilt, sodass ein Tastendruck zum Beispiel alle <code>.pdf</code>-Dateien erfasst.</li>
+<li><strong>Auswahl wiederherstellen</strong> (Num/, Menü Markieren) bringt Ihren vorherigen Satz von Markierungen zurück — nützlich, wenn ein Befehl sie gelöscht hat oder Sie die falsche Gruppe markiert haben.</li>
+</ul>
+<h2 id="tastaturkurzel">Tastaturkürzel</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Taste</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markierung umschalten, nach unten wandern</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Markierung umschalten (aktuelles Objekt)</td>
+<td>Space</td>
+</tr>
+<tr>
+<td>Alle auswählen / Auswahl aufheben</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Alle auswählen (alternativ)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Gruppe nach Maske auswählen</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Gruppe nach Maske abwählen</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Auswahl umkehren</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Alle mit gleicher Erweiterung auswählen</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Vorherige Auswahl wiederherstellen</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Markierungen und der Cursor sind unabhängig voneinander: Das Bewegen des Cursors mit den Pfeiltasten ändert nicht, was markiert ist.</li>
+<li>Der Eintrag des übergeordneten Ordners (<code>..</code>) kann niemals markiert werden.</li>
+<li>Gruppe auswählen, Gruppe abwählen und Auswahl umkehren treffen anhand des Dateinamens, sodass Sie Ordner je nach den Optionen des Dialogs einbeziehen oder auslassen können.</li>
+<li>Nachdem ein Kopier-, Verschiebe- oder Löschvorgang abgeschlossen ist, werden erfolgreich verarbeitete Objekte automatisch unmarkiert, während alle fehlgeschlagenen markiert bleiben, sodass Sie sie erneut versuchen können.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="copying-files.html">Dateien kopieren</a></li><li><a href="searching.html">Dateien finden</a></li></ul></section>
+</main>
+</body>
+</html>

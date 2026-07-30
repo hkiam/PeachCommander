@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MI-asszisztens</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>MI-asszisztens</h1>
+<p>Az MI-asszisztens egy opcionális, eltávolítható bővítmény, amely segít abban, hogy hétköznapi nyelven dolgozhasson a fájljaival. Össze tud foglalni vagy elmagyarázni egy dokumentumot, jobb fájlnevet javasolhat, szöveget fordíthat vagy korrektúrázhat, adatokat táblázattá alakíthat, sőt egy mappát is rendszerezhet – és fájlműveleteket is végrehajthat Ön helyett, miután először bemutatott egy tervet. Ha elérhető, az Apple Intelligence segítségével a készüléken fut, vagy egy felhőalapú modellre is irányíthatja. Mivel bővítményről van szó, teljesen letilthatja vagy eltávolíthatja a <strong>Beállítások ▸ Bővítmények…</strong> menüpontból.</p>
+<h2 id="az-asszisztens-megnyitasa">Az asszisztens megnyitása</h2>
+<p>Válassza a <strong>Parancsok ▸ MI-asszisztens</strong> menüpontot, hogy az asszisztens megjelenjen egy dokkolt panelen az ablak jobb oldalán. Írjon be egy kérést, és nyomja meg a Return billentyűt; az asszisztens fájlokat olvashat, információkat kereshet ki, és – az Ön megerősítésével – módosításokat is végezhet.</p>
+<p><img alt="Az MI-asszisztens csevegőablaka a fájlpanelek mellé dokkolva" src="images/ai-chat.png" />
+<em>(Ábra: Az MI-asszisztens a jobb oldalra dokkolva, egy kérésen dolgozik.)</em></p>
+<h2 id="jobb-gombos-muveletek-mi">Jobb gombos műveletek (MI ▸)</h2>
+<p>Az asszisztens leggyorsabb használati módja a jobb gombos menü <strong>MI ▸</strong> almenüje:</p>
+<ul>
+<li><strong>Egy fájlon</strong> – Összefoglalás, Magyarázat, Névjavaslat, Fordítás angolra, Korrektúra, Feladatok felismerése és Táblázat készítése.</li>
+<li><strong>A panel hátterén</strong> – Mappa rendszerezése és Valószínű duplikátumok keresése.</li>
+</ul>
+<p>Minden <strong>MI ▸</strong> művelet a <strong>saját, címmel ellátott csevegését</strong> nyitja meg (például <em>Összefoglalás – report.txt</em>), így a különböző feladatok elkülönülnek, ahelyett hogy egyetlen hosszú beszélgetésbe torlódnának. Amikor Ön saját maga ír a beviteli mezőbe, az a kérés az aktuális csevegést folytatja.</p>
+<h2 id="a-csevegesek-kezelese">A csevegések kezelése</h2>
+<ul>
+<li>A panel tetején lévő csevegésváltóval mozoghat a beszélgetések között.</li>
+<li>A <strong>Törlés ▾</strong> menü <strong>Ezt a csevegést törlöm</strong> és <strong>Az összes csevegést törlöm</strong> lehetőségeket kínál, így egyszerre kitakaríthat mindent, ha a lista túl hosszú lesz. Az üres csevegések automatikusan törlődnek, amikor bezárja a panelt.</li>
+</ul>
+<h2 id="a-modositasokat-eloszor-megerositi">A módosításokat először megerősíti</h2>
+<p>Bármi olyan előtt, ami fájlokat módosít – áthelyezés, átnevezés, írás, törlés –, az asszisztens <strong>megmutat egy tervet, és megvárja az Ön megerősítését</strong>, mielőtt cselekedne. Ezt a Beállításokban módosíthatja az asszisztens önállóságának növelésével, vagy csak olvasható szintre csökkentheti, hogy soha semmit ne módosítson.</p>
+<h2 id="beallitasok">Beállítások</h2>
+<p>Nyissa meg a <strong>Beállítások ▸ Beállítások ▸ MI</strong> oldalt, hogy egyetlen lapon konfigurálja az asszisztenst:</p>
+<ul>
+<li><strong>Előnyben részesített modell</strong> – Automatikus (felhő, ha be van állítva, egyébként a készüléken), Készüléken (Apple Intelligence) vagy Felhő.</li>
+<li><strong>Felhővégpont, modell és API-kulcs</strong> – a készüléken futó helyett egy OpenAI-kompatibilis modell használatához. A kulcs a macOS Kulcskarikán tárolódik, soha nem a konfigurációs fájlokban.</li>
+<li><strong>Az asszisztens önállósága</strong> – csak olvasható, módosítások megerősítése (az alapértelmezett) vagy önálló.</li>
+<li><strong>Egyéni rendszerprompt</strong> – opcionális utasítások, amelyek befolyásolják, ahogy az asszisztens válaszol.</li>
+<li><strong>MCP-kiszolgáló</strong> – egy opcionális, csak helyben elérhető kiszolgáló, amely lehetővé teszi, hogy egy külső ügynök vezérelje az alkalmazást; alapértelmezés szerint ki van kapcsolva, és tokennel védhető.</li>
+</ul>
+<p><img alt="Az MI oldal a Beállításokban az önállóság és az MCP-kiszolgáló beállításaival" src="images/settings-ai.png" />
+<em>(Ábra: Az asszisztens minden beállítása egyetlen MI oldalon található a Beállításokban.)</em></p>
+<h2 id="adatvedelem">Adatvédelem</h2>
+<ul>
+<li>Az Apple Intelligence használatakor az asszisztens <strong>az Ön Mac gépén</strong> fut; semmi sem hagyja el a készüléket.</li>
+<li>Felhőalapú modellt <strong>csak akkor</strong> használ a program, <strong>ha Ön beállít egyet</strong>, és annak API-kulcsa a Kulcskarikán marad.</li>
+<li>A fájlokat módosító műveleteket a program megerősítteti, mielőtt lefutnának, hacsak Ön szándékosan nem emeli meg az önállóság szintjét.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="settings.html">Beállítások</a></li><li><a href="privacy-and-security.html">Adatvédelem és biztonság</a></li></ul></section>
+</main>
+</body>
+</html>

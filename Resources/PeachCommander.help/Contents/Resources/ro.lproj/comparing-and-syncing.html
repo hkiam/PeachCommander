@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparare și sincronizare</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Comparare și sincronizare</h1>
+<p>Când păstrați două copii ale aceluiași folder — un folder de lucru și o copie de rezervă, un laptop și o partajare de rețea, un proiect și arhiva lui — Peach Commander vă ajută să vedeți exact ce s-a schimbat și să aduceți cele două părți înapoi la pas. Puteți sincroniza două directoare, compara fișiere individuale rând cu rând și inspecta fișiere octet cu octet când aveți nevoie de certitudine până la ultimul caracter.</p>
+<h2 id="sincronizati-doua-directoare">Sincronizați două directoare</h2>
+<ol>
+<li>Deschideți folderul pe care doriți să-l sincronizați în panoul stâng și folderul cu care să-l comparați în panoul drept.</li>
+<li>Alegeți <strong>Comenzi ▸ Sincronizează directoare…</strong>. Cele două căi de folder se completează din panourile dvs.</li>
+<li>Setați cât de temeinică ar trebui să fie comparația: include subfoldere, compară <strong>după conținut</strong> (nu doar după dată și dimensiune), sau ignoră data de modificare.</li>
+<li>Adăugați o mască de filtru (de exemplu <code>*.jpg;*.png</code>) dacă doriți să sincronizați doar anumite fișiere.</li>
+<li>Examinați grila de rezultate. Fiecare rând arată un fișier în stânga, o săgeată de direcție la mijloc și fișierul care se potrivește în dreapta. Săgețile vă spun ce se va întâmpla: <strong>→</strong> copiază de la stânga la dreapta, <strong>←</strong> copiază de la dreapta la stânga, iar <strong>=</strong> înseamnă că cele două sunt identice.</li>
+<li>Ajustați rândurile individuale dacă nu sunteți de acord cu o direcție sugerată, apoi faceți clic pe butonul de sincronizare pentru a efectua modificările.</li>
+</ol>
+<p><img alt="Fereastra de sincronizare a directoarelor cu două căi de folder și o grilă de rezultate a fișierelor cu săgeți stânga, egal și dreapta" src="images/sync-dialog.png" />
+<em>(Figura: fereastra Sincronizează directoare compară ambele părți și propune o direcție de copiere pentru fiecare fișier.)</em></p>
+<h2 id="comparati-doua-fisiere-dupa-continut">Comparați două fișiere după conținut</h2>
+<ol>
+<li>Selectați un fișier în fiecare panou (sau două fișiere în același panou).</li>
+<li>Alegeți <strong>Fișier ▸ Compară după conținut…</strong>.</li>
+<li>Cele două fișiere se deschid unul lângă altul cu diferențele evidențiate. Folosiți controalele următor/anterior pentru a sări între blocurile modificate.</li>
+<li>Dacă activați modul de editare, puteți ajusta oricare fișier direct și salva modificările.</li>
+</ol>
+<p><img alt="Fereastra de comparare care arată două fișiere text unul lângă altul cu rândurile diferite evidențiate" src="images/diff-window.png" />
+<em>(Figura: compararea a două fișiere text; rândurile modificate sunt evidențiate pe ambele părți.)</em></p>
+<h2 id="comparati-fisierele-octet-cu-octet">Comparați fișierele octet cu octet</h2>
+<p>Când două fișiere arată la fel, dar trebuie să dovediți că sunt cu adevărat identice (sau să găsiți acel octet care diferă), folosiți comparația binară. Arată ambele fișiere într-o vizualizare hexazecimală cu octeții care nu se potrivesc marcați, ceea ce este ideal pentru verificarea descărcărilor, verificarea datelor codificate sau confirmarea unei copii exacte.</p>
+<h2 id="comparati-listele-de-directoare">Comparați listele de directoare</h2>
+<p>Pentru a depista diferențele dintre două foldere deschise dintr-o privire, alegeți <strong>Selectare ▸ Compară directoare</strong> (Shift+F2). Peach Commander marchează fișierele care diferă sau lipsesc pe cealaltă parte, astfel încât puteți acționa asupra lor cu comenzile obișnuite de copiere, mutare și ștergere.</p>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Comandă rapidă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compară listele de directoare (marchează fișierele diferite)</td>
+<td>Shift+F2</td>
+</tr>
+<tr>
+<td>Compară după conținut</td>
+<td>Fișier ▸ Compară după conținut…</td>
+</tr>
+<tr>
+<td>Sincronizează directoare</td>
+<td>Comenzi ▸ Sincronizează directoare…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li><strong>După conținut vs. după dată/dimensiune.</strong> O comparație rapidă potrivește fișierele după dimensiune și dată de modificare, ceea ce este rapid, dar poate fi păcălită când marcajele de timp diferă pentru fișiere identice. Activați <strong>după conținut</strong> pentru un rezultat fiabil cu prețul citirii fiecărui fișier.</li>
+<li><strong>Subfoldere și filtre.</strong> Fereastra de sincronizare poate coborî în subfoldere și poate fi limitată cu o mască de filtru, astfel încât puteți sincroniza doar tipurile de fișiere care vă interesează.</li>
+<li><strong>Rămâneți în control.</strong> Sincronizarea nu rulează niciodată de la sine — examinați direcțiile propuse în grila de rezultate și puteți schimba oricare dintre ele înainte ca ceva să fie copiat.</li>
+<li><strong>Presetări.</strong> Configurările de sincronizare folosite frecvent pot fi salvate și reutilizate, astfel încât să nu reintroduceți aceleași opțiuni de fiecare dată.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Redenumirea multor fișiere</a></li></ul></section>
+</main>
+</body>
+</html>

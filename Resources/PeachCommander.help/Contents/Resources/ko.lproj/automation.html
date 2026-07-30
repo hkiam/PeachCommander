@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>자동화(AppleScript 및 단축어)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>자동화(AppleScript 및 단축어)</h1>
+<p>Peach Commander는 스크립트로 제어할 수 있으므로 AppleScript와 단축어 앱에서 구동할 수 있습니다. 몇 가지 핵심 동사를 통해 스크립트가 패널을 탐색하고, 마스크로 파일을 선택하고, 현재 선택 항목을 복사하거나 이동하고, id로 임의의 Peach Commander 명령을 실행할 수 있습니다. 메뉴가 사용하는 것과 정확히 같은 동작을 재사용하므로, 스크립트로 실행하는 단계도 수동 단계처럼 동작합니다. 다운로드 정리, 빌드 출력물 준비, 파일 단계를 더 큰 단축어에 연결하는 등 반복적인 잡무에 편리합니다.</p>
+<h2 id="_1">사전 보기</h2>
+<ol>
+<li><strong>스크립트 편집기</strong>(<code>/Applications/Utilities</code>에 있음)를 엽니다.</li>
+<li><strong>윈도우 ▸ 라이브러리</strong>를 선택한 다음 <strong>Peach Commander</strong>를 두 번 클릭합니다(목록에 없으면 <strong>+</strong>로 추가합니다).</li>
+<li>사전이 열리며 아래의 명령과 속성이 나열됩니다.</li>
+</ol>
+<p>스크립트가 Peach Commander를 처음 제어할 때 macOS는 이를 허용할지 묻습니다(<strong>시스템 설정 ▸ 개인정보 보호 및 보안 ▸ 자동화</strong>). 한 번 승인하면 이후 스크립트는 묻지 않고 실행됩니다.</p>
+<h2 id="_2">읽을 수 있는 것</h2>
+<table>
+<thead>
+<tr>
+<th>속성</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>활성 패널 폴더의 POSIX 경로.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>다른 패널 폴더의 POSIX 경로.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>활성 패널에서 선택된 항목(또는 커서 아래의 항목).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">동사</h2>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>하는 일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;path&gt;" [in left\|right]</code></td>
+<td>패널에서 폴더를 엽니다(기본값: 활성 패널).</td>
+</tr>
+<tr>
+<td><code>select "&lt;mask&gt;"</code></td>
+<td>와일드카드 마스크로 활성 패널의 항목을 선택합니다(예: <code>*.pdf</code>).</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;folder&gt;"</code></td>
+<td>활성 패널의 선택 항목을 폴더로 복사합니다.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;folder&gt;"</code></td>
+<td>활성 패널의 선택 항목을 폴더로 이동합니다.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>id로 임의의 명령을 실행합니다(예: <code>cm_PackFiles</code>).</td>
+</tr>
+</tbody>
+</table>
+<p>복사와 이동은 F5/F6과 같은 백그라운드 전송 대기열을 사용하므로, 진행 상황과 덮어쓰기 프롬프트가 수동 작업과 정확히 동일하게 나타납니다.</p>
+<h2 id="_4">예시</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="_5">단축어에서 사용하기</h2>
+<p><strong>단축어</strong> 앱에서 <strong>AppleScript 실행</strong> 동작을 추가하고 위와 같은 스크립트를 붙여 넣습니다. 그러면 Peach Commander 단계를 더 큰 단축어에 접어 넣을 수 있습니다. 예를 들어 폴더 변경이나 단축키로 트리거할 수 있습니다.</p>
+<h2 id="_6">참고</h2>
+<ul>
+<li><code>run command</code>에 전달하는 명령 id는 명령 브라우저에 표시되는 것과 같은 <code>cm_*</code> id입니다(<a href="start-menu.md">시작 메뉴 및 사용자 지정 명령</a> 참조).</li>
+<li>스크립팅은 항상 <strong>활성</strong> 패널에 작용합니다. 특정 쪽이 필요하면 먼저 <code>go to … in left</code> / <code>in right</code>를 사용하십시오.</li>
+<li>Peach Commander는 단일 창 앱이므로 스크립트는 해당 창의 두 패널을 대상으로 합니다.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">시작 메뉴 및 사용자 지정 명령</a></li><li><a href="settings.html">설정</a></li></ul></section>
+</main>
+</body>
+</html>

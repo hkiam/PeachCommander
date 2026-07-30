@@ -1,0 +1,38 @@
+# Central glossary and terminology rules (DOCUMENTATION.md §12).
+# `term` is the canonical user-facing word; `avoid` lists synonyms that must NOT
+# appear in user-facing prose (enforced by docs/scripts/check-docs.py, which skips
+# code spans and fenced blocks). `definition` seeds the glossary page.
+
+terms:
+  - term: panel
+    definition: One of the two side-by-side file views in the main window.
+    avoid: [pane]
+  - term: active panel
+    definition: The panel that currently has the cursor and receives keyboard input; most operations use it as the source.
+  - term: tab
+    definition: A saved folder location within a panel; each panel can hold several tabs.
+  - term: favorite
+    definition: A saved folder shortcut in the directory hotlist, reachable from the favorites menu or the star chip.
+    avoid: [bookmark]
+  - term: viewer
+    definition: The built-in file viewer (F3) that displays a file as text, code, hex, image or media without changing it.
+  - term: editor
+    definition: The built-in text/code editor (F4) for changing a file's contents.
+  - term: Quick View
+    definition: A live preview of the file under the cursor, shown inside the opposite panel (Ctrl+Q).
+  - term: Quick Look
+    definition: macOS's own preview panel (Cmd+Y), separate from the in-panel Quick View.
+  - term: plugin
+    definition: An add-on bundle that extends Peach Commander with new archive formats, file systems, viewers, columns or commands.
+  - term: command
+    definition: A named action (shown in the command browser) that can be run from a menu, the button bar, a shortcut or the command line.
+  - term: workspace
+    definition: A saved arrangement of panel folders, tabs and layout that can be restored by name.
+  - term: button bar
+    definition: The customizable toolbar of command buttons; supports nested sub-bars.
+  - term: drive bar
+    definition: The strip above each panel listing mounted volumes and their free space.
+  - term: path bar
+    definition: The editable breadcrumb above each panel showing the current folder as clickable segments.
+  - term: function-key bar
+    definition: The row of F3-F8 buttons along the bottom of the window (View, Edit, Copy, Move, New Folder, Delete).

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visualizzazione dei file</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Visualizzazione dei file</h1>
+<p>Peach Commander ha un visualizzatore integrato che ti permette di guardare dentro un file senza aprire un'altra app o modificare il file. Premi F3 sull'elemento sotto il cursore e il visualizzatore si apre all'istante, anche per file molto grandi. Sceglie automaticamente il modo migliore di mostrare il contenuto: testo leggibile, codice con colorazione della sintassi, un dump esadecimale grezzo o un'immagine a dimensione piena. Puoi anche visualizzare un'anteprima di un file proprio dentro la finestra usando l'Anteprima rapida, o affidarlo a Quick Look di macOS.</p>
+<h2 id="visualizza-un-file">Visualizza un file</h2>
+<ol>
+<li>Sposta il cursore su un file nel pannello attivo.</li>
+<li>Premi F3 (o scegli Visualizza nel menu File). Il visualizzatore si apre in una propria finestra.</li>
+<li>Usa la barra degli strumenti per cambiare come viene mostrato il contenuto: Testo, Codice, Hex, Immagine o Renderizzato. Lascialo sull'impostazione automatica per lasciar decidere a Peach Commander.</li>
+<li>Scorri con i tasti freccia, Pag su/Pag giù e la barra di scorrimento. Per testi lunghi, attiva il pulsante della minimappa per vedere e spostarti nell'intero file con un colpo d'occhio.</li>
+<li>Premi N per saltare al file selezionato successivo, o chiudi la finestra con Esc.</li>
+</ol>
+<p><img alt="Il visualizzatore integrato che mostra un file di testo con la minimappa a destra" src="images/lister-text.png" />
+<em>(Figura: visualizzazione di un file di testo, con il selettore di rappresentazione e la minimappa nella barra degli strumenti.)</em></p>
+<h2 id="trova-testo-e-cambia-la-codifica">Trova testo e cambia la codifica</h2>
+<ul>
+<li>Premi Ctrl+F per cercare dentro il file. Premi F3 per saltare alla corrispondenza successiva e Maiusc+F3 per quella precedente.</li>
+<li>Se il testo appare confuso, fai clic su Codifica nella barra degli strumenti (o premi E) per scorrere le codifiche di testo finché non si legge correttamente; l'impostazione automatica di solito è corretta.</li>
+<li>Premi W per commutare l'a capo automatico per le righe lunghe.</li>
+</ul>
+<h2 id="anteprima-rapida-e-quick-look">Anteprima rapida e Quick Look</h2>
+<p>L'Anteprima rapida mostra un'anteprima in tempo reale nel pannello che <em>non</em> stai usando, così puoi continuare a sfogliare da un lato mentre visualizzi l'anteprima dall'altro.</p>
+<ol>
+<li>Premi Ctrl+Q. Il pannello inattivo diventa un'area di anteprima.</li>
+<li>Sposta il cursore su diversi file nel pannello attivo per visualizzare l'anteprima di ciascuno.</li>
+<li>Premi di nuovo Ctrl+Q, o Esc, per riportare il pannello a un normale elenco di file.</li>
+</ol>
+<p>Per un'anteprima veloce a schermo intero gestita da macOS stesso, premi Cmd+Y (Quick Look). Premi di nuovo Cmd+Y o Spazio per chiuderla.</p>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Scorciatoia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Visualizza file sotto il cursore</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Visualizza solo il file sotto il cursore (ignora i file contrassegnati)</td>
+<td>Maiusc+F3</td>
+</tr>
+<tr>
+<td>Apri in un visualizzatore esterno</td>
+<td>Opzione+F3</td>
+</tr>
+<tr>
+<td>Trova nel visualizzatore</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Corrispondenza successiva / precedente</td>
+<td>F3 / Maiusc+F3</td>
+</tr>
+<tr>
+<td>Anteprima rapida nell'altro pannello</td>
+<td>Ctrl+Q</td>
+</tr>
+<tr>
+<td>Quick Look (anteprima macOS)</td>
+<td>Cmd+Y</td>
+</tr>
+<tr>
+<td>Chiudi il visualizzatore o l'Anteprima rapida</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Il visualizzatore è di sola lettura. Per modificare un file, usa invece l'editor (vedi Modifica dei file).</li>
+<li>I file molto grandi si aprono senza ritardo: il testo apre una vista rapida e scorrevole, e la vista esadecimale viene trasmessa direttamente dal disco a qualsiasi dimensione.</li>
+<li>Premi F3 su una cartella per vedere un riepilogo del suo contenuto e la dimensione totale invece dei byte del file.</li>
+<li>La modalità Renderizzato mostra contenuti formattati come le pagine web; la modalità esadecimale mostra i byte grezzi affiancati ai loro caratteri, il che è comodo per esaminare file binari.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Modificare i file</a></li><li><a href="searching.html">Trovare i file</a></li></ul></section>
+</main>
+</body>
+</html>

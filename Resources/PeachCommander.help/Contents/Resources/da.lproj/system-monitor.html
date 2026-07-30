@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Systemovervågning</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Systemovervågning</h1>
+<p>System Monitor-pluginet placerer en live aflæsning af din Macs aktivitet direkte i vinduets titellinje: små chips for CPU, hukommelse, disk, netværk og — hvor hardwaren stiller dem til rådighed — GPU, batteri og sensorer. Hver chip opdateres én gang i sekundet; klik på en for et pop op-vindue med en historikgraf og en detaljeret opdeling. Det er et plugin, så du kan aktivere, konfigurere eller fjerne det i <strong>Konfiguration ▸ Plugins…</strong>.</p>
+<h2 id="chippene-i-titellinjen">Chippene i titellinjen</h2>
+<p>Når pluginet er slået til, sidder en række kompakte chips i titellinjen. Hver chip er en farvet prik, en kort etiket og en live værdi (nogle med en indlejret sparkline):</p>
+<table>
+<thead>
+<tr>
+<th>Chip</th>
+<th>Viser</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>Processorbelastning, med detaljer pr. kerne</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>Brugt / samlet hukommelse (plus wired, komprimeret, swap)</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>Plads og læse/skrive-gennemløb på startdiskenheden</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>Download-/upload-hastigheder og -totaler</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>GPU-udnyttelse · batteriladning og -tilstand · blæserhastigheder og temperaturer</td>
+</tr>
+</tbody>
+</table>
+<p>Klik på en chip for at åbne et pop op-vindue med den store aktuelle værdi, en <strong>HISTORIK</strong>-sparkline, en <strong>DETALJER</strong>-liste med nøgle/værdi og — for CPU'en — en <strong>KERNEBELASTNING</strong>-liste med bjælker pr. kerne.</p>
+<h2 id="konfigurer-det">Konfigurér det</h2>
+<p>Vælg <strong>Kommandoer ▸ System Monitor…</strong> (eller åbn <strong>Konfiguration ▸ Indstillinger ▸ System Monitor</strong>) for at konfigurere aflæsningen:</p>
+<ul>
+<li><strong>Vis systemovervågning i titellinjen</strong> — hovedafbryderen til/fra for chippene.</li>
+<li><strong>Profil</strong> — forudindstillingerne <em>Minimal</em>, <em>Medium</em> eller <em>Maksimal</em>, som vælger et fornuftigt sæt moduler.</li>
+<li><strong>Modultabellen</strong> — slå hvert modul (CPU, GPU, RAM, HDD, Net, Batt, Sens) til eller fra, vælg dets farve, og træk rækker for at fastlægge den rækkefølge, de vises i i titellinjen. Moduler, din hardware ikke kan rapportere, vises som <em>(n/a)</em>.</li>
+</ul>
+<p><img alt="System Monitor-indstillingerne med modultabel, profiler og farver pr. modul" src="images/system-monitor.png" />
+<em>(Figur: vælg hvilke moduler der vises, deres farver og deres rækkefølge.)</em></p>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Alt måles, aldrig forfalskes: moduler, hvis data hardwaren ikke stiller til rådighed (ofte GPU eller sensorer på nogle Mac-computere), forbliver utilgængelige i stedet for at vise opdigtede tal. Batteri er utilgængeligt på stationære computere.</li>
+<li>Måling kører på en baggrundstimer kun mens aflæsningen er synlig, og bevarer omkring 30 minutters historik til graferne.</li>
+<li>Dine modulvalg, farver og rækkefølge gemmes med appens konfiguration.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="settings.html">Indstillinger</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kopiowanie plików</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Kopiowanie plików</h1>
+<p>Peach Commander jest zbudowany wokół dwóch paneli obok siebie: jeden zawiera pliki, nad którymi pracujesz, drugi jest miejscem docelowym. Kopiowanie bierze to, co jest zaznaczone w aktywnym panelu, i umieszcza duplikat w folderze pokazanym w drugim panelu, pozostawiając oryginały na miejscu. To najszybszy sposób na powielanie plików i folderów między dwiema lokalizacjami bez przeciągania.</p>
+<h2 id="kopiowanie-zaznaczenia-do-drugiego-panelu">Kopiowanie zaznaczenia do drugiego panelu</h2>
+<ol>
+<li>W jednym panelu otwórz folder zawierający elementy, które chcesz skopiować.</li>
+<li>W drugim panelu otwórz folder, do którego mają trafić kopie.</li>
+<li>Zaznacz pliki i foldery do skopiowania. Jeśli nic nie jest zaznaczone, użyty zostaje element pod kursorem.</li>
+<li>Naciśnij F5. Otworzy się okno dialogowe kopiowania z już wypełnioną ścieżką docelową.</li>
+</ol>
+<p><img alt="Okno dialogowe kopiowania ze ścieżką docelową i opcjami" src="images/copy-dialog.png" />
+<em>(Rysunek: Okno dialogowe kopiowania. Ścieżka docelowa wskazuje drugi panel; użyj opcji, aby dostroić kopiowanie.)</em></p>
+<ol start="5">
+<li>W razie potrzeby dostosuj miejsce docelowe, a następnie potwierdź, aby rozpocząć kopiowanie.</li>
+</ol>
+<h2 id="opcje-kopiowania">Opcje kopiowania</h2>
+<p>Przed potwierdzeniem możesz zmienić sposób działania kopiowania:</p>
+<ul>
+<li><strong>Tylko nowsze pliki</strong> — pomija każdy element, którego kopia już istnieje i jest w tym samym wieku lub nowsza, więc aktualizowane są tylko zmienione pliki.</li>
+<li><strong>Zachowaj metadane</strong> — zachowuje na kopiach daty, uprawnienia i inne atrybuty plików. Ta opcja jest domyślnie włączona.</li>
+<li><strong>Ograniczenie prędkości</strong> — ogranicza szybkość transferu, aby duże kopiowanie nie wysyciło dysku ani połączenia sieciowego.</li>
+<li><strong>Maska zmiany nazwy</strong> — wpisz wzorzec wieloznaczny w polu docelowym (na przykład <code>*.bak</code>), aby zmieniać nazwy elementów podczas kopiowania.</li>
+</ul>
+<p>Możesz też wysłać zadanie do kolejki w tle zamiast je obserwować — zobacz Transfery w tle.</p>
+<h2 id="postep">Postęp</h2>
+<p>Okno postępu pokazuje bieżący plik oraz całe zadanie z osobnymi paskami, a także prędkość transferu. Możesz wstrzymywać i wznawiać w dowolnej chwili lub wysłać trwające kopiowanie do menedżera transferów w tle, aby pracować dalej, gdy się kończy.</p>
+<p><img alt="Okno dialogowe postępu transferu z paskiem postępu, licznikami plików i bajtów oraz przyciskami Wstrzymaj i Anuluj" src="images/progress-dialog.png" />
+<em>(Rysunek: Okno dialogowe postępu wyświetlane podczas kopiowania lub przenoszenia.)</em></p>
+<h2 id="obsuga-plikow-ktore-juz-istnieja">Obsługa plików, które już istnieją</h2>
+<p>Jeśli kopiowanie miałoby zastąpić istniejący plik, Peach Commander zatrzymuje się i pyta, co zrobić. Podgląd obu plików pomaga podjąć decyzję.</p>
+<p><img alt="Okno dialogowe konfliktu nadpisania porównujące dwa pliki" src="images/overwrite-dialog.png" />
+<em>(Rysunek: Okno dialogowe nadpisania porównuje istniejący plik z tym, który jest kopiowany.)</em></p>
+<p>Twoje możliwości obejmują:</p>
+<ul>
+<li><strong>Nadpisz</strong> istniejący plik lub <strong>Nadpisz wszystkie</strong>, aby zastosować to do każdego pozostałego konfliktu.</li>
+<li><strong>Pomiń</strong> ten plik lub <strong>Pomiń wszystkie</strong> pozostałe konflikty.</li>
+<li><strong>Zmień nazwę</strong> przychodzącej kopii automatycznie, aby zachować oba pliki.</li>
+<li><strong>Dołącz</strong> przychodzące dane na końcu istniejącego pliku.</li>
+<li>Nadpisz tylko wtedy, gdy źródło jest <strong>nowsze</strong> lub <strong>większe</strong> niż istniejący plik.</li>
+</ul>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Klawisz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kopiuj zaznaczenie do drugiego panelu</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Kopiuj w tym samym folderze (utwórz duplikat ze zmienioną nazwą)</td>
+<td>Shift+F5</td>
+</tr>
+<tr>
+<td>Otwórz menedżera transferów w tle</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Kopiowanie między dwiema lokalizacjami na tym samym dysku używa szybkiego klonowania, gdy dysk to obsługuje, więc duże pliki kopiują się niemal natychmiast i zajmują niewiele dodatkowego miejsca.</li>
+<li>Foldery są kopiowane wraz z całą swoją zawartością.</li>
+<li>Aby przenosić pliki zamiast je kopiować, użyj F6. Aby obserwować zadania w kolejce lub nimi zarządzać, otwórz menedżera transferów w tle za pomocą Cmd+Shift+B.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Przenoszenie i zmiana nazw</a></li><li><a href="background-transfers.html">Transfery w tle</a></li></ul></section>
+</main>
+</body>
+</html>

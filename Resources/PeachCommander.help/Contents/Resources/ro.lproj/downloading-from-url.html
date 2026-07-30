@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Descărcare de la un URL</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Descărcare de la un URL</h1>
+<p>Peach Commander poate prelua un fișier direct de la o adresă web HTTP sau HTTPS în panoul activ, fără a deschide un browser. Lipiți un link, confirmați numele sub care va fi salvat, iar descărcarea rulează de la sine — cu reluare dacă conexiunea cade, descărcări în lot pentru mai multe linkuri deodată și verificare opțională a sumei de control, astfel încât să știți că fișierul a sosit intact.</p>
+<h2 id="descarcati-un-fisier">Descărcați un fișier</h2>
+<ol>
+<li>Deschideți folderul panoului unde doriți să ajungă fișierul.</li>
+<li>Alegeți <strong>Rețea &gt; Descarcă de la URL</strong> sau apăsați Cmd+Shift+D.</li>
+<li>Lipiți adresa web în caseta <strong>URL-uri</strong>. Dacă ați copiat mai întâi un link, este completat pentru dvs.</li>
+<li>Verificați numele <strong>Salvează ca</strong> — este sugerat din link și îl puteți edita liber.</li>
+<li>Faceți clic pe <strong>Descarcă</strong>.</li>
+</ol>
+<p><img alt="Dialogul Descarcă de la URL cu un link, un nume de fișier editabil și opțiuni" src="images/download-url.png" />
+<em>(Figura: dialogul de descărcare — lipiți un link, editați numele și setați verificare, credențiale, anteturi sau proxy opționale.)</em></p>
+<p>Implicit descărcarea rulează <strong>în fundal</strong>, astfel încât puteți continua să lucrați în panouri în timpul transferului. Dezactivați <strong>Descarcă în fundal</strong> pentru a o aștepta, sau activați <strong>La coadă pentru mai târziu</strong> pentru a o configura fără a o porni încă.</p>
+<h2 id="descarcati-mai-multe-fisiere-deodata">Descărcați mai multe fișiere deodată</h2>
+<p>Lipiți o adresă web pe linie în caseta <strong>URL-uri</strong>. Când sunt prezente mai mult de un link, numele fiecărui fișier este derivat automat din linkul său, iar câmpurile per-fișier <strong>Salvează ca</strong> și <strong>Verifică</strong> sunt dezactivate.</p>
+<h2 id="reluarea-unei-descarcari-intrerupte">Reluarea unei descărcări întrerupte</h2>
+<p>Dacă un transfer este întrerupt, Peach Commander păstrează ce a primit deja într-un fișier temporar <code>.part</code>. Repornirea aceleiași descărcări reia de unde s-a oprit ori de câte ori serverul o acceptă, în loc să înceapă de la capăt. Fișierul <code>.part</code> este redenumit la numele final doar odată ce descărcarea se termină cu succes.</p>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Comandă rapidă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Descarcă de la URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sfaturi">Sfaturi</h2>
+<ul>
+<li><strong>Verificați fișierul.</strong> Pentru o singură descărcare, lipiți o sumă de control <strong>SHA-256</strong> așteptată în câmpul <strong>Verifică</strong>. După transfer, suma de control a fișierului este comparată cu ea, astfel încât puteți avea încredere că fișierul se potrivește cu ce a listat editorul.</li>
+<li><strong>Autentificare necesară?</strong> Introduceți un nume de utilizator și o parolă în câmpurile <strong>Autent.</strong> pentru site-urile care folosesc autentificare de bază. Pentru acces bazat pe token, adăugați o linie <code>Authorization: Bearer …</code> în caseta <strong>Anteturi</strong>.</li>
+<li><strong>Anteturi personalizate.</strong> Adăugați un antet pe linie în caseta <strong>Anteturi</strong>, de exemplu <code>Referer: …</code> sau <code>Cookie: …</code>, pentru linkuri care funcționează doar cu anumite anteturi de cerere.</li>
+<li><strong>Proxy.</strong> Rutați descărcarea printr-un proxy HTTP sau SOCKS5 completând gazda, portul și tipul <strong>Proxy</strong>.</li>
+<li><strong>Certificate neîncrezute.</strong> Activați <strong>Permite certificat neîncrezut</strong> doar pentru un site de încredere care folosește un certificat autosemnat; aceasta dezactivează verificarea de securitate HTTPS normală pentru acea descărcare.</li>
+<li><strong>Notă:</strong> Cmd+Shift+D este folosit și în altă parte pentru a merge la folderul Birou; dacă comanda rapidă nu deschide acest dialog, folosiți în schimb <strong>Rețea &gt; Descarcă de la URL</strong> din meniu.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Conectarea la FTP și SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

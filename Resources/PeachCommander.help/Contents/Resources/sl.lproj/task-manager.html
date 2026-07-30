@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>Vtičnik Task Manager spremeni izvajajoče se procese na vašem Macu v mapo, po kateri lahko brskate. Pojavi se kot disk <strong>TaskManager</strong> v vrstici diskov; odprite ga in vsak proces je vrstica, ki jo lahko razvrstite, preučite kot datoteko ali končate — z istimi tipkami, ki jih že uporabljate za datoteke. Ker gre za vtičnik, ga lahko izklopite ali odstranite v <strong>Konfiguracija ▸ Vtičniki…</strong>.</p>
+<h2 id="odpiranje">Odpiranje</h2>
+<ol>
+<li>Kliknite vnos <strong>📊 TaskManager</strong> v vrstici diskov (nahaja se takoj za vašim zagonskim diskom).</li>
+<li>Podokno se napolni z eno vrstico na izvajajoči se proces. Ime vsake vrstice je ime procesa, ki mu sledi njegov PID, na primer <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="Task Manager, ki našteva izvajajoče se procese s stolpci PID, CPU, pomnilnik in ukaz" src="images/task-manager.png" />
+<em>(Slika: izvajajoči se procesi, prikazani kot seznam datotek, ki ga lahko razvrstite in nad njim izvajate dejanja.)</em></p>
+<h2 id="kaj-pomeni-vsak-stolpec">Kaj pomeni vsak stolpec</h2>
+<p>Poleg običajnih stolpcev Velikost (pomnilnik) in Datum (čas zagona) Task Manager doda procesne stolpce:</p>
+<table>
+<thead>
+<tr>
+<th>Stolpec</th>
+<th>Pomen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>ID procesa</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Nedavna uporaba procesorja (za prikaz potrebuje drugo osvežitev)</td>
+</tr>
+<tr>
+<td><strong>Niti</strong></td>
+<td>Število niti</td>
+</tr>
+<tr>
+<td><strong>Stanje</strong></td>
+<td>R teče · S spi · T ustavljen · Z zombi · I nedejaven</td>
+</tr>
+<tr>
+<td><strong>Uporabnik</strong></td>
+<td>Lastnik</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>ID nadrejenega procesa</td>
+</tr>
+<tr>
+<td><strong>Ukaz</strong></td>
+<td>Celotna ukazna vrstica</td>
+</tr>
+</tbody>
+</table>
+<p>Razvrstite po katerem koli stolpcu (na primer CPU % ali Velikost/pomnilnik), tako kot bi v običajni mapi.</p>
+<h2 id="preucitev-ali-koncanje-procesa">Preučitev ali končanje procesa</h2>
+<ul>
+<li><strong>Poglej (F3)</strong> prikaže poročilo <em>Informacije o procesu</em>: ime, PID, nadrejeni proces, uporabnik, stanje, niti, pomnilnik, CPU, čas zagona, pot do izvedljive datoteke in celotno ukazno vrstico.</li>
+<li><strong>Izbriši (F8)</strong> konča proces. Prvo brisanje pošlje nežen <strong>izhod</strong> (SIGTERM); ponovno brisanje procesa, ki še vedno teče, stopnjuje na <strong>prisilni izhod</strong> (SIGKILL). Vtičnik nikoli ne cilja na PID 1.</li>
+</ul>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Osnovne podrobnosti (PID, nadrejeni proces, uporabnik, stanje) je mogoče prebrati za vsak proces, tako kot <code>ps</code>. Pomnilnik, niti in CPU je mogoče prebrati le za <strong>vaše lastne</strong> procese; drugi procesi prikazujejo te stolpce prazne (potrebujejo povišane pravice, ki bodo dodane kasneje).</li>
+<li>CPU % je sprememba med dvema vzorcema, zato je prazen, dokler se podokno drugič ne osveži (podokno se osveži približno vsaki dve sekundi).</li>
+<li>Seznam je samo za branje, razen za končanje procesa — vanj ne morete kopirati datotek.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="viewing-files.html">Ogled datotek</a></li><li><a href="deleting-files.html">Brisanje datotek</a></li></ul></section>
+</main>
+</body>
+</html>

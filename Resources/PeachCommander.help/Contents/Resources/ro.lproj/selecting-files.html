@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Selectarea fișierelor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Selectarea fișierelor</h1>
+<p>Înainte de a copia, muta, șterge sau împacheta ceva, îi spuneți mai întâi lui Peach Commander asupra căror elemente să acționeze. Elementul pe care se află cursorul este întotdeauna elementul curent, dar puteți și <em>marca</em> unul sau mai multe fișiere și foldere, astfel încât o comandă să ruleze asupra tuturor deodată. Elementele marcate se evidențiază printr-o culoare distinctă a numelui în panou.</p>
+<h2 id="marcarea-fisierelor-si-folderelor">Marcarea fișierelor și folderelor</h2>
+<ol>
+<li>Faceți clic pe un rând pentru a muta cursorul pe el. Un singur clic selectează doar acel element.</li>
+<li>Pentru a marca mai multe elemente deodată, țineți apăsat Cmd și faceți clic pe fiecare sau țineți apăsat Shift și faceți clic pentru a marca un interval.</li>
+<li>Pentru a marca elementul de sub cursor și a coborî într-o singură mișcare, apăsați Insert. Apăsați-l în mod repetat pentru a marca rapid o serie de elemente consecutive. Bara de spațiu comută de asemenea marcajul elementului curent (și afișează dimensiunea unui folder).</li>
+<li>Pentru a marca totul din panou, alegeți Marcare &gt; Selectează tot (Ctrl+Num+) sau apăsați Cmd+A. Alegeți Marcare &gt; Deselectează tot (Ctrl+Num-) pentru a șterge toate marcajele.</li>
+</ol>
+<h2 id="selectarea-sau-deselectarea-dupa-un-tipar">Selectarea sau deselectarea după un tipar</h2>
+<ol>
+<li>Alegeți Marcare &gt; Selectează grup… (Num+) pentru a adăuga elemente ale căror nume se potrivesc cu un tipar sau Marcare &gt; Deselectează grup… (Num-) pentru a elimina elementele care se potrivesc din marcajele curente.</li>
+<li>Tastați o mască cu metacaractere. Folosiți <code>*</code> pentru orice caractere și <code>?</code> pentru un singur caracter. Separați mai multe măști cu punct și virgulă și listați excepțiile după o bară verticală — de exemplu <code>*.jpg;*.png</code> marchează toate imaginile, iar <code>*.*|*.bak</code> marchează totul cu excepția fișierelor de rezervă.</li>
+</ol>
+<p><img alt="Dialogul Selectează grup cu o mască cu metacaractere tastată în câmpul de tipar" src="images/select-by-mask.png" />
+<em>(Figura: Marcarea fișierelor după o mască cu metacaractere.)</em></p>
+<h2 id="inversare-aceeasi-extensie-si-restaurare">Inversare, aceeași extensie și restaurare</h2>
+<ul>
+<li><strong>Inversează selecția</strong> (Num*, meniul Marcare) inversează fiecare marcaj: elementele marcate devin nemarcate și invers — util pentru „totul cu excepția acestora”.</li>
+<li><strong>Selectează toate cu aceeași extensie</strong> (Alt+Num+, meniul Marcare) marchează fiecare fișier care are aceeași extensie ca elementul de sub cursor, astfel încât o singură apăsare prinde, de exemplu, toate fișierele <code>.pdf</code>.</li>
+<li><strong>Restaurează selecția</strong> (Num/, meniul Marcare) readuce setul anterior de marcaje — util dacă o comandă le-a șters sau ați marcat grupul greșit.</li>
+</ul>
+<h2 id="scurtaturi">Scurtături</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Tastă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Comutați marcajul, coborâți</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Comutați marcajul (elementul curent)</td>
+<td>Space</td>
+</tr>
+<tr>
+<td>Selectează tot / Deselectează tot</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Selectează tot (alternativă)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Selectează grup după mască</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Deselectează grup după mască</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Inversează selecția</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Selectează toate cu aceeași extensie</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Restaurează selecția anterioară</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Marcajele și cursorul sunt independente: mutarea cursorului cu tastele săgeți nu modifică ceea ce este marcat.</li>
+<li>Intrarea folderului părinte (<code>..</code>) nu poate fi marcată niciodată.</li>
+<li>Selectează grup, Deselectează grup și Inversează selecția se potrivesc pe numele fișierului, astfel încât puteți include sau lăsa deoparte foldere în funcție de opțiunile dialogului.</li>
+<li>După ce o copiere, mutare sau ștergere se finalizează, elementele care au fost gestionate cu succes sunt demarcate automat, în timp ce cele care au eșuat rămân marcate ca să le puteți reîncerca.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copierea fișierelor</a></li><li><a href="searching.html">Găsirea fișierelor</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zasebnost in varnost</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Zasebnost in varnost</h1>
+<p>Peach Commander je zgrajen tako, da vam ne stopa na pot in hrani vaše podatke na vašem Macu. Gesla so izročena ključavnici macOS, informacije o sesutju nikoli ne zapustijo vašega računalnika brez vašega privoljenja, aplikacija pa ne zbira nobene analitike uporabe. Ta tema pojasnjuje, kje živijo vaše občutljive informacije in kako podeliti edino sistemsko dovoljenje, ki ga upravitelj datotek potrebuje za svoje delo.</p>
+<h2 id="kje-so-shranjena-gesla">Kje so shranjena gesla</h2>
+<p>Vsako geslo ali geslo ključa, ki ga shranite — za povezavo FTP ali SFTP, ali za odpiranje z geslom zaščitenega arhiva — se zapiše v <strong>ključavnico</strong> macOS, isto varno shrambo, ki jo sistem uporablja za vaše prijave v Wi-Fi in spletna mesta. Gesla se nikoli ne zapišejo v lastne nastavitve ali datoteke povezav Peach Commander v navadnem besedilu.</p>
+<ol>
+<li>Ko shranite geslo povezave ali arhiva, izberite možnost, da si ga zapomni.</li>
+<li>Geslo je shranjeno v vaši prijavni ključavnici, zaščiteno z vašim računom.</li>
+<li>Za kasnejši pregled ali odstranitev shranjenega gesla odprite aplikacijo <strong>Dostop do ključavnice</strong> (v Programi ▸ Pripomočki) in poiščite ime povezave.</li>
+</ol>
+<h2 id="podelitev-popolnega-dostopa-do-diska">Podelitev Popolnega dostopa do diska</h2>
+<p>macOS hrani nekatere lokacije zasebne — podatke Mail, Sporočila in drugih aplikacij znotraj vaše mape Knjižnica — dokler izrecno ne dovolite dostopa. Ker je upravitelj datotek namenjen dosegu vsake datoteke, Peach Commander zaprosi za <strong>Popolni dostop do diska</strong>. Aplikacija deluje naprej z zmanjšanim dostopom, dokler ga ne podelite; le teh zaščitenih map ne boste videli.</p>
+<ol>
+<li>Izberite <strong>Ukazi ▸ Popolni dostop do diska…</strong>, ali kliknite <strong>Odpri Sistemske nastavitve</strong>, ko vas aplikacija ob zagonu ponudi voditi.</li>
+<li>V <strong>Sistemske nastavitve ▸ Zasebnost in varnost ▸ Popolni dostop do diska</strong> vklopite stikalo ob Peach Commander.</li>
+<li>Ponovno zaženite aplikacijo, če ste pozvani.</li>
+</ol>
+<h2 id="porocila-o-sesutju-ostanejo-lokalna">Poročila o sesutju ostanejo lokalna</h2>
+<p>Če se aplikacija nepričakovano zapre, macOS zapiše poročilo o sesutju v vašo lastno mapo diagnostike. Ob naslednjem zagonu ga Peach Commander opazi in ponudi pomoč pri vložitvi poročila o napaki — a le z vašim privoljenjem.</p>
+<ul>
+<li>Lahko <strong>Pokaži v Finderju</strong>, da vidite poročilo, ali <strong>Kopiraj poročilo v odložišče</strong>, da ga sami prilepite v poročilo o napaki.</li>
+<li>Nič se nikoli ne prenese samodejno, in ni vpletena nobena storitev tretje osebe za poročanje o sesutjih.</li>
+</ul>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li><strong>Brez telemetrije.</strong> Peach Commander ne sledi vaši dejavnosti in ne pošilja analitike uporabe nikamor.</li>
+<li><strong>Zmanjšan dostop je varen.</strong> Če preskočite Popolni dostop do diska, aplikacija še vedno brska in upravlja datoteke, ki jih običajno vidite; skrite so le lokacije, zaščitene s sistemom.</li>
+<li><strong>Vi nadzirate shranjena gesla.</strong> Ker poverilnice živijo v ključavnici, jih upravljate in prekličete s standardnimi orodji macOS namesto znotraj aplikacije.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Povezovanje s FTP in SFTP</a></li><li><a href="troubleshooting.html">Odpravljanje težav</a></li></ul></section>
+</main>
+</body>
+</html>

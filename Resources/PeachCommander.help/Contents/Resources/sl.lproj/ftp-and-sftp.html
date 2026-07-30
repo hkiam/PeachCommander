@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Povezovanje s FTP in SFTP</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Povezovanje s FTP in SFTP</h1>
+<p>Peach Commander lahko brska po oddaljenih strežnikih, kot da bi bili običajne mape. Ko ste povezani, eno podokno prikazuje oddaljene datoteke, vi pa jih kopirate, premikate, preimenujete in brišete z istimi tipkami kot lokalno. Govori navadni FTP, varni FTPS in SFTP/SCP prek SSH, tako da lahko dosežete karkoli, od klasičnega spletnega gostovanja do utrjenega strežnika SSH. Shranjene povezave živijo v upravitelju povezav, gesla pa so varno shranjena v vaši ključavnici macOS, ne v sami povezavi.</p>
+<h2 id="povezovanje-s-streznikom">Povezovanje s strežnikom</h2>
+<ol>
+<li>Odprite meni <strong>Omrežje</strong> in izberite <strong>Povezava FTP…</strong> (Ctrl+F), da odprete upravitelja povezav.</li>
+<li>Izberite shranjeno povezavo s seznama in kliknite <strong>Poveži</strong>, ali kliknite <strong>Nova</strong>, da jo ustvarite. Uporabite mape na seznamu za združevanje povezav.</li>
+<li>Za hitro enkratno povezavo izberite <strong>Omrežje &gt; Nova povezava FTP…</strong> (Ctrl+N) in vnesite naslov neposredno.</li>
+<li>Vnesite geslo, ko ste pozvani; obkljukajte možnost, da ga shranite, in gre v vašo ključavnico za naslednjič.</li>
+<li>Ko končate, izberite <strong>Omrežje &gt; Prekini FTP</strong> (Ctrl+Shift+F).</li>
+</ol>
+<p><img alt="Upravitelj povezav FTP, ki prikazuje seznam shranjenih sej z gumbi Nova, Uredi in Izbriši" src="images/ftp-connection-manager.png" />
+<em>(Slika: upravitelj povezav hrani vaše shranjene strežnike; uporabite Nova, Uredi in Izbriši za njihovo upravljanje.)</em></p>
+<p>Pri nastavljanju povezave lahko izberete protokol (FTP, FTPS z izrecnim AUTH TLS, implicitni FTPS na vratih 990 ali SFTP/SCP), pasivni ali aktivni način, oddaljeno in lokalno začetno mapo, kodiranje besedila in izbirni interval keep-alive, da preprečite nedejavnim strežnikom, da vas prekinejo. Za SFTP se lahko overite s svojim agentom SSH, geslom ali datoteko zasebnega ključa, za prenose pa lahko izberete SCP. Neznani ključi gostiteljev SSH se ob prvi uporabi štejejo za zaupanja vredne; če se ključ znanega strežnika kdaj spremeni, je povezava zavrnjena, da vas zaščiti pred posegi.</p>
+<h2 id="konzola-ftp">Konzola FTP</h2>
+<p>Za ogled, kaj natanko pravi strežnik, odprite konzolo FTP iz menija <strong>Omrežje</strong>. Prikazuje dnevnik nadzornega kanala v živo (vaše geslo je zakrito) in vam omogoča vnašanje surovih ukazov FTP strežniku.</p>
+<p><img alt="Konzola FTP, ki prikazuje dnevnik nadzornega kanala in polje za surove ukaze" src="images/ftp-console.png" />
+<em>(Slika: konzola FTP beleži vsako izmenjavo in sprejema surove ukaze, kar je priročno za odpravljanje težav.)</em></p>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Odpri upravitelja povezav</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Nova povezava</td>
+<td>Ctrl+N</td>
+</tr>
+<tr>
+<td>Prekini</td>
+<td>Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Spremeni način prenosa</td>
+<td>Ctrl+Shift+M</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Prekinjeni prenosi in nalaganja se lahko nadaljujejo, kjer so se ustavili, namesto da bi začeli znova.</li>
+<li>Za strežnike FTPS s samopodpisanim potrdilom vklopite možnost sprejmi nezaupljivo potrdilo v nastavitvah te povezave.</li>
+<li>Posrednik SOCKS5 je mogoče nastaviti za vsako povezavo za navadni FTP. Usmerjanje šifrirane povezave FTPS skozi posrednika ni podprto.</li>
+<li>Obstoječe povezave FTP iz Total Commander je mogoče uvoziti.</li>
+<li>SCP se uporablja le za prenos datotek; naštevanje, preimenovanje in brisanje vedno potekajo prek SFTP.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="downloading-from-url.html">Prenašanje z naslova URL</a></li><li><a href="network-shares.html">Omrežne mape</a></li></ul></section>
+</main>
+</body>
+</html>

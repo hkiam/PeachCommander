@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instellingen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Instellingen</h1>
+<p>Het instellingenvenster is waar je Peach Commander afstemt op jouw werkwijze: welke balken verschijnen, hoe bestanden worden getoond, hoe kopieer- en verwijderbewerkingen zich gedragen, het archiefformaat dat wordt gebruikt bij inpakken, tabbladgedrag, FTP-standaarden, de weergavetaal en meer. Instellingen zijn gegroepeerd in pagina's zodat je een optie snel vindt, en elke wijziging wordt automatisch opgeslagen in je persoonlijke configuratiemap.</p>
+<h2 id="instellingen-openen">Instellingen openen</h2>
+<ol>
+<li>Kies <strong>Peach Commander &gt; Instellingen…</strong>, of druk op Cmd+, (komma).</li>
+<li>Je kunt hetzelfde venster ook openen via <strong>Configuratie &gt; Opties…</strong>.</li>
+<li>Kies een pagina uit de lijst links; de opties voor die pagina verschijnen rechts.</li>
+<li>Pas de regelaars aan. Wijzigingen werken meteen, tenzij een opmerking op de pagina anders vermeldt.</li>
+</ol>
+<p><img alt="Het instellingenvenster met de pagina Lay-out en aankruisvakken voor de interfacebalken" src="images/settings-layout.png" />
+<em>(Afbeelding: De pagina Lay-out bepaalt welke balken rond de panelen worden getoond.)</em></p>
+<h2 id="de-paginas">De pagina's</h2>
+<p>Het venster heeft deze pagina's, op volgorde:</p>
+<ul>
+<li><strong>Lay-out</strong> — toon of verberg de schijvenbalk, tabbalk, padbalk en statusbalk.</li>
+<li><strong>Weergave</strong> — hoe bestanden en mappen worden weergegeven, inclusief de datumnotatie.</li>
+<li><strong>Symbolen</strong> — het uiterlijk van symbolen in de bestandslijsten.</li>
+<li><strong>Bediening</strong> — algemeen gedrag, zoals wat er gebeurt als je in een paneel typt (snelzoeken versus de opdrachtregel).</li>
+<li><strong>Kleuren</strong> — aangepaste paneelkleuren, of laat ze het huidige thema volgen.</li>
+<li><strong>Bevestiging</strong> — welke acties eerst om bevestiging vragen, zoals verwijderen.</li>
+<li><strong>Bewerken/Bekijken</strong> — de programma's om bestanden te bewerken en te bekijken, en koppelingen per type.</li>
+<li><strong>Kopiëren/Verwijderen</strong> — bestandsmetadata behouden, snel klonen, alleen nieuwere bestanden kopiëren, controleren na kopiëren, verwijderingen naar de prullenmand sturen, en een optionele snelheidslimiet instellen.</li>
+<li><strong>Zip/Inpakken</strong> — het standaard archiefformaat en compressieniveau bij inpakken.</li>
+<li><strong>Plug-ins</strong> — schakel geïnstalleerde plug-ins in of uit.</li>
+<li><strong>Tabbladen</strong> — hoe maptabbladen openen en zich gedragen.</li>
+<li><strong>FTP</strong> — netwerkstandaarden zoals het keep-alive-interval.</li>
+<li><strong>Toetsenbord</strong> — bekijk en wijzig sneltoetsen.</li>
+<li><strong>Taal</strong> — kies Systeemstandaard, English of Deutsch.</li>
+<li><strong>AI</strong> — configureer de AI-assistent: voorkeursmodel, cloud-eindpunt en sleutel, autonomie en de optionele MCP-server (zie <a href="ai-assistant.md">AI Assistant</a>).</li>
+<li><strong>Overig</strong> — open je configuratiemap in de Finder.</li>
+</ul>
+<p>Ingeschakelde plug-ins kunnen na de ingebouwde pagina's hun eigen pagina toevoegen — bijvoorbeeld <strong>Disk Map</strong> en <strong>System Monitor</strong> — zodat hun opties in hetzelfde venster staan (zie <a href="plugins.md">Plug-ins</a>).</p>
+<p><img alt="Het instellingenvenster met de pagina Weergave en opties voor hoe bestanden worden getoond" src="images/settings-display.png" />
+<em>(Afbeelding: De pagina Weergave bepaalt hoe bestanden en mappen worden weergegeven.)</em></p>
+<p><img alt="Het instellingenvenster met de pagina Bediening" src="images/settings-operation.png" />
+<em>(Afbeelding: De pagina Bediening regelt snelzoeken en muisgedrag.)</em></p>
+<h2 id="waar-je-instellingen-worden-bewaard">Waar je instellingen worden bewaard</h2>
+<p>Je configuratie wordt bewaard in platte-tekstbestanden in je persoonlijke Application Support-map, op <code>~/Library/Application Support/PeachCommander</code>. Ga naar de pagina <strong>Overig</strong> en klik op <strong>Open configuratiemap</strong> om deze te openen. Opgeslagen FTP-wachtwoorden staan niet in deze bestanden; ze worden veilig bewaard in de macOS-sleutelhanger.</p>
+<p>Instellingen worden weggeschreven terwijl je ze wijzigt. Je kunt ook op elk moment forceren op te slaan met <strong>Configuratie &gt; Instellingen bewaren</strong>, en de huidige vensterpositie en paneellay-out opslaan met <strong>Configuratie &gt; Positie bewaren</strong>.</p>
+<h2 id="instellingen-overnemen-uit-total-commander">Instellingen overnemen uit Total Commander</h2>
+<p>Als je overstapt van Total Commander op Windows, kun je je opgeslagen FTP-sites importeren. Kies <strong>Configuratie &gt; wincmd.ini importeren…</strong> en selecteer je Total Commander FTP-configuratiebestand. Je verbindingen worden in dezelfde volgorde als daar aan Peach Commander toegevoegd.</p>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Sneltoets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Instellingen openen</td>
+<td>Cmd+,</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>De pagina <strong>Taal</strong> biedt Systeemstandaard, English en Deutsch. Een taalwijziging werkt pas nadat je Peach Commander opnieuw start.</li>
+<li>Kleuren die je op de pagina <strong>Kleuren</strong> instelt, overschrijven het thema; gebruik daar <strong>Herstel standaardwaarden</strong> om terug te keren naar de themakleuren.</li>
+<li>Peach Commander bewaart zijn instellingen alleen in zijn eigen configuratiemap, zodat je wijzigingen nooit andere apps beïnvloeden en eenvoudig te back-uppen zijn door die map te kopiëren.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="appearance.html">Weergave</a></li><li><a href="keyboard-shortcuts.html">Toetsenbord en sneltoetsen</a></li></ul></section>
+</main>
+</body>
+</html>

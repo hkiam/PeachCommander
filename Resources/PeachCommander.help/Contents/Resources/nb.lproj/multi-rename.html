@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gi mange filer nytt navn</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Gi mange filer nytt navn</h1>
+<p>Verktøy for flernavning gir en hel bunke filer nytt navn i én omgang. I stedet for å redigere navn ett om gangen, beskriver du endringen én gang — et navnemønster, et søk-og-erstatt, et nummereringsskjema eller en endring av bokstavstørrelse — og Peach Commander bruker den på hver merkede fil. En direkte forhåndsvisning viser nøyaktig hva hver fil vil hete før noe skjer, og en enkelt Angre setter de opprinnelige navnene tilbake hvis resultatet ikke ble som du ønsket.</p>
+<h2 id="gi-en-bunke-filer-nytt-navn">Gi en bunke filer nytt navn</h2>
+<ol>
+<li>Merk filene du vil gi nytt navn (se <em>Merke filer</em>). Bare de merkede elementene påvirkes.</li>
+<li>Velg <strong>Kommandoer &gt; Verktøy for flernavning…</strong>, eller trykk Ctrl+M.</li>
+<li>Bygg opp omdøpingsregelen din ved hjelp av feltene beskrevet nedenfor. Forhåndsvisningsrutenettet oppdateres mens du skriver, og viser hvert <strong>Gammelt navn</strong> ved siden av sitt <strong>Nye navn</strong>.</li>
+<li>Kontroller forhåndsvisningen. En rad vist i en uthevingsfarge flagger et navn som ikke kan brukes (for eksempel en duplikat eller et ulovlig navn) slik at du kan justere regelen.</li>
+<li>Når forhåndsvisningen ser riktig ut, klikk <strong>Start</strong>. Hvis du ombestemmer deg, klikk <strong>Angre</strong> for å gjenopprette de opprinnelige navnene.</li>
+</ol>
+<p><img alt="Flernavning-vinduet med maskefeltene, alternativene og gammelt-til-nytt-forhåndsvisningsrutenettet" src="images/multi-rename.png" />
+<em>(Figur: Forhåndsvisningsrutenettet oppdateres i sanntid mens du redigerer omdøpingsregelen; ingenting endres på disken før du klikker Start.)</em></p>
+<h2 id="bygge-opp-omdpingsregelen">Bygge opp omdøpingsregelen</h2>
+<ul>
+<li><strong>Omdøpingsmaske</strong> og <strong>Filendelse</strong> — mønstre som bygger det nye navnet og filendelsen. Bruk hurtiginnsettingsknappene, eller skriv plassholdere direkte: <code>[N]</code> for det opprinnelige navnet, <code>[N1-9]</code> for et område av tegn fra det, <code>[C]</code> for telleren, <code>[d]</code> for dato- og tidsdeler, og <code>[P]</code> for navnet på den overordnede mappen.</li>
+<li><strong>Søk etter / Erstatt med</strong> — erstatt tekst inni navnene. Slå på <strong>Regex</strong> for mønstersamsvar, <strong>Skiller mellom store og små bokstaver</strong> for å samsvare med nøyaktig bokstavstørrelse, og <strong>Gjenta</strong> for å erstatte hver forekomst.</li>
+<li><strong>Bokstavstørrelse</strong> — konverter navn til små bokstaver, STORE BOKSTAVER, Første bokstav stor, eller Hvert Ord Med Stor Forbokstav.</li>
+<li><strong>Teller</strong> — sett <strong>Start</strong>-nummeret, <strong>Steg</strong>et mellom filer, og hvor mange <strong>Sifre</strong> det skal fylles ut til (for eksempel 001, 002, 003) der <code>[C]</code> opptrer.</li>
+</ul>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Åpne Verktøy for flernavning</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Bruk omdøpingen</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Lukk vinduet</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Ingenting skrives til disken før du klikker <strong>Start</strong>, så du kan eksperimentere fritt med regelen og se på forhåndsvisningen.</li>
+<li>Etter en kjøring reverserer <strong>Angre</strong> omdøpingen i ett steg.</li>
+<li>Lagre en regel du bruker ofte som en <strong>Forhåndsinnstilling</strong>, og velg den deretter fra forhåndsinnstillingsmenyen neste gang for å fylle ut alle feltene på én gang.</li>
+<li>For å gi en enkelt fil nytt navn, eller for å gi filer nytt navn mens du flytter dem, bruk gi-nytt-navn-på-stedet eller flyttedialogen i stedet (se <em>Flytte og gi nytt navn</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Flytte og gi nytt navn</a></li></ul></section>
+</main>
+</body>
+</html>

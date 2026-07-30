@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bestanden vinden</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Bestanden vinden</h1>
+<p>Wanneer je bestanden ergens op je Mac wilt opsporen — op naam, op wat ze bevatten, of op grootte en datum — gebruik je het venster Bestanden zoeken. Het doorzoekt een of meer mappen (en hun submappen), kan in tekstbestanden en archieven kijken, en laat je alles wat het vindt rechtstreeks in een paneel sturen zodat je met de resultaten kunt werken alsof het een gewone map is.</p>
+<h2 id="bestanden-op-naam-vinden">Bestanden op naam vinden</h2>
+<ol>
+<li>Kies in het paneel dat de map toont die je wilt doorzoeken <strong>Opdrachten &gt; Bestanden zoeken…</strong> (of druk op Cmd+Shift+F).</li>
+<li>Typ op het tabblad <strong>Algemeen</strong> een naampatroon in <strong>Zoeken naar</strong>. Je kunt jokertekens gebruiken zoals <code>*.pdf</code> of <code>report_*.docx</code>. Om meerdere mappen tegelijk te doorzoeken, vermeld je ze in het startmapveld gescheiden door een puntkomma (<code>;</code>).</li>
+<li>Klik op <strong>Start</strong>. Overeenkomsten verschijnen in de resultatenlijst eronder zodra ze worden gevonden.</li>
+<li>Dubbelklik op een resultaat om naar dat bestand in het actieve paneel te springen, of selecteer een resultaat en klik op <strong>Bekijken</strong> (F3) om het in de ingebouwde viewer te openen.</li>
+</ol>
+<p><img alt="Het venster Bestanden zoeken op het tabblad Algemeen, met het naampatroon, de map en de resultatenlijst" src="images/find-files-general.png" />
+<em>(Afbeelding: Het tabblad Algemeen — zoek op naampatroon over een of meer mappen.)</em></p>
+<h2 id="zoeken-op-inhoud-grootte-en-datum">Zoeken op inhoud, grootte en datum</h2>
+<ol>
+<li>Om binnen bestanden te zoeken, selecteer je <strong>Tekst zoeken</strong> op het tabblad Algemeen en typ je de te zoeken tekst. Met opties kun je het <strong>Hoofdlettergevoelig</strong> maken, alleen een <strong>Heel woord</strong> laten overeenkomen, de tekst als een <strong>Reguliere expressie</strong> behandelen, een <strong>Hex-inhoudszoekopdracht</strong> uitvoeren, of bestanden vinden die de tekst <strong>Niet bevatten</strong>.</li>
+<li>Schakel naar het tabblad <strong>Geavanceerd</strong> om resultaten te versmallen op <strong>Grootte</strong> (bijvoorbeeld <code>10K</code> tot <code>5M</code>), op <strong>gewijzigde datum</strong>-bereik, of op bestanden die in de laatste N dagen zijn gewijzigd.</li>
+<li>Zet <strong>In archieven zoeken</strong> aan om binnen zip-achtige archieven te kijken (zip, jar, war en dergelijke).</li>
+<li>Om de zoekopdracht te beperken tot wat je al hebt gekozen, zet je <strong>Alleen in geselecteerde items zoeken</strong> aan voordat je begint.</li>
+</ol>
+<p><img alt="Het venster Bestanden zoeken op het tabblad Geavanceerd, met grootte- en datumfilters" src="images/find-files-advanced.png" />
+<em>(Afbeelding: Het tabblad Geavanceerd — filter op grootte, datum en andere attributen.)</em></p>
+<p>Als je plug-ins hebt die inhoudsvelden toevoegen (zoals afbeeldingsafmetingen), laat het tabblad <strong>Plug-ins</strong> je een veld aan een voorwaarde laten voldoen — bijvoorbeeld alleen afbeeldingen breder dan 1000 pixels.</p>
+<p><img alt="Het venster Bestanden zoeken op het tabblad Plug-ins, met een inhoudsveldvoorwaarde" src="images/find-files-plugins.png" />
+<em>(Afbeelding: Het tabblad Plug-ins — vind overeenkomsten op door plug-ins geleverde inhoudsvelden.)</em></p>
+<h2 id="snelle-zoekopdrachten-met-spotlight">Snelle zoekopdrachten met Spotlight</h2>
+<p>Voor lokale mappen die macOS al heeft geïndexeerd, zet je <strong>Spotlight gebruiken</strong> aan op het tabblad Algemeen voor vrijwel directe resultaten. Spotlight doorzoekt de index in plaats van bestanden te scannen, dus het negeert reguliere expressies, dieptelimieten voor submappen en de reikwijdte alleen-selectie.</p>
+<h2 id="je-resultaten-hergebruiken-en-doorgeven">Je resultaten hergebruiken en doorgeven</h2>
+<ul>
+<li><strong>Naar lijst sturen</strong> plaatst elk resultaat in het actieve paneel als een tijdelijke lijst, zodat je de hele set tegelijk kunt kopiëren, verplaatsen of verwijderen.</li>
+<li>Kies op het tabblad <strong>Laden / Bewaren</strong> de optie <strong>Bewaren als sjabloon…</strong> om de huidige zoekopdracht (patronen en opties) op te slaan en later opnieuw te kiezen uit de sjabloonlijst.</li>
+</ul>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Sneltoets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open Bestanden zoeken</td>
+<td>Cmd+Shift+F of Option+F7</td>
+</tr>
+<tr>
+<td>Zoekopdracht starten / stoppen</td>
+<td>Startknop in het venster</td>
+</tr>
+<tr>
+<td>Bekijk het geselecteerde resultaat</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Inhoudszoeken leest hele bestanden voor lokale mappen; op andere locaties worden zeer grote bestanden overgeslagen (ruwweg 16 MB, of 64 MB bij gebruik van een reguliere expressie).</li>
+<li>Zoeken binnen archieven daalt af tot vier niveaus van geneste archieven.</li>
+<li><strong>Mappen in resultaten opnemen</strong> vermeldt ook mappen waarvan de namen overeenkomen, niet alleen bestanden.</li>
+<li>Spotlight dekt alleen geïndexeerde lokale mappen; laat het voor netwerklocaties of op patronen gebaseerde overeenkomsten uit en laat Bestanden zoeken scannen.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">Bestanden selecteren</a></li><li><a href="quick-search-and-filter.html">Snelzoeken &amp; filter</a></li></ul></section>
+</main>
+</body>
+</html>

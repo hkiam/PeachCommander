@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Depanare</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Depanare</h1>
+<p>Acest subiect acoperă problemele pe care oamenii le întâlnesc cel mai des: macOS blocând accesul la anumite foldere, un folder care pare blocat pe conținut vechi, un server FTP securizat care refuză să se conecteze și împachetarea în RAR. Fiecare secțiune vă spune ce se întâmplă și cum să remediați.</p>
+<h2 id="macos-cere-permisiune-sau-folderele-par-goale">macOS cere permisiune, sau folderele par goale</h2>
+<p>Unele locații — precum folderul dvs. <code>~/Library</code>, folderele altor utilizatori și zonele de sistem — sunt protejate de macOS și rămân ascunse până când acordați acces. Peach Commander detectează când se întâmplă asta și se oferă să vă ghideze la setarea corectă.</p>
+<ol>
+<li>Când vi se cere, alegeți să deschideți Setări de sistem, sau deschideți-le singur.</li>
+<li>Mergeți la Confidențialitate și securitate, apoi Acces complet la disc.</li>
+<li>Activați comutatorul de lângă Peach Commander. Dacă nu este listat, folosiți butonul Adaugă pentru a-l adăuga.</li>
+<li>Închideți și redeschideți Peach Commander pentru ca noua permisiune să intre în vigoare.</li>
+</ol>
+<p>Peach Commander nu rulează într-un sandbox restricționat, astfel încât odată ce Accesul complet la disc este acordat poate parcurge și gestiona fișiere exact ca Finder.</p>
+<h2 id="un-folder-nu-arata-modificarile-recente">Un folder nu arată modificările recente</h2>
+<p>Panourile se actualizează în mod normal singure când fișierele se schimbă pe disc. Dacă un folder a fost modificat de un alt program, este pe un volum de rețea, sau pur și simplu pare depășit, reîmprospătați-l manual.</p>
+<ol>
+<li>Faceți clic pe panoul pe care doriți să-l actualizați.</li>
+<li>Apăsați F2 (sau Ctrl+R) pentru a reciti acel folder.</li>
+</ol>
+<p>Volumele de rețea și montate nu raportează întotdeauna modificările către macOS, astfel încât o reîmprospătare manuală este soluția fiabilă acolo.</p>
+<h2 id="un-server-ftps-nu-se-conecteaza">Un server FTPS nu se conectează</h2>
+<p>Dacă o conexiune FTP securizată eșuează, verificați aceste setări în detaliile conexiunii:</p>
+<ul>
+<li>Potriviți modul de securitate al serverului: FTPS explicit (AUTH TLS) vs. FTPS implicit (portul 990) nu sunt interschimbabile.</li>
+<li>Dacă conexiunea se blochează după autentificare, comutați între modul de transfer pasiv și activ — majoritatea serverelor din spatele unui firewall au nevoie de pasiv.</li>
+<li>Dacă serverul folosește un certificat autosemnat, trebuie să-l permiteți explicit; altfel conexiunea este refuzată.</li>
+<li>Confirmați gazda, portul, numele de utilizator și parola, și dacă un proxy SOCKS5 este necesar în rețeaua dvs.</li>
+</ul>
+<h2 id="impachetarea-in-rar-nu-face-nimic">Împachetarea în RAR nu face nimic</h2>
+<p>Peach Commander poate crea arhive ZIP, 7z, TAR, TAR.GZ, BZ2 și XZ pe cont propriu. RAR este diferit: deoarece RAR este un format proprietar, crearea arhivelor RAR necesită un instrument separat de linie de comandă RAR instalat pe Mac-ul dvs. Fără el, RAR nu este disponibil când împachetați fișiere (Option+F5). Pentru a citi arhivele RAR existente, le puteți deschide în continuare ca un folder. Dacă nu aveți nevoie în mod specific de RAR, alegeți în schimb ZIP sau 7z — ambele acceptă criptarea puternică AES-256 și volumele divizate.</p>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Comandă rapidă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reîmprospătează folderul activ</td>
+<td>F2 sau Ctrl+R</td>
+</tr>
+<tr>
+<td>Conectează-te la un server FTP/FTPS</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Montează o partajare de rețea</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>Împachetează fișierele selectate</td>
+<td>Option+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Parolele și alte credențiale sunt stocate doar în inelul de chei macOS, niciodată în fișiere de configurare în text simplu.</li>
+<li>Montarea unei partajări de rețea (Cmd+K, sau meniul Rețea ▸ Montează partajare de rețea…) folosește aceeași conexiune pe care o folosește macOS însuși, astfel încât va apărea și în Finder.</li>
+<li>Dacă o problemă persistă după o reîmprospătare și o repornire, poate fi o limitare cunoscută mai degrabă decât o defecțiune — vedeți Limitări cunoscute.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">Confidențialitate și securitate</a></li><li><a href="known-limitations.html">Limitări cunoscute</a></li></ul></section>
+</main>
+</body>
+</html>

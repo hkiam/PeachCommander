@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dateien bearbeiten</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Dateien bearbeiten</h1>
+<p>Wenn Sie eine Datei ändern möchten, statt sie nur anzusehen, öffnet Peach Commander sie in einem integrierten Editor. Text- und Codedateien öffnen sich in einem vollwertigen Editor mit Syntaxhervorhebung, Suchen und Ersetzen, einer Gliederung der Symbole in Ihrem Code und einer Minimap zur schnellen Navigation. Binärdateien können in einem separaten Hex-Editor geöffnet werden, in dem Sie einzelne Bytes untersuchen und ändern können. Sie müssen die App nie verlassen, um schnell eine Änderung vorzunehmen.</p>
+<h2 id="eine-text-oder-codedatei-bearbeiten">Eine Text- oder Codedatei bearbeiten</h2>
+<ol>
+<li>Bewegen Sie in einem der beiden Panels den Cursor auf die Datei, die Sie ändern möchten.</li>
+<li>Drücken Sie F4 oder wählen Sie Datei ▸ Bearbeiten. Die Datei öffnet sich im Editorfenster.</li>
+<li>Nehmen Sie Ihre Änderungen vor. Wenn die Datei ein erkanntes Programmier- oder Datenformat ist, werden Schlüsselwörter, Zeichenketten und Kommentare automatisch eingefärbt.</li>
+<li>Drücken Sie Cmd+S (oder klicken Sie auf Sichern), um Ihre Änderungen zu schreiben. Beim ersten Sichern wird eine Sicherungskopie des Originals neben der Datei aufbewahrt, sodass Sie jederzeit darauf zurückgreifen können.</li>
+</ol>
+<p>Um eine ganz neue Textdatei am aktuellen Ort zu beginnen, drücken Sie Shift+F4.</p>
+<p><img alt="Der integrierte Texteditor mit Syntaxhervorhebung, der Symbolgliederung und der Minimap" src="images/editor.png" />
+<em>(Abbildung: Der Editor mit Syntaxhervorhebung, der Symbolgliederung links und der Minimap rechts.)</em></p>
+<h2 id="suchen-ersetzen-und-navigieren">Suchen, Ersetzen und Navigieren</h2>
+<ul>
+<li>Drücken Sie Cmd+F, um die Suchleiste zu öffnen. Um Text zu ersetzen, öffnen Sie die Suchleiste und schalten Sie sie in die Ersetzen-Ansicht um oder klicken Sie in der Symbolleiste auf Suchen/Ersetzen.</li>
+<li>Klicken Sie auf JSON/XML formatieren, um ein JSON- oder XML-Dokument in ein sauberes, lesbares Layout neu einzurücken.</li>
+<li>Klicken Sie auf Symbole (oder drücken Sie Cmd+Shift+O), um eine Seitenleiste anzuzeigen, die die Klassen, Funktionen und Methoden in Ihrem Code auflistet. Klicken Sie auf einen Eintrag, um direkt dorthin zu springen.</li>
+<li>Drücken Sie Cmd+L, um zu einer bestimmten Zeile zu springen.</li>
+<li>Drücken Sie Cmd+\, um zwischen einer Klammer und ihrem zugehörigen Gegenstück zu springen.</li>
+<li>Klicken Sie auf die Kartenschaltfläche, um die Minimap ein- oder auszublenden, eine verkleinerte Übersicht der gesamten Datei, die Sie zum Scrollen anklicken können.</li>
+<li>Verwenden Sie das Menü Kodierung in der Symbolleiste, wenn die Datei in einer anderen als der Standard-Textkodierung gesichert wurde.</li>
+</ul>
+<h2 id="eine-datei-byte-fur-byte-bearbeiten">Eine Datei Byte für Byte bearbeiten</h2>
+<ol>
+<li>Wählen Sie die Datei in einem Panel aus.</li>
+<li>Wählen Sie Datei ▸ Als Hex bearbeiten (oder klicken Sie mit der rechten Maustaste auf die Datei und wählen Sie Als Hex bearbeiten).</li>
+<li>Tippen Sie Hexziffern, um Bytes zu überschreiben, oder verwenden Sie die Pfeiltasten, um sich durch die Datei zu bewegen. Rücktaste und Entf entfernen Bytes.</li>
+<li>Drücken Sie Cmd+S, um zu sichern. Wie beim Texteditor wird eine einmalige Sicherungskopie des Originals aufbewahrt.</li>
+</ol>
+<h2 id="kurzbefehle">Kurzbefehle</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Taste</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Datei bearbeiten</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Neue Textdatei erstellen und bearbeiten</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>Sichern</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>Suchen</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>Symbolgliederung ein-/ausblenden</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>Zu Zeile springen</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>Zur zugehörigen Klammer springen</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>Widerrufen / Wiederholen (Hex-Editor)</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Die Syntaxhervorhebung deckt JSON, C, C#, Java, JavaScript, TypeScript, Python und Rust ab. Andere Dateitypen öffnen und bearbeiten sich weiterhin normal mit einfacher Einfärbung, aber detaillierte Hervorhebung und die Symbolgliederung sind nur für die unterstützten Sprachen verfügbar.</li>
+<li>Die Funktionen Symbolgliederung und Zu Zeile springen gelten für den Texteditor. Der Hex-Editor ist für die Binäruntersuchung und Bearbeitungen auf Byte-Ebene gedacht, nicht für Text.</li>
+<li>Beide Editoren bewahren beim ersten Sichern eine Sicherungskopie der Originaldatei auf, sodass eine versehentliche Änderung durch Wiederherstellen dieser Sicherungskopie leicht rückgängig gemacht werden kann.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="viewing-files.html">Dateien ansehen</a></li></ul></section>
+</main>
+</body>
+</html>

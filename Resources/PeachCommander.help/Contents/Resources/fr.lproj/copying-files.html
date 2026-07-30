@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copier des fichiers</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Copier des fichiers</h1>
+<p>Peach Commander est conçu autour de deux panneaux côte à côte : l'un contient les fichiers avec lesquels vous travaillez, l'autre est la destination. Copier prend ce qui est sélectionné dans le panneau actif et en place un double dans le dossier affiché dans l'autre panneau, en laissant les originaux en place. C'est le moyen le plus rapide de dupliquer des fichiers et des dossiers entre deux emplacements sans glisser-déposer.</p>
+<h2 id="copier-une-selection-vers-lautre-panneau">Copier une sélection vers l'autre panneau</h2>
+<ol>
+<li>Dans un panneau, ouvrez le dossier qui contient les éléments que vous souhaitez copier.</li>
+<li>Dans l'autre panneau, ouvrez le dossier où les copies doivent aller.</li>
+<li>Sélectionnez les fichiers et dossiers à copier. Si rien n'est sélectionné, l'élément sous le curseur est utilisé.</li>
+<li>Appuyez sur F5. La boîte de dialogue de copie s'ouvre, avec le chemin de destination déjà renseigné.</li>
+</ol>
+<p><img alt="La boîte de dialogue de copie avec le chemin de destination et les options" src="images/copy-dialog.png" />
+<em>(Figure : la boîte de dialogue de copie. Le chemin cible pointe vers l'autre panneau ; utilisez les options pour affiner la copie.)</em></p>
+<ol start="5">
+<li>Ajustez la destination si nécessaire, puis confirmez pour lancer la copie.</li>
+</ol>
+<h2 id="options-de-copie">Options de copie</h2>
+<p>Avant de confirmer, vous pouvez modifier le comportement de la copie :</p>
+<ul>
+<li><strong>Fichiers plus récents uniquement</strong> — ignore tout élément dont la copie existe déjà et est du même âge ou plus récente, de sorte que seuls les fichiers modifiés sont mis à jour.</li>
+<li><strong>Préserver les métadonnées</strong> — conserve les dates, les autorisations et les autres attributs de fichier sur les copies. Activé par défaut.</li>
+<li><strong>Limite de vitesse</strong> — plafonne le débit de transfert afin qu'une copie volumineuse ne sature pas votre disque ou votre connexion réseau.</li>
+<li><strong>Masque de renommage</strong> — saisissez un motif à caractères génériques dans le champ cible (par exemple <code>*.bak</code>) pour renommer les éléments au moment de la copie.</li>
+</ul>
+<p>Vous pouvez aussi envoyer la tâche dans la file d'attente en arrière-plan au lieu de la surveiller — voir Transferts en arrière-plan.</p>
+<h2 id="progression">Progression</h2>
+<p>Une fenêtre de progression affiche le fichier en cours et l'ensemble de la tâche avec des barres distinctes, ainsi que la vitesse de transfert. Vous pouvez mettre en pause et reprendre à tout moment, ou envoyer la copie en cours vers le gestionnaire de transferts en arrière-plan pour continuer à travailler pendant qu'elle se termine.</p>
+<p><img alt="La boîte de dialogue de progression du transfert avec une barre de progression, le décompte des fichiers et des octets, et des boutons Pause et Annuler" src="images/progress-dialog.png" />
+<em>(Figure : la boîte de dialogue de progression affichée pendant une copie ou un déplacement.)</em></p>
+<h2 id="gerer-les-fichiers-qui-existent-deja">Gérer les fichiers qui existent déjà</h2>
+<p>Si une copie devait remplacer un fichier existant, Peach Commander s'arrête et vous demande quoi faire. Un aperçu des deux fichiers vous aide à décider.</p>
+<p><img alt="La boîte de dialogue de conflit de remplacement comparant deux fichiers" src="images/overwrite-dialog.png" />
+<em>(Figure : la boîte de dialogue de remplacement compare le fichier existant avec celui en cours de copie.)</em></p>
+<p>Vos choix comprennent :</p>
+<ul>
+<li><strong>Remplacer</strong> le fichier existant, ou <strong>Tout remplacer</strong> pour appliquer ce choix à tous les conflits restants.</li>
+<li><strong>Ignorer</strong> ce fichier, ou <strong>Tout ignorer</strong> pour les conflits restants.</li>
+<li><strong>Renommer</strong> automatiquement la copie entrante afin de conserver les deux fichiers.</li>
+<li><strong>Ajouter</strong> les données entrantes à la fin du fichier existant.</li>
+<li>Remplacer uniquement lorsque la source est <strong>plus récente</strong> ou <strong>plus volumineuse</strong> que le fichier existant.</li>
+</ul>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Touche</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Copier la sélection vers l'autre panneau</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Copier dans le même dossier (créer un double renommé)</td>
+<td>Shift+F5</td>
+</tr>
+<tr>
+<td>Ouvrir le gestionnaire de transferts en arrière-plan</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>Copier entre deux emplacements sur le même disque utilise un clonage rapide lorsque le disque le prend en charge, de sorte que les fichiers volumineux se copient presque instantanément et occupent peu d'espace supplémentaire.</li>
+<li>Les dossiers sont copiés avec tout leur contenu.</li>
+<li>Pour déplacer des fichiers au lieu de les copier, utilisez F6. Pour surveiller ou gérer les tâches en file d'attente, ouvrez le gestionnaire de transferts en arrière-plan avec Cmd+Shift+B.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Déplacer et renommer</a></li><li><a href="background-transfers.html">Transferts en arrière-plan</a></li></ul></section>
+</main>
+</body>
+</html>

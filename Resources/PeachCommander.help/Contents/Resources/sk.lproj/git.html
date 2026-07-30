@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>Zásuvný modul Git prináša stav úložiska Git priamo do panela súborov — žiadna samostatná aplikácia, žiadny terminál. Pridáva dva stĺpce, ktoré zobrazujú stav pracovného stromu každého súboru a aktuálnu vetvu, podponuku <strong>Git</strong> pre každodenné príkazy (stav, pripraviť, commit, pull, push), a používa <code>git</code>, ktorý je už nainštalovaný na vašom Macu. Keďže ide o zásuvný modul, môžete ho vypnúť alebo odstrániť v <strong>Konfigurácia ▸ Zásuvné moduly…</strong>.</p>
+<h2 id="co-pridava">Čo pridáva</h2>
+<ul>
+<li><strong>Dva stĺpce v zozname súborov</strong> — <em>Git Status</em> a <em>Branch</em>. V úložisku každý súbor zobrazuje krátke stavové slovo (Upravené, Pridané, Odstránené, Nesledované, Premenované, Skopírované, Konflikt, Ignorované alebo Zmenené) a panel zobrazuje aktuálnu vetvu. Stĺpce zapnite v <strong>Konfigurácia ▸ Stĺpce…</strong> (pozri <a href="view-modes-and-sorting.md">Režimy zobrazenia a triedenie</a>).</li>
+<li><strong>Ponuka Git</strong> — pod <strong>Príkazy ▸ Git</strong> a v kontextovej ponuke súboru, s: <strong>Git Status…</strong>, <strong>Git Add (pripraviť)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> a <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="Dialóg Git Status zobrazujúci aktuálnu vetvu a zmenené súbory v úložisku" src="images/git-status.png" />
+<em>(Obrázok: Git Status hlási vetvu a každú zmenu v pracovnom strome.)</em></p>
+<h2 id="kontrola-stavu">Kontrola stavu</h2>
+<ol>
+<li>Umiestnite kurzor na súbor alebo priečinok vnútri úložiska Git.</li>
+<li>Vyberte <strong>Príkazy ▸ Git ▸ Git Status…</strong> (alebo pravý klik ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>Objaví sa súhrn: aktuálna vetva (alebo <em>(odpojené)</em>), potom buď <em>Pracovný strom je čistý.</em>, alebo zoznam zmien, kde každý riadok zobrazuje stav a cestu súboru.</li>
+</ol>
+<p>Ak kurzor nie je vnútri úložiska, zásuvný modul jednoducho oznámi <em>Nie je úložisko Git.</em></p>
+<h2 id="pripravit-commit-pull-push">Pripraviť, commit, pull, push</h2>
+<ul>
+<li><strong>Git Add (pripraviť)</strong> pripraví súbor pod kurzorom (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> požiada o správu commitu, potom odovzdá všetky zmeny (<code>git commit -a</code>). Zobrazí sa kombinovaný výstup, takže presne vidíte, čo sa stalo.</li>
+<li><strong>Git Pull</strong> vykoná pull iba typu fast-forward (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> odošle aktuálnu vetvu (<code>git push</code>).</li>
+</ul>
+<p>Po príkaze, ktorý mení úložisko, sa aktívny panel obnoví, takže stavové stĺpce zostanú aktuálne.</p>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Zásuvný modul používa systémový Git na <code>/usr/bin/git</code>. Ak Git nie je nainštalovaný, príkazy oznámia, že Git nie je k dispozícii. (Inštalácia Xcode Command Line Tools ho poskytne.)</li>
+<li>Stav úložiska sa načíta raz na priečinok a uloží do vyrovnávacej pamäte, takže posúvanie veľkého úložiska zostáva rýchle; vyrovnávacia pamäť sa obnoví po každom príkaze, ktorý zmení strom.</li>
+<li>Commit používa <code>git commit -a</code>, ktorý odovzdá sledované zmeny; úplne nové súbory stále najprv potrebujú <strong>Git Add (pripraviť)</strong>.</li>
+<li>Hlavičky stĺpcov <em>Git Status</em> a <em>Branch</em> sa momentálne zobrazujú v angličtine aj v iných jazykoch rozhrania; hodnoty a dialógy sú lokalizované.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="view-modes-and-sorting.html">Režimy zobrazenia a triedenie</a></li></ul></section>
+</main>
+</body>
+</html>

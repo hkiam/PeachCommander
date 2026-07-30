@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sok fájl átnevezése</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Sok fájl átnevezése</h1>
+<p>A Többszörös átnevezés eszköz egy egész köteg fájlt nevez át egy menetben. Ahelyett, hogy egyenként szerkesztené a neveket, egyszer leírja a változtatást — egy elnevezési mintát, egy keresés-és-cserét, egy számozási sémát vagy egy kis- és nagybetűváltást — és a Peach Commander minden kijelölt fájlra alkalmazza. Egy élő előnézet pontosan megmutatja, hogyan fog hívni minden fájlt, mielőtt bármi történne, és egyetlen Visszavonás visszaadja az eredeti neveket, ha az eredmény nem az volt, amit szeretett volna.</p>
+<h2 id="fajlok-kotegenek-atnevezese">Fájlok kötegének átnevezése</h2>
+<ol>
+<li>Jelölje ki az átnevezni kívánt fájlokat (lásd <em>Fájlok kijelölése</em>). Csak a kijelölt elemek érintettek.</li>
+<li>Válassza a <strong>Parancsok &gt; Többszörös átnevezés eszköz…</strong> lehetőséget, vagy nyomja meg a Ctrl+M-et.</li>
+<li>Építse fel az átnevezési szabályt az alább leírt mezők használatával. Az előnézeti rács gépelés közben frissül, minden <strong>Régi név</strong>-et a <strong>Új név</strong>-e mellett mutatva.</li>
+<li>Ellenőrizze az előnézetet. Egy kiemelő színben megjelenő sor jelzi a nem használható nevet (például egy duplikátumot vagy egy tiltott nevet), hogy módosíthassa a szabályt.</li>
+<li>Amikor az előnézet helyesnek tűnik, kattintson a <strong>Start</strong>-ra. Ha meggondolja magát, kattintson a <strong>Visszavonás</strong>-ra az eredeti nevek visszaállításához.</li>
+</ol>
+<p><img alt="A Többszörös átnevezés ablak a maszkmezőkkel, beállításokkal és a régi-új előnézeti ráccsal" src="images/multi-rename.png" />
+<em>(Ábra: az előnézeti rács élőben frissül, ahogy szerkeszti az átnevezési szabályt; semmi sem változik a lemezen, amíg nem kattint a Startra.)</em></p>
+<h2 id="az-atnevezesi-szabaly-felepitese">Az átnevezési szabály felépítése</h2>
+<ul>
+<li><strong>Átnevezési maszk</strong> és <strong>Kiterjesztés</strong> — minták, amelyek felépítik az új nevet és kiterjesztést. Használja a gyorsbeszúró gombokat, vagy írja be közvetlenül a helyőrzőket: <code>[N]</code> az eredeti névhez, <code>[N1-9]</code> karakterek egy tartományához belőle, <code>[C]</code> a számlálóhoz, <code>[d]</code> a dátum és idő részeihez, és <code>[P]</code> a szülőmappa nevéhez.</li>
+<li><strong>Keresés / Csere erre</strong> — szöveg cseréje a neveken belül. Kapcsolja be a <strong>Regex</strong>-et mintaegyeztetéshez, a <strong>Kis- és nagybetűre érzékeny</strong>-t a pontos kis- és nagybetűk egyeztetéséhez, és az <strong>Ismétlés</strong>-t minden előfordulás cseréjéhez.</li>
+<li><strong>Kis-/nagybetű</strong> — nevek átalakítása kisbetűssé, NAGYBETŰSSÉ, Első betű naggyá vagy Minden Szó Naggyá.</li>
+<li><strong>Számláló</strong> — állítsa be a <strong>Kezdő</strong> számot, a <strong>Lépés</strong>-t a fájlok között, és hány <strong>Számjegy</strong>-re töltse ki (például 001, 002, 003) mindenütt, ahol a <code>[C]</code> megjelenik.</li>
+</ul>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyűparancs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A Többszörös átnevezés eszköz megnyitása</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Az átnevezés alkalmazása</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Az ablak bezárása</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tippek">Tippek</h2>
+<ul>
+<li>Semmi sem íródik a lemezre, amíg nem kattint a <strong>Start</strong>-ra, így szabadon kísérletezhet a szabállyal és nézheti az előnézetet.</li>
+<li>Egy futtatás után a <strong>Visszavonás</strong> egy lépésben megfordítja az átnevezést.</li>
+<li>Mentsen egy gyakran használt szabályt <strong>Előbeállítás</strong>-ként, majd válassza ki az előbeállítás menüből legközelebb, hogy egyszerre kitöltse az összes mezőt.</li>
+<li>Egyetlen fájl átnevezéséhez, vagy fájlok áthelyezés közbeni átnevezéséhez használja inkább a helyben-átnevezést vagy az áthelyezés párbeszédet (lásd <em>Áthelyezés és átnevezés</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Áthelyezés és átnevezés</a></li></ul></section>
+</main>
+</body>
+</html>

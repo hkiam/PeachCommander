@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fájlok kijelölése</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Fájlok kijelölése</h1>
+<p>Mielőtt bármit másolna, áthelyezne, törölne vagy tömörítene, először megmondja a Peach Commandernek, mely elemeken hasson. Az elem, amelyen a kurzor áll, mindig az aktuális elem, de <em>megjelölhet</em> egy vagy több fájlt és mappát is, hogy egy parancs egyszerre fusson mindegyiken. A megjelölt elemek eltérő névszínnel emelkednek ki a panelben.</p>
+<h2 id="fajlok-es-mappak-megjelolese">Fájlok és mappák megjelölése</h2>
+<ol>
+<li>Kattintson egy sorra a kurzor ráhelyezéséhez. Egyetlen kattintás csak azt az egy elemet jelöli ki.</li>
+<li>Több elem egyszerre megjelöléséhez tartsa lenyomva a Cmd-t és kattintson mindegyikre, vagy tartsa lenyomva a Shiftet és kattintson egy tartomány megjelöléséhez.</li>
+<li>A kurzor alatti elem megjelöléséhez és egyszerre lefelé lépéshez nyomja meg az Insertet. Ismételten megnyomva gyorsan megjelölhet egymást követő elemek sorozatát. A szóköz szintén átkapcsolja az aktuális elem megjelölését (és megmutatja egy mappa méretét).</li>
+<li>A panelen minden megjelöléséhez válassza a Kijelölés &gt; Mindet kijelöl (Ctrl+Num+) lehetőséget, vagy nyomja meg a Cmd+A-t. Válassza a Kijelölés &gt; Kijelölés megszüntetése (Ctrl+Num-) lehetőséget az összes megjelölés törléséhez.</li>
+</ol>
+<h2 id="kijeloles-vagy-megszuntetes-minta-szerint">Kijelölés vagy megszüntetés minta szerint</h2>
+<ol>
+<li>Válassza a Kijelölés &gt; Csoport kijelölése… (Num+) lehetőséget olyan elemek hozzáadásához, amelyek nevei megfelelnek egy mintának, vagy a Kijelölés &gt; Csoport kijelölésének megszüntetése… (Num-) lehetőséget a megfelelő elemek eltávolításához az aktuális megjelölésekből.</li>
+<li>Írjon be egy helyettesítő karakteres maszkot. Használja a <code>*</code>-ot bármely karakterhez és a <code>?</code>-et egyetlen karakterhez. Több maszkot pontosvesszővel válasszon el, a kivételeket pedig függőleges vonal után sorolja fel — például a <code>*.jpg;*.png</code> megjelöli az összes képet, a <code>*.*|*.bak</code> pedig mindent a biztonsági mentés fájlok kivételével.</li>
+</ol>
+<p><img alt="A Csoport kijelölése párbeszéd egy helyettesítő karakteres maszkkal a mintamezőben" src="images/select-by-mask.png" />
+<em>(Ábra: fájlok megjelölése helyettesítő karakteres maszkkal.)</em></p>
+<h2 id="invertalas-azonos-kiterjesztes-es-visszaallitas">Invertálás, azonos kiterjesztés és visszaállítás</h2>
+<ul>
+<li><strong>Kijelölés invertálása</strong> (Num*, Kijelölés menü) minden megjelölést megfordít: a megjelölt elemek kijelöletlenné válnak és fordítva — hasznos az „minden, kivéve ezek"-hez.</li>
+<li><strong>Mindet kijelöl azonos kiterjesztéssel</strong> (Alt+Num+, Kijelölés menü) megjelöli minden fájlt, amely osztozik a kurzor alatti elem kiterjesztésén, így egyetlen billentyűlenyomás megragadja például az összes <code>.pdf</code> fájlt.</li>
+<li><strong>Kijelölés visszaállítása</strong> (Num/, Kijelölés menü) visszahozza a megjelölések előző készletét — hasznos, ha egy parancs törölte őket, vagy rossz csoportot jelölt meg.</li>
+</ul>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyű</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Megjelölés átkapcsolása, lefelé lépés</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Megjelölés átkapcsolása (aktuális elem)</td>
+<td>Szóköz</td>
+</tr>
+<tr>
+<td>Mindet kijelöl / Kijelölés megszüntetése</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Mindet kijelöl (alternatíva)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Csoport kijelölése maszk szerint</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Csoport kijelölésének megszüntetése maszk szerint</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Kijelölés invertálása</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Mindet kijelöl azonos kiterjesztéssel</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Előző kijelölés visszaállítása</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A megjelölések és a kurzor függetlenek: a kurzor nyílbillentyűkkel való mozgatása nem változtatja meg, mi van megjelölve.</li>
+<li>A szülőmappa-bejegyzés (<code>..</code>) soha nem jelölhető meg.</li>
+<li>A Csoport kijelölése, Csoport kijelölésének megszüntetése és Kijelölés invertálása a fájlnév alapján egyezik, így a párbeszéd beállításaitól függően bevonhat vagy kihagyhat mappákat.</li>
+<li>Egy másolás, áthelyezés vagy törlés befejezése után a sikeresen kezelt elemek automatikusan kijelöletlenné válnak, míg a sikertelenek megjelöltek maradnak, hogy újrapróbálhassa őket.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Fájlok másolása</a></li><li><a href="searching.html">Fájlok keresése</a></li></ul></section>
+</main>
+</body>
+</html>

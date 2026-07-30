@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Căutare rapidă și filtru</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Căutare rapidă și filtru</h1>
+<p>Când un folder conține sute de elemente, rareori trebuie să derulați. Peach Commander vă permite să săriți direct la un fișier tastându-i numele (căutare rapidă), să reduceți lista doar la elementele care vă interesează (filtru rapid) și să afișați sau ascundeți fișierele cu punct pe care macOS le ține de obicei în afara vederii. Toate trei funcționează în interiorul panoului activ fără a deschide un dialog.</p>
+<h2 id="salt-la-un-fisier-prin-tastare-cautare-rapida">Salt la un fișier prin tastare (căutare rapidă)</h2>
+<ol>
+<li>Faceți clic pe un panou de fișiere astfel încât să fie activ.</li>
+<li>Începeți să tastați începutul unui nume. Cursorul sare la primul element care se potrivește.</li>
+<li>Continuați să tastați pentru a rafina potrivirea, sau apăsați din nou aceeași literă pentru a parcurge elementele care încep cu acea literă.</li>
+<li>Textul tastat se șterge după o scurtă pauză, astfel încât puteți începe o căutare nouă oricând.</li>
+</ol>
+<p>Implicit, literele simple merg la linia de comandă, iar căutarea rapidă este declanșată cu Ctrl+Option+literă (comportamentul clasic). Puteți comuta căutarea rapidă să răspundă la tastarea simplă în schimb, sau să o dezactivați, în setările de configurare.</p>
+<h2 id="filtrarea-listei-filtru-rapid">Filtrarea listei (filtru rapid)</h2>
+<ol>
+<li>În panoul activ, apăsați Ctrl+S pentru a activa filtrul rapid.</li>
+<li>Tastați o mască de filtru. Panoul se îngustează live la elementele care se potrivesc pe măsură ce tastați.</li>
+<li>Apăsați Esc pentru a șterge filtrul și a afișa din nou totul.</li>
+</ol>
+<p>Filtrul acceptă mai multe tipuri de măști:</p>
+<ul>
+<li><strong>Text simplu</strong> se potrivește cu orice nume care conține ce ați tastat (de exemplu, <code>raport</code> arată fiecare element cu „raport" oriunde în numele său).</li>
+<li><strong>Caractere joker</strong> folosesc <code>*</code> (orice caractere) și <code>?</code> (un caracter). Separați mai multe măști cu punct și virgulă și adăugați excluderi după o bară verticală, de exemplu <code>*.jpg;*.png|*thumb*</code> pentru a afișa imagini, dar a ascunde miniaturile.</li>
+<li><strong>Etichete Finder</strong> filtrează după culoarea etichetei: tastați <code>tag:red</code> (sau <code>#red</code>) pentru a afișa doar elementele cu etichetă roșie, sau un simplu <code>tag:</code> pentru a afișa tot ce poartă orice etichetă.</li>
+</ul>
+<h2 id="afisarea-fisierelor-ascunse">Afișarea fișierelor ascunse</h2>
+<p>Apăsați Ctrl+H, sau alegeți comanda din meniul Vizualizare, pentru a comuta elementele ascunse (nume care încep cu un punct și fișiere ascunse de sistem). Setarea se aplică panoului activ și este reținută între sesiuni.</p>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Comandă rapidă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Căutare rapidă (mod clasic)</td>
+<td>Ctrl+Option+literă</td>
+</tr>
+<tr>
+<td>Filtru rapid pornit/oprit</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Șterge filtrul / anulează</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Afișează/ascunde fișierele ascunse</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Căutarea rapidă doar mută cursorul; filtrul rapid schimbă efectiv care elemente sunt listate. Folosiți filtrul când doriți să lucrați pe un subset (de exemplu, să selectați sau copiați doar potrivirile).</li>
+<li>Setările de filtru și fișiere ascunse sunt per panou, astfel încât cele două părți pot afișa lucruri diferite deodată.</li>
+<li>Căutarea rapidă potrivește numele de la început; modul text simplu al filtrului rapid potrivește oriunde în nume. Folosiți un caracter joker precum <code>*text*</code> dacă doriți ca filtrul să se comporte la fel.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Găsirea fișierelor</a></li><li><a href="view-modes-and-sorting.html">Moduri de vizualizare și sortare</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Das Start-Menü &amp; eigene Befehle</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Das Start-Menü &amp; eigene Befehle</h1>
+<p>Das <strong>Start</strong>-Menü ist Ihr ganz persönliches Menü, das in der Menüleiste neben Datei, Bearbeiten und den übrigen steht. Es enthält Befehle, die Sie selbst definieren, sodass die Aktionen, zu denen Sie am häufigsten greifen, stets nur einen Klick entfernt sind. In der Tradition der klassischen Zwei-Panel-Dateimanager kann jeder Eintrag einen integrierten Befehl ausführen, ein externes Programm oder eine App starten oder direkt zu einem Ordner springen. Peach Commander wird mit leerem Start-Menü ausgeliefert, bereit, von Ihnen gefüllt zu werden.</p>
+<h2 id="so-fugen-sie-eigene-befehle-hinzu">So fügen Sie eigene Befehle hinzu</h2>
+<ol>
+<li>Wählen Sie <strong>Start &gt; Start-Menü ändern…</strong>. Peach Commander öffnet Ihre Datei mit Benutzerbefehlen (und legt sie beim ersten Mal mit einem kommentierten Beispiel an).</li>
+<li>Fügen Sie einen Abschnitt pro Befehl hinzu. Jeder Abschnitt beginnt mit einem Namen in eckigen Klammern, gefolgt von einigen einfachen Schlüsseln:
+   - <strong>cmd</strong> — was ausgeführt werden soll: ein Programmpfad, eine App, ein integrierter <code>cm_</code>-Befehl oder ein anderer Ihrer eigenen Befehle.
+   - <strong>param</strong> — an ein Programm übergebene Parameter. Platzhalter werden beim Ausführen des Befehls eingesetzt: <code>%P</code> (Quellordner), <code>%N</code> (aktuelle Datei), <code>%T</code> (Ordner des anderen Panels), <code>%M</code> (Datei des anderen Panels), <code>%S</code> (ausgewählte Dateien).
+   - <strong>path</strong> — der Ordner, in dem gestartet wird (Standard ist der aktuelle Ordner).
+   - <strong>menu</strong> — der im Start-Menü angezeigte Titel.
+   - <strong>key</strong> — ein optionales Kürzel, z. B. <code>C+S+B</code>.</li>
+<li>Speichern Sie die Datei. Das Start-Menü aktualisiert sich von selbst, sobald Peach Commander das nächste Mal aktiv wird, sodass Ihre neuen Einträge sofort erscheinen.</li>
+</ol>
+<h2 id="tipps">Tipps</h2>
+<ul>
+<li>Um den aktuellen Ordner im Terminal zu öffnen, setzen Sie <strong>cmd</strong> auf <code>open</code>, <strong>param</strong> auf <code>-a Terminal %P</code> und <strong>menu</strong> auf <code>Open Terminal Here</code>.</li>
+<li>Verweisen Sie mit <strong>cmd</strong> auf einen <code>cm_</code>-Befehl, um einer integrierten Aktion einen eigenen Start-Menü-Eintrag und ein Kürzel zu geben.</li>
+<li>Die Reihenfolge in der Datei ist die Reihenfolge im Menü, setzen Sie also Ihre meistgenutzten Befehle nach oben.</li>
+</ul>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Sie können auch die gesamte Menüleiste durch Ihre eigene ersetzen. Wählen Sie <strong>Konfiguration &gt; Menüdatei bearbeiten…</strong>, um eine Menüdatei zu öffnen, die aus dem aktuellen, vollständig lokalisierten integrierten Menü erzeugt wird; bearbeiten Sie sie frei, und Ihre Änderungen werden beim nächsten Aktivieren der App wirksam. Löschen Sie die Datei, um die Standard-Menüleiste wiederherzustellen.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="toolbar.html">Die Schaltflächenleiste</a></li><li><a href="keyboard-shortcuts.html">Tastatur &amp; Kurzbefehle</a></li></ul></section>
+</main>
+</body>
+</html>

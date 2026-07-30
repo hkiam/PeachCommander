@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Descargar desde una URL</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Descargar desde una URL</h1>
+<p>Peach Commander puede obtener un archivo directamente desde una dirección web HTTP o HTTPS y colocarlo en el panel activo, sin abrir un navegador. Pegue un enlace, confirme el nombre con el que se guardará y la descarga se ejecuta por su cuenta, con reanudación si se cae la conexión, descargas por lotes de muchos enlaces a la vez y verificación opcional de la suma de comprobación para que sepa que el archivo llegó intacto.</p>
+<h2 id="descargar-un-archivo">Descargar un archivo</h2>
+<ol>
+<li>Abra la carpeta del panel donde quiera que aterrice el archivo.</li>
+<li>Elija <strong>Red &gt; Descargar desde URL</strong>, o pulse Cmd+Shift+D.</li>
+<li>Pegue la dirección web en el cuadro <strong>URL</strong>. Si copió un enlace antes, se rellena automáticamente.</li>
+<li>Compruebe el nombre en <strong>Guardar como</strong>: se sugiere a partir del enlace y puede editarlo libremente.</li>
+<li>Haga clic en <strong>Descargar</strong>.</li>
+</ol>
+<p><img alt="El cuadro de diálogo Descargar desde URL con un enlace, un nombre de archivo editable y opciones" src="images/download-url.png" />
+<em>(Figura: El cuadro de diálogo de descarga: pegue un enlace, edite el nombre y configure la verificación, las credenciales, las cabeceras o un proxy opcionales.)</em></p>
+<p>De forma predeterminada, la descarga se ejecuta <strong>en segundo plano</strong>, de modo que puede seguir trabajando en los paneles mientras se transfiere. Desactive <strong>Descargar en segundo plano</strong> para esperar a que termine, o active <strong>Poner en cola para más tarde</strong> para configurarla sin iniciarla todavía.</p>
+<h2 id="descargar-varios-archivos-a-la-vez">Descargar varios archivos a la vez</h2>
+<p>Pegue una dirección web por línea en el cuadro <strong>URL</strong>. Cuando hay más de un enlace, el nombre de cada archivo se deriva automáticamente de su enlace, y los campos <strong>Guardar como</strong> y <strong>Verificar</strong> de cada archivo quedan desactivados.</p>
+<h2 id="reanudar-una-descarga-interrumpida">Reanudar una descarga interrumpida</h2>
+<p>Si una transferencia se corta, Peach Commander conserva lo que ya ha recibido en un archivo temporal <code>.part</code>. Al iniciar de nuevo la misma descarga, se reanuda desde donde se detuvo siempre que el servidor lo admita, en lugar de empezar desde cero. El archivo <code>.part</code> se renombra con el nombre final solo cuando la descarga finaliza correctamente.</p>
+<h2 id="atajos">Atajos</h2>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Descargar desde URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="consejos">Consejos</h2>
+<ul>
+<li><strong>Verifique el archivo.</strong> Para una única descarga, pegue una suma de comprobación <strong>SHA-256</strong> esperada en el campo <strong>Verificar</strong>. Tras la transferencia, la suma de comprobación del archivo se compara con ella para que pueda confiar en que el archivo coincide con lo que indicó el editor.</li>
+<li><strong>¿Requiere inicio de sesión?</strong> Introduzca un nombre de usuario y una contraseña en los campos <strong>Autenticación</strong> para los sitios que usan autenticación básica. Para el acceso basado en tokens, añada una línea <code>Authorization: Bearer …</code> en el cuadro <strong>Cabeceras</strong>.</li>
+<li><strong>Cabeceras personalizadas.</strong> Añada una cabecera por línea en el cuadro <strong>Cabeceras</strong>, por ejemplo <code>Referer: …</code> o <code>Cookie: …</code>, para los enlaces que solo funcionan con cabeceras de solicitud específicas.</li>
+<li><strong>Proxy.</strong> Enrute la descarga a través de un proxy HTTP o SOCKS5 rellenando el host, el puerto y el tipo en <strong>Proxy</strong>.</li>
+<li><strong>Certificados no fiables.</strong> Active <strong>Permitir certificado no fiable</strong> únicamente para un sitio de su confianza que use un certificado autofirmado; desactiva la comprobación de seguridad HTTPS habitual para esa descarga.</li>
+<li><strong>Nota:</strong> Cmd+Shift+D también se usa en otro lugar para ir a la carpeta Escritorio; si el atajo no abre este cuadro de diálogo, use en su lugar <strong>Red &gt; Descargar desde URL</strong> desde el menú.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Conectarse a FTP y SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

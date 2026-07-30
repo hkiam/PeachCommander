@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Znane ograniczenia</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Znane ograniczenia</h1>
+<p>Peach Commander robi wiele, ale kilka funkcji ma w bieżącej wersji szczere ograniczenia. Poznanie ich z wyprzedzeniem oszczędza zamieszania, gdy coś zachowuje się nieoczekiwanie. Ta strona wymienia bieżące ograniczenia oraz, gdzie to możliwe, proste obejście.</p>
+<h2 id="archiwa">Archiwa</h2>
+<ul>
+<li><strong>Bardzo dużych plików ZIP (ZIP64) nie można otworzyć wbudowanym czytnikiem.</strong> Standardowe archiwa ZIP, TAR i TAR skompresowane gzipem otwierają się bezpośrednio jako foldery. Archiwa ZIP64 — używane, gdy archiwum zawiera więcej niż około 65 000 elementów lub przekracza 4 GB — wykraczają poza to, co obsługuje natywny czytnik, więc mogą nie otworzyć się lub wyświetlić niekompletnie.</li>
+<li><strong>Zaszyfrowane archiwa ZIP</strong> (zarówno starsze ZipCrypto, jak i WinZip AES) są obsługiwane do przeglądania, ale zostaniesz poproszony o hasło.</li>
+<li>Inne formaty, takie jak CPIO, ISO, CAB, LZH, XAR i PAX, otwierają się przez narzędzie pomocnicze, a nie natywny czytnik.</li>
+</ul>
+<h2 id="siec-sftp-scp">Sieć (SFTP / SCP)</h2>
+<ul>
+<li><strong>Zmiana atrybutów plików przez SFTP nie ma efektu w tej wersji.</strong> Możesz przeglądać, pobierać i wysyłać przez SFTP/SCP, ale żądania zmiany uprawnień, własności lub znaczników czasu na serwerze zdalnym są po cichu ignorowane. Wprowadź te zmiany na samym serwerze lub przez inny protokół.</li>
+<li>Przy pierwszym połączeniu z serwerem SFTP zostaniesz poproszony o zaufanie jego kluczowi hosta. Peach Commander zapamiętuje go później (zaufanie przy pierwszym użyciu).</li>
+</ul>
+<h2 id="pobieranie-z-adresu-url">Pobieranie z adresu URL</h2>
+<ul>
+<li>Polecenie <strong>Pobierz z adresu URL</strong> (menu Sieć) używa obecnie skrótu Cmd+Shift+D, który jest tym samym skrótem co Przejdź &gt; Biurko. Gdy oba są dostępne, menu mogą kolidować — dla pewności uruchom pobieranie bezpośrednio z menu Sieć.</li>
+</ul>
+<h2 id="odswiezanie-folderow">Odświeżanie folderów</h2>
+<ul>
+<li><strong>Panel zauważa zmiany zewnętrzne z krótkim opóźnieniem, nie natychmiast.</strong> Peach Commander sprawdza bieżący folder pod kątem zmian mniej więcej co 2 sekundy, więc plik dodany lub usunięty przez inną aplikację może chwilę się pojawiać. Jeśli nie chcesz czekać, odśwież aktywny panel ręcznie klawiszem F2 lub Ctrl+R.</li>
+</ul>
+<h2 id="inne-biezace-ograniczenia">Inne bieżące ograniczenia</h2>
+<ul>
+<li><strong>Niektóre bardzo długie ścieżki bezwzględne</strong> (głęboko zagnieżdżone foldery, których pełna ścieżka jest niezwykle długa) mogą nie być obsługiwane niezawodnie. Praca bliżej szczytu drzewa folderów pozwala tego uniknąć.</li>
+<li><strong>Ta wersja podglądowa nie jest podpisana.</strong> Gatekeeper w macOS może ostrzec, że aplikacja pochodzi od niezidentyfikowanego dewelopera przy pierwszym otwarciu. Kliknij aplikację prawym przyciskiem i wybierz Otwórz, a następnie potwierdź, aby ją uruchomić. Automatyczne aktualizacje nie są jeszcze dostępne w tej wersji.</li>
+</ul>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Odśwież aktywny panel</td>
+<td>F2 lub Ctrl+R</td>
+</tr>
+<tr>
+<td>Pobierz z adresu URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<p>To są ograniczenia bieżącej wersji i oczekuje się, że poprawią się w późniejszych wydaniach. Jeśli napotkasz zachowanie nieopisane tutaj, zobacz temat rozwiązywania problemów.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="troubleshooting.html">Rozwiązywanie problemów</a></li></ul></section>
+</main>
+</body>
+</html>

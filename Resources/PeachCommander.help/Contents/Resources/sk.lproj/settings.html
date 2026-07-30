@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nastavenia</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Nastavenia</h1>
+<p>Okno Nastavenia je miesto, kde prispôsobíte Peach Commander spôsobu, akým pracujete: ktoré lišty sa objavia, ako sa zobrazujú súbory, ako sa správajú operácie kopírovania a mazania, formát archívu použitý pri balení, správanie kariet, predvolené hodnoty FTP, jazyk zobrazenia a viac. Nastavenia sú zoskupené do stránok, takže rýchlo nájdete možnosť, a každá zmena sa automaticky uloží do vášho osobného konfiguračného priečinka.</p>
+<h2 id="otvorenie-nastaveni">Otvorenie Nastavení</h2>
+<ol>
+<li>Vyberte <strong>Peach Commander &gt; Nastavenia…</strong>, alebo stlačte Cmd+, (čiarka).</li>
+<li>To isté okno môžete otvoriť aj z <strong>Konfigurácia &gt; Možnosti…</strong>.</li>
+<li>Vyberte stránku zo zoznamu vľavo; možnosti tej stránky sa objavia vpravo.</li>
+<li>Upravte ovládacie prvky. Zmeny sa prejavia ihneď, pokiaľ poznámka na stránke nehovorí inak.</li>
+</ol>
+<p><img alt="Okno Nastavenia zobrazujúce stránku Rozloženie so zaškrtávacími poľami pre lišty rozhrania" src="images/settings-layout.png" />
+<em>(Obrázok: stránka Rozloženie ovláda, ktoré lišty sa zobrazujú okolo panelov.)</em></p>
+<h2 id="stranky">Stránky</h2>
+<p>Okno má tieto stránky, v poradí:</p>
+<ul>
+<li><strong>Rozloženie</strong> — zobraziť alebo skryť lištu diskov, lištu kariet, lištu cesty a stavovú lištu.</li>
+<li><strong>Zobrazenie</strong> — ako sa vypisujú súbory a priečinky, vrátane formátu dátumu.</li>
+<li><strong>Ikony</strong> — vzhľad ikon v zoznamoch súborov.</li>
+<li><strong>Ovládanie</strong> — všeobecné správanie, ako to, čo sa stane, keď píšete v paneli (rýchle hľadanie oproti príkazovému riadku).</li>
+<li><strong>Farby</strong> — vlastné farby panelov, alebo ich nechajte sledovať aktuálnu tému.</li>
+<li><strong>Potvrdenie</strong> — ktoré akcie najprv žiadajú potvrdenie, ako mazanie.</li>
+<li><strong>Upraviť/Zobraziť</strong> — programy použité na úpravu a zobrazenie súborov a asociácie podľa typu.</li>
+<li><strong>Kopírovanie/Mazanie</strong> — zachovať metaúdaje súborov, použiť rýchle klonovanie, kopírovať len novšie súbory, overiť po kopírovaní, posielať mazania do Koša a nastaviť voliteľné obmedzenie rýchlosti.</li>
+<li><strong>Zip/Balič</strong> — predvolený formát archívu a úroveň kompresie použité pri balení.</li>
+<li><strong>Zásuvné moduly</strong> — zapnúť alebo vypnúť nainštalované zásuvné moduly.</li>
+<li><strong>Karty</strong> — ako sa karty priečinkov otvárajú a správajú.</li>
+<li><strong>FTP</strong> — sieťové predvolené hodnoty ako interval keep-alive.</li>
+<li><strong>Klávesnica</strong> — prezrieť a zmeniť klávesové skratky.</li>
+<li><strong>Jazyk</strong> — vybrať Systémový predvolený, English alebo Deutsch.</li>
+<li><strong>AI</strong> — nakonfigurovať asistenta AI: preferovaný model, cloudový koncový bod a kľúč, autonómiu a voliteľný server MCP (pozri <a href="ai-assistant.md">Asistent AI</a>).</li>
+<li><strong>Rôzne</strong> — otvoriť svoj konfiguračný priečinok vo Finderi.</li>
+</ul>
+<p>Povolené zásuvné moduly môžu pridať vlastné stránky za vstavané — napríklad <strong>Mapa disku</strong> a <strong>System Monitor</strong> — takže ich možnosti žijú v tom istom okne (pozri <a href="plugins.md">Zásuvné moduly</a>).</p>
+<p><img alt="Okno Nastavenia zobrazujúce možnosti stránky Zobrazenie pre výpis súborov" src="images/settings-display.png" />
+<em>(Obrázok: stránka Zobrazenie ovláda, ako sa vypisujú súbory a priečinky.)</em></p>
+<p><img alt="Okno Nastavenia zobrazujúce stránku Ovládanie" src="images/settings-operation.png" />
+<em>(Obrázok: stránka Ovládanie riadi rýchle hľadanie a správanie myši.)</em></p>
+<h2 id="kde-su-ulozene-vase-nastavenia">Kde sú uložené vaše nastavenia</h2>
+<p>Vaša konfigurácia je uchovaná v súboroch obyčajného textu vnútri vášho osobného priečinka Application Support, na <code>~/Library/Application Support/PeachCommander</code>. Na jeho otvorenie prejdite na stránku <strong>Rôzne</strong> a kliknite na <strong>Otvoriť konfiguračný priečinok</strong>. Uložené heslá FTP nie sú uložené v týchto súboroch; sú bezpečne uchované vo zväzku kľúčov macOS.</p>
+<p>Nastavenia sa zapisujú, ako ich meníte. Uloženie môžete tiež vynútiť kedykoľvek pomocou <strong>Konfigurácia &gt; Uložiť nastavenia</strong> a uložiť aktuálnu polohu okna a rozloženie panelov pomocou <strong>Konfigurácia &gt; Uložiť polohu</strong>.</p>
+<h2 id="prenesenie-nastaveni-z-total-commanderu">Prenesenie nastavení z Total Commanderu</h2>
+<p>Ak prechádzate z Total Commanderu vo Windowse, môžete importovať svoje uložené FTP stránky. Vyberte <strong>Konfigurácia &gt; Importovať wincmd.ini…</strong> a vyberte svoj konfiguračný súbor FTP z Total Commanderu. Vaše pripojenia sa pridajú do Peach Commanderu v rovnakom poradí, v akom sa tam objavili.</p>
+<h2 id="skratky">Skratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akcia</th>
+<th>Skratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Otvoriť Nastavenia</td>
+<td>Cmd+,</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Stránka <strong>Jazyk</strong> ponúka Systémový predvolený, English a Deutsch. Zmena jazyka sa prejaví až po reštartovaní Peach Commanderu.</li>
+<li>Farby nastavené na stránke <strong>Farby</strong> prepíšu tému; tam použite <strong>Obnoviť predvolené</strong> na návrat k farbám témy.</li>
+<li>Peach Commander ukladá svoje nastavenia len do vlastného konfiguračného priečinka, takže vaše zmeny nikdy neovplyvnia iné aplikácie a ľahko sa zálohujú skopírovaním toho priečinka.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="appearance.html">Vzhľad</a></li><li><a href="keyboard-shortcuts.html">Klávesnica a skratky</a></li></ul></section>
+</main>
+</body>
+</html>

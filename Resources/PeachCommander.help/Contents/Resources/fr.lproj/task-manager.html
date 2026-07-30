@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>L'extension Task Manager transforme les processus en cours sur votre Mac en un dossier que vous pouvez parcourir. Elle apparaît comme un lecteur <strong>TaskManager</strong> dans la barre de lecteurs ; ouvrez-le et chaque processus est une ligne que vous pouvez trier, examiner comme un fichier, ou terminer — avec les mêmes touches que vous utilisez déjà pour les fichiers. C'est une extension, vous pouvez donc la désactiver ou la retirer dans <strong>Configuration ▸ Extensions…</strong>.</p>
+<h2 id="louvrir">L'ouvrir</h2>
+<ol>
+<li>Cliquez sur l'entrée <strong>📊 TaskManager</strong> dans la barre de lecteurs (elle se trouve juste après votre lecteur de démarrage).</li>
+<li>Le panneau se remplit d'une ligne par processus en cours. Le nom de chaque ligne est le nom du processus suivi de son PID, par exemple <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="Le Task Manager listant les processus en cours avec les colonnes PID, CPU, mémoire et commande" src="images/task-manager.png" />
+<em>(Figure : les processus en cours affichés comme une liste de fichiers que vous pouvez trier et sur laquelle vous pouvez agir.)</em></p>
+<h2 id="ce-que-signifie-chaque-colonne">Ce que signifie chaque colonne</h2>
+<p>Aux côtés des colonnes habituelles Taille (mémoire) et Date (heure de démarrage), Task Manager ajoute des colonnes de processus :</p>
+<table>
+<thead>
+<tr>
+<th>Colonne</th>
+<th>Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>Identifiant du processus</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Utilisation récente du processeur (nécessite un second rafraîchissement pour apparaître)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Nombre de threads</td>
+</tr>
+<tr>
+<td><strong>État</strong></td>
+<td>R en cours · S en veille · T arrêté · Z zombie · I inactif</td>
+</tr>
+<tr>
+<td><strong>Utilisateur</strong></td>
+<td>Propriétaire</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>Identifiant du processus parent</td>
+</tr>
+<tr>
+<td><strong>Commande</strong></td>
+<td>Ligne de commande complète</td>
+</tr>
+</tbody>
+</table>
+<p>Triez selon n'importe quelle colonne (par exemple CPU % ou Taille/mémoire) comme vous le feriez dans un dossier ordinaire.</p>
+<h2 id="examiner-ou-terminer-un-processus">Examiner ou terminer un processus</h2>
+<ul>
+<li><strong>Afficher (F3)</strong> montre un rapport <em>Informations sur le processus</em> : nom, PID, parent, utilisateur, état, threads, mémoire, CPU, heure de démarrage, chemin de l'exécutable et ligne de commande complète.</li>
+<li><strong>Supprimer (F8)</strong> termine le processus. La première suppression envoie une <strong>fermeture</strong> en douceur (SIGTERM) ; supprimer une seconde fois un processus qui tourne encore passe à une <strong>fermeture forcée</strong> (SIGKILL). L'extension ne cible jamais le PID 1.</li>
+</ul>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>Les détails de base (PID, parent, utilisateur, état) sont lisibles pour chaque processus, comme <code>ps</code>. La mémoire, les threads et le CPU ne peuvent être lus que pour <strong>vos propres</strong> processus ; les autres processus affichent ces colonnes vides (elles nécessitent des privilèges élevés, un ajout ultérieur).</li>
+<li>CPU % est une variation entre deux échantillons, il reste donc vide jusqu'à ce que le panneau se rafraîchisse une seconde fois (le panneau se rafraîchit à peu près toutes les deux secondes).</li>
+<li>La liste est en lecture seule à l'exception de la fin d'un processus — vous ne pouvez pas y copier de fichiers.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Extensions</a></li><li><a href="viewing-files.html">Afficher des fichiers</a></li><li><a href="deleting-files.html">Supprimer des fichiers</a></li></ul></section>
+</main>
+</body>
+</html>

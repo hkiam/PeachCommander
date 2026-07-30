@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diskkort</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Diskkort</h1>
+<p>Diskkort er et indbygget plugin, der med et enkelt blik viser, hvad der bruger plads i en mappe eller på en hel diskenhed. Det scanner den mappe, du vælger, og tegner hvert emne i en størrelse, der er proportional med den plads, det faktisk optager på disken, så de største pladsslugere skiller sig ud med det samme. Du kan bore ned i mapper, se hvordan din scanning stemmer overens med diskenhedens frie, rensbare og skjulte plads og rydde op direkte fra kortet.</p>
+<h2 id="start-en-scanning">Start en scanning</h2>
+<ol>
+<li>Gå i det aktive panel til den mappe (eller diskenhed), du vil måle.</li>
+<li>Vælg <strong>Kommandoer ▸ Diskkort: Analysér aktuel mappe</strong>.</li>
+<li>Diskkort-visningen åbner til højre og scanner i baggrunden, mens den viser en løbende optælling af emner og bytes. Store mapper bliver færdige på nogle få sekunder — scanningen læser mappemetadata i massevis og arbejder på tværs af flere CPU-kerner.</li>
+</ol>
+<p><img alt="Diskkortet viser et kvadreret trækort over en mappe, en diskenhedsbjælke, en liste over de største filer og en kategoriforklaring" src="images/disk-map.png" />
+<em>(Figur: Trækortvisningen, farvet efter filkategori, med diskenhedsbjælken øverst og listen over de største filer til højre.)</em></p>
+<h2 id="ls-kortet">Læs kortet</h2>
+<ul>
+<li>Hver blok (trækort) eller ringsegment (solstråle) har en størrelse efter emnets <strong>faktiske størrelse på disken</strong>, så billedet matcher det, Finder og systemet rapporterer.</li>
+<li>Blokke er <strong>farvet efter filtype</strong> — video, billeder, lyd, dokumenter, kode, arkiver, apps, diskbilleder — med en forklaring langs bunden. Du kan skifte til et <strong>varmekort</strong> efter størrelse i indstillingerne.</li>
+<li><strong>Klik på en mappe</strong> for at bore ned i den; brødkrummestien øverst viser, hvor du er, og knappen <strong>◂</strong> går et trin op igen.</li>
+<li>Hold markøren over enhver blok for at se dens fulde sti, størrelse og antal emner.</li>
+</ul>
+<h2 id="to-visninger-trkort-og-solstrale">To visninger: trækort og solstråle</h2>
+<p>Diskkort tilbyder to visualiseringer, og du kan skifte mellem dem med knappen <strong>◎ / ▦</strong> i overskriften eller på indstillingssiden:</p>
+<ul>
+<li><strong>Trækort</strong> — indlejrede rektangler, tættest til at få øje på den enkelte største fil.</li>
+<li><strong>Solstråle</strong> — koncentriske ringe (én pr. mappedybde) omkring den aktuelle mappe, bedst til at se, hvordan plads er fordelt på tværs af et dybt træ.</li>
+</ul>
+<p><img alt="Diskkortets solstrålevisning med koncentriske ringe for mappedybde" src="images/disk-map-sunburst.png" />
+<em>(Figur: Solstrålevisningen — den inderste skive er den aktuelle mappe, og hver ring er ét niveau dybere.)</em></p>
+<h2 id="diskenhedsbjlken">Diskenhedsbjælken</h2>
+<p>Bjælken øverst afstemmer din scanning mod hele diskenheden:</p>
+<ul>
+<li><strong>Scannet / Denne mappe</strong> — hvor meget den analyserede mappe optager.</li>
+<li><strong>Skjult</strong> (ved diskenhedens rod) eller <strong>Resten af diskenheden</strong> (for en undermappe) — alt, der ikke er i denne scanning, herunder systembeskyttede mapper, andre brugere og øjebliksbilleder.</li>
+<li><strong>Rensbar</strong> — plads, macOS kan frigøre automatisk, mest lokale Time Machine-øjebliksbilleder og caches.</li>
+<li><strong>Fri</strong> — plads, der er tilgængelig lige nu.</li>
+</ul>
+<p>Når diskenheden har lokale øjebliksbilleder, viser bjælken en <strong>· N øjebliksbilleder (ⓘ)</strong>-funktion; klik på den for en skrivebeskyttet liste med et tip om at håndtere dem i Diskværktøj eller Time Machine. Diskkort sletter aldrig selv øjebliksbilleder.</p>
+<h2 id="strste-filer">Største filer</h2>
+<p>Slå <strong>Vis listen over de største filer</strong> til for at se de største filer i den aktuelle mappe rangeret efter størrelse, hver med en farvechip for sin kategori. Klik på en for at fremhæve den på kortet.</p>
+<h2 id="ryd-op-fra-kortet">Ryd op fra kortet</h2>
+<p>Højreklik på enhver blok for handlinger:</p>
+<ul>
+<li><strong>Åbn i venstre panel</strong> / <strong>Åbn i højre panel</strong> — vis emnet i et filpanel.</li>
+<li><strong>Vis i Finder</strong>.</li>
+<li><strong>Flyt til papirkurv</strong> — slet kun det emne; kortet opdateres uden en fuld genscanning.</li>
+</ul>
+<p>For at fjerne flere emner på én gang skal du bruge <strong>Samleren</strong>: højreklik ▸ <strong>Markér til Samleren</strong> på hvert emne, og klik derefter på knappen <strong>🗑 N</strong> i overskriften for at flytte alt, du har markeret, til papirkurven i ét bekræftet trin.</p>
+<h2 id="indstillinger">Indstillinger</h2>
+<p>Diskkort tilføjer sin egen side til Indstillinger-vinduet (<strong>Konfiguration ▸ Indstillinger ▸ Diskkort</strong>):</p>
+<ul>
+<li><strong>Diagramstil</strong> — trækort eller solstråle.</li>
+<li><strong>Farvekodning</strong> — efter filtype (kategori) eller efter størrelse (varmekort).</li>
+<li><strong>Bliv på startdiskenheden</strong> — kryds ikke over til andre monterede diske.</li>
+<li><strong>Vis diskenhedsbjælken</strong> og <strong>Vis listen over de største filer</strong>.</li>
+</ul>
+<p>Ændringer anvendes på et åbent Diskkort med det samme.</p>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Diskkort måler <strong>allokeret</strong> størrelse (på disken) og tæller <strong>hårdt linkede</strong> filer kun én gang, så dets totaler stemmer overens med diskenhedens brugte plads i stedet for at tælle for meget.</li>
+<li>Som standard bliver scanningen på startdiskenheden, så den ikke vandrer ind på andre monterede diske eller netværksdrev.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="deleting-files.html">Sletning af filer</a></li><li><a href="settings.html">Indstillinger</a></li></ul></section>
+</main>
+</body>
+</html>

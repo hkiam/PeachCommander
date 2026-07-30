@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstaller</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Uninstaller</h1>
+<p>Presunutie aplikácie do Koša za sebou nechá jej podporné súbory, vyrovnávacie pamäte, predvoľby a kontajnery roztrúsené po vašich priečinkoch Library. Zásuvný modul Uninstaller odstráni aplikáciu <strong>aj</strong> tieto zvyšky: nájde všetko, čo aplikácia zanechala, zobrazí vám zoznam s veľkosťou každej položky a po vašom potvrdení presunie všetko do Koša. Keďže ide o zásuvný modul, môžete ho vypnúť alebo odstrániť v <strong>Konfigurácia ▸ Zásuvné moduly…</strong>.</p>
+<h2 id="odinstalovanie-aplikacie-pod-kurzorom">Odinštalovanie aplikácie pod kurzorom</h2>
+<ol>
+<li>Umiestnite kurzor na aplikáciu (<code>.app</code>) v paneli.</li>
+<li>Vyberte <strong>Súbor ▸ Odinštalovať aplikáciu…</strong>, alebo pravý klik ▸ <strong>Odinštalovať aplikáciu…</strong>, alebo stlačte <strong>Cmd+Shift+U</strong>.</li>
+<li>Otvorí sa okno kontroly, uvádzajúce aplikáciu plus každý súvisiaci súbor, ktorý našlo, každý označený svojou kategóriou, cestou a veľkosťou.</li>
+<li>Odškrtnite čokoľvek, čo si chcete ponechať, potom kliknite na <strong>Presunúť do Koša</strong> (alebo <strong>Odstrániť natrvalo</strong>).</li>
+</ol>
+<p><img alt="Okno kontroly odinštalovania uvádzajúce zvyškové súbory aplikácie so zaškrtávacími poľami a veľkosťami" src="images/uninstaller.png" />
+<em>(Obrázok: pred odstránením čohokoľvek skontrolujte presne to, čo sa odstráni.)</em></p>
+<h2 id="prehliadanie-vsetkych-nainstalovanych-aplikacii">Prehliadanie všetkých nainštalovaných aplikácií</h2>
+<p>Vyberte <strong>Príkazy ▸ Odinštalovať aplikáciu…</strong> na otvorenie prehľadávateľného zoznamu aplikácií nainštalovaných na vašom Macu, s názvom, veľkosťou a dátumom inštalácie každej aplikácie. Vyberte jednu (alebo viacero), kliknite na <strong>Odinštalovať…</strong> a ocitnete sa v tom istom okne kontroly. Zoznam môžete filtrovať písaním do poľa hľadania.</p>
+<h2 id="najdenie-zvyskovych-suborov">Nájdenie zvyškových súborov</h2>
+<p>Vyberte <strong>Príkazy ▸ Nájsť zvyškové súbory…</strong> na vyhľadanie podporných súborov, vyrovnávacích pamätí a predvolieb, ktoré patria aplikáciám, ktoré ste <strong>už</strong> odstránili. Skontrolujte ich rovnakým spôsobom a odstráňte ich. Ak sa nič nenájde, zásuvný modul vám to oznámi.</p>
+<h2 id="ako-dokladne-skenovat">Ako dôkladne skenovať</h2>
+<p>Okno kontroly má ovládací prvok spoľahlivosti:</p>
+<ul>
+<li><strong>Presné</strong> — súbory ukotvené na identifikátor balíka aplikácie. Vysoká spoľahlivosť; vopred vybrané.</li>
+<li><strong>Rozšírené</strong> — pridáva súbory zhodné podľa názvu; ponechané neoznačené, aby ste sa mohli rozhodnúť.</li>
+<li><strong>Hĺbkové</strong> — Rozšírené plus prehľadanie cez Spotlight na čokoľvek ďalšie, čo spomína aplikáciu; tiež ponechané neoznačené.</li>
+</ul>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Zásuvný modul nič neodstraňuje priamo — položky prechádzajú cez Kôš aplikácie alebo trvalé odstránenie, presne ako každá iná operácia so súbormi. Odstránenie súborov v <code>/Library</code> alebo <code>/var</code> môže vyžadovať heslo správcu.</li>
+<li>Pred odstránením zásuvný modul ukončí bežiacu aplikáciu a odbremení jej položky na pozadí (launchd), potom ponúkne upratanie akýchkoľvek teraz prázdnych priečinkov dodávateľa.</li>
+<li>Ak bola aplikácia nainštalovaná pomocou <strong>Homebrew</strong>, zásuvný modul vás upozorní a navrhne <code>brew uninstall --cask</code>, aby Homebrew zostal synchronizovaný. Aplikácie z App Store sú tiež zaznamenané.</li>
+<li>Zhody Rozšírené a Hĺbkové sú zámerne menej spoľahlivé a začínajú neoznačené — pred odstránením ich skontrolujte. Niektoré položky na pozadí nainštalované cez moderné API položiek prihlásenia tu nemožno odstrániť.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="deleting-files.html">Odstraňovanie súborov</a></li></ul></section>
+</main>
+</body>
+</html>

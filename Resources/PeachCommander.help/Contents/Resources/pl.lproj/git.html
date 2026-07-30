@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>Wtyczka Git pokazuje stan repozytorium Git bezpośrednio w panelu plików — bez osobnej aplikacji, bez terminala. Dodaje dwie kolumny prezentujące stan każdego pliku w drzewie roboczym oraz bieżącą gałąź, podmenu <strong>Git</strong> dla codziennych poleceń (status, dodawanie do przechowalni, commit, pull, push) i korzysta z programu <code>git</code> już zainstalowanego na Twoim Macu. Jest to wtyczka, więc możesz ją wyłączyć lub usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>.</p>
+<h2 id="co-dodaje">Co dodaje</h2>
+<ul>
+<li><strong>Dwie kolumny listy plików</strong> — <em>Git Status</em> i <em>Branch</em>. W repozytorium każdy plik pokazuje krótkie słowo stanu (Zmodyfikowany, Dodany, Usunięty, Nieśledzony, Przemianowany, Skopiowany, Konflikt, Ignorowany lub Zmieniony), a panel pokazuje bieżącą gałąź. Włącz te kolumny w <strong>Konfiguracja ▸ Kolumny…</strong> (zobacz <a href="view-modes-and-sorting.md">Tryby widoku i sortowanie</a>).</li>
+<li><strong>Menu Git</strong> — w <strong>Polecenia ▸ Git</strong> oraz w menu prawego przycisku pliku, z pozycjami: <strong>Git Status…</strong>, <strong>Git Add (stage)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> i <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="Okno Git Status pokazujące bieżącą gałąź i zmienione pliki w repozytorium" src="images/git-status.png" />
+<em>(Rysunek: Git Status raportuje gałąź i każdą zmianę w drzewie roboczym.)</em></p>
+<h2 id="sprawdz-stan">Sprawdź stan</h2>
+<ol>
+<li>Ustaw kursor na pliku lub folderze wewnątrz repozytorium Git.</li>
+<li>Wybierz <strong>Polecenia ▸ Git ▸ Git Status…</strong> (lub kliknij prawym przyciskiem ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>Pojawia się podsumowanie: bieżąca gałąź (lub <em>(odłączona)</em>), a następnie albo <em>Drzewo robocze czyste.</em>, albo lista zmian, gdzie każdy wiersz pokazuje stan i ścieżkę pliku.</li>
+</ol>
+<p>Jeśli kursor nie znajduje się wewnątrz repozytorium, wtyczka po prostu informuje <em>To nie jest repozytorium Git.</em></p>
+<h2 id="dodawanie-do-przechowalni-commit-pull-push">Dodawanie do przechowalni, commit, pull, push</h2>
+<ul>
+<li><strong>Git Add (stage)</strong> dodaje plik pod kursorem do przechowalni (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> prosi o komunikat commita, a następnie zatwierdza wszystkie zmiany (<code>git commit -a</code>). Pokazywane jest łączne wyjście, dzięki czemu widzisz dokładnie, co się stało.</li>
+<li><strong>Git Pull</strong> wykonuje pull tylko z przewinięciem w przód (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> wypycha bieżącą gałąź (<code>git push</code>).</li>
+</ul>
+<p>Po poleceniu, które zmienia repozytorium, aktywny panel jest odświeżany, więc kolumny stanu pozostają aktualne.</p>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Wtyczka używa systemowego Gita w <code>/usr/bin/git</code>. Jeśli Git nie jest zainstalowany, polecenia zgłaszają, że Git jest niedostępny. (Zapewnia go instalacja narzędzi wiersza poleceń Xcode.)</li>
+<li>Stan repozytorium jest odczytywany raz na folder i buforowany, więc przewijanie dużego repozytorium pozostaje szybkie; bufor odświeża się po każdym poleceniu, które zmienia drzewo.</li>
+<li>Commit używa <code>git commit -a</code>, który zatwierdza śledzone zmiany; zupełnie nowe pliki nadal wymagają najpierw <strong>Git Add (stage)</strong>.</li>
+<li>Nagłówki kolumn <em>Git Status</em> i <em>Branch</em> są obecnie wyświetlane po angielsku nawet w innych językach interfejsu; wartości i okna dialogowe są zlokalizowane.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="view-modes-and-sorting.html">Tryby widoku i sortowanie</a></li></ul></section>
+</main>
+</body>
+</html>

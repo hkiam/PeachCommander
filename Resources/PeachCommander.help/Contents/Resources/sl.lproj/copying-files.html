@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kopiranje datotek</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Kopiranje datotek</h1>
+<p>Peach Commander je zgrajen okoli dveh podoken drug ob drugem: eno vsebuje datoteke, s katerimi delate, drugo je cilj. Kopiranje vzame vse, kar je izbrano v aktivnem podoknu, in postavi dvojnik v mapo, prikazano v drugem podoknu, izvirnike pa pusti na mestu. To je najhitrejši način za podvajanje datotek in map med dvema lokacijama brez vlečenja.</p>
+<h2 id="kopiranje-izbora-v-drugo-podokno">Kopiranje izbora v drugo podokno</h2>
+<ol>
+<li>V enem podoknu odprite mapo z elementi, ki jih želite kopirati.</li>
+<li>V drugem podoknu odprite mapo, kamor naj gredo kopije.</li>
+<li>Izberite datoteke in mape za kopiranje. Če ni izbrano nič, se uporabi element pod kazalcem.</li>
+<li>Pritisnite F5. Odpre se pogovorno okno kopiranja, v katerem je ciljna pot že izpolnjena.</li>
+</ol>
+<p><img alt="Pogovorno okno kopiranja s ciljno potjo in možnostmi" src="images/copy-dialog.png" />
+<em>(Slika: Pogovorno okno kopiranja. Ciljna pot kaže na drugo podokno; z možnostmi natančno prilagodite kopiranje.)</em></p>
+<ol start="5">
+<li>Po potrebi prilagodite cilj, nato potrdite za začetek kopiranja.</li>
+</ol>
+<h2 id="moznosti-kopiranja">Možnosti kopiranja</h2>
+<p>Preden potrdite, lahko spremenite, kako se kopiranje obnaša:</p>
+<ul>
+<li><strong>Samo novejše datoteke</strong> — preskoči vsak element, katerega kopija že obstaja in je enako stara ali novejša, tako da se posodobijo samo spremenjene datoteke.</li>
+<li><strong>Ohrani metapodatke</strong> — na kopijah ohrani datume, dovoljenja in druge atribute datotek. Privzeto je vklopljeno.</li>
+<li><strong>Omejitev hitrosti</strong> — omeji hitrost prenosa, da veliko kopiranje ne zasede vsega diska ali omrežne povezave.</li>
+<li><strong>Maska preimenovanja</strong> — v ciljno polje vnesite vzorec z nadomestnimi znaki (na primer <code>*.bak</code>), da elemente preimenujete med kopiranjem.</li>
+</ul>
+<p>Opravilo lahko namesto opazovanja pošljete tudi v čakalno vrsto v ozadju — glejte Prenosi v ozadju.</p>
+<h2 id="napredovanje">Napredovanje</h2>
+<p>Okno napredovanja z ločenimi vrsticami prikazuje trenutno datoteko in celotno opravilo ter hitrost prenosa. Kadar koli lahko naredite premor in nadaljujete ali pa potekajoče kopiranje pošljete v upravitelja prenosov v ozadju, da lahko med dokončanjem še naprej delate.</p>
+<p><img alt="Pogovorno okno napredovanja prenosa z vrstico napredovanja, števci datotek in bajtov ter gumboma Premor in Prekliči" src="images/progress-dialog.png" />
+<em>(Slika: Pogovorno okno napredovanja, prikazano med kopiranjem ali premikom.)</em></p>
+<h2 id="ravnanje-z-datotekami-ki-ze-obstajajo">Ravnanje z datotekami, ki že obstajajo</h2>
+<p>Če bi kopiranje zamenjalo obstoječo datoteko, se Peach Commander ustavi in vpraša, kaj naj stori. Predogled obeh datotek vam pomaga pri odločitvi.</p>
+<p><img alt="Pogovorno okno spora ob prepisovanju, ki primerja dve datoteki" src="images/overwrite-dialog.png" />
+<em>(Slika: Pogovorno okno prepisovanja primerja obstoječo datoteko s tisto, ki se kopira.)</em></p>
+<p>Vaše izbire vključujejo:</p>
+<ul>
+<li><strong>Prepiši</strong> obstoječo datoteko ali <strong>Prepiši vse</strong>, da to uporabite za vsak preostali spor.</li>
+<li><strong>Preskoči</strong> to datoteko ali <strong>Preskoči vse</strong> preostale spore.</li>
+<li><strong>Preimenuj</strong> dohodno kopijo samodejno, tako da se obdržita obe datoteki.</li>
+<li><strong>Pripni</strong> dohodne podatke na konec obstoječe datoteke.</li>
+<li>Prepiši samo, kadar je vir <strong>novejši</strong> ali <strong>večji</strong> od obstoječe datoteke.</li>
+</ul>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Tipka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kopiranje izbora v drugo podokno</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Kopiranje v isto mapo (izdelava preimenovanega dvojnika)</td>
+<td>Shift+F5</td>
+</tr>
+<tr>
+<td>Odpiranje upravitelja prenosov v ozadju</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Kopiranje med dvema lokacijama na istem disku uporabi hitro kloniranje, kadar disk to podpira, tako da se velike datoteke skopirajo skoraj v hipu in porabijo malo dodatnega prostora.</li>
+<li>Mape se kopirajo z vsem, kar je v njih.</li>
+<li>Za premik datotek namesto kopiranja uporabite F6. Za opazovanje ali upravljanje opravil v čakalni vrsti odprite upravitelja prenosov v ozadju s Cmd+Shift+B.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Premikanje in preimenovanje</a></li><li><a href="background-transfers.html">Prenosi v ozadju</a></li></ul></section>
+</main>
+</body>
+</html>

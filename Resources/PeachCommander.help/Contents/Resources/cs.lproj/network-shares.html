@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Síťová sdílení</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Síťová sdílení</h1>
+<p>Peach Commander se umí připojit k souborovým serverům ve vaší místní nebo firemní síti — sdílením SMB (Windows/Samba) a AFP — a zobrazit jejich obsah v panelu přesně jako složku na vašem Macu. Po připojení sdílení v něm můžete procházet, kopírovat, přesouvat, přejmenovávat a otevírat soubory přesně jako místně, včetně kopírování mezi sdílením a vaším druhým panelem.</p>
+<h2 id="pripojeni-k-serveru">Připojení k serveru</h2>
+<ol>
+<li>Klepněte na panel, ke kterému se chcete připojit (připojené sdílení se otevře v aktivním panelu).</li>
+<li>Stiskněte Cmd+K, nebo zvolte <strong>Síť &gt; Okolní počítače &gt; Připojit síťové sdílení…</strong>.</li>
+<li>V dialogu <strong>Připojit k serveru</strong> zadejte adresu serveru. Můžete uvést:
+   - adresu SMB, například <code>smb://fileserver/projects</code>
+   - adresu AFP, například <code>afp://fileserver/projects</code>
+   - cestu ve stylu Windows, například <code>\\fileserver\projects</code>
+   - jednoduchý název <code>server/sdílení</code></li>
+<li>Klepněte na Připojit (nebo stiskněte Enter). Pokud server vyžaduje jméno a heslo, macOS zobrazí své obvyklé přihlašovací okno — zadejte tam své údaje.</li>
+<li>Až je sdílení připravené, aktivní panel jej automaticky otevře. Procházejte a pracujte s ním jako s jakoukoli jinou složkou.</li>
+</ol>
+<h2 id="odpojeni">Odpojení</h2>
+<p>Připojené sdílení se objeví jako připojený svazek na vašem Macu. Chcete-li jej odpojit, vysuňte jej obvyklým způsobem macOS — například z postranního panelu Finderu nebo ze seznamu zařízení v Peach Commanderu.</p>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Připojit síťové sdílení…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Ověření (uživatelské jméno, heslo a případná volba „zapamatovat v mé klíčence“) obstarává obvyklé přihlašovací okno macOS, takže uložená hesla serverů fungují jako ve Finderu.</li>
+<li>Pokud zadáte adresu, kterou nelze rozebrat, Peach Commander požádá o adresu SMB/AFP, cestu ve stylu Windows nebo název <code>server/sdílení</code>, a nic se nepřipojí.</li>
+<li>Po potvrzení může připojení chvíli trvat, než macOS sdílení připojí; panel na něj přepne, jakmile bude dostupné.</li>
+<li>Toto se připojuje ke sdíleným zařízením v síti. Chcete-li místo toho dosáhnout serveru FTP, FTPS nebo SFTP, viz související téma níže.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Připojení k FTP a SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

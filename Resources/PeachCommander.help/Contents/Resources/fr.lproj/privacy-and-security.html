@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confidentialité et sécurité</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Confidentialité et sécurité</h1>
+<p>Peach Commander est conçu pour ne pas vous gêner et garder vos données sur votre Mac. Les mots de passe sont confiés au trousseau macOS, les informations sur les plantages ne quittent jamais votre ordinateur sans votre accord, et l'application ne collecte aucune analyse d'usage. Cette rubrique explique où vivent vos informations sensibles et comment accorder l'unique autorisation système dont un gestionnaire de fichiers a besoin pour faire son travail.</p>
+<h2 id="ou-sont-stockes-les-mots-de-passe">Où sont stockés les mots de passe</h2>
+<p>Tout mot de passe ou phrase secrète de clé que vous enregistrez — pour une connexion FTP ou SFTP, ou pour ouvrir une archive protégée par mot de passe — est écrit dans le <strong>trousseau</strong> macOS, le même stockage sécurisé que le système utilise pour vos identifiants Wi-Fi et de sites web. Les mots de passe ne sont jamais écrits en clair dans les propres réglages ou fichiers de connexion de Peach Commander.</p>
+<ol>
+<li>Lorsque vous enregistrez un mot de passe de connexion ou d'archive, choisissez l'option de le mémoriser.</li>
+<li>Le mot de passe est stocké dans votre trousseau d'ouverture de session, protégé par votre compte.</li>
+<li>Pour consulter ou retirer un mot de passe enregistré plus tard, ouvrez l'app <strong>Trousseaux d'accès</strong> (dans Applications ▸ Utilitaires) et recherchez le nom de la connexion.</li>
+</ol>
+<h2 id="accorder-lacces-complet-au-disque">Accorder l'accès complet au disque</h2>
+<p>macOS garde certains emplacements privés — les données de Mail, Messages et d'autres applications à l'intérieur de votre dossier Bibliothèque — jusqu'à ce que vous autorisiez explicitement l'accès. Comme un gestionnaire de fichiers est censé atteindre chaque fichier, Peach Commander demande l'<strong>accès complet au disque</strong>. L'application continue de fonctionner avec un accès réduit tant que vous ne l'accordez pas ; vous ne verrez simplement pas ces dossiers protégés.</p>
+<ol>
+<li>Choisissez <strong>Commandes ▸ Accès complet au disque…</strong>, ou cliquez sur <strong>Ouvrir les Réglages Système</strong> lorsque l'application propose de vous guider au lancement.</li>
+<li>Dans <strong>Réglages Système ▸ Confidentialité et sécurité ▸ Accès complet au disque</strong>, activez l'interrupteur à côté de Peach Commander.</li>
+<li>Relancez l'application si on vous y invite.</li>
+</ol>
+<h2 id="les-rapports-de-plantage-restent-locaux">Les rapports de plantage restent locaux</h2>
+<p>Si l'application quitte de façon inattendue, macOS écrit un rapport de plantage dans votre propre dossier de diagnostics. Au lancement suivant, Peach Commander le remarque et propose de vous aider à déposer un rapport de bogue — mais seulement avec votre consentement.</p>
+<ul>
+<li>Vous pouvez <strong>Afficher dans le Finder</strong> pour voir le rapport, ou <strong>Copier le rapport dans le presse-papiers</strong> pour le coller vous-même dans un rapport de bogue.</li>
+<li>Rien n'est jamais transmis automatiquement, et aucun service tiers de rapport de plantage n'est impliqué.</li>
+</ul>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li><strong>Aucune télémétrie.</strong> Peach Commander ne suit pas votre activité et n'envoie d'analyse d'usage nulle part.</li>
+<li><strong>L'accès réduit est sûr.</strong> Si vous ignorez l'accès complet au disque, l'application parcourt et gère quand même les fichiers que vous voyez normalement ; seuls les emplacements protégés par le système sont masqués.</li>
+<li><strong>Vous contrôlez les mots de passe enregistrés.</strong> Comme les identifiants vivent dans le trousseau, vous les gérez et les révoquez avec les outils standard de macOS plutôt que dans l'application.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Se connecter en FTP et SFTP</a></li><li><a href="troubleshooting.html">Dépannage</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markering af filer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markering af filer</h1>
+<p>Før du kopierer, flytter, sletter eller pakker noget, fortæller du først Peach Commander, hvilke emner der skal handles på. Emnet, din markør sidder på, er altid det aktuelle emne, men du kan også <em>markere</em> én eller flere filer og mapper, så en kommando kører på dem alle på én gang. Markerede emner skiller sig ud med en tydelig navnefarve i panelet.</p>
+<h2 id="marker-filer-og-mapper">Markér filer og mapper</h2>
+<ol>
+<li>Klik på en række for at flytte markøren til den. Et enkelt klik vælger kun det ene emne.</li>
+<li>For at markere flere emner på én gang, hold Cmd nede og klik på hvert, eller hold Shift nede og klik for at markere et interval.</li>
+<li>For at markere emnet under markøren og gå ned i én bevægelse, tryk på Insert. Tryk gentagne gange for hurtigt at markere en række på hinanden følgende emner. Mellemrumstasten skifter også det aktuelle emnes markering (og viser en mappes størrelse).</li>
+<li>For at markere alt i panelet, vælg Markér &gt; Vælg alle (Ctrl+Num+), eller tryk på Cmd+A. Vælg Markér &gt; Fravælg alle (Ctrl+Num-) for at rydde alle markeringer.</li>
+</ol>
+<h2 id="vlg-eller-fravlg-efter-et-mnster">Vælg eller fravælg efter et mønster</h2>
+<ol>
+<li>Vælg Markér &gt; Vælg gruppe… (Num+) for at tilføje emner, hvis navne matcher et mønster, eller Markér &gt; Fravælg gruppe… (Num-) for at fjerne matchende emner fra de aktuelle markeringer.</li>
+<li>Indtast en jokertegnmaske. Brug <code>*</code> for vilkårlige tegn og <code>?</code> for et enkelt tegn. Adskil flere masker med semikolon, og angiv undtagelser efter en lodret streg — for eksempel markerer <code>*.jpg;*.png</code> alle billeder, og <code>*.*|*.bak</code> markerer alt undtagen sikkerhedskopifiler.</li>
+</ol>
+<p><img alt="Dialogen Vælg gruppe med en jokertegnmaske indtastet i mønsterfeltet" src="images/select-by-mask.png" />
+<em>(Figur: markering af filer efter en jokertegnmaske.)</em></p>
+<h2 id="inverter-samme-filtype-og-gendan">Inverter, samme filtype og gendan</h2>
+<ul>
+<li><strong>Inverter markering</strong> (Num*, Markér-menuen) vender hver markering: markerede emner bliver umarkerede og omvendt — praktisk til "alt undtagen disse".</li>
+<li><strong>Vælg alle med samme filtype</strong> (Alt+Num+, Markér-menuen) markerer hver fil, der deler filtypen på emnet under markøren, så ét tastetryk fanger for eksempel alle <code>.pdf</code>-filer.</li>
+<li><strong>Gendan markering</strong> (Num/, Markér-menuen) bringer dit forrige sæt markeringer tilbage — nyttigt hvis en kommando ryddede dem, eller du markerede den forkerte gruppe.</li>
+</ul>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Tast</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Skift markering, gå ned</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Skift markering (aktuelt emne)</td>
+<td>Mellemrum</td>
+</tr>
+<tr>
+<td>Vælg alle / Fravælg alle</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Vælg alle (alternativ)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Vælg gruppe efter maske</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Fravælg gruppe efter maske</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Inverter markering</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Vælg alle med samme filtype</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Gendan forrige markering</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Markeringer og markøren er uafhængige: at flytte markøren med piletasterne ændrer ikke, hvad der er markeret.</li>
+<li>Den overordnede mappe-post (<code>..</code>) kan aldrig markeres.</li>
+<li>Vælg gruppe, Fravælg gruppe og Inverter markering matcher på filnavnet, så du kan inkludere eller udelade mapper afhængigt af dialogens indstillinger.</li>
+<li>Efter en kopiering, flytning eller sletning er færdig, fravælges emner, der blev håndteret korrekt, automatisk, mens dem der mislykkedes forbliver markeret, så du kan prøve dem igen.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiering af filer</a></li><li><a href="searching.html">Find filer</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Premikanje in preimenovanje</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Premikanje in preimenovanje</h1>
+<p>Premikanje datoteke in mape prestavi, namesto da bi jih podvojilo, preimenovanje pa spremeni njihova imena, ne da bi se dotaknilo njihove vsebine. Ker Peach Commander prikazuje dve podokni drug ob drugem, je premikanje zgolj vprašanje izbire tistega, kar želite, v enem podoknu in pošiljanja v mapo, odprto v drugem. Element lahko tudi preimenujete na mestu ali sproti dodelite nova imena premaknjenim elementom z uporabo maske z nadomestnimi znaki.</p>
+<h2 id="premik-datotek-v-drugo-podokno">Premik datotek v drugo podokno</h2>
+<ol>
+<li>V izvornem podoknu odprite mapo z elementi, ki jih želite premakniti, v drugem podoknu pa odprite ciljno mapo.</li>
+<li>Izberite datoteko ali mapo za premik. Za premik več hkrati jih najprej izberite vse (glejte <em>Izbiranje datotek</em>).</li>
+<li>Pritisnite F6 ali izberite <strong>Datoteka &gt; Premakni</strong>.</li>
+<li>Preverite ciljno mapo, prikazano v pogovornem oknu, in kliknite <strong>V redu</strong> (ali pritisnite Return) za začetek premika.</li>
+</ol>
+<p><img alt="Pogovorno okno premika s poljem ciljne poti, možnostmi in potrditvenim poljem čakalne vrste" src="images/copy-dialog.png" />
+<em>(Slika: Pogovorno okno premika uporablja isto ciljno polje kot kopiranje — vnesite pot ali dodajte masko z nadomestnimi znaki za preimenovanje med premikanjem.)</em></p>
+<p>Premiki na istem pogonu se zgodijo skoraj v hipu. Kadar je cilj na drugem pogonu, Peach Commander elemente skopira in izvirnike odstrani šele, ko so vse datoteke varno prispele.</p>
+<h2 id="preimenovanje-na-mestu">Preimenovanje na mestu</h2>
+<ol>
+<li>Izberite eno samo datoteko ali mapo.</li>
+<li>Pritisnite Shift+F6 ali izberite <strong>Datoteka &gt; Preimenuj</strong>.</li>
+<li>Uredite ime neposredno v podoknu, nato pritisnite Return za potrditev ali Esc za preklic.</li>
+</ol>
+<h2 id="preimenovanje-med-premikanjem">Preimenovanje med premikanjem</h2>
+<p>Ciljno polje v pogovornem oknu premika sprejme masko z nadomestnimi znaki, tako da lahko elemente preimenujete med premikanjem:</p>
+<ol>
+<li>Izberite elemente in pritisnite F6.</li>
+<li>V ciljno polje za ciljno mapo dodajte imensko masko, na primer <code>/Users/you/Archive/*_backup.*</code>.</li>
+<li><code>*</code> stoji za izvirno ime in <code>.*</code> za izvirno pripono. Potrdite za premik in preimenovanje v enem koraku.</li>
+</ol>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Premik v drugo podokno</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Preimenovanje na mestu</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="namigi">Namigi</h2>
+<ul>
+<li>Pogovorno okno premika ponuja isti gumb za možnosti in potrditveno polje čakalne vrste v ozadju kot kopiranje, tako da lahko velike premike razvrstite v čakalno vrsto in jih pustite teči v ozadju.</li>
+<li>Premikanje znotraj istega pogona je hitra operacija na mestu, zato je varno tudi za zelo velike mape. Premik med pogoni traja dlje, ker se podatki najprej skopirajo, nato pa se vir izbriše.</li>
+<li>Za preimenovanje mnogih datotek naenkrat s številčenjem, iskanjem in zamenjavo ali vzorci raje uporabite orodje za množično preimenovanje (glejte <em>Množično preimenovanje</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiranje datotek</a></li><li><a href="multi-rename.html">Preimenovanje mnogih datotek</a></li></ul></section>
+</main>
+</body>
+</html>

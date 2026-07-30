@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datotečni pripomočki</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Datotečni pripomočki</h1>
+<p>Poleg kopiranja in premikanja Peach Commander vključuje nabor vsakodnevnih datotečnih pripomočkov za preverjanje nedotaknjenosti datotek, pridobivanje prostora na disku, razbijanje velikih datotek na manjše dele in pretvarjanje datotek v in iz besedilno varnih oblik. Do vseh dostopate iz menija <strong>Datoteka</strong> in delujejo na tem, kar imate izbrano v dejavnem podoknu (ali na elementu pod kazalko, ko ni nič izbrano). Ta tema pokriva nadzorne vsote, iskalnik dvojnikov, razdelitev/združitev, kodiranje/dekodiranje in izračun zasedenega prostora.</p>
+<h2 id="ustvarjanje-ali-preverjanje-nadzornih-vsot">Ustvarjanje ali preverjanje nadzornih vsot</h2>
+<p>Nadzorne vsote omogočajo potrditev, da se je datoteka prenesla ali kopirala brez poškodbe, ali prejemniku dajo način za preverjanje prejete kopije.</p>
+<ol>
+<li>Izberite datoteke, ki jih želite odtisniti.</li>
+<li>Izberite <strong>Datoteka ▸ Ustvari nadzorne vsote…</strong>, izberite algoritem (CRC32, MD5, SHA-1, SHA-256 ali SHA-512) in shranite datoteko nadzorne vsote.</li>
+<li>Za kasnejše preverjanje datotek izberite datoteko nadzorne vsote in izberite <strong>Datoteka ▸ Preveri nadzorne vsote…</strong>. Peach Commander ponovno izračuna vsak zgoščevalnik in prijavi vsako datoteko, ki se ne ujema.</li>
+</ol>
+<p>Nadzorne vsote se izračunavajo neposredno prek trenutne lokacije, tako da jih lahko ustvarite ali preverite tudi za datoteke znotraj arhivov ali na strežniku FTP.</p>
+<h2 id="iskanje-dvojnikov-datotek">Iskanje dvojnikov datotek</h2>
+<p>Iskalnik dvojnikov najde enake datoteke, raztresene po mapah, tako da lahko odstranite odvečne kopije.</p>
+<ol>
+<li>Izberite mape (ali datoteke), ki jih želite pregledati.</li>
+<li>Izberite <strong>Datoteka ▸ Poišči dvojnike…</strong>. Peach Commander primerja kandidate in združi datoteke, ki so enake bajt za bajtom.</li>
+<li>Preglejte vsako skupino, označite kopije, ki jih ne potrebujete več, in jih izbrišite.</li>
+</ol>
+<p><img alt="Iskalnik dvojnikov, ki našteva skupine enakih datotek" src="images/duplicate-finder.png" />
+<em>(Slika: iskalnik dvojnikov združi enake datoteke, tako da lahko obdržite eno in odstranite preostale.)</em></p>
+<h2 id="razdelitev-in-zdruzitev-datotek">Razdelitev in združitev datotek</h2>
+<p>Razdelitev razbije eno veliko datoteko na oštevilčeno serijo manjših delov — priročno za omejitve shranjevanja ali prenosa. Združitev jih znova sestavi.</p>
+<ol>
+<li>Za razdelitev izberite datoteko in izberite <strong>Datoteka ▸ Razdeli datoteko…</strong>, nato nastavite velikost dela. Deli se zapišejo v mapo drugega podokna.</li>
+<li>Za ponovno sestavitev izberite prvi del in izberite <strong>Datoteka ▸ Združi datoteke…</strong>. Izvirna datoteka se obnovi iz oštevilčenih delov.</li>
+</ol>
+<h2 id="kodiranje-in-dekodiranje">Kodiranje in dekodiranje</h2>
+<p>Kodiranje spremeni dvojiško datoteko v navadno besedilo, da preživi kanale, ki prenašajo le besedilo (na primer starejšo e-pošto ali polja za lepljenje). Dekodiranje to obrne.</p>
+<ol>
+<li>Izberite datoteko in izberite <strong>Datoteka ▸ Kodiraj…</strong>, nato izberite obliko — MIME (Base64), UUE (uuencode) ali XXE.</li>
+<li>Za obnovitev izvirnika izberite kodirano datoteko in izberite <strong>Datoteka ▸ Dekodiraj…</strong>. Oblika se zazna samodejno.</li>
+</ol>
+<h2 id="izracun-zasedenega-prostora">Izračun zasedenega prostora</h2>
+<p>Za ogled, koliko prostora mapa ali izbor dejansko uporablja na disku, izberite elemente in pritisnite <strong>Ctrl+L</strong> (<strong>Datoteka ▸ Izračunaj zasedeni prostor…</strong>). Peach Commander sešteje vsako datoteko znotraj, vključno s podmapami, in prikaže vsoto.</p>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Izračunaj zasedeni prostor</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Nadzorne vsote, razdelitev/združitev in kodiranje/dekodiranje so usmerjeni v naprednejša opravila, a vsako je eno pogovorno okno s smiselnimi privzetimi vrednostmi.</li>
+<li>Ko pripomoček ustvari nove datoteke (dele razdelitve, kodirano datoteko, seznam nadzornih vsot), se zapišejo v mapo, prikazano v drugem podoknu — najprej nastavite to podokno na svoj namenjeni cilj.</li>
+<li>Brisanje dvojnikov je trajno glede na vaše nastavitve brisanja; skrbno preglejte vsako skupino in obdržite vsaj eno kopijo vsega, kar še potrebujete.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Primerjava in sinhronizacija</a></li></ul></section>
+</main>
+</body>
+</html>

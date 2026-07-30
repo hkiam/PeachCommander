@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verbinden met FTP en SFTP</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Verbinden met FTP en SFTP</h1>
+<p>Peach Commander kan externe servers doorbladeren alsof het gewone mappen zijn. Eenmaal verbonden toont één paneel de externe bestanden en kopieer, verplaats, hernoem en verwijder je ze met dezelfde toetsen als lokaal. Het spreekt gewoon FTP, beveiligd FTPS en SFTP/SCP over SSH, zodat je alles kunt bereiken, van een klassieke webhost tot een gehardende SSH-server. Bewaarde verbindingen staan in de verbindingsbeheerder, en wachtwoorden worden veilig in je macOS-sleutelhanger bewaard in plaats van in de verbinding zelf.</p>
+<h2 id="verbinding-maken-met-een-server">Verbinding maken met een server</h2>
+<ol>
+<li>Open het menu <strong>Netwerk</strong> en kies <strong>FTP-verbinding…</strong> (Ctrl+F) om de verbindingsbeheerder te openen.</li>
+<li>Kies een bewaarde verbinding uit de lijst en klik op <strong>Verbind</strong>, of klik op <strong>Nieuw</strong> om er een te maken. Gebruik mappen in de lijst om verbindingen te groeperen.</li>
+<li>Voor een snelle eenmalige verbinding kies je <strong>Netwerk &gt; Nieuwe FTP-verbinding…</strong> (Ctrl+N) en typ je het adres rechtstreeks.</li>
+<li>Voer je wachtwoord in wanneer daarom wordt gevraagd; vink de optie aan om het te bewaren en het gaat voor de volgende keer naar je sleutelhanger.</li>
+<li>Ben je klaar, kies dan <strong>Netwerk &gt; FTP-verbinding verbreken</strong> (Ctrl+Shift+F).</li>
+</ol>
+<p><img alt="De FTP-verbindingsbeheerder met de lijst van bewaarde sessies en knoppen Nieuw, Wijzig en Verwijder" src="images/ftp-connection-manager.png" />
+<em>(Afbeelding: De verbindingsbeheerder bewaart je servers; gebruik Nieuw, Wijzig en Verwijder om ze te beheren.)</em></p>
+<p>Bij het opzetten van een verbinding kun je het protocol kiezen (FTP, FTPS met expliciet AUTH TLS, impliciet FTPS op poort 990, of SFTP/SCP), passieve of actieve modus, de externe en lokale startmappen, tekstcodering en een optioneel keep-alive-interval om te voorkomen dat inactieve servers je afsluiten. Voor SFTP kun je je aanmelden met je SSH-agent, een wachtwoord of een privésleutelbestand, en kun je SCP kiezen voor overdrachten. Onbekende SSH-hostsleutels worden bij eerste gebruik vertrouwd; verandert de sleutel van een bekende server ooit, dan wordt de verbinding geweigerd om je tegen manipulatie te beschermen.</p>
+<h2 id="de-ftp-console">De FTP-console</h2>
+<p>Om precies te zien wat de server zegt, open je de FTP-console vanuit het menu <strong>Netwerk</strong>. Hij toont een live logboek van het besturingskanaal (je wachtwoord is gemaskeerd) en laat je ruwe FTP-opdrachten naar de server typen.</p>
+<p><img alt="De FTP-console met het logboek van het besturingskanaal en een veld voor ruwe opdrachten" src="images/ftp-console.png" />
+<em>(Afbeelding: De FTP-console logt elke uitwisseling en accepteert ruwe opdrachten, wat handig is bij probleemoplossing.)</em></p>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Sneltoets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Verbindingsbeheerder openen</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Nieuwe verbinding</td>
+<td>Ctrl+N</td>
+</tr>
+<tr>
+<td>Verbinding verbreken</td>
+<td>Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Overdrachtsmodus wijzigen</td>
+<td>Ctrl+Shift+M</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Onderbroken downloads en uploads kunnen hervatten waar ze zijn gestopt, in plaats van opnieuw te beginnen.</li>
+<li>Voor FTPS-servers met een zelfondertekend certificaat zet je de optie om een niet-vertrouwd certificaat te accepteren aan in de instellingen van die verbinding.</li>
+<li>Een SOCKS5-proxy kan per verbinding worden ingesteld voor gewoon FTP. Een versleutelde FTPS-verbinding via een proxy leiden wordt niet ondersteund.</li>
+<li>Bestaande FTP-verbindingen uit Total Commander kunnen worden geïmporteerd.</li>
+<li>SCP wordt alleen gebruikt voor het overdragen van bestanden; opsommen, hernoemen en verwijderen gaan altijd via SFTP.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="downloading-from-url.html">Downloaden van een URL</a></li><li><a href="network-shares.html">Netwerkshares</a></li></ul></section>
+</main>
+</body>
+</html>

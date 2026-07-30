@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vergelijken &amp; synchroniseren</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Vergelijken &amp; synchroniseren</h1>
+<p>Wanneer je twee kopieën van dezelfde map bijhoudt — een werkmap en een back-up, een laptop en een netwerkshare, een project en zijn archief — helpt Peach Commander je precies te zien wat er is veranderd en de twee kanten weer op één lijn te brengen. Je kunt twee mappen synchroniseren, individuele bestanden regel voor regel vergelijken, en bestanden byte voor byte inspecteren wanneer je zekerheid nodig hebt tot op het laatste teken.</p>
+<h2 id="twee-mappen-synchroniseren">Twee mappen synchroniseren</h2>
+<ol>
+<li>Open de map die je wilt synchroniseren in het linkerpaneel en de map om ermee te vergelijken in het rechterpaneel.</li>
+<li>Kies <strong>Opdrachten ▸ Mappen synchroniseren…</strong>. De twee mappaden worden ingevuld vanuit je panelen.</li>
+<li>Stel in hoe grondig de vergelijking moet zijn: submappen opnemen, vergelijken <strong>op inhoud</strong> (niet alleen op datum en grootte), of de wijzigingsdatum negeren.</li>
+<li>Voeg een filtermasker toe (bijvoorbeeld <code>*.jpg;*.png</code>) als je alleen bepaalde bestanden wilt synchroniseren.</li>
+<li>Bekijk het resultatenraster. Elke rij toont een bestand links, een richtingspijl in het midden en het overeenkomende bestand rechts. De pijlen vertellen je wat er zal gebeuren: <strong>→</strong> kopieert van links naar rechts, <strong>←</strong> kopieert van rechts naar links, en <strong>=</strong> betekent dat de twee identiek zijn.</li>
+<li>Pas individuele rijen aan als je het niet eens bent met een voorgestelde richting, en klik vervolgens op de synchroniseerknop om de wijzigingen uit te voeren.</li>
+</ol>
+<p><img alt="Het venster Mappen synchroniseren met twee mappaden en een resultatenraster van bestanden met linker-, gelijk- en rechterpijlen" src="images/sync-dialog.png" />
+<em>(Afbeelding: Het venster Mappen synchroniseren vergelijkt beide kanten en stelt voor elk bestand een kopieerrichting voor.)</em></p>
+<h2 id="twee-bestanden-op-inhoud-vergelijken">Twee bestanden op inhoud vergelijken</h2>
+<ol>
+<li>Selecteer één bestand in elk paneel (of twee bestanden in hetzelfde paneel).</li>
+<li>Kies <strong>Bestand ▸ Op inhoud vergelijken…</strong>.</li>
+<li>De twee bestanden openen naast elkaar met hun verschillen gemarkeerd. Gebruik de volgende/vorige-bediening om tussen gewijzigde blokken te springen.</li>
+<li>Als je de bewerkmodus aanzet, kun je beide bestanden rechtstreeks aanpassen en je wijzigingen bewaren.</li>
+</ol>
+<p><img alt="Het vergelijkvenster met twee tekstbestanden naast elkaar met verschillende regels gemarkeerd" src="images/diff-window.png" />
+<em>(Afbeelding: Twee tekstbestanden vergelijken; gewijzigde regels worden aan beide kanten gemarkeerd.)</em></p>
+<h2 id="bestanden-byte-voor-byte-vergelijken">Bestanden byte voor byte vergelijken</h2>
+<p>Wanneer twee bestanden er hetzelfde uitzien maar je moet bewijzen dat ze werkelijk identiek zijn (of de ene byte vinden die verschilt), gebruik je de binaire vergelijking. Deze toont beide bestanden in een hex-weergave met niet-overeenkomende bytes gemarkeerd, wat ideaal is om downloads te verifiëren, gecodeerde gegevens te controleren of een exacte kopie te bevestigen.</p>
+<h2 id="mappenlijsten-vergelijken">Mappenlijsten vergelijken</h2>
+<p>Om in één oogopslag verschillen tussen twee open mappen te ontdekken, kies je <strong>Markeren ▸ Mappen vergelijken</strong> (Shift+F2). Peach Commander markeert de bestanden die verschillen of aan de andere kant ontbreken, zodat je erop kunt inwerken met de gebruikelijke kopieer-, verplaats- en verwijderopdrachten.</p>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Sneltoets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mappenlijsten vergelijken (verschillende bestanden markeren)</td>
+<td>Shift+F2</td>
+</tr>
+<tr>
+<td>Op inhoud vergelijken</td>
+<td>Bestand ▸ Op inhoud vergelijken…</td>
+</tr>
+<tr>
+<td>Mappen synchroniseren</td>
+<td>Opdrachten ▸ Mappen synchroniseren…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li><strong>Op inhoud versus op datum/grootte.</strong> Een snelle vergelijking koppelt bestanden op grootte en wijzigingsdatum, wat snel is maar misleid kan worden wanneer tijdstempels verschillen voor identieke bestanden. Zet <strong>op inhoud</strong> aan voor een betrouwbaar resultaat ten koste van het lezen van elk bestand.</li>
+<li><strong>Submappen en filters.</strong> Het synchroniseervenster kan in submappen afdalen en kan met een filtermasker worden beperkt, zodat je alleen de bestandstypen kunt synchroniseren die je interesseren.</li>
+<li><strong>Jij houdt de controle.</strong> Synchroniseren draait nooit vanzelf — je bekijkt de voorgestelde richtingen in het resultatenraster en kunt ze allemaal wijzigen voordat er iets wordt gekopieerd.</li>
+<li><strong>Voorinstellingen.</strong> Veelgebruikte synchronisatieconfiguraties kunnen worden opgeslagen en hergebruikt zodat je niet elke keer dezelfde opties opnieuw invoert.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Veel bestanden hernoemen</a></li></ul></section>
+</main>
+</body>
+</html>

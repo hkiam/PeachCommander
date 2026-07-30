@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstaller</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Uninstaller</h1>
+<p>Przeciągnięcie aplikacji do Kosza zostawia jej pliki pomocnicze, pamięci podręczne, preferencje i kontenery rozrzucone po Twoich folderach Library. Wtyczka Uninstaller usuwa aplikację <strong>oraz</strong> te pozostałości: znajduje wszystko, co aplikacja po sobie zostawiła, pokazuje Ci listę z rozmiarem każdej pozycji i przenosi to wszystko do Kosza po Twoim potwierdzeniu. Jest to wtyczka, więc możesz ją wyłączyć lub usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>.</p>
+<h2 id="odinstaluj-aplikacje-pod-kursorem">Odinstaluj aplikację pod kursorem</h2>
+<ol>
+<li>Ustaw kursor na aplikacji (<code>.app</code>) w panelu.</li>
+<li>Wybierz <strong>Plik ▸ Odinstaluj aplikację…</strong>, lub kliknij prawym przyciskiem ▸ <strong>Odinstaluj aplikację…</strong>, lub naciśnij <strong>Cmd+Shift+U</strong>.</li>
+<li>Otwiera się okno przeglądu, wymieniające aplikację oraz każdy powiązany plik, który znalazła, każdy opisany swoją kategorią, ścieżką i rozmiarem.</li>
+<li>Odznacz wszystko, co chcesz zachować, a następnie kliknij <strong>Przenieś do Kosza</strong> (lub <strong>Usuń trwale</strong>).</li>
+</ol>
+<p><img alt="Okno przeglądu odinstalowania wymieniające pozostałe pliki aplikacji z polami wyboru i rozmiarami" src="images/uninstaller.png" />
+<em>(Rysunek: przejrzyj dokładnie, co zostanie usunięte, zanim cokolwiek zostanie skasowane.)</em></p>
+<h2 id="przegladaj-wszystkie-zainstalowane-aplikacje">Przeglądaj wszystkie zainstalowane aplikacje</h2>
+<p>Wybierz <strong>Polecenia ▸ Odinstaluj aplikację…</strong>, aby otworzyć przeszukiwalną listę aplikacji zainstalowanych na Twoim Macu, z nazwą, rozmiarem i datą instalacji każdej aplikacji. Wybierz jedną (lub kilka), kliknij <strong>Odinstaluj…</strong> i trafiasz do tego samego okna przeglądu. Możesz filtrować listę, wpisując tekst w polu wyszukiwania.</p>
+<h2 id="znajdz-pozostae-pliki">Znajdź pozostałe pliki</h2>
+<p>Wybierz <strong>Polecenia ▸ Znajdź pozostałe pliki…</strong>, aby przeskanować w poszukiwaniu plików pomocniczych, pamięci podręcznych i preferencji należących do aplikacji, które <strong>już</strong> usunąłeś. Przejrzyj je w ten sam sposób i wyczyść. Jeśli nic nie zostanie znalezione, wtyczka Cię o tym informuje.</p>
+<h2 id="jak-dokadnie-skanowac">Jak dokładnie skanować</h2>
+<p>Okno przeglądu ma element sterujący poziomem pewności:</p>
+<ul>
+<li><strong>Precyzyjne</strong> — pliki zakotwiczone w identyfikatorze pakietu aplikacji. Wysoka pewność; wybrane wstępnie.</li>
+<li><strong>Rozszerzone</strong> — dodaje pliki dopasowane po nazwie; pozostawione odznaczone, abyś mógł zdecydować.</li>
+<li><strong>Głębokie</strong> — Rozszerzone plus przeszukanie Spotlight w poszukiwaniu wszystkiego innego wspominającego aplikację; również pozostawione odznaczone.</li>
+</ul>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Nic nie jest usuwane bezpośrednio przez wtyczkę — pozycje przechodzą przez Kosz aplikacji lub trwałe usunięcie, dokładnie jak każda inna operacja na plikach. Usuwanie plików w <code>/Library</code> lub <code>/var</code> może wymagać hasła administratora.</li>
+<li>Przed usunięciem wtyczka zamyka działającą aplikację i wyładowuje jej elementy tła (launchd), a następnie proponuje uporządkowanie wszelkich pustych już folderów producenta.</li>
+<li>Jeśli aplikacja została zainstalowana za pomocą <strong>Homebrew</strong>, wtyczka ostrzega Cię i sugeruje <code>brew uninstall --cask</code>, aby Homebrew pozostał zsynchronizowany. Aplikacje z App Store również są odnotowywane.</li>
+<li>Dopasowania Rozszerzone i Głębokie mają z założenia niższą pewność i zaczynają odznaczone — przejrzyj je przed usunięciem. Niektórych elementów tła zainstalowanych za pomocą nowoczesnego API elementów logowania nie da się tutaj usunąć.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="deleting-files.html">Usuwanie plików</a></li></ul></section>
+</main>
+</body>
+</html>

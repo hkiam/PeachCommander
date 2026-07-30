@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Přesun a přejmenování</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Přesun a přejmenování</h1>
+<p>Přesun přemísťuje soubory a složky místo jejich duplikování a přejmenování mění jejich názvy, aniž by se dotklo obsahu. Protože Peach Commander zobrazuje dva panely vedle sebe, přesun je jen otázkou výběru toho, co chcete, v jednom panelu a jeho odeslání do složky otevřené v druhém. Můžete také přejmenovat položku na místě, nebo dát přesouvaným položkám nové názvy za pochodu pomocí masky se zástupnými znaky.</p>
+<h2 id="presun-souboru-do-druheho-panelu">Přesun souborů do druhého panelu</h2>
+<ol>
+<li>Ve zdrojovém panelu otevřete složku obsahující položky, které chcete přesunout, a otevřete cílovou složku v druhém panelu.</li>
+<li>Vyberte soubor nebo složku k přesunu. Chcete-li přesunout několik najednou, nejprve je všechny vyberte (viz <em>Výběr souborů</em>).</li>
+<li>Stiskněte F6, nebo zvolte <strong>Soubory &gt; Přesunout</strong>.</li>
+<li>Zkontrolujte cílovou složku zobrazenou v dialogu a klepnutím na <strong>OK</strong> (nebo stiskem Enter) zahajte přesun.</li>
+</ol>
+<p><img alt="Dialog přesunu zobrazující pole cílové cesty, možnosti a zaškrtávací pole fronty" src="images/copy-dialog.png" />
+<em>(Obrázek: dialog přesunu používá stejné cílové pole jako kopírování — zadejte cestu, nebo přidejte masku se zástupnými znaky k přejmenování při přesunu.)</em></p>
+<p>Přesuny na stejném disku probíhají téměř okamžitě. Když je cíl na jiném disku, Peach Commander položky zkopíruje a originály odstraní teprve poté, co každý soubor bezpečně dorazil.</p>
+<h2 id="prejmenovani-na-miste">Přejmenování na místě</h2>
+<ol>
+<li>Vyberte jeden soubor nebo složku.</li>
+<li>Stiskněte Shift+F6, nebo zvolte <strong>Soubory &gt; Přejmenovat</strong>.</li>
+<li>Upravte název přímo v panelu, poté stiskem Enter potvrďte nebo Esc zrušte.</li>
+</ol>
+<h2 id="prejmenovani-pri-presunu">Přejmenování při přesunu</h2>
+<p>Cílové pole v dialogu přesunu přijímá masku se zástupnými znaky, takže můžete položky přejmenovat, jak se přesouvají:</p>
+<ol>
+<li>Vyberte položky a stiskněte F6.</li>
+<li>Do cílového pole přidejte za cílovou složku masku názvu, například <code>/Users/vy/Archive/*_backup.*</code>.</li>
+<li><code>*</code> zastupuje původní název a <code>.*</code> původní příponu. Potvrzením přesunete a přejmenujete v jednom kroku.</li>
+</ol>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Přesunout do druhého panelu</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Přejmenovat na místě</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tipy">Tipy</h2>
+<ul>
+<li>Dialog přesunu nabízí stejné tlačítko možností a zaškrtávací pole fronty na pozadí jako kopírování, takže můžete velké přesuny zařadit do fronty a nechat je běžet na pozadí.</li>
+<li>Přesun v rámci stejného disku je rychlá operace na místě, takže je bezpečný pro velmi velké složky. Přesun mezi disky trvá déle, protože data se nejprve zkopírují a poté se zdroj smaže.</li>
+<li>Chcete-li přejmenovat mnoho souborů najednou s číslováním, hledáním a nahrazováním nebo vzory, použijte místo toho nástroj hromadného přejmenování (viz <em>Hromadné přejmenování</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopírování souborů</a></li><li><a href="multi-rename.html">Přejmenování mnoha souborů</a></li></ul></section>
+</main>
+</body>
+</html>

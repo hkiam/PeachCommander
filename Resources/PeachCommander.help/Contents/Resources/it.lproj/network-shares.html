@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Condivisioni di rete</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Condivisioni di rete</h1>
+<p>Peach Commander può connettersi ai file server della tua rete locale o aziendale — condivisioni SMB (Windows/Samba) e AFP — e mostrare il loro contenuto in un pannello proprio come una cartella sul tuo Mac. Una volta connessa una condivisione, puoi sfogliare, copiare, spostare, rinominare e aprire file al suo interno esattamente come in locale, incluso copiare tra la condivisione e il tuo altro pannello.</p>
+<h2 id="connettiti-a-un-server">Connettiti a un server</h2>
+<ol>
+<li>Fai clic sul pannello a cui vuoi connetterti (la condivisione connessa si apre nel pannello attivo).</li>
+<li>Premi Cmd+K, o scegli <strong>Rete &gt; Risorse di rete &gt; Connetti condivisione di rete…</strong>.</li>
+<li>Nella finestra <strong>Connetti al server</strong>, digita l'indirizzo del server. Puoi indicare:
+   - un indirizzo SMB, per esempio <code>smb://fileserver/projects</code>
+   - un indirizzo AFP, per esempio <code>afp://fileserver/projects</code>
+   - un percorso in stile Windows, per esempio <code>\\fileserver\projects</code>
+   - un semplice nome <code>server/condivisione</code></li>
+<li>Fai clic su Connetti (o premi Invio). Se il server richiede nome e password, macOS mostra la sua consueta finestra di accesso — inserisci lì le tue credenziali.</li>
+<li>Quando la condivisione è pronta, il pannello attivo la apre automaticamente. Sfogliala e lavoraci come con qualsiasi altra cartella.</li>
+</ol>
+<h2 id="disconnetti">Disconnetti</h2>
+<p>Una condivisione connessa compare come un volume montato sul tuo Mac. Per disconnetterla, espellila nel modo consueto di macOS — per esempio dalla barra laterale del Finder o dall'elenco dei dispositivi in Peach Commander.</p>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Scorciatoia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Connetti condivisione di rete…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>L'autenticazione (nome utente, password e un'eventuale opzione "ricorda nel mio portachiavi") è gestita dalla consueta finestra di accesso di macOS, così le password dei server salvate funzionano come nel Finder.</li>
+<li>Se indichi un indirizzo che non può essere interpretato, Peach Commander chiede un indirizzo SMB/AFP, un percorso in stile Windows o un nome <code>server/condivisione</code>, e non viene montato nulla.</li>
+<li>Dopo la conferma, la connessione può richiedere un istante mentre macOS monta la condivisione; il pannello passa a essa non appena diventa disponibile.</li>
+<li>Questo si connette a dispositivi condivisi su una rete. Per raggiungere invece un server FTP, FTPS o SFTP, vedi l'argomento correlato sotto.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Connessione a FTP e SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

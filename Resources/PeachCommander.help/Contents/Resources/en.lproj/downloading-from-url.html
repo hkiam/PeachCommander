@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Downloading from a URL</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Downloading from a URL</h1>
+<p>Peach Commander can fetch a file straight from an HTTP or HTTPS web address into the active panel, without opening a browser. Paste a link, confirm the name it will be saved under, and the download runs on its own — with resume if the connection drops, batch downloads for many links at once, and optional checksum verification so you know the file arrived intact.</p>
+<h2 id="download-a-file">Download a file</h2>
+<ol>
+<li>Open the panel folder where you want the file to land.</li>
+<li>Choose <strong>Net &gt; Download from URL</strong>, or press Cmd+Shift+D.</li>
+<li>Paste the web address into the <strong>URL(s)</strong> box. If you copied a link first, it is filled in for you.</li>
+<li>Check the <strong>Save as</strong> name — it is suggested from the link and you can edit it freely.</li>
+<li>Click <strong>Download</strong>.</li>
+</ol>
+<p><img alt="The Download from URL dialog with a link, editable file name, and options" src="images/download-url.png" />
+<em>(Figure: The download dialog — paste a link, edit the name, and set optional verification, credentials, headers, or a proxy.)</em></p>
+<p>By default the download runs <strong>in the background</strong>, so you can keep working in the panels while it transfers. Turn off <strong>Download in background</strong> to wait for it, or turn on <strong>Queue for later</strong> to set it up without starting it yet.</p>
+<h2 id="download-several-files-at-once">Download several files at once</h2>
+<p>Paste one web address per line in the <strong>URL(s)</strong> box. When more than one link is present, each file's name is derived automatically from its link, and the per-file <strong>Save as</strong> and <strong>Verify</strong> fields are turned off.</p>
+<h2 id="resuming-an-interrupted-download">Resuming an interrupted download</h2>
+<p>If a transfer is cut off, Peach Commander keeps what it has already received in a temporary <code>.part</code> file. Starting the same download again resumes from where it stopped whenever the server supports it, rather than starting over. The <code>.part</code> file is renamed to the final name only once the download finishes successfully.</p>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Download from URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li><strong>Verify the file.</strong> For a single download, paste an expected <strong>SHA-256</strong> checksum into the <strong>Verify</strong> field. After the transfer, the file's checksum is compared against it so you can trust the file matches what the publisher listed.</li>
+<li><strong>Sign-in required?</strong> Enter a user name and password in the <strong>Auth</strong> fields for sites that use basic authentication. For token-based access, add an <code>Authorization: Bearer …</code> line in the <strong>Headers</strong> box.</li>
+<li><strong>Custom headers.</strong> Add one header per line in the <strong>Headers</strong> box, for example <code>Referer: …</code> or <code>Cookie: …</code>, for links that only work with specific request headers.</li>
+<li><strong>Proxy.</strong> Route the download through an HTTP or SOCKS5 proxy by filling in the <strong>Proxy</strong> host, port, and type.</li>
+<li><strong>Untrusted certificates.</strong> Only turn on <strong>Allow untrusted certificate</strong> for a site you trust that uses a self-signed certificate; it disables the normal HTTPS security check for that download.</li>
+<li><strong>Note:</strong> Cmd+Shift+D is also used elsewhere for going to the Desktop folder; if the shortcut does not open this dialog, use <strong>Net &gt; Download from URL</strong> from the menu instead.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Connecting to FTP &amp; SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plugins</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Plugins</h1>
+<p>Plugins erweitern Peach Commander um zusätzliche Werkzeuge, Dateiformate und Orte zum Durchsuchen. Ein Dutzend Plugins ist bereits eingebaut, sodass Sie sie sofort verwenden können, und Sie können einzelne Plugins ein- oder ausschalten — oder neue installieren — über ein einziges Fenster. Nutzen Sie Plugins, wenn Sie Funktionen über das alltägliche Kopieren und Durchsuchen hinaus möchten: visualisieren, was eine Festplatte füllt, sich mit einem WebDAV-Server verbinden, den Status eines Git-Repositorys prüfen, die Systemaktivität beobachten und mehr.</p>
+<p>Plugins gibt es in mehreren Ausprägungen: Einige fügen ein <strong>Panel oder eine Seitenleiste</strong> hinzu (eine Ansicht), einige fügen <strong>Spalten</strong> zur Dateiliste hinzu, einige fügen einen <strong>Ort, in den Sie navigieren</strong> wie ein Laufwerk hinzu, und einige bringen der App ein neues <strong>Archivformat</strong> bei. Jedes wird unabhängig aktiviert.</p>
+<h2 id="was-die-eingebauten-plugins-hinzufugen">Was die eingebauten Plugins hinzufügen</h2>
+<p>Mehrere Plugins haben ihr eigenes ausführliches Hilfethema — folgen Sie dem Link für die vollständige Geschichte:</p>
+<ul>
+<li><strong><a href="disk-map.md">Disk Map</a></strong> — visualisiert, was einen Ordner oder ein Volume füllt, als Treemap oder Sunburst, abgeglichen mit freiem, bereinigbarem und verborgenem Speicher, mit einem Sammler zum Aufräumen.</li>
+<li><strong><a href="ai-assistant.md">AI Assistant</a></strong> — ein optionaler, entfernbarer Assistent, der Dateien in einfacher Sprache zusammenfasst, umbenennt, übersetzt, tabelliert und aufräumt, auf dem Gerät oder über ein Cloud-Modell.</li>
+<li><strong><a href="git.md">Git</a></strong> — zeigt den Arbeitsbaum-Status jeder Datei und den aktuellen Branch als Panel-Spalten und fügt ein <strong>Git</strong>-Menü für Status, bereitstellen, committen, pull und push hinzu.</li>
+<li><strong><a href="system-monitor.md">System Monitor</a></strong> — eine Live-Anzeige von CPU, Speicher, Festplatte, Netzwerk (und, sofern verfügbar, GPU, Batterie, Sensoren) in der Fenster-Titelleiste, mit anklickbaren Detaildiagrammen.</li>
+<li><strong><a href="task-manager.md">Task Manager</a></strong> — bindet Ihre laufenden Prozesse als durchsuchbares Laufwerk <strong>TaskManager</strong> ein; sortieren Sie sie, untersuchen Sie sie wie Dateien oder beenden Sie sie mit Löschen.</li>
+<li><strong><a href="uninstaller.md">Uninstaller</a></strong> — entfernt eine Anwendung <strong>und</strong> die Support-Dateien, Caches und Einstellungen, die sie hinterlässt, nachdem er Ihnen genau gezeigt hat, was verschwinden wird.</li>
+</ul>
+<p>Die übrigen eingebauten Plugins sind kleiner und brauchen keine eigene Seite:</p>
+<ul>
+<li><strong>WebDAV</strong> — verbinden Sie sich mit einem WebDAV-Server (<strong>Netz ▸ WebDAV verbinden…</strong>) und durchsuchen, laden Sie hoch und herunter, benennen Sie um und löschen Sie darauf, als wäre er ein Ordner. Passwörter werden im macOS-Schlüsselbund aufbewahrt.</li>
+<li><strong>iCloud Drive</strong> — fügt der Laufwerksleiste einen Eintrag <em>iCloud Drive</em> hinzu, der direkt zu Ihrem lokalen iCloud-Drive-Ordner springt. Er erscheint nur, wenn iCloud Drive auf Ihrem Mac eingerichtet ist.</li>
+<li><strong>Notes</strong> — bewahren Sie eine Notiz neben jeder Datei oder jedem Ordner auf. Ein kleines <strong>●</strong>-Abzeichen markiert Elemente, die eine haben; bearbeiten Sie Notizen in einer angedockten <strong>Notes</strong>-Seitenleiste oder einem vollständigen Rich-Text-Editor (<strong>Befehle ▸ Notiz bearbeiten…</strong>) und durchsuchen Sie sie alle mit <strong>Notizübersicht…</strong>.</li>
+<li><strong>Log Viewer</strong> — öffnen Sie eine Datei als farbcodiertes, nach Ebene klassifiziertes, live mitlaufendes Protokoll (<strong>Datei ▸ Als Protokoll ansehen…</strong>), mit Filtern pro Ebene, Suche und Unterstützung für gängige Protokollformate sowie Ihre eigenen Regex-Formate. Verarbeitet mehrere Gigabyte große Protokolle sofort.</li>
+<li><strong>AI Column</strong> — fügt eine Spalte <em>AI Language</em> hinzu, die die vorherrschende Sprache jeder Textdatei auf dem Gerät erkennt (mithilfe von Apples NaturalLanguage-Framework — kein Cloud-Modell).</li>
+<li><strong>Archivformate</strong> — bringt der App bei, weitere Archivtypen zu durchsuchen und zu entpacken (7z, tar-Familie, gzip/bzip2/xz/zstd sowie RAR, sofern ein Hilfsprogramm installiert ist), die dann wie Ordner geöffnet werden.</li>
+</ul>
+<h2 id="plugins-ein-oder-ausschalten">Plugins ein- oder ausschalten</h2>
+<ol>
+<li>Wählen Sie Konfiguration ▸ Plugins…, um das Plugin-Fenster zu öffnen.</li>
+<li>Jedes installierte Plugin erscheint in der Liste mit seinem Namen, seinem Typ und einem Kontrollkästchen „Aktiviert".</li>
+<li>Aktivieren oder deaktivieren Sie das Kontrollkästchen, um ein Plugin ein- oder auszuschalten. Änderungen werden sofort wirksam — aktivierte Plugins fügen ihre Menüs, Spalten und Funktionen hinzu; deaktivierte bleiben unauffällig.</li>
+</ol>
+<p><img alt="Das Plugin-Fenster mit einer Liste installierter Plugins, Aktivierungs-Kontrollkästchen sowie den Schaltflächen Installieren und Entfernen" src="images/plugins-window.png" />
+<em>(Abbildung: Das Plugin-Fenster, in dem Sie Plugins aktivieren, deaktivieren, installieren oder entfernen.)</em></p>
+<h2 id="ein-neues-plugin-installieren">Ein neues Plugin installieren</h2>
+<ol>
+<li>Wählen Sie Konfiguration ▸ Plugins….</li>
+<li>Klicken Sie auf <strong>Aus Ordner installieren…</strong>.</li>
+<li>Wählen Sie ein Plugin-Bundle oder eine <code>.zip</code>-Datei, die eines enthält, und bestätigen Sie. Das Plugin wird zur Liste hinzugefügt und aktiviert.</li>
+</ol>
+<h2 id="ein-plugin-entfernen">Ein Plugin entfernen</h2>
+<ol>
+<li>Wählen Sie im Plugin-Fenster das Plugin in der Liste aus.</li>
+<li>Klicken Sie auf <strong>Entfernen</strong>. Eingebaute Funktionen bleiben unberührt; nur das ausgewählte Plugin wird entfernt.</li>
+</ol>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Die Plugin-Liste zeigt neben dem Namen und dem Speicherort jedes Plugins auch seinen Typ und seine Schnittstellenversion an, sodass Sie bestätigen können, was installiert ist.</li>
+<li>Wenn keine Plugins installiert sind, zeigt das Fenster eine kurze Aufforderung, die Sie zu <strong>Aus Ordner installieren…</strong> weist.</li>
+<li>Einige Plugins fügen ihre eigenen Spalten, Menüpunkte oder Panel-Orte nur hinzu, solange sie aktiviert sind. Wenn eine erwartete Funktion fehlt, prüfen Sie, ob ihr Plugin hier eingeschaltet ist.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="disk-map.html">Disk Map</a></li><li><a href="ai-assistant.html">KI-Assistent</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="archives.html">Mit Archiven arbeiten</a></li><li><a href="ftp-and-sftp.html">Verbindung mit FTP &amp; SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

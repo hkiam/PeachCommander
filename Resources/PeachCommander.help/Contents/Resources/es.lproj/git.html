@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>El complemento Git muestra el estado de un repositorio Git directamente en el panel de archivos: sin una app aparte, sin terminal. Añade dos columnas que indican el estado del árbol de trabajo de cada archivo y la rama actual, un submenú <strong>Git</strong> para los comandos cotidianos (estado, preparar, confirmar, pull, push), y usa el <code>git</code> que ya está instalado en su Mac. Al ser un complemento, puede desactivarlo o eliminarlo desde <strong>Configuración ▸ Complementos…</strong>.</p>
+<h2 id="que-anade">Qué añade</h2>
+<ul>
+<li><strong>Dos columnas en la lista de archivos</strong> — <em>Git Status</em> y <em>Branch</em>. En un repositorio, cada archivo muestra una palabra de estado breve (Modificado, Añadido, Eliminado, Sin seguimiento, Renombrado, Copiado, Conflicto, Ignorado o Cambiado) y el panel muestra la rama actual. Active las columnas en <strong>Configuración ▸ Columnas…</strong> (consulte <a href="view-modes-and-sorting.md">Modos de vista y ordenación</a>).</li>
+<li><strong>Un menú Git</strong> — bajo <strong>Comandos ▸ Git</strong>, y en el menú contextual de un archivo, con: <strong>Git Status…</strong>, <strong>Git Add (preparar)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> y <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="El cuadro de diálogo Git Status mostrando la rama actual y los archivos modificados del repositorio" src="images/git-status.png" />
+<em>(Figura: Git Status informa de la rama y de cada cambio en el árbol de trabajo.)</em></p>
+<h2 id="comprobar-el-estado">Comprobar el estado</h2>
+<ol>
+<li>Sitúe el cursor sobre un archivo o carpeta dentro de un repositorio Git.</li>
+<li>Elija <strong>Comandos ▸ Git ▸ Git Status…</strong> (o menú contextual ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>Aparece un resumen: la rama actual (o <em>(desacoplada)</em>), y luego, o bien <em>Árbol de trabajo limpio.</em>, o bien una lista de cambios, cada línea con el estado y la ruta del archivo.</li>
+</ol>
+<p>Si el cursor no está dentro de un repositorio, el complemento simplemente indica <em>No es un repositorio Git.</em></p>
+<h2 id="preparar-confirmar-pull-push">Preparar, confirmar, pull, push</h2>
+<ul>
+<li><strong>Git Add (preparar)</strong> prepara el archivo situado bajo el cursor (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> pide un mensaje de confirmación y luego confirma todos los cambios (<code>git commit -a</code>). Se muestra la salida combinada para que vea exactamente qué ocurrió.</li>
+<li><strong>Git Pull</strong> realiza un pull solo de avance rápido (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> envía la rama actual (<code>git push</code>).</li>
+</ul>
+<p>Tras un comando que modifica el repositorio, el panel activo se actualiza para que las columnas de estado se mantengan al día.</p>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>El complemento usa el Git del sistema en <code>/usr/bin/git</code>. Si Git no está instalado, los comandos informan de que Git no está disponible. (Instalar las Herramientas de Línea de Comandos de Xcode lo proporciona.)</li>
+<li>El estado del repositorio se lee una vez por carpeta y se almacena en caché, de modo que desplazarse por un repositorio grande sigue siendo rápido; la caché se actualiza tras cualquier comando que modifique el árbol.</li>
+<li>La confirmación usa <code>git commit -a</code>, que confirma los cambios con seguimiento; los archivos completamente nuevos todavía necesitan <strong>Git Add (preparar)</strong> primero.</li>
+<li>Las cabeceras de columna <em>Git Status</em> y <em>Branch</em> aparecen actualmente en inglés incluso en otros idiomas de la interfaz; los valores y los cuadros de diálogo están localizados.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="view-modes-and-sorting.html">Modos de vista y ordenación</a></li></ul></section>
+</main>
+</body>
+</html>

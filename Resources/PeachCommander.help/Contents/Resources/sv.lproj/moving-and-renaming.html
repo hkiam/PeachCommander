@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flytta och byta namn</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Flytta och byta namn</h1>
+<p>Flytt omplacerar filer och mappar istället för att dubblera dem, och namnbyte ändrar deras namn utan att röra deras innehåll. Eftersom Peach Commander visar två paneler sida vid sida handlar flytt bara om att välja det du vill ha i den ena panelen och skicka det till mappen som är öppen i den andra. Du kan även byta namn på ett objekt på plats, eller ge flyttade objekt nya namn i farten med hjälp av en jokermask.</p>
+<h2 id="flytta-filer-till-den-andra-panelen">Flytta filer till den andra panelen</h2>
+<ol>
+<li>Öppna i källpanelen mappen som innehåller objekten du vill flytta, och öppna målmappen i den andra panelen.</li>
+<li>Markera filen eller mappen som ska flyttas. För att flytta flera samtidigt, markera dem alla först (se <em>Markera filer</em>).</li>
+<li>Tryck på F6, eller välj <strong>Arkiv &gt; Flytta</strong>.</li>
+<li>Kontrollera målmappen som visas i dialogen och klicka på <strong>OK</strong> (eller tryck på Return) för att starta flytten.</li>
+</ol>
+<p><img alt="Flyttdialogen som visar målsökvägsfältet, alternativ och en kryssruta för kön" src="images/copy-dialog.png" />
+<em>(Figur: Flyttdialogen använder samma målfält som kopiering – skriv en sökväg, eller lägg till en jokermask för att byta namn medan du flyttar.)</em></p>
+<p>Flyttar på samma disk sker nästan omedelbart. När målet ligger på en annan disk kopierar Peach Commander objekten och tar sedan bort originalen först efter att varje fil har anlänt säkert.</p>
+<h2 id="byt-namn-pa-plats">Byt namn på plats</h2>
+<ol>
+<li>Markera en enskild fil eller mapp.</li>
+<li>Tryck på Shift+F6, eller välj <strong>Arkiv &gt; Byt namn</strong>.</li>
+<li>Redigera namnet direkt i panelen, och tryck sedan på Return för att bekräfta eller Esc för att avbryta.</li>
+</ol>
+<h2 id="byt-namn-medan-du-flyttar">Byt namn medan du flyttar</h2>
+<p>Målfältet i flyttdialogen accepterar en jokermask, så att du kan byta namn på objekt allteftersom de flyttas:</p>
+<ol>
+<li>Markera objekten och tryck på F6.</li>
+<li>I målfältet, lägg till en namnmask efter målmappen, till exempel <code>/Users/you/Archive/*_backup.*</code>.</li>
+<li><code>*</code> står för det ursprungliga namnet och <code>.*</code> för det ursprungliga filtillägget. Bekräfta för att flytta och byta namn i ett steg.</li>
+</ol>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flytta till den andra panelen</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Byt namn på plats</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>Flyttdialogen erbjuder samma alternativknapp och kryssruta för bakgrundskön som kopiering, så att du kan köa stora flyttar och låta dem köras i bakgrunden.</li>
+<li>Att flytta inom samma disk är en snabb operation på plats, så det är säkert för mycket stora mappar. En flytt mellan diskar tar längre tid eftersom data först kopieras och sedan tas källan bort.</li>
+<li>För att byta namn på många filer samtidigt med numrering, sök-och-ersätt eller mönster, använd Verktyget för massnamnbyte istället (se <em>Massnamnbyte</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiera filer</a></li><li><a href="multi-rename.html">Byta namn på många filer</a></li></ul></section>
+</main>
+</body>
+</html>

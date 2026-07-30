@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>Wtyczka Task Manager zamienia procesy działające na Twoim Macu w folder, który możesz przeglądać. Pojawia się jako dysk <strong>TaskManager</strong> na pasku dysków; otwórz go, a każdy proces jest wierszem, który możesz sortować, badać jak plik lub zakończyć — używając tych samych klawiszy, których już używasz do plików. Jest to wtyczka, więc możesz ją wyłączyć lub usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>.</p>
+<h2 id="otworz">Otwórz</h2>
+<ol>
+<li>Kliknij pozycję <strong>📊 TaskManager</strong> na pasku dysków (znajduje się tuż za Twoim dyskiem startowym).</li>
+<li>Panel wypełnia się jednym wierszem na każdy działający proces. Nazwą każdego wiersza jest nazwa procesu, po której następuje jego PID, na przykład <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="Task Manager wymieniający działające procesy z kolumnami PID, CPU, pamięci i polecenia" src="images/task-manager.png" />
+<em>(Rysunek: działające procesy pokazane jako lista plików, którą możesz sortować i na której możesz działać.)</em></p>
+<h2 id="co-oznacza-kazda-kolumna">Co oznacza każda kolumna</h2>
+<p>Obok zwykłych kolumn Rozmiar (pamięć) i Data (czas uruchomienia) Task Manager dodaje kolumny procesów:</p>
+<table>
+<thead>
+<tr>
+<th>Kolumna</th>
+<th>Znaczenie</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>Identyfikator procesu</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Ostatnie użycie procesora (pojawia się dopiero po drugim odświeżeniu)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Liczba wątków</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R działający · S śpiący · T zatrzymany · Z zombie · I bezczynny</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Właściciel</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>Identyfikator procesu nadrzędnego</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>Pełny wiersz poleceń</td>
+</tr>
+</tbody>
+</table>
+<p>Sortuj według dowolnej kolumny (na przykład CPU % lub Rozmiar/pamięć) tak samo jak w zwykłym folderze.</p>
+<h2 id="zbadaj-lub-zakoncz-proces">Zbadaj lub zakończ proces</h2>
+<ul>
+<li><strong>Podgląd (F3)</strong> pokazuje raport <em>Informacje o procesie</em>: nazwę, PID, proces nadrzędny, użytkownika, stan, wątki, pamięć, procesor, czas uruchomienia, ścieżkę pliku wykonywalnego i pełny wiersz poleceń.</li>
+<li><strong>Usuń (F8)</strong> kończy proces. Pierwsze usunięcie wysyła łagodne <strong>zakończenie</strong> (SIGTERM); usunięcie po raz drugi procesu, który wciąż działa, eskaluje do <strong>wymuszonego zakończenia</strong> (SIGKILL). Wtyczka nigdy nie celuje w PID 1.</li>
+</ul>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Podstawowe szczegóły (PID, proces nadrzędny, użytkownik, stan) są odczytywalne dla każdego procesu, jak w <code>ps</code>. Pamięć, wątki i procesor można odczytać tylko dla <strong>Twoich własnych</strong> procesów; inne procesy pokazują te kolumny puste (wymagają podwyższonych uprawnień, co zostanie dodane później).</li>
+<li>CPU % to zmiana między dwiema próbkami, więc jest puste, dopóki panel nie odświeży się po raz drugi (panel odświeża się mniej więcej co dwie sekundy).</li>
+<li>Lista jest tylko do odczytu, poza kończeniem procesu — nie możesz kopiować do niej plików.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="viewing-files.html">Podgląd plików</a></li><li><a href="deleting-files.html">Usuwanie plików</a></li></ul></section>
+</main>
+</body>
+</html>

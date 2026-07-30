@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ansluta till FTP och SFTP</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Ansluta till FTP och SFTP</h1>
+<p>Peach Commander kan bläddra bland fjärrservrar som om de vore vanliga mappar. När du är ansluten visar den ena panelen fjärrfilerna och du kopierar, flyttar, byter namn på och tar bort dem med samma tangenter du använder lokalt. Det talar vanlig FTP, säker FTPS och SFTP/SCP över SSH, så att du kan nå allt från en klassisk webbvärd till en härdad SSH-server. Sparade anslutningar bor i anslutningshanteraren, och lösenord förvaras säkert i din macOS Keychain snarare än i anslutningen själv.</p>
+<h2 id="anslut-till-en-server">Anslut till en server</h2>
+<ol>
+<li>Öppna menyn <strong>Nätverk</strong> och välj <strong>FTP-anslut…</strong> (Ctrl+F) för att öppna anslutningshanteraren.</li>
+<li>Välj en sparad anslutning från listan och klicka på <strong>Anslut</strong>, eller klicka på <strong>Ny</strong> för att skapa en. Använd mappar i listan för att gruppera anslutningar.</li>
+<li>För en snabb engångsanslutning, välj <strong>Nätverk &gt; FTP ny anslutning…</strong> (Ctrl+N) och skriv in adressen direkt.</li>
+<li>Ange ditt lösenord när du ombeds; kryssa i alternativet att spara det så hamnar det i din Keychain till nästa gång.</li>
+<li>När du är klar, välj <strong>Nätverk &gt; FTP koppla från</strong> (Ctrl+Shift+F).</li>
+</ol>
+<p><img alt="FTP-anslutningshanteraren som visar listan över sparade sessioner med knapparna Ny, Redigera och Ta bort" src="images/ftp-connection-manager.png" />
+<em>(Figur: Anslutningshanteraren håller dina sparade servrar; använd Ny, Redigera och Ta bort för att hantera dem.)</em></p>
+<p>När du ställer in en anslutning kan du välja protokoll (FTP, FTPS med explicit AUTH TLS, implicit FTPS på port 990, eller SFTP/SCP), passivt eller aktivt läge, start-mapparna på fjärr och lokalt, textkodning, och ett valfritt keep-alive-intervall för att hindra inaktiva servrar från att koppla bort dig. För SFTP kan du autentisera med din SSH-agent, ett lösenord eller en privat nyckelfil, och du kan välja SCP för överföringar. Okända SSH-värdnycklar betros vid första användning; om en känd servers nyckel någonsin ändras nekas anslutningen för att skydda dig från manipulering.</p>
+<h2 id="ftp-konsolen">FTP-konsolen</h2>
+<p>För att se exakt vad servern säger, öppna FTP-konsolen från menyn <strong>Nätverk</strong>. Den visar en livelogg över kontrollkanalen (ditt lösenord maskeras) och låter dig skriva råa FTP-kommandon till servern.</p>
+<p><img alt="FTP-konsolen som visar loggen över kontrollkanalen och ett fält för råa kommandon" src="images/ftp-console.png" />
+<em>(Figur: FTP-konsolen loggar varje utbyte och tar emot råa kommandon, vilket är praktiskt vid felsökning.)</em></p>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Öppna anslutningshanteraren</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Ny anslutning</td>
+<td>Ctrl+N</td>
+</tr>
+<tr>
+<td>Koppla från</td>
+<td>Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Byt överföringsläge</td>
+<td>Ctrl+Shift+M</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anteckningar">Anteckningar</h2>
+<ul>
+<li>Avbrutna nedladdningar och uppladdningar kan återupptas där de slutade, istället för att börja om.</li>
+<li>För FTPS-servrar med ett självsignerat certifikat, slå på alternativet att acceptera ett ej betrott certifikat i den anslutningens inställningar.</li>
+<li>En SOCKS5-proxy kan ställas in per anslutning för vanlig FTP. Att dirigera en krypterad FTPS-anslutning genom en proxy stöds inte.</li>
+<li>Befintliga FTP-anslutningar från Total Commander kan importeras.</li>
+<li>SCP används endast för att överföra filer; listning, namnbyte och borttagning går alltid över SFTP.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="downloading-from-url.html">Ladda ner från en URL</a></li><li><a href="network-shares.html">Nätverksresurser</a></li></ul></section>
+</main>
+</body>
+</html>

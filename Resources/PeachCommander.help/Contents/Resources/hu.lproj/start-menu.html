@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Start menü és egyéni parancsok</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>A Start menü és egyéni parancsok</h1>
+<p>A <strong>Start</strong> menü az ön saját személyes menüje, amely a menüsávban ül a Fájl, Szerkesztés és a többi mellett. Olyan parancsokat tartalmaz, amelyeket ön határoz meg, így a leggyakrabban használt műveletek mindig egyetlen kattintásnyira vannak. A klasszikus kétpaneles fájlkezelők hagyományában minden bejegyzés futtathat egy beépített parancsot, elindíthat egy külső programot vagy appot, vagy egyenesen egy mappára ugorhat. A Peach Commander üres Start menüvel érkezik, készen arra, hogy megtöltse.</p>
+<h2 id="hogyan-adja-hozza-sajat-parancsait">Hogyan adja hozzá saját parancsait</h2>
+<ol>
+<li>Válassza a <strong>Start &gt; Start menü módosítása…</strong> lehetőséget. A Peach Commander megnyitja a felhasználói parancsfájlját (első alkalommal egy megjegyzésben lévő példával létrehozva).</li>
+<li>Adjon hozzá egy szakaszt parancsonként. Minden szakasz egy szögletes zárójelben lévő névvel kezdődik, majd néhány egyszerű kulccsal:
+   - <strong>cmd</strong> — mit futtasson: egy programútvonalat, egy appot, egy beépített <code>cm_</code> parancsot, vagy egy másik saját parancsát.
+   - <strong>param</strong> — egy programnak átadott paraméterek. A helyőrzők a parancs futásakor töltődnek ki: <code>%P</code> (forrásmappa), <code>%N</code> (aktuális fájl), <code>%T</code> (a másik panel mappája), <code>%M</code> (a másik panel fájlja), <code>%S</code> (kijelölt fájlok).
+   - <strong>path</strong> — a mappa, ahol kezdje (alapértelmezetten az aktuális mappa).
+   - <strong>menu</strong> — a Start menüben megjelenő cím.
+   - <strong>key</strong> — egy opcionális billentyűparancs, például <code>C+S+B</code>.</li>
+<li>Mentse a fájlt. A Start menü magától frissül, amikor a Peach Commander legközelebb aktívvá válik, így az új bejegyzései azonnal megjelennek.</li>
+</ol>
+<h2 id="tippek">Tippek</h2>
+<ul>
+<li>Az aktuális mappa Terminálban való megnyitásához állítsa a <strong>cmd</strong>-t <code>open</code>-re, a <strong>param</strong>-ot <code>-a Terminal %P</code>-re, és a <strong>menu</strong>-t <code>Terminál megnyitása itt</code>-re.</li>
+<li>Irányítsa a <strong>cmd</strong>-t egy <code>cm_</code> parancsra, hogy egy beépített műveletnek saját Start-menü bejegyzést és billentyűparancsot adjon.</li>
+<li>A fájlban lévő sorrend a menüben lévő sorrend, ezért tegye a leggyakrabban használt parancsokat felülre.</li>
+</ul>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A teljes menüsávot is lecserélheti a sajátjára. Válassza a <strong>Konfiguráció &gt; Menüfájl szerkesztése…</strong> lehetőséget egy olyan menüfájl megnyitásához, amely az aktuális, teljesen lokalizált beépített menüből van kiindítva; szerkessze szabadon, és a változtatásai a következő alkalommal alkalmazódnak, amikor az app aktiválódik. Törölje a fájlt a standard menüsáv visszaállításához.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">A gombsáv</a></li><li><a href="keyboard-shortcuts.html">Billentyűzet és billentyűparancsok</a></li></ul></section>
+</main>
+</body>
+</html>

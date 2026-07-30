@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="leftPeach" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF9D68"/>
+      <stop offset="100%" stop-color="#FF7A3D"/>
+    </linearGradient>
+    <linearGradient id="rightPeach" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF8B82"/>
+      <stop offset="100%" stop-color="#FF5F68"/>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#343A40"/>
+      <stop offset="100%" stop-color="#151A21"/>
+    </linearGradient>
+
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
+
+    <filter id="innerShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="blur"/>
+      <feOffset dy="6" result="offset"/>
+      <feComposite in="offset" in2="SourceAlpha" operator="out" result="inverse"/>
+      <feFlood flood-color="#7E2A20" flood-opacity="0.22" result="color"/>
+      <feComposite in="color" in2="inverse" operator="in" result="shadow"/>
+      <feComposite in="shadow" in2="SourceGraphic" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- macOS icon tile -->
+  <rect x="58" y="58" width="908" height="908" rx="210" fill="#FFFFFF" filter="url(#shadow)"/>
+
+  <!-- stem -->
+  <path d="M486 284 C458 237, 419 205, 391 203"
+        fill="none" stroke="url(#leafGrad)" stroke-width="30" stroke-linecap="round"/>
+
+  <!-- leaf -->
+  <path d="M528 286
+           C538 210, 594 147, 690 139
+           C703 220, 662 281, 531 300 Z"
+        fill="url(#leafGrad)"/>
+
+  <!-- peach left -->
+  <path d="M492 302
+           C444 275, 354 271, 285 311
+           C201 359, 164 460, 170 575
+           C178 726, 274 828, 431 848
+           C467 852, 493 824, 493 790
+           L493 354
+           C493 331, 500 313, 492 302 Z"
+        fill="url(#leftPeach)"/>
+
+  <!-- peach right -->
+  <path d="M532 302
+           C580 275, 670 271, 739 311
+           C823 359, 860 460, 854 575
+           C846 726, 750 828, 593 848
+           C557 852, 531 824, 531 790
+           L531 354
+           C531 331, 524 313, 532 302 Z"
+        fill="url(#rightPeach)"/>
+
+  <!-- left pane -->
+  <path d="M245 452
+           C245 424, 266 403, 294 403
+           H356
+           C368 403, 377 409, 385 419
+           L405 442
+           H452
+           C473 442, 488 458, 488 478
+           V675
+           H245 Z"
+        fill="#B9432D" opacity="0.99" stroke="#8F2F1F" stroke-width="6" filter="url(#innerShadow)"/>
+
+  <!-- right pane -->
+  <path d="M536 452
+           C536 424, 557 403, 585 403
+           H647
+           C659 403, 668 409, 676 419
+           L696 442
+           H743
+           C764 442, 779 458, 779 478
+           V675
+           H536 Z"
+        fill="#B63C4C" opacity="0.99" stroke="#8F2B39" stroke-width="6" filter="url(#innerShadow)"/>
+
+  <!-- list rows left -->
+  <g fill="#FFFFFF">
+    <rect x="294" y="505" width="31" height="31" rx="7"/>
+    <rect x="343" y="511" width="103" height="19" rx="10"/>
+    <rect x="294" y="567" width="31" height="31" rx="7"/>
+    <rect x="343" y="573" width="103" height="19" rx="10"/>
+    <rect x="294" y="629" width="31" height="31" rx="7"/>
+    <rect x="343" y="635" width="103" height="19" rx="10"/>
+  </g>
+
+  <!-- list rows right -->
+  <g fill="#FFFFFF">
+    <rect x="581" y="505" width="31" height="31" rx="7"/>
+    <rect x="630" y="511" width="103" height="19" rx="10"/>
+    <rect x="581" y="567" width="31" height="31" rx="7"/>
+    <rect x="630" y="573" width="103" height="19" rx="10"/>
+    <rect x="581" y="629" width="31" height="31" rx="7"/>
+    <rect x="630" y="635" width="103" height="19" rx="10"/>
+  </g>
+
+  <!-- transfer arrow -->
+  <g fill="none" stroke="#FFFFFF" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M448 563 H576"/>
+    <path d="M471 533 L441 563 L471 593"/>
+    <path d="M553 533 L583 563 L553 593"/>
+  </g>
+</svg>

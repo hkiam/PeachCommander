@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hlavné okno</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Hlavné okno</h1>
+<p>Peach Commander zobrazuje dva zoznamy súborov vedľa seba, takže naraz vidíte, odkiaľ súbory prichádzajú a kam smerujú. Väčšina vašej práce prebieha v týchto dvoch paneloch; lišty okolo nich vám umožňujú prepínať jednotky, prejsť do priečinka a spúšťať bežné príkazy so súbormi bez toho, aby ste opustili klávesnicu. Táto prehliadka pomenúva jednotlivé časti okna, aby dával zmysel zvyšok pomocníka.</p>
+<p><img alt="Hlavné okno Peach Commander s dvoma panelmi a okolitými lištami" src="images/main-window.png" />
+<em>(Obrázok: Hlavné okno — dva panely s lištou tlačidiel, lištou jednotiek a lištami cesty nad nimi a lištou funkčných klávesov pod nimi.)</em></p>
+<h2 id="dva-panely-a-aktivny-panel">Dva panely a aktívny panel</h2>
+<p>Okno je rozdelené na ľavý a pravý panel, každý zobrazuje obsah jedného priečinka. Aktívny je vždy len jeden panel: zobrazuje kurzor (zvýraznený riadok) a jeho lišta cesty je vykreslená s farebným pozadím. Príkazy ako kopírovanie a presun vždy pracujú s aktívnym panelom a odosielajú súbory do toho druhého.</p>
+<ol>
+<li>Kliknutím kdekoľvek do panela ho urobíte aktívnym alebo medzi nimi prepínajte klávesom Tab.</li>
+<li>Kurzor presúvajte hore a dole po aktívnom paneli pomocou klávesov so šípkami.</li>
+<li>Stlačením klávesu Enter na priečinku ho otvoríte, alebo na položke <code>..</code> v hornej časti zoznamu prejdete o úroveň vyššie.</li>
+</ol>
+<h2 id="listy-okolo-panelov">Lišty okolo panelov</h2>
+<ul>
+<li><strong>Lišta tlačidiel</strong> (hore): rad plochých tlačidiel na časté príkazy. Kliknutím na tlačidlo spustíte jeho príkaz; kliknutím pravým tlačidlom lištu upravíte.</li>
+<li><strong>Lišta jednotiek</strong>: jedno tlačidlo pre každý dostupný disk alebo zväzok, každé s ovládačom na vysunutie a údajom o voľnom mieste. Kliknutím na zväzok naň prepnete daný panel.</li>
+<li><strong>Lišta cesty</strong>: zobrazuje aktuálny priečinok ako klikateľnú navigačnú cestu. Kliknutím na segment prejdete priamo do daného priečinka alebo kliknutím na cestu môžete umiestnenie zadať.</li>
+<li><strong>Stavová lišta</strong> (pod každým zoznamom): priebežný súhrn panela — koľko súborov a priečinkov je vybraných a ich celková veľkosť.</li>
+<li><strong>Príkazový riadok</strong> (dole): textové pole, do ktorého môžete napísať príkaz v štýle shellu, ktorý sa spustí v aktuálnom priečinku.</li>
+<li><strong>Lišta funkčných klávesov</strong> (úplne dole): šesť tlačidiel s označením F3 Zobraziť, F4 Upraviť, F5 Kopírovať, F6 Presunúť, F7 Nový priečinok a F8 Odstrániť. Kliknite na tlačidlo alebo stlačte príslušný kláves.</li>
+</ul>
+<p><img alt="Detail lišty jednotiek zobrazujúci tlačidlá zväzkov a voľné miesto" src="images/drive-bar-crop.png" />
+<em>(Obrázok: Lišta jednotiek — jedno tlačidlo pre každý zväzok, s ovládačom na vysunutie a zostávajúcim voľným miestom.)</em></p>
+<h2 id="klavesove-skratky">Klávesové skratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akcia</th>
+<th>Skratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prepnúť aktívny panel</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Otvoriť priečinok / položku pod kurzorom</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Prejsť o priečinok vyššie</td>
+<td>Backspace</td>
+</tr>
+<tr>
+<td>Zobraziť súbor</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Upraviť súbor</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Kopírovať do druhého panela</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Presunúť / premenovať do druhého panela</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Nový priečinok</td>
+<td>F7</td>
+</tr>
+<tr>
+<td>Odstrániť (do Koša)</td>
+<td>F8</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Lišta funkčných klávesov sa počas držania modifikačného klávesu naživo premenúva. Napríklad podržanie klávesu Shift zmení F6 na akciu premenovania na mieste, takže tlačidlá vždy zobrazujú, čo klávesy práve teraz urobia.</li>
+<li>Takmer každú lištu možno zobraziť alebo skryť. V ponukách Zobraziť a Nastavenia nájdete možnosti na zapnutie a vypnutie lišty tlačidiel, lišty jednotiek, príkazového riadka alebo lišty funkčných klávesov, prípadne na usporiadanie oboch panelov nad seba namiesto vedľa seba.</li>
+<li>Na mnohých klávesniciach Macu fungujú klávesy F predvolene ako ovládanie médií a jasu. Podržte kláves Fn spolu s F3–F8 alebo v Nastaveniach systému zapnite „Používať klávesy F1, F2 atď. ako štandardné funkčné klávesy“, aby ste ich mohli používať priamo.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="navigating.html">Pohyb v aplikácii</a></li><li><a href="panels-and-tabs.html">Karty</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El menú Inicio y los comandos personalizados</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>El menú Inicio y los comandos personalizados</h1>
+<p>El menú <strong>Inicio</strong> es tu propio menú personal, situado en la barra de menús junto a Archivo, Edición y los demás. Contiene comandos que defines tú mismo, de modo que las acciones que más usas están siempre a un clic. Siguiendo la tradición de los gestores de archivos clásicos de dos paneles, cada entrada puede ejecutar un comando integrado, iniciar un programa o app externos, o saltar directamente a una carpeta. Peach Commander se entrega con el menú Inicio vacío y listo para que lo llenes.</p>
+<h2 id="como-anadir-tus-propios-comandos">Cómo añadir tus propios comandos</h2>
+<ol>
+<li>Elige <strong>Inicio &gt; Cambiar el menú Inicio…</strong>. Peach Commander abre tu archivo de comandos de usuario (creándolo con un ejemplo comentado la primera vez).</li>
+<li>Añade una sección por comando. Cada sección empieza con un nombre entre corchetes, seguido de unas pocas claves sencillas:
+   - <strong>cmd</strong> — qué ejecutar: la ruta de un programa, una app, un comando integrado <code>cm_</code>, u otro de tus propios comandos.
+   - <strong>param</strong> — parámetros que se pasan a un programa. Los marcadores se rellenan al ejecutar el comando: <code>%P</code> (carpeta de origen), <code>%N</code> (archivo actual), <code>%T</code> (carpeta del otro panel), <code>%M</code> (archivo del otro panel), <code>%S</code> (archivos seleccionados).
+   - <strong>path</strong> — la carpeta en la que empezar (por omisión, la carpeta actual).
+   - <strong>menu</strong> — el título mostrado en el menú Inicio.
+   - <strong>key</strong> — un atajo opcional, p. ej. <code>C+S+B</code>.</li>
+<li>Guarda el archivo. El menú Inicio se actualiza por sí solo la próxima vez que Peach Commander pase a estar activo, así que tus nuevas entradas aparecen de inmediato.</li>
+</ol>
+<h2 id="consejos">Consejos</h2>
+<ul>
+<li>Para abrir la carpeta actual en Terminal, pon <strong>cmd</strong> en <code>open</code>, <strong>param</strong> en <code>-a Terminal %P</code> y <strong>menu</strong> en <code>Abrir Terminal aquí</code>.</li>
+<li>Apunta <strong>cmd</strong> a un comando <code>cm_</code> para dar a una acción integrada su propia entrada de menú Inicio y su atajo.</li>
+<li>El orden en el archivo es el orden en el menú, así que pon tus comandos más usados arriba.</li>
+</ul>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>También puedes reemplazar toda la barra de menús por la tuya. Elige <strong>Configuración &gt; Editar archivo de menú…</strong> para abrir un archivo de menú generado a partir del menú integrado actual, totalmente localizado; edítalo libremente y tus cambios se aplican la próxima vez que se active la app. Elimina el archivo para restaurar la barra de menús estándar.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">La barra de botones</a></li><li><a href="keyboard-shortcuts.html">Teclado y atajos</a></li></ul></section>
+</main>
+</body>
+</html>

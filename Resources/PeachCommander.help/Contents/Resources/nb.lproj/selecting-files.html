@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merke filer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Merke filer</h1>
+<p>Før du kopierer, flytter, sletter eller pakker noe, forteller du først Peach Commander hvilke elementer den skal handle på. Elementet markøren din står på er alltid gjeldende element, men du kan også <em>merke</em> én eller mange filer og mapper slik at en kommando kjøres på dem alle på én gang. Merkede elementer skiller seg ut med en tydelig navnefarge i panelet.</p>
+<h2 id="merk-filer-og-mapper">Merk filer og mapper</h2>
+<ol>
+<li>Klikk på en rad for å flytte markøren til den. Ett enkelt klikk velger bare det ene elementet.</li>
+<li>For å merke flere elementer samtidig, hold Cmd og klikk på hvert enkelt, eller hold Shift og klikk for å merke et område.</li>
+<li>For å merke elementet under markøren og gå ned i én bevegelse, trykk Insert. Trykk gjentatte ganger for å merke en rekke påfølgende elementer raskt. Mellomromstasten veksler også merkingen av gjeldende element (og viser en mappes størrelse).</li>
+<li>For å merke alt i panelet, velg Merk &gt; Merk alt (Ctrl+Num+), eller trykk Cmd+A. Velg Merk &gt; Fjern merking på alt (Ctrl+Num-) for å fjerne alle merkinger.</li>
+</ol>
+<h2 id="merk-eller-fjern-merking-etter-et-mnster">Merk eller fjern merking etter et mønster</h2>
+<ol>
+<li>Velg Merk &gt; Merk gruppe… (Num+) for å legge til elementer hvis navn samsvarer med et mønster, eller Merk &gt; Fjern merking på gruppe… (Num-) for å fjerne samsvarende elementer fra de gjeldende merkingene.</li>
+<li>Skriv en jokertegnmaske. Bruk <code>*</code> for et hvilket som helst antall tegn og <code>?</code> for ett enkelt tegn. Skill flere masker med semikolon, og list unntak etter en loddrett strek — for eksempel merker <code>*.jpg;*.png</code> alle bilder, og <code>*.*|*.bak</code> merker alt bortsett fra sikkerhetskopifiler.</li>
+</ol>
+<p><img alt="Merk gruppe-dialogen med en jokertegnmaske skrevet inn i mønsterfeltet" src="images/select-by-mask.png" />
+<em>(Figur: Merking av filer etter en jokertegnmaske.)</em></p>
+<h2 id="inverter-samme-filendelse-og-gjenopprett">Inverter, samme filendelse og gjenopprett</h2>
+<ul>
+<li><strong>Inverter merking</strong> (Num*, Merk-menyen) snur hver merking: merkede elementer blir umerkede og omvendt — praktisk for "alt bortsett fra disse".</li>
+<li><strong>Merk alt med samme filendelse</strong> (Alt+Num+, Merk-menyen) merker hver fil som deler filendelsen til elementet under markøren, slik at ett tastetrykk fanger for eksempel alle <code>.pdf</code>-filer.</li>
+<li><strong>Gjenopprett merking</strong> (Num/, Merk-menyen) henter tilbake ditt forrige sett med merkinger — nyttig hvis en kommando fjernet dem eller du merket feil gruppe.</li>
+</ul>
+<h2 id="snarveier">Snarveier</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Tast</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Veksle merking, gå ned</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Veksle merking (gjeldende element)</td>
+<td>Space</td>
+</tr>
+<tr>
+<td>Merk alt / Fjern merking på alt</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Merk alt (alternativ)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Merk gruppe etter maske</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Fjern merking på gruppe etter maske</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Inverter merking</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Merk alt med samme filendelse</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Gjenopprett forrige merking</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Merkinger og markøren er uavhengige: å flytte markøren med piltastene endrer ikke hva som er merket.</li>
+<li>Oppføringen for overordnet mappe (<code>..</code>) kan aldri merkes.</li>
+<li>Merk gruppe, Fjern merking på gruppe og Inverter merking samsvarer på filnavnet, så du kan inkludere eller utelate mapper avhengig av dialogens alternativer.</li>
+<li>Etter at en kopiering, flytting eller sletting er fullført, fjernes merkingen automatisk på elementer som ble håndtert vellykket, mens de som mislyktes forblir merket slik at du kan prøve dem på nytt.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiere filer</a></li><li><a href="searching.html">Finne filer</a></li></ul></section>
+</main>
+</body>
+</html>

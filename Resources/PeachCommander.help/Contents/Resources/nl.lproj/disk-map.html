@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Disk Map</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Disk Map</h1>
+<p>Disk Map is een ingebouwde plug-in die in één oogopslag toont wat ruimte gebruikt in een map of op een heel volume. Het scant de map die je kiest en tekent elk item met een grootte die evenredig is aan de ruimte die het werkelijk op schijf inneemt, zodat de grootste ruimtevreters meteen opvallen. Je kunt in mappen inzoomen, zien hoe je scan zich verhoudt tot de vrije, opschoonbare en verborgen ruimte van het volume, en direct vanaf de kaart opruimen.</p>
+<h2 id="een-scan-starten">Een scan starten</h2>
+<ol>
+<li>Ga in het actieve paneel naar de map (of het volume) die je wilt meten.</li>
+<li>Kies <strong>Opdrachten ▸ Disk Map: Huidige map analyseren</strong>.</li>
+<li>De Disk Map-weergave opent rechts en scant op de achtergrond, met een lopende telling van items en bytes. Grote mappen zijn in een paar seconden klaar — de scan leest mapmetadata in bulk en werkt over meerdere CPU-cores.</li>
+</ol>
+<p><img alt="De Disk Map die een vierkantsgemaakte treemap van een map toont, een volumebalk, een lijst met grootste bestanden en een categorielegenda" src="images/disk-map.png" />
+<em>(Afbeelding: De treemap-weergave, gekleurd per bestandscategorie, met de volumebalk bovenaan en de lijst met grootste bestanden rechts.)</em></p>
+<h2 id="de-kaart-lezen">De kaart lezen</h2>
+<ul>
+<li>Elk blok (treemap) of ringsegment (sunburst) heeft een grootte gebaseerd op de <strong>werkelijke grootte op schijf</strong> van het item, zodat het beeld overeenkomt met wat de Finder en het systeem rapporteren.</li>
+<li>Blokken zijn <strong>gekleurd per bestandstype</strong> — video, afbeeldingen, audio, documenten, code, archieven, apps, schijfkopieën — met een legenda langs de onderkant. Je kunt in de instellingen overschakelen naar een grootte-<strong>heatmap</strong>.</li>
+<li><strong>Klik op een map</strong> om erin in te zoomen; het broodkruimelpad bovenaan toont waar je bent, en de knop <strong>◂</strong> gaat een stap omhoog.</li>
+<li>Beweeg over een blok om het volledige pad, de grootte en het aantal items te zien.</li>
+</ul>
+<h2 id="twee-weergaven-treemap-en-sunburst">Twee weergaven: treemap en sunburst</h2>
+<p>Disk Map biedt twee visualisaties, en je kunt ertussen wisselen met de knop <strong>◎ / ▦</strong> in de kop of op de instellingenpagina:</p>
+<ul>
+<li><strong>Treemap</strong> — geneste rechthoeken, het dichtst voor het opsporen van de allergrootste bestanden.</li>
+<li><strong>Sunburst</strong> — concentrische ringen (één per mapdiepte) rond de huidige map, het beste om te zien hoe ruimte over een diepe boom is verdeeld.</li>
+</ul>
+<p><img alt="De Disk Map sunburst-weergave die concentrische ringen voor mapdiepte toont" src="images/disk-map-sunburst.png" />
+<em>(Afbeelding: De sunburst-weergave — de binnenste schijf is de huidige map en elke ring is een niveau dieper.)</em></p>
+<h2 id="de-volumebalk">De volumebalk</h2>
+<p>De balk bovenaan verzoent je scan met het hele volume:</p>
+<ul>
+<li><strong>Gescand / Deze map</strong> — hoeveel de geanalyseerde map inneemt.</li>
+<li><strong>Verborgen</strong> (bij de volumewortel) of <strong>Rest van volume</strong> (voor een submap) — alles wat niet in deze scan zit, waaronder systeembeschermde mappen, andere gebruikers en momentopnamen.</li>
+<li><strong>Opschoonbaar</strong> — ruimte die macOS automatisch kan terugwinnen, voornamelijk lokale Time Machine-momentopnamen en caches.</li>
+<li><strong>Vrij</strong> — ruimte die op dit moment beschikbaar is.</li>
+</ul>
+<p>Wanneer het volume lokale momentopnamen heeft, toont de balk een <strong>· N momentopnamen (ⓘ)</strong>-element; klik erop voor een alleen-lezenlijst, met een tip om ze te beheren in Schijfhulpprogramma of Time Machine. Disk Map verwijdert nooit zelf momentopnamen.</p>
+<h2 id="grootste-bestanden">Grootste bestanden</h2>
+<p>Zet <strong>De lijst met grootste bestanden tonen</strong> aan om de grootste bestanden in de huidige map gerangschikt op grootte te zien, elk met een kleurchip voor zijn categorie. Klik op er een om het op de kaart te markeren.</p>
+<h2 id="opruimen-vanaf-de-kaart">Opruimen vanaf de kaart</h2>
+<p>Klik met de rechtermuisknop op een blok voor acties:</p>
+<ul>
+<li><strong>Openen in linkerpaneel</strong> / <strong>Openen in rechterpaneel</strong> — toon het item in een bestandspaneel.</li>
+<li><strong>Toon in Finder</strong>.</li>
+<li><strong>Verplaats naar Prullenmand</strong> — verwijder alleen dat item; de kaart wordt bijgewerkt zonder een volledige herscan.</li>
+</ul>
+<p>Om meerdere items tegelijk te verwijderen, gebruik je de <strong>Verzamelaar</strong>: klik met de rechtermuisknop ▸ <strong>Markeren voor verzamelaar</strong> op elk item, klik vervolgens op de knop <strong>🗑 N</strong> in de kop om alles wat je hebt gemarkeerd in één bevestigde stap naar de Prullenmand te verplaatsen.</p>
+<h2 id="instellingen">Instellingen</h2>
+<p>Disk Map voegt zijn eigen pagina toe aan het venster Instellingen (<strong>Configuratie ▸ Instellingen ▸ Disk Map</strong>):</p>
+<ul>
+<li><strong>Grafiekstijl</strong> — treemap of sunburst.</li>
+<li><strong>Kleurcodering</strong> — per bestandstype (categorie) of per grootte (heatmap).</li>
+<li><strong>Op het startvolume blijven</strong> — niet oversteken naar andere gekoppelde schijven.</li>
+<li><strong>De volumebalk tonen</strong> en <strong>De lijst met grootste bestanden tonen</strong>.</li>
+</ul>
+<p>Wijzigingen worden onmiddellijk toegepast op een geopende Disk Map.</p>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Disk Map meet de <strong>toegewezen</strong> grootte (op schijf) en telt <strong>hard-gekoppelde</strong> bestanden slechts één keer, zodat de totalen aansluiten bij de gebruikte ruimte van het volume in plaats van te veel te tellen.</li>
+<li>Standaard blijft de scan op het startvolume, zodat deze niet afdwaalt naar andere gekoppelde schijven of netwerkshares.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="deleting-files.html">Bestanden verwijderen</a></li><li><a href="settings.html">Instellingen</a></li></ul></section>
+</main>
+</body>
+</html>

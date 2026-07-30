@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Afinstallering</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Afinstallering</h1>
+<p>At trække en app til papirkurven efterlader dens supportfiler, caches, indstillinger og containere spredt ud over dine Library-mapper. Uninstaller-pluginet fjerner et program <strong>og</strong> de rester: det finder alt, appen har efterladt, viser dig listen med en størrelse for hvert emne og flytter det hele til papirkurven, når du bekræfter. Det er et plugin, så du kan slå det fra eller fjerne det i <strong>Konfiguration ▸ Plugins…</strong>.</p>
+<h2 id="afinstaller-en-app-under-markren">Afinstallér en app under markøren</h2>
+<ol>
+<li>Placér markøren på et program (<code>.app</code>) i et panel.</li>
+<li>Vælg <strong>Fil ▸ Afinstallér program…</strong>, eller højreklik ▸ <strong>Afinstallér program…</strong>, eller tryk på <strong>Cmd+Shift+U</strong>.</li>
+<li>Gennemgangsvinduet åbner og viser appen plus hver relateret fil, det fandt, hver mærket med sin kategori, sti og størrelse.</li>
+<li>Fjern markeringen ved alt, du vil beholde, og klik derefter på <strong>Flyt til papirkurv</strong> (eller <strong>Slet permanent</strong>).</li>
+</ol>
+<p><img alt="Gennemgangsvinduet der viser en apps efterladte filer med afkrydsningsfelter og størrelser" src="images/uninstaller.png" />
+<em>(Figur: gennemgå præcis hvad der vil blive fjernet, før noget slettes.)</em></p>
+<h2 id="gennemse-alle-installerede-apps">Gennemse alle installerede apps</h2>
+<p>Vælg <strong>Kommandoer ▸ Afinstallér program…</strong> for at åbne en søgbar liste over de apps, der er installeret på din Mac, med hver apps navn, størrelse og installationsdato. Vælg en (eller flere), klik på <strong>Afinstallér…</strong>, og du lander i det samme gennemgangsvindue. Du kan filtrere listen ved at skrive i søgefeltet.</p>
+<h2 id="find-efterladte-filer">Find efterladte filer</h2>
+<p>Vælg <strong>Kommandoer ▸ Find efterladte filer…</strong> for at scanne efter supportfiler, caches og indstillinger, der tilhører apps, du <strong>allerede</strong> har slettet. Gennemgå dem på samme måde og ryd dem ud. Hvis der intet findes, siger pluginet det.</p>
+<h2 id="hvor-grundigt-der-skal-scannes">Hvor grundigt der skal scannes</h2>
+<p>Gennemgangsvinduet har en sikkerhedskontrol:</p>
+<ul>
+<li><strong>Præcis</strong> — filer forankret til appens bundle-identifikator. Høj sikkerhed; forudvalgt.</li>
+<li><strong>Udvidet</strong> — tilføjer navnematchede filer; efterladt umarkeret, så du kan bestemme.</li>
+<li><strong>Dyb</strong> — Udvidet plus en Spotlight-gennemgang for alt andet, der nævner appen; også efterladt umarkeret.</li>
+</ul>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Intet slettes direkte af pluginet — emner går gennem appens papirkurv eller permanent sletning, præcis som enhver anden filhandling. At fjerne filer i <code>/Library</code> eller <code>/var</code> kan kræve en administratoradgangskode.</li>
+<li>Før fjernelse afslutter pluginet den kørende app og aflæsser dens baggrundselementer (launchd), og tilbyder derefter at rydde op i nu tomme leverandørmapper.</li>
+<li>Hvis appen blev installeret med <strong>Homebrew</strong>, advarer pluginet dig og foreslår <code>brew uninstall --cask</code>, så Homebrew forbliver synkroniseret. App Store-apps noteres også.</li>
+<li>Udvidede og Dybe match har lavere sikkerhed efter design og starter umarkerede — gennemgå dem, før du fjerner. Nogle baggrundselementer, der er installeret via den moderne login-items-API, kan ikke fjernes her.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="deleting-files.html">Sletning af filer</a></li></ul></section>
+</main>
+</body>
+</html>

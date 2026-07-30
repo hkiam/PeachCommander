@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datei-Werkzeuge</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Datei-Werkzeuge</h1>
+<p>Über das Kopieren und Verschieben hinaus enthält Peach Commander eine Reihe alltäglicher Datei-Werkzeuge, um zu überprüfen, ob Dateien unversehrt sind, Festplattenspeicher zurückzugewinnen, große Dateien in kleinere Teile zu zerlegen und Dateien in und aus textsicheren Formaten zu konvertieren. Sie erreichen alle über das Menü <strong>Datei</strong>, und sie wirken auf das, was Sie im aktiven Panel ausgewählt haben (oder auf das Element unter dem Cursor, wenn nichts ausgewählt ist). Dieses Thema behandelt Prüfsummen, den Duplikatfinder, Teilen/Zusammenfügen, Kodieren/Dekodieren und die Berechnung des belegten Speichers.</p>
+<h2 id="prufsummen-erstellen-oder-verifizieren">Prüfsummen erstellen oder verifizieren</h2>
+<p>Prüfsummen ermöglichen es Ihnen, zu bestätigen, dass eine Datei ohne Beschädigung heruntergeladen oder kopiert wurde, oder einem Empfänger eine Möglichkeit zu geben, die erhaltene Kopie zu prüfen.</p>
+<ol>
+<li>Wählen Sie die Dateien aus, deren Fingerabdruck Sie erstellen möchten.</li>
+<li>Wählen Sie <strong>Datei ▸ Prüfsummen erstellen…</strong>, wählen Sie einen Algorithmus (CRC32, MD5, SHA-1, SHA-256 oder SHA-512) und sichern Sie die Prüfsummendatei.</li>
+<li>Um Dateien später zu prüfen, wählen Sie die Prüfsummendatei aus und wählen Sie <strong>Datei ▸ Prüfsummen verifizieren…</strong>. Peach Commander berechnet jeden Hash neu und meldet jede Datei, die nicht übereinstimmt.</li>
+</ol>
+<p>Prüfsummen werden direkt über den aktuellen Ort gestreamt, sodass Sie sie sogar für Dateien innerhalb von Archiven oder auf einem FTP-Server erstellen oder verifizieren können.</p>
+<h2 id="doppelte-dateien-finden">Doppelte Dateien finden</h2>
+<p>Der Duplikatfinder lokalisiert identische Dateien, die über Ordner verstreut sind, sodass Sie die überflüssigen Kopien entfernen können.</p>
+<ol>
+<li>Wählen Sie die Ordner (oder Dateien) aus, die Sie scannen möchten.</li>
+<li>Wählen Sie <strong>Datei ▸ Duplikate finden…</strong>. Peach Commander vergleicht Kandidaten und gruppiert Dateien, die Byte für Byte identisch sind.</li>
+<li>Überprüfen Sie jede Gruppe, markieren Sie die Kopien, die Sie nicht mehr benötigen, und löschen Sie sie.</li>
+</ol>
+<p><img alt="Der Duplikatfinder listet Gruppen identischer Dateien auf" src="images/duplicate-finder.png" />
+<em>(Abbildung: Der Duplikatfinder gruppiert identische Dateien, sodass Sie eine behalten und den Rest entfernen können.)</em></p>
+<h2 id="dateien-teilen-und-zusammenfugen">Dateien teilen und zusammenfügen</h2>
+<p>Beim Teilen wird eine große Datei in eine nummerierte Reihe kleinerer Teile zerlegt — praktisch für Speicher- oder Übertragungsgrenzen. Beim Zusammenfügen werden sie wieder zusammengesetzt.</p>
+<ol>
+<li>Um zu teilen, wählen Sie eine Datei aus und wählen Sie <strong>Datei ▸ Datei teilen…</strong>, dann legen Sie die Teilgröße fest. Die Teile werden in den Ordner des anderen Panels geschrieben.</li>
+<li>Um wieder zusammenzusetzen, wählen Sie den ersten Teil aus und wählen Sie <strong>Datei ▸ Dateien zusammenfügen…</strong>. Die Originaldatei wird aus den nummerierten Teilen wiederaufgebaut.</li>
+</ol>
+<h2 id="kodieren-und-dekodieren">Kodieren und Dekodieren</h2>
+<p>Beim Kodieren wird eine Binärdatei in reinen Text umgewandelt, sodass sie Kanäle übersteht, die nur Text übertragen (zum Beispiel ältere E-Mails oder Einfügefelder). Beim Dekodieren wird dies umgekehrt.</p>
+<ol>
+<li>Wählen Sie eine Datei aus und wählen Sie <strong>Datei ▸ Kodieren…</strong>, dann wählen Sie ein Format — MIME (Base64), UUE (uuencode) oder XXE.</li>
+<li>Um das Original wiederherzustellen, wählen Sie die kodierte Datei aus und wählen Sie <strong>Datei ▸ Dekodieren…</strong>. Das Format wird automatisch erkannt.</li>
+</ol>
+<h2 id="belegten-speicher-berechnen">Belegten Speicher berechnen</h2>
+<p>Um zu sehen, wie viel Platz ein Ordner oder eine Auswahl tatsächlich auf der Festplatte belegt, wählen Sie die Elemente aus und drücken Sie <strong>Ctrl+L</strong> (<strong>Datei ▸ Belegten Speicher berechnen…</strong>). Peach Commander summiert jede darin enthaltene Datei, einschließlich Unterordner, und zeigt die Gesamtsumme an.</p>
+<h2 id="kurzbefehle">Kurzbefehle</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Taste</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Belegten Speicher berechnen</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Prüfsummen, Teilen/Zusammenfügen und Kodieren/Dekodieren richten sich an fortgeschrittenere Aufgaben, aber jedes ist ein einzelner Dialog mit sinnvollen Voreinstellungen.</li>
+<li>Wenn ein Werkzeug neue Dateien erzeugt (Teildateien, eine kodierte Datei, eine Prüfsummenliste), werden diese in den im anderen Panel angezeigten Ordner geschrieben — stellen Sie dieses Panel zuerst auf Ihr gewünschtes Ziel ein.</li>
+<li>Das Löschen von Duplikaten ist je nach Ihren Löscheinstellungen dauerhaft; überprüfen Sie jede Gruppe sorgfältig und behalten Sie mindestens eine Kopie von allem, was Sie noch benötigen.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="comparing-and-syncing.html">Vergleichen &amp; Synchronisieren</a></li></ul></section>
+</main>
+</body>
+</html>

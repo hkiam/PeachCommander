@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verbindung mit FTP &amp; SFTP</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Verbindung mit FTP &amp; SFTP</h1>
+<p>Peach Commander kann entfernte Server durchsuchen, als wären sie gewöhnliche Ordner. Sobald die Verbindung besteht, zeigt ein Panel die entfernten Dateien, und Sie kopieren, verschieben, benennen um und löschen sie mit denselben Tasten, die Sie lokal verwenden. Es beherrscht einfaches FTP, sicheres FTPS und SFTP/SCP über SSH, sodass Sie alles von einem klassischen Webhost bis zu einem gehärteten SSH-Server erreichen können. Gesicherte Verbindungen leben im Verbindungsmanager, und Passwörter werden sicher in Ihrem macOS-Schlüsselbund aufbewahrt statt in der Verbindung selbst.</p>
+<h2 id="mit-einem-server-verbinden">Mit einem Server verbinden</h2>
+<ol>
+<li>Öffnen Sie das Menü <strong>Netz</strong> und wählen Sie <strong>FTP-Verbindung…</strong> (Ctrl+F), um den Verbindungsmanager zu öffnen.</li>
+<li>Wählen Sie eine gesicherte Verbindung aus der Liste und klicken Sie auf <strong>Verbinden</strong>, oder klicken Sie auf <strong>Neu</strong>, um eine zu erstellen. Verwenden Sie Ordner in der Liste, um Verbindungen zu gruppieren.</li>
+<li>Für eine schnelle einmalige Verbindung wählen Sie <strong>Netz ▸ Neue FTP-Verbindung…</strong> (Ctrl+N) und tippen Sie die Adresse direkt ein.</li>
+<li>Geben Sie Ihr Passwort ein, wenn Sie dazu aufgefordert werden; aktivieren Sie die Option, es zu sichern, und es gelangt für das nächste Mal in Ihren Schlüsselbund.</li>
+<li>Wenn Sie fertig sind, wählen Sie <strong>Netz ▸ FTP trennen</strong> (Ctrl+Shift+F).</li>
+</ol>
+<p><img alt="Der FTP-Verbindungsmanager mit der Liste gesicherter Sitzungen und den Schaltflächen Neu, Bearbeiten und Löschen" src="images/ftp-connection-manager.png" />
+<em>(Abbildung: Der Verbindungsmanager enthält Ihre gesicherten Server; verwenden Sie Neu, Bearbeiten und Löschen, um sie zu verwalten.)</em></p>
+<p>Wenn Sie eine Verbindung einrichten, können Sie das Protokoll wählen (FTP, FTPS mit explizitem AUTH TLS, implizites FTPS auf Port 990 oder SFTP/SCP), den passiven oder aktiven Modus, den entfernten und lokalen Startordner, die Textkodierung und ein optionales Keep-Alive-Intervall, um zu verhindern, dass Sie von untätigen Servern getrennt werden. Für SFTP können Sie sich mit Ihrem SSH-Agenten, einem Passwort oder einer privaten Schlüsseldatei authentifizieren, und Sie können SCP für Übertragungen wählen. Unbekannten SSH-Hostschlüsseln wird bei der ersten Verwendung vertraut; wenn sich der Schlüssel eines bekannten Servers jemals ändert, wird die Verbindung verweigert, um Sie vor Manipulation zu schützen.</p>
+<h2 id="die-ftp-konsole">Die FTP-Konsole</h2>
+<p>Um genau zu sehen, was der Server sagt, öffnen Sie die FTP-Konsole aus dem Menü <strong>Netz</strong>. Sie zeigt ein Live-Protokoll des Steuerkanals (Ihr Passwort ist maskiert) und lässt Sie rohe FTP-Befehle an den Server tippen.</p>
+<p><img alt="Die FTP-Konsole mit dem Protokoll des Steuerkanals und einem Feld für rohe Befehle" src="images/ftp-console.png" />
+<em>(Abbildung: Die FTP-Konsole protokolliert jeden Austausch und akzeptiert rohe Befehle, was bei der Fehlersuche praktisch ist.)</em></p>
+<h2 id="kurzbefehle">Kurzbefehle</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Kurzbefehl</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Verbindungsmanager öffnen</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Neue Verbindung</td>
+<td>Ctrl+N</td>
+</tr>
+<tr>
+<td>Trennen</td>
+<td>Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Übertragungsmodus ändern</td>
+<td>Ctrl+Shift+M</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Unterbrochene Downloads und Uploads können dort fortgesetzt werden, wo sie aufgehört haben, statt von vorne zu beginnen.</li>
+<li>Aktivieren Sie für FTPS-Server mit einem selbstsignierten Zertifikat in den Einstellungen dieser Verbindung die Option, ein nicht vertrauenswürdiges Zertifikat zu akzeptieren.</li>
+<li>Ein SOCKS5-Proxy kann pro Verbindung für einfaches FTP festgelegt werden. Das Leiten einer verschlüsselten FTPS-Verbindung durch einen Proxy wird nicht unterstützt.</li>
+<li>Bestehende FTP-Verbindungen aus Total Commander können importiert werden.</li>
+<li>SCP wird nur zum Übertragen von Dateien verwendet; Auflisten, Umbenennen und Löschen laufen immer über SFTP.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="downloading-from-url.html">Von einer URL herunterladen</a></li><li><a href="network-shares.html">Netzwerkfreigaben</a></li></ul></section>
+</main>
+</body>
+</html>

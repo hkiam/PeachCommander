@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>快速搜索与筛选</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>快速搜索与筛选</h1>
+<p>当文件夹里有数百个项目时，你很少需要滚动。Peach Commander 让你通过键入名称直接跳到某个文件（快速搜索），把列表缩减到只剩你关心的项目（快速筛选），并显示或隐藏 macOS 通常藏起来的点文件。这三者都在活动面板内工作，无需打开对话框。</p>
+<h2 id="_1">通过键入跳到文件（快速搜索）</h2>
+<ol>
+<li>点按文件面板使其活动。</li>
+<li>开始键入名称的开头。光标会跳到第一个匹配项。</li>
+<li>继续键入以细化匹配，或再次按同一个字母以在以该字母开头的项目间循环。</li>
+<li>键入的文本在短暂停顿后清除，因此你随时可以开始新的搜索。</li>
+</ol>
+<p>默认情况下，普通字母会进入命令行，快速搜索由 Ctrl+Option+字母 触发（经典行为）。你可以在“设置”中改为让快速搜索响应普通键入，或将其关闭。</p>
+<h2 id="_2">筛选列表（快速筛选）</h2>
+<ol>
+<li>在活动面板中按 Ctrl+S 打开快速筛选。</li>
+<li>键入筛选掩码。面板会随你键入实时缩窄到匹配项。</li>
+<li>按 Esc 清除筛选并重新显示全部。</li>
+</ol>
+<p>筛选接受多种掩码：</p>
+<ul>
+<li><strong>纯文本</strong> 匹配名称中任意位置包含所键入内容的项（例如 <code>report</code> 会显示名称中任意位置含有“report”的每个项目）。</li>
+<li><strong>通配符</strong> 使用 <code>*</code>（任意字符）和 <code>?</code>（一个字符）。用分号分隔多个掩码，并在竖线后添加排除项，例如 <code>*.jpg;*.png|*thumb*</code> 显示图像但隐藏缩略图。</li>
+<li><strong>Finder 标签</strong> 按标签颜色筛选：键入 <code>tag:red</code>（或 <code>#red</code>）只显示红色标签的项，或仅键入 <code>tag:</code> 显示带任意标签的所有项。</li>
+</ul>
+<h2 id="_3">显示隐藏文件</h2>
+<p>按 Ctrl+H，或从“显示”菜单选择相应命令，以切换隐藏项（以点开头的名称和系统隐藏文件）。此设置应用于活动面板，并在会话间记住。</p>
+<h2 id="_4">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>快速搜索（经典模式）</td>
+<td>Ctrl+Option+字母</td>
+</tr>
+<tr>
+<td>快速筛选开/关</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>清除筛选 / 取消</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>显示/隐藏隐藏文件</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">备注</h2>
+<ul>
+<li>快速搜索只移动光标；快速筛选则实际改变所列出的项目。当你想对子集进行操作（例如只选择或复制匹配项）时使用筛选。</li>
+<li>筛选和隐藏文件设置是按面板的，因此两侧可以同时显示不同内容。</li>
+<li>快速搜索从名称开头匹配；快速筛选的纯文本模式则在名称任意位置匹配。若希望筛选也如此，请使用像 <code>*text*</code> 这样的通配符。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">查找文件</a></li><li><a href="view-modes-and-sorting.html">视图模式与排序</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editarea fișierelor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Editarea fișierelor</h1>
+<p>Când trebuie să modificați un fișier, nu doar să-l priviți, Peach Commander îl deschide într-un editor încorporat. Fișierele text și de cod se deschid într-un editor complet cu evidențierea sintaxei, căutare și înlocuire, un contur al simbolurilor din codul dvs. și o hartă miniaturală pentru navigare rapidă. Fișierele binare pot fi deschise într-un editor hexazecimal separat, unde puteți inspecta și modifica octeți individuali. Nu trebuie niciodată să părăsiți aplicația pentru o editare rapidă.</p>
+<h2 id="editati-un-fisier-text-sau-de-cod">Editați un fișier text sau de cod</h2>
+<ol>
+<li>În oricare panou, mutați cursorul pe fișierul pe care doriți să-l modificați.</li>
+<li>Apăsați F4, sau alegeți Fișier ▸ Editează. Fișierul se deschide în fereastra editorului.</li>
+<li>Faceți modificările. Dacă fișierul este un format de programare sau de date recunoscut, cuvintele cheie, șirurile și comentariile sunt colorate automat.</li>
+<li>Apăsați Cmd+S (sau faceți clic pe Salvează) pentru a scrie modificările. Prima salvare păstrează o copie de rezervă a originalului lângă fișier, astfel încât puteți reveni întotdeauna la ea.</li>
+</ol>
+<p>Pentru a începe un fișier text nou-nouț la locația curentă, apăsați Shift+F4.</p>
+<p><img alt="Editorul de text încorporat care arată evidențierea sintaxei, conturul simbolurilor și harta miniaturală" src="images/editor.png" />
+<em>(Figura: editorul cu evidențierea sintaxei, conturul simbolurilor în stânga și harta miniaturală în dreapta.)</em></p>
+<h2 id="cautare-inlocuire-si-navigare">Căutare, înlocuire și navigare</h2>
+<ul>
+<li>Apăsați Cmd+F pentru a deschide bara de căutare. Pentru a înlocui text, deschideți bara de căutare și comutați-o la vizualizarea de înlocuire, sau faceți clic pe Găsește/Înlocuiește în bara de instrumente.</li>
+<li>Faceți clic pe Formatează JSON/XML pentru a re-indenta un document JSON sau XML într-o dispunere curată, lizibilă.</li>
+<li>Faceți clic pe Simboluri (sau apăsați Cmd+Shift+O) pentru a afișa o bară laterală care listează clasele, funcțiile și metodele din codul dvs. Faceți clic pe o intrare pentru a sări direct la ea.</li>
+<li>Apăsați Cmd+L pentru a sări la o linie anume.</li>
+<li>Apăsați Cmd+\ pentru a sări între o paranteză și perechea ei.</li>
+<li>Faceți clic pe butonul hartă pentru a afișa sau ascunde harta miniaturală, o prezentare generală la scară a întregului fișier pe care puteți face clic pentru a derula.</li>
+<li>Folosiți meniul Codificare din bara de instrumente dacă fișierul a fost salvat în altă codificare de text decât cea implicită.</li>
+</ul>
+<h2 id="editati-un-fisier-octet-cu-octet">Editați un fișier octet cu octet</h2>
+<ol>
+<li>Selectați fișierul într-un panou.</li>
+<li>Alegeți Fișier ▸ Editează ca hexazecimal (sau faceți clic dreapta pe fișier și alegeți Editează ca hexazecimal).</li>
+<li>Tastați cifre hexazecimale pentru a suprascrie octeți, sau folosiți tastele săgeți pentru a vă deplasa prin fișier. Backspace și Delete elimină octeți.</li>
+<li>Apăsați Cmd+S pentru a salva. Ca la editorul de text, o copie de rezervă unică a originalului este păstrată.</li>
+</ol>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Tastă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Editează fișier</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Creează și editează un fișier text nou</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>Salvează</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>Găsește</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>Afișează/ascunde conturul simbolurilor</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>Salt la linie</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>Salt la paranteza pereche</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>Anulează / Refă (editor hexazecimal)</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Evidențierea sintaxei acoperă JSON, C, C#, Java, JavaScript, TypeScript, Python și Rust. Alte tipuri de fișiere se deschid și se editează în continuare normal cu colorare de bază, dar evidențierea detaliată și conturul simbolurilor sunt disponibile doar pentru limbajele acceptate.</li>
+<li>Conturul simbolurilor și Salt la linie se aplică editorului de text. Editorul hexazecimal este destinat inspecției binare și editărilor la nivel de octet, nu textului.</li>
+<li>Ambii editori păstrează o copie de rezervă a fișierului original la prima salvare, astfel încât o modificare accidentală este ușor de anulat restaurând acea copie de rezervă.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Vizualizarea fișierelor</a></li></ul></section>
+</main>
+</body>
+</html>

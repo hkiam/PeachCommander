@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probleemoplossing</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Probleemoplossing</h1>
+<p>Dit onderwerp behandelt de problemen die mensen het vaakst tegenkomen: macOS dat toegang tot bepaalde mappen blokkeert, een map die op oude inhoud lijkt vast te zitten, een beveiligde FTP-server die weigert te verbinden, en inpakken naar RAR. Elk deel vertelt wat er gebeurt en hoe je het oplost.</p>
+<h2 id="macos-vraagt-om-toestemming-of-mappen-lijken-leeg">macOS vraagt om toestemming, of mappen lijken leeg</h2>
+<p>Sommige locaties — zoals je map <code>~/Library</code>, mappen van andere gebruikers en systeemgebieden — worden door macOS beschermd en blijven verborgen totdat je toegang verleent. Peach Commander merkt dit op en biedt aan je naar de juiste instelling te begeleiden.</p>
+<ol>
+<li>Kies bij de vraag om Systeeminstellingen te openen, of open het zelf.</li>
+<li>Ga naar Privacy en beveiliging en vervolgens Volledige schijftoegang.</li>
+<li>Zet de schakelaar naast Peach Commander aan. Staat het er niet bij, gebruik dan de knop Voeg toe.</li>
+<li>Sluit Peach Commander af en open het opnieuw zodat de nieuwe toestemming van kracht wordt.</li>
+</ol>
+<p>Peach Commander draait niet in een beperkte sandbox, dus zodra Volledige schijftoegang is verleend, kan het bestanden bladeren en beheren net als de Finder.</p>
+<h2 id="een-map-toont-recente-wijzigingen-niet">Een map toont recente wijzigingen niet</h2>
+<p>Panelen werken zichzelf normaal bij wanneer bestanden op schijf veranderen. Als een map door een ander programma is gewijzigd, op een netwerkvolume staat of gewoon verouderd lijkt, ververs het dan handmatig.</p>
+<ol>
+<li>Klik op het paneel dat je wilt bijwerken.</li>
+<li>Druk op F2 (of Ctrl+R) om die map opnieuw in te lezen.</li>
+</ol>
+<p>Netwerk- en gekoppelde volumes melden wijzigingen niet altijd aan macOS, dus daar is handmatig verversen de betrouwbare oplossing.</p>
+<h2 id="een-ftps-server-maakt-geen-verbinding">Een FTPS-server maakt geen verbinding</h2>
+<p>Als een beveiligde FTP-verbinding mislukt, controleer dan deze instellingen in de verbindingsgegevens:</p>
+<ul>
+<li>Kies de beveiligingsmodus van de server: expliciet FTPS (AUTH TLS) en impliciet FTPS (poort 990) zijn niet uitwisselbaar.</li>
+<li>Blijft de verbinding hangen na het inloggen, wissel dan tussen passieve en actieve overdrachtsmodus — de meeste servers achter een firewall hebben passief nodig.</li>
+<li>Gebruikt de server een zelfondertekend certificaat, dan moet je het expliciet toestaan; anders wordt de verbinding geweigerd.</li>
+<li>Bevestig de host, poort, gebruikersnaam en wachtwoord, en of er op jouw netwerk een SOCKS5-proxy nodig is.</li>
+</ul>
+<h2 id="inpakken-naar-rar-doet-niets">Inpakken naar RAR doet niets</h2>
+<p>Peach Commander kan zelf ZIP-, 7z-, TAR-, TAR.GZ-, BZ2- en XZ-archieven maken. RAR is anders: omdat RAR een gesloten formaat is, vereist het maken van RAR-archieven een apart RAR-opdrachtregelprogramma dat op je Mac is geïnstalleerd. Zonder dat is RAR niet beschikbaar bij het inpakken van bestanden (Option+F5). Bestaande RAR-archieven lezen kan nog steeds door ze als een map te openen. Heb je RAR niet specifiek nodig, kies dan ZIP of 7z — beide ondersteunen sterke AES-256-versleuteling en gesplitste volumes.</p>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Sneltoets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>De actieve map verversen</td>
+<td>F2 of Ctrl+R</td>
+</tr>
+<tr>
+<td>Verbinden met een FTP/FTPS-server</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Een netwerkshare koppelen</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>De geselecteerde bestanden inpakken</td>
+<td>Option+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Wachtwoorden en andere inloggegevens worden alleen in de macOS-sleutelhanger bewaard, nooit in platte configuratiebestanden.</li>
+<li>Een netwerkshare koppelen (Cmd+K, of Netwerk-menu ▸ Netwerkshare koppelen…) gebruikt dezelfde verbinding die macOS zelf gebruikt, dus hij verschijnt ook in de Finder.</li>
+<li>Blijft een probleem bestaan na verversen en herstarten, dan is het mogelijk een bekende beperking en geen fout — zie Bekende beperkingen.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">Privacy en beveiliging</a></li><li><a href="known-limitations.html">Bekende beperkingen</a></li></ul></section>
+</main>
+</body>
+</html>

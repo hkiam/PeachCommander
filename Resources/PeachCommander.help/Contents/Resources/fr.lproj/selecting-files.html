@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sélectionner des fichiers</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Sélectionner des fichiers</h1>
+<p>Avant de copier, déplacer, supprimer ou compresser quoi que ce soit, vous indiquez d'abord à Peach Commander sur quels éléments agir. L'élément sur lequel se trouve votre curseur est toujours l'élément courant, mais vous pouvez aussi <em>marquer</em> un ou plusieurs fichiers et dossiers pour qu'une commande s'exécute sur l'ensemble d'un coup. Les éléments marqués se distinguent par une couleur de nom particulière dans le panneau.</p>
+<h2 id="marquer-des-fichiers-et-des-dossiers">Marquer des fichiers et des dossiers</h2>
+<ol>
+<li>Cliquez sur une ligne pour y amener le curseur. Un simple clic ne sélectionne que cet élément.</li>
+<li>Pour marquer plusieurs éléments à la fois, maintenez Cmd et cliquez sur chacun d'eux, ou maintenez Shift et cliquez pour marquer une plage.</li>
+<li>Pour marquer l'élément sous le curseur et descendre en un seul geste, appuyez sur Insert. Appuyez plusieurs fois pour marquer rapidement une série d'éléments consécutifs. La barre d'espace bascule également la marque de l'élément courant (et affiche la taille d'un dossier).</li>
+<li>Pour tout marquer dans le panneau, choisissez Sélection &gt; Tout sélectionner (Ctrl+Num+), ou appuyez sur Cmd+A. Choisissez Sélection &gt; Tout désélectionner (Ctrl+Num-) pour effacer toutes les marques.</li>
+</ol>
+<h2 id="selectionner-ou-deselectionner-selon-un-motif">Sélectionner ou désélectionner selon un motif</h2>
+<ol>
+<li>Choisissez Sélection &gt; Sélectionner un groupe… (Num+) pour ajouter les éléments dont le nom correspond à un motif, ou Sélection &gt; Désélectionner un groupe… (Num-) pour retirer les éléments correspondants des marques actuelles.</li>
+<li>Saisissez un masque avec caractères génériques. Utilisez <code>*</code> pour n'importe quels caractères et <code>?</code> pour un seul caractère. Séparez plusieurs masques par un point-virgule, et indiquez les exceptions après une barre verticale — par exemple <code>*.jpg;*.png</code> marque toutes les images, et <code>*.*|*.bak</code> marque tout sauf les fichiers de sauvegarde.</li>
+</ol>
+<p><img alt="La boîte de dialogue Sélectionner un groupe avec un masque à caractères génériques saisi dans le champ de motif" src="images/select-by-mask.png" />
+<em>(Figure : marquer des fichiers à l'aide d'un masque à caractères génériques.)</em></p>
+<h2 id="inverser-meme-extension-et-restaurer">Inverser, même extension et restaurer</h2>
+<ul>
+<li><strong>Inverser la sélection</strong> (Num*, menu Sélection) inverse chaque marque : les éléments marqués deviennent non marqués et inversement — pratique pour « tout sauf ceux-ci ».</li>
+<li><strong>Sélectionner tout avec la même extension</strong> (Alt+Num+, menu Sélection) marque tous les fichiers qui partagent l'extension de l'élément sous le curseur : une seule frappe saisit ainsi tous les fichiers <code>.pdf</code>, par exemple.</li>
+<li><strong>Restaurer la sélection</strong> (Num/, menu Sélection) rétablit votre ensemble de marques précédent — utile si une commande les a effacées ou si vous avez marqué le mauvais groupe.</li>
+</ul>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Touche</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Basculer la marque, descendre</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Basculer la marque (élément courant)</td>
+<td>Space</td>
+</tr>
+<tr>
+<td>Tout sélectionner / Tout désélectionner</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Tout sélectionner (autre méthode)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Sélectionner un groupe par masque</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Désélectionner un groupe par masque</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Inverser la sélection</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Sélectionner tout avec la même extension</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Restaurer la sélection précédente</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>Les marques et le curseur sont indépendants : déplacer le curseur avec les touches fléchées ne change pas ce qui est marqué.</li>
+<li>L'entrée du dossier parent (<code>..</code>) ne peut jamais être marquée.</li>
+<li>Sélectionner un groupe, Désélectionner un groupe et Inverser la sélection s'appliquent au nom du fichier : vous pouvez donc inclure ou exclure les dossiers selon les options de la boîte de dialogue.</li>
+<li>Une fois une copie, un déplacement ou une suppression terminé, les éléments traités avec succès sont démarqués automatiquement, tandis que ceux qui ont échoué restent marqués pour que vous puissiez réessayer.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copier des fichiers</a></li><li><a href="searching.html">Rechercher des fichiers</a></li></ul></section>
+</main>
+</body>
+</html>

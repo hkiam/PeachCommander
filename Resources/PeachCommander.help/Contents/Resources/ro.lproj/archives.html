@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lucrul cu arhive</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Lucrul cu arhive</h1>
+<p>Peach Commander tratează arhivele ca pe foldere. Puteți intra într-o arhivă ZIP, TAR sau altă arhivă acceptată, parcurge conținutul ei și copia fișiere din ea — totul fără a dezarhiva mai întâi pe disc. Când doriți să creați o arhivă, comanda Împachetează grupează selecția dvs. într-un format ZIP, 7z, TAR sau altul, cu criptare opțională și volume divizate. Este util pentru gruparea fișierelor de trimis, micșorarea unui folder pentru stocare sau aruncarea unei priviri într-o descărcare înainte de a vă angaja la extragere.</p>
+<h2 id="parcurgeti-o-arhiva-ca-un-folder">Parcurgeți o arhivă ca un folder</h2>
+<ol>
+<li>Într-un panou, mutați cursorul pe un fișier de arhivă (de exemplu un <code>.zip</code> sau <code>.tar.gz</code>).</li>
+<li>Apăsați Enter sau Ctrl+PageDown pentru a intra, la fel cum ați deschide un folder.</li>
+<li>Navigați normal prin conținut. Apăsați Backspace sau Ctrl+PageUp pentru a urca și a părăsi arhiva.</li>
+<li>Pentru a scoate fișiere, selectați-le și copiați (F5) în celălalt panou.</li>
+</ol>
+<p><img alt="Parcurgerea interiorului unei arhive ca și cum ar fi un folder" src="images/archive-browse.png" />
+<em>(Figura: o arhivă deschisă afișată ca o listă de folder obișnuită, cu fișierele ei gata de copiat.)</em></p>
+<p>ZIP, TAR și TAR comprimat cu gzip sunt citite direct. Alte formate precum CPIO, ISO, CAB, LZH, XAR și PAX sunt citite prin instrumente de sistem încorporate. Arhivele ZIP criptate (atât clasice, cât și AES) pot fi deschise când furnizați parola.</p>
+<h2 id="impachetati-fisiere-intr-o-arhiva-noua">Împachetați fișiere într-o arhivă nouă</h2>
+<ol>
+<li>Selectați fișierele și folderele pe care doriți să le includeți în panoul activ.</li>
+<li>Alegeți Fișier ▸ Împachetează… sau apăsați Alt+F5. (Pentru a împacheta și apoi șterge originalele, folosiți Alt+Shift+F5.)</li>
+<li>În dialog, alegeți formatul arhivei (ZIP, 7z, TAR, tar.gz, bzip2, xz sau RAR), nivelul de compresie și unde să o salvați.</li>
+<li>Opțional, activați criptarea AES-256 și setați o parolă, sau divizați arhiva în volume de dimensiune fixă.</li>
+<li>Confirmați pentru a crea arhiva.</li>
+</ol>
+<p><img alt="Dialogul Împachetează care arată formatul, compresia, criptarea și opțiunile de divizare" src="images/pack-dialog.png" />
+<em>(Figura: dialogul Împachetează, unde alegeți formatul și setați opțiunile de criptare și divizare în volume.)</em></p>
+<h2 id="dezarhivati-sau-testati-o-arhiva">Dezarhivați sau testați o arhivă</h2>
+<ol>
+<li>Puneți arhiva de extras în panoul activ și folderul de destinație în celălalt panou.</li>
+<li>Alegeți Fișier ▸ Dezarhivează… sau apăsați Alt+F9, apoi confirmați destinația.</li>
+<li>Pentru a verifica o arhivă pentru deteriorare fără a o extrage, alegeți Fișier ▸ Testează arhiva.</li>
+</ol>
+<h2 id="editati-un-zip-pe-loc">Editați un ZIP pe loc</h2>
+<p>Puteți adăuga sau elimina fișiere într-un ZIP existent fără a-l dezarhiva. Deschideți ZIP-ul ca folder, apoi copiați fișiere în el sau ștergeți fișiere ca de obicei — modificarea este scrisă direct înapoi în arhivă.</p>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Comandă rapidă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Intră în arhiva de sub cursor</td>
+<td>Enter sau Ctrl+PageDown</td>
+</tr>
+<tr>
+<td>Părăsește arhiva (urcă)</td>
+<td>Backspace sau Ctrl+PageUp</td>
+</tr>
+<tr>
+<td>Împachetează</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Împachetează și șterge originalele</td>
+<td>Alt+Shift+F5</td>
+</tr>
+<tr>
+<td>Dezarhivează</td>
+<td>Alt+F9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Împachetarea în 7z, xz, bzip2 și RAR se bazează pe instrumente externe. RAR în special necesită instalarea programului proprietar RAR; fără el, acel format nu este disponibil.</li>
+<li>Editarea unui ZIP pe loc rescrie întreaga arhivă, astfel încât datele de modificare ale fișierelor din interior nu sunt păstrate.</li>
+<li>Elementele individuale foarte mari sunt plafonate la 512 MiB la extragere. Extragerea poate fi anulată în timp ce rulează.</li>
+<li>Arhivele extrem de mari (ZIP64) nu sunt acceptate.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copierea fișierelor</a></li></ul></section>
+</main>
+</body>
+</html>

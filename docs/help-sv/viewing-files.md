@@ -1,0 +1,56 @@
+---
+title: Visa filer
+slug: viewing-files
+section: Visa och redigera
+order: 70
+related: [editing-files, searching]
+---
+
+Peach Commander har en inbyggd visare som låter dig titta inuti en fil utan att öppna en annan app eller ändra filen. Tryck på F3 på objektet under markören så öppnas visaren direkt, även för mycket stora filer. Den väljer automatiskt bästa sättet att visa innehållet: läsbar text, syntaxfärgad kod, en rå hexadecimal dump, eller en bild i full storlek. Du kan även förhandsvisa en fil direkt i fönstret med Quick View, eller lämna den till macOS Quick Look.
+
+## Visa en fil
+
+1. Flytta markören till en fil i den aktiva panelen.
+2. Tryck på F3 (eller välj Visa i Arkiv-menyn). Visaren öppnas i ett eget fönster.
+3. Använd verktygsfältet för att växla hur innehållet visas: Text, Kod, Hex, Bild eller Renderad. Låt det stå på det automatiska läget för att låta Peach Commander avgöra.
+4. Rulla med piltangenterna, Page Up/Page Down och rullningslisten. För lång text, slå på miniatyrkartsknappen för att se och hoppa runt i hela filen med en blick.
+5. Tryck på N för att hoppa till nästa markerade fil, eller stäng fönstret med Esc.
+
+![Den inbyggda visaren som visar en textfil med miniatyrkartan till höger](screenshots/lister-text.png)
+*(Bild: Att visa en textfil, med representationsväljaren och miniatyrkartan i verktygsfältet.)*
+
+## Hitta text och ändra teckenkodning
+
+- Tryck på Ctrl+F för att söka i filen. Tryck på F3 för att hoppa till nästa träff och Shift+F3 för föregående.
+- Om texten ser förvrängd ut, klicka på Teckenkodning i verktygsfältet (eller tryck på E) för att bläddra genom teckenkodningar tills den läses korrekt; det automatiska läget brukar träffa rätt.
+- Tryck på W för att växla radbrytning för långa rader.
+
+## Quick View och Quick Look
+
+Quick View visar en direkt förhandsvisning i den panel du *inte* använder, så att du kan fortsätta bläddra på ena sidan medan du förhandsvisar på den andra.
+
+1. Tryck på Ctrl+Q. Den inaktiva panelen blir ett förhandsvisningsområde.
+2. Flytta markören över olika filer i den aktiva panelen för att förhandsvisa var och en.
+3. Tryck på Ctrl+Q igen, eller Esc, för att återställa panelen till en vanlig fillista.
+
+För en snabb helskärmsförhandsvisning som macOS själv hanterar, tryck på Cmd+Y (Quick Look). Tryck på Cmd+Y eller Space igen för att stänga den.
+
+## Kortkommandon
+
+| Åtgärd | Kortkommando |
+| --- | --- |
+| Visa fil under markören | F3 |
+| Visa endast filen under markören (ignorera markerade filer) | Shift+F3 |
+| Öppna i en extern visare | Option+F3 |
+| Sök inuti visaren | Ctrl+F |
+| Nästa / föregående träff | F3 / Shift+F3 |
+| Quick View i den andra panelen | Ctrl+Q |
+| Quick Look (macOS-förhandsvisning) | Cmd+Y |
+| Stäng visaren eller Quick View | Esc |
+
+## Anmärkningar
+
+- Visaren är skrivskyddad. För att ändra en fil, använd redigeraren i stället (se Redigera filer).
+- Mycket stora filer öppnas utan fördröjning: text öppnas i en snabb, rullningsbar vy och hexvyn strömmar direkt från disken oavsett storlek.
+- Tryck på F3 på en mapp för att se en sammanfattning av dess innehåll och totala storlek i stället för filbytes.
+- Renderat läge visar formaterat innehåll som webbsidor; hexläge visar de råa byten sida vid sida med deras tecken, vilket är behändigt för att granska binärfiler.

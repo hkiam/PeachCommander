@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstaller</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Uninstaller</h1>
+<p>Ha egy appot a Kukába húz, a támogatófájljai, gyorsítótárai, beállításai és tárolói szétszórva maradnak a Library-mappáiban. Az Uninstaller bővítmény eltávolít egy alkalmazást <strong>és</strong> ezeket a maradványokat: megtalál mindent, amit az app hátrahagyott, megmutatja a listát, mindegyikhez mérettel, és mindent a Kukába helyez, amint Ön megerősíti. Mivel bővítményről van szó, a <strong>Konfiguráció ▸ Bővítmények…</strong> menüpontból kikapcsolhatja vagy eltávolíthatja.</p>
+<h2 id="a-kurzor-alatti-app-eltavolitasa">A kurzor alatti app eltávolítása</h2>
+<ol>
+<li>Vigye a kurzort egy alkalmazásra (<code>.app</code>) egy panelben.</li>
+<li>Válassza a <strong>Fájl ▸ Alkalmazás eltávolítása…</strong> lehetőséget, vagy jobb kattintás ▸ <strong>Alkalmazás eltávolítása…</strong>, vagy nyomja meg a <strong>Cmd+Shift+U</strong> billentyűt.</li>
+<li>Megnyílik az áttekintőablak, amely felsorolja az appot és minden talált kapcsolódó fájlt, mindegyiket a kategóriájával, útvonalával és méretével felcímkézve.</li>
+<li>Vegye ki a pipát mindenből, amit meg szeretne tartani, majd kattintson az <strong>Áthelyezés a Kukába</strong> (vagy a <strong>Végleges törlés</strong>) gombra.</li>
+</ol>
+<p><img alt="Az eltávolítás áttekintőablaka felsorolja egy app maradványfájljait jelölőnégyzetekkel és méretekkel" src="images/uninstaller.png" />
+<em>(Ábra: pontosan tekintse át, mi kerül eltávolításra, mielőtt bármi törlődne.)</em></p>
+<h2 id="minden-telepitett-app-bongeszese">Minden telepített app böngészése</h2>
+<p>Válassza a <strong>Parancsok ▸ Alkalmazás eltávolítása…</strong> lehetőséget a Macre telepített appok kereshető listájának megnyitásához, mindegyiket a nevével, méretével és telepítési dátumával. Válasszon ki egyet (vagy többet), kattintson az <strong>Eltávolítás…</strong> gombra, és ugyanabban az áttekintőablakban köt ki. A listát a keresőmezőbe gépelve szűrheti.</p>
+<h2 id="maradvanyfajlok-keresese">Maradványfájlok keresése</h2>
+<p>Válassza a <strong>Parancsok ▸ Maradványfájlok keresése…</strong> lehetőséget, hogy olyan támogatófájlokat, gyorsítótárakat és beállításokat keressen, amelyek olyan appokhoz tartoznak, amelyeket <strong>már</strong> törölt. Tekintse át őket ugyanígy, és takarítsa ki őket. Ha semmit sem talál, a bővítmény ezt jelzi.</p>
+<h2 id="mennyire-alaposan-vizsgaljon">Mennyire alaposan vizsgáljon</h2>
+<p>Az áttekintőablak rendelkezik egy megbízhatósági vezérlővel:</p>
+<ul>
+<li><strong>Pontos</strong> — az app csomagazonosítójához kötött fájlok. Magas megbízhatóság; előre kiválasztva.</li>
+<li><strong>Bővített</strong> — hozzáadja a névvel egyező fájlokat; pipa nélkül hagyva, hogy Ön dönthessen.</li>
+<li><strong>Mély</strong> — a Bővített plusz egy Spotlight-átvizsgálás minden másra, ami megemlíti az appot; szintén pipa nélkül hagyva.</li>
+</ul>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A bővítmény semmit nem töröl közvetlenül — az elemek az app Kukáján vagy végleges törlésén mennek keresztül, pontosan úgy, mint bármely más fájlművelet. A <code>/Library</code> vagy <code>/var</code> alatti fájlok eltávolítása rendszergazdai jelszót igényelhet.</li>
+<li>Az eltávolítás előtt a bővítmény bezárja a futó appot, és kirakja a háttérelemeit (launchd), majd felajánlja a mostanra üres gyártói mappák rendbetételét.</li>
+<li>Ha az appot <strong>Homebrew</strong> segítségével telepítették, a bővítmény figyelmezteti, és a <code>brew uninstall --cask</code> parancsot javasolja, hogy a Homebrew szinkronban maradjon. Az App Store-appokat is megjegyzi.</li>
+<li>A Bővített és Mély találatok szándékosan alacsonyabb megbízhatóságúak, és pipa nélkül indulnak — tekintse át őket az eltávolítás előtt. Néhány, a modern bejelentkezési elemek API-ján keresztül telepített háttérelem itt nem távolítható el.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="deleting-files.html">Fájlok törlése</a></li></ul></section>
+</main>
+</body>
+</html>

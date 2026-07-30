@@ -1,0 +1,58 @@
+---
+title: Hitta filer
+slug: searching
+section: Hitta filer
+order: 60
+related: [selecting-files, quick-search-and-filter]
+---
+
+När du behöver spåra upp filer var som helst på din Mac — efter namn, efter innehåll, eller efter storlek och datum — använd fönstret Hitta filer. Det söker i en eller flera mappar (och deras undermappar), kan titta inuti textfiler och arkiv, och låter dig skicka allt det hittar direkt in i en panel så att du kan agera på resultaten som om de vore en vanlig mapp.
+
+## Hitta filer efter namn
+
+1. I panelen som visar mappen du vill söka i, välj **Kommandon > Hitta filer…** (eller tryck på Cmd+Shift+F).
+2. På fliken **Allmänt**, skriv ett namnmönster i **Sök efter**. Du kan använda jokertecken som `*.pdf` eller `report_*.docx`. För att söka i flera mappar samtidigt, lista dem i startmappsfältet åtskilda med semikolon (`;`).
+3. Klicka på **Starta**. Matchningar visas i resultatlistan nedan allteftersom de hittas.
+4. Dubbelklicka på ett resultat för att hoppa till den filen i den aktiva panelen, eller markera ett resultat och klicka på **Visa** (F3) för att öppna det i den inbyggda visaren.
+
+![Fönstret Hitta filer på fliken Allmänt, som visar namnmönster, mapp och resultatlista](screenshots/find-files-general.png)
+*(Bild: Fliken Allmänt — sök efter namnmönster i en eller flera mappar.)*
+
+## Sök efter innehåll, storlek och datum
+
+1. För att söka inuti filer, markera **Hitta text** på fliken Allmänt och skriv texten att leta efter. Alternativ låter dig göra den **Skiftlägeskänslig**, matcha endast ett **Helt ord**, behandla texten som ett **Reguljärt uttryck**, göra en **Hexadecimal innehållssökning**, eller hitta filer som **Inte innehåller** texten.
+2. Växla till fliken **Avancerat** för att smalna av resultaten efter **Storlek** (till exempel `10K` till `5M`), efter **ändringsdatum**-intervall, eller till filer ändrade de senaste N dagarna.
+3. Slå på **Sök inuti arkiv** för att titta inuti arkiv av zip-familjen (zip, jar, war och liknande).
+4. För att begränsa sökningen till det du redan valt, slå på **Sök endast i markerade objekt** innan du startar.
+
+![Fönstret Hitta filer på fliken Avancerat, som visar storleks- och datumfilter](screenshots/find-files-advanced.png)
+*(Bild: Fliken Avancerat — filtrera efter storlek, datum och andra attribut.)*
+
+Om du har insticksprogram som lägger till innehållsfält (som bildmått) låter fliken **Insticksprogram** dig kräva att ett fält matchar ett villkor — till exempel endast bilder bredare än 1000 pixlar.
+
+![Fönstret Hitta filer på fliken Insticksprogram, som visar ett innehållsfältvillkor](screenshots/find-files-plugins.png)
+*(Bild: Fliken Insticksprogram — matcha på innehållsfält från insticksprogram.)*
+
+## Snabba sökningar med Spotlight
+
+För lokala mappar som macOS redan har indexerat, slå på **Använd Spotlight** på fliken Allmänt för nästan omedelbara resultat. Spotlight söker i indexet i stället för att söka igenom filer, så det ignorerar reguljära uttryck, undermappsdjupgränser och endast-markerade-omfånget.
+
+## Återanvänd och lämna över dina resultat
+
+- **Skicka till lista** placerar varje resultat i den aktiva panelen som en tillfällig lista, så att du kan kopiera, flytta eller radera hela uppsättningen på en gång.
+- På fliken **Läs in / Spara**, välj **Spara som mall…** för att lagra den aktuella sökningen (mönster och alternativ) och välja den igen senare från mall-listan.
+
+## Kortkommandon
+
+| Åtgärd | Kortkommando |
+| --- | --- |
+| Öppna Hitta filer | Cmd+Shift+F eller Option+F7 |
+| Starta / stoppa sökningen | Starta-knappen i fönstret |
+| Visa det markerade resultatet | F3 |
+
+## Anmärkningar
+
+- Innehållssökning läser hela filer för lokala mappar; på andra platser hoppas mycket stora filer över (ungefär 16 MB, eller 64 MB när ett reguljärt uttryck används).
+- Sökning inuti arkiv går ner upp till fyra nivåer av nästlade arkiv.
+- **Inkludera mappar i resultaten** listar även mappar vars namn matchar, inte bara filer.
+- Spotlight täcker endast indexerade lokala mappar; för nätverksplatser eller mönsterbaserad matchning, lämna det av och låt Hitta filer söka igenom.

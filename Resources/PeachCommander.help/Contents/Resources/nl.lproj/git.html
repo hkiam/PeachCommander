@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>De Git-plug-in toont de status van een Git-repository rechtstreeks in het bestandspaneel — geen aparte app, geen terminal. Hij voegt twee kolommen toe die per bestand de status in de werkboom en de huidige branch tonen, een <strong>Git</strong>-submenu voor de alledaagse opdrachten (status, stagen, committen, pullen, pushen), en gebruikt de <code>git</code> die al op je Mac is geïnstalleerd. Het is een plug-in, dus je kunt hem uitschakelen of verwijderen via <strong>Configuratie ▸ Plug-ins…</strong>.</p>
+<h2 id="wat-het-toevoegt">Wat het toevoegt</h2>
+<ul>
+<li><strong>Twee kolommen in de bestandslijst</strong> — <em>Git Status</em> en <em>Branch</em>. In een repository toont elk bestand een kort statuswoord (Gewijzigd, Toegevoegd, Verwijderd, Niet gevolgd, Hernoemd, Gekopieerd, Conflict, Genegeerd of Veranderd) en toont het paneel de huidige branch. Zet de kolommen aan via <strong>Configuratie ▸ Kolommen…</strong> (zie <a href="view-modes-and-sorting.md">Weergavemodi &amp; sorteren</a>).</li>
+<li><strong>Een Git-menu</strong> — onder <strong>Opdrachten ▸ Git</strong> en in het rechtsklikmenu van een bestand, met: <strong>Git Status…</strong>, <strong>Git Add (stage)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> en <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="Het dialoogvenster Git Status met de huidige branch en de gewijzigde bestanden in de repository" src="images/git-status.png" />
+<em>(Afbeelding: Git Status meldt de branch en elke wijziging in de werkboom.)</em></p>
+<h2 id="de-status-controleren">De status controleren</h2>
+<ol>
+<li>Zet de cursor op een bestand of map binnen een Git-repository.</li>
+<li>Kies <strong>Opdrachten ▸ Git ▸ Git Status…</strong> (of rechtsklik ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>Er verschijnt een samenvatting: de huidige branch (of <em>(losgekoppeld)</em>), gevolgd door ofwel <em>Werkboom schoon.</em> ofwel een lijst met wijzigingen, waarbij elke regel de status en het bestandspad toont.</li>
+</ol>
+<p>Als de cursor niet in een repository staat, meldt de plug-in simpelweg <em>Geen Git-repository.</em></p>
+<h2 id="stagen-committen-pullen-pushen">Stagen, committen, pullen, pushen</h2>
+<ul>
+<li><strong>Git Add (stage)</strong> zet het bestand onder de cursor klaar (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> vraagt om een commitbericht en legt vervolgens alle wijzigingen vast (<code>git commit -a</code>). De gecombineerde uitvoer wordt getoond, zodat je precies ziet wat er is gebeurd.</li>
+<li><strong>Git Pull</strong> doet een pull met alleen fast-forward (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> pusht de huidige branch (<code>git push</code>).</li>
+</ul>
+<p>Na een opdracht die de repository wijzigt, wordt het actieve paneel vernieuwd zodat de statuskolommen actueel blijven.</p>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>De plug-in gebruikt de systeem-Git op <code>/usr/bin/git</code>. Als Git niet is geïnstalleerd, melden de opdrachten dat Git niet beschikbaar is. (Installatie van de Xcode Command Line Tools levert het.)</li>
+<li>De repositorystatus wordt één keer per map gelezen en in de cache bewaard, zodat het scrollen door een grote repo snel blijft; de cache wordt vernieuwd na elke opdracht die de boom wijzigt.</li>
+<li>Commit gebruikt <code>git commit -a</code>, wat gevolgde wijzigingen vastlegt; gloednieuwe bestanden moeten eerst nog via <strong>Git Add (stage)</strong>.</li>
+<li>De kolomkoppen <em>Git Status</em> en <em>Branch</em> worden momenteel in het Engels weergegeven, ook in andere interfacetalen; de waarden en dialoogvensters zijn gelokaliseerd.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="view-modes-and-sorting.html">Weergavemodi &amp; sorteren</a></li></ul></section>
+</main>
+</body>
+</html>

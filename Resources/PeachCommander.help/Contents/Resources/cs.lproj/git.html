@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>Zásuvný modul Git zpřístupňuje stav repozitáře Git přímo v panelu souborů — bez samostatné aplikace, bez terminálu. Přidává dva sloupce, které u každého souboru ukazují stav v pracovním stromu a aktuální větev, podnabídku <strong>Git</strong> pro každodenní příkazy (status, přidání do indexu, commit, pull, push), a spouští <code>git</code>, který již máte v Macu nainstalovaný. Je to zásuvný modul, takže jej můžete vypnout nebo odebrat v nabídce <strong>Konfigurace ▸ Zásuvné moduly…</strong>.</p>
+<h2 id="co-pridava">Co přidává</h2>
+<ul>
+<li><strong>Dva sloupce v seznamu souborů</strong> — <em>Git Status</em> a <em>Branch</em>. V repozitáři každý soubor zobrazuje krátké slovo stavu (Modified, Added, Deleted, Untracked, Renamed, Copied, Conflict, Ignored nebo Changed) a panel zobrazuje aktuální větev. Sloupce zapnete v nabídce <strong>Konfigurace ▸ Sloupce…</strong> (viz <a href="view-modes-and-sorting.md">Režimy zobrazení a řazení</a>).</li>
+<li><strong>Nabídka Git</strong> — pod <strong>Příkazy ▸ Git</strong> a v místní nabídce souboru (po kliknutí pravým tlačítkem), s položkami: <strong>Git Status…</strong>, <strong>Git Add (přidat do indexu)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> a <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="Dialog Git Status zobrazující aktuální větev a změněné soubory v repozitáři" src="images/git-status.png" />
+<em>(Obrázek: Git Status hlásí větev a každou změnu v pracovním stromu.)</em></p>
+<h2 id="kontrola-stavu">Kontrola stavu</h2>
+<ol>
+<li>Umístěte kurzor na soubor nebo složku uvnitř repozitáře Git.</li>
+<li>Zvolte <strong>Příkazy ▸ Git ▸ Git Status…</strong> (nebo klepněte pravým tlačítkem ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>Objeví se souhrn: aktuální větev (nebo <em>(detached)</em>), poté buď <em>Working tree clean.</em>, nebo seznam změn, kde každý řádek zobrazuje stav a cestu k souboru.</li>
+</ol>
+<p>Pokud kurzor není uvnitř repozitáře, zásuvný modul jednoduše oznámí <em>Not a Git repository.</em></p>
+<h2 id="pridani-do-indexu-commit-pull-push">Přidání do indexu, commit, pull, push</h2>
+<ul>
+<li><strong>Git Add (přidat do indexu)</strong> přidá soubor pod kurzorem do indexu (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> vyžádá zprávu commitu a poté zapíše všechny změny (<code>git commit -a</code>). Zobrazí se kombinovaný výstup, takže přesně vidíte, co se stalo.</li>
+<li><strong>Git Pull</strong> provede pull pouze s převinutím vpřed (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> odešle aktuální větev (<code>git push</code>).</li>
+</ul>
+<p>Po příkazu, který mění repozitář, se aktivní panel obnoví, takže sloupce se stavem zůstávají aktuální.</p>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Zásuvný modul používá systémový Git na cestě <code>/usr/bin/git</code>. Pokud Git není nainstalován, příkazy nahlásí, že Git není k dispozici. (Poskytne jej instalace nástrojů Xcode Command Line Tools.)</li>
+<li>Stav repozitáře se pro každou složku načte jednou a uloží do mezipaměti, takže procházení velkého repozitáře zůstává rychlé; mezipaměť se obnoví po každém příkazu, který změní strom.</li>
+<li>Commit používá <code>git commit -a</code>, který zapíše sledované změny; zcela nové soubory je stále nutné nejprve přidat pomocí <strong>Git Add (přidat do indexu)</strong>.</li>
+<li>Záhlaví sloupců <em>Git Status</em> a <em>Branch</em> se aktuálně zobrazují anglicky i v ostatních jazycích rozhraní; hodnoty a dialogy jsou lokalizovány.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="view-modes-and-sorting.html">Režimy zobrazení a řazení</a></li></ul></section>
+</main>
+</body>
+</html>

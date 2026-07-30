@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Impostazioni</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Impostazioni</h1>
+<p>La finestra Impostazioni è dove adatti Peach Commander al tuo modo di lavorare: quali barre compaiono, come vengono mostrati i file, come si comportano le operazioni di copia ed eliminazione, il formato di archivio usato quando comprimi, il comportamento delle schede, i valori predefiniti FTP, la lingua di visualizzazione e altro. Le impostazioni sono raggruppate in pagine così puoi trovare rapidamente un'opzione, e ogni modifica viene salvata automaticamente nella tua cartella di configurazione personale.</p>
+<h2 id="apri-impostazioni">Apri Impostazioni</h2>
+<ol>
+<li>Scegli <strong>Peach Commander &gt; Impostazioni…</strong>, o premi Cmd+, (virgola).</li>
+<li>Puoi anche aprire la stessa finestra da <strong>Configurazione &gt; Opzioni…</strong>.</li>
+<li>Scegli una pagina dall'elenco a sinistra; le opzioni di quella pagina compaiono a destra.</li>
+<li>Regola i controlli. Le modifiche hanno effetto subito a meno che una nota sulla pagina non dica diversamente.</li>
+</ol>
+<p><img alt="La finestra Impostazioni che mostra la pagina Layout con caselle per le barre dell'interfaccia" src="images/settings-layout.png" />
+<em>(Figura: la pagina Layout controlla quali barre sono mostrate attorno ai pannelli.)</em></p>
+<h2 id="le-pagine">Le pagine</h2>
+<p>La finestra ha queste pagine, in ordine:</p>
+<ul>
+<li><strong>Layout</strong> — mostra o nascondi la barra dei dischi, la barra delle schede, la barra del percorso e la barra di stato.</li>
+<li><strong>Visualizzazione</strong> — come vengono elencati file e cartelle, incluso il formato della data.</li>
+<li><strong>Icone</strong> — l'aspetto delle icone negli elenchi dei file.</li>
+<li><strong>Funzionamento</strong> — comportamento generale, come cosa succede quando digiti in un pannello (ricerca rapida contro riga di comando).</li>
+<li><strong>Colori</strong> — colori personalizzati dei pannelli, o lasciali seguire il tema corrente.</li>
+<li><strong>Conferma</strong> — quali azioni chiedono prima di confermare, come l'eliminazione.</li>
+<li><strong>Modifica/Visualizza</strong> — i programmi usati per modificare e visualizzare i file, e le associazioni per tipo.</li>
+<li><strong>Copia/Elimina</strong> — preserva i metadati dei file, usa la clonazione rapida, copia solo i file più recenti, verifica dopo la copia, invia le eliminazioni al Cestino e imposta un limite di velocità opzionale.</li>
+<li><strong>Zip/Compressore</strong> — il formato di archivio e il livello di compressione predefiniti usati quando comprimi.</li>
+<li><strong>Plugin</strong> — attiva o disattiva i plugin installati.</li>
+<li><strong>Schede</strong> — come le schede delle cartelle si aprono e si comportano.</li>
+<li><strong>FTP</strong> — valori predefiniti di rete come l'intervallo keep-alive.</li>
+<li><strong>Tastiera</strong> — rivedi e cambia le scorciatoie da tastiera.</li>
+<li><strong>Lingua</strong> — scegli Predefinita di sistema, English o Deutsch.</li>
+<li><strong>AI</strong> — configura l'assistente IA: modello preferito, endpoint e chiave cloud, autonomia e il server MCP opzionale (vedi <a href="ai-assistant.md">Assistente IA</a>).</li>
+<li><strong>Varie</strong> — apri la tua cartella di configurazione nel Finder.</li>
+</ul>
+<p>I plugin abilitati possono aggiungere le proprie pagine dopo quelle integrate — per esempio <strong>Disk Map</strong> e <strong>System Monitor</strong> — così le loro opzioni risiedono nella stessa finestra (vedi <a href="plugins.md">Plugin</a>).</p>
+<p><img alt="La finestra Impostazioni che mostra le opzioni della pagina Visualizzazione per come vengono elencati i file" src="images/settings-display.png" />
+<em>(Figura: la pagina Visualizzazione controlla come vengono elencati file e cartelle.)</em></p>
+<p><img alt="La finestra Impostazioni che mostra la pagina Funzionamento" src="images/settings-operation.png" />
+<em>(Figura: la pagina Funzionamento governa la ricerca rapida e il comportamento del mouse.)</em></p>
+<h2 id="dove-sono-conservate-le-tue-impostazioni">Dove sono conservate le tue impostazioni</h2>
+<p>La tua configurazione è conservata in file di testo semplice dentro la tua cartella Application Support personale, in <code>~/Library/Application Support/PeachCommander</code>. Per aprirla, vai alla pagina <strong>Varie</strong> e fai clic su <strong>Apri cartella di configurazione</strong>. Le password FTP salvate non sono conservate in questi file; sono conservate in modo sicuro nel portachiavi macOS.</p>
+<p>Le impostazioni vengono scritte man mano che le modifichi. Puoi anche forzare un salvataggio in qualsiasi momento con <strong>Configurazione &gt; Salva impostazioni</strong>, e memorizzare la posizione corrente della finestra e il layout dei pannelli con <strong>Configurazione &gt; Salva posizione</strong>.</p>
+<h2 id="portare-le-impostazioni-da-total-commander">Portare le impostazioni da Total Commander</h2>
+<p>Se stai passando da Total Commander su Windows, puoi importare i tuoi siti FTP salvati. Scegli <strong>Configurazione &gt; Importa wincmd.ini…</strong> e seleziona il tuo file di configurazione FTP di Total Commander. Le tue connessioni vengono aggiunte a Peach Commander nello stesso ordine in cui comparivano lì.</p>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Scorciatoia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apri Impostazioni</td>
+<td>Cmd+,</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>La pagina <strong>Lingua</strong> offre Predefinita di sistema, English e Deutsch. Cambiare la lingua ha effetto solo dopo aver riavviato Peach Commander.</li>
+<li>I colori impostati nella pagina <strong>Colori</strong> sovrascrivono il tema; usa <strong>Ripristina predefiniti</strong> lì per tornare ai colori del tema.</li>
+<li>Peach Commander conserva le sue impostazioni solo nella propria cartella di configurazione, così le tue modifiche non interessano mai altre app e sono facili da salvare copiando quella cartella.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="appearance.html">Aspetto</a></li><li><a href="keyboard-shortcuts.html">Tastiera e scorciatoie</a></li></ul></section>
+</main>
+</body>
+</html>

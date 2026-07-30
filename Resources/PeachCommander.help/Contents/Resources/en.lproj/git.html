@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>The Git plugin surfaces the state of a Git repository right inside the file panel — no separate app, no terminal. It adds two columns that show each file's working-tree status and the current branch, a <strong>Git</strong> submenu for the everyday commands (status, stage, commit, pull, push), and it runs the <code>git</code> already installed on your Mac. It's a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Plugins…</strong>.</p>
+<h2 id="what-it-adds">What it adds</h2>
+<ul>
+<li><strong>Two file-list columns</strong> — <em>Git Status</em> and <em>Branch</em>. In a repository, each file shows a short status word (Modified, Added, Deleted, Untracked, Renamed, Copied, Conflict, Ignored, or Changed) and the panel shows the current branch. Turn the columns on in <strong>Configuration ▸ Columns…</strong> (see <a href="view-modes-and-sorting.md">View modes &amp; sorting</a>).</li>
+<li><strong>A Git menu</strong> — under <strong>Commands ▸ Git</strong>, and in the right-click menu of a file, with: <strong>Git Status…</strong>, <strong>Git Add (stage)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong>, and <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="The Git Status dialog showing the current branch and the changed files in the repository" src="images/git-status.png" />
+<em>(Figure: Git Status reports the branch and every change in the working tree.)</em></p>
+<h2 id="check-the-status">Check the status</h2>
+<ol>
+<li>Put the cursor on a file or folder inside a Git repository.</li>
+<li>Choose <strong>Commands ▸ Git ▸ Git Status…</strong> (or right-click ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>A summary appears: the current branch (or <em>(detached)</em>), then either <em>Working tree clean.</em> or a list of changes, each line showing the status and the file path.</li>
+</ol>
+<p>If the cursor isn't inside a repository, the plugin simply says <em>Not a Git repository.</em></p>
+<h2 id="stage-commit-pull-push">Stage, commit, pull, push</h2>
+<ul>
+<li><strong>Git Add (stage)</strong> stages the file under the cursor (<code>git add</code>).</li>
+<li><strong>Git Commit…</strong> asks for a commit message, then commits all changes (<code>git commit -a</code>). The combined output is shown so you can see exactly what happened.</li>
+<li><strong>Git Pull</strong> does a fast-forward-only pull (<code>git pull --ff-only</code>).</li>
+<li><strong>Git Push</strong> pushes the current branch (<code>git push</code>).</li>
+</ul>
+<p>After a command that changes the repository, the active panel refreshes so the status columns stay current.</p>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>The plugin uses the system Git at <code>/usr/bin/git</code>. If Git isn't installed, the commands report that Git is not available. (Installing the Xcode Command Line Tools provides it.)</li>
+<li>Repository status is read once per folder and cached, so scrolling a large repo stays fast; the cache refreshes after any command that changes the tree.</li>
+<li>Commit uses <code>git commit -a</code>, which commits tracked changes; brand-new files still need <strong>Git Add (stage)</strong> first.</li>
+<li>The <em>Git Status</em> and <em>Branch</em> column headers currently show in English even in other interface languages; the values and dialogs are localized.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="view-modes-and-sorting.html">View modes &amp; sorting</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设置</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>设置</h1>
+<p>设置窗口是你按自己的工作方式调整 Peach Commander 的地方：显示哪些栏、如何显示文件、复制和删除操作如何表现、压缩时使用的压缩格式、标签页行为、FTP 默认值、显示语言等。设置按页分组，便于你快速找到某个选项，且每次更改都会自动保存到你的个人配置文件夹。</p>
+<h2 id="_1">打开设置</h2>
+<ol>
+<li>选择 <strong>Peach Commander &gt; 设置…</strong>，或按 Cmd+,（逗号）。</li>
+<li>你也可以从 <strong>设置 &gt; 选项…</strong> 打开同一窗口。</li>
+<li>从左侧列表选择一页；该页的选项会显示在右侧。</li>
+<li>调整各项控件。除非页面上另有说明，更改立即生效。</li>
+</ol>
+<p><img alt="显示布局页及界面栏复选框的设置窗口" src="images/settings-layout.png" />
+<em>(图：布局页控制在面板周围显示哪些栏。)</em></p>
+<h2 id="_2">各个页面</h2>
+<p>窗口按顺序包含这些页面：</p>
+<ul>
+<li><strong>布局</strong> —— 显示或隐藏驱动器栏、标签栏、路径栏和状态栏。</li>
+<li><strong>显示</strong> —— 文件和文件夹的列出方式，包括日期格式。</li>
+<li><strong>图标</strong> —— 文件列表中的图标外观。</li>
+<li><strong>操作</strong> —— 常规行为，例如你在面板中键入时会发生什么（快速搜索还是命令行）。</li>
+<li><strong>颜色</strong> —— 自定义面板颜色，或让其跟随当前主题。</li>
+<li><strong>确认</strong> —— 哪些操作会先请求你确认，例如删除。</li>
+<li><strong>编辑/查看</strong> —— 用于编辑和查看文件的程序，以及按类型的关联。</li>
+<li><strong>复制/删除</strong> —— 保留文件元数据、使用快速克隆、只复制较新文件、复制后校验、把删除送入废纸篓，并设置可选的速度限制。</li>
+<li><strong>压缩（Zip/Packer）</strong> —— 压缩时使用的默认压缩格式和压缩级别。</li>
+<li><strong>插件</strong> —— 开启或关闭已安装的插件。</li>
+<li><strong>标签页</strong> —— 文件夹标签页如何打开和表现。</li>
+<li><strong>FTP</strong> —— 网络默认值，例如 keep-alive 间隔。</li>
+<li><strong>键盘</strong> —— 查看并更改键盘快捷键。</li>
+<li><strong>语言</strong> —— 选择系统默认、English 或 Deutsch。</li>
+<li><strong>AI</strong> —— 配置 AI 助手：首选模型、云端点和密钥、自主级别，以及可选的 MCP 服务器（参阅 <a href="ai-assistant.md">AI Assistant</a>）。</li>
+<li><strong>其他</strong> —— 在 Finder 中打开你的配置文件夹。</li>
+</ul>
+<p>启用的插件可以在内置页面之后添加自己的页面 —— 例如 <strong>Disk Map</strong> 和 <strong>System Monitor</strong> —— 因此它们的选项就在同一窗口中（参阅 <a href="plugins.md">插件</a>）。</p>
+<p><img alt="显示文件列出方式选项的设置窗口显示页" src="images/settings-display.png" />
+<em>(图：显示页控制文件和文件夹的列出方式。)</em></p>
+<p><img alt="设置窗口的操作页" src="images/settings-operation.png" />
+<em>(图：操作页管理快速搜索和鼠标行为。)</em></p>
+<h2 id="_3">你的设置存放在哪里</h2>
+<p>你的配置以纯文本文件保存在个人 Application Support 文件夹 <code>~/Library/Application Support/PeachCommander</code> 内。要打开它，转到 <strong>其他</strong> 页并点按 <strong>打开配置文件夹</strong>。已保存的 FTP 密码不存放在这些文件中；它们安全地保存在 macOS 钥匙串里。</p>
+<p>设置随你更改即写入。你也可以用 <strong>设置 &gt; 保存设置</strong> 随时强制保存，并用 <strong>设置 &gt; 保存位置</strong> 存储当前窗口位置和面板布局。</p>
+<h2 id="total-commander">从 Total Commander 迁移设置</h2>
+<p>如果你从 Windows 上的 Total Commander 迁移过来，可以导入已保存的 FTP 站点。选择 <strong>设置 &gt; 导入 wincmd.ini…</strong> 并选择你的 Total Commander FTP 配置文件。你的连接会按它们在那里出现的相同顺序添加到 Peach Commander。</p>
+<h2 id="_4">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>打开设置</td>
+<td>Cmd+,</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">备注</h2>
+<ul>
+<li><strong>语言</strong> 页提供系统默认、English 和 Deutsch。更改语言仅在你重新启动 Peach Commander 后生效。</li>
+<li>在 <strong>颜色</strong> 页设置的颜色会覆盖主题；使用那里的 <strong>恢复默认值</strong> 以回到主题的颜色。</li>
+<li>Peach Commander 仅将其设置存放在自己的配置文件夹中，因此你的更改绝不会影响其他应用，并且通过拷贝该文件夹即可轻松备份。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="appearance.html">外观</a></li><li><a href="keyboard-shortcuts.html">键盘与快捷键</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pomočnik UI</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Pomočnik UI</h1>
+<p>Pomočnik UI je izbirni vtičnik, ki ga je mogoče odstraniti in vam pomaga delati z datotekami v naravnem jeziku. Zna povzeti ali razložiti dokument, predlagati boljše ime datoteke, prevesti ali lektorirati besedilo, spremeniti podatke v tabelo in celo urediti mapo — in lahko namesto vas izvede dejanja z datotekami, potem ko vam najprej pokaže načrt. Deluje na napravi z Apple Intelligence, kadar je na voljo, ali pa ga usmerite na model v oblaku. Ker gre za vtičnik, ga lahko onemogočite ali povsem odstranite v <strong>Konfiguracija ▸ Vtičniki…</strong>.</p>
+<h2 id="odpiranje-pomocnika">Odpiranje pomočnika</h2>
+<p>Izberite <strong>Ukazi ▸ Pomočnik UI</strong>, da prikažete pomočnika v zasidranem podoknu na desni strani okna. Vnesite zahtevo in pritisnite Enter; pomočnik lahko bere datoteke, išče informacije in — z vašo potrditvijo — izvaja spremembe.</p>
+<p><img alt="Klepet pomočnika UI, zasidran ob podoknih z datotekami" src="images/ai-chat.png" />
+<em>(Slika: pomočnik UI, zasidran na desni, dela na zahtevi.)</em></p>
+<h2 id="dejanja-z-desnim-klikom-ui">Dejanja z desnim klikom (UI ▸)</h2>
+<p>Najhitrejši način uporabe pomočnika je podmeni <strong>UI ▸</strong> v priročnem meniju:</p>
+<ul>
+<li><strong>Na datoteki</strong> — Povzemi, Razloži, Predlagaj ime, Prevedi v angleščino, Lektoriraj, Zaznaj opravila in Ustvari tabelo.</li>
+<li><strong>Na ozadju podokna</strong> — Uredi to mapo in Poišči verjetne dvojnike.</li>
+</ul>
+<p>Vsako dejanje <strong>UI ▸</strong> odpre <strong>svoj naslovljen klepet</strong> (na primer <em>Povzemi – poročilo.txt</em>), tako da različna opravila ostanejo ločena, namesto da se kopičijo v en dolg pogovor. Ko sami vnesete nekaj v vnosno polje, ta zahteva nadaljuje trenutni klepet.</p>
+<h2 id="upravljanje-klepetov">Upravljanje klepetov</h2>
+<ul>
+<li>Uporabite preklopnik klepetov na vrhu podokna za prehajanje med pogovori.</li>
+<li>Meni <strong>Izbriši ▾</strong> ponuja <strong>Izbriši ta klepet</strong> in <strong>Izbriši vse klepete</strong>, tako da lahko počistite vse naenkrat, ko postane seznam dolg. Prazni klepeti se samodejno počistijo, ko zaprete podokno.</li>
+</ul>
+<h2 id="spremembe-se-najprej-potrdijo">Spremembe se najprej potrdijo</h2>
+<p>Za vse, kar spreminja datoteke — premikanje, preimenovanje, pisanje, brisanje — pomočnik prikaže <strong>načrt in počaka na vašo potrditev</strong> pred dejanjem. To lahko spremenite v Nastavitvah tako, da dvignete avtonomijo pomočnika, ali jo znižate na samo za branje, da nikoli ničesar ne spremeni.</p>
+<h2 id="nastavitve">Nastavitve</h2>
+<p>Odprite <strong>Konfiguracija ▸ Nastavitve ▸ UI</strong>, da nastavite pomočnika na eni strani:</p>
+<ul>
+<li><strong>Prednostni model</strong> — Samodejno (oblak, če je nastavljen, sicer na napravi), Na napravi (Apple Intelligence) ali Oblak.</li>
+<li><strong>Končna točka oblaka, model in ključ API</strong> — za uporabo modela, združljivega z OpenAI, namesto tistega na napravi. Ključ je shranjen v ključavnici macOS, nikoli v vaših konfiguracijskih datotekah.</li>
+<li><strong>Avtonomija pomočnika</strong> — samo za branje, potrdi spremembe (privzeto) ali samostojno.</li>
+<li><strong>Poljuben sistemski poziv</strong> — izbirna navodila, ki oblikujejo, kako pomočnik odgovarja.</li>
+<li><strong>Strežnik MCP</strong> — izbirni, samo lokalni strežnik, ki zunanjemu agentu omogoča upravljanje aplikacije; privzeto izklopljen in ga je mogoče zaščititi z žetonom.</li>
+</ul>
+<p><img alt="Stran UI v Nastavitvah z možnostmi avtonomije in strežnika MCP" src="images/settings-ai.png" />
+<em>(Slika: vse možnosti pomočnika so na eni strani UI v Nastavitvah.)</em></p>
+<h2 id="zasebnost">Zasebnost</h2>
+<ul>
+<li>Z Apple Intelligence pomočnik deluje <strong>na vašem Macu</strong>; nič ne zapusti naprave.</li>
+<li>Model v oblaku se uporabi <strong>le, če ga nastavite</strong>, njegov ključ API pa je shranjen v ključavnici.</li>
+<li>Dejanja, ki spreminjajo datoteke, se potrdijo pred izvedbo, razen če namerno dvignete raven avtonomije.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="settings.html">Nastavitve</a></li><li><a href="privacy-and-security.html">Zasebnost in varnost</a></li></ul></section>
+</main>
+</body>
+</html>

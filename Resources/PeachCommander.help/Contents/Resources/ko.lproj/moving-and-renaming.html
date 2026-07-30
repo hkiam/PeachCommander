@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이동 및 이름 바꾸기</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>이동 및 이름 바꾸기</h1>
+<p>이동은 파일과 폴더를 복제하는 대신 재배치하고, 이름 바꾸기는 내용을 건드리지 않고 이름을 바꿉니다. Peach Commander는 두 패널을 나란히 표시하므로, 이동은 한 패널에서 원하는 것을 고르고 다른 패널에 열린 폴더로 보내기만 하면 됩니다. 항목을 제자리에서 이름 바꾸거나, 와일드카드 마스크를 사용하여 이동하는 항목에 즉석에서 새 이름을 부여할 수도 있습니다.</p>
+<h2 id="_1">파일을 다른 패널로 이동</h2>
+<ol>
+<li>원본 패널에서 이동할 항목이 들어 있는 폴더를 열고, 다른 패널에서 대상 폴더를 엽니다.</li>
+<li>이동할 파일이나 폴더를 선택합니다. 여러 개를 한 번에 이동하려면 먼저 모두 선택하십시오(<em>파일 선택</em> 참조).</li>
+<li>F6을 누르거나 <strong>파일 &gt; Move</strong>를 선택합니다.</li>
+<li>대화상자에 표시된 대상 폴더를 확인하고 <strong>OK</strong>를 클릭(또는 Return을 눌러) 이동을 시작합니다.</li>
+</ol>
+<p><img alt="대상 경로 필드, 옵션, 대기열 체크박스를 보여주는 이동 대화상자" src="images/copy-dialog.png" />
+<em>(그림: 이동 대화상자는 복사와 같은 대상 필드를 사용합니다 — 경로를 입력하거나 와일드카드 마스크를 추가하여 이동하면서 이름을 바꿉니다.)</em></p>
+<p>같은 드라이브에서의 이동은 거의 즉시 일어납니다. 대상이 다른 드라이브에 있으면 Peach Commander는 항목을 복사한 다음, 모든 파일이 안전하게 도착한 후에만 원본을 제거합니다.</p>
+<h2 id="_2">제자리에서 이름 바꾸기</h2>
+<ol>
+<li>파일이나 폴더 하나를 선택합니다.</li>
+<li>Shift+F6을 누르거나 <strong>파일 &gt; Rename</strong>을 선택합니다.</li>
+<li>패널에서 직접 이름을 편집한 다음, Return을 눌러 확인하거나 Esc를 눌러 취소합니다.</li>
+</ol>
+<h2 id="_3">이동하면서 이름 바꾸기</h2>
+<p>이동 대화상자의 대상 필드는 와일드카드 마스크를 받아들이므로, 항목을 이동하면서 이름을 바꿀 수 있습니다.</p>
+<ol>
+<li>항목을 선택하고 F6을 누릅니다.</li>
+<li>대상 필드에서 대상 폴더 뒤에 이름 마스크를 추가합니다(예: <code>/Users/you/Archive/*_backup.*</code>).</li>
+<li><code>*</code>는 원래 이름을, <code>.*</code>는 원래 확장자를 나타냅니다. 확인하면 한 단계로 이동하고 이름을 바꿉니다.</li>
+</ol>
+<h2 id="_4">단축키</h2>
+<table>
+<thead>
+<tr>
+<th>작업</th>
+<th>단축키</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>다른 패널로 이동</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>제자리에서 이름 바꾸기</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">팁</h2>
+<ul>
+<li>이동 대화상자는 복사와 같은 옵션 버튼과 백그라운드 대기열 체크박스를 제공하므로, 대용량 이동을 대기시키고 백그라운드에서 실행되게 할 수 있습니다.</li>
+<li>같은 드라이브 내 이동은 빠른 제자리 작업이므로 매우 큰 폴더에도 안전합니다. 드라이브 간 이동은 데이터를 먼저 복사한 다음 원본을 삭제하므로 시간이 더 걸립니다.</li>
+<li>번호 매기기, 찾아 바꾸기, 패턴으로 많은 파일의 이름을 한 번에 바꾸려면 대신 여러 파일 이름 바꾸기 도구를 사용하십시오(<em>여러 파일 이름 바꾸기</em> 참조).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">파일 복사</a></li><li><a href="multi-rename.html">여러 파일 이름 바꾸기</a></li></ul></section>
+</main>
+</body>
+</html>

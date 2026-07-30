@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Distribution entitlements for the hardened runtime (Developer ID, NOT the
+	  App Sandbox). A file-manager needs unrestricted access to the user's disk,
+	  so the App Sandbox is intentionally not enabled — distribution is via
+	  Developer ID + notarization (see RELEASE.md), not the Mac App Store.
+	-->
+
+	<!-- Peach Commander loads third-party content plugins (WCX/WLX/WDX/WFX)
+	     that are not signed by our team; library validation must be relaxed so
+	     the dynamic loader will accept them. -->
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<true/>
+
+	<!-- Some plugins and helper tools are launched as separate processes and
+	     may not carry the hardened runtime; allow them to inherit our
+	     environment without being rejected. -->
+	<key>com.apple.security.cs.allow-dyld-environment-variables</key>
+	<true/>
+</dict>
+</plist>

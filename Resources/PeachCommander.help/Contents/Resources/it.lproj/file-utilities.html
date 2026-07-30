@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Utility per i file</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Utility per i file</h1>
+<p>Oltre alla copia e allo spostamento, Peach Commander include una serie di utility quotidiane per i file per verificare che i file siano integri, recuperare spazio su disco, suddividere file di grandi dimensioni in parti più piccole e convertire i file da e verso formati sicuri per il testo. Le raggiungete tutte dal menu <strong>File</strong> e agiscono su qualunque cosa abbiate selezionato nel pannello attivo (o sull'elemento sotto il cursore quando non è selezionato nulla). Questo argomento tratta i checksum, il ricercatore di duplicati, dividi/combina, codifica/decodifica e il calcolo dello spazio occupato.</p>
+<h2 id="creare-o-verificare-i-checksum">Creare o verificare i checksum</h2>
+<p>I checksum vi permettono di confermare che un file è stato scaricato o copiato senza corruzione, oppure di fornire a un destinatario un modo per controllare la copia ricevuta.</p>
+<ol>
+<li>Selezionate i file di cui volete calcolare l'impronta.</li>
+<li>Scegliete <strong>File ▸ Crea checksum…</strong>, scegliete un algoritmo (CRC32, MD5, SHA-1, SHA-256 o SHA-512) e salvate il file di checksum.</li>
+<li>Per controllare i file in seguito, selezionate il file di checksum e scegliete <strong>File ▸ Verifica checksum…</strong>. Peach Commander ricalcola ogni hash e segnala qualsiasi file che non corrisponde.</li>
+</ol>
+<p>I checksum vengono elaborati in streaming direttamente sulla posizione corrente, quindi potete crearli o verificarli anche per i file all'interno di archivi o su un server FTP.</p>
+<h2 id="trovare-i-file-duplicati">Trovare i file duplicati</h2>
+<p>Il ricercatore di duplicati individua i file identici sparsi tra le cartelle così potete rimuovere le copie in eccesso.</p>
+<ol>
+<li>Selezionate le cartelle (o i file) da analizzare.</li>
+<li>Scegliete <strong>File ▸ Trova duplicati…</strong>. Peach Commander confronta i candidati e raggruppa i file identici byte per byte.</li>
+<li>Esaminate ogni gruppo, contrassegnate le copie che non vi servono più ed eliminatele.</li>
+</ol>
+<p><img alt="Il ricercatore di duplicati che elenca gruppi di file identici" src="images/duplicate-finder.png" />
+<em>(Figura: il ricercatore di duplicati raggruppa i file identici così potete tenerne uno e rimuovere il resto.)</em></p>
+<h2 id="dividere-e-combinare-i-file">Dividere e combinare i file</h2>
+<p>La divisione spezza un file di grandi dimensioni in una serie numerata di parti più piccole — comoda per i limiti di archiviazione o di trasferimento. La combinazione le riassembla.</p>
+<ol>
+<li>Per dividere, selezionate un file e scegliete <strong>File ▸ Dividi file…</strong>, poi impostate la dimensione delle parti. Le parti vengono scritte nella cartella dell'altro pannello.</li>
+<li>Per riassemblare, selezionate la prima parte e scegliete <strong>File ▸ Combina file…</strong>. Il file originale viene ricostruito dalle parti numerate.</li>
+</ol>
+<h2 id="codificare-e-decodificare">Codificare e decodificare</h2>
+<p>La codifica trasforma un file binario in testo semplice così sopravvive a canali che trasportano solo testo (ad esempio, la posta elettronica più datata o le caselle di incollaggio). La decodifica la inverte.</p>
+<ol>
+<li>Selezionate un file e scegliete <strong>File ▸ Codifica…</strong>, poi scegliete un formato — MIME (Base64), UUE (uuencode) o XXE.</li>
+<li>Per ripristinare l'originale, selezionate il file codificato e scegliete <strong>File ▸ Decodifica…</strong>. Il formato viene rilevato automaticamente.</li>
+</ol>
+<h2 id="calcolare-lo-spazio-occupato">Calcolare lo spazio occupato</h2>
+<p>Per vedere quanto spazio occupa realmente su disco una cartella o una selezione, selezionate gli elementi e premete <strong>Ctrl+L</strong> (<strong>File ▸ Calcola spazio occupato…</strong>). Peach Commander somma ogni file al loro interno, incluse le sottocartelle, e mostra il totale.</p>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Tasto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Calcolare lo spazio occupato</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>I checksum, dividi/combina e codifica/decodifica sono rivolti ad attività più avanzate, ma ciascuno è un'unica finestra di dialogo con impostazioni predefinite sensate.</li>
+<li>Quando un'utility produce nuovi file (parti divise, un file codificato, un elenco di checksum), questi vengono scritti nella cartella mostrata nell'altro pannello — impostate prima quel pannello sulla destinazione desiderata.</li>
+<li>L'eliminazione dei duplicati è definitiva a seconda delle vostre impostazioni di eliminazione; esaminate attentamente ogni gruppo e conservate almeno una copia di qualsiasi cosa vi serva ancora.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Confronto e sincronizzazione</a></li></ul></section>
+</main>
+</body>
+</html>

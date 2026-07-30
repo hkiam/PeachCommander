@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Porovnávání a synchronizace</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Porovnávání a synchronizace</h1>
+<p>Když udržujete dvě kopie stejné složky — pracovní složku a zálohu, notebook a síťové sdílení, projekt a jeho archiv — Peach Commander vám pomáhá přesně vidět, co se změnilo, a obě strany opět sladit. Můžete synchronizovat dva adresáře, porovnávat jednotlivé soubory řádek po řádku a zkoumat soubory bajt po bajtu, když potřebujete jistotu až do posledního znaku.</p>
+<h2 id="synchronizace-dvou-adresaru">Synchronizace dvou adresářů</h2>
+<ol>
+<li>Otevřete složku, kterou chcete synchronizovat, v levém panelu a složku, se kterou ji chcete porovnat, v pravém panelu.</li>
+<li>Zvolte <strong>Příkazy ▸ Synchronizovat adresáře…</strong>. Obě cesty ke složkám se vyplní z vašich panelů.</li>
+<li>Nastavte, jak důkladné má porovnání být: zahrnout podsložky, porovnat <strong>podle obsahu</strong> (nejen podle data a velikosti) nebo ignorovat datum úpravy.</li>
+<li>Přidejte masku filtru (například <code>*.jpg;*.png</code>), pokud chcete synchronizovat jen určité soubory.</li>
+<li>Prohlédněte si výslednou mřížku. Každý řádek zobrazuje soubor vlevo, směrovou šipku uprostřed a odpovídající soubor vpravo. Šipky vám říkají, co se stane: <strong>→</strong> kopíruje zleva doprava, <strong>←</strong> kopíruje zprava doleva a <strong>=</strong> znamená, že jsou oba shodné.</li>
+<li>Upravte jednotlivé řádky, pokud s navrženým směrem nesouhlasíte, a poté kliknutím na tlačítko synchronizace změny proveďte.</li>
+</ol>
+<p><img alt="Okno synchronizace adresářů se dvěma cestami ke složkám a výslednou mřížkou souborů se šipkami vlevo, rovná se a vpravo" src="images/sync-dialog.png" />
+<em>(Obrázek: Okno Synchronizovat adresáře porovnává obě strany a pro každý soubor navrhuje směr kopírování.)</em></p>
+<h2 id="porovnani-dvou-souboru-podle-obsahu">Porovnání dvou souborů podle obsahu</h2>
+<ol>
+<li>Vyberte jeden soubor v každém panelu (nebo dva soubory ve stejném panelu).</li>
+<li>Zvolte <strong>Soubor ▸ Porovnat podle obsahu…</strong>.</li>
+<li>Oba soubory se otevřou vedle sebe se zvýrazněnými rozdíly. Pomocí ovládacích prvků další/předchozí přeskakujte mezi změněnými bloky.</li>
+<li>Zapnete-li režim úprav, můžete kterýkoli soubor přímo upravit a změny uložit.</li>
+</ol>
+<p><img alt="Okno porovnání zobrazující dva textové soubory vedle sebe se zvýrazněnými odlišnými řádky" src="images/diff-window.png" />
+<em>(Obrázek: Porovnání dvou textových souborů; změněné řádky jsou zvýrazněny na obou stranách.)</em></p>
+<h2 id="porovnani-souboru-bajt-po-bajtu">Porovnání souborů bajt po bajtu</h2>
+<p>Když dva soubory vypadají stejně, ale potřebujete dokázat, že jsou skutečně shodné (nebo najít ten jeden odlišný bajt), použijte binární porovnání. Zobrazí oba soubory v šestnáctkovém zobrazení s označenými neshodujícími se bajty, což je ideální k ověření stahování, kontrole zakódovaných dat nebo potvrzení přesné kopie.</p>
+<h2 id="porovnani-vypisu-adresaru">Porovnání výpisů adresářů</h2>
+<p>K rychlému odhalení rozdílů mezi dvěma otevřenými složkami zvolte <strong>Označit ▸ Porovnat adresáře</strong> (Shift+F2). Peach Commander označí soubory, které se liší nebo na druhé straně chybí, takže s nimi můžete pracovat pomocí obvyklých příkazů kopírování, přesunu a mazání.</p>
+<h2 id="klavesove-zkratky">Klávesové zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Porovnat výpisy adresářů (označit odlišné soubory)</td>
+<td>Shift+F2</td>
+</tr>
+<tr>
+<td>Porovnat podle obsahu</td>
+<td>Soubor ▸ Porovnat podle obsahu…</td>
+</tr>
+<tr>
+<td>Synchronizovat adresáře</td>
+<td>Příkazy ▸ Synchronizovat adresáře…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li><strong>Podle obsahu vs. podle data/velikosti.</strong> Rychlé porovnání srovnává soubory podle velikosti a data úpravy, což je rychlé, ale dá se oklamat, když se u shodných souborů liší časové značky. Zapněte <strong>podle obsahu</strong> pro spolehlivý výsledek za cenu čtení každého souboru.</li>
+<li><strong>Podsložky a filtry.</strong> Okno synchronizace umí sestoupit do podsložek a lze jej omezit maskou filtru, takže můžete synchronizovat jen typy souborů, na kterých vám záleží.</li>
+<li><strong>Máte vše pod kontrolou.</strong> Synchronizace nikdy neběží sama od sebe — navržené směry zkontrolujete ve výsledné mřížce a kterýkoli z nich můžete před zkopírováním čehokoli změnit.</li>
+<li><strong>Předvolby.</strong> Často používaná nastavení synchronizace lze uložit a znovu použít, takže nemusíte pokaždé znovu zadávat stejné možnosti.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Přejmenování mnoha souborů</a></li></ul></section>
+</main>
+</body>
+</html>

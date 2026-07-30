@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Monitor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>System Monitor</h1>
+<p>System Monitor-programtillegget plasserer en sanntidsavlesning av Mac-ens aktivitet rett i vinduets tittellinje: små brikker for CPU, minne, disk, nettverk og – der maskinvaren avslører dem – GPU, batteri og sensorer. Hver brikke oppdateres én gang i sekundet; klikk på en for et sprettoppvindu med en historikkgraf og en detaljert oversikt. Det er et programtillegg, så du kan aktivere, konfigurere eller fjerne det i <strong>Konfigurasjon ▸ Programtillegg…</strong>.</p>
+<h2 id="brikkene-i-tittellinjen">Brikkene i tittellinjen</h2>
+<p>Når programtillegget er på, sitter en rad med kompakte brikker i tittellinjen. Hver brikke er en farget prikk, en kort etikett og en sanntidsverdi (noen med en innebygd minigraf):</p>
+<table>
+<thead>
+<tr>
+<th>Brikke</th>
+<th>Viser</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>Prosessorlast, med detaljer per kjerne</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>Brukt / totalt minne (pluss låst, komprimert, veksling)</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>Plass på startvolumet og les/skriv-gjennomstrømning</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>Nedlastings- / opplastingsrater og totaler</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>GPU-utnyttelse · batteriladning og -tilstand · viftehastigheter og temperaturer</td>
+</tr>
+</tbody>
+</table>
+<p>Klikk på en brikke for å åpne et sprettoppvindu med den store gjeldende verdien, en <strong>HISTORIKK</strong>-minigraf, en <strong>DETALJER</strong>-liste med nøkkel/verdi og – for CPU-en – en <strong>KJERNELAST</strong>-liste med søyler per kjerne.</p>
+<h2 id="konfigurer-det">Konfigurer det</h2>
+<p>Velg <strong>Kommandoer ▸ System Monitor…</strong> (eller åpne <strong>Konfigurasjon ▸ Innstillinger ▸ System Monitor</strong>) for å konfigurere avlesningen:</p>
+<ul>
+<li><strong>Vis systemovervåker i tittellinjen</strong> – hovedbryteren av/på for brikkene.</li>
+<li><strong>Profil</strong> – forhåndsinnstillingene <em>Minimal</em>, <em>Medium</em> eller <em>Maksimal</em> som velger et fornuftig sett med moduler.</li>
+<li><strong>Modultabellen</strong> – slå hver modul (CPU, GPU, RAM, HDD, Net, Batt, Sens) på eller av, velg fargen dens, og dra rader for å sette rekkefølgen de vises i i tittellinjen. Moduler maskinvaren din ikke kan rapportere, vises som <em>(n/a)</em>.</li>
+</ul>
+<p><img alt="System Monitor-innstillingene med modultabellen, profilene og fargene per modul" src="images/system-monitor.png" />
+<em>(Figur: velg hvilke moduler som vises, fargene deres og rekkefølgen deres.)</em></p>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Alt måles, aldri forfalskes: moduler hvis data maskinvaren ikke avslører (ofte GPU eller sensorer på enkelte Macer), forblir utilgjengelige i stedet for å vise oppdiktede tall. Batteri er utilgjengelig på stasjonære maskiner.</li>
+<li>Prøvetaking kjører på en bakgrunnstimer bare mens avlesningen er synlig, og beholder omtrent 30 minutter med historikk for grafene.</li>
+<li>Modulvalgene, fargene og rekkefølgen din lagres med appens konfigurasjon.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="settings.html">Innstillinger</a></li></ul></section>
+</main>
+</body>
+</html>

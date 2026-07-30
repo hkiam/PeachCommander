@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시작 메뉴 및 사용자 지정 명령</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>시작 메뉴 및 사용자 지정 명령</h1>
+<p><strong>시작</strong> 메뉴는 파일, 편집 등과 나란히 메뉴 막대에 자리 잡은, 여러분만의 개인 메뉴입니다. 직접 정의한 명령을 담고 있어 가장 자주 쓰는 동작이 항상 한 번의 클릭 거리에 있습니다. 고전적인 이중 패널 파일 관리자의 전통에 따라 각 항목은 기본 제공 명령을 실행하거나, 외부 프로그램이나 앱을 실행하거나, 폴더로 바로 이동할 수 있습니다. Peach Commander는 시작 메뉴를 비운 채로 제공하며 여러분이 채우기를 기다립니다.</p>
+<h2 id="_1">직접 명령 추가하기</h2>
+<ol>
+<li><strong>시작 &gt; 시작 메뉴 변경…</strong>을 선택합니다. Peach Commander가 사용자 명령 파일을 엽니다(처음에는 주석이 달린 예제와 함께 파일을 만듭니다).</li>
+<li>명령마다 한 섹션을 추가합니다. 각 섹션은 대괄호 안의 이름으로 시작하고, 이어서 몇 가지 간단한 키가 옵니다:
+   - <strong>cmd</strong> — 실행할 것: 프로그램 경로, 앱, 기본 제공 <code>cm_</code> 명령, 또는 여러분의 다른 명령.
+   - <strong>param</strong> — 프로그램에 전달할 매개변수. 명령이 실행될 때 자리표시자가 채워집니다: <code>%P</code>(원본 폴더), <code>%N</code>(현재 파일), <code>%T</code>(반대 패널의 폴더), <code>%M</code>(반대 패널의 파일), <code>%S</code>(선택한 파일).
+   - <strong>path</strong> — 시작할 폴더(기본값은 현재 폴더).
+   - <strong>menu</strong> — 시작 메뉴에 표시되는 제목.
+   - <strong>key</strong> — 선택적 단축키, 예: <code>C+S+B</code>.</li>
+<li>파일을 저장합니다. 시작 메뉴는 다음에 Peach Commander가 활성화될 때 스스로 갱신되므로 새 항목이 바로 나타납니다.</li>
+</ol>
+<h2 id="_2">팁</h2>
+<ul>
+<li>현재 폴더를 터미널에서 열려면 <strong>cmd</strong>를 <code>open</code>, <strong>param</strong>을 <code>-a Terminal %P</code>, <strong>menu</strong>를 <code>여기서 터미널 열기</code>로 설정합니다.</li>
+<li><strong>cmd</strong>를 <code>cm_</code> 명령으로 지정하면 기본 제공 동작에 자체 시작 메뉴 항목과 단축키를 줄 수 있습니다.</li>
+<li>파일에서의 순서가 메뉴에서의 순서이므로, 가장 많이 쓰는 명령을 맨 위에 두세요.</li>
+</ul>
+<h2 id="_3">참고</h2>
+<ul>
+<li>전체 메뉴 막대를 여러분만의 것으로 대체할 수도 있습니다. <strong>설정 &gt; 메뉴 파일 편집…</strong>을 선택하면 현재의 완전히 현지화된 기본 메뉴에서 만들어진 메뉴 파일이 열립니다. 자유롭게 편집하면 앱이 다음에 활성화될 때 변경이 적용됩니다. 파일을 삭제하면 표준 메뉴 막대가 복원됩니다.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">버튼 막대</a></li><li><a href="keyboard-shortcuts.html">키보드 및 단축키</a></li></ul></section>
+</main>
+</body>
+</html>

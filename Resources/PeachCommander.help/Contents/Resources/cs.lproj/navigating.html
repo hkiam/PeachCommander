@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pohyb v aplikaci</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Pohyb v aplikaci</h1>
+<p>Peach Commander zobrazuje dvě složky vedle sebe, takže většinu času trávíte přesouváním jednoho panelu ze složky do složky. Můžete otevírat složky, vracet se v hierarchii výš, sledovat, kde jste byli, přímo zadat cestu a přeskakovat rovnou na běžná místa jako Domů, Plocha a Stažené. Každá akce působí na <em>aktivní</em> panel — ten se zvýrazněnou lištou cesty.</p>
+<h2 id="otevirani-slozek-a-navrat-vys">Otevírání složek a návrat výš</h2>
+<ol>
+<li>Šipkami posouvejte výběrovou lištu, dokud není zvýrazněna složka.</li>
+<li>Stiskem <strong>Enter</strong> (nebo dvojklikem) ji otevřete. Tím také vstoupíte do archivů a otevřete soubory ve výchozí aplikaci.</li>
+<li>O úroveň výš do nadřazené složky přejdete stiskem <strong>Ctrl+PageUp</strong> (nebo <strong>Backspace</strong>).</li>
+<li>Na začátek aktuálního disku přeskočíte volbou <strong>Přejít ▸ Kořen</strong>.</li>
+</ol>
+<h2 id="zpet-a-vpred">Zpět a vpřed</h2>
+<p>Peach Commander si pamatuje složky, které jste v každém panelu navštívili, stejně jako webový prohlížeč.</p>
+<ul>
+<li>Stiskem <strong>Alt+Vlevo</strong> se vrátíte do předchozí složky a <strong>Alt+Vpravo</strong> přejdete zase vpřed.</li>
+<li>Stiskem <strong>Alt+Dolů</strong> otevřete rozbalovací seznam nedávných složek a přeskočíte na kteroukoli z nich.</li>
+</ul>
+<h2 id="zadani-cesty-nebo-pouziti-listy-cesty">Zadání cesty nebo použití lišty cesty</h2>
+<p>Lišta cesty v horní části každého panelu ukazuje, kde jste, a slouží také jako způsob, jak se někam rychle dostat.</p>
+<p><img alt="Upravitelná lišta cesty zobrazující aktuální složku jako klikatelné segmenty" src="images/path-bar-crop.png" />
+<em>(Obrázek: lišta cesty. Klepnutím na segment přeskočíte do té složky, nebo na tužku zadáte celou cestu.)</em></p>
+<ul>
+<li>Klepnutím na kterýkoli segment cesty (například na název nadřazené složky) přeskočíte přímo na něj.</li>
+<li>Klepnutím na tužku vpravo od lišty cesty ji změníte na textové pole, poté napište nebo vložte cestu a stiskněte Enter.</li>
+<li>Nebo zvolte <strong>Soubor ▸ Přejít do složky…</strong> (<strong>Cmd+Shift+G</strong>), abyste zadali cestu odkudkoli.</li>
+</ul>
+<h2 id="preskok-na-bezna-mista">Přeskok na běžná místa</h2>
+<p>Nabídka <strong>Přejít</strong> přenese aktivní panel do složek, které používáte nejčastěji:</p>
+<ul>
+<li><strong>Domů</strong>, <strong>Plocha</strong>, <strong>Stažené</strong>, <strong>Koš</strong> a <strong>iCloud Drive</strong>.</li>
+<li><strong>iCloud Drive</strong> se objeví, když je na vašem Macu nastaven.</li>
+</ul>
+<h2 id="prepinani-panelu-a-disku">Přepínání panelů a disků</h2>
+<ul>
+<li>Stiskem <strong>Tab</strong> přesunete zaměření mezi levým a pravým panelem.</li>
+<li>Lišta disků nad každým panelem uvádí připojené svazky s volným místem; klepnutím na svazek na něj panel přepnete.</li>
+<li>Stiskem <strong>Ctrl+U</strong> prohodíte oba panely (jejich složky si vymění strany); <strong>Ctrl+Shift+U</strong> je prohodí i s jejich kartami.</li>
+<li>Stiskem <strong>Ctrl+=</strong> namíříte druhý panel na stejnou složku jako aktivní (<em>cíl = zdroj</em>) — praktické těsně před kopírováním nebo přesunem.</li>
+</ul>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Otevřít složku / soubor pod kurzorem</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Přejít do nadřazené složky</td>
+<td>Ctrl+PageUp (nebo Backspace)</td>
+</tr>
+<tr>
+<td>Zpět / Vpřed v historii</td>
+<td>Alt+Vlevo / Alt+Vpravo</td>
+</tr>
+<tr>
+<td>Rozbalovací seznam historie</td>
+<td>Alt+Dolů</td>
+</tr>
+<tr>
+<td>Přejít do složky… (zadat cestu)</td>
+<td>Cmd+Shift+G</td>
+</tr>
+<tr>
+<td>Domů</td>
+<td>Cmd+Shift+H</td>
+</tr>
+<tr>
+<td>Plocha</td>
+<td>Cmd+Shift+D</td>
+</tr>
+<tr>
+<td>Stažené</td>
+<td>Option+Cmd+L</td>
+</tr>
+<tr>
+<td>Přepnout aktivní panel</td>
+<td>Tab</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tipy">Tipy</h2>
+<ul>
+<li>Každý panel si drží vlastní historii, takže Zpět a Vpřed ovlivňují jen aktivní stranu.</li>
+<li>Pokud zadaná cesta není platná složka, lišta cesty tiše zachová vaše poslední umístění místo přechodu.</li>
+<li>Koš a iCloud Drive v nabídce Přejít nemají výchozí zkratku, ale můžete ji přiřadit v <strong>Konfigurace ▸ Možnosti ▸ Klávesnice</strong>.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="interface-overview.html">Hlavní okno</a></li><li><a href="favorites.html">Oblíbené a seznam rychlého přístupu</a></li></ul></section>
+</main>
+</body>
+</html>

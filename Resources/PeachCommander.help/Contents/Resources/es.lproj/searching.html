@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buscar archivos</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Buscar archivos</h1>
+<p>Cuando necesitas localizar archivos en cualquier parte de tu Mac —por nombre, por lo que contienen, o por tamaño y fecha— usa la ventana Buscar archivos. Busca en una o varias carpetas (y sus subcarpetas), puede mirar dentro de archivos de texto y comprimidos, y te permite enviar todo lo que encuentra directamente a un panel para que actúes sobre los resultados como si fueran una carpeta normal.</p>
+<h2 id="buscar-archivos-por-nombre">Buscar archivos por nombre</h2>
+<ol>
+<li>En el panel que muestra la carpeta donde quieres buscar, elige <strong>Comandos &gt; Buscar archivos…</strong> (o pulsa Cmd+Shift+F).</li>
+<li>En la pestaña <strong>General</strong>, escribe un patrón de nombre en <strong>Buscar</strong>. Puedes usar comodines como <code>*.pdf</code> o <code>report_*.docx</code>. Para buscar en varias carpetas a la vez, enuméralas en el campo de carpeta inicial separadas por un punto y coma (<code>;</code>).</li>
+<li>Haz clic en <strong>Iniciar</strong>. Las coincidencias aparecen en la lista de resultados de abajo a medida que se encuentran.</li>
+<li>Haz doble clic en cualquier resultado para saltar a ese archivo en el panel activo, o selecciona un resultado y haz clic en <strong>Ver</strong> (F3) para abrirlo en el visor integrado.</li>
+</ol>
+<p><img alt="La ventana Buscar archivos en la pestaña General, con el patrón de nombre, la carpeta y la lista de resultados" src="images/find-files-general.png" />
+<em>(Figura: La pestaña General — busca por patrón de nombre en una o varias carpetas.)</em></p>
+<h2 id="buscar-por-contenido-tamano-y-fecha">Buscar por contenido, tamaño y fecha</h2>
+<ol>
+<li>Para buscar dentro de los archivos, marca <strong>Buscar texto</strong> en la pestaña General y escribe el texto a buscar. Las opciones permiten hacerlo <strong>Distinguir mayúsculas</strong>, coincidir solo con una <strong>Palabra completa</strong>, tratar el texto como <strong>Expresión regular</strong>, hacer una <strong>Búsqueda de contenido en hexadecimal</strong>, o encontrar archivos que <strong>No contengan</strong> el texto.</li>
+<li>Cambia a la pestaña <strong>Avanzado</strong> para acotar los resultados por <strong>Tamaño</strong> (por ejemplo, <code>10K</code> a <code>5M</code>), por rango de <strong>fecha de modificación</strong>, o a archivos cambiados en los últimos N días.</li>
+<li>Activa <strong>Buscar dentro de archivos comprimidos</strong> para mirar en archivos de la familia zip (zip, jar, war y similares).</li>
+<li>Para limitar la búsqueda a lo que ya seleccionaste, activa <strong>Buscar solo en los elementos seleccionados</strong> antes de empezar.</li>
+</ol>
+<p><img alt="La ventana Buscar archivos en la pestaña Avanzado, con filtros de tamaño y fecha" src="images/find-files-advanced.png" />
+<em>(Figura: La pestaña Avanzado — filtra por tamaño, fecha y otros atributos.)</em></p>
+<p>Si tienes complementos que añaden campos de contenido (como las dimensiones de imagen), la pestaña <strong>Complementos</strong> te permite exigir que un campo cumpla una condición, por ejemplo, solo imágenes de más de 1000 píxeles de ancho.</p>
+<p><img alt="La ventana Buscar archivos en la pestaña Complementos, con una condición de campo de contenido" src="images/find-files-plugins.png" />
+<em>(Figura: La pestaña Complementos — coincide con campos de contenido proporcionados por complementos.)</em></p>
+<h2 id="busquedas-rapidas-con-spotlight">Búsquedas rápidas con Spotlight</h2>
+<p>Para carpetas locales que macOS ya ha indexado, activa <strong>Usar Spotlight</strong> en la pestaña General para obtener resultados casi instantáneos. Spotlight busca en el índice en lugar de examinar los archivos, así que ignora las expresiones regulares, los límites de profundidad de subcarpetas y el ámbito de solo seleccionados.</p>
+<h2 id="reutilizar-y-traspasar-tus-resultados">Reutilizar y traspasar tus resultados</h2>
+<ul>
+<li><strong>Enviar a la lista</strong> coloca cada resultado en el panel activo como una lista temporal, para que puedas copiar, mover o eliminar todo el conjunto de una vez.</li>
+<li>En la pestaña <strong>Cargar / Guardar</strong>, elige <strong>Guardar como plantilla…</strong> para almacenar la búsqueda actual (patrones y opciones) y volver a elegirla más tarde en la lista de plantillas.</li>
+</ul>
+<h2 id="atajos">Atajos</h2>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir Buscar archivos</td>
+<td>Cmd+Shift+F o Option+F7</td>
+</tr>
+<tr>
+<td>Iniciar / detener la búsqueda</td>
+<td>Botón Iniciar de la ventana</td>
+</tr>
+<tr>
+<td>Ver el resultado seleccionado</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>La búsqueda de contenido lee los archivos completos en carpetas locales; en otras ubicaciones se omiten los archivos muy grandes (unos 16 MB, o 64 MB al usar una expresión regular).</li>
+<li>La búsqueda dentro de archivos comprimidos desciende hasta cuatro niveles de archivos anidados.</li>
+<li><strong>Incluir carpetas en los resultados</strong> también lista las carpetas cuyo nombre coincide, no solo los archivos.</li>
+<li>Spotlight cubre solo las carpetas locales indexadas; para ubicaciones de red o coincidencia por patrones, déjalo desactivado y deja que Buscar archivos examine.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">Seleccionar archivos</a></li><li><a href="quick-search-and-filter.html">Búsqueda rápida y filtro</a></li></ul></section>
+</main>
+</body>
+</html>

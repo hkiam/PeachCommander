@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hálózati megosztások</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Hálózati megosztások</h1>
+<p>A Peach Commander csatlakozhat a helyi vagy vállalati hálózatában lévő fájlkiszolgálókhoz — SMB (Windows/Samba) és AFP megosztásokhoz — és megjelenítheti a tartalmukat egy panelben, akárcsak egy mappát a saját Macjén. Ha egy megosztás csatlakoztatva van, böngészhet, másolhat, áthelyezhet, átnevezhet és megnyithat benne fájlokat pontosan úgy, mint helyben, beleértve a másolást a megosztás és a másik panele között.</p>
+<h2 id="csatlakozas-egy-kiszolgalohoz">Csatlakozás egy kiszolgálóhoz</h2>
+<ol>
+<li>Kattintson arra a panelre, amelyhez csatlakozni szeretne (a csatlakoztatott megosztás az aktív panelben nyílik meg).</li>
+<li>Nyomja meg a Cmd+K-t, vagy válassza a <strong>Hálózat &gt; Hálózati környezet &gt; Hálózati megosztás csatlakoztatása…</strong> lehetőséget.</li>
+<li>A <strong>Csatlakozás a kiszolgálóhoz</strong> párbeszédben írja be a kiszolgáló címét. Megadhat:
+   - egy SMB-címet, például <code>smb://fileserver/projects</code>
+   - egy AFP-címet, például <code>afp://fileserver/projects</code>
+   - egy Windows-stílusú útvonalat, például <code>\\fileserver\projects</code>
+   - egy egyszerű <code>kiszolgáló/megosztás</code> nevet</li>
+<li>Kattintson a Csatlakozás-ra (vagy nyomja meg az Entert). Ha a kiszolgálónak névre és jelszóra van szüksége, a macOS megjeleníti a szokásos bejelentkező ablakát — adja meg ott az adatait.</li>
+<li>Ha a megosztás kész, az aktív panel automatikusan megnyitja. Böngésszen és dolgozzon vele, mint bármely más mappával.</li>
+</ol>
+<h2 id="levalasztas">Leválasztás</h2>
+<p>Egy csatlakoztatott megosztás csatolt kötetként jelenik meg a Macjén. A leválasztásához adja ki a szokásos macOS-módon — például a Finder oldalsávjából vagy a Peach Commander eszközlistájából.</p>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyűparancs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hálózati megosztás csatlakoztatása…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A hitelesítést (felhasználónév, jelszó és egy esetleges „megjegyzés a kulcskarikámban" lehetőség) a szokásos macOS bejelentkező ablak kezeli, így a mentett kiszolgálójelszavak úgy működnek, mint a Finderben.</li>
+<li>Ha olyan címet ad meg, amely nem értelmezhető, a Peach Commander SMB/AFP-címet, Windows-stílusú útvonalat vagy <code>kiszolgáló/megosztás</code> nevet kér, és semmi sem csatolódik.</li>
+<li>A megerősítés után a kapcsolat eltarthat egy pillanatig, míg a macOS csatolja a megosztást; a panel átvált rá, amint elérhetővé válik.</li>
+<li>Ez hálózaton megosztott eszközökhöz csatlakozik. Ahhoz, hogy inkább egy FTP-, FTPS- vagy SFTP-kiszolgálót érjen el, lásd az alábbi kapcsolódó témát.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Csatlakozás FTP-hez és SFTP-hez</a></li></ul></section>
+</main>
+</body>
+</html>

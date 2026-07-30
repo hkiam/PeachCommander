@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Manager</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Task Manager</h1>
+<p>Task Manager-programtillegget gjør prosessene som kjører på Mac-en din, til en mappe du kan bla i. Det vises som en <strong>TaskManager</strong>-stasjon i stasjonslinjen; åpne den, og hver prosess er en rad du kan sortere, granske som en fil eller avslutte – med de samme tastene du allerede bruker for filer. Det er et programtillegg, så du kan slå det av eller fjerne det i <strong>Konfigurasjon ▸ Programtillegg…</strong>.</p>
+<h2 id="apne-det">Åpne det</h2>
+<ol>
+<li>Klikk på <strong>📊 TaskManager</strong>-oppføringen i stasjonslinjen (den sitter rett etter startstasjonen din).</li>
+<li>Panelet fylles med én rad per prosess som kjører. Hver rads navn er prosessnavnet etterfulgt av PID-en, for eksempel <code>Finder (462)</code>.</li>
+</ol>
+<p><img alt="Task Manager som lister prosesser som kjører, med kolonnene PID, CPU, minne og kommando" src="images/task-manager.png" />
+<em>(Figur: prosesser som kjører vist som en filliste du kan sortere og handle på.)</em></p>
+<h2 id="hva-hver-kolonne-betyr">Hva hver kolonne betyr</h2>
+<p>Ved siden av de vanlige kolonnene Størrelse (minne) og Dato (starttid) legger Task Manager til prosesskolonner:</p>
+<table>
+<thead>
+<tr>
+<th>Kolonne</th>
+<th>Betydning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PID</strong></td>
+<td>Prosess-id</td>
+</tr>
+<tr>
+<td><strong>CPU %</strong></td>
+<td>Nylig prosessorbruk (trenger en ny oppdatering for å vises)</td>
+</tr>
+<tr>
+<td><strong>Threads</strong></td>
+<td>Antall tråder</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>R kjører · S sover · T stoppet · Z zombie · I inaktiv</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>Eier</td>
+</tr>
+<tr>
+<td><strong>PPID</strong></td>
+<td>Overordnet prosess-id</td>
+</tr>
+<tr>
+<td><strong>Command</strong></td>
+<td>Full kommandolinje</td>
+</tr>
+</tbody>
+</table>
+<p>Sorter etter en hvilken som helst kolonne (for eksempel CPU % eller Størrelse/minne) akkurat som du ville gjort i en vanlig mappe.</p>
+<h2 id="gransk-eller-avslutt-en-prosess">Gransk eller avslutt en prosess</h2>
+<ul>
+<li><strong>Vis (F3)</strong> viser en <em>Prosessinformasjon</em>-rapport: navn, PID, overordnet, bruker, tilstand, tråder, minne, CPU, starttid, kjørbar sti og den fulle kommandolinjen.</li>
+<li><strong>Slett (F8)</strong> avslutter prosessen. Den første slettingen sender et vennlig <strong>avslutt</strong> (SIGTERM); å slette en prosess som fortsatt kjører en gang til, eskalerer til et <strong>tvangsavslutt</strong> (SIGKILL). Programtillegget retter seg aldri mot PID 1.</li>
+</ul>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Grunnleggende detaljer (PID, overordnet, bruker, tilstand) er lesbare for hver prosess, som <code>ps</code>. Minne, tråder og CPU kan bare leses for <strong>dine egne</strong> prosesser; andre prosesser viser de kolonnene tomme (de trenger hevede rettigheter, en senere tilføyelse).</li>
+<li>CPU % er en endring mellom to prøver, så den er tom til panelet oppdateres en gang til (panelet oppdateres omtrent hvert annet sekund).</li>
+<li>Listen er skrivebeskyttet bortsett fra å avslutte en prosess – du kan ikke kopiere filer inn i den.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="viewing-files.html">Vise filer</a></li><li><a href="deleting-files.html">Slette filer</a></li></ul></section>
+</main>
+</body>
+</html>

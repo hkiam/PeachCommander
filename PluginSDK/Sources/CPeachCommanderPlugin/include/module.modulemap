@@ -1,0 +1,11 @@
+// Umbrella module for the Peach Commander plugin C ABI (PCX/PDX/PFX/PLX + contrib).
+// Import from a Swift-authored plugin with `import CPeachCommanderPlugin`.
+module CPeachCommanderPlugin {
+    header "pc_common.h"
+    header "pcx.h"
+    header "pdx.h"
+    header "pfx.h"
+    header "plx.h"
+    header "contrib.h"
+    export *
+}

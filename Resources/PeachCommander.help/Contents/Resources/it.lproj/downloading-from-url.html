@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scaricare da un URL</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Scaricare da un URL</h1>
+<p>Peach Commander può recuperare un file direttamente da un indirizzo web HTTP o HTTPS nel pannello attivo, senza aprire un browser. Incollate un link, confermate il nome con cui verrà salvato e il download procede da solo — con ripresa se la connessione cade, download in lotto per molti link in una volta e verifica del checksum opzionale così sapete che il file è arrivato integro.</p>
+<h2 id="scaricare-un-file">Scaricare un file</h2>
+<ol>
+<li>Aprite la cartella del pannello in cui volete che arrivi il file.</li>
+<li>Scegliete <strong>Rete &gt; Scarica da URL</strong>, oppure premete Cmd+Shift+D.</li>
+<li>Incollate l'indirizzo web nella casella <strong>URL</strong>. Se avete copiato prima un link, viene inserito automaticamente.</li>
+<li>Controllate il nome in <strong>Salva come</strong> — viene suggerito dal link e potete modificarlo liberamente.</li>
+<li>Fate clic su <strong>Scarica</strong>.</li>
+</ol>
+<p><img alt="La finestra Scarica da URL con un link, il nome di file modificabile e le opzioni" src="images/download-url.png" />
+<em>(Figura: la finestra di download — incollate un link, modificate il nome e impostate verifica, credenziali, intestazioni o un proxy opzionali.)</em></p>
+<p>Per impostazione predefinita il download procede <strong>in background</strong>, così potete continuare a lavorare nei pannelli mentre viene trasferito. Disattivate <strong>Scarica in background</strong> per attenderlo, oppure attivate <strong>Metti in coda per dopo</strong> per configurarlo senza avviarlo subito.</p>
+<h2 id="scaricare-piu-file-in-una-volta">Scaricare più file in una volta</h2>
+<p>Incollate un indirizzo web per riga nella casella <strong>URL</strong>. Quando è presente più di un link, il nome di ogni file viene ricavato automaticamente dal suo link e i campi per singolo file <strong>Salva come</strong> e <strong>Verifica</strong> vengono disattivati.</p>
+<h2 id="riprendere-un-download-interrotto">Riprendere un download interrotto</h2>
+<p>Se un trasferimento viene interrotto, Peach Commander conserva ciò che ha già ricevuto in un file temporaneo <code>.part</code>. Riavviare lo stesso download riprende dal punto in cui si era fermato ogniqualvolta il server lo supporti, invece di ricominciare da capo. Il file <code>.part</code> viene rinominato con il nome finale solo una volta che il download si è concluso con successo.</p>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Scorciatoia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scaricare da URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="suggerimenti">Suggerimenti</h2>
+<ul>
+<li><strong>Verificate il file.</strong> Per un singolo download, incollate un checksum <strong>SHA-256</strong> atteso nel campo <strong>Verifica</strong>. Dopo il trasferimento, il checksum del file viene confrontato con esso così potete fidarvi che il file corrisponda a quanto indicato dall'autore.</li>
+<li><strong>Serve un accesso?</strong> Inserite un nome utente e una password nei campi <strong>Auth</strong> per i siti che usano l'autenticazione di base. Per l'accesso basato su token, aggiungete una riga <code>Authorization: Bearer …</code> nella casella <strong>Intestazioni</strong>.</li>
+<li><strong>Intestazioni personalizzate.</strong> Aggiungete un'intestazione per riga nella casella <strong>Intestazioni</strong>, ad esempio <code>Referer: …</code> o <code>Cookie: …</code>, per i link che funzionano solo con intestazioni di richiesta specifiche.</li>
+<li><strong>Proxy.</strong> Instradate il download attraverso un proxy HTTP o SOCKS5 compilando host, porta e tipo del <strong>Proxy</strong>.</li>
+<li><strong>Certificati non attendibili.</strong> Attivate <strong>Consenti certificato non attendibile</strong> solo per un sito di cui vi fidate che usa un certificato autofirmato; disattiva il normale controllo di sicurezza HTTPS per quel download.</li>
+<li><strong>Nota:</strong> Cmd+Shift+D è usato anche altrove per andare alla cartella Scrivania; se la scorciatoia non apre questa finestra, usate invece <strong>Rete &gt; Scarica da URL</strong> dal menu.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Connessione a FTP e SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Znane omejitve</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Znane omejitve</h1>
+<p>Peach Commander naredi veliko, a nekaj funkcij ima v trenutni različici poštene meje. Če jih poznate vnaprej, se izognete zmedi, ko se kaj obnaša nepričakovano. Ta stran našteva trenutne omejitve in, kjer je mogoče, preprosto rešitev.</p>
+<h2 id="arhivi">Arhivi</h2>
+<ul>
+<li><strong>Zelo velikih datotek ZIP (ZIP64) ni mogoče odpreti z vgrajenim bralnikom.</strong> Standardni arhivi ZIP, TAR in z gzip stisnjen TAR se odprejo neposredno kot mape. Arhivi ZIP64 — uporabljeni, ko arhiv vsebuje več kot približno 65.000 elementov ali presega 4 GB — so zunaj tega, kar obvladuje domači bralnik, tako da se morda ne odprejo ali naštejejo nepopolno.</li>
+<li><strong>Šifrirani arhivi ZIP</strong> (starejši ZipCrypto in WinZip AES) so podprti za brskanje, a boste vprašani za geslo.</li>
+<li>Druge oblike, kot so CPIO, ISO, CAB, LZH, XAR in PAX, se odprejo prek pomožnega orodja namesto domačega bralnika.</li>
+</ul>
+<h2 id="omrezje-sftp-scp">Omrežje (SFTP / SCP)</h2>
+<ul>
+<li><strong>Spreminjanje atributov datotek prek SFTP v tej različici nima učinka.</strong> Prek SFTP/SCP lahko brskate, prenašate in nalagate, a zahteve za spremembo dovoljenj, lastništva ali časovnih žigov na oddaljenem strežniku so tiho prezrte. Te spremembe naredite na samem strežniku, ali prek drugega protokola.</li>
+<li>Ob prvi povezavi s strežnikom SFTP boste vprašani, da zaupate njegovemu ključu gostitelja. Peach Commander si ga nato zapomni (zaupanje ob prvi uporabi).</li>
+</ul>
+<h2 id="prenasanje-z-url">Prenašanje z URL</h2>
+<ul>
+<li>Ukaz <strong>Prenesi z URL</strong> (meni Omrežje) trenutno uporablja bližnjico Cmd+Shift+D, ki je ista bližnjica kot Pojdi &gt; Namizje. Ko sta na voljo oba, sta menija lahko v sporu — za gotovost zaženite prenos neposredno iz menija Omrežje.</li>
+</ul>
+<h2 id="osvezevanje-map">Osveževanje map</h2>
+<ul>
+<li><strong>Podokno opazi zunanje spremembe z majhno zakasnitvijo, ne takoj.</strong> Peach Commander preverja trenutno mapo glede sprememb približno vsaki 2 sekundi, tako da se datoteka, ki jo doda ali odstrani druga aplikacija, lahko pojavi šele čez trenutek. Če ne želite čakati, osvežite dejavno podokno ročno s tipko F2 ali Ctrl+R.</li>
+</ul>
+<h2 id="druge-trenutne-meje">Druge trenutne meje</h2>
+<ul>
+<li><strong>Nekatere zelo dolge absolutne poti</strong> (globoko vgnezdene mape, katerih celotna pot je nenavadno dolga) morda niso obravnavane zanesljivo. Delo bliže vrhu drevesa map se temu izogne.</li>
+<li><strong>Ta predogledna gradnja ni podpisana.</strong> Gatekeeper v macOS lahko ob prvem odpiranju opozori, da je aplikacija od neznanega razvijalca. Kliknite aplikacijo z desno tipko in izberite Odpri, nato potrdite, da jo zaženete. Samodejne posodobitve v tej gradnji še niso na voljo.</li>
+</ul>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Osveži dejavno podokno</td>
+<td>F2 ali Ctrl+R</td>
+</tr>
+<tr>
+<td>Prenesi z URL</td>
+<td>Cmd+Shift+D</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<p>To so omejitve trenutne različice in pričakuje se, da se bodo v kasnejših izdajah izboljšale. Če naletite na obnašanje, ki tu ni opisano, glejte temo o odpravljanju težav.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="troubleshooting.html">Odpravljanje težav</a></li></ul></section>
+</main>
+</body>
+</html>

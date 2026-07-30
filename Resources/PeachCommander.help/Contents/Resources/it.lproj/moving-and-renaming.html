@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spostamento e rinomina</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Spostamento e rinomina</h1>
+<p>Lo spostamento riposiziona file e cartelle invece di duplicarli, e la rinomina cambia i loro nomi senza toccarne il contenuto. Poiché Peach Commander mostra due pannelli affiancati, spostare è solo questione di scegliere ciò che vuoi in un pannello e inviarlo alla cartella aperta nell'altro. Puoi anche rinominare un elemento sul posto, o dare agli elementi spostati nuovi nomi al volo usando una maschera a caratteri jolly.</p>
+<h2 id="sposta-file-nellaltro-pannello">Sposta file nell'altro pannello</h2>
+<ol>
+<li>Nel pannello di origine, apri la cartella che contiene gli elementi da spostare, e apri la cartella di destinazione nell'altro pannello.</li>
+<li>Seleziona il file o la cartella da spostare. Per spostarne più di uno in una volta, selezionali tutti prima (vedi <em>Selezione dei file</em>).</li>
+<li>Premi F6, o scegli <strong>File &gt; Sposta</strong>.</li>
+<li>Controlla la cartella di destinazione mostrata nella finestra e fai clic su <strong>OK</strong> (o premi Invio) per avviare lo spostamento.</li>
+</ol>
+<p><img alt="La finestra di spostamento che mostra il campo del percorso di destinazione, le opzioni e una casella per la coda" src="images/copy-dialog.png" />
+<em>(Figura: la finestra di spostamento usa lo stesso campo di destinazione della copia — digita un percorso, o aggiungi una maschera a caratteri jolly per rinominare mentre sposti.)</em></p>
+<p>Gli spostamenti sullo stesso disco avvengono quasi istantaneamente. Quando la destinazione è su un disco diverso, Peach Commander copia gli elementi e rimuove gli originali solo dopo che ogni file è arrivato in modo sicuro.</p>
+<h2 id="rinomina-sul-posto">Rinomina sul posto</h2>
+<ol>
+<li>Seleziona un singolo file o cartella.</li>
+<li>Premi Maiusc+F6, o scegli <strong>File &gt; Rinomina</strong>.</li>
+<li>Modifica il nome direttamente nel pannello, poi premi Invio per confermare o Esc per annullare.</li>
+</ol>
+<h2 id="rinomina-durante-lo-spostamento">Rinomina durante lo spostamento</h2>
+<p>Il campo di destinazione nella finestra di spostamento accetta una maschera a caratteri jolly, così puoi rinominare gli elementi mentre si spostano:</p>
+<ol>
+<li>Seleziona gli elementi e premi F6.</li>
+<li>Nel campo di destinazione, aggiungi una maschera di nome dopo la cartella di destinazione, per esempio <code>/Users/tu/Archive/*_backup.*</code>.</li>
+<li><code>*</code> sta per il nome originale e <code>.*</code> per l'estensione originale. Conferma per spostare e rinominare in un solo passaggio.</li>
+</ol>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Scorciatoia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sposta nell'altro pannello</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Rinomina sul posto</td>
+<td>Maiusc+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="suggerimenti">Suggerimenti</h2>
+<ul>
+<li>La finestra di spostamento offre lo stesso pulsante di opzioni e la stessa casella della coda in background della copia, così puoi accodare spostamenti grandi e lasciarli in esecuzione in background.</li>
+<li>Lo spostamento all'interno dello stesso disco è un'operazione rapida sul posto, quindi è sicuro per cartelle molto grandi. Uno spostamento tra dischi diversi richiede più tempo perché i dati vengono prima copiati, poi l'origine viene eliminata.</li>
+<li>Per rinominare molti file in una volta con numerazione, cerca-e-sostituisci o schemi, usa invece lo strumento di rinomina multipla (vedi <em>Rinomina multipla</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copiare i file</a></li><li><a href="multi-rename.html">Rinominare molti file</a></li></ul></section>
+</main>
+</body>
+</html>

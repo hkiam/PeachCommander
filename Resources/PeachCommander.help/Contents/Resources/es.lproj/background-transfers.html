@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transferencias en segundo plano</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Transferencias en segundo plano</h1>
+<p>Las copias, los movimientos, las eliminaciones y las descargas grandes no tienen por qué frenar su trabajo. Peach Commander puede ejecutarlos en segundo plano y reunirlos todos en un mismo lugar: el Gestor de transferencias en segundo plano. Desde ahí puede supervisar el progreso y la velocidad de transferencia de cada tarea, pausarla o reanudarla, cancelarla, o poner tareas en cola para iniciarlas más tarde. Como una tarea en segundo plano se ejecuta por su cuenta, nunca le impide examinar carpetas, abrir archivos o iniciar la siguiente transferencia.</p>
+<h2 id="como-hacerlo">Cómo hacerlo</h2>
+<ol>
+<li>Inicie una copia, un movimiento, una eliminación o una descarga y elija ejecutarla en segundo plano. La tarea aparece en el Gestor de transferencias en segundo plano.</li>
+<li>Abra el gestor en cualquier momento desde <strong>Comandos ▸ Gestor de transferencias en segundo plano…</strong> (o pulse Cmd+Shift+B).</li>
+<li>Cada tarea muestra un título, una barra de progreso y una línea en directo con los archivos completados, los bytes transferidos y la velocidad actual.</li>
+<li>Use los botones de cada tarea para <strong>Pausar</strong>, <strong>Reanudar</strong> o <strong>Cancelar</strong> mientras una tarea se está ejecutando.</li>
+<li>Para las tareas que ha añadido pero aún no ha iniciado (tareas retenidas), haga clic en <strong>Iniciar</strong> en la tarea, o en <strong>Iniciar todo</strong> para lanzar de una vez toda la lista de espera.</li>
+<li>Cuando haya terminado todo lo que le interesa, haga clic en <strong>Borrar finalizadas</strong> para ordenar la lista.</li>
+</ol>
+<p><img alt="El Gestor de transferencias en segundo plano con una lista de tareas activas y en espera con barras de progreso y botones de Pausar, Reanudar y Cancelar." src="images/transfer-manager.png" /></p>
+<p><em>Cada transferencia es una fila que puede pausar, reanudar o cancelar de forma independiente.</em></p>
+<h2 id="atajos">Atajos</h2>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir el Gestor de transferencias en segundo plano</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="consejos">Consejos</h2>
+<ul>
+<li><strong>Limite la velocidad.</strong> Para evitar que una transferencia grande sature su conexión o su disco, establezca un límite de velocidad en el cuadro de diálogo de copia antes de iniciar la tarea. El gestor mostrará entonces la tasa limitada en directo.</li>
+<li><strong>Ponga en cola para más tarde.</strong> Las tareas retenidas permanecen en la lista sin ejecutarse hasta que pulsa Iniciar (o Iniciar todo), de modo que puede preparar varias transferencias y lanzarlas juntas.</li>
+<li><strong>Ejecute varias a la vez.</strong> Las tareas se ejecutan de forma independiente, por lo que puede pausar una mientras otra continúa.</li>
+</ul>
+<h2 id="notas">Notas</h2>
+<p>Como una tarea en segundo plano se ejecuta sin que usted la observe, no puede detenerse para hacer preguntas. Si ya existe un archivo en el destino, la tarea en segundo plano lo sobrescribe; si un elemento concreto no puede transferirse, ese elemento se omite y la tarea continúa. Cuando la tarea finaliza, todos los elementos omitidos se recopilan en un registro de errores para que pueda revisar exactamente qué salió mal.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copiar archivos</a></li><li><a href="downloading-from-url.html">Descargar desde una URL</a></li></ul></section>
+</main>
+</body>
+</html>

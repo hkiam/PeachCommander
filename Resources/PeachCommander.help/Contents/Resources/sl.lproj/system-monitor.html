@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Monitor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>System Monitor</h1>
+<p>Vtičnik System Monitor postavi prikaz dejavnosti vašega Maca v realnem času kar v naslovno vrstico okna: majhne čipe za procesor, pomnilnik, disk, omrežje in — kjer jih strojna oprema izpostavi — GPE, baterijo in senzorje. Vsak čip se posodobi enkrat na sekundo; kliknite ga za pojavno okno z zgodovinskim grafom in podrobno razčlenitvijo. Ker gre za vtičnik, ga lahko omogočite, nastavite ali odstranite v <strong>Konfiguracija ▸ Vtičniki…</strong>.</p>
+<h2 id="cipi-v-naslovni-vrstici">Čipi v naslovni vrstici</h2>
+<p>Ko je vtičnik vklopljen, v naslovni vrstici sedi vrsta strnjenih čipov. Vsak čip je obarvana pika, kratka oznaka in vrednost v živo (nekateri z vgrajenim mini-grafom):</p>
+<table>
+<thead>
+<tr>
+<th>Čip</th>
+<th>Prikazuje</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>Obremenitev procesorja, s podrobnostjo po jedrih</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>Uporabljen / skupni pomnilnik (poleg zaklenjenega, stisnjenega, izmenjalnega)</td>
+</tr>
+<tr>
+<td><strong>HDD</strong></td>
+<td>Prostor zagonskega nosilca ter prepustnost branja/pisanja</td>
+</tr>
+<tr>
+<td><strong>Net</strong></td>
+<td>Hitrosti in vsote prenosa/nalaganja</td>
+</tr>
+<tr>
+<td><strong>GPU</strong> · <strong>Batt</strong> · <strong>Sens</strong></td>
+<td>Izkoriščenost GPE · napolnjenost in stanje baterije · hitrosti ventilatorjev in temperature</td>
+</tr>
+</tbody>
+</table>
+<p>Kliknite čip, da odprete pojavno okno z veliko trenutno vrednostjo, mini-grafom <strong>HISTORY</strong>, seznamom ključ/vrednost <strong>DETAILS</strong> in — za CPU — seznamom stolpcev po jedrih <strong>CORE LOAD</strong>.</p>
+<h2 id="nastavitev">Nastavitev</h2>
+<p>Izberite <strong>Ukazi ▸ System Monitor…</strong> (ali odprite <strong>Konfiguracija ▸ Nastavitve ▸ System Monitor</strong>), da nastavite prikaz:</p>
+<ul>
+<li><strong>Prikaži sistemski monitor v naslovni vrstici</strong> — glavni preklop za čipe.</li>
+<li><strong>Profil</strong> — prednastavitve <em>Minimalno</em>, <em>Srednje</em> ali <em>Maksimalno</em>, ki izberejo smiseln nabor modulov.</li>
+<li><strong>Tabela modulov</strong> — vklopite ali izklopite vsak modul (CPU, GPU, RAM, HDD, Net, Batt, Sens), izberite njegovo barvo in povlecite vrstice, da nastavite vrstni red, v katerem se pojavijo v naslovni vrstici. Moduli, ki jih vaša strojna oprema ne more poročati, so prikazani kot <em>(ni na voljo)</em>.</li>
+</ul>
+<p><img alt="Nastavitve System Monitor s tabelo modulov, profili in barvami za posamezne module" src="images/system-monitor.png" />
+<em>(Slika: izberite, kateri moduli se pojavijo, njihove barve in vrstni red.)</em></p>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Vse je izmerjeno, nikoli izmišljeno: moduli, katerih podatkov strojna oprema ne izpostavi (pogosto GPE ali senzorji na nekaterih Macih), ostanejo nedosegljivi, namesto da bi prikazovali izmišljene številke. Baterija ni na voljo na namiznih računalnikih.</li>
+<li>Vzorčenje teče na časovniku v ozadju le, medtem ko je prikaz viden, in hrani približno 30 minut zgodovine za grafe.</li>
+<li>Vaše izbire modulov, barve in vrstni red se shranijo s konfiguracijo aplikacije.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="settings.html">Nastavitve</a></li></ul></section>
+</main>
+</body>
+</html>

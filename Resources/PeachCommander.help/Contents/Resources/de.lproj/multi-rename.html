@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Viele Dateien umbenennen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Viele Dateien umbenennen</h1>
+<p>Das Mehrfach-Umbenennen-Werkzeug benennt einen ganzen Stapel von Dateien in einem Durchgang um. Statt Namen einzeln zu bearbeiten, beschreiben Sie die Änderung einmal — ein Namensmuster, ein Suchen-und-Ersetzen, ein Nummerierungsschema oder eine Änderung der Groß-/Kleinschreibung — und Peach Commander wendet sie auf jede ausgewählte Datei an. Eine Live-Vorschau zeigt genau, wie jede Datei heißen wird, bevor irgendetwas geschieht, und ein einziges Rückgängig stellt die ursprünglichen Namen wieder her, falls das Ergebnis nicht das war, was Sie wollten.</p>
+<h2 id="einen-stapel-von-dateien-umbenennen">Einen Stapel von Dateien umbenennen</h2>
+<ol>
+<li>Wählen Sie die Dateien aus, die Sie umbenennen möchten (siehe <em>Dateien auswählen</em>). Nur die ausgewählten Elemente sind betroffen.</li>
+<li>Wählen Sie <strong>Befehle &gt; Mehrfach-Umbenennen-Werkzeug…</strong> oder drücken Sie Ctrl+M.</li>
+<li>Erstellen Sie Ihre Umbenennungsregel mithilfe der unten beschriebenen Felder. Das Vorschauraster aktualisiert sich beim Tippen und zeigt jeden <strong>Alten Namen</strong> neben seinem <strong>Neuen Namen</strong>.</li>
+<li>Prüfen Sie die Vorschau. Eine in einer Hervorhebungsfarbe angezeigte Zeile markiert einen Namen, der nicht verwendet werden kann (zum Beispiel ein Duplikat oder ein unzulässiger Name), damit Sie die Regel anpassen können.</li>
+<li>Wenn die Vorschau richtig aussieht, klicken Sie auf <strong>Start</strong>. Falls Sie es sich anders überlegen, klicken Sie auf <strong>Rückgängig</strong>, um die ursprünglichen Namen wiederherzustellen.</li>
+</ol>
+<p><img alt="Das Mehrfach-Umbenennen-Fenster mit den Maskenfeldern, Optionen und dem Vorschauraster von alt zu neu" src="images/multi-rename.png" />
+<em>(Abbildung: Das Vorschauraster aktualisiert sich live, während Sie die Umbenennungsregel bearbeiten; auf dem Datenträger wird nichts geändert, bis Sie auf Start klicken.)</em></p>
+<h2 id="die-umbenennungsregel-erstellen">Die Umbenennungsregel erstellen</h2>
+<ul>
+<li><strong>Umbenennungsmaske</strong> und <strong>Erweiterung</strong> — Muster, die den neuen Namen und die Erweiterung bilden. Verwenden Sie die Schnelleinfüge-Schaltflächen oder tippen Sie Platzhalter direkt ein: <code>[N]</code> für den ursprünglichen Namen, <code>[N1-9]</code> für einen Bereich von Zeichen daraus, <code>[C]</code> für den Zähler, <code>[d]</code> für Datums- und Zeitteile und <code>[P]</code> für den Namen des übergeordneten Ordners.</li>
+<li><strong>Suchen nach / Ersetzen durch</strong> — Text innerhalb der Namen ersetzen. Aktivieren Sie <strong>Regex</strong> für den Musterabgleich, <strong>Groß-/Kleinschreibung beachten</strong>, um exakte Groß-/Kleinschreibung abzugleichen, und <strong>Wiederholen</strong>, um jedes Vorkommen zu ersetzen.</li>
+<li><strong>Groß-/Kleinschreibung</strong> — Namen umwandeln in Kleinbuchstaben, GROSSBUCHSTABEN, Ersten Buchstaben groß oder Jedes Wort Groß.</li>
+<li><strong>Zähler</strong> — Legen Sie die <strong>Start</strong>-Nummer, die <strong>Schritt</strong>weite zwischen Dateien und fest, auf wie viele <strong>Stellen</strong> aufgefüllt werden soll (zum Beispiel 001, 002, 003), überall dort, wo <code>[C]</code> erscheint.</li>
+</ul>
+<h2 id="kurzbefehle">Kurzbefehle</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Kurzbefehl</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mehrfach-Umbenennen-Werkzeug öffnen</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Umbenennung anwenden</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Fenster schließen</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tipps">Tipps</h2>
+<ul>
+<li>Auf den Datenträger wird nichts geschrieben, bis Sie auf <strong>Start</strong> klicken, sodass Sie frei mit der Regel experimentieren und die Vorschau beobachten können.</li>
+<li>Nach einem Durchgang macht <strong>Rückgängig</strong> die Umbenennung in einem Schritt rückgängig.</li>
+<li>Speichern Sie eine häufig verwendete Regel als <strong>Voreinstellung</strong> und wählen Sie sie beim nächsten Mal aus dem Voreinstellungsmenü, um alle Felder auf einmal auszufüllen.</li>
+<li>Um eine einzelne Datei umzubenennen oder Dateien beim Verschieben umzubenennen, verwenden Sie stattdessen das Umbenennen an Ort und Stelle oder den Verschieben-Dialog (siehe <em>Verschieben &amp; Umbenennen</em>).</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="moving-and-renaming.html">Verschieben &amp; Umbenennen</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapa de disco</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Mapa de disco</h1>
+<p>Mapa de disco es un complemento integrado que muestra, de un vistazo, qué está ocupando espacio en una carpeta o en todo un volumen. Analiza la carpeta que elija y dibuja cada elemento con un tamaño proporcional al espacio que realmente ocupa en el disco, de modo que los mayores consumidores de espacio destacan de inmediato. Puede profundizar en las carpetas, ver cómo se concilia su análisis con el espacio libre, purgable y oculto del volumen, y hacer limpieza directamente desde el mapa.</p>
+<h2 id="iniciar-un-analisis">Iniciar un análisis</h2>
+<ol>
+<li>En el panel activo, vaya a la carpeta (o volumen) que desea medir.</li>
+<li>Elija <strong>Comandos ▸ Mapa de disco: Analizar carpeta actual</strong>.</li>
+<li>La vista de Mapa de disco se abre a la derecha y analiza en segundo plano, mostrando un recuento en curso de elementos y bytes. Las carpetas grandes terminan en unos segundos: el análisis lee los metadatos de directorio en bloque y trabaja en varios núcleos de la CPU.</li>
+</ol>
+<p><img alt="El Mapa de disco mostrando un mapa de árbol cuadriculado de una carpeta, una barra de volumen, una lista de archivos más grandes y una leyenda de categorías" src="images/disk-map.png" />
+<em>(Figura: La vista de mapa de árbol, coloreada por categoría de archivo, con la barra de volumen encima y la lista de archivos más grandes a la derecha.)</em></p>
+<h2 id="leer-el-mapa">Leer el mapa</h2>
+<ul>
+<li>Cada bloque (mapa de árbol) o segmento de anillo (gráfico solar) se dimensiona según el <strong>tamaño real en disco</strong> del elemento, de modo que la imagen coincide con lo que informan Finder y el sistema.</li>
+<li>Los bloques se <strong>colorean por tipo de archivo</strong> —vídeo, imágenes, audio, documentos, código, archivos comprimidos, aplicaciones, imágenes de disco—, con una leyenda a lo largo de la parte inferior. Puede cambiar a un <strong>mapa de calor</strong> por tamaño en los ajustes.</li>
+<li><strong>Haga clic en una carpeta</strong> para profundizar en ella; la ruta de navegación de la parte superior muestra dónde se encuentra, y el botón <strong>◂</strong> retrocede un nivel.</li>
+<li>Pase el cursor sobre cualquier bloque para ver su ruta completa, su tamaño y su recuento de elementos.</li>
+</ul>
+<h2 id="dos-vistas-mapa-de-arbol-y-grafico-solar">Dos vistas: mapa de árbol y gráfico solar</h2>
+<p>Mapa de disco ofrece dos visualizaciones, y puede alternar entre ellas con el botón <strong>◎ / ▦</strong> de la cabecera o en la página de ajustes:</p>
+<ul>
+<li><strong>Mapa de árbol</strong>: rectángulos anidados, la vista más densa para detectar los archivos individuales más grandes.</li>
+<li><strong>Gráfico solar</strong>: anillos concéntricos (uno por cada nivel de profundidad de carpeta) alrededor de la carpeta actual, ideal para ver cómo se distribuye el espacio en un árbol profundo.</li>
+</ul>
+<p><img alt="La vista de gráfico solar del Mapa de disco mostrando anillos concéntricos según la profundidad de las carpetas" src="images/disk-map-sunburst.png" />
+<em>(Figura: La vista de gráfico solar: el disco interior es la carpeta actual y cada anillo es un nivel más profundo.)</em></p>
+<h2 id="la-barra-de-volumen">La barra de volumen</h2>
+<p>La barra de la parte superior concilia su análisis con el volumen completo:</p>
+<ul>
+<li><strong>Analizado / Esta carpeta</strong>: cuánto ocupa la carpeta analizada.</li>
+<li><strong>Oculto</strong> (en la raíz del volumen) o <strong>Resto del volumen</strong> (para una subcarpeta): todo lo que no está en este análisis, incluidas las carpetas protegidas por el sistema, otros usuarios y las instantáneas.</li>
+<li><strong>Purgable</strong>: espacio que macOS puede recuperar automáticamente, principalmente instantáneas locales de Time Machine y cachés.</li>
+<li><strong>Libre</strong>: espacio disponible en este momento.</li>
+</ul>
+<p>Cuando el volumen tiene instantáneas locales, la barra muestra un control <strong>· N instantáneas (ⓘ)</strong>; haga clic en él para ver una lista de solo lectura, con una indicación para gestionarlas en Utilidad de Discos o en Time Machine. Mapa de disco nunca elimina instantáneas por su cuenta.</p>
+<h2 id="archivos-mas-grandes">Archivos más grandes</h2>
+<p>Active <strong>Mostrar la lista de archivos más grandes</strong> para ver los archivos más grandes de la carpeta actual ordenados por tamaño, cada uno con una etiqueta de color según su categoría. Haga clic en uno para resaltarlo en el mapa.</p>
+<h2 id="hacer-limpieza-desde-el-mapa">Hacer limpieza desde el mapa</h2>
+<p>Haga clic con el botón derecho en cualquier bloque para ver las acciones:</p>
+<ul>
+<li><strong>Abrir en el panel izquierdo</strong> / <strong>Abrir en el panel derecho</strong>: muestra el elemento en un panel de archivos.</li>
+<li><strong>Mostrar en Finder</strong>.</li>
+<li><strong>Mover a la Papelera</strong>: elimina solo ese elemento; el mapa se actualiza sin un nuevo análisis completo.</li>
+</ul>
+<p>Para eliminar varios elementos a la vez, use el <strong>Recopilador</strong>: haga clic con el botón derecho ▸ <strong>Marcar para el Recopilador</strong> en cada elemento y, a continuación, haga clic en el botón <strong>🗑 N</strong> de la cabecera para mover todo lo que ha marcado a la Papelera en un único paso confirmado.</p>
+<h2 id="ajustes">Ajustes</h2>
+<p>Mapa de disco añade su propia página a la ventana de Ajustes (<strong>Configuración ▸ Ajustes ▸ Mapa de disco</strong>):</p>
+<ul>
+<li><strong>Estilo de gráfico</strong>: mapa de árbol o gráfico solar.</li>
+<li><strong>Codificación por colores</strong>: por tipo de archivo (categoría) o por tamaño (mapa de calor).</li>
+<li><strong>Permanecer en el volumen inicial</strong>: no pasar a otros discos montados.</li>
+<li><strong>Mostrar la barra de volumen</strong> y <strong>Mostrar la lista de archivos más grandes</strong>.</li>
+</ul>
+<p>Los cambios se aplican de inmediato a un Mapa de disco abierto.</p>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>Mapa de disco mide el tamaño <strong>asignado</strong> (en disco) y cuenta los archivos con <strong>enlace fijo</strong> solo una vez, de modo que sus totales concuerdan con el espacio usado del volumen en lugar de contarlo de más.</li>
+<li>De forma predeterminada, el análisis permanece en el volumen inicial, por lo que no se adentra en otros discos montados ni en recursos compartidos de red.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="deleting-files.html">Eliminar archivos</a></li><li><a href="settings.html">Ajustes</a></li></ul></section>
+</main>
+</body>
+</html>

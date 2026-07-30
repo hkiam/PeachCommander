@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Partages réseau</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Partages réseau</h1>
+<p>Peach Commander peut se connecter à des serveurs de fichiers de votre réseau local ou d'entreprise — partages SMB (Windows/Samba) et AFP — et afficher leur contenu dans un panneau tout comme un dossier de votre propre Mac. Une fois un partage connecté, vous pouvez parcourir, copier, déplacer, renommer et ouvrir des fichiers dedans exactement comme en local, y compris copier entre le partage et votre autre panneau.</p>
+<h2 id="se-connecter-a-un-serveur">Se connecter à un serveur</h2>
+<ol>
+<li>Cliquez sur le panneau auquel vous voulez vous connecter (le partage connecté s'ouvre dans le panneau actif).</li>
+<li>Appuyez sur Cmd+K, ou choisissez <strong>Réseau &gt; Voisinage réseau &gt; Connecter un partage réseau…</strong>.</li>
+<li>Dans le dialogue <strong>Se connecter au serveur</strong>, saisissez l'adresse du serveur. Vous pouvez indiquer :
+   - une adresse SMB, par exemple <code>smb://fileserver/projects</code>
+   - une adresse AFP, par exemple <code>afp://fileserver/projects</code>
+   - un chemin de style Windows, par exemple <code>\\fileserver\projects</code>
+   - un simple nom <code>serveur/partage</code></li>
+<li>Cliquez sur Se connecter (ou appuyez sur Retour). Si le serveur a besoin d'un nom et d'un mot de passe, macOS affiche sa fenêtre de connexion habituelle — saisissez-y vos informations.</li>
+<li>Une fois le partage prêt, le panneau actif l'ouvre automatiquement. Parcourez-le et travaillez avec comme avec n'importe quel autre dossier.</li>
+</ol>
+<h2 id="se-deconnecter">Se déconnecter</h2>
+<p>Un partage connecté apparaît comme un volume monté sur votre Mac. Pour le déconnecter, éjectez-le de la façon habituelle de macOS — par exemple depuis la barre latérale du Finder ou depuis la liste des appareils de Peach Commander.</p>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Raccourci</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Connecter un partage réseau…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>L'authentification (nom d'utilisateur, mot de passe et une option facultative « mémoriser dans mon trousseau ») est gérée par la fenêtre de connexion habituelle de macOS, de sorte que les mots de passe de serveur enregistrés fonctionnent comme dans le Finder.</li>
+<li>Si vous saisissez une adresse impossible à interpréter, Peach Commander vous demande une adresse SMB/AFP, un chemin de style Windows ou un nom <code>serveur/partage</code>, et rien n'est monté.</li>
+<li>Après confirmation, la connexion peut prendre un moment pendant que macOS monte le partage ; le panneau bascule dessus dès qu'il devient disponible.</li>
+<li>Cela connecte à des appareils partagés sur un réseau. Pour atteindre plutôt un serveur FTP, FTPS ou SFTP, consultez la rubrique liée ci-dessous.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Se connecter en FTP et SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

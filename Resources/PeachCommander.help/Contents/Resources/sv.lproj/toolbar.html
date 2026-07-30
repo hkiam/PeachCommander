@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knappraden</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Knappraden</h1>
+<p>Knappraden är remsan med symbolknappar överst i fönstret. Varje knapp är en enklicks-genväg du själv definierar: kör ett inbyggt kommando, starta ett externt program eller en app, hoppa till en mapp, eller öppna en hel underrad med fler knappar. Det är det snabbaste sättet att ha de åtgärder du använder mest inom räckhåll, och du kan skräddarsy den precis efter hur du arbetar.</p>
+<h2 id="anpassa-knappraden">Anpassa knappraden</h2>
+<ol>
+<li>Välj <strong>Konfiguration &gt; Anpassa verktygsrad…</strong>, eller högerklicka på raden och välj <strong>Redigera knappraden…</strong>.</li>
+<li>Listan till vänster visar de aktuella knapparna. Använd <strong>+</strong> för att lägga till en knapp, <strong>—</strong> för att lägga till en avdelare, <strong>−</strong> för att ta bort den markerade knappen, och <strong>↑ / ↓</strong> för att ordna om.</li>
+<li>Markera en knapp och fyll i formuläret till höger:
+   - <strong>Kommando</strong> — skriv ett inbyggt kommando, eller klicka på <strong>Välj…</strong> för att välja ett ur en lista. Du kan även ange sökvägen till ett program eller en app, en mapp att öppna, eller en annan knapprad att använda som underrad.
+   - <strong>Etikett</strong> — namnet och verktygstipset som visas för knappen.
+   - <strong>Parametrar</strong> och <strong>Startsökväg</strong> — skickas till externa program. Platshållare som <code>%P</code> (källmapp), <code>%N</code> (aktuell fil) och <code>%S</code> (markerade filer) fylls i när knappen körs.
+   - <strong>Symbol</strong> — välj en SF Symbol eller använd en fils eller apps egen symbol; slå på <strong>endast symbol</strong> för att dölja etiketten.</li>
+<li>Klicka på <strong>Spara</strong>. Remsan läses in på nytt direkt.</li>
+</ol>
+<p><img alt="Knappraden överst i fönstret med symbolknappar" src="images/button-bar-crop.png" />
+<em>(Bild: Knappraden sitter ovanför filpanelerna; varje knapp kör ett kommando, program, en mapp eller en underrad.)</em></p>
+<h2 id="underrader-och-spill">Underrader och spill</h2>
+<p>En knapp kan öppna en <em>underrad</em> — en andra uppsättning knappar lagd ovanpå den första. Klicka på den för att gå ned; en <strong>◀</strong>-knapp till vänster tar dig tillbaka till föregående rad. När det finns fler knappar än vad fönsterbredden rymmer, fälls de extra ihop bakom en <strong>»</strong>-pil längst till höger; klicka på den för att nå dem.</p>
+<h2 id="slapp-filer-pa-en-knapp">Släpp filer på en knapp</h2>
+<p>Du kan dra filer eller mappar rakt på en knapp:</p>
+<ul>
+<li><strong>Mappknapp</strong> — de släppta objekten kopieras in i den mappen i bakgrunden.</li>
+<li><strong>Programknapp</strong> — programmet körs med de släppta objekten som sin markering.</li>
+<li><strong>Kommandoknapp</strong> — kommandot körs som vanligt.</li>
+</ul>
+<h2 id="vertikal-knapprad">Vertikal knapprad</h2>
+<p>För att flytta remsan från fönstrets överkant till en kolumn längs vänster sida, välj <strong>Visa &gt; Vertikal knapprad</strong>. Välj det igen för att växla tillbaka till den vågräta remsan.</p>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Raden lagras i en standardknappradsfil som är kompatibel med Total Commander, så rader du redan har kan återanvändas.</li>
+<li>Inga kortkommandon är tilldelade dessa åtgärder som standard, men du kan lägga till egna — se <a href="keyboard-shortcuts">Kortkommandon</a>.</li>
+<li>En knapp utan symbol och utan kommando visas som en enkel avdelare, behändigt för att gruppera relaterade knappar.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts.html">Tangentbord och kortkommandon</a></li><li><a href="settings.html">Inställningar</a></li></ul></section>
+</main>
+</body>
+</html>

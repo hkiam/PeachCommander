@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Start menu &amp; custom commands</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>The Start menu &amp; custom commands</h1>
+<p>The <strong>Start</strong> menu is your own personal menu, sitting in the menu bar alongside File, Edit, and the rest. It holds commands you define yourself, so the actions you reach for most often are always one click away. In the tradition of classic dual-panel file managers, each entry can run a built-in command, launch an external program or app, or jump straight to a folder. Peach Commander ships with the Start menu empty and ready for you to fill.</p>
+<h2 id="how-to-add-your-own-commands">How to add your own commands</h2>
+<ol>
+<li>Choose <strong>Start &gt; Change Start Menu…</strong>. Peach Commander opens your user-commands file (creating it with a commented example the first time).</li>
+<li>Add one section per command. Each section starts with a name in square brackets, then a few simple keys:
+   - <strong>cmd</strong> — what to run: a program path, an app, a built-in <code>cm_</code> command, or another of your own commands.
+   - <strong>param</strong> — parameters passed to a program. Placeholders are filled in when the command runs: <code>%P</code> (source folder), <code>%N</code> (current file), <code>%T</code> (other panel's folder), <code>%M</code> (other panel's file), <code>%S</code> (selected files).
+   - <strong>path</strong> — the folder to start in (defaults to the current folder).
+   - <strong>menu</strong> — the title shown in the Start menu.
+   - <strong>key</strong> — an optional shortcut, e.g. <code>C+S+B</code>.</li>
+<li>Save the file. The Start menu updates on its own the next time Peach Commander becomes active, so your new entries appear right away.</li>
+</ol>
+<h2 id="tips">Tips</h2>
+<ul>
+<li>To open the current folder in Terminal, set <strong>cmd</strong> to <code>open</code>, <strong>param</strong> to <code>-a Terminal %P</code>, and <strong>menu</strong> to <code>Open Terminal Here</code>.</li>
+<li>Point <strong>cmd</strong> at a <code>cm_</code> command to give a built-in action its own Start-menu entry and shortcut.</li>
+<li>Order in the file is the order in the menu, so put your most-used commands at the top.</li>
+</ul>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>You can also replace the entire menu bar with your own. Choose <strong>Configuration &gt; Edit Menu File…</strong> to open a menu file seeded from the current, fully localized built-in menu; edit it freely and your changes apply the next time the app is activated. Delete the file to restore the standard menu bar.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">The button bar</a></li><li><a href="keyboard-shortcuts.html">Keyboard &amp; shortcuts</a></li></ul></section>
+</main>
+</body>
+</html>

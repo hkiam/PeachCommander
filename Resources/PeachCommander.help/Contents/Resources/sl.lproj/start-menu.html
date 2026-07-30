@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meni Start in poljubni ukazi</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Meni Start in poljubni ukazi</h1>
+<p>Meni <strong>Start</strong> je vaš lastni osebni meni, ki sedi v menijski vrstici ob Datoteka, Uredi in drugih. Vsebuje ukaze, ki jih določite sami, tako da so dejanja, po katerih segate najpogosteje, vedno en klik stran. V tradiciji klasičnih dvopodokenskih upraviteljev datotek lahko vsak vnos zažene vgrajen ukaz, zažene zunanji program ali aplikacijo, ali skoči naravnost v mapo. Peach Commander se dobavi s praznim menijem Start, pripravljenim, da ga napolnite.</p>
+<h2 id="kako-dodati-svoje-ukaze">Kako dodati svoje ukaze</h2>
+<ol>
+<li>Izberite <strong>Start &gt; Spremeni meni Start…</strong>. Peach Commander odpre vašo datoteko uporabniških ukazov (prvič jo ustvari s komentiranim primerom).</li>
+<li>Dodajte en razdelek na ukaz. Vsak razdelek se začne z imenom v oglatih oklepajih, nato nekaj preprostih ključev:
+   - <strong>cmd</strong> — kaj zagnati: pot programa, aplikacijo, vgrajen ukaz <code>cm_</code>, ali drug vaš ukaz.
+   - <strong>param</strong> — parametri, posredovani programu. Ograde se izpolnijo ob zagonu ukaza: <code>%P</code> (izvorna mapa), <code>%N</code> (trenutna datoteka), <code>%T</code> (mapa drugega podokna), <code>%M</code> (datoteka drugega podokna), <code>%S</code> (izbrane datoteke).
+   - <strong>path</strong> — mapa, v kateri začeti (privzeto trenutna mapa).
+   - <strong>menu</strong> — naslov, prikazan v meniju Start.
+   - <strong>key</strong> — izbirna bližnjica, npr. <code>C+S+B</code>.</li>
+<li>Shranite datoteko. Meni Start se sam posodobi, ko Peach Commander naslednjič postane dejaven, tako da se vaši novi vnosi pojavijo takoj.</li>
+</ol>
+<h2 id="nasveti">Nasveti</h2>
+<ul>
+<li>Za odpiranje trenutne mape v Terminalu nastavite <strong>cmd</strong> na <code>open</code>, <strong>param</strong> na <code>-a Terminal %P</code>, in <strong>menu</strong> na <code>Odpri Terminal tukaj</code>.</li>
+<li>Usmerite <strong>cmd</strong> na ukaz <code>cm_</code>, da vgrajenemu dejanju daste svoj vnos menija Start in bližnjico.</li>
+<li>Vrstni red v datoteki je vrstni red v meniju, zato postavite najbolj uporabljene ukaze na vrh.</li>
+</ul>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Celotno menijsko vrstico lahko tudi zamenjate s svojo. Izberite <strong>Konfiguracija &gt; Uredi datoteko menija…</strong>, da odprete datoteko menija, zasejano iz trenutnega, popolnoma lokaliziranega vgrajenega menija; urejajte jo prosto in vaše spremembe se uporabijo, ko je aplikacija naslednjič aktivirana. Izbrišite datoteko, da obnovite standardno menijsko vrstico.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="toolbar.html">Vrstica z gumbi</a></li><li><a href="keyboard-shortcuts.html">Tipkovnica in bližnjice</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatización (AppleScript y Atajos)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Automatización (AppleScript y Atajos)</h1>
+<p>Peach Commander admite scripts, de modo que puede controlarlo desde AppleScript y desde la app Atajos. Un puñado de verbos básicos permite a un script navegar por los paneles, seleccionar archivos mediante una máscara, copiar o mover la selección actual y ejecutar cualquier comando de Peach Commander por su identificador, reutilizando exactamente las mismas acciones que usan los menús, de forma que un paso automatizado se comporta como uno manual. Resulta útil para tareas repetitivas: archivar descargas, preparar la salida de una compilación o integrar un paso con archivos dentro de un Atajo más amplio.</p>
+<h2 id="ver-el-diccionario">Ver el diccionario</h2>
+<ol>
+<li>Abra el <strong>Editor de Scripts</strong> (en <code>/Applications/Utilities</code>).</li>
+<li>Elija <strong>Ventana ▸ Biblioteca</strong> y, a continuación, haga doble clic en <strong>Peach Commander</strong> (añádalo con <strong>+</strong> si no aparece en la lista).</li>
+<li>Se abre el diccionario, con la lista de los comandos y propiedades que se indican a continuación.</li>
+</ol>
+<p>La primera vez que un script controla Peach Commander, macOS le pide autorizarlo (<strong>Ajustes del Sistema ▸ Privacidad y seguridad ▸ Automatización</strong>). Apruébelo una vez y los scripts posteriores se ejecutarán sin preguntar.</p>
+<h2 id="lo-que-puede-leer">Lo que puede leer</h2>
+<table>
+<thead>
+<tr>
+<th>Propiedad</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>Ruta POSIX de la carpeta del panel activo.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>Ruta POSIX de la carpeta del otro panel.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>Los elementos seleccionados en el panel activo (o el elemento situado bajo el cursor).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="los-verbos">Los verbos</h2>
+<table>
+<thead>
+<tr>
+<th>Comando</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;path&gt;" [in left\|right]</code></td>
+<td>Abre una carpeta en un panel (predeterminado: el panel activo).</td>
+</tr>
+<tr>
+<td><code>select "&lt;mask&gt;"</code></td>
+<td>Selecciona elementos en el panel activo mediante una máscara con comodines, p. ej. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;folder&gt;"</code></td>
+<td>Copia la selección del panel activo a una carpeta.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;folder&gt;"</code></td>
+<td>Mueve la selección del panel activo a una carpeta.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Ejecuta cualquier comando por su identificador, p. ej. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Copiar y mover usan la misma cola de transferencias en segundo plano que F5/F6, de modo que el progreso y cualquier aviso de sobrescritura aparecen exactamente igual que en una operación manual.</p>
+<h2 id="ejemplo">Ejemplo</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="usarlo-desde-atajos">Usarlo desde Atajos</h2>
+<p>En la app <strong>Atajos</strong>, añada la acción <strong>Ejecutar AppleScript</strong> y pegue un script como el anterior. Eso le permite integrar un paso de Peach Commander dentro de un Atajo más amplio; por ejemplo, activado por un cambio en una carpeta o por una tecla rápida.</p>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>El identificador de comando que pasa a <code>run command</code> es el mismo identificador <code>cm_*</code> que se muestra en el explorador de comandos (consulte <a href="start-menu.md">El menú Inicio y los comandos personalizados</a>).</li>
+<li>Los scripts actúan siempre sobre el panel <strong>activo</strong>; use <code>go to … in left</code> / <code>in right</code> primero si necesita un lado concreto.</li>
+<li>Peach Commander es una aplicación de una sola ventana, por lo que los scripts se dirigen a los dos paneles de esa ventana.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">El menú Inicio y los comandos personalizados</a></li><li><a href="settings.html">Ajustes</a></li></ul></section>
+</main>
+</body>
+</html>

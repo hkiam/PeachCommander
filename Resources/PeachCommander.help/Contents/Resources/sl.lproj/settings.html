@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nastavitve</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Nastavitve</h1>
+<p>Okno Nastavitve je mesto, kjer prilagodite Peach Commander načinu, kako delate: katere vrstice se pojavijo, kako so datoteke prikazane, kako se obnašajo operacije kopiranja in brisanja, oblika arhiva, uporabljena pri pakiranju, obnašanje zavihkov, privzete vrednosti FTP, jezik prikaza in več. Nastavitve so razvrščene v strani, tako da lahko hitro najdete možnost, vsaka sprememba pa se samodejno shrani v vašo osebno mapo konfiguracije.</p>
+<h2 id="odpiranje-nastavitev">Odpiranje Nastavitev</h2>
+<ol>
+<li>Izberite <strong>Peach Commander &gt; Nastavitve…</strong>, ali pritisnite Cmd+, (vejica).</li>
+<li>Isto okno lahko odprete tudi iz <strong>Konfiguracija &gt; Možnosti…</strong>.</li>
+<li>Izberite stran s seznama na levi; možnosti te strani se pojavijo na desni.</li>
+<li>Prilagodite gumbe. Spremembe začnejo veljati takoj, razen če opomba na strani pravi drugače.</li>
+</ol>
+<p><img alt="Okno Nastavitve, ki prikazuje stran Postavitev s potrditvenimi polji za vrstice vmesnika" src="images/settings-layout.png" />
+<em>(Slika: stran Postavitev nadzira, katere vrstice so prikazane okoli podoken.)</em></p>
+<h2 id="strani">Strani</h2>
+<p>Okno ima te strani, po vrsti:</p>
+<ul>
+<li><strong>Postavitev</strong> — prikaži ali skrij vrstico diskov, vrstico zavihkov, vrstico poti in vrstico stanja.</li>
+<li><strong>Prikaz</strong> — kako so našteti datoteke in mape, vključno z obliko datuma.</li>
+<li><strong>Ikone</strong> — videz ikon v seznamih datotek.</li>
+<li><strong>Delovanje</strong> — splošno obnašanje, na primer kaj se zgodi, ko tipkate v podoknu (hitro iskanje proti ukazni vrstici).</li>
+<li><strong>Barve</strong> — poljubne barve podoken, ali jih pustite slediti trenutni temi.</li>
+<li><strong>Potrditev</strong> — katera dejanja najprej prosijo za potrditev, kot je brisanje.</li>
+<li><strong>Uredi/Poglej</strong> — programi, uporabljeni za urejanje in pregledovanje datotek, in povezave po vrsti.</li>
+<li><strong>Kopiranje/Brisanje</strong> — ohrani metapodatke datotek, uporabi hitro kloniranje, kopiraj le novejše datoteke, preveri po kopiranju, pošlji brisanja v Koš in nastavi izbirno omejitev hitrosti.</li>
+<li><strong>Zip/Pakirnik</strong> — privzeta oblika arhiva in raven stiskanja, uporabljena pri pakiranju.</li>
+<li><strong>Vtičniki</strong> — vklopi ali izklopi nameščene vtičnike.</li>
+<li><strong>Zavihki</strong> — kako se zavihki map odpirajo in obnašajo.</li>
+<li><strong>FTP</strong> — omrežne privzete vrednosti, kot je interval keep-alive.</li>
+<li><strong>Tipkovnica</strong> — preglej in spremeni tipkovne bližnjice.</li>
+<li><strong>Jezik</strong> — izberi Sistemsko privzeto, English ali Deutsch.</li>
+<li><strong>UI</strong> — nastavi pomočnika UI: prednostni model, končno točko in ključ oblaka, avtonomijo in izbirni strežnik MCP (glejte <a href="ai-assistant.md">Pomočnik UI</a>).</li>
+<li><strong>Razno</strong> — odpri svojo mapo konfiguracije v Finderju.</li>
+</ul>
+<p>Omogočeni vtičniki lahko dodajo svoje strani za vgrajenimi — na primer <strong>Zemljevid diska</strong> in <strong>System Monitor</strong> — tako da njihove možnosti živijo v istem oknu (glejte <a href="plugins.md">Vtičniki</a>).</p>
+<p><img alt="Okno Nastavitve, ki prikazuje možnosti strani Prikaz za naštevanje datotek" src="images/settings-display.png" />
+<em>(Slika: stran Prikaz nadzira, kako so našteti datoteke in mape.)</em></p>
+<p><img alt="Okno Nastavitve, ki prikazuje stran Delovanje" src="images/settings-operation.png" />
+<em>(Slika: stran Delovanje ureja hitro iskanje in obnašanje miške.)</em></p>
+<h2 id="kje-so-shranjene-vase-nastavitve">Kje so shranjene vaše nastavitve</h2>
+<p>Vaša konfiguracija je hranjena v datotekah navadnega besedila znotraj vaše osebne mape Application Support, na <code>~/Library/Application Support/PeachCommander</code>. Za odpiranje pojdite na stran <strong>Razno</strong> in kliknite <strong>Odpri mapo konfiguracije</strong>. Shranjena gesla FTP niso shranjena v teh datotekah; varno so hranjena v ključavnici macOS.</p>
+<p>Nastavitve se zapisujejo, ko jih spreminjate. Shranjevanje lahko tudi vsililite kadar koli z <strong>Konfiguracija &gt; Shrani nastavitve</strong> ter shranite trenutni položaj okna in postavitev podoken z <strong>Konfiguracija &gt; Shrani položaj</strong>.</p>
+<h2 id="prenos-nastavitev-iz-total-commander">Prenos nastavitev iz Total Commander</h2>
+<p>Če prehajate s Total Commander v sistemu Windows, lahko uvozite svoja shranjena mesta FTP. Izberite <strong>Konfiguracija &gt; Uvozi wincmd.ini…</strong> in izberite svojo konfiguracijsko datoteko FTP iz Total Commander. Vaše povezave se dodajo v Peach Commander v istem vrstnem redu, kot so se pojavile tam.</p>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Odpri Nastavitve</td>
+<td>Cmd+,</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Stran <strong>Jezik</strong> ponuja Sistemsko privzeto, English in Deutsch. Sprememba jezika začne veljati šele po ponovnem zagonu Peach Commander.</li>
+<li>Barve, nastavljene na strani <strong>Barve</strong>, preglasijo temo; tam uporabite <strong>Ponastavi na privzeto</strong>, da se vrnete na barve teme.</li>
+<li>Peach Commander hrani svoje nastavitve le v lastni mapi konfiguracije, tako da vaše spremembe nikoli ne vplivajo na druge aplikacije in jih je enostavno varnostno kopirati s kopiranjem te mape.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="appearance.html">Videz</a></li><li><a href="keyboard-shortcuts.html">Tipkovnica in bližnjice</a></li></ul></section>
+</main>
+</body>
+</html>

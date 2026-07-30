@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파일 보기</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>파일 보기</h1>
+<p>Peach Commander에는 다른 앱을 열거나 파일을 바꾸지 않고 파일 내부를 들여다보게 해 주는 기본 제공 뷰어가 있습니다. 커서 아래 항목에서 F3을 누르면 매우 큰 파일이라도 뷰어가 즉시 열립니다. 내용을 보여 줄 가장 좋은 방법을 자동으로 고릅니다: 읽기 좋은 텍스트, 구문 색이 입혀진 코드, 원시 16진수 덤프, 또는 원본 크기 이미지. Quick View로 창 안에서 바로 미리 보거나 macOS Quick Look에 넘길 수도 있습니다.</p>
+<h2 id="_1">파일 보기</h2>
+<ol>
+<li>활성 패널에서 파일로 커서를 옮깁니다.</li>
+<li>F3을 누릅니다(또는 파일 메뉴에서 보기 선택). 뷰어가 자체 창에서 열립니다.</li>
+<li>도구 막대로 내용을 보여 주는 방식을 전환합니다: 텍스트, 코드, 16진수, 이미지, 렌더링. 자동 설정으로 두면 Peach Commander가 결정합니다.</li>
+<li>화살표 키, Page Up/Page Down, 스크롤 막대로 스크롤합니다. 긴 텍스트는 미니맵 버튼을 켜서 파일 전체를 한눈에 보고 이동합니다.</li>
+<li>N을 눌러 다음 선택 파일로 이동하거나 Esc로 창을 닫습니다.</li>
+</ol>
+<p><img alt="오른쪽에 미니맵이 있는, 텍스트 파일을 보여 주는 기본 제공 뷰어" src="images/lister-text.png" />
+<em>(그림: 도구 막대에 표현 선택기와 미니맵이 있는 텍스트 파일 보기.)</em></p>
+<h2 id="_2">텍스트 찾기 및 인코딩 변경</h2>
+<ul>
+<li>Ctrl+F를 눌러 파일 안을 검색합니다. F3으로 다음 일치, Shift+F3으로 이전 일치로 이동합니다.</li>
+<li>텍스트가 깨져 보이면 도구 막대의 인코딩을 클릭하거나(또는 E를 눌러) 올바르게 읽힐 때까지 텍스트 인코딩을 순환합니다. 자동 설정이 보통 맞습니다.</li>
+<li>W를 눌러 긴 줄의 자동 줄바꿈을 전환합니다.</li>
+</ul>
+<h2 id="quick-view-quick-look">Quick View와 Quick Look</h2>
+<p>Quick View는 사용하지 <em>않는</em> 패널에 실시간 미리 보기를 표시하므로, 한쪽에서 계속 탐색하면서 다른 쪽에서 미리 볼 수 있습니다.</p>
+<ol>
+<li>Ctrl+Q를 누릅니다. 비활성 패널이 미리 보기 영역으로 바뀝니다.</li>
+<li>활성 패널에서 여러 파일 위로 커서를 옮겨 각각을 미리 봅니다.</li>
+<li>Ctrl+Q를 다시 누르거나 Esc를 눌러 패널을 일반 파일 목록으로 되돌립니다.</li>
+</ol>
+<p>macOS 자체가 처리하는 빠른 전체 화면 미리 보기는 Cmd+Y(Quick Look)를 누릅니다. Cmd+Y나 Space를 다시 누르면 닫힙니다.</p>
+<h2 id="_3">단축키</h2>
+<table>
+<thead>
+<tr>
+<th>동작</th>
+<th>단축키</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>커서 아래 파일 보기</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>커서 아래 파일만 보기(표시된 파일 무시)</td>
+<td>Shift+F3</td>
+</tr>
+<tr>
+<td>외부 뷰어에서 열기</td>
+<td>Option+F3</td>
+</tr>
+<tr>
+<td>뷰어 안에서 찾기</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>다음 / 이전 일치</td>
+<td>F3 / Shift+F3</td>
+</tr>
+<tr>
+<td>다른 패널에서 Quick View</td>
+<td>Ctrl+Q</td>
+</tr>
+<tr>
+<td>Quick Look(macOS 미리 보기)</td>
+<td>Cmd+Y</td>
+</tr>
+<tr>
+<td>뷰어 또는 Quick View 닫기</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">참고</h2>
+<ul>
+<li>뷰어는 읽기 전용입니다. 파일을 바꾸려면 편집기를 사용하세요(파일 편집 참조).</li>
+<li>매우 큰 파일도 지연 없이 열립니다: 텍스트는 빠르게 스크롤되는 보기로 열리고, 16진수 보기는 크기에 상관없이 디스크에서 바로 스트리밍됩니다.</li>
+<li>폴더에서 F3을 누르면 파일 바이트 대신 내용 요약과 총 크기를 봅니다.</li>
+<li>렌더링 모드는 웹 페이지 같은 서식 있는 내용을 표시하고, 16진수 모드는 원시 바이트를 해당 문자와 나란히 보여 주어 이진 파일을 살펴보는 데 편리합니다.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">파일 편집</a></li><li><a href="searching.html">파일 찾기</a></li></ul></section>
+</main>
+</body>
+</html>

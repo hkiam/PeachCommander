@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finding files</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Finding files</h1>
+<p>When you need to track down files anywhere on your Mac — by name, by what they contain, or by size and date — use the Find Files window. It searches one or more folders (and their subfolders), can look inside text files and archives, and lets you send everything it finds straight into a panel so you can act on the results as if they were an ordinary folder.</p>
+<h2 id="find-files-by-name">Find files by name</h2>
+<ol>
+<li>In the panel showing the folder you want to search, choose <strong>Commands &gt; Find Files…</strong> (or press Cmd+Shift+F).</li>
+<li>On the <strong>General</strong> tab, type a name pattern in <strong>Search for</strong>. You can use wildcards such as <code>*.pdf</code> or <code>report_*.docx</code>. To search several folders at once, list them in the start-folder field separated by a semicolon (<code>;</code>).</li>
+<li>Click <strong>Start</strong>. Matches appear in the results list below as they are found.</li>
+<li>Double-click any result to jump to that file in the active panel, or select a result and click <strong>View</strong> (F3) to open it in the built-in viewer.</li>
+</ol>
+<p><img alt="The Find Files window on the General tab, showing the name pattern, folder, and results list" src="images/find-files-general.png" />
+<em>(Figure: The General tab — search by name pattern across one or more folders.)</em></p>
+<h2 id="search-by-content-size-and-date">Search by content, size, and date</h2>
+<ol>
+<li>To search inside files, select <strong>Find text</strong> on the General tab and type the text to look for. Options let you make it <strong>Case sensitive</strong>, match only a <strong>Whole word</strong>, treat the text as a <strong>Regular expression</strong>, do a <strong>Hex content search</strong>, or find files that are <strong>Not containing</strong> the text.</li>
+<li>Switch to the <strong>Advanced</strong> tab to narrow results by <strong>Size</strong> (for example <code>10K</code> to <code>5M</code>), by <strong>modified date</strong> range, or to files changed in the last N days.</li>
+<li>Turn on <strong>Search inside archives</strong> to look within zip-family archives (zip, jar, war, and similar).</li>
+<li>To limit the search to what you already picked, turn on <strong>Search in selected items only</strong> before starting.</li>
+</ol>
+<p><img alt="The Find Files window on the Advanced tab, showing size and date filters" src="images/find-files-advanced.png" />
+<em>(Figure: The Advanced tab — filter by size, date, and other attributes.)</em></p>
+<p>If you have plugins that add content fields (such as image dimensions), the <strong>Plugins</strong> tab lets you require a field to match a condition — for example, only images wider than 1000 pixels.</p>
+<p><img alt="The Find Files window on the Plugins tab, showing a content-field condition" src="images/find-files-plugins.png" />
+<em>(Figure: The Plugins tab — match on plugin-provided content fields.)</em></p>
+<h2 id="fast-searches-with-spotlight">Fast searches with Spotlight</h2>
+<p>For local folders that macOS has already indexed, turn on <strong>Use Spotlight</strong> on the General tab for near-instant results. Spotlight searches the index instead of scanning files, so it ignores regular expressions, subfolder depth limits, and the selection-only scope.</p>
+<h2 id="reuse-and-hand-off-your-results">Reuse and hand off your results</h2>
+<ul>
+<li><strong>Feed to Listbox</strong> places every result into the active panel as a temporary list, so you can copy, move, or delete the whole set at once.</li>
+<li>On the <strong>Load / Save</strong> tab, choose <strong>Save as Template…</strong> to store the current search (patterns and options) and pick it again later from the template list.</li>
+</ul>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open Find Files</td>
+<td>Cmd+Shift+F or Option+F7</td>
+</tr>
+<tr>
+<td>Start / stop the search</td>
+<td>Start button in the window</td>
+</tr>
+<tr>
+<td>View the selected result</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Content search reads whole files for local folders; on other locations very large files are skipped (roughly 16 MB, or 64 MB when using a regular expression).</li>
+<li>Searching inside archives descends up to four levels of nested archives.</li>
+<li><strong>Include folders in results</strong> also lists folders whose names match, not just files.</li>
+<li>Spotlight covers indexed local folders only; for network locations or pattern-based matching, leave it off and let Find Files scan.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">Selecting files</a></li><li><a href="quick-search-and-filter.html">Quick search &amp; filter</a></li></ul></section>
+</main>
+</body>
+</html>

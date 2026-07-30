@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kopiera filer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Kopiera filer</h1>
+<p>Peach Commander är uppbyggt kring två paneler sida vid sida: den ena innehåller filerna du arbetar med, den andra är målet. Kopiering tar det som är markerat i den aktiva panelen och lägger en dubblett i mappen som visas i den andra panelen, medan originalen lämnas kvar. Det här är det snabbaste sättet att dubblera filer och mappar mellan två platser utan att dra.</p>
+<h2 id="kopiera-ett-urval-till-den-andra-panelen">Kopiera ett urval till den andra panelen</h2>
+<ol>
+<li>Öppna i den ena panelen mappen som innehåller de objekt du vill kopiera.</li>
+<li>Öppna i den andra panelen mappen dit kopiorna ska.</li>
+<li>Markera filerna och mapparna som ska kopieras. Om inget är markerat används objektet under markören.</li>
+<li>Tryck på F5. Kopieringsdialogen öppnas och visar målsökvägen redan ifylld.</li>
+</ol>
+<p><img alt="Kopieringsdialogen med målsökvägen och alternativ" src="images/copy-dialog.png" />
+<em>(Figur: Kopieringsdialogen. Målsökvägen pekar mot den andra panelen; använd alternativen för att finjustera kopieringen.)</em></p>
+<ol start="5">
+<li>Justera målet vid behov och bekräfta sedan för att starta kopieringen.</li>
+</ol>
+<h2 id="kopieringsalternativ">Kopieringsalternativ</h2>
+<p>Innan du bekräftar kan du ändra hur kopieringen beter sig:</p>
+<ul>
+<li><strong>Endast nyare filer</strong> – hoppar över objekt vars kopia redan finns och är lika gammal eller nyare, så att endast ändrade filer uppdateras.</li>
+<li><strong>Bevara metadata</strong> – behåller datum, behörigheter och andra filattribut på kopiorna. Detta är påslaget som standard.</li>
+<li><strong>Hastighetsgräns</strong> – begränsar överföringshastigheten så att en stor kopiering inte mättar din disk eller nätverksanslutning.</li>
+<li><strong>Namnbytesmask</strong> – skriv ett jokermönster i målfältet (till exempel <code>*.bak</code>) för att byta namn på objekten allteftersom de kopieras.</li>
+</ul>
+<p>Du kan också skicka jobbet till bakgrundskön istället för att titta på det – se Bakgrundsöverföringar.</p>
+<h2 id="forlopp">Förlopp</h2>
+<p>Ett förloppsfönster visar den aktuella filen och det övergripande jobbet med separata staplar, plus överföringshastigheten. Du kan pausa och återuppta när som helst, eller skicka den pågående kopieringen till hanteraren för bakgrundsöverföringar för att fortsätta arbeta medan den slutförs.</p>
+<p><img alt="Förloppsdialogen för överföring med en förloppsstapel, fil- och byteantal samt knapparna Pausa och Avbryt" src="images/progress-dialog.png" />
+<em>(Figur: Förloppsdialogen som visas under en kopiering eller flytt.)</em></p>
+<h2 id="hantera-filer-som-redan-finns">Hantera filer som redan finns</h2>
+<p>Om en kopiering skulle ersätta en befintlig fil stannar Peach Commander och frågar vad som ska göras. En förhandsvisning av båda filerna hjälper dig att bestämma.</p>
+<p><img alt="Konfliktdialogen för överskrivning som jämför två filer" src="images/overwrite-dialog.png" />
+<em>(Figur: Överskrivningsdialogen jämför den befintliga filen med den som kopieras.)</em></p>
+<p>Dina val inkluderar:</p>
+<ul>
+<li><strong>Skriv över</strong> den befintliga filen, eller <strong>Skriv över alla</strong> för att tillämpa det på varje återstående konflikt.</li>
+<li><strong>Hoppa över</strong> den här filen, eller <strong>Hoppa över alla</strong> återstående konflikter.</li>
+<li><strong>Byt namn</strong> på den inkommande kopian automatiskt så att båda filerna behålls.</li>
+<li><strong>Lägg till</strong> inkommande data i slutet av den befintliga filen.</li>
+<li>Skriv över endast när källan är <strong>nyare</strong> eller <strong>större</strong> än den befintliga filen.</li>
+</ul>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Tangent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kopiera urval till den andra panelen</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Kopiera i samma mapp (skapa en omdöpt dubblett)</td>
+<td>Shift+F5</td>
+</tr>
+<tr>
+<td>Öppna hanteraren för bakgrundsöverföringar</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anteckningar">Anteckningar</h2>
+<ul>
+<li>Kopiering mellan två platser på samma disk använder en snabb klon när disken stöder det, så stora filer kopieras nästan omedelbart och använder lite extra utrymme.</li>
+<li>Mappar kopieras med allt som finns i dem.</li>
+<li>För att flytta filer istället för att kopiera dem, använd F6. För att titta på eller hantera köade jobb, öppna hanteraren för bakgrundsöverföringar med Cmd+Shift+B.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Flytta och byta namn</a></li><li><a href="background-transfers.html">Bakgrundsöverföringar</a></li></ul></section>
+</main>
+</body>
+</html>

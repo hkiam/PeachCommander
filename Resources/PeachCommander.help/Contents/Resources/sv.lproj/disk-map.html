@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Disk Map</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Disk Map</h1>
+<p>Disk Map är ett inbyggt insticksprogram som med en blick visar vad som använder utrymme i en mapp eller på en hel volym. Det skannar mappen du väljer och ritar varje objekt dimensionerat i proportion till det utrymme det faktiskt upptar på disk, så att de största utrymmesslukarna sticker ut omedelbart. Du kan borra ned i mappar, se hur din skanning stämmer av mot volymens fria, rensbara och dolda utrymme, och städa upp direkt från kartan.</p>
+<h2 id="starta-en-skanning">Starta en skanning</h2>
+<ol>
+<li>Gå i den aktiva panelen till mappen (eller volymen) du vill mäta.</li>
+<li>Välj <strong>Kommandon ▸ Disk Map: Analysera aktuell mapp</strong>.</li>
+<li>Disk Map-vyn öppnas till höger och skannar i bakgrunden, och visar ett löpande antal objekt och byte. Stora mappar blir klara på några sekunder – skanningen läser katalogmetadata i bulk och arbetar över flera CPU-kärnor.</li>
+</ol>
+<p><img alt="Disk Map som visar en kvadratifierad treemap av en mapp, en volymstapel, en lista över de största filerna och en kategorilegend" src="images/disk-map.png" />
+<em>(Figur: Treemap-vyn, färgad efter filkategori, med volymstapeln överst och listan över de största filerna till höger.)</em></p>
+<h2 id="las-kartan">Läs kartan</h2>
+<ul>
+<li>Varje block (treemap) eller ringsegment (sunburst) dimensioneras efter objektets <strong>faktiska storlek på disk</strong>, så att bilden matchar vad Finder och systemet rapporterar.</li>
+<li>Block är <strong>färgade efter filtyp</strong> – video, bilder, ljud, dokument, kod, arkiv, appar, diskavbildningar – med en legend längs botten. Du kan växla till en storleks-<strong>heatmap</strong> i inställningarna.</li>
+<li><strong>Klicka på en mapp</strong> för att borra ned i den; brödsmulan högst upp visar var du är, och knappen <strong>◂</strong> stegar tillbaka upp.</li>
+<li>Hovra över valfritt block för att se dess fullständiga sökväg, storlek och objektantal.</li>
+</ul>
+<h2 id="tva-vyer-treemap-och-sunburst">Två vyer: treemap och sunburst</h2>
+<p>Disk Map erbjuder två visualiseringar, och du kan växla mellan dem med knappen <strong>◎ / ▦</strong> i rubriken eller på inställningssidan:</p>
+<ul>
+<li><strong>Treemap</strong> – nästlade rektanglar, tätast för att upptäcka den enskilt största filen.</li>
+<li><strong>Sunburst</strong> – koncentriska ringar (en per mappdjup) runt den aktuella mappen, bäst för att se hur utrymme fördelas över ett djupt träd.</li>
+</ul>
+<p><img alt="Disk Maps sunburst-vy som visar koncentriska ringar för mappdjup" src="images/disk-map-sunburst.png" />
+<em>(Figur: Sunburst-vyn – den inre skivan är den aktuella mappen och varje ring är en nivå djupare.)</em></p>
+<h2 id="volymstapeln">Volymstapeln</h2>
+<p>Stapeln överst stämmer av din skanning mot hela volymen:</p>
+<ul>
+<li><strong>Skannat / Den här mappen</strong> – hur mycket den analyserade mappen upptar.</li>
+<li><strong>Dolt</strong> (vid volymens rot) eller <strong>Resten av volymen</strong> (för en undermapp) – allt som inte ingår i denna skanning, inklusive systemskyddade mappar, andra användare och ögonblicksbilder.</li>
+<li><strong>Rensbart</strong> – utrymme som macOS kan återvinna automatiskt, mestadels lokala Time Machine-ögonblicksbilder och cacheminnen.</li>
+<li><strong>Fritt</strong> – utrymme som är tillgängligt just nu.</li>
+</ul>
+<p>När volymen har lokala ögonblicksbilder visar stapeln en <strong>· N ögonblicksbilder (ⓘ)</strong>-hänvisning; klicka på den för en skrivskyddad lista, med ett tips om att hantera dem i Skivverktyg eller Time Machine. Disk Map tar aldrig bort ögonblicksbilder själv.</p>
+<h2 id="storsta-filerna">Största filerna</h2>
+<p>Slå på <strong>Visa listan över de största filerna</strong> för att se de största filerna i den aktuella mappen rangordnade efter storlek, var och en med en färgbricka för sin kategori. Klicka på en för att lyfta fram den på kartan.</p>
+<h2 id="stada-upp-fran-kartan">Städa upp från kartan</h2>
+<p>Högerklicka på valfritt block för åtgärder:</p>
+<ul>
+<li><strong>Öppna i vänster panel</strong> / <strong>Öppna i höger panel</strong> – visa objektet i en filpanel.</li>
+<li><strong>Visa i Finder</strong>.</li>
+<li><strong>Flytta till papperskorgen</strong> – ta bort bara det objektet; kartan uppdateras utan en fullständig omskanning.</li>
+</ul>
+<p>För att ta bort flera objekt på en gång, använd <strong>Samlaren</strong>: högerklicka ▸ <strong>Markera för samlaren</strong> på varje objekt, och klicka sedan på knappen <strong>🗑 N</strong> i rubriken för att flytta allt du markerat till papperskorgen i ett bekräftat steg.</p>
+<h2 id="installningar">Inställningar</h2>
+<p>Disk Map lägger till sin egen sida i inställningsfönstret (<strong>Konfiguration ▸ Inställningar ▸ Disk Map</strong>):</p>
+<ul>
+<li><strong>Diagramstil</strong> – treemap eller sunburst.</li>
+<li><strong>Färgkodning</strong> – efter filtyp (kategori) eller efter storlek (heatmap).</li>
+<li><strong>Stanna kvar på startvolymen</strong> – korsa inte in i andra monterade diskar.</li>
+<li><strong>Visa volymstapeln</strong> och <strong>Visa listan över de största filerna</strong>.</li>
+</ul>
+<p>Ändringar tillämpas på en öppen Disk Map omedelbart.</p>
+<h2 id="anteckningar">Anteckningar</h2>
+<ul>
+<li>Disk Map mäter <strong>allokerad</strong> storlek (på disk) och räknar <strong>hårdlänkade</strong> filer endast en gång, så att dess summor stämmer med volymens använda utrymme snarare än att räknas dubbelt.</li>
+<li>Som standard stannar skanningen på startvolymen, så den vandrar inte in i andra monterade diskar eller nätverksresurser.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="deleting-files.html">Ta bort filer</a></li><li><a href="settings.html">Inställningar</a></li></ul></section>
+</main>
+</body>
+</html>

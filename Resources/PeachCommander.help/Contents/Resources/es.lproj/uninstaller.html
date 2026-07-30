@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstaller</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Uninstaller</h1>
+<p>Arrastrar una app a la Papelera deja sus archivos de soporte, cachés, preferencias y contenedores dispersos por sus carpetas Library. El complemento Uninstaller elimina una aplicación <strong>y</strong> esos restos: encuentra todo lo que la app dejó atrás, le muestra la lista con un tamaño para cada elemento y lo mueve todo a la Papelera una vez que usted confirma. Al ser un complemento, puede desactivarlo o eliminarlo desde <strong>Configuración ▸ Complementos…</strong>.</p>
+<h2 id="desinstalar-una-app-bajo-el-cursor">Desinstalar una app bajo el cursor</h2>
+<ol>
+<li>Sitúe el cursor sobre una aplicación (<code>.app</code>) en un panel.</li>
+<li>Elija <strong>Archivo ▸ Desinstalar aplicación…</strong>, o menú contextual ▸ <strong>Desinstalar aplicación…</strong>, o pulse <strong>Cmd+Shift+U</strong>.</li>
+<li>Se abre la ventana de revisión, que enumera la app más cada archivo relacionado que encontró, cada uno etiquetado con su categoría, ruta y tamaño.</li>
+<li>Desmarque todo lo que quiera conservar y luego haga clic en <strong>Mover a la Papelera</strong> (o <strong>Eliminar permanentemente</strong>).</li>
+</ol>
+<p><img alt="La ventana de revisión de la desinstalación enumerando los archivos residuales de una app con casillas y tamaños" src="images/uninstaller.png" />
+<em>(Figura: revise exactamente qué se eliminará antes de que se borre nada.)</em></p>
+<h2 id="explorar-todas-las-apps-instaladas">Explorar todas las apps instaladas</h2>
+<p>Elija <strong>Comandos ▸ Desinstalar aplicación…</strong> para abrir una lista con búsqueda de las apps instaladas en su Mac, cada una con su nombre, tamaño y fecha de instalación. Seleccione una (o varias), haga clic en <strong>Desinstalar…</strong> y llegará a la misma ventana de revisión. Puede filtrar la lista escribiendo en el campo de búsqueda.</p>
+<h2 id="encontrar-archivos-residuales">Encontrar archivos residuales</h2>
+<p>Elija <strong>Comandos ▸ Buscar archivos residuales…</strong> para buscar archivos de soporte, cachés y preferencias que pertenezcan a apps que <strong>ya</strong> ha eliminado. Revíselos de la misma forma y elimínelos. Si no se encuentra nada, el complemento se lo indica.</p>
+<h2 id="como-de-exhaustivo-es-el-analisis">Cómo de exhaustivo es el análisis</h2>
+<p>La ventana de revisión tiene un control de confianza:</p>
+<ul>
+<li><strong>Preciso</strong> — archivos anclados al identificador de paquete de la app. Confianza alta; preseleccionados.</li>
+<li><strong>Ampliado</strong> — añade archivos coincidentes por nombre; se dejan sin marcar para que usted decida.</li>
+<li><strong>Profundo</strong> — Ampliado más un barrido de Spotlight en busca de cualquier otra cosa que mencione la app; también se deja sin marcar.</li>
+</ul>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>El complemento no elimina nada directamente: los elementos pasan por la Papelera o el borrado permanente de la app, exactamente igual que cualquier otra operación de archivos. Eliminar archivos en <code>/Library</code> o <code>/var</code> puede requerir una contraseña de administrador.</li>
+<li>Antes de eliminar, el complemento cierra la app en ejecución y descarga sus elementos en segundo plano (launchd), y luego se ofrece a ordenar cualquier carpeta de proveedor que haya quedado vacía.</li>
+<li>Si la app se instaló con <strong>Homebrew</strong>, el complemento le avisa y sugiere <code>brew uninstall --cask</code> para que Homebrew se mantenga sincronizado. Las apps de la App Store también se anotan.</li>
+<li>Las coincidencias Ampliado y Profundo son de menor confianza por diseño y empiezan sin marcar: revíselas antes de eliminar. Algunos elementos en segundo plano instalados mediante la moderna API de elementos de inicio de sesión no se pueden eliminar aquí.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="deleting-files.html">Eliminar archivos</a></li></ul></section>
+</main>
+</body>
+</html>

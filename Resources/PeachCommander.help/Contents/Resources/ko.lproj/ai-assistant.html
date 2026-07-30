@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 어시스턴트</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>AI 어시스턴트</h1>
+<p>AI 어시스턴트는 자연어로 파일 작업을 돕는 선택적이고 제거 가능한 플러그인입니다. 문서를 요약하거나 설명하고, 더 나은 파일 이름을 제안하고, 텍스트를 번역하거나 교정하고, 데이터를 표로 만들고, 심지어 폴더를 정리할 수도 있습니다. 또한 먼저 계획을 보여준 후 파일 작업을 대신 수행할 수 있습니다. 가능한 경우 Apple Intelligence를 사용하여 기기에서 실행되며, 클라우드 모델을 지정할 수도 있습니다. 플러그인이므로 <strong>설정 ▸ 플러그인…</strong>에서 완전히 비활성화하거나 제거할 수 있습니다.</p>
+<h2 id="_1">어시스턴트 열기</h2>
+<p><strong>명령 ▸ AI Assistant</strong>를 선택하면 창 오른쪽의 고정된 패널에 어시스턴트가 표시됩니다. 요청을 입력하고 Return을 누르십시오. 어시스턴트는 파일을 읽고, 정보를 찾고, 사용자의 확인을 거쳐 변경을 수행할 수 있습니다.</p>
+<p><img alt="파일 패널 옆에 고정된 AI 어시스턴트 채팅" src="images/ai-chat.png" />
+<em>(그림: 오른쪽에 고정되어 요청을 처리 중인 AI 어시스턴트.)</em></p>
+<h2 id="ai">마우스 오른쪽 버튼 동작(AI ▸)</h2>
+<p>어시스턴트를 사용하는 가장 빠른 방법은 마우스 오른쪽 버튼 메뉴의 <strong>AI ▸</strong> 하위 메뉴입니다.</p>
+<ul>
+<li><strong>파일에서</strong> — 요약, 설명, 이름 제안, 영어로 번역, 교정, 작업 감지, 표 만들기.</li>
+<li><strong>패널 배경에서</strong> — 이 폴더 정리 및 중복 가능성 찾기.</li>
+</ul>
+<p>각 <strong>AI ▸</strong> 동작은 <strong>고유한 제목의 채팅</strong>(예: <em>요약 – report.txt</em>)을 열므로, 서로 다른 작업이 하나의 긴 대화로 쌓이지 않고 분리된 상태를 유지합니다. 입력 필드에 직접 입력하면 그 요청은 현재 채팅을 이어갑니다.</p>
+<h2 id="_2">채팅 관리</h2>
+<ul>
+<li>패널 상단의 채팅 전환기를 사용하여 대화 사이를 이동합니다.</li>
+<li><strong>삭제 ▾</strong> 메뉴는 <strong>이 채팅 삭제</strong>와 <strong>모든 채팅 삭제</strong>를 제공하므로, 목록이 길어지면 한 번에 모두 지울 수 있습니다. 빈 채팅은 패널을 닫을 때 자동으로 정리됩니다.</li>
+</ul>
+<h2 id="_3">변경은 먼저 확인합니다</h2>
+<p>파일을 수정하는 모든 작업(이동, 이름 바꾸기, 쓰기, 삭제)에 대해 어시스턴트는 실행 전에 <strong>계획을 보여주고 사용자의 확인을 기다립니다</strong>. 설정에서 어시스턴트의 자율성을 높이거나, 아무것도 변경하지 않도록 읽기 전용으로 낮출 수 있습니다.</p>
+<h2 id="_4">설정</h2>
+<p><strong>설정 ▸ Settings ▸ AI</strong>를 열어 한 페이지에서 어시스턴트를 구성할 수 있습니다.</p>
+<ul>
+<li><strong>선호 모델</strong> — 자동(구성된 경우 클라우드, 그렇지 않으면 기기 내), 기기 내(Apple Intelligence), 또는 클라우드.</li>
+<li><strong>클라우드 엔드포인트, 모델, API 키</strong> — 기기 내 모델 대신 OpenAI 호환 모델을 사용합니다. 키는 구성 파일이 아니라 macOS 키체인에 저장됩니다.</li>
+<li><strong>어시스턴트 자율성</strong> — 읽기 전용, 변경 확인(기본값), 또는 자율.</li>
+<li><strong>사용자 지정 시스템 프롬프트</strong> — 어시스턴트의 응답 방식을 형성하는 선택적 지침.</li>
+<li><strong>MCP 서버</strong> — 외부 에이전트가 앱을 제어할 수 있게 하는 선택적 로컬 전용 서버. 기본적으로 꺼져 있으며 토큰으로 보호할 수 있습니다.</li>
+</ul>
+<p><img alt="자율성과 MCP 서버 옵션이 있는 설정의 AI 페이지" src="images/settings-ai.png" />
+<em>(그림: 모든 어시스턴트 옵션은 설정의 한 AI 페이지에 있습니다.)</em></p>
+<h2 id="_5">개인정보 보호</h2>
+<ul>
+<li>Apple Intelligence를 사용하면 어시스턴트는 <strong>사용자의 Mac에서</strong> 실행되며, 어떤 것도 기기를 떠나지 않습니다.</li>
+<li>클라우드 모델은 <strong>구성한 경우에만</strong> 사용되며, API 키는 키체인에 보관됩니다.</li>
+<li>자율성 수준을 의도적으로 높이지 않는 한, 파일을 변경하는 동작은 실행 전에 확인됩니다.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">플러그인</a></li><li><a href="settings.html">설정</a></li><li><a href="privacy-and-security.html">개인정보 보호 및 보안</a></li></ul></section>
+</main>
+</body>
+</html>

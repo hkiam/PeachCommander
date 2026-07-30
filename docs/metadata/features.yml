@@ -1,0 +1,775 @@
+# Canonical feature registry for Peach Commander.
+# Single source for coverage checks and generated overviews (README, FEATURES.md,
+# coverage matrix). Schema: DOCUMENTATION.md §6.
+#
+# Synthesized from the Lauf-1 repository inventory (4 parallel analyses of UI,
+# FS/ops/search/network, plugins/SDK, and build/infra). Source refs are module +
+# type/file. `documentation.*` booleans are the intended coverage; check-docs.py
+# verifies them against the generated pages -> docs/generated/coverage-report.md.
+#
+# NOTE (plan corrections established by the inventory):
+#   * AI is now shipped as an OPTIONAL, removable plugin (AIAssistant.ptxplugin) with a
+#     shared automation core in PCAutomation; on-device Apple Intelligence + optional
+#     cloud. See features `ai-assistant`. (The original inventory predated it.)
+#   * Auto-update (Sparkle) is declared but NOT integrated; app ships unsigned today.
+#   * FSEventsWatcher currently POLLS (2 s); true FSEvents is a placeholder.
+#   * Five plugin types exist: pcx, pfx, plx, pdx, ptx (+ orthogonal contrib ABI).
+
+meta:
+  app_version: "0.1.0"
+  categories: [navigation, panels, file-ops, archive, search, network, viewer,
+               customization, settings, plugins, sdk, developer, distribution]
+  audiences: [user, expert, developer, sdk, plugin, internal]
+
+features:
+
+  # ───────────────────────── Navigation ─────────────────────────
+  - id: dual-pane
+    name: Zwei-Panel-Layout
+    name_en: Dual-pane layout
+    category: navigation
+    audiences: [user]
+    status: stable
+    ui: { menus: [], shortcuts: ["Tab (switch)"], commands: [cm_SwitchPanel] }
+    source: { modules: [PCApp], types: [MainWindowController] }
+    documentation: { integrated_help: true, website: true, developer_docs: true }
+    screenshots: [main-window]
+    notes: "Two NSSplitView panes, min 200 pt; Tab switches active pane. Horizontal (stacked) via cm_HorizontalPanels."
+
+  - id: navigation-basics
+    name: Navigieren (öffnen, hoch, Verlauf)
+    name_en: Navigation (open, up, history)
+    category: navigation
+    audiences: [user]
+    status: stable
+    ui: { shortcuts: ["Enter", "Ctrl+PageUp/Down", "Alt+Left/Right", "Backspace"],
+          commands: [cm_OpenDirUnderCursor, cm_GoToParent, cm_HistoryBack, cm_HistoryForward] }
+    source: { modules: [PCVFS], types: [VFSNavigator] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [path-bar-crop]
+
+  - id: path-bar
+    name: Editierbare Pfadleiste
+    name_en: Editable breadcrumb path bar
+    category: navigation
+    audiences: [user]
+    status: stable
+    ui: { commands: [cm_GotoPath] }
+    source: { modules: [PCApp], types: [PathBarView] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [path-bar-crop]
+
+  - id: goto-special-dirs
+    name: Schnellziele (Home/Desktop/Downloads/…)
+    name_en: Special "go to" directories
+    category: navigation
+    audiences: [user]
+    status: stable
+    ui: { menus: [Go], shortcuts: ["Cmd+Shift+H"],
+          commands: [cm_GoToHome, cm_GoToDesktop, cm_GoToDownloads, cm_GoToTrash, cm_GoToICloud, cm_GoToRoot] }
+    source: { modules: [PCVFS], types: [SpecialDirectories] }
+    documentation: { integrated_help: true, website: true }
+
+  - id: hotlist
+    name: Favoriten / Verzeichnis-Hotlist
+    name_en: Favorites / directory hotlist
+    category: navigation
+    audiences: [user]
+    status: stable
+    ui: { shortcuts: ["Ctrl+D"], commands: [cm_DirectoryHotlist] }
+    source: { modules: [PCApp], types: [Hotlist, HotlistManagerWindowController] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [hotlist-manager]
+
+  - id: swap-panels
+    name: Panels tauschen / Ziel = Quelle
+    name_en: Swap panels / target = source
+    category: navigation
+    audiences: [expert]
+    status: stable
+    ui: { shortcuts: ["Ctrl+U", "Ctrl+Shift+U", "Ctrl+="],
+          commands: [cm_Exchange, cm_ExchangeWithTabs, cm_TargetEqualSource] }
+    source: { modules: [PCApp], types: [MainWindowController] }
+    documentation: { integrated_help: true, website: true }
+
+  # ───────────────────────── Panels ─────────────────────────
+  - id: tabs
+    name: Tabs pro Panel
+    name_en: Per-panel tabs
+    category: panels
+    audiences: [user]
+    status: stable
+    ui: { menus: [View], shortcuts: ["Cmd+T", "Cmd+W", "Cmd+}", "Cmd+{"],
+          commands: [cm_OpenNewTab, cm_CloseCurrentTab, cm_NextTab, cm_PrevTab, cm_LockTab] }
+    source: { modules: [PCApp], types: [TabBarView] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [tab-bar-crop]
+
+  - id: view-modes
+    name: Ansichtsmodi (Details/Kurz/Icons/Galerie/Baum)
+    name_en: View modes (details/brief/icons/gallery/tree)
+    category: panels
+    audiences: [user]
+    status: stable
+    ui: { menus: [View], shortcuts: ["Cmd+Shift+M", "Ctrl+F1", "Ctrl+F2", "Ctrl+F8"],
+          commands: [cm_SrcShort, cm_SrcLong, cm_SrcThumbs, cm_SrcTree, cm_CycleViewMode] }
+    source: { modules: [PCApp, PCFoundation], types: [PanelViewMode, IconGridView, PanelTreeView] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [view-modes]
+
+  - id: columns
+    name: Spalten (Name/Ext/Größe/Datum/Attr/Tags/Kommentar)
+    name_en: Columns
+    category: panels
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [Configuration], commands: [cm_ConfigColumns] }
+    source: { modules: [PCApp], types: [PanelColumn, ColumnsConfigWindowController, ColumnSpec] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [columns-config]
+
+  - id: sorting
+    name: Sortierung (inkl. natürliche Sortierung)
+    name_en: Sorting (incl. natural sort)
+    category: panels
+    audiences: [user]
+    status: stable
+    ui: { commands: [cm_SortByName, cm_SortByExt, cm_SortBySize, cm_SortByDate] }
+    source: { modules: [PCVFS, PCFoundation], types: [DirectoryModel, naturalCompare] }
+    documentation: { integrated_help: true, website: true }
+    notes: "Dirs-first; natural (numeric) sort optional (F-026); size/date default descending."
+
+  - id: selection
+    name: Markieren / Mehrfachauswahl
+    name_en: Selection / marking
+    category: panels
+    audiences: [user]
+    status: stable
+    ui: { menus: [Mark], shortcuts: ["Insert", "Num+", "Num-", "Num*", "Cmd+A"],
+          commands: [cm_ToggleMark, cm_SelectByMask, cm_UnselectByMask, cm_InvertMarks, cm_SelectSameExt, cm_RestoreSelection] }
+    source: { modules: [PCCommands], types: [SelectionState] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [select-by-mask]
+
+  - id: quick-search-filter
+    name: Schnellsuche & Schnellfilter
+    name_en: Quick search & quick filter
+    category: panels
+    audiences: [user]
+    status: stable
+    ui: { shortcuts: ["Ctrl+S (filter)"], commands: [cm_QuickFilter] }
+    source: { modules: [PCApp, PCVFS], types: [PanelListView, WildcardMask] }
+    documentation: { integrated_help: true, website: true }
+    notes: "Type-ahead quick search (direct/ctrlalt/cmdline/off); wildcard filter mask *.c;*.h|*.bak."
+
+  - id: hidden-files
+    name: Versteckte Dateien anzeigen
+    name_en: Show hidden files
+    category: panels
+    audiences: [user]
+    status: stable
+    ui: { menus: [View], shortcuts: ["Ctrl+H"], commands: [cm_SwitchHidSys] }
+    source: { modules: [PCVFS], types: [LocalStat, PathUtils] }
+    documentation: { integrated_help: true, website: true }
+
+  - id: drive-bar
+    name: Laufwerksleiste (Volumes + freier Platz)
+    name_en: Drive bar
+    category: panels
+    audiences: [user]
+    status: stable
+    source: { modules: [PCApp, PCVFS], types: [DriveBarView, VolumeManager, Volume] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [drive-bar-crop]
+    notes: "Eject/mount via diskutil; iCloud Drive appears when the backing folder exists (CloudProvider)."
+
+  # ───────────────────────── File operations ─────────────────────────
+  - id: copy
+    name: Dateien kopieren
+    name_en: Copying files
+    category: file-ops
+    audiences: [user]
+    status: stable
+    ui: { shortcuts: ["F5"], commands: [cm_Copy] }
+    source: { modules: [PCOperations], types: [CopyEngine, CopyOptions] }
+    documentation: { integrated_help: true, website: true, developer_docs: true }
+    screenshots: [copy-dialog, progress-dialog]
+    notes: "Recursive, progress/speed, clone-copy (clonefile) same-volume, only-newer, preserve-metadata, follow-symlinks, wildcard rename mask, speed limit."
+
+  - id: move-rename
+    name: Verschieben / Umbenennen
+    name_en: Move / rename
+    category: file-ops
+    audiences: [user]
+    status: stable
+    ui: { shortcuts: ["F6", "Shift+F6"], commands: [cm_RenMov, cm_RenameOnly] }
+    source: { modules: [PCOperations], types: [MoveEngine] }
+    documentation: { integrated_help: true, website: true }
+    notes: "rename(2) fast path; cross-device = copy+delete after success."
+
+  - id: delete
+    name: Löschen (Papierkorb / dauerhaft)
+    name_en: Delete (Trash / permanent)
+    category: file-ops
+    audiences: [user]
+    status: stable
+    ui: { shortcuts: ["F8", "Shift+F8"], commands: [cm_Delete, cm_DeleteReal] }
+    source: { modules: [PCOperations], types: [DeleteEngine] }
+    documentation: { integrated_help: true, website: true }
+
+  - id: new-folder-file
+    name: Neuer Ordner / neue Datei
+    name_en: New folder / new file
+    category: file-ops
+    audiences: [user]
+    status: stable
+    ui: { shortcuts: ["F7", "Shift+F4"], commands: [cm_MkDir, cm_EditNewFile] }
+    source: { modules: [PCOperations], types: [MkDirEngine] }
+    documentation: { integrated_help: true, website: true }
+    notes: "Nested a/b/c and multiple d1|d2."
+
+  - id: overwrite-resolution
+    name: Überschreiben-Konfliktdialog
+    name_en: Overwrite conflict handling
+    category: file-ops
+    audiences: [user]
+    status: stable
+    ui: { dialogs: [OverwriteResolver] }
+    source: { modules: [PCOperations], types: [OverwriteRules, OperationResolver] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [overwrite-dialog]
+    notes: "Overwrite/Skip/Auto-rename/Append/All-older/All-larger; thumbnails preview (F-086)."
+
+  - id: transfer-manager
+    name: Hintergrund-Übertragungsmanager
+    name_en: Background transfer manager
+    category: file-ops
+    audiences: [user]
+    status: stable
+    ui: { menus: [Commands], shortcuts: ["Cmd+Shift+B"], commands: [cm_TransferManager] }
+    source: { modules: [PCApp, PCOperations], types: [TransferManager, TransferQueue] }
+    documentation: { integrated_help: true, website: true, developer_docs: true }
+    screenshots: [transfer-manager]
+    notes: "Queue, pause/resume/cancel, bandwidth limit, held/queued jobs (F-215), background error log (F-089)."
+
+  - id: attributes-acl
+    name: Attribute & ACL ändern
+    name_en: Change attributes & ACL
+    category: file-ops
+    audiences: [expert]
+    status: stable
+    ui: { menus: [File], commands: [cm_SetAttrib] }
+    source: { modules: [PCVFS, PCOperations], types: [AttributeEngine, ACLEditorWindowController] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [attributes-dialog, acl-editor]
+    notes: "POSIX mode, mtime, BSD flags, owner/group, xattr list; ACL via ls -led / chmod +a."
+
+  - id: checksums
+    name: Prüfsummen erstellen/prüfen
+    name_en: Create/verify checksums
+    category: file-ops
+    audiences: [expert]
+    status: stable
+    ui: { menus: [File], commands: [cm_CreateChecksums, cm_VerifyChecksums] }
+    source: { modules: [PCOperations, PCFoundation], types: [ChecksumEngine, ChecksumHasher] }
+    documentation: { integrated_help: true, website: true }
+    notes: "CRC32/MD5/SHA1/SHA256/SHA512; streams over VFS (FTP/archives)."
+
+  - id: find-duplicates
+    name: Doppelte Dateien finden
+    name_en: Find duplicate files
+    category: file-ops
+    audiences: [expert]
+    status: stable
+    ui: { menus: [File], commands: [cm_FindDuplicates] }
+    source: { modules: [PCOperations, PCApp], types: [DuplicateFinder, DuplicateFinderWindowController] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [duplicate-finder]
+
+  - id: split-combine
+    name: Datei teilen / zusammenfügen
+    name_en: Split / combine files
+    category: file-ops
+    audiences: [expert]
+    status: stable
+    ui: { menus: [File], commands: [cm_SplitFile, cm_CombineFiles] }
+    source: { modules: [PCOperations], types: [SplitCombineEngine] }
+    documentation: { integrated_help: true, website: true }
+
+  - id: encode-decode
+    name: Kodieren / Dekodieren (Base64/uu/xx/hex)
+    name_en: Encode / decode
+    category: file-ops
+    audiences: [expert]
+    status: stable
+    ui: { menus: [File], commands: [cm_EncodeFile, cm_DecodeFile] }
+    source: { modules: [PCOperations, PCFoundation], types: [EncodeDecodeEngine, Base64Codec, UUCodec] }
+    documentation: { integrated_help: true, website: true }
+
+  - id: multi-rename
+    name: Mehrfach-Umbenennen-Tool
+    name_en: Multi-rename tool
+    category: file-ops
+    audiences: [expert]
+    status: stable
+    ui: { menus: [Commands], shortcuts: ["Ctrl+M"], commands: [cm_MultiRenameFiles, cm_RenameByEditor] }
+    source: { modules: [PCApp], types: [MultiRenameWindowController] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [multi-rename]
+    notes: "Mask, search/replace, case, regex, counter, live preview, undo; also edit-names-in-editor (F-174)."
+
+  - id: compare-sync
+    name: Vergleichen & Synchronisieren
+    name_en: Compare & synchronize
+    category: file-ops
+    audiences: [expert]
+    status: stable
+    ui: { menus: [Commands, File], commands: [cm_SyncDirs, cm_CompareFilesByContent, cm_CompareFilesBinary, cm_CompareDirs] }
+    source: { modules: [PCApp, PCFoundation], types: [SyncWindowController, DiffWindowController, BinaryCompareWindowController] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [sync-dialog, diff-window]
+    notes: "Directory sync (content/date/size, subdirs, zip-sync, presets), text diff (Myers), hex compare."
+
+  - id: links-comments
+    name: Links, Aliase & Kommentare
+    name_en: Links, aliases & comments
+    category: file-ops
+    audiences: [expert]
+    status: stable
+    ui: { menus: [File], commands: [cm_CreateSymlink, cm_CreateHardlink, cm_CreateAlias, cm_EditComment] }
+    source: { modules: [PCVFS, PCOperations], types: [LinkMaker, CommentStore, DescriptionFile] }
+    documentation: { integrated_help: true, website: true }
+
+  - id: dir-size
+    name: Belegten Platz berechnen
+    name_en: Calculate occupied space
+    category: file-ops
+    audiences: [user]
+    status: stable
+    ui: { menus: [File, View], shortcuts: ["Ctrl+L"], commands: [cm_CalcSpace, cm_CalcAllDirSizes] }
+    source: { modules: [PCVFS], types: [DirectorySizeCalculator] }
+    documentation: { integrated_help: true, website: true }
+
+  # ───────────────────────── Archives ─────────────────────────
+  - id: archive-browse
+    name: Archive als Ordner betreten
+    name_en: Browse archives as folders
+    category: archive
+    audiences: [user]
+    status: stable
+    source: { modules: [PCArchive], types: [ArchiveFS, ZipReader, TarReader, ShellArchiveSource] }
+    documentation: { integrated_help: true, website: true, developer_docs: true }
+    screenshots: [archive-browse]
+    notes: "zip/tar/tar.gz native; cpio/iso/cab/lzh/xar/pax via bsdtar. ZIP64 out of scope; encrypted zip (ZipCrypto + WinZip AES)."
+
+  - id: archive-pack
+    name: Packen (Archiv erstellen)
+    name_en: Pack (create archive)
+    category: archive
+    audiences: [user]
+    status: stable
+    ui: { menus: [File], shortcuts: ["Alt+F5"], commands: [cm_PackFiles] }
+    source: { modules: [PCArchive, PCApp], types: [PackEngine, PackOptionsDialog] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [pack-dialog]
+    notes: "zip/7z/tar/tar.gz/bz2/xz/rar via external tools; AES-256, split volumes, level. RAR needs proprietary binary."
+
+  - id: archive-extract
+    name: Entpacken
+    name_en: Extract / unpack
+    category: archive
+    audiences: [user]
+    status: stable
+    ui: { menus: [File], shortcuts: ["Alt+F9"], commands: [cm_UnpackFiles, cm_TestArchive] }
+    source: { modules: [PCArchive], types: [ArchiveExtractor] }
+    documentation: { integrated_help: true, website: true }
+    notes: "Per-member cap 512 MiB; cancellable; works over any VFS."
+
+  - id: archive-edit
+    name: Zip direkt bearbeiten (Hinzufügen/Löschen)
+    name_en: In-place zip edit
+    category: archive
+    audiences: [expert]
+    status: stable
+    source: { modules: [PCArchive], types: [ArchiveEditor, ZipWriter] }
+    documentation: { integrated_help: true, website: true }
+    notes: "Full rewrite; modification timestamps not preserved."
+
+  # ───────────────────────── Search ─────────────────────────
+  - id: find-files
+    name: Dateien suchen (Find Files)
+    name_en: Find files
+    category: search
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [Commands], shortcuts: ["Cmd+Shift+F"], commands: [cm_SearchFor] }
+    source: { modules: [PCVFS, PCApp], types: [FileSearchEngine, FindFilesWindowController] }
+    documentation: { integrated_help: true, website: true, developer_docs: true }
+    screenshots: [find-files-general, find-files-advanced, find-files-plugins]
+    notes: "Name masks, content/full-text (mmap uncapped local; 64 MB regex; 16 MB non-local), regex, whole-word, hex, encoding-aware, not-containing, size/date/attr filters, in-selection, multi-folder, inside-archives (depth 4), Spotlight, saved templates, feed-to-listbox (ResultsFS)."
+
+  # ───────────────────────── Network ─────────────────────────
+  - id: ftp
+    name: FTP / FTPS
+    name_en: FTP / FTPS
+    category: network
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [Net], shortcuts: ["Ctrl+F", "Ctrl+N"], commands: [cm_FtpConnect, cm_FtpNew, cm_FtpDisconnect] }
+    source: { modules: [PCNet], types: [FTPFileSystem, FTPControlConnection, FtpConnectionManagerWindowController] }
+    documentation: { integrated_help: true, website: true, developer_docs: true }
+    screenshots: [ftp-connection-manager]
+    notes: "Plain FTP, FTPS explicit (AUTH TLS) + implicit (990), active/passive, resume (REST), MLSD/UNIX/DOS listings, keep-alive, self-signed opt-in, SOCKS5 proxy, wincmd import."
+
+  - id: sftp
+    name: SFTP / SCP (SSH)
+    name_en: SFTP / SCP
+    category: network
+    audiences: [user, expert]
+    status: stable
+    source: { modules: [PCNet], types: [SFTPFileSystem, SFTPSession] }
+    documentation: { integrated_help: true, website: true }
+    notes: "libssh2; auth agent/password/key/default keys; known_hosts TOFU; SCP transfer option; setAttributes no-op v1."
+
+  - id: ftp-console
+    name: FTP-Konsole & Protokoll
+    name_en: FTP console & protocol log
+    category: network
+    audiences: [expert]
+    status: stable
+    ui: { menus: [Net], commands: [cm_FtpRawCommand] }
+    source: { modules: [PCNet, PCApp], types: [FTPProtocolLog, FTPConsoleWindowController] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [ftp-console]
+    notes: "Live control-channel log (PASS masked), raw command input."
+
+  - id: http-download
+    name: Download von URL (wget-artig)
+    name_en: Download from URL
+    category: network
+    audiences: [user]
+    status: stable
+    ui: { menus: [Net], shortcuts: ["Cmd+Shift+D"], commands: [cm_DownloadFromURL] }
+    source: { modules: [PCNet, PCApp], types: [HTTPDownloader, DownloadURLWindowController] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [download-url]
+    notes: "HTTP/HTTPS, resume via Range/.part, batch, SHA-256 verify, auth (Basic/Bearer), custom headers, proxy (HTTP/SOCKS5), background/queue-for-later. NOTE: Cmd+Shift+D collides with Go>Desktop — unresolved."
+
+  - id: mount-share
+    name: Netzlaufwerk verbinden (SMB/AFP)
+    name_en: Mount network share
+    category: network
+    audiences: [user]
+    status: stable
+    ui: { menus: [Go, Net], shortcuts: ["Cmd+K"], commands: [cm_MountShare, cm_NetConnect] }
+    source: { modules: [PCApp], types: [MainWindowController] }
+    documentation: { integrated_help: true, website: true }
+    open_question: "Mount implementation not located in read files (likely NSWorkspace/mount) — verify (UNCLEAR)."
+
+  # ───────────────────────── Viewers & editors ─────────────────────────
+  - id: lister-viewer
+    name: Lister / Dateibetrachter (F3)
+    name_en: Lister / file viewer
+    category: viewer
+    audiences: [user]
+    status: stable
+    ui: { menus: [File], shortcuts: ["F3"], commands: [cm_List] }
+    source: { modules: [PCApp], types: [ListerWindow] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [lister-text, lister-hex]
+    notes: "Modes text/code/hex/image/media/web/plugin/directory/xmlTree/binary; find, encoding, marks, symbols outline, minimap, uncapped mmap streaming (>16 MB)."
+
+  - id: quick-view
+    name: Schnellansicht & Quick Look
+    name_en: Quick View & Quick Look
+    category: viewer
+    audiences: [user]
+    status: stable
+    ui: { menus: [View], shortcuts: ["Ctrl+Q", "Cmd+Y"], commands: [cm_SrcQuickview, cm_QuickLook] }
+    source: { modules: [PCApp], types: [QuickLookController, MainWindowController] }
+    documentation: { integrated_help: true, website: true }
+    notes: "Ctrl+Q embeds QLPreviewView in the inactive panel; Cmd+Y native Quick Look."
+
+  - id: editor
+    name: Text-/Code-Editor (F4) & Hex-Editor
+    name_en: Text/code editor & hex editor
+    category: viewer
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [File], shortcuts: ["F4"], commands: [cm_Edit, cm_EditHex] }
+    source: { modules: [PCApp], types: [EditorWindowController, HexEditorWindowController] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [editor]
+    notes: "Save, format JSON/XML, find/replace, symbols outline, minimap, encoding, go-to-line, bracket jump."
+
+  - id: syntax-highlighting
+    name: Syntaxhervorhebung (tree-sitter)
+    name_en: Syntax highlighting
+    category: viewer
+    audiences: [user, developer]
+    status: stable
+    source: { modules: [PCApp], types: [TreeSitterHighlighter, NeonEditorHighlighter] }
+    documentation: { integrated_help: true, website: true, developer_docs: true }
+    notes: "Grammars: JSON, C, Java, JavaScript, Python, Rust, C#, TypeScript. No Swift/.tsx grammar; fallback lexer otherwise."
+
+  # ───────────────────────── Customization ─────────────────────────
+  - id: button-bar
+    name: Buttonleiste (Toolbar)
+    name_en: Button bar (toolbar)
+    category: customization
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [Configuration], commands: [cm_ConfigButtonBar, cm_VerticalButtonBar] }
+    source: { modules: [PCApp, PCFoundation], types: [ButtonBarView, ButtonBar, ButtonBarEditorWindowController] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [button-bar-crop]
+    notes: "TC .bar format, sub-bars, drop files onto buttons; vertical option."
+
+  - id: command-system
+    name: Befehlssystem & Befehlsbrowser
+    name_en: Command system & browser
+    category: customization
+    audiences: [expert]
+    status: stable
+    ui: { menus: [Configuration], commands: [cm_CommandBrowser] }
+    source: { modules: [PCCommands, PCApp], types: [CommandRegistry, CommandBrowserWindowController] }
+    documentation: { integrated_help: true, website: true, developer_docs: true }
+    screenshots: [command-browser]
+    notes: "~150 cm_* commands; unimplemented stubs auto-disabled in menus."
+
+  - id: keyboard-shortcuts
+    name: Tastenkürzel & Schemata
+    name_en: Keyboard shortcuts & schemes
+    category: customization
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [Configuration], commands: [cm_ConfigKeys, cm_ConfigKeyClassic, cm_ConfigKeyMacOS] }
+    source: { modules: [PCApp], types: [KeysWindowController, KeymapMenu] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [keys-editor]
+    notes: "Two schemes: TC-classic, macOS-native; per-command user overrides."
+
+  - id: user-menu
+    name: Start-Menü & benutzerdefinierte Befehle
+    name_en: Start menu & user commands
+    category: customization
+    audiences: [expert]
+    status: stable
+    ui: { menus: [Start], commands: [cm_ChangeStartMenu, cm_ConfigMainMenu] }
+    source: { modules: [PCApp, PCCommands], types: [AppMenu] }
+    documentation: { integrated_help: true, website: true }
+    notes: "User .mnu menu bar (F-257), em_ external commands."
+
+  - id: workspaces
+    name: Arbeitsbereiche (Workspaces)
+    name_en: Workspaces
+    category: customization
+    audiences: [expert]
+    status: stable
+    ui: { menus: [Go], shortcuts: ["Cmd+Ctrl+S"], commands: [cm_Workspaces, cm_SaveWorkspace] }
+    source: { modules: [PCApp], types: [MainWindowController] }
+    documentation: { integrated_help: true, website: true }
+
+  - id: theming
+    name: Darstellung (Hell/Dunkel, Farben, Schrift)
+    name_en: Appearance (light/dark, colors, font)
+    category: customization
+    audiences: [user]
+    status: stable
+    source: { modules: [PCApp], types: [Theme, TypeColorsWindowController] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [settings-colors]
+    notes: "System/Light/Dark, custom panel colors, file-type colors, font size, date format, zebra rows, syntax themes."
+
+  # ───────────────────────── Settings ─────────────────────────
+  - id: settings
+    name: Einstellungen (15 Seiten)
+    name_en: Settings (15 pages)
+    category: settings
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [App, Configuration], shortcuts: ["Cmd+,"], commands: [cm_Options] }
+    source: { modules: [PCApp], types: [SettingsWindowController] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [settings-layout, settings-display, settings-operation]
+    notes: "Layout, Display, Icons, Operation, Colors, Confirmation, Edit/View (associations), Copy/Delete, Zip/Packer, Plugins, Tabs, FTP, Keyboard, Language (en/de), Misc (config folder)."
+
+  - id: config-persistence
+    name: Konfiguration & -ConfigRoot
+    name_en: Configuration & -ConfigRoot
+    category: settings
+    audiences: [developer, expert]
+    status: stable
+    source: { modules: [PCFoundation], types: [ConfigStore, ConfigPaths, INIDocument] }
+    documentation: { developer_docs: true, integrated_help: false, website: true }
+    notes: "INI files in ~/Library/Application Support/PeachCommander; ConfigStore actor; -ConfigRoot / PEACHCMD_CONFIG_ROOT override (F-277). No UserDefaults for app config."
+
+  - id: import-wincmd
+    name: wincmd.ini importieren
+    name_en: Import wincmd.ini
+    category: settings
+    audiences: [expert]
+    status: stable
+    ui: { menus: [Configuration], commands: [cm_ImportWincmd] }
+    source: { modules: [PCApp, PCNet], types: [WincmdFtpImporter] }
+    documentation: { integrated_help: true, website: true }
+
+  - id: macos-integration
+    name: macOS-Integration (Services, Open-With, Tags, Share, Terminal)
+    name_en: macOS integration
+    category: customization
+    audiences: [user]
+    status: stable
+    ui: { commands: [cm_OpenTerminal, cm_QuickLook, cm_FullDiskAccess] }
+    source: { modules: [PCApp], types: [PanelListView] }
+    documentation: { integrated_help: true, website: true }
+    notes: "Native Services merge, Open With ▸ Other, Finder tags, Share sheet, Reveal in Finder, Open Terminal here, Full Disk Access guide, trackpad swipe navigation, HiDPI."
+
+  - id: applescript
+    name: AppleScript / Kurzbefehle
+    name_en: AppleScript
+    category: customization
+    audiences: [user, developer]
+    status: stable
+    source: { modules: [PCApp], types: [Scripting, PeachCommander.sdef] }
+    documentation: { integrated_help: true, website: true }
+    notes: "F-296. sdef dictionary (go to/select/copy items/move items/run command + active folder/inactive folder/selection paths + panel-side enum) via NSAppleScriptEnabled + OSAScriptingDefinition; NSScriptCommand adapters over the host entry points. Also usable from the Shortcuts app via Run AppleScript."
+
+  # ───────────────────────── Plugins (user + developer) ─────────────────────────
+  - id: plugins-user
+    name: Plugins (Anwendersicht)
+    name_en: Plugins (user view)
+    category: plugins
+    audiences: [user]
+    status: stable
+    ui: { menus: [Configuration], commands: [cm_ConfigPlugins] }
+    source: { modules: [PCPluginHost, PCApp], types: [PluginManager, PluginsWindowController] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [plugins-window]
+    notes: "Enable/disable, install from .zip, per-extension association. Bundled: AIAssistant, AIColumn, Archive, Git, iCloud, LogViewer, Notes, SystemMonitor, TaskManager, Treemap (Disk Map), Uninstaller, WebDAV."
+
+  - id: disk-map
+    name: Disk Map (Speicher-Visualisierung)
+    name_en: Disk Map
+    category: plugins
+    audiences: [user]
+    status: stable
+    ui: { menus: [Commands] }
+    source: { modules: [Treemap], types: [DiskMapView, ScanEngine, TreemapLayout, SunburstLayout] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [disk-map, disk-map-sunburst]
+    notes: "External .ptxplugin. getattrlistbulk parallel scanner (allocated size, hard-link dedup, volume-boundary); treemap + sunburst; category colours + heatmap; Used/Free/Purgeable/Hidden volume bar; APFS snapshot report; Collector + largest-files; own Settings page."
+
+  - id: ai-assistant
+    name: KI-Assistent
+    name_en: AI assistant
+    category: plugins
+    audiences: [user]
+    status: stable
+    ui: { menus: [Commands] }
+    source: { modules: [AIAssistant, PCAutomation], types: [AIChatViewController, RemoteAutomationCore, DefaultAutomationCore] }
+    documentation: { integrated_help: true, website: true }
+    screenshots: [ai-chat, settings-ai]
+    notes: "Optional/removable .ptxplugin. On-device Apple Intelligence or OpenAI-compatible cloud; AI ▸ context actions (each opens its own chat); plan-then-confirm writes; unified AI settings page; optional MCP server. Automation core lives in PCAutomation."
+
+  - id: plugin-architecture
+    name: Plugin-Architektur
+    name_en: Plugin architecture
+    category: plugins
+    audiences: [developer, plugin]
+    status: stable
+    source: { modules: [PCPluginHost], types: [PluginHost, PluginLibrary, PluginManifest, PluginGuard] }
+    documentation: { developer_docs: true, sdk_docs: true, integrated_help: false }
+    notes: "In-process dlopen bundles; 5 types (pcx/pfx/plx/pdx/ptx) + contrib ABI; manifest in Info.plist; crash guard + quarantine (F-230); version handshake; when-expressions; detect-strings."
+
+  - id: plugin-abis
+    name: Plugin-ABIs (PCX/PDX/PFX/PLX/contrib)
+    name_en: Plugin ABIs
+    category: plugins
+    audiences: [plugin, sdk]
+    status: stable
+    source: { modules: [CPCX, CPDX, CPFX, CPLX, CContrib], types: [pcx.h, pdx.h, pfx.h, plx.h, contrib.h, pc_common.h] }
+    documentation: { sdk_docs: true, developer_docs: true }
+    notes: "PCX=packer, PDX=content fields, PFX=virtual FS, PLX=lister, contrib=commands/menus/views. UTF-8 C11, PC_API_VERSION=1."
+
+  - id: plugin-sdk
+    name: PluginSDK-Paket
+    name_en: PluginSDK package
+    category: sdk
+    audiences: [sdk, plugin]
+    status: stable
+    source: { modules: [PluginSDK], types: [CPeachCommanderPlugin] }
+    documentation: { sdk_docs: true }
+    notes: "Distributable SwiftPM package re-exporting all six headers; sync via Tools/sync-plugin-sdk.sh; PORTING.md (WCX/WFX/WLX/WDX -> PCX/PFX/PLX/PDX), LOCALIZATION.md, PluginLoc.swift/L()."
+
+  # ───────────────────────── Automation ─────────────────────────
+  - id: automation-script
+    name: Automatisierung (-AutomationScript)
+    name_en: Automation (-AutomationScript)
+    category: developer
+    audiences: [developer]
+    status: stable
+    source: { modules: [PCApp], types: [AutomationRunner] }
+    documentation: { developer_docs: true }
+    notes: "DEBUG-only launch hook; verbs (cmd/connect/dump/menudump/httpget/…); drives the app deterministically. Used by the VM screenshot pipeline."
+
+  # ───────────────────────── Developer / architecture ─────────────────────────
+  - id: architecture
+    name: Gesamtarchitektur & Module
+    name_en: Architecture & modules
+    category: developer
+    audiences: [developer]
+    status: stable
+    source: { modules: [PCFoundation, PCVFS, PCCommands, PCOperations, PCArchive, PCPluginHost, PCNet, PCApp], types: [] }
+    documentation: { developer_docs: true }
+    notes: "8 Swift modules + 12 C static libs; layered, deps point down to PCFoundation; AppKit only in PCApp. Swift concurrency (actors, AsyncStream). Build via XcodeGen."
+
+  - id: build-system
+    name: Buildsystem (XcodeGen) & Onboarding
+    name_en: Build system & onboarding
+    category: developer
+    audiences: [developer]
+    status: stable
+    source: { modules: [], types: [project.yml] }
+    documentation: { developer_docs: true }
+    notes: "xcodegen generate -> xcodebuild; deployment 13.0; universal arm64+x86_64; Tools/bootstrap.sh/build.sh/test.sh; CI on macos-14 Xcode 16."
+
+  - id: testing
+    name: Teststrategie
+    name_en: Testing strategy
+    category: developer
+    audiences: [developer]
+    status: stable
+    source: { modules: [], types: [] }
+    documentation: { developer_docs: true }
+    notes: "~1304 tests across 9 targets; VFS conformance battery; PC_NET_LIVE live gating; perf fixtures via Tools/make-fixtures.sh; XCUITest smoke."
+
+  - id: localization
+    name: Lokalisierung (en/de)
+    name_en: Localization (en/de)
+    category: developer
+    audiences: [developer, plugin]
+    status: stable
+    source: { modules: [PCApp], types: [Localizable.xcstrings, PluginLoc] }
+    documentation: { developer_docs: true }
+    notes: "String Catalog en(source)+de; Tools/extract-strings.sh + apply-translations.py; per-plugin PluginLoc.swift/L()."
+
+  - id: distribution
+    name: Distribution & Updates
+    name_en: Distribution & updates
+    category: distribution
+    audiences: [developer]
+    status: beta
+    source: { modules: [], types: [] }
+    documentation: { developer_docs: true }
+    notes: "DMG via Tools/make-dmg.sh (unsigned today); libssh2+openssl bundled; local-only crash reporting. Sparkle DECLARED BUT NOT INTEGRATED (F-312); signing/notarization documented but not automated (F-310)."
+
+  - id: security
+    name: Sicherheit & Berechtigungen
+    name_en: Security & permissions
+    category: developer
+    audiences: [developer, user]
+    status: stable
+    source: { modules: [PCFoundation], types: [SecretStore, KeychainSecretStore, PeachCommander.entitlements] }
+    documentation: { developer_docs: true, website: true }
+    notes: "App Sandbox intentionally OFF (file manager needs full disk); Developer ID + hardened runtime intended; credentials in Keychain only; disable-library-validation to load unsigned plugins."

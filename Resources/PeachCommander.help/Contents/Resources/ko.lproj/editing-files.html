@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파일 편집</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>파일 편집</h1>
+<p>파일을 단순히 보는 것이 아니라 변경해야 할 때, Peach Commander는 기본 제공 편집기에서 파일을 엽니다. 텍스트 및 코드 파일은 구문 강조, 찾기 및 바꾸기, 코드 내 심볼 개요, 빠른 탐색을 위한 미니맵을 갖춘 완전한 편집기에서 열립니다. 이진 파일은 개별 바이트를 검사하고 변경할 수 있는 별도의 16진수 편집기에서 열 수 있습니다. 빠른 편집을 위해 앱을 떠날 필요가 전혀 없습니다.</p>
+<h2 id="_1">텍스트 또는 코드 파일 편집</h2>
+<ol>
+<li>어느 패널에서든 변경할 파일로 커서를 이동합니다.</li>
+<li>F4를 누르거나 파일 ▸ Edit를 선택합니다. 파일이 편집기 창에서 열립니다.</li>
+<li>변경합니다. 파일이 인식된 프로그래밍 또는 데이터 형식이면 키워드, 문자열, 주석이 자동으로 색이 지정됩니다.</li>
+<li>Cmd+S를 누르거나(또는 저장을 클릭하여) 변경 내용을 기록합니다. 첫 저장 시 원본의 백업을 파일 옆에 보관하므로, 언제든 되돌아갈 수 있습니다.</li>
+</ol>
+<p>현재 위치에 완전히 새로운 텍스트 파일을 시작하려면 Shift+F4를 누르십시오.</p>
+<p><img alt="구문 강조, 심볼 개요, 미니맵을 보여주는 기본 제공 텍스트 편집기" src="images/editor.png" />
+<em>(그림: 구문 강조와 함께 왼쪽에 심볼 개요, 오른쪽에 미니맵이 있는 편집기.)</em></p>
+<h2 id="_2">찾기, 바꾸기, 탐색</h2>
+<ul>
+<li>Cmd+F를 눌러 찾기 막대를 엽니다. 텍스트를 바꾸려면 찾기 막대를 열고 바꾸기 보기로 전환하거나, 도구 모음에서 찾기/바꾸기를 클릭합니다.</li>
+<li>JSON/XML 서식을 클릭하면 JSON 또는 XML 문서를 깔끔하고 읽기 쉬운 레이아웃으로 다시 들여씁니다.</li>
+<li>심볼(또는 Cmd+Shift+O)을 클릭하면 코드 내 클래스, 함수, 메서드를 나열하는 사이드바가 표시됩니다. 항목을 클릭하면 바로 이동합니다.</li>
+<li>Cmd+L을 눌러 특정 줄로 이동합니다.</li>
+<li>Cmd+\를 눌러 괄호와 그 짝 사이를 이동합니다.</li>
+<li>지도 버튼을 클릭하면 미니맵을 표시하거나 숨깁니다. 미니맵은 파일 전체의 축소된 개요로, 클릭하여 스크롤할 수 있습니다.</li>
+<li>파일이 기본 텍스트 인코딩이 아닌 다른 것으로 저장된 경우 도구 모음의 인코딩 메뉴를 사용하십시오.</li>
+</ul>
+<h2 id="_3">파일을 바이트 단위로 편집</h2>
+<ol>
+<li>패널에서 파일을 선택합니다.</li>
+<li>파일 ▸ Edit as Hex를 선택합니다(또는 파일을 마우스 오른쪽 버튼으로 클릭하고 Edit as Hex를 선택합니다).</li>
+<li>16진수 자릿수를 입력하여 바이트를 덮어쓰거나, 화살표 키로 파일을 이동합니다. Backspace와 Delete는 바이트를 제거합니다.</li>
+<li>Cmd+S를 눌러 저장합니다. 텍스트 편집기와 마찬가지로 원본의 일회성 백업이 보관됩니다.</li>
+</ol>
+<h2 id="_4">단축키</h2>
+<table>
+<thead>
+<tr>
+<th>작업</th>
+<th>키</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>파일 편집</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>새 텍스트 파일 만들고 편집</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>저장</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>찾기</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>심볼 개요 표시/숨기기</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>줄로 이동</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>짝 괄호로 이동</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>실행 취소 / 다시 실행(16진수 편집기)</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">참고</h2>
+<ul>
+<li>구문 강조는 JSON, C, C#, Java, JavaScript, TypeScript, Python, Rust를 지원합니다. 다른 파일 유형도 기본 색상으로 정상적으로 열리고 편집되지만, 상세한 강조와 심볼 개요는 지원되는 언어에서만 사용할 수 있습니다.</li>
+<li>심볼 개요와 줄로 이동 기능은 텍스트 편집기에 적용됩니다. 16진수 편집기는 텍스트가 아니라 이진 검사와 바이트 수준 편집을 위한 것입니다.</li>
+<li>두 편집기 모두 처음 저장할 때 원본 파일의 백업을 보관하므로, 실수로 변경한 것은 해당 백업을 복원하여 쉽게 되돌릴 수 있습니다.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">파일 보기</a></li></ul></section>
+</main>
+</body>
+</html>

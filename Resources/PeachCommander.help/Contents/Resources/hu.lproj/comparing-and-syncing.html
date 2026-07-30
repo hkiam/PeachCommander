@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Összehasonlítás és szinkronizálás</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Összehasonlítás és szinkronizálás</h1>
+<p>Amikor ugyanannak a mappának két másolatát tartja – egy munkamappát és egy biztonsági mentést, egy laptopot és egy hálózati megosztást, egy projektet és annak archívumát –, a Peach Commander segít pontosan látni, mi változott, és összehangolni a két oldalt. Szinkronizálhat két könyvtárat, soronként összehasonlíthat egyes fájlokat, és bájtról bájtra megvizsgálhatja a fájlokat, amikor az utolsó karakterig biztosra van szüksége.</p>
+<h2 id="ket-konyvtar-szinkronizalasa">Két könyvtár szinkronizálása</h2>
+<ol>
+<li>Nyissa meg a szinkronizálni kívánt mappát a bal panelen, az összehasonlítandó mappát pedig a jobb panelen.</li>
+<li>Válassza a <strong>Parancsok ▸ Könyvtárak szinkronizálása…</strong> menüpontot. A két mappa útvonala a paneljeiből töltődik ki.</li>
+<li>Állítsa be, mennyire legyen alapos az összehasonlítás: vonja be az almappákat, hasonlítson össze <strong>tartalom szerint</strong> (ne csak dátum és méret alapján), vagy hagyja figyelmen kívül a módosítási dátumot.</li>
+<li>Adjon hozzá egy szűrőmaszkot (például <code>*.jpg;*.png</code>), ha csak bizonyos fájlokat szeretne szinkronizálni.</li>
+<li>Tekintse át az eredményrácsot. Minden sor egy fájlt mutat a bal oldalon, egy irányjelző nyilat középen, és a hozzá illő fájlt a jobb oldalon. A nyilak megmondják, mi fog történni: a <strong>→</strong> balról jobbra másol, a <strong>←</strong> jobbról balra másol, az <strong>=</strong> pedig azt jelenti, hogy a kettő azonos.</li>
+<li>Módosítsa az egyes sorokat, ha nem ért egyet egy javasolt iránnyal, majd kattintson a szinkronizálás gombra a változtatások végrehajtásához.</li>
+</ol>
+<p><img alt="A könyvtárak szinkronizálása ablak két mappaútvonallal és egy eredményráccsal, amely bal, egyenlő és jobb nyilakkal jeleníti meg a fájlokat" src="images/sync-dialog.png" />
+<em>(Ábra: A Könyvtárak szinkronizálása ablak összehasonlítja mindkét oldalt, és minden fájlhoz javasol egy másolási irányt.)</em></p>
+<h2 id="ket-fajl-osszehasonlitasa-tartalom-szerint">Két fájl összehasonlítása tartalom szerint</h2>
+<ol>
+<li>Jelöljön ki egy-egy fájlt mindegyik panelen (vagy két fájlt ugyanazon a panelen).</li>
+<li>Válassza a <strong>Fájl ▸ Összehasonlítás tartalom szerint…</strong> menüpontot.</li>
+<li>A két fájl egymás mellett nyílik meg, kiemelt eltérésekkel. A következő/előző vezérlőkkel ugorhat a megváltozott blokkok között.</li>
+<li>Ha bekapcsolja a szerkesztési módot, közvetlenül módosíthatja bármelyik fájlt, és mentheti a változtatásait.</li>
+</ol>
+<p><img alt="Az összehasonlító ablak két szövegfájlt mutat egymás mellett, kiemelt eltérő sorokkal" src="images/diff-window.png" />
+<em>(Ábra: Két szövegfájl összehasonlítása; a megváltozott sorok mindkét oldalon ki vannak emelve.)</em></p>
+<h2 id="fajlok-osszehasonlitasa-bajtrol-bajtra">Fájlok összehasonlítása bájtról bájtra</h2>
+<p>Amikor két fájl egyformának tűnik, de bizonyítania kell, hogy valóban azonosak (vagy meg kell találnia azt az egy bájtot, amely eltér), használja a bináris összehasonlítást. Mindkét fájlt egy hexadecimális nézetben mutatja, az egyező nem lévő bájtokat megjelölve, ami ideális letöltések ellenőrzéséhez, kódolt adatok vizsgálatához vagy egy pontos másolat megerősítéséhez.</p>
+<h2 id="konyvtarlistak-osszehasonlitasa">Könyvtárlisták összehasonlítása</h2>
+<p>Ahhoz, hogy egy pillantással észrevegye két megnyitott mappa közötti eltéréseket, válassza a <strong>Kijelölés ▸ Könyvtárak összehasonlítása</strong> menüpontot (Shift+F2). A Peach Commander megjelöli azokat a fájlokat, amelyek eltérnek, vagy amelyek hiányoznak a másik oldalon, így a szokásos másolási, áthelyezési és törlési parancsokkal cselekedhet velük.</p>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyűparancs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Könyvtárlisták összehasonlítása (eltérő fájlok megjelölése)</td>
+<td>Shift+F2</td>
+</tr>
+<tr>
+<td>Összehasonlítás tartalom szerint</td>
+<td>Fájl ▸ Összehasonlítás tartalom szerint…</td>
+</tr>
+<tr>
+<td>Könyvtárak szinkronizálása</td>
+<td>Parancsok ▸ Könyvtárak szinkronizálása…</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li><strong>Tartalom szerint vs. dátum/méret szerint.</strong> A gyors összehasonlítás méret és módosítási dátum alapján párosítja a fájlokat, ami gyors, de megtévesztő lehet, ha azonos fájlok időbélyegei eltérnek. Kapcsolja be a <strong>tartalom szerint</strong> lehetőséget a megbízható eredményért, azon az áron, hogy minden fájlt beolvas.</li>
+<li><strong>Almappák és szűrők.</strong> A szinkronizálási ablak leereszkedhet az almappákba, és korlátozható egy szűrőmaszkkal, így csak azokat a fájltípusokat szinkronizálhatja, amelyek fontosak Önnek.</li>
+<li><strong>Ön marad az irányítás alatt.</strong> A szinkronizálás soha nem fut le magától – Ön áttekinti a javasolt irányokat az eredményrácsban, és bármelyiket módosíthatja, mielőtt bármit is másolna.</li>
+<li><strong>Elődefiníciók.</strong> A gyakran használt szinkronizálási beállítások menthetők és újra felhasználhatók, így nem kell minden alkalommal újra megadnia ugyanazokat a beállításokat.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="multi-rename.html">Sok fájl átnevezése</a></li></ul></section>
+</main>
+</body>
+</html>

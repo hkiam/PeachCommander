@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rinominare molti file</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Rinominare molti file</h1>
+<p>Lo strumento di rinomina multipla rinomina un intero gruppo di file in un solo passaggio. Invece di modificare i nomi uno alla volta, descrivi la modifica una sola volta — uno schema di denominazione, un cerca-e-sostituisci, uno schema di numerazione o un cambio di maiuscole/minuscole — e Peach Commander lo applica a ogni file selezionato. Un'anteprima in tempo reale mostra esattamente come si chiamerà ogni file prima che accada qualcosa, e un singolo Annulla riporta i nomi originali se il risultato non era quello che volevi.</p>
+<h2 id="rinomina-un-gruppo-di-file">Rinomina un gruppo di file</h2>
+<ol>
+<li>Seleziona i file da rinominare (vedi <em>Selezione dei file</em>). Sono interessati solo gli elementi selezionati.</li>
+<li>Scegli <strong>Comandi &gt; Strumento di rinomina multipla…</strong>, o premi Ctrl+M.</li>
+<li>Costruisci la tua regola di rinomina usando i campi descritti sotto. La griglia di anteprima si aggiorna mentre digiti, mostrando ogni <strong>Vecchio nome</strong> accanto al suo <strong>Nuovo nome</strong>.</li>
+<li>Controlla l'anteprima. Una riga mostrata in un colore di evidenziazione segnala un nome che non può essere usato (per esempio, un duplicato o un nome non valido) così puoi regolare la regola.</li>
+<li>Quando l'anteprima sembra corretta, fai clic su <strong>Avvia</strong>. Se cambi idea, fai clic su <strong>Annulla</strong> per ripristinare i nomi originali.</li>
+</ol>
+<p><img alt="La finestra di rinomina multipla con i campi della maschera, le opzioni e la griglia di anteprima da vecchio a nuovo" src="images/multi-rename.png" />
+<em>(Figura: la griglia di anteprima si aggiorna in tempo reale mentre modifichi la regola di rinomina; nulla viene modificato sul disco finché non fai clic su Avvia.)</em></p>
+<h2 id="costruire-la-regola-di-rinomina">Costruire la regola di rinomina</h2>
+<ul>
+<li><strong>Maschera di rinomina</strong> ed <strong>Estensione</strong> — schemi che costruiscono il nuovo nome e la nuova estensione. Usa i pulsanti di inserimento rapido, o digita i segnaposto direttamente: <code>[N]</code> per il nome originale, <code>[N1-9]</code> per un intervallo di caratteri da esso, <code>[C]</code> per il contatore, <code>[d]</code> per parti di data e ora e <code>[P]</code> per il nome della cartella superiore.</li>
+<li><strong>Cerca / Sostituisci con</strong> — sostituisce il testo dentro i nomi. Attiva <strong>Regex</strong> per la corrispondenza di schemi, <strong>Distingui maiuscole</strong> per corrispondere esattamente al caso delle lettere e <strong>Ripeti</strong> per sostituire ogni occorrenza.</li>
+<li><strong>Maiuscole/minuscole</strong> — converti i nomi in minuscolo, MAIUSCOLO, Prima lettera maiuscola o Ogni Parola Maiuscola.</li>
+<li><strong>Contatore</strong> — imposta il numero di <strong>Inizio</strong>, il <strong>Passo</strong> tra i file e a quante <strong>Cifre</strong> allineare (per esempio, 001, 002, 003) ovunque compaia <code>[C]</code>.</li>
+</ul>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Scorciatoia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apri lo strumento di rinomina multipla</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Applica la rinomina</td>
+<td>Invio</td>
+</tr>
+<tr>
+<td>Chiudi la finestra</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="suggerimenti">Suggerimenti</h2>
+<ul>
+<li>Nulla viene scritto sul disco finché non fai clic su <strong>Avvia</strong>, così puoi sperimentare liberamente con la regola e osservare l'anteprima.</li>
+<li>Dopo un'esecuzione, <strong>Annulla</strong> inverte la rinomina in un solo passaggio.</li>
+<li>Salva una regola che usi spesso come <strong>Preimpostazione</strong>, poi scegliela dal menu delle preimpostazioni la volta successiva per riempire tutti i campi in una volta.</li>
+<li>Per rinominare un singolo file, o rinominare file mentre li sposti, usa invece la rinomina sul posto o la finestra di spostamento (vedi <em>Spostamento e rinomina</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Spostamento e rinomina</a></li></ul></section>
+</main>
+</body>
+</html>

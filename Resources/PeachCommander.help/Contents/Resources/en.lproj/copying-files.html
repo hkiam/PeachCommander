@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copying files</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Copying files</h1>
+<p>Peach Commander is built around two side-by-side panels: one holds the files you are working with, the other is the destination. Copying takes whatever is selected in the active panel and puts a duplicate in the folder shown in the other panel, leaving the originals in place. This is the fastest way to duplicate files and folders between two locations without dragging.</p>
+<h2 id="copy-a-selection-to-the-other-panel">Copy a selection to the other panel</h2>
+<ol>
+<li>In one panel, open the folder that contains the items you want to copy.</li>
+<li>In the other panel, open the folder where the copies should go.</li>
+<li>Select the files and folders to copy. If nothing is selected, the item under the cursor is used.</li>
+<li>Press F5. The copy dialog opens, showing the destination path already filled in.</li>
+</ol>
+<p><img alt="The copy dialog with the destination path and options" src="images/copy-dialog.png" />
+<em>(Figure: The copy dialog. The target path points at the other panel; use the options to fine-tune the copy.)</em></p>
+<ol start="5">
+<li>Adjust the destination if needed, then confirm to start copying.</li>
+</ol>
+<h2 id="copy-options">Copy options</h2>
+<p>Before you confirm, you can change how the copy behaves:</p>
+<ul>
+<li><strong>Only newer files</strong> — skips any item whose copy already exists and is the same age or newer, so only changed files are updated.</li>
+<li><strong>Preserve metadata</strong> — keeps dates, permissions, and other file attributes on the copies. This is on by default.</li>
+<li><strong>Speed limit</strong> — caps the transfer rate so a large copy does not saturate your disk or network connection.</li>
+<li><strong>Rename mask</strong> — type a wildcard pattern in the target field (for example <code>*.bak</code>) to rename items as they are copied.</li>
+</ul>
+<p>You can also send the job to the background queue instead of watching it — see Background transfers.</p>
+<h2 id="progress">Progress</h2>
+<p>A progress window shows the current file and the overall job with separate bars, plus the transfer speed. You can pause and resume at any time, or send the running copy to the background transfer manager to keep working while it finishes.</p>
+<p><img alt="The transfer progress dialog with a progress bar, file and byte counts, and Pause and Cancel buttons" src="images/progress-dialog.png" />
+<em>(Figure: The progress dialog shown during a copy or move.)</em></p>
+<h2 id="handling-files-that-already-exist">Handling files that already exist</h2>
+<p>If a copy would replace an existing file, Peach Commander stops and asks what to do. A preview of both files helps you decide.</p>
+<p><img alt="The overwrite conflict dialog comparing two files" src="images/overwrite-dialog.png" />
+<em>(Figure: The overwrite dialog compares the existing file with the one being copied.)</em></p>
+<p>Your choices include:</p>
+<ul>
+<li><strong>Overwrite</strong> the existing file, or <strong>Overwrite all</strong> to apply that to every remaining conflict.</li>
+<li><strong>Skip</strong> this file, or <strong>Skip all</strong> remaining conflicts.</li>
+<li><strong>Rename</strong> the incoming copy automatically so both files are kept.</li>
+<li><strong>Append</strong> the incoming data to the end of the existing file.</li>
+<li>Overwrite only when the source is <strong>newer</strong> or <strong>larger</strong> than the existing file.</li>
+</ul>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Copy selection to the other panel</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Copy in the same folder (make a renamed duplicate)</td>
+<td>Shift+F5</td>
+</tr>
+<tr>
+<td>Open the background transfer manager</td>
+<td>Cmd+Shift+B</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Copying between two locations on the same disk uses a fast clone when the disk supports it, so large files copy almost instantly and use little extra space.</li>
+<li>Folders are copied with everything inside them.</li>
+<li>To move files instead of copying them, use F6. To watch or manage queued jobs, open the background transfer manager with Cmd+Shift+B.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Moving &amp; renaming</a></li><li><a href="background-transfers.html">Background transfers</a></li></ul></section>
+</main>
+</body>
+</html>

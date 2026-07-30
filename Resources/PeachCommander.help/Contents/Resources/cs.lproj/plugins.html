@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zásuvné moduly</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Zásuvné moduly</h1>
+<p>Zásuvné moduly rozšiřují Peach Commander o další nástroje, formáty souborů a místa k prohlížení. Tucet zásuvných modulů je vestavěných, takže je můžete začít používat ihned, a jednotlivé zásuvné moduly můžete zapínat či vypínat — nebo instalovat nové — z jediného okna. Zásuvné moduly použijte, když chcete možnosti nad rámec každodenního kopírování a prohlížení: vizualizovat, co zaplňuje disk, připojit se k serveru WebDAV, zkontrolovat stav repozitáře Git, sledovat systémovou aktivitu a další.</p>
+<p>Zásuvné moduly přicházejí v několika podobách: některé přidávají <strong>panel nebo postranní panel</strong> (zobrazení), některé přidávají <strong>sloupce</strong> do seznamu souborů, některé přidávají <strong>místo, do kterého se navigujete</strong>, jako disk, a některé naučí aplikaci nový <strong>formát archivu</strong>. Každý se povoluje nezávisle.</p>
+<h2 id="co-pridavaji-vestavene-zasuvne-moduly">Co přidávají vestavěné zásuvné moduly</h2>
+<p>Několik zásuvných modulů má vlastní podrobné téma nápovědy — pro úplný příběh přejděte po odkazu:</p>
+<ul>
+<li><strong><a href="disk-map.md">Disk Map</a></strong> — vizualizuje, co zaplňuje složku nebo svazek, jako stromovou mapu nebo paprsčitý graf, sladěné s volným, uvolnitelným a skrytým místem, se sběračem pro úklid.</li>
+<li><strong><a href="ai-assistant.md">Asistent AI</a></strong> — volitelný, odstranitelný asistent, který shrnuje, přejmenovává, překládá, vytváří tabulky a uspořádává soubory v přirozeném jazyce, na zařízení nebo prostřednictvím cloudového modelu.</li>
+<li><strong><a href="git.md">Git</a></strong> — zobrazuje stav souborů v pracovním stromu a aktuální větev jako sloupce panelu a přidává nabídku <strong>Git</strong> pro status, přidání do indexu, commit, pull a push.</li>
+<li><strong><a href="system-monitor.md">System Monitor</a></strong> — živý přehled procesoru, paměti, disku, sítě (a tam, kde je dostupné, GPU, baterie, senzorů) v záhlaví okna, s grafy podrobností po kliknutí.</li>
+<li><strong><a href="task-manager.md">Task Manager</a></strong> — připojí vaše běžící procesy jako procházitelný disk <strong>TaskManager</strong>; řaďte je, zkoumejte je jako soubory nebo je ukončete klávesou Smazat.</li>
+<li><strong><a href="uninstaller.md">Uninstaller</a></strong> — odstraní aplikaci <strong>i</strong> podpůrné soubory, mezipaměti a předvolby, které po sobě zanechává, poté co vám přesně ukáže, co zmizí.</li>
+</ul>
+<p>Zbývající vestavěné zásuvné moduly jsou menší a nepotřebují vlastní stránku:</p>
+<ul>
+<li><strong>WebDAV</strong> — připojte se k serveru WebDAV (<strong>Síť ▸ WebDAV Connect…</strong>) a procházejte, nahrávejte, stahujte, přejmenovávejte a mažte na něm, jako by to byla složka. Hesla se uchovávají v klíčence macOS.</li>
+<li><strong>iCloud Drive</strong> — přidá do lišty disků položku <em>iCloud Drive</em>, která skočí přímo do vaší místní složky iCloud Drive. Objeví se jen tehdy, když je iCloud Drive nastaven ve vašem Macu.</li>
+<li><strong>Notes</strong> — uchovávejte poznámku vedle libovolného souboru nebo složky. Malý odznak <strong>●</strong> označuje položky, které ji mají; poznámky upravujte v ukotveném postranním panelu <strong>Notes</strong> nebo v úplném editoru formátovaného textu (<strong>Příkazy ▸ Upravit poznámku…</strong>) a procházejte je všechny pomocí <strong>Přehled poznámek…</strong>.</li>
+<li><strong>Log Viewer</strong> — otevřete soubor jako barevně kódovaný protokol s klasifikací podle úrovní a živým sledováním (<strong>Soubor ▸ Zobrazit jako protokol…</strong>), s filtry podle úrovní, vyhledáváním a podporou běžných formátů protokolů i vašich vlastních formátů regex. Zvládá vícegigabajtové protokoly okamžitě.</li>
+<li><strong>AI Column</strong> — přidá sloupec <em>AI Language</em>, který v zařízení rozpozná převažující jazyk každého textového souboru (pomocí frameworku Apple NaturalLanguage — nikoli cloudového modelu).</li>
+<li><strong>Formáty archivů</strong> — naučí aplikaci procházet a rozbalovat další typy archivů (7z, rodina tar, gzip/bzip2/xz/zstd a RAR tam, kde je nainstalován pomocný nástroj), které se pak otevírají jako složky.</li>
+</ul>
+<h2 id="zapnuti-nebo-vypnuti-zasuvnych-modulu">Zapnutí nebo vypnutí zásuvných modulů</h2>
+<ol>
+<li>Zvolte Konfigurace ▸ Zásuvné moduly… pro otevření okna zásuvných modulů.</li>
+<li>Každý nainstalovaný zásuvný modul se objeví v seznamu s názvem, typem a zaškrtávacím polem „Povoleno“.</li>
+<li>Zaškrtnutím nebo zrušením zaškrtnutí pole povolíte nebo zakážete zásuvný modul. Změny se projeví ihned — povolené zásuvné moduly přidají své nabídky, sloupce a funkce; zakázané se drží stranou.</li>
+</ol>
+<p><img alt="Okno zásuvných modulů uvádějící nainstalované zásuvné moduly se zaškrtávacími poli a tlačítky Nainstalovat a Odebrat" src="images/plugins-window.png" />
+<em>(Obrázek: okno zásuvných modulů, kde povolujete, zakazujete, instalujete nebo odebíráte zásuvné moduly.)</em></p>
+<h2 id="instalace-noveho-zasuvneho-modulu">Instalace nového zásuvného modulu</h2>
+<ol>
+<li>Zvolte Konfigurace ▸ Zásuvné moduly….</li>
+<li>Klepněte na <strong>Nainstalovat ze složky…</strong>.</li>
+<li>Vyberte balíček zásuvného modulu nebo <code>.zip</code>, který jej obsahuje, a potvrďte. Zásuvný modul se přidá do seznamu a povolí.</li>
+</ol>
+<h2 id="odebrani-zasuvneho-modulu">Odebrání zásuvného modulu</h2>
+<ol>
+<li>V okně zásuvných modulů označte zásuvný modul v seznamu.</li>
+<li>Klepněte na <strong>Odebrat</strong>. Vestavěné funkce nejsou ovlivněny; odebere se jen vybraný zásuvný modul.</li>
+</ol>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Seznam zásuvných modulů zobrazuje typ a verzi rozhraní každého zásuvného modulu vedle názvu a umístění, takže si můžete ověřit, co je nainstalováno.</li>
+<li>Pokud není nainstalován žádný zásuvný modul, okno zobrazí krátkou výzvu směřující vás k <strong>Nainstalovat ze složky…</strong>.</li>
+<li>Některé zásuvné moduly přidávají vlastní sloupce, položky nabídek nebo místa panelu jen, když jsou povolené. Pokud očekávaná funkce chybí, zkontrolujte, že je zásuvný modul zde zapnutý.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Mapa disku</a></li><li><a href="ai-assistant.html">AI asistent</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="archives.html">Práce s archivy</a></li><li><a href="ftp-and-sftp.html">Připojení k FTP a SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

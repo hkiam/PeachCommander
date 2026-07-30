@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rozwiązywanie problemów</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Rozwiązywanie problemów</h1>
+<p>Ten temat obejmuje problemy, na które ludzie natrafiają najczęściej: macOS blokujący dostęp do niektórych folderów, folder, który wydaje się utknięty na starej zawartości, bezpieczny serwer FTP, który odmawia połączenia, oraz pakowanie do RAR. Każda sekcja mówi, co się dzieje i jak to naprawić.</p>
+<h2 id="macos-prosi-o-zezwolenie-lub-foldery-wygladaja-na-puste">macOS prosi o zezwolenie lub foldery wyglądają na puste</h2>
+<p>Niektóre lokalizacje — jak Twój folder <code>~/Library</code>, foldery innych użytkowników i obszary systemowe — są chronione przez macOS i pozostają ukryte, dopóki nie przyznasz dostępu. Peach Commander wykrywa, kiedy to się dzieje, i oferuje poprowadzenie Cię do właściwego ustawienia.</p>
+<ol>
+<li>Gdy zostaniesz poproszony, wybierz otwarcie Ustawień systemowych, lub otwórz je sam.</li>
+<li>Przejdź do Prywatność i bezpieczeństwo, a następnie Pełny dostęp do dysku.</li>
+<li>Włącz przełącznik obok Peach Commandera. Jeśli nie jest wymieniony, użyj przycisku Dodaj, aby go dodać.</li>
+<li>Zakończ i ponownie otwórz Peach Commander, aby nowe uprawnienie weszło w życie.</li>
+</ol>
+<p>Peach Commander nie działa wewnątrz ograniczonej piaskownicy, więc po przyznaniu Pełnego dostępu do dysku może przeglądać i zarządzać plikami dokładnie jak Finder.</p>
+<h2 id="folder-nie-pokazuje-ostatnich-zmian">Folder nie pokazuje ostatnich zmian</h2>
+<p>Panele normalnie aktualizują się same, gdy pliki zmieniają się na dysku. Jeśli folder został zmieniony przez inny program, znajduje się na woluminie sieciowym, lub po prostu wygląda na nieaktualny, odśwież go ręcznie.</p>
+<ol>
+<li>Kliknij panel, który chcesz zaktualizować.</li>
+<li>Naciśnij F2 (lub Ctrl+R), aby ponownie odczytać ten folder.</li>
+</ol>
+<p>Woluminy sieciowe i zamontowane nie zawsze zgłaszają zmiany do macOS, więc ręczne odświeżenie jest tam niezawodnym rozwiązaniem.</p>
+<h2 id="serwer-ftps-nie-chce-sie-poaczyc">Serwer FTPS nie chce się połączyć</h2>
+<p>Jeśli bezpieczne połączenie FTP zawodzi, sprawdź te ustawienia w szczegółach połączenia:</p>
+<ul>
+<li>Dopasuj tryb bezpieczeństwa serwera: jawny FTPS (AUTH TLS) a niejawny FTPS (port 990) nie są zamienne.</li>
+<li>Jeśli połączenie zawiesza się po zalogowaniu, przełącz między pasywnym a aktywnym trybem transferu — większość serwerów za zaporą potrzebuje pasywnego.</li>
+<li>Jeśli serwer używa certyfikatu z podpisem własnym, musisz go wyraźnie zezwolić; w przeciwnym razie połączenie jest odrzucane.</li>
+<li>Potwierdź host, port, nazwę użytkownika i hasło oraz to, czy w Twojej sieci wymagany jest serwer proxy SOCKS5.</li>
+</ul>
+<h2 id="pakowanie-do-rar-nic-nie-robi">Pakowanie do RAR nic nie robi</h2>
+<p>Peach Commander może samodzielnie tworzyć archiwa ZIP, 7z, TAR, TAR.GZ, BZ2 i XZ. RAR jest inny: ponieważ RAR to format własnościowy, tworzenie archiwów RAR wymaga oddzielnego narzędzia wiersza poleceń RAR zainstalowanego na Twoim Macu. Bez niego RAR jest niedostępny, gdy pakujesz pliki (Option+F5). Aby odczytać istniejące archiwa RAR, nadal możesz otwierać je jak folder. Jeśli nie potrzebujesz konkretnie RAR, wybierz zamiast tego ZIP lub 7z — oba obsługują silne szyfrowanie AES-256 i podzielone woluminy.</p>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Odśwież aktywny folder</td>
+<td>F2 lub Ctrl+R</td>
+</tr>
+<tr>
+<td>Połącz się z serwerem FTP/FTPS</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Zamontuj udział sieciowy</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>Spakuj wybrane pliki</td>
+<td>Option+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Hasła i inne dane uwierzytelniające są przechowywane tylko w pęku kluczy macOS, nigdy w plikach konfiguracji w postaci jawnej.</li>
+<li>Montowanie udziału sieciowego (Cmd+K, lub menu Sieć ▸ Zamontuj udział sieciowy…) używa tego samego połączenia, którego używa sam macOS, więc pojawi się również w Finderze.</li>
+<li>Jeśli problem utrzymuje się po odświeżeniu i ponownym uruchomieniu, może to być znane ograniczenie, a nie usterka — zobacz Znane ograniczenia.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">Prywatność i bezpieczeństwo</a></li><li><a href="known-limitations.html">Znane ograniczenia</a></li></ul></section>
+</main>
+</body>
+</html>

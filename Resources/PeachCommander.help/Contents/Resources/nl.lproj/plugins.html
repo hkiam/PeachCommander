@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plug-ins</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Plug-ins</h1>
+<p>Plug-ins breiden Peach Commander uit met extra hulpmiddelen, bestandsformaten en plekken om te bladeren. Een dozijn plug-ins is ingebouwd, zodat je ze meteen kunt gebruiken, en je kunt afzonderlijke plug-ins in- of uitschakelen — of nieuwe installeren — vanuit één venster. Gebruik plug-ins wanneer je mogelijkheden wilt die verder gaan dan alledaags kopiëren en bladeren: visualiseren wat een schijf vult, verbinden met een WebDAV-server, de status van een Git-repository bekijken, systeemactiviteit volgen, en meer.</p>
+<p>Plug-ins komen in een paar soorten: sommige voegen een <strong>paneel of zijbalk</strong> toe (een weergave), sommige voegen <strong>kolommen</strong> toe aan de bestandslijst, sommige voegen een <strong>plek toe waar je naartoe navigeert</strong>, zoals een schijf, en sommige leren de app een nieuw <strong>archiefformaat</strong>. Elk wordt onafhankelijk ingeschakeld.</p>
+<h2 id="wat-de-ingebouwde-plug-ins-toevoegen">Wat de ingebouwde plug-ins toevoegen</h2>
+<p>Verschillende plug-ins hebben hun eigen uitgebreide helponderwerp — volg de koppeling voor het hele verhaal:</p>
+<ul>
+<li><strong><a href="disk-map.md">Disk Map</a></strong> — visualiseert wat een map of volume vult als treemap of zonnestraaldiagram, afgezet tegen vrije, opschoonbare en verborgen ruimte, met een opruimverzamelaar.</li>
+<li><strong><a href="ai-assistant.md">AI Assistant</a></strong> — een optionele, verwijderbare assistent die bestanden in gewone taal samenvat, hernoemt, vertaalt, in tabellen zet en opruimt, op het apparaat of via een cloudmodel.</li>
+<li><strong><a href="git.md">Git</a></strong> — toont per bestand de status in de werkboom en de huidige branch als paneelkolommen, en voegt een <strong>Git</strong>-menu toe voor status, stagen, committen, pullen en pushen.</li>
+<li><strong><a href="system-monitor.md">System Monitor</a></strong> — een live-uitlezing van CPU, geheugen, schijf, netwerk (en, waar beschikbaar, GPU, batterij, sensoren) in de titelbalk van het venster, met detailgrafieken die je kunt aanklikken.</li>
+<li><strong><a href="task-manager.md">Task Manager</a></strong> — koppelt je actieve processen als een doorbladerbare <strong>TaskManager</strong>-schijf; sorteer ze, inspecteer ze als bestanden of beëindig ze met Verwijderen.</li>
+<li><strong><a href="uninstaller.md">Uninstaller</a></strong> — verwijdert een applicatie <strong>én</strong> de ondersteuningsbestanden, caches en voorkeuren die het achterlaat, nadat het je precies heeft getoond wat er weggaat.</li>
+</ul>
+<p>De overige ingebouwde plug-ins zijn kleiner en hebben geen eigen pagina nodig:</p>
+<ul>
+<li><strong>WebDAV</strong> — verbind met een WebDAV-server (<strong>Net ▸ WebDAV Verbinden…</strong>) en blader, upload, download, hernoem en verwijder erop alsof het een map was. Wachtwoorden worden bewaard in de macOS-sleutelhanger.</li>
+<li><strong>iCloud Drive</strong> — voegt een <em>iCloud Drive</em>-vermelding toe aan de schijvenbalk die direct naar je lokale iCloud Drive-map springt. Deze verschijnt alleen wanneer iCloud Drive op je Mac is ingesteld.</li>
+<li><strong>Notes</strong> — bewaar een notitie naast elk bestand of elke map. Een klein <strong>●</strong>-badge markeert items die er een hebben; bewerk notities in een vastgezette <strong>Notes</strong>-zijbalk of een volledige rich-text-editor (<strong>Opdrachten ▸ Notitie bewerken…</strong>), en blader ze allemaal door met <strong>Notities-overzicht…</strong>.</li>
+<li><strong>Log Viewer</strong> — open een bestand als een kleurgecodeerd log, ingedeeld op niveau en live meelezend (<strong>Bestand ▸ Bekijken als log…</strong>), met filters per niveau, zoeken en ondersteuning voor gangbare logformaten plus je eigen regex-formaten. Verwerkt logs van meerdere gigabytes direct.</li>
+<li><strong>AI Column</strong> — voegt een <em>AI Language</em>-kolom toe die de dominante taal van elk tekstbestand op het apparaat detecteert (met Apple's NaturalLanguage-framework — geen cloudmodel).</li>
+<li><strong>Archiefformaten</strong> — leert de app meer archieftypen te doorbladeren en uit te pakken (7z, de tar-familie, gzip/bzip2/xz/zstd en RAR waar een hulpprogramma is geïnstalleerd), die dan als mappen openen.</li>
+</ul>
+<h2 id="plug-ins-in-of-uitschakelen">Plug-ins in- of uitschakelen</h2>
+<ol>
+<li>Kies Configuratie ▸ Plug-ins… om het plug-invenster te openen.</li>
+<li>Elke geïnstalleerde plug-in verschijnt in de lijst met naam, type en een aankruisvak "Ingeschakeld".</li>
+<li>Vink het aan of uit om een plug-in in of uit te schakelen. Wijzigingen werken meteen — ingeschakelde plug-ins voegen hun menu's, kolommen en functies toe; uitgeschakelde blijven buiten beeld.</li>
+</ol>
+<p><img alt="Het plug-invenster met een lijst van geïnstalleerde plug-ins, aankruisvakken en knoppen Installeren en Verwijderen" src="images/plugins-window.png" />
+<em>(Afbeelding: Het plug-invenster, waar je plug-ins in- en uitschakelt, installeert of verwijdert.)</em></p>
+<h2 id="een-nieuwe-plug-in-installeren">Een nieuwe plug-in installeren</h2>
+<ol>
+<li>Kies Configuratie ▸ Plug-ins….</li>
+<li>Klik op <strong>Installeren vanuit map…</strong>.</li>
+<li>Kies een plug-inbundel of een <code>.zip</code> die er een bevat en bevestig. De plug-in wordt toegevoegd aan de lijst en ingeschakeld.</li>
+</ol>
+<h2 id="een-plug-in-verwijderen">Een plug-in verwijderen</h2>
+<ol>
+<li>Selecteer in het plug-invenster de plug-in in de lijst.</li>
+<li>Klik op <strong>Verwijderen</strong>. Ingebouwde functies blijven ongemoeid; alleen de geselecteerde plug-in wordt verwijderd.</li>
+</ol>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>De plug-inlijst toont naast naam en locatie ook het type en de interfaceversie van elke plug-in, zodat je kunt controleren wat er is geïnstalleerd.</li>
+<li>Als er geen plug-ins zijn geïnstalleerd, toont het venster een korte aanwijzing naar <strong>Installeren vanuit map…</strong>.</li>
+<li>Sommige plug-ins voegen hun eigen kolommen, menu-items of paneelplekken alleen toe zolang ze zijn ingeschakeld. Ontbreekt een functie die je verwachtte, controleer dan hier of de bijbehorende plug-in aanstaat.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Disk Map</a></li><li><a href="ai-assistant.html">AI-assistent</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="archives.html">Werken met archieven</a></li><li><a href="ftp-and-sftp.html">Verbinden met FTP en SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die Schaltflächenleiste</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Die Schaltflächenleiste</h1>
+<p>Die Schaltflächenleiste ist der Streifen mit Symbolschaltflächen quer über den oberen Rand des Fensters. Jede Schaltfläche ist ein Ein-Klick-Kürzel, das Sie selbst definieren: einen integrierten Befehl ausführen, ein externes Programm oder eine App starten, zu einem Ordner springen oder eine ganze Unterleiste mit weiteren Schaltflächen öffnen. Sie ist der schnellste Weg, die Aktionen, die Sie am häufigsten verwenden, in Reichweite zu bringen, und Sie können sie genau auf Ihre Arbeitsweise zuschneiden.</p>
+<h2 id="die-schaltflachenleiste-anpassen">Die Schaltflächenleiste anpassen</h2>
+<ol>
+<li>Wählen Sie <strong>Konfiguration &gt; Symbolleiste anpassen…</strong> oder klicken Sie mit der rechten Maustaste auf die Leiste und wählen Sie <strong>Schaltflächenleiste bearbeiten…</strong>.</li>
+<li>Die Liste auf der linken Seite zeigt die aktuellen Schaltflächen. Verwenden Sie <strong>+</strong>, um eine Schaltfläche hinzuzufügen, <strong>—</strong>, um einen Trenner hinzuzufügen, <strong>−</strong>, um die ausgewählte Schaltfläche zu entfernen, und <strong>↑ / ↓</strong> zum Umordnen.</li>
+<li>Wählen Sie eine Schaltfläche aus und füllen Sie das Formular auf der rechten Seite aus:
+   - <strong>Befehl</strong> — geben Sie einen integrierten Befehl ein oder klicken Sie auf <strong>Auswählen…</strong>, um einen aus einer Liste zu wählen. Sie können auch den Pfad zu einem Programm oder einer App, einen zu öffnenden Ordner oder eine andere Schaltflächenleiste eingeben, die als Unterleiste verwendet werden soll.
+   - <strong>Beschriftung</strong> — die für die Schaltfläche angezeigte Bezeichnung und der Tooltip.
+   - <strong>Parameter</strong> und <strong>Startpfad</strong> — werden an externe Programme übergeben. Platzhalter wie <code>%P</code> (Quellordner), <code>%N</code> (aktuelle Datei) und <code>%S</code> (ausgewählte Dateien) werden beim Ausführen der Schaltfläche eingesetzt.
+   - <strong>Symbol</strong> — wählen Sie ein SF-Symbol oder verwenden Sie das eigene Symbol einer Datei oder App; schalten Sie <strong>nur Symbol</strong> ein, um die Beschriftung auszublenden.</li>
+<li>Klicken Sie auf <strong>Speichern</strong>. Der Streifen wird sofort neu geladen.</li>
+</ol>
+<p><img alt="Die Schaltflächenleiste quer über den oberen Rand des Fensters mit Symbolschaltflächen" src="images/button-bar-crop.png" />
+<em>(Abbildung: Die Schaltflächenleiste sitzt über den Datei-Panels; jede Schaltfläche führt einen Befehl, ein Programm, einen Ordner oder eine Unterleiste aus.)</em></p>
+<h2 id="unterleisten-und-uberlauf">Unterleisten und Überlauf</h2>
+<p>Eine Schaltfläche kann eine <em>Unterleiste</em> öffnen — einen zweiten Satz Schaltflächen, der über den ersten gelegt wird. Klicken Sie darauf, um hineinzugehen; eine Schaltfläche <strong>◀</strong> ganz links bringt Sie zur vorherigen Leiste zurück. Wenn mehr Schaltflächen vorhanden sind, als in die Fensterbreite passen, klappen die überzähligen hinter einem Chevron <strong>»</strong> am rechten Ende zusammen; klicken Sie darauf, um sie zu erreichen.</p>
+<h2 id="dateien-auf-eine-schaltflache-ziehen">Dateien auf eine Schaltfläche ziehen</h2>
+<p>Sie können Dateien oder Ordner direkt auf eine Schaltfläche ziehen:</p>
+<ul>
+<li><strong>Ordner-Schaltfläche</strong> — die abgelegten Elemente werden im Hintergrund in diesen Ordner kopiert.</li>
+<li><strong>Programm-Schaltfläche</strong> — das Programm wird mit den abgelegten Elementen als Auswahl ausgeführt.</li>
+<li><strong>Befehls-Schaltfläche</strong> — der Befehl wird wie gewohnt ausgeführt.</li>
+</ul>
+<h2 id="vertikale-schaltflachenleiste">Vertikale Schaltflächenleiste</h2>
+<p>Um den Streifen vom oberen Rand des Fensters in eine Spalte an der linken Seite zu verschieben, wählen Sie <strong>Ansicht &gt; Vertikale Schaltflächenleiste</strong>. Wählen Sie sie erneut, um zum waagerechten Streifen zurückzuwechseln.</p>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Die Leiste wird in einer standardmäßigen Schaltflächenleisten-Datei gespeichert, die mit Total Commander kompatibel ist, sodass Leisten, die Sie bereits haben, wiederverwendet werden können.</li>
+<li>Diesen Aktionen sind standardmäßig keine Tastenkürzel zugewiesen, aber Sie können eigene hinzufügen — siehe <a href="keyboard-shortcuts">Tastenkürzel</a>.</li>
+<li>Eine Schaltfläche ohne Symbol und ohne Befehl wird als einfacher Trenner angezeigt, praktisch zum Gruppieren zusammengehöriger Schaltflächen.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="keyboard-shortcuts.html">Tastatur &amp; Kurzbefehle</a></li><li><a href="settings.html">Einstellungen</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automation (AppleScript &amp; Shortcuts)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Automation (AppleScript &amp; Shortcuts)</h1>
+<p>Peach Commander is scriptable, so you can drive it from AppleScript and from the Shortcuts app. A handful of core verbs let a script navigate the panels, select files by a mask, copy or move the current selection, and run any Peach Commander command by its id — reusing exactly the same actions the menus use, so a scripted step behaves like a manual one. It's handy for repetitive chores: filing downloads, staging a build's output, or wiring a file step into a larger Shortcut.</p>
+<h2 id="see-the-dictionary">See the dictionary</h2>
+<ol>
+<li>Open <strong>Script Editor</strong> (in <code>/Applications/Utilities</code>).</li>
+<li>Choose <strong>Window ▸ Library</strong>, then double-click <strong>Peach Commander</strong> (add it with <strong>+</strong> if it isn't listed).</li>
+<li>The dictionary opens, listing the commands and properties below.</li>
+</ol>
+<p>The first time a script controls Peach Commander, macOS asks you to allow it (<strong>System Settings ▸ Privacy &amp; Security ▸ Automation</strong>). Approve it once and later scripts run without prompting.</p>
+<h2 id="what-you-can-read">What you can read</h2>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>POSIX path of the active panel's folder.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>POSIX path of the other panel's folder.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>The selected items in the active panel (or the item under the cursor).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-verbs">The verbs</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;path&gt;" [in left\|right]</code></td>
+<td>Open a folder in a panel (default: the active panel).</td>
+</tr>
+<tr>
+<td><code>select "&lt;mask&gt;"</code></td>
+<td>Select items in the active panel by a wildcard mask, e.g. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;folder&gt;"</code></td>
+<td>Copy the active panel's selection to a folder.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;folder&gt;"</code></td>
+<td>Move the active panel's selection to a folder.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Run any command by its id, e.g. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Copy and move use the same background transfer queue as F5/F6, so progress and any overwrite prompts appear exactly as they do for a manual operation.</p>
+<h2 id="example">Example</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="using-it-from-shortcuts">Using it from Shortcuts</h2>
+<p>In the <strong>Shortcuts</strong> app, add the <strong>Run AppleScript</strong> action and paste a script like the one above. That lets you fold a Peach Commander step into a larger Shortcut — for example, triggered by a folder change or a hotkey.</p>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>The command id you pass to <code>run command</code> is the same <code>cm_*</code> id shown in the command browser (see <a href="start-menu.md">The Start menu &amp; custom commands</a>).</li>
+<li>Scripting always acts on the <strong>active</strong> panel; use <code>go to … in left</code> / <code>in right</code> first if you need a specific side.</li>
+<li>Peach Commander is a single-window app, so scripts target that window's two panels.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">The Start menu &amp; custom commands</a></li><li><a href="settings.html">Settings</a></li></ul></section>
+</main>
+</body>
+</html>

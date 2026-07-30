@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editing files</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Editing files</h1>
+<p>When you need to change a file rather than just look at it, Peach Commander opens it in a built-in editor. Text and code files open in a full editor with syntax highlighting, find and replace, an outline of the symbols in your code, and a minimap for quick navigation. Binary files can be opened in a separate hex editor, where you can inspect and change individual bytes. You never have to leave the app to make a quick edit.</p>
+<h2 id="edit-a-text-or-code-file">Edit a text or code file</h2>
+<ol>
+<li>In either panel, move the cursor to the file you want to change.</li>
+<li>Press F4, or choose File ▸ Edit. The file opens in the editor window.</li>
+<li>Make your changes. If the file is a recognized programming or data format, keywords, strings, and comments are colored automatically.</li>
+<li>Press Cmd+S (or click Save) to write your changes. The first save keeps a backup of the original alongside the file, so you can always fall back to it.</li>
+</ol>
+<p>To start a brand-new text file at the current location, press Shift+F4.</p>
+<p><img alt="The built-in text editor showing syntax highlighting, the symbol outline, and the minimap" src="images/editor.png" />
+<em>(Figure: The editor with syntax highlighting, the symbol outline on the left, and the minimap on the right.)</em></p>
+<h2 id="find-replace-and-navigate">Find, replace, and navigate</h2>
+<ul>
+<li>Press Cmd+F to open the find bar. To replace text, open the find bar and switch it to the replace view, or click Find/Replace in the toolbar.</li>
+<li>Click Format JSON/XML to re-indent a JSON or XML document into clean, readable layout.</li>
+<li>Click Symbols (or press Cmd+Shift+O) to show a sidebar that lists the classes, functions, and methods in your code. Click an entry to jump straight to it.</li>
+<li>Press Cmd+L to jump to a specific line.</li>
+<li>Press Cmd+\ to jump between a bracket and its matching partner.</li>
+<li>Click the map button to show or hide the minimap, a scaled overview of the whole file you can click to scroll.</li>
+<li>Use the Encoding menu in the toolbar if the file was saved in something other than the default text encoding.</li>
+</ul>
+<h2 id="edit-a-file-byte-by-byte">Edit a file byte by byte</h2>
+<ol>
+<li>Select the file in a panel.</li>
+<li>Choose File ▸ Edit as Hex (or right-click the file and choose Edit as Hex).</li>
+<li>Type hex digits to overwrite bytes, or use the arrow keys to move through the file. Backspace and Delete remove bytes.</li>
+<li>Press Cmd+S to save. As with the text editor, a one-time backup of the original is kept.</li>
+</ol>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Edit file</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Create and edit a new text file</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>Save</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>Find</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>Show/hide symbol outline</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>Go to line</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>Jump to matching bracket</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>Undo / redo (hex editor)</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Syntax highlighting covers JSON, C, C#, Java, JavaScript, TypeScript, Python, and Rust. Other file types still open and edit normally with basic coloring, but detailed highlighting and the symbol outline are only available for the supported languages.</li>
+<li>The symbol outline and Go to Line features apply to the text editor. The hex editor is meant for binary inspection and byte-level edits, not for text.</li>
+<li>Both editors keep a backup of the original file the first time you save, so an accidental change is easy to undo by restoring that backup.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Viewing files</a></li></ul></section>
+</main>
+</body>
+</html>

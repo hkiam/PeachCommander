@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>플러그인</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>플러그인</h1>
+<p>플러그인은 Peach Commander에 추가 도구, 파일 형식, 탐색할 위치를 더해 줍니다. 열두 개의 플러그인이 기본 제공되어 바로 사용할 수 있으며, 개별 플러그인을 켜거나 끄고 — 또는 새로 설치하고 — 하나의 창에서 관리할 수 있습니다. 일상적인 복사와 탐색을 넘어서는 기능이 필요할 때 플러그인을 쓰세요: 디스크를 무엇이 채우는지 시각화하기, WebDAV 서버에 연결하기, Git 저장소 상태 확인하기, 시스템 활동 지켜보기 등.</p>
+<p>플러그인에는 몇 가지 형태가 있습니다: 어떤 것은 <strong>패널이나 사이드바</strong>(보기)를 더하고, 어떤 것은 파일 목록에 <strong>열</strong>을 더하고, 어떤 것은 드라이브처럼 <strong>탐색해 들어가는 위치</strong>를 더하며, 어떤 것은 앱에 새로운 <strong>압축 형식</strong>을 가르칩니다. 각각은 독립적으로 켜집니다.</p>
+<h2 id="_1">기본 제공 플러그인이 더하는 것</h2>
+<p>여러 플러그인은 자체적인 상세 도움말 항목이 있습니다 — 전체 내용은 링크를 따라가세요:</p>
+<ul>
+<li><strong><a href="disk-map.md">Disk Map</a></strong> — 폴더나 볼륨을 무엇이 채우는지 트리맵 또는 선버스트로 시각화하고, 여유·정리 가능·숨김 공간과 대조하며, 정리 컬렉터를 제공합니다.</li>
+<li><strong><a href="ai-assistant.md">AI Assistant</a></strong> — 파일을 자연어로 요약·이름 변경·번역·표 작성·정리하는 선택적이고 제거 가능한 도우미로, 온디바이스 또는 클라우드 모델을 사용합니다.</li>
+<li><strong><a href="git.md">Git</a></strong> — 각 파일의 작업 트리 상태와 현재 브랜치를 패널 열로 보여주고, 상태·스테이징·커밋·풀·푸시를 위한 <strong>Git</strong> 메뉴를 더합니다.</li>
+<li><strong><a href="system-monitor.md">System Monitor</a></strong> — CPU, 메모리, 디스크, 네트워크(그리고 가능한 경우 GPU, 배터리, 센서)를 창 제목 표시줄에서 실시간으로 읽어 주며, 클릭하면 상세 그래프로 들어갑니다.</li>
+<li><strong><a href="task-manager.md">Task Manager</a></strong> — 실행 중인 프로세스를 탐색 가능한 <strong>TaskManager</strong> 드라이브로 마운트합니다. 정렬하고, 파일처럼 살펴보고, 삭제로 종료하세요.</li>
+<li><strong><a href="uninstaller.md">Uninstaller</a></strong> — 응용 프로그램 <strong>과</strong> 그것이 남기는 지원 파일, 캐시, 환경설정을 정확히 무엇이 사라질지 보여준 후 제거합니다.</li>
+</ul>
+<p>나머지 기본 제공 플러그인은 더 작아서 별도의 페이지가 필요하지 않습니다:</p>
+<ul>
+<li><strong>WebDAV</strong> — WebDAV 서버에 연결하고(<strong>네트워크 ▸ WebDAV Connect…</strong>) 마치 폴더인 것처럼 그 위에서 탐색, 업로드, 다운로드, 이름 바꾸기, 삭제를 합니다. 암호는 macOS 키체인에 보관됩니다.</li>
+<li><strong>iCloud Drive</strong> — 로컬 iCloud Drive 폴더로 곧장 이동하는 <em>iCloud Drive</em> 항목을 드라이브 막대에 더합니다. Mac에 iCloud Drive가 설정되어 있을 때만 나타납니다.</li>
+<li><strong>Notes</strong> — 아무 파일이나 폴더 옆에 메모를 보관합니다. 작은 <strong>●</strong> 배지가 메모가 있는 항목을 표시합니다. 도킹된 <strong>Notes</strong> 사이드바나 전체 서식 있는 텍스트 편집기(<strong>명령 ▸ Edit Note…</strong>)에서 메모를 편집하고, <strong>Notes Overview…</strong>로 모두 둘러봅니다.</li>
+<li><strong>Log Viewer</strong> — 파일을 색상으로 구분되고 수준별로 분류되며 실시간으로 따라가는 로그로 엽니다(<strong>파일 ▸ View as Log…</strong>). 수준별 필터, 검색, 일반적인 로그 형식과 사용자 지정 정규식 형식을 지원합니다. 수 기가바이트 로그도 즉시 처리합니다.</li>
+<li><strong>AI Column</strong> — 각 텍스트 파일의 주된 언어를 온디바이스로 감지하는 <em>AI Language</em> 열을 더합니다(클라우드 모델이 아니라 Apple의 NaturalLanguage 프레임워크 사용).</li>
+<li><strong>압축 형식</strong> — 앱에 더 많은 압축 유형(7z, tar 계열, gzip/bzip2/xz/zstd, 그리고 헬퍼 도구가 설치된 경우 RAR)을 탐색하고 추출하도록 가르치며, 이들은 폴더처럼 열립니다.</li>
+</ul>
+<h2 id="_2">플러그인 켜기 또는 끄기</h2>
+<ol>
+<li>설정 ▸ 플러그인…을 선택해 플러그인 창을 엽니다.</li>
+<li>설치된 각 플러그인이 이름, 유형, 사용 체크박스와 함께 목록에 나타납니다.</li>
+<li>체크박스를 선택하거나 해제해 플러그인을 켜거나 끕니다. 변경은 즉시 적용됩니다 — 켜진 플러그인은 자신의 메뉴, 열, 기능을 더하고, 꺼진 것은 방해가 되지 않습니다.</li>
+</ol>
+<p><img alt="사용 체크박스와 설치·제거 버튼이 있는, 설치된 플러그인 목록 창" src="images/plugins-window.png" />
+<em>(그림: 플러그인을 켜고, 끄고, 설치하거나 제거하는 플러그인 창.)</em></p>
+<h2 id="_3">새 플러그인 설치</h2>
+<ol>
+<li>설정 ▸ 플러그인…을 선택합니다.</li>
+<li><strong>폴더에서 설치…</strong>를 클릭합니다.</li>
+<li>플러그인 번들 또는 그것을 담은 <code>.zip</code>을 고르고 확인합니다. 플러그인이 목록에 추가되고 켜집니다.</li>
+</ol>
+<h2 id="_4">플러그인 제거</h2>
+<ol>
+<li>플러그인 창에서 목록의 플러그인을 선택합니다.</li>
+<li><strong>제거</strong>를 클릭합니다. 기본 기능은 영향을 받지 않으며, 선택한 플러그인만 제거됩니다.</li>
+</ol>
+<h2 id="_5">참고</h2>
+<ul>
+<li>플러그인 목록은 이름과 위치와 함께 각 플러그인의 유형과 인터페이스 버전을 보여 주므로 무엇이 설치되어 있는지 확인할 수 있습니다.</li>
+<li>설치된 플러그인이 없으면 창은 <strong>폴더에서 설치…</strong>로 안내하는 짧은 안내를 표시합니다.</li>
+<li>일부 플러그인은 켜져 있을 때만 자신의 열, 메뉴 항목, 패널 위치를 더합니다. 기대한 기능이 보이지 않으면 여기서 해당 플러그인이 켜져 있는지 확인하세요.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">디스크 맵</a></li><li><a href="ai-assistant.html">AI 어시스턴트</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="archives.html">압축 파일 다루기</a></li><li><a href="ftp-and-sftp.html">FTP 및 SFTP 연결</a></li></ul></section>
+</main>
+</body>
+</html>

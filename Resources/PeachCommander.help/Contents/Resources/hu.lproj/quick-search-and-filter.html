@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gyorskeresés és szűrő</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Gyorskeresés és szűrő</h1>
+<p>Amikor egy mappa több száz elemet tartalmaz, ritkán kell görgetnie. A Peach Commander lehetővé teszi, hogy egyenesen egy fájlra ugorjon a nevét beírva (gyorskeresés), a listát csak az önt érdeklő elemekre szűkítse (gyorsszűrő), és megjelenítse vagy elrejtse a pontfájlokat, amelyeket a macOS általában szem elől rejt. Mindhárom az aktív panelen belül működik párbeszéd megnyitása nélkül.</p>
+<h2 id="ugras-egy-fajlra-gepelessel-gyorskereses">Ugrás egy fájlra gépeléssel (gyorskeresés)</h2>
+<ol>
+<li>Kattintson egy fájlpanelre, hogy aktív legyen.</li>
+<li>Kezdje el gépelni egy név elejét. A kurzor az első megfelelő elemre ugrik.</li>
+<li>Folytassa a gépelést az egyezés finomításához, vagy nyomja meg ugyanazt a betűt újra az azzal a betűvel kezdődő elemek közötti körbejáráshoz.</li>
+<li>A beírt szöveg egy rövid szünet után törlődik, így bármikor új keresést kezdhet.</li>
+</ol>
+<p>Alapértelmezetten a sima betűk a parancssorba mennek, a gyorskeresés pedig a Ctrl+Option+betűvel indul (a klasszikus viselkedés). Átválthatja a gyorskeresést, hogy sima gépelésre reagáljon, vagy kikapcsolhatja, a konfigurációs beállításokban.</p>
+<h2 id="a-lista-szurese-gyorsszuro">A lista szűrése (gyorsszűrő)</h2>
+<ol>
+<li>Az aktív panelben nyomja meg a Ctrl+S-t a gyorsszűrő bekapcsolásához.</li>
+<li>Írjon be egy szűrőmaszkot. A panel élőben szűkül a megfelelő elemekre, ahogy gépel.</li>
+<li>Nyomja meg az Esc-et a szűrő törléséhez és mindennek újbóli megjelenítéséhez.</li>
+</ol>
+<p>A szűrő többféle maszkot fogad el:</p>
+<ul>
+<li><strong>Sima szöveg</strong> minden névre illeszkedik, amely tartalmazza, amit beírt (például a <code>jelentés</code> minden elemet megjelenít, amelynek nevében bárhol szerepel a „jelentés").</li>
+<li><strong>Helyettesítő karakterek</strong> a <code>*</code>-ot (bármely karakter) és a <code>?</code>-et (egy karakter) használják. Válasszon el több maszkot pontosvesszővel, és adjon hozzá kizárásokat egy függőleges vonal után, például <code>*.jpg;*.png|*thumb*</code> a képek megjelenítéséhez, de az indexképek elrejtéséhez.</li>
+<li><strong>Finder-címkék</strong> címkeszín szerint szűrnek: írja be a <code>tag:red</code>-et (vagy <code>#red</code>) csak a piros címkés elemek megjelenítéséhez, vagy egy egyszerű <code>tag:</code>-et mindennek megjelenítéséhez, ami bármilyen címkét hordoz.</li>
+</ul>
+<h2 id="rejtett-fajlok-megjelenitese">Rejtett fájlok megjelenítése</h2>
+<p>Nyomja meg a Ctrl+H-t, vagy válassza a parancsot a Nézet menüből, a rejtett elemek (ponttal kezdődő nevek és rendszer által rejtett fájlok) átkapcsolásához. A beállítás az aktív panelre vonatkozik, és megjegyződik a munkamenetek között.</p>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyűparancs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gyorskeresés (klasszikus mód)</td>
+<td>Ctrl+Option+betű</td>
+</tr>
+<tr>
+<td>Gyorsszűrő be/ki</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Szűrő törlése / mégse</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Rejtett fájlok megjelenítése/elrejtése</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A gyorskeresés csak a kurzort mozgatja; a gyorsszűrő valóban megváltoztatja, mely elemek szerepelnek. Használja a szűrőt, ha egy részhalmazon szeretne dolgozni (például csak az egyezéseket kijelölni vagy másolni).</li>
+<li>A szűrő és rejtett fájlok beállítások panelenkéntiek, így a két oldal egyszerre különböző dolgokat mutathat.</li>
+<li>A gyorskeresés a nevek elejétől egyezik; a gyorsszűrő sima szöveg módja a név bárhol egyezik. Használjon egy helyettesítő karaktert, mint a <code>*szöveg*</code>, ha azt szeretné, hogy a szűrő ugyanúgy viselkedjen.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Fájlok keresése</a></li><li><a href="view-modes-and-sorting.html">Nézetmódok és rendezés</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inställningar</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Inställningar</h1>
+<p>Inställningsfönstret är där du skräddarsyr Peach Commander efter hur du arbetar: vilka rader som visas, hur filer visas, hur kopierings- och raderingsåtgärder beter sig, arkivformatet som används när du packar, flikbeteende, FTP-standardvärden, visningsspråk med mera. Inställningarna är grupperade i sidor så att du snabbt hittar ett alternativ, och varje ändring sparas automatiskt i din personliga konfigurationsmapp.</p>
+<h2 id="oppna-installningar">Öppna Inställningar</h2>
+<ol>
+<li>Välj <strong>Peach Commander &gt; Inställningar…</strong>, eller tryck på Cmd+, (kommatecken).</li>
+<li>Du kan även öppna samma fönster från <strong>Konfiguration &gt; Alternativ…</strong>.</li>
+<li>Välj en sida från listan till vänster; alternativen för den sidan visas till höger.</li>
+<li>Justera reglagen. Ändringar träder i kraft direkt om inte en anmärkning på sidan säger annat.</li>
+</ol>
+<p><img alt="Inställningsfönstret med sidan Layout och kryssrutor för gränssnittsraderna" src="images/settings-layout.png" />
+<em>(Bild: Sidan Layout styr vilka rader som visas runt panelerna.)</em></p>
+<h2 id="sidorna">Sidorna</h2>
+<p>Fönstret har dessa sidor, i ordning:</p>
+<ul>
+<li><strong>Layout</strong> — visa eller dölj enhetsraden, flikraden, sökvägsraden och statusraden.</li>
+<li><strong>Visning</strong> — hur filer och mappar listas, inklusive datumformatet.</li>
+<li><strong>Symboler</strong> — symbolernas utseende i fillistorna.</li>
+<li><strong>Åtgärder</strong> — allmänt beteende, som vad som händer när du skriver i en panel (snabbsökning kontra kommandoraden).</li>
+<li><strong>Färger</strong> — anpassade panelfärger, eller låt dem följa det aktuella temat.</li>
+<li><strong>Bekräftelse</strong> — vilka åtgärder som ber dig bekräfta först, till exempel radering.</li>
+<li><strong>Redigera/Visa</strong> — programmen som används för att redigera och visa filer, och kopplingar per typ.</li>
+<li><strong>Kopiera/Radera</strong> — bevara filmetadata, använd snabb kloning, kopiera endast nyare filer, verifiera efter kopiering, skicka raderingar till papperskorgen och ange en valfri hastighetsgräns.</li>
+<li><strong>Zip/Packare</strong> — standardarkivformatet och komprimeringsnivån som används när du packar.</li>
+<li><strong>Insticksprogram</strong> — slå på eller av installerade insticksprogram.</li>
+<li><strong>Flikar</strong> — hur mappflikar öppnas och beter sig.</li>
+<li><strong>FTP</strong> — nätverksstandardvärden som keep-alive-intervallet.</li>
+<li><strong>Tangentbord</strong> — granska och ändra kortkommandon.</li>
+<li><strong>Språk</strong> — välj Systemstandard, English eller Deutsch.</li>
+<li><strong>AI</strong> — konfigurera AI-assistenten: önskad modell, molnslutpunkt och nyckel, autonomi och den valfria MCP-servern (se <a href="ai-assistant.md">AI Assistant</a>).</li>
+<li><strong>Övrigt</strong> — öppna din konfigurationsmapp i Finder.</li>
+</ul>
+<p>Aktiverade insticksprogram kan lägga till sina egna sidor efter de inbyggda — till exempel <strong>Disk Map</strong> och <strong>System Monitor</strong> — så att deras alternativ finns i samma fönster (se <a href="plugins.md">Insticksprogram</a>).</p>
+<p><img alt="Inställningsfönstret med sidan Visning och alternativ för hur filer listas" src="images/settings-display.png" />
+<em>(Bild: Sidan Visning styr hur filer och mappar listas.)</em></p>
+<p><img alt="Inställningsfönstret med sidan Åtgärder" src="images/settings-operation.png" />
+<em>(Bild: Sidan Åtgärder styr snabbsökning och musbeteende.)</em></p>
+<h2 id="var-dina-installningar-lagras">Var dina inställningar lagras</h2>
+<p>Din konfiguration förvaras i klartextfiler inuti din personliga Application Support-mapp, på <code>~/Library/Application Support/PeachCommander</code>. För att öppna den, gå till sidan <strong>Övrigt</strong> och klicka på <strong>Öppna konfigurationsmapp</strong>. Sparade FTP-lösenord lagras inte i dessa filer; de förvaras säkert i macOS nyckelring.</p>
+<p>Inställningar skrivs allteftersom du ändrar dem. Du kan även framtvinga en sparning när som helst med <strong>Konfiguration &gt; Spara inställningar</strong>, och lagra det aktuella fönsterläget och panellayouten med <strong>Konfiguration &gt; Spara position</strong>.</p>
+<h2 id="ta-med-installningar-fran-total-commander">Ta med inställningar från Total Commander</h2>
+<p>Om du byter från Total Commander på Windows kan du importera dina sparade FTP-platser. Välj <strong>Konfiguration &gt; Importera wincmd.ini…</strong> och välj din Total Commander FTP-konfigurationsfil. Dina anslutningar läggs till i Peach Commander i samma ordning som de fanns där.</p>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Öppna Inställningar</td>
+<td>Cmd+,</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Sidan <strong>Språk</strong> erbjuder Systemstandard, English och Deutsch. En språkändring träder i kraft först efter att du startat om Peach Commander.</li>
+<li>Färger som ställs in på sidan <strong>Färger</strong> åsidosätter temat; använd <strong>Återställ standardvärden</strong> där för att återgå till temats färger.</li>
+<li>Peach Commander lagrar sina inställningar endast i sin egen konfigurationsmapp, så dina ändringar påverkar aldrig andra appar och är enkla att säkerhetskopiera genom att kopiera den mappen.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="appearance.html">Utseende</a></li><li><a href="keyboard-shortcuts.html">Tangentbord och kortkommandon</a></li></ul></section>
+</main>
+</body>
+</html>

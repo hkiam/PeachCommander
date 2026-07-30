@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knaplinjen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Knaplinjen</h1>
+<p>Knaplinjen er stribien af ikonknapper langs toppen af vinduet. Hver knap er en ét-klik-genvej, du selv definerer: kør en indbygget kommando, start et eksternt program eller en app, spring til en mappe, eller åbn en hel underlinje med flere knapper. Det er den hurtigste måde at få de handlinger, du bruger mest, inden for rækkevidde, og du kan skræddersy den præcis til den måde, du arbejder på.</p>
+<h2 id="tilpas-knaplinjen">Tilpas knaplinjen</h2>
+<ol>
+<li>Vælg <strong>Konfiguration &gt; Tilpas værktøjslinje…</strong>, eller højreklik på linjen og vælg <strong>Rediger knaplinje…</strong>.</li>
+<li>Listen til venstre viser de aktuelle knapper. Brug <strong>+</strong> for at tilføje en knap, <strong>—</strong> for at tilføje en adskiller, <strong>−</strong> for at fjerne den valgte knap, og <strong>↑ / ↓</strong> for at ændre rækkefølge.</li>
+<li>Vælg en knap og udfyld formularen til højre:
+   - <strong>Kommando</strong> — indtast en indbygget kommando, eller klik på <strong>Vælg…</strong> for at vælge en fra en liste. Du kan også indtaste stien til et program eller en app, en mappe at åbne, eller en anden knaplinje at bruge som underlinje.
+   - <strong>Tekst</strong> — etiketten og værktøjstippet vist for knappen.
+   - <strong>Parametre</strong> og <strong>Startsti</strong> — videregivet til eksterne programmer. Pladsholdere såsom <code>%P</code> (kildemappe), <code>%N</code> (aktuel fil) og <code>%S</code> (valgte filer) udfyldes, når knappen kører.
+   - <strong>Ikon</strong> — vælg et SF Symbol eller brug en fils eller apps eget ikon; slå <strong>kun ikon</strong> til for at skjule teksten.</li>
+<li>Klik på <strong>Gem</strong>. Stribien genindlæses med det samme.</li>
+</ol>
+<p><img alt="Knaplinjen langs toppen af vinduet med ikonknapper" src="images/button-bar-crop.png" />
+<em>(Figur: knaplinjen sidder over filpanelerne; hver knap kører en kommando, et program, en mappe eller en underlinje.)</em></p>
+<h2 id="underlinjer-og-overlb">Underlinjer og overløb</h2>
+<p>En knap kan åbne en <em>underlinje</em> — et andet sæt knapper lagt over det første. Klik på den for at gå ned; en <strong>◀</strong>-knap til venstre fører dig tilbage til den forrige linje. Når der er flere knapper, end der er plads til i vinduesbredden, foldes de ekstra bag en <strong>»</strong>-vinkel i højre ende; klik på den for at nå dem.</p>
+<h2 id="slip-filer-pa-en-knap">Slip filer på en knap</h2>
+<p>Du kan trække filer eller mapper direkte på en knap:</p>
+<ul>
+<li><strong>Mappeknap</strong> — de slupne emner kopieres ind i den mappe i baggrunden.</li>
+<li><strong>Programknap</strong> — programmet kører med de slupne emner som sin markering.</li>
+<li><strong>Kommandoknap</strong> — kommandoen kører som normalt.</li>
+</ul>
+<h2 id="lodret-knaplinje">Lodret knaplinje</h2>
+<p>For at flytte stribien fra toppen af vinduet til en kolonne langs venstre side, vælg <strong>Vis &gt; Lodret knaplinje</strong>. Vælg den igen for at skifte tilbage til den vandrette stribe.</p>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li>Linjen gemmes i en standard knaplinjefil, der er kompatibel med Total Commander, så linjer, du allerede har, kan genbruges.</li>
+<li>Der er som standard ikke tildelt tastaturgenveje til disse handlinger, men du kan tilføje dine egne — se <a href="keyboard-shortcuts">Tastaturgenveje</a>.</li>
+<li>En knap uden ikon og uden kommando vises som en simpel adskiller, praktisk til at gruppere relaterede knapper.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="keyboard-shortcuts.html">Tastatur og genveje</a></li><li><a href="settings.html">Indstillinger</a></li></ul></section>
+</main>
+</body>
+</html>

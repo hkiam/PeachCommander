@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Git</h1>
+<p>A Git bővítmény egy Git-tároló állapotát közvetlenül a fájlpanelbe hozza — nincs külön app, nincs terminál. Két oszlopot ad hozzá, amelyek minden fájl munkafa-állapotát és az aktuális branchet mutatják, egy <strong>Git</strong> almenüt a hétköznapi parancsokhoz (státusz, előkészítés, commit, pull, push), és a Macre már telepített <code>git</code>-et használja. Mivel bővítményről van szó, a <strong>Konfiguráció ▸ Bővítmények…</strong> menüpontból kikapcsolhatja vagy eltávolíthatja.</p>
+<h2 id="mit-ad-hozza">Mit ad hozzá</h2>
+<ul>
+<li><strong>Két fájllista-oszlop</strong> — <em>Git Status</em> és <em>Branch</em>. Egy tárolóban minden fájl egy rövid állapotszót mutat (Módosítva, Hozzáadva, Törölve, Nem követett, Átnevezve, Másolva, Ütközés, Figyelmen kívül hagyva vagy Megváltozva), a panel pedig az aktuális branchet mutatja. Kapcsolja be az oszlopokat a <strong>Konfiguráció ▸ Oszlopok…</strong> menüpontban (lásd <a href="view-modes-and-sorting.md">Nézetmódok és rendezés</a>).</li>
+<li><strong>Egy Git menü</strong> — a <strong>Parancsok ▸ Git</strong> alatt, valamint egy fájl jobb gombos menüjében, a következőkkel: <strong>Git Status…</strong>, <strong>Git Add (előkészítés)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> és <strong>Git Push</strong>.</li>
+</ul>
+<p><img alt="A Git Status párbeszéd az aktuális branchet és a tárolóban módosított fájlokat mutatja" src="images/git-status.png" />
+<em>(Ábra: a Git Status jelenti a branchet és a munkafa minden változását.)</em></p>
+<h2 id="az-allapot-ellenorzese">Az állapot ellenőrzése</h2>
+<ol>
+<li>Vigye a kurzort egy Git-tárolón belüli fájlra vagy mappára.</li>
+<li>Válassza a <strong>Parancsok ▸ Git ▸ Git Status…</strong> lehetőséget (vagy jobb kattintás ▸ <strong>Git ▸ Git Status…</strong>).</li>
+<li>Megjelenik egy összefoglaló: az aktuális branch (vagy <em>(leválasztott)</em>), majd vagy <em>A munkafa tiszta.</em>, vagy a változások listája, ahol minden sor az állapotot és a fájl útvonalát mutatja.</li>
+</ol>
+<p>Ha a kurzor nincs egy tárolón belül, a bővítmény egyszerűen azt írja: <em>Nem Git-tároló.</em></p>
+<h2 id="elokeszites-commit-pull-push">Előkészítés, commit, pull, push</h2>
+<ul>
+<li>A <strong>Git Add (előkészítés)</strong> előkészíti a kurzor alatti fájlt (<code>git add</code>).</li>
+<li>A <strong>Git Commit…</strong> egy commit-üzenetet kér, majd az összes változást committolja (<code>git commit -a</code>). Az összesített kimenet megjelenik, így pontosan látja, mi történt.</li>
+<li>A <strong>Git Pull</strong> egy csak fast-forward pullt hajt végre (<code>git pull --ff-only</code>).</li>
+<li>A <strong>Git Push</strong> az aktuális branchet pusholja (<code>git push</code>).</li>
+</ul>
+<p>Egy olyan parancs után, amely megváltoztatja a tárolót, az aktív panel frissül, hogy az állapotoszlopok naprakészek maradjanak.</p>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A bővítmény a rendszer Gitjét használja a <code>/usr/bin/git</code> alatt. Ha a Git nincs telepítve, a parancsok jelzik, hogy a Git nem érhető el. (Az Xcode Command Line Tools telepítése biztosítja.)</li>
+<li>A tároló állapota mappánként egyszer olvasódik be és gyorsítótárazódik, így egy nagy tároló görgetése gyors marad; a gyorsítótár minden olyan parancs után frissül, amely megváltoztatja a fát.</li>
+<li>A commit a <code>git commit -a</code>-t használja, amely a követett változásokat committolja; a vadonatúj fájlokhoz továbbra is előbb a <strong>Git Add (előkészítés)</strong> szükséges.</li>
+<li>A <em>Git Status</em> és <em>Branch</em> oszlopfejlécek jelenleg más felületnyelveken is angolul jelennek meg; az értékek és a párbeszédek honosítottak.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="view-modes-and-sorting.html">Nézetmódok és rendezés</a></li></ul></section>
+</main>
+</body>
+</html>

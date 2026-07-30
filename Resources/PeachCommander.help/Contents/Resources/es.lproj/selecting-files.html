@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seleccionar archivos</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Seleccionar archivos</h1>
+<p>Antes de copiar, mover, eliminar o comprimir algo, primero le dices a Peach Commander sobre qué elementos actuar. El elemento en el que está el cursor es siempre el elemento actual, pero también puedes <em>marcar</em> uno o varios archivos y carpetas para que un comando se ejecute sobre todos ellos a la vez. Los elementos marcados destacan con un color de nombre distinto en el panel.</p>
+<h2 id="marcar-archivos-y-carpetas">Marcar archivos y carpetas</h2>
+<ol>
+<li>Haz clic en una fila para mover el cursor a ella. Un solo clic selecciona únicamente ese elemento.</li>
+<li>Para marcar varios elementos a la vez, mantén pulsada Cmd y haz clic en cada uno, o mantén Shift y haz clic para marcar un rango.</li>
+<li>Para marcar el elemento bajo el cursor y bajar en un solo movimiento, pulsa Insert. Púlsala repetidamente para marcar rápidamente una serie de elementos consecutivos. La barra espaciadora también alterna la marca del elemento actual (y muestra el tamaño de una carpeta).</li>
+<li>Para marcar todo en el panel, elige Selección &gt; Seleccionar todo (Ctrl+Num+), o pulsa Cmd+A. Elige Selección &gt; Deseleccionar todo (Ctrl+Num-) para borrar todas las marcas.</li>
+</ol>
+<h2 id="seleccionar-o-deseleccionar-por-un-patron">Seleccionar o deseleccionar por un patrón</h2>
+<ol>
+<li>Elige Selección &gt; Seleccionar grupo… (Num+) para añadir elementos cuyos nombres coincidan con un patrón, o Selección &gt; Deseleccionar grupo… (Num-) para quitar los coincidentes de las marcas actuales.</li>
+<li>Escribe una máscara con comodines. Usa <code>*</code> para cualquier carácter y <code>?</code> para un solo carácter. Separa varias máscaras con un punto y coma, y enumera las excepciones tras una barra vertical: por ejemplo, <code>*.jpg;*.png</code> marca todas las imágenes, y <code>*.*|*.bak</code> marca todo excepto los archivos de copia de seguridad.</li>
+</ol>
+<p><img alt="El diálogo Seleccionar grupo con una máscara de comodines escrita en el campo de patrón" src="images/select-by-mask.png" />
+<em>(Figura: Marcar archivos con una máscara de comodines.)</em></p>
+<h2 id="invertir-misma-extension-y-restaurar">Invertir, misma extensión y restaurar</h2>
+<ul>
+<li><strong>Invertir selección</strong> (Num*, menú Selección) da la vuelta a cada marca: los elementos marcados se desmarcan y viceversa, útil para «todo excepto estos».</li>
+<li><strong>Seleccionar todos con la misma extensión</strong> (Alt+Num+, menú Selección) marca cada archivo que comparte la extensión del elemento bajo el cursor, así que una pulsación captura todos los archivos <code>.pdf</code>, por ejemplo.</li>
+<li><strong>Restaurar selección</strong> (Num/, menú Selección) recupera tu conjunto anterior de marcas, útil si un comando las borró o marcaste el grupo equivocado.</li>
+</ul>
+<h2 id="atajos">Atajos</h2>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Tecla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alternar marca, bajar</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Alternar marca (elemento actual)</td>
+<td>Space</td>
+</tr>
+<tr>
+<td>Seleccionar todo / deseleccionar todo</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Seleccionar todo (alternativa)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Seleccionar grupo por máscara</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Deseleccionar grupo por máscara</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Invertir selección</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Seleccionar todos con la misma extensión</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Restaurar la selección anterior</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>Las marcas y el cursor son independientes: mover el cursor con las teclas de flecha no cambia lo que está marcado.</li>
+<li>La entrada de la carpeta principal (<code>..</code>) nunca puede marcarse.</li>
+<li>Seleccionar grupo, Deseleccionar grupo e Invertir selección coinciden por el nombre del archivo, así que puedes incluir o dejar fuera las carpetas según las opciones del diálogo.</li>
+<li>Cuando termina una copia, un traslado o una eliminación, los elementos gestionados correctamente se desmarcan automáticamente, mientras que los que fallaron permanecen marcados para que puedas reintentarlos.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copiar archivos</a></li><li><a href="searching.html">Buscar archivos</a></li></ul></section>
+</main>
+</body>
+</html>

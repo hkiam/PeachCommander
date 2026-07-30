@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Netzwerkfreigaben</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Netzwerkfreigaben</h1>
+<p>Peach Commander kann sich mit Dateiservern in Ihrem lokalen Netzwerk oder Firmennetzwerk verbinden — SMB- (Windows/Samba) und AFP-Freigaben — und deren Inhalt in einem Panel anzeigen, genau wie einen Ordner auf Ihrem eigenen Mac. Sobald eine Freigabe verbunden ist, können Sie Dateien darauf durchsuchen, kopieren, verschieben, umbenennen und öffnen, genau wie lokal, einschließlich des Kopierens zwischen der Freigabe und Ihrem anderen Panel.</p>
+<h2 id="mit-einem-server-verbinden">Mit einem Server verbinden</h2>
+<ol>
+<li>Klicken Sie auf das Panel, das Sie verbinden möchten (die verbundene Freigabe wird im aktiven Panel geöffnet).</li>
+<li>Drücken Sie Cmd+K oder wählen Sie <strong>Netz &gt; Netzwerkumgebung &gt; Netzwerkfreigabe verbinden…</strong>.</li>
+<li>Geben Sie im Dialog <strong>Mit Server verbinden</strong> die Serveradresse ein. Sie können eingeben:
+   - eine SMB-Adresse, zum Beispiel <code>smb://fileserver/projects</code>
+   - eine AFP-Adresse, zum Beispiel <code>afp://fileserver/projects</code>
+   - einen Pfad im Windows-Stil, zum Beispiel <code>\\fileserver\projects</code>
+   - einen einfachen <code>server/share</code>-Namen</li>
+<li>Klicken Sie auf Verbinden (oder drücken Sie die Eingabetaste). Wenn der Server einen Namen und ein Passwort benötigt, zeigt macOS seine Standard-Anmeldeaufforderung an — geben Sie dort Ihre Anmeldedaten ein.</li>
+<li>Sobald die Freigabe bereit ist, öffnet das aktive Panel sie automatisch. Durchsuchen und bearbeiten Sie sie wie jeden anderen Ordner.</li>
+</ol>
+<h2 id="verbindung-trennen">Verbindung trennen</h2>
+<p>Eine verbundene Freigabe erscheint als eingebundenes Volume auf Ihrem Mac. Um die Verbindung zu trennen, werfen Sie es auf die übliche macOS-Weise aus — zum Beispiel über die Finder-Seitenleiste oder über die Laufwerksliste in Peach Commander.</p>
+<h2 id="tastaturkurzel">Tastaturkürzel</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Tastaturkürzel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Netzwerkfreigabe verbinden…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Die Authentifizierung (Benutzername, Passwort und eine etwaige Auswahl „im Schlüsselbund merken") wird über das Standard-Anmeldeblatt von macOS abgewickelt, sodass gespeicherte Serverpasswörter genauso funktionieren wie im Finder.</li>
+<li>Wenn Sie eine Adresse eingeben, die nicht verstanden werden kann, bittet Peach Commander Sie, eine SMB/AFP-Adresse, einen Pfad im Windows-Stil oder einen <code>server/share</code>-Namen anzugeben, und es wird nichts eingebunden.</li>
+<li>Nach der Bestätigung kann das Verbinden einen Moment dauern, während macOS die Freigabe einbindet; das Panel wechselt zu ihr, sobald sie verfügbar ist.</li>
+<li>Dies stellt eine Verbindung zu freigegebenen Laufwerken in einem Netzwerk her. Um stattdessen einen FTP-, FTPS- oder SFTP-Server zu erreichen, lesen Sie das verwandte Thema unten.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="ftp-and-sftp.html">Verbindung mit FTP &amp; SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indstillinger</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Indstillinger</h1>
+<p>Indstillinger-vinduet er, hvor du skræddersyr Peach Commander til den måde, du arbejder på: hvilke linjer der vises, hvordan filer vises, hvordan kopierings- og sletningshandlinger opfører sig, arkivformatet brugt når du pakker, faneadfærd, FTP-standarder, visningssproget og mere. Indstillinger er grupperet i sider, så du hurtigt kan finde en mulighed, og hver ændring gemmes automatisk til din personlige konfigurationsmappe.</p>
+<h2 id="abn-indstillinger">Åbn Indstillinger</h2>
+<ol>
+<li>Vælg <strong>Peach Commander &gt; Indstillinger…</strong>, eller tryk på Cmd+, (komma).</li>
+<li>Du kan også åbne det samme vindue fra <strong>Konfiguration &gt; Muligheder…</strong>.</li>
+<li>Vælg en side fra listen til venstre; mulighederne for den side vises til højre.</li>
+<li>Justér kontrollerne. Ændringer træder i kraft med det samme, medmindre en note på siden siger andet.</li>
+</ol>
+<p><img alt="Indstillinger-vinduet der viser Layout-siden med afkrydsningsfelter til grænsefladelinjerne" src="images/settings-layout.png" />
+<em>(Figur: Layout-siden styrer, hvilke linjer der vises omkring panelerne.)</em></p>
+<h2 id="siderne">Siderne</h2>
+<p>Vinduet har disse sider, i rækkefølge:</p>
+<ul>
+<li><strong>Layout</strong> — vis eller skjul drevlinjen, fanelinjen, stilinjen og statuslinjen.</li>
+<li><strong>Visning</strong> — hvordan filer og mapper vises, inklusive datoformatet.</li>
+<li><strong>Ikoner</strong> — ikonudseende i fillisterne.</li>
+<li><strong>Betjening</strong> — generel adfærd, såsom hvad der sker, når du skriver i et panel (hurtigsøgning kontra kommandolinjen).</li>
+<li><strong>Farver</strong> — tilpassede panelfarver, eller lad dem følge det aktuelle tema.</li>
+<li><strong>Bekræftelse</strong> — hvilke handlinger der beder dig bekræfte først, såsom sletning.</li>
+<li><strong>Rediger/Vis</strong> — programmerne brugt til at redigere og vise filer, og associationer pr. type.</li>
+<li><strong>Kopier/Slet</strong> — bevar filmetadata, brug hurtig kloning, kopier kun nyere filer, verificér efter kopiering, send sletninger til papirkurven og indstil en valgfri hastighedsgrænse.</li>
+<li><strong>Zip/Pakker</strong> — standardarkivformatet og komprimeringsniveauet brugt når du pakker.</li>
+<li><strong>Plugins</strong> — slå installerede plugins til eller fra.</li>
+<li><strong>Faner</strong> — hvordan mappefaner åbner og opfører sig.</li>
+<li><strong>FTP</strong> — netværksstandarder såsom keep-alive-intervallet.</li>
+<li><strong>Tastatur</strong> — gennemse og ændr tastaturgenveje.</li>
+<li><strong>Sprog</strong> — vælg Systemstandard, English eller Deutsch.</li>
+<li><strong>AI</strong> — konfigurér AI-assistenten: foretrukken model, skyendepunkt og -nøgle, autonomi og den valgfrie MCP-server (se <a href="ai-assistant.md">AI Assistant</a>).</li>
+<li><strong>Diverse</strong> — åbn din konfigurationsmappe i Finder.</li>
+</ul>
+<p>Aktiverede plugins kan tilføje deres egne sider efter de indbyggede — for eksempel <strong>Disk Map</strong> og <strong>System Monitor</strong> — så deres muligheder bor i det samme vindue (se <a href="plugins.md">Plugins</a>).</p>
+<p><img alt="Indstillinger-vinduet der viser Visning-sidens muligheder for hvordan filer vises" src="images/settings-display.png" />
+<em>(Figur: Visning-siden styrer, hvordan filer og mapper vises.)</em></p>
+<p><img alt="Indstillinger-vinduet der viser Betjening-siden" src="images/settings-operation.png" />
+<em>(Figur: Betjening-siden styrer hurtigsøgning og museadfærd.)</em></p>
+<h2 id="hvor-dine-indstillinger-gemmes">Hvor dine indstillinger gemmes</h2>
+<p>Din konfiguration holdes i klartekstfiler inde i din personlige Application Support-mappe, på <code>~/Library/Application Support/PeachCommander</code>. For at åbne den, gå til <strong>Diverse</strong>-siden og klik på <strong>Åbn konfigurationsmappe</strong>. Gemte FTP-adgangskoder gemmes ikke i disse filer; de holdes sikkert i macOS-nøgleringen.</p>
+<p>Indstillinger skrives, efterhånden som du ændrer dem. Du kan også tvinge en gemning når som helst med <strong>Konfiguration &gt; Gem indstillinger</strong> og gemme den aktuelle vinduesplacering og panellayout med <strong>Konfiguration &gt; Gem position</strong>.</p>
+<h2 id="at-tage-indstillinger-med-fra-total-commander">At tage indstillinger med fra Total Commander</h2>
+<p>Hvis du flytter fra Total Commander på Windows, kan du importere dine gemte FTP-steder. Vælg <strong>Konfiguration &gt; Importer wincmd.ini…</strong> og vælg din Total Commander-FTP-konfigurationsfil. Dine forbindelser tilføjes til Peach Commander i den samme rækkefølge, de optrådte der.</p>
+<h2 id="genveje">Genveje</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Genvej</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Åbn Indstillinger</td>
+<td>Cmd+,</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bemrkninger">Bemærkninger</h2>
+<ul>
+<li><strong>Sprog</strong>-siden tilbyder Systemstandard, English og Deutsch. At ændre sproget træder først i kraft, efter du genstarter Peach Commander.</li>
+<li>Farver sat på <strong>Farver</strong>-siden tilsidesætter temaet; brug <strong>Gendan standardindstillinger</strong> der for at vende tilbage til temaets farver.</li>
+<li>Peach Commander gemmer sine indstillinger kun i sin egen konfigurationsmappe, så dine ændringer påvirker aldrig andre apps og er nemme at sikkerhedskopiere ved at kopiere den mappe.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="appearance.html">Udseende</a></li><li><a href="keyboard-shortcuts.html">Tastatur og genveje</a></li></ul></section>
+</main>
+</body>
+</html>

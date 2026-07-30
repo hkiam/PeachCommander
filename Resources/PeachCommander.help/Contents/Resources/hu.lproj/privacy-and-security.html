@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adatvédelem és biztonság</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Adatvédelem és biztonság</h1>
+<p>A Peach Commandert úgy építették, hogy ne álljon útban, és a Macjén tartsa az adatait. A jelszavak a macOS kulcskarikának adódnak át, az összeomlási információk soha nem hagyják el a számítógépét az ön beleegyezése nélkül, az app pedig semmilyen használati elemzést nem gyűjt. Ez a téma elmagyarázza, hol élnek az érzékeny adatai, és hogyan adja meg azt az egyetlen rendszerengedélyt, amelyre egy fájlkezelőnek a munkájához szüksége van.</p>
+<h2 id="hol-tarolodnak-a-jelszavak">Hol tárolódnak a jelszavak</h2>
+<p>Bármely jelszó vagy kulcs-jelmondat, amelyet elment — egy FTP- vagy SFTP-kapcsolathoz, vagy egy jelszóval védett archívum megnyitásához — a macOS <strong>kulcskarikába</strong> íródik, ugyanabba a biztonságos tárolóba, amelyet a rendszer a Wi-Fi- és weboldal-bejelentkezéseihez használ. A jelszavak soha nem íródnak a Peach Commander saját beállításaiba vagy kapcsolatfájljaiba nyílt szövegként.</p>
+<ol>
+<li>Amikor elment egy kapcsolat- vagy archívumjelszót, válassza a megjegyzésének lehetőségét.</li>
+<li>A jelszó a bejelentkezési kulcskarikájában tárolódik, a fiókja által védve.</li>
+<li>Egy mentett jelszó későbbi áttekintéséhez vagy eltávolításához nyissa meg a <strong>Kulcskarika-hozzáférés</strong> appot (a Programok ▸ Segédprogramok alatt) és keresse meg a kapcsolat nevét.</li>
+</ol>
+<h2 id="teljes-lemez-hozzaferes-megadasa">Teljes lemez-hozzáférés megadása</h2>
+<p>A macOS bizonyos helyeket privátban tart — a Mail, Üzenetek és más appok adatait a Könyvtár mappáján belül — amíg kifejezetten nem engedélyezi a hozzáférést. Mivel egy fájlkezelő arra való, hogy minden fájlt elérjen, a Peach Commander <strong>Teljes lemez-hozzáférést</strong> kér. Az app csökkentett hozzáféréssel működik tovább, amíg meg nem adja; csak nem fogja látni azokat a védett mappákat.</p>
+<ol>
+<li>Válassza a <strong>Parancsok ▸ Teljes lemez-hozzáférés…</strong> lehetőséget, vagy kattintson a <strong>Rendszerbeállítások megnyitása</strong> gombra, amikor az app felajánlja, hogy vezeti önt indításkor.</li>
+<li>A <strong>Rendszerbeállítások ▸ Adatvédelem és biztonság ▸ Teljes lemez-hozzáférés</strong> alatt kapcsolja be a kapcsolót a Peach Commander mellett.</li>
+<li>Indítsa újra az appot, ha kéri.</li>
+</ol>
+<h2 id="az-osszeomlasi-jelentesek-helyben-maradnak">Az összeomlási jelentések helyben maradnak</h2>
+<p>Ha az app váratlanul kilép, a macOS egy összeomlási jelentést ír a saját diagnosztikai mappájába. A következő indításkor a Peach Commander észreveszi, és felajánlja, hogy segít benyújtani egy hibajelentést — de csak az ön beleegyezésével.</p>
+<ul>
+<li><strong>Megjelenítés a Finderben</strong> lehetőséggel megnézheti a jelentést, vagy a <strong>Jelentés másolása a vágólapra</strong> lehetőséggel maga illesztheti be egy hibajelentésbe.</li>
+<li>Semmi sem továbbítódik automatikusan, és nincs harmadik féltől származó összeomlásjelentő szolgáltatás bevonva.</li>
+</ul>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li><strong>Nincs telemetria.</strong> A Peach Commander nem követi a tevékenységét, és nem küld használati elemzést sehová.</li>
+<li><strong>A csökkentett hozzáférés biztonságos.</strong> Ha kihagyja a Teljes lemez-hozzáférést, az app továbbra is böngészi és kezeli a fájlokat, amelyeket normálisan lát; csak a rendszer által védett helyek rejtettek.</li>
+<li><strong>Ön irányítja a mentett jelszavakat.</strong> Mivel a hitelesítő adatok a kulcskarikában élnek, standard macOS-eszközökkel kezeli és vonja vissza őket, nem az appon belül.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Csatlakozás FTP-hez és SFTP-hez</a></li><li><a href="troubleshooting.html">Hibaelhárítás</a></li></ul></section>
+</main>
+</body>
+</html>

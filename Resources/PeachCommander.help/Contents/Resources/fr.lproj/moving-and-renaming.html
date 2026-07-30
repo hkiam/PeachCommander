@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Déplacer et renommer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Déplacer et renommer</h1>
+<p>Déplacer relocalise les fichiers et les dossiers au lieu de les dupliquer, et renommer change leur nom sans toucher à leur contenu. Comme Peach Commander affiche deux panneaux côte à côte, déplacer revient simplement à choisir ce que vous voulez dans un panneau et à l'envoyer vers le dossier ouvert dans l'autre. Vous pouvez aussi renommer un élément sur place, ou donner à la volée de nouveaux noms aux éléments déplacés à l'aide d'un masque à caractères génériques.</p>
+<h2 id="deplacer-des-fichiers-vers-lautre-panneau">Déplacer des fichiers vers l'autre panneau</h2>
+<ol>
+<li>Dans le panneau source, ouvrez le dossier qui contient les éléments que vous souhaitez déplacer, et ouvrez le dossier de destination dans l'autre panneau.</li>
+<li>Sélectionnez le fichier ou le dossier à déplacer. Pour en déplacer plusieurs à la fois, sélectionnez-les tous d'abord (voir <em>Sélectionner des fichiers</em>).</li>
+<li>Appuyez sur F6, ou choisissez <strong>Fichier &gt; Déplacer</strong>.</li>
+<li>Vérifiez le dossier cible indiqué dans la boîte de dialogue et cliquez sur <strong>OK</strong> (ou appuyez sur Return) pour lancer le déplacement.</li>
+</ol>
+<p><img alt="La boîte de dialogue de déplacement affichant le champ du chemin cible, les options et une case pour la file d'attente" src="images/copy-dialog.png" />
+<em>(Figure : la boîte de dialogue de déplacement utilise le même champ cible que la copie — saisissez un chemin, ou ajoutez un masque à caractères génériques pour renommer au moment du déplacement.)</em></p>
+<p>Les déplacements sur le même disque sont quasi instantanés. Lorsque la destination se trouve sur un autre disque, Peach Commander copie les éléments puis ne supprime les originaux qu'une fois que chaque fichier est arrivé à bon port.</p>
+<h2 id="renommer-sur-place">Renommer sur place</h2>
+<ol>
+<li>Sélectionnez un seul fichier ou dossier.</li>
+<li>Appuyez sur Shift+F6, ou choisissez <strong>Fichier &gt; Renommer</strong>.</li>
+<li>Modifiez le nom directement dans le panneau, puis appuyez sur Return pour confirmer ou Esc pour annuler.</li>
+</ol>
+<h2 id="renommer-pendant-le-deplacement">Renommer pendant le déplacement</h2>
+<p>Le champ cible de la boîte de dialogue de déplacement accepte un masque à caractères génériques, ce qui vous permet de renommer les éléments au moment où ils sont déplacés :</p>
+<ol>
+<li>Sélectionnez les éléments et appuyez sur F6.</li>
+<li>Dans le champ cible, ajoutez un masque de nom après le dossier de destination, par exemple <code>/Users/you/Archive/*_backup.*</code>.</li>
+<li><code>*</code> représente le nom d'origine et <code>.*</code> l'extension d'origine. Confirmez pour déplacer et renommer en une seule étape.</li>
+</ol>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Raccourci</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Déplacer vers l'autre panneau</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Renommer sur place</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="astuces">Astuces</h2>
+<ul>
+<li>La boîte de dialogue de déplacement propose le même bouton d'options et la même case de file d'attente en arrière-plan que la copie : vous pouvez donc mettre en file d'attente les déplacements volumineux et les laisser s'exécuter en arrière-plan.</li>
+<li>Déplacer au sein du même disque est une opération rapide sur place, sans risque même pour de très gros dossiers. Un déplacement entre disques prend plus de temps, car les données sont d'abord copiées, puis la source est supprimée.</li>
+<li>Pour renommer de nombreux fichiers d'un coup avec numérotation, rechercher-remplacer ou motifs, utilisez plutôt l'outil de renommage multiple (voir <em>Renommage multiple</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copier des fichiers</a></li><li><a href="multi-rename.html">Renommer plusieurs fichiers</a></li></ul></section>
+</main>
+</body>
+</html>

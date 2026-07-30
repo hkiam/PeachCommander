@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preimenovanje mnogih datotek</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Preimenovanje mnogih datotek</h1>
+<p>Orodje za množično preimenovanje preimenuje celoten sveženj datotek v enem prehodu. Namesto urejanja imen po eno naenkrat spremembo opišete enkrat — vzorec poimenovanja, iskanje in zamenjavo, shemo oštevilčenja ali spremembo velikosti črk — in Peach Commander jo uporabi na vsaki izbrani datoteki. Predogled v živo prikaže natanko, kako se bo imenovala vsaka datoteka, preden se karkoli zgodi, en Razveljavi pa vrne izvirna imena, če rezultat ni bil tak, kot ste želeli.</p>
+<h2 id="preimenovanje-sveznja-datotek">Preimenovanje svežnja datotek</h2>
+<ol>
+<li>Izberite datoteke, ki jih želite preimenovati (glejte <em>Izbor datotek</em>). Prizadeti so le izbrani elementi.</li>
+<li>Izberite <strong>Ukazi &gt; Orodje za množično preimenovanje…</strong> ali pritisnite Ctrl+M.</li>
+<li>Zgradite pravilo preimenovanja z uporabo polj, opisanih spodaj. Mreža predogleda se med tipkanjem posodablja in prikazuje vsako <strong>Staro ime</strong> poleg njegovega <strong>Novega imena</strong>.</li>
+<li>Preglejte predogled. Vrstica, prikazana v barvi poudarka, označuje ime, ki ga ni mogoče uporabiti (na primer dvojnik ali nedovoljeno ime), tako da lahko prilagodite pravilo.</li>
+<li>Ko predogled izgleda pravilno, kliknite <strong>Začni</strong>. Če se premislite, kliknite <strong>Razveljavi</strong>, da obnovite izvirna imena.</li>
+</ol>
+<p><img alt="Okno za množično preimenovanje s polji mask, možnostmi in mrežo predogleda od starega do novega" src="images/multi-rename.png" />
+<em>(Slika: mreža predogleda se posodablja v živo med urejanjem pravila preimenovanja; nič se ne spremeni na disku, dokler ne kliknete Začni.)</em></p>
+<h2 id="gradnja-pravila-preimenovanja">Gradnja pravila preimenovanja</h2>
+<ul>
+<li><strong>Maska preimenovanja</strong> in <strong>Pripona</strong> — vzorca, ki gradita novo ime in pripono. Uporabite gumbe za hitro vstavljanje, ali vnesite ograde neposredno: <code>[N]</code> za izvirno ime, <code>[N1-9]</code> za obseg znakov iz njega, <code>[C]</code> za števec, <code>[d]</code> za dele datuma in časa in <code>[P]</code> za ime nadrejene mape.</li>
+<li><strong>Poišči / Zamenjaj z</strong> — zamenjaj besedilo znotraj imen. Vklopite <strong>Regex</strong> za ujemanje po vzorcu, <strong>Razlikuj velikost</strong> za natančno ujemanje velikosti črk in <strong>Ponovi</strong> za zamenjavo vsakega pojava.</li>
+<li><strong>Velikost črk</strong> — pretvori imena v male črke, VELIKE ČRKE, Prva črka velika ali Vsaka Beseda Velika.</li>
+<li><strong>Števec</strong> — nastavite <strong>začetno</strong> številko, <strong>korak</strong> med datotekami in na koliko <strong>števk</strong> dopolniti (na primer 001, 002, 003) povsod, kjer se pojavi <code>[C]</code>.</li>
+</ul>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Odpri orodje za množično preimenovanje</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Uporabi preimenovanje</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Zapri okno</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<h2 id="nasveti">Nasveti</h2>
+<ul>
+<li>Nič se ne zapiše na disk, dokler ne kliknete <strong>Začni</strong>, tako da lahko s pravilom prosto eksperimentirate in opazujete predogled.</li>
+<li>Po zagonu <strong>Razveljavi</strong> obrne preimenovanje v enem koraku.</li>
+<li>Shranite pravilo, ki ga pogosto uporabljate, kot <strong>Prednastavitev</strong>, nato jo naslednjič izberite iz menija prednastavitev, da naenkrat izpolnite vsa polja.</li>
+<li>Za preimenovanje ene datoteke ali preimenovanje datotek med njihovim premikanjem uporabite namesto tega preimenovanje na mestu ali pogovorno okno premikanja (glejte <em>Premikanje in preimenovanje</em>).</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="moving-and-renaming.html">Premikanje in preimenovanje</a></li></ul></section>
+</main>
+</body>
+</html>

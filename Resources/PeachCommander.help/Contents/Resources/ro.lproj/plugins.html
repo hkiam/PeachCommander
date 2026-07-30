@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pluginuri</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Pluginuri</h1>
+<p>Pluginurile extind Peach Commander cu instrumente suplimentare, formate de fișiere și locuri de parcurs. O duzină de pluginuri sunt încorporate, astfel încât puteți începe să le folosiți imediat, și puteți activa sau dezactiva pluginuri individuale — sau instala altele noi — dintr-o singură fereastră. Folosiți pluginuri când doriți capabilități dincolo de copierea și parcurgerea zilnică: vizualizarea a ceea ce umple un disc, conectarea la un server WebDAV, verificarea stării unui depozit Git, urmărirea activității sistemului și altele.</p>
+<p>Pluginurile vin în câteva feluri: unele adaugă un <strong>panou sau o bară laterală</strong> (o vizualizare), unele adaugă <strong>coloane</strong> la lista de fișiere, unele adaugă un <strong>loc în care navigați</strong> precum o unitate, iar unele învață aplicația un <strong>format de arhivă</strong> nou. Fiecare este activat independent.</p>
+<h2 id="ce-adauga-pluginurile-incorporate">Ce adaugă pluginurile încorporate</h2>
+<p>Mai multe pluginuri au propriul lor subiect detaliat de ajutor — urmați linkul pentru povestea completă:</p>
+<ul>
+<li><strong><a href="disk-map.md">Hartă disc</a></strong> — vizualizează ce umple un folder sau un volum ca o hartă arborescentă sau explozie solară, reconciliat cu spațiul liber, purjabil și ascuns, cu un colector de curățenie.</li>
+<li><strong><a href="ai-assistant.md">Asistent IA</a></strong> — un asistent opțional, care poate fi eliminat, ce rezumă, redenumește, traduce, tabelează și organizează fișiere în limbaj natural, pe dispozitiv sau printr-un model din cloud.</li>
+<li><strong><a href="git.md">Git</a></strong> — arată starea din arborele de lucru a fiecărui fișier și ramura curentă ca coloane de panou, și adaugă un meniu <strong>Git</strong> pentru status, pregătire, commit, pull și push.</li>
+<li><strong><a href="system-monitor.md">System Monitor</a></strong> — o citire în timp real a procesorului, memoriei, discului, rețelei (și, unde este disponibil, GPU, baterie, senzori) în bara de titlu a ferestrei, cu grafice de detaliu accesibile prin clic.</li>
+<li><strong><a href="task-manager.md">Task Manager</a></strong> — montează procesele care rulează ca o unitate <strong>TaskManager</strong> parcurgibilă; sortați-le, examinați-le ca pe fișiere sau încheiați-le cu Ștergere.</li>
+<li><strong><a href="uninstaller.md">Uninstaller</a></strong> — elimină o aplicație <strong>și</strong> fișierele de suport, cache-urile și preferințele pe care le lasă în urmă, după ce vă arată exact ce va dispărea.</li>
+</ul>
+<p>Restul pluginurilor încorporate sunt mai mici și nu au nevoie de o pagină proprie:</p>
+<ul>
+<li><strong>WebDAV</strong> — conectați-vă la un server WebDAV (<strong>Rețea ▸ Conectare WebDAV…</strong>) și parcurgeți, încărcați, descărcați, redenumiți și ștergeți pe el ca și cum ar fi un folder. Parolele sunt păstrate în inelul de chei macOS.</li>
+<li><strong>iCloud Drive</strong> — adaugă un element <em>iCloud Drive</em> în bara de unități care sare direct la folderul dvs. local iCloud Drive. Apare doar când iCloud Drive este configurat pe Mac-ul dvs.</li>
+<li><strong>Notes</strong> — păstrați o notă lângă orice fișier sau folder. Un mic ecuson <strong>●</strong> marchează elementele care au una; editați notele într-o bară laterală <strong>Notes</strong> ancorată sau într-un editor de text îmbogățit complet (<strong>Comenzi ▸ Editează nota…</strong>) și parcurgeți-le pe toate cu <strong>Prezentare generală a notelor…</strong>.</li>
+<li><strong>Log Viewer</strong> — deschideți un fișier ca un jurnal codificat pe culori, clasificat pe niveluri, urmărit în timp real (<strong>Fișier ▸ Vizualizează ca jurnal…</strong>), cu filtre pe nivel, căutare și suport pentru formate comune de jurnal plus propriile dvs. formate regex. Gestionează instantaneu jurnale de mai mulți gigaocteți.</li>
+<li><strong>AI Column</strong> — adaugă o coloană <em>AI Language</em> care detectează limba dominantă a fiecărui fișier text pe dispozitiv (folosind cadrul NaturalLanguage al Apple — nu un model din cloud).</li>
+<li><strong>Formate de arhivă</strong> — învață aplicația să parcurgă și să extragă mai multe tipuri de arhive (7z, familia tar, gzip/bzip2/xz/zstd și RAR acolo unde este instalat un instrument ajutător), care apoi se deschid ca foldere.</li>
+</ul>
+<h2 id="activarea-sau-dezactivarea-pluginurilor">Activarea sau dezactivarea pluginurilor</h2>
+<ol>
+<li>Alegeți Configurare ▸ Pluginuri… pentru a deschide fereastra de pluginuri.</li>
+<li>Fiecare plugin instalat apare în listă cu nume, tip și o casetă „Activat".</li>
+<li>Bifați sau debifați caseta pentru a activa sau dezactiva un plugin. Modificările intră în vigoare imediat — pluginurile activate își adaugă meniurile, coloanele și funcțiile; cele dezactivate stau deoparte.</li>
+</ol>
+<p><img alt="Fereastra de pluginuri care listează pluginurile instalate cu casete de bifare și butoanele Instalează și Elimină" src="images/plugins-window.png" />
+<em>(Figura: fereastra de pluginuri, unde activați, dezactivați, instalați sau eliminați pluginuri.)</em></p>
+<h2 id="instalarea-unui-plugin-nou">Instalarea unui plugin nou</h2>
+<ol>
+<li>Alegeți Configurare ▸ Pluginuri….</li>
+<li>Faceți clic pe <strong>Instalează din folder…</strong>.</li>
+<li>Alegeți un pachet de plugin sau un <code>.zip</code> care conține unul, și confirmați. Pluginul este adăugat în listă și activat.</li>
+</ol>
+<h2 id="eliminarea-unui-plugin">Eliminarea unui plugin</h2>
+<ol>
+<li>În fereastra de pluginuri, marcați pluginul din listă.</li>
+<li>Faceți clic pe <strong>Elimină</strong>. Funcțiile încorporate nu sunt afectate; doar pluginul selectat este eliminat.</li>
+</ol>
+<h2 id="note">Note</h2>
+<ul>
+<li>Lista de pluginuri arată tipul și versiunea de interfață a fiecărui plugin lângă numele și locația sa, astfel încât să puteți confirma ce este instalat.</li>
+<li>Dacă niciun plugin nu este instalat, fereastra arată un scurt îndemn care vă îndreaptă spre <strong>Instalează din folder…</strong>.</li>
+<li>Unele pluginuri adaugă propriile coloane, elemente de meniu sau locuri de panou doar cât timp sunt activate. Dacă o funcție așteptată lipsește, verificați dacă pluginul este activat aici.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="disk-map.html">Hartă disc</a></li><li><a href="ai-assistant.html">Asistent IA</a></li><li><a href="git.html">Git</a></li><li><a href="system-monitor.html">System Monitor</a></li><li><a href="task-manager.html">Task Manager</a></li><li><a href="uninstaller.html">Uninstaller</a></li><li><a href="archives.html">Lucrul cu arhive</a></li><li><a href="ftp-and-sftp.html">Conectarea la FTP și SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

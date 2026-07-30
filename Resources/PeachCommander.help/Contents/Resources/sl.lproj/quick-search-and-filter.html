@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hitro iskanje in filter</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Hitro iskanje in filter</h1>
+<p>Ko mapa vsebuje stotine elementov, le redko potrebujete drsenje. Peach Commander vam omogoča, da skočite naravnost do datoteke z vnosom njenega imena (hitro iskanje), zmanjšate seznam le na elemente, ki vas zanimajo (hitri filter), ter prikažete ali skrijete pikaste datoteke, ki jih macOS običajno drži zunaj pogleda. Vsi trije delujejo znotraj dejavnega podokna brez odpiranja pogovornega okna.</p>
+<h2 id="skok-na-datoteko-z-vnosom-hitro-iskanje">Skok na datoteko z vnosom (hitro iskanje)</h2>
+<ol>
+<li>Kliknite podokno z datotekami, da postane dejavno.</li>
+<li>Začnite tipkati začetek imena. Kazalka skoči na prvi ujemajoči element.</li>
+<li>Nadaljujte tipkanje za izboljšanje ujemanja, ali znova pritisnite isto črko za kroženje po elementih, ki se začnejo s to črko.</li>
+<li>Vneseno besedilo se po kratkem premoru počisti, tako da lahko kadar koli začnete novo iskanje.</li>
+</ol>
+<p>Privzeto navadne črke gredo v ukazno vrstico, hitro iskanje pa se sproži s Ctrl+Option+črka (klasično obnašanje). Hitro iskanje lahko preklopite, da se odziva na navadno tipkanje, ali ga izklopite, v nastavitvah konfiguracije.</p>
+<h2 id="filtriranje-seznama-hitri-filter">Filtriranje seznama (hitri filter)</h2>
+<ol>
+<li>V dejavnem podoknu pritisnite Ctrl+S, da vklopite hitri filter.</li>
+<li>Vnesite masko filtra. Podokno se med tipkanjem v živo zoži na ujemajoče elemente.</li>
+<li>Pritisnite Esc, da počistite filter in znova prikažete vse.</li>
+</ol>
+<p>Filter sprejema več vrst mask:</p>
+<ul>
+<li><strong>Navadno besedilo</strong> se ujema s katerim koli imenom, ki vsebuje, kar ste vnesli (na primer <code>poročilo</code> prikaže vsak element z »poročilo« kjer koli v imenu).</li>
+<li><strong>Nadomestni znaki</strong> uporabljajo <code>*</code> (kateri koli znaki) in <code>?</code> (en znak). Ločite več mask s podpičjem in dodajte izključitve za navpično črto, na primer <code>*.jpg;*.png|*thumb*</code> za prikaz slik, a skrivanje sličic.</li>
+<li><strong>Oznake Finder</strong> filtrirajo po barvi oznake: vnesite <code>tag:red</code> (ali <code>#red</code>) za prikaz le elementov z rdečo oznako, ali golo <code>tag:</code> za prikaz vsega, kar nosi katero koli oznako.</li>
+</ul>
+<h2 id="prikaz-skritih-datotek">Prikaz skritih datotek</h2>
+<p>Pritisnite Ctrl+H, ali izberite ukaz iz menija Pogled, da preklopite skrite elemente (imena, ki se začnejo s piko, in sistemsko skrite datoteke). Nastavitev velja za dejavno podokno in se ohrani med sejami.</p>
+<h2 id="bliznjice">Bližnjice</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hitro iskanje (klasični način)</td>
+<td>Ctrl+Option+črka</td>
+</tr>
+<tr>
+<td>Hitri filter vklop/izklop</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Počisti filter / prekliči</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Prikaži/skrij skrite datoteke</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Hitro iskanje le premakne kazalko; hitri filter dejansko spremeni, kateri elementi so našteti. Filter uporabite, ko želite delati na podmnožici (na primer izbrati ali kopirati le ujemanja).</li>
+<li>Nastavitvi filtra in skritih datotek veljata za vsako podokno, tako da lahko obe strani hkrati prikazujeta različne stvari.</li>
+<li>Hitro iskanje ujema imena od začetka; način navadnega besedila hitrega filtra ujema kjer koli v imenu. Uporabite nadomestni znak, kot je <code>*besedilo*</code>, če želite, da se filter obnaša enako.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Iskanje datotek</a></li><li><a href="view-modes-and-sorting.html">Načini pogleda in razvrščanje</a></li></ul></section>
+</main>
+</body>
+</html>

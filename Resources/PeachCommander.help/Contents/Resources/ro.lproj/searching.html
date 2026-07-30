@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Găsirea fișierelor</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Găsirea fișierelor</h1>
+<p>Când trebuie să depistați fișiere oriunde pe Mac-ul dvs. — după nume, după ce conțin, sau după dimensiune și dată — folosiți fereastra Găsește fișiere. Caută în unul sau mai multe foldere (și subfolderele lor), poate privi în interiorul fișierelor text și al arhivelor și vă permite să trimiteți tot ce găsește direct într-un panou, astfel încât să acționați asupra rezultatelor ca și cum ar fi un folder obișnuit.</p>
+<h2 id="gasiti-fisiere-dupa-nume">Găsiți fișiere după nume</h2>
+<ol>
+<li>În panoul care arată folderul pe care doriți să-l căutați, alegeți <strong>Comenzi &gt; Găsește fișiere…</strong> (sau apăsați Cmd+Shift+F).</li>
+<li>Pe fila <strong>General</strong>, tastați un tipar de nume în <strong>Caută</strong>. Puteți folosi caractere joker precum <code>*.pdf</code> sau <code>raport_*.docx</code>. Pentru a căuta în mai multe foldere deodată, listați-le în câmpul folderului de pornire separate cu punct și virgulă (<code>;</code>).</li>
+<li>Faceți clic pe <strong>Start</strong>. Potrivirile apar în lista de rezultate de mai jos pe măsură ce sunt găsite.</li>
+<li>Faceți dublu clic pe orice rezultat pentru a sări la acel fișier în panoul activ, sau selectați un rezultat și faceți clic pe <strong>Vizualizează</strong> (F3) pentru a-l deschide în vizualizatorul încorporat.</li>
+</ol>
+<p><img alt="Fereastra Găsește fișiere pe fila General, arătând tiparul de nume, folderul și lista de rezultate" src="images/find-files-general.png" />
+<em>(Figura: fila General — căutare după tipar de nume în unul sau mai multe foldere.)</em></p>
+<h2 id="cautare-dupa-continut-dimensiune-si-data">Căutare după conținut, dimensiune și dată</h2>
+<ol>
+<li>Pentru a căuta în interiorul fișierelor, selectați <strong>Găsește text</strong> pe fila General și tastați textul de căutat. Opțiunile vă permit să-l faceți <strong>Sensibil la majuscule</strong>, să potrivească doar un <strong>Cuvânt întreg</strong>, să trateze textul ca o <strong>Expresie regulată</strong>, să facă o <strong>Căutare de conținut hexazecimal</strong> sau să găsească fișiere care <strong>Nu conțin</strong> textul.</li>
+<li>Comutați la fila <strong>Avansat</strong> pentru a îngusta rezultatele după <strong>Dimensiune</strong> (de exemplu <code>10K</code> până la <code>5M</code>), după interval de <strong>dată de modificare</strong>, sau la fișiere modificate în ultimele N zile.</li>
+<li>Activați <strong>Caută în interiorul arhivelor</strong> pentru a privi în arhivele din familia zip (zip, jar, war și similare).</li>
+<li>Pentru a limita căutarea la ce ați ales deja, activați <strong>Caută doar în elementele selectate</strong> înainte de a începe.</li>
+</ol>
+<p><img alt="Fereastra Găsește fișiere pe fila Avansat, arătând filtrele de dimensiune și dată" src="images/find-files-advanced.png" />
+<em>(Figura: fila Avansat — filtrați după dimensiune, dată și alte atribute.)</em></p>
+<p>Dacă aveți pluginuri care adaugă câmpuri de conținut (precum dimensiunile imaginilor), fila <strong>Pluginuri</strong> vă permite să cereți ca un câmp să corespundă unei condiții — de exemplu, doar imagini mai late de 1000 de pixeli.</p>
+<p><img alt="Fereastra Găsește fișiere pe fila Pluginuri, arătând o condiție pe un câmp de conținut" src="images/find-files-plugins.png" />
+<em>(Figura: fila Pluginuri — potrivire pe câmpuri de conținut furnizate de pluginuri.)</em></p>
+<h2 id="cautari-rapide-cu-spotlight">Căutări rapide cu Spotlight</h2>
+<p>Pentru folderele locale pe care macOS le-a indexat deja, activați <strong>Folosește Spotlight</strong> pe fila General pentru rezultate aproape instantanee. Spotlight caută în index în loc să scaneze fișierele, astfel încât ignoră expresiile regulate, limitele de adâncime ale subfolderelor și domeniul doar-selectate.</p>
+<h2 id="reutilizarea-si-predarea-rezultatelor">Reutilizarea și predarea rezultatelor</h2>
+<ul>
+<li><strong>Trimite în listă</strong> plasează fiecare rezultat în panoul activ ca o listă temporară, astfel încât să puteți copia, muta sau șterge întregul set deodată.</li>
+<li>Pe fila <strong>Încarcă / Salvează</strong>, alegeți <strong>Salvează ca șablon…</strong> pentru a stoca căutarea curentă (tipare și opțiuni) și a o alege din nou mai târziu din lista de șabloane.</li>
+</ul>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Comandă rapidă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deschide Găsește fișiere</td>
+<td>Cmd+Shift+F sau Option+F7</td>
+</tr>
+<tr>
+<td>Începe / oprește căutarea</td>
+<td>Butonul Start din fereastră</td>
+</tr>
+<tr>
+<td>Vizualizează rezultatul selectat</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Căutarea de conținut citește fișierele întregi pentru folderele locale; în alte locații fișierele foarte mari sunt omise (aproximativ 16 MB, sau 64 MB când se folosește o expresie regulată).</li>
+<li>Căutarea în interiorul arhivelor coboară până la patru niveluri de arhive imbricate.</li>
+<li><strong>Include folderele în rezultate</strong> listează de asemenea folderele ale căror nume se potrivesc, nu doar fișierele.</li>
+<li>Spotlight acoperă doar folderele locale indexate; pentru locații de rețea sau potrivire bazată pe tipar, lăsați-l dezactivat și lăsați Găsește fișiere să scaneze.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">Selectarea fișierelor</a></li><li><a href="quick-search-and-filter.html">Căutare rapidă și filtru</a></li></ul></section>
+</main>
+</body>
+</html>

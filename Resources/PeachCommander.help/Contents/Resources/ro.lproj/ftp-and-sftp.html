@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conectarea la FTP și SFTP</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Conectarea la FTP și SFTP</h1>
+<p>Peach Commander poate parcurge serverele la distanță ca și cum ar fi foldere obișnuite. Odată conectat, un panou arată fișierele la distanță, iar dvs. le copiați, mutați, redenumiți și ștergeți cu aceleași taste pe care le folosiți local. Vorbește FTP simplu, FTPS securizat și SFTP/SCP peste SSH, astfel încât puteți ajunge la orice, de la o gazdă web clasică la un server SSH întărit. Conexiunile salvate trăiesc în managerul de conexiuni, iar parolele sunt păstrate în siguranță în inelul de chei macOS, nu în conexiunea însăși.</p>
+<h2 id="conectarea-la-un-server">Conectarea la un server</h2>
+<ol>
+<li>Deschideți meniul <strong>Rețea</strong> și alegeți <strong>Conexiune FTP…</strong> (Ctrl+F) pentru a deschide managerul de conexiuni.</li>
+<li>Alegeți o conexiune salvată din listă și faceți clic pe <strong>Conectează</strong>, sau faceți clic pe <strong>Nou</strong> pentru a crea una. Folosiți foldere în listă pentru a grupa conexiunile.</li>
+<li>Pentru o conexiune rapidă unică, alegeți <strong>Rețea &gt; Conexiune FTP nouă…</strong> (Ctrl+N) și tastați adresa direct.</li>
+<li>Introduceți parola când vi se cere; bifați opțiunea de a o salva și merge în inelul de chei pentru data viitoare.</li>
+<li>Când ați terminat, alegeți <strong>Rețea &gt; Deconectare FTP</strong> (Ctrl+Shift+F).</li>
+</ol>
+<p><img alt="Managerul de conexiuni FTP care arată lista de sesiuni salvate cu butoanele Nou, Editează și Șterge" src="images/ftp-connection-manager.png" />
+<em>(Figura: managerul de conexiuni păstrează serverele dvs. salvate; folosiți Nou, Editează și Șterge pentru a le gestiona.)</em></p>
+<p>Când configurați o conexiune puteți alege protocolul (FTP, FTPS cu AUTH TLS explicit, FTPS implicit pe portul 990, sau SFTP/SCP), modul pasiv sau activ, folderele de pornire la distanță și locale, codificarea textului și un interval keep-alive opțional pentru a împiedica serverele inactive să vă deconecteze. Pentru SFTP vă puteți autentifica cu agentul dvs. SSH, o parolă sau un fișier de cheie privată și puteți alege SCP pentru transferuri. Cheile gazdă SSH necunoscute sunt considerate de încredere la prima utilizare; dacă cheia unui server cunoscut se schimbă vreodată, conexiunea este refuzată pentru a vă proteja de manipulare.</p>
+<h2 id="consola-ftp">Consola FTP</h2>
+<p>Pentru a vedea exact ce spune serverul, deschideți consola FTP din meniul <strong>Rețea</strong>. Arată un jurnal live al canalului de control (parola dvs. este mascată) și vă permite să tastați comenzi FTP brute serverului.</p>
+<p><img alt="Consola FTP care arată jurnalul canalului de control și un câmp pentru comenzi brute" src="images/ftp-console.png" />
+<em>(Figura: consola FTP înregistrează fiecare schimb și acceptă comenzi brute, ceea ce este util pentru depanare.)</em></p>
+<h2 id="comenzi-rapide">Comenzi rapide</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Comandă rapidă</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deschide managerul de conexiuni</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Conexiune nouă</td>
+<td>Ctrl+N</td>
+</tr>
+<tr>
+<td>Deconectare</td>
+<td>Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Schimbă modul de transfer</td>
+<td>Ctrl+Shift+M</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Descărcările și încărcările întrerupte pot relua de unde s-au oprit, în loc să înceapă de la capăt.</li>
+<li>Pentru serverele FTPS cu un certificat autosemnat, activați opțiunea de a accepta un certificat neîncrezut în setările acelei conexiuni.</li>
+<li>Un proxy SOCKS5 poate fi setat per conexiune pentru FTP simplu. Rutarea unei conexiuni FTPS criptate printr-un proxy nu este acceptată.</li>
+<li>Conexiunile FTP existente din Total Commander pot fi importate.</li>
+<li>SCP este folosit doar pentru transferul fișierelor; listarea, redenumirea și ștergerea merg întotdeauna prin SFTP.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="downloading-from-url.html">Descărcare de la un URL</a></li><li><a href="network-shares.html">Partajări de rețea</a></li></ul></section>
+</main>
+</body>
+</html>

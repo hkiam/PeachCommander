@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recursos compartidos de red</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Recursos compartidos de red</h1>
+<p>Peach Commander puede conectarse a servidores de archivos de tu red local o de empresa —recursos compartidos SMB (Windows/Samba) y AFP— y mostrar su contenido en un panel igual que una carpeta de tu propio Mac. Una vez conectado un recurso, puedes explorar, copiar, mover, cambiar de nombre y abrir archivos en él exactamente como lo harías en local, incluida la copia entre el recurso y tu otro panel.</p>
+<h2 id="conectarse-a-un-servidor">Conectarse a un servidor</h2>
+<ol>
+<li>Haz clic en el panel que quieres conectar (el recurso conectado se abre en el panel activo).</li>
+<li>Pulsa Cmd+K, o elige <strong>Red &gt; Entorno de red &gt; Montar recurso compartido…</strong>.</li>
+<li>En el diálogo <strong>Conectarse al servidor</strong>, escribe la dirección del servidor. Puedes introducir:
+   - una dirección SMB, por ejemplo <code>smb://fileserver/projects</code>
+   - una dirección AFP, por ejemplo <code>afp://fileserver/projects</code>
+   - una ruta al estilo de Windows, por ejemplo <code>\\fileserver\projects</code>
+   - un nombre sencillo <code>servidor/recurso</code></li>
+<li>Haz clic en Conectar (o pulsa Return). Si el servidor necesita nombre y contraseña, macOS muestra su cuadro de inicio de sesión estándar: introduce ahí tus credenciales.</li>
+<li>Cuando el recurso esté listo, el panel activo lo abre automáticamente. Explóralo y trabaja con él como con cualquier otra carpeta.</li>
+</ol>
+<h2 id="desconectar">Desconectar</h2>
+<p>Un recurso conectado aparece como un volumen montado en tu Mac. Para desconectarlo, expúlsalo del modo habitual de macOS: por ejemplo, desde la barra lateral del Finder o desde la lista de unidades de Peach Commander.</p>
+<h2 id="atajos">Atajos</h2>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Montar recurso compartido…</td>
+<td>Cmd+K</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>La autenticación (nombre de usuario, contraseña y la opción «recordar en mi llavero») la gestiona el cuadro de inicio de sesión estándar de macOS, así que las contraseñas de servidor guardadas funcionan igual que en el Finder.</li>
+<li>Si introduces una dirección que no puede interpretarse, Peach Commander te pide una dirección SMB/AFP, una ruta al estilo de Windows o un nombre <code>servidor/recurso</code>, y no se monta nada.</li>
+<li>Tras confirmar, la conexión puede tardar un momento mientras macOS monta el recurso; el panel cambia a él en cuanto esté disponible.</li>
+<li>Esto conecta con unidades compartidas de una red. Para acceder en su lugar a un servidor FTP, FTPS o SFTP, consulta el tema relacionado más abajo.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="ftp-and-sftp.html">Conectarse a FTP y SFTP</a></li></ul></section>
+</main>
+</body>
+</html>

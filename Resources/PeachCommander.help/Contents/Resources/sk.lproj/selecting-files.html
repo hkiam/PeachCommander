@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Výber súborov</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Výber súborov</h1>
+<p>Skôr než čokoľvek skopírujete, presuniete, odstránite alebo zabalíte, najprv Peach Commanderu poviete, s ktorými položkami má pracovať. Položka, na ktorej sedí kurzor, je vždy aktuálnou položkou, ale môžete tiež <em>označiť</em> jeden alebo viacero súborov a priečinkov, aby sa príkaz vykonal na všetkých naraz. Označené položky vynikajú odlišnou farbou názvu v paneli.</p>
+<h2 id="oznacenie-suborov-a-priecinkov">Označenie súborov a priečinkov</h2>
+<ol>
+<li>Kliknutím na riadok naň presuniete kurzor. Jedno kliknutie vyberie iba danú položku.</li>
+<li>Ak chcete označiť viacero položiek naraz, podržte Cmd a kliknite na každú z nich, alebo podržte Shift a kliknutím označte rozsah.</li>
+<li>Ak chcete jedným pohybom označiť položku pod kurzorom a posunúť sa nadol, stlačte Insert. Opakovaným stláčaním rýchlo označíte sériu po sebe idúcich položiek. Medzerník tiež prepína označenie aktuálnej položky (a zobrazí veľkosť priečinka).</li>
+<li>Ak chcete označiť všetko v paneli, zvoľte Označiť ▸ Vybrať všetko (Ctrl+Num+) alebo stlačte Cmd+A. Voľbou Označiť ▸ Zrušiť výber všetkého (Ctrl+Num-) vymažete všetky označenia.</li>
+</ol>
+<h2 id="vyber-alebo-zrusenie-vyberu-podla-vzoru">Výber alebo zrušenie výberu podľa vzoru</h2>
+<ol>
+<li>Zvoľte Označiť ▸ Vybrať skupinu… (Num+), aby ste pridali položky, ktorých názvy zodpovedajú vzoru, alebo Označiť ▸ Zrušiť výber skupiny… (Num-), aby ste zodpovedajúce položky z aktuálnych označení odstránili.</li>
+<li>Napíšte masku so zástupnými znakmi. Použite <code>*</code> pre ľubovoľné znaky a <code>?</code> pre jeden znak. Viacero masiek oddeľte bodkočiarkou a výnimky uveďte za zvislou čiarou — napríklad <code>*.jpg;*.png</code> označí všetky obrázky a <code>*.*|*.bak</code> označí všetko okrem záložných súborov.</li>
+</ol>
+<p><img alt="Dialóg Vybrať skupinu s maskou so zástupnými znakmi napísanou v poli vzoru" src="images/select-by-mask.png" />
+<em>(Obrázok: Označovanie súborov maskou so zástupnými znakmi.)</em></p>
+<h2 id="invertovanie-rovnaka-pripona-a-obnovenie">Invertovanie, rovnaká prípona a obnovenie</h2>
+<ul>
+<li><strong>Invertovať výber</strong> (Num*, ponuka Označiť) prehodí každé označenie: označené položky sa stanú neoznačenými a naopak — praktické pre „všetko okrem týchto“.</li>
+<li><strong>Vybrať všetko s rovnakou príponou</strong> (Alt+Num+, ponuka Označiť) označí každý súbor, ktorý zdieľa príponu položky pod kurzorom, takže jedným stlačením klávesu získate napríklad všetky súbory <code>.pdf</code>.</li>
+<li><strong>Obnoviť výber</strong> (Num/, ponuka Označiť) vráti vašu predchádzajúcu množinu označení — užitočné, ak ju príkaz vymazal alebo ste označili nesprávnu skupinu.</li>
+</ul>
+<h2 id="klavesove-skratky">Klávesové skratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akcia</th>
+<th>Kláves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prepnúť označenie, posunúť nadol</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Prepnúť označenie (aktuálna položka)</td>
+<td>Space</td>
+</tr>
+<tr>
+<td>Vybrať všetko / Zrušiť výber všetkého</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Vybrať všetko (alternatíva)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Vybrať skupinu podľa masky</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Zrušiť výber skupiny podľa masky</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Invertovať výber</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Vybrať všetko s rovnakou príponou</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Obnoviť predchádzajúci výber</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Označenia a kurzor sú nezávislé: presúvanie kurzora klávesmi so šípkami nemení, čo je označené.</li>
+<li>Položku nadradeného priečinka (<code>..</code>) nie je možné nikdy označiť.</li>
+<li>Vybrať skupinu, Zrušiť výber skupiny a Invertovať výber sa zhodujú podľa názvu súboru, takže priečinky môžete zahrnúť alebo vynechať v závislosti od možností dialógu.</li>
+<li>Po dokončení kopírovania, presunu alebo odstránenia sa položky, ktoré boli úspešne spracované, automaticky odznačia, zatiaľ čo tie, ktoré zlyhali, zostanú označené, aby ste ich mohli zopakovať.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopírovanie súborov</a></li><li><a href="searching.html">Hľadanie súborov</a></li></ul></section>
+</main>
+</body>
+</html>

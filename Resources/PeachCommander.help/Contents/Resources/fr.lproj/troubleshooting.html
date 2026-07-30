@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dépannage</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Dépannage</h1>
+<p>Cette rubrique couvre les problèmes les plus fréquents : macOS bloquant l'accès à certains dossiers, un dossier qui semble figé sur un ancien contenu, un serveur FTP sécurisé qui refuse de se connecter, et la compression en RAR. Chaque section vous indique ce qui se passe et comment le corriger.</p>
+<h2 id="macos-demande-une-autorisation-ou-les-dossiers-semblent-vides">macOS demande une autorisation, ou les dossiers semblent vides</h2>
+<p>Certains emplacements — comme votre dossier <code>~/Library</code>, les dossiers d'autres utilisateurs et les zones système — sont protégés par macOS et restent masqués jusqu'à ce que vous accordiez l'accès. Peach Commander détecte quand cela se produit et propose de vous guider vers le bon réglage.</p>
+<ol>
+<li>Lorsqu'on vous y invite, choisissez d'ouvrir les Réglages Système, ou ouvrez-les vous-même.</li>
+<li>Allez dans Confidentialité et sécurité, puis Accès complet au disque.</li>
+<li>Activez l'interrupteur à côté de Peach Commander. S'il n'est pas listé, utilisez le bouton Ajouter pour l'ajouter.</li>
+<li>Quittez et rouvrez Peach Commander pour que la nouvelle autorisation prenne effet.</li>
+</ol>
+<p>Peach Commander ne s'exécute pas dans un bac à sable restreint, donc une fois l'accès complet au disque accordé, il peut parcourir et gérer les fichiers exactement comme le Finder.</p>
+<h2 id="un-dossier-naffiche-pas-les-changements-recents">Un dossier n'affiche pas les changements récents</h2>
+<p>Les panneaux se mettent normalement à jour tout seuls quand les fichiers changent sur le disque. Si un dossier a été modifié par un autre programme, se trouve sur un volume réseau, ou semble simplement obsolète, actualisez-le manuellement.</p>
+<ol>
+<li>Cliquez sur le panneau à mettre à jour.</li>
+<li>Appuyez sur F2 (ou Ctrl+R) pour relire ce dossier.</li>
+</ol>
+<p>Les volumes réseau et montés ne signalent pas toujours les changements à macOS, une actualisation manuelle est donc la solution fiable là-bas.</p>
+<h2 id="un-serveur-ftps-ne-se-connecte-pas">Un serveur FTPS ne se connecte pas</h2>
+<p>Si une connexion FTP sécurisée échoue, vérifiez ces réglages dans les détails de la connexion :</p>
+<ul>
+<li>Accordez le mode de sécurité du serveur : FTPS explicite (AUTH TLS) et FTPS implicite (port 990) ne sont pas interchangeables.</li>
+<li>Si la connexion se bloque après l'authentification, basculez entre le mode de transfert passif et actif — la plupart des serveurs derrière un pare-feu ont besoin du mode passif.</li>
+<li>Si le serveur utilise un certificat auto-signé, vous devez explicitement l'autoriser ; sinon la connexion est refusée.</li>
+<li>Confirmez l'hôte, le port, le nom d'utilisateur et le mot de passe, et si un proxy SOCKS5 est requis sur votre réseau.</li>
+</ul>
+<h2 id="la-compression-en-rar-ne-fait-rien">La compression en RAR ne fait rien</h2>
+<p>Peach Commander peut créer des archives ZIP, 7z, TAR, TAR.GZ, BZ2 et XZ tout seul. RAR est différent : parce que RAR est un format propriétaire, la création d'archives RAR nécessite un outil en ligne de commande RAR séparé installé sur votre Mac. Sans lui, RAR est indisponible quand vous compressez des fichiers (Option+F5). Pour lire les archives RAR existantes, vous pouvez toujours les ouvrir comme un dossier. Si vous n'avez pas spécifiquement besoin de RAR, choisissez plutôt ZIP ou 7z — les deux prennent en charge un chiffrement AES-256 robuste et les volumes fractionnés.</p>
+<h2 id="raccourcis">Raccourcis</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Raccourci</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actualiser le dossier actif</td>
+<td>F2 ou Ctrl+R</td>
+</tr>
+<tr>
+<td>Se connecter à un serveur FTP/FTPS</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Monter un partage réseau</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>Compresser les fichiers sélectionnés</td>
+<td>Option+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>Les mots de passe et autres identifiants sont stockés uniquement dans le trousseau macOS, jamais dans des fichiers de configuration en clair.</li>
+<li>Monter un partage réseau (Cmd+K, ou menu Réseau ▸ Monter un partage réseau…) utilise la même connexion que macOS lui-même, de sorte qu'il apparaîtra aussi dans le Finder.</li>
+<li>Si un problème persiste après une actualisation et un redémarrage, il peut s'agir d'une limitation connue plutôt que d'une défaillance — voir Limitations connues.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">Confidentialité et sécurité</a></li><li><a href="known-limitations.html">Limitations connues</a></li></ul></section>
+</main>
+</body>
+</html>

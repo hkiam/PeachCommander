@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Szybkie wyszukiwanie i filtr</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Szybkie wyszukiwanie i filtr</h1>
+<p>Gdy folder zawiera setki elementów, rzadko musisz przewijać. Peach Commander pozwala przeskoczyć prosto do pliku, wpisując jego nazwę (szybkie wyszukiwanie), ograniczyć listę tylko do interesujących Cię elementów (szybki filtr) oraz pokazać lub ukryć pliki z kropką, które macOS zwykle trzyma poza wzrokiem. Wszystkie trzy działają wewnątrz aktywnego panelu, bez otwierania okna dialogowego.</p>
+<h2 id="przeskok-do-pliku-przez-pisanie-szybkie-wyszukiwanie">Przeskok do pliku przez pisanie (szybkie wyszukiwanie)</h2>
+<ol>
+<li>Kliknij panel plików, aby był aktywny.</li>
+<li>Zacznij wpisywać początek nazwy. Kursor przeskakuje do pierwszego pasującego elementu.</li>
+<li>Pisz dalej, aby zawęzić dopasowanie, lub naciśnij tę samą literę ponownie, aby przechodzić między elementami zaczynającymi się na tę literę.</li>
+<li>Wpisany tekst czyści się po krótkiej pauzie, więc możesz w dowolnej chwili rozpocząć nowe wyszukiwanie.</li>
+</ol>
+<p>Domyślnie zwykłe litery trafiają do wiersza poleceń, a szybkie wyszukiwanie jest uruchamiane skrótem Ctrl+Option+litera (klasyczne zachowanie). Możesz przełączyć szybkie wyszukiwanie tak, aby zamiast tego reagowało na zwykłe pisanie, lub wyłączyć je w ustawieniach Konfiguracji.</p>
+<h2 id="filtrowanie-listy-szybki-filtr">Filtrowanie listy (szybki filtr)</h2>
+<ol>
+<li>W aktywnym panelu naciśnij Ctrl+S, aby włączyć szybki filtr.</li>
+<li>Wpisz maskę filtra. Panel na żywo zawęża się do pasujących elementów w miarę pisania.</li>
+<li>Naciśnij Esc, aby wyczyścić filtr i ponownie pokazać wszystko.</li>
+</ol>
+<p>Filtr przyjmuje kilka rodzajów masek:</p>
+<ul>
+<li><strong>Zwykły tekst</strong> dopasowuje każdą nazwę, która zawiera to, co wpisałeś (na przykład <code>report</code> pokazuje każdy element mający „report" gdziekolwiek w nazwie).</li>
+<li><strong>Symbole wieloznaczne</strong> używają <code>*</code> (dowolne znaki) i <code>?</code> (jeden znak). Oddziel kilka masek średnikiem i dodaj wykluczenia po pionowej kresce, na przykład <code>*.jpg;*.png|*thumb*</code>, aby pokazać obrazy, ale ukryć miniatury.</li>
+<li><strong>Etykiety Findera</strong> filtrują według koloru etykiety: wpisz <code>tag:red</code> (lub <code>#red</code>), aby pokazać tylko elementy oznaczone na czerwono, albo samo <code>tag:</code>, aby pokazać wszystko, co nosi jakąkolwiek etykietę.</li>
+</ul>
+<h2 id="pokazywanie-ukrytych-plikow">Pokazywanie ukrytych plików</h2>
+<p>Naciśnij Ctrl+H lub wybierz polecenie z menu Widok, aby przełączać ukryte elementy (nazwy zaczynające się od kropki oraz pliki ukryte przez system). Ustawienie dotyczy aktywnego panelu i jest zapamiętywane między sesjami.</p>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Szybkie wyszukiwanie (tryb klasyczny)</td>
+<td>Ctrl+Option+litera</td>
+</tr>
+<tr>
+<td>Szybki filtr wł./wył.</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Wyczyść filtr / anuluj</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Pokaż/ukryj ukryte pliki</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Szybkie wyszukiwanie tylko przesuwa kursor; szybki filtr faktycznie zmienia to, które elementy są wyświetlane. Użyj filtra, gdy chcesz pracować na podzbiorze (na przykład zaznaczyć lub skopiować tylko dopasowania).</li>
+<li>Ustawienia filtra i ukrytych plików są przypisane do panelu, więc obie strony mogą jednocześnie pokazywać różne rzeczy.</li>
+<li>Szybkie wyszukiwanie dopasowuje nazwy od początku; tryb zwykłego tekstu szybkiego filtra dopasowuje w dowolnym miejscu nazwy. Użyj symbolu wieloznacznego jak <code>*text*</code>, jeśli chcesz, aby filtr zachowywał się tak samo.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Wyszukiwanie plików</a></li><li><a href="view-modes-and-sorting.html">Tryby widoku i sortowanie</a></li></ul></section>
+</main>
+</body>
+</html>

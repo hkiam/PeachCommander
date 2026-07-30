@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hledání souborů</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Hledání souborů</h1>
+<p>Když potřebujete vystopovat soubory kdekoli na svém Macu — podle názvu, podle toho, co obsahují, nebo podle velikosti a data — použijte okno Najít soubory. Prohledává jednu nebo více složek (a jejich podsložky), umí nahlédnout dovnitř textových souborů a archivů a umožňuje odeslat vše, co najde, rovnou do panelu, takže s výsledky můžete pracovat jako s obyčejnou složkou.</p>
+<h2 id="hledani-souboru-podle-nazvu">Hledání souborů podle názvu</h2>
+<ol>
+<li>V panelu zobrazujícím složku, kterou chcete prohledat, zvolte <strong>Příkazy &gt; Najít soubory…</strong> (nebo stiskněte Cmd+Shift+F).</li>
+<li>Na kartě <strong>Obecné</strong> zadejte vzor názvu do pole <strong>Hledat</strong>. Můžete použít zástupné znaky jako <code>*.pdf</code> nebo <code>zprava_*.docx</code>. Chcete-li prohledat více složek najednou, uveďte je v poli počáteční složky oddělené středníkem (<code>;</code>).</li>
+<li>Klepněte na <strong>Start</strong>. Shody se objevují v seznamu výsledků níže, jak jsou nalezeny.</li>
+<li>Poklepáním na kterýkoli výsledek přeskočíte na ten soubor v aktivním panelu, nebo vyberte výsledek a klepněte na <strong>Zobrazit</strong> (F3), abyste jej otevřeli ve vestavěném prohlížeči.</li>
+</ol>
+<p><img alt="Okno Najít soubory na kartě Obecné zobrazující vzor názvu, složku a seznam výsledků" src="images/find-files-general.png" />
+<em>(Obrázek: karta Obecné — hledání podle vzoru názvu napříč jednou nebo více složkami.)</em></p>
+<h2 id="hledani-podle-obsahu-velikosti-a-data">Hledání podle obsahu, velikosti a data</h2>
+<ol>
+<li>Chcete-li hledat uvnitř souborů, vyberte <strong>Najít text</strong> na kartě Obecné a zadejte hledaný text. Možnosti umožňují učinit jej <strong>rozlišujícím velikost</strong>, shodovat se jen s <strong>celým slovem</strong>, zacházet s textem jako s <strong>regulárním výrazem</strong>, provést <strong>hexadecimální hledání obsahu</strong> nebo najít soubory, které text <strong>neobsahují</strong>.</li>
+<li>Přepněte na kartu <strong>Pokročilé</strong> pro zúžení výsledků podle <strong>velikosti</strong> (například <code>10K</code> až <code>5M</code>), podle rozsahu <strong>data změny</strong> nebo na soubory změněné za posledních N dní.</li>
+<li>Zapněte <strong>Hledat uvnitř archivů</strong> pro nahlédnutí do archivů rodiny zip (zip, jar, war a podobné).</li>
+<li>Chcete-li omezit hledání jen na to, co jste už vybrali, zapněte před spuštěním <strong>Hledat jen ve vybraných položkách</strong>.</li>
+</ol>
+<p><img alt="Okno Najít soubory na kartě Pokročilé zobrazující filtry velikosti a data" src="images/find-files-advanced.png" />
+<em>(Obrázek: karta Pokročilé — filtrujte podle velikosti, data a dalších atributů.)</em></p>
+<p>Pokud máte zásuvné moduly, které přidávají pole obsahu (jako rozměry obrázků), karta <strong>Zásuvné moduly</strong> umožňuje vyžadovat, aby pole odpovídalo podmínce — například jen obrázky širší než 1000 pixelů.</p>
+<p><img alt="Okno Najít soubory na kartě Zásuvné moduly zobrazující podmínku pro pole obsahu" src="images/find-files-plugins.png" />
+<em>(Obrázek: karta Zásuvné moduly — shoda podle polí obsahu poskytnutých zásuvnými moduly.)</em></p>
+<h2 id="rychla-hledani-se-spotlightem">Rychlá hledání se Spotlightem</h2>
+<p>U místních složek, které macOS už zaindexoval, zapněte <strong>Použít Spotlight</strong> na kartě Obecné pro téměř okamžité výsledky. Spotlight prohledává index místo skenování souborů, takže ignoruje regulární výrazy, limity hloubky podsložek a rozsah jen-vybrané.</p>
+<h2 id="opetovne-pouziti-a-predani-vysledku">Opětovné použití a předání výsledků</h2>
+<ul>
+<li><strong>Poslat do seznamu</strong> umístí každý výsledek do aktivního panelu jako dočasný seznam, takže můžete zkopírovat, přesunout nebo smazat celou sadu najednou.</li>
+<li>Na kartě <strong>Načíst / Uložit</strong> zvolte <strong>Uložit jako šablonu…</strong> pro uložení aktuálního hledání (vzory a možnosti) a jeho pozdější opětovný výběr ze seznamu šablon.</li>
+</ul>
+<h2 id="zkratky">Zkratky</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Otevřít Najít soubory</td>
+<td>Cmd+Shift+F nebo Option+F7</td>
+</tr>
+<tr>
+<td>Spustit / zastavit hledání</td>
+<td>Tlačítko Start v okně</td>
+</tr>
+<tr>
+<td>Zobrazit vybraný výsledek</td>
+<td>F3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Hledání obsahu čte celé soubory u místních složek; na jiných umístěních se velmi velké soubory přeskočí (zhruba 16 MB, nebo 64 MB při použití regulárního výrazu).</li>
+<li>Hledání uvnitř archivů sestupuje až do čtyř úrovní vnořených archivů.</li>
+<li><strong>Zahrnout složky do výsledků</strong> rovněž uvádí složky, jejichž názvy odpovídají, nejen soubory.</li>
+<li>Spotlight pokrývá jen zaindexované místní složky; pro síťová umístění nebo shodu podle vzoru jej nechte vypnutý a nechte Najít soubory skenovat.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="selecting-files.html">Výběr souborů</a></li><li><a href="quick-search-and-filter.html">Rychlé hledání a filtr</a></li></ul></section>
+</main>
+</body>
+</html>

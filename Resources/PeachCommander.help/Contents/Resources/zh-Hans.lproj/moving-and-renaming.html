@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>移动与重命名</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>移动与重命名</h1>
+<p>移动会将文件和文件夹迁移位置而非复制它们，重命名则更改它们的名称而不触及其内容。由于 Peach Commander 并排显示两个面板，移动只不过是在一个面板中选取你想要的内容，并将其发送到另一个面板中打开的文件夹。你还可以就地重命名某个项目，或使用通配符掩码在移动时即时为项目赋予新名称。</p>
+<h2 id="_1">将文件移动到另一个面板</h2>
+<ol>
+<li>在源面板中，打开存放你想移动项目的文件夹，并在另一个面板中打开目标文件夹。</li>
+<li>选择要移动的文件或文件夹。若要一次移动多个，请先将它们全部选中（参见<em>选择文件</em>）。</li>
+<li>按 F6，或选择 <strong>文件 &gt; 移动</strong>。</li>
+<li>检查对话框中显示的目标文件夹，然后单击 <strong>确定</strong>（或按 Return）以开始移动。</li>
+</ol>
+<p><img alt="移动对话框，显示目标路径字段、选项和一个队列复选框" src="images/copy-dialog.png" />
+<em>（图：移动对话框使用与复制相同的目标字段——输入路径，或添加通配符掩码以在移动时重命名。）</em></p>
+<p>同一驱动器上的移动几乎瞬间完成。当目标位于不同的驱动器上时，Peach Commander 会复制这些项目，然后仅在每个文件都安全到达后才移除原文件。</p>
+<h2 id="_2">就地重命名</h2>
+<ol>
+<li>选择单个文件或文件夹。</li>
+<li>按 Shift+F6，或选择 <strong>文件 &gt; 重命名</strong>。</li>
+<li>直接在面板中编辑名称，然后按 Return 确认，或按 Esc 取消。</li>
+</ol>
+<h2 id="_3">移动时重命名</h2>
+<p>移动对话框中的目标字段接受通配符掩码，因此你可以在项目移动时对其重命名：</p>
+<ol>
+<li>选择项目并按 F6。</li>
+<li>在目标字段中，在目标文件夹后添加一个名称掩码，例如 <code>/Users/you/Archive/*_backup.*</code>。</li>
+<li><code>*</code> 代表原始名称，<code>.*</code> 代表原始扩展名。确认即可在一步中完成移动和重命名。</li>
+</ol>
+<h2 id="_4">快捷键</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>移动到另一个面板</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>就地重命名</td>
+<td>Shift+F6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">提示</h2>
+<ul>
+<li>移动对话框提供与复制相同的选项按钮和后台队列复选框，因此你可以将大批量移动排队并让它们在后台运行。</li>
+<li>同一驱动器内的移动是快速的就地操作，因此对于非常大的文件夹也很安全。跨驱动器移动耗时较长，因为数据要先被复制，然后再删除源。</li>
+<li>若要一次用编号、查找替换或模式重命名许多文件，请改用多重命名工具（参见<em>重命名多个文件</em>）。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">复制文件</a></li><li><a href="multi-rename.html">重命名多个文件</a></li></ul></section>
+</main>
+</body>
+</html>

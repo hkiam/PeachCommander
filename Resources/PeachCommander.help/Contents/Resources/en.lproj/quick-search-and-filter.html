@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quick search &amp; filter</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Quick search &amp; filter</h1>
+<p>When a folder holds hundreds of items, you rarely need to scroll. Peach Commander lets you jump straight to a file by typing its name (quick search), pare the list down to just the items you care about (quick filter), and reveal or hide the dotfiles macOS normally keeps out of sight. All three work inside the active panel without opening a dialog.</p>
+<h2 id="jump-to-a-file-by-typing-quick-search">Jump to a file by typing (quick search)</h2>
+<ol>
+<li>Click a file panel so it is active.</li>
+<li>Start typing the beginning of a name. The cursor jumps to the first matching item.</li>
+<li>Keep typing to refine the match, or press the same letter again to cycle through items that start with that letter.</li>
+<li>The typed text clears after a short pause, so you can start a new search at any time.</li>
+</ol>
+<p>By default, plain letters go to the command line and quick search is triggered with Ctrl+Option+letter (the classic behavior). You can switch quick search to respond to plain typing instead, or turn it off, in Configuration settings.</p>
+<h2 id="filter-the-list-quick-filter">Filter the list (quick filter)</h2>
+<ol>
+<li>In the active panel, press Ctrl+S to turn on the quick filter.</li>
+<li>Type a filter mask. The panel narrows live to matching items as you type.</li>
+<li>Press Esc to clear the filter and show everything again.</li>
+</ol>
+<p>The filter accepts several kinds of masks:</p>
+<ul>
+<li><strong>Plain text</strong> matches any name that contains what you typed (for example, <code>report</code> shows every item with "report" anywhere in its name).</li>
+<li><strong>Wildcards</strong> use <code>*</code> (any characters) and <code>?</code> (one character). Separate several masks with a semicolon and add exclusions after a vertical bar, for example <code>*.jpg;*.png|*thumb*</code> to show images but hide thumbnails.</li>
+<li><strong>Finder tags</strong> filter by tag color: type <code>tag:red</code> (or <code>#red</code>) to show only red-tagged items, or a bare <code>tag:</code> to show everything that carries any tag.</li>
+</ul>
+<h2 id="show-hidden-files">Show hidden files</h2>
+<p>Press Ctrl+H, or choose the command from the View menu, to toggle hidden items (names beginning with a dot and system-hidden files). The setting applies to the active panel and is remembered between sessions.</p>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quick search (classic mode)</td>
+<td>Ctrl+Option+letter</td>
+</tr>
+<tr>
+<td>Quick filter on/off</td>
+<td>Ctrl+S</td>
+</tr>
+<tr>
+<td>Clear filter / cancel</td>
+<td>Esc</td>
+</tr>
+<tr>
+<td>Show/hide hidden files</td>
+<td>Ctrl+H</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Quick search only moves the cursor; quick filter actually changes which items are listed. Use the filter when you want to work on a subset (for example, select or copy only the matches).</li>
+<li>The filter and hidden-files settings are per panel, so the two sides can show different things at once.</li>
+<li>Quick search matches names from the start; quick filter's plain-text mode matches anywhere in the name. Use a wildcard like <code>*text*</code> if you want the filter to behave the same way.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="searching.html">Finding files</a></li><li><a href="view-modes-and-sorting.html">View modes &amp; sorting</a></li></ul></section>
+</main>
+</body>
+</html>

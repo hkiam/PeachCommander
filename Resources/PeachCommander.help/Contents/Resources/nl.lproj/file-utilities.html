@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bestandshulpmiddelen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Bestandshulpmiddelen</h1>
+<p>Naast kopiëren en verplaatsen bevat Peach Commander een set alledaagse bestandshulpmiddelen om te verifiëren dat bestanden intact zijn, schijfruimte terug te winnen, grote bestanden in kleinere stukken op te breken en bestanden om te zetten naar en van tekstveilige formaten. Je bereikt ze allemaal via het menu <strong>Bestand</strong>, en ze werken op wat je ook geselecteerd hebt in het actieve paneel (of het item onder de cursor wanneer er niets geselecteerd is). Dit onderwerp behandelt controlesommen, de duplicaatzoeker, splitsen/samenvoegen, coderen/decoderen en het berekenen van de bezette ruimte.</p>
+<h2 id="controlesommen-maken-of-verifieren">Controlesommen maken of verifiëren</h2>
+<p>Met controlesommen kun je bevestigen dat een bestand zonder beschadiging is gedownload of gekopieerd, of een ontvanger een manier geven om de kopie die hij heeft ontvangen te controleren.</p>
+<ol>
+<li>Selecteer de bestanden waarvan je een vingerafdruk wilt maken.</li>
+<li>Kies <strong>Bestand ▸ Controlesommen maken…</strong>, kies een algoritme (CRC32, MD5, SHA-1, SHA-256 of SHA-512) en bewaar het controlesombestand.</li>
+<li>Om bestanden later te controleren, selecteer je het controlesombestand en kies je <strong>Bestand ▸ Controlesommen verifiëren…</strong>. Peach Commander herberekent elke hash en rapporteert elk bestand dat niet overeenkomt.</li>
+</ol>
+<p>Controlesommen streamen rechtstreeks over de huidige locatie, zodat je ze zelfs kunt maken of verifiëren voor bestanden binnen archieven of op een FTP-server.</p>
+<h2 id="dubbele-bestanden-vinden">Dubbele bestanden vinden</h2>
+<p>De duplicaatzoeker vindt identieke bestanden verspreid over mappen zodat je de extra kopieën kunt verwijderen.</p>
+<ol>
+<li>Selecteer de mappen (of bestanden) die je wilt scannen.</li>
+<li>Kies <strong>Bestand ▸ Duplicaten zoeken…</strong>. Peach Commander vergelijkt kandidaten en groepeert bestanden die byte voor byte identiek zijn.</li>
+<li>Bekijk elke groep, markeer de kopieën die je niet meer nodig hebt en verwijder ze.</li>
+</ol>
+<p><img alt="De duplicaatzoeker die groepen identieke bestanden weergeeft" src="images/duplicate-finder.png" />
+<em>(Afbeelding: De duplicaatzoeker groepeert identieke bestanden zodat je er één kunt behouden en de rest kunt verwijderen.)</em></p>
+<h2 id="bestanden-splitsen-en-samenvoegen">Bestanden splitsen en samenvoegen</h2>
+<p>Splitsen breekt één groot bestand op in een genummerde reeks kleinere delen — handig voor opslag- of overdrachtslimieten. Samenvoegen stelt ze weer samen.</p>
+<ol>
+<li>Om te splitsen, selecteer je een bestand en kies je <strong>Bestand ▸ Bestand splitsen…</strong>, en stel je vervolgens de deelgrootte in. De delen worden naar de map van het andere paneel geschreven.</li>
+<li>Om weer samen te stellen, selecteer je het eerste deel en kies je <strong>Bestand ▸ Bestanden samenvoegen…</strong>. Het oorspronkelijke bestand wordt opnieuw opgebouwd uit de genummerde stukken.</li>
+</ol>
+<h2 id="coderen-en-decoderen">Coderen en decoderen</h2>
+<p>Coderen zet een binair bestand om in platte tekst zodat het kanalen overleeft die alleen tekst dragen (bijvoorbeeld oudere e-mail of plakvakken). Decoderen keert dit om.</p>
+<ol>
+<li>Selecteer een bestand en kies <strong>Bestand ▸ Coderen…</strong>, en kies vervolgens een formaat — MIME (Base64), UUE (uuencode) of XXE.</li>
+<li>Om het origineel te herstellen, selecteer je het gecodeerde bestand en kies je <strong>Bestand ▸ Decoderen…</strong>. Het formaat wordt automatisch gedetecteerd.</li>
+</ol>
+<h2 id="bezette-ruimte-berekenen">Bezette ruimte berekenen</h2>
+<p>Om te zien hoeveel ruimte een map of selectie werkelijk op schijf gebruikt, selecteer je de items en druk je op <strong>Ctrl+L</strong> (<strong>Bestand ▸ Bezette ruimte berekenen…</strong>). Peach Commander telt elk bestand erin op, inclusief submappen, en toont het totaal.</p>
+<h2 id="sneltoetsen">Sneltoetsen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Toets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bezette ruimte berekenen</td>
+<td>Ctrl+L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Controlesommen, splitsen/samenvoegen en coderen/decoderen zijn gericht op geavanceerdere taken, maar elk is één venster met verstandige standaardwaarden.</li>
+<li>Wanneer een hulpmiddel nieuwe bestanden produceert (splitsdelen, een gecodeerd bestand, een controlesomlijst), worden deze geschreven naar de map die in het andere paneel wordt getoond — stel dat paneel eerst in op je bedoelde bestemming.</li>
+<li>Het verwijderen van duplicaten is definitief, afhankelijk van je verwijderinstellingen; bekijk elke groep zorgvuldig en houd ten minste één kopie van alles wat je nog nodig hebt.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="comparing-and-syncing.html">Vergelijken &amp; synchroniseren</a></li></ul></section>
+</main>
+</body>
+</html>

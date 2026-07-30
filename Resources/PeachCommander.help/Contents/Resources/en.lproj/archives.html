@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Working with archives</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Working with archives</h1>
+<p>Peach Commander treats archives like folders. You can step inside a ZIP, TAR, or other supported archive, browse its contents, and copy files out — all without unpacking to disk first. When you want to create an archive, the Pack command bundles your selection into a ZIP, 7z, TAR, or other format, with optional encryption and split volumes. This is handy for bundling files to send, shrinking a folder for storage, or peeking inside a download before you commit to extracting it.</p>
+<h2 id="browse-an-archive-as-a-folder">Browse an archive as a folder</h2>
+<ol>
+<li>In a panel, move the cursor to an archive file (for example a <code>.zip</code> or <code>.tar.gz</code>).</li>
+<li>Press Enter or Ctrl+PageDown to step inside, just as you would open a folder.</li>
+<li>Navigate the contents normally. Press Backspace or Ctrl+PageUp to go back up and leave the archive.</li>
+<li>To pull files out, select them and copy (F5) to the other panel.</li>
+</ol>
+<p><img alt="Browsing inside an archive as if it were a folder" src="images/archive-browse.png" />
+<em>(Figure: An opened archive shown as an ordinary folder listing, with its files ready to copy out.)</em></p>
+<p>ZIP, TAR, and gzip-compressed TAR are read directly. Other formats such as CPIO, ISO, CAB, LZH, XAR, and PAX are read through built-in system tools. Encrypted ZIP archives (both classic and AES) can be opened when you supply the password.</p>
+<h2 id="pack-files-into-a-new-archive">Pack files into a new archive</h2>
+<ol>
+<li>Select the files and folders you want to include in the active panel.</li>
+<li>Choose File ▸ Pack… or press Alt+F5. (To pack and then delete the originals, use Alt+Shift+F5.)</li>
+<li>In the dialog, choose the archive format (ZIP, 7z, TAR, tar.gz, bzip2, xz, or RAR), the compression level, and where to save it.</li>
+<li>Optionally turn on AES-256 encryption and set a password, or split the archive into fixed-size volumes.</li>
+<li>Confirm to create the archive.</li>
+</ol>
+<p><img alt="The Pack dialog showing format, compression, encryption, and split options" src="images/pack-dialog.png" />
+<em>(Figure: The Pack dialog, where you pick the format and set encryption and split-volume options.)</em></p>
+<h2 id="unpack-or-test-an-archive">Unpack or test an archive</h2>
+<ol>
+<li>Put the archive you want to extract into the active panel and the destination folder in the other panel.</li>
+<li>Choose File ▸ Unpack… or press Alt+F9, then confirm the destination.</li>
+<li>To check an archive for damage without extracting it, choose File ▸ Test Archive.</li>
+</ol>
+<h2 id="edit-a-zip-in-place">Edit a ZIP in place</h2>
+<p>You can add or remove files inside an existing ZIP without unpacking it. Open the ZIP as a folder, then copy files in or delete files as usual — the change is written straight back to the archive.</p>
+<h2 id="shortcuts">Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enter archive under cursor</td>
+<td>Enter or Ctrl+PageDown</td>
+</tr>
+<tr>
+<td>Leave archive (go up)</td>
+<td>Backspace or Ctrl+PageUp</td>
+</tr>
+<tr>
+<td>Pack</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Pack and delete originals</td>
+<td>Alt+Shift+F5</td>
+</tr>
+<tr>
+<td>Unpack</td>
+<td>Alt+F9</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Packing to 7z, xz, bzip2, and RAR relies on external tools. RAR in particular requires the proprietary RAR program to be installed; without it, that format is unavailable.</li>
+<li>Editing a ZIP in place rewrites the whole archive, so file modification timestamps inside it are not preserved.</li>
+<li>Very large individual members are capped at 512 MiB when extracting. Extraction can be cancelled while it runs.</li>
+<li>Extremely large (ZIP64) archives are not supported.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copying files</a></li></ul></section>
+</main>
+</body>
+</html>

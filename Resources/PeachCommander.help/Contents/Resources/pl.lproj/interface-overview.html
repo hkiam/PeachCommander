@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Okno główne</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Okno główne</h1>
+<p>Peach Commander pokazuje dwie listy plików obok siebie, dzięki czemu jednocześnie widzisz, skąd pliki pochodzą i dokąd trafiają. Większość pracy odbywa się w tych dwóch panelach; paski wokół nich pozwalają przełączać dyski, przechodzić do folderu i uruchamiać najczęstsze polecenia na plikach bez odrywania rąk od klawiatury. Ten przewodnik nazywa każdą część okna, aby reszta pomocy była zrozumiała.</p>
+<p><img alt="Główne okno Peach Commander z dwoma panelami i otaczającymi paskami" src="images/main-window.png" />
+<em>(Rysunek: Okno główne — dwa panele z paskiem przycisków, paskiem dysków i paskami ścieżki u góry oraz paskiem klawiszy funkcyjnych na dole.)</em></p>
+<h2 id="dwa-panele-i-panel-aktywny">Dwa panele i panel aktywny</h2>
+<p>Okno jest podzielone na panel lewy i panel prawy, z których każdy pokazuje zawartość jednego folderu. W danej chwili aktywny jest tylko jeden panel: wyświetla on kursor (wyróżniony wiersz), a jego pasek ścieżki jest rysowany na kolorowym tle. Polecenia takie jak kopiowanie i przenoszenie zawsze działają na panelu aktywnym i wysyłają pliki do drugiego.</p>
+<ol>
+<li>Kliknij w dowolnym miejscu panelu, aby uczynić go aktywnym, lub naciśnij Tab, aby przełączać się między nimi.</li>
+<li>Klawiszami strzałek przesuwaj kursor w górę i w dół aktywnego panelu.</li>
+<li>Naciśnij Enter na folderze, aby go otworzyć, lub na <code>..</code> na górze listy, aby przejść o poziom wyżej.</li>
+</ol>
+<h2 id="paski-woko-paneli">Paski wokół paneli</h2>
+<ul>
+<li><strong>Pasek przycisków</strong> (na górze): rząd płaskich przycisków dla częstych poleceń. Kliknij przycisk, aby uruchomić jego polecenie; kliknij przycisk prawym przyciskiem myszy, aby edytować pasek.</li>
+<li><strong>Pasek dysków</strong>: jeden przycisk na każdy dostępny dysk lub wolumin, każdy z przyciskiem wysuwania i informacją o wolnym miejscu. Kliknij wolumin, aby przełączyć na niego dany panel.</li>
+<li><strong>Pasek ścieżki</strong>: pokazuje bieżący folder jako klikalną ścieżkę nawigacyjną. Kliknij segment, aby przejść bezpośrednio do tego folderu, lub kliknij ścieżkę, aby wpisać lokalizację.</li>
+<li><strong>Pasek stanu</strong> (pod każdą listą): bieżące podsumowanie panelu — ile plików i folderów jest zaznaczonych oraz ich łączny rozmiar.</li>
+<li><strong>Wiersz poleceń</strong> (na dole): pole tekstowe, w którym możesz wpisać polecenie w stylu powłoki, uruchamiane w bieżącym folderze.</li>
+<li><strong>Pasek klawiszy funkcyjnych</strong> (na samym dole): sześć przycisków oznaczonych F3 Podgląd, F4 Edytuj, F5 Kopiuj, F6 Przenieś, F7 NowyFolder i F8 Usuń. Kliknij przycisk lub naciśnij odpowiadający mu klawisz.</li>
+</ul>
+<p><img alt="Zbliżenie paska dysków pokazujące przyciski woluminów i wolne miejsce" src="images/drive-bar-crop.png" />
+<em>(Rysunek: Pasek dysków — jeden przycisk na każdy wolumin, z przyciskiem wysuwania i pozostałym wolnym miejscem.)</em></p>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Przełącz aktywny panel</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Otwórz folder / element pod kursorem</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Przejdź o folder wyżej</td>
+<td>Backspace</td>
+</tr>
+<tr>
+<td>Podgląd pliku</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Edytuj plik</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Kopiuj do drugiego panelu</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>Przenieś / zmień nazwę do drugiego panelu</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Nowy folder</td>
+<td>F7</td>
+</tr>
+<tr>
+<td>Usuń (do Kosza)</td>
+<td>F8</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Pasek klawiszy funkcyjnych zmienia swoje etykiety na żywo, gdy przytrzymasz modyfikator. Przytrzymanie na przykład klawisza Shift zmienia F6 na akcję zmiany nazwy w miejscu, więc przyciski zawsze pokazują, co klawisze zrobią w danej chwili.</li>
+<li>Niemal każdy pasek można pokazać lub ukryć. Zajrzyj do menu Widok i Konfiguracja, aby włączyć lub wyłączyć pasek przycisków, pasek dysków, wiersz poleceń albo pasek klawiszy funkcyjnych, lub aby ułożyć oba panele jeden nad drugim zamiast obok siebie.</li>
+<li>Na wielu klawiaturach Mac klawisze F domyślnie działają jako sterowanie multimediami i jasnością. Przytrzymaj klawisz Fn razem z F3-F8 lub włącz „Używaj klawiszy F1, F2 itp. jako standardowych klawiszy funkcyjnych" w Ustawieniach systemowych, aby używać ich bezpośrednio.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="navigating.html">Poruszanie się</a></li><li><a href="panels-and-tabs.html">Karty</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attribute &amp; Berechtigungen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Attribute &amp; Berechtigungen</h1>
+<p>Peach Commander ermöglicht es Ihnen, die systemnahen Metadaten von Dateien und Ordnern zu untersuchen und zu ändern, die der Finder meist außer Reichweite hält: POSIX-Lese-/Schreib-/Ausführungsberechtigungen, Eigentümer und Gruppe, Änderungs- und Erstellungsdatum, macOS-Flags wie „versteckt" und „gesperrt" sowie erweiterte Attribute. Sie können auch die Zugriffssteuerungsliste (ACL) einer Datei bearbeiten, um feingranulare Regeln pro Benutzer oder Gruppe festzulegen, Links und Aliase erstellen, die auf andere Elemente verweisen, und eigene Kommentare anhängen. Diese Werkzeuge richten sich an fortgeschrittene Benutzer, die präzise Kontrolle darüber benötigen, wie sich Elemente verhalten und wer sie anrühren darf.</p>
+<h2 id="attribute-andern">Attribute ändern</h2>
+<ol>
+<li>Wählen Sie ein oder mehrere Elemente im aktiven Panel aus.</li>
+<li>Wählen Sie <strong>Datei &gt; Attribute ändern…</strong>.</li>
+<li>Legen Sie fest, was Sie benötigen: schalten Sie die Lese-/Schreib-/Ausführungskästchen für Eigentümer, Gruppe und alle um (oder geben Sie direkt einen Oktalwert ein), ändern Sie Eigentümer oder Gruppe, kippen Sie die Flags „versteckt" oder „gesperrt" und setzen Sie das Änderungs- oder Erstellungsdatum. Verwenden Sie <strong>Aktuelle verwenden</strong> für die aktuelle Zeit oder kopieren Sie ein Datum von einer anderen Datei.</li>
+<li>Um dieselbe Änderung durch den Inhalt eines Ordners anzuwenden, aktivieren Sie die rekursive Option und wählen Sie, ob sie Dateien, Ordner oder beides betrifft.</li>
+<li>Klicken Sie auf OK, um die Änderung auszuführen. Rekursive Änderungen laufen als Hintergrundaufgabe mit einem Fortschrittsbalken.</li>
+</ol>
+<p><img alt="Dialog „Attribute ändern&quot; mit dem Berechtigungsraster, den Flags und den Datumsfeldern" src="images/attributes-dialog.png" />
+<em>(Abbildung: Der Dialog „Attribute ändern". Gemischte Werte über eine Mehrfachauswahl hinweg werden als Bindestrich angezeigt, bis Sie sie festlegen.)</em></p>
+<h2 id="eine-acl-bearbeiten">Eine ACL bearbeiten</h2>
+<p>Für Regeln, die über das grundlegende Modell aus Eigentümer/Gruppe/alle hinausgehen, bearbeiten Sie die Zugriffssteuerungsliste des Elements.</p>
+<ol>
+<li>Öffnen Sie <strong>Datei &gt; Attribute ändern…</strong> und öffnen Sie von dort aus den ACL-Editor.</li>
+<li>Jede Zeile ist eine Regel: der Benutzer oder die Gruppe, für den bzw. die sie gilt, ob sie erlaubt oder verweigert, und welche Berechtigungen (Lesen, Schreiben, Löschen usw.) sie gewährt.</li>
+<li>Fügen Sie Zeilen hinzu, entfernen oder bearbeiten Sie sie und speichern Sie dann, um die Liste in das Element zurückzuschreiben.</li>
+</ol>
+<h2 id="links-aliase-und-kommentare-erstellen">Links, Aliase und Kommentare erstellen</h2>
+<ul>
+<li><strong>Datei &gt; Symbolischen Link erstellen…</strong> erstellt einen symbolischen Link (Symlink), der über den Pfad auf das Element unter dem Cursor verweist.</li>
+<li><strong>Datei &gt; Harten Link erstellen…</strong> erstellt einen harten Link auf dieselben Dateidaten. Harte Links funktionieren nur für Dateien auf demselben Volume.</li>
+<li><strong>Datei &gt; Alias erstellen…</strong> erstellt einen macOS-Alias, dem auch der Finder folgen kann.</li>
+<li><strong>Datei &gt; Kommentar bearbeiten…</strong> (Ctrl+Z) öffnet einen Texteditor für einen dateibezogenen Kommentar. Kommentare können in einer eigenen Spalte und in Statushinweisen angezeigt werden.</li>
+</ul>
+<h2 id="tastenkurzel">Tastenkürzel</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Tastenkürzel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kommentar bearbeiten</td>
+<td>Ctrl+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Das Ändern von Eigentümer oder Gruppe erfordert in der Regel Rechte, die Sie als normaler Benutzer nicht haben; wenn das der Fall ist, wird die Änderung als fehlgeschlagen gemeldet, statt angewendet zu werden, und der Rest Ihrer Änderungen wird trotzdem durchgeführt.</li>
+<li>Kommentare werden in einer Datei <code>descript.ion</code> neben Ihren Elementen gespeichert und können je nach Ihren Einstellungen auch als Finder-Kommentare geführt werden. Beide werden beim Anzeigen eines Kommentars gelesen.</li>
+<li>Ein symbolischer Link und ein Alias verweisen beide auf ein Ziel, aber ein symbolischer Link speichert einen einfachen Pfad, während ein Alias eine macOS-Referenz speichert, die weiterhin funktioniert, wenn das Ziel verschoben oder umbenannt wird. Ein harter Link ist ein zweiter Name für dieselben Dateidaten, kein Verweis.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="file-utilities.html">Datei-Werkzeuge</a></li></ul></section>
+</main>
+</body>
+</html>

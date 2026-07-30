@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Das Hauptfenster</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Das Hauptfenster</h1>
+<p>Peach Commander zeigt zwei Dateilisten nebeneinander, sodass Sie gleichzeitig sehen können, woher Dateien kommen und wohin sie gehen. Der Großteil Ihrer Arbeit findet in diesen beiden Panels statt; die Leisten darum herum lassen Sie Laufwerke wechseln, zu einem Ordner springen und die gängigen Dateibefehle ausführen, ohne die Tastatur zu verlassen. Dieser Rundgang benennt jeden Teil des Fensters, damit der Rest der Hilfe verständlich wird.</p>
+<p><img alt="Das Peach-Commander-Hauptfenster mit seinen zwei Panels und den umgebenden Leisten" src="images/main-window.png" />
+<em>(Abbildung: Das Hauptfenster — zwei Panels mit der Schaltflächenleiste, der Laufwerksleiste und den Pfadleisten oben und der Funktionstastenleiste unten.)</em></p>
+<h2 id="die-zwei-panels-und-das-aktive-panel">Die zwei Panels und das aktive Panel</h2>
+<p>Das Fenster ist in ein linkes und ein rechtes Panel aufgeteilt, die jeweils den Inhalt eines Ordners zeigen. Nur ein Panel ist jeweils aktiv: Es zeigt den Cursor (eine hervorgehobene Zeile) und seine Pfadleiste wird mit einem farbigen Hintergrund gezeichnet. Befehle wie Kopieren und Verschieben wirken immer auf das aktive Panel und senden Dateien an das andere.</p>
+<ol>
+<li>Klicken Sie an eine beliebige Stelle in einem Panel, um es zu aktivieren, oder drücken Sie Tab, um zwischen ihnen zu wechseln.</li>
+<li>Verwenden Sie die Pfeiltasten, um den Cursor im aktiven Panel auf- und abzubewegen.</li>
+<li>Drücken Sie Enter auf einem Ordner, um ihn zu öffnen, oder auf <code>..</code> oben in der Liste, um eine Ebene nach oben zu gehen.</li>
+</ol>
+<h2 id="leisten-um-die-panels">Leisten um die Panels</h2>
+<ul>
+<li><strong>Schaltflächenleiste</strong> (oben): eine Reihe flacher Schaltflächen für häufige Befehle. Klicken Sie auf eine Schaltfläche, um ihren Befehl auszuführen; klicken Sie mit der rechten Maustaste auf eine Schaltfläche, um die Leiste zu bearbeiten.</li>
+<li><strong>Laufwerksleiste</strong>: eine Schaltfläche pro verfügbarer Festplatte oder verfügbarem Volume, jeweils mit einem Auswurf-Steuerelement und dem freien Speicher. Klicken Sie auf ein Volume, um dieses Panel dorthin zu wechseln.</li>
+<li><strong>Pfadleiste</strong>: zeigt den aktuellen Ordner als anklickbare Brotkrümelnavigation. Klicken Sie auf ein Segment, um direkt zu diesem Ordner zu springen, oder klicken Sie auf den Pfad, um einen Ort einzutippen.</li>
+<li><strong>Statusleiste</strong> (unter jeder Liste): eine laufende Zusammenfassung des Panels — wie viele Dateien und Ordner ausgewählt sind und ihre Gesamtgröße.</li>
+<li><strong>Befehlszeile</strong> (unten): ein Textfeld, in das Sie einen Befehl im Shell-Stil eintippen können, der im aktuellen Ordner ausgeführt wird.</li>
+<li><strong>Funktionstastenleiste</strong> (ganz unten): sechs Schaltflächen mit den Beschriftungen F3 Ansehen, F4 Bearbeiten, F5 Kopieren, F6 Verschieben, F7 NeuerOrdner und F8 Löschen. Klicken Sie auf eine Schaltfläche oder drücken Sie die entsprechende Taste.</li>
+</ul>
+<p><img alt="Nahaufnahme der Laufwerksleiste mit Volume-Schaltflächen und freiem Speicher" src="images/drive-bar-crop.png" />
+<em>(Abbildung: Die Laufwerksleiste — eine Schaltfläche pro Volume, mit einem Auswurf-Steuerelement und dem verbleibenden freien Speicher.)</em></p>
+<h2 id="kurzbefehle">Kurzbefehle</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Kurzbefehl</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aktives Panel wechseln</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Ordner / Element unter dem Cursor öffnen</td>
+<td>Enter</td>
+</tr>
+<tr>
+<td>Eine Ebene nach oben gehen</td>
+<td>Backspace</td>
+</tr>
+<tr>
+<td>Datei ansehen</td>
+<td>F3</td>
+</tr>
+<tr>
+<td>Datei bearbeiten</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>In das andere Panel kopieren</td>
+<td>F5</td>
+</tr>
+<tr>
+<td>In das andere Panel verschieben / umbenennen</td>
+<td>F6</td>
+</tr>
+<tr>
+<td>Neuer Ordner</td>
+<td>F7</td>
+</tr>
+<tr>
+<td>Löschen (in den Papierkorb)</td>
+<td>F8</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Die Funktionstastenleiste beschriftet sich live neu, wenn Sie einen Modifikator gedrückt halten. Wenn Sie zum Beispiel Shift halten, ändert sich F6 zu einer Umbenennen-an-Ort-Aktion, sodass die Schaltflächen immer zeigen, was die Tasten gerade jetzt tun werden.</li>
+<li>Fast jede Leiste kann ein- oder ausgeblendet werden. Schauen Sie in den Menüs Ansicht und Konfiguration nach, um die Schaltflächenleiste, Laufwerksleiste, Befehlszeile oder Funktionstastenleiste ein- und auszuschalten oder die beiden Panels übereinander statt nebeneinander zu stapeln.</li>
+<li>Auf vielen Mac-Tastaturen fungieren die F-Tasten standardmäßig als Medien- und Helligkeitssteuerungen. Halten Sie die Fn-Taste zusammen mit F3-F8 gedrückt oder aktivieren Sie „F1-, F2- usw. Tasten als Standard-Funktionstasten verwenden" in den Systemeinstellungen, um sie direkt zu verwenden.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="navigating.html">Sich bewegen</a></li><li><a href="panels-and-tabs.html">Tabs</a></li></ul></section>
+</main>
+</body>
+</html>

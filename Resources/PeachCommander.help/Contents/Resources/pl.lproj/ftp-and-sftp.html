@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Łączenie z FTP i SFTP</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Łączenie z FTP i SFTP</h1>
+<p>Peach Commander może przeglądać serwery zdalne tak, jakby były zwykłymi folderami. Po połączeniu jeden panel pokazuje pliki zdalne, a Ty kopiujesz, przenosisz, zmieniasz nazwy i usuwasz je tymi samymi klawiszami, których używasz lokalnie. Mówi zwykłym FTP, bezpiecznym FTPS i SFTP/SCP przez SSH, więc możesz dotrzeć do wszystkiego, od klasycznego hostingu WWW po utwardzony serwer SSH. Zapisane połączenia żyją w menedżerze połączeń, a hasła są bezpiecznie przechowywane w pęku kluczy macOS, a nie w samym połączeniu.</p>
+<h2 id="poacz-sie-z-serwerem">Połącz się z serwerem</h2>
+<ol>
+<li>Otwórz menu <strong>Sieć</strong> i wybierz <strong>Połączenie FTP…</strong> (Ctrl+F), aby otworzyć menedżera połączeń.</li>
+<li>Wybierz zapisane połączenie z listy i kliknij <strong>Połącz</strong>, lub kliknij <strong>Nowe</strong>, aby utworzyć jedno. Użyj folderów na liście, aby grupować połączenia.</li>
+<li>Dla szybkiego jednorazowego połączenia wybierz <strong>Sieć &gt; Nowe połączenie FTP…</strong> (Ctrl+N) i wpisz adres bezpośrednio.</li>
+<li>Wprowadź hasło, gdy zostaniesz o to poproszony; zaznacz opcję jego zapisania, a trafi do Twojego pęku kluczy na następny raz.</li>
+<li>Gdy skończysz, wybierz <strong>Sieć &gt; Rozłącz FTP</strong> (Ctrl+Shift+F).</li>
+</ol>
+<p><img alt="Menedżer połączeń FTP pokazujący listę zapisanych sesji z przyciskami Nowe, Edytuj i Usuń" src="images/ftp-connection-manager.png" />
+<em>(Rysunek: menedżer połączeń przechowuje Twoje zapisane serwery; użyj Nowe, Edytuj i Usuń, aby nimi zarządzać.)</em></p>
+<p>Podczas konfigurowania połączenia możesz wybrać protokół (FTP, FTPS z jawnym AUTH TLS, niejawny FTPS na porcie 990 lub SFTP/SCP), tryb pasywny lub aktywny, zdalny i lokalny folder początkowy, kodowanie tekstu oraz opcjonalny interwał keep-alive, aby powstrzymać bezczynne serwery przed rozłączeniem. W przypadku SFTP możesz uwierzytelnić się swoim agentem SSH, hasłem lub plikiem klucza prywatnego, a do transferów możesz wybrać SCP. Nieznane klucze hosta SSH są uznawane za zaufane przy pierwszym użyciu; jeśli klucz znanego serwera kiedykolwiek się zmieni, połączenie jest odrzucane, aby chronić Cię przed manipulacją.</p>
+<h2 id="konsola-ftp">Konsola FTP</h2>
+<p>Aby zobaczyć dokładnie, co mówi serwer, otwórz konsolę FTP z menu <strong>Sieć</strong>. Pokazuje ona dziennik na żywo kanału kontrolnego (Twoje hasło jest zamaskowane) i pozwala wpisywać serwerowi surowe polecenia FTP.</p>
+<p><img alt="Konsola FTP pokazująca dziennik kanału kontrolnego i pole na surowe polecenia" src="images/ftp-console.png" />
+<em>(Rysunek: konsola FTP rejestruje każdą wymianę i przyjmuje surowe polecenia, co jest przydatne przy rozwiązywaniu problemów.)</em></p>
+<h2 id="skroty">Skróty</h2>
+<table>
+<thead>
+<tr>
+<th>Akcja</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Otwórz menedżera połączeń</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Nowe połączenie</td>
+<td>Ctrl+N</td>
+</tr>
+<tr>
+<td>Rozłącz</td>
+<td>Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Zmień tryb transferu</td>
+<td>Ctrl+Shift+M</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Przerwane pobierania i wysyłania mogą wznowić się w miejscu, w którym się zatrzymały, zamiast zaczynać od nowa.</li>
+<li>W przypadku serwerów FTPS z certyfikatem z podpisem własnym włącz opcję akceptacji niezaufanego certyfikatu w ustawieniach tego połączenia.</li>
+<li>Serwer proxy SOCKS5 można ustawić dla każdego połączenia w przypadku zwykłego FTP. Kierowanie zaszyfrowanego połączenia FTPS przez serwer proxy nie jest obsługiwane.</li>
+<li>Istniejące połączenia FTP z Total Commandera można zaimportować.</li>
+<li>SCP jest używany tylko do transferu plików; wyświetlanie, zmiana nazwy i usuwanie zawsze przechodzą przez SFTP.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="downloading-from-url.html">Pobieranie z adresu URL</a></li><li><a href="network-shares.html">Udziały sieciowe</a></li></ul></section>
+</main>
+</body>
+</html>

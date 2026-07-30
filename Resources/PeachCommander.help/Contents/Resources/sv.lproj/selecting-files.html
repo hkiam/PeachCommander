@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markera filer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Markera filer</h1>
+<p>Innan du kopierar, flyttar, raderar eller packar något talar du först om för Peach Commander vilka objekt som ska bearbetas. Objektet som markören står på är alltid det aktuella objektet, men du kan även <em>markera</em> en eller flera filer och mappar så att ett kommando körs på dem alla på en gång. Markerade objekt sticker ut med en tydlig namnfärg i panelen.</p>
+<h2 id="markera-filer-och-mappar">Markera filer och mappar</h2>
+<ol>
+<li>Klicka på en rad för att flytta markören till den. Ett enkelklick markerar bara det objektet.</li>
+<li>För att markera flera objekt på en gång, håll ned Cmd och klicka på var och en, eller håll ned Shift och klicka för att markera ett intervall.</li>
+<li>För att markera objektet under markören och samtidigt stega nedåt, tryck på Insert. Tryck upprepade gånger för att snabbt markera en följd av objekt. Mellanslag växlar också det aktuella objektets markering (och visar en mapps storlek).</li>
+<li>För att markera allt i panelen, välj Markera &gt; Markera alla (Ctrl+Num+), eller tryck på Cmd+A. Välj Markera &gt; Avmarkera alla (Ctrl+Num-) för att rensa alla markeringar.</li>
+</ol>
+<h2 id="markera-eller-avmarkera-efter-ett-monster">Markera eller avmarkera efter ett mönster</h2>
+<ol>
+<li>Välj Markera &gt; Markera grupp… (Num+) för att lägga till objekt vars namn matchar ett mönster, eller Markera &gt; Avmarkera grupp… (Num-) för att ta bort matchande objekt från de aktuella markeringarna.</li>
+<li>Skriv en jokermask. Använd <code>*</code> för valfria tecken och <code>?</code> för ett enda tecken. Separera flera masker med semikolon och lista undantag efter ett lodrätt streck — till exempel markerar <code>*.jpg;*.png</code> alla bilder, och <code>*.*|*.bak</code> markerar allt utom säkerhetskopior.</li>
+</ol>
+<p><img alt="Dialogrutan Markera grupp med en jokermask inskriven i mönsterfältet" src="images/select-by-mask.png" />
+<em>(Bild: Markera filer med en jokermask.)</em></p>
+<h2 id="invertera-samma-filandelse-och-aterstall">Invertera, samma filändelse och återställ</h2>
+<ul>
+<li><strong>Invertera markering</strong> (Num*, Markera-menyn) vänder på varje markering: markerade objekt blir omarkerade och tvärtom — behändigt för "allt utom dessa".</li>
+<li><strong>Markera alla med samma filändelse</strong> (Alt+Num+, Markera-menyn) markerar varje fil som delar filändelse med objektet under markören, så en tangenttryckning tar till exempel alla <code>.pdf</code>-filer.</li>
+<li><strong>Återställ markering</strong> (Num/, Markera-menyn) hämtar tillbaka din föregående uppsättning markeringar — användbart om ett kommando rensade dem eller du markerade fel grupp.</li>
+</ul>
+<h2 id="kortkommandon">Kortkommandon</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Tangent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Växla markering, flytta ned</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>Växla markering (aktuellt objekt)</td>
+<td>Space</td>
+</tr>
+<tr>
+<td>Markera alla / avmarkera alla</td>
+<td>Ctrl+Num+ / Ctrl+Num-</td>
+</tr>
+<tr>
+<td>Markera alla (alternativ)</td>
+<td>Cmd+A</td>
+</tr>
+<tr>
+<td>Markera grupp efter mask</td>
+<td>Num+</td>
+</tr>
+<tr>
+<td>Avmarkera grupp efter mask</td>
+<td>Num-</td>
+</tr>
+<tr>
+<td>Invertera markering</td>
+<td>Num*</td>
+</tr>
+<tr>
+<td>Markera alla med samma filändelse</td>
+<td>Alt+Num+</td>
+</tr>
+<tr>
+<td>Återställ föregående markering</td>
+<td>Num/</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Markeringar och markören är oberoende: att flytta markören med piltangenterna ändrar inte vad som är markerat.</li>
+<li>Den överordnade mappens post (<code>..</code>) kan aldrig markeras.</li>
+<li>Markera grupp, Avmarkera grupp och Invertera markering matchar på filnamnet, så du kan inkludera eller utelämna mappar beroende på dialogrutans alternativ.</li>
+<li>När en kopiering, flytt eller radering är klar avmarkeras objekt som hanterades korrekt automatiskt, medan de som misslyckades förblir markerade så att du kan försöka igen.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Kopiera filer</a></li><li><a href="searching.html">Hitta filer</a></li></ul></section>
+</main>
+</body>
+</html>

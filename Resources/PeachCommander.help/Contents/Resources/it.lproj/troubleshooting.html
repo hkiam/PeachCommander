@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Risoluzione dei problemi</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Risoluzione dei problemi</h1>
+<p>Questo argomento copre i problemi che le persone incontrano più spesso: macOS che blocca l'accesso a certe cartelle, una cartella che sembra bloccata su un contenuto vecchio, un server FTP sicuro che rifiuta di connettersi, e la compressione in RAR. Ogni sezione ti dice cosa sta succedendo e come risolverlo.</p>
+<h2 id="macos-chiede-unautorizzazione-o-le-cartelle-sembrano-vuote">macOS chiede un'autorizzazione, o le cartelle sembrano vuote</h2>
+<p>Alcune posizioni — come la tua cartella <code>~/Library</code>, le cartelle di altri utenti e le aree di sistema — sono protette da macOS e restano nascoste finché non concedi l'accesso. Peach Commander rileva quando questo accade e si offre di guidarti all'impostazione giusta.</p>
+<ol>
+<li>Quando richiesto, scegli di aprire Impostazioni di Sistema, o aprile tu stesso.</li>
+<li>Vai su Privacy e sicurezza, poi Accesso completo al disco.</li>
+<li>Attiva l'interruttore accanto a Peach Commander. Se non è elencato, usa il pulsante Aggiungi per aggiungerlo.</li>
+<li>Esci e riapri Peach Commander così che la nuova autorizzazione abbia effetto.</li>
+</ol>
+<p>Peach Commander non viene eseguito dentro un sandbox limitato, quindi una volta concesso l'Accesso completo al disco può sfogliare e gestire i file proprio come il Finder.</p>
+<h2 id="una-cartella-non-mostra-le-modifiche-recenti">Una cartella non mostra le modifiche recenti</h2>
+<p>I pannelli normalmente si aggiornano da soli quando i file cambiano sul disco. Se una cartella è stata modificata da un altro programma, si trova su un volume di rete, o semplicemente sembra obsoleta, aggiornala manualmente.</p>
+<ol>
+<li>Fai clic sul pannello che vuoi aggiornare.</li>
+<li>Premi F2 (o Ctrl+R) per rileggere quella cartella.</li>
+</ol>
+<p>I volumi di rete e montati non sempre segnalano le modifiche a macOS, quindi un aggiornamento manuale è la soluzione affidabile lì.</p>
+<h2 id="un-server-ftps-non-si-connette">Un server FTPS non si connette</h2>
+<p>Se una connessione FTP sicura fallisce, controlla queste impostazioni nei dettagli della connessione:</p>
+<ul>
+<li>Fai corrispondere la modalità di sicurezza del server: FTPS esplicito (AUTH TLS) contro FTPS implicito (porta 990) non sono intercambiabili.</li>
+<li>Se la connessione si blocca dopo l'accesso, passa tra la modalità di trasferimento passiva e attiva — la maggior parte dei server dietro un firewall ha bisogno della passiva.</li>
+<li>Se il server usa un certificato autofirmato, devi consentirlo esplicitamente; altrimenti la connessione viene rifiutata.</li>
+<li>Conferma host, porta, nome utente e password, e se sulla tua rete è richiesto un proxy SOCKS5.</li>
+</ul>
+<h2 id="la-compressione-in-rar-non-fa-nulla">La compressione in RAR non fa nulla</h2>
+<p>Peach Commander può creare archivi ZIP, 7z, TAR, TAR.GZ, BZ2 e XZ da solo. RAR è diverso: poiché RAR è un formato proprietario, creare archivi RAR richiede uno strumento a riga di comando RAR separato installato sul tuo Mac. Senza di esso, RAR non è disponibile quando comprimi i file (Opzione+F5). Per leggere gli archivi RAR esistenti puoi comunque aprirli come una cartella. Se non hai bisogno specificamente di RAR, scegli invece ZIP o 7z — entrambi supportano la robusta crittografia AES-256 e i volumi divisi.</p>
+<h2 id="scorciatoie">Scorciatoie</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Scorciatoia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aggiorna la cartella attiva</td>
+<td>F2 o Ctrl+R</td>
+</tr>
+<tr>
+<td>Connettiti a un server FTP/FTPS</td>
+<td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Monta una condivisione di rete</td>
+<td>Cmd+K</td>
+</tr>
+<tr>
+<td>Comprimi i file selezionati</td>
+<td>Opzione+F5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="note">Note</h2>
+<ul>
+<li>Le password e le altre credenziali sono conservate solo nel portachiavi macOS, mai in file di configurazione in chiaro.</li>
+<li>Montare una condivisione di rete (Cmd+K, o menu Rete ▸ Monta condivisione di rete…) usa la stessa connessione che macOS stesso usa, così comparirà anche nel Finder.</li>
+<li>Se un problema persiste dopo un aggiornamento e un riavvio, potrebbe essere una limitazione nota piuttosto che un difetto — vedi Limitazioni note.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="privacy-and-security.html">Privacy e sicurezza</a></li><li><a href="known-limitations.html">Limitazioni note</a></li></ul></section>
+</main>
+</body>
+</html>

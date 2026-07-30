@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fájlok szerkesztése</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Fájlok szerkesztése</h1>
+<p>Amikor egy fájlt meg kell változtatnia, nem csak megnéznie, a Peach Commander a beépített szerkesztőben nyitja meg. A szöveg- és kódfájlok egy teljes szerkesztőben nyílnak meg szintaxiskiemeléssel, kereséssel és cserével, a kódjában lévő szimbólumok vázlatával, és egy minitérképpel a gyors navigációhoz. A bináris fájlok külön hexadecimális szerkesztőben nyithatók meg, ahol egyes bájtokat vizsgálhat és változtathat. Soha nem kell elhagynia az appot egy gyors szerkesztéshez.</p>
+<h2 id="szoveg-vagy-kodfajl-szerkesztese">Szöveg- vagy kódfájl szerkesztése</h2>
+<ol>
+<li>Bármelyik panelben vigye a kurzort a megváltoztatni kívánt fájlra.</li>
+<li>Nyomja meg az F4-et, vagy válassza a Fájl ▸ Szerkesztés lehetőséget. A fájl a szerkesztőablakban nyílik meg.</li>
+<li>Végezze el a változtatásokat. Ha a fájl felismert programozási vagy adatformátum, a kulcsszavak, karakterláncok és megjegyzések automatikusan színeződnek.</li>
+<li>Nyomja meg a Cmd+S-t (vagy kattintson a Mentés-re) a változtatások írásához. Az első mentés biztonsági mentést tart az eredetiről a fájl mellett, így mindig visszatérhet hozzá.</li>
+</ol>
+<p>Egy vadonatúj szövegfájl kezdéséhez az aktuális helyen nyomja meg a Shift+F4-et.</p>
+<p><img alt="A beépített szövegszerkesztő a szintaxiskiemelést, a szimbólumvázlatot és a minitérképet mutatja" src="images/editor.png" />
+<em>(Ábra: a szerkesztő szintaxiskiemeléssel, a szimbólumvázlattal balra és a minitérképpel jobbra.)</em></p>
+<h2 id="kereses-csere-es-navigacio">Keresés, csere és navigáció</h2>
+<ul>
+<li>Nyomja meg a Cmd+F-et a keresősáv megnyitásához. Szöveg cseréjéhez nyissa meg a keresősávot és váltsa a csere nézetre, vagy kattintson a Keresés/Csere gombra az eszköztárban.</li>
+<li>Kattintson a JSON/XML formázása gombra egy JSON- vagy XML-dokumentum tiszta, olvasható elrendezésbe való újratagolásához.</li>
+<li>Kattintson a Szimbólumok gombra (vagy nyomja meg a Cmd+Shift+O-t) egy oldalsáv megjelenítéséhez, amely felsorolja a kódjában lévő osztályokat, függvényeket és metódusokat. Kattintson egy bejegyzésre, hogy egyenesen odaugorjon.</li>
+<li>Nyomja meg a Cmd+L-t egy adott sorra ugráshoz.</li>
+<li>Nyomja meg a Cmd+-t egy zárójel és a párja közötti ugráshoz.</li>
+<li>Kattintson a térkép gombra a minitérkép megjelenítéséhez vagy elrejtéséhez, ami az egész fájl kicsinyített áttekintése, amelyre kattintva görgethet.</li>
+<li>Használja a Kódolás menüt az eszköztárban, ha a fájl nem az alapértelmezett szövegkódolással lett mentve.</li>
+</ul>
+<h2 id="fajl-szerkesztese-bajtrol-bajtra">Fájl szerkesztése bájtról bájtra</h2>
+<ol>
+<li>Jelölje ki a fájlt egy panelben.</li>
+<li>Válassza a Fájl ▸ Szerkesztés hexadecimálisként lehetőséget (vagy kattintson jobb gombbal a fájlra és válassza a Szerkesztés hexadecimálisként lehetőséget).</li>
+<li>Gépeljen hexadecimális számjegyeket a bájtok felülírásához, vagy használja a nyílbillentyűket a fájlon való mozgáshoz. A Backspace és a Delete eltávolít bájtokat.</li>
+<li>Nyomja meg a Cmd+S-t a mentéshez. A szövegszerkesztőhöz hasonlóan egyszeri biztonsági mentés készül az eredetiről.</li>
+</ol>
+<h2 id="billentyuparancsok">Billentyűparancsok</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Billentyű</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fájl szerkesztése</td>
+<td>F4</td>
+</tr>
+<tr>
+<td>Új szövegfájl létrehozása és szerkesztése</td>
+<td>Shift+F4</td>
+</tr>
+<tr>
+<td>Mentés</td>
+<td>Cmd+S</td>
+</tr>
+<tr>
+<td>Keresés</td>
+<td>Cmd+F</td>
+</tr>
+<tr>
+<td>Szimbólumvázlat megjelenítése/elrejtése</td>
+<td>Cmd+Shift+O</td>
+</tr>
+<tr>
+<td>Ugrás sorra</td>
+<td>Cmd+L</td>
+</tr>
+<tr>
+<td>Ugrás a párzárójelre</td>
+<td>Cmd+\</td>
+</tr>
+<tr>
+<td>Visszavonás / Ismét (hex szerkesztő)</td>
+<td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+</tbody>
+</table>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A szintaxiskiemelés lefedi a JSON, C, C#, Java, JavaScript, TypeScript, Python és Rust nyelveket. Más fájltípusok továbbra is normálisan nyílnak meg és szerkeszthetők alapszínezéssel, de a részletes kiemelés és a szimbólumvázlat csak a támogatott nyelvekhez elérhető.</li>
+<li>A szimbólumvázlat és az Ugrás sorra a szövegszerkesztőre vonatkozik. A hex szerkesztő a bináris vizsgálatra és bájtszintű szerkesztésre való, nem a szövegre.</li>
+<li>Mindkét szerkesztő biztonsági mentést tart az eredeti fájlról az első mentéskor, így egy véletlen változtatás könnyen visszavonható a biztonsági mentés visszaállításával.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Fájlok megtekintése</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatizare (AppleScript și Comenzi rapide)</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Automatizare (AppleScript și Comenzi rapide)</h1>
+<p>Peach Commander poate fi scriptat, astfel încât îl puteți conduce din AppleScript și din aplicația Comenzi rapide. Un pumn de verbe de bază permit unui script să navigheze prin panouri, să selecteze fișiere după o mască, să copieze sau mute selecția curentă și să ruleze orice comandă Peach Commander după identificatorul ei — reutilizând exact aceleași acțiuni pe care le folosesc meniurile, astfel încât un pas scriptat se comportă ca unul manual. Este util pentru corvezile repetitive: sortarea descărcărilor, pregătirea rezultatului unei compilări sau conectarea unui pas de fișier într-o Comandă rapidă mai mare.</p>
+<h2 id="vedeti-dictionarul">Vedeți dicționarul</h2>
+<ol>
+<li>Deschideți <strong>Editor de scripturi</strong> (în <code>/Aplicații/Utilitare</code>).</li>
+<li>Alegeți <strong>Fereastră ▸ Bibliotecă</strong>, apoi faceți dublu clic pe <strong>Peach Commander</strong> (adăugați-l cu <strong>+</strong> dacă nu este listat).</li>
+<li>Dicționarul se deschide, listând comenzile și proprietățile de mai jos.</li>
+</ol>
+<p>Prima dată când un script controlează Peach Commander, macOS vă cere să îl permiteți (<strong>Setări de sistem ▸ Confidențialitate și securitate ▸ Automatizare</strong>). Aprobați-l o dată și scripturile ulterioare rulează fără solicitare.</p>
+<h2 id="ce-puteti-citi">Ce puteți citi</h2>
+<table>
+<thead>
+<tr>
+<th>Proprietate</th>
+<th>Semnificație</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active folder</code></td>
+<td>Calea POSIX a folderului panoului activ.</td>
+</tr>
+<tr>
+<td><code>inactive folder</code></td>
+<td>Calea POSIX a folderului celuilalt panou.</td>
+</tr>
+<tr>
+<td><code>selection paths</code></td>
+<td>Elementele selectate în panoul activ (sau elementul de sub cursor).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="verbele">Verbele</h2>
+<table>
+<thead>
+<tr>
+<th>Comandă</th>
+<th>Ce face</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go to "&lt;cale&gt;" [in left\|right]</code></td>
+<td>Deschide un folder într-un panou (implicit: panoul activ).</td>
+</tr>
+<tr>
+<td><code>select "&lt;mască&gt;"</code></td>
+<td>Selectează elemente în panoul activ după o mască cu caractere joker, de ex. <code>*.pdf</code>.</td>
+</tr>
+<tr>
+<td><code>copy items to "&lt;folder&gt;"</code></td>
+<td>Copiază selecția panoului activ într-un folder.</td>
+</tr>
+<tr>
+<td><code>move items to "&lt;folder&gt;"</code></td>
+<td>Mută selecția panoului activ într-un folder.</td>
+</tr>
+<tr>
+<td><code>run command "&lt;id&gt;"</code></td>
+<td>Rulează orice comandă după identificatorul ei, de ex. <code>cm_PackFiles</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Copierea și mutarea folosesc aceeași coadă de transfer de fundal ca F5/F6, astfel încât progresul și eventualele solicitări de suprascriere apar exact ca la o operațiune manuală.</p>
+<h2 id="exemplu">Exemplu</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+    <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<h2 id="folosirea-din-comenzi-rapide">Folosirea din Comenzi rapide</h2>
+<p>În aplicația <strong>Comenzi rapide</strong>, adăugați acțiunea <strong>Rulează AppleScript</strong> și lipiți un script precum cel de mai sus. Aceasta vă permite să integrați un pas Peach Commander într-o Comandă rapidă mai mare — de exemplu, declanșată de o modificare de folder sau o tastă rapidă.</p>
+<h2 id="note">Note</h2>
+<ul>
+<li>Identificatorul comenzii pe care îl transmiteți la <code>run command</code> este același identificator <code>cm_*</code> afișat în navigatorul de comenzi (vedeți <a href="start-menu.md">Meniul Start și comenzile personalizate</a>).</li>
+<li>Scriptarea acționează întotdeauna asupra panoului <strong>activ</strong>; folosiți mai întâi <code>go to … in left</code> / <code>in right</code> dacă aveți nevoie de o anumită parte.</li>
+<li>Peach Commander este o aplicație cu o singură fereastră, astfel încât scripturile țintesc cele două panouri ale acelei ferestre.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="start-menu.html">Meniul Start și comenzile personalizate</a></li><li><a href="settings.html">Setări</a></li></ul></section>
+</main>
+</body>
+</html>
