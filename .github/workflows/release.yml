@@ -17,7 +17,7 @@ permissions:
 jobs:
   build-dmg:
     name: Build & package DMG
-    runs-on: macos-14
+    runs-on: macos-26
 
     steps:
       - name: Checkout repository
@@ -26,9 +26,8 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          # Range, not a hard pin: runner images drop old point releases
-          # (16.0 was removed). Matches bootstrap.sh's "Xcode 16+".
-          xcode-version: '^16.0'
+          # Keep in sync with ci.yml — the sources need the macOS 26 SDK.
+          xcode-version: '^26.0'
 
       - name: Install dependencies
         run: |
