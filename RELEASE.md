@@ -182,5 +182,14 @@ and `CFBundleVersion` under the app target's `info.properties` (currently `0.1.0
 and `1`). `Tools/bootstrap.sh` generates `Sources/PCApp/Info.plist` from it, so
 `project.yml` is the single place to edit.
 
-Bump it **before** tagging. Nothing derives the tag from that value or checks that
-they agree, so `v0.9.0` will happily ship an app that calls itself `0.1.0`.
+Bump it **before** tagging. `Tools/check-version.sh` enforces the match and runs as
+the first step of the release workflow, so a mismatched tag fails in seconds
+instead of after the build:
+
+```bash
+Tools/check-version.sh          # what version is this?
+Tools/check-version.sh v0.2.0   # would this tag be accepted?
+```
+
+Nothing *derives* the tag from `project.yml` — bumping is still a deliberate edit —
+but a `v0.2.0` tag can no longer ship an app that calls itself `0.1.0`.

@@ -23,6 +23,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      # Cheap gate first: fail in seconds rather than after an 8-minute build if
+      # the tag and CFBundleShortVersionString disagree. A no-op for
+      # workflow_dispatch, where GITHUB_REF_NAME is a branch.
+      - name: Check tag matches the app version
+        run: ./Tools/check-version.sh
+
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
