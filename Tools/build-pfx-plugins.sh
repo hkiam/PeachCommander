@@ -7,7 +7,8 @@ cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 DEFAULT_DIR="$HOME/Library/Application Support/PeachCommander/plugins"
 OUT_DIR="${1:-$DEFAULT_DIR}"
-ARCH="$(uname -m)"; TARGET="${ARCH}-apple-macos13.0"
+# Universal (arm64 + x86_64) plugin builds — see Tools/lib/pc-universal.sh.
+source "$ROOT/Tools/lib/pc-universal.sh"
 
 build() {  # name  srcfile  bridging  bundlename
   local name="$1" src="$2" bridge="$3" bundleName="$4"
@@ -15,7 +16,7 @@ build() {  # name  srcfile  bridging  bundlename
   rm -rf "$bundle"
   mkdir -p "$bundle/Contents/MacOS"
   cp "$ROOT/$(dirname "$src")/Info.plist" "$bundle/Contents/Info.plist"
-  swiftc -emit-library -O \
+  pc_swiftc -emit-library -O \
     -module-name "$name" \
     -target "$TARGET" \
     -framework AppKit \

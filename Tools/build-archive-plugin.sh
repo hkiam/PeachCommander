@@ -7,10 +7,11 @@ ROOT="$(pwd)"
 DEFAULT_DIR="$HOME/Library/Application Support/PeachCommander/plugins"
 OUT_DIR="${1:-$DEFAULT_DIR}"
 BUNDLE="$OUT_DIR/Archive.pcxplugin"
-ARCH="$(uname -m)"; TARGET="${ARCH}-apple-macos13.0"
+# Universal (arm64 + x86_64) plugin builds — see Tools/lib/pc-universal.sh.
+source "$ROOT/Tools/lib/pc-universal.sh"
 rm -rf "$BUNDLE"; mkdir -p "$BUNDLE/Contents/MacOS"
 cp "$ROOT/Plugins/Archive/Info.plist" "$BUNDLE/Contents/Info.plist"
-swiftc -emit-library -O -module-name Archive -target "$TARGET" \
+pc_swiftc -emit-library -O -module-name Archive -target "$TARGET" \
   -import-objc-header "$ROOT/Plugins/Archive/ArchiveBridging.h" \
   -Xcc -I"$ROOT/Plugins/SDK" \
   -o "$BUNDLE/Contents/MacOS/Archive" \
