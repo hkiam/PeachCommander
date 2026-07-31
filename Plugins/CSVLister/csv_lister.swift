@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-// sample_csv_lister.swift — a Swift PLX lister plugin (SPEC-012 §3, I16 T02).
+// csv_lister.swift — a Swift PLX lister plugin (SPEC-012 §3, I16 T02).
 //
 // Renders a .csv file as a real NSTableView, proving the PLX host can embed a
 // plugin-provided AppKit view in the Lister (F3) window. Unlike the C sample
 // fixtures, this returns a genuine NSView*, which is what ListLoad's contract
-// promises on macOS. Built into a SampleCSVLister.plxplugin bundle by
-// Tools/build-sample-csv-lister.sh and loaded via dlopen like any PLX plugin.
+// promises on macOS. Built into a CSVLister.plxplugin bundle by
+// Tools/build-csvlister-plugin.sh and loaded via dlopen like any PLX plugin.
 //
 // All view work must happen on the main thread; the host calls these entry
 // points from its @MainActor lister flow.
