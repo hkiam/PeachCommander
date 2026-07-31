@@ -233,6 +233,21 @@ targets:
         NSMicrophoneUsageDescription: Peach Commander uses the microphone for voice input in the AI assistant.
         NSSpeechRecognitionUsageDescription: Peach Commander transcribes your speech for voice input in the AI assistant.
 
+  # Golden tests on the default palettes. Compiles Sources/PCApp/Theme.swift directly instead
+  # of hosting PCApp: Theme only imports AppKit, so this needs no test host and stays fast.
+  PCThemeTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCThemeTests
+      - path: Sources/PCApp/Theme.swift
+    settings:
+      PRODUCT_NAME: PCThemeTests
+      CODE_SIGNING_ALLOWED: NO
+    frameworks:
+      - XCTest
+
   PCFoundationTests:
     type: bundle.unit-test
     platform: macOS
@@ -613,6 +628,7 @@ schemes:
         - PCAutomationTests
         - PCPluginHostTests
         - PCNetTests
+        - PCThemeTests
 
   AllTests:
     build:
@@ -631,6 +647,7 @@ schemes:
         - PCPluginHostTests
         - PCNetTests
         - PCPerfTests
+        - PCThemeTests
 
   UITests:
     build:

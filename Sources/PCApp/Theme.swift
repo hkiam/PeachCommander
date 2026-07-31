@@ -56,6 +56,85 @@ public struct Theme {
         statusBarText: NSColor(white: 0.9, alpha: 1.0)
     )
 
+    // MARK: - Norton Commander (F-2xx: selectable themes)
+    //
+    // The authentic CGA 16-colour values, which is what makes it read as the real thing:
+    // blue #0000AA ground, cyan #00AAAA text, light cyan #55FFFF for the cursor row and
+    // headers, yellow #FFFF55 as the accent, black on cyan for the bars.
+    //
+    // Colour only. The double-line box frames and the DOS raster font are structural and
+    // typographic, not palette — deliberately out of scope, see DECISIONS.
+    private static func cga(_ hex: String) -> NSColor { NSColor(hexString: hex)! }
+
+    public static let norton = Colors(
+        windowBackground: cga("0000AA"),
+        listBackground: cga("0000AA"),
+        listText: cga("00AAAA"),
+        selectedText: cga("FFFF55"),          // marked files: NC's yellow
+        cursorFrame: cga("00AAAA"),
+        activePathBarBackground: cga("00AAAA"),
+        activePathBarText: cga("000000"),
+        inactivePathBarBackground: cga("0000AA"),
+        inactivePathBarText: cga("AAAAAA"),
+        pathBarBackground: cga("00AAAA"),
+        pathBarText: cga("000000"),
+        pathBarHoverBackground: cga("55FFFF"),
+        pathBarSeparator: cga("000080"),
+        pathBarFreeSpaceText: cga("000000"),
+        columnSeparator: cga("000080"),
+        functionButtonBackground: cga("00AAAA"),
+        functionButtonPressed: cga("55FFFF"),
+        functionButtonText: cga("000000"),
+        statusBarBackground: cga("00AAAA"),
+        statusBarText: cga("000000"),
+        // The panel-drawing colours Phase 1 exposed. Without these the cursor row and the
+        // drive bar would stay macOS-accent blue inside a CGA-blue panel.
+        zebraRow: cga("000080").withAlphaComponent(0.35),
+        selectionFillActive: cga("00AAAA"),          // NC inverts the cursor row…
+        selectionFillInactive: cga("000080"),
+        activeCursorFrame: cga("55FFFF"),
+        headerSeparator: cga("000080"),
+        driveBarBackground: cga("00AAAA"),
+        driveBarHighlight: cga("55FFFF"),
+        driveBarText: cga("000000"),
+        driveBarHighlightText: cga("000000")
+    )
+
+    // MARK: - Named palettes
+
+    /// A selectable theme. `base` decides the window appearance (so system controls, sheets
+    /// and scrollers match) while `colors` supplies the panel palette.
+    public struct Palette {
+        public let id: String
+        public let name: String
+        public let isDark: Bool
+        public let colors: Colors
+        public let syntax: SyntaxColors
+        public init(id: String, name: String, isDark: Bool, colors: Colors, syntax: SyntaxColors) {
+            self.id = id; self.name = name; self.isDark = isDark
+            self.colors = colors; self.syntax = syntax
+        }
+    }
+
+    /// `system` is not in this list on purpose: it means "follow the appearance", which is the
+    /// default and resolves to the untouched light/dark palettes.
+    public static let palettes: [Palette] = [
+        Palette(id: "light", name: "Light", isDark: false, colors: light, syntax: lightSyntax),
+        Palette(id: "dark", name: "Dark", isDark: true, colors: dark, syntax: darkSyntax),
+        Palette(id: "norton", name: "Norton Commander", isDark: true, colors: norton, syntax: darkSyntax),
+    ]
+
+    public static func palette(id: String) -> Palette? { palettes.first { $0.id == id } }
+
+    /// Resolve the palette for a theme id, falling back to the appearance-driven default.
+    ///
+    /// Anything unknown — a removed theme, a typo in the config — lands on `system`, so a bad
+    /// value can never leave the app unreadable.
+    public static func resolve(themeId: String, isDark: Bool) -> (colors: Colors, syntax: SyntaxColors) {
+        if let p = palette(id: themeId) { return (p.colors, p.syntax) }
+        return isDark ? (dark, darkSyntax) : (light, lightSyntax)
+    }
+
     /// Current theme (light or dark)
     public static var current: Colors = light
 
@@ -116,6 +195,24 @@ public struct Theme {
         public let statusBarBackground: NSColor
         public let statusBarText: NSColor
 
+        // Panel-drawing colours that used to be hardcoded in PanelCells/DriveBarView. Their
+        // defaults below reproduce exactly what was drawn before, so a palette that does not
+        // mention them looks unchanged — that is what keeps light/dark pixel-identical.
+        /// Zebra striping on alternate rows.
+        public let zebraRow: NSColor
+        /// Fill behind a selected row, active and inactive panel.
+        public let selectionFillActive: NSColor
+        public let selectionFillInactive: NSColor
+        /// Cursor frame in the *active* panel (the inactive one uses `cursorFrame`).
+        public let activeCursorFrame: NSColor
+        /// Hairline under the column headers.
+        public let headerSeparator: NSColor
+        /// Drive bar: normal and highlighted button, and their labels.
+        public let driveBarBackground: NSColor
+        public let driveBarHighlight: NSColor
+        public let driveBarText: NSColor
+        public let driveBarHighlightText: NSColor
+
         public init(
             windowBackground: NSColor,
             listBackground: NSColor,
@@ -136,7 +233,18 @@ public struct Theme {
             functionButtonPressed: NSColor,
             functionButtonText: NSColor,
             statusBarBackground: NSColor,
-            statusBarText: NSColor
+            statusBarText: NSColor,
+            // Defaults = the values these were hardcoded to, so the existing light/dark
+            // literals stay valid and unchanged.
+            zebraRow: NSColor = NSColor.gray.withAlphaComponent(0.08),
+            selectionFillActive: NSColor = NSColor.controlAccentColor.withAlphaComponent(0.22),
+            selectionFillInactive: NSColor = NSColor.gray.withAlphaComponent(0.10),
+            activeCursorFrame: NSColor = NSColor.controlAccentColor,
+            headerSeparator: NSColor = NSColor.separatorColor,
+            driveBarBackground: NSColor = NSColor.controlColor,
+            driveBarHighlight: NSColor = NSColor.controlAccentColor,
+            driveBarText: NSColor = NSColor.labelColor,
+            driveBarHighlightText: NSColor = NSColor.white
         ) {
             self.windowBackground = windowBackground
             self.listBackground = listBackground
@@ -158,6 +266,15 @@ public struct Theme {
             self.functionButtonText = functionButtonText
             self.statusBarBackground = statusBarBackground
             self.statusBarText = statusBarText
+            self.zebraRow = zebraRow
+            self.selectionFillActive = selectionFillActive
+            self.selectionFillInactive = selectionFillInactive
+            self.activeCursorFrame = activeCursorFrame
+            self.headerSeparator = headerSeparator
+            self.driveBarBackground = driveBarBackground
+            self.driveBarHighlight = driveBarHighlight
+            self.driveBarText = driveBarText
+            self.driveBarHighlightText = driveBarHighlightText
         }
 
         /// Return a copy with the four user-customisable panel colours overridden
@@ -183,7 +300,19 @@ public struct Theme {
                 functionButtonPressed: functionButtonPressed,
                 functionButtonText: functionButtonText,
                 statusBarBackground: statusBarBackground,
-                statusBarText: statusBarText)
+                statusBarText: statusBarText,
+                // Carried through explicitly. Without this the initialiser defaults would win
+                // and a palette's own panel colours would silently revert to the macOS ones as
+                // soon as the user has any custom colour set.
+                zebraRow: zebraRow,
+                selectionFillActive: selectionFillActive,
+                selectionFillInactive: selectionFillInactive,
+                activeCursorFrame: activeCursorFrame,
+                headerSeparator: headerSeparator,
+                driveBarBackground: driveBarBackground,
+                driveBarHighlight: driveBarHighlight,
+                driveBarText: driveBarText,
+                driveBarHighlightText: driveBarHighlightText)
         }
     }
 

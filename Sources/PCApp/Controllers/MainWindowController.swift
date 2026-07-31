@@ -83,6 +83,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private let hotlistStore: ConfigStore
     private var hotlist = Hotlist()
     private let configPaths: ConfigPaths
+    /// Selected colour theme id ("system" = follow the appearance, the default and the
+    /// behaviour that predates themes). Persisted as [Colors] Theme.
+    private var themeId: String = "system"
     private var hiddenFilesShown = false
     private var saveScheduled = false
     private var didRestore = false
@@ -467,6 +470,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             listBackground: NSColor(hexString: await mainConfig.string("Colors", "Background", default: "")),
             selectedText: NSColor(hexString: await mainConfig.string("Colors", "Selection", default: "")),
             cursorFrame: NSColor(hexString: await mainConfig.string("Colors", "Cursor", default: "")))
+        // Selected colour theme. "system" is the default and means: no named palette, follow
+        // the appearance exactly as before — so an existing configuration renders unchanged.
+        themeId = await mainConfig.string("Colors", "Theme", default: "system")
         let appearance = await mainConfig.string("Colors", "Appearance", default: "system")
         applyAppearance(appearance)
         if await mainConfig.bool("Layout", "PreviewPanel", default: false) { togglePreviewPanel() }
@@ -3011,6 +3017,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             showHidden: await mainConfig.bool("Configuration", "ShowHiddenSystem", default: false),
             iconMode: await mainConfig.string("Configuration", "IconMode", default: "all"),
             appearance: await mainConfig.string("Colors", "Appearance", default: "system"),
+            theme: await mainConfig.string("Colors", "Theme", default: "system"),
             confirmDelete: await mainConfig.bool("Operation", "ConfirmDelete", default: true),
             deleteToTrash: await mainConfig.bool("Operation", "DeleteToTrash", default: true),
             selectDirsWithMask: await mainConfig.bool("Operation", "SelectDirs", default: false),
@@ -3162,6 +3169,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         case "Display.TypeColors":
             displayTypeColors = value
             applyDisplayOptionsToPanels()
+        case "Colors.Theme":
+            themeId = value
+            applyAppearance(appearanceSetting)
         case "Colors.Appearance":
             applyAppearance(value)
         case "Colors.Foreground", "Colors.Background", "Colors.Selection", "Colors.Cursor":
@@ -3271,9 +3281,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let appAppearance = named.map { NSAppearance(named: $0) } ?? nil
         NSApp.appearance = appAppearance     // nil = follow the OS
         window?.appearance = appAppearance
-        let isDark = value == "dark" || (value != "light" && Self.systemIsDark())
-        Theme.current = (isDark ? Theme.dark : Theme.light).applying(Theme.customColors)   // F-272
-        Theme.currentSyntax = isDark ? Theme.darkSyntax : Theme.lightSyntax
+        var isDark = value == "dark" || (value != "light" && Self.systemIsDark())
+        // A named palette decides its own light/dark base, so system controls, sheets and
+        // scrollers match it. With "system" this resolves to the untouched light/dark pair and
+        // the two lines below behave exactly as they did before themes existed.
+        if let palette = Theme.palette(id: themeId) { isDark = palette.isDark }
+        let resolved = Theme.resolve(themeId: themeId, isDark: isDark)
+        Theme.current = resolved.colors.applying(Theme.customColors)   // F-272
+        Theme.currentSyntax = resolved.syntax
         window?.backgroundColor = Theme.current.windowBackground
         leftPanelController?.applyAppearance()
         rightPanelController?.applyAppearance()

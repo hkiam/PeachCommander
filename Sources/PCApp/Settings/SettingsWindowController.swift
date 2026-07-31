@@ -14,6 +14,7 @@ public struct SettingsSnapshot: Sendable {
     public var showHidden: Bool
     public var iconMode: String        // "none" | "standard" | "all"
     public var appearance: String      // "light" | "dark"
+    public var theme: String           // "system" (default) | a Theme.palettes id
     public var confirmDelete: Bool
     public var deleteToTrash: Bool
     public var selectDirsWithMask: Bool
@@ -64,7 +65,7 @@ public struct SettingsSnapshot: Sendable {
     public var customSelection: String = ""
     public var customCursor: String = ""
 
-    public init(showHidden: Bool, iconMode: String, appearance: String,
+    public init(showHidden: Bool, iconMode: String, appearance: String, theme: String = "system",
                 confirmDelete: Bool, deleteToTrash: Bool, selectDirsWithMask: Bool,
                 bracketsAroundDirs: Bool, naturalSort: Bool = true, alternatingRows: Bool = false,
                 fontSize: Int = 13, sizeStyle: String,
@@ -102,6 +103,7 @@ public struct SettingsSnapshot: Sendable {
         self.showHidden = showHidden
         self.iconMode = iconMode
         self.appearance = appearance
+        self.theme = theme
         self.confirmDelete = confirmDelete
         self.deleteToTrash = deleteToTrash
         self.selectDirsWithMask = selectDirsWithMask
@@ -250,6 +252,7 @@ public final class SettingsWindowController: NSWindowController {
 
     // Colors page controls
     private let appearancePopup = NSPopUpButton()
+    private let themePopup = NSPopUpButton()
     // F-272: custom panel colour wells (each paired with an "enabled" checkbox).
     private let fgWell = NSColorWell(), fgCheck = NSButton()
     private let bgWell = NSColorWell(), bgCheck = NSButton()
@@ -1112,6 +1115,12 @@ public final class SettingsWindowController: NSWindowController {
     private static let appearanceValues = ["system", "light", "dark"]
 
     private func buildColorsPage() -> NSView {
+        // "System" first and selected by default: no palette, the appearance decides — the
+        // look Peach Commander has always had. The named palettes are additions.
+        makePopup(themePopup,
+                  items: [String(localized: "System (default)")] + Theme.palettes.map(\.name),
+                  selectedIndex: max(0, Self.themeValues.firstIndex(of: snapshot.theme) ?? 0),
+                  action: #selector(themeChanged))
         makePopup(appearancePopup,
                   items: [String(localized: "System (follow macOS)"), String(localized: "Light"), String(localized: "Dark")],
                   selectedIndex: max(0, Self.appearanceValues.firstIndex(of: snapshot.appearance) ?? 0),
@@ -1123,8 +1132,19 @@ public final class SettingsWindowController: NSWindowController {
                              target: self, action: #selector(resetCustomColors))
         reset.bezelStyle = .rounded
 
+        // A palette carries its own base, so leaving Appearance live would be a control that
+        // silently does nothing.
+        appearancePopup.isEnabled = snapshot.theme == "system"
+
+        let themeNote = NSTextField(wrappingLabelWithString: String(localized:
+            "A theme brings its own colors and its own light/dark base; Appearance then has no effect. Custom colors below still win."))
+        themeNote.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        themeNote.textColor = .secondaryLabelColor
+
         return makePageStack(rows: [
+            labeledRow(title: String(localized: "Theme:"), control: themePopup),
             labeledRow(title: String(localized: "Appearance:"), control: appearancePopup),
+            themeNote,
             heading,
             colorRow(check: fgCheck, well: fgWell, title: String(localized: "Text:"),
                      hex: snapshot.customForeground, action: #selector(fgChanged)),
@@ -1159,6 +1179,16 @@ public final class SettingsWindowController: NSWindowController {
         row.spacing = 10
         row.alignment = .centerY
         return row
+    }
+
+    /// Index 0 is "system"; the rest mirror `Theme.palettes` in order.
+    private static var themeValues: [String] { ["system"] + Theme.palettes.map(\.id) }
+
+    @objc private func themeChanged() {
+        let idx = themePopup.indexOfSelectedItem
+        let values = Self.themeValues
+        onSetString("Colors.Theme", values.indices.contains(idx) ? values[idx] : "system")
+        appearancePopup.isEnabled = themePopup.indexOfSelectedItem == 0
     }
 
     @objc private func appearanceChanged() {

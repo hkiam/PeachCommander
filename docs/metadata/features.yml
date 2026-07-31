@@ -581,6 +581,21 @@ features:
     screenshots: [settings-colors]
     notes: "System/Light/Dark, custom panel colors, file-type colors, font size, date format, zebra rows, syntax themes."
 
+  - id: color-themes
+    name: Farbthemen (inkl. Norton Commander)
+    name_en: Color themes (incl. Norton Commander)
+    category: customization
+    audiences: [user]
+    status: stable
+    source: { modules: [PCApp], types: [Theme] }
+    documentation: { integrated_help: true, website: false }
+    notes: >-
+      Named palettes selectable under Settings > Colors > Theme. "System" is the default and
+      keeps the classic appearance-driven look untouched; Light, Dark and Norton Commander
+      (authentic CGA blue/cyan/yellow) are opt-in. A palette brings its own light/dark base;
+      the four custom panel colors still override it. Unknown ids fall back to System.
+      Golden tests (PCThemeTests) pin the default palettes so they cannot drift.
+
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
     name: Einstellungen (15 Seiten)

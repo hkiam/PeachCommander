@@ -8,6 +8,21 @@ related: [settings]
 
 Peach Commander can match the look of the rest of your Mac or take on a style of its own. You can follow the system light or dark setting (or force one), recolor the file panels, highlight files by type, and adjust the list font size and date format so the panels read exactly the way you like.
 
+## Pick a color theme
+
+A theme replaces the whole panel palette in one step.
+
+1. Open the settings window by pressing Cmd+, (or Configuration > Settings…).
+2. Select the **Colors** page.
+3. Choose from the **Theme** menu:
+   - **System (default)** — no theme. The panels follow the Appearance setting below, exactly as they always have. This is the default.
+   - **Light** / **Dark** — pin the built-in light or dark palette regardless of what macOS is doing.
+   - **Norton Commander** — the classic blue-and-cyan look of the original DOS file manager, in its authentic CGA colors: blue panels, cyan text, a light-cyan cursor row and yellow for marked files.
+
+A theme brings its own light/dark base so that sheets, scrollers, and standard controls match it — which is why the **Appearance** menu is greyed out while a theme is selected. Custom panel colors (below) still win over the theme, so you can keep one favorite color on top of it.
+
+Themes are colors only. The panel layout, the frames, and the fonts are unchanged — Norton Commander does not bring back the double-line box borders or the DOS raster font.
+
 ## Set light, dark, or system appearance
 
 1. Open the settings window by pressing Cmd+, (or Configuration > Settings…).
@@ -56,6 +71,7 @@ On the **Display** page you can also:
 
 ## Notes
 
+- The Appearance menu only applies while the Theme is **System (default)**; a theme decides its own base.
 - The Appearance setting styles the file panels. System dialogs, alerts, and standard controls always follow macOS.
 - The built-in file viewer uses matching light and dark syntax-highlighting palettes, so highlighted code stays readable in either appearance.
 - Custom colors and file-type rules are saved with your settings and reapplied every time you open the app.
