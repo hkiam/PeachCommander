@@ -13,7 +13,7 @@ final class TypeColorsWindowController: NSWindowController {
     /// Called on Done with the serialized "mask=RRGGBB,…" config string.
     var onSave: ((String) -> Void)?
 
-    private let rowsStack = NSStackView()
+    private let rowsStack = FlippedStackView()   // documentView: must be top-origin
     private var rowViews: [(mask: NSTextField, well: NSColorWell)] = []
 
     init(config: String) {

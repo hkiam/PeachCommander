@@ -482,8 +482,17 @@ public final class SettingsWindowController: NSWindowController {
         scroll.drawsBackground = false
         scroll.borderType = .noBorder
 
+        // The document view must be flipped, or AppKit puts its origin at the bottom left:
+        // a pane shorter than the window then sits at the foot of the empty space, and a
+        // taller one opens scrolled to its end. Panes arrive as plain NSStackViews (and
+        // plugin panes as arbitrary views), none of which are flipped, so they go inside a
+        // flipped container rather than being subclassed. Same reason the codebase overrides
+        // isFlipped for its other custom scroll contents.
+        let document = FlippedContainerView()
+        document.translatesAutoresizingMaskIntoConstraints = false
         view.translatesAutoresizingMaskIntoConstraints = false
-        scroll.documentView = view
+        document.addSubview(view)
+        scroll.documentView = document
         contentContainer.addSubview(scroll)
 
         NSLayoutConstraint.activate([
@@ -491,12 +500,17 @@ public final class SettingsWindowController: NSWindowController {
             scroll.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
             scroll.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
             scroll.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor),
+            // The pane fills the container, so the container's height *is* the pane's height.
+            view.topAnchor.constraint(equalTo: document.topAnchor),
+            view.leadingAnchor.constraint(equalTo: document.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: document.trailingAnchor),
+            view.bottomAnchor.constraint(equalTo: document.bottomAnchor),
             // Match the width so panes reflow instead of scrolling sideways; height stays
             // free so the content decides when a scroller is needed.
-            view.leadingAnchor.constraint(equalTo: scroll.contentView.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: scroll.contentView.trailingAnchor),
-            view.topAnchor.constraint(equalTo: scroll.contentView.topAnchor),
-            view.widthAnchor.constraint(equalTo: scroll.contentView.widthAnchor)
+            document.topAnchor.constraint(equalTo: scroll.contentView.topAnchor),
+            document.leadingAnchor.constraint(equalTo: scroll.contentView.leadingAnchor),
+            document.trailingAnchor.constraint(equalTo: scroll.contentView.trailingAnchor),
+            document.widthAnchor.constraint(equalTo: scroll.contentView.widthAnchor)
         ])
     }
 
