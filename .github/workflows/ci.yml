@@ -32,6 +32,11 @@ jobs:
           brew install xcodegen libssh2
           ./Tools/bootstrap.sh
 
+      # Static half of the release guard: catches a plugin that exists but would not be
+      # shipped. Needs no build, so it runs before the expensive steps.
+      - name: Check every shipping plugin is in the shipping set
+        run: ./Tools/verify-shipping.sh
+
       - name: Build project
         run: |
           ./Tools/build.sh

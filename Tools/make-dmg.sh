@@ -81,6 +81,12 @@ PC_SSH2_PREFIX="$SSH2_PREFIX" Tools/bundle-libssh2.sh "$APP"
 # PC_CODESIGN_IDENTITY, which keeps the unsigned build path unchanged.
 Tools/codesign-app.sh "$APP"
 
+echo "==> Verifying the bundle ships everything, universally…"
+# Fails the release rather than shipping a host-only slice or a plugin that never got
+# built. Both happened before; RELEASE.md documented the check as something to run by
+# hand, which is why it never got run.
+Tools/verify-shipping.sh "$APP"
+
 echo "==> Staging…"
 rm -rf "$STAGING" "$DMG"
 mkdir -p "$STAGING"
