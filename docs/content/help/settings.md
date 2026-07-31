@@ -11,7 +11,7 @@ The Settings window is where you tailor Peach Commander to the way you work: whi
 ## Open Settings
 
 1. Choose **Peach Commander > Settings…**, or press Cmd+, (comma).
-2. You can also open the same window from **Configuration > Options…**.
+2. You can also open the same window from **Configuration > Settings…** — the same entry, in the menu where you may expect to find it.
 3. Pick a page from the list on the left; the options for that page appear on the right.
 4. Adjust the controls. Changes take effect immediately unless a note on the page says otherwise.
 

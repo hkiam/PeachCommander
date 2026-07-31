@@ -82,7 +82,7 @@ Entries appear in the same order as in the file, so put your most-used commands 
 
 Maybe you want one of these actions — or any of the roughly 150 built-in commands — on a key that suits you. Peach Commander lets you rebind anything on top of whichever scheme you use.
 
-1. Choose **Configuration > Keyboard Shortcuts…**.
+1. Choose **Configuration > Edit Shortcuts…**.
 2. Type part of the command's name in the search field, then select its row. For our example, search for `compare`.
 3. Click **Record…** and press the combination you want, for example Control+Shift+K.
 4. It's assigned immediately. If that combination was already used by another command, a notice tells you which one it was taken from, so you can decide whether to reassign it.
@@ -90,7 +90,7 @@ Maybe you want one of these actions — or any of the roughly 150 built-in comma
 
 Use **Clear** to remove a command's shortcut, or **Restore Defaults** to discard all your changes and return to the current scheme's original keys.
 
-> **Two schemes to start from.** If you're new to shortcuts, first pick the scheme closest to your habits under **Configuration > Keyboard Scheme** — **TC Classic** (Ctrl-based, the default) or **macOS Native** (Cmd-based). Your personal rebindings layer on top and survive switching schemes. Full details are in [Keyboard & shortcuts](keyboard-shortcuts.md).
+> **Two schemes to start from.** If you're new to shortcuts, first pick the scheme closest to your habits on the **Keys** page in Settings (Cmd+,) — **TC Classic** (Ctrl-based, the default) or **macOS Native** (Cmd-based). Your personal rebindings layer on top and survive switching schemes. Full details are in [Keyboard & shortcuts](keyboard-shortcuts.md).
 
 **Not sure which command to bind?** Choose **Configuration > Command Browser…**, search by name or description, and double-click to run a command on the active panel. It's the quickest way to discover what's available before you assign a key.
 
