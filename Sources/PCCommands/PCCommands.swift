@@ -85,6 +85,9 @@ public protocol PanelControllerProtocol: AnyObject {
     /// Copy the selection into the archive at `archiveZip`, under `subPath`
     /// (extracting first if the source is itself inside an archive — F-139).
     func copyInto(archiveZip: String, subPath: String) async
+    /// Move the selection into the archive at `archiveZip`, under `subPath`: the same add,
+    /// then the sources are removed once the rewrite succeeded.
+    func moveInto(archiveZip: String, subPath: String) async
     /// Re-open the archive this panel is inside (after it was rewritten on disk).
     func reloadCurrentArchive() async
     /// Move the selection (or cursor item) into `targetDir` (F6).
@@ -1224,9 +1227,19 @@ private func cm_Copy_handler(_ context: CommandContext) async throws {
 private func cm_RenMov_handler(_ context: CommandContext) async throws {
     guard let active = context.activePanel, let inactive = context.inactivePanel else { return }
     let target = await inactive.currentDirectory()
-    await active.moveSelection(to: target)
-    await active.reload()
-    await inactive.reload()
+    // Mirror cm_Copy: a target panel inside a rewritable archive means "add to the archive",
+    // here followed by removing the sources. Without this branch the move fell through to an
+    // ordinary filesystem move whose destination was the panel's path *inside* the zip, so it
+    // never touched the archive.
+    if let zip = inactive.currentArchiveZipPath {
+        await active.moveInto(archiveZip: zip, subPath: target)
+        await inactive.reloadCurrentArchive()   // re-open the rewritten zip
+        await active.reload()
+    } else {
+        await active.moveSelection(to: target)
+        await active.reload()
+        await inactive.reload()
+    }
 }
 
 private func cm_MkDir_handler(_ context: CommandContext) async throws {
