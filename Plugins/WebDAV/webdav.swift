@@ -209,6 +209,14 @@ final class ConnectDialog: NSObject {
         super.init()
         window.title = L("Connect to WebDAV Server")
         window.center()
+        // AppKit releases a programmatically created window when it closes
+        // (isReleasedWhenClosed defaults to true, and only NSWindowController turns it
+        // off). This object keeps a strong reference, so leaving it on means the window
+        // is freed while we still point at it — an over-release that crashed in
+        // -[_NSWindowTransformAnimation dealloc] once the close animation released it
+        // again. The hang used to mask it: the app froze before anything touched the
+        // freed window.
+        window.isReleasedWhenClosed = false
         build()
     }
 

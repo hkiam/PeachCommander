@@ -1034,6 +1034,10 @@ final class MonitorSettingsWindow: NSObject, NSWindowDelegate {
         let w = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 460, height: 420),
                          styleMask: [.titled, .closable], backing: .buffered, defer: false)
         w.title = L("System Monitor"); w.delegate = self; w.center()
+        // See the Uninstaller: a programmatically created window is released when it
+        // closes unless an NSWindowController owns it, and this object keeps a strong
+        // reference — leaving it on frees the window while we still point at it.
+        w.isReleasedWhenClosed = false
         w.contentView = SettingsView()
         window = w
         w.makeKeyAndOrderFront(nil)
