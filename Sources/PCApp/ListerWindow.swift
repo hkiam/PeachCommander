@@ -689,14 +689,19 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         let view = Unmanaged<NSView>.fromOpaque(handle).takeUnretainedValue()
         view.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(view)
+        // Fill the content area, not the whole window. Pinning to the container's edges put
+        // the plugin's own chrome on top of the viewer's toolbar — the CSV lister's "Filter"
+        // row drew over the representation popup and the Symbols button. The split view is
+        // exactly the region between toolbar, sidebar, minimap and status bar, which is what
+        // an embedded representation should occupy, and it is the same anchor the web view
+        // uses. (Anchoring to scrollView instead would freeze the height: rebuildContent
+        // hides it first, and a hidden NSSplitView arranged subview keeps its last frame.)
+        let area = marks.splitView
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: container.topAnchor),
-            view.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            // Same reason as in ensureWebView: rebuildContent hides the scroll view
-            // before embedding a plugin, and a hidden NSSplitView arranged subview
-            // keeps its last frame — so anchoring here froze the plugin's height.
-            view.bottomAnchor.constraint(equalTo: marks.splitView.bottomAnchor)   // sit above the status bar
+            view.topAnchor.constraint(equalTo: area.topAnchor),
+            view.leadingAnchor.constraint(equalTo: area.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: area.trailingAnchor),
+            view.bottomAnchor.constraint(equalTo: area.bottomAnchor)
         ])
         pluginView = (lister, handle, view)
         return true
