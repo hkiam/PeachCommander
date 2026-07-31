@@ -14,7 +14,8 @@ import PCPluginHost
 import UniformTypeIdentifiers
 
 @MainActor
-final class ListerWindowController: NSWindowController, NSWindowDelegate, NSTextViewDelegate {
+final class ListerWindowController: NSWindowController, NSWindowDelegate, NSTextViewDelegate,
+                                    NSUserInterfaceValidations {
     enum Mode { case text, hex, image, media, web, plugin, directory, code, xmlTree, binary }
 
     /// Audio/video player for `.media` mode (paused/cleared when the view changes).
@@ -158,6 +159,9 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     private var minimapWidth: NSLayoutConstraint!
     private var minimapVisible = false
     private let minimapToggle = NSButton()
+    /// Toolbar action buttons paired with their selector, for per-representation
+    /// enablement (see refreshActionEnablement).
+    private var actionButtons: [(Selector, NSButton)] = []
     private var webView: ListerWebView?
     private weak var container: NSView?
 
@@ -295,9 +299,12 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         reprPopup.target = self
         reprPopup.action = #selector(toolbarReprChanged(_:))
 
+        // Registered so refreshActionEnablement() can re-validate them per
+        // representation; NSButton does not participate in AppKit's own validation.
         func button(_ title: String, _ selector: Selector) -> NSButton {
             let b = NSButton(title: title, target: self, action: selector)
             b.bezelStyle = .rounded
+            actionButtons.append((selector, b))
             return b
         }
         // Symbol-outline sidebar toggle (leading). Disabled until a file yields symbols.
@@ -537,8 +544,9 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         let path = files[index]
 
         // Recompute the symbol outline + minimap once the new content view is in
-        // place (populate for code/text, clear for other modes).
-        defer { refreshSymbols(); refreshMinimap() }
+        // place (populate for code/text, clear for other modes), and re-validate the
+        // toolbar: most actions only apply to some representations.
+        defer { refreshSymbols(); refreshMinimap(); refreshActionEnablement() }
 
         // The content view (and its marks) is about to be replaced — collapse
         // the marks panel so it doesn't show stale entries for the old view.
@@ -756,6 +764,14 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         let web = ensureWebView()
         scrollView.isHidden = true
         web.isHidden = false
+        // The rendered page *is* the content view now. Without this, contentView kept
+        // pointing at whatever the previous representation built: `markable` and
+        // `ViewerTextProviding` still resolved against that invisible view, so Mark
+        // All and Copy silently operated on the previously viewed file, and Print
+        // printed it. A WKWebView conforms to none of those protocols, so assigning it
+        // makes every capability below answer truthfully.
+        contentView = web
+        textMarks = nil
         // Focus the web view so arrows / space / PageUp-Down scroll the page natively.
         DispatchQueue.main.async { [weak self] in self?.window?.makeFirstResponder(web) }
 
@@ -1927,6 +1943,69 @@ extension ListerWindowController: WindowContextMenuProviding {
         c.saveAs = true; c.printable = true   // F-121
         c.multiFile = files.count > 1
         return c
+    }
+
+    // MARK: - Action availability per representation
+    //
+    // documentCaps above describes what this *window kind* can offer, so the menus
+    // are built once. What a given action can do depends on the representation
+    // currently on screen, and the two are not the same thing: rendered Markdown has
+    // no text storage, no mark backend and nothing byte-addressable to scroll.
+    //
+    // Previously the actions just returned early — `if mode == .text || mode == .code`
+    // — while their buttons and menu items stayed enabled. Clicking Format, Encoding,
+    // Mark All or Marks on a rendered Markdown file therefore did nothing at all, with
+    // no hint that it could not work. Everything now answers through this one
+    // predicate: validateUserInterfaceItem drives the menus, refreshActionEnablement
+    // drives the toolbar buttons (plain NSButtons do not validate themselves).
+
+    /// Text transformations need real text storage in a text/code representation.
+    private var canTransformText: Bool { mode == .text || mode == .code }
+    /// Occurrence marking needs one of the two mark backends.
+    private var canMark: Bool { hasMarkBackend }
+    /// Copy takes the whole text of the displayed view.
+    private var canCopyText: Bool { contentView is ViewerTextProviding }
+    /// Search either uses the native find bar, delegates to a plugin, or scrolls to a
+    /// byte offset — the last one needs a view that can be scrolled by offset.
+    private var canSearch: Bool {
+        textContentView != nil || mode == .plugin || contentView is ListerScrollable
+    }
+
+    /// Whether `selector` can do anything in the representation on screen.
+    fileprivate func supportsAction(_ selector: Selector) -> Bool {
+        switch selector {
+        case DocumentAction.format, DocumentAction.xmlTree, DocumentAction.xpath,
+             DocumentAction.cycleEncoding:
+            return canTransformText
+        case DocumentAction.markAll, DocumentAction.count,
+             DocumentAction.clearAllMarks, DocumentAction.toggleMarksPanel:
+            return canMark
+        case DocumentAction.copy:
+            return canCopyText
+        case DocumentAction.find, DocumentAction.findNext, DocumentAction.findPrev:
+            return canSearch
+        case DocumentAction.goToLocation:
+            return canSearch
+        case DocumentAction.nextFile, DocumentAction.prevFile:
+            return files.count > 1
+        default:
+            return true   // Save As, Print, representation switching, reload…
+        }
+    }
+
+    /// Re-validate the toolbar buttons. NSButton has no validation of its own, so this
+    /// runs after every content rebuild (see rebuildContent's defer).
+    private func refreshActionEnablement() {
+        for (selector, button) in actionButtons {
+            button.isEnabled = supportsAction(selector)
+        }
+    }
+
+    /// Menu items and other validated controls route through the same predicate, so the
+    /// Tools menu and the context menu grey out exactly what the toolbar does.
+    func validateUserInterfaceItem(_ item: any NSValidatedUserInterfaceItem) -> Bool {
+        guard let action = item.action else { return true }
+        return supportsAction(action)
     }
 
     // Read-only content: Copy (whole text or the current selection).
