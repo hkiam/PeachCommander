@@ -989,6 +989,24 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
 
     /// Copy the full text of the current text/code view to the clipboard.
     private func copyAll() {
+        // Rendered pages: hand the standard editing action to WebKit, which copies the
+        // selection exactly as its own context menu does.
+        //
+        // The viewer's Edit menu owns the ⌘C key equivalent (makeEditMenu binds it to
+        // DocumentAction.copy), and a menu key equivalent is matched before the
+        // responder chain — so the key never reached the web view. That is why copying
+        // worked from WebKit's own context menu but not from the keyboard.
+        if mode == .web, let web = webView, !web.isHidden {
+            NSApp.sendAction(Selector(("copy:")), to: web, from: nil)
+            return
+        }
+        // Same situation for an embedded plugin view: guarded on responds(to:), so a
+        // plugin that implements the standard action gets it and one that doesn't still
+        // falls through to the beep below rather than silently doing nothing.
+        if mode == .plugin, let pv = pluginView?.view, pv.responds(to: Selector(("copy:"))) {
+            NSApp.sendAction(Selector(("copy:")), to: pv, from: nil)
+            return
+        }
         let provider = contentView as? ViewerTextProviding
         // Prefer the mouse selection; fall back to the whole text.
         guard let text = provider?.selectedText ?? provider?.copyText, !text.isEmpty else {
@@ -1982,8 +2000,14 @@ extension ListerWindowController: WindowContextMenuProviding {
     private var canTransformText: Bool { mode == .text || mode == .code }
     /// Occurrence marking needs one of the two mark backends.
     private var canMark: Bool { hasMarkBackend }
-    /// Copy takes the whole text of the displayed view.
-    private var canCopyText: Bool { contentView is ViewerTextProviding }
+    /// Copy takes the whole text of the displayed view, or forwards the standard
+    /// `copy:` action to a view that implements it (WebKit's rendered page, a plugin
+    /// view that supports copying).
+    private var canCopyText: Bool {
+        if contentView is ViewerTextProviding || mode == .web { return true }
+        if mode == .plugin, let pv = pluginView?.view { return pv.responds(to: Selector(("copy:"))) }
+        return false
+    }
     /// Search has four backends: the native find bar in a text view, WebKit's own find
     /// on a rendered page, the plugin's search, or a byte-offset scan — the last one
     /// needs a view that can be scrolled to an offset.
