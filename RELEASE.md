@@ -73,15 +73,19 @@ result on its own before:
    directly; `swiftc` accepts only one `-target`, so each slice is compiled
    separately and merged with `lipo`.
 
-Verify a packaged build rather than trusting it:
+This is enforced, not documented-and-hoped-for. `Tools/verify-shipping.sh` runs inside
+make-dmg.sh before the image is staged and fails the release if any Mach-O in the bundle
+carries a single slice — the previous version of this section was a one-liner to run by
+hand, which is precisely why nobody ran it while twelve plugins shipped host-only.
+
+The same script also checks that every plugin in `Plugins/` (bar `Sample*` and `SDK`) is
+actually built by `build-all-plugins.sh`, because the CSV lister sat there for weeks
+without being shipped. That half needs no build and runs in CI too.
 
 ```bash
-APP=build/dmg-derived/Build/Products/Release/PeachCommander.app
-find "$APP" -type f -exec sh -c 'a=$(lipo -archs "$1" 2>/dev/null) || exit 0
-  [ -n "$a" ] && case "$a" in *arm64*x86_64*|*x86_64*arm64*) ;; *) echo "SINGLE: $1 -> $a";; esac' _ {} \;
-```
-
-Silence means every slice is present. `PC_PLUGIN_ARCHS=arm64` builds plugins for one
+Tools/verify-shipping.sh                 # shipping-set completeness only
+Tools/verify-shipping.sh path/to/App.app # plus every Mach-O is arm64 + x86_64
+``` `PC_PLUGIN_ARCHS=arm64` builds plugins for one
 architecture when iterating locally.
 
 ## Cutting a release
