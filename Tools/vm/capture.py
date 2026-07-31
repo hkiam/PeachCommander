@@ -119,10 +119,15 @@ def launch_app(ip, script_lines, theme):
     body = "\n".join(flatten(script_lines))
     ssh_guest(ip, f"cat > ~/pc-demo-auto.txt <<'PCEOF'\n{body}\nPCEOF")
     cfg = f"/Users/{GUEST}/pc-cfg-{theme}"
-    # Reset per-panel/session state so every shot starts from defaults (details
-    # view, default window) — the appearance in peachcmd.ini is kept, but the
-    # persisted session.ini must not leak view mode / dirs between specs.
-    ssh_guest(ip, f"rm -f {cfg}/session.ini {cfg}/workspaces.ini")
+    # Reset per-panel/session state so every shot starts from defaults (details view, default
+    # window): the persisted session.ini must not leak view mode / dirs between specs.
+    #
+    # peachcmd.ini is *rewritten*, not kept. A spec that changes a setting through the app — the
+    # `theme` verb does exactly that, on purpose, so the shot shows the real code path — persists it
+    # here, and the next spec would inherit it. Regenerating the file is what keeps every spec
+    # independent, which is the whole promise of this harness.
+    ssh_guest(ip, f"rm -f {cfg}/session.ini {cfg}/workspaces.ini && "
+                  f"printf '[Colors]\\nAppearance={theme}\\n' > {cfg}/peachcmd.ini")
     ssh_guest(ip, "pkill -x PeachCommander 2>/dev/null; sleep 1; "
                   "killall Terminal 2>/dev/null; "
                   f"open ~/pc-test/{APPNAME} --args -ConfigRoot {cfg} "

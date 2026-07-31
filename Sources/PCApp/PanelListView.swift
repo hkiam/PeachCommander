@@ -97,6 +97,42 @@ enum SortDirection {
 }
 
 /// Custom header view for sort arrows
+/// Column header cell that follows the palette (F-340).
+///
+/// AppKit draws the header with system colours, which left a grey strip between a themed path bar
+/// and a themed list. Drawing is only taken over when a palette is actually selected: with the
+/// default theme this falls straight through to `super`, so the header stays exactly the control
+/// AppKit renders rather than an approximation of it.
+///
+/// No new palette colours — the header is the strip directly above the list, so it borrows the
+/// active path bar's pair, which is also what the original Norton Commander did with its column
+/// captions: dark text on the cyan bar.
+final class ThemedHeaderCell: NSTableHeaderCell {
+    override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
+        guard Theme.paletteActive else { return super.draw(withFrame: cellFrame, in: controlView) }
+        Theme.current.activePathBarBackground.setFill()
+        cellFrame.fill()
+        Theme.current.headerSeparator.setStroke()
+        let sep = NSBezierPath()
+        sep.move(to: NSPoint(x: cellFrame.maxX - 0.5, y: cellFrame.minY + 2))
+        sep.line(to: NSPoint(x: cellFrame.maxX - 0.5, y: cellFrame.maxY - 2))
+        sep.lineWidth = 1
+        sep.stroke()
+        drawInterior(withFrame: cellFrame.insetBy(dx: 4, dy: 0), in: controlView)
+    }
+
+    override func drawInterior(withFrame cellFrame: NSRect, in controlView: NSView) {
+        guard Theme.paletteActive else { return super.drawInterior(withFrame: cellFrame, in: controlView) }
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: font ?? Fonts.bold13,
+            .foregroundColor: Theme.current.activePathBarText,
+        ]
+        let text = stringValue as NSString
+        let size = text.size(withAttributes: attrs)
+        text.draw(at: NSPoint(x: cellFrame.minX, y: cellFrame.midY - size.height / 2), withAttributes: attrs)
+    }
+}
+
 final class SortableHeaderView: NSTableHeaderView {
     private weak var tableViewRef: NSTableView?
     // Keyed by column identifier (fieldID) so both built-in and plugin columns
@@ -360,7 +396,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         let tableColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(id))
         tableColumn.width = width
         tableColumn.minWidth = 30
-        let headerCell = NSTableHeaderCell()
+        let headerCell = ThemedHeaderCell()
         headerCell.alignment = .left
         headerCell.font = Fonts.bold13
         tableColumn.headerCell = headerCell

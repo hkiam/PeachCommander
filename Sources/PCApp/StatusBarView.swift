@@ -55,8 +55,24 @@ class StatusBarView: NSView {
             // dynamic system labelColor, so text always matches our bar background
             // (otherwise dark-mode labelColor = white lands on a light bar).
             label.textColor = Theme.current.statusBarText
+            // Truncate, never wrap. The four labels are chained edge to edge with fixed gaps, so
+            // when the text is long one of them gets almost no width — and an NSTextField defaults
+            // to wrapping, which turned "Free: 16.4 GB" into one character per line spilling out of
+            // the bar. Single-line + truncation is the only sane behaviour in a status bar.
+            label.usesSingleLineMode = true
+            label.maximumNumberOfLines = 1
+            label.lineBreakMode = .byTruncatingTail
+            label.cell?.truncatesLastVisibleLine = true
         }
         pathLabel.font = Fonts.system13
+        // The path is the one label that can lose characters without losing meaning — it is already
+        // shortened by `shortenPath` — so it yields its width first and truncates in the middle,
+        // which keeps both the volume and the leaf directory readable.
+        pathLabel.lineBreakMode = .byTruncatingMiddle
+        pathLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        for label in [countLabel, freeSpaceLabel, sortLabel] {
+            label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        }
 
         countLabel.font = Fonts.system13
         countLabel.alignment = .right

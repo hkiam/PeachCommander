@@ -29,7 +29,12 @@ public struct Theme {
         functionButtonPressed: NSColor(white: 0.85, alpha: 1.0),
         functionButtonText: NSColor.black,
         statusBarBackground: NSColor(white: 0.95, alpha: 1.0),
-        statusBarText: NSColor.black
+        statusBarText: NSColor.black,
+        tabBarBackground: NSColor(white: 0.82, alpha: 1.0),
+        tabBarActiveChip: NSColor.white,
+        tabBarInactiveChip: NSColor(white: 0.90, alpha: 1.0),
+        tabBarChipText: NSColor(white: 0.10, alpha: 1.0),
+        tabBarActiveChipText: NSColor(white: 0.10, alpha: 1.0)
     )
 
     /// Dark mode colors (TC-style dark palette)
@@ -53,7 +58,12 @@ public struct Theme {
         functionButtonPressed: NSColor(white: 0.35, alpha: 1.0),
         functionButtonText: NSColor(white: 0.9, alpha: 1.0),
         statusBarBackground: NSColor(white: 0.25, alpha: 1.0),
-        statusBarText: NSColor(white: 0.9, alpha: 1.0)
+        statusBarText: NSColor(white: 0.9, alpha: 1.0),
+        tabBarBackground: NSColor(white: 0.16, alpha: 1.0),
+        tabBarActiveChip: NSColor(white: 0.34, alpha: 1.0),
+        tabBarInactiveChip: NSColor(white: 0.22, alpha: 1.0),
+        tabBarChipText: NSColor(white: 0.92, alpha: 1.0),
+        tabBarActiveChipText: NSColor(white: 0.92, alpha: 1.0)
     )
 
     // MARK: - Norton Commander (F-2xx: selectable themes)
@@ -100,7 +110,13 @@ public struct Theme {
         driveBarHighlightText: cga("000000"),
         // The active panel's cursor bar is cyan, and the panel keeps the row's normal text
         // colour — which here is the same cyan. Without this the cursor row is invisible.
-        cursorRowText: cga("000000")
+        cursorRowText: cga("000000"),
+        // NC had no tabs; cyan-on-blue with the active tab inverted is the natural extension.
+        tabBarBackground: cga("0000AA"),
+        tabBarActiveChip: cga("00AAAA"),
+        tabBarInactiveChip: cga("000080"),
+        tabBarChipText: cga("00AAAA"),
+        tabBarActiveChipText: cga("000000")   // black on the cyan active chip
     )
 
     // MARK: - Named palettes
@@ -239,6 +255,17 @@ public struct Theme {
         /// shipped that way. Marked files keep `selectedText`, so marking stays visible on the bar.
         public var cursorRowText: NSColor?
 
+        // Tab bar (F-340). These were four hardcoded greys picked from the dark/light appearance,
+        // so the bar stayed macOS-grey under a palette. The light/dark defaults below are exactly
+        // those greys, which is why extracting them changes nothing.
+        public var tabBarBackground: NSColor
+        public var tabBarActiveChip: NSColor
+        public var tabBarInactiveChip: NSColor
+        /// Two text colours, because a palette may invert the active chip the way the cursor row is
+        /// inverted — with one shared colour, Norton's cyan chip carried cyan text.
+        public var tabBarChipText: NSColor
+        public var tabBarActiveChipText: NSColor
+
         /// Set one colour by its declared name, case-insensitively. Returns `false` for an
         /// unknown name so a theme-file loader can report the typo instead of ignoring it.
         ///
@@ -279,6 +306,11 @@ public struct Theme {
             // Optional in the struct, but a file can only ever *set* it — absence means nil, which
             // is the default. There is no way to write "leave the cursor row alone" explicitly,
             // and none is needed: omitting the key does exactly that.
+            case "tabbarbackground": tabBarBackground = color
+            case "tabbaractivechip": tabBarActiveChip = color
+            case "tabbarinactivechip": tabBarInactiveChip = color
+            case "tabbarchiptext": tabBarChipText = color
+            case "tabbaractivechiptext": tabBarActiveChipText = color
             case "cursorrowtext": cursorRowText = color
             default: return false
             }
@@ -317,7 +349,12 @@ public struct Theme {
             driveBarHighlight: NSColor = NSColor.controlAccentColor,
             driveBarText: NSColor = NSColor.labelColor,
             driveBarHighlightText: NSColor = NSColor.white,
-            cursorRowText: NSColor? = nil
+            cursorRowText: NSColor? = nil,
+            tabBarBackground: NSColor,
+            tabBarActiveChip: NSColor,
+            tabBarInactiveChip: NSColor,
+            tabBarChipText: NSColor,
+            tabBarActiveChipText: NSColor
         ) {
             self.windowBackground = windowBackground
             self.listBackground = listBackground
@@ -349,6 +386,11 @@ public struct Theme {
             self.driveBarText = driveBarText
             self.driveBarHighlightText = driveBarHighlightText
             self.cursorRowText = cursorRowText
+            self.tabBarBackground = tabBarBackground
+            self.tabBarActiveChip = tabBarActiveChip
+            self.tabBarInactiveChip = tabBarInactiveChip
+            self.tabBarChipText = tabBarChipText
+            self.tabBarActiveChipText = tabBarActiveChipText
         }
 
         /// Return a copy with the four user-customisable panel colours overridden
@@ -387,7 +429,12 @@ public struct Theme {
                 driveBarHighlight: driveBarHighlight,
                 driveBarText: driveBarText,
                 driveBarHighlightText: driveBarHighlightText,
-                cursorRowText: cursorRowText)
+                cursorRowText: cursorRowText,
+                tabBarBackground: tabBarBackground,
+                tabBarActiveChip: tabBarActiveChip,
+                tabBarInactiveChip: tabBarInactiveChip,
+                tabBarChipText: tabBarChipText,
+                tabBarActiveChipText: tabBarActiveChipText)
         }
     }
 
@@ -473,6 +520,16 @@ public struct Theme {
         }
         return v
     }
+
+    /// The palette id in effect, or "system" when none is selected (F-340).
+    ///
+    /// Needed by the few places that must draw *differently* rather than just with other colours —
+    /// the column header hands its drawing back to AppKit unless a palette is active, which is what
+    /// keeps the default header pixel-identical instead of a re-implementation of it.
+    nonisolated(unsafe) public static var activePaletteId: String = "system"
+
+    /// Whether a named palette is in effect.
+    public static var paletteActive: Bool { palette(id: activePaletteId) != nil }
 
     /// The active custom-colour overrides; `applyAppearance` folds these into `current`.
     nonisolated(unsafe) public static var customColors = ColorOverride()

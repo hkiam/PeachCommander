@@ -21,6 +21,17 @@ A theme replaces the whole panel palette in one step.
 
 A theme brings its own light/dark base so that sheets, scrollers, and standard controls match it — which is why the **Appearance** menu is greyed out while a theme is selected. Custom panel colors (below) still win over the theme, so you can keep one favorite color on top of it.
 
+![Peach Commander in the Norton Commander palette](screenshots/theme-norton.png)
+*(Figure: The Norton Commander palette — the original CGA blue, cyan and yellow.)*
+
+The Norton Commander theme uses the authentic CGA values the 1986 original did: `#0000AA` blue, `#00AAAA` cyan, `#55FFFF` for the cursor row, `#FFFF55` for marked files. The cursor bar inverts to dark text on cyan the way the original drew it, while marked files keep their yellow.
+
+![Close-up of the cursor row in the Norton palette](screenshots/theme-norton-cursor-crop.png)
+*(Figure: The cursor bar inverts; marked files stay yellow.)*
+
+![The Colors settings page in the Norton Commander palette](screenshots/theme-norton-settings.png)
+*(Figure: The app's own dialogs follow the theme too.)*
+
 Themes are colors only. The panel layout, the frames, and the fonts are unchanged — Norton Commander does not bring back the double-line box borders or the DOS raster font.
 
 ## Write your own theme

@@ -105,20 +105,13 @@ public final class TabBarView: NSView {
         NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
     }
 
-    private var barBackground: NSColor {
-        isDarkMode ? NSColor(white: 0.16, alpha: 1.0) : NSColor(white: 0.82, alpha: 1.0)
-    }
-
-    private var activeChipColor: NSColor {
-        isDarkMode ? NSColor(white: 0.34, alpha: 1.0) : NSColor.white
-    }
-
-    private var inactiveChipColor: NSColor {
-        isDarkMode ? NSColor(white: 0.22, alpha: 1.0) : NSColor(white: 0.90, alpha: 1.0)
-    }
-
-    private var chipTextColor: NSColor {
-        isDarkMode ? NSColor(white: 0.92, alpha: 1.0) : NSColor(white: 0.10, alpha: 1.0)
+    // Routed through the palette (F-340). The light/dark palettes carry exactly the greys these
+    // getters used to hardcode, so extracting them changed nothing; a theme can now reach them.
+    private var barBackground: NSColor { Theme.current.tabBarBackground }
+    private var activeChipColor: NSColor { Theme.current.tabBarActiveChip }
+    private var inactiveChipColor: NSColor { Theme.current.tabBarInactiveChip }
+    private func chipTextColor(active: Bool) -> NSColor {
+        active ? Theme.current.tabBarActiveChipText : Theme.current.tabBarChipText
     }
 
     // MARK: - Drawing
@@ -164,7 +157,7 @@ public final class TabBarView: NSView {
             NSBezierPath(rect: textRect).setClip()
             let attrText = NSMutableAttributedString(string: text, attributes: [
                 .font: tab.active ? Fonts.bold13 : font,
-                .foregroundColor: chipTextColor
+                .foregroundColor: chipTextColor(active: tab.active)
             ])
             let style = NSMutableParagraphStyle()
             style.lineBreakMode = .byTruncatingTail
@@ -186,7 +179,7 @@ public final class TabBarView: NSView {
         plusPath.stroke()
         let plusAttrs: [NSAttributedString.Key: Any] = [
             .font: NSFont.systemFont(ofSize: 15, weight: .medium),
-            .foregroundColor: chipTextColor
+            .foregroundColor: chipTextColor(active: false)   // drawn on the inactive chip colour
         ]
         let plus = "+" as NSString
         let plusSize = plus.size(withAttributes: plusAttrs)

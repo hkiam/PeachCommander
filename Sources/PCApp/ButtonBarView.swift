@@ -97,6 +97,11 @@ final class ButtonBarView: NSView {
 
     func applyTheme() {
         layer?.backgroundColor = Theme.current.functionButtonBackground.cgColor
+        // The toolbar's icons are deliberately left to AppKit. Tinting them with contentTintColor
+        // was tried and measured on a capture: the symbols stayed accent-blue (7.5/255 luminance
+        // gap against the CGA-cyan bar), so the property does not reach these buttons' images.
+        // Restyling them would mean re-implementing NSButton, which is the same line already drawn
+        // for checkboxes and popup buttons — a themed panel in an app whose controls stay macOS.
     }
 
     private func rebuild() {
