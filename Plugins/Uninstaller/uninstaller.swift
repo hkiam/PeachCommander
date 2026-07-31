@@ -612,12 +612,21 @@ final class InstalledAppsPicker: NSObject, NSTableViewDataSource, NSTableViewDel
     /// cannot stop a session that is no longer ours.
     func windowWillClose(_ notification: Notification) {
         guard NSApp.modalWindow === window else { return }
-        // Deferred on purpose. Stopping the session *inside* this notification lets
-        // runModal(for:) return while AppKit is still tearing this window down: the caller
-        // then drops its last reference and the window is freed with a close animation
-        // (_NSWindowTransformAnimation) still holding it — an over-release that crashed with
-        // SIGSEGV in objc_release. One run-loop turn later the close has completed.
-        DispatchQueue.main.async { NSApp.stopModal() }
+        // Deferred, but scheduled on the *run loop* including the modal mode — not
+        // DispatchQueue.main.
+        //
+        // Deferral is needed because stopping the session inside this notification lets
+        // runModal(for:) return while AppKit is still tearing the window down; the caller
+        // drops its last reference and the window is freed with a close animation
+        // (_NSWindowTransformAnimation) still holding it, which crashed in objc_release.
+        //
+        // But a main-queue block is the wrong vehicle here. These dialogs are opened from a
+        // main-actor Task (plugin command → PcRunCommand → runModal), and while that task
+        // sits in a nested modal loop the main queue is not serviced — so the block would
+        // never run and the app would stay modal, i.e. exactly the hang this fixes.
+        // Measured, not assumed: from a main-actor Task, DispatchQueue.main.async never
+        // returns from runModal while perform(inModes:) does.
+        RunLoop.main.perform(inModes: [.modalPanel, .default, .common]) { NSApp.stopModal() }
     }
 
     func runModal() -> [String] {
@@ -833,12 +842,21 @@ final class UninstallReviewWindow: NSObject, NSWindowDelegate {
     /// cannot stop a session that is no longer ours.
     func windowWillClose(_ notification: Notification) {
         guard NSApp.modalWindow === window else { return }
-        // Deferred on purpose. Stopping the session *inside* this notification lets
-        // runModal(for:) return while AppKit is still tearing this window down: the caller
-        // then drops its last reference and the window is freed with a close animation
-        // (_NSWindowTransformAnimation) still holding it — an over-release that crashed with
-        // SIGSEGV in objc_release. One run-loop turn later the close has completed.
-        DispatchQueue.main.async { NSApp.stopModal() }
+        // Deferred, but scheduled on the *run loop* including the modal mode — not
+        // DispatchQueue.main.
+        //
+        // Deferral is needed because stopping the session inside this notification lets
+        // runModal(for:) return while AppKit is still tearing the window down; the caller
+        // drops its last reference and the window is freed with a close animation
+        // (_NSWindowTransformAnimation) still holding it, which crashed in objc_release.
+        //
+        // But a main-queue block is the wrong vehicle here. These dialogs are opened from a
+        // main-actor Task (plugin command → PcRunCommand → runModal), and while that task
+        // sits in a nested modal loop the main queue is not serviced — so the block would
+        // never run and the app would stay modal, i.e. exactly the hang this fixes.
+        // Measured, not assumed: from a main-actor Task, DispatchQueue.main.async never
+        // returns from runModal while perform(inModes:) does.
+        RunLoop.main.perform(inModes: [.modalPanel, .default, .common]) { NSApp.stopModal() }
     }
 
     func runModal() {
