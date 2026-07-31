@@ -161,3 +161,47 @@ and the matching `PC_CAP_NEW|PC_CAP_MODIFY|PC_CAP_DELETE` bits to make it writab
 - [ ] Package as a `.pcxplugin` bundle with an Info.plist (§5).
 - [ ] Verify: `browse → extract → (pack/delete)` through the Peach Commander UI.
 ```
+
+## Matching the host's colour theme (F-338)
+
+The host can be themed — including a Norton Commander palette whose CGA blue matches no macOS
+appearance. A plugin view that hardcodes system colours then looks out of place beside the panels.
+
+Add `Plugins/SDK/PluginTheme.swift` to your swiftc sources and read the colours instead:
+
+```swift
+private var theme = PluginTheme.systemFallback
+
+func applyTheme() {
+    theme = PluginTheme(services)          // or PluginTheme(svc) if you keep the struct by value
+    layer?.backgroundColor = theme.background.cgColor
+    label.textColor = theme.text
+    needsDisplay = true
+}
+```
+
+Semantic colours: `background`, `windowBackground`, `text`, `secondaryText`, `accent`, `separator`,
+`selectionBackground`, `selectionText`, `markedText`, `controlBackground`, `controlText`, plus
+`isDark` and `id`. Any host panel colour is available raw via `hostColor("statusBarBackground",
+fallback: …)` — the same names a user theme file uses.
+
+Every property falls back to the system colour, so a plugin using the helper against a host that
+predates the theme keys renders exactly as it did before. `hostSuppliesTheme` tells you which case
+you are in.
+
+**Follow changes.** For a view from `PcMakeView`, the host calls
+`PcNotifyView(view, "theme", <themeId>)`. For your own windows, export the optional entry point:
+
+```swift
+@_cdecl("PcNotifyThemeChanged")
+public func PcNotifyThemeChanged() { myWindow?.applyTheme() }
+```
+
+**Where theming is right, and where it is not.** Theme a view that sits *in the panel area* — the
+sidebar and preview containers. Do **not** theme a view in the `titlebar` or `settings` container,
+or a standalone window: those are macOS chrome, and system colours are correct there. The shipped
+plugins follow exactly that split — Treemap's disk map, Notes' sidebar and the AI chat are themed;
+the System Monitor's titlebar chips and every settings pane are not.
+
+If you theme text, theme its background in the same pass. A themed foreground on an unthemed
+background is how you get cyan on white.

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /*
  * pdx.h — Peach Commander content plugins (PDX), a WDX port (SPEC-012 §5, F-233).
  *

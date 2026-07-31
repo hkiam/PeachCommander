@@ -358,13 +358,41 @@ final class NotesOverviewWindow: NSWindowController, NSTableViewDataSource, NSTa
 final class NotesSidebarView: NSView, NSTextViewDelegate {
     private let header = NSTextField(labelWithString: "")
     private let text = MarkdownSourceTextView()
+    private let scroll = NSScrollView()
     private var currentKey = NotesStore.globalKey
     private var dirty = false
+    /// Host colour theme (F-338). This view sits in the sidebar, right beside the file panels, so
+    /// leaving it in macOS colours is what looks out of place under a theme like Norton.
+    private var services: UnsafePointer<PcHostServices>?
 
     init() {
         super.init(frame: NSRect(x: 0, y: 0, width: 260, height: 400))
         build()
         loadContext(NotesStore.globalKey)
+    }
+
+    func bindServices(_ s: UnsafePointer<PcHostServices>?) {
+        services = s
+        applyTheme()
+    }
+
+    /// Apply the host theme to the editor. Background *and* text together — a themed text colour
+    /// on an unthemed background is how you get cyan on white.
+    func applyTheme() {
+        let theme = PluginTheme(services)
+        wantsLayer = true
+        layer?.backgroundColor = theme.windowBackground.cgColor
+        header.textColor = theme.secondaryText
+        text.backgroundColor = theme.background
+        text.textColor = theme.text
+        // The caret and the selection have to follow too, or they vanish into the new background.
+        text.insertionPointColor = theme.text
+        text.selectedTextAttributes = [.backgroundColor: theme.selectionBackground,
+                                       .foregroundColor: theme.selectionText]
+        scroll.backgroundColor = theme.background
+        // No highlighting to reassert: the sidebar editor is `isRichText = false` plain text, so
+        // `textColor` is the whole story. The WYSIWYG window is a different surface and keeps the
+        // system colours — it is a standalone window, not part of the panel area.
     }
     required init?(coder: NSCoder) { fatalError() }
 
@@ -383,7 +411,6 @@ final class NotesSidebarView: NSView, NSTextViewDelegate {
             guard let self else { return }
             attachImage(url, key: self.currentKey, into: self.text); self.dirty = true
         }
-        let scroll = NSScrollView()
         scroll.documentView = text; scroll.hasVerticalScroller = true; scroll.borderType = .bezelBorder
         scroll.translatesAutoresizingMaskIntoConstraints = false
         addSubview(scroll)
@@ -444,6 +471,7 @@ public func PcGetApiVersion() -> Int32 { 1 }
 public func PcMakeView(_ viewId: UnsafePointer<CChar>?, _ container: UnsafePointer<CChar>?,
                        _ services: UnsafePointer<PcHostServices>?) -> UnsafeMutableRawPointer? {
     let view = NotesSidebarView()
+    view.bindServices(services)
     if let services, let getCtx = services.pointee.getContext {
         var buf = [CChar](repeating: 0, count: 4096)
         let ok = "cursorPath".withCString { getCtx(services.pointee.host, $0, &buf, 4096) }
@@ -463,8 +491,10 @@ public func PcCloseView(_ view: UnsafeMutableRawPointer?) {
 public func PcNotifyView(_ view: UnsafeMutableRawPointer?, _ key: UnsafePointer<CChar>?, _ value: UnsafePointer<CChar>?) {
     guard let view, let key else { return }
     guard let sidebar = Unmanaged<NSView>.fromOpaque(view).takeUnretainedValue() as? NotesSidebarView else { return }
-    if String(cString: key) == "cursorPath" {
-        sidebar.setContext(cursorPath: value.map { String(cString: $0) } ?? "")
+    switch String(cString: key) {
+    case "cursorPath": sidebar.setContext(cursorPath: value.map { String(cString: $0) } ?? "")
+    case "theme": sidebar.applyTheme()
+    default: break
     }
 }
 

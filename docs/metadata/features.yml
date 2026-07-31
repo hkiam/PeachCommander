@@ -612,6 +612,23 @@ features:
       creates the folder with a commented example, and the Theme menu re-reads it on open, so
       editing a theme needs no restart.
 
+  - id: plugin-theming
+    name: Plugin-Views folgen dem Farbthema
+    name_en: Plugin views follow the colour theme
+    category: plugins
+    audiences: [user, plugin, sdk]
+    status: stable
+    source: { modules: [PCApp, PCPluginHost], types: [Theme, ContribHostBridge, ContributionRegistry] }
+    documentation: { integrated_help: false, website: false }
+    notes: >-
+      The host publishes its palette as getContext keys ("theme.id", "theme.isDark", a semantic set
+      like theme.background/text/accent, and every raw colour as theme.color.<name>), and pushes
+      changes via PcNotifyView(view, "theme", id) plus the new optional PcNotifyThemeChanged export
+      for plugin-owned windows. No ABI break: the keys are additive and the export is optional.
+      Plugins/SDK/PluginTheme.swift wraps it with system-colour fallbacks, so a plugin using it
+      against an older host is unchanged. Adopted by the three sidebar views (Treemap disk map,
+      Notes, AI chat); titlebar and settings panes stay macOS chrome on purpose.
+
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
     name: Einstellungen (15 Seiten)

@@ -3287,6 +3287,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// For "system" the app appearance is left to follow the OS and our custom
     /// Theme palette is derived from the current effective appearance; a system
     /// dark-mode toggle is observed and re-applied (see systemAppearanceChanged).
+    /// Whether the UI is dark right now: the palette's own base if a theme is selected, otherwise
+    /// the Appearance setting, otherwise the OS. Shared so the plugin context and the panels can
+    /// never disagree about it.
+    static func appearanceIsDark(themeId: String, setting: String) -> Bool {
+        if let palette = Theme.palette(id: themeId) { return palette.isDark }
+        return setting == "dark" || (setting != "light" && systemIsDark())
+    }
+
     private func applyAppearance(_ value: String) {
         appearanceSetting = value
         let named: NSAppearance.Name?
@@ -3298,11 +3306,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let appAppearance = named.map { NSAppearance(named: $0) } ?? nil
         NSApp.appearance = appAppearance     // nil = follow the OS
         window?.appearance = appAppearance
-        var isDark = value == "dark" || (value != "light" && Self.systemIsDark())
         // A named palette decides its own light/dark base, so system controls, sheets and
         // scrollers match it. With "system" this resolves to the untouched light/dark pair and
         // the two lines below behave exactly as they did before themes existed.
-        if let palette = Theme.palette(id: themeId) { isDark = palette.isDark }
+        let isDark = Self.appearanceIsDark(themeId: themeId, setting: value)
         let resolved = Theme.resolve(themeId: themeId, isDark: isDark)
         Theme.current = resolved.colors.applying(Theme.customColors)   // F-272
         Theme.currentSyntax = resolved.syntax
@@ -3314,6 +3321,13 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         commandLine.applyTheme()
         previewPanel.applyTheme()
         previewHandle.applyTheme()
+        // Plugin-drawn UI (F-338): mounted views get the context key, plugin-owned windows get
+        // the broadcast. Both are no-ops for plugins that do not implement them.
+        ViewContainerRegistry.shared.notifyViews(key: "theme", value: themeId)
+        ContributionRegistry.shared.notifyThemeChanged()
+        // One line per theme change. Cheap, and it answers "which theme is this user actually on,
+        // and did it resolve?" — which is otherwise invisible, since a bad id falls back silently.
+        logger.info("Theme applied: id=\(self.themeId, privacy: .public), appearance=\(value, privacy: .public), dark=\(isDark), background=\(Theme.pluginHex(Theme.current.listBackground), privacy: .public)")
     }
 
     /// True when the OS is currently in Dark Mode.
@@ -6029,6 +6043,14 @@ extension MainWindowController: ContributionHost {
         // AI cloud endpoint (the AI plugin reads these to pick its provider).
         context.set("AI.CloudBaseURL", cachedCloudBase)
         context.set("AI.CloudModel", cachedCloudModel)
+        // Theme colours, so a plugin's own views can match the host (F-338). Pure addition: a
+        // plugin that reads none of these keys behaves exactly as before.
+        for (key, value) in Theme.pluginContextValues(colors: Theme.current,
+                                                     isDark: Self.appearanceIsDark(themeId: themeId,
+                                                                                   setting: appearanceSetting),
+                                                     themeId: themeId) {
+            context.set(key, value)
+        }
     }
 
     /// Long-term AI memory file (under the config root, beside the chat sessions).

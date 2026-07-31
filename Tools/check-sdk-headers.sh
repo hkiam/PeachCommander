@@ -43,4 +43,13 @@ for base in pc_common.h contrib.h; do
   fi
 done
 
+# The distributable SwiftPM package carries its own copy, refreshed by sync-plugin-sdk.sh. It was
+# a full licence-header behind for months because nothing checked it: an out-of-date SDK package
+# means third-party plugin authors compile against an ABI the host no longer has.
+for base in pc_common.h pcx.h pdx.h pfx.h plx.h contrib.h; do
+  if ! cmp -s "Plugins/SDK/$base" "PluginSDK/Sources/CPeachCommanderPlugin/include/$base"; then
+    echo "DRIFT: PluginSDK/Sources/CPeachCommanderPlugin/include/$base differs from Plugins/SDK/$base — run Tools/sync-plugin-sdk.sh"; fail=1
+  fi
+done
+
 exit $fail

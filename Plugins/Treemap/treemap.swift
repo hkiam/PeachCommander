@@ -38,6 +38,7 @@ public func PcMakeView(_ viewId: UnsafePointer<CChar>?, _ container: UnsafePoint
     }
     let view = DiskMapView(root: contextValue(services, "sidebarViewRoot") ?? NSHomeDirectory())
     view.frame = NSRect(x: 0, y: 0, width: 280, height: 460)
+    view.bindServices(services)
     if let services {
         let svc = services.pointee, host = svc.host
         if let fn = svc.openPathInPanel {
@@ -61,7 +62,10 @@ public func PcCloseView(_ view: UnsafeMutableRawPointer?) {
 }
 
 @_cdecl("PcNotifyView")
-public func PcNotifyView(_ view: UnsafeMutableRawPointer?, _ key: UnsafePointer<CChar>?, _ value: UnsafePointer<CChar>?) {}
+public func PcNotifyView(_ view: UnsafeMutableRawPointer?, _ key: UnsafePointer<CChar>?, _ value: UnsafePointer<CChar>?) {
+    guard let view, let key, String(cString: key) == "theme" else { return }
+    (Unmanaged<NSView>.fromOpaque(view).takeUnretainedValue() as? DiskMapView)?.applyTheme()
+}
 
 /// Root to analyze: the active panel's current folder, then cursor folder, then home.
 private func analyzeRoot(_ svc: PcHostServices) -> String {
@@ -101,6 +105,25 @@ private func withCStringArray(_ strings: [String], _ body: (UnsafePointer<Unsafe
 // MARK: - View
 
 final class DiskMapView: NSView {
+    /// Host colour theme for the view's *chrome* — background, header, selection, separators
+    /// (F-338). The tile palette is deliberately NOT themed: those colours encode file type and
+    /// size, so recolouring them to match a theme would destroy the information the map exists to
+    /// show. Chrome follows the host, data keeps its own palette.
+    private var theme = PluginTheme.systemFallback
+    /// Valid for this view's lifetime per the contrib ABI, so it can be re-read on a theme change.
+    private var services: UnsafePointer<PcHostServices>?
+
+    func bindServices(_ s: UnsafePointer<PcHostServices>?) {
+        services = s
+        applyTheme()
+    }
+
+    /// Re-read the theme and repaint. Called from PcNotifyView(view, "theme", …).
+    func applyTheme() {
+        theme = PluginTheme(services)
+        needsDisplay = true
+    }
+
     private let root: String
     private var rootNode: Node?
     private var current: Node?
@@ -206,7 +229,7 @@ final class DiskMapView: NSView {
     private let ringH: CGFloat = 30
 
     override func draw(_ dirtyRect: NSRect) {
-        NSColor.windowBackgroundColor.setFill(); bounds.fill()
+        theme.windowBackground.setFill(); bounds.fill()
         snapshotInfoRect = .zero
         drawHeader()
 
@@ -265,7 +288,7 @@ final class DiskMapView: NSView {
             cat.color.setFill(); NSBezierPath(roundedRect: sw, xRadius: 2, yRadius: 2).fill()
             let name = cat.displayName as NSString
             let attrs: [NSAttributedString.Key: Any] = [
-                .font: NSFont.systemFont(ofSize: 10), .foregroundColor: NSColor.secondaryLabelColor]
+                .font: NSFont.systemFont(ofSize: 10), .foregroundColor: theme.secondaryText]
             name.draw(at: NSPoint(x: x + 14, y: y), withAttributes: attrs)
             x += 14 + name.size(withAttributes: attrs).width + 12
             if x > rect.maxX - 30 { break }
@@ -287,7 +310,7 @@ final class DiskMapView: NSView {
             fill.setFill(); rect.insetBy(dx: 0.5, dy: 0.5).fill()
             if markedIDs.contains(ObjectIdentifier(node)) { markOverlay(rect) }
             if node === selected {
-                NSColor.controlAccentColor.setStroke()
+                theme.accent.setStroke()
                 let p = NSBezierPath(rect: rect.insetBy(dx: 1, dy: 1)); p.lineWidth = 2; p.stroke()
             }
             if tile.depth == 0, rect.width > 46, rect.height > 24 {
@@ -308,13 +331,13 @@ final class DiskMapView: NSView {
         let maxS = maxChildSize(current)
         for arc in arcs {
             let path = SunburstLayout.path(for: arc, center: center)
-            let base = arc.depth == 0 ? NSColor.controlBackgroundColor : tileFill(arc.node, scheme: scheme, maxSize: maxS)
+            let base = arc.depth == 0 ? theme.background : tileFill(arc.node, scheme: scheme, maxSize: maxS)
             let fill = arc.depth <= 1 ? base : (base.blended(withFraction: CGFloat(arc.depth - 1) * 0.12, of: .white) ?? base)
             fill.setFill(); path.fill()
-            NSColor.windowBackgroundColor.setStroke(); path.lineWidth = 0.75; path.stroke()
-            if arc.node === selected { NSColor.controlAccentColor.setStroke(); path.lineWidth = 2; path.stroke() }
+            theme.windowBackground.setStroke(); path.lineWidth = 0.75; path.stroke()
+            if arc.node === selected { theme.accent.setStroke(); path.lineWidth = 2; path.stroke() }
             if markedIDs.contains(ObjectIdentifier(arc.node)) {
-                NSColor.controlAccentColor.withAlphaComponent(0.5).setFill(); path.fill()
+                theme.accent.withAlphaComponent(0.5).setFill(); path.fill()
             }
         }
         // Center label: current folder + total.
@@ -327,7 +350,7 @@ final class DiskMapView: NSView {
         let scanned = min(rootNode?.size ?? 0, vol.used)
         let hidden = max(0, vol.used - scanned)
         let segs: [(Int64, NSColor)] = [
-            (scanned, NSColor.controlAccentColor),
+            (scanned, theme.accent),
             (hidden, NSColor.systemGray),
             (vol.purgeable, NSColor.systemOrange.withAlphaComponent(0.7)),
             (vol.free, NSColor.quaternaryLabelColor),
@@ -335,7 +358,7 @@ final class DiskMapView: NSView {
         let total = max(1, vol.total)
         var x = rect.minX
         let bar = NSRect(x: rect.minX, y: rect.minY, width: rect.width, height: 10)
-        NSColor.quaternaryLabelColor.setFill(); NSBezierPath(roundedRect: bar, xRadius: 3, yRadius: 3).fill()
+        theme.separator.setFill(); NSBezierPath(roundedRect: bar, xRadius: 3, yRadius: 3).fill()
         for (v, c) in segs where v > 0 {
             let w = CGFloat(Double(v) / Double(total)) * rect.width
             c.setFill(); NSRect(x: x, y: bar.minY, width: max(0, w), height: bar.height).fill(); x += w
@@ -356,7 +379,7 @@ final class DiskMapView: NSView {
     }
 
     private func drawLargestFiles(_ current: Node, in rect: NSRect) {
-        NSColor.controlBackgroundColor.setFill(); rect.fill()
+        theme.background.setFill(); rect.fill()
         drawText(L("Largest files"), in: NSRect(x: rect.minX + 6, y: rect.minY + 4, width: rect.width - 12, height: 14),
                  bold: true, color: .labelColor)
         var files: [Node] = []
@@ -368,7 +391,7 @@ final class DiskMapView: NSView {
         for node in files.prefix(Int((rect.height - 24) / rowH)) {
             let r = NSRect(x: rect.minX + 4, y: y, width: rect.width - 8, height: rowH - 2)
             largestRows.append((r, node))
-            if node === selected { NSColor.selectedContentBackgroundColor.setFill(); r.fill() }
+            if node === selected { theme.selectionBackground.setFill(); r.fill() }
             FileCategory.of(node).color.setFill()
             NSRect(x: r.minX, y: r.minY + 4, width: 3, height: r.height - 8).fill()
             drawText(node.name, in: NSRect(x: r.minX + 8, y: r.minY + 1, width: r.width - 10, height: 14),
@@ -384,12 +407,12 @@ final class DiskMapView: NSView {
     }
 
     private func markOverlay(_ rect: NSRect) {
-        NSColor.controlAccentColor.withAlphaComponent(0.35).setFill(); rect.insetBy(dx: 0.5, dy: 0.5).fill()
+        theme.accent.withAlphaComponent(0.35).setFill(); rect.insetBy(dx: 0.5, dy: 0.5).fill()
         drawText("✓", in: NSRect(x: rect.minX + 2, y: rect.minY + 1, width: 14, height: 14), bold: true, color: .white)
     }
 
     private func drawHeader() {
-        NSColor.controlBackgroundColor.setFill()
+        theme.background.setFill()
         NSRect(x: 0, y: 0, width: bounds.width, height: headerH).fill()
         var x: CGFloat = 6
         if let current, current.parent != nil {

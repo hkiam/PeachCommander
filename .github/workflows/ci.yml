@@ -37,6 +37,13 @@ jobs:
       - name: Check every shipping plugin is in the shipping set
         run: ./Tools/verify-shipping.sh
 
+      # The plugin C ABI lives in four places (Plugins/SDK, the three Sources/C* modules, and the
+      # distributable SwiftPM package). Nothing enforced that they agree, and the SwiftPM copy had
+      # already drifted; a stale copy means third-party plugins compile against an ABI the host
+      # does not have. Needs no build.
+      - name: Check the plugin SDK headers agree and compile standalone
+        run: ./Tools/check-sdk-headers.sh
+
       - name: Build project
         run: |
           ./Tools/build.sh

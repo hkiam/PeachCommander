@@ -64,7 +64,8 @@ pc_swiftc -emit-library -O \
   "$ROOT/Plugins/AIAssistant/aiplugin.swift" \
   "$ROOT/Plugins/AIAssistant/RemoteAutomationCore.swift" \
   "$ROOT/Plugins/AIAssistant/AIChatViewController.swift" \
-  "$ROOT/Plugins/AIAssistant/AISettings.swift"
+  "$ROOT/Plugins/AIAssistant/AISettings.swift" \
+  "$ROOT/Plugins/SDK/PluginTheme.swift"
 
 if [ -d "$ROOT/Plugins/AIAssistant/Resources" ]; then
   cp -R "$ROOT/Plugins/AIAssistant/Resources/." "$BUNDLE/Contents/Resources/"
