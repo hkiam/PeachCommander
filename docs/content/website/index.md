@@ -161,6 +161,36 @@ A button bar with sub-bars, two keyboard schemes (TC-classic and macOS-native) p
 
 ---
 
+## An homage: the Norton Commander palette
+
+Before there were two panels on a Mac, there were two panels on a CGA screen. **Norton Commander** shipped in 1986 and taught a generation what a file manager is for — blue background, cyan file names, a bar you walked up and down with the arrow keys, function keys along the bottom. Forty years later the muscle memory is still there, and so is the layout: two panels, F5 to copy, F6 to move.
+
+So we put the colors back. Pick **Norton Commander** in Settings ▸ Colors and Peach Commander comes up in the original CGA palette — `#0000AA` blue, `#00AAAA` cyan, `#55FFFF` for the cursor row, `#FFFF55` for the files you have marked. Not an approximation: those are the actual 16-color CGA values.
+
+![Peach Commander in the Norton Commander palette: blue panels with cyan file names](screenshots/theme-norton.png)
+*The Norton Commander palette. Same app, same speed — 1986 colors.*
+
+The cursor bar inverts to dark text on cyan, the way the original drew it, while marked files keep their yellow so you never lose track of a selection.
+
+![Close-up of the cursor row in the Norton palette](screenshots/theme-norton-cursor-crop.png)
+*The cursor bar, inverted — and marked files still yellow.*
+
+It is a gimmick, and we mean that kindly. It is also **colors only**: no double-line box frames, no DOS raster font, and every keyboard shortcut, dialog and plugin behaves exactly as it does in any other theme. The default look is untouched — themes are something you opt into, never something that happens to you.
+
+And it is not a special case in the code. Norton is one entry in a theme system you can extend: drop a small `.ini` in your `themes` folder, name the handful of colors you care about, inherit the rest, and it shows up in the Theme menu without restarting the app.
+
+```ini
+[Theme]
+Name = Midnight
+Base = dark
+
+[Colors]
+ListBackground = #101020
+ListText       = #C0C0D0
+```
+
+---
+
 ## Who it is for
 
 - **Developers and power users** who live on the keyboard and move code, builds, and assets all day.

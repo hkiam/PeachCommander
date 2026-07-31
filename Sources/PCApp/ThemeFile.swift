@@ -255,6 +255,9 @@ enum ThemeFile {
             ("StatusBarBackground", nc.statusBarBackground), ("StatusBarText", nc.statusBarText),
             ("DriveBarBackground", nc.driveBarBackground), ("DriveBarHighlight", nc.driveBarHighlight),
             ("DriveBarText", nc.driveBarText), ("DriveBarHighlightText", nc.driveBarHighlightText),
+            ("TabBarBackground", nc.tabBarBackground), ("TabBarActiveChip", nc.tabBarActiveChip),
+            ("TabBarInactiveChip", nc.tabBarInactiveChip), ("TabBarChipText", nc.tabBarChipText),
+            ("TabBarActiveChipText", nc.tabBarActiveChipText),
         ] + (nc.cursorRowText.map { [("CursorRowText", $0)] } ?? [])
         let width = pairs.map(\.0.count).max() ?? 0
         for (key, color) in pairs {

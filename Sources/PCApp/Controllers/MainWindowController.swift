@@ -3160,7 +3160,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
     }
 
-    private func applyStringOption(_ keyPath: String, _ value: String) {
+    /// Not private: the DEBUG automation runner uses it so a scripted run changes a setting
+    /// through exactly the same path the Settings dialog does.
+    func applyStringOption(_ keyPath: String, _ value: String) {
         // The Cloud API key goes to the Keychain, never to the config store.
         if keyPath == "AI.CloudKey" { Self.saveCloudKeyToKeychain(value); return }
         // AI-plugin-owned prefs persist to the plugin's JSON (aichat/config.json), which
@@ -3329,6 +3331,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let resolved = Theme.resolve(themeId: themeId, isDark: isDark)
         Theme.current = resolved.colors.applying(Theme.customColors)   // F-272
         Theme.currentSyntax = resolved.syntax
+        Theme.activePaletteId = themeId
         // Rebuilt here, and only here: the one place the theme can change (F-338).
         Theme.pluginContext = Theme.pluginContextValues(colors: Theme.current, isDark: isDark,
                                                        themeId: themeId)

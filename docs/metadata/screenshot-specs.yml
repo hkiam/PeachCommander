@@ -5,6 +5,7 @@
 #
 # Automation verbs (DEBUG -AutomationScript): left/right <path>, active l|r,
 # focus <name>, enter, wait <ms>, cmd <cm_Name>, view <path>, settingspage <Page>,
+# theme <id> (select a colour palette — "system", "norton", …),
 # findtab <0..3>, overwritedlg, hotlistmanage, syncdemo <l>|<r>.
 #
 # Reliable, fully-scriptable states are listed here. A few states that need
@@ -284,6 +285,32 @@ screenshots:
     pages: [appearance]
     dark: true
     script: [*main, settingspage Colors, wait 800]
+
+  # ── Norton Commander palette (F-2xx) ─────────────────────────────────────────
+  # `theme norton` goes through the same code path as the Settings popup, so these
+  # show exactly what a user gets. No dark variant: the palette pins its own base,
+  # which is the point — a light/dark pair would be the same image twice.
+  - id: theme-norton
+    feature: color-themes
+    alt: "The dual-pane main window in the Norton Commander palette: blue panels with cyan text"
+    caption: "The Norton Commander palette — the original CGA blue, cyan and yellow."
+    pages: [appearance]
+    script: [*main, theme norton, wait 1200]
+
+  - id: theme-norton-settings
+    feature: color-themes
+    alt: "The Colors settings page with the Theme menu, shown in the Norton Commander palette"
+    caption: "Themes are picked in Settings ▸ Colors; the dialog follows the palette."
+    pages: [appearance]
+    script: [*main, theme norton, wait 600, settingspage Colors, wait 1200]
+
+  - id: theme-norton-cursor-crop
+    feature: color-themes
+    alt: "Close-up of the cursor row in the Norton palette: black text on the cyan bar"
+    caption: "The cursor bar inverts to black on cyan, as the original did."
+    pages: [appearance]
+    crop: [0, 172, 500, 140]
+    script: [*main, theme norton, wait 1200]
 
   - id: plugins-window
     feature: plugins-user

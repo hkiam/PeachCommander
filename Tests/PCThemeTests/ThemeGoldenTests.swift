@@ -65,6 +65,11 @@ final class ThemeGoldenTests: XCTestCase {
             "driveBarHighlightText": rgba(c.driveBarHighlightText),
             // Optional: "none" when the palette leaves the cursor row's text alone.
             "cursorRowText": c.cursorRowText.map(rgba) ?? "none",
+            "tabBarBackground": rgba(c.tabBarBackground),
+            "tabBarActiveChip": rgba(c.tabBarActiveChip),
+            "tabBarInactiveChip": rgba(c.tabBarInactiveChip),
+            "tabBarChipText": rgba(c.tabBarChipText),
+            "tabBarActiveChipText": rgba(c.tabBarActiveChipText),
         ]
     }
 
@@ -91,6 +96,13 @@ final class ThemeGoldenTests: XCTestCase {
         "functionButtonText": "000000@1.000",
         "statusBarBackground": "f2f2f2@1.000",
         "statusBarText": "000000@1.000",
+        // The four greys the tab bar used to hardcode, plus the active-chip text colour that was
+        // the same as the inactive one. Pinned so extracting them stays a no-op for the default.
+        "tabBarBackground": "d1d1d1@1.000",
+        "tabBarActiveChip": "ffffff@1.000",
+        "tabBarInactiveChip": "e6e6e6@1.000",
+        "tabBarChipText": "1a1a1a@1.000",
+        "tabBarActiveChipText": "1a1a1a@1.000",
     ]
 
     private let darkGolden = [
@@ -114,6 +126,11 @@ final class ThemeGoldenTests: XCTestCase {
         "functionButtonText": "e6e6e6@1.000",
         "statusBarBackground": "404040@1.000",
         "statusBarText": "e6e6e6@1.000",
+        "tabBarBackground": "292929@1.000",
+        "tabBarActiveChip": "575757@1.000",
+        "tabBarInactiveChip": "383838@1.000",
+        "tabBarChipText": "ebebeb@1.000",
+        "tabBarActiveChipText": "ebebeb@1.000",
     ]
 
     func testLightPaletteIsUnchanged() {
@@ -264,6 +281,34 @@ final class ThemeGoldenTests: XCTestCase {
                 """
                 palette "\(p.id)": the cursor bar (\(rgba(p.colors.selectionFillActive))) is too                 close to the row text (\(rgba(p.colors.listText))) — set cursorRowText, or pick a                 fill that leaves the text readable.
                 """)
+        }
+    }
+
+    /// Every text-on-background pair a palette hands to the drawing code, checked in one place.
+    ///
+    /// Grown from the Norton cursor-row bug: a palette that sets a fill close to its text colour
+    /// renders invisible text, and the only reason that was caught was someone looking at a
+    /// screenshot. The tab-bar pairs were added after the same mistake was about to ship there —
+    /// an authentic cyan active chip carrying the palette's cyan text.
+    func testEveryTextOnFillPairIsLegibleInEveryPalette() {
+        for p in Theme.palettes {
+            let c = p.colors
+            let pairs: [(String, NSColor, NSColor)] = [
+                ("statusBar", c.statusBarText, c.statusBarBackground),
+                ("activePathBar", c.activePathBarText, c.activePathBarBackground),
+                ("inactivePathBar", c.inactivePathBarText, c.inactivePathBarBackground),
+                ("pathBar", c.pathBarText, c.pathBarBackground),
+                ("functionButton", c.functionButtonText, c.functionButtonBackground),
+                ("driveBar", c.driveBarText, c.driveBarBackground),
+                ("driveBarHighlight", c.driveBarHighlightText, c.driveBarHighlight),
+                ("tabBarActiveChip", c.tabBarActiveChipText, c.tabBarActiveChip),
+                ("tabBarInactiveChip", c.tabBarChipText, c.tabBarInactiveChip),
+                ("list", c.listText, c.listBackground),
+            ]
+            for (name, fg, bg) in pairs {
+                XCTAssertGreaterThan(luminanceGap(fg, over: bg, on: c.listBackground), 0.12,
+                    "palette \"\(p.id)\": \(name) draws \(rgba(fg)) on \(rgba(bg)) — not readable")
+            }
         }
     }
 
