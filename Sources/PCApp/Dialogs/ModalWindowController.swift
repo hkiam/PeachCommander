@@ -22,6 +22,12 @@ class ModalWindowController: NSWindowController, NSWindowDelegate {
     /// Guarded on `modalWindow` so the ordinary OK/Cancel path — which has already called
     /// `stopModal()` before closing — cannot stop a session that is no longer ours.
     func windowWillClose(_ notification: Notification) {
-        if NSApp.modalWindow === window { NSApp.stopModal() }
+        guard NSApp.modalWindow === window else { return }
+        // Deferred on purpose. Stopping the session *inside* this notification lets
+        // runModal(for:) return while AppKit is still tearing this window down: the caller
+        // then drops its last reference and the window is freed with a close animation
+        // (_NSWindowTransformAnimation) still holding it — an over-release that crashed with
+        // SIGSEGV in objc_release. One run-loop turn later the close has completed.
+        DispatchQueue.main.async { NSApp.stopModal() }
     }
 }

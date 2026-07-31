@@ -611,12 +611,18 @@ final class InstalledAppsPicker: NSObject, NSTableViewDataSource, NSTableViewDel
     /// Guarded on modalWindow so the ordinary OK/Cancel path, which already called stopModal,
     /// cannot stop a session that is no longer ours.
     func windowWillClose(_ notification: Notification) {
-        if NSApp.modalWindow === window { NSApp.stopModal() }
+        guard NSApp.modalWindow === window else { return }
+        // Deferred on purpose. Stopping the session *inside* this notification lets
+        // runModal(for:) return while AppKit is still tearing this window down: the caller
+        // then drops its last reference and the window is freed with a close animation
+        // (_NSWindowTransformAnimation) still holding it — an over-release that crashed with
+        // SIGSEGV in objc_release. One run-loop turn later the close has completed.
+        DispatchQueue.main.async { NSApp.stopModal() }
     }
 
     func runModal() -> [String] {
         NSApp.runModal(for: window)
-        window.orderOut(nil)
+        if window.isVisible { window.orderOut(nil) }
         return chosenPaths
     }
 
@@ -826,10 +832,21 @@ final class UninstallReviewWindow: NSObject, NSWindowDelegate {
     /// Guarded on modalWindow so the ordinary OK/Cancel path, which already called stopModal,
     /// cannot stop a session that is no longer ours.
     func windowWillClose(_ notification: Notification) {
-        if NSApp.modalWindow === window { NSApp.stopModal() }
+        guard NSApp.modalWindow === window else { return }
+        // Deferred on purpose. Stopping the session *inside* this notification lets
+        // runModal(for:) return while AppKit is still tearing this window down: the caller
+        // then drops its last reference and the window is freed with a close animation
+        // (_NSWindowTransformAnimation) still holding it — an over-release that crashed with
+        // SIGSEGV in objc_release. One run-loop turn later the close has completed.
+        DispatchQueue.main.async { NSApp.stopModal() }
     }
 
-    func runModal() { NSApp.runModal(for: window); window.orderOut(nil) }
+    func runModal() {
+        NSApp.runModal(for: window)
+        // Only if it is still on screen: when the user closed it themselves, AppKit has
+        // already taken it down and ordering it out again is pointless churn.
+        if window.isVisible { window.orderOut(nil) }
+    }
 
     private func build() {
         guard let content = window.contentView else { return }
