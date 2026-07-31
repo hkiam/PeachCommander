@@ -7,7 +7,7 @@ import PCArchive
 import PCFoundation
 
 @MainActor
-final class PackOptionsDialog: NSWindowController {
+final class PackOptionsDialog: ModalWindowController {
     /// Fired on "Pack" with the final archive name (extension applied) and options.
     var onPack: ((_ archiveName: String, _ options: PackOptions) -> Void)?
     /// Fired on "Pack" when a packer-plugin format is chosen (F-137): the archive
@@ -50,6 +50,7 @@ final class PackOptionsDialog: NSWindowController {
         window.title = String(localized: "Pack Files")
         window.center()
         super.init(window: window)
+        window.delegate = self   // closing the window must end the modal session
         build(defaultBaseName: defaultBaseName)
     }
 

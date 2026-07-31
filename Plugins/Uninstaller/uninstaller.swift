@@ -574,7 +574,8 @@ func orphanItems() -> [CleanupItem] {
 /// Modal list of installed apps (icon / name / size / install date). Returns the
 /// chosen .app path, or nil if cancelled. Sizes are computed off-main and the list
 /// refreshes when they arrive.
-final class InstalledAppsPicker: NSObject, NSTableViewDataSource, NSTableViewDelegate, NSSearchFieldDelegate {
+final class InstalledAppsPicker: NSObject, NSTableViewDataSource, NSTableViewDelegate,
+                                 NSSearchFieldDelegate, NSWindowDelegate {
     private let window: NSWindow
     private let table = NSTableView()
     private let searchField = NSSearchField()
@@ -593,11 +594,26 @@ final class InstalledAppsPicker: NSObject, NSTableViewDataSource, NSTableViewDel
         window.title = L("Uninstall Application")
         window.center()
         super.init()
+        window.delegate = self   // so closing the window ends the modal session
         build()
         computeSizesInBackground()
     }
 
     /// Returns the chosen .app paths (one per selected row), or [] if cancelled.
+
+    /// End the modal session when the window goes away by any route.
+    ///
+    /// These windows are `.closable`, so the red button (or ⌘W) dismisses them without any of
+    /// our buttons running. `NSApp.runModal(for:)` then never returns and the *whole app*
+    /// stays modal: the main window ignores clicks and its title-bar buttons do nothing while
+    /// the menu bar still works — exactly how this was reported.
+    ///
+    /// Guarded on modalWindow so the ordinary OK/Cancel path, which already called stopModal,
+    /// cannot stop a session that is no longer ours.
+    func windowWillClose(_ notification: Notification) {
+        if NSApp.modalWindow === window { NSApp.stopModal() }
+    }
+
     func runModal() -> [String] {
         NSApp.runModal(for: window)
         window.orderOut(nil)
@@ -760,7 +776,7 @@ final class FlippedStackView: NSStackView {
     override var isFlipped: Bool { true }
 }
 
-final class UninstallReviewWindow: NSObject {
+final class UninstallReviewWindow: NSObject, NSWindowDelegate {
     private let window: NSWindow
     private let appName: String
     private let rescan: (Int) -> [CleanupItem]
@@ -793,9 +809,24 @@ final class UninstallReviewWindow: NSObject {
         window.title = self.title
         window.center()
         super.init()
+        window.delegate = self   // so closing the window ends the modal session
         items = rescan(0)
         build()
         populate()
+    }
+
+
+    /// End the modal session when the window goes away by any route.
+    ///
+    /// These windows are `.closable`, so the red button (or ⌘W) dismisses them without any of
+    /// our buttons running. `NSApp.runModal(for:)` then never returns and the *whole app*
+    /// stays modal: the main window ignores clicks and its title-bar buttons do nothing while
+    /// the menu bar still works — exactly how this was reported.
+    ///
+    /// Guarded on modalWindow so the ordinary OK/Cancel path, which already called stopModal,
+    /// cannot stop a session that is no longer ours.
+    func windowWillClose(_ notification: Notification) {
+        if NSApp.modalWindow === window { NSApp.stopModal() }
     }
 
     func runModal() { NSApp.runModal(for: window); window.orderOut(nil) }

@@ -9,7 +9,7 @@ import AppKit
 import PCFoundation
 
 /// Select/Unselect group dialog.
-final class SelectUnselectDialog: NSWindowController {
+final class SelectUnselectDialog: ModalWindowController {
     private let logger = PCFoundationLogger.logger
 
     /// Called on OK with the entered mask and the include-directories choice.
@@ -38,6 +38,7 @@ final class SelectUnselectDialog: NSWindowController {
         window.center()
         window.level = .modalPanel
         super.init(window: window)
+        window.delegate = self   // closing the window must end the modal session
         setupDialog()
     }
 
