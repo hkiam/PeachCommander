@@ -54,6 +54,9 @@ ListBackground = #101020
 ListText       = #C0C0D0
 ```
 
+![Peach Commander in einem selbst geschriebenen Thema](screenshots/theme-custom.png)
+*(Abbildung: Ein Thema, geladen aus einer Datei im Themen-Ordner.)*
+
 `Base` wählt die eingebaute Palette (`light` oder `dark`), die alle Farben liefert, die Sie nicht aufführen. Farben sind `#RRGGBB` (oder `#RRGGBBAA` mit Transparenz). Zeilen, die mit `;` oder `#` beginnen, sind Kommentare.
 
 Ist etwas in der Datei falsch, überspringt Peach Commander diese eine Zeile und behält den Rest Ihres Themas — die Datei wird nicht abgewiesen. Der Grund landet im Systemprotokoll, sichtbar in der Konsole, wenn Sie nach `[theme]` filtern.
