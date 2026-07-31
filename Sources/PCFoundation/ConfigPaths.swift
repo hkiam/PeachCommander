@@ -58,6 +58,11 @@ public struct ConfigPaths: Sendable {
         root.appendingPathComponent("keymap-user.ini")
     }
 
+    /// Per-extension formatter tools, one `[ext]` section each (see FormatterConfig).
+    public var formatters: URL {
+        root.appendingPathComponent(FormatterConfig.fileName)
+    }
+
     /// Optional user main-menu override, TC `.mnu` format (F-257). When present it
     /// replaces the built-in command menus.
     public var mainMenu: URL {

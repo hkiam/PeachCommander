@@ -3,7 +3,7 @@
 //
 // An NSTextView-based editor: selection, undo, copy/paste and the system find bar
 // come for free. Adds syntax highlighting (SyntaxHighlighter) applied to the text
-// storage, JSON/XML formatting (StructuredTextFormatter), an encoding picker, and
+// storage, extensible formatting (FormatterRegistry), an encoding picker, and
 // save-with-.bak-backup. Bound to F4 (cm_Edit) in place of the external editor.
 
 import AppKit
@@ -86,8 +86,15 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         saveButton.bezelStyle = .rounded
         saveButton.keyEquivalent = "s"
         saveButton.keyEquivalentModifierMask = .command
-        let formatButton = NSButton(title: String(localized: "Format JSON/XML"), target: self, action: #selector(format))
+        // "Format" without naming formats: what is supported now depends on the built-ins,
+        // the command-line tools installed, plugins and the user's formatters.ini.
+        let formatButton = NSButton(title: String(localized: "Format"), target: self, action: #selector(format))
         formatButton.bezelStyle = .rounded
+        let ext = (path as NSString).pathExtension.lowercased()
+        formatButton.isEnabled = FormatterRegistry.shared.canFormat(extension: ext)
+        formatButton.toolTip = formatButton.isEnabled
+            ? String(localized: "Format this file")
+            : String(localized: "No formatter available for this file type")
         let bracketButton = NSButton(title: "{ }", target: self, action: #selector(docJumpBracket))
         bracketButton.bezelStyle = .rounded
         bracketButton.keyEquivalent = "\\"
@@ -366,7 +373,15 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
 
     @objc private func format() {
         let ext = (path as NSString).pathExtension.lowercased()
-        guard let result = StructuredTextFormatter.autoFormat(textView.string, extension: ext) else {
+        let result: (text: String, formatter: String)
+        do {
+            result = try FormatterRegistry.shared.format(textView.string, extension: ext)
+        } catch let error as FormatError {
+            // The editor writes to disk, so saying why matters even more here than in the
+            // viewer — "Already formatted" must not look like a failed edit.
+            statusLabel.stringValue = error.userMessage
+            NSSound.beep(); return
+        } catch {
             NSSound.beep(); return
         }
         textView.string = result.text

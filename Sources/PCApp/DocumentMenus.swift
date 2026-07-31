@@ -144,7 +144,7 @@ enum DocumentMenus {
         var sepAdded = false
         func sep() { if leadingSeparator, !sepAdded { menu.addItem(.separator()); sepAdded = true } }
         if caps.encoding { sep(); add(menu, String(localized: "Cycle Text Encoding"), DocumentAction.cycleEncoding, target, "e", [.command, .option]) }
-        if caps.format { sep(); add(menu, String(localized: "Format JSON/XML/Code"), DocumentAction.format, target) }
+        if caps.format { sep(); add(menu, String(localized: "Format"), DocumentAction.format, target) }
         if caps.xmlTree { sep(); add(menu, String(localized: "XML Tree"), DocumentAction.xmlTree, target) }
     }
 

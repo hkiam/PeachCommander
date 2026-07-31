@@ -143,6 +143,12 @@ final class ContributionRegistry {
     /// Run a contributed command via its plugin's behavior ABI. Returns false if
     /// no enabled plugin owns it. Pre-resolves async host data (local path,
     /// selection) so the plugin's synchronous callbacks can serve it.
+    /// Every tool contributed by an enabled plugin, in plugin order. Used by
+    /// FormatterSetup to pick out the ones that declare `formatsExtensions`.
+    func allTools() -> [ToolContribution] {
+        order.compactMap { entries[$0]?.contributions.tools }.flatMap { $0 }
+    }
+
     /// Automation tools contributed by loaded plugins, as catalogue entries (KI-06).
     func toolDefinitions() -> [ToolDefinition] {
         order.flatMap { pid -> [ToolDefinition] in
