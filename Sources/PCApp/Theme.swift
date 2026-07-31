@@ -118,11 +118,22 @@ public struct Theme {
 
     /// `system` is not in this list on purpose: it means "follow the appearance", which is the
     /// default and resolves to the untouched light/dark palettes.
-    public static let palettes: [Palette] = [
+    static let builtInPalettes: [Palette] = [
         Palette(id: "light", name: "Light", isDark: false, colors: light, syntax: lightSyntax),
         Palette(id: "dark", name: "Dark", isDark: true, colors: dark, syntax: darkSyntax),
         Palette(id: "norton", name: "Norton Commander", isDark: true, colors: norton, syntax: darkSyntax),
     ]
+
+    /// Themes loaded from the user's `themes/` directory (F-274). Set once at startup by
+    /// `ThemeFile.loadUserPalettes`; empty in tests and until that runs.
+    public static var userPalettes: [Palette] = []
+
+    /// Built-in palettes first, so a user file can never shadow a shipped one — `palette(id:)`
+    /// takes the first match and `ThemeFile` rejects reserved ids outright.
+    public static var palettes: [Palette] { builtInPalettes + userPalettes }
+
+    /// Ids that a user theme file may not claim.
+    public static var reservedPaletteIds: Set<String> { Set(["system"] + builtInPalettes.map(\.id)) }
 
     public static func palette(id: String) -> Palette? { palettes.first { $0.id == id } }
 
@@ -174,44 +185,89 @@ public struct Theme {
 
     /// Colors struct
     public struct Colors {
-        public let windowBackground: NSColor
-        public let listBackground: NSColor
-        public let listText: NSColor
-        public let selectedText: NSColor
-        public let cursorFrame: NSColor
-        public let activePathBarBackground: NSColor
-        public let activePathBarText: NSColor
-        public let inactivePathBarBackground: NSColor
-        public let inactivePathBarText: NSColor
-        public let pathBarBackground: NSColor
-        public let pathBarText: NSColor
-        public let pathBarHoverBackground: NSColor
-        public let pathBarSeparator: NSColor
-        public let pathBarFreeSpaceText: NSColor
-        public let columnSeparator: NSColor
-        public let functionButtonBackground: NSColor
-        public let functionButtonPressed: NSColor
-        public let functionButtonText: NSColor
-        public let statusBarBackground: NSColor
-        public let statusBarText: NSColor
+        // `var`, not `let`: a theme file names the colours it wants and the rest are inherited
+        // from its base palette, which needs a keyed setter (see `setColor`). Nothing mutates
+        // `Theme.current` in place — every assignment goes through a fresh copy.
+        public var windowBackground: NSColor
+        public var listBackground: NSColor
+        public var listText: NSColor
+        public var selectedText: NSColor
+        public var cursorFrame: NSColor
+        public var activePathBarBackground: NSColor
+        public var activePathBarText: NSColor
+        public var inactivePathBarBackground: NSColor
+        public var inactivePathBarText: NSColor
+        public var pathBarBackground: NSColor
+        public var pathBarText: NSColor
+        public var pathBarHoverBackground: NSColor
+        public var pathBarSeparator: NSColor
+        public var pathBarFreeSpaceText: NSColor
+        public var columnSeparator: NSColor
+        public var functionButtonBackground: NSColor
+        public var functionButtonPressed: NSColor
+        public var functionButtonText: NSColor
+        public var statusBarBackground: NSColor
+        public var statusBarText: NSColor
 
         // Panel-drawing colours that used to be hardcoded in PanelCells/DriveBarView. Their
         // defaults below reproduce exactly what was drawn before, so a palette that does not
         // mention them looks unchanged — that is what keeps light/dark pixel-identical.
         /// Zebra striping on alternate rows.
-        public let zebraRow: NSColor
+        public var zebraRow: NSColor
         /// Fill behind a selected row, active and inactive panel.
-        public let selectionFillActive: NSColor
-        public let selectionFillInactive: NSColor
+        public var selectionFillActive: NSColor
+        public var selectionFillInactive: NSColor
         /// Cursor frame in the *active* panel (the inactive one uses `cursorFrame`).
-        public let activeCursorFrame: NSColor
+        public var activeCursorFrame: NSColor
         /// Hairline under the column headers.
-        public let headerSeparator: NSColor
+        public var headerSeparator: NSColor
         /// Drive bar: normal and highlighted button, and their labels.
-        public let driveBarBackground: NSColor
-        public let driveBarHighlight: NSColor
-        public let driveBarText: NSColor
-        public let driveBarHighlightText: NSColor
+        public var driveBarBackground: NSColor
+        public var driveBarHighlight: NSColor
+        public var driveBarText: NSColor
+        public var driveBarHighlightText: NSColor
+
+        /// Set one colour by its declared name, case-insensitively. Returns `false` for an
+        /// unknown name so a theme-file loader can report the typo instead of ignoring it.
+        ///
+        /// A switch rather than reflection: `Mirror` cannot write, and a `KeyPath` table would
+        /// still have to be maintained by hand. `ThemeFile.colorKeys` is generated from this
+        /// switch's cases by a test, so the two cannot drift apart.
+        public mutating func setColor(named name: String, to color: NSColor) -> Bool {
+            switch name.lowercased() {
+            case "windowbackground": windowBackground = color
+            case "listbackground": listBackground = color
+            case "listtext": listText = color
+            case "selectedtext": selectedText = color
+            case "cursorframe": cursorFrame = color
+            case "activepathbarbackground": activePathBarBackground = color
+            case "activepathbartext": activePathBarText = color
+            case "inactivepathbarbackground": inactivePathBarBackground = color
+            case "inactivepathbartext": inactivePathBarText = color
+            case "pathbarbackground": pathBarBackground = color
+            case "pathbartext": pathBarText = color
+            case "pathbarhoverbackground": pathBarHoverBackground = color
+            case "pathbarseparator": pathBarSeparator = color
+            case "pathbarfreespacetext": pathBarFreeSpaceText = color
+            case "columnseparator": columnSeparator = color
+            case "functionbuttonbackground": functionButtonBackground = color
+            case "functionbuttonpressed": functionButtonPressed = color
+            case "functionbuttontext": functionButtonText = color
+            case "statusbarbackground": statusBarBackground = color
+            case "statusbartext": statusBarText = color
+            case "zebrarow": zebraRow = color
+            case "selectionfillactive": selectionFillActive = color
+            case "selectionfillinactive": selectionFillInactive = color
+            case "activecursorframe": activeCursorFrame = color
+            case "headerseparator": headerSeparator = color
+            case "drivebarbackground": driveBarBackground = color
+            case "drivebarhighlight": driveBarHighlight = color
+            case "drivebartext": driveBarText = color
+            case "drivebarhighlighttext": driveBarHighlightText = color
+            default: return false
+            }
+            return true
+        }
 
         public init(
             windowBackground: NSColor,
