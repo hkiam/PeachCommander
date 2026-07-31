@@ -3588,9 +3588,15 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             guard let self else { return }
             self.rebuildMainMenu()
             ViewContainerRegistry.shared.refresh(host: self)
+            // Plugins can be enabled/disabled at runtime, so the formatters they
+            // contribute are rebuilt with the rest of their contributions.
+            FormatterSetup.refreshPluginFormatters(host: self)
         }
         rebuildMainMenu()
         ViewContainerRegistry.shared.refresh(host: self)
+        FormatterSetup.refreshUserFormatters(configRoot: configPaths.root)
+        FormatterSetup.ensureTemplate(at: configPaths.formatters)
+        FormatterSetup.refreshPluginFormatters(host: self)
         // Swap the whole bar when a tool window / the main window becomes key so tool
         // windows get a minimal, content-specific menu (TODOS: minimal tool menus).
         NotificationCenter.default.addObserver(self, selector: #selector(keyWindowChangedForMenu(_:)),

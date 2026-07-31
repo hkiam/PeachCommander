@@ -85,8 +85,21 @@ public struct ToolContribution: Sendable, Equatable {
     public let description: String
     public let capability: String   // read|navigate|write|delete|config|runCommand|network
     public let params: [ToolParamSpec]
-    public init(name: String, description: String, capability: String, params: [ToolParamSpec]) {
-        self.name = name; self.description = description; self.capability = capability; self.params = params
+    /// Lowercased file extensions this tool formats, from the manifest's
+    /// `formatsExtensions`. Non-empty means the host also offers it as a text formatter
+    /// (PluginTextFormatter), invoked with `{"text": …, "extension": …}` and expected to
+    /// return the formatted text. Empty for an ordinary assistant tool.
+    ///
+    /// Reuses the existing tool ABI on purpose: a formatter is just a tool with a declared
+    /// input/output contract, so a plugin needs no second entry point and the host no second
+    /// invocation path.
+    public let formatsExtensions: [String]
+
+    public init(name: String, description: String, capability: String, params: [ToolParamSpec],
+                formatsExtensions: [String] = []) {
+        self.name = name; self.description = description; self.capability = capability
+        self.params = params
+        self.formatsExtensions = formatsExtensions.map { $0.lowercased() }
     }
 }
 
@@ -198,8 +211,10 @@ public enum ContributionParser {
                                      description: str(p, "description") ?? "",
                                      required: (p["required"] as? Bool) ?? true)
             }
+            let formats = (d["formatsExtensions"] as? [String] ?? []).map { $0.lowercased() }
             c.tools.append(ToolContribution(name: name, description: str(d, "description") ?? "",
-                                            capability: str(d, "capability") ?? "read", params: params))
+                                            capability: str(d, "capability") ?? "read", params: params,
+                                            formatsExtensions: formats))
         }
         for d in arr("keybindings") {
             guard let command = str(d, "command"), let key = str(d, "key") else {

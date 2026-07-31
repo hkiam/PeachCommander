@@ -140,6 +140,10 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     private var textEncoding: TextEncodingChoice?
     /// True when the text view is showing pretty-printed JSON/XML.
     private var isFormatted = false
+    /// Which formatter produced the current output, shown in the status line. Worth
+    /// surfacing because the winning formatter depends on what is installed and
+    /// configured — otherwise "formatted" would look inconsistent between machines.
+    private var formatterUsed: String?
     /// Parsed XML tree + its outline data source, for the collapsible tree mode.
     private var xmlRoot: XMLTreeNode?
     private var xmlOutline: XMLOutlineController?
@@ -557,6 +561,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         teardownPlugin()
         teardownMedia()
         isFormatted = false
+        formatterUsed = nil
 
         if mode == .plugin {
             if embedPlugin(for: path, slice: slice) {
@@ -855,7 +860,13 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         switch mode {
         case .text:
             let enc = textEncoding?.displayName ?? String(localized: "auto")
-            let fmt = isFormatted ? " · \(String(localized: "formatted"))" : ""
+            let fmt: String
+            if isFormatted {
+                let via = formatterUsed.map { " (\($0))" } ?? ""
+                fmt = " · \(String(localized: "formatted"))\(via)"
+            } else {
+                fmt = ""
+            }
             modeName = "\(String(localized: "Text")) · \(enc)\(fmt)"
         case .hex: modeName = "\(String(localized: "Hex")) · \(hexBytesPerRow)/line"   // F-111
         case .binary: modeName = "\(String(localized: "Binary")) · \(binaryColumns)/line"
@@ -1249,20 +1260,23 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         guard let slice, mode == .text || mode == .code else { return }
         let text = decodedText(slice)
         let ext = (files[index] as NSString).pathExtension.lowercased()
-        guard let result = StructuredTextFormatter.autoFormat(text, extension: ext) else {
-            NSSound.beep()   // not valid JSON/XML, or YAML with nothing to tidy
+        let result: (text: String, formatter: String)
+        do {
+            result = try FormatterRegistry.shared.format(text, extension: ext)
+        } catch let error as FormatError {
+            // Say *why* rather than just beeping: "jq is not installed" and
+            // "Not valid JSON" are very different problems for the user.
+            statusLabel.stringValue = error.userMessage
+            NSSound.beep()
+            return
+        } catch {
+            NSSound.beep()
             return
         }
-        // Keep syntax highlighting on the formatted output: render it in the code view
-        // with the matching language (JSON → JS lexer, XML → XML lexer, YAML → YAML lexer).
-        let highlightExt: String
-        switch result.kind {
-        case "XML": highlightExt = "xml"
-        case "YAML": highlightExt = "yml"
-        default: highlightExt = "json"
-        }
+        // Highlight by the file's own extension, not by whichever formatter ran — a .yml
+        // formatted by yq is still YAML.
         let view: NSView
-        if let language = SyntaxHighlighter.language(forExtension: highlightExt) {
+        if let language = SyntaxHighlighter.language(forExtension: ext) {
             view = CodeListerView(text: result.text, language: language)
         } else {
             view = TextListerView(string: result.text)
@@ -1270,6 +1284,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         scrollView.documentView = view
         contentView = view
         isFormatted = true
+        formatterUsed = result.formatter
         updateStatus()
     }
 
@@ -2040,6 +2055,10 @@ extension ListerWindowController: WindowContextMenuProviding {
 
     /// Text transformations need real text storage in a text/code representation.
     private var canTransformText: Bool { mode == .text || mode == .code }
+    /// Lowercased extension of the file on screen.
+    private var currentExtension: String {
+        files.indices.contains(index) ? (files[index] as NSString).pathExtension.lowercased() : ""
+    }
     /// Occurrence marking needs one of the two mark backends.
     private var canMark: Bool { hasMarkBackend }
     /// Copy takes the whole text of the displayed view, or forwards the standard
@@ -2065,8 +2084,12 @@ extension ListerWindowController: WindowContextMenuProviding {
     /// Whether `selector` can do anything in the representation on screen.
     fileprivate func supportsAction(_ selector: Selector) -> Bool {
         switch selector {
-        case DocumentAction.format, DocumentAction.xmlTree, DocumentAction.xpath,
-             DocumentAction.cycleEncoding:
+        case DocumentAction.format:
+            // Text representation *and* something that can format this extension: the set of
+            // formats is open-ended now (built-ins, installed tools, plugins, user config),
+            // so the registry is the only thing that knows.
+            return canTransformText && FormatterRegistry.shared.canFormat(extension: currentExtension)
+        case DocumentAction.xmlTree, DocumentAction.xpath, DocumentAction.cycleEncoding:
             return canTransformText
         case DocumentAction.markAll, DocumentAction.count,
              DocumentAction.clearAllMarks, DocumentAction.toggleMarksPanel:
