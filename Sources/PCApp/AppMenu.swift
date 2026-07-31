@@ -296,31 +296,36 @@ enum AppMenu {
         main.addItem(configItem)
         let configMenu = NSMenu(title: String(localized: "Configuration"))
         configItem.submenu = configMenu
-        configMenu.addItem(command(String(localized: "Options…"), cmd: "cm_Options",
+        // Settings live in exactly one place — this opens the same window the app menu's
+        // ⌘, does. It used to be labelled "Options…" here while the app menu called the
+        // *same command* "Settings…", so one feature looked like two.
+        configMenu.addItem(command(String(localized: "Settings…"), cmd: "cm_Options",
+                                   key: ",", mask: .command, target: target, action: commandAction))
+        configMenu.addItem(.separator())
+        // Below: tools with their own windows, not preferences. Labelled exactly like the
+        // buttons in the Settings panes that open the same windows ("Manage Plugins…",
+        // "Edit Shortcuts…"), so the same wording always means the same destination
+        // instead of reading like a second, competing feature.
+        configMenu.addItem(command(String(localized: "Manage Plugins…"), cmd: "cm_ConfigPlugins",
+                                   key: "", mask: [], target: target, action: commandAction))
+        configMenu.addItem(command(String(localized: "Edit Shortcuts…"), cmd: "cm_ConfigKeys",
                                    key: "", mask: [], target: target, action: commandAction))
         configMenu.addItem(command(String(localized: "Customize Toolbar…"), cmd: "cm_ConfigButtonBar",
                                    key: "", mask: [], target: target, action: commandAction))
-        configMenu.addItem(command(String(localized: "Command Browser…"), cmd: "cm_CommandBrowser",
-                                   key: "", mask: [], target: target, action: commandAction))
-        configMenu.addItem(command(String(localized: "Keyboard Shortcuts…"), cmd: "cm_ConfigKeys",
-                                   key: "", mask: [], target: target, action: commandAction))
-        configMenu.addItem(command(String(localized: "Plugins…"), cmd: "cm_ConfigPlugins",
-                                   key: "", mask: [], target: target, action: commandAction))
         configMenu.addItem(command(String(localized: "Columns…"), cmd: "cm_ConfigColumns",
                                    key: "", mask: [], target: target, action: commandAction))
+        configMenu.addItem(command(String(localized: "Command Browser…"), cmd: "cm_CommandBrowser",
+                                   key: "", mask: [], target: target, action: commandAction))
+        configMenu.addItem(.separator())
+        // One-off actions, kept apart from the everyday tools above.
         configMenu.addItem(command(String(localized: "Import wincmd.ini…"), cmd: "cm_ImportWincmd",
                                    key: "", mask: [], target: target, action: commandAction))
         configMenu.addItem(command(String(localized: "Edit Menu File…"), cmd: "cm_ConfigMainMenu",
                                    key: "", mask: [], target: target, action: commandAction))
-        configMenu.addItem(.separator())
-        let schemeItem = NSMenuItem(title: String(localized: "Keyboard Scheme"), action: nil, keyEquivalent: "")
-        let schemeMenu = NSMenu(title: String(localized: "Keyboard Scheme"))
-        schemeItem.submenu = schemeMenu
-        schemeMenu.addItem(command(String(localized: "TC Classic"), cmd: "cm_ConfigKeyClassic",
-                                   key: "", mask: [], target: target, action: commandAction))
-        schemeMenu.addItem(command(String(localized: "macOS Native"), cmd: "cm_ConfigKeyMacOS",
-                                   key: "", mask: [], target: target, action: commandAction))
-        configMenu.addItem(schemeItem)
+        // The "Keyboard Scheme" submenu is gone: picking a scheme is a preference and it
+        // already lives in Settings ▸ Keys, right above "Edit Shortcuts…" where the two
+        // belong together. cm_ConfigKeyClassic / cm_ConfigKeyMacOS remain as commands, so
+        // the button bar, the command browser and any keymap binding still reach them.
 
         // Start menu (user commands, I13 §4). Populated dynamically by the window
         // controller; the "Change Start Menu…" item is always the last entry.

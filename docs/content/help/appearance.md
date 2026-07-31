@@ -10,7 +10,7 @@ Peach Commander can match the look of the rest of your Mac or take on a style of
 
 ## Set light, dark, or system appearance
 
-1. Open the settings window by choosing Configuration > Options…, or press Cmd+,.
+1. Open the settings window by pressing Cmd+, (or Configuration > Settings…).
 2. Select the **Colors** page.
 3. From the **Appearance** menu, choose one of:
    - **System (follow macOS)** — matches your Mac's current light/dark setting automatically.
@@ -33,7 +33,7 @@ Leave a checkbox off to keep the built-in color for that element. Click **Reset 
 
 ## Color files by type
 
-1. Open Configuration > Options… and select the **Display** page.
+1. Open Settings (Cmd+,) and select the **Display** page.
 2. Click **File-Type Colors…**.
 3. Add a rule with a name mask such as `*.zip` or `*.txt`, then pick a color for files that match it.
 4. Use **Add Rule** for more masks; click **Done** to save or **Cancel** to discard.

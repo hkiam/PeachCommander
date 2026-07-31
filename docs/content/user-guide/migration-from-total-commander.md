@@ -20,7 +20,7 @@ Peach Commander ships with two keyboard layouts. Pick the one that matches how y
 To switch:
 
 1. Open the **Configuration** menu.
-2. Choose **Keyboard Scheme**.
+2. Open **Settings** (Cmd+,) and pick the **Keys** page.
 3. Select **TC Classic**.
 
 That single choice restores the function-key commands you have been pressing for years. For the full list of keys in each scheme, see [Keyboard shortcuts](keyboard-shortcuts.md).
