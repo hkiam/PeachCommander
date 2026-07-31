@@ -447,6 +447,17 @@ public final class SettingsWindowController: NSWindowController {
         selectPage(.layout)
     }
 
+    /// Re-apply the theme to the surfaces this window colours itself (F-339).
+    ///
+    /// Derived from `Theme.current` every time rather than remembering a previous value, which is
+    /// what makes switching back to the default correct: the source list simply gets whatever the
+    /// default palette says, exactly as it would on a fresh window.
+    public func applyTheme() {
+        sourceList.backgroundColor = Theme.current.listBackground
+        sourceList.enclosingScrollView?.backgroundColor = Theme.current.listBackground
+        sourceList.reloadData()
+    }
+
     private func setupSourceList(in parent: NSView) {
         sourceList.headerView = nil
         sourceList.rowHeight = Metrics.rowHeight + 4
@@ -1369,15 +1380,21 @@ extension SettingsWindowController: NSMenuDelegate {
         let idx = themePopup.indexOfSelectedItem
         let selectedId = values.indices.contains(idx) ? values[idx] : "system"
 
-        ThemeFile.loadUserPalettes(from: directory)
-
-        // Re-apply if the *selected* theme is one of the user's: they may have just edited its
-        // colours, and reloading the palette alone would not repaint anything. Built-ins cannot
-        // change, so this stays quiet in the common case. Items added with a nil action still
-        // trigger the popup's own action on selection.
-        if Theme.userPalettes.contains(where: { $0.id == selectedId }) {
-            onSetString("Colors.Theme", selectedId)
+        // Compare the selected palette's colours across the reload, so a re-apply happens only when
+        // the file genuinely changed. Re-applying unconditionally wrote the config and repainted
+        // every panel, window and plugin on *every* opening of this menu.
+        func colours(of id: String) -> [String: String]? {
+            Theme.userPalettes.first { $0.id == id }
+                .map { Theme.pluginContextValues(colors: $0.colors, isDark: $0.isDark, themeId: $0.id) }
         }
+        let before = colours(of: selectedId)
+        ThemeFile.loadUserPalettes(from: directory)
+        let after = colours(of: selectedId)
+
+        // Built-in palettes cannot change, so this only ever fires for the user's own themes —
+        // exactly the "I edited my theme, show me" case. Items added with a nil action still trigger
+        // the popup's own action on selection.
+        if before != after { onSetString("Colors.Theme", selectedId) }
 
         let names = Self.themeNames()
         guard names != menu.items.map(\.title) else { return }   // nothing changed, leave it alone

@@ -629,6 +629,24 @@ features:
       against an older host is unchanged. Adopted by the three sidebar views (Treemap disk map,
       Notes, AI chat); titlebar and settings panes stay macOS chrome on purpose.
 
+  - id: themed-dialogs
+    name: Eigene Fenster folgen dem Farbthema
+    name_en: The app's own windows follow the colour theme
+    category: customization
+    audiences: [user]
+    status: stable
+    source: { modules: [PCApp], types: [ThemedWindows] }
+    documentation: { integrated_help: true, website: false }
+    notes: >-
+      A named palette now also decides the base appearance (NSApp.appearance), so dialogs, sheets
+      and scrollers match it instead of staying light. ThemedWindows paints the background of the
+      app's own windows from one central sweep plus NSWindow.didBecomeKeyNotification for windows
+      opened later. Eligibility is by exact window class (which excludes every AppKit panel,
+      including the one behind NSAlert) plus a view-tree check that excludes plugin-owned windows —
+      those get PcNotifyThemeChanged instead. Inner surfaces stay with their own window's
+      applyTheme(), which re-derives from Theme.current; a central retint could not be undone
+      soundly. No-op unless a palette is selected, so the default appearance is untouched.
+
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
     name: Einstellungen (15 Seiten)

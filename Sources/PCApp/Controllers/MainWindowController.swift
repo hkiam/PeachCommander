@@ -485,6 +485,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         DistributedNotificationCenter.default().addObserver(
             self, selector: #selector(systemAppearanceChanged),
             name: NSNotification.Name("AppleInterfaceThemeChangedNotification"), object: nil)
+        // Most dialogs are created long after the theme was applied, so painting only the windows
+        // that exist now would miss nearly all of them (F-339).
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(windowBecameKey(_:)),
+            name: NSWindow.didBecomeKeyNotification, object: nil)
         let mouseMode = await mainConfig.string("Operation", "MouseMode", default: "left")
         leftPanelController?.setMouseMode(mouseMode)
         rightPanelController?.setMouseMode(mouseMode)
@@ -3287,6 +3292,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// For "system" the app appearance is left to follow the OS and our custom
     /// Theme palette is derived from the current effective appearance; a system
     /// dark-mode toggle is observed and re-applied (see systemAppearanceChanged).
+    @objc private func windowBecameKey(_ note: Notification) {
+        guard let opened = note.object as? NSWindow else { return }
+        ThemedWindows.applyOnOpen(opened, themeId: themeId, mainWindow: window)
+    }
+
     /// Whether the UI is dark right now: the palette's own base if a theme is selected, otherwise
     /// the Appearance setting, otherwise the OS. Shared so the plugin context and the panels can
     /// never disagree about it.
@@ -3297,22 +3307,31 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     private func applyAppearance(_ value: String) {
         appearanceSetting = value
+        let isDark = Self.appearanceIsDark(themeId: themeId, setting: value)
         let named: NSAppearance.Name?
-        switch value {
-        case "dark": named = .darkAqua
-        case "light": named = .aqua
-        default: named = nil   // system
+        if Theme.palette(id: themeId) != nil {
+            // A named palette decides the base appearance, not just the panel colours. Without
+            // this a dark-based palette like Norton left every dialog, sheet and scroller in light
+            // aqua — a white Settings window against CGA-blue panels. Deriving it from the palette
+            // is what the comment here always claimed and the code never did.
+            named = isDark ? .darkAqua : .aqua
+        } else {
+            // No palette: exactly the pre-theme behaviour, including nil = follow the OS.
+            switch value {
+            case "dark": named = .darkAqua
+            case "light": named = .aqua
+            default: named = nil   // system
+            }
         }
         let appAppearance = named.map { NSAppearance(named: $0) } ?? nil
         NSApp.appearance = appAppearance     // nil = follow the OS
         window?.appearance = appAppearance
-        // A named palette decides its own light/dark base, so system controls, sheets and
-        // scrollers match it. With "system" this resolves to the untouched light/dark pair and
-        // the two lines below behave exactly as they did before themes existed.
-        let isDark = Self.appearanceIsDark(themeId: themeId, setting: value)
         let resolved = Theme.resolve(themeId: themeId, isDark: isDark)
         Theme.current = resolved.colors.applying(Theme.customColors)   // F-272
         Theme.currentSyntax = resolved.syntax
+        // Rebuilt here, and only here: the one place the theme can change (F-338).
+        Theme.pluginContext = Theme.pluginContextValues(colors: Theme.current, isDark: isDark,
+                                                       themeId: themeId)
         window?.backgroundColor = Theme.current.windowBackground
         leftPanelController?.applyAppearance()
         rightPanelController?.applyAppearance()
@@ -3325,6 +3344,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // the broadcast. Both are no-ops for plugins that do not implement them.
         ViewContainerRegistry.shared.notifyViews(key: "theme", value: themeId)
         ContributionRegistry.shared.notifyThemeChanged()
+        // The app's own dialogs (F-339). No-op unless a named palette is selected.
+        ThemedWindows.apply(themeId: themeId, mainWindow: window)
+        // Windows that colour surfaces of their own re-derive them; ThemedWindows only owns the
+        // window background, because restoring an inner surface from a remembered value is unsound.
+        settingsWindow?.applyTheme()
         // One line per theme change. Cheap, and it answers "which theme is this user actually on,
         // and did it resolve?" — which is otherwise invisible, since a bad id falls back silently.
         logger.info("Theme applied: id=\(self.themeId, privacy: .public), appearance=\(value, privacy: .public), dark=\(isDark), background=\(Theme.pluginHex(Theme.current.listBackground), privacy: .public)")
@@ -6044,13 +6068,20 @@ extension MainWindowController: ContributionHost {
         context.set("AI.CloudBaseURL", cachedCloudBase)
         context.set("AI.CloudModel", cachedCloudModel)
         // Theme colours, so a plugin's own views can match the host (F-338). Pure addition: a
-        // plugin that reads none of these keys behaves exactly as before.
-        for (key, value) in Theme.pluginContextValues(colors: Theme.current,
-                                                     isDark: Self.appearanceIsDark(themeId: themeId,
-                                                                                   setting: appearanceSetting),
-                                                     themeId: themeId) {
-            context.set(key, value)
+        // plugin that reads none of these keys behaves exactly as before. Read from the cache —
+        // this function runs on every keystroke and every menu validation.
+        //
+        // Filled on demand if applyAppearance has not run yet: plugins are loaded before the config
+        // is read, so an early context query would otherwise be answered with no theme at all and a
+        // plugin would see "this host does not support themes". The dictionary always has entries
+        // once built, so empty is an unambiguous "not computed yet".
+        if Theme.pluginContext.isEmpty {
+            Theme.pluginContext = Theme.pluginContextValues(
+                colors: Theme.current,
+                isDark: Self.appearanceIsDark(themeId: themeId, setting: appearanceSetting),
+                themeId: themeId)
         }
+        for (key, value) in Theme.pluginContext { context.set(key, value) }
     }
 
     /// Long-term AI memory file (under the config root, beside the chat sessions).
