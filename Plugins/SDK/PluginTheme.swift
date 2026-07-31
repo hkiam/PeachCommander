@@ -106,7 +106,9 @@ struct PluginTheme {
         accent = color("theme.accent", .controlAccentColor)
         separator = color("theme.separator", .separatorColor)
         selectionBackground = color("theme.selectionBackground", .selectedContentBackgroundColor)
-        selectionText = color("theme.selectionText", .selectedMenuItemTextColor)
+        // alternateSelectedControlTextColor is AppKit's "text on a selected control background";
+        // selectedMenuItemTextColor is a menu-specific colour and was the wrong role here.
+        selectionText = color("theme.selectionText", .alternateSelectedControlTextColor)
         markedText = color("theme.markedText", .systemRed)
         controlBackground = color("theme.controlBackground", .controlColor)
         controlText = color("theme.controlText", .labelColor)

@@ -432,6 +432,14 @@ public struct Theme {
     ///
     /// A plugin that reads none of these is unaffected: the host simply answers keys nobody asks
     /// about. That is what makes this a pure addition rather than an ABI change.
+    /// The current theme's plugin keys, rebuilt only when the theme changes.
+    ///
+    /// Not a convenience: `contribContextValue` builds the *whole* contribution context to answer a
+    /// single key, and the context is built on every keystroke for keybinding lookup and on every
+    /// menu validation. Computing this dictionary there — a Mirror pass over 30 fields plus 42 hex
+    /// formats — put all of that on the key-handling path. Set by `applyAppearance`.
+    nonisolated(unsafe) public static var pluginContext: [String: String] = [:]
+
     public static func pluginContextValues(colors: Colors, isDark: Bool, themeId: String) -> [String: String] {
         var v: [String: String] = [
             "theme.id": themeId,

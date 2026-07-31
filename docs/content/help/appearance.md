@@ -98,6 +98,7 @@ On the **Display** page you can also:
 ## Notes
 
 - The Appearance menu only applies while the Theme is **System (default)**; a theme decides its own base.
+- A theme also colours the app's own dialogs. System dialogs — Open, Save, the colour and font pickers, and alerts — keep their standard look, and so do windows that plugins open themselves.
 - The Appearance setting styles the file panels. System dialogs, alerts, and standard controls always follow macOS.
 - The built-in file viewer uses matching light and dark syntax-highlighting palettes, so highlighted code stays readable in either appearance.
 - Custom colors and file-type rules are saved with your settings and reapplied every time you open the app.
