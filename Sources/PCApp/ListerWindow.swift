@@ -1249,14 +1249,20 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         guard let slice, mode == .text || mode == .code else { return }
         let text = decodedText(slice)
         let ext = (files[index] as NSString).pathExtension.lowercased()
-        guard let result = StructuredTextFormatter.autoFormat(text, preferXML: ext == "xml") else {
-            NSSound.beep()   // not valid JSON/XML
+        guard let result = StructuredTextFormatter.autoFormat(text, extension: ext) else {
+            NSSound.beep()   // not valid JSON/XML, or YAML with nothing to tidy
             return
         }
         // Keep syntax highlighting on the formatted output: render it in the code view
-        // with the matching language (JSON → JS lexer, XML → XML lexer).
+        // with the matching language (JSON → JS lexer, XML → XML lexer, YAML → YAML lexer).
+        let highlightExt: String
+        switch result.kind {
+        case "XML": highlightExt = "xml"
+        case "YAML": highlightExt = "yml"
+        default: highlightExt = "json"
+        }
         let view: NSView
-        if let language = SyntaxHighlighter.language(forExtension: result.kind == "XML" ? "xml" : "json") {
+        if let language = SyntaxHighlighter.language(forExtension: highlightExt) {
             view = CodeListerView(text: result.text, language: language)
         } else {
             view = TextListerView(string: result.text)
