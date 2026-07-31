@@ -988,6 +988,34 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     }
 
     /// Copy the full text of the current text/code view to the clipboard.
+    /// Copy from the rendered page, matching what the other representations do: the
+    /// selection if there is one, otherwise everything.
+    ///
+    /// The queries run in an **isolated** content world, so the page's own JavaScript
+    /// stays disabled (`allowsContentJavaScript = false` — a previewed page must not run
+    /// active content) while the host can still read what is rendered.
+    private func copyFromWeb(_ web: ListerWebView) {
+        web.evaluateJavaScript("window.getSelection().toString()", in: nil, in: .defaultClient) { result in
+            let selection = ((try? result.get()) as? String) ?? ""
+            if !selection.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                // Hand it to WebKit rather than setting the string ourselves, so the
+                // clipboard keeps the rich flavours its own context menu provides.
+                NSApp.sendAction(Selector(("copy:")), to: web, from: nil)
+                return
+            }
+            // Nothing selected → the whole rendered text, as plain text (which is all the
+            // other representations offer anyway).
+            web.evaluateJavaScript("document.body.innerText", in: nil, in: .defaultClient) { textResult in
+                guard let text = (try? textResult.get()) as? String,
+                      !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    NSSound.beep(); return
+                }
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(text, forType: .string)
+            }
+        }
+    }
+
     private func copyAll() {
         // Rendered pages: hand the standard editing action to WebKit, which copies the
         // selection exactly as its own context menu does.
@@ -997,7 +1025,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         // responder chain — so the key never reached the web view. That is why copying
         // worked from WebKit's own context menu but not from the keyboard.
         if mode == .web, let web = webView, !web.isHidden {
-            NSApp.sendAction(Selector(("copy:")), to: web, from: nil)
+            copyFromWeb(web)
             return
         }
         // Same situation for an embedded plugin view: guarded on responds(to:), so a
@@ -1091,6 +1119,14 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             if event.keyCode == 53 { window?.close(); return true }
             return false
         }
+        // Never claim a ⌘ shortcut. Every binding below is a bare letter or function
+        // key matched by keyCode alone, so without this guard each one also swallowed
+        // its Command variant: ⌘A reloaded in auto mode instead of selecting all,
+        // ⌘M marked occurrences instead of minimising, ⌘P stepped to the next file
+        // instead of printing, ⌘E cycled the encoding, ⌘1…⌘7 switched representation.
+        // Those belong to the menus and to standard editing, so let them through.
+        if event.modifierFlags.contains(.command) { return false }
+
         let ctrl = event.modifierFlags.contains(.control)
         let shift = event.modifierFlags.contains(.shift)
         switch event.keyCode {
@@ -2061,6 +2097,13 @@ extension ListerWindowController: WindowContextMenuProviding {
     func makeEditMenu() -> NSMenu {
         let menu = NSMenu(title: String(localized: "Edit"))
         AppMenu.editItem(menu, String(localized: "Copy"), action: DocumentAction.copy, target: self, key: "c")
+        // target: nil routes selectAll: through the responder chain, so WebKit selects
+        // the rendered page and an NSTextView selects its text — each doing the right
+        // thing natively. AppKit also greys the item out for the custom lister views,
+        // which do not implement it. Listed explicitly so ⌘A is discoverable, and so it
+        // is a menu key equivalent rather than something the key handler has to know.
+        AppMenu.editItem(menu, String(localized: "Select All"), action: Selector(("selectAll:")),
+                         target: nil, key: "a")
         return menu
     }
 
