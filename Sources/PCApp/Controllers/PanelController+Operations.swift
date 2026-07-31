@@ -83,10 +83,62 @@ extension PanelController {
     /// then added — so this covers both local→archive (F-133) and archive→archive
     /// (F-139). The archive is rewritten via ArchiveEditor.add (zip only).
     func copyInto(archiveZip: String, subPath: String) async {
+        await addToArchive(archiveZip: archiveZip, subPath: subPath, removingSources: false)
+    }
+
+    /// Move the selection INTO the archive: the same add, then the sources go to the Trash
+    /// once the archive has actually been rewritten (F-133/F-139).
+    ///
+    /// Before this existed, F6 onto an archive panel fell through to an ordinary move whose
+    /// destination was the panel's path *inside* the zip — so it did not add to the archive
+    /// at all and wrote to a bogus location.
+    func moveInto(archiveZip: String, subPath: String) async {
+        await addToArchive(archiveZip: archiveZip, subPath: subPath, removingSources: true)
+    }
+
+    /// Shared implementation for copy/move into a rewritable archive.
+    ///
+    /// Prompts first, like every other copy target. The archive path used to be taken
+    /// straight from the target panel with no dialog at all, so the operation ran
+    /// immediately and the entry name could not be changed — for a single item the prompt is
+    /// therefore seeded with the full path *including* the name, which is what makes
+    /// renaming on the way in possible.
+    private func addToArchive(archiveZip: String, subPath: String, removingSources: Bool) async {
         let items = await selectedOrCursorPaths()
         guard !items.isEmpty else { return }
         let sub = subPath.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        func arc(for name: String) -> String { sub.isEmpty ? name : sub + "/" + name }
+
+        // Seed: "sub/name" for one item (name editable), "sub/" for several (a target folder).
+        let single = items.count == 1 ? (items[0] as NSString).lastPathComponent : nil
+        var initial = sub
+        if let single { initial = sub.isEmpty ? single : sub + "/" + single }
+        else if !sub.isEmpty { initial = sub + "/" }
+
+        let archiveName = (archiveZip as NSString).lastPathComponent
+        let title = removingSources
+            ? String(localized: "Move into \(archiveName)")
+            : String(localized: "Copy into \(archiveName)")
+        // No background option: the archive is rewritten in one synchronous pass.
+        guard let (raw, _, _, _) = promptTarget(title: title, count: items.count,
+                                               initial: initial, allowBackground: false) else { return }
+
+        let entered = raw.trimmingCharacters(in: CharacterSet(charactersIn: " /"))
+        // One item: the whole entry path was editable, so use it verbatim unless the user
+        // ended it with "/" to mean "into this folder, keep the name".
+        let targetDir: String
+        let renamedTo: String?
+        if single != nil && !raw.hasSuffix("/") {
+            targetDir = (entered as NSString).deletingLastPathComponent
+            let base = (entered as NSString).lastPathComponent
+            renamedTo = base.isEmpty ? nil : base
+        } else {
+            targetDir = entered
+            renamedTo = nil
+        }
+        func arc(for name: String) -> String {
+            let leaf = renamedTo ?? name
+            return targetDir.isEmpty ? leaf : targetDir + "/" + leaf
+        }
 
         var entries: [(localPath: String, arcPath: String)] = []
         var tempDir: URL?
@@ -104,12 +156,26 @@ extension PanelController {
             for item in items { entries.append((item, arc(for: (item as NSString).lastPathComponent))) }
         }
 
+        var added = false
         do {
             try ArchiveEditor.add(to: URL(fileURLWithPath: archiveZip), entries: entries)
+            added = true
         } catch {
-            presentError(String(localized: "Copy into Archive"), detail: "\(error)")
+            presentError(title, detail: "\(error)")
         }
         if let tempDir { try? FileManager.default.removeItem(at: tempDir) }
+
+        // Sources go only after the archive was actually rewritten — a failed add must never
+        // cost the originals. To the Trash rather than unlinked, so a mistaken F6 into an
+        // archive stays recoverable.
+        guard removingSources, added else { return }
+        if isInArchive {
+            // Archive → archive: remove the entries from the *source* zip.
+            await deleteInArchive(items)
+        } else {
+            await runTransfer(.trash(items: items), title: String(localized: "Moving to Trash"))
+            registerUndo(label: String(localized: "Move"), undoMove: items, at: archiveZip)
+        }
     }
 
     /// After a foreground copy, verify each copied file against its source by
