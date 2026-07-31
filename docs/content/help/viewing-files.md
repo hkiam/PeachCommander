@@ -53,4 +53,6 @@ For a fast full-screen preview handled by macOS itself, press Cmd+Y (Quick Look)
 - The viewer is read-only. To change a file, use the editor instead (see Editing files).
 - Very large files open without delay: text opens a fast, scrollable view and the hex view streams straight from disk at any size.
 - Press F3 on a folder to see a summary of its contents and total size instead of file bytes.
-- The Rendered mode displays formatted content such as web pages; hex mode shows the raw bytes side by side with their characters, which is handy for inspecting binary files.
+- The Rendered mode displays formatted content such as web pages and Markdown; hex mode shows the raw bytes side by side with their characters, which is handy for inspecting binary files.
+- In Rendered mode you can select text and copy it, and Find searches the rendered page. Buttons that cannot apply to a rendered page — Format, Encoding, Mark All, Marks and Go To — are greyed out rather than doing nothing.
+- The Format button re-indents structured files (JSON, XML, HTML, INI, YAML, and more when you have the matching command-line tool installed). It is described in full under [Editing files](editing-files.md#formatting-a-file), and works the same way here.
