@@ -80,6 +80,21 @@ final class PFXFileSystemTests: XCTestCase {
         return all
     }
 
+    /// Wait until the plugin reports no live `PfxFindFirst` handles.
+    ///
+    /// `SampleFsOpenFinds` counts *live* handles, and PFXFileSystem enumerates on a
+    /// background queue, closing the handle from the stream's `onTermination` — so
+    /// the close can land after `collect` has already returned. Asserting the count
+    /// immediately therefore fails intermittently and looks like a leak that isn't
+    /// one. Poll instead of sleeping a fixed amount: fast in the normal case, still
+    /// bounded if the handle really does leak.
+    private func waitForNoOpenHandles(timeout ticks: Int = 200) async throws {
+        var waited = 0
+        while hook("SampleFsOpenFinds") != 0, waited < ticks {
+            try await Task.sleep(nanoseconds: 5_000_000); waited += 1
+        }
+    }
+
     // MARK: - Tests
 
     func test_list_root_returnsEntries_filteringDotDirs() async throws {
@@ -120,7 +135,8 @@ final class PFXFileSystemTests: XCTestCase {
         let fs = makeFS()
         let entries = try await collect(fs, "/empty")
         XCTAssertTrue(entries.isEmpty, "empty dir should list nothing: \(entries.map(\.name))")
-        XCTAssertEqual(hook("SampleFsOpenFinds"), 0)
+        try await waitForNoOpenHandles()
+        XCTAssertEqual(hook("SampleFsOpenFinds"), 0, "listing an empty dir leaked its find handle")
     }
 
     func test_missingDirectory_throwsNotFound() async throws {
@@ -145,10 +161,7 @@ final class PFXFileSystemTests: XCTestCase {
         }
         XCTAssertGreaterThan(first, 0)
         // The handle should be closed and enumeration must not have run to the end.
-        var waited = 0
-        while hook("SampleFsOpenFinds") != 0, waited < 200 {
-            try await Task.sleep(nanoseconds: 5_000_000); waited += 1
-        }
+        try await waitForNoOpenHandles()
         XCTAssertEqual(hook("SampleFsOpenFinds"), 0, "cancelled listing leaked its find handle")
         XCTAssertLessThan(hook("SampleFsFindNextCalls"), 1000, "enumeration did not stop early on cancel")
     }
