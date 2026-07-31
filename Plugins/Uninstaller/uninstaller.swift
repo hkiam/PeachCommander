@@ -593,6 +593,14 @@ final class InstalledAppsPicker: NSObject, NSTableViewDataSource, NSTableViewDel
                           styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
         window.title = L("Uninstall Application")
         window.center()
+        // AppKit releases a programmatically created window when it closes
+        // (isReleasedWhenClosed defaults to true, and only NSWindowController turns it
+        // off). This object keeps a strong reference, so leaving it on means the window
+        // is freed while we still point at it — an over-release that crashed in
+        // -[_NSWindowTransformAnimation dealloc] once the close animation released it
+        // again. The hang used to mask it: the app froze before anything touched the
+        // freed window.
+        window.isReleasedWhenClosed = false
         super.init()
         window.delegate = self   // so closing the window ends the modal session
         build()
@@ -823,6 +831,14 @@ final class UninstallReviewWindow: NSObject, NSWindowDelegate {
                           styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
         window.title = self.title
         window.center()
+        // AppKit releases a programmatically created window when it closes
+        // (isReleasedWhenClosed defaults to true, and only NSWindowController turns it
+        // off). This object keeps a strong reference, so leaving it on means the window
+        // is freed while we still point at it — an over-release that crashed in
+        // -[_NSWindowTransformAnimation dealloc] once the close animation released it
+        // again. The hang used to mask it: the app froze before anything touched the
+        // freed window.
+        window.isReleasedWhenClosed = false
         super.init()
         window.delegate = self   // so closing the window ends the modal session
         items = rescan(0)
