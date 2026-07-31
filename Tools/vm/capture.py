@@ -86,6 +86,40 @@ def vnc_capture(host, port, pw, out: Path):
     return r.returncode == 0
 
 
+"""A demo user theme, installed into the guest's themes/ folder.
+
+Deliberately *not* a copy of a built-in palette: it names a handful of colours and inherits the
+rest from `Base = dark`, which is the case a theme author actually hits and the one worth having a
+screenshot of.
+"""
+USER_THEME = """[Theme]
+Name = Midnight
+Base = dark
+
+[Colors]
+WindowBackground          = #0C0C18
+ListBackground            = #101020
+ListText                  = #C8C8E0
+SelectedText              = #FFD060
+SelectionFillActive       = #2A2A55
+ActiveCursorFrame         = #6A6ACC
+CursorRowText             = #FFFFFF
+ActivePathBarBackground   = #2A2A55
+ActivePathBarText         = #E0E0F0
+InactivePathBarBackground = #151528
+InactivePathBarText       = #9090B0
+StatusBarBackground       = #1A1A30
+StatusBarText             = #C8C8E0
+FunctionButtonBackground  = #1A1A30
+FunctionButtonText        = #C8C8E0
+TabBarBackground          = #101020
+TabBarActiveChip          = #2A2A55
+TabBarInactiveChip        = #181830
+TabBarChipText            = #9090B0
+TabBarActiveChipText      = #E0E0F0
+"""
+
+
 def setup_guest(ip):
     # Force each theme deterministically via the app's own config (-ConfigRoot),
     # not the OS appearance (a relaunched process won't pick that up live).
@@ -93,6 +127,13 @@ def setup_guest(ip):
     for theme in ("light", "dark"):
         ssh_guest(ip, f"mkdir -p ~/pc-cfg-{theme} && "
                       f"printf '[Colors]\\nAppearance={theme}\\n' > ~/pc-cfg-{theme}/peachcmd.ini")
+    # A user theme file, so a spec can show that themes are extensible — and so the
+    # "drop an .ini into themes/ and it shows up" path is exercised by the harness rather than
+    # only by unit tests. Installed state, like the demo tree from demo-content.sh, which is why
+    # the per-launch reset below leaves themes/ alone.
+    for theme in ("light", "dark"):
+        ssh_guest(ip, f"mkdir -p ~/pc-cfg-{theme}/themes && "
+                      f"cat > ~/pc-cfg-{theme}/themes/midnight.ini <<'PCTHEME'\n{USER_THEME}\nPCTHEME")
     ssh_guest(ip, "defaults write com.apple.dock autohide -bool true; "
                   "defaults write com.apple.dock autohide-delay -float 999; killall Dock 2>/dev/null || true")
     # Force the GUEST's system locale to English. Plugin bundles resolve their
@@ -126,6 +167,7 @@ def launch_app(ip, script_lines, theme):
     # `theme` verb does exactly that, on purpose, so the shot shows the real code path — persists it
     # here, and the next spec would inherit it. Regenerating the file is what keeps every spec
     # independent, which is the whole promise of this harness.
+    # themes/ survives on purpose: it is installed state, not per-spec state.
     ssh_guest(ip, f"rm -f {cfg}/session.ini {cfg}/workspaces.ini && "
                   f"printf '[Colors]\\nAppearance={theme}\\n' > {cfg}/peachcmd.ini")
     ssh_guest(ip, "pkill -x PeachCommander 2>/dev/null; sleep 1; "

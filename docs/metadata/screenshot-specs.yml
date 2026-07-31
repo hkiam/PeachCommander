@@ -312,6 +312,15 @@ screenshots:
     crop: [0, 172, 500, 140]
     script: [*main, theme norton, wait 1200]
 
+  # A theme supplied by the *user*, not shipped with the app: proves the "drop an .ini in
+  # themes/ and pick it" path end to end. capture.py installs themes/midnight.ini in the guest.
+  - id: theme-custom
+    feature: user-themes
+    alt: "Peach Commander in a user-written theme: deep indigo panels with pale blue file names"
+    caption: "A user theme — one .ini naming a handful of colours, inheriting the rest."
+    pages: [appearance]
+    script: [*main, theme midnight, wait 1200]
+
   - id: plugins-window
     feature: plugins-user
     alt: "The plugins manager window"

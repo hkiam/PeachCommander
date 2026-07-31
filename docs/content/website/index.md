@@ -186,8 +186,11 @@ Base = dark
 
 [Colors]
 ListBackground = #101020
-ListText       = #C0C0D0
+ListText       = #C8C8E0
 ```
+
+![Peach Commander in a user-written theme with deep indigo panels](screenshots/theme-custom.png)
+*A theme from a file — that snippet, plus a dozen more lines, and nothing recompiled.*
 
 ---
 

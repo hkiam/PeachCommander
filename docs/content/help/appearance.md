@@ -54,6 +54,9 @@ ListBackground = #101020
 ListText       = #C0C0D0
 ```
 
+![Peach Commander in a user-written theme](screenshots/theme-custom.png)
+*(Figure: A theme loaded from a file in the themes folder.)*
+
 `Base` picks the built-in palette (`light` or `dark`) that supplies every color you do not list, so you only write down what you want to change. Colors are `#RRGGBB`. Lines starting with `;` or `#` are comments.
 
 If something in the file is wrong, Peach Commander skips that one line and keeps the rest of your theme — it does not refuse the file. The reason is written to the system log, visible in Console.app if you filter for `[theme]`.
