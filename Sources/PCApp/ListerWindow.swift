@@ -680,7 +680,10 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             view.topAnchor.constraint(equalTo: container.topAnchor),
             view.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             view.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)   // sit above the status bar
+            // Same reason as in ensureWebView: rebuildContent hides the scroll view
+            // before embedding a plugin, and a hidden NSSplitView arranged subview
+            // keeps its last frame — so anchoring here froze the plugin's height.
+            view.bottomAnchor.constraint(equalTo: marks.splitView.bottomAnchor)   // sit above the status bar
         ])
         pluginView = (lister, handle, view)
         return true
@@ -813,11 +816,17 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         web.translatesAutoresizingMaskIntoConstraints = false
         if let container {
             container.addSubview(web)
+            // Pin to the split view, NOT to scrollView: showWeb() hides the scroll
+            // view, and a hidden arranged subview of an NSSplitView stops being laid
+            // out — its frame froze at whatever it was when last visible, so a web
+            // view anchored to it kept the old size when the window grew and left
+            // blank areas to the right and below.
+            let area = marks.splitView
             NSLayoutConstraint.activate([
-                web.topAnchor.constraint(equalTo: scrollView.topAnchor),
-                web.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-                web.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-                web.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
+                web.topAnchor.constraint(equalTo: area.topAnchor),
+                web.leadingAnchor.constraint(equalTo: area.leadingAnchor),
+                web.trailingAnchor.constraint(equalTo: area.trailingAnchor),
+                web.bottomAnchor.constraint(equalTo: area.bottomAnchor)
             ])
         }
         webView = web
