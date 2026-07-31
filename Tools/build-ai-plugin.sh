@@ -21,6 +21,32 @@ if [ -z "$FWDIR" ]; then
 fi
 [ -d "$FWDIR/PCAutomation.framework" ] || { echo "PCAutomation.framework not found in '$FWDIR' — build the app first"; exit 1; }
 
+# A plugin can only be as universal as the framework it links against. make-dmg.sh passes
+# the Release build, which is arm64 + x86_64; a developer's Debug build is host-architecture
+# only, and compiling the x86_64 slice against it fails with
+#   could not find module 'PCAutomation' for target 'x86_64-apple-macos'
+# So clamp the slice list to what the framework actually contains, keeping any explicit
+# PC_PLUGIN_ARCHS the caller set as an upper bound.
+FW_BIN="$FWDIR/PCAutomation.framework/Versions/A/PCAutomation"
+[ -f "$FW_BIN" ] || FW_BIN="$FWDIR/PCAutomation.framework/PCAutomation"
+if [ -f "$FW_BIN" ]; then
+  FW_ARCHS="$(lipo -archs "$FW_BIN" 2>/dev/null || echo "")"
+  if [ -n "$FW_ARCHS" ]; then
+    CLAMPED=""
+    for a in $PC_PLUGIN_ARCHS; do
+      case " $FW_ARCHS " in *" $a "*) CLAMPED="${CLAMPED:+$CLAMPED }$a" ;; esac
+    done
+    if [ -z "$CLAMPED" ]; then
+      echo "error: PCAutomation.framework has [$FW_ARCHS], none of the requested [$PC_PLUGIN_ARCHS]" >&2
+      exit 1
+    fi
+    if [ "$CLAMPED" != "$PC_PLUGIN_ARCHS" ]; then
+      echo "note: building for [$CLAMPED] — PCAutomation.framework provides only [$FW_ARCHS]"
+    fi
+    PC_PLUGIN_ARCHS="$CLAMPED"
+  fi
+fi
+
 rm -rf "$BUNDLE"
 mkdir -p "$BUNDLE/Contents/MacOS"
 cp "$ROOT/Plugins/AIAssistant/Info.plist" "$BUNDLE/Contents/Info.plist"
