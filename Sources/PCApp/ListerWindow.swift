@@ -1304,6 +1304,23 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         tv.scrollRangeToVisible(sel)
     }
 
+    /// Search the rendered page through WebKit's own find, which highlights the match
+    /// and scrolls to it. Byte-offset search is useless here: the rendered DOM has no
+    /// relationship to the file's byte positions, and a WKWebView is not
+    /// ListerScrollable — so the generic path below found offsets it could never show.
+    private func findInWeb(backwards: Bool) {
+        guard let web = webView, !web.isHidden else { return }
+        let needle = String(bytes: lastNeedle, encoding: .utf8) ?? ""
+        guard !needle.isEmpty else { return }
+        let config = WKFindConfiguration()
+        config.backwards = backwards
+        config.caseSensitive = !searchCaseInsensitive
+        config.wraps = true
+        web.find(needle, configuration: config) { result in
+            if !result.matchFound { NSSound.beep() }
+        }
+    }
+
     private func findNext() {
         guard !lastNeedle.isEmpty else { return }
         // In plugin mode, delegate search to the plugin's own view.
@@ -1312,6 +1329,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             if !needle.isEmpty, !pv.lister.searchText(in: pv.handle, needle) { NSSound.beep() }
             return
         }
+        if mode == .web { findInWeb(backwards: false); return }
         guard let slice else { return }
         if let match = ChunkSearcher.search(lastNeedle, in: slice, from: searchOffset,
                                             caseInsensitive: searchCaseInsensitive) {
@@ -1332,6 +1350,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             if !needle.isEmpty, !pv.lister.searchText(in: pv.handle, needle) { NSSound.beep() }
             return
         }
+        if mode == .web { findInWeb(backwards: true); return }
         guard let slice else { return }
         if let match = ChunkSearcher.searchBackward(lastNeedle, in: slice, before: lastMatchOffset,
                                                     caseInsensitive: searchCaseInsensitive) {
@@ -1965,10 +1984,16 @@ extension ListerWindowController: WindowContextMenuProviding {
     private var canMark: Bool { hasMarkBackend }
     /// Copy takes the whole text of the displayed view.
     private var canCopyText: Bool { contentView is ViewerTextProviding }
-    /// Search either uses the native find bar, delegates to a plugin, or scrolls to a
-    /// byte offset — the last one needs a view that can be scrolled by offset.
+    /// Search has four backends: the native find bar in a text view, WebKit's own find
+    /// on a rendered page, the plugin's search, or a byte-offset scan — the last one
+    /// needs a view that can be scrolled to an offset.
     private var canSearch: Bool {
-        textContentView != nil || mode == .plugin || contentView is ListerScrollable
+        textContentView != nil || mode == .web || mode == .plugin || contentView is ListerScrollable
+    }
+    /// Go To addresses a line or a byte offset. The rendered page has neither, so it
+    /// stays unavailable there even though searching works.
+    private var canGoTo: Bool {
+        textContentView != nil || contentView is ListerScrollable
     }
 
     /// Whether `selector` can do anything in the representation on screen.
@@ -1985,7 +2010,7 @@ extension ListerWindowController: WindowContextMenuProviding {
         case DocumentAction.find, DocumentAction.findNext, DocumentAction.findPrev:
             return canSearch
         case DocumentAction.goToLocation:
-            return canSearch
+            return canGoTo
         case DocumentAction.nextFile, DocumentAction.prevFile:
             return files.count > 1
         default:
