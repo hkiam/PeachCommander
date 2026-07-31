@@ -83,4 +83,43 @@ final class SyntaxHighlighterTests: XCTestCase {
         // Closing tags keep the name highlighted.
         XCTAssertEqual(toks.filter { $0 == (.keyword, "title") }.count, 2)
     }
+
+    // MARK: - YAML
+
+    func testYAMLLanguageResolution() {
+        for ext in ["yml", "yaml", "YML"] {
+            XCTAssertEqual(SyntaxHighlighter.language(forExtension: ext)?.name, "YAML", ext)
+        }
+    }
+
+    func testYAMLCommentStringAndNumber() {
+        let lang = try! XCTUnwrap(SyntaxHighlighter.language(forExtension: "yml"))
+        let text = "# a comment\nname: \"peach\"\nport: 8080\n"
+        let kinds = Set(SyntaxHighlighter.tokens(text, language: lang).map(\.kind))
+        XCTAssertTrue(kinds.contains(.comment))
+        XCTAssertTrue(kinds.contains(.string))
+        XCTAssertTrue(kinds.contains(.number))
+    }
+
+    func testYAMLBooleanAndNullScalarsAreKeywords() {
+        let lang = try! XCTUnwrap(SyntaxHighlighter.language(forExtension: "yaml"))
+        // YAML 1.2 core spellings plus the 1.1 ones real files still use.
+        for scalar in ["true", "false", "null", "yes", "no", "on", "off", "TRUE", "Null"] {
+            let text = "flag: \(scalar)\n"
+            let tokens = SyntaxHighlighter.tokens(text, language: lang)
+            XCTAssertTrue(tokens.contains { $0.kind == .keyword },
+                          "expected \(scalar) to be a keyword, got \(tokens.map(\.kind))")
+        }
+    }
+
+    func testYAMLSingleQuotedStringIsAString() {
+        let lang = try! XCTUnwrap(SyntaxHighlighter.language(forExtension: "yml"))
+        let tokens = SyntaxHighlighter.tokens("title: 'hello world'\n", language: lang)
+        XCTAssertTrue(tokens.contains { $0.kind == .string })
+    }
+
+    func testYAMLHasNoBlockComments() {
+        let lang = try! XCTUnwrap(SyntaxHighlighter.language(forExtension: "yml"))
+        XCTAssertNil(lang.blockComment)
+    }
 }

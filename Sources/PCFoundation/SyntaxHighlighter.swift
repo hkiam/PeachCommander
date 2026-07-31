@@ -61,6 +61,13 @@ public enum SyntaxHighlighter {
         case "sh", "bash", "zsh":
             return SyntaxLanguage(name: "Shell", keywords: shellKeywords,
                                   lineComments: ["#"], blockComment: nil, stringDelimiters: ["\"", "'"])
+        case "yml", "yaml":
+            // YAML's "keywords" are its plain scalars for booleans and null (YAML 1.1
+            // spellings included, which is what most real files and parsers use).
+            // Keys are not coloured: this lexer is line- and token-based, and telling a
+            // mapping key from a plain scalar needs indentation context it does not track.
+            return SyntaxLanguage(name: "YAML", keywords: yamlKeywords,
+                                  lineComments: ["#"], blockComment: nil, stringDelimiters: ["\"", "'"])
         default:
             return nil
         }
@@ -221,5 +228,18 @@ public enum SyntaxHighlighter {
     static let shellKeywords: Set<String> = [
         "if", "then", "else", "elif", "fi", "for", "while", "do", "done", "case", "esac", "in",
         "function", "return", "echo", "export", "local", "read", "exit", "cd", "set"
+    ]
+
+    /// YAML plain scalars that carry meaning rather than being free text. Both the
+    /// YAML 1.2 core spellings and the 1.1 ones (yes/no/on/off), since real files and
+    /// most parsers still treat those as booleans. Capitalised and upper-case variants
+    /// are listed because the tokenizer matches whole words literally.
+    static let yamlKeywords: Set<String> = [
+        "true", "false", "null",
+        "True", "False", "Null",
+        "TRUE", "FALSE", "NULL",
+        "yes", "no", "on", "off",
+        "Yes", "No", "On", "Off",
+        "YES", "NO", "ON", "OFF"
     ]
 }

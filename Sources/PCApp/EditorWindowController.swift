@@ -366,7 +366,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
 
     @objc private func format() {
         let ext = (path as NSString).pathExtension.lowercased()
-        guard let result = StructuredTextFormatter.autoFormat(textView.string, preferXML: ext == "xml") else {
+        guard let result = StructuredTextFormatter.autoFormat(textView.string, extension: ext) else {
             NSSound.beep(); return
         }
         textView.string = result.text
