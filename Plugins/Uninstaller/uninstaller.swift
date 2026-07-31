@@ -750,6 +750,16 @@ final class InstalledAppsPicker: NSObject, NSTableViewDataSource, NSTableViewDel
 
 // MARK: - Review window (self-contained)
 
+/// A vertical stack used as an NSScrollView documentView must be flipped.
+///
+/// AppKit puts a non-flipped document view's origin at the *bottom* left, so the object
+/// list sat at the foot of the scroll view instead of growing downwards from the top (and
+/// a long list opened scrolled to its end). Matches how the host overrides isFlipped for
+/// its own scroll contents.
+final class FlippedStackView: NSStackView {
+    override var isFlipped: Bool { true }
+}
+
 final class UninstallReviewWindow: NSObject {
     private let window: NSWindow
     private let appName: String
@@ -759,7 +769,7 @@ final class UninstallReviewWindow: NSObject {
     private var checks: [(NSButton, CleanupItem)] = []
 
     private let header = NSTextField(wrappingLabelWithString: "")
-    private let itemsStack = NSStackView()
+    private let itemsStack = FlippedStackView()
     private let levelControl = NSSegmentedControl()
     private let summary = NSTextField(labelWithString: "")
     private let trash = NSButton(title: "", target: nil, action: nil)

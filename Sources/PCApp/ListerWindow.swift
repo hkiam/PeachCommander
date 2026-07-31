@@ -735,8 +735,21 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         let label = NSTextField(wrappingLabelWithString: String(localized: "Calculating…"))
         label.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
         label.textColor = Theme.current.listText
-        label.frame = NSRect(x: 8, y: 8, width: 600, height: 260)
-        scrollView.documentView = label
+        // A wrapping label is not flipped, so as a documentView its origin would be the
+        // bottom left and the folder summary would sit at the foot of the scroll view. Put
+        // it in a top-origin container instead.
+        let document = FlippedContainerView()
+        document.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
+        document.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: document.topAnchor, constant: 8),
+            label.leadingAnchor.constraint(equalTo: document.leadingAnchor, constant: 8),
+            label.trailingAnchor.constraint(equalTo: document.trailingAnchor, constant: -8),
+            label.bottomAnchor.constraint(equalTo: document.bottomAnchor, constant: -8),
+            document.widthAnchor.constraint(equalTo: scrollView.contentView.widthAnchor)
+        ])
+        scrollView.documentView = document
         contentView = label
         statusLabel.stringValue = "\(String(localized: "Folder"))   \(dir)"
         Task { @MainActor in

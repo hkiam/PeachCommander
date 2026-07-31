@@ -901,6 +901,13 @@ final class PopoverDelegate: NSObject, NSPopoverDelegate {
 
 // MARK: - Popover content
 
+/// A top-origin stack for use as an NSScrollView documentView: a non-flipped document view
+/// has its origin at the bottom left, which would push the per-core rows to the foot of the
+/// scroll view instead of starting at the top.
+final class FlippedGridStack: NSStackView {
+    override var isFlipped: Bool { true }
+}
+
 final class PopoverContentController: NSViewController {
     private let module: ModuleID
     private let openInPanel: ((Int, String) -> Void)?
@@ -909,7 +916,7 @@ final class PopoverContentController: NSViewController {
     private let bigValue = NSTextField(labelWithString: "")
     private let spark = Sparkline()
     private let rowsStack = NSStackView()
-    private let coreGrid = NSStackView()
+    private let coreGrid = FlippedGridStack()   // documentView: must be top-origin
     private let coreScroll = NSScrollView()
 
     init(module: ModuleID, openInPanel: ((Int, String) -> Void)?) {

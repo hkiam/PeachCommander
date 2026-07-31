@@ -50,7 +50,7 @@ enum ACLStore {
 
 final class ACLEditorWindowController: NSWindowController {
     private let path: String
-    private let rowsStack = NSStackView()
+    private let rowsStack = FlippedStackView()   // documentView: must be top-origin
     private var rows: [(kind: NSPopUpButton, name: NSTextField, action: NSPopUpButton, perms: NSTextField)] = []
     private let statusLabel = NSTextField(labelWithString: "")
 

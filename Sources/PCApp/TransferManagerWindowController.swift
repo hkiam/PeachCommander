@@ -64,7 +64,7 @@ final class TransferManagerWindowController: NSWindowController {
         let scroll = NSScrollView()
         scroll.hasVerticalScroller = true
         scroll.translatesAutoresizingMaskIntoConstraints = false
-        let doc = FlippedView()
+        let doc = FlippedContainerView()
         doc.translatesAutoresizingMaskIntoConstraints = false
         doc.addSubview(stack)
         scroll.documentView = doc
@@ -204,9 +204,4 @@ final class TransferManagerWindowController: NSWindowController {
     @objc private func startJob(_ sender: NSButton) { if let j = job(for: sender) { manager.startJob(j) } }
     @objc private func startAll() { manager.startAllQueued() }
     @objc private func clearFinished() { manager.clearFinished() }
-}
-
-/// A top-origin document view so the job stack grows downward in the scroll view.
-private final class FlippedView: NSView {
-    override var isFlipped: Bool { true }
 }
