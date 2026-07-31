@@ -101,6 +101,37 @@ calls your behavior ABI (`contrib.h`) when the user triggers it.
 - **views** — embed an `NSView` in a container (`sidebar`, `preview`, `bottombar`,
   `titlebar`); built lazily via `PcMakeView(viewId, containerId, services)`.
 - **hides** — hide a built-in or other command, `when`-gated.
+- **tools** — `{ name, description, capability, params?, formatsExtensions? }`. Invoked via
+  `PcInvokeTool(name, argumentsJson, services)`. Two uses share the one ABI: the
+  assistant's tool catalogue, and — when `formatsExtensions` is present — a **text
+  formatter** for those extensions.
+
+### Contributing a formatter
+
+A formatter is a tool with an agreed contract, so there is no second entry point:
+
+```xml
+<key>tools</key>
+<array>
+  <dict>
+    <key>name</key>              <string>format_swift</string>
+    <key>description</key>       <string>SwiftFormat</string>
+    <key>capability</key>        <string>read</string>
+    <key>formatsExtensions</key> <array><string>swift</string></array>
+  </dict>
+</array>
+```
+
+The host calls `PcInvokeTool` with `{"text": "…", "extension": "swift"}` and takes the
+returned string as the formatted text. Return the input unchanged (or nothing) if you
+cannot format it — the host then falls through to the next candidate. `description`
+becomes the name shown in the status line.
+
+Resolution order is: the user's `formatters.ini` → **plugins** → installed command-line
+tools (`yq`, `taplo`, `prettier`, `jq`, `xmllint`, …) → the built-ins (JSON, XML, HTML,
+INI, YAML). So a plugin beats every automatic choice but still yields to an explicit user
+configuration. Calls are given 10 seconds before the host gives up, so do the work
+synchronously and return.
 
 ### `when` expressions
 

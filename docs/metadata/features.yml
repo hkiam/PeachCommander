@@ -500,7 +500,7 @@ features:
     source: { modules: [PCApp], types: [EditorWindowController, HexEditorWindowController] }
     documentation: { integrated_help: true, website: true }
     screenshots: [editor]
-    notes: "Save, format JSON/XML, find/replace, symbols outline, minimap, encoding, go-to-line, bracket jump."
+    notes: "Save, extensible formatting (built-in JSON/XML/HTML/INI/YAML, plus any installed command-line formatter or one configured per extension in formatters.ini), find/replace, symbols outline, minimap, encoding, go-to-line, bracket jump."
 
   - id: syntax-highlighting
     name: Syntaxhervorhebung (tree-sitter)
@@ -510,7 +510,7 @@ features:
     status: stable
     source: { modules: [PCApp], types: [TreeSitterHighlighter, NeonEditorHighlighter] }
     documentation: { integrated_help: true, website: true, developer_docs: true }
-    notes: "Grammars: JSON, C, Java, JavaScript, Python, Rust, C#, TypeScript. No Swift/.tsx grammar; fallback lexer otherwise."
+    notes: "tree-sitter grammars: JSON, C, Java, JavaScript, Python, Rust, C#, TypeScript. The built-in lexer covers Swift, C-family, JavaScript, Python, XML/HTML, Shell and YAML and is the fallback where no grammar exists (e.g. Swift, .tsx)."
 
   # ───────────────────────── Customization ─────────────────────────
   - id: button-bar

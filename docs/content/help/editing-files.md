@@ -23,12 +23,49 @@ To start a brand-new text file at the current location, press Shift+F4.
 ## Find, replace, and navigate
 
 - Press Cmd+F to open the find bar. To replace text, open the find bar and switch it to the replace view, or click Find/Replace in the toolbar.
-- Click Format JSON/XML to re-indent a JSON or XML document into clean, readable layout.
+- Click Format to re-indent the file into a clean, readable layout. See [Formatting a file](#formatting-a-file) below for which file types this covers. The button is greyed out when nothing can format the file you have open.
 - Click Symbols (or press Cmd+Shift+O) to show a sidebar that lists the classes, functions, and methods in your code. Click an entry to jump straight to it.
 - Press Cmd+L to jump to a specific line.
 - Press Cmd+\ to jump between a bracket and its matching partner.
 - Click the map button to show or hide the minimap, a scaled overview of the whole file you can click to scroll.
 - Use the Encoding menu in the toolbar if the file was saved in something other than the default text encoding.
+
+## Formatting a file
+
+Click **Format** in the editor (or use the same command in the viewer) to re-indent the file. Peach Commander picks a formatter based on the file's extension and shows which one it used in the status line, for example *formatted (jq)* — so you can always tell what shaped the result.
+
+**Works out of the box** for JSON, XML, SVG, plists, HTML, INI-style configuration, and YAML. YAML is a special case: it is tidied rather than re-indented, because in YAML the indentation *is* the structure, and rewriting it without a real YAML parser could change what the file means. Trailing spaces go, stray tabs in the indentation become spaces, runs of blank lines collapse — and anything inside a block scalar (`|` or `>`) is left exactly as it is, because whitespace is content there.
+
+**Better formatters take over automatically.** If you have one of these installed, Peach Commander uses it instead, because a dedicated tool usually matches what the wider ecosystem expects — and for configuration formats it keeps your comments:
+
+| Install | and you get |
+| --- | --- |
+| `yq` or `prettier` | full YAML formatting, comments preserved |
+| `taplo` | TOML |
+| `sqlformat` or `sql-formatter` | SQL |
+| `prettier` | Markdown |
+| `jq` | JSON, in the conventional style |
+| `xmllint` | XML and SVG |
+
+If a file type has no formatter, the Format button is greyed out and the menu entry disabled. Trying anyway tells you why — *"taplo is not installed"* reads differently from *"Not valid JSON"*.
+
+### Use your own formatter
+
+To format a file type Peach Commander does not know, or to use a different tool, create `formatters.ini` in the configuration folder — one section per extension:
+
+```ini
+[swift]
+tool = swiftformat
+args = --quiet stdin
+
+[sql]
+tool = /opt/homebrew/bin/sqlfluff
+args = format -
+```
+
+`tool` is an executable name (looked up like your shell would) or an absolute path; `args` are passed as-is. The file's text goes in on standard input and the formatted text is read back from standard output, so any well-behaved command-line formatter works. Your entries win over everything else. A commented template is created for you on first launch, so you can simply open the file and fill it in.
+
+Plugins can contribute formatters too — see [Plugins](plugins.md).
 
 ## Edit a file byte by byte
 
