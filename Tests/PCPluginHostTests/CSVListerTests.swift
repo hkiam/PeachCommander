@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-// SampleCSVListerTests.swift - Drive the Swift SampleCSVLister PLX plugin
-// (Plugins/SampleCSVLister/sample_csv_lister.swift) through the PLX adapter.
+// CSVListerTests.swift - Drive the Swift CSVLister PLX plugin
+// (Plugins/CSVLister/csv_lister.swift) through the PLX adapter.
 //
 // This plugin returns a real NSView, so it verifies the on-macOS ListLoad contract
 // the Lister UI relies on (a non-null NSView* handle), plus detect dispatch, search,
@@ -9,7 +9,7 @@
 import XCTest
 @testable import PCPluginHost
 
-final class SampleCSVListerTests: XCTestCase {
+final class CSVListerTests: XCTestCase {
     private var dir: URL!
 
     override func setUpWithError() throws {
@@ -31,7 +31,7 @@ final class SampleCSVListerTests: XCTestCase {
     // plugins do not. With four tests the process ended up with four copies of the
     // same Swift module, and the ObjC runtime said so every single run:
     //
-    //   objc[…]: Class _TtC15SampleCSVLister13CSVListerView is implemented in both
+    //   objc[…]: Class _TtC9CSVLister13CSVListerView is implemented in both
     //   …/samplecsv-A/libsamplecsv.dylib and …/samplecsv-B/libsamplecsv.dylib.
     //   This may cause spurious casting failures and mysterious crashes.
     //
@@ -60,7 +60,7 @@ final class SampleCSVListerTests: XCTestCase {
         try FileManager.default.createDirectory(at: libDir, withIntermediateDirectories: true)
         Self.libDir = libDir
 
-        let src = repoRoot.appendingPathComponent("Plugins/SampleCSVLister/sample_csv_lister.swift")
+        let src = repoRoot.appendingPathComponent("Plugins/CSVLister/csv_lister.swift")
         let out = libDir.appendingPathComponent("libsamplecsv.dylib")
         #if arch(arm64)
         let target = "arm64-apple-macos13.0"
@@ -69,7 +69,7 @@ final class SampleCSVListerTests: XCTestCase {
         #endif
         let p = Process()
         p.executableURL = URL(fileURLWithPath: swiftc)
-        p.arguments = ["-emit-library", "-module-name", "SampleCSVLister", "-target", target,
+        p.arguments = ["-emit-library", "-module-name", "CSVLister", "-target", target,
                        "-framework", "AppKit", "-o", out.path, src.path]
         let pipe = Pipe(); p.standardError = pipe
         try p.run(); p.waitUntilExit()

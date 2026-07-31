@@ -165,6 +165,7 @@ Peach Commander keeps the core small and pushes special-purpose features out int
 | **Uninstaller** | Find and remove apps *and* their leftovers |
 | **WebDAV** | Mount and browse a WebDAV server as a folder |
 | **iCloud** · **Notes** · **Log Viewer** | Quick iCloud Drive access · notes beside your files · tail log files |
+| **CSV Lister** | F3 on a .csv/.tsv opens it as a sortable table, delimiter auto-detected |
 | **Archive formats** · **AIColumn** | Extra archive types · AI-derived file column |
 
 Internally there are **five plugin kinds** (`pcx`, `pfx`, `plx`, `pdx`, `ptx`) plus an orthogonal contrib ABI, designed in the spirit of Total Commander's WCX/WFX/WLX/WDX families. The porting story and a public **SDK** live under [`PluginSDK/`](PluginSDK/) and [`docs/content/plugins/`](docs/content/plugins/).

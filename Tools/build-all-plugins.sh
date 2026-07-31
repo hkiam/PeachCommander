@@ -6,7 +6,8 @@
 # Contents/PlugIns so a DMG install ships with all plugins present (and, being
 # enabled by default, active) out of the box.
 #
-# Sample/demo plugins (Tools/build-sample-*.sh) are intentionally excluded.
+# Sample/demo plugins (Tools/build-sample-*.sh) are intentionally excluded — they are
+# SDK examples, not product. The CSV lister used to be one and is now shipped.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -17,6 +18,7 @@ OUT_DIR="$(cd "$OUT_DIR" && pwd)"   # absolute: the per-plugin scripts cd into t
 echo "==> Building all shipping plugins into: $OUT_DIR"
 SCRIPTS=(
   build-archive-plugin
+  build-csvlister-plugin
   build-git-plugin
   build-logviewer-plugin
   build-notes-plugin
