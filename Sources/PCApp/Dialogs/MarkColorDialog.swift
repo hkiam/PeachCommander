@@ -10,7 +10,7 @@ import AppKit
 import PCFoundation
 
 @MainActor
-final class MarkColorDialog: NSWindowController {
+final class MarkColorDialog: ModalWindowController {
     /// Called on OK with the entered term and the chosen palette color index.
     var onConfirm: ((_ term: String, _ colorIndex: Int) -> Void)?
 
@@ -38,6 +38,7 @@ final class MarkColorDialog: NSWindowController {
         window.title = title
         window.center()
         super.init(window: window)
+        window.delegate = self   // closing the window must end the modal session
         build(term: term)
     }
 

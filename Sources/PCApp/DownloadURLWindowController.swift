@@ -27,7 +27,7 @@ struct DownloadBatchInput {
     var proxy: ProxyConfig?
 }
 
-final class DownloadURLWindowController: NSWindowController, NSTextViewDelegate, NSTextFieldDelegate {
+final class DownloadURLWindowController: ModalWindowController, NSTextViewDelegate, NSTextFieldDelegate {
     var onStart: ((DownloadBatchInput) -> Void)?
 
     private let urlView = NSTextView()
@@ -50,6 +50,7 @@ final class DownloadURLWindowController: NSWindowController, NSTextViewDelegate,
                               styleMask: [.titled, .closable], backing: .buffered, defer: false)
         window.title = String(localized: "Download from URL")
         super.init(window: window)
+        window.delegate = self   // closing the window must end the modal session
         buildUI()
         if !prefillURL.isEmpty {
             urlView.string = prefillURL

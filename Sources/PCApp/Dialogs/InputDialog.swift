@@ -10,7 +10,7 @@ import PCFoundation
 import PCOperations
 
 /// Generic modal single-line text input dialog.
-final class InputDialog: NSWindowController {
+final class InputDialog: ModalWindowController {
     private let logger = PCFoundationLogger.logger
 
     /// Called on OK with the entered text.
@@ -70,6 +70,7 @@ final class InputDialog: NSWindowController {
         window.center()
         window.level = .modalPanel
         super.init(window: window)
+        window.delegate = self   // closing the window must end the modal session
         checkbox.state = checkboxOn ? .on : .off
         secondCheckbox.state = secondCheckboxOn ? .on : .off
         thirdCheckbox.state = thirdCheckboxOn ? .on : .off
