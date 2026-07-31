@@ -85,8 +85,9 @@ without being shipped. That half needs no build and runs in CI too.
 ```bash
 Tools/verify-shipping.sh                 # shipping-set completeness only
 Tools/verify-shipping.sh path/to/App.app # plus every Mach-O is arm64 + x86_64
-``` `PC_PLUGIN_ARCHS=arm64` builds plugins for one
-architecture when iterating locally.
+```
+
+`PC_PLUGIN_ARCHS=arm64` builds plugins for one architecture when iterating locally.
 
 ## Cutting a release
 
