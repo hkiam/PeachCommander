@@ -2,7 +2,7 @@
 
 _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`. Do not edit by hand._
 
-**68 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
+**69 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
 
 ## Navigation
 
@@ -93,6 +93,7 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 | Command system & browser | expert | — | ✅ |
 | Keyboard shortcuts & schemes | user, expert | — | ✅ |
 | Start menu & user commands | expert | — | ✅ |
+| User-supplied color themes (themes/*.ini) | user, expert | — | ✅ |
 | Workspaces | expert | Cmd+Ctrl+S | ✅ |
 | macOS integration | user | — | ✅ |
 

@@ -79,6 +79,11 @@ public struct ConfigPaths: Sendable {
         root.appendingPathComponent("ftp-sites.ini")
     }
 
+    /// Directory holding user-supplied colour themes, one `.ini` per theme (F-337).
+    public var themesDirectory: URL {
+        root.appendingPathComponent("themes", isDirectory: true)
+    }
+
     /// Directory holding installed plugin bundles (I14 §8).
     public var pluginsDirectory: URL {
         root.appendingPathComponent("plugins", isDirectory: true)

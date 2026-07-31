@@ -23,6 +23,32 @@ A theme brings its own light/dark base so that sheets, scrollers, and standard c
 
 Themes are colors only. The panel layout, the frames, and the fonts are unchanged — Norton Commander does not bring back the double-line box borders or the DOS raster font.
 
+## Write your own theme
+
+Themes are plain text files, one per theme, in a `themes` folder inside your configuration folder.
+
+1. On the **Colors** page, click **Themes Folder…**. The folder is created if it does not exist, and the first time it is empty Peach Commander drops a commented `example-norton.ini` in it that lists every color you can set.
+2. Copy that file, give it a new name, and edit it. The file name (without `.ini`) is the theme's id; the `Name` line is what the Theme menu shows.
+3. Save. Open the **Theme** menu again — your theme is in the list. No restart needed.
+
+A minimal theme is three lines:
+
+```ini
+[Theme]
+Name = Midnight
+Base = dark
+
+[Colors]
+ListBackground = #101020
+ListText       = #C0C0D0
+```
+
+`Base` picks the built-in palette (`light` or `dark`) that supplies every color you do not list, so you only write down what you want to change. Colors are `#RRGGBB`. Lines starting with `;` or `#` are comments.
+
+If something in the file is wrong, Peach Commander skips that one line and keeps the rest of your theme — it does not refuse the file. The reason is written to the system log, visible in Console.app if you filter for `[theme]`.
+
+The names `light`, `dark`, `norton` and `system` belong to the built-in themes; a file using one of them as its file name is skipped so it cannot shadow a shipped theme. If you delete the theme file you had selected, Peach Commander falls back to **System (default)**.
+
 ## Set light, dark, or system appearance
 
 1. Open the settings window by pressing Cmd+, (or Configuration > Settings…).

@@ -596,6 +596,22 @@ features:
       the four custom panel colors still override it. Unknown ids fall back to System.
       Golden tests (PCThemeTests) pin the default palettes so they cannot drift.
 
+  - id: user-themes
+    name: Eigene Farbthemen (themes/*.ini)
+    name_en: User-supplied color themes (themes/*.ini)
+    category: customization
+    audiences: [user, expert]
+    status: stable
+    source: { modules: [PCApp], types: [ThemeFile, Theme] }
+    documentation: { integrated_help: true, website: false }
+    notes: >-
+      One .ini per theme in <config>/themes. The file name is the id, [Theme] Name is the display
+      name, [Theme] Base (light|dark) supplies every colour the file does not list, and [Colors]
+      keys are the Theme.Colors property names. A malformed line is skipped and logged rather
+      than rejecting the file; built-in ids are reserved. "Themes Folder..." in Settings > Colors
+      creates the folder with a commented example, and the Theme menu re-reads it on open, so
+      editing a theme needs no restart.
+
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
     name: Einstellungen (15 Seiten)

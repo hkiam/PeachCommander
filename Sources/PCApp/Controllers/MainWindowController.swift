@@ -470,6 +470,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             listBackground: NSColor(hexString: await mainConfig.string("Colors", "Background", default: "")),
             selectedText: NSColor(hexString: await mainConfig.string("Colors", "Selection", default: "")),
             cursorFrame: NSColor(hexString: await mainConfig.string("Colors", "Cursor", default: "")))
+        // User themes first: the id read below may name one of them, and resolution falls back
+        // to "system" for anything unknown, so loading after this would render a user theme as
+        // the default on every launch.
+        ThemeFile.loadUserPalettes(from: configPaths.themesDirectory)
         // Selected colour theme. "system" is the default and means: no named palette, follow
         // the appearance exactly as before — so an existing configuration renders unchanged.
         themeId = await mainConfig.string("Colors", "Theme", default: "system")
@@ -2979,6 +2983,19 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                     guard let self else { return }
                     NSWorkspace.shared.activateFileViewerSelecting([self.configPaths.root])
                 },
+                onOpenThemesFolder: { [weak self] in
+                    guard let self else { return }
+                    // Created on demand, with a commented example inside when it is empty —
+                    // there is no guessing the format from an empty folder.
+                    let dir = self.configPaths.themesDirectory
+                    do {
+                        _ = try ThemeFile.prepareDirectory(dir)
+                    } catch {
+                        self.logger.error("could not prepare themes folder \(dir.path, privacy: .public): \(String(describing: error), privacy: .public)")
+                    }
+                    NSWorkspace.shared.activateFileViewerSelecting([dir])
+                },
+                themesDirectory: self.configPaths.themesDirectory,
                 onSetLanguage: { [weak self] lang in self?.setUILanguage(lang) },
                 onSetKeyScheme: { [weak self] scheme in self?.setKeyScheme(scheme) },
                 onEditShortcuts: { [weak self] in self?.showKeysEditor() }

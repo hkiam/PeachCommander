@@ -330,6 +330,10 @@ public final class SettingsWindowController: NSWindowController {
     private let onSaveAssociations: (FileAssociations) -> Void
     private let configRootPath: String
     private let onOpenConfigFolder: () -> Void
+    /// Prepare + reveal the themes folder; the controller owns the paths (F-337).
+    private let onOpenThemesFolder: () -> Void
+    /// Where to re-read user themes from when the Theme menu opens. nil disables reloading.
+    private let themesDirectory: URL?
     private let currentLanguage: String
     private let onSetLanguage: (String) -> Void
     private let currentKeyScheme: String
@@ -345,6 +349,8 @@ public final class SettingsWindowController: NSWindowController {
                 onSetString: @escaping (_ keyPath: String, _ value: String) -> Void,
                 onSaveAssociations: @escaping (FileAssociations) -> Void = { _ in },
                 onOpenConfigFolder: @escaping () -> Void = {},
+                onOpenThemesFolder: @escaping () -> Void = {},
+                themesDirectory: URL? = nil,
                 onSetLanguage: @escaping (String) -> Void = { _ in },
                 onSetKeyScheme: @escaping (String) -> Void = { _ in },
                 onEditShortcuts: @escaping () -> Void = {}) {
@@ -357,6 +363,8 @@ public final class SettingsWindowController: NSWindowController {
         self.onSetString = onSetString
         self.onSaveAssociations = onSaveAssociations
         self.onOpenConfigFolder = onOpenConfigFolder
+        self.onOpenThemesFolder = onOpenThemesFolder
+        self.themesDirectory = themesDirectory
         self.onSetLanguage = onSetLanguage
         self.onSetKeyScheme = onSetKeyScheme
         self.onEditShortcuts = onEditShortcuts
@@ -1117,10 +1125,12 @@ public final class SettingsWindowController: NSWindowController {
     private func buildColorsPage() -> NSView {
         // "System" first and selected by default: no palette, the appearance decides — the
         // look Peach Commander has always had. The named palettes are additions.
-        makePopup(themePopup,
-                  items: [String(localized: "System (default)")] + Theme.palettes.map(\.name),
-                  selectedIndex: max(0, Self.themeValues.firstIndex(of: snapshot.theme) ?? 0),
-                  action: #selector(themeChanged))
+        makePopup(themePopup, items: Self.themeNames(), selectedIndex: 0, action: #selector(themeChanged))
+        selectTheme(snapshot.theme)
+        // Re-read the themes folder whenever the menu is opened, so a file the user just saved
+        // shows up without restarting the app. menuNeedsUpdate is the only AppKit hook that
+        // fires before the popup is displayed.
+        themePopup.menu?.delegate = self
         makePopup(appearancePopup,
                   items: [String(localized: "System (follow macOS)"), String(localized: "Light"), String(localized: "Dark")],
                   selectedIndex: max(0, Self.appearanceValues.firstIndex(of: snapshot.appearance) ?? 0),
@@ -1131,6 +1141,13 @@ public final class SettingsWindowController: NSWindowController {
         let reset = NSButton(title: String(localized: "Reset to defaults"),
                              target: self, action: #selector(resetCustomColors))
         reset.bezelStyle = .rounded
+
+        let themesFolder = NSButton(title: String(localized: "Themes Folder…"),
+                                    target: self, action: #selector(openThemesFolder))
+        themesFolder.bezelStyle = .rounded
+        themesFolder.setContentHuggingPriority(.required, for: .horizontal)
+        themesFolder.toolTip = String(localized:
+            "Open the folder holding your own theme files. An example is created the first time.")
 
         // A palette carries its own base, so leaving Appearance live would be a control that
         // silently does nothing.
@@ -1143,6 +1160,7 @@ public final class SettingsWindowController: NSWindowController {
 
         return makePageStack(rows: [
             labeledRow(title: String(localized: "Theme:"), control: themePopup),
+            themesFolder,
             labeledRow(title: String(localized: "Appearance:"), control: appearancePopup),
             themeNote,
             heading,
@@ -1181,8 +1199,19 @@ public final class SettingsWindowController: NSWindowController {
         return row
     }
 
-    /// Index 0 is "system"; the rest mirror `Theme.palettes` in order.
+    /// Index 0 is "system"; the rest mirror `Theme.palettes` in order — built-ins, then the
+    /// user's own. Computed, not stored: `Theme.palettes` grows when a theme file is loaded.
     private static var themeValues: [String] { ["system"] + Theme.palettes.map(\.id) }
+    private static func themeNames() -> [String] {
+        [String(localized: "System (default)")] + Theme.palettes.map(\.name)
+    }
+
+    /// Select the item for `id`, falling back to "System" for an id that no longer exists —
+    /// which is what happens when the user deletes the theme file they had selected.
+    private func selectTheme(_ id: String) {
+        themePopup.selectItem(at: max(0, Self.themeValues.firstIndex(of: id) ?? 0))
+        appearancePopup.isEnabled = themePopup.indexOfSelectedItem == 0
+    }
 
     @objc private func themeChanged() {
         let idx = themePopup.indexOfSelectedItem
@@ -1190,6 +1219,8 @@ public final class SettingsWindowController: NSWindowController {
         onSetString("Colors.Theme", values.indices.contains(idx) ? values[idx] : "system")
         appearancePopup.isEnabled = themePopup.indexOfSelectedItem == 0
     }
+
+    @objc private func openThemesFolder() { onOpenThemesFolder() }
 
     @objc private func appearanceChanged() {
         let idx = appearancePopup.indexOfSelectedItem
@@ -1319,5 +1350,39 @@ extension SettingsWindowController: NSTableViewDataSource, NSTableViewDelegate {
         } else {
             selectPluginPane(row - builtinPageCount)
         }
+    }
+}
+
+
+// MARK: - Live theme list (F-337)
+
+extension SettingsWindowController: NSMenuDelegate {
+    /// Re-read the themes folder and rebuild the Theme menu just before it opens.
+    ///
+    /// The alternative — populating once when the page is built — means a theme the user just
+    /// saved does not appear until the app is restarted, which makes editing a theme a
+    /// restart-per-iteration loop. Rebuilding here costs one small directory read per click.
+    public func menuNeedsUpdate(_ menu: NSMenu) {
+        guard menu === themePopup.menu, let directory = themesDirectory else { return }
+        // Remember the id, not the index: reloading can insert or drop items above it.
+        let values = Self.themeValues
+        let idx = themePopup.indexOfSelectedItem
+        let selectedId = values.indices.contains(idx) ? values[idx] : "system"
+
+        ThemeFile.loadUserPalettes(from: directory)
+
+        // Re-apply if the *selected* theme is one of the user's: they may have just edited its
+        // colours, and reloading the palette alone would not repaint anything. Built-ins cannot
+        // change, so this stays quiet in the common case. Items added with a nil action still
+        // trigger the popup's own action on selection.
+        if Theme.userPalettes.contains(where: { $0.id == selectedId }) {
+            onSetString("Colors.Theme", selectedId)
+        }
+
+        let names = Self.themeNames()
+        guard names != menu.items.map(\.title) else { return }   // nothing changed, leave it alone
+        menu.removeAllItems()
+        for name in names { menu.addItem(withTitle: name, action: nil, keyEquivalent: "") }
+        selectTheme(selectedId)
     }
 }
