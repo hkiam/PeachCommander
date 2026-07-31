@@ -63,6 +63,8 @@ final class ThemeGoldenTests: XCTestCase {
             "driveBarHighlight": rgba(c.driveBarHighlight),
             "driveBarText": rgba(c.driveBarText),
             "driveBarHighlightText": rgba(c.driveBarHighlightText),
+            // Optional: "none" when the palette leaves the cursor row's text alone.
+            "cursorRowText": c.cursorRowText.map(rgba) ?? "none",
         ]
     }
 
@@ -139,6 +141,9 @@ final class ThemeGoldenTests: XCTestCase {
             XCTAssertEqual(c.driveBarHighlight, NSColor.controlAccentColor, "\(name).driveBarHighlight")
             XCTAssertEqual(c.driveBarText, NSColor.labelColor, "\(name).driveBarText")
             XCTAssertEqual(c.driveBarHighlightText, NSColor.white, "\(name).driveBarHighlightText")
+            XCTAssertNil(c.cursorRowText,
+                         "\(name).cursorRowText must stay nil — a value here changes how every "
+                         + "cursor row is drawn in the default theme")
         }
     }
 
@@ -243,6 +248,37 @@ final class ThemeGoldenTests: XCTestCase {
         for (name, fg, bg) in pairs {
             XCTAssertNotEqual(rgba(fg), rgba(bg), "\(name): text and background are the same colour")
         }
+    }
+
+    /// The invariant that the shipped Norton palette violated: the cursor row is drawn as a
+    /// filled bar while the cells keep their normal text colour, so a palette whose
+    /// `selectionFillActive` is close to its `listText` renders an unreadable row unless it also
+    /// sets `cursorRowText`. Checked for every palette, not just Norton, so the next one cannot
+    /// repeat it.
+    func testEveryPaletteKeepsTheCursorRowReadable() {
+        for p in Theme.palettes {
+            if p.colors.cursorRowText != nil { continue }   // it re-colours the text, fine
+            let contrast = luminanceGap(p.colors.listText, over: p.colors.selectionFillActive,
+                                        on: p.colors.listBackground)
+            XCTAssertGreaterThan(contrast, 0.12,
+                """
+                palette "\(p.id)": the cursor bar (\(rgba(p.colors.selectionFillActive))) is too                 close to the row text (\(rgba(p.colors.listText))) — set cursorRowText, or pick a                 fill that leaves the text readable.
+                """)
+        }
+    }
+
+    /// Perceived-brightness gap between text and the bar it sits on. `selectionFillActive` may be
+    /// translucent, so it is composited over the panel background first — comparing against the
+    /// raw fill would call a 22%-alpha accent tint "different" when on screen it barely shifts.
+    private func luminanceGap(_ text: NSColor, over fill: NSColor, on background: NSColor) -> CGFloat {
+        func lum(_ c: NSColor) -> CGFloat {
+            let s = c.usingColorSpace(.sRGB) ?? c
+            return 0.299 * s.redComponent + 0.587 * s.greenComponent + 0.114 * s.blueComponent
+        }
+        let f = fill.usingColorSpace(.sRGB) ?? fill
+        let a = f.alphaComponent
+        let composited = lum(f) * a + lum(background) * (1 - a)
+        return abs(lum(text) - composited)
     }
 
     // MARK: - Custom colours on top

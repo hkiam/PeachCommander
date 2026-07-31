@@ -225,6 +225,10 @@ enum ThemeFile {
             "; This example reproduces the built-in Norton Commander theme, so it also serves as",
             "; the complete list of colours you can set. Built-in names (light, dark, norton,",
             "; system) are reserved — a file using one is skipped.",
+            ";",
+            "; CursorRowText is optional and special: the cursor row is drawn as a filled bar while",
+            "; the text keeps its normal colour. Set it if your bar colour is close to your text",
+            "; colour, or the cursor row will be unreadable. Omit it to leave the text alone.",
             "",
             "[Theme]",
             "Name = My Norton",
@@ -251,7 +255,7 @@ enum ThemeFile {
             ("StatusBarBackground", nc.statusBarBackground), ("StatusBarText", nc.statusBarText),
             ("DriveBarBackground", nc.driveBarBackground), ("DriveBarHighlight", nc.driveBarHighlight),
             ("DriveBarText", nc.driveBarText), ("DriveBarHighlightText", nc.driveBarHighlightText),
-        ]
+        ] + (nc.cursorRowText.map { [("CursorRowText", $0)] } ?? [])
         let width = pairs.map(\.0.count).max() ?? 0
         for (key, color) in pairs {
             lines.append(key.padding(toLength: width, withPad: " ", startingAt: 0) + " = #" + color.hexString.uppercased())

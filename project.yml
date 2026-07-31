@@ -243,9 +243,14 @@ targets:
       - Tests/PCThemeTests
       - path: Sources/PCApp/Theme.swift
       - path: Sources/PCApp/ThemeFile.swift
+      # The SDK helper plugins compile into themselves. Included here so the *plugin* side of the
+      # theme bridge is tested against a fake host table, not just the host side.
+      - path: Plugins/SDK/PluginTheme.swift
     settings:
       PRODUCT_NAME: PCThemeTests
       CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: CContrib
     frameworks:
       - XCTest
 

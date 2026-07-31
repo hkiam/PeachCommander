@@ -45,6 +45,14 @@ final class ContributionRegistry {
         onChange?()
     }
 
+    /// Tell every loaded plugin the colour theme changed (F-338).
+    ///
+    /// Errors are not possible here — a plugin without the entry point is skipped — so this is
+    /// safe to call on every theme change, including the startup one.
+    func notifyThemeChanged() {
+        for id in order { entries[id]?.plugin.notifyThemeChanged() }
+    }
+
     func removeAll() {
         guard !entries.isEmpty else { return }
         entries.removeAll(); order.removeAll(); onChange?()

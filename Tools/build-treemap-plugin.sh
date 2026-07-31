@@ -25,7 +25,8 @@ pc_swiftc -emit-library -O \
   "$ROOT/Plugins/Treemap/ScanEngine.swift" \
   "$ROOT/Plugins/Treemap/Renderers.swift" \
   "$ROOT/Plugins/Treemap/TreemapConfig.swift" \
-  "$ROOT/Plugins/SDK/PluginLoc.swift"
+  "$ROOT/Plugins/SDK/PluginLoc.swift" \
+  "$ROOT/Plugins/SDK/PluginTheme.swift"
 
 # Ship the plugin's localizations (see Plugins/SDK/LOCALIZATION.md).
 if [ -d "$ROOT/Plugins/Treemap/Resources" ]; then

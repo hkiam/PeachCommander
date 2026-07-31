@@ -13,7 +13,7 @@ public enum ContribSymbols {
     // Nothing is strictly required: a plugin may contribute only commands
     // (PcRunCommand), only views (PcMakeView), or both.
     public static let required: [String] = []
-    public static let optional = ["PcRunCommand", "PcMakeView", "PcCloseView", "PcConfigure", "PcNotifyView", "PcGetApiVersion", "PcInvokeTool"]
+    public static let optional = ["PcRunCommand", "PcMakeView", "PcCloseView", "PcConfigure", "PcNotifyView", "PcNotifyThemeChanged", "PcGetApiVersion", "PcInvokeTool"]
 }
 
 public final class ContribPlugin {
@@ -23,6 +23,7 @@ public final class ContribPlugin {
     private typealias MakeViewFn = @convention(c) (UnsafePointer<CChar>?, UnsafePointer<CChar>?, UnsafePointer<PcHostServices>?) -> UnsafeMutableRawPointer?
     private typealias CloseViewFn = @convention(c) (UnsafeMutableRawPointer?) -> Void
     private typealias NotifyViewFn = @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?, UnsafePointer<CChar>?) -> Void
+    private typealias NotifyThemeFn = @convention(c) () -> Void
     private typealias InvokeToolFn = @convention(c) (UnsafePointer<CChar>?, UnsafePointer<CChar>?, UnsafePointer<PcHostServices>?) -> UnsafeMutablePointer<CChar>?
 
     public init(library: PluginLibrary) { self.lib = library }
@@ -57,6 +58,16 @@ public final class ContribPlugin {
         key.withCString { k in value.withCString { v in
             unsafeBitCast(ptr, to: NotifyViewFn.self)(view, k, v)
         } }
+    }
+
+    /// Tell the plugin the host's colour theme changed, so its own windows can repaint.
+    ///
+    /// Views get the finer-grained PcNotifyView("theme", id); this covers windows the plugin
+    /// opened itself, which the host cannot address by view pointer. Absent symbol = no-op, which
+    /// is every plugin built before the theme keys existed.
+    public func notifyThemeChanged() {
+        guard let ptr = lib.symbol("PcNotifyThemeChanged") else { return }
+        unsafeBitCast(ptr, to: NotifyThemeFn.self)()
     }
 
     public var hasTools: Bool { lib.symbol("PcInvokeTool") != nil }

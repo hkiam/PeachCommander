@@ -18,7 +18,8 @@ pc_swiftc -emit-library -O -module-name Notes -target "$TARGET" -framework AppKi
   -o "$BUNDLE/Contents/MacOS/Notes" \
   "$ROOT/Plugins/Notes/notes.swift" \
   "$ROOT/Plugins/Notes/notes_wysiwyg.swift" \
-  "$ROOT/Plugins/SDK/PluginLoc.swift"
+  "$ROOT/Plugins/SDK/PluginLoc.swift" \
+  "$ROOT/Plugins/SDK/PluginTheme.swift"
 
 # Ship the plugin's localizations (see Plugins/SDK/LOCALIZATION.md).
 if [ -d "$ROOT/Plugins/Notes/Resources" ]; then

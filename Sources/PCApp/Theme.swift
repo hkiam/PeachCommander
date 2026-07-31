@@ -97,7 +97,10 @@ public struct Theme {
         driveBarBackground: cga("00AAAA"),
         driveBarHighlight: cga("55FFFF"),
         driveBarText: cga("000000"),
-        driveBarHighlightText: cga("000000")
+        driveBarHighlightText: cga("000000"),
+        // The active panel's cursor bar is cyan, and the panel keeps the row's normal text
+        // colour — which here is the same cyan. Without this the cursor row is invisible.
+        cursorRowText: cga("000000")
     )
 
     // MARK: - Named palettes
@@ -227,6 +230,15 @@ public struct Theme {
         public var driveBarText: NSColor
         public var driveBarHighlightText: NSColor
 
+        /// Text colour for the cursor row in the *active* panel, or nil to leave the row's text
+        /// alone (the default, and what the panel did before palettes existed).
+        ///
+        /// Needed because the cursor row is drawn as a filled bar while the text keeps its normal
+        /// colour. A palette whose fill is close to its text colour then makes the cursor row
+        /// unreadable — Norton's authentic cyan bar over cyan text is exactly that case, and it
+        /// shipped that way. Marked files keep `selectedText`, so marking stays visible on the bar.
+        public var cursorRowText: NSColor?
+
         /// Set one colour by its declared name, case-insensitively. Returns `false` for an
         /// unknown name so a theme-file loader can report the typo instead of ignoring it.
         ///
@@ -264,6 +276,10 @@ public struct Theme {
             case "drivebarhighlight": driveBarHighlight = color
             case "drivebartext": driveBarText = color
             case "drivebarhighlighttext": driveBarHighlightText = color
+            // Optional in the struct, but a file can only ever *set* it — absence means nil, which
+            // is the default. There is no way to write "leave the cursor row alone" explicitly,
+            // and none is needed: omitting the key does exactly that.
+            case "cursorrowtext": cursorRowText = color
             default: return false
             }
             return true
@@ -300,7 +316,8 @@ public struct Theme {
             driveBarBackground: NSColor = NSColor.controlColor,
             driveBarHighlight: NSColor = NSColor.controlAccentColor,
             driveBarText: NSColor = NSColor.labelColor,
-            driveBarHighlightText: NSColor = NSColor.white
+            driveBarHighlightText: NSColor = NSColor.white,
+            cursorRowText: NSColor? = nil
         ) {
             self.windowBackground = windowBackground
             self.listBackground = listBackground
@@ -331,6 +348,7 @@ public struct Theme {
             self.driveBarHighlight = driveBarHighlight
             self.driveBarText = driveBarText
             self.driveBarHighlightText = driveBarHighlightText
+            self.cursorRowText = cursorRowText
         }
 
         /// Return a copy with the four user-customisable panel colours overridden
@@ -368,7 +386,8 @@ public struct Theme {
                 driveBarBackground: driveBarBackground,
                 driveBarHighlight: driveBarHighlight,
                 driveBarText: driveBarText,
-                driveBarHighlightText: driveBarHighlightText)
+                driveBarHighlightText: driveBarHighlightText,
+                cursorRowText: cursorRowText)
         }
     }
 
@@ -385,18 +404,90 @@ public struct Theme {
         }
     }
 
+    // MARK: - Plugin bridge (F-338)
+
+    /// "#RRGGBB", or "#RRGGBBAA" when the colour is translucent.
+    ///
+    /// Separate from `NSColor.hexString` on purpose: that one is what the settings colour wells
+    /// round-trip through the config file, and widening its output would change values already
+    /// written there. This one only ever feeds the plugin bridge.
+    public static func pluginHex(_ color: NSColor) -> String {
+        let c = color.usingColorSpace(.sRGB) ?? color
+        let r = Int((c.redComponent * 255).rounded()), g = Int((c.greenComponent * 255).rounded())
+        let b = Int((c.blueComponent * 255).rounded()), a = Int((c.alphaComponent * 255).rounded())
+        return a >= 255 ? String(format: "#%02X%02X%02X", r, g, b)
+                        : String(format: "#%02X%02X%02X%02X", r, g, b, a)
+    }
+
+    /// The theme as `getContext` keys a plugin can read (SPEC: contrib.h "theme.*").
+    ///
+    /// Two vocabularies, on purpose:
+    ///
+    ///   * **Semantic** — `theme.background`, `theme.text`, `theme.accent`, … A plugin draws a
+    ///     list or a chart, not a drive bar, so it should not have to learn which panel element
+    ///     happens to carry the colour it wants. These names also stay stable if the panel
+    ///     colours are reorganised later.
+    ///   * **Raw** — `theme.color.<propertyName>` for every colour in `Colors`, for the rare
+    ///     plugin that wants to match one specific panel element exactly.
+    ///
+    /// A plugin that reads none of these is unaffected: the host simply answers keys nobody asks
+    /// about. That is what makes this a pure addition rather than an ABI change.
+    public static func pluginContextValues(colors: Colors, isDark: Bool, themeId: String) -> [String: String] {
+        var v: [String: String] = [
+            "theme.id": themeId,
+            "theme.isDark": isDark ? "1" : "0",
+            // Semantic set. Deliberately small — every entry is something a plugin view actually
+            // needs to draw a list, a chart or a form.
+            "theme.background": pluginHex(colors.listBackground),
+            "theme.windowBackground": pluginHex(colors.windowBackground),
+            "theme.text": pluginHex(colors.listText),
+            "theme.secondaryText": pluginHex(colors.pathBarFreeSpaceText),
+            "theme.accent": pluginHex(colors.activeCursorFrame),
+            "theme.separator": pluginHex(colors.columnSeparator),
+            "theme.selectionBackground": pluginHex(colors.selectionFillActive),
+            // The text colour to use *on* selectionBackground. A palette that inverts its cursor
+            // row says so via cursorRowText; otherwise the normal text colour is what the panel
+            // itself draws there, so a plugin matching the panel should use the same.
+            "theme.selectionText": pluginHex(colors.cursorRowText ?? colors.listText),
+            "theme.markedText": pluginHex(colors.selectedText),
+            "theme.controlBackground": pluginHex(colors.driveBarBackground),
+            "theme.controlText": pluginHex(colors.driveBarText),
+        ]
+        for (label, value) in Mirror(reflecting: colors).children {
+            guard let label else { continue }
+            if let c = value as? NSColor {
+                v["theme.color.\(label)"] = pluginHex(c)
+            } else if let c = value as? NSColor? {
+                // Optional colours (cursorRowText): omit the key entirely when unset, so a plugin
+                // can tell "the palette does not re-colour the cursor row" from "it is black".
+                if let c { v["theme.color.\(label)"] = pluginHex(c) }
+            }
+        }
+        return v
+    }
+
     /// The active custom-colour overrides; `applyAppearance` folds these into `current`.
     nonisolated(unsafe) public static var customColors = ColorOverride()
 }
 
 public extension NSColor {
-    /// Parse "RRGGBB" / "#RRGGBB" (sRGB); nil for empty or malformed input.
+    /// Parse "RRGGBB" / "#RRGGBB", or "RRGGBBAA" / "#RRGGBBAA" with alpha (sRGB);
+    /// nil for empty or malformed input.
+    ///
+    /// Eight digits exist because two of the panel colours are deliberately translucent — the
+    /// zebra stripe and the selection fill sit *over* the background. Without alpha a theme file
+    /// could not express them and would have to fake the blend against one fixed background.
     convenience init?(hexString: String) {
         var s = hexString.trimmingCharacters(in: .whitespaces)
         if s.hasPrefix("#") { s.removeFirst() }
-        guard s.count == 6, let v = Int(s, radix: 16) else { return nil }
-        self.init(srgbRed: CGFloat((v >> 16) & 0xFF) / 255, green: CGFloat((v >> 8) & 0xFF) / 255,
-                  blue: CGFloat(v & 0xFF) / 255, alpha: 1)
+        guard s.count == 6 || s.count == 8, let v = UInt64(s, radix: 16) else { return nil }
+        if s.count == 8 {
+            self.init(srgbRed: CGFloat((v >> 24) & 0xFF) / 255, green: CGFloat((v >> 16) & 0xFF) / 255,
+                      blue: CGFloat((v >> 8) & 0xFF) / 255, alpha: CGFloat(v & 0xFF) / 255)
+        } else {
+            self.init(srgbRed: CGFloat((v >> 16) & 0xFF) / 255, green: CGFloat((v >> 8) & 0xFF) / 255,
+                      blue: CGFloat(v & 0xFF) / 255, alpha: 1)
+        }
     }
 
     /// "RRGGBB" for this colour in sRGB.

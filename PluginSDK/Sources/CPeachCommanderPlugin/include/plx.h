@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /*
  * plx.h — Peach Commander lister plugins (PLX), a WLX port (SPEC-012 §3, F-238).
  *

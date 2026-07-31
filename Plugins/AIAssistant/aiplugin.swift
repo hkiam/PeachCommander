@@ -15,6 +15,8 @@ private var aiVCKey: UInt8 = 0   // associates the view controller's lifetime wi
 /// The live chat view controller (weak) + a prompt queued before it exists, so an
 /// "AI ▸" context-menu skill can send even if the panel isn't mounted yet.
 @MainActor private weak var liveChatVC: AIChatViewController?
+/// The services table the live chat was built with, so PcNotifyView("theme") can re-read colours.
+@MainActor private var liveChatServices: PcHostServices?
 @MainActor private var pendingSkillPrompt: (prompt: String, title: String)?
 @MainActor private var pendingTableRequest: (path: String, name: String)?
 
@@ -44,6 +46,10 @@ public func PcMakeView(_ viewId: UnsafePointer<CChar>?,
         ])
         objc_setAssociatedObject(container, &aiVCKey, vc, .OBJC_ASSOCIATION_RETAIN)
         liveChatVC = vc
+        // F-338: colour the chat for the host's theme, and remember the services table so a later
+        // theme change can be re-read (PcNotifyView below).
+        liveChatServices = svc
+        vc.applyTheme(svc)
         await vc.start()
         vc.focusInput()
         // A skill invoked before the panel existed queued its request — run it now.
@@ -126,7 +132,10 @@ private func presentAIView(_ svc: PcHostServices) {
 }
 
 @_cdecl("PcNotifyView")
-public func PcNotifyView(_ view: UnsafeMutableRawPointer?, _ key: UnsafePointer<CChar>?, _ value: UnsafePointer<CChar>?) {}
+public func PcNotifyView(_ view: UnsafeMutableRawPointer?, _ key: UnsafePointer<CChar>?, _ value: UnsafePointer<CChar>?) {
+    guard let key, String(cString: key) == "theme" else { return }
+    MainActor.assumeIsolated { liveChatVC?.applyTheme(liveChatServices) }
+}
 
 // MARK: - Chat construction (mirrors the app's former openAIChat wiring)
 

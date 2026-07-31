@@ -73,7 +73,9 @@ final class DirectoryCellView: NSTableCellView, NSTextFieldDelegate {
     func configure(name: String, request: IconRequest?, isSelected: Bool, badge: String? = nil, color: NSColor? = nil) {
         iconGeneration &+= 1
         label.stringValue = name
-        label.textColor = isSelected ? Theme.current.selectedText : (color ?? Theme.current.listText)
+        isMarked = isSelected
+        baseTextColor = isSelected ? Theme.current.selectedText : (color ?? Theme.current.listText)
+        label.textColor = baseTextColor
         badgeLabel.stringValue = badge ?? ""
         badgeLabel.textColor = .systemYellow   // sticky-note hue
 
@@ -89,6 +91,21 @@ final class DirectoryCellView: NSTableCellView, NSTextFieldDelegate {
                 self.iconView.image = image
             }
         }
+    }
+
+    /// See `CursorRowAwareCell`. Kept beside the rename support because both touch `label`'s
+    /// colour: `beginInlineEdit` deliberately switches to the system text colours, and
+    /// `applyCursorRowText` must not fight it — it is only ever called for non-editing rows,
+    /// since the cursor row cannot move while its own cell is being edited.
+    private var baseTextColor: NSColor = Theme.current.listText
+    private var isMarked = false
+
+    func applyCursorRowText(_ onCursorRow: Bool) {
+        guard !isMarked, let cursorColor = Theme.current.cursorRowText else {
+            label.textColor = baseTextColor
+            return
+        }
+        label.textColor = onCursorRow ? cursorColor : baseTextColor
     }
 
     // MARK: - In-cell rename (F-081)
@@ -150,6 +167,21 @@ final class DirectoryCellView: NSTableCellView, NSTextFieldDelegate {
 }
 
 /// Plain text column cell (Ext / Size / Date / Attr).
+extension DirectoryCellView: CursorRowAwareCell {}
+
+/// A panel cell whose label colour depends on whether its row is the cursor row.
+///
+/// The cursor row is drawn as a filled bar by `CursorRowView` while the cells keep their normal
+/// text colour, so a palette whose bar colour is close to its text colour renders an unreadable
+/// row. `Theme.current.cursorRowText` fixes that per palette, and this protocol is how the row
+/// view reaches the cells to apply it.
+///
+/// Inert unless a palette sets `cursorRowText`: with nil — every built-in light/dark theme — the
+/// row view does not even iterate its cells, so the default drawing path is untouched.
+protocol CursorRowAwareCell: AnyObject {
+    func applyCursorRowText(_ onCursorRow: Bool)
+}
+
 final class PlainCellView: NSTableCellView {
     static let reuseID = NSUserInterfaceItemIdentifier("PCPlainCell")
 
@@ -184,25 +216,59 @@ final class PlainCellView: NSTableCellView {
     func configure(text: String, isSelected: Bool, monospaced: Bool = false,
                    alignment: NSTextAlignment = .left, color: NSColor? = nil) {
         label.stringValue = text
-        label.textColor = isSelected ? Theme.current.selectedText : (color ?? Theme.current.listText)
+        isMarked = isSelected
+        baseTextColor = isSelected ? Theme.current.selectedText : (color ?? Theme.current.listText)
+        label.textColor = baseTextColor
         label.font = monospaced ? Fonts.panelMono : Fonts.panelText
         label.alignment = alignment
     }
+
+    /// The colour `configure` chose, so the cursor-row colour can be applied and removed without
+    /// re-running configure (the cursor moves far more often than cells are reconfigured).
+    private var baseTextColor: NSColor = Theme.current.listText
+    /// Marked files keep `selectedText` even on the cursor bar — that is how NC shows them too,
+    /// and losing the marking would be worse than a slightly odd colour pairing.
+    private var isMarked = false
+
+    func applyCursorRowText(_ onCursorRow: Bool) {
+        guard !isMarked, let cursorColor = Theme.current.cursorRowText else {
+            label.textColor = baseTextColor
+            return
+        }
+        label.textColor = onCursorRow ? cursorColor : baseTextColor
+    }
 }
+
+extension PlainCellView: CursorRowAwareCell {}
 
 /// Row view that draws the TC cursor frame around the focused row.
 final class CursorRowView: NSTableRowView {
     var isCursor: Bool = false {
-        didSet { if oldValue != isCursor { needsDisplay = true } }
+        didSet { if oldValue != isCursor { needsDisplay = true; needsLayout = true } }
     }
     /// Whether this row's panel is the active one — the cursor row is tinted more
     /// strongly on the active side so you can tell which panel is focused.
     var isActivePanel: Bool = false {
-        didSet { if oldValue != isActivePanel, isCursor { needsDisplay = true } }
+        didSet { if oldValue != isActivePanel, isCursor { needsDisplay = true; needsLayout = true } }
     }
     /// Alternating-row background (F-032): shade odd rows when enabled.
     var zebra: Bool = false { didSet { if oldValue != zebra { needsDisplay = true } } }
     var isOddRow: Bool = false { didSet { if oldValue != isOddRow { needsDisplay = true } } }
+
+    /// Apply the palette's cursor-row text colour to this row's cells.
+    ///
+    /// `layout()` rather than the `isCursor` setter: AppKit adds the cell views to the row view
+    /// *after* `rowViewForRow` returns, so at that point there is nothing to colour. layout runs
+    /// once the cells are in place and again whenever the cursor moves onto or off this row.
+    ///
+    /// The guard is what keeps the default untouched — with no `cursorRowText` the cells are never
+    /// even visited, so light/dark draw exactly as they did before this existed.
+    override func layout() {
+        super.layout()
+        guard Theme.current.cursorRowText != nil else { return }
+        let onBar = isCursor && isActivePanel   // only the active panel's bar is filled strongly
+        for case let cell as CursorRowAwareCell in subviews { cell.applyCursorRowText(onBar) }
+    }
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)

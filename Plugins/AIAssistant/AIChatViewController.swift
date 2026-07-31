@@ -603,21 +603,53 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     /// live run.
     func nativeActivity(_ toolName: String) { showActivity(toolName, gen: runGeneration) }
 
-    private static let bodyAttrs: [NSAttributedString.Key: Any] =
-        [.font: NSFont.systemFont(ofSize: 13), .foregroundColor: NSColor.labelColor]
+    /// Host colour theme (F-338). The chat is a sidebar panel sitting beside the file panels, so
+    /// it follows the theme; a standalone window would stay in system colours.
+    private var theme = PluginTheme.systemFallback
+
+    /// Not `static` any more: the body colour depends on the theme, and a static would freeze
+    /// whatever the theme was when the class was first touched.
+    private var bodyAttrs: [NSAttributedString.Key: Any] {
+        [.font: NSFont.systemFont(ofSize: 13), .foregroundColor: theme.text]
+    }
+    private var labelAttrs: [NSAttributedString.Key: Any] {
+        [.font: NSFont.boldSystemFont(ofSize: 12), .foregroundColor: theme.secondaryText]
+    }
+
+    /// Apply the host theme, including to messages already on screen.
+    ///
+    /// Remapping the existing runs matters: without it a theme switch leaves the transcript in two
+    /// colour schemes at once — old messages in the previous theme, new ones in the current — which
+    /// looks like a rendering bug. The two colours this view ever sets are known, so old → new is
+    /// an exact substitution rather than a guess.
+    func applyTheme(_ services: PcHostServices?) {
+        let old = theme
+        theme = PluginTheme(services)
+        transcript.backgroundColor = theme.background
+        transcript.insertionPointColor = theme.text
+        transcript.selectedTextAttributes = [.backgroundColor: theme.selectionBackground,
+                                             .foregroundColor: theme.selectionText]
+        guard let ts = transcript.textStorage, ts.length > 0 else { return }
+        ts.beginEditing()
+        ts.enumerateAttribute(.foregroundColor, in: NSRange(location: 0, length: ts.length)) { value, range, _ in
+            guard let c = value as? NSColor else { return }
+            if c == old.text { ts.addAttribute(.foregroundColor, value: theme.text, range: range) }
+            else if c == old.secondaryText { ts.addAttribute(.foregroundColor, value: theme.secondaryText, range: range) }
+        }
+        ts.endEditing()
+    }
 
     /// Stream the assistant's answer live: start an assistant bubble on the first partial,
     /// then replace its body with each cumulative snapshot.
     func streamPartial(_ text: String) {
         guard busy, let ts = transcript.textStorage else { return }
         if streamBodyStart == nil {
-            ts.append(NSAttributedString(string: "\(assistantLabel): ", attributes: [
-                .font: NSFont.boldSystemFont(ofSize: 12), .foregroundColor: NSColor.secondaryLabelColor]))
+            ts.append(NSAttributedString(string: "\(assistantLabel): ", attributes: labelAttrs))
             streamBodyStart = ts.length
         }
         let start = streamBodyStart ?? ts.length
         let range = NSRange(location: start, length: max(0, ts.length - start))
-        ts.replaceCharacters(in: range, with: NSAttributedString(string: text, attributes: Self.bodyAttrs))
+        ts.replaceCharacters(in: range, with: NSAttributedString(string: text, attributes: bodyAttrs))
         transcript.scrollToEndOfDocument(nil)
     }
 
@@ -632,9 +664,9 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
             let range = NSRange(location: start, length: max(0, ts.length - start))
             ts.replaceCharacters(in: range, with: NSAttributedString(
                 string: shown.isEmpty ? String(localized: "I couldn’t produce a clear answer. Please try again or rephrase.", comment: "AI: empty answer fallback") : shown,
-                attributes: Self.bodyAttrs))
+                attributes: bodyAttrs))
         }
-        ts.append(NSAttributedString(string: "\n\n", attributes: Self.bodyAttrs))
+        ts.append(NSAttributedString(string: "\n\n", attributes: bodyAttrs))
         streamBodyStart = nil
         transcript.scrollToEndOfDocument(nil)
         return true
@@ -706,11 +738,9 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
 
     private func append(role: String, text: String) {
         let m = NSMutableAttributedString()
-        m.append(NSAttributedString(string: "\(role): ", attributes: [
-            .font: NSFont.boldSystemFont(ofSize: 12), .foregroundColor: NSColor.secondaryLabelColor]))
+        m.append(NSAttributedString(string: "\(role): ", attributes: labelAttrs))
         let bodyStart = m.length
-        m.append(NSAttributedString(string: text, attributes: [
-            .font: NSFont.systemFont(ofSize: 13), .foregroundColor: NSColor.labelColor]))
+        m.append(NSAttributedString(string: text, attributes: bodyAttrs))
         for match in PathDetector.detect(in: text) {
             guard let encoded = match.path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
                   let url = URL(string: "pcfile://" + encoded) else { continue }

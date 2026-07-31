@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /*
  * contrib.h — Peach Commander plugin contributions, behavior ABI (SPEC-013).
  *
@@ -45,7 +46,17 @@ typedef struct PcHostServices {
     /* UI + composition. */
     void (*presentInfo)(void *host, const char *title, const char *message);
     /* Read a context value by key (same keys the declarative `when` sees), e.g.
-       "cursorPath", "selectionCount", "panelScheme". 1 on success. */
+       "cursorPath", "selectionCount", "panelScheme". 1 on success.
+
+       Colour theme (F-338): "theme.id", "theme.isDark" ("1"/"0"), and colours as
+       "#RRGGBB" — or "#RRGGBBAA" when translucent. A semantic set a plugin view can
+       draw with directly: theme.background, theme.windowBackground, theme.text,
+       theme.secondaryText, theme.accent, theme.separator,
+       theme.selectionBackground, theme.selectionText, theme.markedText,
+       theme.controlBackground, theme.controlText. Every host panel colour is also
+       available raw as "theme.color.<name>" (the names a user theme file uses).
+       Read them when building a view and again on PcNotifyThemeChanged; fall back to
+       the system colours if a key is absent, which is what an older host returns. */
     int  (*getContext)(void *host, const char *key, char *out, int maxlen);
     /* Trigger any host or plugin command by id (composition). */
     void (*invokeCommand)(void *host, const char *commandId);
@@ -126,6 +137,16 @@ void  PcConfigure(void *parentWindow);
    Lets a plugin add tools to the assistant's catalogue; the host gates them by the
    declared capability and routes calls here. May be NULL if the plugin has no tools. */
 char *PcInvokeTool(const char *toolName, const char *argumentsJson, const PcHostServices *services);
+
+/* Notify the plugin that the host's colour theme changed, so any window or view it
+   already opened can re-read the `theme.*` context keys (see getContext) and repaint.
+   Optional — a plugin that does not export it is simply not called, and a plugin that
+   does still works with an older host that never calls it. Called on the main thread.
+
+   Views built with PcMakeView also receive PcNotifyView(view, "theme", <themeId>);
+   this entry point exists for the plugin's OWN windows, which the host cannot address
+   by view pointer. */
+void  PcNotifyThemeChanged(void);
 
 /* Notify a view previously returned by PcMakeView that a host context value
    changed, e.g. key "cursorPath" or "dir" (both UTF-8). Lets an embedded view
