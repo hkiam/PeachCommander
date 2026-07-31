@@ -1097,6 +1097,13 @@ final class SettingsView: NSView, NSTableViewDataSource, NSTableViewDelegate {
             scroll.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             scroll.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             scroll.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            // A minimum height, or this pane has none at all: the table's height came only
+            // from the pane's bottom edge, while the pane's height comes from its content —
+            // circular, and Auto Layout resolves it by collapsing the table to its header
+            // row. The host's settings panes now size to their content and scroll, so a pane
+            // has to state how tall it wants to be. Matches the built-in associations pane,
+            // which sets the same kind of floor.
+            scroll.heightAnchor.constraint(greaterThanOrEqualToConstant: 240),
         ])
     }
 
