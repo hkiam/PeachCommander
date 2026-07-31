@@ -359,12 +359,17 @@ public final class SettingsWindowController: NSWindowController {
         self.onEditShortcuts = onEditShortcuts
 
         let window = NSWindow(
-            contentRect: NSMakeRect(0, 0, 680, 440),
-            styleMask: [.titled, .closable],
+            contentRect: NSMakeRect(0, 0, 680, 520),
+            // Resizable: panes differ enormously in height — the plugin list grows with
+            // every installed plugin — and a fixed 440pt window simply cut the rest off.
+            styleMask: [.titled, .closable, .resizable],
             backing: .buffered,
             defer: false
         )
         window.title = String(localized: "Settings")
+        // Small enough to fit a laptop screen, large enough that the source list and a
+        // pane's controls stay usable.
+        window.minSize = NSSize(width: 620, height: 400)
         super.init(window: window)
         setupWindow()
     }
@@ -455,21 +460,49 @@ public final class SettingsWindowController: NSWindowController {
     // MARK: - Page switching
 
     private func selectPage(_ page: SettingsPage) {
+        mount(pageViews[page] ?? buildAndCachePage(page))
+    }
+
+    /// Put `view` in the content area inside a scroll view.
+    ///
+    /// Panes were previously pinned to top/leading/trailing only, with no bottom anchor and
+    /// no scroll view anywhere — so a pane taller than the window did not scroll, it was
+    /// silently clipped. On the Plugins pane that hid the "Manage Plugins…" button below the
+    /// edge, which looked like a dead button rather than a layout problem. Scrolling here
+    /// rather than inside makePageStack covers plugin-contributed panes too, since those
+    /// never went through it.
+    private func mount(_ view: NSView) {
         contentContainer.subviews.forEach { $0.removeFromSuperview() }
-        let view = pageViews[page] ?? buildAndCachePage(page)
+
+        let scroll = NSScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        scroll.hasVerticalScroller = true
+        scroll.hasHorizontalScroller = false
+        scroll.autohidesScrollers = true
+        scroll.drawsBackground = false
+        scroll.borderType = .noBorder
+
         view.translatesAutoresizingMaskIntoConstraints = false
-        contentContainer.addSubview(view)
+        scroll.documentView = view
+        contentContainer.addSubview(scroll)
+
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: contentContainer.topAnchor),
-            view.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor)
+            scroll.topAnchor.constraint(equalTo: contentContainer.topAnchor),
+            scroll.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
+            scroll.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor),
+            // Match the width so panes reflow instead of scrolling sideways; height stays
+            // free so the content decides when a scroller is needed.
+            view.leadingAnchor.constraint(equalTo: scroll.contentView.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: scroll.contentView.trailingAnchor),
+            view.topAnchor.constraint(equalTo: scroll.contentView.topAnchor),
+            view.widthAnchor.constraint(equalTo: scroll.contentView.widthAnchor)
         ])
     }
 
     /// Mount a plugin-contributed pane (built lazily, cached, pinned to fill).
     private func selectPluginPane(_ index: Int) {
         guard pluginPanes.indices.contains(index) else { return }
-        contentContainer.subviews.forEach { $0.removeFromSuperview() }
         let pane = pluginPanes[index]
         let view: NSView
         if let cached = pluginPaneViews[pane.id] {
@@ -478,14 +511,9 @@ public final class SettingsWindowController: NSWindowController {
             pluginPaneViews[pane.id] = made
             view = made
         } else { return }
-        view.translatesAutoresizingMaskIntoConstraints = false
-        contentContainer.addSubview(view)
-        NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: contentContainer.topAnchor),
-            view.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor),
-        ])
+        // Same treatment as the built-in pages: a plugin's pane is arbitrary content, so it
+        // gets to scroll rather than being clipped to whatever the window happens to be.
+        mount(view)
     }
 
     private func buildAndCachePage(_ page: SettingsPage) -> NSView {
