@@ -208,22 +208,21 @@ final class CursorRowView: NSTableRowView {
         super.draw(dirtyRect)
         // Faint alternating shade on non-cursor odd rows (drawn under the content).
         if zebra, isOddRow, !isCursor {
-            NSColor.gray.withAlphaComponent(0.08).setFill()
+            Theme.current.zebraRow.setFill()
             bounds.fill()
         }
         guard isCursor else { return }
         // Subtle background fill: accent tint on the active panel, faint grey on the
         // inactive one, so the cursor row stays readable but marks the active side.
-        let fill = isActivePanel
-            ? NSColor.controlAccentColor.withAlphaComponent(0.22)
-            : NSColor.gray.withAlphaComponent(0.10)
+        let fill = isActivePanel ? Theme.current.selectionFillActive
+                                 : Theme.current.selectionFillInactive
         fill.setFill()
         bounds.fill()
         // Thin frame around the cursor row.
         let frame = bounds.insetBy(dx: 0.5, dy: 0.5)
         let path = NSBezierPath(rect: frame)
         path.lineWidth = 1
-        (isActivePanel ? NSColor.controlAccentColor : Theme.current.cursorFrame).setStroke()
+        (isActivePanel ? Theme.current.activeCursorFrame : Theme.current.cursorFrame).setStroke()
         path.stroke()
     }
 
@@ -329,7 +328,7 @@ final class TagCellView: NSTableCellView {
             color.setFill()
             dot.fill()
             // Thin outline so light dots stay visible on the row background.
-            NSColor.separatorColor.setStroke()
+            Theme.current.headerSeparator.setStroke()
             dot.lineWidth = 0.5
             dot.stroke()
             x += diameter + spacing

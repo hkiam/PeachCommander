@@ -2,7 +2,7 @@
 
 _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`. Do not edit by hand._
 
-**67 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
+**68 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
 
 ## Navigation
 
@@ -89,6 +89,7 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 | Appearance (light/dark, colors, font) | user | — | ✅ |
 | AppleScript | user, developer | — | ✅ |
 | Button bar (toolbar) | user, expert | — | ✅ |
+| Color themes (incl. Norton Commander) | user | — | ✅ |
 | Command system & browser | expert | — | ✅ |
 | Keyboard shortcuts & schemes | user, expert | — | ✅ |
 | Start menu & user commands | expert | — | ✅ |

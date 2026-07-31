@@ -94,12 +94,13 @@ final class DriveBarView: NSView {
         let textSize = (text as NSString).size(withAttributes: [.font: font])
         let rect = NSRect(x: x, y: (bounds.height - chipHeight) / 2,
                           width: textSize.width + textPad * 2, height: chipHeight)
-        (highlighted ? NSColor.controlAccentColor : NSColor.controlColor).setFill()
+        (highlighted ? Theme.current.driveBarHighlight : Theme.current.driveBarBackground).setFill()
         NSBezierPath(roundedRect: rect, xRadius: 4, yRadius: 4).fill()
         (text as NSString).draw(
             at: NSPoint(x: rect.minX + textPad, y: rect.midY - textSize.height / 2),
             withAttributes: [.font: font,
-                             .foregroundColor: highlighted ? NSColor.white : NSColor.labelColor])
+                             .foregroundColor: highlighted ? Theme.current.driveBarHighlightText
+                                                          : Theme.current.driveBarText])
         x = rect.maxX + spacing
         return rect
     }
