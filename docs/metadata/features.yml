@@ -504,7 +504,9 @@ features:
       multi-page document pages inside the panel. Name, kind and size below it, then created /
       modified / where as key-value rows. The preview is debounced (~0.18 s) so walking a directory
       with the arrow keys does not spawn a preview per row, and falls back to the file icon for
-      folders and anything Quick Look has no generator for.
+      folders and anything Quick Look has no generator for. The preview starts at the top of the
+      page and grows into whatever height the details leave, and the panel's width is draggable
+      from its left edge (F-344), persisted as [Layout] PreviewWidth.
 
   - id: editor
     name: Text-/Code-Editor (F4) & Hex-Editor

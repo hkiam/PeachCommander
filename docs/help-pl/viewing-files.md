@@ -52,7 +52,7 @@ Aby uzyskać szybki podgląd pełnoekranowy obsługiwany przez sam macOS, naciś
 
 Panel boczny (**Widok > Panel podglądu** lub Cmd+Shift+P) ma stronę **Informacje**, która pokazuje element pod kursorem tak, jak robi to pasek informacji Findera.
 
-- Podgląd wypełnia szerokość panelu — po poszerzeniu panelu podgląd rośnie razem z nim.
+- Podgląd wypełnia szerokość panelu — po poszerzeniu panelu podgląd rośnie razem z nim. Przeciągnij lewą krawędź panelu, aby go poszerzyć lub zwęzić; szerokość jest zapamiętywana.
 - To prawdziwy podgląd macOS, a nie mała miniatura: działa każdy format, który potrafi pokazać Szybki podgląd, a dokument wielostronicowy przewijasz w podglądzie strona po stronie.
 - Poniżej znajdują się nazwa, rodzaj i rozmiar, a dalej data utworzenia i zmiany oraz folder, w którym element się znajduje.
 
