@@ -63,6 +63,8 @@ The source is syntax-highlighted, and two buttons take it further: **Save As…*
 
 Results are cached on disk, so reopening a file you looked at before is instant; the cache is keyed by the file's size and date and by the engine's arguments, so a rebuilt class or a changed flag is decompiled again. The engine you pick is remembered per file kind. A profile can inherit from a built-in with `extends = cfr` and override only the flags — useful when you keep two presets of the same engine.
 
+Turn on **Compare** to open a second panel with its own engine menu. Two decompilers fail in different places, so seeing them side by side is often quicker than deciding which to trust; picking `javap` on one side puts the bytecode next to the source. Both panels share the cache, so switching between engines you have already run is instant.
+
 Android is covered too: F3 on a `.dex` file uses **jadx** (Apache 2.0, `brew install jadx`), which turns Dalvik bytecode back into Java. Adding it took one engine description — the same mechanism, a different format.
 
 The plugin is **off until you turn it on**, in Settings ▸ Plugins — most people never open a class file, and it needs an engine to be useful.
