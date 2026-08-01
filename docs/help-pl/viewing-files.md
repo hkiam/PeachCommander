@@ -59,6 +59,8 @@ Nic nie jest pobierane za ciebie: to programy innych autorów na własnych licen
 
 Silnik zmieniasz menu u góry podglądu; wybrany działa natychmiast, a wynik jest zachowywany, więc porównanie dwóch silników na tym samym pliku jest błyskawiczne.
 
+Kod jest podświetlany składniowo, a dwa przyciski prowadzą dalej: **Zapisz jako…** zapisuje go do pliku, a **Otwórz w edytorze** przekazuje go temu, co otwiera `.java` na twoim Macu. Bardzo duży wynik pokazywany jest bez podświetlenia, aby pojawił się od razu, a nie po chwili; wiersz stanu o tym informuje.
+
 Wtyczka jest **wyłączona, dopóki jej nie włączysz**, w Ustawienia ▸ Wtyczki — większość osób nigdy nie otwiera pliku .class, a bez silnika i tak nic nie da.
 
 Aby dodać własny silnik, utwórz `decompilers.ini` w folderze silników:

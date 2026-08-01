@@ -527,6 +527,26 @@ public struct Theme {
     /// formats — put all of that on the key-handling path. Set by `applyAppearance`.
     nonisolated(unsafe) public static var pluginContext: [String: String] = [:]
 
+    /// The nine syntax colours as `theme.syntax.<role>` keys.
+    ///
+    /// Separate from the panel colours because they answer a different question: a plugin that
+    /// renders *code* needs a comment colour, not a drive-bar colour. Without these a plugin
+    /// showing source had to invent its own palette, which is precisely the mismatch the theme
+    /// bridge exists to avoid.
+    public static func pluginSyntaxValues(_ s: SyntaxColors) -> [String: String] {
+        [
+            "theme.syntax.comment": pluginHex(s.comment),
+            "theme.syntax.string": pluginHex(s.string),
+            "theme.syntax.number": pluginHex(s.number),
+            "theme.syntax.keyword": pluginHex(s.keyword),
+            "theme.syntax.type": pluginHex(s.type),
+            "theme.syntax.function": pluginHex(s.function),
+            "theme.syntax.property": pluginHex(s.property),
+            "theme.syntax.constant": pluginHex(s.constant),
+            "theme.syntax.escape": pluginHex(s.escape),
+        ]
+    }
+
     public static func pluginContextValues(colors: Colors, isDark: Bool, themeId: String) -> [String: String] {
         var v: [String: String] = [
             "theme.id": themeId,
@@ -548,6 +568,7 @@ public struct Theme {
             "theme.controlBackground": pluginHex(colors.driveBarBackground),
             "theme.controlText": pluginHex(colors.driveBarText),
         ]
+        v.merge(pluginSyntaxValues(isDark ? darkSyntax : lightSyntax)) { a, _ in a }
         for (label, value) in Mirror(reflecting: colors).children {
             guard let label else { continue }
             if let c = value as? NSColor {

@@ -702,7 +702,10 @@ features:
       is GPLv3 and could not be shipped inside an Apache-2.0 app — which is why nothing is bundled
       and nothing is downloaded. User engines from decompilers.ini take precedence over built-ins.
       Ships disabled: PCPluginEnabledByDefault=false, the first use of the opt-in state added to
-      PluginConfig.
+      PluginConfig. The source is syntax-highlighted by Plugins/SDK/PluginSyntax.swift — a
+      language-agnostic lexer, not a parser, because decompiler output is often truncated — and can
+      be saved to a file or handed to the system editor. Highlighting is skipped above 400k
+      characters so a large result appears at once.
 
   # ───────────────────────── Settings ─────────────────────────
   - id: settings

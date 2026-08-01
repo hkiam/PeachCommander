@@ -3383,6 +3383,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // Rebuilt here, and only here: the one place the theme can change (F-338).
         Theme.pluginContext = Theme.pluginContextValues(colors: Theme.current, isDark: isDark,
                                                        themeId: themeId)
+        // A named palette carries its own syntax colours, so take them from what was resolved
+        // rather than re-deriving them from isDark — otherwise a palette could show panels in its
+        // own colours while plugins highlighted code in the generic dark set.
+        Theme.pluginContext.merge(Theme.pluginSyntaxValues(Theme.currentSyntax)) { _, new in new }
         window?.backgroundColor = Theme.current.windowBackground
         leftPanelController?.applyAppearance()
         rightPanelController?.applyAppearance()

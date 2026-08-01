@@ -59,6 +59,8 @@ No se descarga nada por usted: son programas de terceros con sus propias licenci
 
 Cambie de motor con el menú en la parte superior del visor; el elegido se usa de inmediato y el resultado se conserva, así que comparar dos motores sobre el mismo archivo es instantáneo.
 
+El código se resalta sintácticamente, y dos botones van más allá: **Guardar como…** lo escribe en un archivo y **Abrir en el editor** lo entrega a lo que abra los `.java` en su Mac. Un resultado muy grande se muestra sin resaltado para que aparezca de inmediato en lugar de tras una pausa; la línea de estado lo indica.
+
 El módulo está **desactivado hasta que usted lo active**, en Ajustes ▸ Módulos: casi nadie abre un archivo .class, y sin un motor no sirve de nada.
 
 Para añadir un motor propio, cree `decompilers.ini` en la carpeta de motores:

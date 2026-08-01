@@ -59,6 +59,8 @@ Semmi sem töltődik le Ön helyett: ezek harmadik felek saját licencű program
 
 A motort a megjelenítő tetején lévő menüvel váltja; a választott azonnal érvényes, az eredmény pedig megmarad, így két motor összehasonlítása ugyanazon a fájlon azonnali.
 
+A forráskód szintaxiskiemelést kap, és két gomb visz továbbra: a **Mentés másként…** fájlba írja, az **Megnyitás szerkesztőben** pedig átadja annak, ami a Macen a `.java` fájlokat megnyitja. A nagyon nagy eredmény kiemelés nélkül jelenik meg, hogy azonnal látszódjon és ne szünet után; az állapotsor jelzi, ha ez történik.
+
 A bővítmény **ki van kapcsolva, amíg be nem kapcsolja**, a Beállítások ▸ Bővítmények oldalon — a legtöbben soha nem nyitnak meg .class fájlt, motor nélkül pedig úgysem használható.
 
 Saját motor hozzáadásához hozzon létre egy `decompilers.ini` fájlt a motorok mappájában:

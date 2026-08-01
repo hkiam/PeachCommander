@@ -29,6 +29,11 @@ final class DecompiledView: NSView {
     private let status = NSTextField(labelWithString: "")
     private let enginePopup = NSPopUpButton()
     private let revealButton = NSButton(title: L("Engine Folder…"), target: nil, action: nil)
+    private let saveButton = NSButton(title: L("Save As…"), target: nil, action: nil)
+    private let openButton = NSButton(title: L("Open in Editor"), target: nil, action: nil)
+    /// The unhighlighted source, kept because Save As and Open in Editor must write the code the
+    /// engine produced — not the attributed string the view happens to be showing.
+    private var currentSource = ""
 
     private let path: String
     private let kind: String
@@ -82,24 +87,34 @@ final class DecompiledView: NSView {
         enginePopup.translatesAutoresizingMaskIntoConstraints = false
         enginePopup.isEnabled = candidates.count > 1
 
-        revealButton.target = self
-        revealButton.action = #selector(revealEngineFolder)
-        revealButton.bezelStyle = .rounded
-        revealButton.translatesAutoresizingMaskIntoConstraints = false
+        for (button, action) in [(revealButton, #selector(revealEngineFolder)),
+                                 (saveButton, #selector(saveAs)),
+                                 (openButton, #selector(openInEditor))] {
+            button.target = self
+            button.action = action
+            button.bezelStyle = .rounded
+            button.translatesAutoresizingMaskIntoConstraints = false
+            // Nothing to save or open until an engine has produced something.
+            if button !== revealButton { button.isEnabled = false }
+        }
 
         status.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
         status.textColor = .secondaryLabelColor
         status.lineBreakMode = .byTruncatingTail
         status.translatesAutoresizingMaskIntoConstraints = false
 
-        for v in [scroll, enginePopup, revealButton, status] { addSubview(v) }
+        for v in [scroll, enginePopup, revealButton, saveButton, openButton, status] { addSubview(v) }
         NSLayoutConstraint.activate([
             enginePopup.topAnchor.constraint(equalTo: topAnchor, constant: 6),
             enginePopup.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
             revealButton.centerYAnchor.constraint(equalTo: enginePopup.centerYAnchor),
             revealButton.leadingAnchor.constraint(equalTo: enginePopup.trailingAnchor, constant: 8),
             status.centerYAnchor.constraint(equalTo: enginePopup.centerYAnchor),
-            status.leadingAnchor.constraint(equalTo: revealButton.trailingAnchor, constant: 12),
+            saveButton.centerYAnchor.constraint(equalTo: enginePopup.centerYAnchor),
+            saveButton.leadingAnchor.constraint(equalTo: revealButton.trailingAnchor, constant: 8),
+            openButton.centerYAnchor.constraint(equalTo: enginePopup.centerYAnchor),
+            openButton.leadingAnchor.constraint(equalTo: saveButton.trailingAnchor, constant: 8),
+            status.leadingAnchor.constraint(equalTo: openButton.trailingAnchor, constant: 12),
             status.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -8),
             scroll.topAnchor.constraint(equalTo: enginePopup.bottomAnchor, constant: 6),
             scroll.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -171,8 +186,7 @@ final class DecompiledView: NSView {
 
     private func run(_ engine: DecompilerEngine) {
         if let cached = cache[engine.id] {
-            text.string = cached
-            status.stringValue = engine.name
+            display(cached, engine: engine)
             return
         }
         guard engine.isAvailable else {
@@ -194,14 +208,70 @@ final class DecompiledView: NSView {
                 case .success(let source):
                     log.info("\(engine.id, privacy: .public) produced \(source.count) characters")
                     self.cache[engine.id] = source
-                    self.text.string = source
-                    self.status.stringValue = engine.name
+                    self.display(source, engine: engine)
                 case .failure(let error):
                     log.warning("\(engine.id, privacy: .public): \(error.userMessage, privacy: .public)")
                     self.show(error: error, note: engine.note)
                 }
             }
         }
+    }
+
+    /// Show decompiled source, highlighted for the host's theme.
+    ///
+    /// Highlighting is skipped above `PluginSyntax.maximumLength` and the status line says so, so a
+    /// very large result appears immediately as plain text instead of stalling the view.
+    private func display(_ source: String, engine: DecompilerEngine) {
+        currentSource = source
+        // System-colour fallbacks, not the host's palette. A lister plugin is handed the parent
+        // view and a path — `ListLoad` has no PcHostServices — so it cannot read the theme bridge
+        // at all. The fallbacks are dynamic system colours, so they still follow light and dark;
+        // what they cannot follow is a *named* palette. Fixing that means widening the lister ABI,
+        // which is a bigger decision than this feature.
+        let font = text.font ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+        let tooBig = source.utf16.count > PluginSyntax.maximumLength
+        text.textStorage?.setAttributedString(
+            PluginSyntax.highlight(source, palette: .system, font: font))
+        status.stringValue = tooBig
+            ? String(format: L("%@ — too large to highlight"), engine.name)
+            : engine.name
+        saveButton.isEnabled = true
+        openButton.isEnabled = true
+    }
+
+    /// Write the source somewhere the user chooses.
+    @objc private func saveAs() {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = suggestedFileName
+        panel.allowedFileTypes = ["java", "txt"]
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do { try currentSource.write(to: url, atomically: true, encoding: .utf8) }
+        catch { status.stringValue = error.localizedDescription }
+    }
+
+    /// Hand the source to whatever opens .java on this Mac.
+    ///
+    /// A temp file and NSWorkspace, not the host's editor: a lister plugin is given the parent view
+    /// and a path, not the host-services table, so it has no way to ask Peach Commander to open
+    /// anything. Opening the user's real editor is arguably what they want anyway.
+    @objc private func openInEditor() {
+        let dir = (NSTemporaryDirectory() as NSString)
+            .appendingPathComponent("pc-decompiled-\(ProcessInfo.processInfo.globallyUniqueString)")
+        try? FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+        let file = (dir as NSString).appendingPathComponent(suggestedFileName)
+        do {
+            try currentSource.write(toFile: file, atomically: true, encoding: .utf8)
+            NSWorkspace.shared.open(URL(fileURLWithPath: file))
+        } catch {
+            status.stringValue = error.localizedDescription
+        }
+    }
+
+    /// `Hello.class` becomes `Hello.java`; a javap dump stays `.txt` since it is not source.
+    private var suggestedFileName: String {
+        let stem = ((path as NSString).lastPathComponent as NSString).deletingPathExtension
+        let isSource = !currentSource.hasPrefix("Compiled from")
+        return stem + (isSource ? ".java" : ".txt")
     }
 
     private func show(error: DecompileError, note: String? = nil) {
