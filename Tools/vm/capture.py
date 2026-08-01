@@ -88,35 +88,37 @@ def vnc_capture(host, port, pw, out: Path):
 
 """A demo user theme, installed into the guest's themes/ folder.
 
-Deliberately *not* a copy of a built-in palette: it names a handful of colours and inherits the
-rest from `Base = dark`, which is the case a theme author actually hits and the one worth having a
-screenshot of.
+Deliberately unlike any shipped palette — a green phosphor look nothing in the app offers — so the
+screenshot of it cannot be mistaken for a built-in theme. It names a dozen colours and inherits the
+rest from `Base = dark`, which is the case a theme author actually hits. Its id must also stay off
+`Theme.reservedPaletteIds`: the earlier "midnight" became a shipped palette, and a user file by
+that name is (correctly) skipped.
 """
 USER_THEME = """[Theme]
-Name = Midnight
+Name = My Terminal
 Base = dark
 
 [Colors]
-WindowBackground          = #0C0C18
-ListBackground            = #101020
-ListText                  = #C8C8E0
-SelectedText              = #FFD060
-SelectionFillActive       = #2A2A55
-ActiveCursorFrame         = #6A6ACC
-CursorRowText             = #FFFFFF
-ActivePathBarBackground   = #2A2A55
-ActivePathBarText         = #E0E0F0
-InactivePathBarBackground = #151528
-InactivePathBarText       = #9090B0
-StatusBarBackground       = #1A1A30
-StatusBarText             = #C8C8E0
-FunctionButtonBackground  = #1A1A30
-FunctionButtonText        = #C8C8E0
-TabBarBackground          = #101020
-TabBarActiveChip          = #2A2A55
-TabBarInactiveChip        = #181830
-TabBarChipText            = #9090B0
-TabBarActiveChipText      = #E0E0F0
+WindowBackground          = #0A140A
+ListBackground            = #0E1A0E
+ListText                  = #7FE07F
+SelectedText              = #FFC24A
+SelectionFillActive       = #1F5C1F
+ActiveCursorFrame         = #66FF66
+CursorRowText             = #E8FFE8
+ActivePathBarBackground   = #1F5C1F
+ActivePathBarText         = #E8FFE8
+InactivePathBarBackground = #12220F
+InactivePathBarText       = #6FA06F
+StatusBarBackground       = #143014
+StatusBarText             = #A8E0A8
+FunctionButtonBackground  = #143014
+FunctionButtonText        = #A8E0A8
+TabBarBackground          = #0E1A0E
+TabBarActiveChip          = #1F5C1F
+TabBarInactiveChip        = #142814
+TabBarChipText            = #6FA06F
+TabBarActiveChipText      = #E8FFE8
 """
 
 
@@ -133,7 +135,7 @@ def setup_guest(ip):
     # the per-launch reset below leaves themes/ alone.
     for theme in ("light", "dark"):
         ssh_guest(ip, f"mkdir -p ~/pc-cfg-{theme}/themes && "
-                      f"cat > ~/pc-cfg-{theme}/themes/midnight.ini <<'PCTHEME'\n{USER_THEME}\nPCTHEME")
+                      f"cat > ~/pc-cfg-{theme}/themes/my-terminal.ini <<'PCTHEME'\n{USER_THEME}\nPCTHEME")
     ssh_guest(ip, "defaults write com.apple.dock autohide -bool true; "
                   "defaults write com.apple.dock autohide-delay -float 999; killall Dock 2>/dev/null || true")
     # Force the GUEST's system locale to English. Plugin bundles resolve their

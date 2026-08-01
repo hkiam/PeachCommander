@@ -119,6 +119,38 @@ public struct Theme {
         tabBarActiveChipText: cga("000000")   // black on the cyan active chip
     )
 
+    // MARK: - Midnight (F-341)
+
+    /// A dark palette that is not just "dark": deep indigo panels with a soft blue-grey text.
+    ///
+    /// Composed from `dark` with a dozen overrides rather than spelled out in full, which is
+    /// exactly what a theme file with `Base = dark` does — the shipped palette and the documented
+    /// user-theme mechanism are the same thing, so neither can drift from the other.
+    public static let midnight: Colors = {
+        var c = dark
+        c.windowBackground = cga("0C0C18")
+        c.listBackground = cga("101020")
+        c.listText = cga("C8C8E0")
+        c.selectedText = cga("FFD060")
+        c.selectionFillActive = cga("2A2A55")
+        c.activeCursorFrame = cga("6A6ACC")
+        c.cursorRowText = cga("FFFFFF")
+        c.activePathBarBackground = cga("2A2A55")
+        c.activePathBarText = cga("E0E0F0")
+        c.inactivePathBarBackground = cga("151528")
+        c.inactivePathBarText = cga("9090B0")
+        c.statusBarBackground = cga("1A1A30")
+        c.statusBarText = cga("C8C8E0")
+        c.functionButtonBackground = cga("1A1A30")
+        c.functionButtonText = cga("C8C8E0")
+        c.tabBarBackground = cga("101020")
+        c.tabBarActiveChip = cga("2A2A55")
+        c.tabBarInactiveChip = cga("181830")
+        c.tabBarChipText = cga("9090B0")
+        c.tabBarActiveChipText = cga("E0E0F0")
+        return c
+    }()
+
     // MARK: - Named palettes
 
     /// A selectable theme. `base` decides the window appearance (so system controls, sheets
@@ -137,10 +169,18 @@ public struct Theme {
 
     /// `system` is not in this list on purpose: it means "follow the appearance", which is the
     /// default and resolves to the untouched light/dark palettes.
+    /// Display names are localized, because they sit one row above the Appearance popup, which
+    /// has always been localized — "Light / Dark" over "Hell / Dunkel" reads like a bug. "Norton
+    /// Commander" stays as it is: it is the name of a program, not a description of a colour.
     static let builtInPalettes: [Palette] = [
-        Palette(id: "light", name: "Light", isDark: false, colors: light, syntax: lightSyntax),
-        Palette(id: "dark", name: "Dark", isDark: true, colors: dark, syntax: darkSyntax),
-        Palette(id: "norton", name: "Norton Commander", isDark: true, colors: norton, syntax: darkSyntax),
+        Palette(id: "light", name: String(localized: "Light"), isDark: false,
+                colors: light, syntax: lightSyntax),
+        Palette(id: "dark", name: String(localized: "Dark"), isDark: true,
+                colors: dark, syntax: darkSyntax),
+        Palette(id: "midnight", name: String(localized: "Midnight"), isDark: true,
+                colors: midnight, syntax: darkSyntax),
+        Palette(id: "norton", name: "Norton Commander", isDark: true,
+                colors: norton, syntax: darkSyntax),
     ]
 
     /// Themes loaded from the user's `themes/` directory (F-274). Set once at startup by

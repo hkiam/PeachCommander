@@ -17,6 +17,7 @@ Een thema vervangt het complete kleurenpalet van de panelen in één keer.
 3. Kies in het menu **Thema**:
    - **Systeem (standaard)** — geen thema. De panelen volgen de instelling Weergave hieronder, precies zoals altijd. Dit is de standaardinstelling.
    - **Licht** / **Donker** — leg het ingebouwde lichte of donkere palet vast, ongeacht wat macOS doet.
+   - **Middernacht** — een donker thema dat niet alleen grijs is: diep indigo panelen met zacht blauwgrijze tekst, een witte cursorregel en amber voor gemarkeerde bestanden.
    - **Norton Commander** — het klassieke blauw-cyaan van de oorspronkelijke DOS-bestandsbeheerder, in de echte CGA-kleuren: blauwe panelen, cyaan tekst, een lichtcyaan cursorregel en geel voor gemarkeerde bestanden.
 
 Een thema brengt zijn eigen lichte/donkere basis mee, zodat vensterbladen, schuifbalken en standaardknoppen erbij passen — daarom is het menu **Weergave** grijs zolang er een thema is gekozen. De eigen paneelkleuren (hieronder) gaan nog steeds vóór het thema.
@@ -46,7 +47,7 @@ Een minimaal thema is drie regels:
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]

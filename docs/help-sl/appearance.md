@@ -17,6 +17,7 @@ Tema z enim korakom zamenja celotno paleto pladnjev.
 3. V meniju **Tema** izberite:
    - **Sistem (privzeto)** — brez teme. Pladnji sledijo nastavitvi Videz spodaj, natanko kot doslej. To je privzeta izbira.
    - **Svetla** / **Temna** — določi vgrajeno svetlo ali temno paleto ne glede na to, kaj počne macOS.
+   - **Polnoč** — temna tema, ki ni le siva: globoko indigo pladnji z mehko modrosivim besedilom, belo vrstico kazalke in jantarno za označene datoteke.
    - **Norton Commander** — klasičen modro-cianast videz izvirnega upravitelja datotek za DOS v pristnih barvah CGA: modri pladnji, cianasto besedilo, svetlo cianasta vrstica kazalke in rumena za označene datoteke.
 
 Tema prinese lasten svetli/temni temelj, da se listi, drsniki in standardni gradniki ujemajo z njo — zato je meni **Videz** zatemnjen, dokler je izbrana tema. Lastne barve pladnjev (spodaj) imajo pred temo še vedno prednost.
@@ -46,7 +47,7 @@ Najmanjša tema so tri vrstice:
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]

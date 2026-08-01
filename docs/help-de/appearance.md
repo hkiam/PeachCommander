@@ -17,6 +17,7 @@ Ein Thema ersetzt die gesamte Panel-Palette in einem Schritt.
 3. Wählen Sie im Menü **Thema**:
    - **System (Standard)** — kein Thema. Die Panels folgen der Einstellung „Erscheinungsbild" darunter, genau wie bisher. Das ist die Voreinstellung.
    - **Hell** / **Dunkel** — die eingebaute helle oder dunkle Palette festlegen, unabhängig davon, was macOS tut.
+   - **Mitternacht** — ein dunkles Thema, das nicht nur grau ist: tiefblaue Panels mit weich blaugrauem Text, weißer Cursor-Zeile und Bernstein für markierte Dateien.
    - **Norton Commander** — das klassische Blau-Cyan des DOS-Dateimanagers, in den echten CGA-Farben: blaue Panels, cyanfarbene Dateinamen, hellcyane Cursor-Zeile und Gelb für markierte Dateien.
 
 Ein Thema bringt seine eigene Hell/Dunkel-Basis mit, damit Blätter, Rollbalken und Standardsteuerelemente dazu passen — deshalb ist das Menü **Erscheinungsbild** ausgegraut, solange ein Thema gewählt ist. Die eigenen Panel-Farben weiter unten haben weiterhin Vorrang.
@@ -46,7 +47,7 @@ Ein minimales Thema hat drei Zeilen:
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]

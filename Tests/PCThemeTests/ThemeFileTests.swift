@@ -235,11 +235,11 @@ final class ThemeFileTests: XCTestCase {
 
     func testIdComesFromTheFilenameAndNonIniFilesAreSkipped() {
         withTempDir { dir in
-            write("[Colors]\nListText = #FF0000", "midnight.ini", in: dir)
+            write("[Colors]\nListText = #FF0000", "twilight.ini", in: dir)
             write("[Colors]\nListText = #00FF00", "notes.txt", in: dir)
             write("[Colors]\nListText = #0000FF", "UPPER.INI", in: dir)
             let result = ThemeFile.loadPalettes(from: dir)
-            XCTAssertEqual(Set(result.palettes.map(\.id)), ["midnight", "UPPER"],
+            XCTAssertEqual(Set(result.palettes.map(\.id)), ["twilight", "UPPER"],
                            "only .ini files, id = filename stem")
         }
     }
@@ -249,7 +249,9 @@ final class ThemeFileTests: XCTestCase {
     /// what the app actually renders.
     func testReservedIdsAreRejected() {
         withTempDir { dir in
-            let reserved = ["norton.ini", "dark.ini", "light.ini", "system.ini"]
+            // Every shipped id, derived rather than listed: a palette added later is covered
+            // automatically instead of quietly slipping past this test.
+            let reserved = (Theme.reservedPaletteIds).map { "\($0).ini" }
             for name in reserved { write("[Colors]\nListText = #FF0000", name, in: dir) }
             let result = ThemeFile.loadPalettes(from: dir)
             XCTAssertTrue(result.palettes.isEmpty, "loaded: \(result.palettes.map(\.id))")

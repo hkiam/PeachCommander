@@ -313,11 +313,18 @@ screenshots:
     script: [*main, theme norton, wait 1200]
 
   # A theme supplied by the *user*, not shipped with the app: proves the "drop an .ini in
-  # themes/ and pick it" path end to end. capture.py installs themes/midnight.ini in the guest.
+  # themes/ and pick it" path end to end. capture.py installs themes/my-terminal.ini in the guest.
   - id: theme-custom
     feature: user-themes
-    alt: "Peach Commander in a user-written theme: deep indigo panels with pale blue file names"
+    alt: "Peach Commander in a user-written theme: dark green panels with phosphor-green file names"
     caption: "A user theme — one .ini naming a handful of colours, inheriting the rest."
+    pages: [appearance]
+    script: [*main, theme my-terminal, wait 1200]
+
+  - id: theme-midnight
+    feature: color-themes
+    alt: "The dual-pane main window in the Midnight palette: deep indigo panels"
+    caption: "Midnight — dark without being grey."
     pages: [appearance]
     script: [*main, theme midnight, wait 1200]
 

@@ -17,6 +17,7 @@ Egy téma egyetlen lépésben lecseréli a panelek teljes színpalettáját.
 3. Válasszon a **Téma** menüből:
    - **Rendszer (alapértelmezett)** — nincs téma. A panelek az alábbi Megjelenés beállítást követik, pontosan úgy, mint eddig. Ez az alapértelmezés.
    - **Világos** / **Sötét** — rögzíti a beépített világos vagy sötét palettát, függetlenül attól, mit tesz a macOS.
+   - **Éjfél** — sötét téma, amely nem csupán szürke: mély indigó panelek lágy kékesszürke szöveggel, fehér kurzorsorral és borostyánsárgával a megjelölt fájlokhoz.
    - **Norton Commander** — az eredeti DOS-os fájlkezelő klasszikus kék-ciánkék kinézete, valódi CGA-színekben: kék panelek, ciánkék szöveg, világos ciánkék kurzorsor és sárga a megjelölt fájlokhoz.
 
 A téma saját világos/sötét alapot hoz magával, hogy a lapok, a görgetősávok és a szokásos vezérlők illeszkedjenek hozzá — ezért halvány a **Megjelenés** menü, amíg téma van kiválasztva. Az alábbi egyéni panelszínek továbbra is elsőbbséget élveznek a témával szemben.
@@ -46,7 +47,7 @@ Egy minimális téma három sor:
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]
