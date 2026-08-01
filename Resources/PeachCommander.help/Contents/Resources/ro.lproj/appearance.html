@@ -11,6 +11,47 @@
 <main class="pc-help">
 <h1>Aspect</h1>
 <p>Peach Commander se poate potrivi cu aspectul restului Mac-ului dvs. sau poate adopta un stil propriu. Puteți urma setarea de sistem luminoasă sau întunecată (sau forța una), recolora panourile de fișiere, evidenția fișierele după tip și ajusta dimensiunea fontului listei și formatul datei, astfel încât panourile să se citească exact cum vă place.</p>
+<h2 id="alegerea-unei-teme-de-culori">Alegerea unei teme de culori</h2>
+<p>O temă înlocuiește întreaga paletă a panourilor într-un singur pas.</p>
+<ol>
+<li>Deschideți fereastra de setări alegând Configurare &gt; Opțiuni…, sau apăsați Cmd+,.</li>
+<li>Selectați pagina <strong>Culori</strong>.</li>
+<li>Alegeți din meniul <strong>Temă</strong>:
+   - <strong>Sistem (implicit)</strong> — fără temă. Panourile urmează setarea Aspect de mai jos, exact ca până acum. Aceasta este valoarea implicită.
+   - <strong>Luminoasă</strong> / <strong>Întunecată</strong> — fixează paleta luminoasă sau întunecată încorporată, indiferent de ce face macOS.
+   - <strong>Norton Commander</strong> — aspectul clasic albastru-cyan al managerului de fișiere DOS original, în culorile CGA autentice: panouri albastre, text cyan, rândul cursorului cyan deschis și galben pentru fișierele marcate.</li>
+</ol>
+<p>O temă aduce propria bază deschisă/închisă, astfel încât foile, barele de derulare și controalele standard să se potrivească cu ea — de aceea meniul <strong>Aspect</strong> este estompat cât timp o temă este selectată. Culorile personalizate ale panourilor (mai jos) au în continuare prioritate față de temă.</p>
+<p><img alt="Peach Commander în paleta Norton Commander" src="images/theme-norton.png" />
+<em>(Figura: paleta Norton Commander — albastrul, cyanul și galbenul CGA originale.)</em></p>
+<p>Tema Norton Commander folosește valorile CGA autentice ale originalului din 1986: <code>#0000AA</code> albastru, <code>#00AAAA</code> cyan, <code>#55FFFF</code> pentru rândul cursorului, <code>#FFFF55</code> pentru fișierele marcate. Bara cursorului se inversează în text închis pe cyan, așa cum o desena originalul, iar fișierele marcate își păstrează galbenul.</p>
+<p><img alt="Detaliu al rândului cursorului în paleta Norton" src="images/theme-norton-cursor-crop.png" />
+<em>(Figura: bara cursorului se inversează; fișierele marcate rămân galbene.)</em></p>
+<p><img alt="Pagina de setări Culori în paleta Norton Commander" src="images/theme-norton-settings.png" />
+<em>(Figura: și ferestrele proprii ale aplicației urmează tema.)</em></p>
+<p>Temele înseamnă doar culori. Dispunerea panourilor, chenarele și fonturile rămân neschimbate — Norton Commander nu readuce chenarele cu linie dublă și nici fontul raster DOS.</p>
+<h2 id="scrieti-va-propria-tema">Scrieți-vă propria temă</h2>
+<p>Temele sunt fișiere text simple, câte unul pe temă, într-un dosar <code>themes</code> din interiorul dosarului dumneavoastră de configurare.</p>
+<ol>
+<li>Pe pagina <strong>Culori</strong>, apăsați <strong>Dosarul temelor…</strong>. Dosarul este creat dacă nu există, iar prima dată când este gol, Peach Commander pune în el un fișier comentat <code>example-norton.ini</code> care enumeră toate culorile ce pot fi setate.</li>
+<li>Copiați acel fișier, dați-i un nume nou și editați-l. Numele fișierului (fără <code>.ini</code>) este identificatorul temei; linia <code>Name</code> este ceea ce afișează meniul Temă.</li>
+<li>Salvați. Deschideți din nou meniul <strong>Temă</strong> — tema dumneavoastră este în listă. Nu este nevoie de repornire.</li>
+</ol>
+<p>O temă minimă are trei linii:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Theme]</span>
+<span class="na">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Midnight</span>
+<span class="na">Base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dark</span>
+
+<span class="k">[Colors]</span>
+<span class="na">ListBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">#101020</span>
+<span class="na">ListText</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="c1">#C0C0D0</span>
+</code></pre></div>
+
+<p><img alt="Peach Commander într-o temă scrisă de utilizator" src="images/theme-custom.png" />
+<em>(Figura: o temă încărcată dintr-un fișier din dosarul temelor.)</em></p>
+<p><code>Base</code> alege paleta încorporată (<code>light</code> sau <code>dark</code>) care furnizează fiecare culoare pe care nu o enumerați, așa că scrieți doar ce doriți să schimbați. Culorile sunt <code>#RRGGBB</code>. Liniile care încep cu <code>;</code> sau <code>#</code> sunt comentarii.</p>
+<p>Dacă ceva este greșit în fișier, Peach Commander sare peste acea linie și păstrează restul temei — nu respinge fișierul. Motivul este scris în jurnalul de sistem, vizibil în Consolă dacă filtrați după <code>[theme]</code>.</p>
+<p>Numele <code>light</code>, <code>dark</code>, <code>norton</code> și <code>system</code> aparțin temelor încorporate; un fișier cu un astfel de nume este ignorat, ca să nu poată ascunde o temă livrată. Dacă ștergeți fișierul temei selectate, Peach Commander revine la <strong>Sistem (implicit)</strong>.</p>
 <h2 id="setati-aspectul-luminos-intunecat-sau-de-sistem">Setați aspectul luminos, întunecat sau de sistem</h2>
 <ol>
 <li>Deschideți fereastra de setări alegând Configurare &gt; Opțiuni…, sau apăsați Cmd+,.</li>
@@ -63,6 +104,8 @@
 </table>
 <h2 id="note">Note</h2>
 <ul>
+<li>Meniul Aspect are efect doar cât timp tema este <strong>Sistem (implicit)</strong>; o temă își stabilește propria bază.</li>
+<li>O temă colorează și ferestrele proprii ale aplicației. Ferestrele de sistem — Deschide, Salvează, selectoarele de culoare și font și alertele — își păstrează aspectul standard, la fel ca ferestrele deschise chiar de module.</li>
 <li>Setarea de aspect stilizează panourile de fișiere. Dialogurile de sistem, alertele și controalele standard urmează întotdeauna macOS.</li>
 <li>Vizualizatorul de fișiere încorporat folosește palete de evidențiere a sintaxei luminoase și întunecate care se potrivesc, astfel încât codul evidențiat rămâne lizibil în ambele aspecte.</li>
 <li>Culorile personalizate și regulile după tip de fișier sunt salvate cu setările dvs. și reaplicate de fiecare dată când deschideți aplicația.</li>

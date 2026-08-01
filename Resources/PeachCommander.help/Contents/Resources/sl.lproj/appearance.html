@@ -11,6 +11,47 @@
 <main class="pc-help">
 <h1>Videz</h1>
 <p>Peach Commander se lahko ujema z videzom preostanka vašega Maca ali prevzame svoj slog. Sledite lahko svetli ali temni sistemski nastavitvi (ali eno vsilite), prebarvate podokna z datotekami, poudarite datoteke po vrsti ter prilagodite velikost pisave seznama in obliko datuma, tako da se podokna berejo natanko tako, kot vam je všeč.</p>
+<h2 id="izbira-barvne-teme">Izbira barvne teme</h2>
+<p>Tema z enim korakom zamenja celotno paleto pladnjev.</p>
+<ol>
+<li>Odprite okno nastavitev z izbiro Konfiguracija &gt; Možnosti…, ali pritisnite Cmd+,.</li>
+<li>Izberite stran <strong>Barve</strong>.</li>
+<li>V meniju <strong>Tema</strong> izberite:
+   - <strong>Sistem (privzeto)</strong> — brez teme. Pladnji sledijo nastavitvi Videz spodaj, natanko kot doslej. To je privzeta izbira.
+   - <strong>Svetla</strong> / <strong>Temna</strong> — določi vgrajeno svetlo ali temno paleto ne glede na to, kaj počne macOS.
+   - <strong>Norton Commander</strong> — klasičen modro-cianast videz izvirnega upravitelja datotek za DOS v pristnih barvah CGA: modri pladnji, cianasto besedilo, svetlo cianasta vrstica kazalke in rumena za označene datoteke.</li>
+</ol>
+<p>Tema prinese lasten svetli/temni temelj, da se listi, drsniki in standardni gradniki ujemajo z njo — zato je meni <strong>Videz</strong> zatemnjen, dokler je izbrana tema. Lastne barve pladnjev (spodaj) imajo pred temo še vedno prednost.</p>
+<p><img alt="Peach Commander v paleti Norton Commander" src="images/theme-norton.png" />
+<em>(Slika: paleta Norton Commander — izvirna modra, cianasta in rumena CGA.)</em></p>
+<p>Tema Norton Commander uporablja pristne vrednosti CGA iz izvirnika iz leta 1986: <code>#0000AA</code> modra, <code>#00AAAA</code> cianasta, <code>#55FFFF</code> za vrstico kazalke, <code>#FFFF55</code> za označene datoteke. Trak kazalke se obrne v temno besedilo na cianasti podlagi, kakor ga je risal izvirnik, označene datoteke pa obdržijo rumeno.</p>
+<p><img alt="Podrobnost vrstice kazalke v paleti Norton" src="images/theme-norton-cursor-crop.png" />
+<em>(Slika: trak kazalke se obrne; označene datoteke ostanejo rumene.)</em></p>
+<p><img alt="Stran nastavitev Barve v paleti Norton Commander" src="images/theme-norton-settings.png" />
+<em>(Slika: tudi lastna okna programa sledijo temi.)</em></p>
+<p>Teme so zgolj barve. Razporeditev pladnjev, okvirji in pisave ostanejo nespremenjeni — Norton Commander ne vrne dvojnih okvirjev niti rastrske pisave DOS.</p>
+<h2 id="napisite-svojo-temo">Napišite svojo temo</h2>
+<p>Teme so navadne besedilne datoteke, ena na temo, v mapi <code>themes</code> znotraj vaše nastavitvene mape.</p>
+<ol>
+<li>Na strani <strong>Barve</strong> kliknite <strong>Mapa tem…</strong>. Mapa se ustvari, če je ni, in ko je prvič prazna, Peach Commander vanjo odloži komentirano datoteko <code>example-norton.ini</code> s seznamom vseh barv, ki jih lahko nastavite.</li>
+<li>Datoteko kopirajte, ji dajte novo ime in jo uredite. Ime datoteke (brez <code>.ini</code>) je oznaka teme; vrstica <code>Name</code> je tisto, kar prikaže meni Tema.</li>
+<li>Shranite. Znova odprite meni <strong>Tema</strong> — vaša tema je na seznamu. Ponovni zagon ni potreben.</li>
+</ol>
+<p>Najmanjša tema so tri vrstice:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Theme]</span>
+<span class="na">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Midnight</span>
+<span class="na">Base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dark</span>
+
+<span class="k">[Colors]</span>
+<span class="na">ListBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">#101020</span>
+<span class="na">ListText</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="c1">#C0C0D0</span>
+</code></pre></div>
+
+<p><img alt="Peach Commander v temi, ki jo je napisal uporabnik" src="images/theme-custom.png" />
+<em>(Slika: tema, naložena iz datoteke v mapi tem.)</em></p>
+<p><code>Base</code> izbere vgrajeno paleto (<code>light</code> ali <code>dark</code>), ki dá vse barve, ki jih ne navedete, tako da zapišete le tisto, kar želite spremeniti. Barve so <code>#RRGGBB</code>. Vrstice, ki se začnejo z <code>;</code> ali <code>#</code>, so opombe.</p>
+<p>Če je v datoteki kaj narobe, Peach Commander preskoči prav tisto vrstico in obdrži preostanek teme — datoteke ne zavrne. Razlog zapiše v sistemski dnevnik, viden v Konzoli, če filtrirate po <code>[theme]</code>.</p>
+<p>Imena <code>light</code>, <code>dark</code>, <code>norton</code> in <code>system</code> pripadajo vgrajenim temam; datoteka s takim imenom se preskoči, da ne more zakriti priložene teme. Če izbrišete datoteko izbrane teme, se Peach Commander vrne na <strong>Sistem (privzeto)</strong>.</p>
 <h2 id="nastavite-svetel-temen-ali-sistemski-videz">Nastavite svetel, temen ali sistemski videz</h2>
 <ol>
 <li>Odprite okno nastavitev z izbiro Konfiguracija &gt; Možnosti…, ali pritisnite Cmd+,.</li>
@@ -63,6 +104,8 @@
 </table>
 <h2 id="opombe">Opombe</h2>
 <ul>
+<li>Meni Videz učinkuje le, dokler je tema <strong>Sistem (privzeto)</strong>; tema si določi lasten temelj.</li>
+<li>Tema pobarva tudi lastna okna programa. Sistemska okna — Odpri, Shrani, izbirnika barve in pisave ter opozorila — obdržijo standardni videz, prav tako okna, ki jih odprejo vtičniki.</li>
 <li>Nastavitev videza oblikuje podokna z datotekami. Sistemska pogovorna okna, opozorila in standardni gumbi vedno sledijo macOS.</li>
 <li>Vgrajeni pregledovalnik datotek uporablja ujemajoče svetle in temne palete poudarjanja skladnje, tako da poudarjena koda ostane berljiva v obeh videzih.</li>
 <li>Poljubne barve in pravila vrst datotek se shranijo z vašimi nastavitvami in znova uporabijo vsakič, ko odprete aplikacijo.</li>

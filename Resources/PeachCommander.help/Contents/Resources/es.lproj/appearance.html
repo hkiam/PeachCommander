@@ -11,6 +11,47 @@
 <main class="pc-help">
 <h1>Aspecto</h1>
 <p>Peach Commander puede adaptarse al aspecto del resto de su Mac o adoptar un estilo propio. Puede seguir el ajuste de aspecto claro u oscuro del sistema (o forzar uno), recolorear los paneles de archivos, resaltar los archivos por tipo y ajustar el tamaño de la fuente de la lista y el formato de fecha para que los paneles se lean exactamente como usted prefiera.</p>
+<h2 id="elegir-un-tema-de-color">Elegir un tema de color</h2>
+<p>Un tema sustituye toda la paleta de los paneles de una sola vez.</p>
+<ol>
+<li>Abra la ventana de ajustes eligiendo Configuración &gt; Opciones…, o pulse Cmd+,.</li>
+<li>Seleccione la página <strong>Colores</strong>.</li>
+<li>Elija en el menú <strong>Tema</strong>:
+   - <strong>Sistema (por omisión)</strong> — sin tema. Los paneles siguen el ajuste Aspecto de más abajo, exactamente como siempre. Es el valor por omisión.
+   - <strong>Claro</strong> / <strong>Oscuro</strong> — fijar la paleta clara u oscura integrada, independientemente de lo que haga macOS.
+   - <strong>Norton Commander</strong> — el aspecto azul y cian del gestor de archivos original de DOS, con sus auténticos colores CGA: paneles azules, texto cian, línea del cursor en cian claro y amarillo para los archivos marcados.</li>
+</ol>
+<p>Un tema aporta su propia base clara/oscura, de modo que las hojas, las barras de desplazamiento y los controles estándar concuerden con él; por eso el menú <strong>Aspecto</strong> aparece atenuado mientras hay un tema seleccionado. Los colores personalizados de los paneles (más abajo) siguen teniendo prioridad sobre el tema.</p>
+<p><img alt="Peach Commander con la paleta Norton Commander" src="images/theme-norton.png" />
+<em>(Figura: la paleta Norton Commander: el azul, el cian y el amarillo CGA originales.)</em></p>
+<p>El tema Norton Commander usa los valores CGA auténticos del original de 1986: <code>#0000AA</code> azul, <code>#00AAAA</code> cian, <code>#55FFFF</code> para la línea del cursor y <code>#FFFF55</code> para los archivos marcados. La barra del cursor se invierte a texto oscuro sobre cian, tal como la dibujaba el original, mientras que los archivos marcados conservan su amarillo.</p>
+<p><img alt="Detalle de la línea del cursor en la paleta Norton" src="images/theme-norton-cursor-crop.png" />
+<em>(Figura: la barra del cursor se invierte; los archivos marcados siguen en amarillo.)</em></p>
+<p><img alt="La página de ajustes Colores con la paleta Norton Commander" src="images/theme-norton-settings.png" />
+<em>(Figura: las ventanas propias de la aplicación también siguen el tema.)</em></p>
+<p>Los temas son solo colores. La disposición de los paneles, los marcos y las tipografías no cambian: Norton Commander no devuelve los bordes de doble línea ni la tipografía de mapa de bits de DOS.</p>
+<h2 id="escribir-su-propio-tema">Escribir su propio tema</h2>
+<p>Los temas son archivos de texto sencillos, uno por tema, en una carpeta <code>themes</code> dentro de su carpeta de configuración.</p>
+<ol>
+<li>En la página <strong>Colores</strong>, pulse <strong>Carpeta de temas…</strong>. La carpeta se crea si no existe y, la primera vez que está vacía, Peach Commander deja en ella un archivo comentado <code>example-norton.ini</code> que enumera todos los colores que puede definir.</li>
+<li>Copie ese archivo, póngale un nombre nuevo y edítelo. El nombre del archivo (sin <code>.ini</code>) es el identificador del tema; la línea <code>Name</code> es lo que muestra el menú Tema.</li>
+<li>Guarde. Abra de nuevo el menú <strong>Tema</strong>: su tema está en la lista. No hace falta reiniciar.</li>
+</ol>
+<p>Un tema mínimo son tres líneas:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Theme]</span>
+<span class="na">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Midnight</span>
+<span class="na">Base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dark</span>
+
+<span class="k">[Colors]</span>
+<span class="na">ListBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">#101020</span>
+<span class="na">ListText</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="c1">#C0C0D0</span>
+</code></pre></div>
+
+<p><img alt="Peach Commander con un tema escrito por el usuario" src="images/theme-custom.png" />
+<em>(Figura: un tema cargado desde un archivo de la carpeta de temas.)</em></p>
+<p><code>Base</code> elige la paleta integrada (<code>light</code> u <code>dark</code>) que aporta todos los colores que usted no indique, así que solo escribe lo que quiere cambiar. Los colores se indican como <code>#RRGGBB</code>. Las líneas que empiezan por <code>;</code> o <code>#</code> son comentarios.</p>
+<p>Si algo del archivo está mal, Peach Commander omite esa línea y conserva el resto de su tema: no rechaza el archivo. El motivo se escribe en el registro del sistema, visible en Consola si filtra por <code>[theme]</code>.</p>
+<p>Los nombres <code>light</code>, <code>dark</code>, <code>norton</code> y <code>system</code> pertenecen a los temas integrados; un archivo que use uno de ellos se omite para que no pueda ocultar un tema incluido. Si borra el archivo del tema seleccionado, Peach Commander vuelve a <strong>Sistema (por omisión)</strong>.</p>
 <h2 id="definir-el-aspecto-claro-oscuro-o-del-sistema">Definir el aspecto claro, oscuro o del sistema</h2>
 <ol>
 <li>Abra la ventana de ajustes eligiendo Configuración &gt; Opciones…, o pulse Cmd+,.</li>
@@ -63,6 +104,8 @@
 </table>
 <h2 id="notas">Notas</h2>
 <ul>
+<li>El menú Aspecto solo actúa mientras el tema sea <strong>Sistema (por omisión)</strong>; un tema define su propia base.</li>
+<li>Un tema también colorea las ventanas propias de la aplicación. Las ventanas del sistema —Abrir, Guardar, los selectores de color y tipografía y las alertas— mantienen su aspecto estándar, igual que las ventanas que abren los módulos.</li>
 <li>El ajuste de Aspecto da estilo a los paneles de archivos. Los cuadros de diálogo del sistema, las alertas y los controles estándar siguen siempre a macOS.</li>
 <li>El visor de archivos integrado usa paletas de resaltado de sintaxis claras y oscuras a juego, de modo que el código resaltado sigue siendo legible en cualquiera de los dos aspectos.</li>
 <li>Los colores personalizados y las reglas por tipo de archivo se guardan con sus ajustes y se vuelven a aplicar cada vez que abre la aplicación.</li>

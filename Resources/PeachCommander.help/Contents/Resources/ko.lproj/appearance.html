@@ -11,7 +11,48 @@
 <main class="pc-help">
 <h1>모양</h1>
 <p>Peach Commander는 나머지 Mac의 모양과 어울리게 하거나 고유한 스타일을 취할 수 있습니다. 시스템의 밝게/어둡게 설정을 따르거나(또는 하나를 강제하거나), 파일 패널의 색을 변경하고, 유형별로 파일을 강조하고, 목록 글꼴 크기와 날짜 형식을 조정하여 패널이 정확히 원하는 방식으로 읽히도록 할 수 있습니다.</p>
-<h2 id="_1">밝게, 어둡게, 또는 시스템 모양 설정</h2>
+<h2 id="_1">색상 테마 선택</h2>
+<p>테마는 패널 색상 팔레트 전체를 한 번에 바꿉니다.</p>
+<ol>
+<li>설정 &gt; 옵션…을 선택하거나 Cmd+,를 눌러 설정 창을 엽니다.</li>
+<li><strong>색상</strong> 페이지를 선택합니다.</li>
+<li><strong>테마</strong> 메뉴에서 선택합니다:
+   - <strong>시스템(기본값)</strong> — 테마 없음. 패널은 아래의 모양 설정을 그대로 따릅니다. 기본값입니다.
+   - <strong>밝게</strong> / <strong>어둡게</strong> — macOS 설정과 무관하게 내장 밝은 팔레트나 어두운 팔레트를 고정합니다.
+   - <strong>Norton Commander</strong> — 원조 DOS 파일 관리자의 파랑·청록 배색을 실제 CGA 색으로 재현합니다. 파란 패널, 청록 글자, 밝은 청록 커서 행, 표시한 파일은 노랑입니다.</li>
+</ol>
+<p>테마는 자체 밝게/어둡게 기준을 가지므로 시트, 스크롤 막대, 표준 컨트롤이 테마와 어울립니다. 그래서 테마를 선택한 동안에는 <strong>모양</strong> 메뉴가 흐리게 표시됩니다. 아래의 사용자 패널 색상은 여전히 테마보다 우선합니다.</p>
+<p><img alt="Norton Commander 팔레트의 Peach Commander" src="images/theme-norton.png" />
+<em>(그림: Norton Commander 팔레트 — 원조 CGA 파랑, 청록, 노랑.)</em></p>
+<p>Norton Commander 테마는 1986년 원본의 실제 CGA 값을 사용합니다. <code>#0000AA</code> 파랑, <code>#00AAAA</code> 청록, 커서 행은 <code>#55FFFF</code>, 표시한 파일은 <code>#FFFF55</code>입니다. 커서 막대는 원본이 그렸던 대로 청록 바탕에 어두운 글자로 반전되며, 표시한 파일은 노랑을 유지합니다.</p>
+<p><img alt="Norton 팔레트의 커서 행 확대" src="images/theme-norton-cursor-crop.png" />
+<em>(그림: 커서 막대가 반전되고, 표시한 파일은 노랑으로 남습니다.)</em></p>
+<p><img alt="Norton Commander 팔레트의 색상 설정 페이지" src="images/theme-norton-settings.png" />
+<em>(그림: 앱 자체 윈도우도 테마를 따릅니다.)</em></p>
+<p>테마는 색상만 바꿉니다. 패널 배치, 테두리, 서체는 그대로입니다. Norton Commander 테마가 이중선 테두리나 DOS 래스터 서체를 되살리지는 않습니다.</p>
+<h2 id="_2">직접 테마 만들기</h2>
+<p>테마는 일반 텍스트 파일이며, 설정 폴더 안의 <code>themes</code> 폴더에 테마당 하나씩 둡니다.</p>
+<ol>
+<li><strong>색상</strong> 페이지에서 <strong>테마 폴더…</strong>를 클릭합니다. 폴더가 없으면 만들어지고, 처음 비어 있을 때 Peach Commander가 설정 가능한 모든 색상을 나열한 주석 달린 <code>example-norton.ini</code>를 넣어 둡니다.</li>
+<li>그 파일을 복사해 새 이름을 주고 편집합니다. 파일 이름(<code>.ini</code> 제외)이 테마의 식별자이고, <code>Name</code> 줄이 테마 메뉴에 표시됩니다.</li>
+<li>저장한 뒤 <strong>테마</strong> 메뉴를 다시 열면 목록에 나타납니다. 다시 실행할 필요는 없습니다.</li>
+</ol>
+<p>최소한의 테마는 세 줄입니다:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Theme]</span>
+<span class="na">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Midnight</span>
+<span class="na">Base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dark</span>
+
+<span class="k">[Colors]</span>
+<span class="na">ListBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">#101020</span>
+<span class="na">ListText</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="c1">#C0C0D0</span>
+</code></pre></div>
+
+<p><img alt="사용자가 작성한 테마의 Peach Commander" src="images/theme-custom.png" />
+<em>(그림: 테마 폴더의 파일에서 불러온 테마.)</em></p>
+<p><code>Base</code>는 적지 않은 색상을 모두 제공할 내장 팔레트(<code>light</code> 또는 <code>dark</code>)를 고릅니다. 따라서 바꾸고 싶은 것만 적으면 됩니다. 색상은 <code>#RRGGBB</code> 형식입니다. <code>;</code> 또는 <code>#</code>으로 시작하는 줄은 주석입니다.</p>
+<p>파일에 잘못된 곳이 있으면 Peach Commander는 그 한 줄만 건너뛰고 나머지 테마는 유지합니다. 파일 전체를 거부하지 않습니다. 이유는 시스템 로그에 기록되며, 콘솔에서 <code>[theme]</code>으로 필터링하면 볼 수 있습니다.</p>
+<p><code>light</code>, <code>dark</code>, <code>norton</code>, <code>system</code>은 내장 테마의 이름입니다. 이 이름을 쓴 파일은 내장 테마를 가리지 못하도록 건너뜁니다. 선택한 테마 파일을 삭제하면 Peach Commander는 <strong>시스템(기본값)</strong>으로 되돌아갑니다.</p>
+<h2 id="_3">밝게, 어둡게, 또는 시스템 모양 설정</h2>
 <ol>
 <li>설정 &gt; 옵션…을 선택하거나 Cmd+,를 눌러 설정 창을 엽니다.</li>
 <li><strong>색상</strong> 페이지를 선택합니다.</li>
@@ -22,7 +63,7 @@
 </ol>
 <p><img alt="모양 메뉴와 사용자 지정 패널 색상 웰이 표시된 색상 설정 페이지" src="images/settings-colors.png" />
 <em>(그림: 색상 페이지: 모양을 선택하고 개별 패널 색상을 재정의합니다.)</em></p>
-<h2 id="_2">패널 색상 사용자 지정</h2>
+<h2 id="_4">패널 색상 사용자 지정</h2>
 <p>같은 <strong>색상</strong> 페이지의 <strong>사용자 지정 패널 색상</strong>에서 임의의 요소 옆의 체크박스를 켜고 그 옆의 웰에서 색을 선택합니다.</p>
 <ul>
 <li><strong>텍스트</strong> — 파일 및 폴더 이름.</li>
@@ -31,7 +72,7 @@
 <li><strong>커서 프레임</strong> — 현재 항목 주위의 윤곽선.</li>
 </ul>
 <p>체크박스를 꺼 두면 해당 요소에 대해 기본 제공 색을 유지합니다. <strong>기본값으로 재설정</strong>을 클릭하면 모든 재정의를 한 번에 지웁니다.</p>
-<h2 id="_3">유형별로 파일 색 지정</h2>
+<h2 id="_5">유형별로 파일 색 지정</h2>
 <ol>
 <li>설정 &gt; 옵션…을 열고 <strong>표시</strong> 페이지를 선택합니다.</li>
 <li><strong>파일 형식 색상…</strong>을 클릭합니다.</li>
@@ -39,14 +80,14 @@
 <li>더 많은 마스크를 추가하려면 <strong>규칙 추가</strong>를 사용합니다. 저장하려면 <strong>완료</strong>를, 취소하려면 <strong>취소</strong>를 클릭합니다.</li>
 </ol>
 <p>그러면 일치하는 파일이 두 패널 모두에서 선택한 색으로 나타납니다.</p>
-<h2 id="_4">글꼴 크기와 날짜 형식 조정</h2>
+<h2 id="_6">글꼴 크기와 날짜 형식 조정</h2>
 <p><strong>표시</strong> 페이지에서 다음도 할 수 있습니다.</p>
 <ul>
 <li>패널 목록 <strong>글꼴 크기</strong>를 포인트 단위로 선택합니다.</li>
 <li>수정 날짜 표시 방식을 제어하려면 <strong>날짜 형식</strong> 패턴을 입력합니다. 비워 두면 Mac의 지역 형식을 사용합니다. 입력하는 동안 필드 아래에 실시간 미리 보기가 나타납니다.</li>
 <li>긴 목록을 훑어보기 쉽게 하는 얼룩말 줄무늬를 위해 <strong>교대 행 배경</strong>을 켭니다.</li>
 </ul>
-<h2 id="_5">단축키</h2>
+<h2 id="_7">단축키</h2>
 <table>
 <thead>
 <tr>
@@ -61,8 +102,10 @@
 </tr>
 </tbody>
 </table>
-<h2 id="_6">참고</h2>
+<h2 id="_8">참고</h2>
 <ul>
+<li>모양 메뉴는 테마가 <strong>시스템(기본값)</strong>일 때만 적용됩니다. 테마는 자체 기준을 정합니다.</li>
+<li>테마는 앱 자체 윈도우도 칠합니다. 열기, 저장, 색상 및 서체 선택기, 경고 같은 시스템 윈도우는 표준 모양을 유지하며, 플러그인이 직접 여는 윈도우도 마찬가지입니다.</li>
 <li>모양 설정은 파일 패널의 스타일을 지정합니다. 시스템 대화상자, 경고, 표준 컨트롤은 항상 macOS를 따릅니다.</li>
 <li>기본 제공 파일 뷰어는 밝은 구문 강조 팔레트와 어두운 구문 강조 팔레트를 짝지어 사용하므로, 강조된 코드는 어느 모양에서든 읽기 쉬운 상태를 유지합니다.</li>
 <li>사용자 지정 색상과 파일 형식 규칙은 설정과 함께 저장되어 앱을 열 때마다 다시 적용됩니다.</li>

@@ -11,6 +11,47 @@
 <main class="pc-help">
 <h1>Utseende</h1>
 <p>Peach Commander kan matcha utseendet på resten av din Mac eller anta en egen stil. Du kan följa systemets ljusa eller mörka inställning (eller framtvinga en av dem), färgsätta filpanelerna på nytt, lyfta fram filer efter typ och justera listans teckenstorlek och datumformat så att panelerna ser ut exakt som du vill.</p>
+<h2 id="valj-ett-fargtema">Välj ett färgtema</h2>
+<p>Ett tema byter ut hela panelpaletten i ett enda steg.</p>
+<ol>
+<li>Öppna inställningsfönstret genom att välja Konfiguration &gt; Alternativ…, eller tryck på Cmd+,.</li>
+<li>Välj sidan <strong>Färger</strong>.</li>
+<li>Välj i menyn <strong>Tema</strong>:
+   - <strong>System (standard)</strong> — inget tema. Panelerna följer inställningen Utseende nedan, precis som tidigare. Detta är standardvalet.
+   - <strong>Ljust</strong> / <strong>Mörkt</strong> — lås den inbyggda ljusa eller mörka paletten oavsett vad macOS gör.
+   - <strong>Norton Commander</strong> — den klassiska blå-cyana looken från den ursprungliga DOS-filhanteraren, i äkta CGA-färger: blå paneler, cyan text, ljust cyan markörrad och gult för markerade filer.</li>
+</ol>
+<p>Ett tema har en egen ljus/mörk grund så att ark, rullningslister och standardkontroller passar ihop med det — därför är menyn <strong>Utseende</strong> nedtonad så länge ett tema är valt. Egna panelfärger (nedan) gäller fortfarande före temat.</p>
+<p><img alt="Peach Commander i Norton Commander-paletten" src="images/theme-norton.png" />
+<em>(Figur: Norton Commander-paletten — det ursprungliga CGA-blå, -cyan och -gult.)</em></p>
+<p>Norton Commander-temat använder de äkta CGA-värdena från originalet 1986: <code>#0000AA</code> blått, <code>#00AAAA</code> cyan, <code>#55FFFF</code> för markörraden och <code>#FFFF55</code> för markerade filer. Markörraden inverteras till mörk text på cyan, så som originalet ritade den, medan markerade filer behåller sitt gula.</p>
+<p><img alt="Närbild på markörraden i Norton-paletten" src="images/theme-norton-cursor-crop.png" />
+<em>(Figur: markörraden inverteras; markerade filer förblir gula.)</em></p>
+<p><img alt="Inställningssidan Färger i Norton Commander-paletten" src="images/theme-norton-settings.png" />
+<em>(Figur: även programmets egna fönster följer temat.)</em></p>
+<p>Teman handlar bara om färger. Panelernas layout, ramarna och typsnitten är oförändrade — Norton Commander tar inte tillbaka de dubbla linjeramarna eller DOS rasterteckensnitt.</p>
+<h2 id="skriv-ett-eget-tema">Skriv ett eget tema</h2>
+<p>Teman är vanliga textfiler, en per tema, i en mapp <code>themes</code> inuti din konfigurationsmapp.</p>
+<ol>
+<li>Klicka på <strong>Temamapp…</strong> på sidan <strong>Färger</strong>. Mappen skapas om den saknas, och första gången den är tom lägger Peach Commander en kommenterad <code>example-norton.ini</code> där som listar varje färg du kan ange.</li>
+<li>Kopiera filen, ge den ett nytt namn och redigera den. Filnamnet (utan <code>.ini</code>) är temats id; raden <code>Name</code> är det som menyn Tema visar.</li>
+<li>Spara. Öppna menyn <strong>Tema</strong> igen — ditt tema finns i listan. Ingen omstart behövs.</li>
+</ol>
+<p>Ett minimalt tema är tre rader:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Theme]</span>
+<span class="na">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Midnight</span>
+<span class="na">Base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dark</span>
+
+<span class="k">[Colors]</span>
+<span class="na">ListBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">#101020</span>
+<span class="na">ListText</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="c1">#C0C0D0</span>
+</code></pre></div>
+
+<p><img alt="Peach Commander i ett egenskrivet tema" src="images/theme-custom.png" />
+<em>(Figur: ett tema inläst från en fil i temamappen.)</em></p>
+<p><code>Base</code> väljer den inbyggda paletten (<code>light</code> eller <code>dark</code>) som ger varje färg du inte anger, så du skriver bara det du vill ändra. Färger anges som <code>#RRGGBB</code>. Rader som börjar med <code>;</code> eller <code>#</code> är kommentarer.</p>
+<p>Är något fel i filen hoppar Peach Commander över just den raden och behåller resten av ditt tema — filen avvisas inte. Orsaken skrivs till systemloggen och syns i Konsol om du filtrerar på <code>[theme]</code>.</p>
+<p>Namnen <code>light</code>, <code>dark</code>, <code>norton</code> och <code>system</code> tillhör de inbyggda temana; en fil med ett sådant namn hoppas över så att den inte kan skugga ett medföljande tema. Raderar du filen för det valda temat faller Peach Commander tillbaka på <strong>System (standard)</strong>.</p>
 <h2 id="stall-in-ljust-morkt-eller-systemutseende">Ställ in ljust, mörkt eller systemutseende</h2>
 <ol>
 <li>Öppna inställningsfönstret genom att välja Konfiguration &gt; Alternativ…, eller tryck på Cmd+,.</li>
@@ -63,6 +104,8 @@
 </table>
 <h2 id="anteckningar">Anteckningar</h2>
 <ul>
+<li>Menyn Utseende verkar bara så länge temat är <strong>System (standard)</strong>; ett tema bestämmer sin egen grund.</li>
+<li>Ett tema färgar även programmets egna fönster. Systemfönster — Öppna, Spara, färg- och teckensnittsväljarna och varningar — behåller sitt standardutseende, liksom fönster som insticksmoduler öppnar själva.</li>
 <li>Inställningen Utseende formar filpanelerna. Systemdialoger, varningar och standardkontroller följer alltid macOS.</li>
 <li>Den inbyggda filvisaren använder matchande ljusa och mörka paletter för syntaxfärgning, så att färgad kod förblir läsbar i båda utseendena.</li>
 <li>Egna färger och filtypsregler sparas med dina inställningar och tillämpas på nytt varje gång du öppnar appen.</li>
