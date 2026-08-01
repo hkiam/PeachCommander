@@ -72,12 +72,33 @@ final class ZipCryptoTests: XCTestCase {
         }
     }
 
+    /// A wrong password must be reported as `.wrongPassword` — over several candidates, because
+    /// classic ZipCrypto cannot do better than one byte.
+    ///
+    /// The format's only integrity check on the password is `header[11] == checkByte`, so any given
+    /// wrong password slips through with probability 1/256. `/usr/bin/zip` writes a *random*
+    /// 12-byte header, so asserting on one fixed wrong password made this test fail roughly one run
+    /// in 256 — which is exactly how it failed in CI while passing locally and in the release job.
+    ///
+    /// Trying several candidates and requiring that at least one is caught keeps the assertion
+    /// honest about the format while making it deterministic in practice: for all eight to collide
+    /// is a 256^-8 event. The error *type* is still asserted strictly, which is the part that is
+    /// actually our code's responsibility.
     func test_wrongPassword_throwsWrongPassword() throws {
         let url = try makeEncryptedZip(password: "correct", files: ["a.txt": Data("payload".utf8)])
         let reader = try XCTUnwrap(ZipReader(fileURL: url))
         let entry = try XCTUnwrap(reader.entries.first { $0.path == "a.txt" })
-        XCTAssertThrowsError(try reader.data(for: entry, password: "wrong")) { error in
-            XCTAssertEqual(error as? ZipError, .wrongPassword)
+
+        var detected = 0
+        for candidate in ["wrong", "wrong2", "hunter2", "", "correct!", "Correct", "x", "0000"] {
+            do {
+                _ = try reader.data(for: entry, password: candidate)
+            } catch {
+                XCTAssertEqual(error as? ZipError, .wrongPassword,
+                               "\(candidate.debugDescription) was rejected, but not as .wrongPassword")
+                detected += 1
+            }
         }
+        XCTAssertGreaterThan(detected, 0, "no wrong password was detected at all")
     }
 }
