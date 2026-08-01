@@ -61,6 +61,8 @@ Die Engine wechseln Sie über das Menü oben im Betrachter; die gewählte wird s
 
 Der Quelltext wird syntaxhervorgehoben, und zwei Schaltflächen führen weiter: **Speichern unter …** schreibt ihn in eine Datei, **In Editor öffnen** übergibt ihn dem Programm, das auf Ihrem Mac `.java` öffnet. Ein sehr großes Ergebnis wird ohne Hervorhebung gezeigt, damit es sofort erscheint statt nach einer Pause; die Statuszeile sagt, wenn das passiert.
 
+Ergebnisse werden auf der Platte zwischengespeichert, das erneute Öffnen einer schon betrachteten Datei ist damit sofortig; der Schlüssel enthält Größe und Datum der Datei sowie die Argumente der Engine, eine neu gebaute Klasse oder ein geänderter Schalter wird also erneut dekompiliert. Die gewählte Engine wird je Dateiart gemerkt. Ein Profil kann mit `extends = cfr` von einer eingebauten Engine erben und nur die Schalter überschreiben — praktisch, wenn Sie zwei Voreinstellungen derselben Engine pflegen.
+
 Android ist ebenfalls abgedeckt: F3 auf einer `.dex`-Datei benutzt **jadx** (Apache 2.0, `brew install jadx`), das Dalvik-Bytecode zurück in Java verwandelt. Dafür genügte eine Engine-Beschreibung — derselbe Mechanismus, ein anderes Format.
 
 Das Plugin ist **aus, bis Sie es einschalten**, unter Einstellungen ▸ Plugins — die meisten öffnen nie eine Klassendatei, und ohne Engine nützt es nichts.

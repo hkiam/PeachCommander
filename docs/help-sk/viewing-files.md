@@ -61,6 +61,8 @@ Engine prepnete ponukou v hornej časti prehliadača; zvolený sa použije ihne�
 
 Zdrojový kód sa farebne zvýrazňuje a dve tlačidlá vedú ďalej: **Uložiť ako…** ho zapíše do súboru a **Otvoriť v editore** ho predá tomu, čo na vašom Macu otvára `.java`. Veľmi rozsiahly výsledok sa zobrazí bez zvýraznenia, aby sa objavil hneď a nie po čakaní; stavový riadok to uvedie.
 
+Výsledky sa ukladajú do diskovej vyrovnávacej pamäte, takže opätovné otvorenie už zobrazeného súboru je okamžité; kľúč obsahuje veľkosť a dátum súboru aj argumenty enginu, preto sa znovu zostavená trieda alebo zmenený prepínač dekompiluje znova. Zvolený engine sa pamätá pre každý druh súboru. Profil môže dediť z vstavaného enginu pomocou `extends = cfr` a prepísať len prepínače — vhodné, ak máte dve predvoľby toho istého enginu.
+
 Pokrytý je aj Android: F3 na súbore `.dex` použije **jadx** (Apache 2.0, `brew install jadx`), ktorý prevádza bajtkód Dalvik späť na Javu. Stačil jediný opis enginu — rovnaký mechanizmus, iný formát.
 
 Modul je **vypnutý, kým ho nezapnete**, v Nastavenia ▸ Zásuvné moduly — väčšina ľudí súbor .class nikdy neotvorí a bez enginu aj tak nič nezmôže.

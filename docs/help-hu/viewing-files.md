@@ -61,6 +61,8 @@ A motort a megjelenítő tetején lévő menüvel váltja; a választott azonnal
 
 A forráskód szintaxiskiemelést kap, és két gomb visz továbbra: a **Mentés másként…** fájlba írja, az **Megnyitás szerkesztőben** pedig átadja annak, ami a Macen a `.java` fájlokat megnyitja. A nagyon nagy eredmény kiemelés nélkül jelenik meg, hogy azonnal látszódjon és ne szünet után; az állapotsor jelzi, ha ez történik.
 
+Az eredmények lemezen gyorsítótárba kerülnek, így egy korábban megnyitott fájl azonnal megjelenik; a kulcs tartalmazza a fájl méretét és dátumát, valamint a motor argumentumait, ezért egy újraépített osztály vagy megváltozott kapcsoló ismét visszafejtésre kerül. A választott motor fájltípusonként megmarad. Egy profil az `extends = cfr` sorral örökölhet egy beépített motortól, és csak a kapcsolókat írja felül — hasznos, ha ugyanabból a motorból két beállítást tart.
+
 Az Android is szerepel: egy `.dex` fájlon az F3 a **jadx**-ot használja (Apache 2.0, `brew install jadx`), amely a Dalvik bájtkódot Javára fordítja vissza. Ehhez egyetlen motorleírás kellett — ugyanaz a mechanizmus, más formátum.
 
 A bővítmény **ki van kapcsolva, amíg be nem kapcsolja**, a Beállítások ▸ Bővítmények oldalon — a legtöbben soha nem nyitnak meg .class fájlt, motor nélkül pedig úgysem használható.
