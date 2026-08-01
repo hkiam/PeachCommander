@@ -26,6 +26,16 @@ Vrstica z gumbi je trak ikonskih gumbov vzdolž vrha okna. Vsak gumb je bližnji
 
 Gumb lahko odpre *podvrstico* — drug nabor gumbov, prekrit čez prvega. Kliknite ga za spust; gumb **◀** na levi vas vrne na prejšnjo vrstico. Ko je gumbov več, kot jih gre v širino okna, se odvečni zložijo za znak **»** na desnem koncu; kliknite ga, da jih dosežete.
 
+## Dodajanje programa s spustom na vrstico
+
+Za postavitev orodja na vrstico vam ni treba odpirati urejevalnika. Povlecite program, aplikacijo ali skript iz pladnja — ali iz Finderja — na **prosto mesto** v vrstici. Črtica pokaže, kam bo pristal; ob spustu tam nastane gumb.
+
+- **Programi, aplikacije in skripti** postanejo gumb, ki jih zažene nad vašim trenutnim izborom: parametri novega gumba so `%S`, torej imena izbranih datotek. Če orodje ne sme dobiti argumentov, to polje v urejevalniku izpraznite.
+- **Mape** postanejo gumb, ki skoči vanje — in ki vanje kopira datoteke, ko jih pozneje spustite nanj.
+- Kar ni mogoče zagnati, je zavrnjeno: navaden dokument nima pravice za izvajanje, gumb zanj bi ob kliku le spodletel.
+
+Spust na **obstoječi** gumb ohrani svoj pomen: gumb se zažene s spuščenimi datotekami. Novega ustvari le prosto mesto.
+
 ## Spuščanje datotek na gumb
 
 Datoteke ali mape lahko povlečete naravnost na gumb:
@@ -33,6 +43,10 @@ Datoteke ali mape lahko povlečete naravnost na gumb:
 - **Gumb mape** — spuščeni elementi se kopirajo v to mapo v ozadju.
 - **Gumb programa** — program se zažene s spuščenimi elementi kot svojim izborom.
 - **Gumb ukaza** — ukaz se zažene kot običajno.
+
+## Skrivanje vrstice z gumbi
+
+Izberite **Pogled > Vrstica z gumbi**, da vrstico skrijete, in znova, da jo prikličete nazaj. Isto stikalo je na strani **Postavitev** v nastavitvah, izbira pa se zapomni.
 
 ## Navpična vrstica z gumbi
 

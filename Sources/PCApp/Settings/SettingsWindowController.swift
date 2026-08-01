@@ -27,6 +27,7 @@ public struct SettingsSnapshot: Sendable {
     public var fontSize: Int           // F-272: panel-list font size (points)
     public var sizeStyle: String       // "kb" | "dynamic" | "bytes"
     public var dateFormat: String      // Unicode pattern; "" = system locale
+    public var showButtonBar: Bool = true   // F-342
     public var showDriveBar: Bool = true    // F-270
     public var showStatusBar: Bool = true   // F-270
     public var showTabBar: Bool = true      // F-270
@@ -71,6 +72,7 @@ public struct SettingsSnapshot: Sendable {
                 fontSize: Int = 13, sizeStyle: String,
                 dateFormat: String = PanelDateFormatter.defaultPattern,
                 showCommandLine: Bool = true, showFunctionKeys: Bool = true,
+                showButtonBar: Bool = true,
                 showDriveBar: Bool = true, showStatusBar: Bool = true,
                 showTabBar: Bool = true, showPathBar: Bool = true,
                 verifyAfterCopy: Bool = false, quickSearchMode: String = "direct",
@@ -116,6 +118,7 @@ public struct SettingsSnapshot: Sendable {
         self.fontSize = fontSize
         self.sizeStyle = sizeStyle
         self.dateFormat = dateFormat
+        self.showButtonBar = showButtonBar
         self.showDriveBar = showDriveBar
         self.showStatusBar = showStatusBar
         self.showTabBar = showTabBar
@@ -215,6 +218,7 @@ public final class SettingsWindowController: NSWindowController {
     // Layout page controls
     private let commandLineCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let functionKeysCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+    private let buttonBarCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-342
     private let driveBarCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-270
     private let statusBarCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-270
     private let tabBarCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-270
@@ -881,6 +885,8 @@ public final class SettingsWindowController: NSWindowController {
                      isOn: snapshot.showCommandLine, action: #selector(commandLineChanged))
         makeCheckbox(functionKeysCheckbox, title: String(localized: "Show function key bar"),
                      isOn: snapshot.showFunctionKeys, action: #selector(functionKeysChanged))
+        makeCheckbox(buttonBarCheckbox, title: String(localized: "Show button bar"),
+                     isOn: snapshot.showButtonBar, action: #selector(buttonBarChanged))
         makeCheckbox(driveBarCheckbox, title: String(localized: "Show drive bar"),
                      isOn: snapshot.showDriveBar, action: #selector(driveBarChanged))
         makeCheckbox(statusBarCheckbox, title: String(localized: "Show status bar"),
@@ -889,12 +895,15 @@ public final class SettingsWindowController: NSWindowController {
                      isOn: snapshot.showTabBar, action: #selector(tabBarChanged))
         makeCheckbox(pathBarCheckbox, title: String(localized: "Show path bar"),
                      isOn: snapshot.showPathBar, action: #selector(pathBarChanged))
-        return makePageStack(rows: [commandLineCheckbox, functionKeysCheckbox, driveBarCheckbox,
+        return makePageStack(rows: [commandLineCheckbox, functionKeysCheckbox, buttonBarCheckbox, driveBarCheckbox,
                                     statusBarCheckbox, tabBarCheckbox, pathBarCheckbox])
     }
 
     @objc private func commandLineChanged() {
         onSetBool("Layout.CommandLine", commandLineCheckbox.state == .on)
+    }
+    @objc private func buttonBarChanged() {
+        onSetBool("Layout.ButtonBar", buttonBarCheckbox.state == .on)
     }
     @objc private func driveBarChanged() {
         onSetBool("Layout.DriveBar", driveBarCheckbox.state == .on)

@@ -26,6 +26,16 @@ The button bar is the strip of icon buttons across the top of the window. Each b
 
 A button can open a *sub-bar* — a second set of buttons layered over the first. Click it to descend; a **◀** button at the left returns you to the previous bar. When there are more buttons than fit the window width, the extras collapse behind a **»** chevron at the right end; click it to reach them.
 
+## Add a program by dropping it on the bar
+
+You do not have to open the editor to put a tool on the bar. Drag a program, an app or a script from a panel — or from Finder — onto **free space** in the bar. A caret shows where it will land, and dropping creates the button there.
+
+- **Programs, apps and scripts** become a button that runs them on your current selection: the new button's parameters default to `%S`, the selected file names. Clear that field in the editor for a tool that should take no arguments.
+- **Folders** become a button that jumps to that folder — and that copies files into it when you drop them on it later.
+- Anything that cannot be run is refused: a plain document has no execute permission, so dropping it would only create a button that fails when clicked.
+
+Dropping onto an *existing* button keeps its own meaning — it runs that button with the dropped files. Only free space adds a new one.
+
 ## Drop files onto a button
 
 You can drag files or folders straight onto a button:
@@ -33,6 +43,10 @@ You can drag files or folders straight onto a button:
 - **Folder button** — the dropped items are copied into that folder in the background.
 - **Program button** — the program runs with the dropped items as its selection.
 - **Command button** — the command runs as usual.
+
+## Hide the button bar
+
+Choose **View > Button Bar** to hide the strip, and again to bring it back. The same switch is on the **Layout** page in Settings, and the choice is remembered.
 
 ## Vertical button bar
 

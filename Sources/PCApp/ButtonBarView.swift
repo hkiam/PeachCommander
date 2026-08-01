@@ -18,6 +18,10 @@ final class ButtonBarView: NSView {
     var onEditBar: (() -> Void)?
     /// Invoked when files are dropped onto a button (F-067): the model + paths.
     var onDropOnButton: ((BarButton, [String]) -> Void)?
+    /// Invoked when programs/scripts are dropped on *free* bar space (F-342): paths + where to
+    /// insert them. Dropping onto an existing button keeps its old meaning — run it with those
+    /// files — because the button is a subview and AppKit routes the drag to it first.
+    var onAddPrograms: (([String], Int) -> Void)?
 
     private let stack = NSStackView()
     private var bar = ButtonBar()
@@ -30,6 +34,8 @@ final class ButtonBarView: NSView {
     private var buttonViews: [(view: NSView, model: BarButton?)] = []
     private var overflowButtons: [BarButton] = []
     private var relayingOverflow = false
+    /// Insertion point for a drag in progress, drawn as a caret; nil when no drag is over us.
+    private var dropIndex: Int? { didSet { if oldValue != dropIndex { needsDisplay = true } } }
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -40,6 +46,7 @@ final class ButtonBarView: NSView {
         stack.edgeInsets = NSEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
         stack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stack)
+        registerForDraggedTypes([.fileURL])   // F-342: drop a program on free space to add it
         stackConstraintsH = [
             stack.leadingAnchor.constraint(equalTo: leadingAnchor),
             stack.centerYAnchor.constraint(equalTo: centerYAnchor),
@@ -238,6 +245,69 @@ final class ButtonBarView: NSView {
         return nil
     }
 
+    /// Only the drop caret is drawn here — the bar's background is the layer's, set in applyTheme.
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        guard let dropIndex else { return }
+        Theme.current.activeCursorFrame.setFill()
+        NSBezierPath(roundedRect: caretRect(for: dropIndex), xRadius: 1, yRadius: 1).fill()
+    }
+
+    // MARK: - Dropping a program onto free space (F-342)
+
+    /// Where a drop at `point` should insert, in `bar.buttons` indices.
+    ///
+    /// Measured against the *visible* buttons and mapped back to model indices, because the
+    /// overflow chevron hides the tail: dropping after the last visible button must append to the
+    /// model, not insert in the middle of what is hidden behind the chevron.
+    private func insertionIndex(at point: NSPoint) -> Int {
+        var index = 0
+        for (view, model) in buttonViews {
+            guard model != nil else { continue }
+            let f = view.frame
+            let past = isVertical ? point.y < f.midY : point.x > f.midX
+            if past { index += 1 } else { break }
+        }
+        return min(index, bar.buttons.count)
+    }
+
+    /// The caret drawn between two buttons while a drag hovers, so the drop lands where it looks
+    /// like it will rather than always at the end.
+    private func caretRect(for index: Int) -> NSRect {
+        let visible = buttonViews.compactMap { $0.model != nil ? $0.view : nil }
+        let thickness: CGFloat = 2
+        if isVertical {
+            let y = index < visible.count ? visible[index].frame.maxY
+                                          : (visible.last?.frame.minY ?? bounds.maxY)
+            return NSRect(x: 4, y: y - thickness / 2, width: bounds.width - 8, height: thickness)
+        }
+        let x = index < visible.count ? visible[index].frame.minX
+                                      : (visible.last?.frame.maxX ?? 6) + 2
+        return NSRect(x: x - thickness / 2, y: 3, width: thickness, height: bounds.height - 6)
+    }
+
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation { dragUpdate(sender) }
+    override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation { dragUpdate(sender) }
+    override func draggingExited(_ sender: NSDraggingInfo?) { dropIndex = nil }
+    override func concludeDragOperation(_ sender: NSDraggingInfo?) { dropIndex = nil }
+
+    private func dragUpdate(_ sender: NSDraggingInfo) -> NSDragOperation {
+        guard onAddPrograms != nil, !DroppableButton.files(from: sender).isEmpty else {
+            dropIndex = nil
+            return []
+        }
+        dropIndex = insertionIndex(at: convert(sender.draggingLocation, from: nil))
+        return .copy
+    }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        let files = DroppableButton.files(from: sender)
+        guard let onAddPrograms, !files.isEmpty else { dropIndex = nil; return false }
+        onAddPrograms(files, dropIndex ?? bar.buttons.count)
+        dropIndex = nil
+        return true
+    }
+
     /// A short human label when there is no icon: the tooltip, else a cleaned command.
     private static func label(for model: BarButton) -> String {
         if !model.menu.isEmpty { return model.menu }
@@ -273,7 +343,7 @@ final class DroppableButton: NSButton {
         return true
     }
 
-    private static func files(from sender: NSDraggingInfo) -> [String] {
+    fileprivate static func files(from sender: NSDraggingInfo) -> [String] {
         guard let urls = sender.draggingPasteboard.readObjects(
             forClasses: [NSURL.self],
             options: [.urlReadingFileURLsOnly: true]) as? [URL] else { return [] }

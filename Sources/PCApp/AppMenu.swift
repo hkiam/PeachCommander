@@ -353,6 +353,8 @@ enum AppMenu {
                                  key: "p", mask: [.command, .shift], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Horizontal Panels"), cmd: "cm_HorizontalPanels",
                                  key: "", mask: [], target: target, action: commandAction))
+        viewMenu.addItem(command(String(localized: "Button Bar"), cmd: "cm_ButtonBar",
+                                 key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Vertical Button Bar"), cmd: "cm_VerticalButtonBar",
                                  key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(.separator())

@@ -2,7 +2,7 @@
 
 _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`. Do not edit by hand._
 
-**71 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
+**72 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
 
 ## Navigation
 
@@ -86,6 +86,7 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 
 | Feature | Audiences | Shortcut(s) | Status |
 |---|---|---|---|
+| Add programs to the button bar by dropping them on it | user | — | ✅ |
 | Appearance (light/dark, colors, font) | user | — | ✅ |
 | AppleScript | user, developer | — | ✅ |
 | Button bar (toolbar) | user, expert | — | ✅ |

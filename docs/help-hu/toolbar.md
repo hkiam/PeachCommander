@@ -26,6 +26,16 @@ A gombsáv az ikongombok csíkja az ablak teteje mentén. Minden gomb egy egykat
 
 Egy gomb megnyithat egy *algombsávot* — egy második gombkészletet az első fölé rétegezve. Kattintson rá a leereszkedéshez; egy **◀** gomb balra visszaviszi az előző sávhoz. Amikor több gomb van, mint amennyi az ablak szélességébe fér, a többlet egy **»** jel mögé zsugorodik a jobb végén; kattintson rá az eléréséhez.
 
+## Program hozzáadása a sávra húzással
+
+Nem kell megnyitnia a szerkesztőt ahhoz, hogy egy eszközt a sávra tegyen. Húzzon egy programot, alkalmazást vagy parancsfájlt egy panelről — vagy a Finderből — a sáv **szabad területére**. Egy vonal jelzi, hová kerül; elengedéskor ott jön létre a gomb.
+
+- **Programok, alkalmazások és parancsfájlok** olyan gombbá válnak, amely a jelenlegi kijelölésen futtatja őket: az új gomb paramétere `%S`, a kijelölt fájlnevek. Ürítse ki ezt a mezőt a szerkesztőben, ha az eszköz ne kapjon argumentumot.
+- **Mappák** olyan gombbá válnak, amely odaugrik — és amely fájlokat másol bele, ha később ráejti őket.
+- Ami nem futtatható, azt elutasítja: egy közönséges dokumentumnak nincs futtatási joga, a hozzá tartozó gomb kattintáskor csak hibára futna.
+
+Egy **meglévő** gombra ejtés megtartja a jelentését: az a gomb fut le az ejtett fájlokkal. Újat csak a szabad terület hoz létre.
+
 ## Fájlok ejtése egy gombra
 
 Fájlokat vagy mappákat egyenesen egy gombra húzhat:
@@ -33,6 +43,10 @@ Fájlokat vagy mappákat egyenesen egy gombra húzhat:
 - **Mappagomb** — az ejtett elemek a háttérben abba a mappába másolódnak.
 - **Programgomb** — a program az ejtett elemekkel mint kijelölésével fut.
 - **Parancsgomb** — a parancs a szokásos módon fut.
+
+## A gombsáv elrejtése
+
+Válassza a **Nézet > Gombsáv** menüpontot a sáv elrejtéséhez, és újra az előhívásához. Ugyanez a kapcsoló a beállítások **Elrendezés** oldalán is megtalálható, és a választás megmarad.
 
 ## Függőleges gombsáv
 

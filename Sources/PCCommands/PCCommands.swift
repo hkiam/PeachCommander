@@ -297,6 +297,8 @@ public protocol WindowControllerProtocol: AnyObject {
     /// side) — cm_HorizontalPanels (F-002).
     func toggleHorizontalPanels()
     /// Toggle the button bar between the top strip and a left column — cm_VerticalButtonBar (F-011).
+    /// Show or hide the button bar — cm_ButtonBar (F-342).
+    func toggleButtonBar()
     func toggleVerticalButtonBar()
     /// Open the folder under the active panel's cursor in the LEFT panel (else
     /// the active panel's current folder) — Ctrl+Left (cm_TransferLeft).
@@ -744,6 +746,7 @@ public actor CommandRegistry {
         register(Self.cm_SaveWorkspace)
         register(Self.cm_PreviewPanel)
         register(Self.cm_HorizontalPanels)
+        register(Self.cm_ButtonBar)
         register(Self.cm_VerticalButtonBar)
         register(Self.cm_SrcLong)
         register(Self.cm_SrcShort)
@@ -912,6 +915,9 @@ public actor CommandRegistry {
     static let cm_HorizontalPanels = PCCommand(id: 30104, name: "cm_HorizontalPanels", category: "View",
         help: "Arrange the two file panels above/below each other instead of side by side",
         handler: { ctx in ctx.windowController?.toggleHorizontalPanels() })
+    static let cm_ButtonBar = PCCommand(id: 30114, name: "cm_ButtonBar", category: "View",
+        help: "Show or hide the button bar",
+        handler: { ctx in ctx.windowController?.toggleButtonBar() })
     static let cm_VerticalButtonBar = PCCommand(id: 30105, name: "cm_VerticalButtonBar", category: "View",
         help: "Dock the button bar as a left-hand column instead of the top strip",
         handler: { ctx in ctx.windowController?.toggleVerticalButtonBar() })

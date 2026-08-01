@@ -26,6 +26,16 @@ Knappelinjen er stripen med ikonknapper langs toppen av vinduet. Hver knapp er e
 
 En knapp kan åpne en *underlinje* – et andre sett med knapper lagt over det første. Klikk den for å stige ned; en **◀**-knapp til venstre tar deg tilbake til den forrige linjen. Når det er flere knapper enn som får plass i vindusbredden, kollapser de ekstra bak en **»**-vinkel i høyre ende; klikk den for å nå dem.
 
+## Legg til et program ved å slippe det på raden
+
+Du trenger ikke å åpne redigeringen for å legge et verktøy på raden. Dra et program, en app eller et skript fra et panel — eller fra Finder — til **ledig plass** på raden. En strek viser hvor det havner; når du slipper, opprettes knappen der.
+
+- **Programmer, apper og skript** blir en knapp som kjører dem på det du har valgt: den nye knappens parametere er `%S`, de valgte filnavnene. Tøm feltet i redigeringen for et verktøy som ikke skal ha argumenter.
+- **Mapper** blir en knapp som hopper dit — og som kopierer filer dit når du senere slipper dem på den.
+- Det som ikke kan kjøres, avvises: et vanlig dokument har ikke kjørerettighet, og en knapp for det ville bare feile ved klikk.
+
+Å slippe på en **eksisterende** knapp beholder betydningen: knappen kjøres med de slupne filene. Bare ledig plass oppretter en ny.
+
 ## Slipp filer på en knapp
 
 Du kan dra filer eller mapper rett på en knapp:
@@ -33,6 +43,10 @@ Du kan dra filer eller mapper rett på en knapp:
 - **Mappeknapp** – de slupne elementene kopieres inn i den mappen i bakgrunnen.
 - **Programknapp** – programmet kjører med de slupne elementene som utvalget sitt.
 - **Kommandoknapp** – kommandoen kjører som vanlig.
+
+## Skjul knappelinjen
+
+Velg **Vis > Knapprad** for å skjule raden, og igjen for å hente den tilbake. Den samme bryteren finnes på siden **Oppsett** i innstillingene, og valget huskes.
 
 ## Vertikal knappelinje
 

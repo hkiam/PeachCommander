@@ -26,6 +26,16 @@ Bara de butoane este banda de butoane cu pictograme de-a lungul părții de sus 
 
 Un buton poate deschide o *sub-bară* — un al doilea set de butoane suprapus peste primul. Faceți clic pe el pentru a coborî; un buton **◀** în stânga vă readuce la bara anterioară. Când sunt mai multe butoane decât încap în lățimea ferestrei, cele în plus se pliază în spatele unui chevron **»** la capătul din dreapta; faceți clic pe el pentru a ajunge la ele.
 
+## Adăugarea unui program prin tragere pe bară
+
+Nu trebuie să deschideți editorul pentru a pune o unealtă pe bară. Trageți un program, o aplicație sau un script dintr-un panou — sau din Finder — pe un **spațiu liber** al barei. O liniuță arată unde va ajunge; la eliberare butonul este creat acolo.
+
+- **Programele, aplicațiile și scripturile** devin un buton care le execută asupra selecției curente: parametrii noului buton sunt `%S`, numele fișierelor selectate. Goliți acel câmp în editor pentru o unealtă care nu trebuie să primească argumente.
+- **Dosarele** devin un buton care sare la ele — și care copiază fișiere în ele când le lăsați deasupra mai târziu.
+- Ce nu poate fi executat este refuzat: un document obișnuit nu are drept de execuție, iar un buton pentru el ar eșua la primul clic.
+
+Lăsarea peste un buton **existent** își păstrează sensul: acel buton se execută cu fișierele lăsate. Doar spațiul liber creează unul nou.
+
 ## Aruncați fișiere pe un buton
 
 Puteți trage fișiere sau foldere direct pe un buton:
@@ -33,6 +43,10 @@ Puteți trage fișiere sau foldere direct pe un buton:
 - **Buton de folder** — elementele aruncate sunt copiate în acel folder în fundal.
 - **Buton de program** — programul rulează cu elementele aruncate ca selecția sa.
 - **Buton de comandă** — comanda rulează ca de obicei.
+
+## Ascunderea barei de butoane
+
+Alegeți **Vizualizare > Bara de butoane** pentru a ascunde bara și din nou pentru a o readuce. Același comutator se află pe pagina **Dispunere** din setări, iar alegerea este reținută.
 
 ## Bară de butoane verticală
 

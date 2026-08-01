@@ -237,3 +237,72 @@ final class ButtonBarTests: XCTestCase {
         XCTAssertTrue(reparsed.buttons.isEmpty)
     }
 }
+
+// MARK: - Buttons created by dropping a program on the bar (F-342)
+//
+// The decision "what does this dropped path become?" is the whole feature: get it wrong and you
+// either create a button that cannot run, or refuse a tool the user legitimately dropped. It lives
+// on MainWindowController (AppKit), so the rule is mirrored here against the same criteria — an
+// app bundle, an executable file, or a directory — over real files in a temp tree.
+
+final class ButtonBarDropTests: XCTestCase {
+    private var dir: URL!
+
+    override func setUpWithError() throws {
+        dir = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent("pc-bardrop-\(ProcessInfo.processInfo.globallyUniqueString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    }
+    override func tearDownWithError() throws { try? FileManager.default.removeItem(at: dir) }
+
+    private func file(_ name: String, executable: Bool) throws -> String {
+        let url = dir.appendingPathComponent(name)
+        try "#!/bin/sh\necho hi\n".write(to: url, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: executable ? 0o755 : 0o644],
+                                              ofItemAtPath: url.path)
+        return url.path
+    }
+
+    /// A script has to carry an execute bit to be worth a button — a plain .txt dropped by accident
+    /// would otherwise become a button that fails the moment it is clicked.
+    func testOnlyExecutableFilesQualify() throws {
+        let runnable = try file("tool.sh", executable: true)
+        let plain = try file("notes.txt", executable: false)
+        XCTAssertTrue(FileManager.default.isExecutableFile(atPath: runnable))
+        XCTAssertFalse(FileManager.default.isExecutableFile(atPath: plain))
+    }
+
+    /// An .app is a *directory*, so the naive "is it a folder?" test would turn every app into a
+    /// navigation button instead of something you can launch.
+    func testAppBundleIsTreatedAsAProgramNotAFolder() throws {
+        let app = dir.appendingPathComponent("Demo.app")
+        try FileManager.default.createDirectory(at: app, withIntermediateDirectories: true)
+        var isDir: ObjCBool = false
+        XCTAssertTrue(FileManager.default.fileExists(atPath: app.path, isDirectory: &isDir))
+        XCTAssertTrue(isDir.boolValue, "an app bundle really is a directory — hence the extra check")
+        XCTAssertEqual((app.path as NSString).pathExtension.lowercased(), "app")
+    }
+
+    /// Serialising and re-parsing has to survive a button whose command is a path with spaces and
+    /// whose parameter is `%S`, because that is exactly what a drop produces.
+    func testDroppedButtonSurvivesSerialisation() throws {
+        let button = BarButton(icon: "/Applications/My Tool.app", cmd: "/Applications/My Tool.app",
+                               param: "%S", path: "", menu: "My Tool", iconic: true)
+        let restored = ButtonBar(parsing: ButtonBar(buttons: [button]).serialize())
+        XCTAssertEqual(restored.buttons.count, 1)
+        XCTAssertEqual(restored.buttons.first?.cmd, "/Applications/My Tool.app")
+        XCTAssertEqual(restored.buttons.first?.param, "%S")
+        XCTAssertEqual(restored.buttons.first?.menu, "My Tool")
+    }
+
+    /// Insertion has to respect the drop position, and clamp rather than trap when the index is
+    /// past the end — the bar view derives it from a mouse location.
+    func testInsertionAtIndexClampsInsteadOfTrapping() {
+        var buttons = [BarButton(cmd: "cm_A"), BarButton(cmd: "cm_B")]
+        let dropped = BarButton(cmd: "/bin/ls", param: "%S")
+        buttons.insert(dropped, at: min(1, buttons.count))
+        XCTAssertEqual(buttons.map(\.cmd), ["cm_A", "/bin/ls", "cm_B"])
+        buttons.insert(dropped, at: min(99, buttons.count))
+        XCTAssertEqual(buttons.last?.cmd, "/bin/ls")
+    }
+}

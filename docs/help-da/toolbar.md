@@ -26,6 +26,16 @@ Knaplinjen er stribien af ikonknapper langs toppen af vinduet. Hver knap er en �
 
 En knap kan åbne en *underlinje* — et andet sæt knapper lagt over det første. Klik på den for at gå ned; en **◀**-knap til venstre fører dig tilbage til den forrige linje. Når der er flere knapper, end der er plads til i vinduesbredden, foldes de ekstra bag en **»**-vinkel i højre ende; klik på den for at nå dem.
 
+## Tilføj et program ved at slippe det på linjen
+
+Du behøver ikke at åbne redigeringen for at lægge et værktøj på linjen. Træk et program, en app eller et script fra et panel — eller fra Finder — til **ledig plads** på linjen. En streg viser, hvor det lander; når du slipper, oprettes knappen der.
+
+- **Programmer, apps og scripts** bliver til en knap, der kører dem på dit aktuelle udvalg: den nye knaps parametre er `%S`, de markerede filnavne. Tøm feltet i redigeringen, hvis værktøjet ikke skal have argumenter.
+- **Mapper** bliver til en knap, der hopper derhen — og som kopierer filer derind, når du senere slipper dem på den.
+- Det, der ikke kan køres, afvises: et almindeligt dokument har ikke kørselsrettighed, og en knap til det ville blot fejle ved klik.
+
+At slippe på en **eksisterende** knap bevarer dens betydning: knappen køres med de slupne filer. Kun ledig plads opretter en ny.
+
 ## Slip filer på en knap
 
 Du kan trække filer eller mapper direkte på en knap:
@@ -33,6 +43,10 @@ Du kan trække filer eller mapper direkte på en knap:
 - **Mappeknap** — de slupne emner kopieres ind i den mappe i baggrunden.
 - **Programknap** — programmet kører med de slupne emner som sin markering.
 - **Kommandoknap** — kommandoen kører som normalt.
+
+## Skjul knaplinjen
+
+Vælg **Vis > Knaplinje** for at skjule linjen, og igen for at hente den tilbage. Den samme kontakt findes på siden **Layout** i indstillingerne, og valget huskes.
 
 ## Lodret knaplinje
 

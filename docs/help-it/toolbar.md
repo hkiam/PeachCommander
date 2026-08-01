@@ -26,6 +26,16 @@ La barra dei pulsanti è la striscia di pulsanti a icone in cima alla finestra. 
 
 Un pulsante può aprire una *sotto-barra* — un secondo insieme di pulsanti sovrapposto al primo. Fai clic su di esso per scendere; un pulsante **◀** a sinistra ti riporta alla barra precedente. Quando ci sono più pulsanti di quanti ne stiano nella larghezza della finestra, quelli in eccesso si comprimono dietro un chevron **»** all'estremità destra; fai clic su di esso per raggiungerli.
 
+## Aggiungere un programma trascinandolo sulla barra
+
+Non serve aprire l’editor per mettere uno strumento sulla barra. Trascinate un programma, un’app o uno script da un pannello — o dal Finder — su uno **spazio libero** della barra. Un trattino mostra dove finirà; rilasciandolo il pulsante viene creato lì.
+
+- **Programmi, app e script** diventano un pulsante che li esegue sulla selezione corrente: i parametri del nuovo pulsante valgono `%S`, i nomi dei file selezionati. Svuotate quel campo nell’editor per uno strumento che non deve ricevere argomenti.
+- **Cartelle** diventano un pulsante che vi salta — e che vi copia dentro i file quando ce li rilasciate in seguito.
+- Ciò che non può essere eseguito viene rifiutato: un normale documento non ha il permesso di esecuzione, e un pulsante per esso fallirebbe al primo clic.
+
+Rilasciare su un pulsante **esistente** ne conserva il significato: quel pulsante viene eseguito con i file rilasciati. Solo lo spazio libero ne crea uno nuovo.
+
 ## Trascina file su un pulsante
 
 Puoi trascinare file o cartelle direttamente su un pulsante:
@@ -33,6 +43,10 @@ Puoi trascinare file o cartelle direttamente su un pulsante:
 - **Pulsante cartella** — gli elementi rilasciati vengono copiati in quella cartella in background.
 - **Pulsante programma** — il programma viene eseguito con gli elementi rilasciati come sua selezione.
 - **Pulsante comando** — il comando viene eseguito normalmente.
+
+## Nascondere la barra dei pulsanti
+
+Scegliete **Vista > Barra dei pulsanti** per nasconderla, e di nuovo per farla tornare. Lo stesso interruttore è nella pagina **Disposizione** delle impostazioni, e la scelta viene ricordata.
 
 ## Barra dei pulsanti verticale
 

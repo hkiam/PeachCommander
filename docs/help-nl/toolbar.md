@@ -26,6 +26,16 @@ De knoppenbalk is de strook met pictogramknoppen boven aan het venster. Elke kno
 
 Een knop kan een *subbalk* openen — een tweede set knoppen die over de eerste heen wordt gelegd. Klik erop om af te dalen; een **◀**-knop links brengt je terug naar de vorige balk. Wanneer er meer knoppen zijn dan in de vensterbreedte passen, worden de extra knoppen ingeklapt achter een **»**-chevron aan de rechterkant; klik erop om ze te bereiken.
 
+## Een programma op de balk slepen
+
+U hoeft de editor niet te openen om een hulpmiddel op de balk te zetten. Sleep een programma, een app of een script vanuit een paneel — of vanuit de Finder — naar **vrije ruimte** op de balk. Een streepje toont waar het terechtkomt; loslaten maakt daar de knop.
+
+- **Programma’s, apps en scripts** worden een knop die ze op uw huidige selectie uitvoert: de parameters van de nieuwe knop staan op `%S`, de geselecteerde bestandsnamen. Maak dat veld leeg in de editor voor een hulpmiddel dat geen argumenten hoort te krijgen.
+- **Mappen** worden een knop die daarheen springt — en die er bestanden in kopieert als u ze er later op laat vallen.
+- Wat niet uitgevoerd kan worden, wordt geweigerd: een gewoon document heeft geen uitvoerrecht, een knop ervoor zou bij de eerste klik mislukken.
+
+Loslaten op een **bestaande** knop behoudt zijn betekenis: die knop wordt met de losgelaten bestanden uitgevoerd. Alleen vrije ruimte maakt een nieuwe aan.
+
 ## Bestanden op een knop neerzetten
 
 Je kunt bestanden of mappen rechtstreeks op een knop slepen:
@@ -33,6 +43,10 @@ Je kunt bestanden of mappen rechtstreeks op een knop slepen:
 - **Mapknop** — de neergezette items worden op de achtergrond naar die map gekopieerd.
 - **Programmaknop** — het programma wordt uitgevoerd met de neergezette items als selectie.
 - **Opdrachtknop** — de opdracht wordt zoals gebruikelijk uitgevoerd.
+
+## De knoppenbalk verbergen
+
+Kies **Weergave > Knoppenbalk** om de balk te verbergen, en nogmaals om hem terug te halen. Dezelfde schakelaar staat op de pagina **Lay-out** in de instellingen, en de keuze wordt onthouden.
 
 ## Verticale knoppenbalk
 
