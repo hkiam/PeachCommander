@@ -68,9 +68,10 @@ Vlastný engine pridáte vytvorením `decompilers.ini` v priečinku enginov:
 name   = My Decompiler
 kinds  = class
 tool   = java
-args   = -jar {engine} {input}
-engine = ~/tools/my-decompiler.jar
-output = stdout
+args    = -jar {engine} {input}
+engine  = my-decompiler.jar   ; a bare name is looked up in this folder
+output  = stdout
+timeout = 30                  ; seconds before the engine is stopped
 ```
 
 `{input}`, `{engine}` a `{outdir}` sa dosadia pri spustení. Vaše záznamy majú prednosť pred vstavanými a použitie vstavaného názvu (`cfr`, `vineflower`, `procyon`, `javap`) ho nahradí namiesto pridania druhého záznamu.

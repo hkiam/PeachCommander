@@ -126,18 +126,18 @@ final class PluginDecompilerTests: XCTestCase {
     func testAvailabilityDistinguishesMissingToolFromMissingPayload() throws {
         let tool = try script("engine.sh", "echo hi")
         let present = DecompilerEngine(id: "a", name: "A", kinds: ["class"], tool: tool,
-                                       args: [], enginePath: nil, output: .stdout, note: nil)
+                                       args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30)
         XCTAssertTrue(present.isAvailable)
         XCTAssertNil(present.missingPath)
 
         let noJar = DecompilerEngine(id: "b", name: "B", kinds: ["class"], tool: tool,
-                                     args: [], enginePath: "/nope/x.jar", output: .stdout, note: nil)
+                                     args: [], enginePath: "/nope/x.jar", output: .stdout, note: nil, timeout: 30)
         XCTAssertFalse(noJar.isAvailable)
         XCTAssertEqual(noJar.missingPath, "/nope/x.jar",
                        "the message must be able to name the file the user has to install")
 
         let noTool = DecompilerEngine(id: "c", name: "C", kinds: ["class"], tool: "/nope/tool",
-                                      args: [], enginePath: nil, output: .stdout, note: nil)
+                                      args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30)
         XCTAssertFalse(noTool.isAvailable)
     }
 
@@ -148,7 +148,7 @@ final class PluginDecompilerTests: XCTestCase {
         let input = dir.appendingPathComponent("Foo.class").path
         try "class Foo {}".write(toFile: input, atomically: true, encoding: .utf8)
         let engine = DecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: tool,
-                                      args: ["{input}"], enginePath: nil, output: .stdout, note: nil)
+                                      args: ["{input}"], enginePath: nil, output: .stdout, note: nil, timeout: 30)
         XCTAssertEqual(try DecompilerRunner.run(engine, input: input).get(), "class Foo {}")
     }
 
@@ -162,7 +162,7 @@ final class PluginDecompilerTests: XCTestCase {
         try Data().write(to: URL(fileURLWithPath: jar))
         let engine = DecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: tool,
                                       args: ["-jar", "{engine}", "{input}"],
-                                      enginePath: jar, output: .stdout, note: nil)
+                                      enginePath: jar, output: .stdout, note: nil, timeout: 30)
         let text = try DecompilerRunner.run(engine, input: "/x/Foo.class").get()
         XCTAssertEqual(text.split(separator: "\n").map(String.init),
                        ["-jar", jar, "/x/Foo.class"])
@@ -174,7 +174,7 @@ final class PluginDecompilerTests: XCTestCase {
         let tool = try script("writer.sh", #"echo "decompiled" > "$2/Foo.java""#)
         let engine = DecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: tool,
                                       args: ["{input}", "{outdir}"], enginePath: nil,
-                                      output: .directory, note: nil)
+                                      output: .directory, note: nil, timeout: 30)
         XCTAssertEqual(try DecompilerRunner.run(engine, input: "/x/Foo.class").get(),
                        "decompiled\n")
     }
@@ -183,7 +183,7 @@ final class PluginDecompilerTests: XCTestCase {
     func testFailureCarriesTheEnginesDiagnostics() throws {
         let tool = try script("fail.sh", "echo 'not a class file' >&2; exit 3")
         let engine = DecompilerEngine(id: "e", name: "Broken", kinds: ["class"], tool: tool,
-                                      args: [], enginePath: nil, output: .stdout, note: nil)
+                                      args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30)
         guard case .failure(let error) = DecompilerRunner.run(engine, input: "/x") else {
             return XCTFail("expected a failure")
         }
@@ -201,7 +201,7 @@ final class PluginDecompilerTests: XCTestCase {
     func testSilentSuccessIsTreatedAsFailure() throws {
         let tool = try script("quiet.sh", "exit 0")
         let engine = DecompilerEngine(id: "e", name: "Quiet", kinds: ["class"], tool: tool,
-                                      args: [], enginePath: nil, output: .stdout, note: nil)
+                                      args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30)
         guard case .failure(.emptyOutput) = DecompilerRunner.run(engine, input: "/x") else {
             return XCTFail("expected emptyOutput")
         }
@@ -212,9 +212,64 @@ final class PluginDecompilerTests: XCTestCase {
     func testLargeOutputDoesNotDeadlock() throws {
         let tool = try script("big.sh", "for i in $(seq 1 20000); do echo 'public void method();'; done")
         let engine = DecompilerEngine(id: "e", name: "Big", kinds: ["class"], tool: tool,
-                                      args: [], enginePath: nil, output: .stdout, note: nil)
+                                      args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30)
         let text = try DecompilerRunner.run(engine, input: "/x").get()
         XCTAssertEqual(text.split(separator: "\n").count, 20000)
+    }
+
+    /// An engine that never finishes must be stopped and reported, not left to spin while the view
+    /// says "Decompiling…" for ever. Obfuscated bytecode really does send decompilers into loops.
+    func testAnEngineThatHangsIsStoppedAndReported() throws {
+        let tool = try script("forever.sh", "sleep 60")
+        let engine = DecompilerEngine(id: "e", name: "Slow", kinds: ["class"], tool: tool,
+                                      args: [], enginePath: nil, output: .stdout, note: nil,
+                                      timeout: 1)
+        let started = Date()
+        guard case .failure(let error) = DecompilerRunner.run(engine, input: "/x") else {
+            return XCTFail("expected a failure")
+        }
+        XCTAssertLessThan(Date().timeIntervalSince(started), 10, "the watchdog did not fire")
+        guard case .timedOut(let name, let seconds) = error else {
+            return XCTFail("expected timedOut, got \(error)")
+        }
+        XCTAssertEqual(name, "Slow")
+        XCTAssertEqual(seconds, 1)
+        XCTAssertTrue(error.userMessage.contains("1 second"), error.userMessage)
+    }
+
+    /// Nothing on stdin, so whether a tool blocks cannot depend on how the app was launched.
+    func testAToolReadingStdinGetsEOFRatherThanWaiting() throws {
+        let tool = try script("readstdin.sh", "cat; echo done")
+        let engine = DecompilerEngine(id: "e", name: "Reader", kinds: ["class"], tool: tool,
+                                      args: [], enginePath: nil, output: .stdout, note: nil,
+                                      timeout: 5)
+        XCTAssertEqual(try DecompilerRunner.run(engine, input: "/x").get(), "done\n")
+    }
+
+    /// `~` and bare file names in the config must resolve the way the user expects: a jar named in
+    /// the engine folder, not against a working directory a GUI app never shows them.
+    func testPathsResolveAgainstTheEngineFolderAndHome() {
+        let (engines, _) = DecompilerRegistry.parse("""
+            [a]
+            kinds  = class
+            tool   = ~/bin/mytool
+            engine = cfr.jar
+            """, engineDirectory: "/opt/engines")
+        XCTAssertEqual(engines.first?.tool, (NSHomeDirectory() as NSString).appendingPathComponent("bin/mytool"))
+        XCTAssertEqual(engines.first?.enginePath, "/opt/engines/cfr.jar")
+    }
+
+    func testTimeoutIsConfigurablePerEngine() {
+        let (engines, _) = DecompilerRegistry.parse("""
+            [a]
+            kinds   = class
+            tool    = /bin/echo
+            timeout = 120
+            """, engineDirectory: "/e")
+        XCTAssertEqual(engines.first?.timeout, 120)
+        let (defaulted, _) = DecompilerRegistry.parse("[b]\nkinds = class\ntool = /bin/echo",
+                                                      engineDirectory: "/e")
+        XCTAssertEqual(defaulted.first?.timeout, DecompilerEngine.defaultTimeout)
     }
 
     // MARK: - Messages
@@ -225,6 +280,7 @@ final class PluginDecompilerTests: XCTestCase {
             .engineMissing(engine: "CFR", path: "/x/cfr.jar"),
             .engineFailed(engine: "CFR", exitCode: 1, message: "boom"),
             .emptyOutput(engine: "CFR"),
+            .timedOut(engine: "CFR", seconds: 30),
             .notReadable("not a class file"),
         ]
         for c in cases {

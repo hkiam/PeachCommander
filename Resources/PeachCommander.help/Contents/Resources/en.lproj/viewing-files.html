@@ -59,9 +59,10 @@
 <span class="na">name</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">My Decompiler</span>
 <span class="na">kinds</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">class</span>
 <span class="na">tool</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">java</span>
-<span class="na">args</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">-jar {engine} {input}</span>
-<span class="na">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">~/tools/my-decompiler.jar</span>
-<span class="na">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">stdout</span>
+<span class="na">args</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">-jar {engine} {input}</span>
+<span class="na">engine</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">my-decompiler.jar</span><span class="w">   </span><span class="c1">; a bare name is looked up in this folder</span>
+<span class="na">output</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">stdout</span>
+<span class="na">timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">30</span><span class="w">                  </span><span class="c1">; seconds before the engine is stopped</span>
 </code></pre></div>
 
 <p><code>{input}</code>, <code>{engine}</code> and <code>{outdir}</code> are filled in when the engine runs. Your own entries take precedence over the built-in ones, and reusing a built-in name (<code>cfr</code>, <code>vineflower</code>, <code>procyon</code>, <code>javap</code>) replaces it rather than adding a second entry.</p>

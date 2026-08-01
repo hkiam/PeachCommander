@@ -159,10 +159,12 @@ final class DecompiledView: NSView {
             "    kinds  = class",
             "    tool   = java",
             "    args   = -jar {engine} {input}",
-            "    engine = ~/path/to/engine.jar",
-            "    output = stdout          ; or: directory",
+            "    engine  = engine.jar     ; a bare name is looked up in this folder",
+            "    output  = stdout         ; or: directory",
+            "    timeout = 30             ; seconds before the engine is stopped",
             "",
             "{input}, {engine} and {outdir} are substituted when the engine runs.",
+            "Your own entries take precedence over the built-in ones.",
         ]
         try? lines.joined(separator: "\n").write(toFile: readme, atomically: true, encoding: .utf8)
     }
@@ -234,6 +236,15 @@ final class DecompiledView: NSView {
 
     func selectAll() { text.setSelectedRange(NSRange(location: 0, length: (text.string as NSString).length)) }
 
+    /// Font size, as the lister ABI offers via PC_LC_FONTPLUS / PC_LC_FONTMINUS. Decompiled source
+    /// is dense, so the viewer's zoom keys have to work here — ignoring commands the ABI defines
+    /// makes them look broken rather than unimplemented.
+    func changeFontSize(by delta: CGFloat) {
+        let current = text.font?.pointSize ?? 12
+        let size = min(32, max(8, current + delta))
+        text.font = NSFont.monospacedSystemFont(ofSize: size, weight: .regular)
+    }
+
     func copySelection() {
         let sel = text.selectedRange()
         let content = sel.length > 0 ? (text.string as NSString).substring(with: sel) : text.string
@@ -286,6 +297,8 @@ public func ListSendCommand(_ listWin: UnsafeMutableRawPointer?, _ command: Int3
     switch command {
     case 1: view.copySelection(); return 0     // PC_LC_COPY
     case 2: view.selectAll(); return 0         // PC_LC_SELECTALL
+    case 4: view.changeFontSize(by: 1); return 0   // PC_LC_FONTPLUS
+    case 5: view.changeFontSize(by: -1); return 0  // PC_LC_FONTMINUS
     default: return 1
     }
 }

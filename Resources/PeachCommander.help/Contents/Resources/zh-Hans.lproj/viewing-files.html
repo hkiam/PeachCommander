@@ -59,9 +59,10 @@
 <span class="na">name</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">My Decompiler</span>
 <span class="na">kinds</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">class</span>
 <span class="na">tool</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">java</span>
-<span class="na">args</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">-jar {engine} {input}</span>
-<span class="na">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">~/tools/my-decompiler.jar</span>
-<span class="na">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">stdout</span>
+<span class="na">args</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">-jar {engine} {input}</span>
+<span class="na">engine</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">my-decompiler.jar</span><span class="w">   </span><span class="c1">; a bare name is looked up in this folder</span>
+<span class="na">output</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">stdout</span>
+<span class="na">timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">30</span><span class="w">                  </span><span class="c1">; seconds before the engine is stopped</span>
 </code></pre></div>
 
 <p><code>{input}</code>、<code>{engine}</code> 和 <code>{outdir}</code> 会在运行时替换。你自己的条目优先于内置条目；重用内置名称（<code>cfr</code>、<code>vineflower</code>、<code>procyon</code>、<code>javap</code>）会替换它，而不是新增一条。</p>

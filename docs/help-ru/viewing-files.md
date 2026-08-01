@@ -68,9 +68,10 @@ related: [editing-files, searching]
 name   = My Decompiler
 kinds  = class
 tool   = java
-args   = -jar {engine} {input}
-engine = ~/tools/my-decompiler.jar
-output = stdout
+args    = -jar {engine} {input}
+engine  = my-decompiler.jar   ; a bare name is looked up in this folder
+output  = stdout
+timeout = 30                  ; seconds before the engine is stopped
 ```
 
 `{input}`, `{engine}` и `{outdir}` подставляются при запуске. Ваши записи имеют приоритет над встроенными, а повторное использование встроенного имени (`cfr`, `vineflower`, `procyon`, `javap`) заменяет его, а не добавляет вторую запись.

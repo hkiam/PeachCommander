@@ -68,9 +68,10 @@ Quick View показує живий попередній перегляд у п
 name   = My Decompiler
 kinds  = class
 tool   = java
-args   = -jar {engine} {input}
-engine = ~/tools/my-decompiler.jar
-output = stdout
+args    = -jar {engine} {input}
+engine  = my-decompiler.jar   ; a bare name is looked up in this folder
+output  = stdout
+timeout = 30                  ; seconds before the engine is stopped
 ```
 
 `{input}`, `{engine}` та `{outdir}` підставляються під час запуску. Ваші записи мають перевагу над вбудованими, а повторне використання вбудованої назви (`cfr`, `vineflower`, `procyon`, `javap`) замінює її, а не додає другий запис.

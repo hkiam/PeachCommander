@@ -68,9 +68,10 @@ Svoj pogon dodate tako, da v mapi pogonov ustvarite `decompilers.ini`:
 name   = My Decompiler
 kinds  = class
 tool   = java
-args   = -jar {engine} {input}
-engine = ~/tools/my-decompiler.jar
-output = stdout
+args    = -jar {engine} {input}
+engine  = my-decompiler.jar   ; a bare name is looked up in this folder
+output  = stdout
+timeout = 30                  ; seconds before the engine is stopped
 ```
 
 `{input}`, `{engine}` in `{outdir}` se nadomestijo ob zagonu. Vaši vnosi imajo prednost pred vgrajenimi, ponovna uporaba vgrajenega imena (`cfr`, `vineflower`, `procyon`, `javap`) pa ga zamenja, namesto da bi dodala drugi vnos.

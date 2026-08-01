@@ -68,9 +68,10 @@ macOS 자체가 처리하는 빠른 전체 화면 미리 보기는 Cmd+Y(Quick L
 name   = My Decompiler
 kinds  = class
 tool   = java
-args   = -jar {engine} {input}
-engine = ~/tools/my-decompiler.jar
-output = stdout
+args    = -jar {engine} {input}
+engine  = my-decompiler.jar   ; a bare name is looked up in this folder
+output  = stdout
+timeout = 30                  ; seconds before the engine is stopped
 ```
 
 `{input}`, `{engine}`, `{outdir}`는 실행 시 채워집니다. 사용자가 적은 항목이 기본 항목보다 우선하며, 기본 이름(`cfr`, `vineflower`, `procyon`, `javap`)을 다시 쓰면 항목이 하나 더 생기는 대신 그것을 대체합니다.

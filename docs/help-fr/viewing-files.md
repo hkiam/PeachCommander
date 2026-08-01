@@ -68,9 +68,10 @@ Pour ajouter votre propre moteur, créez `decompilers.ini` dans le dossier des m
 name   = My Decompiler
 kinds  = class
 tool   = java
-args   = -jar {engine} {input}
-engine = ~/tools/my-decompiler.jar
-output = stdout
+args    = -jar {engine} {input}
+engine  = my-decompiler.jar   ; a bare name is looked up in this folder
+output  = stdout
+timeout = 30                  ; seconds before the engine is stopped
 ```
 
 `{input}`, `{engine}` et `{outdir}` sont remplacés à l’exécution. Vos entrées ont priorité sur celles fournies, et réutiliser un nom intégré (`cfr`, `vineflower`, `procyon`, `javap`) le remplace au lieu d’ajouter une seconde entrée.
