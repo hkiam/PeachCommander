@@ -61,6 +61,8 @@ Silnik zmieniasz menu u góry podglądu; wybrany działa natychmiast, a wynik je
 
 Kod jest podświetlany składniowo, a dwa przyciski prowadzą dalej: **Zapisz jako…** zapisuje go do pliku, a **Otwórz w edytorze** przekazuje go temu, co otwiera `.java` na twoim Macu. Bardzo duży wynik pokazywany jest bez podświetlenia, aby pojawił się od razu, a nie po chwili; wiersz stanu o tym informuje.
 
+Android jest również objęty: F3 na pliku `.dex` używa **jadx** (Apache 2.0, `brew install jadx`), który zamienia kod bajtowy Dalvik z powrotem na Javę. Wystarczył jeden opis silnika — ten sam mechanizm, inny format.
+
 Wtyczka jest **wyłączona, dopóki jej nie włączysz**, w Ustawienia ▸ Wtyczki — większość osób nigdy nie otwiera pliku .class, a bez silnika i tak nic nie da.
 
 Aby dodać własny silnik, utwórz `decompilers.ini` w folderze silników:

@@ -61,6 +61,8 @@ Byt motor med menyn högst upp i visaren; den du väljer används genast och res
 
 Källkoden syntaxmarkeras, och två knappar tar den vidare: **Spara som…** skriver den till en fil och **Öppna i redigerare** lämnar den till det som öppnar `.java` på din Mac. Ett mycket stort resultat visas omarkerat så att det syns direkt i stället för efter en paus; statusraden säger till när det händer.
 
+Android täcks också: F3 på en `.dex`-fil använder **jadx** (Apache 2.0, `brew install jadx`), som gör Dalvik-bytekod till Java igen. Det krävdes en enda motorbeskrivning — samma mekanism, annat format.
+
 Modulen är **av tills du slår på den**, under Inställningar ▸ Insticksmoduler — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.
 
 Lägg till en egen motor genom att skapa `decompilers.ini` i motormappen:

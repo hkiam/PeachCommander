@@ -24,12 +24,16 @@
 
 import Foundation
 
+// Every type carries the `Plugin` prefix. This file is compiled *into* plugins, so a bare name
+// like `DecompilerEngine` is a collision waiting to happen with whatever the plugin author already
+// has — PluginSyntax.swift hit exactly that with `SyntaxLanguage` against PCFoundation's own.
+
 // MARK: - Errors
 
 /// Why no source could be produced. The cases are distinct because the view must say something
 /// different for each: "install an engine" is a setup problem, "the engine crashed" is not, and
 /// neither is "this is not a class file".
-enum DecompileError: Error, Equatable {
+enum PluginDecompileError: Error, Equatable {
     /// No engine is configured or installed for this kind of file.
     case noEngine(kind: String)
     /// An engine is configured but its tool or JAR is missing from disk.
@@ -66,7 +70,7 @@ enum DecompileError: Error, Equatable {
 // MARK: - Engines
 
 /// How an engine hands its result back.
-enum DecompilerOutput: String {
+enum PluginDecompilerOutput: String {
     /// Source is written to stdout — the common case, and the only one that needs no temp files.
     case stdout
     /// The engine insists on writing files; it is given a temp directory and the files are
@@ -75,7 +79,7 @@ enum DecompilerOutput: String {
 }
 
 /// One decompiler engine, as data.
-struct DecompilerEngine: Equatable {
+struct PluginDecompilerEngine: Equatable {
     let id: String
     let name: String
     /// Input kinds this engine handles, lowercased and without a dot ("class", "jar", "dex").
@@ -86,7 +90,7 @@ struct DecompilerEngine: Equatable {
     let args: [String]
     /// Optional payload the tool runs — a JAR for the JVM engines.
     let enginePath: String?
-    let output: DecompilerOutput
+    let output: PluginDecompilerOutput
     /// Shown when the engine is missing, so the message can name a licence and a download.
     let note: String?
     /// Seconds before the engine is stopped. Decompilers do get stuck — obfuscated bytecode is a
@@ -101,35 +105,45 @@ struct DecompilerEngine: Equatable {
 
 // MARK: - Built-in engine descriptors
 
-extension DecompilerEngine {
+extension PluginDecompilerEngine {
     /// Engines the plugin knows how to drive. Descriptors only — nothing is bundled.
     ///
     /// Ordered by preference: CFR and Vineflower produce Java source and are permissively
     /// licensed (MIT and Apache-2.0), so they can be recommended without a licence caveat.
     /// `javap` comes last but needs no download at all: it is part of any JDK, and bytecode is a
     /// far better answer than an empty window.
-    static func builtIns(engineDirectory: String) -> [DecompilerEngine] {
+    static func builtIns(engineDirectory: String) -> [PluginDecompilerEngine] {
         func jar(_ name: String) -> String { (engineDirectory as NSString).appendingPathComponent(name) }
         return [
-            DecompilerEngine(
+            PluginDecompilerEngine(
                 id: "cfr", name: "CFR", kinds: ["class", "jar"],
                 tool: "java", args: ["-jar", "{engine}", "{input}"],
                 enginePath: jar("cfr.jar"), output: .stdout,
                 note: "CFR — MIT licence. Download cfr.jar from https://github.com/leibnitz27/cfr/releases",
                 timeout: defaultTimeout),
-            DecompilerEngine(
+            PluginDecompilerEngine(
                 id: "vineflower", name: "Vineflower", kinds: ["class", "jar"],
                 tool: "java", args: ["-jar", "{engine}", "{input}", "{outdir}"],
                 enginePath: jar("vineflower.jar"), output: .directory,
                 note: "Vineflower — Apache-2.0 licence. Download vineflower.jar from "
                     + "https://github.com/Vineflower/vineflower/releases", timeout: defaultTimeout),
-            DecompilerEngine(
+            PluginDecompilerEngine(
                 id: "procyon", name: "Procyon", kinds: ["class", "jar"],
                 tool: "java", args: ["-jar", "{engine}", "{input}"],
                 enginePath: jar("procyon.jar"), output: .stdout,
                 note: "Procyon — Apache-2.0 licence. Download procyon-decompiler.jar from "
                     + "https://github.com/mstrobel/procyon/releases", timeout: defaultTimeout),
-            DecompilerEngine(
+            // Android. The proof that this design carries a new format: one descriptor and one
+            // clause in the plugin's detect string, no change to the runner — `output: .directory`
+            // and `{outdir}` already existed for Vineflower.
+            PluginDecompilerEngine(
+                id: "jadx", name: "jadx (Android)", kinds: ["dex", "apk"],
+                tool: "jadx", args: ["--no-res", "-d", "{outdir}", "{input}"],
+                enginePath: nil, output: .directory,
+                note: "jadx — Apache-2.0 licence. Install with `brew install jadx`, or download "
+                    + "from https://github.com/skylot/jadx/releases",
+                timeout: 120),   // a dex holds a whole app; 30 s is not enough
+            PluginDecompilerEngine(
                 id: "javap", name: "javap (bytecode)", kinds: ["class"],
                 tool: "javap", args: ["-c", "-p", "-constants", "{input}"],
                 enginePath: nil, output: .stdout,
@@ -142,8 +156,8 @@ extension DecompilerEngine {
 // MARK: - Registry
 
 /// Resolves which engine to use, from built-in descriptors plus the user's own.
-struct DecompilerRegistry {
-    private(set) var engines: [DecompilerEngine]
+struct PluginDecompilerRegistry {
+    private(set) var engines: [PluginDecompilerEngine]
     /// Warnings from parsing the user's file, surfaced rather than swallowed.
     private(set) var warnings: [String] = []
 
@@ -161,8 +175,8 @@ struct DecompilerRegistry {
     /// place, so pointing CFR at another path or adding flags needs no new id.
     init(configRoot: String) {
         let dir = Self.engineDirectory(configRoot: configRoot)
-        var builtIns = DecompilerEngine.builtIns(engineDirectory: dir)
-        var user: [DecompilerEngine] = []
+        var builtIns = PluginDecompilerEngine.builtIns(engineDirectory: dir)
+        var user: [PluginDecompilerEngine] = []
         let iniPath = (dir as NSString).appendingPathComponent("decompilers.ini")
         if let text = try? String(contentsOfFile: iniPath, encoding: .utf8) {
             let parsed = Self.parse(text, engineDirectory: dir)
@@ -176,12 +190,12 @@ struct DecompilerRegistry {
     }
 
     /// Engines that can handle `kind`, in preference order.
-    func engines(for kind: String) -> [DecompilerEngine] {
+    func engines(for kind: String) -> [PluginDecompilerEngine] {
         engines.filter { $0.handles(kind: kind) }
     }
 
     /// The first engine for `kind` that is actually present on disk.
-    func firstAvailable(for kind: String) -> DecompilerEngine? {
+    func firstAvailable(for kind: String) -> PluginDecompilerEngine? {
         engines(for: kind).first { $0.isAvailable }
     }
 
@@ -190,8 +204,8 @@ struct DecompilerRegistry {
     /// Parse `decompilers.ini`. Deliberately forgiving in the same way theme files are: a bad
     /// section costs that engine and a warning, never the whole file.
     static func parse(_ text: String, engineDirectory: String)
-        -> (engines: [DecompilerEngine], warnings: [String]) {
-        var engines: [DecompilerEngine] = []
+        -> (engines: [PluginDecompilerEngine], warnings: [String]) {
+        var engines: [PluginDecompilerEngine] = []
         var warnings: [String] = []
         var section: String?
         var fields: [String: String] = [:]
@@ -208,8 +222,8 @@ struct DecompilerRegistry {
             guard !kinds.isEmpty else {
                 warnings.append("[\(id)]: no `kinds`, ignored"); return
             }
-            let output = DecompilerOutput(rawValue: (fields["output"] ?? "stdout").lowercased()) ?? .stdout
-            engines.append(DecompilerEngine(
+            let output = PluginDecompilerOutput(rawValue: (fields["output"] ?? "stdout").lowercased()) ?? .stdout
+            engines.append(PluginDecompilerEngine(
                 id: id, name: fields["name"] ?? id, kinds: kinds,
                 // `~` is expanded for the tool too, not just the payload: `tool = ~/bin/mytool`
                 // used to be passed through literally and could never be found.
@@ -220,7 +234,7 @@ struct DecompilerRegistry {
                 // working directory — never what was meant.
                 enginePath: fields["engine"].map { resolve($0, relativeTo: engineDirectory) },
                 output: output, note: fields["note"],
-                timeout: fields["timeout"].flatMap(Int.init) ?? DecompilerEngine.defaultTimeout))
+                timeout: fields["timeout"].flatMap(Int.init) ?? PluginDecompilerEngine.defaultTimeout))
         }
 
         for raw in text.components(separatedBy: .newlines) {
@@ -275,7 +289,7 @@ struct DecompilerRegistry {
 
 // MARK: - Availability
 
-extension DecompilerEngine {
+extension PluginDecompilerEngine {
     /// Whether this engine can run right now: its tool resolves and its payload exists.
     var isAvailable: Bool { resolvedTool != nil && missingPath == nil }
 
@@ -306,13 +320,13 @@ extension DecompilerEngine {
 
 // MARK: - Running
 
-enum DecompilerRunner {
+enum PluginDecompilerRunner {
     /// Run `engine` over `input` and return the source it produced.
     ///
     /// Synchronous on purpose: the caller is a lister view that is already off the main thread for
     /// its load, and threading here would only move the problem. Decompiling a large class takes
     /// seconds, so callers cache the result.
-    static func run(_ engine: DecompilerEngine, input: String) -> Result<String, DecompileError> {
+    static func run(_ engine: PluginDecompilerEngine, input: String) -> Result<String, PluginDecompileError> {
         guard let toolPath = engine.resolvedTool else {
             return .failure(.engineMissing(engine: engine.name, path: engine.tool))
         }

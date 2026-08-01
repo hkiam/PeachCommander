@@ -61,6 +61,8 @@ Engine prepnete ponukou v hornej časti prehliadača; zvolený sa použije ihne�
 
 Zdrojový kód sa farebne zvýrazňuje a dve tlačidlá vedú ďalej: **Uložiť ako…** ho zapíše do súboru a **Otvoriť v editore** ho predá tomu, čo na vašom Macu otvára `.java`. Veľmi rozsiahly výsledok sa zobrazí bez zvýraznenia, aby sa objavil hneď a nie po čakaní; stavový riadok to uvedie.
 
+Pokrytý je aj Android: F3 na súbore `.dex` použije **jadx** (Apache 2.0, `brew install jadx`), ktorý prevádza bajtkód Dalvik späť na Javu. Stačil jediný opis enginu — rovnaký mechanizmus, iný formát.
+
 Modul je **vypnutý, kým ho nezapnete**, v Nastavenia ▸ Zásuvné moduly — väčšina ľudí súbor .class nikdy neotvorí a bez enginu aj tak nič nezmôže.
 
 Vlastný engine pridáte vytvorením `decompilers.ini` v priečinku enginov:
