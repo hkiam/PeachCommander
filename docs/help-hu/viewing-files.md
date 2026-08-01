@@ -68,9 +68,10 @@ Saját motor hozzáadásához hozzon létre egy `decompilers.ini` fájlt a motor
 name   = My Decompiler
 kinds  = class
 tool   = java
-args   = -jar {engine} {input}
-engine = ~/tools/my-decompiler.jar
-output = stdout
+args    = -jar {engine} {input}
+engine  = my-decompiler.jar   ; a bare name is looked up in this folder
+output  = stdout
+timeout = 30                  ; seconds before the engine is stopped
 ```
 
 A `{input}`, `{engine}` és `{outdir}` helyére futtatáskor kerül az érték. A saját bejegyzései elsőbbséget élveznek a beépítettekkel szemben, és egy beépített név (`cfr`, `vineflower`, `procyon`, `javap`) újrahasználata lecseréli azt, nem pedig második bejegyzést hoz létre.

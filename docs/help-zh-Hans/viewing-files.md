@@ -68,9 +68,10 @@ Quick View 在你*未*使用的面板中显示实时预览，因此你可以在�
 name   = My Decompiler
 kinds  = class
 tool   = java
-args   = -jar {engine} {input}
-engine = ~/tools/my-decompiler.jar
-output = stdout
+args    = -jar {engine} {input}
+engine  = my-decompiler.jar   ; a bare name is looked up in this folder
+output  = stdout
+timeout = 30                  ; seconds before the engine is stopped
 ```
 
 `{input}`、`{engine}` 和 `{outdir}` 会在运行时替换。你自己的条目优先于内置条目；重用内置名称（`cfr`、`vineflower`、`procyon`、`javap`）会替换它，而不是新增一条。

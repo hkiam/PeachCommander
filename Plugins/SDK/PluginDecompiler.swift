@@ -38,6 +38,8 @@ enum DecompileError: Error, Equatable {
     case engineFailed(engine: String, exitCode: Int32, message: String)
     /// The engine produced nothing at all.
     case emptyOutput(engine: String)
+    /// The engine ran too long and was stopped.
+    case timedOut(engine: String, seconds: Int)
     /// The input is not what this plugin claims to read.
     case notReadable(String)
 
@@ -53,6 +55,8 @@ enum DecompileError: Error, Equatable {
             return "\(engine) exited \(code)\(detail.isEmpty ? "" : ": \(detail)")"
         case .emptyOutput(let engine):
             return "\(engine) produced no output."
+        case .timedOut(let engine, let seconds):
+            return "\(engine) did not finish within \(seconds) seconds and was stopped."
         case .notReadable(let why):
             return why
         }
@@ -85,8 +89,14 @@ struct DecompilerEngine: Equatable {
     let output: DecompilerOutput
     /// Shown when the engine is missing, so the message can name a licence and a download.
     let note: String?
+    /// Seconds before the engine is stopped. Decompilers do get stuck — obfuscated bytecode is a
+    /// known way to send one into a loop — and without a limit the view would say "Decompiling…"
+    /// for ever with no way back.
+    let timeout: Int
 
     func handles(kind: String) -> Bool { kinds.contains(kind.lowercased()) }
+
+    static let defaultTimeout = 30
 }
 
 // MARK: - Built-in engine descriptors
@@ -105,25 +115,26 @@ extension DecompilerEngine {
                 id: "cfr", name: "CFR", kinds: ["class", "jar"],
                 tool: "java", args: ["-jar", "{engine}", "{input}"],
                 enginePath: jar("cfr.jar"), output: .stdout,
-                note: "CFR — MIT licence. Download cfr.jar from https://github.com/leibnitz27/cfr/releases"),
+                note: "CFR — MIT licence. Download cfr.jar from https://github.com/leibnitz27/cfr/releases",
+                timeout: defaultTimeout),
             DecompilerEngine(
                 id: "vineflower", name: "Vineflower", kinds: ["class", "jar"],
                 tool: "java", args: ["-jar", "{engine}", "{input}", "{outdir}"],
                 enginePath: jar("vineflower.jar"), output: .directory,
                 note: "Vineflower — Apache-2.0 licence. Download vineflower.jar from "
-                    + "https://github.com/Vineflower/vineflower/releases"),
+                    + "https://github.com/Vineflower/vineflower/releases", timeout: defaultTimeout),
             DecompilerEngine(
                 id: "procyon", name: "Procyon", kinds: ["class", "jar"],
                 tool: "java", args: ["-jar", "{engine}", "{input}"],
                 enginePath: jar("procyon.jar"), output: .stdout,
                 note: "Procyon — Apache-2.0 licence. Download procyon-decompiler.jar from "
-                    + "https://github.com/mstrobel/procyon/releases"),
+                    + "https://github.com/mstrobel/procyon/releases", timeout: defaultTimeout),
             DecompilerEngine(
                 id: "javap", name: "javap (bytecode)", kinds: ["class"],
                 tool: "javap", args: ["-c", "-p", "-constants", "{input}"],
                 enginePath: nil, output: .stdout,
                 note: "javap ships with any JDK — no download needed, but it shows bytecode "
-                    + "rather than Java source."),
+                    + "rather than Java source.", timeout: defaultTimeout),
         ]
     }
 }
@@ -199,10 +210,17 @@ struct DecompilerRegistry {
             }
             let output = DecompilerOutput(rawValue: (fields["output"] ?? "stdout").lowercased()) ?? .stdout
             engines.append(DecompilerEngine(
-                id: id, name: fields["name"] ?? id, kinds: kinds, tool: tool,
+                id: id, name: fields["name"] ?? id, kinds: kinds,
+                // `~` is expanded for the tool too, not just the payload: `tool = ~/bin/mytool`
+                // used to be passed through literally and could never be found.
+                tool: expandTilde(tool),
                 args: splitArguments(fields["args"] ?? ""),
-                enginePath: fields["engine"].map { expandTilde($0) },
-                output: output, note: fields["note"]))
+                // A bare file name resolves against the engine folder, which is where the user was
+                // told to put jars. Before, `engine = cfr.jar` resolved against the process's
+                // working directory — never what was meant.
+                enginePath: fields["engine"].map { resolve($0, relativeTo: engineDirectory) },
+                output: output, note: fields["note"],
+                timeout: fields["timeout"].flatMap(Int.init) ?? DecompilerEngine.defaultTimeout))
         }
 
         for raw in text.components(separatedBy: .newlines) {
@@ -224,7 +242,6 @@ struct DecompilerRegistry {
             fields[key] = String(line[line.index(after: eq)...]).trimmingCharacters(in: .whitespaces)
         }
         flush()
-        _ = engineDirectory
         return (engines, warnings)
     }
 
@@ -246,6 +263,14 @@ struct DecompilerRegistry {
     }
 
     static func expandTilde(_ path: String) -> String { (path as NSString).expandingTildeInPath }
+
+    /// Expand `~`, and resolve a relative path against the engine folder rather than the process's
+    /// working directory — which for a GUI app is somewhere the user has never heard of.
+    static func resolve(_ path: String, relativeTo directory: String) -> String {
+        let expanded = expandTilde(path)
+        guard !(expanded as NSString).isAbsolutePath else { return expanded }
+        return (directory as NSString).appendingPathComponent(expanded)
+    }
 }
 
 // MARK: - Availability
@@ -316,6 +341,11 @@ enum DecompilerRunner {
         let out = Pipe(), err = Pipe()
         process.standardOutput = out
         process.standardError = err
+        // Explicitly nothing on stdin. A tool invoked with the wrong flags may wait for input, and
+        // whether it then blocks depended on how the app happened to be launched — inherited stdin
+        // from a terminal keeps it waiting, from Finder it does not. That is not a property a
+        // viewer should have.
+        process.standardInput = FileHandle.nullDevice
         // Read both pipes while the process runs. A decompiler can emit more than a pipe buffer
         // holds, and waiting first would deadlock on exactly the large classes this is for.
         var outData = Data(), errData = Data()
@@ -330,8 +360,27 @@ enum DecompilerRunner {
         do { try process.run() } catch {
             return .failure(.engineMissing(engine: engine.name, path: toolPath))
         }
+
+        // Stop an engine that will not finish. Decompilers do get stuck, and the alternative is a
+        // view that says "Decompiling…" for ever while a JVM burns a core in the background.
+        let deadline = DispatchTime.now() + .seconds(engine.timeout)
+        var timedOut = false
+        let watchdog = DispatchWorkItem {
+            guard process.isRunning else { return }
+            timedOut = true
+            process.terminate()
+            // SIGTERM is enough for a JVM; the kill is the backstop for a tool that ignores it.
+            DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+                if process.isRunning { kill(process.processIdentifier, SIGKILL) }
+            }
+        }
+        DispatchQueue.global().asyncAfter(deadline: deadline, execute: watchdog)
         process.waitUntilExit()
+        watchdog.cancel()
         group.wait()
+        if timedOut {
+            return .failure(.timedOut(engine: engine.name, seconds: engine.timeout))
+        }
 
         let stderrText = String(data: errData, encoding: .utf8) ?? ""
         guard process.terminationStatus == 0 else {

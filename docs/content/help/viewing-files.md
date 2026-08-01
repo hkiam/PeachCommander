@@ -68,9 +68,10 @@ To add an engine of your own, create `decompilers.ini` in the engine folder:
 name   = My Decompiler
 kinds  = class
 tool   = java
-args   = -jar {engine} {input}
-engine = ~/tools/my-decompiler.jar
-output = stdout
+args    = -jar {engine} {input}
+engine  = my-decompiler.jar   ; a bare name is looked up in this folder
+output  = stdout
+timeout = 30                  ; seconds before the engine is stopped
 ```
 
 `{input}`, `{engine}` and `{outdir}` are filled in when the engine runs. Your own entries take precedence over the built-in ones, and reusing a built-in name (`cfr`, `vineflower`, `procyon`, `javap`) replaces it rather than adding a second entry.

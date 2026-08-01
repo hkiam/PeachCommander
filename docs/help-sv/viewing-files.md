@@ -68,9 +68,10 @@ Lägg till en egen motor genom att skapa `decompilers.ini` i motormappen:
 name   = My Decompiler
 kinds  = class
 tool   = java
-args   = -jar {engine} {input}
-engine = ~/tools/my-decompiler.jar
-output = stdout
+args    = -jar {engine} {input}
+engine  = my-decompiler.jar   ; a bare name is looked up in this folder
+output  = stdout
+timeout = 30                  ; seconds before the engine is stopped
 ```
 
 `{input}`, `{engine}` och `{outdir}` fylls i när motorn körs. Dina egna poster går före de inbyggda, och att återanvända ett inbyggt namn (`cfr`, `vineflower`, `procyon`, `javap`) ersätter det i stället för att lägga till en andra post.

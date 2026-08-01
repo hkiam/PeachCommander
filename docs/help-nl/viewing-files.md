@@ -68,9 +68,10 @@ Wilt u een eigen engine toevoegen, maak dan `decompilers.ini` in de enginemap:
 name   = My Decompiler
 kinds  = class
 tool   = java
-args   = -jar {engine} {input}
-engine = ~/tools/my-decompiler.jar
-output = stdout
+args    = -jar {engine} {input}
+engine  = my-decompiler.jar   ; a bare name is looked up in this folder
+output  = stdout
+timeout = 30                  ; seconds before the engine is stopped
 ```
 
 `{input}`, `{engine}` en `{outdir}` worden bij uitvoering ingevuld. Uw eigen regels gaan vóór de ingebouwde, en het hergebruiken van een ingebouwde naam (`cfr`, `vineflower`, `procyon`, `javap`) vervangt die in plaats van een tweede regel toe te voegen.

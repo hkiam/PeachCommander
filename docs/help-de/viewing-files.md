@@ -68,9 +68,10 @@ Um eine eigene Engine einzutragen, legen Sie `decompilers.ini` im Engine-Ordner 
 name   = My Decompiler
 kinds  = class
 tool   = java
-args   = -jar {engine} {input}
-engine = ~/tools/my-decompiler.jar
-output = stdout
+args    = -jar {engine} {input}
+engine  = my-decompiler.jar   ; a bare name is looked up in this folder
+output  = stdout
+timeout = 30                  ; seconds before the engine is stopped
 ```
 
 `{input}`, `{engine}` und `{outdir}` werden beim Ausführen eingesetzt. Ihre eigenen Einträge haben Vorrang vor den eingebauten, und ein wiederverwendeter eingebauter Name (`cfr`, `vineflower`, `procyon`, `javap`) ersetzt diesen, statt einen zweiten Eintrag anzulegen.
