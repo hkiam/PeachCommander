@@ -59,6 +59,8 @@ Ingenting laddas ned åt dig: det här är tredjepartsprogram med egna licenser,
 
 Byt motor med menyn högst upp i visaren; den du väljer används genast och resultatet sparas, så att jämföra två motorer på samma fil går direkt.
 
+Källkoden syntaxmarkeras, och två knappar tar den vidare: **Spara som…** skriver den till en fil och **Öppna i redigerare** lämnar den till det som öppnar `.java` på din Mac. Ett mycket stort resultat visas omarkerat så att det syns direkt i stället för efter en paus; statusraden säger till när det händer.
+
 Modulen är **av tills du slår på den**, under Inställningar ▸ Insticksmoduler — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.
 
 Lägg till en egen motor genom att skapa `decompilers.ini` i motormappen:

@@ -59,6 +59,8 @@ Der hentes intet for dig: det er tredjepartsprogrammer med egne licenser, og Pea
 
 Skift motor med menuen øverst i fremviseren; den valgte bruges straks, og resultatet bevares, så det er øjeblikkeligt at sammenligne to motorer på den samme fil.
 
+Kildekoden syntaksfremhæves, og to knapper fører videre: **Arkivér som…** skriver den til en fil, og **Åbn i redigering** giver den til det, der åbner `.java` på din Mac. Et meget stort resultat vises uden fremhævning, så det kommer frem straks i stedet for efter en pause; statuslinjen siger til.
+
 Pluginet er **slået fra, indtil du slår det til**, under Indstillinger ▸ Plugins — de fleste åbner aldrig en classfil, og uden en motor gør det ingen nytte.
 
 Tilføj din egen motor ved at oprette `decompilers.ini` i motormappen:

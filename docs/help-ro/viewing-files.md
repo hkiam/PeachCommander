@@ -59,6 +59,8 @@ Nu se descarcă nimic în locul dumneavoastră: sunt programe terțe cu licențe
 
 Schimbați motorul din meniul aflat în partea de sus a vizualizatorului; cel ales este folosit imediat, iar rezultatul este păstrat, așa că este instantaneu să comparați două motoare pe același fișier.
 
+Codul este evidențiat sintactic, iar două butoane merg mai departe: **Salvează ca…** îl scrie într-un fișier, iar **Deschide în editor** îl predă programului care deschide `.java` pe Mac-ul dumneavoastră. Un rezultat foarte mare este afișat fără evidențiere, ca să apară imediat și nu după o pauză; linia de stare o menționează.
+
 Modulul este **oprit până îl porniți**, în Setări ▸ Module — cei mai mulți nu deschid niciodată un fișier .class, iar fără motor oricum nu ajută.
 
 Pentru a adăuga un motor propriu, creați `decompilers.ini` în dosarul motoarelor:

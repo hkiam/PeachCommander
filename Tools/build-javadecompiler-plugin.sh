@@ -36,7 +36,8 @@ pc_swiftc -emit-library -O \
        -o "$BUNDLE/Contents/MacOS/JavaDecompiler" \
        "$SRC" \
        "$ROOT/Plugins/SDK/PluginLoc.swift" \
-       "$ROOT/Plugins/SDK/PluginDecompiler.swift"
+       "$ROOT/Plugins/SDK/PluginDecompiler.swift" \
+       "$ROOT/Plugins/SDK/PluginSyntax.swift"
 
 # Ship the plugin's localizations (see Plugins/SDK/LOCALIZATION.md).
 if [ -d "$ROOT/Plugins/JavaDecompiler/Resources" ]; then

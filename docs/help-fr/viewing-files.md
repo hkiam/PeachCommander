@@ -59,6 +59,8 @@ Rien n’est téléchargé à votre place : ce sont des programmes tiers sous le
 
 Changez de moteur avec le menu en haut de la visionneuse ; celui que vous choisissez est utilisé immédiatement et le résultat est conservé, si bien que comparer deux moteurs sur le même fichier est instantané.
 
+Le source est coloré syntaxiquement, et deux boutons vont plus loin : **Enregistrer sous…** l’écrit dans un fichier, et **Ouvrir dans l’éditeur** le confie à ce qui ouvre les `.java` sur votre Mac. Un résultat très volumineux s’affiche sans coloration afin de paraître immédiatement plutôt qu’après une pause ; la ligne d’état l’indique.
+
 Le module est **désactivé tant que vous ne l’activez pas**, dans Réglages ▸ Modules — la plupart des gens n’ouvrent jamais de fichier .class, et sans moteur il ne sert à rien.
 
 Pour ajouter votre propre moteur, créez `decompilers.ini` dans le dossier des moteurs :

@@ -59,6 +59,8 @@ Non viene scaricato nulla per voi: sono programmi di terzi con licenze proprie, 
 
 Cambiate motore con il menu in cima al visualizzatore; quello scelto viene usato subito e il risultato viene conservato, così confrontare due motori sullo stesso file è immediato.
 
+Il sorgente è evidenziato sintatticamente, e due pulsanti fanno di più: **Registra come…** lo scrive in un file e **Apri nell’editor** lo consegna a ciò che apre i `.java` sul vostro Mac. Un risultato molto grande viene mostrato senza evidenziazione per comparire subito anziché dopo una pausa; la riga di stato lo segnala.
+
 Il modulo è **spento finché non lo accendete**, in Impostazioni ▸ Moduli: quasi nessuno apre un file .class, e senza motore non serve.
 
 Per aggiungere un motore vostro, create `decompilers.ini` nella cartella dei motori:

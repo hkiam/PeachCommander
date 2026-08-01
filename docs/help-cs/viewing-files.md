@@ -59,6 +59,8 @@ Nic se za vás nestahuje: jde o programy třetích stran s vlastními licencemi 
 
 Engine přepnete nabídkou v horní části prohlížeče; zvolený se použije ihned a výsledek se uchová, takže porovnání dvou enginů nad týmž souborem je okamžité.
 
+Zdrojový kód se barevně zvýrazňuje a dvě tlačítka vedou dál: **Uložit jako…** jej zapíše do souboru a **Otevřít v editoru** jej předá tomu, co na vašem Macu otevírá `.java`. Velmi rozsáhlý výsledek se zobrazí bez zvýraznění, aby se objevil hned a ne po prodlevě; stavový řádek to uvede.
+
 Modul je **vypnutý, dokud jej nezapnete**, v Nastavení ▸ Zásuvné moduly — většina lidí soubor .class nikdy neotevře a bez enginu stejně nic nezmůže.
 
 Vlastní engine přidáte vytvořením `decompilers.ini` ve složce enginů:

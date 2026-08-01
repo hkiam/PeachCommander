@@ -59,6 +59,8 @@ Es wird nichts für Sie heruntergeladen: das sind fremde Programme unter eigenen
 
 Die Engine wechseln Sie über das Menü oben im Betrachter; die gewählte wird sofort verwendet und das Ergebnis behalten, sodass der Vergleich zweier Engines an derselben Datei ohne Wartezeit geht.
 
+Der Quelltext wird syntaxhervorgehoben, und zwei Schaltflächen führen weiter: **Speichern unter …** schreibt ihn in eine Datei, **In Editor öffnen** übergibt ihn dem Programm, das auf Ihrem Mac `.java` öffnet. Ein sehr großes Ergebnis wird ohne Hervorhebung gezeigt, damit es sofort erscheint statt nach einer Pause; die Statuszeile sagt, wenn das passiert.
+
 Das Plugin ist **aus, bis Sie es einschalten**, unter Einstellungen ▸ Plugins — die meisten öffnen nie eine Klassendatei, und ohne Engine nützt es nichts.
 
 Um eine eigene Engine einzutragen, legen Sie `decompilers.ini` im Engine-Ordner an:

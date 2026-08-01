@@ -59,6 +59,8 @@ Nič se ne prenese namesto vas: to so programi tretjih oseb z lastnimi licencami
 
 Pogon zamenjate z menijem na vrhu pregledovalnika; izbrani se uporabi takoj, rezultat pa se ohrani, tako da je primerjava dveh pogonov na isti datoteki hipna.
 
+Izvorna koda je barvno označena, dva gumba pa vodita dalje: **Shrani kot …** jo zapiše v datoteko, **Odpri v urejevalniku** pa jo izroči tistemu, kar na vašem Macu odpira `.java`. Zelo velik rezultat je prikazan brez označevanja, da se pokaže takoj in ne po premoru; vrstica stanja to pove.
+
 Vtičnik je **izklopljen, dokler ga ne vklopite**, v Nastavitve ▸ Vtičniki — večina ljudi datoteke .class nikoli ne odpre, brez pogona pa tako ali tako ne koristi.
 
 Svoj pogon dodate tako, da v mapi pogonov ustvarite `decompilers.ini`:

@@ -59,6 +59,8 @@ Nothing is downloaded for you: these are third-party programs under their own li
 
 Switch engines with the menu at the top of the viewer; the one you pick is used immediately and the result is kept, so comparing two engines on the same file is instant.
 
+The source is syntax-highlighted, and two buttons take it further: **Save As…** writes it to a file, and **Open in Editor** hands it to whatever opens `.java` on your Mac. A very large result is shown unhighlighted so that it appears at once rather than after a pause; the status line says when that happens.
+
 The plugin is **off until you turn it on**, in Settings ▸ Plugins — most people never open a class file, and it needs an engine to be useful.
 
 To add an engine of your own, create `decompilers.ini` in the engine folder:

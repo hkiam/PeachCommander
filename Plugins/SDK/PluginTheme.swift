@@ -63,6 +63,16 @@ struct PluginTheme {
     let controlBackground: NSColor
     let controlText: NSColor
 
+    // Syntax colours, for a plugin that renders code (F-346). Separate from the panel colours
+    // because they answer a different question — a code view needs a comment colour, not a
+    // drive-bar colour — and because a plugin inventing its own would look un-themed.
+    let syntaxComment: NSColor
+    let syntaxString: NSColor
+    let syntaxNumber: NSColor
+    let syntaxKeyword: NSColor
+    let syntaxType: NSColor
+    let syntaxProperty: NSColor
+
     /// All system colours, for a property's initial value before services arrive. Spelled out
     /// rather than `PluginTheme(nil)`, which is ambiguous between the two initialisers below.
     static var systemFallback: PluginTheme { PluginTheme(nil as PcHostServices?) }
@@ -112,6 +122,14 @@ struct PluginTheme {
         markedText = color("theme.markedText", .systemRed)
         controlBackground = color("theme.controlBackground", .controlColor)
         controlText = color("theme.controlText", .labelColor)
+        // Fallbacks are the system colours the host's own light palette uses, so an older host
+        // that does not publish these still produces recognisable code colouring.
+        syntaxComment = color("theme.syntax.comment", .systemGreen)
+        syntaxString = color("theme.syntax.string", .systemRed)
+        syntaxNumber = color("theme.syntax.number", .systemBlue)
+        syntaxKeyword = color("theme.syntax.keyword", .systemPurple)
+        syntaxType = color("theme.syntax.type", .systemIndigo)
+        syntaxProperty = color("theme.syntax.property", .systemBrown)
     }
 
     /// One of the host's raw panel colours by name (e.g. "statusBarBackground") — the same names a
