@@ -35,6 +35,36 @@
 <li>Naciśnij Ctrl+Q ponownie, lub Esc, aby przywrócić panelowi normalną listę plików.</li>
 </ol>
 <p>Aby uzyskać szybki podgląd pełnoekranowy obsługiwany przez sam macOS, naciśnij Cmd+Y (Quick Look). Naciśnij Cmd+Y lub Spację ponownie, aby go zamknąć.</p>
+<h2 id="strona-informacji-w-panelu-bocznym">Strona informacji w panelu bocznym</h2>
+<p>Panel boczny (<strong>Widok &gt; Panel podglądu</strong> lub Cmd+Shift+P) ma stronę <strong>Informacje</strong>, która pokazuje element pod kursorem tak, jak robi to pasek informacji Findera.</p>
+<ul>
+<li>Podgląd wypełnia szerokość panelu — po poszerzeniu panelu podgląd rośnie razem z nim. Przeciągnij lewą krawędź panelu, aby go poszerzyć lub zwęzić; szerokość jest zapamiętywana.</li>
+<li>To prawdziwy podgląd macOS, a nie mała miniatura: działa każdy format, który potrafi pokazać Szybki podgląd, a dokument wielostronicowy przewijasz w podglądzie strona po stronie.</li>
+<li>Poniżej znajdują się nazwa, rodzaj i rozmiar, a dalej data utworzenia i zmiany oraz folder, w którym element się znajduje.</li>
+</ul>
+<p>Przy przesuwaniu kursora nazwa i dane odświeżają się natychmiast; podgląd pojawia się chwilę później, aby przytrzymanie strzałki przez długi folder nie uruchamiało podglądu dla każdego mijanego wiersza.</p>
+<h2 id="dekompilacja-plikow-class-jezyka-java">Dekompilacja plików .class języka Java</h2>
+<p>Przy włączonej wtyczce <strong>Java Decompiler</strong> klawisz F3 na pliku <code>.class</code> pokazuje czytelny kod zamiast danych binarnych — również dla klas wewnątrz archiwum JAR lub ZIP, do którego można wejść i czytać bez rozpakowywania.</p>
+<p>Wtyczka nie zawiera własnego dekompilatora. Steruje silnikiem, który instalujesz sam, i silnik można wymienić w każdej chwili:</p>
+<ul>
+<li><strong>CFR</strong> (licencja MIT) i <strong>Vineflower</strong> (Apache 2.0) tworzą kod źródłowy Javy. Umieść <code>cfr.jar</code> lub <code>vineflower.jar</code> w folderze silników.</li>
+<li><strong>Procyon</strong> (Apache 2.0) to trzeci dekompilator do kodu źródłowego.</li>
+<li><strong>javap</strong> nie wymaga żadnego pobierania — należy do każdego JDK i pokazuje kod bajtowy zamiast źródła Javy.</li>
+</ul>
+<p>Nic nie jest pobierane za ciebie: to programy innych autorów na własnych licencjach, a Peach Commander ich nie pobiera ani nie aktualizuje. Przycisk <strong>Folder silników…</strong> w podglądzie otwiera folder, do którego należą, i zostawia tam notatkę z nazwą każdego silnika i miejscem pobrania. Wszystkie poza javap wymagają zainstalowanej Javy.</p>
+<p>Silnik zmieniasz menu u góry podglądu; wybrany działa natychmiast, a wynik jest zachowywany, więc porównanie dwóch silników na tym samym pliku jest błyskawiczne.</p>
+<p>Wtyczka jest <strong>wyłączona, dopóki jej nie włączysz</strong>, w Ustawienia ▸ Wtyczki — większość osób nigdy nie otwiera pliku .class, a bez silnika i tak nic nie da.</p>
+<p>Aby dodać własny silnik, utwórz <code>decompilers.ini</code> w folderze silników:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>
+<span class="na">name</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">My Decompiler</span>
+<span class="na">kinds</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">class</span>
+<span class="na">tool</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">java</span>
+<span class="na">args</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">-jar {engine} {input}</span>
+<span class="na">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">~/tools/my-decompiler.jar</span>
+<span class="na">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">stdout</span>
+</code></pre></div>
+
+<p><code>{input}</code>, <code>{engine}</code> i <code>{outdir}</code> są podstawiane przy uruchomieniu. Twoje wpisy mają pierwszeństwo przed wbudowanymi, a użycie wbudowanej nazwy (<code>cfr</code>, <code>vineflower</code>, <code>procyon</code>, <code>javap</code>) zastępuje ją zamiast dodawać drugi wpis.</p>
 <h2 id="skroty">Skróty</h2>
 <table>
 <thead>
@@ -78,20 +108,14 @@
 </tr>
 </tbody>
 </table>
-<h2 id="strona-informacji-w-panelu-bocznym">Strona informacji w panelu bocznym</h2>
-<p>Panel boczny (<strong>Widok &gt; Panel podglądu</strong> lub Cmd+Shift+P) ma stronę <strong>Informacje</strong>, która pokazuje element pod kursorem tak, jak robi to pasek informacji Findera.</p>
-<ul>
-<li>Podgląd wypełnia szerokość panelu — po poszerzeniu panelu podgląd rośnie razem z nim.</li>
-<li>To prawdziwy podgląd macOS, a nie mała miniatura: działa każdy format, który potrafi pokazać Szybki podgląd, a dokument wielostronicowy przewijasz w podglądzie strona po stronie.</li>
-<li>Poniżej znajdują się nazwa, rodzaj i rozmiar, a dalej data utworzenia i zmiany oraz folder, w którym element się znajduje.</li>
-</ul>
-<p>Przy przesuwaniu kursora nazwa i dane odświeżają się natychmiast; podgląd pojawia się chwilę później, aby przytrzymanie strzałki przez długi folder nie uruchamiało podglądu dla każdego mijanego wiersza.</p>
 <h2 id="uwagi">Uwagi</h2>
 <ul>
 <li>Przeglądarka jest tylko do odczytu. Aby zmienić plik, użyj zamiast tego edytora (zobacz Edycja plików).</li>
 <li>Bardzo duże pliki otwierają się bez opóźnienia: tekst otwiera szybki, przewijalny widok, a widok szesnastkowy jest strumieniowany prosto z dysku przy dowolnym rozmiarze.</li>
 <li>Naciśnij F3 na folderze, aby zobaczyć podsumowanie jego zawartości i całkowity rozmiar zamiast bajtów pliku.</li>
 <li>Tryb Renderowany wyświetla sformatowaną zawartość, taką jak strony internetowe; tryb szesnastkowy pokazuje surowe bajty obok ich znaków, co jest przydatne do badania plików binarnych.</li>
+<li>W trybie Renderowanym można zaznaczać i kopiować tekst, a Znajdź przeszukuje wyrenderowaną stronę. Przyciski, których nie da się zastosować do wyrenderowanej strony — Formatuj, Kodowanie, Zaznacz wszystko, Zaznaczenia i Idź do — są wyszarzone, zamiast pozostawać bez efektu.</li>
+<li>Przycisk Formatuj ponownie wcina pliki strukturalne (JSON, XML, HTML, INI, YAML i więcej, jeśli masz odpowiednie narzędzie wiersza poleceń). Jest w pełni opisany w <a href="editing-files.md#formatting-a-file">Edycja plików</a> i działa tu tak samo.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Edycja plików</a></li><li><a href="searching.html">Wyszukiwanie plików</a></li></ul></section>
 </main>

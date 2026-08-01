@@ -35,6 +35,36 @@
 <li>Tryck på Ctrl+Q igen, eller Esc, för att återställa panelen till en vanlig fillista.</li>
 </ol>
 <p>För en snabb helskärmsförhandsvisning som macOS själv hanterar, tryck på Cmd+Y (Quick Look). Tryck på Cmd+Y eller Space igen för att stänga den.</p>
+<h2 id="infosidan-i-sidopanelen">Infosidan i sidopanelen</h2>
+<p>Sidopanelen (<strong>Visa &gt; Förhandsvisningspanel</strong>, eller Cmd+Skift+P) har en sida <strong>Info</strong> som visar objektet under markören på samma sätt som Finders infosidopanel.</p>
+<ul>
+<li>Förhandsvisningen fyller panelens bredd: gör du panelen bredare växer förhandsvisningen med den. Dra i panelens vänsterkant för att göra den bredare eller smalare; bredden kommer ihåg.</li>
+<li>Det är en riktig macOS-förhandsvisning, inte en liten miniatyr: alla format som Snabbtitt kan visa fungerar här, och ett dokument med flera sidor bläddrar du sida för sida inuti förhandsvisningen.</li>
+<li>Under den står namn, typ och storlek, och därefter när objektet skapades och ändrades samt vilken mapp det ligger i.</li>
+</ul>
+<p>När markören flyttas uppdateras namn och uppgifter direkt; förhandsvisningen följer ett ögonblick senare, så att en nedhållen piltangent genom en lång mapp inte startar en förhandsvisning för varje rad.</p>
+<h2 id="dekompilera-java-classfiler">Dekompilera Java-classfiler</h2>
+<p>Med insticksmodulen <strong>Java Decompiler</strong> påslagen visar F3 på en <code>.class</code>-fil läsbar kod i stället för binärdata — även för classfiler inuti en JAR eller ZIP, som du kan gå in i och läsa utan att packa upp.</p>
+<p>Modulen innehåller ingen egen dekompilator. Den styr en motor som du installerar, och du kan byta motor när som helst:</p>
+<ul>
+<li><strong>CFR</strong> (MIT-licens) och <strong>Vineflower</strong> (Apache 2.0) ger Java-källkod. Lägg <code>cfr.jar</code> eller <code>vineflower.jar</code> i motormappen.</li>
+<li><strong>Procyon</strong> (Apache 2.0) är en tredje källkodsdekompilator.</li>
+<li><strong>javap</strong> kräver ingen nedladdning alls — den följer med varje JDK och visar bytekod i stället för Java-källkod.</li>
+</ul>
+<p>Ingenting laddas ned åt dig: det här är tredjepartsprogram med egna licenser, och Peach Commander varken hämtar eller uppdaterar dem. Knappen <strong>Motormapp…</strong> i visaren öppnar mappen de hör hemma i och lämnar en notis där som namnger varje motor och var den finns. Alla utom javap kräver installerat Java.</p>
+<p>Byt motor med menyn högst upp i visaren; den du väljer används genast och resultatet sparas, så att jämföra två motorer på samma fil går direkt.</p>
+<p>Modulen är <strong>av tills du slår på den</strong>, under Inställningar ▸ Insticksmoduler — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.</p>
+<p>Lägg till en egen motor genom att skapa <code>decompilers.ini</code> i motormappen:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>
+<span class="na">name</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">My Decompiler</span>
+<span class="na">kinds</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">class</span>
+<span class="na">tool</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">java</span>
+<span class="na">args</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">-jar {engine} {input}</span>
+<span class="na">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">~/tools/my-decompiler.jar</span>
+<span class="na">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">stdout</span>
+</code></pre></div>
+
+<p><code>{input}</code>, <code>{engine}</code> och <code>{outdir}</code> fylls i när motorn körs. Dina egna poster går före de inbyggda, och att återanvända ett inbyggt namn (<code>cfr</code>, <code>vineflower</code>, <code>procyon</code>, <code>javap</code>) ersätter det i stället för att lägga till en andra post.</p>
 <h2 id="kortkommandon">Kortkommandon</h2>
 <table>
 <thead>
@@ -78,20 +108,14 @@
 </tr>
 </tbody>
 </table>
-<h2 id="infosidan-i-sidopanelen">Infosidan i sidopanelen</h2>
-<p>Sidopanelen (<strong>Visa &gt; Förhandsvisningspanel</strong>, eller Cmd+Skift+P) har en sida <strong>Info</strong> som visar objektet under markören på samma sätt som Finders infosidopanel.</p>
-<ul>
-<li>Förhandsvisningen fyller panelens bredd: gör du panelen bredare växer förhandsvisningen med den.</li>
-<li>Det är en riktig macOS-förhandsvisning, inte en liten miniatyr: alla format som Snabbtitt kan visa fungerar här, och ett dokument med flera sidor bläddrar du sida för sida inuti förhandsvisningen.</li>
-<li>Under den står namn, typ och storlek, och därefter när objektet skapades och ändrades samt vilken mapp det ligger i.</li>
-</ul>
-<p>När markören flyttas uppdateras namn och uppgifter direkt; förhandsvisningen följer ett ögonblick senare, så att en nedhållen piltangent genom en lång mapp inte startar en förhandsvisning för varje rad.</p>
 <h2 id="anmarkningar">Anmärkningar</h2>
 <ul>
 <li>Visaren är skrivskyddad. För att ändra en fil, använd redigeraren i stället (se Redigera filer).</li>
 <li>Mycket stora filer öppnas utan fördröjning: text öppnas i en snabb, rullningsbar vy och hexvyn strömmar direkt från disken oavsett storlek.</li>
 <li>Tryck på F3 på en mapp för att se en sammanfattning av dess innehåll och totala storlek i stället för filbytes.</li>
 <li>Renderat läge visar formaterat innehåll som webbsidor; hexläge visar de råa byten sida vid sida med deras tecken, vilket är behändigt för att granska binärfiler.</li>
+<li>I läget Renderat kan du markera och kopiera text, och Sök söker i den renderade sidan. Knappar som inte går att använda på en renderad sida — Formatera, Teckenkodning, Markera allt, Markeringar och Gå till — är nedtonade i stället för verkningslösa.</li>
+<li>Knappen Formatera drar om indraget i strukturerade filer (JSON, XML, HTML, INI, YAML och fler om du har rätt kommandoradsverktyg installerat). Den beskrivs i sin helhet under <a href="editing-files.md#formatting-a-file">Redigera filer</a> och fungerar likadant här.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Redigera filer</a></li><li><a href="searching.html">Hitta filer</a></li></ul></section>
 </main>

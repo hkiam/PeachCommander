@@ -35,6 +35,36 @@
 <li>Znova pritisnite Ctrl+Q ali Esc, da podokno vrnete v običajen seznam datotek.</li>
 </ol>
 <p>Za hiter celozaslonski predogled, ki ga obravnava sam macOS, pritisnite Cmd+Y (Quick Look). Znova pritisnite Cmd+Y ali Space, da ga zaprete.</p>
+<h2 id="stran-z-informacijami-v-stranskem-pladnju">Stran z informacijami v stranskem pladnju</h2>
+<p>Stranski pladenj (<strong>Pogled &gt; Panel predogleda</strong> ali Cmd+Shift+P) ima stran <strong>Informacije</strong>, ki prikaže element pod kazalko tako, kot to počne informacijski stranski pas Finderja.</p>
+<ul>
+<li>Predogled zapolni celotno širino pladnja — če pladenj razširite, raste predogled z njim. Povlecite levi rob pladnja, da ga razširite ali zožite; širina se zapomni.</li>
+<li>To je pravi predogled macOS, ne majhna sličica: deluje vsak zapis, ki ga zna prikazati Hitri pogled, po večstranskem dokumentu pa listate kar v predogledu, stran za stranjo.</li>
+<li>Pod njim so ime, vrsta in velikost, nato kdaj je bil element ustvarjen in spremenjen ter v kateri mapi je.</li>
+</ul>
+<p>Ob premikanju kazalke se ime in podatki osvežijo takoj; predogled sledi trenutek pozneje, tako da zadržana puščična tipka skozi dolgo mapo ne zažene predogleda za vsako prehojeno vrstico.</p>
+<h2 id="dekompiliranje-datotek-class-jezika-java">Dekompiliranje datotek .class jezika Java</h2>
+<p>Z vklopljenim vtičnikom <strong>Java Decompiler</strong> F3 na datoteki <code>.class</code> pokaže berljivo kodo namesto dvojiških podatkov — tudi za razrede znotraj arhiva JAR ali ZIP, v katerega lahko vstopite in ga berete brez razpakiranja.</p>
+<p>Vtičnik sam nima dekompilatorja. Krmili pogon, ki ga namestite sami, in pogon lahko kadar koli zamenjate:</p>
+<ul>
+<li><strong>CFR</strong> (licenca MIT) in <strong>Vineflower</strong> (Apache 2.0) ustvarita izvorno kodo Jave. <code>cfr.jar</code> ali <code>vineflower.jar</code> odložite v mapo pogonov.</li>
+<li><strong>Procyon</strong> (Apache 2.0) je tretji dekompilator v izvorno kodo.</li>
+<li><strong>javap</strong> ne potrebuje nobenega prenosa — je del vsakega JDK in prikaže bajtno kodo namesto izvorne kode Jave.</li>
+</ul>
+<p>Nič se ne prenese namesto vas: to so programi tretjih oseb z lastnimi licencami, Peach Commander pa jih niti ne prenaša niti ne posodablja. Gumb <strong>Mapa pogonov…</strong> v pregledovalniku odpre mapo, kamor sodijo, in vanjo pusti zapisek z imenom vsakega pogona in mestom prenosa. Vsi razen javap zahtevajo nameščeno Javo.</p>
+<p>Pogon zamenjate z menijem na vrhu pregledovalnika; izbrani se uporabi takoj, rezultat pa se ohrani, tako da je primerjava dveh pogonov na isti datoteki hipna.</p>
+<p>Vtičnik je <strong>izklopljen, dokler ga ne vklopite</strong>, v Nastavitve ▸ Vtičniki — večina ljudi datoteke .class nikoli ne odpre, brez pogona pa tako ali tako ne koristi.</p>
+<p>Svoj pogon dodate tako, da v mapi pogonov ustvarite <code>decompilers.ini</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>
+<span class="na">name</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">My Decompiler</span>
+<span class="na">kinds</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">class</span>
+<span class="na">tool</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">java</span>
+<span class="na">args</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">-jar {engine} {input}</span>
+<span class="na">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">~/tools/my-decompiler.jar</span>
+<span class="na">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">stdout</span>
+</code></pre></div>
+
+<p><code>{input}</code>, <code>{engine}</code> in <code>{outdir}</code> se nadomestijo ob zagonu. Vaši vnosi imajo prednost pred vgrajenimi, ponovna uporaba vgrajenega imena (<code>cfr</code>, <code>vineflower</code>, <code>procyon</code>, <code>javap</code>) pa ga zamenja, namesto da bi dodala drugi vnos.</p>
 <h2 id="bliznjice">Bližnjice</h2>
 <table>
 <thead>
@@ -78,20 +108,14 @@
 </tr>
 </tbody>
 </table>
-<h2 id="stran-z-informacijami-v-stranskem-pladnju">Stran z informacijami v stranskem pladnju</h2>
-<p>Stranski pladenj (<strong>Pogled &gt; Panel predogleda</strong> ali Cmd+Shift+P) ima stran <strong>Informacije</strong>, ki prikaže element pod kazalko tako, kot to počne informacijski stranski pas Finderja.</p>
-<ul>
-<li>Predogled zapolni celotno širino pladnja — če pladenj razširite, raste predogled z njim.</li>
-<li>To je pravi predogled macOS, ne majhna sličica: deluje vsak zapis, ki ga zna prikazati Hitri pogled, po večstranskem dokumentu pa listate kar v predogledu, stran za stranjo.</li>
-<li>Pod njim so ime, vrsta in velikost, nato kdaj je bil element ustvarjen in spremenjen ter v kateri mapi je.</li>
-</ul>
-<p>Ob premikanju kazalke se ime in podatki osvežijo takoj; predogled sledi trenutek pozneje, tako da zadržana puščična tipka skozi dolgo mapo ne zažene predogleda za vsako prehojeno vrstico.</p>
 <h2 id="opombe">Opombe</h2>
 <ul>
 <li>Pregledovalnik je samo za branje. Za spremembo datoteke raje uporabite urejevalnik (glejte Urejanje datotek).</li>
 <li>Zelo velike datoteke se odprejo brez zakasnitve: besedilo odpre hiter, drsljiv pogled, šestnajstiški pogled pa se pretaka naravnost z diska pri poljubni velikosti.</li>
 <li>Pritisnite F3 na mapi, da namesto bajtov datoteke vidite povzetek njene vsebine in skupno velikost.</li>
 <li>Način Izrisano prikaže oblikovano vsebino, kot so spletne strani; šestnajstiški način prikaže surove bajte ob njihovih znakih, kar je priročno za pregledovanje binarnih datotek.</li>
+<li>V načinu Izrisano lahko besedilo označite in kopirate, Najdi pa preišče izrisano stran. Gumbi, ki jih na izrisani strani ni mogoče uporabiti — Oblikuj, Kodiranje, Izberi vse, Izbori in Pojdi na — so zatemnjeni, namesto da bi ostali brez učinka.</li>
+<li>Gumb Oblikuj na novo zamakne strukturirane datoteke (JSON, XML, HTML, INI, YAML in druge, če imate ustrezno orodje ukazne vrstice). V celoti je opisan v <a href="editing-files.md#formatting-a-file">Urejanje datotek</a> in tu deluje enako.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Urejanje datotek</a></li><li><a href="searching.html">Iskanje datotek</a></li></ul></section>
 </main>

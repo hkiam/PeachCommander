@@ -38,6 +38,12 @@ public struct PluginManifest: Sendable, Equatable {
     public let extensions: [String]
     public let detectString: String?
     public let minHostVersion: Int?
+    /// Whether the plugin is on as soon as it is installed (F-345).
+    ///
+    /// `Info.plist` key `PCPluginEnabledByDefault`; absent means true, which is what every plugin
+    /// shipped so far expects. A plugin sets it to false when it is only useful to some users and
+    /// would otherwise claim files they never want it to touch — the Java decompiler is the first.
+    public let enabledByDefault: Bool
 
     public init(
         type: PluginType,
@@ -45,7 +51,8 @@ public struct PluginManifest: Sendable, Equatable {
         name: String,
         extensions: [String] = [],
         detectString: String? = nil,
-        minHostVersion: Int? = nil
+        minHostVersion: Int? = nil,
+        enabledByDefault: Bool = true
     ) {
         self.type = type
         self.apiVersion = apiVersion
@@ -53,6 +60,7 @@ public struct PluginManifest: Sendable, Equatable {
         self.extensions = extensions
         self.detectString = detectString
         self.minHostVersion = minHostVersion
+        self.enabledByDefault = enabledByDefault
     }
 }
 
@@ -121,6 +129,7 @@ public enum PluginManifestParser {
 
         // --- min host version ---
         let minHostVersion = intValue(from: dict["PCPluginMinHostVersion"])
+        let enabledByDefault = (dict["PCPluginEnabledByDefault"] as? Bool) ?? true
 
         return .success(PluginManifest(
             type: type,
@@ -128,7 +137,8 @@ public enum PluginManifestParser {
             name: name,
             extensions: extensions,
             detectString: detectString,
-            minHostVersion: minHostVersion
+            minHostVersion: minHostVersion,
+            enabledByDefault: enabledByDefault
         ))
     }
 

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key><string>JavaDecompiler</string>
+	<key>CFBundleExecutable</key><string>JavaDecompiler</string>
+	<key>CFBundlePackageType</key><string>BNDL</string>
+	<key>CFBundleShortVersionString</key><string>1.0</string>
+	<key>CFBundleVersion</key><string>1</string>
+	<key>PCPluginType</key><string>plx</string>
+	<key>PCPluginAPIVersion</key><integer>1</integer>
+	<key>PCPluginName</key><string>Java Decompiler</string>
+	<key>PCPluginExtensions</key>
+	<array><string>class</string></array>
+	<!-- Claim .class by extension, and by the CAFEBABE magic so a class file that lost its
+	     extension inside an archive is still recognised. -->
+	<key>PCPluginDetectString</key>
+	<string>EXT="CLASS" | ([0]=202 &amp; [1]=254 &amp; [2]=186 &amp; [3]=190)</string>
+	<key>PCPluginMinHostVersion</key><integer>1</integer>
+	<!-- Off until switched on: it needs an engine the user installs, and most people never
+	     open a .class file. Shipped so it is one click away, not a download away. -->
+	<key>PCPluginEnabledByDefault</key><false/>
+</dict>
+</plist>

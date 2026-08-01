@@ -48,10 +48,20 @@ public actor PluginManager {
 
     /// All discovered plugins that are currently enabled.
     public func enabledPlugins() -> [DiscoveredPlugin] {
-        discovered.filter { config.isEnabled($0.manifest.name) }
+        // Consults the manifest, not just the deny-list: a plugin that ships disabled is only in
+        // here once the user turns it on. Using the name-only rule silently defeated that.
+        discovered.filter { config.isEnabled($0.manifest.name, enabledByDefault: $0.manifest.enabledByDefault) }
     }
 
-    public func isEnabled(_ name: String) -> Bool { config.isEnabled(name) }
+    /// Whether `name` is on, honouring a manifest that asks to start off (F-345). Falls back to
+    /// the plain rule for a name that matches no discovered plugin, so callers that only have a
+    /// name — the settings list, the packer lookup — keep working.
+    public func isEnabled(_ name: String) -> Bool {
+        guard let m = discovered.first(where: { $0.manifest.name == name })?.manifest else {
+            return config.isEnabled(name)
+        }
+        return config.isEnabled(name, enabledByDefault: m.enabledByDefault)
+    }
 
     public func setEnabled(_ name: String, _ enabled: Bool) {
         config.setEnabled(name, enabled)

@@ -35,6 +35,46 @@ L'Anteprima rapida mostra un'anteprima in tempo reale nel pannello che *non* sta
 
 Per un'anteprima veloce a schermo intero gestita da macOS stesso, premi Cmd+Y (Quick Look). Premi di nuovo Cmd+Y o Spazio per chiuderla.
 
+## La pagina Informazioni del pannello laterale
+
+Il pannello laterale (**Vista > Pannello anteprima**, oppure Cmd+Maiusc+P) ha una pagina **Informazioni** che mostra l’elemento sotto il cursore come fa la barra laterale delle informazioni del Finder.
+
+- L’anteprima occupa tutta la larghezza del pannello: allargando il pannello, l’anteprima cresce con esso. Trascinate il bordo sinistro del pannello per allargarlo o restringerlo; la larghezza viene ricordata.
+- È una vera anteprima di macOS, non una piccola miniatura: funziona ogni formato che Vista Rapida sa mostrare, e un documento di più pagine si sfoglia pagina per pagina dentro l’anteprima.
+- Sotto compaiono nome, tipo e dimensione, poi quando l’elemento è stato creato e modificato e in quale cartella si trova.
+
+Spostando il cursore, nome e dati si aggiornano subito; l’anteprima segue un istante dopo, così tenere premuta una freccia lungo una cartella lunga non avvia un’anteprima per ogni riga attraversata.
+
+## Decompilare file .class Java
+
+Con il modulo **Java Decompiler** attivo, F3 su un file `.class` mostra codice leggibile invece di dati binari — anche per le classi dentro un JAR o uno ZIP, in cui potete entrare e che potete leggere senza scompattarlo.
+
+Il modulo non contiene alcun decompilatore proprio. Pilota un motore che installate voi, e potete cambiarlo in qualsiasi momento:
+
+- **CFR** (licenza MIT) e **Vineflower** (Apache 2.0) producono sorgente Java. Mettete `cfr.jar` o `vineflower.jar` nella cartella dei motori.
+- **Procyon** (Apache 2.0) è un terzo decompilatore verso il sorgente.
+- **javap** non richiede alcun download: fa parte di qualsiasi JDK e mostra bytecode anziché sorgente Java.
+
+Non viene scaricato nulla per voi: sono programmi di terzi con licenze proprie, e Peach Commander non li scarica né li aggiorna. Il pulsante **Cartella dei motori…** nel visualizzatore apre la cartella a cui sono destinati e vi lascia una nota con il nome di ogni motore e dove ottenerlo. Tutti tranne javap richiedono Java installato.
+
+Cambiate motore con il menu in cima al visualizzatore; quello scelto viene usato subito e il risultato viene conservato, così confrontare due motori sullo stesso file è immediato.
+
+Il modulo è **spento finché non lo accendete**, in Impostazioni ▸ Moduli: quasi nessuno apre un file .class, e senza motore non serve.
+
+Per aggiungere un motore vostro, create `decompilers.ini` nella cartella dei motori:
+
+```ini
+[myengine]
+name   = My Decompiler
+kinds  = class
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/tools/my-decompiler.jar
+output = stdout
+```
+
+`{input}`, `{engine}` e `{outdir}` vengono sostituiti all’esecuzione. Le vostre voci hanno la precedenza su quelle integrate, e riusare un nome integrato (`cfr`, `vineflower`, `procyon`, `javap`) lo sostituisce invece di aggiungere una seconda voce.
+
 ## Scorciatoie
 
 | Azione | Scorciatoia |
@@ -48,19 +88,11 @@ Per un'anteprima veloce a schermo intero gestita da macOS stesso, premi Cmd+Y (Q
 | Quick Look (anteprima macOS) | Cmd+Y |
 | Chiudi il visualizzatore o l'Anteprima rapida | Esc |
 
-## La pagina Informazioni del pannello laterale
-
-Il pannello laterale (**Vista > Pannello anteprima**, oppure Cmd+Maiusc+P) ha una pagina **Informazioni** che mostra l’elemento sotto il cursore come fa la barra laterale delle informazioni del Finder.
-
-- L’anteprima occupa tutta la larghezza del pannello: allargando il pannello, l’anteprima cresce con esso. Trascinate il bordo sinistro del pannello per allargarlo o restringerlo; la larghezza viene ricordata.
-- È una vera anteprima di macOS, non una piccola miniatura: funziona ogni formato che Vista Rapida sa mostrare, e un documento di più pagine si sfoglia pagina per pagina dentro l’anteprima.
-- Sotto compaiono nome, tipo e dimensione, poi quando l’elemento è stato creato e modificato e in quale cartella si trova.
-
-Spostando il cursore, nome e dati si aggiornano subito; l’anteprima segue un istante dopo, così tenere premuta una freccia lungo una cartella lunga non avvia un’anteprima per ogni riga attraversata.
-
 ## Note
 
 - Il visualizzatore è di sola lettura. Per modificare un file, usa invece l'editor (vedi Modifica dei file).
 - I file molto grandi si aprono senza ritardo: il testo apre una vista rapida e scorrevole, e la vista esadecimale viene trasmessa direttamente dal disco a qualsiasi dimensione.
 - Premi F3 su una cartella per vedere un riepilogo del suo contenuto e la dimensione totale invece dei byte del file.
 - La modalità Renderizzato mostra contenuti formattati come le pagine web; la modalità esadecimale mostra i byte grezzi affiancati ai loro caratteri, il che è comodo per esaminare file binari.
+- In modalità Renderizzato potete selezionare e copiare testo, e Trova cerca nella pagina renderizzata. I pulsanti non applicabili a una pagina renderizzata — Formatta, Codifica, Seleziona tutto, Selezioni e Vai a — sono disattivati anziché restare senza effetto.
+- Il pulsante Formatta rientra di nuovo i file strutturati (JSON, XML, HTML, INI, YAML e altri se avete installato il relativo strumento a riga di comando). È descritto per intero in [Modificare i file](editing-files.md#formatting-a-file) e qui funziona allo stesso modo.

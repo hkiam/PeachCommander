@@ -92,3 +92,45 @@ final class PluginConfigTests: XCTestCase {
         XCTAssertFalse(stillDisabled)
     }
 }
+
+// MARK: - Opt-in plugins (F-345)
+//
+// "Never touched" and "switched off" used to be the same state, which made a plugin that ships
+// disabled impossible: turning it on would have looked exactly like the default. These cover the
+// third state that fixes it.
+
+extension PluginConfigTests {
+    func testOptInPluginIsOffUntilExplicitlyEnabled() {
+        let config = PluginConfig()
+        XCTAssertTrue(config.isEnabled("Normal", enabledByDefault: true))
+        XCTAssertFalse(config.isEnabled("OptIn", enabledByDefault: false),
+                       "a plugin whose manifest opts out must start off")
+    }
+
+    func testEnablingAnOptInPluginSticks() {
+        var config = PluginConfig()
+        config.setEnabled("OptIn", true)
+        XCTAssertTrue(config.isEnabled("OptIn", enabledByDefault: false))
+        // and it survives a round-trip through plugins.ini
+        let restored = PluginConfig(parsing: config.serialized())
+        XCTAssertTrue(restored.isEnabled("OptIn", enabledByDefault: false))
+    }
+
+    /// Turning it off again must work — an explicit disable beats an explicit enable, or the
+    /// switch would be one-way for opt-in plugins.
+    func testDisablingWinsOverEnabling() {
+        var config = PluginConfig()
+        config.setEnabled("OptIn", true)
+        config.setEnabled("OptIn", false)
+        XCTAssertFalse(config.isEnabled("OptIn", enabledByDefault: false))
+        XCTAssertFalse(config.isEnabled("OptIn", enabledByDefault: true))
+    }
+
+    /// An ordinary plugin must be unaffected by the new state: no entry means on.
+    func testOrdinaryPluginsAreUnchanged() {
+        let config = PluginConfig(parsing: "[Plugins]\nDisabled=Broken\n")
+        XCTAssertTrue(config.isEnabled("Anything", enabledByDefault: true))
+        XCTAssertFalse(config.isEnabled("Broken", enabledByDefault: true))
+        XCTAssertTrue(config.isEnabled("Anything"), "the old single-argument rule still holds")
+    }
+}

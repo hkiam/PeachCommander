@@ -289,3 +289,43 @@ final class DetectStringTests: XCTestCase {
         XCTAssertFalse(DetectString.matches(#"EXT>"ccc""#, context: ctx))
     }
 }
+
+// MARK: - The Java decompiler's detect string (F-345)
+//
+// The plugin claims .class by extension *and* by CAFEBABE, so a class file that lost its name
+// inside an archive is still recognised. Both halves are asserted here because a detect string
+// that silently never matches looks exactly like a plugin that failed to load.
+
+extension DetectStringTests {
+    private var javaDetect: String { #"EXT="CLASS" | ([0]=202 & [1]=254 & [2]=186 & [3]=190)"# }
+
+    func testJavaDetectStringIsValid() {
+        XCTAssertTrue(DetectString.isValid(javaDetect), "a malformed detect string never matches")
+    }
+
+    func testJavaDetectMatchesByExtension() {
+        let ctx = DetectContext(ext: "class", size: 1000, bytes: [0, 0, 0, 0])
+        XCTAssertTrue(DetectString.matches(javaDetect, context: ctx))
+    }
+
+    /// CAFEBABE = 0xCA 0xFE 0xBA 0xBE = 202 254 186 190.
+    ///
+    /// Note the single `=`: this dialect has no `==`, and a detect string using it parses as
+    /// invalid, which means the plugin silently never claims anything. That is exactly how the
+    /// first version of this plugin failed — the viewer just showed plain text.
+    func testJavaDetectMatchesByMagicWithoutAnExtension() {
+        let ctx = DetectContext(ext: "", size: 1000, bytes: [202, 254, 186, 190, 0, 0])
+        XCTAssertTrue(DetectString.matches(javaDetect, context: ctx),
+                      "a class file without its extension must still be recognised")
+    }
+
+    func testJavaDetectIgnoresUnrelatedFiles() {
+        XCTAssertFalse(DetectString.matches(javaDetect,
+                                            context: DetectContext(ext: "txt", size: 10, bytes: [1, 2, 3, 4])))
+        // A Mach-O also starts with 0xCAFEBABE (fat binary) — but only the byte test can confuse
+        // them, and the extension differs, so this documents the known overlap rather than hiding it.
+        XCTAssertTrue(DetectString.matches(javaDetect,
+                                           context: DetectContext(ext: "", size: 10, bytes: [202, 254, 186, 190])),
+                      "known overlap with Mach-O fat binaries; the engine reports it cannot read them")
+    }
+}

@@ -35,6 +35,46 @@ Quick View afișează o previzualizare în timp real în panoul pe care *nu* îl
 
 Pentru o previzualizare rapidă pe tot ecranul gestionată de macOS însuși, apăsați Cmd+Y (Quick Look). Apăsați din nou Cmd+Y sau Space pentru a o închide.
 
+## Pagina de informații din panoul lateral
+
+Panoul lateral (**Vizualizare > Panoul de previzualizare**, sau Cmd+Shift+P) are o pagină **Informații** care arată elementul de sub cursor așa cum o face bara laterală de informații din Finder.
+
+- Previzualizarea ocupă toată lățimea panoului: dacă lărgiți panoul, previzualizarea crește odată cu el. Trageți de marginea stângă a panoului pentru a-l lărgi sau îngusta; lățimea este reținută.
+- Este o previzualizare macOS adevărată, nu o miniatură mică: funcționează orice format pe care Quick Look îl poate afișa, iar un document cu mai multe pagini se parcurge pagină cu pagină chiar în previzualizare.
+- Dedesubt sunt numele, tipul și dimensiunea, apoi când a fost creat și modificat elementul și în ce dosar se află.
+
+La mutarea cursorului, numele și detaliile se actualizează imediat; previzualizarea urmează o clipă mai târziu, astfel încât o săgeată ținută apăsată printr-un dosar lung să nu pornească o previzualizare pentru fiecare rând parcurs.
+
+## Decompilarea fișierelor .class Java
+
+Cu modulul **Java Decompiler** activat, F3 pe un fișier `.class` afișează cod lizibil în loc de date binare — inclusiv pentru clasele din interiorul unei arhive JAR sau ZIP, în care puteți intra și pe care o puteți citi fără dezarhivare.
+
+Modulul nu conține niciun decompilator propriu. Comandă un motor pe care îl instalați dumneavoastră, iar motorul poate fi schimbat oricând:
+
+- **CFR** (licență MIT) și **Vineflower** (Apache 2.0) produc cod sursă Java. Puneți `cfr.jar` sau `vineflower.jar` în dosarul motoarelor.
+- **Procyon** (Apache 2.0) este un al treilea decompilator către cod sursă.
+- **javap** nu necesită nicio descărcare: face parte din orice JDK și arată bytecode în loc de cod sursă Java.
+
+Nu se descarcă nimic în locul dumneavoastră: sunt programe terțe cu licențe proprii, iar Peach Commander nici nu le aduce, nici nu le actualizează. Butonul **Dosarul motoarelor…** din vizualizator deschide dosarul căruia îi aparțin și lasă acolo o notă cu numele fiecărui motor și locul de unde se obține. Toate în afară de javap necesită Java instalat.
+
+Schimbați motorul din meniul aflat în partea de sus a vizualizatorului; cel ales este folosit imediat, iar rezultatul este păstrat, așa că este instantaneu să comparați două motoare pe același fișier.
+
+Modulul este **oprit până îl porniți**, în Setări ▸ Module — cei mai mulți nu deschid niciodată un fișier .class, iar fără motor oricum nu ajută.
+
+Pentru a adăuga un motor propriu, creați `decompilers.ini` în dosarul motoarelor:
+
+```ini
+[myengine]
+name   = My Decompiler
+kinds  = class
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/tools/my-decompiler.jar
+output = stdout
+```
+
+`{input}`, `{engine}` și `{outdir}` sunt înlocuite la rulare. Intrările dumneavoastră au prioritate față de cele incluse, iar reutilizarea unui nume inclus (`cfr`, `vineflower`, `procyon`, `javap`) îl înlocuiește în loc să adauge o a doua intrare.
+
 ## Scurtături
 
 | Acțiune | Scurtătură |
@@ -48,19 +88,11 @@ Pentru o previzualizare rapidă pe tot ecranul gestionată de macOS însuși, ap
 | Quick Look (previzualizare macOS) | Cmd+Y |
 | Închideți vizualizatorul sau Quick View | Esc |
 
-## Pagina de informații din panoul lateral
-
-Panoul lateral (**Vizualizare > Panoul de previzualizare**, sau Cmd+Shift+P) are o pagină **Informații** care arată elementul de sub cursor așa cum o face bara laterală de informații din Finder.
-
-- Previzualizarea ocupă toată lățimea panoului: dacă lărgiți panoul, previzualizarea crește odată cu el. Trageți de marginea stângă a panoului pentru a-l lărgi sau îngusta; lățimea este reținută.
-- Este o previzualizare macOS adevărată, nu o miniatură mică: funcționează orice format pe care Quick Look îl poate afișa, iar un document cu mai multe pagini se parcurge pagină cu pagină chiar în previzualizare.
-- Dedesubt sunt numele, tipul și dimensiunea, apoi când a fost creat și modificat elementul și în ce dosar se află.
-
-La mutarea cursorului, numele și detaliile se actualizează imediat; previzualizarea urmează o clipă mai târziu, astfel încât o săgeată ținută apăsată printr-un dosar lung să nu pornească o previzualizare pentru fiecare rând parcurs.
-
 ## Note
 
 - Vizualizatorul este doar-citire. Pentru a modifica un fișier, folosiți în schimb editorul (consultați Editarea fișierelor).
 - Fișierele foarte mari se deschid fără întârziere: textul deschide o vizualizare rapidă, care se poate derula, iar vizualizarea hex se transmite direct de pe disc, la orice dimensiune.
 - Apăsați F3 pe un folder pentru a vedea un rezumat al conținutului său și dimensiunea totală în loc de octeții fișierului.
 - Modul Randat afișează conținut formatat, cum ar fi pagini web; modul hex afișează octeții bruți alături de caracterele lor, ceea ce este util pentru inspectarea fișierelor binare.
+- În modul Randat puteți selecta și copia text, iar Căutare parcurge pagina randată. Butoanele care nu se pot aplica unei pagini randate — Formatare, Codificare, Selectează tot, Selecții și Salt la — sunt estompate în loc să rămână fără efect.
+- Butonul Formatare reindentează fișierele structurate (JSON, XML, HTML, INI, YAML și altele, dacă aveți instalat instrumentul de linie de comandă potrivit). Este descris pe larg la [Editarea fișierelor](editing-files.md#formatting-a-file) și funcționează la fel și aici.

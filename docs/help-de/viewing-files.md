@@ -35,6 +35,46 @@ Quick View zeigt eine Live-Vorschau in dem Panel, das Sie *nicht* verwenden, sod
 
 Für eine schnelle Vollbild-Vorschau, die macOS selbst übernimmt, drücken Sie Cmd+Y (Quick Look). Drücken Sie erneut Cmd+Y oder die Leertaste, um sie zu schließen.
 
+## Die Info-Seite im Seitenfenster
+
+Das Seitenfenster (**Ansicht > Vorschau-Panel** oder Cmd+Shift+P) hat eine Seite **Info**, die den Eintrag unter dem Cursor so zeigt, wie es die Info-Seitenleiste des Finders tut.
+
+- Die Vorschau nimmt die volle Breite des Fensters ein — verbreitern Sie das Fenster, wächst sie mit. Ziehen Sie an der linken Kante des Fensters, um es breiter oder schmaler zu machen; die Breite wird gemerkt.
+- Es ist eine echte macOS-Vorschau, kein kleines Miniaturbild: jedes Format, das Quick Look anzeigen kann, funktioniert hier, und ein mehrseitiges Dokument lässt sich in der Vorschau Seite für Seite durchblättern.
+- Darunter stehen Name, Art und Größe, dann wann der Eintrag erstellt und geändert wurde und in welchem Ordner er liegt.
+
+Beim Bewegen des Cursors werden Name und Angaben sofort aktualisiert; die Vorschau folgt einen Moment später, damit das Durchhalten einer Pfeiltaste durch einen langen Ordner nicht für jede Zeile eine Vorschau startet.
+
+## Java-Klassendateien dekompilieren
+
+Ist das Plugin **Java Decompiler** eingeschaltet, zeigt F3 auf einer `.class`-Datei lesbaren Code statt Binärdaten — auch für Klassendateien in einem JAR oder ZIP, in das Sie hineingehen und das Sie ohne Auspacken ansehen können.
+
+Das Plugin enthält selbst keinen Decompiler. Es steuert eine Engine an, die Sie installieren, und Sie können die Engine jederzeit wechseln:
+
+- **CFR** (MIT-Lizenz) und **Vineflower** (Apache 2.0) erzeugen Java-Quelltext. Legen Sie `cfr.jar` oder `vineflower.jar` in den Engine-Ordner.
+- **Procyon** (Apache 2.0) ist ein dritter Quelltext-Decompiler.
+- **javap** braucht überhaupt keinen Download — es gehört zu jedem JDK und zeigt Bytecode statt Java-Quelltext.
+
+Es wird nichts für Sie heruntergeladen: das sind fremde Programme unter eigenen Lizenzen, und Peach Commander holt und aktualisiert sie nicht. Der Knopf **Engine-Ordner …** im Betrachter öffnet den Ordner, in den sie gehören, und legt dort eine Notiz ab, die jede Engine und ihre Bezugsquelle nennt. Alle außer javap brauchen ein installiertes Java.
+
+Die Engine wechseln Sie über das Menü oben im Betrachter; die gewählte wird sofort verwendet und das Ergebnis behalten, sodass der Vergleich zweier Engines an derselben Datei ohne Wartezeit geht.
+
+Das Plugin ist **aus, bis Sie es einschalten**, unter Einstellungen ▸ Plugins — die meisten öffnen nie eine Klassendatei, und ohne Engine nützt es nichts.
+
+Um eine eigene Engine einzutragen, legen Sie `decompilers.ini` im Engine-Ordner an:
+
+```ini
+[myengine]
+name   = My Decompiler
+kinds  = class
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/tools/my-decompiler.jar
+output = stdout
+```
+
+`{input}`, `{engine}` und `{outdir}` werden beim Ausführen eingesetzt. Ihre eigenen Einträge haben Vorrang vor den eingebauten, und ein wiederverwendeter eingebauter Name (`cfr`, `vineflower`, `procyon`, `javap`) ersetzt diesen, statt einen zweiten Eintrag anzulegen.
+
 ## Tastenkürzel
 
 | Aktion | Kürzel |
@@ -48,19 +88,11 @@ Für eine schnelle Vollbild-Vorschau, die macOS selbst übernimmt, drücken Sie 
 | Quick Look (macOS-Vorschau) | Cmd+Y |
 | Betrachter oder Quick View schließen | Esc |
 
-## Die Info-Seite im Seitenfenster
-
-Das Seitenfenster (**Ansicht > Vorschau-Panel** oder Cmd+Shift+P) hat eine Seite **Info**, die den Eintrag unter dem Cursor so zeigt, wie es die Info-Seitenleiste des Finders tut.
-
-- Die Vorschau nimmt die volle Breite des Fensters ein — verbreitern Sie das Fenster, wächst sie mit. Ziehen Sie an der linken Kante des Fensters, um es breiter oder schmaler zu machen; die Breite wird gemerkt.
-- Es ist eine echte macOS-Vorschau, kein kleines Miniaturbild: jedes Format, das Quick Look anzeigen kann, funktioniert hier, und ein mehrseitiges Dokument lässt sich in der Vorschau Seite für Seite durchblättern.
-- Darunter stehen Name, Art und Größe, dann wann der Eintrag erstellt und geändert wurde und in welchem Ordner er liegt.
-
-Beim Bewegen des Cursors werden Name und Angaben sofort aktualisiert; die Vorschau folgt einen Moment später, damit das Durchhalten einer Pfeiltaste durch einen langen Ordner nicht für jede Zeile eine Vorschau startet.
-
 ## Hinweise
 
 - Der Betrachter ist schreibgeschützt. Um eine Datei zu ändern, verwenden Sie stattdessen den Editor (siehe Dateien bearbeiten).
 - Sehr große Dateien öffnen sich ohne Verzögerung: Text öffnet eine schnelle, scrollbare Ansicht, und die Hex-Ansicht streamt direkt von der Festplatte in beliebiger Größe.
 - Drücken Sie F3 auf einem Ordner, um statt Dateibytes eine Zusammenfassung seines Inhalts und der Gesamtgröße zu sehen.
 - Der Modus Gerendert zeigt formatierten Inhalt wie Webseiten an; der Hex-Modus zeigt die rohen Bytes neben ihren Zeichen, was praktisch ist, um Binärdateien zu untersuchen.
+- Im Modus Gerendert können Sie Text markieren und kopieren, und Suchen durchsucht die gerenderte Seite. Schaltflächen, die auf eine gerenderte Seite nicht anwendbar sind — Formatieren, Kodierung, Alle markieren, Markierungen und Gehe zu —, sind ausgegraut, statt wirkungslos zu bleiben.
+- Die Schaltfläche Formatieren rückt strukturierte Dateien neu ein (JSON, XML, HTML, INI, YAML und weitere, wenn das passende Kommandozeilenwerkzeug installiert ist). Sie ist unter [Dateien bearbeiten](editing-files.md#formatting-a-file) vollständig beschrieben und funktioniert hier genauso.

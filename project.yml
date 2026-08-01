@@ -260,6 +260,9 @@ targets:
     deploymentTarget: "13.0"
     sources:
       - Tests/PCFoundationTests
+      # The decompiler engine runner is compiled into plugins, so nothing in the app's build
+      # exercises it. Included here for the same reason PluginTheme.swift is in PCThemeTests.
+      - path: Plugins/SDK/PluginDecompiler.swift
     settings:
       PRODUCT_NAME: PCFoundationTests
       CODE_SIGNING_ALLOWED: NO

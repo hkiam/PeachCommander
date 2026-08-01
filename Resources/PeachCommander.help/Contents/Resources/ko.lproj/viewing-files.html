@@ -35,7 +35,37 @@
 <li>Ctrl+Q를 다시 누르거나 Esc를 눌러 패널을 일반 파일 목록으로 되돌립니다.</li>
 </ol>
 <p>macOS 자체가 처리하는 빠른 전체 화면 미리 보기는 Cmd+Y(Quick Look)를 누릅니다. Cmd+Y나 Space를 다시 누르면 닫힙니다.</p>
-<h2 id="_3">단축키</h2>
+<h2 id="_3">사이드 패널의 정보 페이지</h2>
+<p>사이드 패널(<strong>보기 &gt; 미리보기 패널</strong> 또는 Cmd+Shift+P)에는 커서 아래 항목을 Finder의 정보 사이드바처럼 보여 주는 <strong>정보</strong> 페이지가 있습니다.</p>
+<ul>
+<li>미리보기는 패널의 가로폭을 가득 채웁니다. 패널을 넓히면 미리보기도 함께 커집니다. 패널의 왼쪽 가장자리를 끌어 넓히거나 좁힐 수 있으며, 너비는 기억됩니다.</li>
+<li>작은 축소판이 아니라 실제 macOS 미리보기입니다. 훑어보기가 표시할 수 있는 모든 형식이 여기서도 동작하며, 여러 쪽짜리 문서는 미리보기 안에서 쪽 단위로 넘길 수 있습니다.</li>
+<li>그 아래에는 이름, 종류, 크기가 있고, 이어서 만든 날짜와 수정한 날짜, 그리고 어느 폴더에 있는지가 표시됩니다.</li>
+</ul>
+<p>커서를 옮기면 이름과 세부 정보는 즉시 갱신되고, 미리보기는 잠시 뒤에 따라옵니다. 그래서 긴 폴더에서 화살표 키를 누르고 있어도 지나가는 줄마다 미리보기가 시작되지는 않습니다.</p>
+<h2 id="java">Java 클래스 파일 디컴파일</h2>
+<p><strong>Java Decompiler</strong> 플러그인을 켜면 <code>.class</code> 파일에서 F3을 누를 때 이진 데이터 대신 읽을 수 있는 코드가 표시됩니다. JAR이나 ZIP 안의 클래스 파일도 마찬가지로, 압축을 풀지 않고 들어가서 볼 수 있습니다.</p>
+<p>플러그인 자체에는 디컴파일러가 없습니다. 사용자가 설치한 엔진을 구동할 뿐이며, 엔진은 언제든지 바꿀 수 있습니다.</p>
+<ul>
+<li><strong>CFR</strong>(MIT 라이선스)과 <strong>Vineflower</strong>(Apache 2.0)는 Java 소스를 만들어 냅니다. <code>cfr.jar</code> 또는 <code>vineflower.jar</code>를 엔진 폴더에 넣으십시오.</li>
+<li><strong>Procyon</strong>(Apache 2.0)은 소스를 만들어 내는 세 번째 디컴파일러입니다.</li>
+<li><strong>javap</strong>는 내려받을 것이 전혀 없습니다. 모든 JDK에 들어 있으며, Java 소스가 아니라 바이트코드를 보여 줍니다.</li>
+</ul>
+<p>아무것도 대신 내려받지 않습니다. 이들은 각자의 라이선스를 가진 서드파티 프로그램이며, Peach Commander는 이를 가져오지도 갱신하지도 않습니다. 뷰어의 <strong>엔진 폴더…</strong> 버튼은 이들이 놓일 폴더를 열고, 각 엔진의 이름과 구할 곳을 적은 메모를 남깁니다. javap를 제외하면 모두 Java가 설치되어 있어야 합니다.</p>
+<p>엔진은 뷰어 상단의 메뉴로 바꿉니다. 선택한 엔진이 즉시 사용되고 결과는 보관되므로, 같은 파일에서 두 엔진을 비교하는 일이 즉시 이루어집니다.</p>
+<p>플러그인은 <strong>켜기 전까지 꺼져 있습니다</strong>(설정 ▸ 플러그인). 대부분은 .class 파일을 열 일이 없고, 엔진이 없으면 쓸모도 없기 때문입니다.</p>
+<p>직접 만든 엔진을 추가하려면 엔진 폴더에 <code>decompilers.ini</code>를 만드십시오.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>
+<span class="na">name</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">My Decompiler</span>
+<span class="na">kinds</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">class</span>
+<span class="na">tool</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">java</span>
+<span class="na">args</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">-jar {engine} {input}</span>
+<span class="na">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">~/tools/my-decompiler.jar</span>
+<span class="na">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">stdout</span>
+</code></pre></div>
+
+<p><code>{input}</code>, <code>{engine}</code>, <code>{outdir}</code>는 실행 시 채워집니다. 사용자가 적은 항목이 기본 항목보다 우선하며, 기본 이름(<code>cfr</code>, <code>vineflower</code>, <code>procyon</code>, <code>javap</code>)을 다시 쓰면 항목이 하나 더 생기는 대신 그것을 대체합니다.</p>
+<h2 id="_4">단축키</h2>
 <table>
 <thead>
 <tr>
@@ -78,20 +108,14 @@
 </tr>
 </tbody>
 </table>
-<h2 id="_4">사이드 패널의 정보 페이지</h2>
-<p>사이드 패널(<strong>보기 &gt; 미리보기 패널</strong> 또는 Cmd+Shift+P)에는 커서 아래 항목을 Finder의 정보 사이드바처럼 보여 주는 <strong>정보</strong> 페이지가 있습니다.</p>
-<ul>
-<li>미리보기는 패널의 가로폭을 가득 채웁니다. 패널을 넓히면 미리보기도 함께 커집니다.</li>
-<li>작은 축소판이 아니라 실제 macOS 미리보기입니다. 훑어보기가 표시할 수 있는 모든 형식이 여기서도 동작하며, 여러 쪽짜리 문서는 미리보기 안에서 쪽 단위로 넘길 수 있습니다.</li>
-<li>그 아래에는 이름, 종류, 크기가 있고, 이어서 만든 날짜와 수정한 날짜, 그리고 어느 폴더에 있는지가 표시됩니다.</li>
-</ul>
-<p>커서를 옮기면 이름과 세부 정보는 즉시 갱신되고, 미리보기는 잠시 뒤에 따라옵니다. 그래서 긴 폴더에서 화살표 키를 누르고 있어도 지나가는 줄마다 미리보기가 시작되지는 않습니다.</p>
 <h2 id="_5">참고</h2>
 <ul>
 <li>뷰어는 읽기 전용입니다. 파일을 바꾸려면 편집기를 사용하세요(파일 편집 참조).</li>
 <li>매우 큰 파일도 지연 없이 열립니다: 텍스트는 빠르게 스크롤되는 보기로 열리고, 16진수 보기는 크기에 상관없이 디스크에서 바로 스트리밍됩니다.</li>
 <li>폴더에서 F3을 누르면 파일 바이트 대신 내용 요약과 총 크기를 봅니다.</li>
 <li>렌더링 모드는 웹 페이지 같은 서식 있는 내용을 표시하고, 16진수 모드는 원시 바이트를 해당 문자와 나란히 보여 주어 이진 파일을 살펴보는 데 편리합니다.</li>
+<li>렌더링 모드에서도 텍스트를 선택해 복사할 수 있고, 찾기는 렌더링된 페이지를 검색합니다. 렌더링된 페이지에 적용할 수 없는 버튼 — 서식, 인코딩, 모두 선택, 선택 항목, 이동 — 은 아무 일도 하지 않는 대신 흐리게 표시됩니다.</li>
+<li>서식 버튼은 구조화된 파일(JSON, XML, HTML, INI, YAML 및 해당 명령줄 도구가 설치되어 있으면 그 밖의 형식)의 들여쓰기를 다시 맞춥니다. 자세한 설명은 <a href="editing-files.md#formatting-a-file">파일 편집</a>에 있으며, 여기서도 같은 방식으로 동작합니다.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">파일 편집</a></li><li><a href="searching.html">파일 찾기</a></li></ul></section>
 </main>

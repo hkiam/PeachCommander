@@ -2,7 +2,7 @@
 
 _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`. Do not edit by hand._
 
-**73 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
+**74 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
 
 ## Navigation
 
@@ -114,6 +114,7 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 |---|---|---|---|
 | AI assistant | user | — | ✅ |
 | Disk Map | user | — | ✅ |
+| Java decompiler plugin (F3 on a .class file) | user, expert | — | ✅ |
 | Plugin ABIs | plugin, sdk | — | ✅ |
 | Plugin architecture | developer, plugin | — | ✅ |
 | Plugin views follow the colour theme | user, plugin, sdk | — | ✅ |
