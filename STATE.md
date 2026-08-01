@@ -12,11 +12,46 @@
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. |
 | Parity inventory | Reconciled against code 2026-07-23 (4-agent audit): **59 done · 70 partial · 43 todo · 7 n/a-macos · 2 post-1.0** (was 33/40/98). See docs/product/feature-inventory.md. |
-| Last updated | 2026-07-30 |
+| Last updated | 2026-08-01 |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (991 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=991 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
 ## 2026-07-30 — Localization to 19 languages · documentation system · README · plugin docs
+## 2026-08-01 — Colour themes · button bar programs · Finder-style Info panel · Java decompiler
+
+**Colour themes (F-341..343) — DONE.** Selectable palettes with Norton Commander as
+the homage and Midnight as a second built-in; the default view is untouched, which was
+the constraint. Users write their own as `themes/*.ini` (`Base = dark` plus overrides).
+Plugin views follow the palette through the contrib ABI (`PcNotifyThemeChanged`), and
+app-owned windows are repainted while AppKit's own panels are left alone. Golden tests
+pin every palette's hex values — generated, not remembered, after guessing them twice
+and being wrong twice. v0.2.0 was cut from this.
+
+**Button bar (F-067 ext.) — DONE.** External programs, .app bundles and scripts live on
+the bar: drop one on free space to add it, drop files on an icon to pass them, or run it
+against the current selection. The bar hides via View ▸ Show button bar.
+
+**Side panel Info page (F-344) — DONE.** Reworked along Finder's info sidebar: a
+QLPreviewView filling the width, paging through what QuickLook offers, starting at the
+top, and the panel's width draggable from its left edge (persisted as
+`[Layout] PreviewWidth`).
+
+**Java decompiler plugin (F-345..349) — DONE, ships disabled.** An optional, fully
+removable PLX lister that decompiles nothing itself: it drives engines the user installs
+(CFR, Vineflower, Procyon, jadx, javap), described as data so a future format is a
+descriptor and not a rewrite. Nothing is downloaded or fetched — the app only names the
+engines and their licences. Then five power-user steps: syntax highlighting plus Save
+As/Open in Editor, .dex through the same machinery, a disk cache with a remembered engine
+and `extends` profiles, a compare panel (two engines, or source next to javap bytecode),
+and F3 on a whole .jar/.apk/.dex giving a package tree with search across every class.
+
+**Known and unscheduled:** 15 pre-existing Auto Layout conflicts remain in DriveBarView,
+PanelTreeView, PanelView and PathBarView (two others were fixed in StatusBarView and
+PreviewPanelView). Still open from before: Developer-ID signing/notarization, Sparkle
+auto-update, accessibility (I19 T06), and a translation check that compares *content*
+rather than topic existence.
+
+
 
 **Localization (I19 T05) — DONE for 19 languages.** The UI String Catalog
 (`Sources/PCApp/Localizable.xcstrings`, 991 keys) is translated into all 19
