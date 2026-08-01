@@ -48,6 +48,16 @@ Para una vista previa rápida a pantalla completa gestionada por macOS mismo, pu
 | Quick Look (vista previa de macOS) | Cmd+Y |
 | Cerrar el visor o Quick View | Esc |
 
+## La página de información del panel lateral
+
+El panel lateral (**Visualización > Panel de previsualización**, o Cmd+Mayús+P) tiene una página **Información** que muestra el elemento bajo el cursor igual que la barra lateral de información del Finder.
+
+- La previsualización ocupa todo el ancho del panel: al ensanchar el panel, la previsualización crece con él.
+- Es una previsualización real de macOS, no una miniatura pequeña: funciona cualquier formato que Vista Rápida pueda mostrar, y un documento de varias páginas se recorre página a página dentro de la previsualización.
+- Debajo están el nombre, el tipo y el tamaño, y después cuándo se creó y se modificó el elemento y en qué carpeta está.
+
+Al mover el cursor, el nombre y los datos se actualizan de inmediato; la previsualización llega un momento después, de modo que mantener pulsada una flecha a lo largo de una carpeta larga no inicia una previsualización por cada fila.
+
 ## Notas
 
 - El visor es de solo lectura. Para modificar un archivo, usa el editor en su lugar (consulta Editar archivos).

@@ -2834,32 +2834,40 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     private func refreshPreviewInfo() {
         guard let path = activePanel?.tableView.cursorItemFullPath() else {
-            previewPanel.setInfo(image: nil, text: String(localized: "No selection."))
+            previewPanel.setInfo(path: nil, title: String(localized: "No selection."),
+                                 subtitle: "", details: [], fallbackIcon: nil)
             return
         }
         let url = URL(fileURLWithPath: path)
         var isDir: ObjCBool = false
         FileManager.default.fileExists(atPath: path, isDirectory: &isDir)
-        var lines = [url.lastPathComponent]
-        if let vals = try? url.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey, .localizedTypeDescriptionKey]) {
-            if let t = vals.localizedTypeDescription { lines.append(t) }
-            if !isDir.boolValue, let s = vals.fileSize { lines.append(ByteSize(Int64(s)).formatted(style: .bytesWithSep)) }
-            if let m = vals.contentModificationDate { lines.append(Self.previewDateFormatter.string(from: m)) }
+        let vals = try? url.resourceValues(forKeys: [
+            .fileSizeKey, .contentModificationDateKey, .creationDateKey,
+            .localizedTypeDescriptionKey, .totalFileSizeKey,
+        ])
+
+        // Finder's arrangement: kind and size on one dimmed line under the name, then the dates
+        // as a key/value block. Path last, because it is the least interesting and the longest.
+        var subtitleParts: [String] = []
+        if let kind = vals?.localizedTypeDescription { subtitleParts.append(kind) }
+        if !isDir.boolValue, let size = vals?.fileSize {
+            subtitleParts.append(ByteSize(Int64(size)).formatted(style: .bytesWithSep))
         }
-        lines.append(path)
-        let text = lines.joined(separator: "\n")
-        previewPanel.setInfo(image: NSWorkspace.shared.icon(forFile: path), text: text)
-        guard !isDir.boolValue else { return }
-        let scale = window?.backingScaleFactor ?? 2
-        let req = QLThumbnailGenerator.Request(fileAt: url, size: CGSize(width: 160, height: 160),
-                                               scale: scale, representationTypes: .thumbnail)
-        QLThumbnailGenerator.shared.generateBestRepresentation(for: req) { [weak self] rep, _ in
-            guard let rep else { return }
-            DispatchQueue.main.async {
-                guard let self, self.activePanel?.tableView.cursorItemFullPath() == path else { return }
-                self.previewPanel.setInfo(image: rep.nsImage, text: text)
-            }
+
+        var details: [(String, String)] = []
+        if let created = vals?.creationDate {
+            details.append((String(localized: "Created"), Self.previewDateFormatter.string(from: created)))
         }
+        if let modified = vals?.contentModificationDate {
+            details.append((String(localized: "Modified"), Self.previewDateFormatter.string(from: modified)))
+        }
+        details.append((String(localized: "Where"), (path as NSString).deletingLastPathComponent))
+
+        previewPanel.setInfo(path: path,
+                             title: url.lastPathComponent,
+                             subtitle: subtitleParts.joined(separator: " — "),
+                             details: details,
+                             fallbackIcon: NSWorkspace.shared.icon(forFile: path))
     }
 
     @objc private func hotlistAddCurrent() {

@@ -48,6 +48,16 @@ Pentru o previzualizare rapidă pe tot ecranul gestionată de macOS însuși, ap
 | Quick Look (previzualizare macOS) | Cmd+Y |
 | Închideți vizualizatorul sau Quick View | Esc |
 
+## Pagina de informații din panoul lateral
+
+Panoul lateral (**Vizualizare > Panoul de previzualizare**, sau Cmd+Shift+P) are o pagină **Informații** care arată elementul de sub cursor așa cum o face bara laterală de informații din Finder.
+
+- Previzualizarea ocupă toată lățimea panoului: dacă lărgiți panoul, previzualizarea crește odată cu el.
+- Este o previzualizare macOS adevărată, nu o miniatură mică: funcționează orice format pe care Quick Look îl poate afișa, iar un document cu mai multe pagini se parcurge pagină cu pagină chiar în previzualizare.
+- Dedesubt sunt numele, tipul și dimensiunea, apoi când a fost creat și modificat elementul și în ce dosar se află.
+
+La mutarea cursorului, numele și detaliile se actualizează imediat; previzualizarea urmează o clipă mai târziu, astfel încât o săgeată ținută apăsată printr-un dosar lung să nu pornească o previzualizare pentru fiecare rând parcurs.
+
 ## Note
 
 - Vizualizatorul este doar-citire. Pentru a modifica un fișier, folosiți în schimb editorul (consultați Editarea fișierelor).

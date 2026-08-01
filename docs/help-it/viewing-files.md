@@ -48,6 +48,16 @@ Per un'anteprima veloce a schermo intero gestita da macOS stesso, premi Cmd+Y (Q
 | Quick Look (anteprima macOS) | Cmd+Y |
 | Chiudi il visualizzatore o l'Anteprima rapida | Esc |
 
+## La pagina Informazioni del pannello laterale
+
+Il pannello laterale (**Vista > Pannello anteprima**, oppure Cmd+Maiusc+P) ha una pagina **Informazioni** che mostra l’elemento sotto il cursore come fa la barra laterale delle informazioni del Finder.
+
+- L’anteprima occupa tutta la larghezza del pannello: allargando il pannello, l’anteprima cresce con esso.
+- È una vera anteprima di macOS, non una piccola miniatura: funziona ogni formato che Vista Rapida sa mostrare, e un documento di più pagine si sfoglia pagina per pagina dentro l’anteprima.
+- Sotto compaiono nome, tipo e dimensione, poi quando l’elemento è stato creato e modificato e in quale cartella si trova.
+
+Spostando il cursore, nome e dati si aggiornano subito; l’anteprima segue un istante dopo, così tenere premuta una freccia lungo una cartella lunga non avvia un’anteprima per ogni riga attraversata.
+
 ## Note
 
 - Il visualizzatore è di sola lettura. Per modificare un file, usa invece l'editor (vedi Modifica dei file).

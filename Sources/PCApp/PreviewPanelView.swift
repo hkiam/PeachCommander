@@ -7,6 +7,7 @@
 // `mode`; visibility/width is managed by MainWindowController.
 
 import AppKit
+import Quartz
 import PCFoundation
 
 final class PreviewPanelView: NSView {
@@ -26,11 +27,26 @@ final class PreviewPanelView: NSView {
     private let pluginContainer = NSView()
     private var mountedViews: [String: NSView] = [:]
 
-    // Info mode.
+    // Info mode (F-343). Modelled on Finder's info sidebar: a large live preview on top, the
+    // name and kind under it, then a key/value detail block.
+    //
+    // The preview is a real `QLPreviewView`, not a thumbnail image. That is what buys "every
+    // format macOS can show" and paging through a multi-page document in one move — QuickLook
+    // embeds the same renderers Finder uses, so a PDF scrolls page by page inside the panel.
+    // The icon view stays as the fallback for what QuickLook has no generator for.
+    private var previewView: QLPreviewView?
+    private let previewHost = NSView()
     private let imageView = NSImageView()
+    private let titleLabel = NSTextField(labelWithString: "")
+    private let subtitleLabel = NSTextField(labelWithString: "")
+    private let detailStack = NSStackView()
     private let infoLabel = NSTextField(wrappingLabelWithString: "")
     private let infoScroll = NSScrollView()
     private let infoContent = NSView()
+    /// The item currently shown, so a repeated selection does not rebuild the preview.
+    private var previewedPath: String?
+    /// Pending debounced preview load; cancelled when the cursor moves on.
+    private var previewWork: DispatchWorkItem?
 
     // Activities / Log modes share a read-only text view each.
     private let activitiesText = NSTextView()
@@ -57,13 +73,29 @@ final class PreviewPanelView: NSView {
         segmented.translatesAutoresizingMaskIntoConstraints = false
         addSubview(segmented)
 
-        // Info: image on top, metadata below (scrollable).
+        // Info: a large preview on top, then name/kind, then details (all scrollable).
+        previewHost.translatesAutoresizingMaskIntoConstraints = false
         imageView.imageScaling = .scaleProportionallyUpOrDown
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        previewHost.addSubview(imageView)
+        titleLabel.font = Fonts.bold13
+        titleLabel.lineBreakMode = .byTruncatingMiddle
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        subtitleLabel.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        subtitleLabel.textColor = .secondaryLabelColor
+        subtitleLabel.lineBreakMode = .byTruncatingTail
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        detailStack.orientation = .vertical
+        detailStack.alignment = .leading
+        detailStack.spacing = 2
+        detailStack.translatesAutoresizingMaskIntoConstraints = false
         infoLabel.font = Fonts.system13
         infoLabel.translatesAutoresizingMaskIntoConstraints = false
         infoContent.translatesAutoresizingMaskIntoConstraints = false
-        infoContent.addSubview(imageView)
+        infoContent.addSubview(previewHost)
+        infoContent.addSubview(titleLabel)
+        infoContent.addSubview(subtitleLabel)
+        infoContent.addSubview(detailStack)
         infoContent.addSubview(infoLabel)
         infoScroll.documentView = infoContent
         infoScroll.hasVerticalScroller = true
@@ -103,12 +135,33 @@ final class PreviewPanelView: NSView {
             infoContent.widthAnchor.constraint(equalTo: infoScroll.widthAnchor),
             infoContent.topAnchor.constraint(equalTo: infoScroll.topAnchor),
 
-            imageView.topAnchor.constraint(equalTo: infoContent.topAnchor, constant: 10),
-            imageView.centerXAnchor.constraint(equalTo: infoContent.centerXAnchor),
-            imageView.widthAnchor.constraint(equalToConstant: 160),
-            imageView.heightAnchor.constraint(equalToConstant: 160),
+            // The preview takes the full width and a 4:3-ish share of it, so it grows with the
+            // panel instead of sitting at a fixed 160 pt. Height is derived from width rather
+            // than pinned, which keeps it large when the user widens the panel — the point of
+            // the rework.
+            previewHost.topAnchor.constraint(equalTo: infoContent.topAnchor, constant: 10),
+            previewHost.leadingAnchor.constraint(equalTo: infoContent.leadingAnchor, constant: 10),
+            previewHost.trailingAnchor.constraint(equalTo: infoContent.trailingAnchor, constant: -10),
+            previewHost.heightAnchor.constraint(equalTo: previewHost.widthAnchor, multiplier: 1.25),
 
-            infoLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 12),
+            imageView.centerXAnchor.constraint(equalTo: previewHost.centerXAnchor),
+            imageView.centerYAnchor.constraint(equalTo: previewHost.centerYAnchor),
+            imageView.widthAnchor.constraint(lessThanOrEqualTo: previewHost.widthAnchor),
+            imageView.heightAnchor.constraint(lessThanOrEqualTo: previewHost.heightAnchor),
+
+            titleLabel.topAnchor.constraint(equalTo: previewHost.bottomAnchor, constant: 12),
+            titleLabel.leadingAnchor.constraint(equalTo: infoContent.leadingAnchor, constant: 10),
+            titleLabel.trailingAnchor.constraint(equalTo: infoContent.trailingAnchor, constant: -10),
+
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
+            subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            subtitleLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
+
+            detailStack.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 12),
+            detailStack.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            detailStack.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
+
+            infoLabel.topAnchor.constraint(equalTo: detailStack.bottomAnchor, constant: 10),
             infoLabel.leadingAnchor.constraint(equalTo: infoContent.leadingAnchor, constant: 10),
             infoLabel.trailingAnchor.constraint(equalTo: infoContent.trailingAnchor, constant: -10),
             infoLabel.bottomAnchor.constraint(equalTo: infoContent.bottomAnchor, constant: -10),
@@ -187,9 +240,105 @@ final class PreviewPanelView: NSView {
 
     // MARK: - Content setters
 
-    func setInfo(image: NSImage?, text: String) {
-        imageView.image = image
-        infoLabel.stringValue = text
+    /// Fill the info page for one item (F-343).
+    ///
+    /// `details` are the Finder-style key/value rows; `fallbackIcon` is shown only when QuickLook
+    /// cannot render the item — a folder, a broken link, a type with no generator.
+    func setInfo(path: String?, title: String, subtitle: String,
+                 details: [(String, String)], fallbackIcon: NSImage?) {
+        titleLabel.stringValue = title
+        subtitleLabel.stringValue = subtitle
+        infoLabel.stringValue = ""
+
+        detailStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        for (key, value) in details { detailStack.addArrangedSubview(Self.detailRow(key, value)) }
+
+        setPreview(path: path, fallbackIcon: fallbackIcon)
+    }
+
+    /// Show `path` in a live QuickLook view, or the icon when it cannot be previewed.
+    ///
+    /// The `QLPreviewView` is created lazily and reused: rebuilding it per selection made the
+    /// panel flicker and threw away QuickLook's own state — including which page of a document
+    /// you had scrolled to.
+    private func setPreview(path: String?, fallbackIcon: NSImage?) {
+        guard previewedPath != path else { return }
+        previewedPath = path
+        previewWork?.cancel()
+
+        guard let path, Self.canQuickLook(path) else {
+            previewView?.previewItem = nil
+            previewView?.isHidden = true
+            imageView.isHidden = false
+            imageView.image = fallbackIcon
+            return
+        }
+        // Debounced: holding an arrow key walks a directory in a few milliseconds per row, and
+        // asking QuickLook to render each one in passing would spawn a preview per keystroke. The
+        // name and details above have already updated, so the panel still responds immediately.
+        let work = DispatchWorkItem { [weak self] in self?.loadPreview(path) }
+        previewWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.18, execute: work)
+    }
+
+    private func loadPreview(_ path: String) {
+        imageView.isHidden = true
+        let view = previewView ?? {
+            let v = QLPreviewView(frame: .zero, style: .normal) ?? QLPreviewView()
+            v.autostarts = false            // don't start playing media just because the cursor moved
+            v.shouldCloseWithWindow = false
+            v.translatesAutoresizingMaskIntoConstraints = false
+            previewHost.addSubview(v)
+            NSLayoutConstraint.activate([
+                v.topAnchor.constraint(equalTo: previewHost.topAnchor),
+                v.leadingAnchor.constraint(equalTo: previewHost.leadingAnchor),
+                v.trailingAnchor.constraint(equalTo: previewHost.trailingAnchor),
+                v.bottomAnchor.constraint(equalTo: previewHost.bottomAnchor),
+            ])
+            previewView = v
+            return v
+        }()
+        view.isHidden = false
+        // Lay out before handing QuickLook the item, so the view has its real size when asked to
+        // render rather than the zero frame it still has in the run-loop turn it was added in.
+        //
+        // Kept as correct practice, not as a proven fix: the preview is flaky *inside the test VM*
+        // (a spinner that never resolves) and this did not change that. Measured there instead:
+        // loadPreview does run, with a 280x350 frame, for both a text file and a PDF — so the
+        // integration hands QuickLook a properly sized view and what happens next is QuickLook's.
+        // The same VM renders both files via qlmanage, and rendered them in the panel too once it
+        // had been up for several minutes, which points at its preview-extension host.
+        previewHost.layoutSubtreeIfNeeded()
+        view.previewItem = URL(fileURLWithPath: path) as NSURL
+    }
+
+    /// Whether QuickLook should be asked at all.
+    ///
+    /// Directories and packages are deliberately excluded: QuickLook renders a folder as a generic
+    /// icon anyway, so the icon path gives the same picture without spinning up a preview agent.
+    private static func canQuickLook(_ path: String) -> Bool {
+        var isDir: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: path, isDirectory: &isDir) else { return false }
+        guard isDir.boolValue else { return true }
+        return NSWorkspace.shared.isFilePackage(atPath: path)
+    }
+
+    /// One "Key    Value" row, laid out like Finder's: dimmed key on the left, value right-aligned.
+    private static func detailRow(_ key: String, _ value: String) -> NSView {
+        let k = NSTextField(labelWithString: key)
+        k.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        k.textColor = .secondaryLabelColor
+        k.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        let v = NSTextField(labelWithString: value)
+        v.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        v.alignment = .right
+        v.lineBreakMode = .byTruncatingMiddle
+        v.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        let row = NSStackView(views: [k, v])
+        row.orientation = .horizontal
+        row.distribution = .fill
+        row.spacing = 8
+        return row
     }
 
     func setActivities(_ text: String) {
@@ -205,6 +354,7 @@ final class PreviewPanelView: NSView {
     func applyTheme() {
         layer?.backgroundColor = Theme.current.windowBackground.cgColor
         infoLabel.textColor = Theme.current.listText
+        titleLabel.textColor = Theme.current.listText
         activitiesText.textColor = Theme.current.listText
         logText.textColor = Theme.current.listText
     }

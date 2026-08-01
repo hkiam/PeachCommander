@@ -48,6 +48,16 @@ Pour un aperçu plein écran rapide géré par macOS lui-même, appuyez sur Cmd+
 | Coup d'œil (aperçu macOS) | Cmd+Y |
 | Fermer le lecteur ou l'Aperçu rapide | Échap |
 
+## La page Infos du panneau latéral
+
+Le panneau latéral (**Présentation > Panneau d’aperçu**, ou Cmd+Maj+P) comporte une page **Infos** qui présente l’élément sous le curseur comme le fait la barre latérale d’informations du Finder.
+
+- L’aperçu occupe toute la largeur du panneau : élargissez le panneau et l’aperçu grandit avec lui.
+- C’est un véritable aperçu macOS, pas une petite vignette : tous les formats que Coup d’œil sait afficher fonctionnent ici, et un document de plusieurs pages se parcourt page par page dans l’aperçu.
+- En dessous figurent le nom, le type et la taille, puis les dates de création et de modification et le dossier où se trouve l’élément.
+
+Lorsque le curseur se déplace, le nom et les informations se mettent à jour immédiatement ; l’aperçu suit un instant plus tard, afin qu’une flèche maintenue à travers un long dossier ne lance pas un aperçu pour chaque ligne traversée.
+
 ## Remarques
 
 - Le lecteur est en lecture seule. Pour modifier un fichier, utilisez plutôt l'éditeur (voir Modifier des fichiers).

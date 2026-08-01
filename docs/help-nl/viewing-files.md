@@ -48,6 +48,16 @@ Voor een snel schermvullend voorbeeld dat door macOS zelf wordt verzorgd, druk j
 | Quick Look (macOS-voorbeeld) | Cmd+Y |
 | Sluit de viewer of Quick View | Esc |
 
+## De infopagina in het zijpaneel
+
+Het zijpaneel (**Weergave > Voorvertoningspaneel**, of Cmd+Shift+P) heeft een pagina **Info** die het item onder de cursor toont zoals de infozijbalk van de Finder dat doet.
+
+- De voorvertoning vult de breedte van het paneel: maakt u het paneel breder, dan groeit de voorvertoning mee.
+- Het is een echte macOS-voorvertoning, geen kleine miniatuur: elk formaat dat Snelle weergave kan tonen werkt hier, en een document van meerdere pagina’s blader je binnen de voorvertoning pagina voor pagina door.
+- Daaronder staan de naam, de soort en de grootte, en vervolgens wanneer het item is aangemaakt en gewijzigd en in welke map het staat.
+
+Bij het verplaatsen van de cursor worden naam en gegevens meteen bijgewerkt; de voorvertoning volgt even later, zodat een ingedrukte pijltoets door een lange map niet voor elke regel een voorvertoning start.
+
 ## Opmerkingen
 
 - De viewer is alleen-lezen. Om een bestand te wijzigen, gebruik je in plaats daarvan de editor (zie Bestanden bewerken).

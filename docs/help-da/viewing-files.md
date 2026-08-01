@@ -48,6 +48,16 @@ For en hurtig fuldskærms-forhåndsvisning håndteret af macOS selv, tryk på Cm
 | Quick Look (macOS-forhåndsvisning) | Cmd+Y |
 | Luk fremviseren eller Hurtigvisning | Esc |
 
+## Infosiden i sidepanelet
+
+Sidepanelet (**Vis > Eksempelpanel**, eller Cmd+Skift+P) har en side **Info**, der viser emnet under markøren på samme måde som Finders infosidepanel.
+
+- Eksemplet fylder panelets bredde: gør du panelet bredere, vokser eksemplet med.
+- Det er et rigtigt macOS-eksempel, ikke en lille miniature: alle formater, som Kig kan vise, virker her, og et dokument på flere sider blader du side for side inde i eksemplet.
+- Nedenunder står navn, type og størrelse, og derefter hvornår emnet blev oprettet og ændret, samt hvilken mappe det ligger i.
+
+Når markøren flyttes, opdateres navn og oplysninger straks; eksemplet følger et øjeblik efter, så en holdt piletast gennem en lang mappe ikke starter et eksempel for hver række.
+
 ## Bemærkninger
 
 - Fremviseren er skrivebeskyttet. For at ændre en fil, brug i stedet editoren (se Redigering af filer).

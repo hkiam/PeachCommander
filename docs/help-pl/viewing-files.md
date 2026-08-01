@@ -48,6 +48,16 @@ Aby uzyskać szybki podgląd pełnoekranowy obsługiwany przez sam macOS, naciś
 | Quick Look (podgląd macOS) | Cmd+Y |
 | Zamknij przeglądarkę lub Szybki podgląd | Esc |
 
+## Strona informacji w panelu bocznym
+
+Panel boczny (**Widok > Panel podglądu** lub Cmd+Shift+P) ma stronę **Informacje**, która pokazuje element pod kursorem tak, jak robi to pasek informacji Findera.
+
+- Podgląd wypełnia szerokość panelu — po poszerzeniu panelu podgląd rośnie razem z nim.
+- To prawdziwy podgląd macOS, a nie mała miniatura: działa każdy format, który potrafi pokazać Szybki podgląd, a dokument wielostronicowy przewijasz w podglądzie strona po stronie.
+- Poniżej znajdują się nazwa, rodzaj i rozmiar, a dalej data utworzenia i zmiany oraz folder, w którym element się znajduje.
+
+Przy przesuwaniu kursora nazwa i dane odświeżają się natychmiast; podgląd pojawia się chwilę później, aby przytrzymanie strzałki przez długi folder nie uruchamiało podglądu dla każdego mijanego wiersza.
+
 ## Uwagi
 
 - Przeglądarka jest tylko do odczytu. Aby zmienić plik, użyj zamiast tego edytora (zobacz Edycja plików).

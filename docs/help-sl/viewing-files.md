@@ -48,6 +48,16 @@ Za hiter celozaslonski predogled, ki ga obravnava sam macOS, pritisnite Cmd+Y (Q
 | Quick Look (predogled macOS) | Cmd+Y |
 | Zapri pregledovalnik ali Quick View | Esc |
 
+## Stran z informacijami v stranskem pladnju
+
+Stranski pladenj (**Pogled > Panel predogleda** ali Cmd+Shift+P) ima stran **Informacije**, ki prikaže element pod kazalko tako, kot to počne informacijski stranski pas Finderja.
+
+- Predogled zapolni celotno širino pladnja — če pladenj razširite, raste predogled z njim.
+- To je pravi predogled macOS, ne majhna sličica: deluje vsak zapis, ki ga zna prikazati Hitri pogled, po večstranskem dokumentu pa listate kar v predogledu, stran za stranjo.
+- Pod njim so ime, vrsta in velikost, nato kdaj je bil element ustvarjen in spremenjen ter v kateri mapi je.
+
+Ob premikanju kazalke se ime in podatki osvežijo takoj; predogled sledi trenutek pozneje, tako da zadržana puščična tipka skozi dolgo mapo ne zažene predogleda za vsako prehojeno vrstico.
+
 ## Opombe
 
 - Pregledovalnik je samo za branje. Za spremembo datoteke raje uporabite urejevalnik (glejte Urejanje datotek).
