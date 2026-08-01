@@ -63,6 +63,8 @@ Der Quelltext wird syntaxhervorgehoben, und zwei Schaltflächen führen weiter: 
 
 Ergebnisse werden auf der Platte zwischengespeichert, das erneute Öffnen einer schon betrachteten Datei ist damit sofortig; der Schlüssel enthält Größe und Datum der Datei sowie die Argumente der Engine, eine neu gebaute Klasse oder ein geänderter Schalter wird also erneut dekompiliert. Die gewählte Engine wird je Dateiart gemerkt. Ein Profil kann mit `extends = cfr` von einer eingebauten Engine erben und nur die Schalter überschreiben — praktisch, wenn Sie zwei Voreinstellungen derselben Engine pflegen.
 
+Schalten Sie **Vergleichen** ein, um ein zweites Panel mit eigenem Engine-Menü zu öffnen. Zwei Decompiler scheitern an unterschiedlichen Stellen, sie nebeneinander zu sehen ist deshalb oft schneller als die Entscheidung, welchem man traut; wählt man auf einer Seite `javap`, steht der Bytecode neben dem Quelltext. Beide Panels teilen den Cache, das Umschalten zwischen bereits gelaufenen Engines ist also sofortig.
+
 Android ist ebenfalls abgedeckt: F3 auf einer `.dex`-Datei benutzt **jadx** (Apache 2.0, `brew install jadx`), das Dalvik-Bytecode zurück in Java verwandelt. Dafür genügte eine Engine-Beschreibung — derselbe Mechanismus, ein anderes Format.
 
 Das Plugin ist **aus, bis Sie es einschalten**, unter Einstellungen ▸ Plugins — die meisten öffnen nie eine Klassendatei, und ohne Engine nützt es nichts.

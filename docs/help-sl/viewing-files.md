@@ -63,6 +63,8 @@ Izvorna koda je barvno označena, dva gumba pa vodita dalje: **Shrani kot …** 
 
 Rezultati se shranjujejo v predpomnilnik na disku, zato je ponovno odpiranje že ogledane datoteke hipno; ključ vsebuje velikost in datum datoteke ter argumente pogona, zato se znova zgrajen razred ali spremenjeno stikalo dekompilira na novo. Izbrani pogon se zapomni za vsako vrsto datoteke. Profil lahko z `extends = cfr` podeduje vgrajen pogon in nadomesti le stikala — priročno, če imate dve prednastavitvi istega pogona.
 
+Vklopite **Primerjaj**, da odprete drugi pladenj z lastnim menijem pogona. Dva dekompilatorja odpovesta na različnih mestih, zato je videti ju drug ob drugem pogosto hitreje kot odločati, katerem zaupati; če na eni strani izberete `javap`, stoji bajtna koda ob izvorni. Oba pladnja si delita predpomnilnik, zato je preklapljanje med že zaganjanimi pogoni hipno.
+
 Pokrit je tudi Android: F3 na datoteki `.dex` uporabi **jadx** (Apache 2.0, `brew install jadx`), ki bajtno kodo Dalvik pretvori nazaj v Javo. Zadostoval je en opis pogona — isti mehanizem, drug zapis.
 
 Vtičnik je **izklopljen, dokler ga ne vklopite**, v Nastavitve ▸ Vtičniki — večina ljudi datoteke .class nikoli ne odpre, brez pogona pa tako ali tako ne koristi.

@@ -63,6 +63,8 @@ Il sorgente è evidenziato sintatticamente, e due pulsanti fanno di più: **Regi
 
 I risultati sono messi in cache su disco, così riaprire un file già visto è immediato; la chiave comprende dimensione e data del file e gli argomenti del motore, quindi una classe ricompilata o un’opzione modificata viene decompilata di nuovo. Il motore scelto viene ricordato per tipo di file. Un profilo può ereditare da un motore integrato con `extends = cfr` e ridefinire solo le opzioni — comodo se tenete due preimpostazioni dello stesso motore.
 
+Attivate **Confronta** per aprire un secondo pannello con il proprio menu del motore. Due decompilatori sbagliano in punti diversi, quindi vederli affiancati è spesso più rapido che decidere di quale fidarsi; scegliendo `javap` da un lato, il bytecode sta accanto al sorgente. I due pannelli condividono la cache, così passare tra motori già eseguiti è immediato.
+
 Anche Android è coperto: F3 su un file `.dex` usa **jadx** (Apache 2.0, `brew install jadx`), che riporta il bytecode Dalvik a Java. È bastata una descrizione di motore — stesso meccanismo, formato diverso.
 
 Il modulo è **spento finché non lo accendete**, in Impostazioni ▸ Moduli: quasi nessuno apre un file .class, e senza motore non serve.

@@ -63,6 +63,8 @@ A forráskód szintaxiskiemelést kap, és két gomb visz továbbra: a **Mentés
 
 Az eredmények lemezen gyorsítótárba kerülnek, így egy korábban megnyitott fájl azonnal megjelenik; a kulcs tartalmazza a fájl méretét és dátumát, valamint a motor argumentumait, ezért egy újraépített osztály vagy megváltozott kapcsoló ismét visszafejtésre kerül. A választott motor fájltípusonként megmarad. Egy profil az `extends = cfr` sorral örökölhet egy beépített motortól, és csak a kapcsolókat írja felül — hasznos, ha ugyanabból a motorból két beállítást tart.
 
+Kapcsolja be az **Összehasonlítás**t, hogy megnyíljon egy második panel a saját motormenüjével. Két visszafejtő más helyeken hibázik, ezért egymás mellett látni őket gyakran gyorsabb, mint eldönteni, melyikben bízzon; ha az egyik oldalon a `javap`-ot választja, a bájtkód a forrás mellé kerül. A két panel közös gyorsítótárat használ, így a már lefuttatott motorok közti váltás azonnali.
+
 Az Android is szerepel: egy `.dex` fájlon az F3 a **jadx**-ot használja (Apache 2.0, `brew install jadx`), amely a Dalvik bájtkódot Javára fordítja vissza. Ehhez egyetlen motorleírás kellett — ugyanaz a mechanizmus, más formátum.
 
 A bővítmény **ki van kapcsolva, amíg be nem kapcsolja**, a Beállítások ▸ Bővítmények oldalon — a legtöbben soha nem nyitnak meg .class fájlt, motor nélkül pedig úgysem használható.

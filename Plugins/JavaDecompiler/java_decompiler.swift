@@ -31,6 +31,14 @@ final class DecompiledView: NSView {
     private let revealButton = NSButton(title: L("Engine Folder…"), target: nil, action: nil)
     private let saveButton = NSButton(title: L("Save As…"), target: nil, action: nil)
     private let openButton = NSButton(title: L("Open in Editor"), target: nil, action: nil)
+    /// Second pane (F-348). "Compare two engines" and "source next to bytecode" are the same
+    /// mechanism with different engine choices, so it is built once.
+    private let compareToggle = NSButton(checkboxWithTitle: L("Compare"), target: nil, action: nil)
+    private let secondPopup = NSPopUpButton()
+    private let secondScroll = NSScrollView()
+    private let secondText = NSTextView()
+    private var showingSecondPane = false
+    private var splitConstraints: [NSLayoutConstraint] = []
     /// The unhighlighted source, kept because Save As and Open in Editor must write the code the
     /// engine produced — not the attributed string the view happens to be showing.
     private var currentSource = ""
@@ -64,6 +72,12 @@ final class DecompiledView: NSView {
             run(candidates[initial])
         } else {
             show(error: .noEngine(kind: kind))
+        }
+        // Debug hook, like PC_AI_PROBE in the AI plugin: the compare checkbox cannot be clicked
+        // from a script, and the layout swap is the part worth verifying automatically.
+        if ProcessInfo.processInfo.environment["PC_DECOMPILE_COMPARE"] != nil {
+            compareToggle.state = .on
+            toggleCompare()
         }
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -107,7 +121,32 @@ final class DecompiledView: NSView {
         status.lineBreakMode = .byTruncatingTail
         status.translatesAutoresizingMaskIntoConstraints = false
 
-        for v in [scroll, enginePopup, revealButton, saveButton, openButton, status] { addSubview(v) }
+        secondText.isEditable = false
+        secondText.isRichText = false
+        secondText.font = text.font
+        secondText.textContainerInset = NSSize(width: 6, height: 6)
+        secondScroll.documentView = secondText
+        secondScroll.hasVerticalScroller = true
+        secondScroll.hasHorizontalScroller = true
+        secondScroll.autohidesScrollers = true
+        secondScroll.translatesAutoresizingMaskIntoConstraints = false
+        secondScroll.isHidden = true
+        for (i, engine) in candidates.enumerated() {
+            secondPopup.addItem(withTitle: engine.name + (engine.isAvailable ? "" : " — " + L("not installed")))
+            secondPopup.lastItem?.tag = i
+        }
+        secondPopup.target = self
+        secondPopup.action = #selector(secondEngineChanged)
+        secondPopup.translatesAutoresizingMaskIntoConstraints = false
+        secondPopup.isHidden = true
+        compareToggle.target = self
+        compareToggle.action = #selector(toggleCompare)
+        compareToggle.translatesAutoresizingMaskIntoConstraints = false
+        // Nothing to compare against with a single engine.
+        compareToggle.isEnabled = candidates.count > 1
+
+        for v in [scroll, secondScroll, enginePopup, revealButton, saveButton, openButton,
+                  compareToggle, secondPopup, status] { addSubview(v) }
         NSLayoutConstraint.activate([
             enginePopup.topAnchor.constraint(equalTo: topAnchor, constant: 6),
             enginePopup.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
@@ -118,13 +157,101 @@ final class DecompiledView: NSView {
             saveButton.leadingAnchor.constraint(equalTo: revealButton.trailingAnchor, constant: 8),
             openButton.centerYAnchor.constraint(equalTo: enginePopup.centerYAnchor),
             openButton.leadingAnchor.constraint(equalTo: saveButton.trailingAnchor, constant: 8),
-            status.leadingAnchor.constraint(equalTo: openButton.trailingAnchor, constant: 12),
+            compareToggle.centerYAnchor.constraint(equalTo: enginePopup.centerYAnchor),
+            compareToggle.leadingAnchor.constraint(equalTo: openButton.trailingAnchor, constant: 12),
+            secondPopup.centerYAnchor.constraint(equalTo: enginePopup.centerYAnchor),
+            secondPopup.leadingAnchor.constraint(equalTo: compareToggle.trailingAnchor, constant: 6),
+            status.leadingAnchor.constraint(equalTo: secondPopup.trailingAnchor, constant: 12),
             status.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -8),
             scroll.topAnchor.constraint(equalTo: enginePopup.bottomAnchor, constant: 6),
             scroll.leadingAnchor.constraint(equalTo: leadingAnchor),
-            scroll.trailingAnchor.constraint(equalTo: trailingAnchor),
             scroll.bottomAnchor.constraint(equalTo: bottomAnchor),
+            secondScroll.topAnchor.constraint(equalTo: scroll.topAnchor),
+            secondScroll.bottomAnchor.constraint(equalTo: bottomAnchor),
+            secondScroll.trailingAnchor.constraint(equalTo: trailingAnchor),
         ])
+        applyPaneLayout()
+    }
+
+    // MARK: Two panes (F-348)
+
+    /// One set of constraints per state, swapped as a pair.
+    ///
+    /// Deactivating the old set before activating the new one matters: leaving the single-pane
+    /// trailing edge attached while adding the split would make the two contradict each other, and
+    /// Auto Layout resolves that by breaking one at random.
+    private func applyPaneLayout() {
+        NSLayoutConstraint.deactivate(splitConstraints)
+        splitConstraints = showingSecondPane
+            ? [scroll.trailingAnchor.constraint(equalTo: secondScroll.leadingAnchor, constant: -1),
+               scroll.widthAnchor.constraint(equalTo: secondScroll.widthAnchor)]
+            : [scroll.trailingAnchor.constraint(equalTo: trailingAnchor)]
+        NSLayoutConstraint.activate(splitConstraints)
+        secondScroll.isHidden = !showingSecondPane
+        secondPopup.isHidden = !showingSecondPane
+    }
+
+    @objc private func toggleCompare() {
+        showingSecondPane = compareToggle.state == .on
+        applyPaneLayout()
+        guard showingSecondPane else { return }
+        // Open the second pane on a *different* engine than the first — comparing an engine with
+        // itself is the one thing this cannot be for. Prefer a bytecode view next to source, which
+        // is the pairing worth having.
+        let firstIndex = enginePopup.selectedItem?.tag ?? 0
+        let choice = candidates.firstIndex { $0.id == "javap" && $0.isAvailable && $0.id != candidates[firstIndex].id }
+            ?? candidates.indices.first { $0 != firstIndex && candidates[$0].isAvailable }
+        guard let choice else {
+            secondText.string = L("No second engine is installed.")
+            return
+        }
+        secondPopup.selectItem(withTag: choice)
+        runSecond(candidates[choice])
+    }
+
+    @objc private func secondEngineChanged() {
+        let i = secondPopup.selectedItem?.tag ?? 0
+        guard candidates.indices.contains(i) else { return }
+        runSecond(candidates[i])
+    }
+
+    /// The second pane reuses the same cache and runner; only the destination view differs.
+    private func runSecond(_ engine: PluginDecompilerEngine) {
+        if let cached = cache[engine.id] ?? PluginDecompilerCache.read(path: path, engine: engine,
+                                                                      configRoot: configRootPath) {
+            cache[engine.id] = cached
+            showSecond(cached)
+            return
+        }
+        guard engine.isAvailable else {
+            secondText.string = (engine.missingPath.map {
+                PluginDecompileError.engineMissing(engine: engine.name, path: $0)
+            } ?? .engineMissing(engine: engine.name, path: engine.tool)).userMessage
+            return
+        }
+        secondText.string = String(format: L("Decompiling with %@…"), engine.name)
+        let file = path
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let result = PluginDecompilerRunner.run(engine, input: file)
+            DispatchQueue.main.async {
+                guard let self else { return }
+                switch result {
+                case .success(let source):
+                    self.cache[engine.id] = source
+                    PluginDecompilerCache.write(source, path: file, engine: engine,
+                                                configRoot: self.configRootPath)
+                    self.showSecond(source)
+                case .failure(let error):
+                    self.secondText.string = error.userMessage
+                }
+            }
+        }
+    }
+
+    private func showSecond(_ source: String) {
+        let font = secondText.font ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+        secondText.textStorage?.setAttributedString(
+            PluginSyntax.highlight(source, palette: .system, font: font))
     }
 
     // MARK: Running
@@ -329,7 +456,15 @@ final class DecompiledView: NSView {
     func changeFontSize(by delta: CGFloat) {
         let current = text.font?.pointSize ?? 12
         let size = min(32, max(8, current + delta))
-        text.font = NSFont.monospacedSystemFont(ofSize: size, weight: .regular)
+        let font = NSFont.monospacedSystemFont(ofSize: size, weight: .regular)
+        // Both panes: zooming one half of a comparison would defeat the comparison.
+        for view in [text, secondText] {
+            view.font = font
+            // The attributed string carries its own font, so re-apply it over the whole range or
+            // only newly typed text would change size — and this view is not editable.
+            view.textStorage?.addAttribute(.font, value: font,
+                                           range: NSRange(location: 0, length: view.textStorage?.length ?? 0))
+        }
     }
 
     func copySelection() {

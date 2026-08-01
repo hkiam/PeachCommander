@@ -120,6 +120,15 @@ final class PreviewPanelView: NSView {
         pluginContainer.isHidden = true
         addSubview(pluginContainer)
 
+        let inset = [
+            previewHost.leadingAnchor.constraint(equalTo: infoContent.leadingAnchor, constant: 10),
+            previewHost.trailingAnchor.constraint(equalTo: infoContent.trailingAnchor, constant: -10),
+            titleLabel.leadingAnchor.constraint(equalTo: infoContent.leadingAnchor, constant: 10),
+            titleLabel.trailingAnchor.constraint(equalTo: infoContent.trailingAnchor, constant: -10),
+            infoLabel.leadingAnchor.constraint(equalTo: infoContent.leadingAnchor, constant: 10),
+            infoLabel.trailingAnchor.constraint(equalTo: infoContent.trailingAnchor, constant: -10),
+        ]
+        NSLayoutConstraint.activate(inset)
         NSLayoutConstraint.activate([
             segmented.topAnchor.constraint(equalTo: topAnchor, constant: 6),
             segmented.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
@@ -144,8 +153,6 @@ final class PreviewPanelView: NSView {
             // on how tall the panel was; growing into the free space removes that band and makes
             // the preview as large as the panel allows, which is the whole point.
             previewHost.topAnchor.constraint(equalTo: infoContent.topAnchor),
-            previewHost.leadingAnchor.constraint(equalTo: infoContent.leadingAnchor, constant: 10),
-            previewHost.trailingAnchor.constraint(equalTo: infoContent.trailingAnchor, constant: -10),
             previewHost.heightAnchor.constraint(greaterThanOrEqualToConstant: 120),
 
             imageView.centerXAnchor.constraint(equalTo: previewHost.centerXAnchor),
@@ -154,8 +161,6 @@ final class PreviewPanelView: NSView {
             imageView.heightAnchor.constraint(lessThanOrEqualTo: previewHost.heightAnchor),
 
             titleLabel.topAnchor.constraint(equalTo: previewHost.bottomAnchor, constant: 12),
-            titleLabel.leadingAnchor.constraint(equalTo: infoContent.leadingAnchor, constant: 10),
-            titleLabel.trailingAnchor.constraint(equalTo: infoContent.trailingAnchor, constant: -10),
 
             subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
             subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
@@ -166,10 +171,15 @@ final class PreviewPanelView: NSView {
             detailStack.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
 
             infoLabel.topAnchor.constraint(equalTo: detailStack.bottomAnchor, constant: 10),
-            infoLabel.leadingAnchor.constraint(equalTo: infoContent.leadingAnchor, constant: 10),
-            infoLabel.trailingAnchor.constraint(equalTo: infoContent.trailingAnchor, constant: -10),
             infoLabel.bottomAnchor.constraint(equalTo: infoContent.bottomAnchor, constant: -10),
         ])
+        // The panel collapses to width 0 when hidden, and hidden views still take part in layout.
+        // The 10 pt insets then cannot hold, and Auto Layout logged a conflict on every pass and
+        // dropped one of *its* choosing. Below-required priority says which to relax — the inset,
+        // never the panel width — so a collapsed panel is simply a panel with no room for insets.
+        for constraint in inset {
+            constraint.priority = .init(999)
+        }
         for area in [activitiesScroll, logScroll, pluginContainer] {
             NSLayoutConstraint.activate([
                 area.topAnchor.constraint(equalTo: segmented.bottomAnchor, constant: 6),

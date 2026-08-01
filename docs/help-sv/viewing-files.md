@@ -63,6 +63,8 @@ Källkoden syntaxmarkeras, och två knappar tar den vidare: **Spara som…** skr
 
 Resultat cachas på disk, så att öppna en fil du redan sett igen går direkt; nyckeln omfattar filens storlek och datum samt motorns argument, så en ombyggd class eller en ändrad flagga dekompileras på nytt. Den valda motorn kommer ihåg per filtyp. En profil kan ärva från en inbyggd motor med `extends = cfr` och bara ersätta flaggorna — bra när du har två förinställningar av samma motor.
 
+Slå på **Jämför** för att öppna en andra ruta med egen motormeny. Två dekompilatorer misslyckas på olika ställen, så att se dem sida vid sida går ofta snabbare än att avgöra vilken man ska lita på; väljer du `javap` på ena sidan står bytekoden intill källkoden. Båda rutorna delar cachen, så att växla mellan motorer du redan kört går direkt.
+
 Android täcks också: F3 på en `.dex`-fil använder **jadx** (Apache 2.0, `brew install jadx`), som gör Dalvik-bytekod till Java igen. Det krävdes en enda motorbeskrivning — samma mekanism, annat format.
 
 Modulen är **av tills du slår på den**, under Inställningar ▸ Insticksmoduler — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.

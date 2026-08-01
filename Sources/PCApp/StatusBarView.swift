@@ -94,12 +94,15 @@ class StatusBarView: NSView {
             pathLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
             pathLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
 
+            // One gap per pair. There used to be two: `count.trailing == free.leading - 10` *and*
+            // `free.leading == count.trailing + 20`, which cannot both hold, so AppKit logged a
+            // conflict on every layout pass and broke one of them — chosen by it, not by us. That
+            // arbitrariness is what made this bar fragile; the character-by-character wrapping
+            // fixed earlier sat on top of it.
             countLabel.leadingAnchor.constraint(equalTo: pathLabel.trailingAnchor, constant: 20),
-            countLabel.trailingAnchor.constraint(equalTo: freeSpaceLabel.leadingAnchor, constant: -10),
             countLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
 
             freeSpaceLabel.leadingAnchor.constraint(equalTo: countLabel.trailingAnchor, constant: 20),
-            freeSpaceLabel.trailingAnchor.constraint(equalTo: sortLabel.leadingAnchor, constant: -10),
             freeSpaceLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
 
             sortLabel.leadingAnchor.constraint(equalTo: freeSpaceLabel.trailingAnchor, constant: 20),

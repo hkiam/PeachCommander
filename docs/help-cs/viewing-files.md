@@ -63,6 +63,8 @@ Zdrojový kód se barevně zvýrazňuje a dvě tlačítka vedou dál: **Uložit 
 
 Výsledky se ukládají do diskové cache, takže opětovné otevření již zobrazeného souboru je okamžité; klíč obsahuje velikost a datum souboru i argumenty enginu, proto se znovu přeložená třída nebo změněný přepínač dekompiluje znovu. Zvolený engine se pamatuje pro každý druh souboru. Profil může dědit z vestavěného enginu pomocí `extends = cfr` a přepsat jen přepínače — vhodné, když máte dvě předvolby téhož enginu.
 
+Zapněte **Porovnat**, chcete-li otevřít druhý panel s vlastní nabídkou enginu. Dva dekompilátory selhávají na jiných místech, vidět je vedle sebe je proto často rychlejší než rozhodovat, kterému věřit; zvolíte-li na jedné straně `javap`, stojí bajtkód vedle zdrojového kódu. Oba panely mají společnou cache, přepínání mezi již spuštěnými enginy je tedy okamžité.
+
 Pokryt je i Android: F3 na souboru `.dex` použije **jadx** (Apache 2.0, `brew install jadx`), který převádí bajtkód Dalvik zpět na Javu. Stačil jediný popis enginu — stejný mechanismus, jiný formát.
 
 Modul je **vypnutý, dokud jej nezapnete**, v Nastavení ▸ Zásuvné moduly — většina lidí soubor .class nikdy neotevře a bez enginu stejně nic nezmůže.

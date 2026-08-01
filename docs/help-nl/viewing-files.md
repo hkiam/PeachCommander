@@ -63,6 +63,8 @@ De broncode wordt syntaxgemarkeerd, en twee knoppen gaan verder: **Bewaar als…
 
 Resultaten worden op schijf gecachet, zodat een eerder bekeken bestand meteen opengaat; de sleutel bevat de grootte en datum van het bestand en de argumenten van de engine, dus een opnieuw gebouwde class of een gewijzigde optie wordt opnieuw gedecompileerd. De gekozen engine wordt per bestandssoort onthouden. Een profiel kan met `extends = cfr` van een ingebouwde engine erven en alleen de opties overschrijven — handig bij twee presets van dezelfde engine.
 
+Zet **Vergelijken** aan om een tweede paneel met zijn eigen enginemenu te openen. Twee decompilers falen op verschillende plekken, dus ze naast elkaar zien is vaak sneller dan beslissen welke je vertrouwt; kies je aan één kant `javap`, dan staat de bytecode naast de broncode. Beide panelen delen de cache, dus wisselen tussen al uitgevoerde engines gaat direct.
+
 Android hoort er ook bij: F3 op een `.dex`-bestand gebruikt **jadx** (Apache 2.0, `brew install jadx`), dat Dalvik-bytecode terugbrengt naar Java. Daarvoor was één enginebeschrijving genoeg — hetzelfde mechanisme, ander formaat.
 
 De plug-in staat **uit tot u hem aanzet**, bij Instellingen ▸ Plug-ins — de meeste mensen openen nooit een classbestand, en zonder engine heeft hij geen nut.

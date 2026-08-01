@@ -63,6 +63,8 @@ Codul este evidențiat sintactic, iar două butoane merg mai departe: **Salveaz�
 
 Rezultatele sunt păstrate în cache pe disc, așa că redeschiderea unui fișier deja vizualizat este imediată; cheia include dimensiunea și data fișierului, precum și argumentele motorului, astfel încât o clasă recompilată sau o opțiune schimbată este decompilată din nou. Motorul ales este reținut pentru fiecare tip de fișier. Un profil poate moșteni de la un motor inclus prin `extends = cfr` și poate rescrie doar opțiunile — util când păstrați două presetări ale aceluiași motor.
 
+Activați **Compară** pentru a deschide un al doilea panou cu propriul meniu de motor. Două decompilatoare greșesc în locuri diferite, așa că a le vedea alături este adesea mai rapid decât a decide în care să aveți încredere; alegând `javap` pe o parte, bytecode-ul stă lângă sursă. Ambele panouri împart cache-ul, deci comutarea între motoare deja rulate este imediată.
+
 Android este de asemenea acoperit: F3 pe un fișier `.dex` folosește **jadx** (Apache 2.0, `brew install jadx`), care transformă bytecode-ul Dalvik înapoi în Java. A fost nevoie de o singură descriere de motor — același mecanism, alt format.
 
 Modulul este **oprit până îl porniți**, în Setări ▸ Module — cei mai mulți nu deschid niciodată un fișier .class, iar fără motor oricum nu ajută.

@@ -712,6 +712,10 @@ features:
       mtime, engine id and engine arguments — failures deliberately are not, since a missing engine
       is a condition of the system. The chosen engine is remembered per kind in preferred.ini, and
       `extends = <builtin>` lets a config section inherit a built-in and override only its flags.
+      A Compare checkbox opens a second panel with its own engine menu, which answers two separate
+      requests with one mechanism: comparing engines where they disagree, and putting javap bytecode
+      next to the source. The panels swap between one and two constraint sets rather than nesting a
+      split view, measured to add no Auto Layout conflicts of its own.
 
   # ───────────────────────── Settings ─────────────────────────
   - id: settings

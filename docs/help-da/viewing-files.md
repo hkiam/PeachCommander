@@ -63,6 +63,8 @@ Kildekoden syntaksfremhæves, og to knapper fører videre: **Arkivér som…** s
 
 Resultater caches på disken, så det er øjeblikkeligt at åbne en fil, du har set før; nøglen omfatter filens størrelse og dato samt motorens argumenter, så en genbygget class eller et ændret flag dekompileres igen. Den valgte motor huskes pr. filtype. En profil kan arve fra en indbygget motor med `extends = cfr` og kun overskrive flagene — nyttigt hvis du har to forudindstillinger af samme motor.
 
+Slå **Sammenlign** til for at åbne endnu et felt med sin egen motormenu. To dekompilatorer fejler forskellige steder, så at se dem side om side er ofte hurtigere end at afgøre, hvilken man skal tro på; vælger du `javap` i den ene side, står bytekoden ved siden af kildekoden. Begge felter deler cachen, så det er øjeblikkeligt at skifte mellem motorer, du allerede har kørt.
+
 Android er også dækket: F3 på en `.dex`-fil bruger **jadx** (Apache 2.0, `brew install jadx`), som laver Dalvik-bytekode tilbage til Java. Det krævede én motorbeskrivelse — samme mekanisme, andet format.
 
 Pluginet er **slået fra, indtil du slår det til**, under Indstillinger ▸ Plugins — de fleste åbner aldrig en classfil, og uden en motor gør det ingen nytte.
