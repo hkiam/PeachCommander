@@ -61,6 +61,8 @@ Pogon zamenjate z menijem na vrhu pregledovalnika; izbrani se uporabi takoj, rez
 
 Izvorna koda je barvno označena, dva gumba pa vodita dalje: **Shrani kot …** jo zapiše v datoteko, **Odpri v urejevalniku** pa jo izroči tistemu, kar na vašem Macu odpira `.java`. Zelo velik rezultat je prikazan brez označevanja, da se pokaže takoj in ne po premoru; vrstica stanja to pove.
 
+Pokrit je tudi Android: F3 na datoteki `.dex` uporabi **jadx** (Apache 2.0, `brew install jadx`), ki bajtno kodo Dalvik pretvori nazaj v Javo. Zadostoval je en opis pogona — isti mehanizem, drug zapis.
+
 Vtičnik je **izklopljen, dokler ga ne vklopite**, v Nastavitve ▸ Vtičniki — večina ljudi datoteke .class nikoli ne odpre, brez pogona pa tako ali tako ne koristi.
 
 Svoj pogon dodate tako, da v mapi pogonov ustvarite `decompilers.ini`:

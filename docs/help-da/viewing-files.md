@@ -61,6 +61,8 @@ Skift motor med menuen øverst i fremviseren; den valgte bruges straks, og resul
 
 Kildekoden syntaksfremhæves, og to knapper fører videre: **Arkivér som…** skriver den til en fil, og **Åbn i redigering** giver den til det, der åbner `.java` på din Mac. Et meget stort resultat vises uden fremhævning, så det kommer frem straks i stedet for efter en pause; statuslinjen siger til.
 
+Android er også dækket: F3 på en `.dex`-fil bruger **jadx** (Apache 2.0, `brew install jadx`), som laver Dalvik-bytekode tilbage til Java. Det krævede én motorbeskrivelse — samme mekanisme, andet format.
+
 Pluginet er **slået fra, indtil du slår det til**, under Indstillinger ▸ Plugins — de fleste åbner aldrig en classfil, og uden en motor gør det ingen nytte.
 
 Tilføj din egen motor ved at oprette `decompilers.ini` i motormappen:

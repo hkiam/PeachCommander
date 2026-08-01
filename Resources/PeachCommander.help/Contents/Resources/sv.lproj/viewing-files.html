@@ -54,6 +54,7 @@
 <p>Ingenting laddas ned åt dig: det här är tredjepartsprogram med egna licenser, och Peach Commander varken hämtar eller uppdaterar dem. Knappen <strong>Motormapp…</strong> i visaren öppnar mappen de hör hemma i och lämnar en notis där som namnger varje motor och var den finns. Alla utom javap kräver installerat Java.</p>
 <p>Byt motor med menyn högst upp i visaren; den du väljer används genast och resultatet sparas, så att jämföra två motorer på samma fil går direkt.</p>
 <p>Källkoden syntaxmarkeras, och två knappar tar den vidare: <strong>Spara som…</strong> skriver den till en fil och <strong>Öppna i redigerare</strong> lämnar den till det som öppnar <code>.java</code> på din Mac. Ett mycket stort resultat visas omarkerat så att det syns direkt i stället för efter en paus; statusraden säger till när det händer.</p>
+<p>Android täcks också: F3 på en <code>.dex</code>-fil använder <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), som gör Dalvik-bytekod till Java igen. Det krävdes en enda motorbeskrivning — samma mekanism, annat format.</p>
 <p>Modulen är <strong>av tills du slår på den</strong>, under Inställningar ▸ Insticksmoduler — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.</p>
 <p>Lägg till en egen motor genom att skapa <code>decompilers.ini</code> i motormappen:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>

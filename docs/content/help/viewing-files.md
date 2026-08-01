@@ -61,6 +61,8 @@ Switch engines with the menu at the top of the viewer; the one you pick is used 
 
 The source is syntax-highlighted, and two buttons take it further: **Save As…** writes it to a file, and **Open in Editor** hands it to whatever opens `.java` on your Mac. A very large result is shown unhighlighted so that it appears at once rather than after a pause; the status line says when that happens.
 
+Android is covered too: F3 on a `.dex` file uses **jadx** (Apache 2.0, `brew install jadx`), which turns Dalvik bytecode back into Java. Adding it took one engine description — the same mechanism, a different format.
+
 The plugin is **off until you turn it on**, in Settings ▸ Plugins — most people never open a class file, and it needs an engine to be useful.
 
 To add an engine of your own, create `decompilers.ini` in the engine folder:

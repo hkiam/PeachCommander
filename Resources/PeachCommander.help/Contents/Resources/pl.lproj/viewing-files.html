@@ -54,6 +54,7 @@
 <p>Nic nie jest pobierane za ciebie: to programy innych autorów na własnych licencjach, a Peach Commander ich nie pobiera ani nie aktualizuje. Przycisk <strong>Folder silników…</strong> w podglądzie otwiera folder, do którego należą, i zostawia tam notatkę z nazwą każdego silnika i miejscem pobrania. Wszystkie poza javap wymagają zainstalowanej Javy.</p>
 <p>Silnik zmieniasz menu u góry podglądu; wybrany działa natychmiast, a wynik jest zachowywany, więc porównanie dwóch silników na tym samym pliku jest błyskawiczne.</p>
 <p>Kod jest podświetlany składniowo, a dwa przyciski prowadzą dalej: <strong>Zapisz jako…</strong> zapisuje go do pliku, a <strong>Otwórz w edytorze</strong> przekazuje go temu, co otwiera <code>.java</code> na twoim Macu. Bardzo duży wynik pokazywany jest bez podświetlenia, aby pojawił się od razu, a nie po chwili; wiersz stanu o tym informuje.</p>
+<p>Android jest również objęty: F3 na pliku <code>.dex</code> używa <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), który zamienia kod bajtowy Dalvik z powrotem na Javę. Wystarczył jeden opis silnika — ten sam mechanizm, inny format.</p>
 <p>Wtyczka jest <strong>wyłączona, dopóki jej nie włączysz</strong>, w Ustawienia ▸ Wtyczki — większość osób nigdy nie otwiera pliku .class, a bez silnika i tak nic nie da.</p>
 <p>Aby dodać własny silnik, utwórz <code>decompilers.ini</code> w folderze silników:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>

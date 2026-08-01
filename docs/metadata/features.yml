@@ -705,7 +705,10 @@ features:
       PluginConfig. The source is syntax-highlighted by Plugins/SDK/PluginSyntax.swift — a
       language-agnostic lexer, not a parser, because decompiler output is often truncated — and can
       be saved to a file or handed to the system editor. Highlighting is skipped above 400k
-      characters so a large result appears at once.
+      characters so a large result appears at once. Android .dex is covered by the same machinery
+      through jadx (Apache-2.0): adding the format cost one engine descriptor and one clause in the
+      detect string, with no change to the runner — which is the claim the architecture was
+      supposed to support, now asserted by a test.
 
   # ───────────────────────── Settings ─────────────────────────
   - id: settings

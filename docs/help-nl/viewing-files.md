@@ -61,6 +61,8 @@ Wissel van engine met het menu bovenin de weergave; de gekozen engine wordt mete
 
 De broncode wordt syntaxgemarkeerd, en twee knoppen gaan verder: **Bewaar als…** schrijft hem naar een bestand en **Open in editor** geeft hem aan wat op uw Mac `.java` opent. Een heel groot resultaat wordt zonder markering getoond zodat het meteen verschijnt in plaats van na een pauze; de statusregel meldt dat.
 
+Android hoort er ook bij: F3 op een `.dex`-bestand gebruikt **jadx** (Apache 2.0, `brew install jadx`), dat Dalvik-bytecode terugbrengt naar Java. Daarvoor was één enginebeschrijving genoeg — hetzelfde mechanisme, ander formaat.
+
 De plug-in staat **uit tot u hem aanzet**, bij Instellingen ▸ Plug-ins — de meeste mensen openen nooit een classbestand, en zonder engine heeft hij geen nut.
 
 Wilt u een eigen engine toevoegen, maak dan `decompilers.ini` in de enginemap:

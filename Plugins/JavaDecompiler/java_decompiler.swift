@@ -37,9 +37,9 @@ final class DecompiledView: NSView {
 
     private let path: String
     private let kind: String
-    private let registry: DecompilerRegistry
+    private let registry: PluginDecompilerRegistry
     /// Engines that can handle this file, in preference order; the popup mirrors it.
-    private let candidates: [DecompilerEngine]
+    private let candidates: [PluginDecompilerEngine]
     /// Decompiled text per engine id, so switching back and forth is instant.
     private var cache: [String: String] = [:]
 
@@ -47,7 +47,7 @@ final class DecompiledView: NSView {
         self.path = path
         self.configRootPath = configRoot
         self.kind = (path as NSString).pathExtension.lowercased()
-        self.registry = DecompilerRegistry(configRoot: configRoot)
+        self.registry = PluginDecompilerRegistry(configRoot: configRoot)
         self.candidates = registry.engines(for: kind.isEmpty ? "class" : kind)
         super.init(frame: NSRect(x: 0, y: 0, width: 800, height: 600))
         build()
@@ -141,7 +141,7 @@ final class DecompiledView: NSView {
 
     private let configRootPath: String
     private var engineDirectory: String {
-        DecompilerRegistry.engineDirectory(configRoot: configRootPath)
+        PluginDecompilerRegistry.engineDirectory(configRoot: configRootPath)
     }
 
     /// A note in the engine folder naming the engines, their licences and where to get them —
@@ -158,7 +158,7 @@ final class DecompiledView: NSView {
             "updates them.",
             "",
         ]
-        for engine in DecompilerEngine.builtIns(engineDirectory: engineDirectory) {
+        for engine in PluginDecompilerEngine.builtIns(engineDirectory: engineDirectory) {
             lines.append("* \(engine.name)")
             if let note = engine.note { lines.append("  \(note)") }
             if let p = engine.enginePath {
@@ -184,7 +184,7 @@ final class DecompiledView: NSView {
         try? lines.joined(separator: "\n").write(toFile: readme, atomically: true, encoding: .utf8)
     }
 
-    private func run(_ engine: DecompilerEngine) {
+    private func run(_ engine: PluginDecompilerEngine) {
         if let cached = cache[engine.id] {
             display(cached, engine: engine)
             return
@@ -201,7 +201,7 @@ final class DecompiledView: NSView {
         // screen — blocking here would freeze it mid-open.
         let file = path
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            let result = DecompilerRunner.run(engine, input: file)
+            let result = PluginDecompilerRunner.run(engine, input: file)
             DispatchQueue.main.async {
                 guard let self else { return }
                 switch result {
@@ -221,7 +221,7 @@ final class DecompiledView: NSView {
     ///
     /// Highlighting is skipped above `PluginSyntax.maximumLength` and the status line says so, so a
     /// very large result appears immediately as plain text instead of stalling the view.
-    private func display(_ source: String, engine: DecompilerEngine) {
+    private func display(_ source: String, engine: PluginDecompilerEngine) {
         currentSource = source
         // System-colour fallbacks, not the host's palette. A lister plugin is handed the parent
         // view and a path — `ListLoad` has no PcHostServices — so it cannot read the theme bridge
@@ -274,7 +274,7 @@ final class DecompiledView: NSView {
         return stem + (isSource ? ".java" : ".txt")
     }
 
-    private func show(error: DecompileError, note: String? = nil) {
+    private func show(error: PluginDecompileError, note: String? = nil) {
         status.stringValue = error.userMessage
         var body = [error.userMessage, ""]
         if let note, !note.isEmpty { body += [note, ""] }
@@ -282,7 +282,7 @@ final class DecompiledView: NSView {
             body.append(L("Install one of these engines, then reopen this file:"))
             body.append("")
             for engine in candidates.isEmpty
-                ? DecompilerEngine.builtIns(engineDirectory: engineDirectory) : candidates {
+                ? PluginDecompilerEngine.builtIns(engineDirectory: engineDirectory) : candidates {
                 body.append("  • \(engine.name)")
                 if let n = engine.note { body.append("    \(n)") }
             }
@@ -332,7 +332,8 @@ public func PcGetApiVersion() -> Int32 { 1 }
 public func ListGetDetectString(_ buf: UnsafeMutablePointer<CChar>?, _ maxlen: Int32) {
     guard let buf, maxlen > 0 else { return }
     // Extension first, magic bytes second: CAFEBABE catches a class file whose name was lost.
-    let detect = "EXT=\"CLASS\" | ([0]=202 & [1]=254 & [2]=186 & [3]=190)"
+    // .class by extension or by CAFEBABE, plus Dalvik: a .dex starts with "dex\n" (100 101 120 10).
+    let detect = "EXT=\"CLASS\" | EXT=\"DEX\" | ([0]=202 & [1]=254 & [2]=186 & [3]=190)"
     _ = detect.withCString { strlcpy(buf, $0, Int(maxlen)) }
 }
 

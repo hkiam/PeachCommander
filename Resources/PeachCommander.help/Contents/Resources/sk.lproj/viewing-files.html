@@ -54,6 +54,7 @@
 <p>Nič sa za vás nesťahuje: ide o programy tretích strán s vlastnými licenciami a Peach Commander ich nesťahuje ani neaktualizuje. Tlačidlo <strong>Priečinok enginov…</strong> v prehliadači otvorí priečinok, kam patria, a zanechá v ňom poznámku s názvom každého enginu a odkiaľ ho získať. Všetky okrem javap vyžadujú nainštalovanú Javu.</p>
 <p>Engine prepnete ponukou v hornej časti prehliadača; zvolený sa použije ihneď a výsledok sa uchová, takže porovnanie dvoch enginov nad tým istým súborom je okamžité.</p>
 <p>Zdrojový kód sa farebne zvýrazňuje a dve tlačidlá vedú ďalej: <strong>Uložiť ako…</strong> ho zapíše do súboru a <strong>Otvoriť v editore</strong> ho predá tomu, čo na vašom Macu otvára <code>.java</code>. Veľmi rozsiahly výsledok sa zobrazí bez zvýraznenia, aby sa objavil hneď a nie po čakaní; stavový riadok to uvedie.</p>
+<p>Pokrytý je aj Android: F3 na súbore <code>.dex</code> použije <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), ktorý prevádza bajtkód Dalvik späť na Javu. Stačil jediný opis enginu — rovnaký mechanizmus, iný formát.</p>
 <p>Modul je <strong>vypnutý, kým ho nezapnete</strong>, v Nastavenia ▸ Zásuvné moduly — väčšina ľudí súbor .class nikdy neotvorí a bez enginu aj tak nič nezmôže.</p>
 <p>Vlastný engine pridáte vytvorením <code>decompilers.ini</code> v priečinku enginov:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>

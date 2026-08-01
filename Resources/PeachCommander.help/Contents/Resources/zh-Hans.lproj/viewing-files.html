@@ -54,6 +54,7 @@
 <p>不会替你下载任何东西：这些是第三方程序，各有自己的许可，Peach Commander 既不获取也不更新它们。查看器中的 <strong>引擎文件夹…</strong> 按钮会打开它们应放置的文件夹，并在其中留下一份说明，列出每个引擎及其下载地址。除 javap 外都需要已安装 Java。</p>
 <p>用查看器顶部的菜单切换引擎；所选引擎立即生效，结果会被保留，因此在同一文件上比较两个引擎没有等待。</p>
 <p>源代码带语法高亮，另有两个按钮继续处理：<strong>存储为…</strong> 写入文件，<strong>在编辑器中打开</strong> 交给 Mac 上打开 <code>.java</code> 的程序。结果非常大时会不加高亮直接显示，以便立即出现而不是等上一会儿；状态行会说明。</p>
+<p>Android 同样支持：对 <code>.dex</code> 文件按 F3 会使用 <strong>jadx</strong>（Apache 2.0，<code>brew install jadx</code>），把 Dalvik 字节码还原成 Java。为此只需一份引擎描述 —— 同一套机制，不同格式。</p>
 <p>插件<strong>默认关闭，直到你打开它</strong>（设置 ▸ 插件）—— 多数人从不打开 .class 文件，而且没有引擎它也没有用处。</p>
 <p>要添加自己的引擎，在引擎文件夹中新建 <code>decompilers.ini</code>：</p>
 <div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>

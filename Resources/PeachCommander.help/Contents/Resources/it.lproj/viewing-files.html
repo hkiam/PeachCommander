@@ -54,6 +54,7 @@
 <p>Non viene scaricato nulla per voi: sono programmi di terzi con licenze proprie, e Peach Commander non li scarica né li aggiorna. Il pulsante <strong>Cartella dei motori…</strong> nel visualizzatore apre la cartella a cui sono destinati e vi lascia una nota con il nome di ogni motore e dove ottenerlo. Tutti tranne javap richiedono Java installato.</p>
 <p>Cambiate motore con il menu in cima al visualizzatore; quello scelto viene usato subito e il risultato viene conservato, così confrontare due motori sullo stesso file è immediato.</p>
 <p>Il sorgente è evidenziato sintatticamente, e due pulsanti fanno di più: <strong>Registra come…</strong> lo scrive in un file e <strong>Apri nell’editor</strong> lo consegna a ciò che apre i <code>.java</code> sul vostro Mac. Un risultato molto grande viene mostrato senza evidenziazione per comparire subito anziché dopo una pausa; la riga di stato lo segnala.</p>
+<p>Anche Android è coperto: F3 su un file <code>.dex</code> usa <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), che riporta il bytecode Dalvik a Java. È bastata una descrizione di motore — stesso meccanismo, formato diverso.</p>
 <p>Il modulo è <strong>spento finché non lo accendete</strong>, in Impostazioni ▸ Moduli: quasi nessuno apre un file .class, e senza motore non serve.</p>
 <p>Per aggiungere un motore vostro, create <code>decompilers.ini</code> nella cartella dei motori:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>
