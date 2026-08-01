@@ -19,6 +19,7 @@ echo "==> Building all shipping plugins into: $OUT_DIR"
 SCRIPTS=(
   build-archive-plugin
   build-csvlister-plugin
+  build-javadecompiler-plugin
   build-git-plugin
   build-logviewer-plugin
   build-notes-plugin

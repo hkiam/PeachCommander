@@ -35,7 +35,37 @@
 <li>再次按 Ctrl+Q，或按 Esc，让面板恢复为普通文件列表。</li>
 </ol>
 <p>要获得由 macOS 本身处理的快速全屏预览，按 Cmd+Y（Quick Look）。再次按 Cmd+Y 或 Space 将其关闭。</p>
-<h2 id="_3">快捷键</h2>
+<h2 id="_3">侧栏中的信息页</h2>
+<p>侧栏（<strong>显示 &gt; 预览面板</strong>，或 Cmd+Shift+P）有一个 <strong>信息</strong> 页，像访达的信息侧栏那样显示光标所在的项目。</p>
+<ul>
+<li>预览会填满侧栏宽度：把侧栏拉宽，预览也随之变大。 拖动侧栏左边缘可加宽或收窄，宽度会被记住。</li>
+<li>这是真正的 macOS 预览，而不是小缩略图：快速查看能显示的所有格式在这里都能用，多页文档还可以在预览中逐页翻阅。</li>
+<li>下方依次是名称、种类和大小，然后是创建时间、修改时间以及所在文件夹。</li>
+</ul>
+<p>移动光标时，名称和信息会立即更新；预览稍后跟上，因此按住方向键快速穿过长目录时，不会为经过的每一行都启动一次预览。</p>
+<h2 id="java-class">反编译 Java class 文件</h2>
+<p>启用 <strong>Java Decompiler</strong> 插件后，对 <code>.class</code> 文件按 F3 会显示可读代码而不是二进制数据 —— 包括 JAR 或 ZIP 里的 class 文件，你可以进入压缩包直接查看，无需解压。</p>
+<p>插件本身不含任何反编译器。它只是驱动你自己安装的引擎，而且引擎随时可换：</p>
+<ul>
+<li><strong>CFR</strong>（MIT 许可）与 <strong>Vineflower</strong>（Apache 2.0）生成 Java 源代码。把 <code>cfr.jar</code> 或 <code>vineflower.jar</code> 放进引擎文件夹即可。</li>
+<li><strong>Procyon</strong>（Apache 2.0）是第三个生成源代码的反编译器。</li>
+<li><strong>javap</strong> 完全不需要下载 —— 它随任何 JDK 一起提供，显示的是字节码而非 Java 源代码。</li>
+</ul>
+<p>不会替你下载任何东西：这些是第三方程序，各有自己的许可，Peach Commander 既不获取也不更新它们。查看器中的 <strong>引擎文件夹…</strong> 按钮会打开它们应放置的文件夹，并在其中留下一份说明，列出每个引擎及其下载地址。除 javap 外都需要已安装 Java。</p>
+<p>用查看器顶部的菜单切换引擎；所选引擎立即生效，结果会被保留，因此在同一文件上比较两个引擎没有等待。</p>
+<p>插件<strong>默认关闭，直到你打开它</strong>（设置 ▸ 插件）—— 多数人从不打开 .class 文件，而且没有引擎它也没有用处。</p>
+<p>要添加自己的引擎，在引擎文件夹中新建 <code>decompilers.ini</code>：</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>
+<span class="na">name</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">My Decompiler</span>
+<span class="na">kinds</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">class</span>
+<span class="na">tool</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">java</span>
+<span class="na">args</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">-jar {engine} {input}</span>
+<span class="na">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">~/tools/my-decompiler.jar</span>
+<span class="na">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">stdout</span>
+</code></pre></div>
+
+<p><code>{input}</code>、<code>{engine}</code> 和 <code>{outdir}</code> 会在运行时替换。你自己的条目优先于内置条目；重用内置名称（<code>cfr</code>、<code>vineflower</code>、<code>procyon</code>、<code>javap</code>）会替换它，而不是新增一条。</p>
+<h2 id="_4">快捷键</h2>
 <table>
 <thead>
 <tr>
@@ -78,20 +108,14 @@
 </tr>
 </tbody>
 </table>
-<h2 id="_4">侧栏中的信息页</h2>
-<p>侧栏（<strong>显示 &gt; 预览面板</strong>，或 Cmd+Shift+P）有一个 <strong>信息</strong> 页，像访达的信息侧栏那样显示光标所在的项目。</p>
-<ul>
-<li>预览会填满侧栏宽度：把侧栏拉宽，预览也随之变大。</li>
-<li>这是真正的 macOS 预览，而不是小缩略图：快速查看能显示的所有格式在这里都能用，多页文档还可以在预览中逐页翻阅。</li>
-<li>下方依次是名称、种类和大小，然后是创建时间、修改时间以及所在文件夹。</li>
-</ul>
-<p>移动光标时，名称和信息会立即更新；预览稍后跟上，因此按住方向键快速穿过长目录时，不会为经过的每一行都启动一次预览。</p>
 <h2 id="_5">备注</h2>
 <ul>
 <li>查看器是只读的。要更改文件，请改用编辑器（参阅“编辑文件”）。</li>
 <li>非常大的文件也会毫无延迟地打开：文本以快速、可滚动的视图打开，十六进制视图无论多大都直接从磁盘流式读取。</li>
 <li>在文件夹上按 F3 会看到其内容和总大小的摘要，而非文件字节。</li>
 <li>渲染模式显示网页等带格式的内容；十六进制模式将原始字节与其字符并排显示，便于检查二进制文件。</li>
+<li>在渲染模式下也可以选择并复制文本，查找会在渲染后的页面中搜索。对渲染页面无法适用的按钮 —— 格式化、编码、全选、选择项和跳转 —— 会变灰，而不是按了没反应。</li>
+<li>格式化按钮会重新缩进结构化文件（JSON、XML、HTML、INI、YAML，若安装了相应的命令行工具还支持更多）。完整说明见<a href="editing-files.md#formatting-a-file">编辑文件</a>，在这里的用法相同。</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">编辑文件</a></li><li><a href="searching.html">查找文件</a></li></ul></section>
 </main>

@@ -35,6 +35,36 @@
 <li>Trykk Ctrl+Q igjen, eller Esc, for å få panelet tilbake til en vanlig filliste.</li>
 </ol>
 <p>For en rask fullskjerm-forhåndsvisning håndtert av macOS selv, trykk Cmd+Y (Quick Look). Trykk Cmd+Y eller Space igjen for å lukke den.</p>
+<h2 id="infosiden-i-sidepanelet">Infosiden i sidepanelet</h2>
+<p>Sidepanelet (<strong>Vis &gt; Forhåndsvisningspanel</strong>, eller Cmd+Skift+P) har en side <strong>Info</strong> som viser objektet under markøren slik Finders infosidepanel gjør.</p>
+<ul>
+<li>Forhåndsvisningen fyller bredden på panelet: gjør du panelet bredere, vokser forhåndsvisningen med. Dra i panelets venstre kant for å gjøre det bredere eller smalere; bredden huskes.</li>
+<li>Det er en ekte macOS-forhåndsvisning, ikke en liten miniatyr: alle formater Kikk kan vise fungerer her, og et dokument på flere sider blar du side for side inne i forhåndsvisningen.</li>
+<li>Under står navn, type og størrelse, og deretter når objektet ble opprettet og endret, og hvilken mappe det ligger i.</li>
+</ul>
+<p>Når markøren flyttes, oppdateres navn og opplysninger straks; forhåndsvisningen følger et øyeblikk etter, slik at en holdt piltast gjennom en lang mappe ikke starter en forhåndsvisning for hver rad.</p>
+<h2 id="dekompiler-java-classfiler">Dekompiler Java-classfiler</h2>
+<p>Med programtillegget <strong>Java Decompiler</strong> slått på viser F3 på en <code>.class</code>-fil lesbar kode i stedet for binærdata — også for classfiler inne i en JAR eller ZIP, som du kan gå inn i og lese uten å pakke ut.</p>
+<p>Tillegget inneholder ingen dekompilator selv. Det styrer en motor du installerer, og du kan bytte motor når som helst:</p>
+<ul>
+<li><strong>CFR</strong> (MIT-lisens) og <strong>Vineflower</strong> (Apache 2.0) gir Java-kildekode. Legg <code>cfr.jar</code> eller <code>vineflower.jar</code> i motormappen.</li>
+<li><strong>Procyon</strong> (Apache 2.0) er en tredje kildekodedekompilator.</li>
+<li><strong>javap</strong> krever ingen nedlasting: den følger med ethvert JDK og viser bytekode i stedet for Java-kildekode.</li>
+</ul>
+<p>Ingenting lastes ned for deg: dette er tredjepartsprogrammer med egne lisenser, og Peach Commander verken henter eller oppdaterer dem. Knappen <strong>Motormappe…</strong> i fremviseren åpner mappen de hører hjemme i og legger igjen et notat som navngir hver motor og hvor den fås. Alle unntatt javap krever installert Java.</p>
+<p>Bytt motor med menyen øverst i fremviseren; den du velger brukes straks og resultatet beholdes, så det går umiddelbart å sammenligne to motorer på samme fil.</p>
+<p>Tillegget er <strong>av til du slår det på</strong>, under Innstillinger ▸ Programtillegg — de fleste åpner aldri en classfil, og uten motor gjør det ingen nytte.</p>
+<p>Legg til din egen motor ved å opprette <code>decompilers.ini</code> i motormappen:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>
+<span class="na">name</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">My Decompiler</span>
+<span class="na">kinds</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">class</span>
+<span class="na">tool</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">java</span>
+<span class="na">args</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">-jar {engine} {input}</span>
+<span class="na">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">~/tools/my-decompiler.jar</span>
+<span class="na">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">stdout</span>
+</code></pre></div>
+
+<p><code>{input}</code>, <code>{engine}</code> og <code>{outdir}</code> fylles inn når motoren kjøres. Dine egne oppføringer går foran de innebygde, og å gjenbruke et innebygd navn (<code>cfr</code>, <code>vineflower</code>, <code>procyon</code>, <code>javap</code>) erstatter det i stedet for å legge til en ny oppføring.</p>
 <h2 id="snarveier">Snarveier</h2>
 <table>
 <thead>
@@ -78,20 +108,14 @@
 </tr>
 </tbody>
 </table>
-<h2 id="infosiden-i-sidepanelet">Infosiden i sidepanelet</h2>
-<p>Sidepanelet (<strong>Vis &gt; Forhåndsvisningspanel</strong>, eller Cmd+Skift+P) har en side <strong>Info</strong> som viser objektet under markøren slik Finders infosidepanel gjør.</p>
-<ul>
-<li>Forhåndsvisningen fyller bredden på panelet: gjør du panelet bredere, vokser forhåndsvisningen med.</li>
-<li>Det er en ekte macOS-forhåndsvisning, ikke en liten miniatyr: alle formater Kikk kan vise fungerer her, og et dokument på flere sider blar du side for side inne i forhåndsvisningen.</li>
-<li>Under står navn, type og størrelse, og deretter når objektet ble opprettet og endret, og hvilken mappe det ligger i.</li>
-</ul>
-<p>Når markøren flyttes, oppdateres navn og opplysninger straks; forhåndsvisningen følger et øyeblikk etter, slik at en holdt piltast gjennom en lang mappe ikke starter en forhåndsvisning for hver rad.</p>
 <h2 id="merknader">Merknader</h2>
 <ul>
 <li>Visningen er skrivebeskyttet. For å endre en fil, bruk redigeringsprogrammet i stedet (se Redigere filer).</li>
 <li>Svært store filer åpnes uten forsinkelse: tekst åpner en rask, rullbar visning, og heksadesimalvisningen strømmer rett fra disken uansett størrelse.</li>
 <li>Trykk F3 på en mappe for å se et sammendrag av innholdet og total størrelse i stedet for filbytes.</li>
 <li>Gjengitt-modus viser formatert innhold som nettsider; heksmodus viser de rå bytene side om side med tegnene deres, noe som er praktisk for å inspisere binærfiler.</li>
+<li>I modusen Gjengitt kan du merke og kopiere tekst, og Søk søker i den gjengitte siden. Knapper som ikke kan brukes på en gjengitt side — Formater, Tegnkoding, Merk alt, Merkinger og Gå til — er nedtonet i stedet for uten virkning.</li>
+<li>Knappen Formater setter inn nye innrykk i strukturerte filer (JSON, XML, HTML, INI, YAML og flere hvis du har det tilhørende kommandolinjeverktøyet). Den er beskrevet i sin helhet under <a href="editing-files.md#formatting-a-file">Redigere filer</a> og virker likedan her.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Redigere filer</a></li><li><a href="searching.html">Finne filer</a></li></ul></section>
 </main>

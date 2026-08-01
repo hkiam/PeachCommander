@@ -45,6 +45,36 @@ The side panel (**View > Preview Panel**, or Cmd+Shift+P) has an **Info** page t
 
 Moving the cursor updates the name and details immediately; the preview itself follows a moment later, so holding an arrow key through a long folder does not start a preview for every row it passes.
 
+## Decompile Java class files
+
+With the **Java Decompiler** plugin switched on, F3 on a `.class` file shows readable code instead of binary — including class files inside a JAR or ZIP, which you can step into and view without unpacking.
+
+The plugin contains no decompiler of its own. It drives an engine you install, and you can swap engines at any time:
+
+- **CFR** (MIT licence) and **Vineflower** (Apache 2.0) produce Java source. Put `cfr.jar` or `vineflower.jar` into the engine folder.
+- **Procyon** (Apache 2.0) is a third source decompiler.
+- **javap** needs no download at all — it comes with any JDK, and shows bytecode rather than Java source.
+
+Nothing is downloaded for you: these are third-party programs under their own licences, and Peach Commander neither fetches nor updates them. The viewer's **Engine Folder…** button opens the folder they belong in and leaves a note there naming each engine and where to get it. All of them except javap need Java installed.
+
+Switch engines with the menu at the top of the viewer; the one you pick is used immediately and the result is kept, so comparing two engines on the same file is instant.
+
+The plugin is **off until you turn it on**, in Settings ▸ Plugins — most people never open a class file, and it needs an engine to be useful.
+
+To add an engine of your own, create `decompilers.ini` in the engine folder:
+
+```ini
+[myengine]
+name   = My Decompiler
+kinds  = class
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/tools/my-decompiler.jar
+output = stdout
+```
+
+`{input}`, `{engine}` and `{outdir}` are filled in when the engine runs. Your own entries take precedence over the built-in ones, and reusing a built-in name (`cfr`, `vineflower`, `procyon`, `javap`) replaces it rather than adding a second entry.
+
 ## Shortcuts
 
 | Action | Shortcut |

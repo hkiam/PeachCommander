@@ -35,6 +35,36 @@
 <li>Appuyez de nouveau sur Ctrl+Q, ou sur Échap, pour rendre au panneau une liste de fichiers normale.</li>
 </ol>
 <p>Pour un aperçu plein écran rapide géré par macOS lui-même, appuyez sur Cmd+Y (Coup d'œil). Appuyez de nouveau sur Cmd+Y ou Espace pour le fermer.</p>
+<h2 id="la-page-infos-du-panneau-lateral">La page Infos du panneau latéral</h2>
+<p>Le panneau latéral (<strong>Présentation &gt; Panneau d’aperçu</strong>, ou Cmd+Maj+P) comporte une page <strong>Infos</strong> qui présente l’élément sous le curseur comme le fait la barre latérale d’informations du Finder.</p>
+<ul>
+<li>L’aperçu occupe toute la largeur du panneau : élargissez le panneau et l’aperçu grandit avec lui. Faites glisser le bord gauche du panneau pour l’élargir ou le rétrécir ; la largeur est mémorisée.</li>
+<li>C’est un véritable aperçu macOS, pas une petite vignette : tous les formats que Coup d’œil sait afficher fonctionnent ici, et un document de plusieurs pages se parcourt page par page dans l’aperçu.</li>
+<li>En dessous figurent le nom, le type et la taille, puis les dates de création et de modification et le dossier où se trouve l’élément.</li>
+</ul>
+<p>Lorsque le curseur se déplace, le nom et les informations se mettent à jour immédiatement ; l’aperçu suit un instant plus tard, afin qu’une flèche maintenue à travers un long dossier ne lance pas un aperçu pour chaque ligne traversée.</p>
+<h2 id="decompiler-des-fichiers-class-java">Décompiler des fichiers .class Java</h2>
+<p>Avec le module <strong>Java Decompiler</strong> activé, F3 sur un fichier <code>.class</code> affiche du code lisible au lieu de données binaires — y compris pour les classes situées dans un JAR ou un ZIP, dans lequel vous pouvez entrer et lire sans le décompresser.</p>
+<p>Le module ne contient aucun décompilateur. Il pilote un moteur que vous installez, et vous pouvez en changer à tout moment :</p>
+<ul>
+<li><strong>CFR</strong> (licence MIT) et <strong>Vineflower</strong> (Apache 2.0) produisent du source Java. Placez <code>cfr.jar</code> ou <code>vineflower.jar</code> dans le dossier des moteurs.</li>
+<li><strong>Procyon</strong> (Apache 2.0) est un troisième décompilateur vers le source.</li>
+<li><strong>javap</strong> ne demande aucun téléchargement : il accompagne tout JDK et montre du bytecode plutôt que du source Java.</li>
+</ul>
+<p>Rien n’est téléchargé à votre place : ce sont des programmes tiers sous leurs propres licences, et Peach Commander ne les récupère ni ne les met à jour. Le bouton <strong>Dossier des moteurs…</strong> de la visionneuse ouvre le dossier auquel ils sont destinés et y dépose une note nommant chaque moteur et son adresse de téléchargement. Tous sauf javap exigent Java.</p>
+<p>Changez de moteur avec le menu en haut de la visionneuse ; celui que vous choisissez est utilisé immédiatement et le résultat est conservé, si bien que comparer deux moteurs sur le même fichier est instantané.</p>
+<p>Le module est <strong>désactivé tant que vous ne l’activez pas</strong>, dans Réglages ▸ Modules — la plupart des gens n’ouvrent jamais de fichier .class, et sans moteur il ne sert à rien.</p>
+<p>Pour ajouter votre propre moteur, créez <code>decompilers.ini</code> dans le dossier des moteurs :</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>
+<span class="na">name</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">My Decompiler</span>
+<span class="na">kinds</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">class</span>
+<span class="na">tool</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">java</span>
+<span class="na">args</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">-jar {engine} {input}</span>
+<span class="na">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">~/tools/my-decompiler.jar</span>
+<span class="na">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">stdout</span>
+</code></pre></div>
+
+<p><code>{input}</code>, <code>{engine}</code> et <code>{outdir}</code> sont remplacés à l’exécution. Vos entrées ont priorité sur celles fournies, et réutiliser un nom intégré (<code>cfr</code>, <code>vineflower</code>, <code>procyon</code>, <code>javap</code>) le remplace au lieu d’ajouter une seconde entrée.</p>
 <h2 id="raccourcis">Raccourcis</h2>
 <table>
 <thead>
@@ -78,20 +108,14 @@
 </tr>
 </tbody>
 </table>
-<h2 id="la-page-infos-du-panneau-lateral">La page Infos du panneau latéral</h2>
-<p>Le panneau latéral (<strong>Présentation &gt; Panneau d’aperçu</strong>, ou Cmd+Maj+P) comporte une page <strong>Infos</strong> qui présente l’élément sous le curseur comme le fait la barre latérale d’informations du Finder.</p>
-<ul>
-<li>L’aperçu occupe toute la largeur du panneau : élargissez le panneau et l’aperçu grandit avec lui.</li>
-<li>C’est un véritable aperçu macOS, pas une petite vignette : tous les formats que Coup d’œil sait afficher fonctionnent ici, et un document de plusieurs pages se parcourt page par page dans l’aperçu.</li>
-<li>En dessous figurent le nom, le type et la taille, puis les dates de création et de modification et le dossier où se trouve l’élément.</li>
-</ul>
-<p>Lorsque le curseur se déplace, le nom et les informations se mettent à jour immédiatement ; l’aperçu suit un instant plus tard, afin qu’une flèche maintenue à travers un long dossier ne lance pas un aperçu pour chaque ligne traversée.</p>
 <h2 id="remarques">Remarques</h2>
 <ul>
 <li>Le lecteur est en lecture seule. Pour modifier un fichier, utilisez plutôt l'éditeur (voir Modifier des fichiers).</li>
 <li>Les très gros fichiers s'ouvrent sans délai : le texte ouvre une vue rapide et défilable, et la vue hexa est diffusée directement depuis le disque quelle que soit la taille.</li>
 <li>Appuyez sur F3 sur un dossier pour voir un résumé de son contenu et sa taille totale au lieu des octets d'un fichier.</li>
 <li>Le mode Rendu affiche du contenu formaté tel que des pages web ; le mode hexa montre les octets bruts côte à côte avec leurs caractères, ce qui est pratique pour inspecter des fichiers binaires.</li>
+<li>En mode Rendu, vous pouvez sélectionner et copier du texte, et Rechercher explore la page rendue. Les boutons inapplicables à une page rendue — Formater, Encodage, Tout sélectionner, Sélections et Aller à — sont grisés plutôt que sans effet.</li>
+<li>Le bouton Formater réindente les fichiers structurés (JSON, XML, HTML, INI, YAML, et d’autres si l’outil en ligne de commande correspondant est installé). Il est décrit en détail sous <a href="editing-files.md#formatting-a-file">Modifier des fichiers</a> et fonctionne ici de la même façon.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="editing-files.html">Modifier des fichiers</a></li><li><a href="searching.html">Rechercher des fichiers</a></li></ul></section>
 </main>

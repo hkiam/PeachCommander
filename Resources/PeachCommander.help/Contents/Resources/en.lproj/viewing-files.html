@@ -38,11 +38,33 @@
 <h2 id="the-info-side-panel">The Info side panel</h2>
 <p>The side panel (<strong>View &gt; Preview Panel</strong>, or Cmd+Shift+P) has an <strong>Info</strong> page that shows the item under the cursor the way Finder's info sidebar does.</p>
 <ul>
-<li>The preview fills the width of the panel, so widen the panel and the preview grows with it.</li>
+<li>The preview fills the width of the panel, so widen the panel and the preview grows with it. Drag the panel's left edge to make it wider or narrower; the width is remembered.</li>
 <li>It is a real macOS preview, not a small thumbnail: every format Quick Look can show works here, and a multi-page document scrolls page by page inside the preview.</li>
 <li>Below it are the name, the kind and the size, then when the item was created and changed and which folder it is in.</li>
 </ul>
 <p>Moving the cursor updates the name and details immediately; the preview itself follows a moment later, so holding an arrow key through a long folder does not start a preview for every row it passes.</p>
+<h2 id="decompile-java-class-files">Decompile Java class files</h2>
+<p>With the <strong>Java Decompiler</strong> plugin switched on, F3 on a <code>.class</code> file shows readable code instead of binary — including class files inside a JAR or ZIP, which you can step into and view without unpacking.</p>
+<p>The plugin contains no decompiler of its own. It drives an engine you install, and you can swap engines at any time:</p>
+<ul>
+<li><strong>CFR</strong> (MIT licence) and <strong>Vineflower</strong> (Apache 2.0) produce Java source. Put <code>cfr.jar</code> or <code>vineflower.jar</code> into the engine folder.</li>
+<li><strong>Procyon</strong> (Apache 2.0) is a third source decompiler.</li>
+<li><strong>javap</strong> needs no download at all — it comes with any JDK, and shows bytecode rather than Java source.</li>
+</ul>
+<p>Nothing is downloaded for you: these are third-party programs under their own licences, and Peach Commander neither fetches nor updates them. The viewer's <strong>Engine Folder…</strong> button opens the folder they belong in and leaves a note there naming each engine and where to get it. All of them except javap need Java installed.</p>
+<p>Switch engines with the menu at the top of the viewer; the one you pick is used immediately and the result is kept, so comparing two engines on the same file is instant.</p>
+<p>The plugin is <strong>off until you turn it on</strong>, in Settings ▸ Plugins — most people never open a class file, and it needs an engine to be useful.</p>
+<p>To add an engine of your own, create <code>decompilers.ini</code> in the engine folder:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[myengine]</span>
+<span class="na">name</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">My Decompiler</span>
+<span class="na">kinds</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">class</span>
+<span class="na">tool</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">java</span>
+<span class="na">args</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">-jar {engine} {input}</span>
+<span class="na">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">~/tools/my-decompiler.jar</span>
+<span class="na">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">stdout</span>
+</code></pre></div>
+
+<p><code>{input}</code>, <code>{engine}</code> and <code>{outdir}</code> are filled in when the engine runs. Your own entries take precedence over the built-in ones, and reusing a built-in name (<code>cfr</code>, <code>vineflower</code>, <code>procyon</code>, <code>javap</code>) replaces it rather than adding a second entry.</p>
 <h2 id="shortcuts">Shortcuts</h2>
 <table>
 <thead>

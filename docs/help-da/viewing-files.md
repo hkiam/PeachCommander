@@ -35,6 +35,46 @@ Hurtigvisning viser en live forhåndsvisning i det panel, du *ikke* bruger, så 
 
 For en hurtig fuldskærms-forhåndsvisning håndteret af macOS selv, tryk på Cmd+Y (Quick Look). Tryk på Cmd+Y eller Mellemrum igen for at lukke den.
 
+## Infosiden i sidepanelet
+
+Sidepanelet (**Vis > Eksempelpanel**, eller Cmd+Skift+P) har en side **Info**, der viser emnet under markøren på samme måde som Finders infosidepanel.
+
+- Eksemplet fylder panelets bredde: gør du panelet bredere, vokser eksemplet med. Træk i panelets venstre kant for at gøre det bredere eller smallere; bredden huskes.
+- Det er et rigtigt macOS-eksempel, ikke en lille miniature: alle formater, som Kig kan vise, virker her, og et dokument på flere sider blader du side for side inde i eksemplet.
+- Nedenunder står navn, type og størrelse, og derefter hvornår emnet blev oprettet og ændret, samt hvilken mappe det ligger i.
+
+Når markøren flyttes, opdateres navn og oplysninger straks; eksemplet følger et øjeblik efter, så en holdt piletast gennem en lang mappe ikke starter et eksempel for hver række.
+
+## Dekompilér Java-classfiler
+
+Med pluginet **Java Decompiler** slået til viser F3 på en `.class`-fil læsbar kode i stedet for binære data — også for classfiler inde i en JAR eller ZIP, som du kan gå ind i og læse uden at pakke ud.
+
+Pluginet indeholder ingen dekompilator selv. Det styrer en motor, du installerer, og du kan skifte motor når som helst:
+
+- **CFR** (MIT-licens) og **Vineflower** (Apache 2.0) giver Java-kildekode. Læg `cfr.jar` eller `vineflower.jar` i motormappen.
+- **Procyon** (Apache 2.0) er en tredje kildekodedekompilator.
+- **javap** kræver ingen download: den følger med ethvert JDK og viser bytekode i stedet for Java-kildekode.
+
+Der hentes intet for dig: det er tredjepartsprogrammer med egne licenser, og Peach Commander hverken henter eller opdaterer dem. Knappen **Motormappe…** i fremviseren åbner mappen, de hører til i, og efterlader en note med hver motor og hvor den fås. Alle undtagen javap kræver installeret Java.
+
+Skift motor med menuen øverst i fremviseren; den valgte bruges straks, og resultatet bevares, så det er øjeblikkeligt at sammenligne to motorer på den samme fil.
+
+Pluginet er **slået fra, indtil du slår det til**, under Indstillinger ▸ Plugins — de fleste åbner aldrig en classfil, og uden en motor gør det ingen nytte.
+
+Tilføj din egen motor ved at oprette `decompilers.ini` i motormappen:
+
+```ini
+[myengine]
+name   = My Decompiler
+kinds  = class
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/tools/my-decompiler.jar
+output = stdout
+```
+
+`{input}`, `{engine}` og `{outdir}` udfyldes, når motoren køres. Dine egne poster går forud for de indbyggede, og genbrug af et indbygget navn (`cfr`, `vineflower`, `procyon`, `javap`) erstatter det i stedet for at tilføje endnu en post.
+
 ## Genveje
 
 | Handling | Genvej |
@@ -48,19 +88,11 @@ For en hurtig fuldskærms-forhåndsvisning håndteret af macOS selv, tryk på Cm
 | Quick Look (macOS-forhåndsvisning) | Cmd+Y |
 | Luk fremviseren eller Hurtigvisning | Esc |
 
-## Infosiden i sidepanelet
-
-Sidepanelet (**Vis > Eksempelpanel**, eller Cmd+Skift+P) har en side **Info**, der viser emnet under markøren på samme måde som Finders infosidepanel.
-
-- Eksemplet fylder panelets bredde: gør du panelet bredere, vokser eksemplet med. Træk i panelets venstre kant for at gøre det bredere eller smallere; bredden huskes.
-- Det er et rigtigt macOS-eksempel, ikke en lille miniature: alle formater, som Kig kan vise, virker her, og et dokument på flere sider blader du side for side inde i eksemplet.
-- Nedenunder står navn, type og størrelse, og derefter hvornår emnet blev oprettet og ændret, samt hvilken mappe det ligger i.
-
-Når markøren flyttes, opdateres navn og oplysninger straks; eksemplet følger et øjeblik efter, så en holdt piletast gennem en lang mappe ikke starter et eksempel for hver række.
-
 ## Bemærkninger
 
 - Fremviseren er skrivebeskyttet. For at ændre en fil, brug i stedet editoren (se Redigering af filer).
 - Meget store filer åbner uden forsinkelse: tekst åbner en hurtig, rulbar visning, og hex-visningen streames direkte fra disken ved enhver størrelse.
 - Tryk på F3 på en mappe for at se et resumé af dens indhold og samlede størrelse i stedet for filbytes.
 - Gengivet-tilstand viser formateret indhold såsom websider; hex-tilstand viser de rå bytes side om side med deres tegn, hvilket er praktisk til at inspicere binære filer.
+- I tilstanden Gengivet kan du markere og kopiere tekst, og Søg gennemsøger den gengivne side. Knapper, der ikke kan bruges på en gengivet side — Formatér, Tegnsæt, Markér alt, Markeringer og Gå til — er nedtonede i stedet for uvirksomme.
+- Knappen Formatér indrykker strukturerede filer på ny (JSON, XML, HTML, INI, YAML og flere, hvis du har det tilsvarende kommandolinjeværktøj). Den er beskrevet fuldt ud under [Redigér filer](editing-files.md#formatting-a-file) og virker på samme måde her.

@@ -35,6 +35,46 @@ Quick View visar en direkt förhandsvisning i den panel du *inte* använder, så
 
 För en snabb helskärmsförhandsvisning som macOS själv hanterar, tryck på Cmd+Y (Quick Look). Tryck på Cmd+Y eller Space igen för att stänga den.
 
+## Infosidan i sidopanelen
+
+Sidopanelen (**Visa > Förhandsvisningspanel**, eller Cmd+Skift+P) har en sida **Info** som visar objektet under markören på samma sätt som Finders infosidopanel.
+
+- Förhandsvisningen fyller panelens bredd: gör du panelen bredare växer förhandsvisningen med den. Dra i panelens vänsterkant för att göra den bredare eller smalare; bredden kommer ihåg.
+- Det är en riktig macOS-förhandsvisning, inte en liten miniatyr: alla format som Snabbtitt kan visa fungerar här, och ett dokument med flera sidor bläddrar du sida för sida inuti förhandsvisningen.
+- Under den står namn, typ och storlek, och därefter när objektet skapades och ändrades samt vilken mapp det ligger i.
+
+När markören flyttas uppdateras namn och uppgifter direkt; förhandsvisningen följer ett ögonblick senare, så att en nedhållen piltangent genom en lång mapp inte startar en förhandsvisning för varje rad.
+
+## Dekompilera Java-classfiler
+
+Med insticksmodulen **Java Decompiler** påslagen visar F3 på en `.class`-fil läsbar kod i stället för binärdata — även för classfiler inuti en JAR eller ZIP, som du kan gå in i och läsa utan att packa upp.
+
+Modulen innehåller ingen egen dekompilator. Den styr en motor som du installerar, och du kan byta motor när som helst:
+
+- **CFR** (MIT-licens) och **Vineflower** (Apache 2.0) ger Java-källkod. Lägg `cfr.jar` eller `vineflower.jar` i motormappen.
+- **Procyon** (Apache 2.0) är en tredje källkodsdekompilator.
+- **javap** kräver ingen nedladdning alls — den följer med varje JDK och visar bytekod i stället för Java-källkod.
+
+Ingenting laddas ned åt dig: det här är tredjepartsprogram med egna licenser, och Peach Commander varken hämtar eller uppdaterar dem. Knappen **Motormapp…** i visaren öppnar mappen de hör hemma i och lämnar en notis där som namnger varje motor och var den finns. Alla utom javap kräver installerat Java.
+
+Byt motor med menyn högst upp i visaren; den du väljer används genast och resultatet sparas, så att jämföra två motorer på samma fil går direkt.
+
+Modulen är **av tills du slår på den**, under Inställningar ▸ Insticksmoduler — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.
+
+Lägg till en egen motor genom att skapa `decompilers.ini` i motormappen:
+
+```ini
+[myengine]
+name   = My Decompiler
+kinds  = class
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/tools/my-decompiler.jar
+output = stdout
+```
+
+`{input}`, `{engine}` och `{outdir}` fylls i när motorn körs. Dina egna poster går före de inbyggda, och att återanvända ett inbyggt namn (`cfr`, `vineflower`, `procyon`, `javap`) ersätter det i stället för att lägga till en andra post.
+
 ## Kortkommandon
 
 | Åtgärd | Kortkommando |
@@ -48,19 +88,11 @@ För en snabb helskärmsförhandsvisning som macOS själv hanterar, tryck på Cm
 | Quick Look (macOS-förhandsvisning) | Cmd+Y |
 | Stäng visaren eller Quick View | Esc |
 
-## Infosidan i sidopanelen
-
-Sidopanelen (**Visa > Förhandsvisningspanel**, eller Cmd+Skift+P) har en sida **Info** som visar objektet under markören på samma sätt som Finders infosidopanel.
-
-- Förhandsvisningen fyller panelens bredd: gör du panelen bredare växer förhandsvisningen med den. Dra i panelens vänsterkant för att göra den bredare eller smalare; bredden kommer ihåg.
-- Det är en riktig macOS-förhandsvisning, inte en liten miniatyr: alla format som Snabbtitt kan visa fungerar här, och ett dokument med flera sidor bläddrar du sida för sida inuti förhandsvisningen.
-- Under den står namn, typ och storlek, och därefter när objektet skapades och ändrades samt vilken mapp det ligger i.
-
-När markören flyttas uppdateras namn och uppgifter direkt; förhandsvisningen följer ett ögonblick senare, så att en nedhållen piltangent genom en lång mapp inte startar en förhandsvisning för varje rad.
-
 ## Anmärkningar
 
 - Visaren är skrivskyddad. För att ändra en fil, använd redigeraren i stället (se Redigera filer).
 - Mycket stora filer öppnas utan fördröjning: text öppnas i en snabb, rullningsbar vy och hexvyn strömmar direkt från disken oavsett storlek.
 - Tryck på F3 på en mapp för att se en sammanfattning av dess innehåll och totala storlek i stället för filbytes.
 - Renderat läge visar formaterat innehåll som webbsidor; hexläge visar de råa byten sida vid sida med deras tecken, vilket är behändigt för att granska binärfiler.
+- I läget Renderat kan du markera och kopiera text, och Sök söker i den renderade sidan. Knappar som inte går att använda på en renderad sida — Formatera, Teckenkodning, Markera allt, Markeringar och Gå till — är nedtonade i stället för verkningslösa.
+- Knappen Formatera drar om indraget i strukturerade filer (JSON, XML, HTML, INI, YAML och fler om du har rätt kommandoradsverktyg installerat). Den beskrivs i sin helhet under [Redigera filer](editing-files.md#formatting-a-file) och fungerar likadant här.

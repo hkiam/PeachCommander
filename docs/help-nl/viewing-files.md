@@ -35,6 +35,46 @@ Quick View toont een live voorbeeld in het paneel dat je *niet* gebruikt, zodat 
 
 Voor een snel schermvullend voorbeeld dat door macOS zelf wordt verzorgd, druk je op Cmd+Y (Quick Look). Druk nogmaals op Cmd+Y of Space om het te sluiten.
 
+## De infopagina in het zijpaneel
+
+Het zijpaneel (**Weergave > Voorvertoningspaneel**, of Cmd+Shift+P) heeft een pagina **Info** die het item onder de cursor toont zoals de infozijbalk van de Finder dat doet.
+
+- De voorvertoning vult de breedte van het paneel: maakt u het paneel breder, dan groeit de voorvertoning mee. Sleep de linkerrand van het paneel om het breder of smaller te maken; de breedte wordt onthouden.
+- Het is een echte macOS-voorvertoning, geen kleine miniatuur: elk formaat dat Snelle weergave kan tonen werkt hier, en een document van meerdere pagina’s blader je binnen de voorvertoning pagina voor pagina door.
+- Daaronder staan de naam, de soort en de grootte, en vervolgens wanneer het item is aangemaakt en gewijzigd en in welke map het staat.
+
+Bij het verplaatsen van de cursor worden naam en gegevens meteen bijgewerkt; de voorvertoning volgt even later, zodat een ingedrukte pijltoets door een lange map niet voor elke regel een voorvertoning start.
+
+## Java-classbestanden decompileren
+
+Met de plug-in **Java Decompiler** aan toont F3 op een `.class`-bestand leesbare code in plaats van binaire gegevens — ook voor classbestanden in een JAR of ZIP, waar u in kunt gaan en die u zonder uitpakken kunt lezen.
+
+De plug-in bevat zelf geen decompiler. Hij bestuurt een engine die u installeert, en u kunt op elk moment wisselen:
+
+- **CFR** (MIT-licentie) en **Vineflower** (Apache 2.0) leveren Java-broncode. Zet `cfr.jar` of `vineflower.jar` in de enginemap.
+- **Procyon** (Apache 2.0) is een derde broncode-decompiler.
+- **javap** vergt geen enkele download: het hoort bij elke JDK en toont bytecode in plaats van Java-broncode.
+
+Er wordt niets voor u gedownload: dit zijn programma’s van derden met eigen licenties, en Peach Commander haalt noch werkt ze bij. De knop **Enginemap…** in de weergave opent de map waar ze thuishoren en legt er een notitie neer met elke engine en waar u die krijgt. Alle behalve javap hebben Java nodig.
+
+Wissel van engine met het menu bovenin de weergave; de gekozen engine wordt meteen gebruikt en het resultaat bewaard, zodat twee engines op hetzelfde bestand vergelijken direct gaat.
+
+De plug-in staat **uit tot u hem aanzet**, bij Instellingen ▸ Plug-ins — de meeste mensen openen nooit een classbestand, en zonder engine heeft hij geen nut.
+
+Wilt u een eigen engine toevoegen, maak dan `decompilers.ini` in de enginemap:
+
+```ini
+[myengine]
+name   = My Decompiler
+kinds  = class
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/tools/my-decompiler.jar
+output = stdout
+```
+
+`{input}`, `{engine}` en `{outdir}` worden bij uitvoering ingevuld. Uw eigen regels gaan vóór de ingebouwde, en het hergebruiken van een ingebouwde naam (`cfr`, `vineflower`, `procyon`, `javap`) vervangt die in plaats van een tweede regel toe te voegen.
+
 ## Sneltoetsen
 
 | Actie | Sneltoets |
@@ -48,19 +88,11 @@ Voor een snel schermvullend voorbeeld dat door macOS zelf wordt verzorgd, druk j
 | Quick Look (macOS-voorbeeld) | Cmd+Y |
 | Sluit de viewer of Quick View | Esc |
 
-## De infopagina in het zijpaneel
-
-Het zijpaneel (**Weergave > Voorvertoningspaneel**, of Cmd+Shift+P) heeft een pagina **Info** die het item onder de cursor toont zoals de infozijbalk van de Finder dat doet.
-
-- De voorvertoning vult de breedte van het paneel: maakt u het paneel breder, dan groeit de voorvertoning mee. Sleep de linkerrand van het paneel om het breder of smaller te maken; de breedte wordt onthouden.
-- Het is een echte macOS-voorvertoning, geen kleine miniatuur: elk formaat dat Snelle weergave kan tonen werkt hier, en een document van meerdere pagina’s blader je binnen de voorvertoning pagina voor pagina door.
-- Daaronder staan de naam, de soort en de grootte, en vervolgens wanneer het item is aangemaakt en gewijzigd en in welke map het staat.
-
-Bij het verplaatsen van de cursor worden naam en gegevens meteen bijgewerkt; de voorvertoning volgt even later, zodat een ingedrukte pijltoets door een lange map niet voor elke regel een voorvertoning start.
-
 ## Opmerkingen
 
 - De viewer is alleen-lezen. Om een bestand te wijzigen, gebruik je in plaats daarvan de editor (zie Bestanden bewerken).
 - Zeer grote bestanden openen zonder vertraging: tekst opent een snelle, scrollbare weergave en de hex-weergave streamt bij elke grootte rechtstreeks van schijf.
 - Druk op F3 op een map om in plaats van bestandsbytes een samenvatting van de inhoud en totale grootte te zien.
 - De modus Weergegeven toont opgemaakte inhoud zoals webpagina's; de hex-modus toont de ruwe bytes naast hun tekens, wat handig is om binaire bestanden te inspecteren.
+- In de modus Weergegeven kunt u tekst selecteren en kopiëren, en Zoeken doorzoekt de weergegeven pagina. Knoppen die niet op een weergegeven pagina van toepassing zijn — Opmaken, Codering, Alles selecteren, Selecties en Ga naar — zijn grijs in plaats van zonder effect.
+- De knop Opmaken laat gestructureerde bestanden opnieuw inspringen (JSON, XML, HTML, INI, YAML en meer als u het bijbehorende opdrachtregelprogramma hebt). Hij wordt volledig beschreven onder [Bestanden bewerken](editing-files.md#formatting-a-file) en werkt hier hetzelfde.

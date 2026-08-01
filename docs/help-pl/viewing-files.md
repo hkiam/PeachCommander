@@ -35,6 +35,46 @@ Szybki podgląd pokazuje podgląd na żywo w panelu, którego *nie* używasz, dz
 
 Aby uzyskać szybki podgląd pełnoekranowy obsługiwany przez sam macOS, naciśnij Cmd+Y (Quick Look). Naciśnij Cmd+Y lub Spację ponownie, aby go zamknąć.
 
+## Strona informacji w panelu bocznym
+
+Panel boczny (**Widok > Panel podglądu** lub Cmd+Shift+P) ma stronę **Informacje**, która pokazuje element pod kursorem tak, jak robi to pasek informacji Findera.
+
+- Podgląd wypełnia szerokość panelu — po poszerzeniu panelu podgląd rośnie razem z nim. Przeciągnij lewą krawędź panelu, aby go poszerzyć lub zwęzić; szerokość jest zapamiętywana.
+- To prawdziwy podgląd macOS, a nie mała miniatura: działa każdy format, który potrafi pokazać Szybki podgląd, a dokument wielostronicowy przewijasz w podglądzie strona po stronie.
+- Poniżej znajdują się nazwa, rodzaj i rozmiar, a dalej data utworzenia i zmiany oraz folder, w którym element się znajduje.
+
+Przy przesuwaniu kursora nazwa i dane odświeżają się natychmiast; podgląd pojawia się chwilę później, aby przytrzymanie strzałki przez długi folder nie uruchamiało podglądu dla każdego mijanego wiersza.
+
+## Dekompilacja plików .class języka Java
+
+Przy włączonej wtyczce **Java Decompiler** klawisz F3 na pliku `.class` pokazuje czytelny kod zamiast danych binarnych — również dla klas wewnątrz archiwum JAR lub ZIP, do którego można wejść i czytać bez rozpakowywania.
+
+Wtyczka nie zawiera własnego dekompilatora. Steruje silnikiem, który instalujesz sam, i silnik można wymienić w każdej chwili:
+
+- **CFR** (licencja MIT) i **Vineflower** (Apache 2.0) tworzą kod źródłowy Javy. Umieść `cfr.jar` lub `vineflower.jar` w folderze silników.
+- **Procyon** (Apache 2.0) to trzeci dekompilator do kodu źródłowego.
+- **javap** nie wymaga żadnego pobierania — należy do każdego JDK i pokazuje kod bajtowy zamiast źródła Javy.
+
+Nic nie jest pobierane za ciebie: to programy innych autorów na własnych licencjach, a Peach Commander ich nie pobiera ani nie aktualizuje. Przycisk **Folder silników…** w podglądzie otwiera folder, do którego należą, i zostawia tam notatkę z nazwą każdego silnika i miejscem pobrania. Wszystkie poza javap wymagają zainstalowanej Javy.
+
+Silnik zmieniasz menu u góry podglądu; wybrany działa natychmiast, a wynik jest zachowywany, więc porównanie dwóch silników na tym samym pliku jest błyskawiczne.
+
+Wtyczka jest **wyłączona, dopóki jej nie włączysz**, w Ustawienia ▸ Wtyczki — większość osób nigdy nie otwiera pliku .class, a bez silnika i tak nic nie da.
+
+Aby dodać własny silnik, utwórz `decompilers.ini` w folderze silników:
+
+```ini
+[myengine]
+name   = My Decompiler
+kinds  = class
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/tools/my-decompiler.jar
+output = stdout
+```
+
+`{input}`, `{engine}` i `{outdir}` są podstawiane przy uruchomieniu. Twoje wpisy mają pierwszeństwo przed wbudowanymi, a użycie wbudowanej nazwy (`cfr`, `vineflower`, `procyon`, `javap`) zastępuje ją zamiast dodawać drugi wpis.
+
 ## Skróty
 
 | Akcja | Skrót |
@@ -48,19 +88,11 @@ Aby uzyskać szybki podgląd pełnoekranowy obsługiwany przez sam macOS, naciś
 | Quick Look (podgląd macOS) | Cmd+Y |
 | Zamknij przeglądarkę lub Szybki podgląd | Esc |
 
-## Strona informacji w panelu bocznym
-
-Panel boczny (**Widok > Panel podglądu** lub Cmd+Shift+P) ma stronę **Informacje**, która pokazuje element pod kursorem tak, jak robi to pasek informacji Findera.
-
-- Podgląd wypełnia szerokość panelu — po poszerzeniu panelu podgląd rośnie razem z nim. Przeciągnij lewą krawędź panelu, aby go poszerzyć lub zwęzić; szerokość jest zapamiętywana.
-- To prawdziwy podgląd macOS, a nie mała miniatura: działa każdy format, który potrafi pokazać Szybki podgląd, a dokument wielostronicowy przewijasz w podglądzie strona po stronie.
-- Poniżej znajdują się nazwa, rodzaj i rozmiar, a dalej data utworzenia i zmiany oraz folder, w którym element się znajduje.
-
-Przy przesuwaniu kursora nazwa i dane odświeżają się natychmiast; podgląd pojawia się chwilę później, aby przytrzymanie strzałki przez długi folder nie uruchamiało podglądu dla każdego mijanego wiersza.
-
 ## Uwagi
 
 - Przeglądarka jest tylko do odczytu. Aby zmienić plik, użyj zamiast tego edytora (zobacz Edycja plików).
 - Bardzo duże pliki otwierają się bez opóźnienia: tekst otwiera szybki, przewijalny widok, a widok szesnastkowy jest strumieniowany prosto z dysku przy dowolnym rozmiarze.
 - Naciśnij F3 na folderze, aby zobaczyć podsumowanie jego zawartości i całkowity rozmiar zamiast bajtów pliku.
 - Tryb Renderowany wyświetla sformatowaną zawartość, taką jak strony internetowe; tryb szesnastkowy pokazuje surowe bajty obok ich znaków, co jest przydatne do badania plików binarnych.
+- W trybie Renderowanym można zaznaczać i kopiować tekst, a Znajdź przeszukuje wyrenderowaną stronę. Przyciski, których nie da się zastosować do wyrenderowanej strony — Formatuj, Kodowanie, Zaznacz wszystko, Zaznaczenia i Idź do — są wyszarzone, zamiast pozostawać bez efektu.
+- Przycisk Formatuj ponownie wcina pliki strukturalne (JSON, XML, HTML, INI, YAML i więcej, jeśli masz odpowiednie narzędzie wiersza poleceń). Jest w pełni opisany w [Edycja plików](editing-files.md#formatting-a-file) i działa tu tak samo.

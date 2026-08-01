@@ -35,6 +35,46 @@ L'Aperçu rapide affiche un aperçu en direct dans le panneau que vous n'utilise
 
 Pour un aperçu plein écran rapide géré par macOS lui-même, appuyez sur Cmd+Y (Coup d'œil). Appuyez de nouveau sur Cmd+Y ou Espace pour le fermer.
 
+## La page Infos du panneau latéral
+
+Le panneau latéral (**Présentation > Panneau d’aperçu**, ou Cmd+Maj+P) comporte une page **Infos** qui présente l’élément sous le curseur comme le fait la barre latérale d’informations du Finder.
+
+- L’aperçu occupe toute la largeur du panneau : élargissez le panneau et l’aperçu grandit avec lui. Faites glisser le bord gauche du panneau pour l’élargir ou le rétrécir ; la largeur est mémorisée.
+- C’est un véritable aperçu macOS, pas une petite vignette : tous les formats que Coup d’œil sait afficher fonctionnent ici, et un document de plusieurs pages se parcourt page par page dans l’aperçu.
+- En dessous figurent le nom, le type et la taille, puis les dates de création et de modification et le dossier où se trouve l’élément.
+
+Lorsque le curseur se déplace, le nom et les informations se mettent à jour immédiatement ; l’aperçu suit un instant plus tard, afin qu’une flèche maintenue à travers un long dossier ne lance pas un aperçu pour chaque ligne traversée.
+
+## Décompiler des fichiers .class Java
+
+Avec le module **Java Decompiler** activé, F3 sur un fichier `.class` affiche du code lisible au lieu de données binaires — y compris pour les classes situées dans un JAR ou un ZIP, dans lequel vous pouvez entrer et lire sans le décompresser.
+
+Le module ne contient aucun décompilateur. Il pilote un moteur que vous installez, et vous pouvez en changer à tout moment :
+
+- **CFR** (licence MIT) et **Vineflower** (Apache 2.0) produisent du source Java. Placez `cfr.jar` ou `vineflower.jar` dans le dossier des moteurs.
+- **Procyon** (Apache 2.0) est un troisième décompilateur vers le source.
+- **javap** ne demande aucun téléchargement : il accompagne tout JDK et montre du bytecode plutôt que du source Java.
+
+Rien n’est téléchargé à votre place : ce sont des programmes tiers sous leurs propres licences, et Peach Commander ne les récupère ni ne les met à jour. Le bouton **Dossier des moteurs…** de la visionneuse ouvre le dossier auquel ils sont destinés et y dépose une note nommant chaque moteur et son adresse de téléchargement. Tous sauf javap exigent Java.
+
+Changez de moteur avec le menu en haut de la visionneuse ; celui que vous choisissez est utilisé immédiatement et le résultat est conservé, si bien que comparer deux moteurs sur le même fichier est instantané.
+
+Le module est **désactivé tant que vous ne l’activez pas**, dans Réglages ▸ Modules — la plupart des gens n’ouvrent jamais de fichier .class, et sans moteur il ne sert à rien.
+
+Pour ajouter votre propre moteur, créez `decompilers.ini` dans le dossier des moteurs :
+
+```ini
+[myengine]
+name   = My Decompiler
+kinds  = class
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/tools/my-decompiler.jar
+output = stdout
+```
+
+`{input}`, `{engine}` et `{outdir}` sont remplacés à l’exécution. Vos entrées ont priorité sur celles fournies, et réutiliser un nom intégré (`cfr`, `vineflower`, `procyon`, `javap`) le remplace au lieu d’ajouter une seconde entrée.
+
 ## Raccourcis
 
 | Action | Raccourci |
@@ -48,19 +88,11 @@ Pour un aperçu plein écran rapide géré par macOS lui-même, appuyez sur Cmd+
 | Coup d'œil (aperçu macOS) | Cmd+Y |
 | Fermer le lecteur ou l'Aperçu rapide | Échap |
 
-## La page Infos du panneau latéral
-
-Le panneau latéral (**Présentation > Panneau d’aperçu**, ou Cmd+Maj+P) comporte une page **Infos** qui présente l’élément sous le curseur comme le fait la barre latérale d’informations du Finder.
-
-- L’aperçu occupe toute la largeur du panneau : élargissez le panneau et l’aperçu grandit avec lui. Faites glisser le bord gauche du panneau pour l’élargir ou le rétrécir ; la largeur est mémorisée.
-- C’est un véritable aperçu macOS, pas une petite vignette : tous les formats que Coup d’œil sait afficher fonctionnent ici, et un document de plusieurs pages se parcourt page par page dans l’aperçu.
-- En dessous figurent le nom, le type et la taille, puis les dates de création et de modification et le dossier où se trouve l’élément.
-
-Lorsque le curseur se déplace, le nom et les informations se mettent à jour immédiatement ; l’aperçu suit un instant plus tard, afin qu’une flèche maintenue à travers un long dossier ne lance pas un aperçu pour chaque ligne traversée.
-
 ## Remarques
 
 - Le lecteur est en lecture seule. Pour modifier un fichier, utilisez plutôt l'éditeur (voir Modifier des fichiers).
 - Les très gros fichiers s'ouvrent sans délai : le texte ouvre une vue rapide et défilable, et la vue hexa est diffusée directement depuis le disque quelle que soit la taille.
 - Appuyez sur F3 sur un dossier pour voir un résumé de son contenu et sa taille totale au lieu des octets d'un fichier.
 - Le mode Rendu affiche du contenu formaté tel que des pages web ; le mode hexa montre les octets bruts côte à côte avec leurs caractères, ce qui est pratique pour inspecter des fichiers binaires.
+- En mode Rendu, vous pouvez sélectionner et copier du texte, et Rechercher explore la page rendue. Les boutons inapplicables à une page rendue — Formater, Encodage, Tout sélectionner, Sélections et Aller à — sont grisés plutôt que sans effet.
+- Le bouton Formater réindente les fichiers structurés (JSON, XML, HTML, INI, YAML, et d’autres si l’outil en ligne de commande correspondant est installé). Il est décrit en détail sous [Modifier des fichiers](editing-files.md#formatting-a-file) et fonctionne ici de la même façon.
