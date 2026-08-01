@@ -65,6 +65,8 @@ Wyniki są zapisywane w pamięci podręcznej na dysku, więc ponowne otwarcie ju
 
 Włącz **Porównaj**, aby otworzyć drugi panel z własnym menu silnika. Dwa dekompilatory zawodzą w różnych miejscach, więc zobaczenie ich obok siebie jest często szybsze niż rozstrzyganie, któremu zaufać; wybór `javap` z jednej strony stawia kod bajtowy obok źródła. Oba panele dzielą pamięć podręczną, więc przełączanie między już uruchomionymi silnikami jest natychmiastowe.
 
+F3 na całym pliku `.jar`, `.apk` lub `.dex` dekompiluje go w całości i pokazuje drzewo pakietów obok źródła. Pole wyszukiwania nad drzewem przeszukuje każdą klasę — dokładnie to pytanie, na które jedna klasa odpowiedzieć nie może: gdzie napis, wywołanie albo stała rzeczywiście występuje, gdy jeszcze nie wiadomo, w której klasie. Trafienia zawężają drzewo, a pierwsze otwiera się na swojej linii. Enter nadal otwiera JAR jako archiwum — oba czasowniki pozostają rozdzielone.
+
 Android jest również objęty: F3 na pliku `.dex` używa **jadx** (Apache 2.0, `brew install jadx`), który zamienia kod bajtowy Dalvik z powrotem na Javę. Wystarczył jeden opis silnika — ten sam mechanizm, inny format.
 
 Wtyczka jest **wyłączona, dopóki jej nie włączysz**, w Ustawienia ▸ Wtyczki — większość osób nigdy nie otwiera pliku .class, a bez silnika i tak nic nie da.

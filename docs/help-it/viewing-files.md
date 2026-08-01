@@ -65,6 +65,8 @@ I risultati sono messi in cache su disco, così riaprire un file già visto è i
 
 Attivate **Confronta** per aprire un secondo pannello con il proprio menu del motore. Due decompilatori sbagliano in punti diversi, quindi vederli affiancati è spesso più rapido che decidere di quale fidarsi; scegliendo `javap` da un lato, il bytecode sta accanto al sorgente. I due pannelli condividono la cache, così passare tra motori già eseguiti è immediato.
 
+F3 su un `.jar`, `.apk` o `.dex` intero lo decompila tutto in una volta e mostra un albero di package accanto al sorgente. Il campo di ricerca sopra l’albero cerca in ogni classe — proprio la domanda a cui una singola classe non può rispondere: dove una stringa, una chiamata o una costante compare davvero, quando non si sa ancora in quale classe. Le corrispondenze restringono l’albero e la prima si apre alla sua riga. Con Invio il JAR si apre ancora come archivio: i due verbi restano distinti.
+
 Anche Android è coperto: F3 su un file `.dex` usa **jadx** (Apache 2.0, `brew install jadx`), che riporta il bytecode Dalvik a Java. È bastata una descrizione di motore — stesso meccanismo, formato diverso.
 
 Il modulo è **spento finché non lo accendete**, in Impostazioni ▸ Moduli: quasi nessuno apre un file .class, e senza motore non serve.

@@ -65,6 +65,8 @@ Výsledky se ukládají do diskové cache, takže opětovné otevření již zob
 
 Zapněte **Porovnat**, chcete-li otevřít druhý panel s vlastní nabídkou enginu. Dva dekompilátory selhávají na jiných místech, vidět je vedle sebe je proto často rychlejší než rozhodovat, kterému věřit; zvolíte-li na jedné straně `javap`, stojí bajtkód vedle zdrojového kódu. Oba panely mají společnou cache, přepínání mezi již spuštěnými enginy je tedy okamžité.
 
+F3 na celém `.jar`, `.apk` nebo `.dex` dekompiluje vše najednou a vedle zdrojového kódu zobrazí strom balíčků. Vyhledávací pole nad stromem prohledá každou třídu — právě tu otázku, na kterou jedna třída odpovědět nemůže: kde se řetězec, volání nebo konstanta skutečně vyskytuje, když ještě nevíte, ve které třídě. Nálezy strom zúží a první se otevře na svém řádku. Enter otevírá JAR stále jako archiv — obě činnosti zůstávají oddělené.
+
 Pokryt je i Android: F3 na souboru `.dex` použije **jadx** (Apache 2.0, `brew install jadx`), který převádí bajtkód Dalvik zpět na Javu. Stačil jediný popis enginu — stejný mechanismus, jiný formát.
 
 Modul je **vypnutý, dokud jej nezapnete**, v Nastavení ▸ Zásuvné moduly — většina lidí soubor .class nikdy neotevře a bez enginu stejně nic nezmůže.

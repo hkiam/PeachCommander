@@ -65,6 +65,8 @@ Results are cached on disk, so reopening a file you looked at before is instant;
 
 Turn on **Compare** to open a second panel with its own engine menu. Two decompilers fail in different places, so seeing them side by side is often quicker than deciding which to trust; picking `javap` on one side puts the bytecode next to the source. Both panels share the cache, so switching between engines you have already run is instant.
 
+F3 on a whole `.jar`, `.apk` or `.dex` decompiles all of it at once and shows a package tree beside the source. The search field above the tree searches every class, which is the question a single class cannot answer: where a string, a call or a constant actually occurs, when you do not yet know which class holds it. Matches narrow the tree and the first one opens at its line. Opening a JAR with Enter still browses it as an archive — the two verbs stay separate.
+
 Android is covered too: F3 on a `.dex` file uses **jadx** (Apache 2.0, `brew install jadx`), which turns Dalvik bytecode back into Java. Adding it took one engine description — the same mechanism, a different format.
 
 The plugin is **off until you turn it on**, in Settings ▸ Plugins — most people never open a class file, and it needs an engine to be useful.

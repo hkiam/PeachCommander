@@ -65,6 +65,8 @@ Ergebnisse werden auf der Platte zwischengespeichert, das erneute Öffnen einer 
 
 Schalten Sie **Vergleichen** ein, um ein zweites Panel mit eigenem Engine-Menü zu öffnen. Zwei Decompiler scheitern an unterschiedlichen Stellen, sie nebeneinander zu sehen ist deshalb oft schneller als die Entscheidung, welchem man traut; wählt man auf einer Seite `javap`, steht der Bytecode neben dem Quelltext. Beide Panels teilen den Cache, das Umschalten zwischen bereits gelaufenen Engines ist also sofortig.
 
+F3 auf eine ganze `.jar`, `.apk` oder `.dex` dekompiliert alles auf einmal und zeigt einen Paketbaum neben dem Quelltext. Das Suchfeld über dem Baum durchsucht jede Klasse — genau die Frage, die eine einzelne Klasse nicht beantworten kann: wo eine Zeichenkette, ein Aufruf oder eine Konstante tatsächlich vorkommt, wenn man die Klasse noch nicht kennt. Treffer verengen den Baum, der erste öffnet sich an seiner Zeile. Mit Enter öffnet eine JAR weiterhin als Archiv — die beiden Verben bleiben getrennt.
+
 Android ist ebenfalls abgedeckt: F3 auf einer `.dex`-Datei benutzt **jadx** (Apache 2.0, `brew install jadx`), das Dalvik-Bytecode zurück in Java verwandelt. Dafür genügte eine Engine-Beschreibung — derselbe Mechanismus, ein anderes Format.
 
 Das Plugin ist **aus, bis Sie es einschalten**, unter Einstellungen ▸ Plugins — die meisten öffnen nie eine Klassendatei, und ohne Engine nützt es nichts.

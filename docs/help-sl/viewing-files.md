@@ -65,6 +65,8 @@ Rezultati se shranjujejo v predpomnilnik na disku, zato je ponovno odpiranje že
 
 Vklopite **Primerjaj**, da odprete drugi pladenj z lastnim menijem pogona. Dva dekompilatorja odpovesta na različnih mestih, zato je videti ju drug ob drugem pogosto hitreje kot odločati, katerem zaupati; če na eni strani izberete `javap`, stoji bajtna koda ob izvorni. Oba pladnja si delita predpomnilnik, zato je preklapljanje med že zaganjanimi pogoni hipno.
 
+F3 na celotni `.jar`, `.apk` ali `.dex` dekompilira vse naenkrat in ob izvorni kodi pokaže drevo paketov. Iskalno polje nad drevesom preišče vsak razred — prav tisto vprašanje, na katero en razred ne more odgovoriti: kje se niz, klic ali konstanta res pojavi, ko še ne veste, v katerem razredu. Zadetki zožijo drevo, prvi pa se odpre pri svoji vrstici. Enter še vedno odpre JAR kot arhiv — dejanji ostaneta ločeni.
+
 Pokrit je tudi Android: F3 na datoteki `.dex` uporabi **jadx** (Apache 2.0, `brew install jadx`), ki bajtno kodo Dalvik pretvori nazaj v Javo. Zadostoval je en opis pogona — isti mehanizem, drug zapis.
 
 Vtičnik je **izklopljen, dokler ga ne vklopite**, v Nastavitve ▸ Vtičniki — večina ljudi datoteke .class nikoli ne odpre, brez pogona pa tako ali tako ne koristi.

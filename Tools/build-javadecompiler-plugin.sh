@@ -18,6 +18,7 @@ DEFAULT_DIR="$HOME/Library/Application Support/PeachCommander/plugins"
 OUT_DIR="${1:-$DEFAULT_DIR}"
 BUNDLE="$OUT_DIR/JavaDecompiler.plxplugin"
 SRC="Plugins/JavaDecompiler/java_decompiler.swift"
+SRC_ARCHIVE="Plugins/JavaDecompiler/archive_view.swift"
 PLIST="Plugins/JavaDecompiler/Info.plist"
 
 # Universal (arm64 + x86_64) plugin builds — see Tools/lib/pc-universal.sh. Required now
@@ -35,6 +36,7 @@ pc_swiftc -emit-library -O \
        -framework AppKit \
        -o "$BUNDLE/Contents/MacOS/JavaDecompiler" \
        "$SRC" \
+       "$SRC_ARCHIVE" \
        "$ROOT/Plugins/SDK/PluginLoc.swift" \
        "$ROOT/Plugins/SDK/PluginDecompiler.swift" \
        "$ROOT/Plugins/SDK/PluginSyntax.swift"

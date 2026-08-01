@@ -65,6 +65,8 @@ Los resultados se guardan en caché en el disco, así que volver a abrir un arch
 
 Active **Comparar** para abrir un segundo panel con su propio menú de motor. Dos descompiladores fallan en lugares distintos, así que verlos uno al lado del otro suele ser más rápido que decidir en cuál confiar; eligiendo `javap` en un lado, el bytecode queda junto al código fuente. Ambos paneles comparten la caché, por lo que alternar entre motores ya ejecutados es inmediato.
 
+F3 sobre un `.jar`, `.apk` o `.dex` completo lo descompila de una vez y muestra un árbol de paquetes junto al código. El campo de búsqueda sobre el árbol recorre todas las clases: justo la pregunta que una sola clase no puede responder, dónde aparece realmente una cadena, una llamada o una constante cuando aún no se sabe en qué clase está. Las coincidencias reducen el árbol y la primera se abre en su línea. Con Intro el JAR sigue abriéndose como archivo; los dos verbos siguen separados.
+
 Android también está cubierto: F3 sobre un archivo `.dex` usa **jadx** (Apache 2.0, `brew install jadx`), que convierte el bytecode de Dalvik de vuelta a Java. Bastó con una descripción de motor: el mismo mecanismo, otro formato.
 
 El módulo está **desactivado hasta que usted lo active**, en Ajustes ▸ Módulos: casi nadie abre un archivo .class, y sin un motor no sirve de nada.

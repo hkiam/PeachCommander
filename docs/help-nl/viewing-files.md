@@ -65,6 +65,8 @@ Resultaten worden op schijf gecachet, zodat een eerder bekeken bestand meteen op
 
 Zet **Vergelijken** aan om een tweede paneel met zijn eigen enginemenu te openen. Twee decompilers falen op verschillende plekken, dus ze naast elkaar zien is vaak sneller dan beslissen welke je vertrouwt; kies je aan één kant `javap`, dan staat de bytecode naast de broncode. Beide panelen delen de cache, dus wisselen tussen al uitgevoerde engines gaat direct.
 
+F3 op een hele `.jar`, `.apk` of `.dex` decompileert alles in één keer en toont een pakketboom naast de broncode. Het zoekveld boven de boom zoekt in elke klasse — precies de vraag die één klasse niet kan beantwoorden: waar een tekenreeks, een aanroep of een constante werkelijk voorkomt, als je de klasse nog niet kent. Treffers versmallen de boom en de eerste opent op zijn regel. Met Enter opent een JAR nog steeds als archief; de twee werkwoorden blijven gescheiden.
+
 Android hoort er ook bij: F3 op een `.dex`-bestand gebruikt **jadx** (Apache 2.0, `brew install jadx`), dat Dalvik-bytecode terugbrengt naar Java. Daarvoor was één enginebeschrijving genoeg — hetzelfde mechanisme, ander formaat.
 
 De plug-in staat **uit tot u hem aanzet**, bij Instellingen ▸ Plug-ins — de meeste mensen openen nooit een classbestand, en zonder engine heeft hij geen nut.
