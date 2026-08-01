@@ -17,6 +17,7 @@ Et tema udskifter hele panelpaletten i ét trin.
 3. Vælg i menuen **Tema**:
    - **System (standard)** — intet tema. Panelerne følger indstillingen Udseende nedenfor, præcis som hidtil. Dette er standardvalget.
    - **Lyst** / **Mørkt** — fastlås den indbyggede lyse eller mørke palet uanset hvad macOS gør.
+   - **Midnat** — et mørkt tema, der ikke bare er gråt: dybt indigofarvede paneler med blødt blågråt tekst, hvid markørlinje og ravgul til markerede filer.
    - **Norton Commander** — det klassiske blå-cyan udseende fra den oprindelige DOS-filhåndtering, i ægte CGA-farver: blå paneler, cyan tekst, lys cyan markørlinje og gul til markerede filer.
 
 Et tema har sit eget lyse/mørke grundlag, så ark, rullepaneler og standardkontroller passer til det — derfor er menuen **Udseende** nedtonet, så længe et tema er valgt. Egne panelfarver (nedenfor) har stadig forrang for temaet.
@@ -46,7 +47,7 @@ Et minimalt tema fylder tre linjer:
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]

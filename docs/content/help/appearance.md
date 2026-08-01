@@ -17,6 +17,7 @@ A theme replaces the whole panel palette in one step.
 3. Choose from the **Theme** menu:
    - **System (default)** — no theme. The panels follow the Appearance setting below, exactly as they always have. This is the default.
    - **Light** / **Dark** — pin the built-in light or dark palette regardless of what macOS is doing.
+   - **Midnight** — a dark theme that is not just grey: deep indigo panels with soft blue-grey text, a white cursor row and amber for marked files.
    - **Norton Commander** — the classic blue-and-cyan look of the original DOS file manager, in its authentic CGA colors: blue panels, cyan text, a light-cyan cursor row and yellow for marked files.
 
 A theme brings its own light/dark base so that sheets, scrollers, and standard controls match it — which is why the **Appearance** menu is greyed out while a theme is selected. Custom panel colors (below) still win over the theme, so you can keep one favorite color on top of it.
@@ -46,7 +47,7 @@ A minimal theme is three lines:
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]

@@ -17,6 +17,7 @@ O temă înlocuiește întreaga paletă a panourilor într-un singur pas.
 3. Alegeți din meniul **Temă**:
    - **Sistem (implicit)** — fără temă. Panourile urmează setarea Aspect de mai jos, exact ca până acum. Aceasta este valoarea implicită.
    - **Luminoasă** / **Întunecată** — fixează paleta luminoasă sau întunecată încorporată, indiferent de ce face macOS.
+   - **Miezul nopții** — o temă întunecată care nu este doar gri: panouri indigo intens cu text gri-albăstrui blând, rândul cursorului alb și chihlimbariu pentru fișierele marcate.
    - **Norton Commander** — aspectul clasic albastru-cyan al managerului de fișiere DOS original, în culorile CGA autentice: panouri albastre, text cyan, rândul cursorului cyan deschis și galben pentru fișierele marcate.
 
 O temă aduce propria bază deschisă/închisă, astfel încât foile, barele de derulare și controalele standard să se potrivească cu ea — de aceea meniul **Aspect** este estompat cât timp o temă este selectată. Culorile personalizate ale panourilor (mai jos) au în continuare prioritate față de temă.
@@ -46,7 +47,7 @@ O temă minimă are trei linii:
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]

@@ -17,6 +17,7 @@ Un tema sustituye toda la paleta de los paneles de una sola vez.
 3. Elija en el menú **Tema**:
    - **Sistema (por omisión)** — sin tema. Los paneles siguen el ajuste Aspecto de más abajo, exactamente como siempre. Es el valor por omisión.
    - **Claro** / **Oscuro** — fijar la paleta clara u oscura integrada, independientemente de lo que haga macOS.
+   - **Medianoche** — un tema oscuro que no es solo gris: paneles de índigo profundo con texto azul grisáceo suave, línea del cursor blanca y ámbar para los archivos marcados.
    - **Norton Commander** — el aspecto azul y cian del gestor de archivos original de DOS, con sus auténticos colores CGA: paneles azules, texto cian, línea del cursor en cian claro y amarillo para los archivos marcados.
 
 Un tema aporta su propia base clara/oscura, de modo que las hojas, las barras de desplazamiento y los controles estándar concuerden con él; por eso el menú **Aspecto** aparece atenuado mientras hay un tema seleccionado. Los colores personalizados de los paneles (más abajo) siguen teniendo prioridad sobre el tema.
@@ -46,7 +47,7 @@ Un tema mínimo son tres líneas:
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]

@@ -181,7 +181,7 @@ And it is not a special case in the code. Norton is one entry in a theme system 
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]
@@ -189,8 +189,13 @@ ListBackground = #101020
 ListText       = #C8C8E0
 ```
 
-![Peach Commander in a user-written theme with deep indigo panels](screenshots/theme-custom.png)
+![Peach Commander in a user-written theme with dark green panels](screenshots/theme-custom.png)
 *A theme from a file — that snippet, plus a dozen more lines, and nothing recompiled.*
+
+Four themes ship in the box. Alongside Light, Dark and Norton Commander there is **Midnight**, for when "dark" should mean something other than grey:
+
+![Peach Commander in the Midnight palette](screenshots/theme-midnight.png)
+*Midnight — deep indigo panels, soft blue-grey text, amber for marked files.*
 
 ---
 

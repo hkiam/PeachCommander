@@ -17,6 +17,7 @@ Motív nahradí celú paletu panelov jedným krokom.
 3. V ponuke **Motív** vyberte:
    - **Systém (predvolené)** — žiadny motív. Panely sa riadia nastavením Vzhľad nižšie, presne ako doteraz. Toto je predvolená voľba.
    - **Svetlý** / **Tmavý** — pevne nastaví vstavanú svetlú alebo tmavú paletu bez ohľadu na to, čo robí macOS.
+   - **Polnoc** — tmavý motív, ktorý nie je len sivý: hlboko indigové panely s jemne modrosivým textom, bielym riadkom kurzora a jantárovou pre označené súbory.
    - **Norton Commander** — klasický modro-azúrový vzhľad pôvodného DOSového správcu súborov v pravých farbách CGA: modré panely, azúrový text, svetloazúrový riadok kurzora a žltá pre označené súbory.
 
 Motív prináša vlastný svetlý/tmavý základ, aby k nemu ladili hárky, posuvníky aj štandardné ovládacie prvky — preto je ponuka **Vzhľad** zosivená, kým je motív zvolený. Vlastné farby panelov (nižšie) majú pred motívom stále prednosť.
@@ -46,7 +47,7 @@ Minimálny motív má tri riadky:
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]

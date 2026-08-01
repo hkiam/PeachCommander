@@ -17,6 +17,7 @@ Un tema sostituisce l’intera tavolozza dei pannelli in un solo passaggio.
 3. Scegliete dal menu **Tema**:
    - **Sistema (predefinito)** — nessun tema. I pannelli seguono l’impostazione Aspetto qui sotto, esattamente come hanno sempre fatto. È l’impostazione predefinita.
    - **Chiaro** / **Scuro** — fissa la tavolozza chiara o scura integrata, indipendentemente da ciò che fa macOS.
+   - **Mezzanotte** — un tema scuro che non è solo grigio: pannelli indaco profondo con testo grigio-azzurro tenue, riga del cursore bianca e ambra per i file marcati.
    - **Norton Commander** — l’aspetto blu e ciano del gestore di file DOS originale, nei suoi autentici colori CGA: pannelli blu, testo ciano, riga del cursore ciano chiaro e giallo per i file marcati.
 
 Un tema porta con sé la propria base chiara/scura, così che pannelli a comparsa, barre di scorrimento e controlli standard vi si accordino: per questo il menu **Aspetto** è disattivato finché è selezionato un tema. I colori personalizzati dei pannelli (qui sotto) hanno comunque la precedenza sul tema.
@@ -46,7 +47,7 @@ Un tema minimo sono tre righe:
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]

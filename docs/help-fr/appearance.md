@@ -17,6 +17,7 @@ Un thème remplace toute la palette des panneaux en une seule fois.
 3. Dans le menu **Thème**, choisissez :
    - **Système (par défaut)** — aucun thème. Les panneaux suivent le réglage Apparence ci-dessous, exactement comme auparavant. C’est le réglage par défaut.
    - **Clair** / **Sombre** — fixer la palette claire ou sombre intégrée, quel que soit le réglage de macOS.
+   - **Minuit** — un thème sombre qui n’est pas seulement gris : des panneaux indigo profond, un texte gris-bleu doux, une ligne de curseur blanche et de l’ambre pour les fichiers marqués.
    - **Norton Commander** — l’aspect bleu et cyan du gestionnaire de fichiers DOS d’origine, dans ses véritables couleurs CGA : panneaux bleus, texte cyan, ligne du curseur cyan clair et jaune pour les fichiers marqués.
 
 Un thème apporte sa propre base claire/sombre, afin que les feuilles, les barres de défilement et les contrôles standard s’y accordent — c’est pourquoi le menu **Apparence** est grisé tant qu’un thème est sélectionné. Les couleurs personnalisées des panneaux (ci-dessous) restent prioritaires sur le thème.
@@ -46,7 +47,7 @@ Un thème minimal tient en trois lignes :
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]

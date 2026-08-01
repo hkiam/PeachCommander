@@ -17,6 +17,7 @@ Motyw zastępuje całą paletę paneli w jednym kroku.
 3. Wybierz z menu **Motyw**:
    - **System (domyślnie)** — bez motywu. Panele stosują się do ustawienia Wygląd poniżej, dokładnie tak jak dotychczas. To ustawienie domyślne.
    - **Jasny** / **Ciemny** — ustala wbudowaną jasną lub ciemną paletę niezależnie od tego, co robi macOS.
+   - **Północ** — ciemny motyw, który nie jest tylko szary: głęboko indygowe panele z miękkim niebieskoszarym tekstem, białym wierszem kursora i bursztynem dla zaznaczonych plików.
    - **Norton Commander** — klasyczny niebiesko-turkusowy wygląd pierwotnego menedżera plików DOS, w autentycznych barwach CGA: niebieskie panele, turkusowy tekst, jasnoturkusowy wiersz kursora i żółty dla zaznaczonych plików.
 
 Motyw wnosi własną jasną/ciemną podstawę, dzięki czemu arkusze, paski przewijania i standardowe kontrolki do niego pasują — dlatego menu **Wygląd** jest wyszarzone, gdy wybrany jest motyw. Własne kolory paneli (poniżej) nadal mają pierwszeństwo przed motywem.
@@ -46,7 +47,7 @@ Minimalny motyw to trzy wiersze:
 
 ```ini
 [Theme]
-Name = Midnight
+Name = My Midnight
 Base = dark
 
 [Colors]

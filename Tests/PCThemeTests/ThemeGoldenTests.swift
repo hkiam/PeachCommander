@@ -326,6 +326,37 @@ final class ThemeGoldenTests: XCTestCase {
         return abs(lum(text) - composited)
     }
 
+    // MARK: - Midnight
+
+    /// Pinned like the others, and — the part worth testing — proof that it really is `dark` plus
+    /// overrides. If someone spelled it out in full later, the inherited colours would silently
+    /// stop tracking `dark` and the two palettes would drift apart.
+    func testMidnightOverridesWhatItNamesAndInheritsTheRest() {
+        guard let m = Theme.palette(id: "midnight") else { return XCTFail("midnight palette missing") }
+        XCTAssertTrue(m.isDark)
+        XCTAssertEqual(rgba(m.colors.listBackground), "101020@1.000")
+        XCTAssertEqual(rgba(m.colors.listText), "c8c8e0@1.000")
+        XCTAssertEqual(rgba(m.colors.selectedText), "ffd060@1.000")
+        XCTAssertEqual(m.colors.cursorRowText.map(rgba), "ffffff@1.000")
+
+        // Not named in the palette, so these must still be exactly the dark defaults.
+        for (name, mine, inherited) in [
+            ("zebraRow", m.colors.zebraRow, Theme.dark.zebraRow),
+            ("driveBarHighlight", m.colors.driveBarHighlight, Theme.dark.driveBarHighlight),
+            ("driveBarText", m.colors.driveBarText, Theme.dark.driveBarText),
+            ("columnSeparator", m.colors.columnSeparator, Theme.dark.columnSeparator),
+            ("headerSeparator", m.colors.headerSeparator, Theme.dark.headerSeparator),
+        ] {
+            XCTAssertEqual(mine, inherited, "midnight.\(name) should be inherited from dark, not redefined")
+        }
+    }
+
+    /// The palette is shipped, so its id is reserved and a user file called midnight.ini can no
+    /// longer shadow it. Asserted here because that is a promise to anyone who already had one.
+    func testMidnightIsReserved() {
+        XCTAssertTrue(Theme.reservedPaletteIds.contains("midnight"))
+    }
+
     // MARK: - Custom colours on top
 
     /// The four existing user overrides must keep winning over a palette — that is what the
