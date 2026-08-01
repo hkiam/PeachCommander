@@ -65,6 +65,8 @@ Az eredmények lemezen gyorsítótárba kerülnek, így egy korábban megnyitott
 
 Kapcsolja be az **Összehasonlítás**t, hogy megnyíljon egy második panel a saját motormenüjével. Két visszafejtő más helyeken hibázik, ezért egymás mellett látni őket gyakran gyorsabb, mint eldönteni, melyikben bízzon; ha az egyik oldalon a `javap`-ot választja, a bájtkód a forrás mellé kerül. A két panel közös gyorsítótárat használ, így a már lefuttatott motorok közti váltás azonnali.
 
+Az F3 egy egész `.jar`, `.apk` vagy `.dex` fájlon mindent egyszerre fejt vissza, és a forrás mellett csomagfát jelenít meg. A fa fölötti keresőmező minden osztályban keres — épp az a kérdés, amit egyetlen osztály nem tud megválaszolni: hol fordul elő valóban egy szöveg, egy hívás vagy egy konstans, amikor még nem tudja, melyik osztályban. A találatok szűkítik a fát, az első pedig a saját során nyílik meg. Az Enter továbbra is archívumként nyitja a JAR-t — a két művelet elkülönül.
+
 Az Android is szerepel: egy `.dex` fájlon az F3 a **jadx**-ot használja (Apache 2.0, `brew install jadx`), amely a Dalvik bájtkódot Javára fordítja vissza. Ehhez egyetlen motorleírás kellett — ugyanaz a mechanizmus, más formátum.
 
 A bővítmény **ki van kapcsolva, amíg be nem kapcsolja**, a Beállítások ▸ Bővítmények oldalon — a legtöbben soha nem nyitnak meg .class fájlt, motor nélkül pedig úgysem használható.

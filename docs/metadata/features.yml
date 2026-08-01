@@ -716,6 +716,20 @@ features:
       requests with one mechanism: comparing engines where they disagree, and putting javap bytecode
       next to the source. The panels swap between one and two constraint sets rather than nesting a
       split view, measured to add no Auto Layout conflicts of its own.
+      F3 on a whole .jar, .apk or .dex decompiles the archive in one engine run and shows a package
+      tree beside the source, with a search field that scans every class — the question a single
+      class cannot answer. This needed no new machinery in the runner: `output = directory` and
+      {outdir} already existed, so an archive mode is one more field on the engine descriptor
+      (`archive_args`, `archive_timeout`, also settable in decompilers.ini and inherited by
+      `extends`). Engines without it are offered for single classes only, because reusing the
+      single-file arguments on an archive would run a tool with flags its author never meant.
+      Results are cached as a directory and read one class at a time, so a 40 MB result costs one
+      file read per click; a `.pc-complete` marker is what makes reuse safe, since a directory left
+      by a timeout would otherwise be served as a complete archive with classes silently missing.
+      .war, .ear and .aar were claimed at first and withdrawn: no described engine can decompile
+      one, and a test now holds the claimed kinds to the engines that exist. Enter still browses a
+      JAR as an archive through the built-in ZIP support — F3 and Enter were always separate verbs,
+      which is why both fit without a conflict.
 
   # ───────────────────────── Settings ─────────────────────────
   - id: settings

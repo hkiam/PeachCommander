@@ -65,6 +65,8 @@ Resultat cachas på disk, så att öppna en fil du redan sett igen går direkt; 
 
 Slå på **Jämför** för att öppna en andra ruta med egen motormeny. Två dekompilatorer misslyckas på olika ställen, så att se dem sida vid sida går ofta snabbare än att avgöra vilken man ska lita på; väljer du `javap` på ena sidan står bytekoden intill källkoden. Båda rutorna delar cachen, så att växla mellan motorer du redan kört går direkt.
 
+F3 på en hel `.jar`, `.apk` eller `.dex` dekompilerar allt på en gång och visar ett pakettträd intill källkoden. Sökfältet över trädet söker i varje klass — just den fråga en enskild klass inte kan svara på: var en sträng, ett anrop eller en konstant faktiskt förekommer, när man ännu inte vet i vilken klass. Träffar smalnar av trädet och den första öppnas på sin rad. Med Enter öppnas JAR-filen fortfarande som ett arkiv; de två verben hålls åtskilda.
+
 Android täcks också: F3 på en `.dex`-fil använder **jadx** (Apache 2.0, `brew install jadx`), som gör Dalvik-bytekod till Java igen. Det krävdes en enda motorbeskrivning — samma mekanism, annat format.
 
 Modulen är **av tills du slår på den**, under Inställningar ▸ Insticksmoduler — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.

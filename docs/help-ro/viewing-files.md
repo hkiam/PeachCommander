@@ -65,6 +65,8 @@ Rezultatele sunt păstrate în cache pe disc, așa că redeschiderea unui fișie
 
 Activați **Compară** pentru a deschide un al doilea panou cu propriul meniu de motor. Două decompilatoare greșesc în locuri diferite, așa că a le vedea alături este adesea mai rapid decât a decide în care să aveți încredere; alegând `javap` pe o parte, bytecode-ul stă lângă sursă. Ambele panouri împart cache-ul, deci comutarea între motoare deja rulate este imediată.
 
+F3 pe un `.jar`, `.apk` sau `.dex` întreg îl decompilează dintr-o dată și arată un arbore de pachete lângă sursă. Câmpul de căutare de deasupra arborelui caută în fiecare clasă — exact întrebarea la care o singură clasă nu poate răspunde: unde apare de fapt un șir, un apel sau o constantă, când încă nu știți în ce clasă. Potrivirile restrâng arborele, iar prima se deschide la linia sa. Enter deschide în continuare JAR-ul ca arhivă — cele două acțiuni rămân separate.
+
 Android este de asemenea acoperit: F3 pe un fișier `.dex` folosește **jadx** (Apache 2.0, `brew install jadx`), care transformă bytecode-ul Dalvik înapoi în Java. A fost nevoie de o singură descriere de motor — același mecanism, alt format.
 
 Modulul este **oprit până îl porniți**, în Setări ▸ Module — cei mai mulți nu deschid niciodată un fișier .class, iar fără motor oricum nu ajută.

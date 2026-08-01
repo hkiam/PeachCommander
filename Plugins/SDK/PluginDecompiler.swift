@@ -78,6 +78,22 @@ enum PluginDecompilerOutput: String {
     case directory
 }
 
+/// How an engine is driven when the input is a whole archive rather than one class.
+///
+/// Separate arguments rather than reusing `args`, because the two invocations differ in kind and not
+/// just in degree: single-class runs mostly print to stdout, whole-archive runs must write a tree of
+/// files, and the flag that switches a decompiler between them is engine-specific. Keeping them
+/// apart also means adding archive support cannot change what already works for one class.
+struct PluginDecompilerArchiveSupport: Equatable {
+    /// Argument template. Must place output under `{outdir}`, since that is what is read back.
+    let args: [String]
+    /// Seconds before the engine is stopped. A whole JAR is minutes of work where one class is
+    /// seconds, so this is deliberately not the single-file timeout.
+    let timeout: Int
+
+    static let defaultTimeout = 300
+}
+
 /// One decompiler engine, as data.
 struct PluginDecompilerEngine: Equatable {
     let id: String
@@ -97,11 +113,28 @@ struct PluginDecompilerEngine: Equatable {
     /// known way to send one into a loop — and without a limit the view would say "Decompiling…"
     /// for ever with no way back.
     let timeout: Int
+    /// How to run this engine over a whole archive, or nil if it cannot do one.
+    ///
+    /// `javap` is the honest nil here: it prints one class and has no notion of a JAR.
+    let archive: PluginDecompilerArchiveSupport?
 
     func handles(kind: String) -> Bool { kinds.contains(kind.lowercased()) }
 
+    /// Whether this engine can turn `kind` into a *tree* of sources rather than a single result.
+    func handlesArchive(kind: String) -> Bool { archive != nil && handles(kind: kind) }
+
     static let defaultTimeout = 30
 }
+
+/// Input kinds where one file yields many sources, so the result belongs in a tree.
+///
+/// `dex` and `apk` are in here with `jar`: a dex holds a whole Android app, and concatenating that
+/// into one buffer — which is what the single-file path does — is unreadable at any size.
+///
+/// Exactly the kinds a built-in engine claims, and a test holds it to that. `.war`, `.ear` and
+/// `.aar` were in here first and came straight back out: nothing described could decompile one, so
+/// F3 on such a file would have opened a view that could only ever apologise.
+let pluginDecompilerArchiveKinds: Set<String> = ["jar", "apk", "dex"]
 
 // MARK: - Built-in engine descriptors
 
@@ -120,35 +153,52 @@ extension PluginDecompilerEngine {
                 tool: "java", args: ["-jar", "{engine}", "{input}"],
                 enginePath: jar("cfr.jar"), output: .stdout,
                 note: "CFR — MIT licence. Download cfr.jar from https://github.com/leibnitz27/cfr/releases",
-                timeout: defaultTimeout),
+                timeout: defaultTimeout,
+                archive: PluginDecompilerArchiveSupport(
+                    args: ["-jar", "{engine}", "{input}", "--outputdir", "{outdir}"],
+                    timeout: PluginDecompilerArchiveSupport.defaultTimeout)),
             PluginDecompilerEngine(
                 id: "vineflower", name: "Vineflower", kinds: ["class", "jar"],
                 tool: "java", args: ["-jar", "{engine}", "{input}", "{outdir}"],
                 enginePath: jar("vineflower.jar"), output: .directory,
                 note: "Vineflower — Apache-2.0 licence. Download vineflower.jar from "
-                    + "https://github.com/Vineflower/vineflower/releases", timeout: defaultTimeout),
+                    + "https://github.com/Vineflower/vineflower/releases", timeout: defaultTimeout,
+                // Same invocation as the single-file case — it already writes into a directory.
+                // Given a JAR, a FernFlower-derived engine may write a *JAR of sources* rather than
+                // a tree; the reader expands one if it finds it, so either shape works.
+                archive: PluginDecompilerArchiveSupport(
+                    args: ["-jar", "{engine}", "{input}", "{outdir}"],
+                    timeout: PluginDecompilerArchiveSupport.defaultTimeout)),
             PluginDecompilerEngine(
                 id: "procyon", name: "Procyon", kinds: ["class", "jar"],
                 tool: "java", args: ["-jar", "{engine}", "{input}"],
                 enginePath: jar("procyon.jar"), output: .stdout,
                 note: "Procyon — Apache-2.0 licence. Download procyon-decompiler.jar from "
-                    + "https://github.com/mstrobel/procyon/releases", timeout: defaultTimeout),
+                    + "https://github.com/mstrobel/procyon/releases", timeout: defaultTimeout,
+                archive: PluginDecompilerArchiveSupport(
+                    args: ["-jar", "{engine}", "-jar", "{input}", "-o", "{outdir}"],
+                    timeout: PluginDecompilerArchiveSupport.defaultTimeout)),
             // Android. The proof that this design carries a new format: one descriptor and one
             // clause in the plugin's detect string, no change to the runner — `output: .directory`
             // and `{outdir}` already existed for Vineflower.
             PluginDecompilerEngine(
-                id: "jadx", name: "jadx (Android)", kinds: ["dex", "apk"],
+                id: "jadx", name: "jadx (Android)", kinds: ["dex", "apk", "jar"],
                 tool: "jadx", args: ["--no-res", "-d", "{outdir}", "{input}"],
                 enginePath: nil, output: .directory,
                 note: "jadx — Apache-2.0 licence. Install with `brew install jadx`, or download "
                     + "from https://github.com/skylot/jadx/releases",
-                timeout: 120),   // a dex holds a whole app; 30 s is not enough
+                timeout: 120,   // a dex holds a whole app; 30 s is not enough
+                archive: PluginDecompilerArchiveSupport(
+                    args: ["--no-res", "-d", "{outdir}", "{input}"],
+                    timeout: PluginDecompilerArchiveSupport.defaultTimeout)),
             PluginDecompilerEngine(
                 id: "javap", name: "javap (bytecode)", kinds: ["class"],
                 tool: "javap", args: ["-c", "-p", "-constants", "{input}"],
                 enginePath: nil, output: .stdout,
                 note: "javap ships with any JDK — no download needed, but it shows bytecode "
-                    + "rather than Java source.", timeout: defaultTimeout),
+                    + "rather than Java source.", timeout: defaultTimeout,
+                // Nothing to put here: javap prints one class and has no notion of an archive.
+                archive: nil),
         ]
     }
 }
@@ -194,6 +244,15 @@ struct PluginDecompilerRegistry {
         engines.filter { $0.handles(kind: kind) }
     }
 
+    /// Engines that can decompile a whole archive of `kind`, in preference order.
+    ///
+    /// A separate list rather than filtering at the call site, because "handles .jar" and "can
+    /// decompile a .jar in one run" are different claims: javap handles a class and can never do
+    /// the second, and offering it in an archive view would produce an engine that always fails.
+    func archiveEngines(for kind: String) -> [PluginDecompilerEngine] {
+        engines.filter { $0.handlesArchive(kind: kind) }
+    }
+
     /// The first engine for `kind` that is actually present on disk.
     func firstAvailable(for kind: String) -> PluginDecompilerEngine? {
         engines(for: kind).first { $0.isAvailable }
@@ -223,7 +282,11 @@ struct PluginDecompilerRegistry {
                 for (key, value) in [("tool", base.tool), ("kinds", base.kinds.joined(separator: ",")),
                                      ("output", base.output.rawValue),
                                      ("engine", base.enginePath ?? ""), ("args", base.args.joined(separator: " ")),
-                                     ("timeout", String(base.timeout))]
+                                     ("timeout", String(base.timeout)),
+                                     // Inherited too, so a CFR profile that only adds a flag to the
+                                     // single-class line keeps working on whole JARs.
+                                     ("archive_args", base.archive?.args.joined(separator: " ") ?? ""),
+                                     ("archive_timeout", base.archive.map { String($0.timeout) } ?? "")]
                 where fields[key] == nil && !value.isEmpty {
                     fields[key] = value
                 }
@@ -251,7 +314,16 @@ struct PluginDecompilerRegistry {
                 // working directory — never what was meant.
                 enginePath: fields["engine"].map { resolve($0, relativeTo: engineDirectory) },
                 output: output, note: fields["note"],
-                timeout: fields["timeout"].flatMap(Int.init) ?? PluginDecompilerEngine.defaultTimeout))
+                timeout: fields["timeout"].flatMap(Int.init) ?? PluginDecompilerEngine.defaultTimeout,
+                // Absent `archive_args` means "this engine does one class at a time" rather than
+                // "use the single-file arguments on a JAR" — guessing the latter would run a tool
+                // with flags its author never intended and blame the result on the user's file.
+                archive: fields["archive_args"].map { line in
+                    PluginDecompilerArchiveSupport(
+                        args: splitArguments(line),
+                        timeout: fields["archive_timeout"].flatMap(Int.init)
+                            ?? PluginDecompilerArchiveSupport.defaultTimeout)
+                }))
         }
 
         for raw in text.components(separatedBy: .newlines) {
@@ -358,12 +430,16 @@ enum PluginDecompilerCache {
 
     /// A stable, filesystem-safe key. Hashing rather than sanitising the path: paths contain
     /// characters a file name cannot, and are longer than a file name may be.
-    static func key(path: String, engine: PluginDecompilerEngine) -> String? {
+    ///
+    /// `variant` separates results the same engine produces under different invocations — a whole
+    /// archive and a single class share an engine id but are not each other's cache entry.
+    static func key(path: String, engine: PluginDecompilerEngine, variant: String = "") -> String? {
         guard let attrs = try? FileManager.default.attributesOfItem(atPath: path),
               let size = attrs[.size] as? Int,
               let modified = attrs[.modificationDate] as? Date else { return nil }
         let material = [path, String(size), String(Int(modified.timeIntervalSince1970)),
-                        engine.id, engine.args.joined(separator: " ")].joined(separator: "\u{1}")
+                        engine.id, engine.args.joined(separator: " "), variant]
+            .joined(separator: "\u{1}")
         // FNV-1a: enough to distinguish inputs, and no dependency on CryptoKit for a cache name.
         var hash: UInt64 = 0xcbf29ce484222325
         for byte in Array(material.utf8) {
@@ -385,6 +461,37 @@ enum PluginDecompilerCache {
         try? source.write(toFile: (dir as NSString).appendingPathComponent(key),
                           atomically: true, encoding: .utf8)
         prune(dir)
+    }
+
+    // MARK: Whole-archive results
+
+    /// Marker written once a run finished, so a directory left behind by a crash or a timeout is not
+    /// mistaken for a complete result. Without it a half-decompiled JAR would be served from cache
+    /// for ever, and the only symptom would be classes quietly missing from the tree.
+    static let completionMarker = ".pc-complete"
+
+    /// Where a whole-archive result for this (file, engine) pair belongs.
+    ///
+    /// A directory rather than one concatenated file: the tree view reads single classes on demand,
+    /// so a 40 MB result costs one file read per click instead of 40 MB of memory per open.
+    static func treeDirectory(path: String, engine: PluginDecompilerEngine, configRoot: String) -> String? {
+        guard let key = key(path: path, engine: engine,
+                            variant: engine.archive?.args.joined(separator: " ") ?? "archive") else { return nil }
+        return (directory(configRoot: configRoot) as NSString).appendingPathComponent("tree-" + key)
+    }
+
+    /// Whether `dir` holds a result that finished.
+    static func treeIsComplete(_ dir: String) -> Bool {
+        FileManager.default.fileExists(
+            atPath: (dir as NSString).appendingPathComponent(completionMarker))
+    }
+
+    static func markTreeComplete(_ dir: String) {
+        _ = FileManager.default.createFile(
+            atPath: (dir as NSString).appendingPathComponent(completionMarker), contents: nil)
+        // Prune the folder this result sits in, which is the cache root — derived from `dir` rather
+        // than rebuilt from configRoot, so the two can never disagree about where the cache is.
+        prune((dir as NSString).deletingLastPathComponent)
     }
 
     /// Drop entries older than `maximumAge`. Cheap enough to run on every write: the folder holds
@@ -467,7 +574,99 @@ enum PluginDecompilerRunner {
         }
         defer { if let outDir { try? FileManager.default.removeItem(atPath: outDir) } }
 
-        let args = engine.args.map { arg -> String in
+        switch execute(engine, args: engine.args, timeout: engine.timeout,
+                       input: input, outDir: outDir, toolPath: toolPath) {
+        case .failure(let error):
+            return .failure(error)
+        case .success(let stdout):
+            let text = outDir.map { collect(from: $0) } ?? stdout
+            guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                return .failure(.emptyOutput(engine: engine.name))
+            }
+            return .success(text)
+        }
+    }
+
+    /// Run `engine` over a whole archive, writing its tree into `outputDirectory`.
+    ///
+    /// The directory belongs to the caller — the cache, in practice — so the result survives the
+    /// call and single classes can be read from it later. Returns the relative paths of the source
+    /// files produced, sorted, or a failure describing what the engine did.
+    static func runArchive(_ engine: PluginDecompilerEngine, input: String,
+                           outputDirectory: String) -> Result<[String], PluginDecompileError> {
+        guard let archive = engine.archive else {
+            return .failure(.notReadable("\(engine.name) cannot decompile a whole archive."))
+        }
+        guard let toolPath = engine.resolvedTool else {
+            return .failure(.engineMissing(engine: engine.name, path: engine.tool))
+        }
+        if let missing = engine.missingPath {
+            return .failure(.engineMissing(engine: engine.name, path: missing))
+        }
+        let fm = FileManager.default
+        // A leftover from a previous, unfinished attempt would otherwise be mixed with this one's
+        // output and the tree would show classes from two runs.
+        try? fm.removeItem(atPath: outputDirectory)
+        do { try fm.createDirectory(atPath: outputDirectory, withIntermediateDirectories: true) }
+        catch { return .failure(.notReadable(error.localizedDescription)) }
+
+        if case .failure(let error) = execute(engine, args: archive.args, timeout: archive.timeout,
+                                              input: input, outDir: outputDirectory, toolPath: toolPath) {
+            return .failure(error)
+        }
+        expandNestedArchives(in: outputDirectory)
+        let files = sourceFiles(in: outputDirectory)
+        guard !files.isEmpty else { return .failure(.emptyOutput(engine: engine.name)) }
+        return .success(files)
+    }
+
+    /// Extensions worth showing in a tree of decompiled sources.
+    ///
+    /// A whitelist and not a blacklist: engines drop all sorts of things next to the source —
+    /// manifests, resources, their own logs — and listing what belongs is a shorter, more stable
+    /// rule than guessing what does not.
+    static let sourceExtensions: Set<String> = ["java", "kt", "smali", "txt", "scala", "groovy"]
+
+    /// Relative paths of the source files under `directory`, sorted so the tree is stable.
+    static func sourceFiles(in directory: String) -> [String] {
+        let fm = FileManager.default
+        guard let e = fm.enumerator(atPath: directory) else { return [] }
+        return (e.allObjects as? [String] ?? [])
+            .filter { sourceExtensions.contains(($0 as NSString).pathExtension.lowercased()) }
+            .sorted()
+    }
+
+    /// Expand a JAR or ZIP of sources the engine may have written instead of a tree.
+    ///
+    /// FernFlower-derived engines given a JAR answer with a JAR — of `.java` files, which is the
+    /// right content in the wrong container. Unpacking it here keeps that quirk out of both the
+    /// engine descriptors and the view: whatever an engine's habit is, the cache holds a tree.
+    private static func expandNestedArchives(in directory: String) {
+        let fm = FileManager.default
+        guard let names = try? fm.contentsOfDirectory(atPath: directory) else { return }
+        for name in names where ["jar", "zip"].contains((name as NSString).pathExtension.lowercased()) {
+            let full = (directory as NSString).appendingPathComponent(name)
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
+            process.arguments = ["-qq", "-o", full, "-d", directory]
+            process.standardOutput = FileHandle.nullDevice
+            process.standardError = FileHandle.nullDevice
+            process.standardInput = FileHandle.nullDevice
+            guard (try? process.run()) != nil else { return }
+            process.waitUntilExit()
+            if process.terminationStatus == 0 { try? fm.removeItem(atPath: full) }
+        }
+    }
+
+    /// Start the tool, feed it nothing, read both pipes, and stop it if it overruns.
+    ///
+    /// Shared by the single-file and whole-archive paths so there is exactly one place that spawns a
+    /// process: the watchdog, the closed stdin and the concurrent pipe reads are each a bug that was
+    /// fixed once, and a second copy would be a second place to forget them.
+    private static func execute(_ engine: PluginDecompilerEngine, args template: [String], timeout: Int,
+                                input: String, outDir: String?,
+                                toolPath: String) -> Result<String, PluginDecompileError> {
+        let args = template.map { arg -> String in
             arg.replacingOccurrences(of: "{input}", with: input)
                 .replacingOccurrences(of: "{engine}", with: engine.enginePath ?? "")
                 .replacingOccurrences(of: "{outdir}", with: outDir ?? "")
@@ -501,7 +700,7 @@ enum PluginDecompilerRunner {
 
         // Stop an engine that will not finish. Decompilers do get stuck, and the alternative is a
         // view that says "Decompiling…" for ever while a JVM burns a core in the background.
-        let deadline = DispatchTime.now() + .seconds(engine.timeout)
+        let deadline = DispatchTime.now() + .seconds(timeout)
         var timedOut = false
         let watchdog = DispatchWorkItem {
             guard process.isRunning else { return }
@@ -517,26 +716,26 @@ enum PluginDecompilerRunner {
         watchdog.cancel()
         group.wait()
         if timedOut {
-            return .failure(.timedOut(engine: engine.name, seconds: engine.timeout))
+            return .failure(.timedOut(engine: engine.name, seconds: timeout))
         }
 
-        let stderrText = String(data: errData, encoding: .utf8) ?? ""
         guard process.terminationStatus == 0 else {
             return .failure(.engineFailed(engine: engine.name,
                                           exitCode: process.terminationStatus,
-                                          message: stderrText))
+                                          message: String(data: errData, encoding: .utf8) ?? ""))
         }
+        // Only stdout. What a directory-writing engine produced is the caller's business, because the
+        // two callers want it in different shapes: one concatenated string, or a tree left on disk.
+        return .success(String(data: outData, encoding: .utf8) ?? "")
+    }
 
-        let text: String
-        if let outDir {
-            text = collect(from: outDir)
-        } else {
-            text = String(data: outData, encoding: .utf8) ?? ""
-        }
-        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            return .failure(.emptyOutput(engine: engine.name))
-        }
-        return .success(text)
+    /// Read one file out of a whole-archive result.
+    ///
+    /// Files stay on disk and are read when clicked rather than held in memory: a decompiled JAR runs
+    /// to tens of megabytes, and the view only ever shows one class at a time.
+    static func readSource(_ relativePath: String, from directory: String) -> String? {
+        try? String(contentsOfFile: (directory as NSString).appendingPathComponent(relativePath),
+                    encoding: .utf8)
     }
 
     /// Concatenate what a directory-writing engine produced, in a stable order.
@@ -553,5 +752,140 @@ enum PluginDecompilerRunner {
             parts.append(files.count > 1 ? "// ---- \(rel)\n\(body)" : body)
         }
         return parts.joined(separator: "\n")
+    }
+}
+
+// MARK: - Tree of a whole-archive result
+
+/// One node of the package tree built from a decompiled archive.
+///
+/// A class rather than a struct because an NSOutlineView identifies rows by object, and value
+/// semantics would hand it a fresh copy on every query.
+final class PluginDecompilerNode {
+    let name: String
+    /// Relative path inside the result directory, for a leaf; nil for a package.
+    let relativePath: String?
+    private(set) var children: [PluginDecompilerNode] = []
+
+    init(name: String, relativePath: String? = nil) {
+        self.name = name
+        self.relativePath = relativePath
+    }
+
+    var isLeaf: Bool { relativePath != nil }
+
+    /// The shallowest leaf, or nil if there is none.
+    ///
+    /// Breadth-first, not depth-first: packages sort before classes, so descending first finds a
+    /// class several packages down and showing it means expanding all of them — opening a JAR would
+    /// unfold a branch nobody asked for. The shallowest class is usually already on screen.
+    static func shallowestLeaf(in nodes: [PluginDecompilerNode]) -> PluginDecompilerNode? {
+        var level = nodes
+        while !level.isEmpty {
+            if let leaf = level.first(where: \.isLeaf) { return leaf }
+            level = level.flatMap(\.children)
+        }
+        return nil
+    }
+
+    /// Build the tree from the relative paths an engine produced.
+    ///
+    /// Single-child packages are collapsed into one row — `com/example/app` instead of three levels
+    /// with nothing to choose in them, which is what makes a Java tree navigable at all. Sorted with
+    /// packages before classes so the shape does not change as the caller's order does.
+    static func tree(from paths: [String]) -> [PluginDecompilerNode] {
+        let root = PluginDecompilerNode(name: "")
+        for path in paths {
+            let parts = path.split(separator: "/").map(String.init)
+            guard let leaf = parts.last else { continue }
+            var node = root
+            for part in parts.dropLast() {
+                if let existing = node.children.first(where: { $0.name == part && !$0.isLeaf }) {
+                    node = existing
+                } else {
+                    let child = PluginDecompilerNode(name: part)
+                    node.children.append(child)
+                    node = child
+                }
+            }
+            node.children.append(PluginDecompilerNode(name: leaf, relativePath: path))
+        }
+        root.collapseSingleChildPackages()
+        root.sortRecursively()
+        return root.children
+    }
+
+    /// Merge a package that contains nothing but one package into its parent.
+    private func collapseSingleChildPackages() {
+        for child in children { child.collapseSingleChildPackages() }
+        children = children.map { child in
+            var current = child
+            while !current.isLeaf, current.children.count == 1, let only = current.children.first,
+                  !only.isLeaf {
+                let merged = PluginDecompilerNode(name: current.name + "/" + only.name)
+                merged.children = only.children
+                current = merged
+            }
+            return current
+        }
+    }
+
+    private func sortRecursively() {
+        children.sort {
+            $0.isLeaf == $1.isLeaf ? $0.name.localizedStandardCompare($1.name) == .orderedAscending
+                                   : !$0.isLeaf
+        }
+        for child in children { child.sortRecursively() }
+    }
+}
+
+/// Searching every class in a decompiled archive at once.
+///
+/// The point of decompiling a whole JAR rather than one class: finding where a string, a call or a
+/// constant actually occurs, without knowing which class to open first.
+enum PluginDecompilerSearch {
+    /// One file that matched, and where.
+    struct Hit: Equatable {
+        let relativePath: String
+        /// 1-based line of the first match, for a status line the user can act on.
+        let line: Int
+        /// The matching line, trimmed, so the result list shows the code and not just a file name.
+        let excerpt: String
+    }
+
+    /// Total bytes read before the scan gives up.
+    ///
+    /// A cap, not a limit on usefulness: an obfuscated Android app decompiles to hundreds of
+    /// megabytes, and reading all of it to answer one query would freeze the view for minutes. The
+    /// caller is told the scan was capped, so a partial answer is never presented as a complete one.
+    static let byteBudget = 64 * 1024 * 1024
+
+    /// Files under `directory` containing `needle`, in the order given.
+    ///
+    /// `isCancelled` is consulted per file so a typed query can abandon a scan the next keystroke
+    /// made irrelevant.
+    static func scan(files: [String], in directory: String, for needle: String, matchCase: Bool,
+                     isCancelled: () -> Bool = { false }) -> (hits: [Hit], capped: Bool) {
+        guard !needle.isEmpty else { return ([], false) }
+        let options: String.CompareOptions = matchCase ? [] : [.caseInsensitive]
+        var hits: [Hit] = []
+        var budget = byteBudget
+        for file in files {
+            if isCancelled() { return (hits, false) }
+            guard budget > 0 else { return (hits, true) }
+            guard let body = PluginDecompilerRunner.readSource(file, from: directory) else { continue }
+            budget -= body.utf8.count
+            guard body.range(of: needle, options: options) != nil else { continue }
+            // Only now split into lines: doing it for every file would cost far more than the
+            // whole-string check that rules most of them out.
+            for (i, line) in body.components(separatedBy: .newlines).enumerated()
+            where line.range(of: needle, options: options) != nil {
+                hits.append(Hit(relativePath: file, line: i + 1,
+                                excerpt: line.trimmingCharacters(in: .whitespaces)))
+                break
+            }
+        }
+        // Every file was read, so the answer is complete even if the budget ended up at zero.
+        return (hits, false)
     }
 }

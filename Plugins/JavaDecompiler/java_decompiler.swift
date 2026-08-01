@@ -21,9 +21,23 @@ import os
 /// invisible. os.Logger, not NSLog: NSLog does not reach the unified log from this app.
 let log = Logger(subsystem: "com.peachcommander", category: "JavaDecompiler")
 
+// MARK: - What the lister ABI can ask of a view
+
+/// The commands `ListSendCommand` and `ListSearchText` forward, whichever view `ListLoad` built.
+///
+/// A base class rather than a protocol because the entry points recover the view from an opaque
+/// pointer, and `Unmanaged<T>` needs a class. Defaults do nothing rather than being abstract: a view
+/// that cannot sensibly zoom should decline the command, not crash the host that sent it.
+class DecompilerListerView: NSView {
+    func find(_ needle: String, matchCase: Bool) -> Bool { false }
+    func selectAll() {}
+    func changeFontSize(by delta: CGFloat) {}
+    func copySelection() {}
+}
+
 // MARK: - The view
 
-final class DecompiledView: NSView {
+final class DecompiledView: DecompilerListerView {
     private let scroll = NSScrollView()
     private let text = NSTextView()
     private let status = NSTextField(labelWithString: "")
@@ -310,6 +324,18 @@ final class DecompiledView: NSView {
             "    output  = stdout         ; or: directory",
             "    timeout = 30             ; seconds before the engine is stopped",
             "",
+            "For F3 on a whole .jar, .apk or .dex, add how the engine is driven over an",
+            "archive. Without these two lines the engine is offered for single classes only —",
+            "the single-file arguments are never reused on an archive, because that would run",
+            "the tool with flags its author never meant:",
+            "",
+            "    archive_args    = {input} --outputdir {outdir}",
+            "    archive_timeout = 300    ; a whole archive is minutes, not seconds",
+            "",
+            "The result must end up under {outdir}; that directory is what gets read back. An",
+            "engine that writes a .jar of sources there instead of a tree is fine — it is",
+            "unpacked automatically.",
+            "",
             "{input}, {engine} and {outdir} are substituted when the engine runs.",
             "Your own entries take precedence over the built-in ones.",
         ]
@@ -438,7 +464,7 @@ final class DecompiledView: NSView {
 
     // MARK: Viewer commands
 
-    func find(_ needle: String, matchCase: Bool) -> Bool {
+    override func find(_ needle: String, matchCase: Bool) -> Bool {
         let haystack = text.string
         let options: String.CompareOptions = matchCase ? [] : [.caseInsensitive]
         guard let range = haystack.range(of: needle, options: options) else { return false }
@@ -448,12 +474,12 @@ final class DecompiledView: NSView {
         return true
     }
 
-    func selectAll() { text.setSelectedRange(NSRange(location: 0, length: (text.string as NSString).length)) }
+    override func selectAll() { text.setSelectedRange(NSRange(location: 0, length: (text.string as NSString).length)) }
 
     /// Font size, as the lister ABI offers via PC_LC_FONTPLUS / PC_LC_FONTMINUS. Decompiled source
     /// is dense, so the viewer's zoom keys have to work here — ignoring commands the ABI defines
     /// makes them look broken rather than unimplemented.
-    func changeFontSize(by delta: CGFloat) {
+    override func changeFontSize(by delta: CGFloat) {
         let current = text.font?.pointSize ?? 12
         let size = min(32, max(8, current + delta))
         let font = NSFont.monospacedSystemFont(ofSize: size, weight: .regular)
@@ -467,7 +493,7 @@ final class DecompiledView: NSView {
         }
     }
 
-    func copySelection() {
+    override func copySelection() {
         let sel = text.selectedRange()
         let content = sel.length > 0 ? (text.string as NSString).substring(with: sel) : text.string
         NSPasteboard.general.clearContents()
@@ -485,7 +511,12 @@ public func ListGetDetectString(_ buf: UnsafeMutablePointer<CChar>?, _ maxlen: I
     guard let buf, maxlen > 0 else { return }
     // Extension first, magic bytes second: CAFEBABE catches a class file whose name was lost.
     // .class by extension or by CAFEBABE, plus Dalvik: a .dex starts with "dex\n" (100 101 120 10).
-    let detect = "EXT=\"CLASS\" | EXT=\"DEX\" | ([0]=202 & [1]=254 & [2]=186 & [3]=190)"
+    // Whole archives too (F-349) — a JAR or APK is claimed for F3 only. Enter still browses it
+    // through the host's built-in ZIP support, which is a different verb and a different plugin
+    // type, so the two never compete. The dialect has a single `=`, never `==`: an expression with
+    // `==` parses as invalid and the plugin then silently claims nothing at all.
+    let detect = "EXT=\"CLASS\" | EXT=\"DEX\" | EXT=\"JAR\" | EXT=\"APK\""
+        + " | ([0]=202 & [1]=254 & [2]=186 & [3]=190)"
     _ = detect.withCString { strlcpy(buf, $0, Int(maxlen)) }
 }
 
@@ -495,28 +526,34 @@ public func ListLoad(_ parent: UnsafeMutableRawPointer?, _ file: UnsafeMutablePo
     guard let file, let path = String(validatingUTF8: file),
           FileManager.default.isReadableFile(atPath: path) else { return nil }
     let root = configRoot()
-    let view = DecompiledView(path: path, configRoot: root)
+    // One file in, many files out — a JAR, an APK or a dex — gets the tree view; a single class
+    // gets the single-source view. The decision is the file's kind and not the engine's, because it
+    // has to be made before any engine has run.
+    let kind = (path as NSString).pathExtension.lowercased()
+    let view: DecompilerListerView = pluginDecompilerArchiveKinds.contains(kind)
+        ? DecompiledArchiveView(path: path, configRoot: root)
+        : DecompiledView(path: path, configRoot: root)
     return Unmanaged.passRetained(view).toOpaque()
 }
 
 @_cdecl("ListCloseWindow")
 public func ListCloseWindow(_ listWin: UnsafeMutableRawPointer?) {
     guard let listWin else { return }
-    Unmanaged<DecompiledView>.fromOpaque(listWin).release()
+    Unmanaged<DecompilerListerView>.fromOpaque(listWin).release()
 }
 
 @_cdecl("ListSearchText")
 public func ListSearchText(_ listWin: UnsafeMutableRawPointer?, _ searchString: UnsafeMutablePointer<CChar>?,
                            _ options: Int32) -> Int32 {
     guard let listWin, let searchString, let needle = String(validatingUTF8: searchString) else { return 1 }
-    let view = Unmanaged<DecompiledView>.fromOpaque(listWin).takeUnretainedValue()
+    let view = Unmanaged<DecompilerListerView>.fromOpaque(listWin).takeUnretainedValue()
     return view.find(needle, matchCase: options & 0x0001 != 0) ? 0 : 1
 }
 
 @_cdecl("ListSendCommand")
 public func ListSendCommand(_ listWin: UnsafeMutableRawPointer?, _ command: Int32, _ parameter: Int32) -> Int32 {
     guard let listWin else { return 1 }
-    let view = Unmanaged<DecompiledView>.fromOpaque(listWin).takeUnretainedValue()
+    let view = Unmanaged<DecompilerListerView>.fromOpaque(listWin).takeUnretainedValue()
     switch command {
     case 1: view.copySelection(); return 0     // PC_LC_COPY
     case 2: view.selectAll(); return 0         // PC_LC_SELECTALL
