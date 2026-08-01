@@ -26,6 +26,16 @@ Pasek przycisków to pas przycisków z ikonami wzdłuż górnej części okna. K
 
 Przycisk może otworzyć *podpasek* — drugi zestaw przycisków nałożony na pierwszy. Kliknij go, aby zejść; przycisk **◀** po lewej cofa Cię do poprzedniego paska. Gdy jest więcej przycisków, niż mieści się w szerokości okna, nadmiarowe zwijają się za strzałką **»** na prawym końcu; kliknij ją, aby do nich dotrzeć.
 
+## Dodaj program, upuszczając go na pasek
+
+Nie musisz otwierać edytora, aby umieścić narzędzie na pasku. Przeciągnij program, aplikację lub skrypt z panelu — albo z Findera — na **wolne miejsce** paska. Kreska pokazuje, gdzie wyląduje; po upuszczeniu powstaje tam przycisk.
+
+- **Programy, aplikacje i skrypty** stają się przyciskiem, który uruchamia je na bieżącym zaznaczeniu: parametry nowego przycisku to `%S`, czyli nazwy zaznaczonych plików. Wyczyść to pole w edytorze, jeśli narzędzie nie ma otrzymywać argumentów.
+- **Foldery** stają się przyciskiem, który do nich przechodzi — i który kopiuje do nich pliki, gdy później je na nim upuścisz.
+- To, czego nie da się uruchomić, jest odrzucane: zwykły dokument nie ma prawa wykonywania, a przycisk dla niego zawiódłby przy pierwszym kliknięciu.
+
+Upuszczenie na **istniejący** przycisk zachowuje jego znaczenie: przycisk uruchamia się z upuszczonymi plikami. Nowy powstaje tylko na wolnym miejscu.
+
 ## Upuść pliki na przycisk
 
 Możesz przeciągnąć pliki lub foldery bezpośrednio na przycisk:
@@ -33,6 +43,10 @@ Możesz przeciągnąć pliki lub foldery bezpośrednio na przycisk:
 - **Przycisk folderu** — upuszczone elementy są kopiowane do tego folderu w tle.
 - **Przycisk programu** — program uruchamia się z upuszczonymi elementami jako swoim wyborem.
 - **Przycisk polecenia** — polecenie uruchamia się jak zwykle.
+
+## Ukryj pasek przycisków
+
+Wybierz **Widok > Pasek przycisków**, aby ukryć pasek, i ponownie, aby go przywrócić. Ten sam przełącznik jest na stronie **Układ** w ustawieniach, a wybór jest zapamiętywany.
 
 ## Pionowy pasek przycisków
 

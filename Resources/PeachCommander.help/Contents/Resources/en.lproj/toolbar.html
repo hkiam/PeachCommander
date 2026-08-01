@@ -26,6 +26,14 @@
 <em>(Figure: The button bar sits above the file panels; each button runs a command, program, folder, or sub-bar.)</em></p>
 <h2 id="sub-bars-and-overflow">Sub-bars and overflow</h2>
 <p>A button can open a <em>sub-bar</em> — a second set of buttons layered over the first. Click it to descend; a <strong>◀</strong> button at the left returns you to the previous bar. When there are more buttons than fit the window width, the extras collapse behind a <strong>»</strong> chevron at the right end; click it to reach them.</p>
+<h2 id="add-a-program-by-dropping-it-on-the-bar">Add a program by dropping it on the bar</h2>
+<p>You do not have to open the editor to put a tool on the bar. Drag a program, an app or a script from a panel — or from Finder — onto <strong>free space</strong> in the bar. A caret shows where it will land, and dropping creates the button there.</p>
+<ul>
+<li><strong>Programs, apps and scripts</strong> become a button that runs them on your current selection: the new button's parameters default to <code>%S</code>, the selected file names. Clear that field in the editor for a tool that should take no arguments.</li>
+<li><strong>Folders</strong> become a button that jumps to that folder — and that copies files into it when you drop them on it later.</li>
+<li>Anything that cannot be run is refused: a plain document has no execute permission, so dropping it would only create a button that fails when clicked.</li>
+</ul>
+<p>Dropping onto an <em>existing</em> button keeps its own meaning — it runs that button with the dropped files. Only free space adds a new one.</p>
 <h2 id="drop-files-onto-a-button">Drop files onto a button</h2>
 <p>You can drag files or folders straight onto a button:</p>
 <ul>
@@ -33,6 +41,8 @@
 <li><strong>Program button</strong> — the program runs with the dropped items as its selection.</li>
 <li><strong>Command button</strong> — the command runs as usual.</li>
 </ul>
+<h2 id="hide-the-button-bar">Hide the button bar</h2>
+<p>Choose <strong>View &gt; Button Bar</strong> to hide the strip, and again to bring it back. The same switch is on the <strong>Layout</strong> page in Settings, and the choice is remembered.</p>
 <h2 id="vertical-button-bar">Vertical button bar</h2>
 <p>To move the strip from the top of the window to a column down the left side, choose <strong>View &gt; Vertical Button Bar</strong>. Choose it again to switch back to the horizontal strip.</p>
 <h2 id="notes">Notes</h2>

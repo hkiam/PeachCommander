@@ -650,6 +650,23 @@ features:
       applyTheme(), which re-derives from Theme.current; a central retint could not be undone
       soundly. No-op unless a palette is selected, so the default appearance is untouched.
 
+  - id: button-bar-drop
+    name: Programme per Drag & Drop auf die Leiste legen
+    name_en: Add programs to the button bar by dropping them on it
+    category: customization
+    audiences: [user]
+    status: stable
+    source: { modules: [PCApp], types: [ButtonBarView, MainWindowController] }
+    documentation: { integrated_help: true, website: false }
+    notes: >-
+      Dropping a program, app or script on *free* bar space creates a button for it, with a caret
+      showing the insertion point; the parameter defaults to %S so a click runs it on the current
+      selection. Folders become navigation buttons. Anything without an execute bit is refused
+      rather than becoming a button that fails on click. Dropping onto an existing button keeps
+      its old meaning (run it with those files) because the button is a subview and gets the drag
+      first. The bar can also be hidden: cm_ButtonBar, View menu, and Settings > Layout,
+      persisted as [Layout] ButtonBar (default true).
+
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
     name: Einstellungen (15 Seiten)

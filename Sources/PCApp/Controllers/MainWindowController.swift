@@ -121,6 +121,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private var buttonBarGroupH: [NSLayoutConstraint] = []       // top-strip layout
     private var buttonBarGroupV: [NSLayoutConstraint] = []       // left-column layout
     private var buttonBarVertical = false
+    private var buttonBarVisible = true
     private var commandLineHeightConstraint: NSLayoutConstraint?
     private var functionBarHeightConstraint: NSLayoutConstraint?
     private var buttonBar = ButtonBar()
@@ -510,6 +511,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         ftpKeepAliveSeconds = Int(await mainConfig.string("FTP", "KeepAliveSeconds", default: "0")) ?? 0
         setCommandLineVisible(await mainConfig.bool("Layout", "CommandLine", default: true))
         setFunctionBarVisible(await mainConfig.bool("Layout", "FunctionKeys", default: true))
+        setButtonBarVisible(await mainConfig.bool("Layout", "ButtonBar", default: true))
         setDriveBarVisible(await mainConfig.bool("Layout", "DriveBar", default: true))
         setStatusBarVisible(await mainConfig.bool("Layout", "StatusBar", default: true))
         setTabBarVisible(await mainConfig.bool("Layout", "TabBar", default: true))
@@ -3051,6 +3053,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             dateFormat: await mainConfig.string("Display", "DateFormat", default: PanelDateFormatter.defaultPattern),
             showCommandLine: await mainConfig.bool("Layout", "CommandLine", default: true),
             showFunctionKeys: await mainConfig.bool("Layout", "FunctionKeys", default: true),
+            showButtonBar: await mainConfig.bool("Layout", "ButtonBar", default: true),
             showDriveBar: await mainConfig.bool("Layout", "DriveBar", default: true),
             showStatusBar: await mainConfig.bool("Layout", "StatusBar", default: true),
             showTabBar: await mainConfig.bool("Layout", "TabBar", default: true),
@@ -3129,6 +3132,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             setCommandLineVisible(value)
         case "Layout.FunctionKeys":
             setFunctionBarVisible(value)
+        case "Layout.ButtonBar":
+            setButtonBarVisible(value)
         case "Layout.DriveBar":
             setDriveBarVisible(value)
         case "Layout.StatusBar":
@@ -4170,8 +4175,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             let editor = ButtonBarEditorWindowController(bar: self.buttonBar, commands: commands)
             editor.onSave = { [weak self] bar in
                 guard let self else { return }
-                try? bar.serialize().write(to: self.configPaths.buttonBar, atomically: true, encoding: .utf8)
-                self.loadButtonBar()   // re-read + re-render the live strip
+                self.buttonBar = bar
+                self.saveButtonBar()
             }
             editor.onPickCommand = { [weak self] complete in self?.presentCommandPicker(onPick: complete) }   // F-255
             self.buttonBarEditor = editor
@@ -4274,6 +4279,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         buttonBarView.onRunButton = { [weak self] in self?.runBarButton($0) }
         buttonBarView.onEditBar = { [weak self] in self?.showCustomizeToolbar() }
         buttonBarView.onDropOnButton = { [weak self] button, files in self?.handleButtonDrop(button, files: files) }
+        buttonBarView.onAddPrograms = { [weak self] files, index in self?.addBarButtons(for: files, at: index) }
     }
 
     // MARK: - Vertical button bar (F-011)
@@ -4281,10 +4287,27 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Drive the active size constraint from the bar's preferred thickness (height
     /// when horizontal, width when vertical); the inactive one stays at 0.
     private func applyButtonBarThickness() {
-        let t = buttonBarView.preferredThickness
+        // Hidden collapses both constraints, so visibility flows through the one place that owns
+        // the bar's size — a separate isHidden toggle would fight this on every relayout (F-342).
+        let t = buttonBarVisible ? buttonBarView.preferredThickness : 0
+        buttonBarView.isHidden = !buttonBarVisible
         buttonBarHeightConstraint?.constant = buttonBarVertical ? 0 : t
         buttonBarWidthConstraint?.constant = buttonBarVertical ? t : 0
     }
+
+    /// Whether the button bar is shown (F-342). Persisted as [Layout] ButtonBar; default true, so
+    /// an existing configuration is unchanged.
+    var isButtonBarVisible: Bool { buttonBarVisible }
+
+    func setButtonBarVisible(_ visible: Bool, persist: Bool = false) {
+        buttonBarVisible = visible
+        applyButtonBarThickness()
+        setMenuCheck(cmd: "cm_ButtonBar", on: visible)
+        guard persist else { return }
+        Task { await mainConfig.setBool(visible, "Layout", "ButtonBar"); await mainConfig.flush() }
+    }
+
+    func toggleButtonBar() { setButtonBarVisible(!buttonBarVisible, persist: true) }
 
     var isButtonBarVertical: Bool { buttonBarVertical }
 
@@ -4370,6 +4393,56 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// receives the files as a background copy into that folder; a program button
     /// runs with the dropped files as its %-parameter selection; other command
     /// kinds (cm_/em_/.bar) just run normally.
+    /// Add buttons for programs, scripts or folders dropped on free bar space (F-342).
+    ///
+    /// The counterpart to dropping *onto* a button, which runs it with those files. Here the drop
+    /// creates the button, which is how Total Commander has always let you put a tool on the bar
+    /// without opening an editor first.
+    func addBarButtons(for paths: [String], at index: Int) {
+        var inserted = 0
+        for path in paths {
+            guard let button = Self.barButton(forDropped: path) else { continue }
+            buttonBar.buttons.insert(button, at: min(index + inserted, buttonBar.buttons.count))
+            inserted += 1
+        }
+        guard inserted > 0 else { return }
+        saveButtonBar()
+        logger.info("Button bar: added \(inserted) button(s) from a drop")
+    }
+
+    /// Turn a dropped path into a button, or nil if it is nothing we can run.
+    ///
+    /// A folder becomes a *navigation* button, matching what `runBarButton` already does with a
+    /// directory command — and dropping files on it later copies them there, which is the
+    /// behaviour that was already implemented for folder buttons.
+    ///
+    /// Everything else becomes a program button whose parameter defaults to `%S`, the selected
+    /// names. That is the point of putting a tool on the bar: click it and it runs on what you
+    /// have selected. The editor can clear it for a tool that should take no arguments.
+    static func barButton(forDropped path: String) -> BarButton? {
+        let fm = FileManager.default
+        var isDir: ObjCBool = false
+        guard fm.fileExists(atPath: path, isDirectory: &isDir) else { return nil }
+        let ns = path as NSString
+        let isApp = ns.pathExtension.lowercased() == "app"
+        let name = FileManager.default.displayName(atPath: path)
+        if isDir.boolValue && !isApp {
+            return BarButton(icon: path, cmd: path, param: "", path: "", menu: name, iconic: true)
+        }
+        // A plain file has to be launchable: an app bundle, or something with an execute bit.
+        guard isApp || fm.isExecutableFile(atPath: path) else { return nil }
+        return BarButton(icon: path, cmd: path, param: "%S", path: "", menu: name, iconic: true)
+    }
+
+    /// Persist the bar and re-render the live strip. One place, so a drop and the editor cannot
+    /// diverge — the editor used to write the file and then re-read it from disk, which meant two
+    /// code paths for the same operation.
+    func saveButtonBar() {
+        try? buttonBar.serialize().write(to: configPaths.buttonBar, atomically: true, encoding: .utf8)
+        buttonBarView.setBar(buttonBar)
+        applyButtonBarThickness()
+    }
+
     func handleButtonDrop(_ button: BarButton, files: [String]) {
         let cmd = button.cmd
         guard !files.isEmpty else { runBarButton(button); return }

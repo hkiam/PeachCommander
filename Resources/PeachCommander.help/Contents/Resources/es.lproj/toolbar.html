@@ -26,6 +26,14 @@
 <em>(Figura: La barra de botones se sitúa encima de los paneles de archivos; cada botón ejecuta un comando, un programa, una carpeta o una subbarra.)</em></p>
 <h2 id="subbarras-y-desbordamiento">Subbarras y desbordamiento</h2>
 <p>Un botón puede abrir una <em>subbarra</em>: un segundo conjunto de botones superpuesto al primero. Haz clic en él para bajar; un botón <strong>◀</strong> a la izquierda te devuelve a la barra anterior. Cuando hay más botones de los que caben en el ancho de la ventana, los sobrantes se pliegan tras una comilla angular <strong>»</strong> en el extremo derecho; haz clic en ella para alcanzarlos.</p>
+<h2 id="anadir-un-programa-arrastrandolo-a-la-barra">Añadir un programa arrastrándolo a la barra</h2>
+<p>No hace falta abrir el editor para poner una herramienta en la barra. Arrastre un programa, una app o un script desde un panel —o desde el Finder— a un <strong>espacio libre</strong> de la barra. Una marca indica dónde caerá; al soltarlo se crea allí el botón.</p>
+<ul>
+<li><strong>Programas, apps y scripts</strong> se convierten en un botón que los ejecuta sobre su selección actual: los parámetros del nuevo botón son <code>%S</code>, los nombres de los archivos seleccionados. Vacíe ese campo en el editor si la herramienta no debe recibir argumentos.</li>
+<li><strong>Carpetas</strong> se convierten en un botón que salta a ellas — y que copia archivos dentro cuando los suelta encima más adelante.</li>
+<li>Lo que no se puede ejecutar se rechaza: un documento normal no tiene permiso de ejecución, y un botón para él solo fallaría al pulsarlo.</li>
+</ul>
+<p>Soltar sobre un botón <strong>existente</strong> mantiene su significado: ese botón se ejecuta con los archivos soltados. Solo el espacio libre crea uno nuevo.</p>
 <h2 id="soltar-archivos-sobre-un-boton">Soltar archivos sobre un botón</h2>
 <p>Puedes arrastrar archivos o carpetas directamente sobre un botón:</p>
 <ul>
@@ -33,6 +41,8 @@
 <li><strong>Botón de programa</strong> — el programa se ejecuta con los elementos soltados como su selección.</li>
 <li><strong>Botón de comando</strong> — el comando se ejecuta como de costumbre.</li>
 </ul>
+<h2 id="ocultar-la-barra-de-botones">Ocultar la barra de botones</h2>
+<p>Elija <strong>Visualización &gt; Barra de botones</strong> para ocultarla, y de nuevo para recuperarla. El mismo interruptor está en la página <strong>Disposición</strong> de los ajustes, y la elección se recuerda.</p>
 <h2 id="barra-de-botones-vertical">Barra de botones vertical</h2>
 <p>Para mover la tira de la parte superior de la ventana a una columna en el lado izquierdo, elige <strong>Visualización &gt; Barra de botones vertical</strong>. Elígela de nuevo para volver a la tira horizontal.</p>
 <h2 id="notas">Notas</h2>

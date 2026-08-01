@@ -26,6 +26,16 @@ Lišta tlačidiel je pás ikonových tlačidiel pozdĺž hornej časti okna. Ka�
 
 Tlačidlo môže otvoriť *podlištu* — druhú sadu tlačidiel preloženú cez prvú. Kliknite naň na zostup; tlačidlo **◀** vľavo vás vráti na predchádzajúcu lištu. Keď je tlačidiel viac, ako sa zmestí do šírky okna, tie navyše sa zložia za šípku **»** na pravom konci; kliknite na ňu na ich dosiahnutie.
 
+## Pridanie programu potiahnutím na lištu
+
+Na umiestnenie nástroja na lištu nemusíte otvárať editor. Potiahnite program, aplikáciu alebo skript z panela — alebo z Findera — na **voľné miesto** lišty. Čiarka ukáže, kam pristane; po pustení tam vznikne tlačidlo.
+
+- **Programy, aplikácie a skripty** sa stanú tlačidlom, ktoré ich spustí nad vaším aktuálnym výberom: parametre nového tlačidla sú `%S`, teda názvy vybraných súborov. Ak nástroj nemá dostávať argumenty, vyprázdnite toto pole v editore.
+- **Priečinky** sa stanú tlačidlom, ktoré do nich prejde — a ktoré do nich kopíruje súbory, keď ich naň neskôr pustíte.
+- Čo sa nedá spustiť, je odmietnuté: bežný dokument nemá právo na spustenie a tlačidlo preň by pri kliknutí len zlyhalo.
+
+Pustenie na **existujúce** tlačidlo si zachováva svoj význam: tlačidlo sa spustí s pustenými súbormi. Nové vznikne len na voľnom mieste.
+
 ## Presunutie súborov na tlačidlo
 
 Súbory alebo priečinky môžete presunúť rovno na tlačidlo:
@@ -33,6 +43,10 @@ Súbory alebo priečinky môžete presunúť rovno na tlačidlo:
 - **Tlačidlo priečinka** — presunuté položky sa skopírujú do toho priečinka na pozadí.
 - **Tlačidlo programu** — program sa spustí s presunutými položkami ako svojím výberom.
 - **Tlačidlo príkazu** — príkaz sa spustí ako obvykle.
+
+## Skrytie lišty tlačidiel
+
+Zvoľte **Zobraziť > Lišta tlačidiel**, ak chcete lištu skryť, a znova, ak ju chcete vrátiť. Rovnaký prepínač je na stránke **Rozloženie** v nastaveniach a voľba sa pamätá.
 
 ## Zvislá lišta tlačidiel
 

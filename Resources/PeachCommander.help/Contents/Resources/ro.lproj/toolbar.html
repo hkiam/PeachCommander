@@ -26,6 +26,14 @@
 <em>(Figura: bara de butoane se află deasupra panourilor de fișiere; fiecare buton rulează o comandă, un program, un folder sau o sub-bară.)</em></p>
 <h2 id="sub-bare-si-depasire">Sub-bare și depășire</h2>
 <p>Un buton poate deschide o <em>sub-bară</em> — un al doilea set de butoane suprapus peste primul. Faceți clic pe el pentru a coborî; un buton <strong>◀</strong> în stânga vă readuce la bara anterioară. Când sunt mai multe butoane decât încap în lățimea ferestrei, cele în plus se pliază în spatele unui chevron <strong>»</strong> la capătul din dreapta; faceți clic pe el pentru a ajunge la ele.</p>
+<h2 id="adaugarea-unui-program-prin-tragere-pe-bara">Adăugarea unui program prin tragere pe bară</h2>
+<p>Nu trebuie să deschideți editorul pentru a pune o unealtă pe bară. Trageți un program, o aplicație sau un script dintr-un panou — sau din Finder — pe un <strong>spațiu liber</strong> al barei. O liniuță arată unde va ajunge; la eliberare butonul este creat acolo.</p>
+<ul>
+<li><strong>Programele, aplicațiile și scripturile</strong> devin un buton care le execută asupra selecției curente: parametrii noului buton sunt <code>%S</code>, numele fișierelor selectate. Goliți acel câmp în editor pentru o unealtă care nu trebuie să primească argumente.</li>
+<li><strong>Dosarele</strong> devin un buton care sare la ele — și care copiază fișiere în ele când le lăsați deasupra mai târziu.</li>
+<li>Ce nu poate fi executat este refuzat: un document obișnuit nu are drept de execuție, iar un buton pentru el ar eșua la primul clic.</li>
+</ul>
+<p>Lăsarea peste un buton <strong>existent</strong> își păstrează sensul: acel buton se execută cu fișierele lăsate. Doar spațiul liber creează unul nou.</p>
 <h2 id="aruncati-fisiere-pe-un-buton">Aruncați fișiere pe un buton</h2>
 <p>Puteți trage fișiere sau foldere direct pe un buton:</p>
 <ul>
@@ -33,6 +41,8 @@
 <li><strong>Buton de program</strong> — programul rulează cu elementele aruncate ca selecția sa.</li>
 <li><strong>Buton de comandă</strong> — comanda rulează ca de obicei.</li>
 </ul>
+<h2 id="ascunderea-barei-de-butoane">Ascunderea barei de butoane</h2>
+<p>Alegeți <strong>Vizualizare &gt; Bara de butoane</strong> pentru a ascunde bara și din nou pentru a o readuce. Același comutator se află pe pagina <strong>Dispunere</strong> din setări, iar alegerea este reținută.</p>
 <h2 id="bara-de-butoane-verticala">Bară de butoane verticală</h2>
 <p>Pentru a muta banda din partea de sus a ferestrei într-o coloană de-a lungul părții stângi, alegeți <strong>Vizualizare &gt; Bară de butoane verticală</strong>. Alegeți-o din nou pentru a reveni la banda orizontală.</p>
 <h2 id="note">Note</h2>

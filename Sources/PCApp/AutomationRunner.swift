@@ -14,6 +14,7 @@
 //   disconnect            leave the active panel's network mount
 //   wait  <ms>            sleep (let an async connect/list settle)
 //   dump  <file>          write the active panel's path + entry names to a file
+//   bardrop <path>        add a bar button for <path>, as a drop on free space would
 //   theme <id>            select a colour palette ("system", "norton", …)
 //   quit                  terminate the app
 //   # …                   comment / blank lines are ignored
@@ -192,6 +193,10 @@ extension MainWindowController {
                                       currentItem: "vacation.mov", bytesPerSecond: 82_000_000))
             case "help":       NSApplication.shared.showHelp(nil)   // open the Help Book in Help Viewer
             case "automate":   await automateCoreTool(arg)          // drive the Automation Core: automate <tool>|<json>
+            case "bardrop":                                // bardrop <path> — as if dropped on free bar space
+                // The drag itself cannot be scripted, but everything after it can: this is the
+                // exact entry point the bar view calls, so a scripted run exercises the real path.
+                addBarButtons(for: [arg], at: 0)
             case "theme":                                  // theme <id> — select a colour palette (F-2xx)
                 // Documentation screenshots of a theme have to be reproducible, and driving the
                 // Settings popup by hand is not. Goes through the same sink as the popup, so the

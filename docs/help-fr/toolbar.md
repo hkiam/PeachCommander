@@ -26,6 +26,16 @@ La barre de boutons est la bande de boutons à icônes en haut de la fenêtre. C
 
 Un bouton peut ouvrir une *sous-barre* — un second jeu de boutons superposé au premier. Cliquez dessus pour descendre ; un bouton **◀** à gauche vous ramène à la barre précédente. Quand il y a plus de boutons que la largeur de la fenêtre ne peut en contenir, les surnuméraires se replient derrière un chevron **»** à l'extrémité droite ; cliquez dessus pour les atteindre.
 
+## Ajouter un programme en le déposant sur la barre
+
+Vous n’avez pas besoin d’ouvrir l’éditeur pour placer un outil sur la barre. Faites glisser un programme, une app ou un script depuis un panneau — ou depuis le Finder — sur un **espace libre** de la barre. Un trait indique où il atterrira ; le relâcher y crée le bouton.
+
+- **Programmes, apps et scripts** deviennent un bouton qui les exécute sur votre sélection courante : les paramètres du nouveau bouton valent `%S`, les noms des fichiers sélectionnés. Videz ce champ dans l’éditeur pour un outil qui ne doit recevoir aucun argument.
+- **Dossiers** deviennent un bouton qui y accède — et qui y copie des fichiers lorsque vous les y déposez ensuite.
+- Ce qui ne peut pas être exécuté est refusé : un simple document n’a pas de droit d’exécution, un bouton pour lui échouerait dès le premier clic.
+
+Déposer sur un bouton **existant** conserve son sens habituel : ce bouton s’exécute avec les fichiers déposés. Seul l’espace libre en crée un nouveau.
+
 ## Déposer des fichiers sur un bouton
 
 Vous pouvez glisser des fichiers ou des dossiers directement sur un bouton :
@@ -33,6 +43,10 @@ Vous pouvez glisser des fichiers ou des dossiers directement sur un bouton :
 - **Bouton de dossier** — les éléments déposés sont copiés dans ce dossier en arrière-plan.
 - **Bouton de programme** — le programme s'exécute avec les éléments déposés comme sélection.
 - **Bouton de commande** — la commande s'exécute normalement.
+
+## Masquer la barre de boutons
+
+Choisissez **Présentation > Barre de boutons** pour masquer la barre, et de nouveau pour la faire revenir. Le même réglage se trouve sur la page **Disposition** des réglages, et le choix est mémorisé.
 
 ## Barre de boutons verticale
 

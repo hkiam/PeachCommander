@@ -26,6 +26,16 @@ Lišta tlačítek je pruh ikonových tlačítek podél horní části okna. Kaž
 
 Tlačítko může otevřít *podlištu* — druhou sadu tlačítek přeloženou přes první. Klepnutím na ni sestoupíte; tlačítko **◀** vlevo vás vrátí na předchozí lištu. Když je tlačítek více, než se vejde do šířky okna, ta navíc se sbalí za šipku **»** na pravém konci; klepnutím na ni se k nim dostanete.
 
+## Přidání programu přetažením na lištu
+
+Abyste dali nástroj na lištu, nemusíte otevírat editor. Přetáhněte program, aplikaci nebo skript z panelu — nebo z Finderu — na **volné místo** lišty. Čárka ukáže, kam přistane; po puštění tam vznikne tlačítko.
+
+- **Programy, aplikace a skripty** se stanou tlačítkem, které je spustí nad vaším aktuálním výběrem: parametry nového tlačítka jsou `%S`, tedy názvy vybraných souborů. Pokud nástroj nemá dostávat argumenty, vyprázdněte toto pole v editoru.
+- **Složky** se stanou tlačítkem, které do nich přejde — a které do nich kopíruje soubory, když je na ně později pustíte.
+- Co nelze spustit, je odmítnuto: běžný dokument nemá právo ke spuštění a tlačítko pro něj by při kliknutí jen selhalo.
+
+Puštění na **existující** tlačítko si zachovává svůj význam: tlačítko se spustí s puštěnými soubory. Nové vznikne jen na volném místě.
+
 ## Přetažení souborů na tlačítko
 
 Soubory nebo složky můžete přetáhnout přímo na tlačítko:
@@ -33,6 +43,10 @@ Soubory nebo složky můžete přetáhnout přímo na tlačítko:
 - **Tlačítko složky** — přetažené položky se zkopírují do té složky na pozadí.
 - **Tlačítko programu** — program se spustí s přetaženými položkami jako svým výběrem.
 - **Tlačítko příkazu** — příkaz se spustí jako obvykle.
+
+## Skrytí lišty tlačítek
+
+Zvolte **Zobrazení > Lišta tlačítek**, chcete-li lištu skrýt, a znovu, chcete-li ji vrátit. Stejný přepínač je na stránce **Rozvržení** v nastavení a volba se pamatuje.
 
 ## Svislá lišta tlačítek
 

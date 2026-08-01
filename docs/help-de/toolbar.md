@@ -26,6 +26,16 @@ Die Schaltflächenleiste ist der Streifen mit Symbolschaltflächen quer über de
 
 Eine Schaltfläche kann eine *Unterleiste* öffnen — einen zweiten Satz Schaltflächen, der über den ersten gelegt wird. Klicken Sie darauf, um hineinzugehen; eine Schaltfläche **◀** ganz links bringt Sie zur vorherigen Leiste zurück. Wenn mehr Schaltflächen vorhanden sind, als in die Fensterbreite passen, klappen die überzähligen hinter einem Chevron **»** am rechten Ende zusammen; klicken Sie darauf, um sie zu erreichen.
 
+## Ein Programm per Drag & Drop auf die Leiste legen
+
+Sie müssen den Editor nicht öffnen, um ein Werkzeug auf die Leiste zu legen. Ziehen Sie ein Programm, eine App oder ein Skript aus einem Panel — oder aus dem Finder — auf eine **freie Fläche** der Leiste. Ein Strich zeigt, wo es landet; beim Loslassen entsteht dort der Knopf.
+
+- **Programme, Apps und Skripte** werden zu einem Knopf, der sie auf Ihrer aktuellen Auswahl ausführt: die Parameter des neuen Knopfes stehen auf `%S`, den ausgewählten Dateinamen. Leeren Sie dieses Feld im Editor, wenn das Werkzeug keine Argumente bekommen soll.
+- **Ordner** werden zu einem Knopf, der dorthin springt — und der Dateien dorthin kopiert, wenn Sie sie später darauf fallen lassen.
+- Was sich nicht ausführen lässt, wird abgelehnt: ein gewöhnliches Dokument hat kein Ausführungsrecht, ein Knopf dafür würde beim Klicken nur scheitern.
+
+Das Fallenlassen auf einen **vorhandenen** Knopf behält seine bisherige Bedeutung — der Knopf wird mit den abgelegten Dateien ausgeführt. Nur freie Fläche legt einen neuen an.
+
 ## Dateien auf eine Schaltfläche ziehen
 
 Sie können Dateien oder Ordner direkt auf eine Schaltfläche ziehen:
@@ -33,6 +43,10 @@ Sie können Dateien oder Ordner direkt auf eine Schaltfläche ziehen:
 - **Ordner-Schaltfläche** — die abgelegten Elemente werden im Hintergrund in diesen Ordner kopiert.
 - **Programm-Schaltfläche** — das Programm wird mit den abgelegten Elementen als Auswahl ausgeführt.
 - **Befehls-Schaltfläche** — der Befehl wird wie gewohnt ausgeführt.
+
+## Die Schaltflächenleiste ausblenden
+
+Wählen Sie **Ansicht > Schaltflächenleiste**, um die Leiste auszublenden, und erneut, um sie zurückzuholen. Derselbe Schalter steht auf der Seite **Layout** in den Einstellungen; die Wahl wird gemerkt.
 
 ## Vertikale Schaltflächenleiste
 

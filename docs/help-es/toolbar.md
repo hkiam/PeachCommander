@@ -26,6 +26,16 @@ La barra de botones es la tira de botones con iconos en la parte superior de la 
 
 Un botón puede abrir una *subbarra*: un segundo conjunto de botones superpuesto al primero. Haz clic en él para bajar; un botón **◀** a la izquierda te devuelve a la barra anterior. Cuando hay más botones de los que caben en el ancho de la ventana, los sobrantes se pliegan tras una comilla angular **»** en el extremo derecho; haz clic en ella para alcanzarlos.
 
+## Añadir un programa arrastrándolo a la barra
+
+No hace falta abrir el editor para poner una herramienta en la barra. Arrastre un programa, una app o un script desde un panel —o desde el Finder— a un **espacio libre** de la barra. Una marca indica dónde caerá; al soltarlo se crea allí el botón.
+
+- **Programas, apps y scripts** se convierten en un botón que los ejecuta sobre su selección actual: los parámetros del nuevo botón son `%S`, los nombres de los archivos seleccionados. Vacíe ese campo en el editor si la herramienta no debe recibir argumentos.
+- **Carpetas** se convierten en un botón que salta a ellas — y que copia archivos dentro cuando los suelta encima más adelante.
+- Lo que no se puede ejecutar se rechaza: un documento normal no tiene permiso de ejecución, y un botón para él solo fallaría al pulsarlo.
+
+Soltar sobre un botón **existente** mantiene su significado: ese botón se ejecuta con los archivos soltados. Solo el espacio libre crea uno nuevo.
+
 ## Soltar archivos sobre un botón
 
 Puedes arrastrar archivos o carpetas directamente sobre un botón:
@@ -33,6 +43,10 @@ Puedes arrastrar archivos o carpetas directamente sobre un botón:
 - **Botón de carpeta** — los elementos soltados se copian en esa carpeta en segundo plano.
 - **Botón de programa** — el programa se ejecuta con los elementos soltados como su selección.
 - **Botón de comando** — el comando se ejecuta como de costumbre.
+
+## Ocultar la barra de botones
+
+Elija **Visualización > Barra de botones** para ocultarla, y de nuevo para recuperarla. El mismo interruptor está en la página **Disposición** de los ajustes, y la elección se recuerda.
 
 ## Barra de botones vertical
 

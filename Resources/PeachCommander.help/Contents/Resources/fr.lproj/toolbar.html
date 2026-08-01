@@ -26,6 +26,14 @@
 <em>(Figure : la barre de boutons se trouve au-dessus des panneaux de fichiers ; chaque bouton exécute une commande, un programme, un dossier ou une sous-barre.)</em></p>
 <h2 id="sous-barres-et-debordement">Sous-barres et débordement</h2>
 <p>Un bouton peut ouvrir une <em>sous-barre</em> — un second jeu de boutons superposé au premier. Cliquez dessus pour descendre ; un bouton <strong>◀</strong> à gauche vous ramène à la barre précédente. Quand il y a plus de boutons que la largeur de la fenêtre ne peut en contenir, les surnuméraires se replient derrière un chevron <strong>»</strong> à l'extrémité droite ; cliquez dessus pour les atteindre.</p>
+<h2 id="ajouter-un-programme-en-le-deposant-sur-la-barre">Ajouter un programme en le déposant sur la barre</h2>
+<p>Vous n’avez pas besoin d’ouvrir l’éditeur pour placer un outil sur la barre. Faites glisser un programme, une app ou un script depuis un panneau — ou depuis le Finder — sur un <strong>espace libre</strong> de la barre. Un trait indique où il atterrira ; le relâcher y crée le bouton.</p>
+<ul>
+<li><strong>Programmes, apps et scripts</strong> deviennent un bouton qui les exécute sur votre sélection courante : les paramètres du nouveau bouton valent <code>%S</code>, les noms des fichiers sélectionnés. Videz ce champ dans l’éditeur pour un outil qui ne doit recevoir aucun argument.</li>
+<li><strong>Dossiers</strong> deviennent un bouton qui y accède — et qui y copie des fichiers lorsque vous les y déposez ensuite.</li>
+<li>Ce qui ne peut pas être exécuté est refusé : un simple document n’a pas de droit d’exécution, un bouton pour lui échouerait dès le premier clic.</li>
+</ul>
+<p>Déposer sur un bouton <strong>existant</strong> conserve son sens habituel : ce bouton s’exécute avec les fichiers déposés. Seul l’espace libre en crée un nouveau.</p>
 <h2 id="deposer-des-fichiers-sur-un-bouton">Déposer des fichiers sur un bouton</h2>
 <p>Vous pouvez glisser des fichiers ou des dossiers directement sur un bouton :</p>
 <ul>
@@ -33,6 +41,8 @@
 <li><strong>Bouton de programme</strong> — le programme s'exécute avec les éléments déposés comme sélection.</li>
 <li><strong>Bouton de commande</strong> — la commande s'exécute normalement.</li>
 </ul>
+<h2 id="masquer-la-barre-de-boutons">Masquer la barre de boutons</h2>
+<p>Choisissez <strong>Présentation &gt; Barre de boutons</strong> pour masquer la barre, et de nouveau pour la faire revenir. Le même réglage se trouve sur la page <strong>Disposition</strong> des réglages, et le choix est mémorisé.</p>
 <h2 id="barre-de-boutons-verticale">Barre de boutons verticale</h2>
 <p>Pour déplacer la bande du haut de la fenêtre vers une colonne le long du côté gauche, choisissez <strong>Affichage &gt; Barre de boutons verticale</strong>. Choisissez-la à nouveau pour revenir à la bande horizontale.</p>
 <h2 id="remarques">Remarques</h2>
