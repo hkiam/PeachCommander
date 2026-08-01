@@ -213,6 +213,23 @@ struct PluginDecompilerRegistry {
         func flush() {
             guard let id = section else { return }
             defer { fields = [:] }
+            // `extends = cfr` inherits a built-in's tool, jar, kinds and output, so a profile that
+            // only changes the flags is three lines instead of six. CFR alone has dozens of
+            // switches, and a power user wants several presets of the same engine, not one.
+            if let base = fields["extends"].flatMap({ baseId in
+                PluginDecompilerEngine.builtIns(engineDirectory: engineDirectory)
+                    .first { $0.id == baseId.trimmingCharacters(in: .whitespaces) }
+            }) {
+                for (key, value) in [("tool", base.tool), ("kinds", base.kinds.joined(separator: ",")),
+                                     ("output", base.output.rawValue),
+                                     ("engine", base.enginePath ?? ""), ("args", base.args.joined(separator: " ")),
+                                     ("timeout", String(base.timeout))]
+                where fields[key] == nil && !value.isEmpty {
+                    fields[key] = value
+                }
+            } else if let missing = fields["extends"] {
+                warnings.append("[\(id)]: unknown `extends = \(missing)`, ignored")
+            }
             guard let tool = fields["tool"], !tool.isEmpty else {
                 warnings.append("[\(id)]: no `tool`, ignored"); return
             }
@@ -315,6 +332,113 @@ extension PluginDecompilerEngine {
             if FileManager.default.isExecutableFile(atPath: candidate) { return candidate }
         }
         return nil
+    }
+}
+
+// MARK: - Result cache
+
+/// Decompiled output cached on disk, keyed by what can invalidate it.
+///
+/// Decompiling costs seconds; reopening the same class should not. The key is (path, size,
+/// modification time, engine id, engine arguments) — size and mtime because the file may have been
+/// rebuilt, and the arguments because a profile with different flags is a different result even
+/// though the engine id is the same.
+///
+/// Failures are never cached. A missing engine or a crash is a condition of the *system*, not of
+/// the file, and caching it would mean installing the engine did not help until something evicted
+/// the entry.
+enum PluginDecompilerCache {
+    /// Old entries are dropped past this age so the folder cannot grow without bound.
+    static let maximumAge: TimeInterval = 30 * 24 * 3600
+
+    static func directory(configRoot: String) -> String {
+        (PluginDecompilerRegistry.engineDirectory(configRoot: configRoot) as NSString)
+            .appendingPathComponent("cache")
+    }
+
+    /// A stable, filesystem-safe key. Hashing rather than sanitising the path: paths contain
+    /// characters a file name cannot, and are longer than a file name may be.
+    static func key(path: String, engine: PluginDecompilerEngine) -> String? {
+        guard let attrs = try? FileManager.default.attributesOfItem(atPath: path),
+              let size = attrs[.size] as? Int,
+              let modified = attrs[.modificationDate] as? Date else { return nil }
+        let material = [path, String(size), String(Int(modified.timeIntervalSince1970)),
+                        engine.id, engine.args.joined(separator: " ")].joined(separator: "\u{1}")
+        // FNV-1a: enough to distinguish inputs, and no dependency on CryptoKit for a cache name.
+        var hash: UInt64 = 0xcbf29ce484222325
+        for byte in Array(material.utf8) {
+            hash = (hash ^ UInt64(byte)) &* 0x100000001b3
+        }
+        return String(hash, radix: 36)
+    }
+
+    static func read(path: String, engine: PluginDecompilerEngine, configRoot: String) -> String? {
+        guard let key = key(path: path, engine: engine) else { return nil }
+        let file = (directory(configRoot: configRoot) as NSString).appendingPathComponent(key)
+        return try? String(contentsOfFile: file, encoding: .utf8)
+    }
+
+    static func write(_ source: String, path: String, engine: PluginDecompilerEngine, configRoot: String) {
+        guard let key = key(path: path, engine: engine) else { return }
+        let dir = directory(configRoot: configRoot)
+        try? FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+        try? source.write(toFile: (dir as NSString).appendingPathComponent(key),
+                          atomically: true, encoding: .utf8)
+        prune(dir)
+    }
+
+    /// Drop entries older than `maximumAge`. Cheap enough to run on every write: the folder holds
+    /// one small file per (file, engine) pair a user has actually looked at.
+    private static func prune(_ dir: String) {
+        let fm = FileManager.default
+        guard let names = try? fm.contentsOfDirectory(atPath: dir) else { return }
+        let cutoff = Date().addingTimeInterval(-maximumAge)
+        for name in names {
+            let file = (dir as NSString).appendingPathComponent(name)
+            guard let attrs = try? fm.attributesOfItem(atPath: file),
+                  let modified = attrs[.modificationDate] as? Date, modified < cutoff else { continue }
+            try? fm.removeItem(atPath: file)
+        }
+    }
+}
+
+// MARK: - Preferred engine
+
+/// Which engine the user last chose, per input kind.
+///
+/// A separate small file rather than a section in `decompilers.ini`: that file is hand-written and
+/// rewriting it to record a menu choice would reformat someone's own comments.
+enum PluginDecompilerPreference {
+    private static func file(configRoot: String) -> String {
+        (PluginDecompilerRegistry.engineDirectory(configRoot: configRoot) as NSString)
+            .appendingPathComponent("preferred.ini")
+    }
+
+    static func read(configRoot: String) -> [String: String] {
+        guard let text = try? String(contentsOfFile: file(configRoot: configRoot), encoding: .utf8) else {
+            return [:]
+        }
+        var out: [String: String] = [:]
+        for line in text.components(separatedBy: .newlines) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard !trimmed.isEmpty, !trimmed.hasPrefix(";"), !trimmed.hasPrefix("["),
+                  let eq = trimmed.firstIndex(of: "=") else { continue }
+            out[String(trimmed[trimmed.startIndex..<eq]).trimmingCharacters(in: .whitespaces).lowercased()] =
+                String(trimmed[trimmed.index(after: eq)...]).trimmingCharacters(in: .whitespaces)
+        }
+        return out
+    }
+
+    static func set(engine id: String, forKind kind: String, configRoot: String) {
+        var values = read(configRoot: configRoot)
+        values[kind.lowercased()] = id
+        let body = ["; Engine chosen last for each file kind — written by the decompiler plugin.",
+                    "[Preferred]"]
+            + values.keys.sorted().map { "\($0) = \(values[$0]!)" }
+        let path = file(configRoot: configRoot)
+        try? FileManager.default.createDirectory(atPath: (path as NSString).deletingLastPathComponent,
+                                                 withIntermediateDirectories: true)
+        try? body.joined(separator: "\n").appending("\n").write(toFile: path, atomically: true, encoding: .utf8)
     }
 }
 

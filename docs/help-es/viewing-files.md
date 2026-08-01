@@ -61,6 +61,8 @@ Cambie de motor con el menú en la parte superior del visor; el elegido se usa d
 
 El código se resalta sintácticamente, y dos botones van más allá: **Guardar como…** lo escribe en un archivo y **Abrir en el editor** lo entrega a lo que abra los `.java` en su Mac. Un resultado muy grande se muestra sin resaltado para que aparezca de inmediato en lugar de tras una pausa; la línea de estado lo indica.
 
+Los resultados se guardan en caché en el disco, así que volver a abrir un archivo ya visto es inmediato; la clave incluye el tamaño y la fecha del archivo y los argumentos del motor, de modo que una clase recompilada o una opción cambiada se descompila de nuevo. El motor elegido se recuerda por tipo de archivo. Un perfil puede heredar de un motor incorporado con `extends = cfr` y redefinir solo las opciones, útil si mantiene dos ajustes del mismo motor.
+
 Android también está cubierto: F3 sobre un archivo `.dex` usa **jadx** (Apache 2.0, `brew install jadx`), que convierte el bytecode de Dalvik de vuelta a Java. Bastó con una descripción de motor: el mismo mecanismo, otro formato.
 
 El módulo está **desactivado hasta que usted lo active**, en Ajustes ▸ Módulos: casi nadie abre un archivo .class, y sin un motor no sirve de nada.

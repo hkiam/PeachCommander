@@ -61,6 +61,8 @@ Byt motor med menyn högst upp i visaren; den du väljer används genast och res
 
 Källkoden syntaxmarkeras, och två knappar tar den vidare: **Spara som…** skriver den till en fil och **Öppna i redigerare** lämnar den till det som öppnar `.java` på din Mac. Ett mycket stort resultat visas omarkerat så att det syns direkt i stället för efter en paus; statusraden säger till när det händer.
 
+Resultat cachas på disk, så att öppna en fil du redan sett igen går direkt; nyckeln omfattar filens storlek och datum samt motorns argument, så en ombyggd class eller en ändrad flagga dekompileras på nytt. Den valda motorn kommer ihåg per filtyp. En profil kan ärva från en inbyggd motor med `extends = cfr` och bara ersätta flaggorna — bra när du har två förinställningar av samma motor.
+
 Android täcks också: F3 på en `.dex`-fil använder **jadx** (Apache 2.0, `brew install jadx`), som gör Dalvik-bytekod till Java igen. Det krävdes en enda motorbeskrivning — samma mekanism, annat format.
 
 Modulen är **av tills du slår på den**, under Inställningar ▸ Insticksmoduler — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.

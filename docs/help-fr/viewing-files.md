@@ -61,6 +61,8 @@ Changez de moteur avec le menu en haut de la visionneuse ; celui que vous choisi
 
 Le source est coloré syntaxiquement, et deux boutons vont plus loin : **Enregistrer sous…** l’écrit dans un fichier, et **Ouvrir dans l’éditeur** le confie à ce qui ouvre les `.java` sur votre Mac. Un résultat très volumineux s’affiche sans coloration afin de paraître immédiatement plutôt qu’après une pause ; la ligne d’état l’indique.
 
+Les résultats sont mis en cache sur le disque : réouvrir un fichier déjà consulté est immédiat. La clé comprend la taille et la date du fichier ainsi que les arguments du moteur, si bien qu’une classe recompilée ou une option modifiée est décompilée à nouveau. Le moteur choisi est mémorisé par type de fichier. Un profil peut hériter d’un moteur intégré avec `extends = cfr` et ne redéfinir que les options — utile si vous gardez deux préréglages du même moteur.
+
 Android est également couvert : F3 sur un fichier `.dex` utilise **jadx** (Apache 2.0, `brew install jadx`), qui reconvertit le bytecode Dalvik en Java. Il a suffi d’une description de moteur — même mécanisme, autre format.
 
 Le module est **désactivé tant que vous ne l’activez pas**, dans Réglages ▸ Modules — la plupart des gens n’ouvrent jamais de fichier .class, et sans moteur il ne sert à rien.

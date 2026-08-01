@@ -708,7 +708,10 @@ features:
       characters so a large result appears at once. Android .dex is covered by the same machinery
       through jadx (Apache-2.0): adding the format cost one engine descriptor and one clause in the
       detect string, with no change to the runner — which is the claim the architecture was
-      supposed to support, now asserted by a test.
+      supposed to support, now asserted by a test. Results are cached on disk, keyed by path, size,
+      mtime, engine id and engine arguments — failures deliberately are not, since a missing engine
+      is a condition of the system. The chosen engine is remembered per kind in preferred.ini, and
+      `extends = <builtin>` lets a config section inherit a built-in and override only its flags.
 
   # ───────────────────────── Settings ─────────────────────────
   - id: settings

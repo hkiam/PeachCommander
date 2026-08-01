@@ -288,6 +288,92 @@ final class PluginDecompilerTests: XCTestCase {
         XCTAssertEqual(defaulted.first?.timeout, PluginDecompilerEngine.defaultTimeout)
     }
 
+    // MARK: - Cache, preference, profiles (F-347)
+
+    /// The key must change when the file changes, or a rebuilt class would show yesterday's source.
+    func testCacheKeyFollowsFileAndArguments() throws {
+        let file = dir.appendingPathComponent("A.class").path
+        try "one".write(toFile: file, atomically: true, encoding: .utf8)
+        let engine = PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: "/bin/echo",
+                                            args: ["-a"], enginePath: nil, output: .stdout,
+                                            note: nil, timeout: 5)
+        let first = PluginDecompilerCache.key(path: file, engine: engine)
+        XCTAssertNotNil(first)
+
+        // Same everything: same key.
+        XCTAssertEqual(first, PluginDecompilerCache.key(path: file, engine: engine))
+
+        // Different flags are a different result even for the same engine id.
+        let profile = PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: "/bin/echo",
+                                            args: ["-b"], enginePath: nil, output: .stdout,
+                                            note: nil, timeout: 5)
+        XCTAssertNotEqual(first, PluginDecompilerCache.key(path: file, engine: profile))
+
+        // A rebuilt file must invalidate it.
+        try "two, and longer".write(toFile: file, atomically: true, encoding: .utf8)
+        XCTAssertNotEqual(first, PluginDecompilerCache.key(path: file, engine: engine))
+    }
+
+    func testCacheRoundTrips() throws {
+        let file = dir.appendingPathComponent("B.class").path
+        try "x".write(toFile: file, atomically: true, encoding: .utf8)
+        let engine = PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: "/bin/echo",
+                                            args: [], enginePath: nil, output: .stdout,
+                                            note: nil, timeout: 5)
+        XCTAssertNil(PluginDecompilerCache.read(path: file, engine: engine, configRoot: dir.path))
+        PluginDecompilerCache.write("class B {}", path: file, engine: engine, configRoot: dir.path)
+        XCTAssertEqual(PluginDecompilerCache.read(path: file, engine: engine, configRoot: dir.path),
+                       "class B {}")
+    }
+
+    /// A missing file must not produce a key at all — otherwise every unreadable path would share
+    /// one cache entry and serve each other's contents.
+    func testNoCacheKeyForAMissingFile() {
+        let engine = PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: "/bin/echo",
+                                            args: [], enginePath: nil, output: .stdout,
+                                            note: nil, timeout: 5)
+        XCTAssertNil(PluginDecompilerCache.key(path: "/nope/nothing.class", engine: engine))
+    }
+
+    func testPreferredEngineRoundTripsPerKind() {
+        XCTAssertTrue(PluginDecompilerPreference.read(configRoot: dir.path).isEmpty)
+        PluginDecompilerPreference.set(engine: "vineflower", forKind: "class", configRoot: dir.path)
+        PluginDecompilerPreference.set(engine: "jadx", forKind: "dex", configRoot: dir.path)
+        let values = PluginDecompilerPreference.read(configRoot: dir.path)
+        XCTAssertEqual(values["class"], "vineflower")
+        XCTAssertEqual(values["dex"], "jadx")
+        // Changing one must not lose the other.
+        PluginDecompilerPreference.set(engine: "cfr", forKind: "class", configRoot: dir.path)
+        XCTAssertEqual(PluginDecompilerPreference.read(configRoot: dir.path)["dex"], "jadx")
+    }
+
+    /// `extends` is what makes several presets of one engine practical: inherit the tool and jar,
+    /// override only the flags.
+    func testProfileInheritsFromABuiltIn() {
+        let (engines, warnings) = PluginDecompilerRegistry.parse("""
+            [cfr-sugar]
+            name    = CFR (sugared)
+            extends = cfr
+            args    = -jar {engine} --sugarenums true {input}
+            """, engineDirectory: "/opt/e")
+        XCTAssertTrue(warnings.isEmpty, "warnings: \(warnings)")
+        guard let e = engines.first else { return XCTFail("nothing parsed") }
+        XCTAssertEqual(e.tool, "java", "tool inherited")
+        XCTAssertEqual(e.kinds, ["class", "jar"], "kinds inherited")
+        XCTAssertEqual(e.enginePath, "/opt/e/cfr.jar", "jar inherited")
+        XCTAssertTrue(e.args.contains("--sugarenums"), "args overridden")
+    }
+
+    func testUnknownExtendsIsReported() {
+        let (_, warnings) = PluginDecompilerRegistry.parse("""
+            [x]
+            extends = nosuchengine
+            kinds = class
+            tool = /bin/echo
+            """, engineDirectory: "/e")
+        XCTAssertTrue(warnings.contains { $0.contains("nosuchengine") }, "warnings: \(warnings)")
+    }
+
     // MARK: - Messages
 
     func testEveryErrorSaysSomethingSpecific() {

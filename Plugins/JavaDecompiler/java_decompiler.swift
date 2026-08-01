@@ -54,7 +54,11 @@ final class DecompiledView: NSView {
         // Prefer an engine that is actually installed; otherwise show the first one so the view
         // can explain what to install rather than presenting an empty popup.
         log.info("open \((path as NSString).lastPathComponent, privacy: .public): \(self.candidates.count) engine(s), available: \(self.candidates.filter(\.isAvailable).map(\.id).joined(separator: ","), privacy: .public)")
-        let initial = candidates.firstIndex { $0.isAvailable } ?? 0
+        // The engine chosen last for this kind wins, if it is still installed. Someone who prefers
+        // Vineflower should not have to pick it again for every file.
+        let preferred = PluginDecompilerPreference.read(configRoot: configRoot)[kind]
+        let initial = candidates.firstIndex { $0.id == preferred && $0.isAvailable }
+            ?? candidates.firstIndex { $0.isAvailable } ?? 0
         if !candidates.isEmpty {
             enginePopup.selectItem(at: initial)
             run(candidates[initial])
@@ -128,6 +132,7 @@ final class DecompiledView: NSView {
     @objc private func engineChanged() {
         let i = enginePopup.selectedItem?.tag ?? 0
         guard candidates.indices.contains(i) else { return }
+        PluginDecompilerPreference.set(engine: candidates[i].id, forKind: kind, configRoot: configRootPath)
         run(candidates[i])
     }
 
@@ -189,6 +194,14 @@ final class DecompiledView: NSView {
             display(cached, engine: engine)
             return
         }
+        // Disk cache before spawning anything: reopening a class you looked at yesterday should be
+        // instant, and decompiling is measured in seconds.
+        if let onDisk = PluginDecompilerCache.read(path: path, engine: engine, configRoot: configRootPath) {
+            cache[engine.id] = onDisk
+            display(onDisk, engine: engine)
+            log.info("\(engine.id, privacy: .public): served from cache")
+            return
+        }
         guard engine.isAvailable else {
             show(error: engine.missingPath.map { .engineMissing(engine: engine.name, path: $0) }
                     ?? .engineMissing(engine: engine.name, path: engine.tool),
@@ -208,6 +221,10 @@ final class DecompiledView: NSView {
                 case .success(let source):
                     log.info("\(engine.id, privacy: .public) produced \(source.count) characters")
                     self.cache[engine.id] = source
+                    // Only successes are cached — a missing engine is a condition of the system,
+                    // and caching it would mean installing the engine changed nothing.
+                    PluginDecompilerCache.write(source, path: file, engine: engine,
+                                                configRoot: self.configRootPath)
                     self.display(source, engine: engine)
                 case .failure(let error):
                     log.warning("\(engine.id, privacy: .public): \(error.userMessage, privacy: .public)")

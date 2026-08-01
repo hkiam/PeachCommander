@@ -61,6 +61,8 @@ Schimbați motorul din meniul aflat în partea de sus a vizualizatorului; cel al
 
 Codul este evidențiat sintactic, iar două butoane merg mai departe: **Salvează ca…** îl scrie într-un fișier, iar **Deschide în editor** îl predă programului care deschide `.java` pe Mac-ul dumneavoastră. Un rezultat foarte mare este afișat fără evidențiere, ca să apară imediat și nu după o pauză; linia de stare o menționează.
 
+Rezultatele sunt păstrate în cache pe disc, așa că redeschiderea unui fișier deja vizualizat este imediată; cheia include dimensiunea și data fișierului, precum și argumentele motorului, astfel încât o clasă recompilată sau o opțiune schimbată este decompilată din nou. Motorul ales este reținut pentru fiecare tip de fișier. Un profil poate moșteni de la un motor inclus prin `extends = cfr` și poate rescrie doar opțiunile — util când păstrați două presetări ale aceluiași motor.
+
 Android este de asemenea acoperit: F3 pe un fișier `.dex` folosește **jadx** (Apache 2.0, `brew install jadx`), care transformă bytecode-ul Dalvik înapoi în Java. A fost nevoie de o singură descriere de motor — același mecanism, alt format.
 
 Modulul este **oprit până îl porniți**, în Setări ▸ Module — cei mai mulți nu deschid niciodată un fișier .class, iar fără motor oricum nu ajută.
