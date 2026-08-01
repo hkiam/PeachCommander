@@ -18,6 +18,18 @@ rm -rf "$ROOT"; mkdir -p "$ROOT"/{Documents,Images,Projects/peach-app/src,Music,
 printf 'Quarterly report\n================\n\nRevenue up 12%%.\n' > "$ROOT/Documents/report.txt"
 printf '# Meeting notes\n\n- Ship 1.0\n- Write docs\n' > "$ROOT/Documents/notes.md"
 printf 'name,qty,price\nApples,12,0.40\nPears,8,0.55\n' > "$ROOT/Documents/inventory.csv"
+
+# A real multi-page PDF, built from tools every macOS has. The Info sidebar's whole point is a
+# large preview you can page through, and that cannot be shown on a one-line text file.
+python3 - > /tmp/pc-doc.txt <<'PYDOC'
+for page in range(1, 4):
+    print(f"Peach Commander \u2014 sample document, page {page}\n")
+    for i in range(1, 40):
+        print(f"  line {i:02d} of page {page}: the quick brown fox jumps over the lazy dog.")
+    print("\f", end="")
+PYDOC
+/usr/sbin/cupsfilter /tmp/pc-doc.txt > "$ROOT/Documents/handbook.pdf" 2>/dev/null || true
+rm -f /tmp/pc-doc.txt
 printf '{ "app": "Peach Commander", "version": "1.0" }\n' > "$ROOT/Documents/config.json"
 printf 'Lorem ipsum dolor sit amet.\n' > "$ROOT/Documents/readme.txt"
 

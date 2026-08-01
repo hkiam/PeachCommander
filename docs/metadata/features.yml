@@ -490,6 +490,22 @@ features:
     documentation: { integrated_help: true, website: true }
     notes: "Ctrl+Q embeds QLPreviewView in the inactive panel; Cmd+Y native Quick Look."
 
+  - id: preview-info
+    name: Info-Seite im Seitenfenster
+    name_en: Info page in the side panel
+    category: viewer
+    audiences: [user]
+    status: stable
+    source: { modules: [PCApp], types: [PreviewPanelView, MainWindowController] }
+    documentation: { integrated_help: true, website: false }
+    notes: >-
+      Reworked along Finder's info sidebar (F-343): a live QLPreviewView that fills the panel width
+      instead of a fixed 160 pt thumbnail, so every format Quick Look supports renders and a
+      multi-page document pages inside the panel. Name, kind and size below it, then created /
+      modified / where as key-value rows. The preview is debounced (~0.18 s) so walking a directory
+      with the arrow keys does not spawn a preview per row, and falls back to the file icon for
+      folders and anything Quick Look has no generator for.
+
   - id: editor
     name: Text-/Code-Editor (F4) & Hex-Editor
     name_en: Text/code editor & hex editor

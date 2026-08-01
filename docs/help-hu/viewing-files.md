@@ -48,6 +48,16 @@ Egy gyors, magától a macOS által kezelt teljes képernyős előnézethez nyom
 | Quick Look (macOS előnézet) | Cmd+Y |
 | A megjelenítő vagy a Gyorsnézet bezárása | Esc |
 
+## Az információs oldal az oldalsó panelen
+
+Az oldalsó panelen (**Nézet > Előnézeti panel**, vagy Cmd+Shift+P) van egy **Információ** oldal, amely a kurzor alatti elemet úgy mutatja, ahogyan a Finder információs oldalsávja.
+
+- Az előnézet kitölti a panel teljes szélességét: ha szélesíti a panelt, az előnézet vele nő.
+- Ez valódi macOS-előnézet, nem apró bélyegkép: minden formátum működik, amit a Gyorsnézet meg tud jeleníteni, a több oldalas dokumentumokat pedig az előnézeten belül lapozhatja végig.
+- Alatta a név, a típus és a méret áll, majd hogy mikor jött létre és mikor módosult az elem, és melyik mappában van.
+
+A kurzor mozgatásakor a név és az adatok azonnal frissülnek; az előnézet egy pillanattal később követi, így egy lenyomva tartott nyílbillentyű egy hosszú mappán át nem indít előnézetet minden érintett sorhoz.
+
 ## Megjegyzések
 
 - A megjelenítő csak olvasható. Egy fájl megváltoztatásához használja inkább a szerkesztőt (lásd Fájlok szerkesztése).

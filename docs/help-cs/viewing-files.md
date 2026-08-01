@@ -48,6 +48,16 @@ Pro rychlý celoobrazovkový náhled zpracovaný přímo macOS stiskněte Cmd+Y 
 | Quick Look (náhled macOS) | Cmd+Y |
 | Zavřít prohlížeč nebo Rychlý náhled | Esc |
 
+## Stránka s informacemi v bočním panelu
+
+Boční panel (**Zobrazení > Panel náhledu** nebo Cmd+Shift+P) má stránku **Informace**, která ukazuje položku pod kurzorem tak, jak to dělá informační postranní panel Finderu.
+
+- Náhled vyplní celou šířku panelu — když panel rozšíříte, náhled roste s ním.
+- Jde o skutečný náhled macOS, ne o malý náhledový obrázek: funguje každý formát, který umí zobrazit Rychlý náhled, a vícestránkovým dokumentem listujete přímo v náhledu stránku po stránce.
+- Pod ním je název, druh a velikost, dále kdy byla položka vytvořena a změněna a v které složce leží.
+
+Při pohybu kurzoru se název a údaje aktualizují okamžitě; náhled následuje o okamžik později, aby podržená šipka procházející dlouhou složkou nespouštěla náhled pro každý míjený řádek.
+
 ## Poznámky
 
 - Prohlížeč je jen pro čtení. Chcete-li soubor změnit, použijte místo toho editor (viz Úpravy souborů).

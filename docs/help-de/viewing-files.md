@@ -48,6 +48,16 @@ Für eine schnelle Vollbild-Vorschau, die macOS selbst übernimmt, drücken Sie 
 | Quick Look (macOS-Vorschau) | Cmd+Y |
 | Betrachter oder Quick View schließen | Esc |
 
+## Die Info-Seite im Seitenfenster
+
+Das Seitenfenster (**Ansicht > Vorschau-Panel** oder Cmd+Shift+P) hat eine Seite **Info**, die den Eintrag unter dem Cursor so zeigt, wie es die Info-Seitenleiste des Finders tut.
+
+- Die Vorschau nimmt die volle Breite des Fensters ein — verbreitern Sie das Fenster, wächst sie mit.
+- Es ist eine echte macOS-Vorschau, kein kleines Miniaturbild: jedes Format, das Quick Look anzeigen kann, funktioniert hier, und ein mehrseitiges Dokument lässt sich in der Vorschau Seite für Seite durchblättern.
+- Darunter stehen Name, Art und Größe, dann wann der Eintrag erstellt und geändert wurde und in welchem Ordner er liegt.
+
+Beim Bewegen des Cursors werden Name und Angaben sofort aktualisiert; die Vorschau folgt einen Moment später, damit das Durchhalten einer Pfeiltaste durch einen langen Ordner nicht für jede Zeile eine Vorschau startet.
+
 ## Hinweise
 
 - Der Betrachter ist schreibgeschützt. Um eine Datei zu ändern, verwenden Sie stattdessen den Editor (siehe Dateien bearbeiten).
