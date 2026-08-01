@@ -11,9 +11,50 @@
 <main class="pc-help">
 <h1>Appearance</h1>
 <p>Peach Commander can match the look of the rest of your Mac or take on a style of its own. You can follow the system light or dark setting (or force one), recolor the file panels, highlight files by type, and adjust the list font size and date format so the panels read exactly the way you like.</p>
+<h2 id="pick-a-color-theme">Pick a color theme</h2>
+<p>A theme replaces the whole panel palette in one step.</p>
+<ol>
+<li>Open the settings window by pressing Cmd+, (or Configuration &gt; Settings…).</li>
+<li>Select the <strong>Colors</strong> page.</li>
+<li>Choose from the <strong>Theme</strong> menu:
+   - <strong>System (default)</strong> — no theme. The panels follow the Appearance setting below, exactly as they always have. This is the default.
+   - <strong>Light</strong> / <strong>Dark</strong> — pin the built-in light or dark palette regardless of what macOS is doing.
+   - <strong>Norton Commander</strong> — the classic blue-and-cyan look of the original DOS file manager, in its authentic CGA colors: blue panels, cyan text, a light-cyan cursor row and yellow for marked files.</li>
+</ol>
+<p>A theme brings its own light/dark base so that sheets, scrollers, and standard controls match it — which is why the <strong>Appearance</strong> menu is greyed out while a theme is selected. Custom panel colors (below) still win over the theme, so you can keep one favorite color on top of it.</p>
+<p><img alt="Peach Commander in the Norton Commander palette" src="images/theme-norton.png" />
+<em>(Figure: The Norton Commander palette — the original CGA blue, cyan and yellow.)</em></p>
+<p>The Norton Commander theme uses the authentic CGA values the 1986 original did: <code>#0000AA</code> blue, <code>#00AAAA</code> cyan, <code>#55FFFF</code> for the cursor row, <code>#FFFF55</code> for marked files. The cursor bar inverts to dark text on cyan the way the original drew it, while marked files keep their yellow.</p>
+<p><img alt="Close-up of the cursor row in the Norton palette" src="images/theme-norton-cursor-crop.png" />
+<em>(Figure: The cursor bar inverts; marked files stay yellow.)</em></p>
+<p><img alt="The Colors settings page in the Norton Commander palette" src="images/theme-norton-settings.png" />
+<em>(Figure: The app's own dialogs follow the theme too.)</em></p>
+<p>Themes are colors only. The panel layout, the frames, and the fonts are unchanged — Norton Commander does not bring back the double-line box borders or the DOS raster font.</p>
+<h2 id="write-your-own-theme">Write your own theme</h2>
+<p>Themes are plain text files, one per theme, in a <code>themes</code> folder inside your configuration folder.</p>
+<ol>
+<li>On the <strong>Colors</strong> page, click <strong>Themes Folder…</strong>. The folder is created if it does not exist, and the first time it is empty Peach Commander drops a commented <code>example-norton.ini</code> in it that lists every color you can set.</li>
+<li>Copy that file, give it a new name, and edit it. The file name (without <code>.ini</code>) is the theme's id; the <code>Name</code> line is what the Theme menu shows.</li>
+<li>Save. Open the <strong>Theme</strong> menu again — your theme is in the list. No restart needed.</li>
+</ol>
+<p>A minimal theme is three lines:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Theme]</span>
+<span class="na">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Midnight</span>
+<span class="na">Base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dark</span>
+
+<span class="k">[Colors]</span>
+<span class="na">ListBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">#101020</span>
+<span class="na">ListText</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="c1">#C0C0D0</span>
+</code></pre></div>
+
+<p><img alt="Peach Commander in a user-written theme" src="images/theme-custom.png" />
+<em>(Figure: A theme loaded from a file in the themes folder.)</em></p>
+<p><code>Base</code> picks the built-in palette (<code>light</code> or <code>dark</code>) that supplies every color you do not list, so you only write down what you want to change. Colors are <code>#RRGGBB</code>. Lines starting with <code>;</code> or <code>#</code> are comments.</p>
+<p>If something in the file is wrong, Peach Commander skips that one line and keeps the rest of your theme — it does not refuse the file. The reason is written to the system log, visible in Console.app if you filter for <code>[theme]</code>.</p>
+<p>The names <code>light</code>, <code>dark</code>, <code>norton</code> and <code>system</code> belong to the built-in themes; a file using one of them as its file name is skipped so it cannot shadow a shipped theme. If you delete the theme file you had selected, Peach Commander falls back to <strong>System (default)</strong>.</p>
 <h2 id="set-light-dark-or-system-appearance">Set light, dark, or system appearance</h2>
 <ol>
-<li>Open the settings window by choosing Configuration &gt; Options…, or press Cmd+,.</li>
+<li>Open the settings window by pressing Cmd+, (or Configuration &gt; Settings…).</li>
 <li>Select the <strong>Colors</strong> page.</li>
 <li>From the <strong>Appearance</strong> menu, choose one of:
    - <strong>System (follow macOS)</strong> — matches your Mac's current light/dark setting automatically.
@@ -33,7 +74,7 @@
 <p>Leave a checkbox off to keep the built-in color for that element. Click <strong>Reset to defaults</strong> to clear all overrides at once.</p>
 <h2 id="color-files-by-type">Color files by type</h2>
 <ol>
-<li>Open Configuration &gt; Options… and select the <strong>Display</strong> page.</li>
+<li>Open Settings (Cmd+,) and select the <strong>Display</strong> page.</li>
 <li>Click <strong>File-Type Colors…</strong>.</li>
 <li>Add a rule with a name mask such as <code>*.zip</code> or <code>*.txt</code>, then pick a color for files that match it.</li>
 <li>Use <strong>Add Rule</strong> for more masks; click <strong>Done</strong> to save or <strong>Cancel</strong> to discard.</li>
@@ -63,6 +104,8 @@
 </table>
 <h2 id="notes">Notes</h2>
 <ul>
+<li>The Appearance menu only applies while the Theme is <strong>System (default)</strong>; a theme decides its own base.</li>
+<li>A theme also colours the app's own dialogs. System dialogs — Open, Save, the colour and font pickers, and alerts — keep their standard look, and so do windows that plugins open themselves.</li>
 <li>The Appearance setting styles the file panels. System dialogs, alerts, and standard controls always follow macOS.</li>
 <li>The built-in file viewer uses matching light and dark syntax-highlighting palettes, so highlighted code stays readable in either appearance.</li>
 <li>Custom colors and file-type rules are saved with your settings and reapplied every time you open the app.</li>

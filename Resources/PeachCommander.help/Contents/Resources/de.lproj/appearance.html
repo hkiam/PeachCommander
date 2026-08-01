@@ -11,6 +11,47 @@
 <main class="pc-help">
 <h1>Erscheinungsbild</h1>
 <p>Peach Commander kann sich dem Aussehen des restlichen Mac anpassen oder einen eigenen Stil annehmen. Sie können der hellen oder dunklen Systemeinstellung folgen (oder eine davon erzwingen), die Datei-Panels umfärben, Dateien nach Typ hervorheben und Schriftgröße der Liste sowie Datumsformat anpassen, sodass die Panels genau so lesbar sind, wie Sie es möchten.</p>
+<h2 id="ein-farbthema-wahlen">Ein Farbthema wählen</h2>
+<p>Ein Thema ersetzt die gesamte Panel-Palette in einem Schritt.</p>
+<ol>
+<li>Öffnen Sie die Einstellungen mit Cmd+, (oder Konfiguration &gt; Einstellungen…).</li>
+<li>Wählen Sie die Seite <strong>Farben</strong>.</li>
+<li>Wählen Sie im Menü <strong>Thema</strong>:
+   - <strong>System (Standard)</strong> — kein Thema. Die Panels folgen der Einstellung „Erscheinungsbild" darunter, genau wie bisher. Das ist die Voreinstellung.
+   - <strong>Hell</strong> / <strong>Dunkel</strong> — die eingebaute helle oder dunkle Palette festlegen, unabhängig davon, was macOS tut.
+   - <strong>Norton Commander</strong> — das klassische Blau-Cyan des DOS-Dateimanagers, in den echten CGA-Farben: blaue Panels, cyanfarbene Dateinamen, hellcyane Cursor-Zeile und Gelb für markierte Dateien.</li>
+</ol>
+<p>Ein Thema bringt seine eigene Hell/Dunkel-Basis mit, damit Blätter, Rollbalken und Standardsteuerelemente dazu passen — deshalb ist das Menü <strong>Erscheinungsbild</strong> ausgegraut, solange ein Thema gewählt ist. Die eigenen Panel-Farben weiter unten haben weiterhin Vorrang.</p>
+<p><img alt="Peach Commander in der Norton-Commander-Palette" src="images/theme-norton.png" />
+<em>(Abbildung: Die Norton-Commander-Palette — das originale CGA-Blau, -Cyan und -Gelb.)</em></p>
+<p>Das Norton-Commander-Thema verwendet die echten CGA-Werte des Originals von 1986: <code>#0000AA</code> Blau, <code>#00AAAA</code> Cyan, <code>#55FFFF</code> für die Cursor-Zeile, <code>#FFFF55</code> für markierte Dateien. Die Cursor-Zeile invertiert auf dunkle Schrift auf Cyan, so wie das Original sie zeichnete; markierte Dateien behalten ihr Gelb.</p>
+<p><img alt="Nahaufnahme der Cursor-Zeile in der Norton-Palette" src="images/theme-norton-cursor-crop.png" />
+<em>(Abbildung: Die Cursor-Zeile invertiert; markierte Dateien bleiben gelb.)</em></p>
+<p><img alt="Die Einstellungsseite „Farben&quot; in der Norton-Commander-Palette" src="images/theme-norton-settings.png" />
+<em>(Abbildung: Auch die programmeigenen Dialoge folgen dem Thema.)</em></p>
+<p>Themen sind reine Farben. Panel-Aufbau, Rahmen und Schriften bleiben unverändert — Norton Commander bringt keine Doppellinien-Rahmen und keine DOS-Rasterschrift zurück.</p>
+<h2 id="eigene-themen-schreiben">Eigene Themen schreiben</h2>
+<p>Themen sind einfache Textdateien, eine pro Thema, in einem Ordner <code>themes</code> innerhalb Ihres Konfigurationsordners.</p>
+<ol>
+<li>Klicken Sie auf der Seite <strong>Farben</strong> auf <strong>Themen-Ordner…</strong>. Der Ordner wird angelegt, falls er fehlt, und beim ersten Mal legt Peach Commander eine kommentierte <code>example-norton.ini</code> hinein, die alle setzbaren Farben auflistet.</li>
+<li>Kopieren Sie diese Datei, geben Sie ihr einen neuen Namen und bearbeiten Sie sie. Der Dateiname (ohne <code>.ini</code>) ist die Kennung des Themas; die Zeile <code>Name</code> erscheint im Menü <strong>Thema</strong>.</li>
+<li>Speichern. Öffnen Sie das Menü <strong>Thema</strong> erneut — Ihr Thema steht in der Liste. Kein Neustart nötig.</li>
+</ol>
+<p>Ein minimales Thema hat drei Zeilen:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Theme]</span>
+<span class="na">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Midnight</span>
+<span class="na">Base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dark</span>
+
+<span class="k">[Colors]</span>
+<span class="na">ListBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">#101020</span>
+<span class="na">ListText</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="c1">#C0C0D0</span>
+</code></pre></div>
+
+<p><img alt="Peach Commander in einem selbst geschriebenen Thema" src="images/theme-custom.png" />
+<em>(Abbildung: Ein Thema, geladen aus einer Datei im Themen-Ordner.)</em></p>
+<p><code>Base</code> wählt die eingebaute Palette (<code>light</code> oder <code>dark</code>), die alle Farben liefert, die Sie nicht aufführen. Farben sind <code>#RRGGBB</code> (oder <code>#RRGGBBAA</code> mit Transparenz). Zeilen, die mit <code>;</code> oder <code>#</code> beginnen, sind Kommentare.</p>
+<p>Ist etwas in der Datei falsch, überspringt Peach Commander diese eine Zeile und behält den Rest Ihres Themas — die Datei wird nicht abgewiesen. Der Grund landet im Systemprotokoll, sichtbar in der Konsole, wenn Sie nach <code>[theme]</code> filtern.</p>
+<p>Die Namen <code>light</code>, <code>dark</code>, <code>norton</code> und <code>system</code> gehören den eingebauten Themen; eine Datei mit einem dieser Namen wird übersprungen. Löschen Sie die Datei des gewählten Themas, fällt Peach Commander auf <strong>System (Standard)</strong> zurück.</p>
 <h2 id="helles-dunkles-oder-systemerscheinungsbild-einstellen">Helles, dunkles oder Systemerscheinungsbild einstellen</h2>
 <ol>
 <li>Öffnen Sie das Einstellungsfenster über Konfiguration &gt; Optionen… oder drücken Sie Cmd+,.</li>
@@ -63,6 +104,8 @@
 </table>
 <h2 id="hinweise">Hinweise</h2>
 <ul>
+<li>Das Menü „Erscheinungsbild" wirkt nur, solange das Thema <strong>System (Standard)</strong> ist; ein Thema legt seine eigene Basis fest.</li>
+<li>Ein Thema färbt auch die programmeigenen Dialoge. Systemdialoge — Öffnen, Speichern, die Farb- und Schriftauswahl und Warnungen — behalten ihr Standardaussehen, ebenso Fenster, die Plugins selbst öffnen.</li>
 <li>Die Einstellung zum Erscheinungsbild gestaltet die Datei-Panels. Systemdialoge, Warnungen und Standardsteuerelemente folgen stets macOS.</li>
 <li>Der eingebaute Datei-Betrachter verwendet aufeinander abgestimmte helle und dunkle Paletten für die Syntaxhervorhebung, sodass hervorgehobener Code in beiden Erscheinungsbildern lesbar bleibt.</li>
 <li>Eigene Farben und Dateityp-Regeln werden mit Ihren Einstellungen gespeichert und bei jedem Öffnen der App erneut angewendet.</li>

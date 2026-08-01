@@ -11,6 +11,47 @@
 <main class="pc-help">
 <h1>Wygląd</h1>
 <p>Peach Commander może dopasować się do wyglądu reszty Twojego Maca lub przybrać własny styl. Możesz podążać za jasnym lub ciemnym ustawieniem systemu (albo wymusić jedno z nich), zmienić kolory paneli plików, wyróżnić pliki według typu oraz dostosować rozmiar czcionki listy i format daty, aby panele czytały się dokładnie tak, jak lubisz.</p>
+<h2 id="wybierz-motyw-kolorow">Wybierz motyw kolorów</h2>
+<p>Motyw zastępuje całą paletę paneli w jednym kroku.</p>
+<ol>
+<li>Otwórz okno ustawień, wybierając Konfiguracja &gt; Opcje…, lub naciśnij Cmd+,.</li>
+<li>Wybierz stronę <strong>Kolory</strong>.</li>
+<li>Wybierz z menu <strong>Motyw</strong>:
+   - <strong>System (domyślnie)</strong> — bez motywu. Panele stosują się do ustawienia Wygląd poniżej, dokładnie tak jak dotychczas. To ustawienie domyślne.
+   - <strong>Jasny</strong> / <strong>Ciemny</strong> — ustala wbudowaną jasną lub ciemną paletę niezależnie od tego, co robi macOS.
+   - <strong>Norton Commander</strong> — klasyczny niebiesko-turkusowy wygląd pierwotnego menedżera plików DOS, w autentycznych barwach CGA: niebieskie panele, turkusowy tekst, jasnoturkusowy wiersz kursora i żółty dla zaznaczonych plików.</li>
+</ol>
+<p>Motyw wnosi własną jasną/ciemną podstawę, dzięki czemu arkusze, paski przewijania i standardowe kontrolki do niego pasują — dlatego menu <strong>Wygląd</strong> jest wyszarzone, gdy wybrany jest motyw. Własne kolory paneli (poniżej) nadal mają pierwszeństwo przed motywem.</p>
+<p><img alt="Peach Commander w palecie Norton Commander" src="images/theme-norton.png" />
+<em>(Rysunek: paleta Norton Commander — oryginalny błękit, turkus i żółć CGA.)</em></p>
+<p>Motyw Norton Commander używa autentycznych wartości CGA z oryginału z 1986 roku: <code>#0000AA</code> niebieski, <code>#00AAAA</code> turkusowy, <code>#55FFFF</code> dla wiersza kursora, <code>#FFFF55</code> dla zaznaczonych plików. Pasek kursora odwraca się na ciemny tekst na turkusie, tak jak rysował go oryginał, a zaznaczone pliki zachowują żółć.</p>
+<p><img alt="Zbliżenie wiersza kursora w palecie Norton" src="images/theme-norton-cursor-crop.png" />
+<em>(Rysunek: pasek kursora się odwraca; zaznaczone pliki pozostają żółte.)</em></p>
+<p><img alt="Strona ustawień Kolory w palecie Norton Commander" src="images/theme-norton-settings.png" />
+<em>(Rysunek: własne okna programu również stosują się do motywu.)</em></p>
+<p>Motywy to wyłącznie kolory. Układ paneli, ramki i kroje pisma pozostają bez zmian — Norton Commander nie przywraca podwójnych ramek ani rastrowego kroju DOS.</p>
+<h2 id="napisz-wasny-motyw">Napisz własny motyw</h2>
+<p>Motywy to zwykłe pliki tekstowe, po jednym na motyw, w folderze <code>themes</code> wewnątrz folderu konfiguracji.</p>
+<ol>
+<li>Na stronie <strong>Kolory</strong> kliknij <strong>Folder motywów…</strong>. Folder zostanie utworzony, jeśli nie istnieje, a gdy jest pusty po raz pierwszy, Peach Commander umieszcza w nim skomentowany plik <code>example-norton.ini</code> z listą wszystkich kolorów, jakie można ustawić.</li>
+<li>Skopiuj ten plik, nadaj mu nową nazwę i edytuj. Nazwa pliku (bez <code>.ini</code>) jest identyfikatorem motywu; wiersz <code>Name</code> to nazwa pokazywana w menu Motyw.</li>
+<li>Zapisz. Otwórz menu <strong>Motyw</strong> ponownie — Twój motyw jest na liście. Ponowne uruchomienie nie jest potrzebne.</li>
+</ol>
+<p>Minimalny motyw to trzy wiersze:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Theme]</span>
+<span class="na">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Midnight</span>
+<span class="na">Base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dark</span>
+
+<span class="k">[Colors]</span>
+<span class="na">ListBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">#101020</span>
+<span class="na">ListText</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="c1">#C0C0D0</span>
+</code></pre></div>
+
+<p><img alt="Peach Commander we własnoręcznie napisanym motywie" src="images/theme-custom.png" />
+<em>(Rysunek: motyw wczytany z pliku w folderze motywów.)</em></p>
+<p><code>Base</code> wybiera wbudowaną paletę (<code>light</code> lub <code>dark</code>), która dostarcza wszystkie kolory niewymienione przez Ciebie, więc zapisujesz tylko to, co chcesz zmienić. Kolory podaje się jako <code>#RRGGBB</code>. Wiersze zaczynające się od <code>;</code> lub <code>#</code> są komentarzami.</p>
+<p>Jeśli coś w pliku jest błędne, Peach Commander pomija ten jeden wiersz i zachowuje resztę motywu — nie odrzuca pliku. Powód trafia do dziennika systemowego, widocznego w Konsoli po odfiltrowaniu <code>[theme]</code>.</p>
+<p>Nazwy <code>light</code>, <code>dark</code>, <code>norton</code> i <code>system</code> należą do motywów wbudowanych; plik o takiej nazwie jest pomijany, aby nie mógł przesłonić motywu dostarczonego z programem. Po usunięciu pliku wybranego motywu Peach Commander wraca do <strong>System (domyślnie)</strong>.</p>
 <h2 id="ustaw-wyglad-jasny-ciemny-lub-systemowy">Ustaw wygląd jasny, ciemny lub systemowy</h2>
 <ol>
 <li>Otwórz okno ustawień, wybierając Konfiguracja &gt; Opcje…, lub naciśnij Cmd+,.</li>
@@ -63,6 +104,8 @@
 </table>
 <h2 id="uwagi">Uwagi</h2>
 <ul>
+<li>Menu Wygląd działa tylko wtedy, gdy motyw to <strong>System (domyślnie)</strong>; motyw sam określa swoją podstawę.</li>
+<li>Motyw koloruje także własne okna programu. Okna systemowe — Otwórz, Zapisz, próbniki koloru i czcionki oraz alerty — zachowują standardowy wygląd, podobnie jak okna otwierane przez wtyczki.</li>
 <li>Ustawienie wyglądu stylizuje panele plików. Okna dialogowe systemu, alerty i standardowe elementy sterujące zawsze podążają za macOS.</li>
 <li>Wbudowana przeglądarka plików używa dopasowanych jasnych i ciemnych palet podświetlania składni, dzięki czemu podświetlony kod pozostaje czytelny w obu wyglądach.</li>
 <li>Niestandardowe kolory i reguły typów plików są zapisywane z Twoimi ustawieniami i stosowane ponownie za każdym razem, gdy otwierasz aplikację.</li>

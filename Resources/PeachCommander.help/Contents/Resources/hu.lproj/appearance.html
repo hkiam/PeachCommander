@@ -11,6 +11,47 @@
 <main class="pc-help">
 <h1>Megjelenés</h1>
 <p>A Peach Commander illeszkedhet a Mac többi részének megjelenéséhez, vagy saját stílust ölthet. Követheti a rendszer világos vagy sötét beállítását (vagy kényszeríthet egyet), átszínezheti a fájlpaneleket, típus szerint kiemelheti a fájlokat, valamint úgy állíthatja be a listabetűméretet és a dátumformátumot, hogy a panelek pontosan úgy jelenjenek meg, ahogy Ön szereti.</p>
+<h2 id="szintema-valasztasa">Színtéma választása</h2>
+<p>Egy téma egyetlen lépésben lecseréli a panelek teljes színpalettáját.</p>
+<ol>
+<li>Nyissa meg a beállítások ablakát a Beállítások &gt; Beállítások… menüponttal, vagy nyomja meg a Cmd+, billentyűt.</li>
+<li>Válassza a <strong>Színek</strong> oldalt.</li>
+<li>Válasszon a <strong>Téma</strong> menüből:
+   - <strong>Rendszer (alapértelmezett)</strong> — nincs téma. A panelek az alábbi Megjelenés beállítást követik, pontosan úgy, mint eddig. Ez az alapértelmezés.
+   - <strong>Világos</strong> / <strong>Sötét</strong> — rögzíti a beépített világos vagy sötét palettát, függetlenül attól, mit tesz a macOS.
+   - <strong>Norton Commander</strong> — az eredeti DOS-os fájlkezelő klasszikus kék-ciánkék kinézete, valódi CGA-színekben: kék panelek, ciánkék szöveg, világos ciánkék kurzorsor és sárga a megjelölt fájlokhoz.</li>
+</ol>
+<p>A téma saját világos/sötét alapot hoz magával, hogy a lapok, a görgetősávok és a szokásos vezérlők illeszkedjenek hozzá — ezért halvány a <strong>Megjelenés</strong> menü, amíg téma van kiválasztva. Az alábbi egyéni panelszínek továbbra is elsőbbséget élveznek a témával szemben.</p>
+<p><img alt="A Peach Commander a Norton Commander palettában" src="images/theme-norton.png" />
+<em>(Ábra: a Norton Commander paletta — az eredeti CGA kék, ciánkék és sárga.)</em></p>
+<p>A Norton Commander téma az 1986-os eredeti valódi CGA-értékeit használja: <code>#0000AA</code> kék, <code>#00AAAA</code> ciánkék, <code>#55FFFF</code> a kurzorsorhoz, <code>#FFFF55</code> a megjelölt fájlokhoz. A kurzorsáv sötét szövegre vált ciánkék alapon, ahogy az eredeti rajzolta, a megjelölt fájlok pedig megtartják a sárgájukat.</p>
+<p><img alt="A kurzorsor közelről a Norton palettában" src="images/theme-norton-cursor-crop.png" />
+<em>(Ábra: a kurzorsáv invertál; a megjelölt fájlok sárgák maradnak.)</em></p>
+<p><img alt="A Színek beállítási oldal a Norton Commander palettában" src="images/theme-norton-settings.png" />
+<em>(Ábra: a program saját ablakai is követik a témát.)</em></p>
+<p>A témák csak színek. A panelek elrendezése, a keretek és a betűtípusok változatlanok — a Norton Commander nem hozza vissza a kettős vonalú kereteket, sem a DOS raszteres betűtípusát.</p>
+<h2 id="sajat-tema-irasa">Saját téma írása</h2>
+<p>A témák egyszerű szövegfájlok, témánként egy, a beállítási mappán belüli <code>themes</code> mappában.</p>
+<ol>
+<li>A <strong>Színek</strong> oldalon kattintson a <strong>Témák mappája…</strong> gombra. A mappa létrejön, ha nem létezik, és amikor először üres, a Peach Commander elhelyez benne egy megjegyzésekkel ellátott <code>example-norton.ini</code> fájlt, amely felsorolja az összes beállítható színt.</li>
+<li>Másolja le a fájlt, adjon neki új nevet, és szerkessze. A fájlnév (a <code>.ini</code> nélkül) a téma azonosítója; a <code>Name</code> sor jelenik meg a Téma menüben.</li>
+<li>Mentse el. Nyissa meg újra a <strong>Téma</strong> menüt — a témája ott van a listában. Újraindítás nem szükséges.</li>
+</ol>
+<p>Egy minimális téma három sor:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Theme]</span>
+<span class="na">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Midnight</span>
+<span class="na">Base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dark</span>
+
+<span class="k">[Colors]</span>
+<span class="na">ListBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">#101020</span>
+<span class="na">ListText</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="c1">#C0C0D0</span>
+</code></pre></div>
+
+<p><img alt="A Peach Commander egy felhasználó által írt témában" src="images/theme-custom.png" />
+<em>(Ábra: a témák mappájában lévő fájlból betöltött téma.)</em></p>
+<p>A <code>Base</code> választja ki azt a beépített palettát (<code>light</code> vagy <code>dark</code>), amely minden fel nem sorolt színt szolgáltat, így csak azt írja le, amit meg akar változtatni. A színek <code>#RRGGBB</code> alakúak. A <code>;</code> vagy <code>#</code> jellel kezdődő sorok megjegyzések.</p>
+<p>Ha valami hibás a fájlban, a Peach Commander kihagyja azt az egy sort, és megtartja a téma többi részét — nem utasítja el a fájlt. Az okot a rendszernaplóba írja, amely a Konzolban látható, ha a <code>[theme]</code> kifejezésre szűr.</p>
+<p>A <code>light</code>, <code>dark</code>, <code>norton</code> és <code>system</code> nevek a beépített témákhoz tartoznak; az ilyen nevű fájl kimarad, hogy ne takarhasson el egy mellékelt témát. Ha törli a kiválasztott téma fájlját, a Peach Commander visszatér a <strong>Rendszer (alapértelmezett)</strong> beállításra.</p>
 <h2 id="vilagos-sotet-vagy-rendszer-szerinti-megjelenes-beallitasa">Világos, sötét vagy rendszer szerinti megjelenés beállítása</h2>
 <ol>
 <li>Nyissa meg a beállítások ablakát a Beállítások &gt; Beállítások… menüponttal, vagy nyomja meg a Cmd+, billentyűt.</li>
@@ -63,6 +104,8 @@
 </table>
 <h2 id="megjegyzesek">Megjegyzések</h2>
 <ul>
+<li>A Megjelenés menü csak addig hat, amíg a téma <strong>Rendszer (alapértelmezett)</strong>; a téma maga határozza meg az alapját.</li>
+<li>A téma a program saját ablakait is színezi. A rendszerablakok — Megnyitás, Mentés, a szín- és betűválasztó, valamint a figyelmeztetések — megtartják szokásos kinézetüket, ahogy a bővítmények által megnyitott ablakok is.</li>
 <li>A Megjelenés beállítás a fájlpaneleket stílusozza. A rendszer párbeszédpaneljei, riasztásai és a szabványos vezérlők mindig a macOS-t követik.</li>
 <li>A beépített fájlmegjelenítő egymáshoz illő világos és sötét szintaxiskiemelő palettákat használ, így a kiemelt kód mindkét megjelenésben olvasható marad.</li>
 <li>Az egyéni színek és fájltípus-szabályok a beállításaival együtt mentődnek, és minden alkalommal újra érvénybe lépnek, amikor megnyitja az alkalmazást.</li>

@@ -11,6 +11,47 @@
 <main class="pc-help">
 <h1>Vzhled</h1>
 <p>Peach Commander se může přizpůsobit vzhledu zbytku vašeho Macu nebo získat vlastní styl. Můžete sledovat systémové světlé či tmavé nastavení (nebo některé vynutit), přebarvit panely souborů, zvýraznit soubory podle typu a upravit velikost písma seznamu a formát data, aby se panely četly přesně tak, jak si přejete.</p>
+<h2 id="volba-barevneho-motivu">Volba barevného motivu</h2>
+<p>Motiv nahradí celou paletu panelů jedním krokem.</p>
+<ol>
+<li>Otevřete okno nastavení volbou Konfigurace &gt; Možnosti… nebo stiskem Cmd+,.</li>
+<li>Vyberte stránku <strong>Barvy</strong>.</li>
+<li>V nabídce <strong>Motiv</strong> zvolte:
+   - <strong>Systém (výchozí)</strong> — žádný motiv. Panely se řídí nastavením Vzhled níže, přesně jako dosud. Toto je výchozí volba.
+   - <strong>Světlý</strong> / <strong>Tmavý</strong> — pevně nastaví vestavěnou světlou nebo tmavou paletu bez ohledu na to, co dělá macOS.
+   - <strong>Norton Commander</strong> — klasický modro-azurový vzhled původního DOSového správce souborů v pravých barvách CGA: modré panely, azurový text, světle azurový řádek kurzoru a žlutá pro označené soubory.</li>
+</ol>
+<p>Motiv přináší vlastní světlý/tmavý základ, aby k němu ladily archy, posuvníky i standardní ovládací prvky — proto je nabídka <strong>Vzhled</strong> zašedlá, dokud je motiv zvolen. Vlastní barvy panelů (níže) mají před motivem stále přednost.</p>
+<p><img alt="Peach Commander v paletě Norton Commander" src="images/theme-norton.png" />
+<em>(Obrázek: paleta Norton Commander — původní modrá, azurová a žlutá CGA.)</em></p>
+<p>Motiv Norton Commander používá pravé hodnoty CGA z originálu z roku 1986: <code>#0000AA</code> modrá, <code>#00AAAA</code> azurová, <code>#55FFFF</code> pro řádek kurzoru, <code>#FFFF55</code> pro označené soubory. Pruh kurzoru se převrací na tmavý text na azurové, jak jej kreslil originál, zatímco označené soubory si ponechávají žlutou.</p>
+<p><img alt="Detail řádku kurzoru v paletě Norton" src="images/theme-norton-cursor-crop.png" />
+<em>(Obrázek: pruh kurzoru se převrací; označené soubory zůstávají žluté.)</em></p>
+<p><img alt="Stránka nastavení Barvy v paletě Norton Commander" src="images/theme-norton-settings.png" />
+<em>(Obrázek: vlastní okna aplikace se motivem řídí také.)</em></p>
+<p>Motivy jsou pouze barvy. Uspořádání panelů, rámečky a písma zůstávají beze změny — Norton Commander nevrací dvojité rámečky ani rastrové písmo DOS.</p>
+<h2 id="napiste-si-vlastni-motiv">Napište si vlastní motiv</h2>
+<p>Motivy jsou obyčejné textové soubory, jeden na motiv, ve složce <code>themes</code> uvnitř vaší složky s konfigurací.</p>
+<ol>
+<li>Na stránce <strong>Barvy</strong> klepněte na <strong>Složka motivů…</strong>. Složka se vytvoří, pokud neexistuje, a když je poprvé prázdná, Peach Commander do ní vloží okomentovaný soubor <code>example-norton.ini</code> se seznamem všech barev, které lze nastavit.</li>
+<li>Soubor zkopírujte, pojmenujte jej nově a upravte. Název souboru (bez <code>.ini</code>) je identifikátor motivu; řádek <code>Name</code> je to, co ukazuje nabídka Motiv.</li>
+<li>Uložte. Otevřete nabídku <strong>Motiv</strong> znovu — váš motiv je v seznamu. Restart není potřeba.</li>
+</ol>
+<p>Minimální motiv má tři řádky:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Theme]</span>
+<span class="na">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Midnight</span>
+<span class="na">Base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dark</span>
+
+<span class="k">[Colors]</span>
+<span class="na">ListBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">#101020</span>
+<span class="na">ListText</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="c1">#C0C0D0</span>
+</code></pre></div>
+
+<p><img alt="Peach Commander ve vlastnoručně napsaném motivu" src="images/theme-custom.png" />
+<em>(Obrázek: motiv načtený ze souboru ve složce motivů.)</em></p>
+<p><code>Base</code> volí vestavěnou paletu (<code>light</code> nebo <code>dark</code>), která dodá všechny barvy, jež neuvedete, takže píšete jen to, co chcete změnit. Barvy se zadávají jako <code>#RRGGBB</code>. Řádky začínající <code>;</code> nebo <code>#</code> jsou komentáře.</p>
+<p>Je-li v souboru něco špatně, Peach Commander přeskočí právě onen řádek a zbytek motivu ponechá — soubor neodmítne. Důvod se zapíše do systémového protokolu, viditelného v Konzoli po filtrování na <code>[theme]</code>.</p>
+<p>Názvy <code>light</code>, <code>dark</code>, <code>norton</code> a <code>system</code> patří vestavěným motivům; soubor s takovým názvem se přeskočí, aby nemohl zastínit dodávaný motiv. Smažete-li soubor zvoleného motivu, Peach Commander se vrátí na <strong>Systém (výchozí)</strong>.</p>
 <h2 id="nastaveni-svetleho-tmaveho-nebo-systemoveho-vzhledu">Nastavení světlého, tmavého nebo systémového vzhledu</h2>
 <ol>
 <li>Otevřete okno nastavení volbou Konfigurace &gt; Možnosti… nebo stiskem Cmd+,.</li>
@@ -63,6 +104,8 @@
 </table>
 <h2 id="poznamky">Poznámky</h2>
 <ul>
+<li>Nabídka Vzhled působí jen tehdy, je-li motiv <strong>Systém (výchozí)</strong>; motiv si určuje vlastní základ.</li>
+<li>Motiv obarví i vlastní okna aplikace. Systémová okna — Otevřít, Uložit, výběr barvy a písma a upozornění — si ponechávají standardní vzhled, stejně jako okna, která si otevírají zásuvné moduly.</li>
 <li>Nastavení Vzhled stylizuje panely souborů. Systémové dialogy, upozornění a standardní ovládací prvky vždy sledují macOS.</li>
 <li>Vestavěný prohlížeč souborů používá odpovídající světlé a tmavé palety zvýraznění syntaxe, takže zvýrazněný kód zůstává čitelný v obou vzhledech.</li>
 <li>Vlastní barvy a pravidla pro typy souborů se ukládají s vaším nastavením a znovu se použijí při každém otevření aplikace.</li>

@@ -8,6 +8,60 @@ related: [settings]
 
 Peach Commander kan matcha utseendet på resten av din Mac eller anta en egen stil. Du kan följa systemets ljusa eller mörka inställning (eller framtvinga en av dem), färgsätta filpanelerna på nytt, lyfta fram filer efter typ och justera listans teckenstorlek och datumformat så att panelerna ser ut exakt som du vill.
 
+## Välj ett färgtema
+
+Ett tema byter ut hela panelpaletten i ett enda steg.
+
+1. Öppna inställningsfönstret genom att välja Konfiguration > Alternativ…, eller tryck på Cmd+,.
+2. Välj sidan **Färger**.
+3. Välj i menyn **Tema**:
+   - **System (standard)** — inget tema. Panelerna följer inställningen Utseende nedan, precis som tidigare. Detta är standardvalet.
+   - **Ljust** / **Mörkt** — lås den inbyggda ljusa eller mörka paletten oavsett vad macOS gör.
+   - **Norton Commander** — den klassiska blå-cyana looken från den ursprungliga DOS-filhanteraren, i äkta CGA-färger: blå paneler, cyan text, ljust cyan markörrad och gult för markerade filer.
+
+Ett tema har en egen ljus/mörk grund så att ark, rullningslister och standardkontroller passar ihop med det — därför är menyn **Utseende** nedtonad så länge ett tema är valt. Egna panelfärger (nedan) gäller fortfarande före temat.
+
+![Peach Commander i Norton Commander-paletten](screenshots/theme-norton.png)
+*(Figur: Norton Commander-paletten — det ursprungliga CGA-blå, -cyan och -gult.)*
+
+Norton Commander-temat använder de äkta CGA-värdena från originalet 1986: `#0000AA` blått, `#00AAAA` cyan, `#55FFFF` för markörraden och `#FFFF55` för markerade filer. Markörraden inverteras till mörk text på cyan, så som originalet ritade den, medan markerade filer behåller sitt gula.
+
+![Närbild på markörraden i Norton-paletten](screenshots/theme-norton-cursor-crop.png)
+*(Figur: markörraden inverteras; markerade filer förblir gula.)*
+
+![Inställningssidan Färger i Norton Commander-paletten](screenshots/theme-norton-settings.png)
+*(Figur: även programmets egna fönster följer temat.)*
+
+Teman handlar bara om färger. Panelernas layout, ramarna och typsnitten är oförändrade — Norton Commander tar inte tillbaka de dubbla linjeramarna eller DOS rasterteckensnitt.
+
+## Skriv ett eget tema
+
+Teman är vanliga textfiler, en per tema, i en mapp `themes` inuti din konfigurationsmapp.
+
+1. Klicka på **Temamapp…** på sidan **Färger**. Mappen skapas om den saknas, och första gången den är tom lägger Peach Commander en kommenterad `example-norton.ini` där som listar varje färg du kan ange.
+2. Kopiera filen, ge den ett nytt namn och redigera den. Filnamnet (utan `.ini`) är temats id; raden `Name` är det som menyn Tema visar.
+3. Spara. Öppna menyn **Tema** igen — ditt tema finns i listan. Ingen omstart behövs.
+
+Ett minimalt tema är tre rader:
+
+```ini
+[Theme]
+Name = Midnight
+Base = dark
+
+[Colors]
+ListBackground = #101020
+ListText       = #C0C0D0
+```
+
+![Peach Commander i ett egenskrivet tema](screenshots/theme-custom.png)
+*(Figur: ett tema inläst från en fil i temamappen.)*
+
+`Base` väljer den inbyggda paletten (`light` eller `dark`) som ger varje färg du inte anger, så du skriver bara det du vill ändra. Färger anges som `#RRGGBB`. Rader som börjar med `;` eller `#` är kommentarer.
+
+Är något fel i filen hoppar Peach Commander över just den raden och behåller resten av ditt tema — filen avvisas inte. Orsaken skrivs till systemloggen och syns i Konsol om du filtrerar på `[theme]`.
+
+Namnen `light`, `dark`, `norton` och `system` tillhör de inbyggda temana; en fil med ett sådant namn hoppas över så att den inte kan skugga ett medföljande tema. Raderar du filen för det valda temat faller Peach Commander tillbaka på **System (standard)**.
 ## Ställ in ljust, mörkt eller systemutseende
 
 1. Öppna inställningsfönstret genom att välja Konfiguration > Alternativ…, eller tryck på Cmd+,.
@@ -56,6 +110,8 @@ På sidan **Visning** kan du även:
 
 ## Anteckningar
 
+- Menyn Utseende verkar bara så länge temat är **System (standard)**; ett tema bestämmer sin egen grund.
+- Ett tema färgar även programmets egna fönster. Systemfönster — Öppna, Spara, färg- och teckensnittsväljarna och varningar — behåller sitt standardutseende, liksom fönster som insticksmoduler öppnar själva.
 - Inställningen Utseende formar filpanelerna. Systemdialoger, varningar och standardkontroller följer alltid macOS.
 - Den inbyggda filvisaren använder matchande ljusa och mörka paletter för syntaxfärgning, så att färgad kod förblir läsbar i båda utseendena.
 - Egna färger och filtypsregler sparas med dina inställningar och tillämpas på nytt varje gång du öppnar appen.

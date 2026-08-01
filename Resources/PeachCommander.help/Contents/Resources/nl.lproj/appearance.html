@@ -11,6 +11,47 @@
 <main class="pc-help">
 <h1>Weergave</h1>
 <p>Peach Commander kan het uiterlijk van de rest van je Mac volgen of een eigen stijl aannemen. Je kunt de lichte of donkere systeeminstelling volgen (of er een afdwingen), de bestandspanelen inkleuren, bestanden op type markeren en de lettergrootte en datumnotatie van de lijst aanpassen, zodat de panelen precies zo leesbaar zijn als jij wilt.</p>
+<h2 id="een-kleurthema-kiezen">Een kleurthema kiezen</h2>
+<p>Een thema vervangt het complete kleurenpalet van de panelen in één keer.</p>
+<ol>
+<li>Open het instellingenvenster via Configuratie &gt; Opties…, of druk op Cmd+,.</li>
+<li>Selecteer de pagina <strong>Kleuren</strong>.</li>
+<li>Kies in het menu <strong>Thema</strong>:
+   - <strong>Systeem (standaard)</strong> — geen thema. De panelen volgen de instelling Weergave hieronder, precies zoals altijd. Dit is de standaardinstelling.
+   - <strong>Licht</strong> / <strong>Donker</strong> — leg het ingebouwde lichte of donkere palet vast, ongeacht wat macOS doet.
+   - <strong>Norton Commander</strong> — het klassieke blauw-cyaan van de oorspronkelijke DOS-bestandsbeheerder, in de echte CGA-kleuren: blauwe panelen, cyaan tekst, een lichtcyaan cursorregel en geel voor gemarkeerde bestanden.</li>
+</ol>
+<p>Een thema brengt zijn eigen lichte/donkere basis mee, zodat vensterbladen, schuifbalken en standaardknoppen erbij passen — daarom is het menu <strong>Weergave</strong> grijs zolang er een thema is gekozen. De eigen paneelkleuren (hieronder) gaan nog steeds vóór het thema.</p>
+<p><img alt="Peach Commander in het Norton Commander-palet" src="images/theme-norton.png" />
+<em>(Afbeelding: het Norton Commander-palet — het oorspronkelijke CGA-blauw, -cyaan en -geel.)</em></p>
+<p>Het Norton Commander-thema gebruikt de echte CGA-waarden van het origineel uit 1986: <code>#0000AA</code> blauw, <code>#00AAAA</code> cyaan, <code>#55FFFF</code> voor de cursorregel en <code>#FFFF55</code> voor gemarkeerde bestanden. De cursorbalk keert om naar donkere tekst op cyaan, zoals het origineel hem tekende, terwijl gemarkeerde bestanden hun geel behouden.</p>
+<p><img alt="Detail van de cursorregel in het Norton-palet" src="images/theme-norton-cursor-crop.png" />
+<em>(Afbeelding: de cursorbalk keert om; gemarkeerde bestanden blijven geel.)</em></p>
+<p><img alt="De instellingenpagina Kleuren in het Norton Commander-palet" src="images/theme-norton-settings.png" />
+<em>(Afbeelding: ook de eigen vensters van het programma volgen het thema.)</em></p>
+<p>Thema’s gaan alleen over kleuren. De indeling van de panelen, de kaders en de lettertypen blijven ongewijzigd — Norton Commander brengt de dubbele lijnkaders en het DOS-rasterlettertype niet terug.</p>
+<h2 id="een-eigen-thema-schrijven">Een eigen thema schrijven</h2>
+<p>Thema’s zijn gewone tekstbestanden, één per thema, in een map <code>themes</code> binnen uw configuratiemap.</p>
+<ol>
+<li>Klik op de pagina <strong>Kleuren</strong> op <strong>Themamap…</strong>. De map wordt aangemaakt als hij niet bestaat, en de eerste keer dat hij leeg is zet Peach Commander er een becommentarieerd bestand <code>example-norton.ini</code> in dat elke instelbare kleur opsomt.</li>
+<li>Kopieer dat bestand, geef het een nieuwe naam en pas het aan. De bestandsnaam (zonder <code>.ini</code>) is de id van het thema; de regel <code>Name</code> is wat het menu Thema toont.</li>
+<li>Bewaar. Open het menu <strong>Thema</strong> opnieuw — uw thema staat in de lijst. Herstarten is niet nodig.</li>
+</ol>
+<p>Een minimaal thema is drie regels:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Theme]</span>
+<span class="na">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Midnight</span>
+<span class="na">Base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dark</span>
+
+<span class="k">[Colors]</span>
+<span class="na">ListBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c1">#101020</span>
+<span class="na">ListText</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="c1">#C0C0D0</span>
+</code></pre></div>
+
+<p><img alt="Peach Commander in een zelfgeschreven thema" src="images/theme-custom.png" />
+<em>(Afbeelding: een thema geladen uit een bestand in de themamap.)</em></p>
+<p><code>Base</code> kiest het ingebouwde palet (<code>light</code> of <code>dark</code>) dat elke kleur levert die u niet noemt, zodat u alleen opschrijft wat u wilt veranderen. Kleuren zijn <code>#RRGGBB</code>. Regels die met <code>;</code> of <code>#</code> beginnen zijn commentaar.</p>
+<p>Klopt er iets niet in het bestand, dan slaat Peach Commander die ene regel over en houdt de rest van uw thema — het bestand wordt niet geweigerd. De reden komt in het systeemlogboek, zichtbaar in Console als u op <code>[theme]</code> filtert.</p>
+<p>De namen <code>light</code>, <code>dark</code>, <code>norton</code> en <code>system</code> horen bij de ingebouwde thema’s; een bestand met zo’n naam wordt overgeslagen, zodat het geen meegeleverd thema kan verbergen. Verwijdert u het bestand van het gekozen thema, dan valt Peach Commander terug op <strong>Systeem (standaard)</strong>.</p>
 <h2 id="licht-donker-of-systeemweergave-instellen">Licht, donker of systeemweergave instellen</h2>
 <ol>
 <li>Open het instellingenvenster via Configuratie &gt; Opties…, of druk op Cmd+,.</li>
@@ -63,6 +104,8 @@
 </table>
 <h2 id="opmerkingen">Opmerkingen</h2>
 <ul>
+<li>Het menu Weergave werkt alleen zolang het thema <strong>Systeem (standaard)</strong> is; een thema bepaalt zijn eigen basis.</li>
+<li>Een thema kleurt ook de eigen vensters van het programma. Systeemvensters — Open, Bewaar, de kleur- en lettertypekiezers en waarschuwingen — houden hun standaarduiterlijk, net als vensters die plugins zelf openen.</li>
 <li>De instelling Weergave stijlt de bestandspanelen. Systeemvensters, waarschuwingen en standaardregelaars volgen altijd macOS.</li>
 <li>De ingebouwde bestandsviewer gebruikt bijpassende lichte en donkere paletten voor syntaxiskleuring, zodat gekleurde code in beide weergaven leesbaar blijft.</li>
 <li>Aangepaste kleuren en bestandstyperegels worden met je instellingen bewaard en elke keer dat je de app opent opnieuw toegepast.</li>
