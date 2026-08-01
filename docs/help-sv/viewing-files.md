@@ -52,7 +52,7 @@ För en snabb helskärmsförhandsvisning som macOS själv hanterar, tryck på Cm
 
 Sidopanelen (**Visa > Förhandsvisningspanel**, eller Cmd+Skift+P) har en sida **Info** som visar objektet under markören på samma sätt som Finders infosidopanel.
 
-- Förhandsvisningen fyller panelens bredd: gör du panelen bredare växer förhandsvisningen med den.
+- Förhandsvisningen fyller panelens bredd: gör du panelen bredare växer förhandsvisningen med den. Dra i panelens vänsterkant för att göra den bredare eller smalare; bredden kommer ihåg.
 - Det är en riktig macOS-förhandsvisning, inte en liten miniatyr: alla format som Snabbtitt kan visa fungerar här, och ett dokument med flera sidor bläddrar du sida för sida inuti förhandsvisningen.
 - Under den står namn, typ och storlek, och därefter när objektet skapades och ändrades samt vilken mapp det ligger i.
 

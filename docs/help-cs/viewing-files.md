@@ -52,7 +52,7 @@ Pro rychlý celoobrazovkový náhled zpracovaný přímo macOS stiskněte Cmd+Y 
 
 Boční panel (**Zobrazení > Panel náhledu** nebo Cmd+Shift+P) má stránku **Informace**, která ukazuje položku pod kurzorem tak, jak to dělá informační postranní panel Finderu.
 
-- Náhled vyplní celou šířku panelu — když panel rozšíříte, náhled roste s ním.
+- Náhled vyplní celou šířku panelu — když panel rozšíříte, náhled roste s ním. Tažením za levý okraj panelu jej rozšíříte nebo zúžíte; šířka se pamatuje.
 - Jde o skutečný náhled macOS, ne o malý náhledový obrázek: funguje každý formát, který umí zobrazit Rychlý náhled, a vícestránkovým dokumentem listujete přímo v náhledu stránku po stránce.
 - Pod ním je název, druh a velikost, dále kdy byla položka vytvořena a změněna a v které složce leží.
 

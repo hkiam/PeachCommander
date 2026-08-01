@@ -52,7 +52,7 @@ For en rask fullskjerm-forhåndsvisning håndtert av macOS selv, trykk Cmd+Y (Qu
 
 Sidepanelet (**Vis > Forhåndsvisningspanel**, eller Cmd+Skift+P) har en side **Info** som viser objektet under markøren slik Finders infosidepanel gjør.
 
-- Forhåndsvisningen fyller bredden på panelet: gjør du panelet bredere, vokser forhåndsvisningen med.
+- Forhåndsvisningen fyller bredden på panelet: gjør du panelet bredere, vokser forhåndsvisningen med. Dra i panelets venstre kant for å gjøre det bredere eller smalere; bredden huskes.
 - Det er en ekte macOS-forhåndsvisning, ikke en liten miniatyr: alle formater Kikk kan vise fungerer her, og et dokument på flere sider blar du side for side inne i forhåndsvisningen.
 - Under står navn, type og størrelse, og deretter når objektet ble opprettet og endret, og hvilken mappe det ligger i.
 

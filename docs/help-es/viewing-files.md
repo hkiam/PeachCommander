@@ -52,7 +52,7 @@ Para una vista previa rápida a pantalla completa gestionada por macOS mismo, pu
 
 El panel lateral (**Visualización > Panel de previsualización**, o Cmd+Mayús+P) tiene una página **Información** que muestra el elemento bajo el cursor igual que la barra lateral de información del Finder.
 
-- La previsualización ocupa todo el ancho del panel: al ensanchar el panel, la previsualización crece con él.
+- La previsualización ocupa todo el ancho del panel: al ensanchar el panel, la previsualización crece con él. Arrastre el borde izquierdo del panel para ensancharlo o estrecharlo; la anchura se recuerda.
 - Es una previsualización real de macOS, no una miniatura pequeña: funciona cualquier formato que Vista Rápida pueda mostrar, y un documento de varias páginas se recorre página a página dentro de la previsualización.
 - Debajo están el nombre, el tipo y el tamaño, y después cuándo se creó y se modificó el elemento y en qué carpeta está.
 

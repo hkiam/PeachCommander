@@ -52,7 +52,7 @@ Pour un aperçu plein écran rapide géré par macOS lui-même, appuyez sur Cmd+
 
 Le panneau latéral (**Présentation > Panneau d’aperçu**, ou Cmd+Maj+P) comporte une page **Infos** qui présente l’élément sous le curseur comme le fait la barre latérale d’informations du Finder.
 
-- L’aperçu occupe toute la largeur du panneau : élargissez le panneau et l’aperçu grandit avec lui.
+- L’aperçu occupe toute la largeur du panneau : élargissez le panneau et l’aperçu grandit avec lui. Faites glisser le bord gauche du panneau pour l’élargir ou le rétrécir ; la largeur est mémorisée.
 - C’est un véritable aperçu macOS, pas une petite vignette : tous les formats que Coup d’œil sait afficher fonctionnent ici, et un document de plusieurs pages se parcourt page par page dans l’aperçu.
 - En dessous figurent le nom, le type et la taille, puis les dates de création et de modification et le dossier où se trouve l’élément.
 

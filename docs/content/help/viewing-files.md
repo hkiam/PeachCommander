@@ -39,7 +39,7 @@ For a fast full-screen preview handled by macOS itself, press Cmd+Y (Quick Look)
 
 The side panel (**View > Preview Panel**, or Cmd+Shift+P) has an **Info** page that shows the item under the cursor the way Finder's info sidebar does.
 
-- The preview fills the width of the panel, so widen the panel and the preview grows with it.
+- The preview fills the width of the panel, so widen the panel and the preview grows with it. Drag the panel's left edge to make it wider or narrower; the width is remembered.
 - It is a real macOS preview, not a small thumbnail: every format Quick Look can show works here, and a multi-page document scrolls page by page inside the preview.
 - Below it are the name, the kind and the size, then when the item was created and changed and which folder it is in.
 

@@ -134,15 +134,19 @@ final class PreviewPanelView: NSView {
             infoContent.trailingAnchor.constraint(equalTo: infoScroll.trailingAnchor),
             infoContent.widthAnchor.constraint(equalTo: infoScroll.widthAnchor),
             infoContent.topAnchor.constraint(equalTo: infoScroll.topAnchor),
+            // Fill the visible height, so previewHost has free space to expand into. Without this
+            // the content view is only as tall as its content and the preview collapses to its
+            // minimum.
+            infoContent.heightAnchor.constraint(greaterThanOrEqualTo: infoScroll.heightAnchor),
 
-            // The preview takes the full width and a 4:3-ish share of it, so it grows with the
-            // panel instead of sitting at a fixed 160 pt. Height is derived from width rather
-            // than pinned, which keeps it large when the user widens the panel — the point of
-            // the rework.
-            previewHost.topAnchor.constraint(equalTo: infoContent.topAnchor, constant: 10),
+            // The preview starts at the very top and takes every point the details below do not
+            // need. A fixed aspect ratio left a band of empty panel above or below it depending
+            // on how tall the panel was; growing into the free space removes that band and makes
+            // the preview as large as the panel allows, which is the whole point.
+            previewHost.topAnchor.constraint(equalTo: infoContent.topAnchor),
             previewHost.leadingAnchor.constraint(equalTo: infoContent.leadingAnchor, constant: 10),
             previewHost.trailingAnchor.constraint(equalTo: infoContent.trailingAnchor, constant: -10),
-            previewHost.heightAnchor.constraint(equalTo: previewHost.widthAnchor, multiplier: 1.25),
+            previewHost.heightAnchor.constraint(greaterThanOrEqualToConstant: 120),
 
             imageView.centerXAnchor.constraint(equalTo: previewHost.centerXAnchor),
             imageView.centerYAnchor.constraint(equalTo: previewHost.centerYAnchor),

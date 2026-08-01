@@ -24,7 +24,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private let splitView = NSSplitView()
     private let previewPanel = PreviewPanelView()
     private let previewHandle = PreviewToggleHandle()
+    private let previewResizer = PreviewResizeHandle()
     private var previewWidthConstraint: NSLayoutConstraint?
+    private var previewResizerWidthConstraint: NSLayoutConstraint?
     private var previewTimer: Timer?
     private static let previewWidth: CGFloat = 300
     /// Docked AI assistant panel (right column, left of the preview panel).
@@ -248,13 +250,23 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         container.addSubview(splitView)
         container.addSubview(previewPanel)
         container.addSubview(previewHandle)
+        container.addSubview(previewResizer)
         container.addSubview(commandLine)
         container.addSubview(functionKeyBar)
         previewPanel.translatesAutoresizingMaskIntoConstraints = false
         previewWidthConstraint = previewPanel.widthAnchor.constraint(equalToConstant: 0)  // hidden by default
+        // The resizer collapses with the panel: a drag handle for something that is not there
+        // would be a dead strip down the middle of the window.
+        previewResizerWidthConstraint = previewResizer.widthAnchor.constraint(equalToConstant: 0)
         previewPanel.onModeChange = { [weak self] _ in self?.refreshPreview() }
         previewHandle.translatesAutoresizingMaskIntoConstraints = false
         previewHandle.onClick = { [weak self] in self?.togglePreviewPanel() }
+        previewResizer.translatesAutoresizingMaskIntoConstraints = false
+        previewResizer.onResize = { [weak self] width in self?.setPreviewWidth(width) }
+        previewResizer.onResizeFinished = { [weak self] width in
+            Task { await self?.mainConfig.setInt(Int(width), "Layout", "PreviewWidth")
+                   await self?.mainConfig.flush() }
+        }
         buttonBarHeightConstraint = buttonBarView.heightAnchor.constraint(equalToConstant: 0)
         buttonBarWidthConstraint = buttonBarView.widthAnchor.constraint(equalToConstant: 0)
         commandLineHeightConstraint = commandLine.heightAnchor.constraint(equalToConstant: Metrics.commandLineHeight)
@@ -264,7 +276,13 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         NSLayoutConstraint.activate([
             buttonBarView.topAnchor.constraint(equalTo: container.topAnchor),
             buttonBarView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            splitView.trailingAnchor.constraint(equalTo: previewPanel.leadingAnchor),
+            // The resizer sits between the file panels and the preview column, which is where a
+            // divider belongs — the toggle chevron stays out at the window edge.
+            splitView.trailingAnchor.constraint(equalTo: previewResizer.leadingAnchor),
+            previewResizer.trailingAnchor.constraint(equalTo: previewPanel.leadingAnchor),
+            previewResizer.topAnchor.constraint(equalTo: splitView.topAnchor),
+            previewResizer.bottomAnchor.constraint(equalTo: splitView.bottomAnchor),
+            previewResizerWidthConstraint!,
             previewPanel.bottomAnchor.constraint(equalTo: splitView.bottomAnchor),
             previewPanel.trailingAnchor.constraint(equalTo: previewHandle.leadingAnchor),
             previewWidthConstraint!,
@@ -480,6 +498,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         themeId = await mainConfig.string("Colors", "Theme", default: "system")
         let appearance = await mainConfig.string("Colors", "Appearance", default: "system")
         applyAppearance(appearance)
+        let savedWidth = await mainConfig.int("Layout", "PreviewWidth", default: Int(Self.previewWidth))
+        preferredPreviewWidth = max(PreviewResizeHandle.minWidth, CGFloat(savedWidth))
         if await mainConfig.bool("Layout", "PreviewPanel", default: false) { togglePreviewPanel() }
         horizontalPanels = await mainConfig.bool("Layout", "HorizontalPanels", default: false)
         if horizontalPanels { applyPanelArrangement() }
@@ -2789,11 +2809,26 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let f = DateFormatter(); f.dateStyle = .medium; f.timeStyle = .short; return f
     }()
 
+    /// Apply a panel width while dragging (F-344). The resizer owns the clamping.
+    private func setPreviewWidth(_ width: CGFloat) {
+        guard let c = previewWidthConstraint, c.constant > 0 else { return }
+        c.constant = width
+        previewResizer.panelWidth = width
+        preferredPreviewWidth = width
+    }
+
+    /// The width to restore the panel to. Starts at the built-in default and follows the user's
+    /// last drag, so re-opening the panel does not undo the resize.
+    private var preferredPreviewWidth: CGFloat = MainWindowController.previewWidth
+
     func togglePreviewPanel() {
         guard let c = previewWidthConstraint else { return }
         let show = c.constant == 0
-        c.constant = show ? Self.previewWidth : 0
+        c.constant = show ? preferredPreviewWidth : 0
+        previewResizerWidthConstraint?.constant = show ? PreviewResizeHandle.width : 0
+        previewResizer.panelWidth = preferredPreviewWidth
         previewPanel.isHidden = !show   // fully hide when collapsed (no leftover sliver)
+        previewResizer.isHidden = !show
         previewHandle.isPanelOpen = show
         previewPanel.applyTheme()
         Task { await mainConfig.setBool(show, "Layout", "PreviewPanel") }
@@ -3356,6 +3391,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         commandLine.applyTheme()
         previewPanel.applyTheme()
         previewHandle.applyTheme()
+        previewResizer.applyTheme()
         // Plugin-drawn UI (F-338): mounted views get the context key, plugin-owned windows get
         // the broadcast. Both are no-ops for plugins that do not implement them.
         ViewContainerRegistry.shared.notifyViews(key: "theme", value: themeId)

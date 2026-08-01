@@ -52,7 +52,7 @@ Egy gyors, magától a macOS által kezelt teljes képernyős előnézethez nyom
 
 Az oldalsó panelen (**Nézet > Előnézeti panel**, vagy Cmd+Shift+P) van egy **Információ** oldal, amely a kurzor alatti elemet úgy mutatja, ahogyan a Finder információs oldalsávja.
 
-- Az előnézet kitölti a panel teljes szélességét: ha szélesíti a panelt, az előnézet vele nő.
+- Az előnézet kitölti a panel teljes szélességét: ha szélesíti a panelt, az előnézet vele nő. Húzza a panel bal szélét, hogy szélesebbé vagy keskenyebbé tegye; a szélesség megmarad.
 - Ez valódi macOS-előnézet, nem apró bélyegkép: minden formátum működik, amit a Gyorsnézet meg tud jeleníteni, a több oldalas dokumentumokat pedig az előnézeten belül lapozhatja végig.
 - Alatta a név, a típus és a méret áll, majd hogy mikor jött létre és mikor módosult az elem, és melyik mappában van.
 
