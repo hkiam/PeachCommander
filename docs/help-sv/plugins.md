@@ -27,6 +27,7 @@ De återstående inbyggda insticksprogrammen är mindre och behöver ingen egen 
 - **iCloud Drive** — lägger till en post *iCloud Drive* i enhetsraden som hoppar direkt till din lokala iCloud Drive-mapp. Den visas bara när iCloud Drive är konfigurerat på din Mac.
 - **Notes** — behåll en anteckning bredvid vilken fil eller mapp som helst. En liten **●**-bricka markerar objekt som har en; redigera anteckningar i en dockad **Notes**-sidopanel eller en fullständig redigerare för rik text (**Kommandon ▸ Redigera anteckning…**), och bläddra bland dem alla med **Anteckningsöversikt…**.
 - **Log Viewer** — öppna en fil som en färgkodad, nivåklassificerad, live-följande logg (**Arkiv ▸ Visa som logg…**), med filter per nivå, sökning och stöd för vanliga loggformat plus dina egna regex-format. Hanterar loggar på flera gigabyte omedelbart.
+- **CSV Lister** — tryck F3 på en `.csv`- eller `.tsv`-fil och den öppnas som en riktig tabell med sorterbara kolumner i stället för rå text. Avgränsaren upptäcks automatiskt, så semikolonseparerade exporter ställer också upp sig, och visarens sökning hittar värden cell för cell.
 - **AI Column** — lägger till en kolumn *AI Language* som identifierar varje textfils dominerande språk på enheten (med Apples NaturalLanguage-ramverk — inte en molnmodell).
 - **Arkivformat** — lär appen att bläddra i och packa upp fler arkivtyper (7z, tar-familjen, gzip/bzip2/xz/zstd, och RAR där ett hjälpverktyg är installerat), som sedan öppnas som mappar.
 

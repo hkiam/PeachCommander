@@ -27,6 +27,7 @@ related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller
 - **iCloud Drive** — 로컬 iCloud Drive 폴더로 곧장 이동하는 *iCloud Drive* 항목을 드라이브 막대에 더합니다. Mac에 iCloud Drive가 설정되어 있을 때만 나타납니다.
 - **Notes** — 아무 파일이나 폴더 옆에 메모를 보관합니다. 작은 **●** 배지가 메모가 있는 항목을 표시합니다. 도킹된 **Notes** 사이드바나 전체 서식 있는 텍스트 편집기(**명령 ▸ Edit Note…**)에서 메모를 편집하고, **Notes Overview…**로 모두 둘러봅니다.
 - **Log Viewer** — 파일을 색상으로 구분되고 수준별로 분류되며 실시간으로 따라가는 로그로 엽니다(**파일 ▸ View as Log…**). 수준별 필터, 검색, 일반적인 로그 형식과 사용자 지정 정규식 형식을 지원합니다. 수 기가바이트 로그도 즉시 처리합니다.
+- **CSV Lister** — `.csv` 또는 `.tsv` 파일에서 F3을 누르면 원시 텍스트가 아니라 정렬 가능한 열을 가진 진짜 표로 열립니다. 구분자는 자동으로 감지되므로 세미콜론으로 구분된 내보내기도 줄이 맞고, 뷰어의 검색은 값을 셀 단위로 찾습니다.
 - **AI Column** — 각 텍스트 파일의 주된 언어를 온디바이스로 감지하는 *AI Language* 열을 더합니다(클라우드 모델이 아니라 Apple의 NaturalLanguage 프레임워크 사용).
 - **압축 형식** — 앱에 더 많은 압축 유형(7z, tar 계열, gzip/bzip2/xz/zstd, 그리고 헬퍼 도구가 설치된 경우 RAR)을 탐색하고 추출하도록 가르치며, 이들은 폴더처럼 열립니다.
 

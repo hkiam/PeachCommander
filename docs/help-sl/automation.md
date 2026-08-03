@@ -10,7 +10,7 @@ Peach Commander je mogoče skriptirati, tako da ga lahko upravljate iz AppleScri
 
 ## Ogled slovarja
 
-1. Odprite **Urejevalnik skriptov** (v `/Programi/Pripomočki`).
+1. Odprite **Urejevalnik skriptov** (v `/Applications/Utilities` — »Pripomočki« v Finderju).
 2. Izberite **Okno ▸ Knjižnica**, nato dvakrat kliknite **Peach Commander** (dodajte ga z **+**, če ni na seznamu).
 3. Slovar se odpre in našteje ukaze in lastnosti spodaj.
 

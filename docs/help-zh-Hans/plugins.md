@@ -27,6 +27,7 @@ related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller
 - **iCloud Drive** —— 在驱动器栏中添加一个 *iCloud Drive* 条目，直接跳转到你本地的 iCloud 云盘文件夹。它仅在你的 Mac 上设置了 iCloud 云盘时才出现。
 - **Notes** —— 在任意文件或文件夹旁保留一条备注。一个小小的 **●** 标记会标示带有备注的项目；在停靠的 **Notes** 侧边栏或完整的富文本编辑器中编辑备注（**命令 ▸ Edit Note…**），并用 **Notes Overview…** 浏览所有备注。
 - **Log Viewer** —— 将文件作为彩色编码、按级别分类、实时跟踪的日志打开（**文件 ▸ View as Log…**），带有按级别的筛选、搜索，并支持常见日志格式以及你自己的正则格式。可即时处理数 GB 大小的日志。
+- **CSV Lister** — 在 `.csv` 或 `.tsv` 文件上按 F3，它会以可排序列的真实表格打开，而不是原始文本。分隔符自动识别，所以用分号分隔的导出也能对齐，查看器的搜索按单元格逐个查找值。
 - **AI Column** —— 添加一个 *AI Language* 列，在设备本地检测每个文本文件的主要语言（使用 Apple 的 NaturalLanguage 框架 —— 而非云端模型）。
 - **压缩格式** —— 教会应用浏览和解压更多压缩类型（7z、tar 系列、gzip/bzip2/xz/zstd，以及在安装了辅助工具时的 RAR），它们随后会像文件夹一样打开。
 

@@ -10,7 +10,7 @@ Peach Commander kan skriptes, så du kan styre den fra AppleScript og fra Snarve
 
 ## Se ordlisten
 
-1. Åpne **Script Editor** (i `/Programmer/Verktøy`).
+1. Åpne **Script Editor** (i `/Applications/Utilities` — «Verktøy» i Finder).
 2. Velg **Vindu ▸ Bibliotek**, og dobbeltklikk deretter **Peach Commander** (legg den til med **+** hvis den ikke er oppført).
 3. Ordlisten åpnes og lister kommandoene og egenskapene nedenfor.
 

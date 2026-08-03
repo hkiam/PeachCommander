@@ -27,6 +27,7 @@ De resterende innebygde programtilleggene er mindre og trenger ikke en egen side
 - **iCloud** – legger til en *iCloud Drive*-oppføring i stasjonslinjen som hopper rett til din lokale iCloud Drive-mappe. Den vises bare når iCloud Drive er satt opp på Mac-en din.
 - **Notes** – behold et notat ved siden av en hvilken som helst fil eller mappe. Et lite **●**-merke markerer elementer som har ett; rediger notater i et forankret **Notes**-sidefelt eller en fullstendig rik-tekst-redigerer (**Kommandoer ▸ Rediger notat…**), og bla gjennom dem alle med **Notatoversikt…**.
 - **Log Viewer** – åpne en fil som en fargekodet, nivåklassifisert logg med sanntidsfølging (**Fil ▸ Vis som logg…**), med filtre per nivå, søk og støtte for vanlige loggformater pluss dine egne regex-formater. Håndterer logger på flere gigabyte umiddelbart.
+- **CSV Lister** — trykk F3 på en `.csv`- eller `.tsv`-fil, og den åpnes som en ekte tabell med sorterbare kolonner i stedet for rå tekst. Skilletegnet oppdages automatisk, så semikolonseparerte eksporter stiller seg også opp, og viserens søk finner verdier celle for celle.
 - **AI Column** – legger til en *AI Language*-kolonne som oppdager hver tekstfils dominerende språk på enheten (ved hjelp av Apples NaturalLanguage-rammeverk – ikke en skymodell).
 - **Arkivformater** – lærer appen å bla i og pakke ut flere arkivtyper (7z, tar-familien, gzip/bzip2/xz/zstd, og RAR der et hjelpeverktøy er installert), som deretter åpnes som mapper.
 
