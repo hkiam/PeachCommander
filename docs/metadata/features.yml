@@ -878,7 +878,10 @@ features:
       unclaimed files on the extension before any engine runs. Verified in the VM: one phrase, two
       hits, the second inside demo.jar. Deriving the Find dialog's tab height from its content also
       collapsed the results list to nothing ("Done: 2 found" with nothing to see), so the list has a
-      floor and the window grows instead.
+      floor and the window grows instead. The dialog's own 37 reported conflicts then came
+      down to 7 by measuring instead of guessing: a hidden tab page has height *zero* until it is
+      shown, so the advisory bound on its stack could never hold, and every explicit control width was
+      a required rule against a page with no width yet. Both are priority 999 now.
 
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
