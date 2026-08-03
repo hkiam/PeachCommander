@@ -34,6 +34,14 @@ A margó sorszámokat jelenít meg, a kurzor sorát a többinél világosabban; 
 - Kattintson a térkép gombra a minitérkép megjelenítéséhez vagy elrejtéséhez, ami az egész fájl kicsinyített áttekintése, amelyre kattintva görgethet.
 - Használja a Kódolás menüt az eszköztárban, ha a fájl nem az alapértelmezett szövegkódolással lett mentve.
 
+## Szűrés shell-paranccsal
+
+Kattintson a **Szűrés…** elemre (vagy nyomja meg a Shift+Cmd+\-t), hogy a kijelölt szöveget egy parancsnak adja át, és a parancs kimenetével helyettesítse. Ha nincs kijelölés, a teljes dokumentum megy át. Így a már ismert eszközök az editor parancsaivá válnak: a `sort -u` eltávolítja az ismétlődő sorokat, a `jq .` olvashatóvá tesz egy JSON-választ, a `column -t` kiegyenesít egy táblázatot, a `base64 -d` dekódol egy blokkot, az `openssl x509 -noout -text` olvashatóan kiírja egy tanúsítványt.
+
+A parancs a bejelentkezési shellben fut: a `PATH`, az aliasok és a függvények pontosan úgy működnek, mint a Terminálban, a csővezetékek és az idézőjelek pedig azt jelentik, amit elvár. A munkakönyvtár a szerkesztett fájl mappája, így a relatív útvonalak ott oldódnak fel, ahol számít rájuk. A használt parancsokat megjegyzi a program, és legközelebb felajánlja a lenyíló listában.
+
+Ha a parancs hibára fut, a szöveg érintetlen marad, és a parancs hibaüzenete az állapotsorban jelenik meg — a `jq` szintaktikai hibája soha nem kerül be a fájlba. Az a parancs, amely semmit sem ír ki, kiüríti a kijelölést; pontosan erre való a `grep` szűrése, és a Cmd+Z visszahozza. Az a parancs, amely nem fejeződik be, húsz másodperc után leáll.
+
 ## Fájl formázása
 
 Kattintson a szerkesztőben a **Formázás** gombra (ugyanez a parancs a megjelenítőben is megvan), és a fájl újra behúzásra kerül. A Peach Commander a kiterjesztés alapján választ formázót, és az állapotsorban megmutatja, melyiket használta, például *formatted (jq)* — így mindig tudja, mi alakította az eredményt.
@@ -90,6 +98,7 @@ Bővítmények is adhatnak formázót — lásd [Plugins](plugins.md).
 | Ugrás sorra | Cmd+L |
 | Ugrás a párzárójelre | Cmd+\ |
 | Visszavonás / Ismét (hex szerkesztő) | Cmd+Z / Cmd+Shift+Z |
+| A kijelölés szűrése paranccsal | Shift+Cmd+\ |
 
 ## Megjegyzések
 

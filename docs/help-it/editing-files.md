@@ -34,6 +34,14 @@ Il margine mostra i numeri di riga, con la riga del cursore più chiara delle al
 - Fate clic sul pulsante della mappa per mostrare o nascondere la minimappa, una panoramica in scala dell'intero file su cui potete fare clic per scorrere.
 - Usate il menu Codifica nella barra degli strumenti se il file è stato salvato in una codifica di testo diversa da quella predefinita.
 
+## Filtrare con un comando shell
+
+Fate clic su **Filtra…** (o premete Shift+Cmd+\) per inviare il testo selezionato a un comando e sostituirlo con ciò che il comando stampa. Se non è selezionato nulla, passa tutto il documento. Così gli strumenti che già conoscete diventano comandi dell’editor: `sort -u` rimuove le righe duplicate, `jq .` rende leggibile una risposta JSON, `column -t` allinea una tabella, `base64 -d` decodifica un blocco, `openssl x509 -noout -text` mostra un certificato in chiaro.
+
+Il comando viene eseguito nella vostra shell di login: `PATH`, alias e funzioni si comportano esattamente come nel Terminale, e pipe e virgolette significano quello che vi aspettate. La directory di lavoro è la cartella del file che state modificando, così i percorsi relativi si risolvono dove ve li aspettate. I comandi usati vengono ricordati e riproposti nell’elenco a comparsa la volta successiva.
+
+Se il comando non riesce, il vostro testo resta intatto e il messaggio di errore del comando compare nella riga di stato: un errore di sintassi di `jq` non finisce mai incollato nel vostro file. Un comando che non stampa nulla svuota la selezione, che è esattamente ciò a cui serve filtrare con `grep`, e Cmd+Z la riporta. Un comando che non termina viene interrotto dopo venti secondi.
+
 ## Formattare un file
 
 Fate clic su **Formatta** nell’editor (lo stesso comando esiste nel visualizzatore) per rientrare il file. Peach Commander scegle il formattatore in base all’estensione e mostra nella barra di stato quale ha usato, per esempio *formatted (jq)* — così sapete sempre cosa ha dato forma al risultato.
@@ -90,6 +98,7 @@ Anche i plugin possono fornire formattatori — vedi [Plugins](plugins.md).
 | Andare a una riga | Cmd+L |
 | Saltare alla parentesi corrispondente | Cmd+\ |
 | Annulla / ripristina (editor esadecimale) | Cmd+Z / Cmd+Shift+Z |
+| Filtrare la selezione con un comando | Shift+Cmd+\ |
 
 ## Note
 

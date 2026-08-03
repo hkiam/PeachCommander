@@ -68,6 +68,12 @@ SCENARIOS = [
                   "settingspage Layout", "wait 2500"], 10),
     ("viewer-text", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                      "focus notes.txt", "wait 500", "cmd cm_List", "wait 2000"], 10),
+    # The editor's filter (F-356), in two pictures: the prompt, and the document after a command ran.
+    # Reading the text back is not enough — a text view has held a whole document and rendered none
+    # of it, and that is exactly this window.
+    ("editor-filter", ["editfilter /Users/admin/pc-demo/hosts.txt|sort -u|/Users/admin/filter.txt",
+                       "wait 2500"], 9),
+    ("editor-filter-dialog", ["editfilterdlg /Users/admin/pc-demo/hosts.txt", "wait 2000"], 9),
     # Not a layout scenario: this one asks the app what a screen reader would find. The hand-drawn
     # bars are the case where the failure mode is *no element at all* and nothing on screen differs,
     # so it can only be caught by asking (I19 T06).
@@ -79,6 +85,13 @@ SCENARIOS = [
 # Labels that must appear in the accessibility dump. Each one is a control that draws itself and would
 # otherwise be invisible; a missing entry means somebody removed the wiring, not that a label changed.
 REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"]
+
+# Scenarios that leave a report in the guest, and what has to be in it. The screenshot proves the
+# window drew; this proves the *edit* happened — replaced, undoable, and with the expected text.
+REPORTS = {
+    "editor-filter": ("/Users/admin/filter.txt",
+                      ["outcome=replaced", "undo=true", "alpha.example\nbeta.example\n"]),
+}
 
 # What AppKit prints when it gives up on a constraint set. One message spans many lines; the first
 # constraint in the list is stable enough to name the offender.
@@ -154,6 +167,8 @@ def boot(app: str, run: str):
     ssh_guest(ip, "mkdir -p pc-cfg pc-demo/sub && "
                   "printf 'notes, for the viewer scenario\\n' > pc-demo/notes.txt && "
                   "printf 'a,b\\n1,2\\n' > pc-demo/table.csv && "
+                  # Unsorted, with a duplicate: `sort -u` over it has a visible, checkable result.
+                  "printf 'beta.example\\nalpha.example\\nbeta.example\\n' > pc-demo/hosts.txt && "
                   "printf 'x' > pc-demo/sub/nested.txt && "
                   "printf '[Colors]\\nAppearance=dark\\n' > pc-cfg/peachcmd.ini && "
                   "defaults write com.apple.dock autohide -bool true; killall Dock 2>/dev/null; "
@@ -230,6 +245,16 @@ def main():
                 continue
             found, a11y = run_scenario(ip, host, port, pw, name, script, settle, out)
             measured[name] = found
+            if name in REPORTS:
+                path, expected = REPORTS[name]
+                report = ssh_guest(ip, f"cat {path} 2>/dev/null").stdout
+                (out / f"{name}-report.txt").write_text(report)
+                absent = [e for e in expected if e not in report]
+                if absent:
+                    failures.append(f"{name}: report missing {absent!r}")
+                    say(f"{name}: REPORT MISSING {absent!r}")
+                else:
+                    say(f"{name}: report ok ({report.splitlines()[0] if report else 'empty'})")
             if a11y.strip():
                 missing = [label for label in REQUIRED_A11Y if label not in a11y]
                 if missing:

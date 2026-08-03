@@ -34,6 +34,14 @@ Rob prikazuje številke vrstic, vrstica s kazalcem je svetlejša od drugih; gumb
 - Kliknite gumb zemljevida, da prikažete ali skrijete mini zemljevid, pomanjšan pregled celotne datoteke, na katerega lahko kliknete za pomikanje.
 - Uporabite meni Kodiranje v orodni vrstici, če je bila datoteka shranjena v drugem kot privzetem kodiranju besedila.
 
+## Filtriranje z ukazom lupine
+
+Kliknite **Filtriraj…** (ali pritisnite Shift+Cmd+\), da izbrano besedilo pošljete skozi ukaz in ga nadomestite s tem, kar ukaz izpiše. Če ni izbrano nič, gre skozi celoten dokument. Tako orodja, ki jih že poznate, postanejo ukazi urejevalnika: `sort -u` odstrani podvojene vrstice, `jq .` naredi odgovor JSON berljiv, `column -t` poravna tabelo, `base64 -d` dekodira blok, `openssl x509 -noout -text` izpiše potrdilo v berljivi obliki.
+
+Ukaz se izvede v vaši prijavni lupini: `PATH`, vzdevki in funkcije delujejo natanko tako kot v Terminalu, cevi in narekovaji pa pomenijo to, kar pričakujete. Delovni imenik je mapa urejane datoteke, zato se relativne poti razrešijo tam, kjer pričakujete. Uporabljeni ukazi se shranijo in se naslednjič ponudijo v spustnem seznamu.
+
+Če ukaz spodleti, ostane vaše besedilo nedotaknjeno, sporočilo o napaki ukaza pa se pokaže v vrstici stanja — skladenjska napaka orodja `jq` nikoli ne konča prilepljena v vaši datoteki. Ukaz, ki ne izpiše ničesar, izprazni izbor, in prav temu je filtriranje z orodjem `grep` namenjeno; Cmd+Z ga povrne. Ukaz, ki se ne konča, se po dvajsetih sekundah ustavi.
+
 ## Oblikovanje datoteke
 
 V urejevalniku kliknite **Oblikuj** (isti ukaz je tudi v pregledovalniku), da se datoteka znova zamakne. Peach Commander izbere oblikovalnik po končnici in v vrstici stanja pokaže, kateri je bil, na primer *formatted (jq)* — tako vedno veste, kaj je oblikovalo rezultat.
@@ -90,6 +98,7 @@ Oblikovalnike lahko prispevajo tudi vstavki — glejte [Plugins](plugins.md).
 | Pojdi na vrstico | Cmd+L |
 | Skoči na ujemajoči oklepaj | Cmd+\ |
 | Razveljavi / Uveljavi (šestnajstiški urejevalnik) | Cmd+Z / Cmd+Shift+Z |
+| Filtriraj izbor z ukazom | Shift+Cmd+\ |
 
 ## Opombe
 

@@ -34,6 +34,14 @@ De kantlijn toont regelnummers, met de regel van de cursor lichter dan de rest; 
 - Klik op de kaartknop om de minimap te tonen of te verbergen, een geschaald overzicht van het hele bestand waarop je kunt klikken om te scrollen.
 - Gebruik het menu Codering in de werkbalk als het bestand is opgeslagen in iets anders dan de standaard tekstcodering.
 
+## Filteren via een shell-opdracht
+
+Klik op **Filteren…** (of druk op Shift+Cmd+\) om de geselecteerde tekst door een opdracht te sturen en te vervangen door wat de opdracht afdrukt. Is er niets geselecteerd, dan gaat het hele document erdoor. Zo worden de hulpmiddelen die u al kent opdrachten van de editor: `sort -u` verwijdert dubbele regels, `jq .` maakt een JSON-antwoord leesbaar, `column -t` lijnt een tabel uit, `base64 -d` decodeert een blok, `openssl x509 -noout -text` toont een certificaat leesbaar.
+
+De opdracht loopt in uw login-shell: uw `PATH`, uw aliassen en uw functies werken precies zoals in Terminal, en pipes en aanhalingstekens betekenen wat u verwacht. De werkmap is de map van het bestand dat u bewerkt, zodat relatieve paden worden opgelost waar u dat verwacht. Gebruikte opdrachten worden bewaard en de volgende keer in de keuzelijst aangeboden.
+
+Mislukt de opdracht, dan blijft uw tekst ongewijzigd en verschijnt de foutmelding van de opdracht in de statusregel — een `jq`-syntaxisfout komt nooit in uw bestand terecht. Een opdracht die niets afdrukt maakt de selectie leeg, en juist daarvoor filtert u met `grep`; Cmd+Z brengt die terug. Een opdracht die niet klaar komt, wordt na twintig seconden gestopt.
+
 ## Een bestand opmaken
 
 Klik op **Opmaken** in de editor (dezelfde opdracht zit in de viewer) om het bestand opnieuw te laten inspringen. Peach Commander kiest een opmaker op basis van de extensie en laat in de statusbalk zien welke het was, bijvoorbeeld *formatted (jq)* — zo weet je altijd wat het resultaat heeft gevormd.
@@ -90,6 +98,7 @@ Plugins kunnen ook opmakers aanleveren — zie [Plugins](plugins.md).
 | Ga naar regel | Cmd+L |
 | Naar bijbehorend haakje springen | Cmd+\ |
 | Ongedaan maken / opnieuw (hex-editor) | Cmd+Z / Cmd+Shift+Z |
+| Selectie via een opdracht filteren | Shift+Cmd+\ |
 
 ## Opmerkingen
 

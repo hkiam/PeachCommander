@@ -58,6 +58,13 @@ Dependency direction: `PCApp -> everything`, engine modules never import PCApp,
   ad-hoc selectors from menu items to controllers (needed for remapping/buttonbar).
 - Look & feel targets `docs/product/ui-reference.md`; theme constants centralized
   in `PCApp/Theme.swift`.
+- **Never assign `textView.string` to change a document.** It works, and it silently
+  clears the undo stack — after Format, ⌘Z did nothing and the original was gone.
+  Go through `EditorTextFilter.replace`, which asks `shouldChangeText(in:replacementString:)`
+  first (so a read-only document can refuse), names the undo action, and posts
+  `didChangeText()`. Programmatic replacements post no `NSText.didChangeNotification`,
+  so anything watching the text — gutter, highlighter, outline, minimap — is driven
+  by hand afterwards (`afterProgrammaticEdit`).
 
 ## Testing
 

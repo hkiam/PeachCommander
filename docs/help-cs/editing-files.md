@@ -34,6 +34,14 @@ Okraj zobrazuje čísla řádků, řádek s kurzorem světlejší než ostatní;
 - Klepnutím na tlačítko mapy zobrazíte nebo skryjete minimapu, zmenšený přehled celého souboru, na který můžete klepnout pro rolování.
 - Použijte nabídku Kódování na panelu nástrojů, pokud byl soubor uložen v jiném než výchozím kódování textu.
 
+## Filtrování příkazem shellu
+
+Klepněte na **Filtrovat…** (nebo stiskněte Shift+Cmd+\), abyste vybraný text poslali přes příkaz a nahradili jej tím, co příkaz vypíše. Není-li nic vybráno, projde celý dokument. Z nástrojů, které už znáte, se tak stanou příkazy editoru: `sort -u` odstraní duplicitní řádky, `jq .` zpřehlední odpověď ve formátu JSON, `column -t` zarovná tabulku, `base64 -d` dekóduje blok, `openssl x509 -noout -text` vypíše certifikát v čitelné podobě.
+
+Příkaz běží ve vašem přihlašovacím shellu: `PATH`, aliasy i funkce fungují přesně jako v Terminálu a roury i uvozovky znamenají to, co očekáváte. Pracovním adresářem je složka upravovaného souboru, takže relativní cesty se vyhodnotí tam, kde to čekáte. Použité příkazy se pamatují a příště se nabídnou v rozbalovacím seznamu.
+
+Pokud příkaz selže, váš text zůstane nedotčen a chybová zpráva příkazu se objeví ve stavovém řádku — syntaktická chyba nástroje `jq` nikdy neskončí vložená do vašeho souboru. Příkaz, který nic nevypíše, vyprázdní výběr; přesně k tomu se filtrování nástrojem `grep` používá a Cmd+Z jej vrátí. Příkaz, který se nedokončí, se po dvaceti sekundách ukončí.
+
 ## Formátování souboru
 
 Klikněte v editoru na **Formátovat** (stejný příkaz je i v prohlížeči) a soubor se znovu odsadí. Peach Commander vybere formátovač podle přípony a ve stavovém řádku ukáže, který to byl, například *formatted (jq)* — takže vždy víte, co výsledek utvářelo.
@@ -90,6 +98,7 @@ Formátovače mohou dodávat i zásuvné moduly — viz [Plugins](plugins.md).
 | Přejít na řádek | Cmd+L |
 | Přeskočit na odpovídající závorku | Cmd+\ |
 | Zpět / Znovu (hex editor) | Cmd+Z / Cmd+Shift+Z |
+| Filtrovat výběr příkazem | Shift+Cmd+\ |
 
 ## Poznámky
 

@@ -34,6 +34,14 @@ Die Randspalte zeigt Zeilennummern, die Zeile mit dem Cursor heller als die übr
 - Klicken Sie auf die Kartenschaltfläche, um die Minimap ein- oder auszublenden, eine verkleinerte Übersicht der gesamten Datei, die Sie zum Scrollen anklicken können.
 - Verwenden Sie das Menü Kodierung in der Symbolleiste, wenn die Datei in einer anderen als der Standard-Textkodierung gesichert wurde.
 
+## Durch einen Shell-Befehl filtern
+
+Klicken Sie auf **Filtern…** (oder drücken Sie Shift+Cmd+\), um den markierten Text durch einen Befehl zu schicken und durch dessen Ausgabe zu ersetzen. Ist nichts markiert, geht das ganze Dokument durch. Damit werden die Werkzeuge, die Sie ohnehin kennen, zu Editor-Befehlen: `sort -u` entfernt doppelte Zeilen, `jq .` macht eine JSON-Antwort lesbar, `column -t` richtet eine Tabelle aus, `base64 -d` dekodiert einen Block, `openssl x509 -noout -text` zeigt ein Zertifikat im Klartext.
+
+Der Befehl läuft in Ihrer Login-Shell: `PATH`, Aliase und Funktionen wirken genau wie im Terminal, und Pipes und Anführungszeichen bedeuten das, was Sie erwarten. Als Arbeitsverzeichnis dient der Ordner der bearbeiteten Datei, sodass relative Pfade dort aufgelöst werden, wo Sie es erwarten. Benutzte Befehle werden gespeichert und beim nächsten Mal in der Auswahlliste angeboten.
+
+Schlägt der Befehl fehl, bleibt Ihr Text unverändert und die Fehlermeldung des Befehls erscheint in der Statuszeile — ein `jq`-Syntaxfehler landet nie in Ihrer Datei. Ein Befehl ohne Ausgabe leert die Markierung; genau dafür filtert man mit `grep`, und Cmd+Z holt sie zurück. Ein Befehl, der nicht fertig wird, wird nach zwanzig Sekunden abgebrochen.
+
 ## Eine Datei formatieren
 
 Klicken Sie im Editor auf **Formatieren** (im Viewer gibt es denselben Befehl), um die Datei neu einzurücken. Peach Commander wählt den Formatierer anhand der Dateiendung und zeigt in der Statuszeile, welcher es war, etwa *formatted (jq)* — so wissen Sie immer, was das Ergebnis geformt hat.
@@ -90,6 +98,7 @@ Auch Plugins können Formatierer beitragen — siehe [Plugins](plugins.md).
 | Zu Zeile springen | Cmd+L |
 | Zur zugehörigen Klammer springen | Cmd+\ |
 | Widerrufen / Wiederholen (Hex-Editor) | Cmd+Z / Cmd+Shift+Z |
+| Auswahl durch einen Befehl filtern | Shift+Cmd+\ |
 
 ## Hinweise
 

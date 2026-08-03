@@ -34,6 +34,14 @@ Marginea arată numerele de linie, cu linia cursorului mai deschisă decât rest
 - Faceți clic pe butonul hartă pentru a afișa sau ascunde harta miniaturală, o prezentare generală la scară a întregului fișier pe care puteți face clic pentru a derula.
 - Folosiți meniul Codificare din bara de instrumente dacă fișierul a fost salvat în altă codificare de text decât cea implicită.
 
+## Filtrare printr-o comandă shell
+
+Faceți clic pe **Filtrează…** (sau apăsați Shift+Cmd+\) pentru a trimite textul selectat printr-o comandă și a-l înlocui cu ceea ce afișează comanda. Dacă nu este selectat nimic, trece întregul document. Astfel, uneltele pe care le știți deja devin comenzi ale editorului: `sort -u` elimină liniile duplicate, `jq .` face lizibil un răspuns JSON, `column -t` aliniază un tabel, `base64 -d` decodează un bloc, `openssl x509 -noout -text` afișează un certificat în clar.
+
+Comanda rulează în shell-ul de conectare: `PATH`, aliasurile și funcțiile dumneavoastră se comportă exact ca în Terminal, iar conductele și ghilimelele înseamnă ceea ce vă așteptați. Directorul de lucru este folderul fișierului editat, astfel încât căile relative se rezolvă acolo unde vă așteptați. Comenzile folosite sunt memorate și oferite în lista derulantă data viitoare.
+
+Dacă comanda eșuează, textul rămâne neatins, iar mesajul de eroare al comenzii apare în linia de stare — o eroare de sintaxă a lui `jq` nu ajunge niciodată lipită în fișierul dumneavoastră. O comandă care nu afișează nimic golește selecția, exact la asta servește filtrarea cu `grep`, iar Cmd+Z o readuce. O comandă care nu se încheie este oprită după douăzeci de secunde.
+
 ## Formatarea unui fișier
 
 Apăsați **Formatează** în editor (aceeași comandă există în vizualizator) pentru a reindenta fișierul. Peach Commander alege un formator după extensie și arată în bara de stare pe care l-a folosit, de exemplu *formatted (jq)* — așa știți mereu ce a modelat rezultatul.
@@ -90,6 +98,7 @@ args = format -
 | Salt la linie | Cmd+L |
 | Salt la paranteza pereche | Cmd+\ |
 | Anulează / Refă (editor hexazecimal) | Cmd+Z / Cmd+Shift+Z |
+| Filtrează selecția printr-o comandă | Shift+Cmd+\ |
 
 ## Note
 
