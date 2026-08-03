@@ -22,6 +22,8 @@ To start a brand-new text file at the current location, press Shift+F4.
 
 If the file belongs to `root` — an entry in `/etc`, a launchd plist, a web server's config — saving offers to do it **as administrator**: macOS asks for authorization the usual way, the content is handed over through a private temporary file rather than a command line, and the file keeps its own owner and permissions instead of quietly becoming yours.
 
+The gutter shows line numbers, with the line you are on brighter than the rest; the button beside the encoding menu hides it. A wrapped line is numbered once, so the number always means the same line a compiler error or a review comment means.
+
 ## Find, replace, and navigate
 
 - Press Cmd+F to open the find bar. To replace text, open the find bar and switch it to the replace view, or click Find/Replace in the toolbar.

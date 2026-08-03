@@ -22,6 +22,8 @@ Egy vadonatúj szövegfájl kezdéséhez az aktuális helyen nyomja meg a Shift+
 
 Ha a fájl a `root` tulajdona — egy bejegyzés az `/etc`-ben, egy launchd plist, egy webkiszolgáló beállítása —, a mentés felajánlja, hogy **rendszergazdaként** történjen: a macOS a szokott módon engedélyt kér, a tartalom egy privát ideiglenes fájlon keresztül kerül át, nem parancssoron, és a fájl megtartja a saját tulajdonosát és jogosultságait ahelyett, hogy csendben az Öné lenne.
 
+A margó sorszámokat jelenít meg, a kurzor sorát a többinél világosabban; a kódolás menü melletti gomb elrejti. A tördelt sor egyszer kap számot, így a szám mindig ugyanazt a sort jelenti, amelyet egy fordítási hiba vagy egy átvizsgálási megjegyzés is.
+
 ## Keresés, csere és navigáció
 
 - Nyomja meg a Cmd+F-et a keresősáv megnyitásához. Szöveg cseréjéhez nyissa meg a keresősávot és váltsa a csere nézetre, vagy kattintson a Keresés/Csere gombra az eszköztárban.

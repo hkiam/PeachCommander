@@ -22,6 +22,8 @@ Chcete-li vytvořit zcela nový textový soubor v aktuálním umístění, stisk
 
 Patří-li soubor `root` — záznam v `/etc`, launchd plist, konfigurace webového serveru —, uložení nabídne udělat to **jako správce**: macOS požádá o autorizaci jako obvykle, obsah se předá přes privátní dočasný soubor místo příkazové řádky a soubor si ponechá vlastního vlastníka i práva, místo aby se tiše stal vaším.
 
+Okraj zobrazuje čísla řádků, řádek s kurzorem světlejší než ostatní; tlačítko vedle nabídky kódování jej skryje. Zalomený řádek je číslován jednou, takže číslo vždy znamená týž řádek, který má na mysli chyba kompilátoru nebo poznámka z revize.
+
 ## Hledání, nahrazování a navigace
 
 - Stiskem Cmd+F otevřete lištu hledání. Chcete-li nahradit text, otevřete lištu hledání a přepněte ji na zobrazení nahrazování, nebo klepněte na Hledat/Nahradit na panelu nástrojů.

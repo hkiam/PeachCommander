@@ -22,6 +22,8 @@ Za začetek povsem nove besedilne datoteke na trenutnem mestu pritisnite Shift+F
 
 Če datoteka pripada `root` — vnos v `/etc`, launchd plist, nastavitve spletnega strežnika —, shranjevanje ponudi, da to stori **kot skrbnik**: macOS zahteva odobritev kot običajno, vsebina gre prek zasebne začasne datoteke in ne prek ukazne vrstice, datoteka pa ohrani svojega lastnika in pravice, namesto da bi tiho postala vaša.
 
+Rob prikazuje številke vrstic, vrstica s kazalcem je svetlejša od drugih; gumb ob meniju kodiranja ga skrije. Prelomljena vrstica je oštevilčena enkrat, zato številka vedno pomeni isto vrstico, ki jo misli napaka prevajalnika ali pripomba iz pregleda.
+
 ## Iskanje, zamenjava in krmarjenje
 
 - Pritisnite Cmd+F, da odprete iskalno vrstico. Za zamenjavo besedila odprite iskalno vrstico in jo preklopite na pogled zamenjave, ali kliknite Poišči/Zamenjaj v orodni vrstici.

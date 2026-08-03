@@ -22,6 +22,8 @@ For å starte en helt ny tekstfil på gjeldende plassering, trykk Shift+F4.
 
 Hører fila til `root` — noe i `/etc`, en launchd-plist, konfigurasjonen til en vevtjener — tilbyr lagringen å gjøre det **som administrator**: macOS ber om godkjenning på vanlig måte, innholdet overleveres via en privat midlertidig fil i stedet for en kommandolinje, og fila beholder sin egen eier og sine rettigheter i stedet for stille å bli din.
 
+Margen viser linjenumre, med linja du står på lysere enn de andre; knappen ved siden av kodingsmenyen skjuler den. En brutt linje nummereres én gang, så nummeret betyr alltid samme linje som en kompilatorfeil eller en gjennomgangskommentar mener.
+
 ## Finn, erstatt og naviger
 
 - Trykk Cmd+F for å åpne finn-linjen. For å erstatte tekst, åpne finn-linjen og bytt til erstatt-visningen, eller klikk Finn/Erstatt i verktøylinjen.

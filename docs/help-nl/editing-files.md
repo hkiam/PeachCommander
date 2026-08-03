@@ -22,6 +22,8 @@ Om een gloednieuw tekstbestand op de huidige locatie te starten, druk je op Shif
 
 Hoort het bestand bij `root` — iets in `/etc`, een launchd-plist, de configuratie van een webserver — dan biedt opslaan aan het **als beheerder** te doen: macOS vraagt op de gebruikelijke manier om autorisatie, de inhoud gaat via een privé tijdelijk bestand in plaats van via een opdrachtregel, en het bestand houdt zijn eigen eigenaar en rechten in plaats van stil van jou te worden.
 
+De kantlijn toont regelnummers, met de regel van de cursor lichter dan de rest; de knop naast het coderingsmenu verbergt hem. Een afgebroken regel wordt één keer genummerd, dus het nummer betekent altijd dezelfde regel als een compilerfout of een reviewopmerking.
+
 ## Zoeken, vervangen en navigeren
 
 - Druk op Cmd+F om de zoekbalk te openen. Om tekst te vervangen, open je de zoekbalk en schakel je over naar de vervangweergave, of klik je op Zoeken/Vervangen in de werkbalk.

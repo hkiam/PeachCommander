@@ -22,6 +22,8 @@ För att starta en helt ny textfil på den aktuella platsen, tryck på Shift+F4.
 
 Om filen tillhör `root` — något i `/etc`, en launchd-plist, en webbservers konfiguration — erbjuder sparandet att göra det **som administratör**: macOS frågar om behörighet på vanligt sätt, innehållet lämnas över via en privat temporärfil i stället för en kommandorad, och filen behåller sin egen ägare och sina rättigheter i stället för att tyst bli din.
 
+Marginalen visar radnummer, med raden du står på ljusare än de övriga; knappen intill kodningsmenyn döljer den. En radbruten rad numreras en gång, så numret betyder alltid samma rad som ett kompilatorfel eller en granskningskommentar menar.
+
 ## Sök, ersätt och navigera
 
 - Tryck på Cmd+F för att öppna sökfältet. För att ersätta text, öppna sökfältet och växla det till ersättningsvyn, eller klicka på Sök/Ersätt i verktygsfältet.

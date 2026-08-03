@@ -22,6 +22,8 @@ For at starte en helt ny tekstfil på den aktuelle placering skal du trykke på 
 
 Tilhører filen `root` — noget i `/etc`, en launchd-plist, en webservers konfiguration — tilbyder gemningen at gøre det **som administrator**: macOS beder om godkendelse på sædvanlig vis, indholdet overleveres via en privat midlertidig fil i stedet for en kommandolinje, og filen beholder sin egen ejer og sine rettigheder i stedet for stille at blive din.
 
+Margenen viser linjenumre, med linjen du står på lysere end de andre; knappen ved siden af kodningsmenuen skjuler den. En ombrudt linje nummereres én gang, så nummeret betyder altid samme linje, som en oversætterfejl eller en gennemgangskommentar mener.
+
 ## Søg, erstat og naviger
 
 - Tryk på Cmd+F for at åbne søgebjælken. For at erstatte tekst skal du åbne søgebjælken og skifte den til erstat-visningen eller klikke på Søg/Erstat i værktøjslinjen.
