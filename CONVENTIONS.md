@@ -78,6 +78,7 @@ Dependency direction: `PCApp -> everything`, engine modules never import PCApp,
   a view's constraints; `--update-baseline` records an improvement, never a regression.
   Note that AppKit prints only the *required* constraints of a conflict — lowering one
   to 999 makes it the escape valve and it disappears from the log.
+
 ## Git
 
 - Commit format: see WORKFLOW.md. Branch `main` only (single-agent workflow);
