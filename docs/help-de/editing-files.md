@@ -30,6 +30,43 @@ Um eine ganz neue Textdatei am aktuellen Ort zu beginnen, drücken Sie Shift+F4.
 - Klicken Sie auf die Kartenschaltfläche, um die Minimap ein- oder auszublenden, eine verkleinerte Übersicht der gesamten Datei, die Sie zum Scrollen anklicken können.
 - Verwenden Sie das Menü Kodierung in der Symbolleiste, wenn die Datei in einer anderen als der Standard-Textkodierung gesichert wurde.
 
+## Eine Datei formatieren
+
+Klicken Sie im Editor auf **Formatieren** (im Viewer gibt es denselben Befehl), um die Datei neu einzurücken. Peach Commander wählt den Formatierer anhand der Dateiendung und zeigt in der Statuszeile, welcher es war, etwa *formatted (jq)* — so wissen Sie immer, was das Ergebnis geformt hat.
+
+**Ohne Zutun** funktionieren JSON, XML, SVG, plists, HTML, INI-artige Konfiguration und YAML. YAML ist ein Sonderfall: es wird aufgeräumt statt neu eingerückt, denn in YAML *ist* die Einrückung die Struktur, und sie ohne echten YAML-Parser umzuschreiben könnte die Bedeutung ändern. Leerzeichen am Zeilenende fallen weg, versprengte Tabulatoren in der Einrückung werden Leerzeichen, Folgen von Leerzeilen schrumpfen — und alles innerhalb eines Blockskalars (`|` oder `>`) bleibt genau so, denn dort ist Weißraum Inhalt.
+
+**Bessere Formatierer übernehmen automatisch.** Ist einer davon installiert, benutzt Peach Commander ihn, weil ein eigens dafür gebautes Werkzeug meist dem entspricht, was das übrige Ökosystem erwartet — und bei Konfigurationsformaten Ihre Kommentare erhält:
+
+| Installieren | und Sie erhalten |
+| --- | --- |
+| `yq` oder `prettier` | vollständige YAML-Formatierung, Kommentare bleiben |
+| `taplo` | TOML |
+| `sqlformat` oder `sql-formatter` | SQL |
+| `prettier` | Markdown |
+| `jq` | JSON im üblichen Stil |
+| `xmllint` | XML und SVG |
+
+Hat ein Dateityp keinen Formatierer, ist der Knopf ausgegraut und der Menüeintrag deaktiviert. Wer es dennoch versucht, erfährt den Grund — *„taplo ist nicht installiert“* liest sich anders als *„Kein gültiges JSON“*.
+
+### Einen eigenen Formatierer verwenden
+
+Um einen Dateityp zu formatieren, den Peach Commander nicht kennt, oder um ein anderes Werkzeug zu nutzen, legen Sie `formatters.ini` im Konfigurationsordner an — ein Abschnitt pro Endung:
+
+```ini
+[swift]
+tool = swiftformat
+args = --quiet stdin
+
+[sql]
+tool = /opt/homebrew/bin/sqlfluff
+args = format -
+```
+
+`tool` ist ein ausführbarer Name (wird gesucht wie in Ihrer Shell) oder ein absoluter Pfad; `args` werden unverändert übergeben. Der Text der Datei geht über die Standardeingabe hinein, der formatierte Text kommt über die Standardausgabe zurück — so funktioniert jeder wohlerzogene Kommandozeilen-Formatierer. Ihre Einträge gewinnen gegen alles andere. Eine kommentierte Vorlage wird beim ersten Start angelegt, Sie können die Datei also einfach öffnen und ausfüllen.
+
+Auch Plugins können Formatierer beitragen — siehe [Plugins](plugins.md).
+
 ## Eine Datei Byte für Byte bearbeiten
 
 1. Wählen Sie die Datei in einem Panel aus.

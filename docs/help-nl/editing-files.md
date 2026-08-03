@@ -30,6 +30,43 @@ Om een gloednieuw tekstbestand op de huidige locatie te starten, druk je op Shif
 - Klik op de kaartknop om de minimap te tonen of te verbergen, een geschaald overzicht van het hele bestand waarop je kunt klikken om te scrollen.
 - Gebruik het menu Codering in de werkbalk als het bestand is opgeslagen in iets anders dan de standaard tekstcodering.
 
+## Een bestand opmaken
+
+Klik op **Opmaken** in de editor (dezelfde opdracht zit in de viewer) om het bestand opnieuw te laten inspringen. Peach Commander kiest een opmaker op basis van de extensie en laat in de statusbalk zien welke het was, bijvoorbeeld *formatted (jq)* — zo weet je altijd wat het resultaat heeft gevormd.
+
+**Zonder iets te installeren**: JSON, XML, SVG, plists, HTML, INI-achtige configuratie en YAML. YAML is een geval apart: het wordt opgeruimd in plaats van opnieuw ingesprongen, want in YAML *is* de inspringing de structuur, en die herschrijven zonder echte YAML-parser kan de betekenis veranderen. Spaties aan het regeleinde verdwijnen, losse tabs in de inspringing worden spaties, reeksen lege regels krimpen — en alles binnen een blokscalair (`|` of `>`) blijft precies zoals het is, want daar is witruimte inhoud.
+
+**Betere opmakers nemen automatisch over.** Heb je er een geïnstalleerd, dan gebruikt Peach Commander die, omdat een specifiek gereedschap meestal past bij wat de rest van het ecosysteem verwacht — en bij configuratieformaten je commentaar bewaart:
+
+| Installeer | en je krijgt |
+| --- | --- |
+| `yq` of `prettier` | volledige YAML-opmaak, commentaar blijft |
+| `taplo` | TOML |
+| `sqlformat` of `sql-formatter` | SQL |
+| `prettier` | Markdown |
+| `jq` | JSON, in de gebruikelijke stijl |
+| `xmllint` | XML en SVG |
+
+Heeft een bestandstype geen opmaker, dan is de knop grijs en het menu-item uitgeschakeld. Toch proberen vertelt je waarom — *“taplo is niet geïnstalleerd”* leest anders dan *“Geen geldige JSON”*.
+
+### Je eigen opmaker gebruiken
+
+Wil je een type opmaken dat Peach Commander niet kent, of een ander gereedschap gebruiken, maak dan `formatters.ini` in de configuratiemap — één sectie per extensie:
+
+```ini
+[swift]
+tool = swiftformat
+args = --quiet stdin
+
+[sql]
+tool = /opt/homebrew/bin/sqlfluff
+args = format -
+```
+
+`tool` is een naam van een programma (opgezocht zoals je shell dat doet) of een absoluut pad; `args` worden ongewijzigd doorgegeven. De tekst van het bestand gaat via standaardinvoer naar binnen en de opgemaakte tekst komt via standaarduitvoer terug, dus elke net werkende opdrachtregel-opmaker werkt. Jouw regels winnen van al het andere. Bij de eerste start wordt een becommentarieerd voorbeeld aangemaakt: open het bestand en vul het in.
+
+Plugins kunnen ook opmakers aanleveren — zie [Plugins](plugins.md).
+
 ## Een bestand byte voor byte bewerken
 
 1. Selecteer het bestand in een paneel.

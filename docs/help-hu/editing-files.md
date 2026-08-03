@@ -30,6 +30,43 @@ Egy vadonatúj szövegfájl kezdéséhez az aktuális helyen nyomja meg a Shift+
 - Kattintson a térkép gombra a minitérkép megjelenítéséhez vagy elrejtéséhez, ami az egész fájl kicsinyített áttekintése, amelyre kattintva görgethet.
 - Használja a Kódolás menüt az eszköztárban, ha a fájl nem az alapértelmezett szövegkódolással lett mentve.
 
+## Fájl formázása
+
+Kattintson a szerkesztőben a **Formázás** gombra (ugyanez a parancs a megjelenítőben is megvan), és a fájl újra behúzásra kerül. A Peach Commander a kiterjesztés alapján választ formázót, és az állapotsorban megmutatja, melyiket használta, például *formatted (jq)* — így mindig tudja, mi alakította az eredményt.
+
+**Telepítés nélkül** működik: JSON, XML, SVG, plist, HTML, INI-jellegű konfiguráció és YAML. A YAML külön eset: rendbe teszi, nem újra behúzza, mert YAML-ben a behúzás *maga* a szerkezet, és igazi YAML-értelmező nélkül átírni megváltoztathatná a fájl jelentését. A sorvégi szóközök eltűnnek, a behúzásba keveredett tabulátorok szóközzé válnak, az üres sorok sorozatai összezsugorodnak — és minden, ami blokkskaláron (`|` vagy `>`) belül van, pontosan úgy marad, mert ott a szóköz tartalom.
+
+**A jobb formázók automatikusan átveszik a munkát.** Ha valamelyik telepítve van, a Peach Commander azt használja, mert egy erre készült eszköz általában megfelel annak, amit a szélesebb ökoszisztéma elvár — konfigurációs formátumoknál pedig megőrzi a megjegyzéseit:
+
+| Telepítse | és megkapja |
+| --- | --- |
+| `yq` vagy `prettier` | teljes YAML-formázás, a megjegyzések megmaradnak |
+| `taplo` | TOML |
+| `sqlformat` vagy `sql-formatter` | SQL |
+| `prettier` | Markdown |
+| `jq` | JSON, a megszokott stílusban |
+| `xmllint` | XML és SVG |
+
+Ha egy fájltípushoz nincs formázó, a gomb szürke és a menüpont letiltott. Ha mégis megpróbálja, megtudja, miért — *„a taplo nincs telepítve”* máshogy hangzik, mint *„Nem érvényes JSON”*.
+
+### Saját formázó használata
+
+Olyan típus formázásához, amelyet a Peach Commander nem ismer, vagy más eszköz használatához hozzon létre egy `formatters.ini` fájlt a beállítási mappában — kiterjesztésenként egy szakaszt:
+
+```ini
+[swift]
+tool = swiftformat
+args = --quiet stdin
+
+[sql]
+tool = /opt/homebrew/bin/sqlfluff
+args = format -
+```
+
+A `tool` egy programnév (úgy keresi meg, ahogy a shell tenné) vagy egy teljes útvonal; az `args` változtatás nélkül kerül átadásra. A fájl szövege a standard bemeneten megy be, a formázott szöveg a standard kimeneten jön vissza, így minden jól nevelt parancssori formázó működik. Az Ön bejegyzései mindent felülírnak. Az első indításnál megjegyzésekkel ellátott minta készül — nyissa meg a fájlt és töltse ki.
+
+Bővítmények is adhatnak formázót — lásd [Plugins](plugins.md).
+
 ## Fájl szerkesztése bájtról bájtra
 
 1. Jelölje ki a fájlt egy panelben.

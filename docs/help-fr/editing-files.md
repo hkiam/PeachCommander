@@ -30,6 +30,43 @@ Pour créer un tout nouveau fichier texte à l'emplacement courant, appuyez sur 
 - Cliquez sur le bouton carte pour afficher ou masquer la minicarte, un aperçu à l'échelle de tout le fichier sur lequel vous pouvez cliquer pour faire défiler.
 - Utilisez le menu Encodage de la barre d'outils si le fichier a été enregistré avec un encodage autre que celui par défaut.
 
+## Formater un fichier
+
+Cliquez sur **Formater** dans l’éditeur (la même commande existe dans la visionneuse) pour réindenter le fichier. Peach Commander choisit un formateur d’après l’extension et indique dans la barre d’état lequel a servi, par exemple *formatted (jq)* — vous savez donc toujours ce qui a façonné le résultat.
+
+**Sans rien installer** : JSON, XML, SVG, plists, HTML, configuration de type INI et YAML. YAML est un cas à part : il est nettoyé plutôt que réindenté, car en YAML l’indentation *est* la structure, et la réécrire sans un vrai analyseur YAML pourrait changer le sens du fichier. Les espaces en fin de ligne disparaissent, les tabulations égarées dans l’indentation deviennent des espaces, les suites de lignes vides se réduisent — et tout ce qui est dans un scalaire de bloc (`|` ou `>`) reste tel quel, car là l’espace est du contenu.
+
+**Les meilleurs formateurs prennent le relais automatiquement.** Si l’un d’eux est installé, Peach Commander l’utilise : un outil dédié correspond généralement à ce qu’attend l’écosystème — et pour les formats de configuration, il préserve vos commentaires :
+
+| Installez | et vous obtenez |
+| --- | --- |
+| `yq` ou `prettier` | formatage YAML complet, commentaires préservés |
+| `taplo` | TOML |
+| `sqlformat` ou `sql-formatter` | SQL |
+| `prettier` | Markdown |
+| `jq` | JSON, dans le style habituel |
+| `xmllint` | XML et SVG |
+
+Si un type de fichier n’a pas de formateur, le bouton est grisé et l’entrée de menu désactivée. Essayer quand même vous dit pourquoi — *« taplo n’est pas installé »* ne se lit pas comme *« JSON invalide »*.
+
+### Utiliser votre propre formateur
+
+Pour formater un type que Peach Commander ne connaît pas, ou pour employer un autre outil, créez `formatters.ini` dans le dossier de configuration — une section par extension :
+
+```ini
+[swift]
+tool = swiftformat
+args = --quiet stdin
+
+[sql]
+tool = /opt/homebrew/bin/sqlfluff
+args = format -
+```
+
+`tool` est un nom d’exécutable (recherché comme le ferait votre shell) ou un chemin absolu ; `args` sont passés tels quels. Le texte du fichier entre par l’entrée standard et le texte formaté est relu sur la sortie standard, donc tout formateur en ligne de commande bien élevé fonctionne. Vos entrées l’emportent sur tout le reste. Un modèle commenté est créé au premier lancement : ouvrez le fichier et complétez-le.
+
+Les plugins peuvent aussi fournir des formateurs — voir [Plugins](plugins.md).
+
 ## Modifier un fichier octet par octet
 
 1. Sélectionnez le fichier dans un panneau.

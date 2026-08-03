@@ -30,6 +30,43 @@ För att starta en helt ny textfil på den aktuella platsen, tryck på Shift+F4.
 - Klicka på kartknappen för att visa eller dölja minikartan, en skalad översikt över hela filen som du kan klicka på för att rulla.
 - Använd menyn Kodning i verktygsfältet om filen sparades i något annat än standardtextkodningen.
 
+## Formatera en fil
+
+Klicka på **Formatera** i redigeraren (samma kommando finns i visaren) för att indentera om filen. Peach Commander väljer formaterare efter filändelsen och visar i statusraden vilken det blev, till exempel *formatted (jq)* — så du vet alltid vad som format resultatet.
+
+**Utan att installera något**: JSON, XML, SVG, plists, HTML, INI-liknande konfiguration och YAML. YAML är ett särfall: den städas i stället för att indenteras om, eftersom indenteringen i YAML *är* strukturen, och att skriva om den utan en riktig YAML-tolk kan ändra filens innebörd. Blanksteg i radslut försvinner, vilsna tabbar i indenteringen blir blanksteg, följder av tomma rader krymper — och allt inuti en blockskalär (`|` eller `>`) lämnas precis som det är, för där är blanktecken innehåll.
+
+**Bättre formaterare tar över automatiskt.** Har du någon av dessa installerad använder Peach Commander den, eftersom ett dedikerat verktyg oftast motsvarar vad ekosystemet förväntar sig — och för konfigurationsformat behåller det dina kommentarer:
+
+| Installera | och du får |
+| --- | --- |
+| `yq` eller `prettier` | fullständig YAML-formatering, kommentarer bevaras |
+| `taplo` | TOML |
+| `sqlformat` eller `sql-formatter` | SQL |
+| `prettier` | Markdown |
+| `jq` | JSON, i det vanliga formatet |
+| `xmllint` | XML och SVG |
+
+Har en filtyp ingen formaterare är knappen grå och menyposten avstängd. Försöker du ändå får du veta varför — *”taplo är inte installerat”* läses annorlunda än *”Inte giltig JSON”*.
+
+### Använda en egen formaterare
+
+För att formatera en typ Peach Commander inte känner, eller för att använda ett annat verktyg, skapa `formatters.ini` i konfigurationsmappen — en sektion per ändelse:
+
+```ini
+[swift]
+tool = swiftformat
+args = --quiet stdin
+
+[sql]
+tool = /opt/homebrew/bin/sqlfluff
+args = format -
+```
+
+`tool` är ett programnamn (söks upp som ditt skal gör) eller en absolut sökväg; `args` skickas som de är. Filens text går in via standard in och den formaterade texten läses från standard ut, så vilken välartad kommandoradsformaterare som helst fungerar. Dina poster vinner över allt annat. Vid första starten skapas en kommenterad mall — öppna filen och fyll i den.
+
+Insticksmoduler kan också bidra med formaterare — se [Plugins](plugins.md).
+
 ## Redigera en fil byte för byte
 
 1. Markera filen i en panel.
