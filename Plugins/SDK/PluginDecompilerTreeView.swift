@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// archive_view.swift — F3 on a whole JAR, APK or DEX (F-349).
+// PluginDecompilerTreeView.swift — F3 on something that yields many sources (F-349).
 //
 // F3 on a single .class shows one file (see java_decompiler.swift). F3 on a JAR runs the engine
 // once over the whole archive and shows the result as a package tree with a source panel — which
@@ -16,6 +16,7 @@
 import AppKit
 
 final class DecompiledArchiveView: DecompilerListerView {
+    private let profile: PluginDecompilerProfile
     // Left: the tree. Right: one class. An NSSplitView rather than constraints, because the
     // divider should be draggable — a package name can be long, and a fixed split would truncate
     // either the tree or the code depending on the archive.
@@ -48,11 +49,12 @@ final class DecompiledArchiveView: DecompilerListerView {
     /// Raised to abandon a scan whose query the user has already replaced.
     private var searchGeneration = 0
 
-    init(path: String, configRoot: String) {
+    init(path: String, configRoot: String, profile: PluginDecompilerProfile) {
         self.path = path
         self.configRootPath = configRoot
+        self.profile = profile
         self.kind = (path as NSString).pathExtension.lowercased()
-        self.registry = PluginDecompilerRegistry(configRoot: configRoot)
+        self.registry = PluginDecompilerRegistry(configRoot: configRoot, profile: profile.id)
         self.candidates = registry.archiveEngines(for: kind)
         super.init(frame: NSRect(x: 0, y: 0, width: 900, height: 600))
         build()
@@ -182,7 +184,8 @@ final class DecompiledArchiveView: DecompilerListerView {
 
     private func run(_ engine: PluginDecompilerEngine) {
         guard let cacheDir = PluginDecompilerCache.treeDirectory(path: path, engine: engine,
-                                                                 configRoot: configRootPath) else {
+                                                                 configRoot: configRootPath,
+                                                                 profile: profile.id) else {
             showMessage(PluginDecompileError.notReadable(L("This file could not be read.")).userMessage,
                         includingInstallHelp: false)
             return
@@ -220,7 +223,8 @@ final class DecompiledArchiveView: DecompilerListerView {
                 guard let self else { return }
                 switch result {
                 case .success(let found):
-                    PluginDecompilerCache.markTreeComplete(cacheDir, configRoot: self.configRootPath)
+                    PluginDecompilerCache.markTreeComplete(cacheDir, configRoot: self.configRootPath,
+                                                           profile: self.profile.id)
                     log.info("\(engine.id, privacy: .public): produced \(found.count) file(s)")
                     self.present(files: found, directory: cacheDir, engine: engine, fromCache: false)
                 case .failure(let error):
@@ -316,7 +320,7 @@ final class DecompiledArchiveView: DecompilerListerView {
         currentFile = rel
         let font = text.font ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
         text.textStorage?.setAttributedString(
-            PluginSyntax.highlight(source, palette: .system, font: font))
+            PluginSyntax.highlight(source, language: profile.language, palette: .system, font: font))
         if let line { scroll(to: line) } else { text.scrollRangeToVisible(NSRange(location: 0, length: 0)) }
     }
 

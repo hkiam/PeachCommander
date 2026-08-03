@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// panel_command.swift — put decompiled sources into a file panel (F-350).
+// PluginDecompilerPanel.swift — put decompiled sources into a file panel (F-350).
 //
 // The plugin's first answer to "show me this JAR as source" was a window of its own, with a tree and
 // a search field in it. That was the wrong instinct: Peach Commander already navigates archives,
@@ -19,25 +19,20 @@
 
 import AppKit
 
-/// Command ids, matching PCContributions in Info.plist.
-private let commandToSources = "plugin.javadecompiler.tosources"
-private let commandClearCache = "plugin.javadecompiler.clearcache"
-
-@_cdecl("PcRunCommand")
-public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafePointer<PcHostServices>?) {
-    guard let services else { return }
-    let svc = services.pointee
-    let command = commandId.map { String(cString: $0) } ?? ""
+/// Dispatch a contributed command. Each plugin's `PcRunCommand` is one call to this with its own
+/// profile — the ids come from the profile so the code and the manifest cannot drift apart.
+func runDecompilerCommand(_ command: String, _ svc: PcHostServices,
+                          profile: PluginDecompilerProfile) {
     switch command {
-    case commandToSources: decompileToPanel(svc)
-    case commandClearCache: clearCache(svc)
+    case profile.commandToSources: decompileToPanel(svc, profile: profile)
+    case profile.commandClearCache: clearCache(svc, profile: profile)
     default: break
     }
 }
 
 // MARK: - Decompile into a panel
 
-private func decompileToPanel(_ svc: PcHostServices) {
+private func decompileToPanel(_ svc: PcHostServices, profile: PluginDecompilerProfile) {
     let configRoot = context(svc, "configRoot") ?? configRoot()
     // The *local* path, so a class inside an archive works too: the host extracts it to a temp file
     // first, exactly as it does for F3. Asking for the plain cursor path would hand a decompiler a
@@ -51,14 +46,14 @@ private func decompileToPanel(_ svc: PcHostServices) {
     // Check the *input* before blaming the setup. Without this the message for a cursor sitting on a
     // folder read "No decompiler engine is installed for . files", which sends someone off to install
     // an engine over a mistake an engine cannot fix.
-    guard kind == "class" || pluginDecompilerArchiveKinds.contains(kind) else {
+    guard profile.handles(kind: kind), profile.claims(path) else {
         present(svc, L("Nothing to decompile"),
                 String(format: L("%@ is not a class file or an archive of them."),
                        (path as NSString).lastPathComponent))
         return
     }
-    let registry = PluginDecompilerRegistry(configRoot: configRoot)
-    let isArchive = pluginDecompilerArchiveKinds.contains(kind)
+    let registry = PluginDecompilerRegistry(configRoot: configRoot, profile: profile.id)
+    let isArchive = profile.isTree(kind: kind)
     let candidates = isArchive ? registry.archiveEngines(for: kind) : registry.engines(for: kind)
     guard let engine = candidates.first(where: { $0.isAvailable })
             ?? preferred(candidates, configRoot: configRoot, kind: kind) else {
@@ -86,8 +81,8 @@ private func decompileToPanel(_ svc: PcHostServices) {
 
     DispatchQueue.global(qos: .userInitiated).async {
         let result = isArchive
-            ? archiveDirectory(engine: engine, path: path, configRoot: configRoot)
-            : singleFileDirectory(engine: engine, path: path, configRoot: configRoot)
+            ? archiveDirectory(engine: engine, path: path, configRoot: configRoot, profile: profile)
+            : singleFileDirectory(engine: engine, path: path, configRoot: configRoot, profile: profile)
         DispatchQueue.main.async {
             progress.close()
             switch result {
@@ -108,9 +103,10 @@ private func decompileToPanel(_ svc: PcHostServices) {
 /// The cache is the delivery mechanism, not an optimisation: the sources have to live somewhere a
 /// panel can navigate, and a directory keyed by (file, engine) is already exactly that. Reopening
 /// the same archive therefore costs nothing and shows the same paths.
-private func archiveDirectory(engine: PluginDecompilerEngine, path: String,
-                              configRoot: String) -> Result<String, PluginDecompileError> {
-    guard let dir = PluginDecompilerCache.treeDirectory(path: path, engine: engine, configRoot: configRoot) else {
+private func archiveDirectory(engine: PluginDecompilerEngine, path: String, configRoot: String,
+                              profile: PluginDecompilerProfile) -> Result<String, PluginDecompileError> {
+    guard let dir = PluginDecompilerCache.treeDirectory(path: path, engine: engine, configRoot: configRoot,
+                                                       profile: profile.id) else {
         return .failure(.notReadable("This file could not be read."))
     }
     if PluginDecompilerCache.treeIsComplete(dir), !PluginDecompilerRunner.sourceFiles(in: dir).isEmpty {
@@ -118,7 +114,7 @@ private func archiveDirectory(engine: PluginDecompilerEngine, path: String,
     }
     switch PluginDecompilerRunner.runArchive(engine, input: path, outputDirectory: dir) {
     case .success:
-        PluginDecompilerCache.markTreeComplete(dir, configRoot: configRoot)
+        PluginDecompilerCache.markTreeComplete(dir, configRoot: configRoot, profile: profile.id)
         return .success(dir)
     case .failure(let error):
         return .failure(error)
@@ -129,28 +125,30 @@ private func archiveDirectory(engine: PluginDecompilerEngine, path: String,
 ///
 /// A directory even for a single class, because the host is being asked to *navigate* somewhere, and
 /// the file is named after the class so the panel shows `Hello.java` rather than a cache key.
-private func singleFileDirectory(engine: PluginDecompilerEngine, path: String,
-                                 configRoot: String) -> Result<String, PluginDecompileError> {
+private func singleFileDirectory(engine: PluginDecompilerEngine, path: String, configRoot: String,
+                                 profile: PluginDecompilerProfile) -> Result<String, PluginDecompileError> {
     let source: String
-    if let cached = PluginDecompilerCache.read(path: path, engine: engine, configRoot: configRoot) {
+    if let cached = PluginDecompilerCache.read(path: path, engine: engine, configRoot: configRoot,
+                                               profile: profile.id) {
         source = cached
     } else {
         switch PluginDecompilerRunner.run(engine, input: path) {
         case .success(let text):
-            PluginDecompilerCache.write(text, path: path, engine: engine, configRoot: configRoot)
+            PluginDecompilerCache.write(text, path: path, engine: engine, configRoot: configRoot,
+                                        profile: profile.id)
             source = text
         case .failure(let error):
             return .failure(error)
         }
     }
     guard let dir = PluginDecompilerCache.fileDirectory(path: path, engine: engine,
-                                                       configRoot: configRoot) else {
+                                                       configRoot: configRoot, profile: profile.id) else {
         return .failure(.notReadable("This file could not be read."))
     }
     let stem = ((path as NSString).lastPathComponent as NSString).deletingPathExtension
     // javap prints bytecode, not Java; naming that .java would make the host highlight it as source
     // and the user save it as something it is not.
-    let name = stem + (source.hasPrefix("Compiled from") ? ".txt" : ".java")
+    let name = stem + (profile.isBytecodeListing(source) ? ".txt" : "." + profile.sourceExtension)
     do {
         try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
         try source.write(toFile: (dir as NSString).appendingPathComponent(name),
@@ -171,10 +169,10 @@ private func preferred(_ candidates: [PluginDecompilerEngine], configRoot: Strin
 
 /// Delete every cached result. Offered as a command as well as in the options window, because a
 /// stale result after installing a better engine is the one case where the cache is in the way.
-private func clearCache(_ svc: PcHostServices) {
+private func clearCache(_ svc: PcHostServices, profile: PluginDecompilerProfile) {
     let configRoot = context(svc, "configRoot") ?? configRoot()
-    let dir = PluginDecompilerCache.directory(configRoot: configRoot)
-    let removed = PluginDecompilerCache.entryCount(configRoot: configRoot)
+    let dir = PluginDecompilerCache.directory(configRoot: configRoot, profile: profile.id)
+    let removed = PluginDecompilerCache.entryCount(configRoot: configRoot, profile: profile.id)
     try? FileManager.default.removeItem(atPath: dir)
     present(svc, L("Decompiler cache cleared"),
             String(format: L("%d cached result(s) removed."), removed))

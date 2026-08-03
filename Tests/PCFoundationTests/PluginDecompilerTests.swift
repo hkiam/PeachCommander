@@ -532,10 +532,10 @@ final class PluginDecompilerArchiveTests: XCTestCase {
         let registry = PluginDecompilerRegistry(configRoot: root)
         XCTAssertFalse(registry.archiveEngines(for: "jar").contains { $0.id == "javap" })
         XCTAssertTrue(registry.archiveEngines(for: "jar").contains { $0.id == "cfr" })
-        // Every kind the plugin routes to the tree view must have at least one engine describing it,
+        // Every kind the profile routes to the tree view must have at least one engine describing it,
         // or F3 on such a file would open a view nothing can ever fill. No exemptions: the carve-out
         // this once had was hiding three kinds that were claimed and unsupported.
-        for kind in pluginDecompilerArchiveKinds {
+        for kind in PluginDecompilerProfile.java.treeKinds {
             XCTAssertFalse(registry.archiveEngines(for: kind).isEmpty, "no archive engine for .\(kind)")
         }
     }

@@ -126,15 +126,56 @@ struct PluginDecompilerEngine: Equatable {
     static let defaultTimeout = 30
 }
 
-/// Input kinds where one file yields many sources, so the result belongs in a tree.
+/// Everything a decompiler plugin has to say about *its* formats. The rest is shared.
 ///
-/// `dex` and `apk` are in here with `jar`: a dex holds a whole Android app, and concatenating that
-/// into one buffer — which is what the single-file path does — is unreadable at any size.
-///
-/// Exactly the kinds a built-in engine claims, and a test holds it to that. `.war`, `.ear` and
-/// `.aar` were in here first and came straight back out: nothing described could decompile one, so
-/// F3 on such a file would have opened a view that could only ever apologise.
-let pluginDecompilerArchiveKinds: Set<String> = ["jar", "apk", "dex"]
+/// This exists because the second decompiler plugin did. The first one had its formats spread through
+/// the views as literals — "class" here, `.java` there, a global set of archive kinds — and copying
+/// 1,600 lines of view code to change five of those strings is not an architecture. A profile makes
+/// the format the parameter it always was: the views, the panel command, the search field and the
+/// settings page live in the SDK and read from here, so a plugin is a profile plus its C exports.
+struct PluginDecompilerProfile {
+    /// Short, stable, filesystem-safe: names this plugin's section in `options.ini` and its own
+    /// subfolder in the cache, so two decompiler plugins cannot overwrite each other's settings or
+    /// clear each other's results.
+    let id: String
+    /// Kinds shown as one document (a single class).
+    let singleKinds: Set<String>
+    /// Kinds where one input yields many sources, so the result belongs in a tree or a panel.
+    ///
+    /// For Java this is archives — a JAR, an APK, a dex. For .NET it is the assembly itself: one
+    /// `.dll` holds many types, which is the same shape and takes the same path.
+    let treeKinds: Set<String>
+    /// Which language the result is highlighted as.
+    let language: PluginSyntaxLanguage
+    /// Extension for a single decompiled file the panel command writes ("java", "cs").
+    let sourceExtension: String
+    /// Prefixes that mark a result as *not* source but a bytecode listing, so it is not saved or
+    /// named as something it is not. javap starts with "Compiled from"; monodis with ".assembly".
+    let bytecodeMarkers: [String]
+    /// Ids the manifest declares, kept here so the code and the plist cannot drift apart.
+    let settingsViewId: String
+    let commandToSources: String
+    let commandClearCache: String
+    /// A check the detect string cannot express, run before the view is built. Returning false makes
+    /// `ListLoad` decline, and the host then falls back to its own viewer.
+    ///
+    /// Needed because `.dll` and `.exe` name native binaries as well as managed assemblies, and
+    /// deciding which is which means following a pointer at offset 0x3C — the detect-string grammar
+    /// has fixed offsets only. Java needs nothing here and passes a constant true.
+    let claims: (String) -> Bool
+
+    func handles(kind: String) -> Bool {
+        singleKinds.contains(kind) || treeKinds.contains(kind)
+    }
+
+    /// Whether `kind` yields many files rather than one document.
+    func isTree(kind: String) -> Bool { treeKinds.contains(kind) }
+
+    /// Whether `source` looks like a bytecode listing rather than source code.
+    func isBytecodeListing(_ source: String) -> Bool {
+        bytecodeMarkers.contains { source.hasPrefix($0) }
+    }
+}
 
 // MARK: - Built-in engine descriptors
 
@@ -223,7 +264,7 @@ struct PluginDecompilerRegistry {
     /// trouble of describing their own decompiler would still get a built-in, which is the
     /// opposite of what configuring one means. An entry that reuses a built-in id replaces it in
     /// place, so pointing CFR at another path or adding flags needs no new id.
-    init(configRoot: String) {
+    init(configRoot: String, profile: String = "") {
         let dir = Self.engineDirectory(configRoot: configRoot)
         var builtIns = PluginDecompilerEngine.builtIns(engineDirectory: dir)
         var user: [PluginDecompilerEngine] = []
@@ -238,7 +279,7 @@ struct PluginDecompilerRegistry {
         }
         // The user's timeouts applied here and nowhere else: every consumer goes through this
         // registry, so a setting cannot be honoured on one path and ignored on another.
-        let options = PluginDecompilerOptions.read(configRoot: configRoot)
+        let options = PluginDecompilerOptions.read(configRoot: configRoot, profile: profile)
         engines = (user + builtIns).map { $0.withTimeouts(options) }
     }
 
@@ -427,13 +468,17 @@ enum PluginDecompilerCache {
     /// the settings page can change it (F-352).
     static let maximumAge: TimeInterval = 30 * 24 * 3600
 
-    static func maximumAge(configRoot: String) -> TimeInterval {
-        TimeInterval(PluginDecompilerOptions.read(configRoot: configRoot).cacheMaxAgeDays) * 24 * 3600
+    static func maximumAge(configRoot: String, profile: String = "") -> TimeInterval {
+        TimeInterval(PluginDecompilerOptions.read(configRoot: configRoot, profile: profile).cacheMaxAgeDays)
+            * 24 * 3600
     }
 
-    static func directory(configRoot: String) -> String {
-        (PluginDecompilerRegistry.engineDirectory(configRoot: configRoot) as NSString)
+    /// Where results live. One subfolder per plugin, so a count shown on one settings page and a
+    /// "clear cache" pressed there mean that plugin's results and not another's.
+    static func directory(configRoot: String, profile: String = "") -> String {
+        let base = (PluginDecompilerRegistry.engineDirectory(configRoot: configRoot) as NSString)
             .appendingPathComponent("cache")
+        return profile.isEmpty ? base : (base as NSString).appendingPathComponent(profile)
     }
 
     /// A stable, filesystem-safe key. Hashing rather than sanitising the path: paths contain
@@ -456,19 +501,21 @@ enum PluginDecompilerCache {
         return String(hash, radix: 36)
     }
 
-    static func read(path: String, engine: PluginDecompilerEngine, configRoot: String) -> String? {
+    static func read(path: String, engine: PluginDecompilerEngine, configRoot: String,
+                     profile: String = "") -> String? {
         guard let key = key(path: path, engine: engine) else { return nil }
-        let file = (directory(configRoot: configRoot) as NSString).appendingPathComponent(key)
+        let file = (directory(configRoot: configRoot, profile: profile) as NSString).appendingPathComponent(key)
         return try? String(contentsOfFile: file, encoding: .utf8)
     }
 
-    static func write(_ source: String, path: String, engine: PluginDecompilerEngine, configRoot: String) {
+    static func write(_ source: String, path: String, engine: PluginDecompilerEngine, configRoot: String,
+                      profile: String = "") {
         guard let key = key(path: path, engine: engine) else { return }
-        let dir = directory(configRoot: configRoot)
+        let dir = directory(configRoot: configRoot, profile: profile)
         try? FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
         try? source.write(toFile: (dir as NSString).appendingPathComponent(key),
                           atomically: true, encoding: .utf8)
-        prune(dir, maximumAge: maximumAge(configRoot: configRoot))
+        prune(dir, maximumAge: maximumAge(configRoot: configRoot, profile: profile))
     }
 
     // MARK: Whole-archive results
@@ -482,14 +529,15 @@ enum PluginDecompilerCache {
     ///
     /// A directory rather than one concatenated file: the tree view reads single classes on demand,
     /// so a 40 MB result costs one file read per click instead of 40 MB of memory per open.
-    static func treeDirectory(path: String, engine: PluginDecompilerEngine, configRoot: String) -> String? {
+    static func treeDirectory(path: String, engine: PluginDecompilerEngine, configRoot: String,
+                              profile: String = "") -> String? {
         guard let key = key(path: path, engine: engine,
                             variant: engine.archive?.args.joined(separator: " ") ?? "archive") else { return nil }
         // The archive's name in the directory name, because this directory is opened *in a file panel*
         // (F-350) and its last component becomes the tab's title. A pure hash made that tab read
         // "tree-28au0ddiogk2x", which tells the person looking at it nothing at all. The hash stays —
         // it is what keeps two archives of the same name apart.
-        return (directory(configRoot: configRoot) as NSString)
+        return (directory(configRoot: configRoot, profile: profile) as NSString)
             .appendingPathComponent(safeName((path as NSString).lastPathComponent) + "-" + key)
     }
 
@@ -501,10 +549,11 @@ enum PluginDecompilerCache {
 
     /// Whether `dir` holds a result that finished.
     /// Where a single class's `.java` file belongs, named so a panel tab reads the class's name.
-    static func fileDirectory(path: String, engine: PluginDecompilerEngine, configRoot: String) -> String? {
+    static func fileDirectory(path: String, engine: PluginDecompilerEngine, configRoot: String,
+                              profile: String = "") -> String? {
         guard let key = key(path: path, engine: engine, variant: "single-dir") else { return nil }
         let stem = ((path as NSString).lastPathComponent as NSString).deletingPathExtension
-        return (directory(configRoot: configRoot) as NSString)
+        return (directory(configRoot: configRoot, profile: profile) as NSString)
             .appendingPathComponent(safeName(stem) + "-" + key)
     }
 
@@ -513,26 +562,26 @@ enum PluginDecompilerCache {
             atPath: (dir as NSString).appendingPathComponent(completionMarker))
     }
 
-    static func markTreeComplete(_ dir: String, configRoot: String) {
+    static func markTreeComplete(_ dir: String, configRoot: String, profile: String = "") {
         _ = FileManager.default.createFile(
             atPath: (dir as NSString).appendingPathComponent(completionMarker), contents: nil)
         // Prune the folder this result sits in, which is the cache root — derived from `dir` rather
         // than rebuilt from configRoot, so the two can never disagree about where the cache is.
         prune((dir as NSString).deletingLastPathComponent,
-              maximumAge: maximumAge(configRoot: configRoot))
+              maximumAge: maximumAge(configRoot: configRoot, profile: profile))
     }
 
     /// How many results are cached, and how much disk they take.
     ///
     /// Shown in the options window and used by the "clear cache" command, so both can say what they
     /// are about to remove rather than asking for blind confirmation.
-    static func entryCount(configRoot: String) -> Int {
-        (try? FileManager.default.contentsOfDirectory(atPath: directory(configRoot: configRoot)))?
+    static func entryCount(configRoot: String, profile: String = "") -> Int {
+        (try? FileManager.default.contentsOfDirectory(atPath: directory(configRoot: configRoot, profile: profile)))?
             .filter { !$0.hasPrefix(".") }.count ?? 0
     }
 
-    static func sizeInBytes(configRoot: String) -> Int64 {
-        let dir = directory(configRoot: configRoot)
+    static func sizeInBytes(configRoot: String, profile: String = "") -> Int64 {
+        let dir = directory(configRoot: configRoot, profile: profile)
         guard let e = FileManager.default.enumerator(atPath: dir) else { return 0 }
         var total: Int64 = 0
         for case let rel as String in e {
@@ -986,15 +1035,29 @@ struct PluginDecompilerOptions: Equatable {
     /// Forgiving in the same way the theme and engine files are: a mangled line costs that one setting
     /// rather than the whole file, because the alternative is a plugin that silently stops working
     /// because of a stray character.
-    static func read(configRoot: String) -> PluginDecompilerOptions {
+    /// Read this plugin's own settings.
+    ///
+    /// `profile` selects the section, so two decompiler plugins share one file the user can read
+    /// without sharing switches they do not mean for each other. An empty profile reads whatever
+    /// section comes first, which is what the single-plugin format looked like.
+    static func read(configRoot: String, profile: String = "") -> PluginDecompilerOptions {
         var options = PluginDecompilerOptions()
         guard let text = try? String(contentsOfFile: file(configRoot: configRoot), encoding: .utf8) else {
             return options
         }
+        var inSection = profile.isEmpty
         for line in text.components(separatedBy: .newlines) {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
-            guard !trimmed.isEmpty, !trimmed.hasPrefix(";"), !trimmed.hasPrefix("#"),
-                  !trimmed.hasPrefix("["), let eq = trimmed.firstIndex(of: "=") else { continue }
+            if trimmed.hasPrefix("["), trimmed.hasSuffix("]") {
+                let name = String(trimmed.dropFirst().dropLast()).trimmingCharacters(in: .whitespaces)
+                // "[Options]" is the section the single-plugin version wrote; treat it as everyone's
+                // so an existing file keeps working rather than silently reverting to defaults.
+                inSection = profile.isEmpty || name.caseInsensitiveCompare(profile) == .orderedSame
+                    || name.caseInsensitiveCompare("Options") == .orderedSame
+                continue
+            }
+            guard inSection, !trimmed.isEmpty, !trimmed.hasPrefix(";"), !trimmed.hasPrefix("#"),
+                  let eq = trimmed.firstIndex(of: "=") else { continue }
             let key = String(trimmed[trimmed.startIndex..<eq]).trimmingCharacters(in: .whitespaces).lowercased()
             var value = String(trimmed[trimmed.index(after: eq)...]).trimmingCharacters(in: .whitespaces)
             // Strip a trailing comment, the way the engine file's parser does. This file is written
@@ -1022,20 +1085,45 @@ struct PluginDecompilerOptions: Equatable {
         ["1", "true", "yes", "on"].contains(value.lowercased())
     }
 
-    func write(configRoot: String) {
+    /// Write this plugin's section, leaving every other section alone.
+    ///
+    /// Rewriting the whole file would delete the other decompiler plugin's settings — the sort of
+    /// bug that only shows up when both are installed and looks like the other plugin forgot them.
+    func write(configRoot: String, profile: String = "Options") {
+        let path = Self.file(configRoot: configRoot)
+        let existing = (try? String(contentsOfFile: path, encoding: .utf8)) ?? ""
+        let kept = Self.sectionsOtherThan(profile, in: existing)
         let body = [
-            "; Options for the decompiler plugin — written by its settings page.",
-            "[Options]",
+            "; Options for the decompiler plugins — written by their settings pages.",
+            "[\(profile)]",
             "ClaimArchives   = \(claimArchives ? 1 : 0)   ; F3 on a .jar/.apk/.dex opens the decompiled tree",
             "SearchDecompile = \(allowSearchDecompile ? 1 : 0)   ; may decompile while the host searches",
             "ClassTimeout    = \(classTimeout)   ; seconds for one class (0 = the engine's own value)",
             "ArchiveTimeout  = \(archiveTimeout)   ; seconds for a whole archive (0 = the engine's own)",
             "MaxAgeDays      = \(cacheMaxAgeDays)   ; how long a cached result survives",
         ].joined(separator: "\n") + "\n"
-        let path = Self.file(configRoot: configRoot)
         try? FileManager.default.createDirectory(atPath: (path as NSString).deletingLastPathComponent,
                                                  withIntermediateDirectories: true)
-        try? body.write(toFile: path, atomically: true, encoding: .utf8)
+        try? (body + kept).write(toFile: path, atomically: true, encoding: .utf8)
+    }
+
+    /// Every section of `text` except `profile`, verbatim, so writing one preserves the others.
+    static func sectionsOtherThan(_ profile: String, in text: String) -> String {
+        var out: [String] = []
+        var keeping = false
+        for line in text.components(separatedBy: .newlines) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.hasPrefix("["), trimmed.hasSuffix("]") {
+                let name = String(trimmed.dropFirst().dropLast()).trimmingCharacters(in: .whitespaces)
+                keeping = name.caseInsensitiveCompare(profile) != .orderedSame
+                    && name.caseInsensitiveCompare("Options") != .orderedSame
+            } else if !keeping {
+                continue
+            }
+            if keeping { out.append(line) }
+        }
+        guard !out.isEmpty else { return "" }
+        return "\n" + out.joined(separator: "\n").trimmingCharacters(in: .newlines) + "\n"
     }
 }
 
@@ -1055,4 +1143,24 @@ extension PluginDecompilerEngine {
                     timeout: options.archiveTimeout > 0 ? options.archiveTimeout : $0.timeout)
             })
     }
+}
+
+// MARK: - Profiles
+
+extension PluginDecompilerProfile {
+    /// Java and the JVM formats: one class as one document, archives and a dex as many.
+    ///
+    /// `claims` is a constant true because the detect string already decides everything that matters
+    /// here — an extension or the CAFEBABE magic. .NET is the case that needed more.
+    static let java = PluginDecompilerProfile(
+        id: "java",
+        singleKinds: ["class"],
+        treeKinds: ["jar", "apk", "dex"],
+        language: .java,
+        sourceExtension: "java",
+        bytecodeMarkers: ["Compiled from"],
+        settingsViewId: "plugin.javadecompiler.settings",
+        commandToSources: "plugin.javadecompiler.tosources",
+        commandClearCache: "plugin.javadecompiler.clearcache",
+        claims: { _ in true })
 }
