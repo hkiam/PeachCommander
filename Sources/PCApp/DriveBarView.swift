@@ -107,6 +107,48 @@ final class DriveBarView: NSView {
 
     // MARK: - Interaction
 
+    // MARK: - Accessibility (I19 T06)
+
+    /// The bar is a group; the chips are its children.
+    ///
+    /// Without this the whole bar is one opaque rectangle to VoiceOver and every volume in it is
+    /// unreachable — the chips are drawn, not built from controls. `chipHits` already holds what is
+    /// needed, because hit-testing clicks and describing controls want the same information.
+    override func isAccessibilityElement() -> Bool { true }
+    override func accessibilityRole() -> NSAccessibility.Role? { .group }
+    override func accessibilityLabel() -> String? { String(localized: "Drive bar") }
+
+    override func accessibilityChildren() -> [Any]? {
+        chipHits.map { hit in
+            switch hit.chip {
+            case .go:
+                return AccessibleHotspot(label: String(localized: "Favorites"), role: .button,
+                                         frameInView: hit.rect, parent: self) { [weak self] in
+                    self?.showGoMenu(at: hit.rect)
+                }
+            case .drives:
+                return AccessibleHotspot(label: String(localized: "All volumes"), role: .button,
+                                         frameInView: hit.rect, parent: self) { [weak self] in
+                    self?.showDrivesMenu(at: hit.rect)
+                }
+            case .volume(let i):
+                // Name *and* free space: the chip shows both, so announcing only the name would tell a
+                // screen-reader user less than the screen tells everyone else.
+                let volume = volumes.indices.contains(i) ? volumes[i] : nil
+                let label = volume.map { v in
+                    "\(v.name), " + String(
+                        format: String(localized: "%@ free"),
+                        ByteCountFormatter.string(fromByteCount: v.freeSpace, countStyle: .file))
+                } ?? String(localized: "Volume")
+                return AccessibleHotspot(label: label, role: .button,
+                                         frameInView: hit.rect, parent: self) { [weak self] in
+                    guard let self, self.volumes.indices.contains(i) else { return }
+                    self.onSelect?(self.volumes[i].path)
+                }
+            }
+        }
+    }
+
     override func mouseDown(with event: NSEvent) {
         let point = convert(event.locationInWindow, from: nil)
         guard let hit = chipHits.first(where: { $0.rect.contains(point) }) else { return }

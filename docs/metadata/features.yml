@@ -883,6 +883,31 @@ features:
       shown, so the advisory bound on its stack could never hold, and every explicit control width was
       a required rule against a page with no width yet. Both are priority 999 now.
 
+  - id: accessibility-drawn-controls
+    name: Barrierefreiheit der selbstgezeichneten Leisten
+    name_en: Accessibility for hand-drawn controls
+    category: customization
+    audiences: [user]
+    status: partial
+    source: { modules: [PCApp], types: [AccessibleHotspot, DriveBarView, TabBarView, PreviewResizeHandle] }
+    documentation: { integrated_help: false, website: false }
+    notes: >-
+      The drive bar, the tab bar and the preview panel's resize handle draw their controls and
+      hit-test clicks themselves. That is the right choice for how they look, and it had one
+      consequence nobody sees on screen: assistive technology found *nothing* there — not unlabelled
+      buttons, an opaque rectangle. The volumes could not be reached, the current tab could not be
+      identified, and the panel width was mouse-only. Those views already keep each chip's frame in
+      order to hit-test, so they already know where their controls are and what they say;
+      AccessibleHotspot turns that into accessibility children with a role, a label, a value for the
+      current tab, and the same action a click performs. The handle became a splitter with increment
+      and decrement that clamp exactly as a drag does.
+      Partial on purpose: this is the class of control that was completely invisible, not the whole of
+      I19 T06. The helper is unit-tested in its own target — no unit-test target links the app, so it
+      compiles the one file into itself the way PCThemeTests does with Theme.swift — and the target
+      had to be added to *both* schemes, because a target absent from the scheme never runs and the
+      suite stays green while the test does nothing. The view-level wiring itself is not yet verified
+      end to end: that needs an accessibility query inside the VM, which the harness cannot do yet.
+
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
     name: Einstellungen (15 Seiten)

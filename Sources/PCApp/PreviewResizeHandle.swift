@@ -63,6 +63,38 @@ final class PreviewResizeHandle: NSView {
         return min(max(width, Self.minWidth), maximum)
     }
 
+    // MARK: - Accessibility (I19 T06)
+
+    /// A splitter, with the panel's width as its value.
+    ///
+    /// Six points of plain view with a `mouseDown`: to VoiceOver it was nothing at all, so the panel's
+    /// width was mouse-only. As a splitter it can be found, read and adjusted — the increment and
+    /// decrement actions move it by the same step the keyboard would, and they clamp exactly as a drag
+    /// does, so there is one rule for how wide the panel may get.
+    override func isAccessibilityElement() -> Bool { true }
+    override func accessibilityRole() -> NSAccessibility.Role? { .splitter }
+    override func accessibilityLabel() -> String? { String(localized: "Preview panel width") }
+    override func accessibilityValue() -> Any? { Int(panelWidth) }
+
+    /// One press of an arrow, in points. Big enough to be worth doing, small enough to aim with.
+    private static let accessibilityStep: CGFloat = 20
+
+    override func accessibilityPerformIncrement() -> Bool {
+        apply(clamp(panelWidth + Self.accessibilityStep))
+        return true
+    }
+
+    override func accessibilityPerformDecrement() -> Bool {
+        apply(clamp(panelWidth - Self.accessibilityStep))
+        return true
+    }
+
+    /// Report a new width and persist it, as the end of a drag does.
+    private func apply(_ width: CGFloat) {
+        onResize?(width)
+        onResizeFinished?(width)
+    }
+
     func applyTheme() {
         layer?.backgroundColor = Theme.current.columnSeparator.cgColor
     }
