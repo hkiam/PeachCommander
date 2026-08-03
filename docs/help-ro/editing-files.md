@@ -30,6 +30,43 @@ Pentru a începe un fișier text nou-nouț la locația curentă, apăsați Shift
 - Faceți clic pe butonul hartă pentru a afișa sau ascunde harta miniaturală, o prezentare generală la scară a întregului fișier pe care puteți face clic pentru a derula.
 - Folosiți meniul Codificare din bara de instrumente dacă fișierul a fost salvat în altă codificare de text decât cea implicită.
 
+## Formatarea unui fișier
+
+Apăsați **Formatează** în editor (aceeași comandă există în vizualizator) pentru a reindenta fișierul. Peach Commander alege un formator după extensie și arată în bara de stare pe care l-a folosit, de exemplu *formatted (jq)* — așa știți mereu ce a modelat rezultatul.
+
+**Fără să instalați nimic**: JSON, XML, SVG, pliste, HTML, configurație în stil INI și YAML. YAML este un caz aparte: este curățat, nu reindentat, fiindcă în YAML indentarea *este* structura, iar rescrierea ei fără un analizor YAML adevărat ar putea schimba sensul fișierului. Spațiile de la capăt de rând dispar, tabulatorii rătăciți din indentare devin spații, șirurile de rânduri goale se scurtează — iar tot ce se află într-un scalar de bloc (`|` sau `>`) rămâne exact așa, pentru că acolo spațiul este conținut.
+
+**Formatoarele mai bune preiau automat.** Dacă aveți unul dintre ele instalat, Peach Commander îl folosește, pentru că o unealtă dedicată corespunde de obicei așteptărilor ecosistemului — iar la formatele de configurație vă păstrează comentariile:
+
+| Instalați | și obțineți |
+| --- | --- |
+| `yq` sau `prettier` | formatare YAML completă, comentariile păstrate |
+| `taplo` | TOML |
+| `sqlformat` sau `sql-formatter` | SQL |
+| `prettier` | Markdown |
+| `jq` | JSON, în stilul obișnuit |
+| `xmllint` | XML și SVG |
+
+Dacă un tip de fișier nu are formator, butonul este estompat și intrarea de menu dezactivată. Dacă încercați oricum, aflați de ce — *„taplo nu este instalat”* se citește altfel decât *„JSON invalid”*.
+
+### Folosirea propriului formator
+
+Pentru a formata un tip pe care Peach Commander nu îl cunoaște, sau pentru a folosi altă unealtă, creați `formatters.ini` în dosarul de configurație — o secțiune pentru fiecare extensie:
+
+```ini
+[swift]
+tool = swiftformat
+args = --quiet stdin
+
+[sql]
+tool = /opt/homebrew/bin/sqlfluff
+args = format -
+```
+
+`tool` este un nume de program (căutat cum ar face shell-ul) sau o cale absolută; `args` sunt transmise ca atare. Textul fișierului intră pe intrarea standard, iar textul formatat este citit de la ieșirea standard, așa că funcționează orice formator de linie de comandă bine crescut. Intrările dumneavoastră câștigă în fața tuturor celorlalte. La prima pornire se creează un șablon comentat — deschideți fișierul și completați-l.
+
+Și pluginurile pot contribui cu formatoare — vedeți [Plugins](plugins.md).
+
 ## Editați un fișier octet cu octet
 
 1. Selectați fișierul într-un panou.

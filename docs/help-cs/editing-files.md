@@ -30,6 +30,43 @@ Chcete-li vytvořit zcela nový textový soubor v aktuálním umístění, stisk
 - Klepnutím na tlačítko mapy zobrazíte nebo skryjete minimapu, zmenšený přehled celého souboru, na který můžete klepnout pro rolování.
 - Použijte nabídku Kódování na panelu nástrojů, pokud byl soubor uložen v jiném než výchozím kódování textu.
 
+## Formátování souboru
+
+Klikněte v editoru na **Formátovat** (stejný příkaz je i v prohlížeči) a soubor se znovu odsadí. Peach Commander vybere formátovač podle přípony a ve stavovém řádku ukáže, který to byl, například *formatted (jq)* — takže vždy víte, co výsledek utvářelo.
+
+**Bez instalace čehokoli**: JSON, XML, SVG, plisty, HTML, konfigurace ve stylu INI a YAML. YAML je zvláštní případ: uklidí se, místo aby se znovu odsazoval, protože v YAML *je* odsazení strukturou a přepsat je bez skutečného parseru YAML by mohlo změnit význam souboru. Mezery na konci řádku zmizí, zbloudilé tabulátory v odsazení se stanou mezerami, řady prázdných řádků se zkrátí — a vše ve blokovém skaláru (`|` nebo `>`) zůstane přesně tak, jak je, protože tam je bílý znak obsahem.
+
+**Lepší formátovače převezmou vládu automaticky.** Máte-li některý z nich, Peach Commander použije jej, protože specializovaný nástroj obvykle odpovídá tomu, co očekává okolní ekosystém — a u konfiguračních formátů zachová vaše komentáře:
+
+| Nainstalujte | a získáte |
+| --- | --- |
+| `yq` nebo `prettier` | plné formátování YAML, komentáře zachovány |
+| `taplo` | TOML |
+| `sqlformat` nebo `sql-formatter` | SQL |
+| `prettier` | Markdown |
+| `jq` | JSON v obvyklém stylu |
+| `xmllint` | XML a SVG |
+
+Nemá-li typ souboru formátovač, je tlačítko zešedlé a položka nabídky vypnutá. Pokus vám přesto řekne proč — *„taplo není nainstalován“* se čte jinak než *„Neplatný JSON“*.
+
+### Použití vlastního formátovače
+
+Chcete-li formátovat typ, který Peach Commander nezná, nebo použít jiný nástroj, vytvořte v konfigurační složce `formatters.ini` — jedna sekce na příponu:
+
+```ini
+[swift]
+tool = swiftformat
+args = --quiet stdin
+
+[sql]
+tool = /opt/homebrew/bin/sqlfluff
+args = format -
+```
+
+`tool` je jméno spustitelného programu (hledá se jako ve vašem shellu) nebo absolutní cesta; `args` se předají bez úprav. Text souboru jde dovnitř standardním vstupem a formátovaný text se čte ze standardního výstupu, takže funguje každý dobře vychovaný formátovač z příkazové řádky. Vaše záznamy vítězí nad všemi ostatními. Při prvním spuštění se vytvoří okomentovaná šablona — otevřete soubor a doplňte ji.
+
+Formátovače mohou dodávat i zásuvné moduly — viz [Plugins](plugins.md).
+
 ## Úprava souboru byte po bytu
 
 1. Vyberte soubor v panelu.

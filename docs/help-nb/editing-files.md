@@ -30,6 +30,43 @@ For å starte en helt ny tekstfil på gjeldende plassering, trykk Shift+F4.
 - Klikk kart-knappen for å vise eller skjule minikartet, en skalert oversikt over hele filen som du kan klikke på for å rulle.
 - Bruk Tegnkoding-menyen i verktøylinjen hvis filen ble lagret i noe annet enn standard tekstkoding.
 
+## Formatere en fil
+
+Klikk **Formater** i redigereren (samme kommando finnes i viseren) for å rykke inn fila på nytt. Peach Commander velger formaterer ut fra filendelsen og viser i statuslinja hvilken det ble, for eksempel *formatted (jq)* — så du vet alltid hva som formet resultatet.
+
+**Uten å installere noe**: JSON, XML, SVG, plists, HTML, INI-liknende konfigurasjon og YAML. YAML er et særtilfelle: den ryddes i stedet for å rykkes inn på nytt, for i YAML *er* innrykket strukturen, og å skrive det om uten en ekte YAML-parser kan endre hva fila betyr. Mellomrom ved linjeslutt forsvinner, villfarne tabulatorer i innrykket blir mellomrom, rekker av tomme linjer krymper — og alt inne i en blokkskalar (`|` eller `>`) står nøyaktig som det står, for der er blanktegn innhold.
+
+**Bedre formaterere tar over automatisk.** Har du en av dem installert, bruker Peach Commander den, fordi et dedikert verktøy som regel svarer til hva økosystemet forventer — og for konfigurasjonsformater beholder det kommentarene dine:
+
+| Installer | og du får |
+| --- | --- |
+| `yq` eller `prettier` | full YAML-formatering, kommentarer bevares |
+| `taplo` | TOML |
+| `sqlformat` eller `sql-formatter` | SQL |
+| `prettier` | Markdown |
+| `jq` | JSON, i vanlig stil |
+| `xmllint` | XML og SVG |
+
+Har en filtype ingen formaterer, er knappen grå og menyvalget avslått. Prøver du likevel, får du vite hvorfor — *«taplo er ikke installert»* leses annerledes enn *«Ikke gyldig JSON»*.
+
+### Bruke din egen formaterer
+
+For å formatere en type Peach Commander ikke kjenner, eller for å bruke et annet verktøy, lag `formatters.ini` i konfigurasjonsmappa — én seksjon per endelse:
+
+```ini
+[swift]
+tool = swiftformat
+args = --quiet stdin
+
+[sql]
+tool = /opt/homebrew/bin/sqlfluff
+args = format -
+```
+
+`tool` er et programnavn (slås opp som skallet ditt gjør) eller en absolutt sti; `args` sendes videre uendret. Teksten i fila går inn via standard inn, og den formaterte teksten leses fra standard ut, så enhver veloppdragen kommandolinjeformaterer virker. Dine oppføringer vinner over alt annet. Ved første oppstart lages en kommentert mal — åpne fila og fyll den ut.
+
+Programtillegg kan også bidra med formaterere — se [Plugins](plugins.md).
+
 ## Rediger en fil byte for byte
 
 1. Merk filen i et panel.
