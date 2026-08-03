@@ -389,6 +389,11 @@ public final class FindFilesWindowController: NSWindowController {
             scrollView.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20),
             scrollView.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20),
             scrollView.bottomAnchor.constraint(equalTo: buttons.topAnchor, constant: -12),
+            // A floor for the results. Deriving the tab's height from its content made the tab taller
+            // than the constant it replaced, and with nothing holding the list open it collapsed to
+            // nothing: "Done: 2 found" with no way to see the two. The window grows instead — it is
+            // resizable, and Auto Layout raises its minimum size to fit.
+            scrollView.heightAnchor.constraint(greaterThanOrEqualToConstant: 160),
 
             buttons.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20),
             buttons.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -20)
