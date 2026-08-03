@@ -22,6 +22,8 @@ Pour créer un tout nouveau fichier texte à l'emplacement courant, appuyez sur 
 
 Si le fichier appartient à `root` — une entrée dans `/etc`, un plist launchd, la configuration d’un serveur web —, l’enregistrement propose de le faire **en tant qu’administrateur** : macOS demande une autorisation comme d’habitude, le contenu passe par un fichier temporaire privé plutôt que par une ligne de commande, et le fichier conserve son propriétaire et ses permissions au lieu de devenir discrètement le vôtre.
 
+La gouttière affiche les numéros de ligne, celle du curseur plus claire que les autres ; le bouton à côté du menu d’encodage la masque. Une ligne repliée est numérotée une fois : le numéro désigne toujours la même ligne qu’une erreur de compilation ou une remarque de relecture.
+
 ## Rechercher, remplacer et naviguer
 
 - Appuyez sur Cmd+F pour ouvrir la barre de recherche. Pour remplacer du texte, ouvrez la barre de recherche et basculez-la vers la vue de remplacement, ou cliquez sur Rechercher/Remplacer dans la barre d'outils.

@@ -22,6 +22,8 @@ Per iniziare un file di testo nuovo di zecca nella posizione corrente, premete S
 
 Se il file appartiene a `root` — una voce in `/etc`, un plist di launchd, la configurazione di un server web —, il salvataggio propone di farlo **come amministratore**: macOS chiede l’autorizzazione come sempre, il contenuto passa da un file temporaneo privato invece che da una riga di comando, e il file mantiene proprietario e permessi invece di diventare vostro in silenzio.
 
+Il margine mostra i numeri di riga, con la riga del cursore più chiara delle altre; il pulsante accanto al menu della codifica lo nasconde. Una riga mandata a capo è numerata una volta sola, quindi il numero indica sempre la stessa riga a cui si riferisce un errore del compilatore o un commento di revisione.
+
 ## Trovare, sostituire e navigare
 
 - Premete Cmd+F per aprire la barra di ricerca. Per sostituire il testo, aprite la barra di ricerca e passate alla vista di sostituzione, oppure fate clic su Trova/Sostituisci nella barra degli strumenti.

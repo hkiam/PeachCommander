@@ -22,6 +22,8 @@ Pentru a începe un fișier text nou-nouț la locația curentă, apăsați Shift
 
 Dacă fișierul aparține lui `root` — o intrare în `/etc`, un plist launchd, configurația unui server web —, salvarea propune să o facă **ca administrator**: macOS cere o autorizare în modul obișnuit, conținutul este predat printr-un fișier temporar privat și nu printr-o linie de comandă, iar fișierul își păstrează propriul proprietar și permisiunile în loc să devină al dumneavoastră pe nesimțite.
 
+Marginea arată numerele de linie, cu linia cursorului mai deschisă decât restul; butonul de lângă meniul de codare o ascunde. O linie continuată este numerotată o singură dată, deci numărul înseamnă mereu aceeași linie la care se referă o eroare de compilare sau o observație de recenzie.
+
 ## Căutare, înlocuire și navigare
 
 - Apăsați Cmd+F pentru a deschide bara de căutare. Pentru a înlocui text, deschideți bara de căutare și comutați-o la vizualizarea de înlocuire, sau faceți clic pe Găsește/Înlocuiește în bara de instrumente.

@@ -969,6 +969,31 @@ features:
       one literal argument. What is *not* verified end to end is the macOS password prompt itself: that
       is Apple's dialog and typing a password is not something this project's tooling does.
 
+  - id: editor-line-numbers
+    name: Zeilennummern im Editor
+    name_en: Line numbers in the editor
+    category: viewer
+    audiences: [user, expert]
+    status: stable
+    source: { modules: [PCApp], types: [LineNumberRuler, EditorLineIndex] }
+    documentation: { integrated_help: true, website: false }
+    notes: >-
+      The editor had a symbol sidebar, a minimap, marks and "go to line" — and no line numbers, which is
+      what every compiler error, stack trace and review comment refers to. A gutter on by default, with
+      a toolbar toggle, the current line brighter than the rest, and a width that grows when the line
+      count crosses a power of ten. Wrapped lines are numbered once, at their first fragment, because
+      the number means a line in the file.
+      An NSRulerView because AppKit scrolls and repaints it in step with the text; getting it attached
+      took three attempts and all three failures are recorded in the source. Filling the rect AppKit
+      hands to `drawHashMarksAndLabels` painted over the whole content area — the file looked empty
+      while the numbers beside it counted its lines correctly — so only the gutter strip is filled. And
+      NSScrollView never insetted the content for the ruler with this text view's unbounded container,
+      whatever order the ruler, client view and document view were assigned in, so the text container
+      is insetted explicitly from the ruler's thickness.
+      The line index is deliberately *not* PCVFS's LineIndexer: that one returns byte offsets while
+      NSLayoutManager works in UTF-16, which agree until the first umlaut. It is a separate, tested
+      type, covering a missing trailing newline, CRLF, a lone CR, and a caret one past the end.
+
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
     name: Einstellungen (15 Seiten)

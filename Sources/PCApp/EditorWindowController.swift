@@ -48,6 +48,8 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     private var minimapWidth: NSLayoutConstraint!
     private var minimapVisible = false
     private let minimapToggle = NSButton()
+    private let gutterToggle = NSButton()
+    private var lineNumbers: LineNumberRuler?
     private var minimapWork: DispatchWorkItem?
 
     init(path: String) {
@@ -136,6 +138,16 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         toolbar.addArrangedSubview(findButton)
         toolbar.addArrangedSubview(NSTextField(labelWithString: String(localized: "Encoding:")))
         toolbar.addArrangedSubview(encodingPopup)
+        gutterToggle.bezelStyle = .rounded
+        gutterToggle.image = NSImage(systemSymbolName: "list.number",
+                                     accessibilityDescription: String(localized: "Line numbers"))
+        gutterToggle.imagePosition = .imageOnly
+        gutterToggle.setButtonType(.pushOnPushOff)
+        gutterToggle.state = .on          // on by default: the absence was the complaint
+        gutterToggle.target = self
+        gutterToggle.action = #selector(toggleLineNumbers)
+        gutterToggle.toolTip = String(localized: "Show/hide line numbers")
+        toolbar.addArrangedSubview(gutterToggle)
         toolbar.addArrangedSubview(minimapToggle)
         content.addSubview(toolbar)
 
@@ -156,9 +168,25 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         textView.textContainer?.size = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         textView.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
 
-        scrollView.documentView = textView
         scrollView.hasVerticalScroller = true
         scrollView.hasHorizontalScroller = true
+        // The gutter. AppKit scrolls and repaints a ruler in step with the text view, which a
+        // hand-built column of labels would have to be kept in sync with by hand.
+        //
+        // The order matters and is not interchangeable: `hasVerticalRuler` must be true *before* the
+        // ruler is assigned, and the client view set afterwards. Assigning first left the ruler sized
+        // to the whole content area — it painted its own opaque background over the text, so the file
+        // looked empty while the numbers counted its lines correctly.
+        scrollView.hasVerticalRuler = true
+        let ruler = LineNumberRuler(textView: textView, scrollView: scrollView)
+        lineNumbers = ruler
+        scrollView.verticalRulerView = ruler
+        ruler.clientView = textView
+        scrollView.rulersVisible = true
+        scrollView.documentView = textView
+        // Keep the text clear of the gutter ourselves — see `onThicknessChanged`.
+        ruler.onThicknessChanged = { [weak self] thickness in self?.insetTextForGutter(thickness) }
+        insetTextForGutter(ruler.ruleThickness)
 
         // Editor (top) + marks panel (bottom) share a draggable horizontal split.
         marks.onClearAll = { [weak self] in self?.markController.clearAll(); self?.marks.reload() }
@@ -291,6 +319,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         encoding = TextEncodingChoice.from(detected) ?? .utf8
         encodingPopup.selectItem(withTitle: encoding.displayName)
         textView.string = String(data: data, encoding: encoding.encoding) ?? String(decoding: data, as: UTF8.self)
+        refreshLineNumbers()
         isDirty = false
         refreshHighlight()
         refreshSymbols()
@@ -364,6 +393,29 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         }
     }
 
+    @objc private func toggleLineNumbers() {
+        let visible = gutterToggle.state == .on
+        scrollView.rulersVisible = visible
+        insetTextForGutter(visible ? (lineNumbers?.ruleThickness ?? 0) : 0)
+    }
+
+    /// Leave `gutter` points free on the left so no glyph is hidden behind the line numbers.
+    ///
+    /// `textContainerInset` pads both sides, which costs a right margin of the same width. That is a
+    /// fair price for text that is never clipped, and the alternative — moving the text view's frame —
+    /// fights the scroll view for the same job.
+    private func insetTextForGutter(_ gutter: CGFloat) {
+        textView.textContainerInset = NSSize(width: gutter + 6, height: 6)
+        textView.needsDisplay = true
+        lineNumbers?.needsDisplay = true
+    }
+
+    /// Re-scan the line starts after the text was replaced in code.
+    ///
+    /// `NSText.didChangeNotification` covers typing; setting `textView.string` — reload from disk,
+    /// format, a line operation — does not post it, and the gutter would keep the old line count.
+    private func refreshLineNumbers() { lineNumbers?.refresh() }
+
     @objc private func encodingChanged() {
         if let choice = TextEncodingChoice.allCases.first(where: { $0.displayName == encodingPopup.titleOfSelectedItem }) {
             encoding = choice
@@ -385,6 +437,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
             NSSound.beep(); return
         }
         textView.string = result.text
+        refreshLineNumbers()
         isDirty = true
         refreshHighlight()
         refreshSymbols()

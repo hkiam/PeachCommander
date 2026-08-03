@@ -22,6 +22,8 @@ Na začatie úplne nového textového súboru na aktuálnom mieste stlačte Shif
 
 Ak súbor patrí `root` — záznam v `/etc`, launchd plist, konfigurácia webového servera —, uloženie navrhne urobiť to **ako správca**: macOS požiada o autorizáciu ako obvykle, obsah sa predá cez privátny dočasný súbor namiesto príkazového riadku a súbor si ponechá vlastného vlastníka aj práva namiesto toho, aby sa tichom stal vaším.
 
+Okraj zobrazuje čísla riadkov, riadok s kurzorom svetlejšie než ostatné; tlačidlo vedľa nabídky kódovania ho skryje. Zalomený riadok je číslovaný raz, takže číslo vždy znamená ten istý riadok, ktorý má na mysli chyba kompilátora alebo poznámka z revízie.
+
 ## Hľadanie, nahrádzanie a navigácia
 
 - Stlačte Cmd+F na otvorenie lišty hľadania. Na nahradenie textu otvorte lištu hľadania a prepnite ju na zobrazenie nahrádzania, alebo kliknite na Hľadať/Nahradiť na paneli nástrojov.

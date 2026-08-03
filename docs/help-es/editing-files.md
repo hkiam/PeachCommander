@@ -22,6 +22,8 @@ Para empezar un archivo de texto completamente nuevo en la ubicación actual, pu
 
 Si el archivo pertenece a `root` — una entrada en `/etc`, un plist de launchd, la configuración de un servidor web —, al guardar se ofrece hacerlo **como administrador**: macOS pide autorización de la forma habitual, el contenido se entrega mediante un archivo temporal privado en lugar de una línea de comandos, y el archivo conserva su propietario y sus permisos en vez de pasar a ser suyo sin avisar.
 
+El margen muestra los números de línea, con la línea del cursor más clara que el resto; el botón junto al menú de codificación lo oculta. Una línea con salto se numera una sola vez, así que el número siempre significa la misma línea que un error del compilador o un comentario de revisión.
+
 ## Buscar, reemplazar y navegar
 
 - Pulse Cmd+F para abrir la barra de búsqueda. Para reemplazar texto, abra la barra de búsqueda y cámbiela a la vista de reemplazo, o haga clic en Buscar/Reemplazar en la barra de herramientas.

@@ -251,6 +251,19 @@ targets:
     dependencies:
       - target: PCFoundation
 
+  PCEditorTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCEditorTests
+      - path: Sources/PCApp/EditorLineIndex.swift
+    settings:
+      PRODUCT_NAME: PCEditorTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
+
   PCShellQuoteTests:
     type: bundle.unit-test
     platform: macOS
@@ -670,6 +683,7 @@ schemes:
         - PCThemeTests
         - PCAccessibilityTests
         - PCShellQuoteTests
+        - PCEditorTests
 
   AllTests:
     build:
@@ -691,6 +705,7 @@ schemes:
         - PCThemeTests
         - PCAccessibilityTests
         - PCShellQuoteTests
+        - PCEditorTests
 
   UITests:
     build:

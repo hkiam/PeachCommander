@@ -22,6 +22,8 @@ Aby utworzyć zupełnie nowy plik tekstowy w bieżącej lokalizacji, naciśnij S
 
 Jeśli plik należy do `root` — wpis w `/etc`, plist launchd, konfiguracja serwera WWW — zapis proponuje zrobić to **jako administrator**: macOS poprosi o autoryzację jak zwykle, treść jest przekazywana przez prywatny plik tymczasowy, a nie przez wiersz poleceń, i plik zachowuje własnego właściciela oraz uprawnienia, zamiast po cichu stać się twoim.
 
+Marginesw pokazuje numery wierszy, wiersz z kursorem jaśniej niż pozostałe; przycisk obok menu kodowania go ukrywa. Zawinięty wiersz jest numerowany raz, więc numer zawsze oznacza ten sam wiersz, o którym mówi błąd kompilatora albo uwaga z przeglądu.
+
 ## Wyszukiwanie, zamiana i nawigacja
 
 - Naciśnij Cmd+F, aby otworzyć pasek wyszukiwania. Aby zamienić tekst, otwórz pasek wyszukiwania i przełącz go na widok zamiany, lub kliknij Znajdź/Zamień na pasku narzędzi.
