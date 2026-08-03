@@ -72,6 +72,12 @@ Dependency direction: `PCApp -> everything`, engine modules never import PCApp,
   that read state back and looked green. When the host display is locked or
   headless, `Tools/vm/` captures the framebuffer over VNC — that is what it is for.
 
+- **Auto Layout conflicts are a gate, not noise.** `Tools/vm/regress.py` walks the
+  standard views in a VM and holds each one's conflict count against
+  `docs/metadata/layout-baseline.json`, which may only go down. Run it after touching
+  a view's constraints; `--update-baseline` records an improvement, never a regression.
+  Note that AppKit prints only the *required* constraints of a conflict — lowering one
+  to 999 makes it the escape valve and it disappears from the log.
 ## Git
 
 - Commit format: see WORKFLOW.md. Branch `main` only (single-agent workflow);
