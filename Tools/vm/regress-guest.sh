@@ -30,3 +30,9 @@ killall Terminal 2>/dev/null
 # their text, and narrowing the predicate is what produced an empty capture the first time.
 log show --info --style compact --start "$START" \
     --predicate 'process == "PeachCommander"' 2>/dev/null
+# The accessibility dump, when the scenario asked for one, marked so the host can split it off.
+if [ -f "$HOME/a11y.txt" ]; then
+  echo "===A11Y==="
+  cat "$HOME/a11y.txt"
+  rm -f "$HOME/a11y.txt"
+fi
