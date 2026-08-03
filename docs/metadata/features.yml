@@ -871,6 +871,14 @@ features:
       search its own result in place and report the line, so nothing is copied — verified against a
       marker 33,575 bytes into a decompiled class, found at line 404. A regex or hex query is never
       delegated, since those are the host's dialect and not something a plugin promised to speak.
+      Searching *inside* an archive was then found not to work at all rather than to be slow, which is
+      what I had written: the provider was gated on `fs.scheme == "file"`, so a .class in a JAR was
+      searched as bytecode and reported as no match. Archive entries are extracted to a temp file first
+      now — what the archive opener already did for nested archives — and the provider declines
+      unclaimed files on the extension before any engine runs. Verified in the VM: one phrase, two
+      hits, the second inside demo.jar. Deriving the Find dialog's tab height from its content also
+      collapsed the results list to nothing ("Done: 2 found" with nothing to see), so the list has a
+      floor and the window grows instead.
 
   # ───────────────────────── Settings ─────────────────────────
   - id: settings

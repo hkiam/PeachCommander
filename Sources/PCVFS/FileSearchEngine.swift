@@ -548,17 +548,37 @@ public actor FileSearchEngine {
         // addition to the byte search but a replacement: searching a .class for "hello" as bytes
         // finds the constant pool entry and misses everything the source says, so combining the two
         // would report line numbers from a file the user is not looking at.
-        if query.searchPluginText, fs.scheme == "file" {
-            // Ask the provider to search in place first — no copy, and therefore no cap on how much
-            // of the document is reachable. Only plain-text queries can be delegated: a regex or a
-            // hex pattern is the host's own dialect and not something a plugin promises to speak.
-            if let textSearcher, !query.useRegex, query.hexContent?.isEmpty ?? true,
-               let needle = query.contentText, !needle.isEmpty,
-               let hit = await textSearcher(path, needle, query.caseSensitive) {
-                return (hit.line, hit.preview)
+        if query.searchPluginText {
+            // A provider reads *files*, so an entry inside an archive has to become one first. The
+            // gate here used to be `fs.scheme == "file"`, which meant the option silently did nothing
+            // inside a JAR — not "slower", as I had assumed and written down, but absent: a .class in
+            // an archive was searched as bytecode and reported as no match.
+            //
+            // The extraction is what the archive opener already does for nested archives, and it costs
+            // a temp file per entry — paid only when the option is on, and the provider declines
+            // unclaimed files on the extension alone before any engine runs.
+            var localPath: String? = fs.scheme == "file" ? path : nil
+            var temporary: URL?
+            if localPath == nil,
+               let url = (try? await fs.localFileIfAvailable(
+                   VFSPath(filesystemId: fs.scheme, path: path))) ?? nil {
+                localPath = url.path
+                temporary = url
             }
-            if let textProvider, let text = await textProvider(path) {
-                return Self.textMatch(text: text, query: query, contentRegex: contentRegex)
+            defer { if let temporary { try? FileManager.default.removeItem(at: temporary) } }
+            if let localPath {
+                // Ask the provider to search in place first — no copy, and therefore no cap on how
+                // much of the document is reachable. Only plain-text queries can be delegated: a
+                // regex or a hex pattern is the host's own dialect and not something a plugin
+                // promises to speak.
+                if let textSearcher, !query.useRegex, query.hexContent?.isEmpty ?? true,
+                   let needle = query.contentText, !needle.isEmpty,
+                   let hit = await textSearcher(localPath, needle, query.caseSensitive) {
+                    return (hit.line, hit.preview)
+                }
+                if let textProvider, let text = await textProvider(localPath) {
+                    return Self.textMatch(text: text, query: query, contentRegex: contentRegex)
+                }
             }
         }
         if fs.scheme == "file", let slice = FileSlice(path: path) {
