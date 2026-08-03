@@ -71,6 +71,8 @@ Obstaja druga, bolj neposredna pot: postavite kazalec na datoteko `.class` ali n
 
 Drugi vstavek naredi isto za .NET: F3 na upravljani `.dll`, `.exe` ali `.winmd` pokaže njene tipe kot C#, **Dekompiliraj zbirko v vire** (⌘⇧N) jih položi v pladenj, iskanje pa lahko pogleda v zbirko enako kot prej. Poganja **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) za izvorno kodo ali **monodis** iz Mona za IL — .NET-ov protipol `javap`. Domorodna `.dll` ima enako končnico in nobene izvorne kode za prikaz, zato vstavek to preveri pred odprtjem in jo prepusti vgrajenemu pregledovalniku.
 
+Stran z nastavitvami ima gumb **Preveri pogone** in splača se ga pritisniti: »namenščeno« drugje pomeni le, da je datoteka na disku, pogon za Javo na Macu brez JDK pa je prisoten in ne more delovati. Preverjanje vsak pogon vpraša po različici in pove, kateri res delujejo.
+
 Pokrit je tudi Android: F3 na datoteki `.dex` uporabi **jadx** (Apache 2.0, `brew install jadx`), ki bajtno kodo Dalvik pretvori nazaj v Javo. Zadostoval je en opis pogona — isti mehanizem, drug zapis.
 
 Vtičnik je **izklopljen, dokler ga ne vklopite**, v Nastavitve ▸ Vtičniki — večina ljudi datoteke .class nikoli ne odpre, brez pogona pa tako ali tako ne koristi.

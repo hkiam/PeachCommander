@@ -142,18 +142,18 @@ final class PluginDecompilerTests: XCTestCase {
     func testAvailabilityDistinguishesMissingToolFromMissingPayload() throws {
         let tool = try script("engine.sh", "echo hi")
         let present = PluginDecompilerEngine(id: "a", name: "A", kinds: ["class"], tool: tool,
-                                       args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30, archive: nil)
+                                       args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30, versionArgs: ["--version"], archive: nil)
         XCTAssertTrue(present.isAvailable)
         XCTAssertNil(present.missingPath)
 
         let noJar = PluginDecompilerEngine(id: "b", name: "B", kinds: ["class"], tool: tool,
-                                     args: [], enginePath: "/nope/x.jar", output: .stdout, note: nil, timeout: 30, archive: nil)
+                                     args: [], enginePath: "/nope/x.jar", output: .stdout, note: nil, timeout: 30, versionArgs: ["--version"], archive: nil)
         XCTAssertFalse(noJar.isAvailable)
         XCTAssertEqual(noJar.missingPath, "/nope/x.jar",
                        "the message must be able to name the file the user has to install")
 
         let noTool = PluginDecompilerEngine(id: "c", name: "C", kinds: ["class"], tool: "/nope/tool",
-                                      args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30, archive: nil)
+                                      args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30, versionArgs: ["--version"], archive: nil)
         XCTAssertFalse(noTool.isAvailable)
     }
 
@@ -164,7 +164,7 @@ final class PluginDecompilerTests: XCTestCase {
         let input = dir.appendingPathComponent("Foo.class").path
         try "class Foo {}".write(toFile: input, atomically: true, encoding: .utf8)
         let engine = PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: tool,
-                                      args: ["{input}"], enginePath: nil, output: .stdout, note: nil, timeout: 30, archive: nil)
+                                      args: ["{input}"], enginePath: nil, output: .stdout, note: nil, timeout: 30, versionArgs: ["--version"], archive: nil)
         XCTAssertEqual(try PluginDecompilerRunner.run(engine, input: input).get(), "class Foo {}")
     }
 
@@ -178,7 +178,7 @@ final class PluginDecompilerTests: XCTestCase {
         try Data().write(to: URL(fileURLWithPath: jar))
         let engine = PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: tool,
                                       args: ["-jar", "{engine}", "{input}"],
-                                      enginePath: jar, output: .stdout, note: nil, timeout: 30, archive: nil)
+                                      enginePath: jar, output: .stdout, note: nil, timeout: 30, versionArgs: ["--version"], archive: nil)
         let text = try PluginDecompilerRunner.run(engine, input: "/x/Foo.class").get()
         XCTAssertEqual(text.split(separator: "\n").map(String.init),
                        ["-jar", jar, "/x/Foo.class"])
@@ -190,7 +190,7 @@ final class PluginDecompilerTests: XCTestCase {
         let tool = try script("writer.sh", #"echo "decompiled" > "$2/Foo.java""#)
         let engine = PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: tool,
                                       args: ["{input}", "{outdir}"], enginePath: nil,
-                                      output: .directory, note: nil, timeout: 30, archive: nil)
+                                      output: .directory, note: nil, timeout: 30, versionArgs: ["--version"], archive: nil)
         XCTAssertEqual(try PluginDecompilerRunner.run(engine, input: "/x/Foo.class").get(),
                        "decompiled\n")
     }
@@ -199,7 +199,7 @@ final class PluginDecompilerTests: XCTestCase {
     func testFailureCarriesTheEnginesDiagnostics() throws {
         let tool = try script("fail.sh", "echo 'not a class file' >&2; exit 3")
         let engine = PluginDecompilerEngine(id: "e", name: "Broken", kinds: ["class"], tool: tool,
-                                      args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30, archive: nil)
+                                      args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30, versionArgs: ["--version"], archive: nil)
         guard case .failure(let error) = PluginDecompilerRunner.run(engine, input: "/x") else {
             return XCTFail("expected a failure")
         }
@@ -217,7 +217,7 @@ final class PluginDecompilerTests: XCTestCase {
     func testSilentSuccessIsTreatedAsFailure() throws {
         let tool = try script("quiet.sh", "exit 0")
         let engine = PluginDecompilerEngine(id: "e", name: "Quiet", kinds: ["class"], tool: tool,
-                                      args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30, archive: nil)
+                                      args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30, versionArgs: ["--version"], archive: nil)
         guard case .failure(.emptyOutput) = PluginDecompilerRunner.run(engine, input: "/x") else {
             return XCTFail("expected emptyOutput")
         }
@@ -228,7 +228,7 @@ final class PluginDecompilerTests: XCTestCase {
     func testLargeOutputDoesNotDeadlock() throws {
         let tool = try script("big.sh", "for i in $(seq 1 20000); do echo 'public void method();'; done")
         let engine = PluginDecompilerEngine(id: "e", name: "Big", kinds: ["class"], tool: tool,
-                                      args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30, archive: nil)
+                                      args: [], enginePath: nil, output: .stdout, note: nil, timeout: 30, versionArgs: ["--version"], archive: nil)
         let text = try PluginDecompilerRunner.run(engine, input: "/x").get()
         XCTAssertEqual(text.split(separator: "\n").count, 20000)
     }
@@ -239,7 +239,7 @@ final class PluginDecompilerTests: XCTestCase {
         let tool = try script("forever.sh", "sleep 60")
         let engine = PluginDecompilerEngine(id: "e", name: "Slow", kinds: ["class"], tool: tool,
                                       args: [], enginePath: nil, output: .stdout, note: nil,
-                                      timeout: 1, archive: nil)
+                                      timeout: 1, versionArgs: ["--version"], archive: nil)
         let started = Date()
         guard case .failure(let error) = PluginDecompilerRunner.run(engine, input: "/x") else {
             return XCTFail("expected a failure")
@@ -258,7 +258,7 @@ final class PluginDecompilerTests: XCTestCase {
         let tool = try script("readstdin.sh", "cat; echo done")
         let engine = PluginDecompilerEngine(id: "e", name: "Reader", kinds: ["class"], tool: tool,
                                       args: [], enginePath: nil, output: .stdout, note: nil,
-                                      timeout: 5, archive: nil)
+                                      timeout: 5, versionArgs: ["--version"], archive: nil)
         XCTAssertEqual(try PluginDecompilerRunner.run(engine, input: "/x").get(), "done\n")
     }
 
@@ -296,7 +296,7 @@ final class PluginDecompilerTests: XCTestCase {
         try "one".write(toFile: file, atomically: true, encoding: .utf8)
         let engine = PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: "/bin/echo",
                                             args: ["-a"], enginePath: nil, output: .stdout,
-                                            note: nil, timeout: 5, archive: nil)
+                                            note: nil, timeout: 5, versionArgs: ["--version"], archive: nil)
         let first = PluginDecompilerCache.key(path: file, engine: engine)
         XCTAssertNotNil(first)
 
@@ -306,7 +306,7 @@ final class PluginDecompilerTests: XCTestCase {
         // Different flags are a different result even for the same engine id.
         let profile = PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: "/bin/echo",
                                             args: ["-b"], enginePath: nil, output: .stdout,
-                                            note: nil, timeout: 5, archive: nil)
+                                            note: nil, timeout: 5, versionArgs: ["--version"], archive: nil)
         XCTAssertNotEqual(first, PluginDecompilerCache.key(path: file, engine: profile))
 
         // A rebuilt file must invalidate it.
@@ -319,7 +319,7 @@ final class PluginDecompilerTests: XCTestCase {
         try "x".write(toFile: file, atomically: true, encoding: .utf8)
         let engine = PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: "/bin/echo",
                                             args: [], enginePath: nil, output: .stdout,
-                                            note: nil, timeout: 5, archive: nil)
+                                            note: nil, timeout: 5, versionArgs: ["--version"], archive: nil)
         XCTAssertNil(PluginDecompilerCache.read(path: file, engine: engine, configRoot: dir.path))
         PluginDecompilerCache.write("class B {}", path: file, engine: engine, configRoot: dir.path)
         XCTAssertEqual(PluginDecompilerCache.read(path: file, engine: engine, configRoot: dir.path),
@@ -331,7 +331,7 @@ final class PluginDecompilerTests: XCTestCase {
     func testNoCacheKeyForAMissingFile() {
         let engine = PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: "/bin/echo",
                                             args: [], enginePath: nil, output: .stdout,
-                                            note: nil, timeout: 5, archive: nil)
+                                            note: nil, timeout: 5, versionArgs: ["--version"], archive: nil)
         XCTAssertNil(PluginDecompilerCache.key(path: "/nope/nothing.class", engine: engine))
     }
 
@@ -616,6 +616,7 @@ final class PluginDecompilerArchiveTests: XCTestCase {
         let engine = PluginDecompilerEngine(
             id: "fake", name: "Fake", kinds: ["jar"], tool: script,
             args: ["{input}"], enginePath: nil, output: .directory, note: nil, timeout: 5,
+            versionArgs: ["--version"],
             archive: PluginDecompilerArchiveSupport(args: ["{input}", "{outdir}"], timeout: 30))
         let out = (root as NSString).appendingPathComponent("result")
         let result = PluginDecompilerRunner.runArchive(engine, input: "/dev/null", outputDirectory: out)
@@ -627,7 +628,7 @@ final class PluginDecompilerArchiveTests: XCTestCase {
         // single-file arguments.
         let single = PluginDecompilerEngine(
             id: "single", name: "Single", kinds: ["jar"], tool: script, args: ["{input}"],
-            enginePath: nil, output: .stdout, note: nil, timeout: 5, archive: nil)
+            enginePath: nil, output: .stdout, note: nil, timeout: 5, versionArgs: ["--version"], archive: nil)
         if case .success = PluginDecompilerRunner.runArchive(single, input: "/dev/null",
                                                             outputDirectory: out) {
             XCTFail("an engine without archive support must not be run over an archive")
@@ -765,8 +766,9 @@ final class PluginDecompilerFormatTests: XCTestCase {
 
     /// A minimal PE. `cliSize` of 0 is a native image; anything else is managed.
     private func writePE(_ name: String, magic: UInt16 = 0x10B, cliRVA: UInt32 = 0x2000,
-                         cliSize: UInt32, peOffset: UInt32 = 0x80) throws -> String {
-        var bytes = [UInt8](repeating: 0, count: 1024)
+                         cliSize: UInt32, peOffset: UInt32 = 0x80,
+                         totalSize: Int = 1024) throws -> String {
+        var bytes = [UInt8](repeating: 0, count: totalSize)
         bytes[0] = 0x4D; bytes[1] = 0x5A                       // "MZ"
         func put32(_ value: UInt32, at i: Int) {
             bytes[i] = UInt8(value & 0xFF); bytes[i + 1] = UInt8((value >> 8) & 0xFF)
@@ -923,7 +925,7 @@ final class PluginDecompilerReviewTests: XCTestCase {
         func engine() -> PluginDecompilerEngine {
             PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: "/bin/echo",
                                    args: ["{input}"], enginePath: jar, output: .stdout, note: nil,
-                                   timeout: 5, archive: nil)
+                                   timeout: 5, versionArgs: ["--version"], archive: nil)
         }
         let before = PluginDecompilerCache.key(path: input, engine: engine())
         // The user installs a newer engine JAR: same name, same flags, different decompiler.
@@ -931,5 +933,117 @@ final class PluginDecompilerReviewTests: XCTestCase {
         let after = PluginDecompilerCache.key(path: input, engine: engine())
         XCTAssertNotEqual(before, after,
                           "upgrading an engine must not keep serving the old engine's output")
+    }
+}
+
+// MARK: - "Installed" must mean "runs" (review item 1)
+
+extension PluginDecompilerReviewTests {
+    func testAToolThatCannotRunIsReportedBrokenNotInstalled() throws {
+        // Stands in for Apple's javap stub: present, executable, and it refuses with a message.
+        let stub = (root as NSString).appendingPathComponent("stub.sh")
+        try "#!/bin/sh\necho 'Unable to locate a Java Runtime.' >&2\nexit 1\n"
+            .write(toFile: stub, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: stub)
+        let engine = PluginDecompilerEngine(
+            id: "stub", name: "Stub", kinds: ["class"], tool: stub, args: ["{input}"],
+            enginePath: nil, output: .stdout, note: nil, timeout: 5,
+            versionArgs: ["-version"], archive: nil)
+        // The old, shallower check says yes — the file is there and executable.
+        XCTAssertTrue(engine.isAvailable)
+        // The probe is what the user needs to be told.
+        guard case .broken(let reason) = PluginDecompilerRunner.probe(engine) else {
+            return XCTFail("a tool that exits non-zero must not be reported as working")
+        }
+        XCTAssertTrue(reason.contains("Java Runtime"), reason)
+    }
+
+    func testAWorkingToolReportsItsVersion() throws {
+        let engine = PluginDecompilerEngine(
+            id: "echo", name: "Echo", kinds: ["class"], tool: "/bin/echo", args: ["{input}"],
+            enginePath: nil, output: .stdout, note: nil, timeout: 5,
+            versionArgs: ["Echo 1.2.3"], archive: nil)
+        XCTAssertEqual(PluginDecompilerRunner.probe(engine), .works(version: "Echo 1.2.3"))
+    }
+
+    func testAMissingToolIsReportedAsMissingRatherThanBroken() {
+        let engine = PluginDecompilerEngine(
+            id: "gone", name: "Gone", kinds: ["class"], tool: "/nonexistent/tool", args: [],
+            enginePath: nil, output: .stdout, note: nil, timeout: 5,
+            versionArgs: ["--version"], archive: nil)
+        XCTAssertEqual(PluginDecompilerRunner.probe(engine), .missing(path: "/nonexistent/tool"))
+    }
+
+    func testAMissingPayloadIsNamedRatherThanTheTool() throws {
+        let engine = PluginDecompilerEngine(
+            id: "jar", name: "Jar", kinds: ["class"], tool: "/bin/echo", args: [],
+            enginePath: "/nope/engine.jar", output: .stdout, note: nil, timeout: 5,
+            versionArgs: ["--version"], archive: nil)
+        // The JVM is fine; the decompiler jar is what is absent, and that is what must be said.
+        XCTAssertEqual(PluginDecompilerRunner.probe(engine), .missing(path: "/nope/engine.jar"))
+    }
+}
+
+extension PluginDecompilerFormatTests {
+    func testAnAssemblyBehindALargeDosStubIsStillRecognised() throws {
+        // A linker may put a much bigger stub in front of the PE header than the usual ~200 bytes.
+        // The check used to read a fixed 4 KB prefix, which called such an assembly native.
+        let path = try writePE("far.dll", cliSize: 72, peOffset: 0x9000, totalSize: 0x9400)
+        XCTAssertTrue(PluginDecompilerFormats.isManagedAssembly(path))
+    }
+}
+
+// MARK: - Cache eviction (review item 4)
+
+extension PluginDecompilerReviewTests {
+    private func cachedEntry(_ name: String, bytes: Int, usedDaysAgo: Int) throws -> String {
+        let dir = PluginDecompilerCache.directory(configRoot: root, profile: "java")
+        try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+        let path = (dir as NSString).appendingPathComponent(name)
+        try Data(repeating: 0x41, count: bytes).write(to: URL(fileURLWithPath: path))
+        try FileManager.default.setAttributes(
+            [.modificationDate: Date().addingTimeInterval(-Double(usedDaysAgo) * 86_400)],
+            ofItemAtPath: path)
+        return path
+    }
+
+    func testReadingAnEntryKeepsItAlive() throws {
+        var options = PluginDecompilerOptions()
+        options.cacheMaxAgeDays = 30
+        options.write(configRoot: root, profile: "java")
+        let input = (root as NSString).appendingPathComponent("Old.class")
+        try "bytecode".write(toFile: input, atomically: true, encoding: .utf8)
+        let engine = PluginDecompilerEngine(
+            id: "e", name: "E", kinds: ["class"], tool: "/bin/echo", args: [], enginePath: nil,
+            output: .stdout, note: nil, timeout: 5, versionArgs: ["--version"], archive: nil)
+        PluginDecompilerCache.write("source", path: input, engine: engine, configRoot: root, profile: "java")
+        let key = try XCTUnwrap(PluginDecompilerCache.key(path: input, engine: engine))
+        let file = (PluginDecompilerCache.directory(configRoot: root, profile: "java") as NSString)
+            .appendingPathComponent(key)
+        // Pretend it was written 29 days ago and then opened today.
+        try FileManager.default.setAttributes([.modificationDate: Date().addingTimeInterval(-29 * 86_400)],
+                                             ofItemAtPath: file)
+        _ = PluginDecompilerCache.read(path: input, engine: engine, configRoot: root, profile: "java")
+        let used = try XCTUnwrap((try? FileManager.default.attributesOfItem(atPath: file))?[.modificationDate] as? Date)
+        XCTAssertLessThan(Date().timeIntervalSince(used), 60,
+                          "an entry that was just used must not expire tomorrow because the engine ran "
+                          + "a month ago")
+    }
+
+    func testTheSizeBudgetEvictsTheLeastRecentlyUsed() throws {
+        var options = PluginDecompilerOptions()
+        options.cacheMaxSizeMB = 1
+        options.write(configRoot: root, profile: "java")
+        let old = try cachedEntry("old-entry", bytes: 600 * 1024, usedDaysAgo: 5)
+        let fresh = try cachedEntry("fresh-entry", bytes: 600 * 1024, usedDaysAgo: 0)
+        // Writing anything prunes; together the two entries are over the 1 MB budget.
+        let input = (root as NSString).appendingPathComponent("Trigger.class")
+        try "x".write(toFile: input, atomically: true, encoding: .utf8)
+        let engine = PluginDecompilerEngine(
+            id: "e", name: "E", kinds: ["class"], tool: "/bin/echo", args: [], enginePath: nil,
+            output: .stdout, note: nil, timeout: 5, versionArgs: ["--version"], archive: nil)
+        PluginDecompilerCache.write("small", path: input, engine: engine, configRoot: root, profile: "java")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: old), "the least recently used must go first")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: fresh), "and the recently used must stay")
     }
 }

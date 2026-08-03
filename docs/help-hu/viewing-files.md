@@ -71,6 +71,8 @@ Van egy második, közvetlenebb út: állítsa a kurzort egy `.class` fájlra va
 
 Egy második bővítmény ugyanezt teszi a .NET-tel: az F3 egy felügyelt `.dll`, `.exe` vagy `.winmd` fájlon C#-ként mutatja a típusait, az **Assembly visszafejtése forrásba** (⌘⇧N) panelbe teszi őket, és a keresés ugyanígy be tud nézni egy assemblybe. Az **ILSpy**-t (MIT, `dotnet tool install -g ilspycmd`) vezérli forráshoz, vagy a Mono **monodis**-át IL-hez — ez a `javap` .NET-es megfelelője. Egy natív `.dll` ugyanezt a kiterjesztést viseli, forrása viszont nincs; a bővítmény ezt megnyitás előtt ellenőrzi, és a beépített megjelenítőre hagyja.
 
+A beállítási lapon van egy **Motorok ellenőrzése** gomb, és érdemes megnyomni: az „telepítve” másutt csak azt jelenti, hogy a fájl megvan, és egy Java-motor JDK nélküli Macen jelen van, futni pedig nem tud. Az ellenőrzés minden motortól elkéri a verzióját, és megmondja, melyik működik valóban.
+
 Az Android is szerepel: egy `.dex` fájlon az F3 a **jadx**-ot használja (Apache 2.0, `brew install jadx`), amely a Dalvik bájtkódot Javára fordítja vissza. Ehhez egyetlen motorleírás kellett — ugyanaz a mechanizmus, más formátum.
 
 A bővítmény **ki van kapcsolva, amíg be nem kapcsolja**, a Beállítások ▸ Bővítmények oldalon — a legtöbben soha nem nyitnak meg .class fájlt, motor nélkül pedig úgysem használható.

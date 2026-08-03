@@ -71,6 +71,8 @@ Jest druga, bardziej bezpośrednia droga: ustaw kursor na pliku `.class` albo na
 
 Druga wtyczka robi to samo dla .NET: F3 na zarządzanym `.dll`, `.exe` lub `.winmd` pokazuje jego typy jako C#, **Zdekompiluj assembly do źródeł** (⌘⇧N) umieszcza je w panelu, a wyszukiwanie potrafi zajrzeć do assembly tak samo. Steruje **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) dla źródeł albo **monodis** z Mono dla IL — odpowiednikiem `javap` w .NET. Natywny `.dll` ma to samo rozszerzenie i nie ma źródła do pokazania, więc wtyczka sprawdza to przed otwarciem i zostawia go wbudowanej przeglądarce.
 
+Strona ustawień ma przycisk **Sprawdź silniki** i warto go użyć: „zainstalowany” gdzie indziej znaczy tylko, że plik jest na dysku, a silnik Javy na Macu bez JDK jest obecny i nie może działać. Sprawdzenie pyta każdy silnik o wersję i mówi, które naprawdę działają.
+
 Android jest również objęty: F3 na pliku `.dex` używa **jadx** (Apache 2.0, `brew install jadx`), który zamienia kod bajtowy Dalvik z powrotem na Javę. Wystarczył jeden opis silnika — ten sam mechanizm, inny format.
 
 Wtyczka jest **wyłączona, dopóki jej nie włączysz**, w Ustawienia ▸ Wtyczki — większość osób nigdy nie otwiera pliku .class, a bez silnika i tak nic nie da.
