@@ -127,3 +127,47 @@ final class SearchPluginTextTests: XCTestCase {
         XCTAssertFalse(registry.hasFullTextProvider)
     }
 }
+
+/// The size of the text a full-text provider may return.
+///
+/// Split out because the limit is not in the search at all but in the host's content-plugin bridge,
+/// and a review found it set to 1 KB — twenty lines of a decompiled class, with everything below
+/// reported as absent.
+final class SearchPluginTextSizeTests: XCTestCase {
+    private var dir: URL!
+
+    private struct LongTextProvider: ContentFieldProvider {
+        let providerName = "long"
+        let fields = [ContentField(id: "source", title: "Source", isFullText: true)]
+        func value(fieldID: String, forFileAt url: URL) async -> ContentValue {
+            var lines = ["// a long decompiled result"]
+            for i in 0..<400 { lines.append("    private int filler\(i) = \(i);") }
+            lines.append("    static final String DEEP = \"needle far below the first kilobyte\";")
+            return .string(lines.joined(separator: "\n"))
+        }
+    }
+
+    override func setUpWithError() throws {
+        dir = FileManager.default.temporaryDirectory.appendingPathComponent("SearchSize-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        try "bytes".write(to: dir.appendingPathComponent("Hello.class"), atomically: true, encoding: .utf8)
+    }
+    override func tearDownWithError() throws { if let dir { try? FileManager.default.removeItem(at: dir) } }
+
+    func testAMatchFarIntoTheProvidedTextIsFound() async {
+        let registry = ContentFieldRegistry()
+        registry.register(LongTextProvider())
+        var query = SearchQuery(nameMask: "*.class", startDirectory: dir.path,
+                                contentText: "needle far below the first kilobyte")
+        query.searchPluginText = true
+        var hits: [String] = []
+        for await hit in await FileSearchEngine().search(
+            query, fs: LocalFS(),
+            textProvider: { path in await registry.fullText(forFileAt: URL(fileURLWithPath: path)) }) {
+            hits.append((hit.path as NSString).lastPathComponent)
+            // The line number must come from the *provided* text, not from the file's own bytes.
+            XCTAssertEqual(hit.matchLine, 402)
+        }
+        XCTAssertEqual(hits, ["Hello.class"])
+    }
+}
