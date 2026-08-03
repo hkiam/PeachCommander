@@ -61,8 +61,28 @@ public final class PDXPlugin: @unchecked Sendable {
     private typealias CompareFn = @convention(c) (Int32, UnsafeMutablePointer<CChar>?,
                                                   UnsafeMutablePointer<CChar>?, Int32) -> Int32
 
-    /// The buffer size handed to the plugin for names and string values.
+    /// The buffer size handed to the plugin for names and ordinary string values.
+    ///
+    /// A column value is a table cell: a kilobyte is already far more than one can show.
     private static let bufferCapacity = 1024
+
+    /// The buffer for a *full-text* field, which is a whole document rather than a cell.
+    ///
+    /// 1 KB was the cap for both until a review measured what that meant: the decompiler plugin offers
+    /// a class's decompiled source as full text so the host's search can look inside it, and the
+    /// search only ever saw the first kilobyte — about twenty lines. Every phrase past that was
+    /// reported as absent, and the feature looked fine because the test phrase happened to be near
+    /// the top.
+    ///
+    /// 4 MB is a deliberate compromise, not a limit anybody should hit: it covers a decompiled class
+    /// with room to spare, is allocated only for full-text fields, and only while a search asks. A
+    /// plugin must still respect the `maxlen` it is handed, so a longer result truncates rather than
+    /// overruns — and it is the plugin, not the host, that knows what it just cut off.
+    private static let fullTextCapacity = 4 * 1024 * 1024
+
+    /// The same value, readable by `PDXContentProvider` — which is the only caller that knows a field
+    /// is full text.
+    static var fullTextCapacityForCallers: Int { fullTextCapacity }
 
     // MARK: - Public API
 
@@ -95,13 +115,17 @@ public final class PDXPlugin: @unchecked Sendable {
     }
 
     /// Fetch one field's value for a local file, decoded to a `ContentValue`.
+    /// Fetch one field's value for a local file, decoded to a `ContentValue`.
+    ///
+    /// `capacity` is the buffer handed to the plugin. Callers that know the field is full text pass
+    /// `fullTextCapacity`; everyone else gets the cell-sized default.
     public func value(fileName: String, fieldIndex: Int, unitIndex: Int = 0,
-                      flags: Int32 = 0) throws -> ContentValue {
+                      flags: Int32 = 0, capacity: Int? = nil) throws -> ContentValue {
         guard let ptr = lib.symbol("ContentGetValue") else {
             throw PDXError.missingSymbol("ContentGetValue")
         }
         let fn = unsafeBitCast(ptr, to: GetValueFn.self)
-        let cap = Self.bufferCapacity
+        let cap = capacity ?? Self.bufferCapacity
         var buf = [UInt8](repeating: 0, count: cap)
         let rc = fileName.withCString { fp -> Int32 in
             let mutable = UnsafeMutablePointer(mutating: fp)
@@ -210,7 +234,12 @@ public struct PDXContentProvider: ContentFieldProvider {
 
     public func value(fieldID: String, forFileAt url: URL) async -> ContentValue {
         guard let index = fieldIndexByID[fieldID] else { return .none }
-        return (try? plugin.value(fileName: url.path, fieldIndex: index)) ?? .none
+        // A full-text field is a document, not a cell, and needs a buffer to match — see
+        // `fullTextCapacity`. Asking for the big one unconditionally would allocate megabytes per
+        // column value on every panel redraw.
+        let capacity = fields.first { $0.id == fieldID }?.isFullText == true
+            ? PDXPlugin.fullTextCapacityForCallers : nil
+        return (try? plugin.value(fileName: url.path, fieldIndex: index, capacity: capacity)) ?? .none
     }
 
     /// A stable, qualified-id-safe slug for a human field name ("Name Length" → "name_length").

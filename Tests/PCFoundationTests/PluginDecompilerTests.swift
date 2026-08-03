@@ -881,3 +881,55 @@ extension PluginDecompilerFormatTests {
         }
     }
 }
+
+// MARK: - Review probes (do these actually behave as claimed?)
+
+final class PluginDecompilerReviewTests: XCTestCase {
+    private var root = ""
+
+    override func setUpWithError() throws {
+        root = (NSTemporaryDirectory() as NSString).appendingPathComponent("pc-review-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(atPath: root, withIntermediateDirectories: true)
+    }
+    override func tearDownWithError() throws { try? FileManager.default.removeItem(atPath: root) }
+
+    /// Does one plugin writing its settings preserve a legacy `[Options]` section the other reads?
+    func testProbeLegacyOptionsSectionSurvivesTheOtherPluginWriting() throws {
+        let path = PluginDecompilerOptions.file(configRoot: root)
+        try FileManager.default.createDirectory(atPath: (path as NSString).deletingLastPathComponent,
+                                               withIntermediateDirectories: true)
+        // What a single-plugin installation left behind: settings in the old, unnamespaced section.
+        try "[Options]\nClaimArchives = 0\nClassTimeout = 45\n"
+            .write(toFile: path, atomically: true, encoding: .utf8)
+        XCTAssertFalse(PluginDecompilerOptions.read(configRoot: root, profile: "java").claimArchives)
+
+        // Now the *other* plugin saves its own settings for the first time.
+        var net = PluginDecompilerOptions()
+        net.claimArchives = true
+        net.write(configRoot: root, profile: "net")
+
+        let java = PluginDecompilerOptions.read(configRoot: root, profile: "java")
+        XCTAssertFalse(java.claimArchives,
+                       "the Java plugin's saved setting must survive the .NET plugin saving its own")
+        XCTAssertEqual(java.classTimeout, 45)
+    }
+
+    /// Does a cached result survive the engine itself being replaced?
+    func testProbeCacheNoticesAnUpgradedEngine() throws {
+        let jar = (root as NSString).appendingPathComponent("engine.jar")
+        try "v1".write(toFile: jar, atomically: true, encoding: .utf8)
+        let input = (root as NSString).appendingPathComponent("Hello.class")
+        try "bytecode".write(toFile: input, atomically: true, encoding: .utf8)
+        func engine() -> PluginDecompilerEngine {
+            PluginDecompilerEngine(id: "e", name: "E", kinds: ["class"], tool: "/bin/echo",
+                                   args: ["{input}"], enginePath: jar, output: .stdout, note: nil,
+                                   timeout: 5, archive: nil)
+        }
+        let before = PluginDecompilerCache.key(path: input, engine: engine())
+        // The user installs a newer engine JAR: same name, same flags, different decompiler.
+        try "v2 — a much better decompiler".write(toFile: jar, atomically: true, encoding: .utf8)
+        let after = PluginDecompilerCache.key(path: input, engine: engine())
+        XCTAssertNotEqual(before, after,
+                          "upgrading an engine must not keep serving the old engine's output")
+    }
+}

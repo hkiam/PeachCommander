@@ -47,7 +47,12 @@ final class DecompiledArchiveView: DecompilerListerView {
     /// The file the source panel is showing, so a search hit can scroll within it.
     private var currentFile: String?
     /// Raised to abandon a scan whose query the user has already replaced.
-    private var searchGeneration = 0
+    ///
+    /// Locked, not a bare Int. The scan runs off the main thread and reads this to decide whether to
+    /// stop, while typing writes it on the main thread — unsynchronised access from two threads is a
+    /// data race whatever the values happen to be, and a comment saying "read on one, written on the
+    /// other" was not a substitute for making it true.
+    private let searchGeneration = LockedCounter()
 
     init(path: String, configRoot: String, profile: PluginDecompilerProfile) {
         self.path = path
@@ -345,8 +350,7 @@ final class DecompiledArchiveView: DecompilerListerView {
 
     @objc private func searchChanged() {
         let needle = searchField.stringValue
-        searchGeneration += 1
-        let generation = searchGeneration
+        let generation = searchGeneration.increment()
         guard !needle.isEmpty else {
             // Back to the whole archive, not to an empty tree.
             roots = PluginDecompilerNode.tree(from: files)
@@ -363,10 +367,10 @@ final class DecompiledArchiveView: DecompilerListerView {
                                                     isCancelled: { [weak self] in
                 // Read on a background thread but only ever written on the main one, so this is a
                 // comparison against a value that changes rather than a shared mutation.
-                self?.searchGeneration != generation
+                self?.searchGeneration.value != generation
             })
             DispatchQueue.main.async {
-                guard let self, self.searchGeneration == generation else { return }
+                guard let self, self.searchGeneration.value == generation else { return }
                 self.showSearchResults(result.hits, capped: result.capped, needle: needle)
             }
         }
@@ -508,5 +512,26 @@ extension DecompiledArchiveView: NSOutlineViewDataSource, NSOutlineViewDelegate 
         guard let node = outline.item(atRow: outline.selectedRow) as? PluginDecompilerNode,
               let rel = node.relativePath, rel != currentFile else { return }
         show(file: rel)
+    }
+}
+
+/// A counter that can be raised on one thread and read on another.
+///
+/// Small on purpose: the alternative was an actor, which would make every read `await` and turn a
+/// synchronous cancellation check inside a tight scan loop into a suspension point.
+final class LockedCounter {
+    private var count = 0
+    private let lock = NSLock()
+
+    /// Raise the counter and return its new value.
+    func increment() -> Int {
+        lock.lock(); defer { lock.unlock() }
+        count += 1
+        return count
+    }
+
+    var value: Int {
+        lock.lock(); defer { lock.unlock() }
+        return count
     }
 }

@@ -530,8 +530,18 @@ enum PluginDecompilerCache {
         guard let attrs = try? FileManager.default.attributesOfItem(atPath: path),
               let size = attrs[.size] as? Int,
               let modified = attrs[.modificationDate] as? Date else { return nil }
+        // The engine's payload identity too, not only its id and flags. Without it, installing a
+        // better cfr.jar or a newer ILSpy kept serving the previous engine's output until the input
+        // changed or the entry aged out — an upgrade that appeared to do nothing.
+        var engineStamp = ""
+        if let enginePath = engine.enginePath,
+           let attrs = try? FileManager.default.attributesOfItem(atPath: enginePath) {
+            let size = (attrs[.size] as? Int).map(String.init) ?? ""
+            let time = (attrs[.modificationDate] as? Date).map { String(Int($0.timeIntervalSince1970)) } ?? ""
+            engineStamp = size + ":" + time
+        }
         let material = [path, String(size), String(Int(modified.timeIntervalSince1970)),
-                        engine.id, engine.args.joined(separator: " "), variant]
+                        engine.id, engine.args.joined(separator: " "), engineStamp, variant]
             .joined(separator: "\u{1}")
         // FNV-1a: enough to distinguish inputs, and no dependency on CryptoKit for a cache name.
         var hash: UInt64 = 0xcbf29ce484222325
@@ -1089,15 +1099,16 @@ struct PluginDecompilerOptions: Equatable {
         guard let text = try? String(contentsOfFile: file(configRoot: configRoot), encoding: .utf8) else {
             return options
         }
+        // The profile's own section wins; `[Options]` — what the single-plugin version wrote — is read
+        // only when the profile has no section of its own yet, so an existing file keeps working
+        // without one plugin inheriting settings the other saved.
+        let wanted = text.range(of: "[\(profile)]", options: .caseInsensitive) != nil ? profile : "Options"
         var inSection = profile.isEmpty
         for line in text.components(separatedBy: .newlines) {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             if trimmed.hasPrefix("["), trimmed.hasSuffix("]") {
                 let name = String(trimmed.dropFirst().dropLast()).trimmingCharacters(in: .whitespaces)
-                // "[Options]" is the section the single-plugin version wrote; treat it as everyone's
-                // so an existing file keeps working rather than silently reverting to defaults.
-                inSection = profile.isEmpty || name.caseInsensitiveCompare(profile) == .orderedSame
-                    || name.caseInsensitiveCompare("Options") == .orderedSame
+                inSection = profile.isEmpty || name.caseInsensitiveCompare(wanted) == .orderedSame
                 continue
             }
             guard inSection, !trimmed.isEmpty, !trimmed.hasPrefix(";"), !trimmed.hasPrefix("#"),
@@ -1159,8 +1170,10 @@ struct PluginDecompilerOptions: Equatable {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             if trimmed.hasPrefix("["), trimmed.hasSuffix("]") {
                 let name = String(trimmed.dropFirst().dropLast()).trimmingCharacters(in: .whitespaces)
+                // Only this profile's own section is replaced. Dropping `[Options]` as well deleted
+                // whatever the *other* plugin was still reading from it — its settings vanished the
+                // moment someone opened this plugin's settings page.
                 keeping = name.caseInsensitiveCompare(profile) != .orderedSame
-                    && name.caseInsensitiveCompare("Options") != .orderedSame
             } else if !keeping {
                 continue
             }

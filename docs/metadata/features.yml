@@ -843,6 +843,17 @@ features:
       framework), neither of which is on a GUI app's PATH. Every shipped manifest's detect string is
       now parse-checked by a test — the `==` mistake that once made a plugin silently claim nothing
       would have been caught by it.
+      A review afterwards found four defects, all in code written during these steps and all now
+      fixed with a test each. The search saw only the *first kilobyte* of any plugin-provided text:
+      PDXPlugin handed every field a 1 KB buffer, which is right for a table cell and useless for a
+      document, so a phrase past about twenty lines was reported as absent — and the VM check had
+      looked fine only because its phrase sat near the top. Full-text fields now get 4 MB, measured
+      against a marker 5,392 bytes in. One plugin saving its settings deleted the legacy `[Options]`
+      section the other was still reading, so the Java plugin's settings vanished the moment anyone
+      opened the .NET page. A cached result outlived the engine that produced it: the key covered the
+      input, the engine id and its flags but not the engine payload, so installing a better cfr.jar or
+      ILSpy kept serving the old output. And the tree view's search-generation counter was written on
+      the main thread and read from the scan thread with nothing but a comment between them.
 
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
