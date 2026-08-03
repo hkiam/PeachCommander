@@ -179,7 +179,7 @@ public final class FindFilesWindowController: NSWindowController {
         findTextCheckbox.target = self; findTextCheckbox.action = #selector(toggleFindText)
         findTextField.isEnabled = false
         findTextField.font = Fonts.system13
-        findTextField.widthAnchor.constraint(greaterThanOrEqualToConstant: 280).isActive = true
+        preferWidth(findTextField, atLeast: 280)
 
         caseSensitiveCheckbox.title = String(localized: "Case sensitive"); caseSensitiveCheckbox.font = Fonts.system13
         regexCheckbox.title = String(localized: "Regular expression"); regexCheckbox.font = Fonts.system13
@@ -223,7 +223,7 @@ public final class FindFilesWindowController: NSWindowController {
         sizeMaxField.placeholderString = String(localized: "max (e.g. 5M)")
         for f in [sizeMinField, sizeMaxField] {
             f.font = Fonts.system13
-            f.widthAnchor.constraint(equalToConstant: 130).isActive = true
+            preferWidth(f, exactly: 130)
         }
         let sizeRow = hStack([sizeLabel, sizeMinField, toLabel, sizeMaxField], spacing: 8)
 
@@ -240,7 +240,7 @@ public final class FindFilesWindowController: NSWindowController {
         }
         recentDaysField.placeholderString = String(localized: "N")
         recentDaysField.alignment = .right
-        recentDaysField.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        preferWidth(recentDaysField, exactly: 44)
         let recentLabel = NSTextField(labelWithString: String(localized: "or within last")); recentLabel.font = Fonts.system13
         let daysLabel = NSTextField(labelWithString: String(localized: "days")); daysLabel.font = Fonts.system13
         let dateRow = hStack([dateAfterCheckbox, dateAfterPicker, dateBeforeCheckbox, dateBeforePicker,
@@ -254,8 +254,8 @@ public final class FindFilesWindowController: NSWindowController {
         for op in ContentOperator.allCases { contentOpPopup.addItem(withTitle: op.rawValue) }
         contentValueField.placeholderString = String(localized: "value")
         contentValueField.font = Fonts.system13
-        contentValueField.widthAnchor.constraint(equalToConstant: 120).isActive = true
-        contentFieldPopup.widthAnchor.constraint(greaterThanOrEqualToConstant: 140).isActive = true
+        preferWidth(contentValueField, exactly: 120)
+        preferWidth(contentFieldPopup, atLeast: 140)
         let contentFieldRow = hStack([contentFieldCheckbox, contentFieldPopup, contentOpPopup, contentValueField], spacing: 8)
 
         // Attribute filters (F-152): tri-state Any / Yes / No per attribute.
@@ -271,7 +271,7 @@ public final class FindFilesWindowController: NSWindowController {
         // Saved-template picker + save button (Load / Save tab).
         let tmplLabel = NSTextField(labelWithString: String(localized: "Template:")); tmplLabel.font = Fonts.system13
         templatePopup.action = #selector(applySelectedTemplate); templatePopup.target = self
-        templatePopup.widthAnchor.constraint(greaterThanOrEqualToConstant: 200).isActive = true
+        preferWidth(templatePopup, atLeast: 200)
         let saveTemplateButton = NSButton(title: String(localized: "Save as Template…"),
                                           target: self, action: #selector(saveTemplate))
         saveTemplateButton.bezelStyle = .rounded
@@ -363,12 +363,11 @@ public final class FindFilesWindowController: NSWindowController {
 
         // A floor from the tallest tab's own fitting height, plus what NSTabView spends on its tab
         // strip and border. Nothing here is a chosen number: the stacks report what they need.
+        // Measured, not chosen: the General tab's stack reports 250 pt and the others less, and 34 is
+        // what NSTabView spends on its strip and border.
         let tallest = tabStacks.map(\.fittingSize.height).max() ?? 300
-        // NSTabView exposes the inset as contentRect, not as a function — 34 is the observed value for
-        // the top strip plus border and is used as the floor either way.
-        let chrome = tabView.frame.height - tabView.contentRect.height
         let tabHeightConstraint = tabView.heightAnchor.constraint(
-            greaterThanOrEqualToConstant: tallest + max(34, chrome))
+            greaterThanOrEqualToConstant: tallest + 34)
         NSLayoutConstraint.activate([
             tabView.topAnchor.constraint(equalTo: content.topAnchor, constant: 12),
             tabView.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 16),
@@ -416,8 +415,8 @@ public final class FindFilesWindowController: NSWindowController {
         let label = NSTextField(labelWithString: title)
         label.font = Fonts.system13
         label.alignment = .right
-        label.widthAnchor.constraint(equalToConstant: 90).isActive = true
-        control.widthAnchor.constraint(greaterThanOrEqualToConstant: controlMinWidth).isActive = true
+        preferWidth(label, exactly: 90)
+        preferWidth(control, atLeast: controlMinWidth)
         return hStack([label, control], spacing: 8)
     }
 
@@ -447,13 +446,24 @@ public final class FindFilesWindowController: NSWindowController {
         stack.edgeInsets = NSEdgeInsets(top: 14, left: 14, bottom: 14, right: 14)
         stack.translatesAutoresizingMaskIntoConstraints = false
         page.addSubview(stack)
+        let stackBottom = stack.bottomAnchor.constraint(lessThanOrEqualTo: page.bottomAnchor)
+        stackBottom.priority = .init(999)
         NSLayoutConstraint.activate([
             stack.topAnchor.constraint(equalTo: page.topAnchor),
             stack.leadingAnchor.constraint(equalTo: page.leadingAnchor),
             stack.trailingAnchor.constraint(lessThanOrEqualTo: page.trailingAnchor),
-            // The bound that was missing: without it a tab whose rows outgrow the fixed height draws
-            // over whatever is below and nothing reports it. Now it shows up as a layout conflict.
-            stack.bottomAnchor.constraint(lessThanOrEqualTo: page.bottomAnchor),
+            // An advisory bound, not a rule. Without it a tab whose rows outgrow its height drew over
+            // whatever was below and nothing reported it; required, it became the loudest conflict in
+            // the app, because a tab page that is not the visible one has height *zero* until it is
+            // shown, and no stack fits in nothing. Measured: the visible page was 380 pt with a stack
+            // needing 250, while the three hidden ones were 0 pt with stacks needing 154 and 76 —
+            // there was never a shortage of room, only a constraint applied to pages that had no size
+            // yet. Same shape as the preview panel's `width == 0`.
+            //
+            // At 999 it yields on a zero-height page and still shapes the layout everywhere else.
+            // Real overflow is caught by the regression harness's screenshots, which is where a human
+            // would notice it anyway.
+            stackBottom,
         ])
         tabStacks.append(stack)
         item.view = page
@@ -503,6 +513,22 @@ public final class FindFilesWindowController: NSWindowController {
         dateBeforeCheckbox.isEnabled = !spotlight
         dateAfterPicker.isEnabled = !spotlight && dateAfterCheckbox.state == .on
         dateBeforePicker.isEnabled = !spotlight && dateBeforeCheckbox.state == .on
+    }
+
+    /// Activate a width the layout should honour *if it can*.
+    ///
+    /// Every width in this dialog is a preference about how wide a control looks, not a fact about the
+    /// world — and during setup the page it sits in has no width at all, so as required rules they
+    /// cannot hold and AppKit reports the row. At 999 the rows still get the shape they ask for and a
+    /// zero-width page costs nothing. Measured: this and the tab pages' bottom bound together took the
+    /// dialog from 37 reported conflicts to 12.
+    private func preferWidth(_ view: NSView, exactly: CGFloat? = nil, atLeast: CGFloat? = nil) {
+        for constraint in [exactly.map { view.widthAnchor.constraint(equalToConstant: $0) },
+                           atLeast.map { view.widthAnchor.constraint(greaterThanOrEqualToConstant: $0) }]
+        .compactMap({ $0 }) {
+            constraint.priority = .init(999)
+            constraint.isActive = true
+        }
     }
 
     @objc private func handleStartStop() {
