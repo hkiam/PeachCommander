@@ -22,6 +22,8 @@ Um eine ganz neue Textdatei am aktuellen Ort zu beginnen, drücken Sie Shift+F4.
 
 Gehört die Datei `root` — ein Eintrag in `/etc`, ein launchd-plist, die Konfiguration eines Webservers —, bietet das Speichern an, es **als Administrator** zu tun: macOS fragt wie gewohnt nach einer Autorisierung, der Inhalt wird über eine private temporäre Datei übergeben statt über eine Befehlszeile, und die Datei behält ihren Eigentümer und ihre Rechte, statt still Ihnen zu gehören.
 
+Ist die Datei nicht beschreibbar, erfahren Sie das beim Öffnen und nicht erst beim Speichern: der Titel trägt ein Schloss, und die Statuszeile nennt das Hindernis — einem anderen Benutzer gehörend, Rechte, die das Schreiben verbieten, eine gesperrte Datei, ein Read-only-Volume oder Schutz durch das System. Nur das Erste lässt sich durch Autorisieren des Speichervorgangs lösen, und nur dort wird es angeboten; bei den übrigen würde das Passwort kosten und trotzdem scheitern.
+
 Die Randspalte zeigt Zeilennummern, die Zeile mit dem Cursor heller als die übrigen; der Knopf neben dem Kodierungsmenü blendet sie aus. Eine umgebrochene Zeile wird einmal gezählt, die Nummer meint also immer dieselbe Zeile, die ein Compilerfehler oder ein Review-Kommentar meint.
 
 ## Suchen, Ersetzen und Navigieren
@@ -41,6 +43,21 @@ Klicken Sie auf **Filtern…** (oder drücken Sie Shift+Cmd+\), um den markierte
 Der Befehl läuft in Ihrer Login-Shell: `PATH`, Aliase und Funktionen wirken genau wie im Terminal, und Pipes und Anführungszeichen bedeuten das, was Sie erwarten. Als Arbeitsverzeichnis dient der Ordner der bearbeiteten Datei, sodass relative Pfade dort aufgelöst werden, wo Sie es erwarten. Benutzte Befehle werden gespeichert und beim nächsten Mal in der Auswahlliste angeboten.
 
 Schlägt der Befehl fehl, bleibt Ihr Text unverändert und die Fehlermeldung des Befehls erscheint in der Statuszeile — ein `jq`-Syntaxfehler landet nie in Ihrer Datei. Ein Befehl ohne Ausgabe leert die Markierung; genau dafür filtert man mit `grep`, und Cmd+Z holt sie zurück. Ein Befehl, der nicht fertig wird, wird nach zwanzig Sekunden abgebrochen.
+
+## Zeilen sortieren, entdoppeln und aufräumen
+
+Das Menü **Zeilen** — in der Werkzeugleiste und, solange der Editor vorn ist, in der Menüleiste — führt die Bearbeitungen aus, die immer wieder anfallen, ohne getippten Befehl und ohne installiertes Werkzeug:
+
+- Sortieren A→Z oder Z→A, wobei Zahlen dem Wert nach verglichen werden, sodass `file9` vor `file10` kommt.
+- Die Reihenfolge der Zeilen umkehren.
+- Doppelte Zeilen entfernen, jeweils die erste behalten und die übrigen in ihrer Reihenfolge lassen.
+- Leere Zeilen entfernen, auch die, die nur leer aussehen, weil sie Leerzeichen enthalten.
+- Leerzeichen am Zeilenende entfernen — der unsichtbare Unterschied, der einen Diff unruhig macht.
+- Nur die Zeilen behalten oder entfernen, die einen von Ihnen eingegebenen Text enthalten.
+
+Ist Text markiert, arbeitet jede dieser Operationen auf den markierten Zeilen; die Markierung wird zuvor auf ganze Zeilen erweitert, denn eine halbe Zeile zu sortieren ergibt keinen Sinn. Ohne Markierung gilt sie für das ganze Dokument. Jede ist ein einzelner Undo-Schritt, Cmd+Z nimmt also die ganze Operation zurück.
+
+Die Zeilenenden stehen neben dem Menü „Kodierung": **LF** für Unix und macOS, **CRLF** für Windows, **CR** für das klassische Mac OS, und *(mixed)*, wenn eine Datei mehr als eine Art enthält — häufig der Grund für einen Fehler, der keinen Sinn ergibt. Wählen Sie eine andere, um die ganze Datei in einem widerrufbaren Schritt umzuwandeln. Die Zeilenoperationen ändern das Zeilenende nie von sich aus: eine sortierte CRLF-Datei bleibt CRLF.
 
 ## Eine Datei formatieren
 

@@ -22,6 +22,8 @@ Na začatie úplne nového textového súboru na aktuálnom mieste stlačte Shif
 
 Ak súbor patrí `root` — záznam v `/etc`, launchd plist, konfigurácia webového servera —, uloženie navrhne urobiť to **ako správca**: macOS požiada o autorizáciu ako obvykle, obsah sa predá cez privátny dočasný súbor namiesto príkazového riadku a súbor si ponechá vlastného vlastníka aj práva namiesto toho, aby sa tichom stal vaším.
 
+Ak do súboru nemožno zapisovať, dozviete sa to pri otvorení, a nie až pri ukladaní: titulok nesie zámok a stavový riadok pomenuje prekážku — patrí inému používateľovi, oprávnenia zápis zakazujú, uzamknutý súbor, svazok len na čítanie alebo ochrana systémom. Len prvú z nich možno vyriešiť autorizáciou uloženia a len tam sa ponúka; pri ostatných by vás stála heslo a aj tak by zlyhala.
+
 Okraj zobrazuje čísla riadkov, riadok s kurzorom svetlejšie než ostatné; tlačidlo vedľa nabídky kódovania ho skryje. Zalomený riadok je číslovaný raz, takže číslo vždy znamená ten istý riadok, ktorý má na mysli chyba kompilátora alebo poznámka z revízie.
 
 ## Hľadanie, nahrádzanie a navigácia
@@ -41,6 +43,21 @@ Kliknite na **Filtrovať…** (alebo stlačte Shift+Cmd+\), aby ste vybraný tex
 Príkaz beží vo vašom prihlasovacom shelle: `PATH`, aliasy aj funkcie fungujú presne ako v Termináli a rúry aj úvodzovky znamenajú to, čo očakávate. Pracovným adresárom je zložka upravovaného súboru, takže relatívne cesty sa vyhodnotia tam, kde to čakáte. Použité príkazy sa pamätajú a nabudúce sa ponúknu v rozbaľovacom zozname.
 
 Ak príkaz zlyhá, váš text zostane nedotknutý a chybové hlásenie príkazu sa zobrazí v stavovom riadku — syntaktická chyba nástroja `jq` nikdy neskončí vložená do vášho súboru. Príkaz, ktorý nič nevypíše, vyprázdni výber; presne na to sa filtrovanie nástrojom `grep` používa a Cmd+Z ho vráti. Príkaz, ktorý sa nedokončí, sa po dvadsiatich sekundách ukončí.
+
+## Riadky zoradiť, odstrániť duplikáty a upraviť
+
+Menu **Riadky** — na paneli nástrojov a, kým je editor vpredu, aj v hlavnej nabídke — vykonáva úpravy, ktoré prichádzajú znova a znova, bez napísaného príkazu a bez nainštalovaného nástroja:
+
+- Zoradiť A→Z alebo Z→A, pričom čísla sa porovnávajú podľa hodnoty, takže `file9` je pred `file10`.
+- Obrátiť poradie riadkov.
+- Odstrániť duplicitné riadky, z každého ponechať prvý a ostatné nechať v ich poradí.
+- Odstrániť prázdne riadky vrátane tých, ktoré len vyzerajú prázdne, pretože obsahujú medzery.
+- Odstrániť medzery na konci riadkov — neviditeľný rozdiel, pre ktorý je diff neprehľadný.
+- Ponechať len riadky obsahujúce text, ktorý zadáte, alebo ich naopak odstrániť.
+
+Ak je text vybraný, každá z operácií pracuje na vybraných riadkoch; výber sa najprv rozšíri na celé riadky, pretože zoradiť pol riadku nemá zmysel. Bez výberu platia pre celý dokument. Každá je jediným krokom vrátenia, takže Cmd+Z vezme späť celú operáciu.
+
+Konce riadkov sú vedľa nabídky Kódovanie: **LF** pre Unix a macOS, **CRLF** pre Windows, **CR** pre klasický Mac OS a *(mixed)*, keď jeden súbor obsahuje viac druhov — často príčina chyby, ktorá nedáva zmysel. Výberom iného prevediete celý súbor jedným krokom, ktorý sa dá vrátiť. Operácie s riadkami koniec riadku nikdy nemenia samé od sebe: zoradený súbor s CRLF zostane CRLF.
 
 ## Formátovanie súboru
 

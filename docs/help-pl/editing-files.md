@@ -22,6 +22,8 @@ Aby utworzyć zupełnie nowy plik tekstowy w bieżącej lokalizacji, naciśnij S
 
 Jeśli plik należy do `root` — wpis w `/etc`, plist launchd, konfiguracja serwera WWW — zapis proponuje zrobić to **jako administrator**: macOS poprosi o autoryzację jak zwykle, treść jest przekazywana przez prywatny plik tymczasowy, a nie przez wiersz poleceń, i plik zachowuje własnego właściciela oraz uprawnienia, zamiast po cichu stać się twoim.
 
+Jeśli do pliku nie można pisać, dowiesz się o tym przy otwarciu, a nie dopiero przy zapisie: tytuł nosi kłódkę, a wiersz stanu nazywa przeszkodę — należy do innego użytkownika, uprawnienia zabraniają zapisu, plik jest zablokowany, wolumin jest tylko do odczytu albo chroni go system. Tylko pierwszą da się rozwiązać, autoryzując zapis, i tylko tam jest to proponowane; w pozostałych kosztowałoby to hasło i mimo to by się nie udało.
+
 Marginesw pokazuje numery wierszy, wiersz z kursorem jaśniej niż pozostałe; przycisk obok menu kodowania go ukrywa. Zawinięty wiersz jest numerowany raz, więc numer zawsze oznacza ten sam wiersz, o którym mówi błąd kompilatora albo uwaga z przeglądu.
 
 ## Wyszukiwanie, zamiana i nawigacja
@@ -41,6 +43,21 @@ Kliknij **Filtruj…** (lub naciśnij Shift+Cmd+\), aby przesłać zaznaczony te
 Polecenie działa w Twojej powłoce logowania: `PATH`, aliasy i funkcje działają dokładnie tak jak w Terminalu, a potoki i cudzysłowy znaczą to, czego się spodziewasz. Katalogiem roboczym jest folder edytowanego pliku, więc ścieżki względne rozwiązują się tam, gdzie tego oczekujesz. Użyte polecenia są zapamiętywane i następnym razem proponowane na liście rozwijanej.
 
 Jeśli polecenie zawiedzie, Twój tekst pozostaje nietknięty, a komunikat błędu polecenia pojawia się w wierszu stanu — błąd składni narzędzia `jq` nigdy nie trafi wklejony do Twojego pliku. Polecenie, które nic nie wypisze, opróżnia zaznaczenie i właśnie do tego służy filtrowanie narzędziem `grep`; Cmd+Z je przywraca. Polecenie, które się nie kończy, jest zatrzymywane po dwudziestu sekundach.
+
+## Sortowanie, usuwanie duplikatów i porządkowanie wierszy
+
+Menu **Wiersze** — na pasku narzędzi i, dopóki edytor jest na wierzchu, na pasku menu — wykonuje zmiany, które wracają wciąż od nowa, bez wpisywanego polecenia i bez zainstalowanego narzędzia:
+
+- Sortuj A→Z lub Z→A, porównując liczby według wartości, tak że `file9` jest przed `file10`.
+- Odwróć kolejność wierszy.
+- Usuń powtórzone wiersze, zachowując pierwszy z każdego i pozostawiając resztę w ich kolejności.
+- Usuń puste wiersze, w tym te, które tylko wyglądają na puste, bo zawierają spacje.
+- Usuń spacje na końcu wiersza — niewidoczną różnicę, która zaśmieca diff.
+- Zachowaj tylko wiersze zawierające wpisany przez Ciebie tekst albo właśnie je usuń.
+
+Gdy tekst jest zaznaczony, każda z tych operacji działa na zaznaczonych wierszach; zaznaczenie jest najpierw rozszerzane do całych wierszy, bo sortowanie połowy wiersza nic nie znaczy. Bez zaznaczenia działają na całym dokumencie. Każda jest jednym krokiem cofnięcia, więc Cmd+Z wycofuje całą operację.
+
+Końce wierszy znajdują się obok menu Kodowanie: **LF** dla Uniksa i macOS, **CRLF** dla Windows, **CR** dla klasycznego Mac OS oraz *(mixed)*, gdy jeden plik zawiera więcej niż jeden rodzaj — często powód błędu, który nie ma sensu. Wybierz inny, aby przekonwertować cały plik jednym krokiem, który da się cofnąć. Operacje na wierszach nigdy nie zmieniają końca wiersza same z siebie: posortowany plik CRLF pozostaje plikiem CRLF.
 
 ## Formatowanie pliku
 

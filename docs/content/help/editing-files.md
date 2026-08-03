@@ -22,6 +22,8 @@ To start a brand-new text file at the current location, press Shift+F4.
 
 If the file belongs to `root` — an entry in `/etc`, a launchd plist, a web server's config — saving offers to do it **as administrator**: macOS asks for authorization the usual way, the content is handed over through a private temporary file rather than a command line, and the file keeps its own owner and permissions instead of quietly becoming yours.
 
+If the file cannot be written, you are told when you open it rather than when you try to save: the title carries a lock and the status line says which obstacle it is — owned by another user, permissions that deny writing, a locked file, a read-only volume, or protection by the system. Only the first of those can be settled by authorizing the save, and only that one offers it; for the others the offer would cost you a password and fail anyway.
+
 The gutter shows line numbers, with the line you are on brighter than the rest; the button beside the encoding menu hides it. A wrapped line is numbered once, so the number always means the same line a compiler error or a review comment means.
 
 ## Find, replace, and navigate
@@ -41,6 +43,21 @@ Click **Filter…** (or press Shift+Cmd+\) to send the selected text through a c
 The command runs in your login shell, so your `PATH`, your aliases, and your functions work exactly as they do in Terminal, and pipes and quoting mean what you expect them to. It runs in the folder of the file you are editing, so relative paths resolve where you would expect. The commands you have used are remembered and offered in the dropdown the next time.
 
 If the command fails, your text is left untouched and the command's own error message appears in the status line — a `jq` syntax error never ends up pasted into your file. A command that prints nothing empties the selection, which is exactly what filtering with `grep` is for, and Cmd+Z brings it back. A command that never finishes is stopped after twenty seconds.
+
+## Sort, deduplicate and clean up lines
+
+The **Lines** menu — in the toolbar, and in the menu bar while the editor is in front — applies the edits that come up again and again, with no command typed and no tool installed:
+
+- Sort A→Z or Z→A, comparing numbers by value, so `file9` comes before `file10`.
+- Reverse the order of the lines.
+- Remove duplicate lines, keeping the first of each and leaving the rest in their original order.
+- Remove blank lines, including the ones that only look empty because they hold spaces.
+- Trim trailing whitespace — the invisible difference that makes a diff noisy.
+- Keep only, or remove, the lines containing a piece of text you type.
+
+With text selected, each of these works on the selected lines; the selection is grown to whole lines first, because sorting half a line means nothing. With nothing selected they work on the whole document. Each one is a single undo step, so Cmd+Z takes back the whole operation.
+
+Line endings sit next to the Encoding menu: **LF** for Unix and macOS, **CRLF** for Windows, **CR** for classic Mac OS, and *(mixed)* when one file contains more than one kind — often the reason a script fails with an error that makes no sense. Pick another one to convert the whole file in one undoable step. The line operations never change the terminator on their own: sorting a CRLF file leaves it CRLF.
 
 ## Formatting a file
 

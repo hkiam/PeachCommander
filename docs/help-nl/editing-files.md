@@ -22,6 +22,8 @@ Om een gloednieuw tekstbestand op de huidige locatie te starten, druk je op Shif
 
 Hoort het bestand bij `root` — iets in `/etc`, een launchd-plist, de configuratie van een webserver — dan biedt opslaan aan het **als beheerder** te doen: macOS vraagt op de gebruikelijke manier om autorisatie, de inhoud gaat via een privé tijdelijk bestand in plaats van via een opdrachtregel, en het bestand houdt zijn eigen eigenaar en rechten in plaats van stil van jou te worden.
 
+Als het bestand niet schrijfbaar is, hoort u dat bij het openen en niet pas bij het opslaan: de titel draagt een slotje en de statusregel noemt het obstakel — eigendom van een andere gebruiker, rechten die schrijven verbieden, een vergrendeld bestand, een alleen-lezen volume of bescherming door het systeem. Alleen het eerste is op te lossen door het opslaan te autoriseren, en alleen daar wordt dat aangeboden; bij de andere zou het u een wachtwoord kosten en toch mislukken.
+
 De kantlijn toont regelnummers, met de regel van de cursor lichter dan de rest; de knop naast het coderingsmenu verbergt hem. Een afgebroken regel wordt één keer genummerd, dus het nummer betekent altijd dezelfde regel als een compilerfout of een reviewopmerking.
 
 ## Zoeken, vervangen en navigeren
@@ -41,6 +43,21 @@ Klik op **Filteren…** (of druk op Shift+Cmd+\) om de geselecteerde tekst door 
 De opdracht loopt in uw login-shell: uw `PATH`, uw aliassen en uw functies werken precies zoals in Terminal, en pipes en aanhalingstekens betekenen wat u verwacht. De werkmap is de map van het bestand dat u bewerkt, zodat relatieve paden worden opgelost waar u dat verwacht. Gebruikte opdrachten worden bewaard en de volgende keer in de keuzelijst aangeboden.
 
 Mislukt de opdracht, dan blijft uw tekst ongewijzigd en verschijnt de foutmelding van de opdracht in de statusregel — een `jq`-syntaxisfout komt nooit in uw bestand terecht. Een opdracht die niets afdrukt maakt de selectie leeg, en juist daarvoor filtert u met `grep`; Cmd+Z brengt die terug. Een opdracht die niet klaar komt, wordt na twintig seconden gestopt.
+
+## Regels sorteren, ontdubbelen en opschonen
+
+Het menu **Regels** — in de knoppenbalk en, zolang de editor vooraan staat, in de menubalk — voert de bewerkingen uit die steeds terugkomen, zonder getypte opdracht en zonder geïnstalleerd hulpmiddel:
+
+- Sorteren A→Z of Z→A, waarbij getallen op waarde worden vergeleken, zodat `file9` vóór `file10` komt.
+- De volgorde van de regels omkeren.
+- Dubbele regels verwijderen, van elke de eerste bewaren en de rest in hun volgorde laten.
+- Lege regels verwijderen, ook die alleen leeg lijken omdat ze spaties bevatten.
+- Witruimte aan het regeleinde verwijderen — het onzichtbare verschil dat een diff onrustig maakt.
+- Alleen de regels behouden die een door u getypte tekst bevatten, of juist die verwijderen.
+
+Met tekst geselecteerd werkt elk van deze bewerkingen op de geselecteerde regels; de selectie wordt eerst tot hele regels uitgebreid, want een halve regel sorteren betekent niets. Zonder selectie werken ze op het hele document. Elke bewerking is één stap in de ongedaan-maakgeschiedenis, dus Cmd+Z neemt de hele bewerking terug.
+
+De regeleinden staan naast het menu Codering: **LF** voor Unix en macOS, **CRLF** voor Windows, **CR** voor het klassieke Mac OS, en *(mixed)* wanneer één bestand meer dan één soort bevat — vaak de reden dat een script faalt met een onbegrijpelijke fout. Kies een andere om het hele bestand in één ongedaan te maken stap om te zetten. De regelbewerkingen wijzigen het regeleinde nooit op eigen initiatief: een gesorteerd CRLF-bestand blijft CRLF.
 
 ## Een bestand opmaken
 
