@@ -108,3 +108,10 @@ public func ContentGetValue(_ fileName: UnsafeMutablePointer<CChar>?, _ fieldInd
                             _ maxlen: Int32, _ flags: Int32) -> Int32 {
     decompilerContentValue(fileName, fieldIndex, fieldValue, maxlen, profile: profile)
 }
+
+@_cdecl("ContentSearchText")
+public func ContentSearchText(_ fileName: UnsafeMutablePointer<CChar>?, _ fieldIndex: Int32,
+                              _ needle: UnsafePointer<CChar>?, _ flags: Int32,
+                              _ matchLine: UnsafeMutablePointer<CChar>?, _ lineMax: Int32) -> Int32 {
+    decompilerContentSearch(fileName, fieldIndex, needle, flags, matchLine, lineMax, profile: profile)
+}

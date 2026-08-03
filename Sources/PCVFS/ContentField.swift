@@ -52,6 +52,18 @@ public protocol ContentFieldProvider: Sendable {
     var fields: [ContentField] { get }
     /// Compute one field's value for a local file (`.none` if unavailable).
     func value(fieldID: String, forFileAt url: URL) async -> ContentValue
+    /// Search a full-text field *inside the provider*, if it can, returning the 1-based line and its
+    /// text. Default nil: the caller then fetches the text and searches it itself.
+    ///
+    /// Worth having because fetching means copying a whole document across the plugin boundary, and
+    /// whatever buffer that uses becomes the limit on how much of it is searchable.
+    func searchFullText(fieldID: String, forFileAt url: URL, needle: String,
+                        matchCase: Bool) async -> (line: Int, preview: String)?
+}
+
+public extension ContentFieldProvider {
+    func searchFullText(fieldID: String, forFileAt url: URL, needle: String,
+                        matchCase: Bool) async -> (line: Int, preview: String)? { nil }
 }
 
 /// Holds the registered providers and resolves qualified field ids.
@@ -91,6 +103,26 @@ public final class ContentFieldRegistry: @unchecked Sendable {
             if !text.isEmpty { parts.append(text) }
         }
         return parts.isEmpty ? nil : parts.joined(separator: "\n")
+    }
+
+    /// Search every full-text provider for `needle`, preferring providers that can search themselves.
+    ///
+    /// Returns the first match as a line number and that line's text. A provider that cannot search
+    /// gets asked for its text instead, so the two kinds coexist and only the capable ones avoid the
+    /// copy.
+    public func searchFullText(forFileAt url: URL, needle: String,
+                               matchCase: Bool) async -> (line: Int, preview: String)? {
+        lock.lock()
+        let candidates = providers.values
+            .flatMap { provider in provider.fields.filter(\.isFullText).map { (provider, $0.id) } }
+        lock.unlock()
+        for (provider, fieldID) in candidates {
+            if let hit = await provider.searchFullText(fieldID: fieldID, forFileAt: url,
+                                                      needle: needle, matchCase: matchCase) {
+                return hit
+            }
+        }
+        return nil
     }
 
     /// Whether any provider offers full text at all, so a caller can skip the work entirely.

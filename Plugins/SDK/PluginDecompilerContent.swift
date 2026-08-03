@@ -57,6 +57,40 @@ func decompilerContentValue(_ fileName: UnsafeMutablePointer<CChar>?, _ fieldInd
     return 9   // PC_FT_FULLTEXT
 }
 
+/// Search this plugin's own decompiled text and report where it matched (F-354).
+///
+/// The point of doing it here rather than handing the text over: nothing is copied, so the whole
+/// result is searchable instead of as much as the host's buffer holds — which was one kilobyte until a
+/// review measured it. Each plugin's `ContentSearchText` is one call to this.
+func decompilerContentSearch(_ fileName: UnsafeMutablePointer<CChar>?, _ fieldIndex: Int32,
+                             _ needle: UnsafePointer<CChar>?, _ flags: Int32,
+                             _ matchLine: UnsafeMutablePointer<CChar>?, _ lineMax: Int32,
+                             profile: PluginDecompilerProfile) -> Int32 {
+    guard fieldIndex == 0, let fileName, let needle else { return -1 }   // PC_FT_NOSUCHFIELD
+    let path = String(cString: fileName)
+    let term = String(cString: needle)
+    guard !term.isEmpty else { return 0 }
+    let kind = (path as NSString).pathExtension.lowercased()
+    guard profile.singleKinds.contains(kind) || profile.treeKinds.contains(kind),
+          profile.claims(path) else { return 0 }
+    let configRoot = configRoot()
+    guard PluginDecompilerOptions.read(configRoot: configRoot, profile: profile.id)
+        .allowSearchDecompile else { return 0 }
+    guard let source = decompiledSource(path: path, kind: kind, configRoot: configRoot,
+                                        profile: profile) else { return 0 }
+    let options: String.CompareOptions = (flags & 0x0001) != 0 ? [] : [.caseInsensitive]
+    guard source.range(of: term, options: options) != nil else { return 0 }
+    for (i, line) in source.components(separatedBy: .newlines).enumerated()
+    where line.range(of: term, options: options) != nil {
+        if let matchLine, lineMax > 0 {
+            _ = line.trimmingCharacters(in: .whitespaces)
+                .withCString { strlcpy(matchLine, $0, Int(lineMax)) }
+        }
+        return Int32(i + 1)
+    }
+    return 0
+}
+
 /// The decompiled source for `path`, from the cache when possible.
 ///
 /// A search touches many files, so the cache is what makes this usable at all: the first search over

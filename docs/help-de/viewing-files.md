@@ -71,6 +71,8 @@ Es gibt einen zweiten, direkteren Weg: Cursor auf eine `.class`-Datei oder ein g
 
 Ein zweites Plugin macht dasselbe für .NET: F3 auf eine verwaltete `.dll`, `.exe` oder `.winmd` zeigt ihre Typen als C#, **Assembly in Quelltext dekompilieren** (⌘⇧N) legt sie in ein Dateipanel, und die Suche kann genauso in eine Assembly hineinsehen. Es steuert **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) für Quelltext oder **monodis** aus Mono für IL — das .NET-Gegenstück zu `javap`. Eine native `.dll` hat dieselbe Endung und keinen Quelltext; das Plugin prüft das vor dem Öffnen und überlässt sie dem eingebauten Viewer.
 
+Die Einstellungsseite hat einen Knopf **Engines prüfen**, und der lohnt sich: „installiert“ heißt an anderer Stelle nur, dass die Datei vorhanden ist, und eine Java-Engine auf einem Mac ohne JDK ist vorhanden und kann nicht laufen. Die Prüfung fragt jede Engine nach ihrer Version und sagt, welche tatsächlich funktionieren.
+
 Android ist ebenfalls abgedeckt: F3 auf einer `.dex`-Datei benutzt **jadx** (Apache 2.0, `brew install jadx`), das Dalvik-Bytecode zurück in Java verwandelt. Dafür genügte eine Engine-Beschreibung — derselbe Mechanismus, ein anderes Format.
 
 Das Plugin ist **aus, bis Sie es einschalten**, unter Einstellungen ▸ Plugins — die meisten öffnen nie eine Klassendatei, und ohne Engine nützt es nichts.

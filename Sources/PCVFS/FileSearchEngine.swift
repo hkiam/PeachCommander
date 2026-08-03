@@ -147,9 +147,18 @@ public actor FileSearchEngine {
     /// claims the file, which is the normal case and must stay cheap.
     public typealias TextProvider = @Sendable (_ path: String) async -> String?
 
-    /// Set for the duration of a search, rather than threaded through the walk: it is one value that
-    /// never varies per directory, and the walk already carries six parameters.
+    /// A provider searching its *own* text and reporting where it matched (F-354).
+    ///
+    /// Preferred over `TextProvider` when the app supplies it: fetching a document across the plugin
+    /// boundary caps what can be searched at whatever buffer carries it, and searching in place has no
+    /// such limit. Returns nil when no provider can answer, and the text path is then used.
+    public typealias TextSearcher = @Sendable (_ path: String, _ needle: String, _ matchCase: Bool)
+        async -> (line: Int, preview: String)?
+
+    /// Set for the duration of a search, rather than threaded through the walk: they are one value
+    /// each that never varies per directory, and the walk already carries six parameters.
     private var textProvider: TextProvider?
+    private var textSearcher: TextSearcher?
 
     /// Zip-format extensions searched when `searchArchives` is on — plain zip plus
     /// its many specializations (Java, Android, browser, docs stay excluded here).
@@ -175,8 +184,10 @@ public actor FileSearchEngine {
     /// promptly instead of running to completion in the background.
     public func search(_ query: SearchQuery, fs: VirtualFileSystem,
                        archiveOpener: ArchiveOpener? = nil,
-                       textProvider: TextProvider? = nil) -> AsyncStream<SearchHit> {
+                       textProvider: TextProvider? = nil,
+                       textSearcher: TextSearcher? = nil) -> AsyncStream<SearchHit> {
         self.textProvider = textProvider
+        self.textSearcher = textSearcher
         return AsyncStream { continuation in
             let regexOptions: NSRegularExpression.Options = query.caseSensitive ? [] : [.caseInsensitive]
             let matchesEverything = query.nameMask.isEmpty || query.nameMask == "*" || query.nameMask == "*.*"
@@ -317,12 +328,15 @@ public actor FileSearchEngine {
         // are scanned concurrently over their memory maps (F-151); everything else
         // sequentially. Order within a directory is not significant for results.
         let hasContentFilter = (query.contentText?.isEmpty == false) || (query.hexContent?.isEmpty == false)
-        // `searchPluginText` takes the sequential path on purpose. The concurrent one is a nonisolated
-        // memory-map scan that cannot await a provider, so routing plugin-text searches through it
-        // silently ignored the provider entirely — the flag looked like it did nothing. The mmap
-        // speed-up is beside the point here anyway: producing the text can mean running a decompiler,
-        // which dwarfs any scan it saves.
-        if fs.scheme == "file", hasContentFilter, !query.searchPluginText {
+        // Three paths, not two. The mmap fast path is a nonisolated static scan that cannot await a
+        // provider, so plugin-text searches must not go through it — routing them there ignored the
+        // provider entirely and the option looked like it did nothing. But the sequential fallback is
+        // the wrong home for them too: producing the text can mean starting a decompiler per file, so
+        // it is the one case where concurrency matters most.
+        if fs.scheme == "file", hasContentFilter, query.searchPluginText {
+            await matchProvidedTextConcurrently(files, query: query, compiled: compiled,
+                                                continuation: continuation, prefix: prefix)
+        } else if fs.scheme == "file", hasContentFilter {
             await matchFilesConcurrently(files, query: query, compiled: compiled,
                                          continuation: continuation, prefix: prefix)
         } else {
@@ -339,6 +353,46 @@ public actor FileSearchEngine {
                 await descendArchive(entry: f.entry, path: f.childPath, query: query, compiled: compiled,
                                      fs: fs, continuation: continuation, prefix: prefix,
                                      archiveOpener: archiveOpener, archiveDepth: archiveDepth)
+            }
+        }
+    }
+
+    /// Content-match `files` where a plugin may supply the text, several at a time.
+    ///
+    /// The work being overlapped is not a scan but an *engine run* — seconds each, and independent per
+    /// file. Bounded to the same width as the mmap path so a search cannot start dozens of decompiler
+    /// processes at once. Each task calls the actor-isolated matcher, whose `await` on the provider
+    /// releases the actor, so the runs really do overlap rather than queue.
+    private func matchProvidedTextConcurrently(
+        _ files: [(entry: VFSEntry, childPath: String)],
+        query: SearchQuery, compiled: CompiledQuery,
+        continuation: AsyncStream<SearchHit>.Continuation, prefix: String
+    ) async {
+        let maxConcurrent = 8
+        await withTaskGroup(of: SearchHit?.self) { group in
+            var active = 0
+            for f in files {
+                if Task.isCancelled { break }
+                guard Self.passesMetaFilters(f.entry, query: query, compiled: compiled) else { continue }
+                if active >= maxConcurrent, let result = await group.next() {
+                    active -= 1
+                    if let hit = result { continuation.yield(hit) }
+                }
+                let path = f.childPath
+                let display = Self.display(prefix, path)
+                group.addTask { [self] in
+                    let match = await firstContentMatch(path: path, query: query,
+                                                       contentRegex: compiled.contentRegex, fs: LocalFS())
+                    if query.contentNotContaining {
+                        return match == nil ? SearchHit(path: display) : nil
+                    }
+                    guard let match else { return nil }
+                    return SearchHit(path: display, matchLine: match.line, matchPreview: match.preview)
+                }
+                active += 1
+            }
+            for await result in group {
+                if let hit = result { continuation.yield(hit) }
             }
         }
     }
@@ -494,9 +548,18 @@ public actor FileSearchEngine {
         // addition to the byte search but a replacement: searching a .class for "hello" as bytes
         // finds the constant pool entry and misses everything the source says, so combining the two
         // would report line numbers from a file the user is not looking at.
-        if query.searchPluginText, fs.scheme == "file", let textProvider,
-           let text = await textProvider(path) {
-            return Self.textMatch(text: text, query: query, contentRegex: contentRegex)
+        if query.searchPluginText, fs.scheme == "file" {
+            // Ask the provider to search in place first — no copy, and therefore no cap on how much
+            // of the document is reachable. Only plain-text queries can be delegated: a regex or a
+            // hex pattern is the host's own dialect and not something a plugin promises to speak.
+            if let textSearcher, !query.useRegex, query.hexContent?.isEmpty ?? true,
+               let needle = query.contentText, !needle.isEmpty,
+               let hit = await textSearcher(path, needle, query.caseSensitive) {
+                return (hit.line, hit.preview)
+            }
+            if let textProvider, let text = await textProvider(path) {
+                return Self.textMatch(text: text, query: query, contentRegex: contentRegex)
+            }
         }
         if fs.scheme == "file", let slice = FileSlice(path: path) {
             return Self.matchInSlice(slice, query: query, contentRegex: contentRegex)

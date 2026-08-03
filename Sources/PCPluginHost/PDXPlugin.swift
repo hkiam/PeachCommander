@@ -58,6 +58,9 @@ public final class PDXPlugin: @unchecked Sendable {
                                                    UnsafeMutableRawPointer?, Int32, Int32) -> Int32
     private typealias SetValueFn = @convention(c) (UnsafeMutablePointer<CChar>?, Int32, Int32,
                                                    Int32, UnsafeMutableRawPointer?, Int32) -> Int32
+    private typealias SearchTextFn = @convention(c) (UnsafeMutablePointer<CChar>?, Int32,
+                                                    UnsafePointer<CChar>?, Int32,
+                                                    UnsafeMutablePointer<CChar>?, Int32) -> Int32
     private typealias CompareFn = @convention(c) (Int32, UnsafeMutablePointer<CChar>?,
                                                   UnsafeMutablePointer<CChar>?, Int32) -> Int32
 
@@ -134,6 +137,29 @@ public final class PDXPlugin: @unchecked Sendable {
             }
         }
         return Self.decode(type: rc, buffer: buf)
+    }
+
+    /// Ask the plugin to search its own full-text field, if it can (PC_FT_FULLTEXT + ContentSearchText).
+    ///
+    /// Returns the 1-based line of the first match and that line's text, or nil when the plugin does
+    /// not export the entry point — the caller then falls back to fetching the text. This exists to
+    /// take the host's buffer out of the picture: a decompiled class is a document, and copying one
+    /// into a fixed buffer is what limited how much of it could be searched.
+    public func searchText(fileName: String, fieldIndex: Int, needle: String,
+                          matchCase: Bool) -> (line: Int, preview: String)? {
+        guard let ptr = lib.symbol("ContentSearchText") else { return nil }
+        let fn = unsafeBitCast(ptr, to: SearchTextFn.self)
+        var lineBuf = [CChar](repeating: 0, count: Self.bufferCapacity)
+        let rc = fileName.withCString { fp -> Int32 in
+            needle.withCString { np -> Int32 in
+                lineBuf.withUnsafeMutableBufferPointer { lb in
+                    fn(UnsafeMutablePointer(mutating: fp), Int32(fieldIndex), np,
+                       matchCase ? Int32(PC_CONTENT_MATCHCASE) : 0, lb.baseAddress, Int32(Self.bufferCapacity))
+                }
+            }
+        }
+        guard rc > 0 else { return nil }
+        return (Int(rc), String(cString: lineBuf))
     }
 
     /// Write a field value back to `fileName` via the plugin's optional
@@ -230,6 +256,13 @@ public struct PDXContentProvider: ContentFieldProvider {
         }
         self.fields = fields
         self.fieldIndexByID = map
+    }
+
+    public func searchFullText(fieldID: String, forFileAt url: URL, needle: String,
+                               matchCase: Bool) async -> (line: Int, preview: String)? {
+        guard let index = fieldIndexByID[fieldID] else { return nil }
+        return plugin.searchText(fileName: url.path, fieldIndex: index, needle: needle,
+                                 matchCase: matchCase)
     }
 
     public func value(fieldID: String, forFileAt url: URL) async -> ContentValue {

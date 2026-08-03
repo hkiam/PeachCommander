@@ -71,6 +71,8 @@ There is a second, more direct route: put the cursor on a `.class` file or a who
 
 A second plugin does the same for .NET: F3 on a managed `.dll`, `.exe` or `.winmd` shows its types as C#, **Decompile Assembly to Sources** (⌘⇧N) puts them in a file panel, and the search can look inside an assembly the same way. It drives **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) for source, or **monodis** from Mono for IL — the .NET counterpart to `javap`. A native `.dll` has the same extension and no source to show, so the plugin checks before it opens and leaves those to the built-in viewer.
 
+The settings page has a **Check Engines** button, and it is worth pressing: “installed” elsewhere only means the file is on disk, and a Java engine on a Mac without a JDK is present and cannot run. The check asks each engine for its version and says which ones actually work.
+
 Android is covered too: F3 on a `.dex` file uses **jadx** (Apache 2.0, `brew install jadx`), which turns Dalvik bytecode back into Java. Adding it took one engine description — the same mechanism, a different format.
 
 The plugin is **off until you turn it on**, in Settings ▸ Plugins — most people never open a class file, and it needs an engine to be useful.

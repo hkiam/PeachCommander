@@ -42,6 +42,7 @@ final class DecompilerSettingsView: NSView {
     private let classTimeout = NSTextField()
     private let archiveTimeout = NSTextField()
     private let cacheAge = NSTextField()
+    private let cacheSize = NSTextField()
     private let cacheLabel = NSTextField(labelWithString: "")
     private let enginePopups: [(kind: String, popup: NSPopUpButton)]
     private let engineStatus = NSTextField(labelWithString: "")
@@ -90,7 +91,13 @@ final class DecompilerSettingsView: NSView {
         rows.append(engineStatus)
         let folder = NSButton(title: L("Engine Folder…"), target: self, action: #selector(openEngineFolder))
         folder.bezelStyle = .rounded
-        rows.append(folder)
+        let check = NSButton(title: L("Check Engines"), target: self, action: #selector(checkEngines))
+        check.bezelStyle = .rounded
+        check.toolTip = L("Run each engine's version command. “Installed” only means the file is there — a Java tool without a JDK is present and cannot run.")
+        let buttons = NSStackView(views: [folder, check])
+        buttons.orientation = .horizontal
+        buttons.spacing = 8
+        rows.append(buttons)
 
         rows.append(heading(L("Viewing and searching")))
         for (box, action) in [(claimArchives, #selector(optionsChanged)),
@@ -107,7 +114,7 @@ final class DecompilerSettingsView: NSView {
 
         rows.append(heading(L("Limits")))
         for (field, value) in [(classTimeout, options.classTimeout), (archiveTimeout, options.archiveTimeout),
-                               (cacheAge, options.cacheMaxAgeDays)] {
+                               (cacheAge, options.cacheMaxAgeDays), (cacheSize, options.cacheMaxSizeMB)] {
             field.stringValue = String(value)
             field.alignment = .right
             field.target = self
@@ -116,11 +123,13 @@ final class DecompilerSettingsView: NSView {
             field.widthAnchor.constraint(equalToConstant: 70).isActive = true
         }
         classTimeout.placeholderString = "0"
-        rows.append(labelled(L("Timeout for one class (s, 0 = engine default):"), classTimeout))
+        rows.append(labelled(String(format: L("Timeout for one %@ (s, 0 = engine default):"),
+                                    L(profile.unitKey)), classTimeout))
         rows.append(labelled(L("Timeout for a whole archive (s, 0 = engine default):"), archiveTimeout))
 
         rows.append(heading(L("Cache")))
         rows.append(labelled(L("Keep results for (days):"), cacheAge))
+        rows.append(labelled(L("Cache size limit (MB):"), cacheSize))
         cacheLabel.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
         cacheLabel.textColor = .secondaryLabelColor
         rows.append(cacheLabel)
@@ -180,10 +189,42 @@ final class DecompilerSettingsView: NSView {
         options.classTimeout = max(0, Int(classTimeout.stringValue) ?? 0)
         options.archiveTimeout = max(0, Int(archiveTimeout.stringValue) ?? 0)
         options.cacheMaxAgeDays = max(1, Int(cacheAge.stringValue) ?? 30)
+        options.cacheMaxSizeMB = max(1, Int(cacheSize.stringValue) ?? 500)
         // Written on every change rather than on an OK button: this is a settings pane inside the
         // host's window, and it has no OK of its own to hang a commit on.
         options.write(configRoot: configRootPath, profile: profile.id)
         refreshStatus()
+    }
+
+    /// Ask every engine to identify itself, and report what actually ran.
+    ///
+    /// Behind a button because it starts a process per engine. The answer is worth the wait: the
+    /// cheap check that fills the popups only asks whether the file exists, and on a Mac without a
+    /// JDK every Java engine passes that and none of them work.
+    @objc private func checkEngines() {
+        let kinds = profile.singleKinds.union(profile.treeKinds)
+        let engines = registry.engines.filter { engine in kinds.contains { engine.handles(kind: $0) } }
+        engineStatus.stringValue = L("Checking…")
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let results = engines.map { ($0.name, PluginDecompilerRunner.probe($0)) }
+            DispatchQueue.main.async {
+                guard let self else { return }
+                var lines: [String] = []
+                for (name, result) in results {
+                    switch result {
+                    case .works(let version):
+                        lines.append(String(format: L("✓ %@ — %@"), name, version))
+                    case .missing(let path):
+                        lines.append(String(format: L("• %@ — not installed (%@)"), name,
+                                            (path as NSString).lastPathComponent))
+                    case .broken(let reason):
+                        lines.append(String(format: L("✗ %@ — installed but cannot run: %@"), name, reason))
+                    }
+                }
+                self.engineStatus.stringValue = lines.joined(separator: "\n")
+                self.engineStatus.maximumNumberOfLines = max(3, lines.count)
+            }
+        }
     }
 
     @objc private func openEngineFolder() {

@@ -71,6 +71,8 @@ Er is een tweede, directere route: zet de cursor op een `.class`-bestand of op e
 
 Een tweede plugin doet hetzelfde voor .NET: F3 op een managed `.dll`, `.exe` of `.winmd` toont de types als C#, **Assembly naar broncode decompileren** (⌘⇧N) zet ze in een paneel, en de zoekfunctie kan net zo in een assembly kijken. Het stuurt **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) aan voor broncode, of **monodis** uit Mono voor IL — de .NET-tegenhanger van `javap`. Een native `.dll` heeft dezelfde extensie en geen broncode; de plugin controleert dat vóór het openen en laat die aan de ingebouwde viewer.
 
+De instellingenpagina heeft een knop **Engines controleren**, en die is het waard: 'geïnstalleerd' betekent elders alleen dat het bestand er is, en een Java-engine op een Mac zonder JDK is aanwezig en kan niet werken. De controle vraagt elke engine om zijn versie en zegt welke echt werken.
+
 Android hoort er ook bij: F3 op een `.dex`-bestand gebruikt **jadx** (Apache 2.0, `brew install jadx`), dat Dalvik-bytecode terugbrengt naar Java. Daarvoor was één enginebeschrijving genoeg — hetzelfde mechanisme, ander formaat.
 
 De plug-in staat **uit tot u hem aanzet**, bij Instellingen ▸ Plug-ins — de meeste mensen openen nooit een classbestand, en zonder engine heeft hij geen nut.

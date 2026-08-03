@@ -113,6 +113,12 @@ struct PluginDecompilerEngine: Equatable {
     /// known way to send one into a loop — and without a limit the view would say "Decompiling…"
     /// for ever with no way back.
     let timeout: Int
+    /// Arguments that make the tool identify itself, for the "does it actually run" check.
+    ///
+    /// For the JVM engines this asks *java*, not the decompiler: those are `-jar` payloads, and what
+    /// breaks is either the JVM or the jar — and the jar's absence is already reported separately. A
+    /// flag guess against the payload would confuse "no runtime" with "unknown option".
+    let versionArgs: [String]
     /// How to run this engine over a whole archive, or nil if it cannot do one.
     ///
     /// `javap` is the honest nil here: it prints one class and has no notion of a JAR.
@@ -149,6 +155,12 @@ struct PluginDecompilerProfile {
     let language: PluginSyntaxLanguage
     /// Extension for a single decompiled file the panel command writes ("java", "cs").
     let sourceExtension: String
+    /// What one unit of work is called, for labels like "timeout for one …".
+    ///
+    /// A localization key, not a finished word: the settings page passes it through `L()` so each
+    /// language supplies its own. The .NET page used to say "one class", which is not what .NET calls
+    /// the thing it decompiles.
+    let unitKey: String
     /// Extensions that count as *result* files in a tree.
     ///
     /// Not cosmetic: the runner decides "did the engine produce anything" by counting these, so a
@@ -202,6 +214,7 @@ extension PluginDecompilerEngine {
                 enginePath: jar("cfr.jar"), output: .stdout,
                 note: "CFR — MIT licence. Download cfr.jar from https://github.com/leibnitz27/cfr/releases",
                 timeout: defaultTimeout,
+                versionArgs: ["-version"],
                 archive: PluginDecompilerArchiveSupport(
                     args: ["-jar", "{engine}", "{input}", "--outputdir", "{outdir}"],
                     timeout: PluginDecompilerArchiveSupport.defaultTimeout)),
@@ -214,6 +227,7 @@ extension PluginDecompilerEngine {
                 // Same invocation as the single-file case — it already writes into a directory.
                 // Given a JAR, a FernFlower-derived engine may write a *JAR of sources* rather than
                 // a tree; the reader expands one if it finds it, so either shape works.
+                versionArgs: ["-version"],
                 archive: PluginDecompilerArchiveSupport(
                     args: ["-jar", "{engine}", "{input}", "{outdir}"],
                     timeout: PluginDecompilerArchiveSupport.defaultTimeout)),
@@ -223,6 +237,7 @@ extension PluginDecompilerEngine {
                 enginePath: jar("procyon.jar"), output: .stdout,
                 note: "Procyon — Apache-2.0 licence. Download procyon-decompiler.jar from "
                     + "https://github.com/mstrobel/procyon/releases", timeout: defaultTimeout,
+                versionArgs: ["-version"],
                 archive: PluginDecompilerArchiveSupport(
                     args: ["-jar", "{engine}", "-jar", "{input}", "-o", "{outdir}"],
                     timeout: PluginDecompilerArchiveSupport.defaultTimeout)),
@@ -236,6 +251,7 @@ extension PluginDecompilerEngine {
                 note: "jadx — Apache-2.0 licence. Install with `brew install jadx`, or download "
                     + "from https://github.com/skylot/jadx/releases",
                 timeout: 120,   // a dex holds a whole app; 30 s is not enough
+                versionArgs: ["--version"],
                 archive: PluginDecompilerArchiveSupport(
                     args: ["--no-res", "-d", "{outdir}", "{input}"],
                     timeout: PluginDecompilerArchiveSupport.defaultTimeout)),
@@ -252,6 +268,7 @@ extension PluginDecompilerEngine {
                 note: "ILSpy — MIT licence. Install with `dotnet tool install -g ilspycmd` "
                     + "(see https://github.com/icsharpcode/ILSpy).",
                 timeout: defaultTimeout,
+                versionArgs: ["--version"],
                 archive: PluginDecompilerArchiveSupport(
                     args: ["-p", "-o", "{outdir}", "{input}"],
                     timeout: PluginDecompilerArchiveSupport.defaultTimeout)),
@@ -264,6 +281,7 @@ extension PluginDecompilerEngine {
                 note: "monodis ships with Mono — MIT licence. Install with `brew install mono`.",
                 timeout: defaultTimeout,
                 // One long listing, not a tree; an assembly's IL is a single document.
+                versionArgs: ["--version"],
                 archive: nil),
             PluginDecompilerEngine(
                 id: "javap", name: "javap (bytecode)", kinds: ["class"],
@@ -272,6 +290,7 @@ extension PluginDecompilerEngine {
                 note: "javap ships with any JDK — no download needed, but it shows bytecode "
                     + "rather than Java source.", timeout: defaultTimeout,
                 // Nothing to put here: javap prints one class and has no notion of an archive.
+                versionArgs: ["-version"],
                 archive: nil),
         ]
     }
@@ -363,7 +382,8 @@ struct PluginDecompilerRegistry {
                                      // Inherited too, so a CFR profile that only adds a flag to the
                                      // single-class line keeps working on whole JARs.
                                      ("archive_args", base.archive?.args.joined(separator: " ") ?? ""),
-                                     ("archive_timeout", base.archive.map { String($0.timeout) } ?? "")]
+                                     ("archive_timeout", base.archive.map { String($0.timeout) } ?? ""),
+                                     ("version_args", base.versionArgs.joined(separator: " "))]
                 where fields[key] == nil && !value.isEmpty {
                     fields[key] = value
                 }
@@ -395,6 +415,7 @@ struct PluginDecompilerRegistry {
                 // Absent `archive_args` means "this engine does one class at a time" rather than
                 // "use the single-file arguments on a JAR" — guessing the latter would run a tool
                 // with flags its author never intended and blame the result on the user's file.
+                versionArgs: PluginDecompilerRegistry.splitArguments(fields["version_args"] ?? "--version"),
                 archive: fields["archive_args"].map { line in
                     PluginDecompilerArchiveSupport(
                         args: splitArguments(line),
@@ -508,6 +529,11 @@ enum PluginDecompilerCache {
     /// the settings page can change it (F-352).
     static let maximumAge: TimeInterval = 30 * 24 * 3600
 
+    static func maximumBytes(configRoot: String, profile: String = "") -> Int64 {
+        Int64(PluginDecompilerOptions.read(configRoot: configRoot, profile: profile).cacheMaxSizeMB)
+            * 1024 * 1024
+    }
+
     static func maximumAge(configRoot: String, profile: String = "") -> TimeInterval {
         TimeInterval(PluginDecompilerOptions.read(configRoot: configRoot, profile: profile).cacheMaxAgeDays)
             * 24 * 3600
@@ -555,7 +581,17 @@ enum PluginDecompilerCache {
                      profile: String = "") -> String? {
         guard let key = key(path: path, engine: engine) else { return nil }
         let file = (directory(configRoot: configRoot, profile: profile) as NSString).appendingPathComponent(key)
-        return try? String(contentsOfFile: file, encoding: .utf8)
+        guard let text = try? String(contentsOfFile: file, encoding: .utf8) else { return nil }
+        touch(file)
+        return text
+    }
+
+    /// Mark an entry as used, so pruning measures idle time rather than age.
+    ///
+    /// Writing the modification date is enough: nothing else reads it, and the *input's* mtime — which
+    /// does matter — lives in the key, not here.
+    static func touch(_ path: String) {
+        try? FileManager.default.setAttributes([.modificationDate: Date()], ofItemAtPath: path)
     }
 
     static func write(_ source: String, path: String, engine: PluginDecompilerEngine, configRoot: String,
@@ -565,7 +601,8 @@ enum PluginDecompilerCache {
         try? FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
         try? source.write(toFile: (dir as NSString).appendingPathComponent(key),
                           atomically: true, encoding: .utf8)
-        prune(dir, maximumAge: maximumAge(configRoot: configRoot, profile: profile))
+        prune(dir, maximumAge: maximumAge(configRoot: configRoot, profile: profile),
+              maximumBytes: maximumBytes(configRoot: configRoot, profile: profile))
     }
 
     // MARK: Whole-archive results
@@ -618,7 +655,8 @@ enum PluginDecompilerCache {
         // Prune the folder this result sits in, which is the cache root — derived from `dir` rather
         // than rebuilt from configRoot, so the two can never disagree about where the cache is.
         prune((dir as NSString).deletingLastPathComponent,
-              maximumAge: maximumAge(configRoot: configRoot, profile: profile))
+              maximumAge: maximumAge(configRoot: configRoot, profile: profile),
+              maximumBytes: maximumBytes(configRoot: configRoot, profile: profile))
     }
 
     /// How many results are cached, and how much disk they take.
@@ -645,16 +683,50 @@ enum PluginDecompilerCache {
 
     /// Drop entries older than `maximumAge`. Cheap enough to run on every write: the folder holds
     /// one small file per (file, engine) pair a user has actually looked at.
-    private static func prune(_ dir: String, maximumAge: TimeInterval = maximumAge) {
+    private static func prune(_ dir: String, maximumAge: TimeInterval = maximumAge,
+                             maximumBytes: Int64 = 0) {
         let fm = FileManager.default
         guard let names = try? fm.contentsOfDirectory(atPath: dir) else { return }
         let cutoff = Date().addingTimeInterval(-maximumAge)
-        for name in names {
+        // Entries with their last-used time and size, so both rules can be applied in one pass over
+        // the folder rather than two walks of a possibly large tree.
+        var entries: [(path: String, used: Date, bytes: Int64)] = []
+        for name in names where !name.hasPrefix(".") {
             let file = (dir as NSString).appendingPathComponent(name)
-            guard let attrs = try? fm.attributesOfItem(atPath: file),
-                  let modified = attrs[.modificationDate] as? Date, modified < cutoff else { continue }
-            try? fm.removeItem(atPath: file)
+            guard let attrs = try? fm.attributesOfItem(atPath: file) else { continue }
+            let used = (attrs[.modificationDate] as? Date) ?? .distantPast
+            if used < cutoff {
+                try? fm.removeItem(atPath: file)
+                continue
+            }
+            entries.append((file, used, sizeOfItem(file)))
         }
+        guard maximumBytes > 0 else { return }
+        var total = entries.reduce(Int64(0)) { $0 + $1.bytes }
+        guard total > maximumBytes else { return }
+        // Least recently used first: the entry nobody has opened in longest is the cheapest to lose.
+        for entry in entries.sorted(by: { $0.used < $1.used }) {
+            try? fm.removeItem(atPath: entry.path)
+            total -= entry.bytes
+            if total <= maximumBytes { break }
+        }
+    }
+
+    /// Bytes an entry occupies, whether it is one file or a whole tree.
+    private static func sizeOfItem(_ path: String) -> Int64 {
+        let fm = FileManager.default
+        var isDir: ObjCBool = false
+        guard fm.fileExists(atPath: path, isDirectory: &isDir) else { return 0 }
+        if !isDir.boolValue {
+            return (try? fm.attributesOfItem(atPath: path))?[.size] as? Int64 ?? 0
+        }
+        guard let e = fm.enumerator(atPath: path) else { return 0 }
+        var total: Int64 = 0
+        for case let rel as String in e {
+            let full = (path as NSString).appendingPathComponent(rel)
+            total += (try? fm.attributesOfItem(atPath: full))?[.size] as? Int64 ?? 0
+        }
+        return total
     }
 }
 
@@ -772,7 +844,7 @@ enum PluginDecompilerRunner {
                                               input: input, outDir: outputDirectory, toolPath: toolPath) {
             return .failure(error)
         }
-        expandNestedArchives(in: outputDirectory)
+        expandNestedArchives(in: outputDirectory, extensions: extensions)
         let files = sourceFiles(in: outputDirectory, extensions: extensions)
         guard !files.isEmpty else { return .failure(.emptyOutput(engine: engine.name)) }
         return .success(files)
@@ -802,11 +874,16 @@ enum PluginDecompilerRunner {
     /// FernFlower-derived engines given a JAR answer with a JAR — of `.java` files, which is the
     /// right content in the wrong container. Unpacking it here keeps that quirk out of both the
     /// engine descriptors and the view: whatever an engine's habit is, the cache holds a tree.
-    private static func expandNestedArchives(in directory: String) {
+    private static func expandNestedArchives(in directory: String,
+                                             extensions: Set<String> = sourceExtensions) {
         let fm = FileManager.default
         guard let names = try? fm.contentsOfDirectory(atPath: directory) else { return }
         for name in names where ["jar", "zip"].contains((name as NSString).pathExtension.lowercased()) {
             let full = (directory as NSString).appendingPathComponent(name)
+            // Look before unpacking. An engine may also drop a *resource* archive next to the source,
+            // and the first version of this expanded every archive it found and then deleted it —
+            // destroying data the engine had extracted for the user.
+            guard archiveHoldsSources(full, extensions: extensions) else { continue }
             let process = Process()
             process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
             process.arguments = ["-qq", "-o", full, "-d", directory]
@@ -815,7 +892,29 @@ enum PluginDecompilerRunner {
             process.standardInput = FileHandle.nullDevice
             guard (try? process.run()) != nil else { return }
             process.waitUntilExit()
-            if process.terminationStatus == 0 { try? fm.removeItem(atPath: full) }
+            // The archive stays. Its contents are now beside it, and deleting the original is not
+            // this code's decision to make.
+        }
+    }
+
+    /// Whether `archive` contains at least one file this profile would call a result.
+    private static func archiveHoldsSources(_ archive: String, extensions: Set<String>) -> Bool {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
+        process.arguments = ["-Z1", archive]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = FileHandle.nullDevice
+        process.standardInput = FileHandle.nullDevice
+        guard (try? process.run()) != nil else { return false }
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        guard process.terminationStatus == 0, let listing = String(data: data, encoding: .utf8) else {
+            return false
+        }
+        return listing.split(separator: "\n").contains {
+            extensions.contains(($0.trimmingCharacters(in: .whitespaces) as NSString)
+                .pathExtension.lowercased())
         }
     }
 
@@ -824,7 +923,7 @@ enum PluginDecompilerRunner {
     /// Shared by the single-file and whole-archive paths so there is exactly one place that spawns a
     /// process: the watchdog, the closed stdin and the concurrent pipe reads are each a bug that was
     /// fixed once, and a second copy would be a second place to forget them.
-    private static func execute(_ engine: PluginDecompilerEngine, args template: [String], timeout: Int,
+    static func execute(_ engine: PluginDecompilerEngine, args template: [String], timeout: Int,
                                 input: String, outDir: String?,
                                 toolPath: String) -> Result<String, PluginDecompileError> {
         let args = template.map { arg -> String in
@@ -888,6 +987,46 @@ enum PluginDecompilerRunner {
         // Only stdout. What a directory-writing engine produced is the caller's business, because the
         // two callers want it in different shapes: one concatenated string, or a tree left on disk.
         return .success(String(data: outData, encoding: .utf8) ?? "")
+    }
+
+    /// What asking an engine to identify itself produced.
+    ///
+    /// "Installed" used to mean "the file is there", which is not the same claim. On a Mac without a
+    /// JDK, /usr/bin/javap exists — Apple ships a stub — and prints "Unable to locate a Java Runtime"
+    /// when run. The settings page reported it as installed and the user found out by choosing it.
+    enum PluginDecompilerProbeResult: Equatable {
+        /// The tool ran and said something about itself.
+        case works(version: String)
+        /// The tool is not on disk at all, or its payload is missing.
+        case missing(path: String)
+        /// The tool exists but could not run — the stub case, and the one worth reporting.
+        case broken(reason: String)
+
+        var isWorking: Bool { if case .works = self { return true }; return false }
+    }
+
+    /// Run `engine`'s version command and report what happened.
+    ///
+    /// Deliberately not called on a hot path: it starts a process per engine, which is why it sits
+    /// behind a button rather than running whenever a settings page opens.
+    static func probe(_ engine: PluginDecompilerEngine) -> PluginDecompilerProbeResult {
+        guard let toolPath = engine.resolvedTool else { return .missing(path: engine.tool) }
+        if let missing = engine.missingPath { return .missing(path: missing) }
+        switch execute(engine, args: engine.versionArgs, timeout: 10,
+                       input: "", outDir: nil, toolPath: toolPath) {
+        case .success(let out):
+            // Some tools print their version to stderr; an empty stdout with a zero exit is still a
+            // tool that ran, so it counts as working rather than as a mystery.
+            let line = out.split(separator: "\n").first.map(String.init)?
+                .trimmingCharacters(in: .whitespaces) ?? ""
+            return .works(version: line.isEmpty ? engine.name : line)
+        case .failure(let error):
+            if case .engineFailed(_, _, let message) = error {
+                let line = message.split(separator: "\n").first.map(String.init) ?? ""
+                return .broken(reason: line.isEmpty ? error.userMessage : line)
+            }
+            return .broken(reason: error.userMessage)
+        }
     }
 
     /// Read one file out of a whole-archive result.
@@ -1076,8 +1215,13 @@ struct PluginDecompilerOptions: Equatable {
     /// Seconds for one class, and for a whole archive. Zero means "use the engine's own value".
     var classTimeout: Int = 0
     var archiveTimeout: Int = 0
-    /// Days a cached result survives.
+    /// Days a cached result survives *since it was last used* — see `PluginDecompilerCache.touch`.
     var cacheMaxAgeDays: Int = 30
+    /// Megabytes the cache may occupy. The oldest-used results go first once it is over.
+    ///
+    /// Age alone was the wrong rule on its own: a JAR opened every day expired after thirty days while
+    /// a one-off 40 MB result sat there for the same thirty.
+    var cacheMaxSizeMB: Int = 500
 
     static func file(configRoot: String) -> String {
         (PluginDecompilerRegistry.engineDirectory(configRoot: configRoot) as NSString)
@@ -1130,6 +1274,7 @@ struct PluginDecompilerOptions: Equatable {
             case "classtimeout": options.classTimeout = Int(value) ?? 0
             case "archivetimeout": options.archiveTimeout = Int(value) ?? 0
             case "maxagedays": options.cacheMaxAgeDays = Int(value) ?? 30
+            case "maxsizemb": options.cacheMaxSizeMB = Int(value) ?? 500
             default: break
             }
         }
@@ -1155,7 +1300,8 @@ struct PluginDecompilerOptions: Equatable {
             "SearchDecompile = \(allowSearchDecompile ? 1 : 0)   ; may decompile while the host searches",
             "ClassTimeout    = \(classTimeout)   ; seconds for one class (0 = the engine's own value)",
             "ArchiveTimeout  = \(archiveTimeout)   ; seconds for a whole archive (0 = the engine's own)",
-            "MaxAgeDays      = \(cacheMaxAgeDays)   ; how long a cached result survives",
+            "MaxAgeDays      = \(cacheMaxAgeDays)   ; days a result survives since last use",
+            "MaxSizeMB       = \(cacheMaxSizeMB)   ; megabytes the cache may occupy",
         ].joined(separator: "\n") + "\n"
         try? FileManager.default.createDirectory(atPath: (path as NSString).deletingLastPathComponent,
                                                  withIntermediateDirectories: true)
@@ -1194,6 +1340,7 @@ extension PluginDecompilerEngine {
             id: id, name: name, kinds: kinds, tool: tool, args: args, enginePath: enginePath,
             output: output, note: note,
             timeout: options.classTimeout > 0 ? options.classTimeout : timeout,
+            versionArgs: versionArgs,
             archive: archive.map {
                 PluginDecompilerArchiveSupport(
                     args: $0.args,
@@ -1221,6 +1368,7 @@ extension PluginDecompilerProfile {
         treeKinds: ["dll", "exe", "winmd", "netmodule"],
         language: .csharp,
         sourceExtension: "cs",
+        unitKey: "type",
         resultExtensions: ["cs", "vb", "fs", "il", "txt"],
         bytecodeMarkers: [".assembly", "// Metadata version"],
         settingsViewId: "plugin.netdecompiler.settings",
@@ -1234,6 +1382,7 @@ extension PluginDecompilerProfile {
         treeKinds: ["jar", "apk", "dex"],
         language: .java,
         sourceExtension: "java",
+        unitKey: "class",
         resultExtensions: ["java", "kt", "smali", "txt", "scala", "groovy"],
         bytecodeMarkers: ["Compiled from"],
         settingsViewId: "plugin.javadecompiler.settings",
@@ -1261,8 +1410,20 @@ enum PluginDecompilerFormats {
     static func isManagedAssembly(_ path: String) -> Bool {
         guard let handle = FileHandle(forReadingAtPath: path) else { return false }
         defer { try? handle.close() }
-        guard let head = try? handle.read(upToCount: 4096), head.count > 0x40 else { return false }
-        let bytes = [UInt8](head)
+        // A 4 KB prefix covers the usual DOS stub but is not a rule: a linker may put a much larger
+        // one in front of the PE header, and reading a fixed prefix would call such an assembly
+        // native. Read the header, then seek to wherever it says the PE actually starts.
+        guard let head = try? handle.read(upToCount: 0x40), head.count == 0x40 else { return false }
+        var bytes = [UInt8](head)
+        guard bytes[0] == 0x4D, bytes[1] == 0x5A else { return false }              // "MZ"
+        let peOffsetValue = Int(bytes[0x3C]) | Int(bytes[0x3D]) << 8
+            | Int(bytes[0x3E]) << 16 | Int(bytes[0x3F]) << 24
+        guard peOffsetValue > 0, peOffsetValue < 64 * 1024 * 1024 else { return false }
+        // 264 bytes reaches past the optional header's data directories for both PE32 and PE32+.
+        guard (try? handle.seek(toOffset: UInt64(peOffsetValue))) != nil,
+              let headers = try? handle.read(upToCount: 264), headers.count > 24 else { return false }
+        // Re-base the offsets on the slice just read, so the arithmetic below stays as written.
+        bytes = [UInt8](repeating: 0, count: peOffsetValue) + [UInt8](headers)
         func u16(_ i: Int) -> Int? {
             guard i + 1 < bytes.count else { return nil }
             return Int(bytes[i]) | Int(bytes[i + 1]) << 8
@@ -1271,8 +1432,8 @@ enum PluginDecompilerFormats {
             guard i + 3 < bytes.count else { return nil }
             return Int(bytes[i]) | Int(bytes[i + 1]) << 8 | Int(bytes[i + 2]) << 16 | Int(bytes[i + 3]) << 24
         }
-        guard bytes[0] == 0x4D, bytes[1] == 0x5A else { return false }              // "MZ"
-        guard let peOffset = u32(0x3C), peOffset > 0, peOffset + 24 < bytes.count else { return false }
+        let peOffset = peOffsetValue
+        guard peOffset + 24 < bytes.count else { return false }
         guard bytes[peOffset] == 0x50, bytes[peOffset + 1] == 0x45,
               bytes[peOffset + 2] == 0, bytes[peOffset + 3] == 0 else { return false }  // "PE\0\0"
         let optionalHeader = peOffset + 24

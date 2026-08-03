@@ -201,6 +201,9 @@ final class DecompiledArchiveView: DecompilerListerView {
         if PluginDecompilerCache.treeIsComplete(cacheDir) {
             let found = PluginDecompilerRunner.sourceFiles(in: cacheDir, extensions: profile.resultExtensions)
             if !found.isEmpty {
+                // Reusing a result counts as using it, or pruning would measure age since the engine
+                // ran and drop the archive somebody opens every day.
+                PluginDecompilerCache.touch(cacheDir)
                 log.info("\(engine.id, privacy: .public): tree served from cache, \(found.count) file(s)")
                 present(files: found, directory: cacheDir, engine: engine, fromCache: true)
                 return

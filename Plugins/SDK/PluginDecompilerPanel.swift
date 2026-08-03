@@ -109,7 +109,9 @@ private func archiveDirectory(engine: PluginDecompilerEngine, path: String, conf
                                                        profile: profile.id) else {
         return .failure(.notReadable("This file could not be read."))
     }
-    if PluginDecompilerCache.treeIsComplete(dir), !PluginDecompilerRunner.sourceFiles(in: dir, extensions: profile.resultExtensions).isEmpty {
+    if PluginDecompilerCache.treeIsComplete(dir),
+       !PluginDecompilerRunner.sourceFiles(in: dir, extensions: profile.resultExtensions).isEmpty {
+        PluginDecompilerCache.touch(dir)
         return .success(dir)
     }
     switch PluginDecompilerRunner.runArchive(engine, input: path, outputDirectory: dir,

@@ -71,6 +71,8 @@ Existuje druhá, priamejšia cesta: postavte kurzor na súbor `.class` alebo na 
 
 Druhý zásuvný modul robí to isté pre .NET: F3 na spravovanej `.dll`, `.exe` alebo `.winmd` zobrazí jej typy ako C#, **Dekompilovať assembly do zdrojov** (⌘⇧N) ich vloží do panela a hľadanie dokáže nazrieť do assembly rovnakým spôsobom. Riadi **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) pre zdrojový kód alebo **monodis** z Mona pre IL — obdobu `javap` v .NET. Natívna `.dll` má rovnakú príponu a žiadny zdroj na zobrazenie, takže modul to pred otvorením skontroluje a prenechá ju vstavanému prehliadaču.
 
+Stránka nastavení má tlačidlo **Skontrolovať enginy** a stojí za to ho stlačiť: „nainštalované“ inde znamená len to, že súbor existuje, a engine pre Javu na Macu bez JDK je prítomný a nemôže bežať. Kontrola sa každého enginu spýta na verziu a povie, ktoré skutočne fungujú.
+
 Pokrytý je aj Android: F3 na súbore `.dex` použije **jadx** (Apache 2.0, `brew install jadx`), ktorý prevádza bajtkód Dalvik späť na Javu. Stačil jediný opis enginu — rovnaký mechanizmus, iný formát.
 
 Modul je **vypnutý, kým ho nezapnete**, v Nastavenia ▸ Zásuvné moduly — väčšina ľudí súbor .class nikdy neotvorí a bez enginu aj tak nič nezmôže.

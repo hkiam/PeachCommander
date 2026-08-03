@@ -2716,14 +2716,22 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                     // (F-351). Passed only when asked for: producing it can run a decompiler, and the
                     // engine must not pay that on an ordinary search.
                     var textProvider: FileSearchEngine.TextProvider?
+                    var textSearcher: FileSearchEngine.TextSearcher?
                     if searchPluginText {
                         textProvider = { path in
                             await registry.fullText(forFileAt: URL(fileURLWithPath: path))
                         }
+                        // Preferred when a plugin can search its own result (F-354): nothing is copied,
+                        // so the whole document is reachable rather than as much as a buffer holds.
+                        textSearcher = { path, needle, matchCase in
+                            await registry.searchFullText(forFileAt: URL(fileURLWithPath: path),
+                                                          needle: needle, matchCase: matchCase)
+                        }
                     }
                     for await hit in await engine.search(query, fs: fs,
                                                          archiveOpener: searchArchives ? opener : nil,
-                                                         textProvider: textProvider) {
+                                                         textProvider: textProvider,
+                                                         textSearcher: textSearcher) {
                         // Content-field predicate (F-157): resolve the field on the
                         // (local) hit and skip files that don't satisfy the condition.
                         if let pred = contentPredicate, fs is LocalFS {

@@ -854,6 +854,23 @@ features:
       input, the engine id and its flags but not the engine payload, so installing a better cfr.jar or
       ILSpy kept serving the old output. And the tree view's search-generation counter was written on
       the main thread and read from the scan thread with nothing but a comment between them.
+      A second pass then worked through the review's own proposal list, and two of the five proposals
+      turned out to be non-problems — measured rather than argued. Enter already browses a .jar and a
+      .nupkg (the host recognises zip content by its bytes, not by an extension list), so nothing had
+      to be added for either. What was real: "installed" only ever meant "the file exists", and on a
+      Mac without a JDK every Java engine passed that check and none could run — a Check Engines
+      button now asks each engine for its version and reports which work, which fail and why. Result
+      archives an engine drops beside the source are only unpacked when they hold source files, and
+      never deleted. The managed-assembly check seeks to the PE header instead of reading a fixed 4 KB
+      prefix, so a large DOS stub no longer makes an assembly look native. The .NET settings page says
+      "one type" where Java says "one class". Provider-backed content searches run several files at
+      once again — the work being overlapped is an engine run, and making it sequential to fix a
+      correctness bug had left the cost behind. The cache measures idle time rather than age (an entry
+      is touched when reused) and honours a size budget, evicting least-recently-used first. And the
+      buffer that limited full-text search is gone from the picture: ContentSearchText lets a plugin
+      search its own result in place and report the line, so nothing is copied — verified against a
+      marker 33,575 bytes into a decompiled class, found at line 404. A regex or hex query is never
+      delegated, since those are the host's dialect and not something a plugin promised to speak.
 
   # ───────────────────────── Settings ─────────────────────────
   - id: settings

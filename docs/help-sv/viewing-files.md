@@ -71,6 +71,8 @@ Det finns en andra, mer direkt väg: ställ markören på en `.class`-fil eller 
 
 En andra insticksmodul gör samma sak för .NET: F3 på en hanterad `.dll`, `.exe` eller `.winmd` visar dess typer som C#, **Dekompilera assembly till källkod** (⌘⇧N) lägger dem i en ruta, och sökningen kan se in i en assembly på samma sätt. Den kör **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) för källkod, eller **monodis** ur Mono för IL — .NET:s motsvarighet till `javap`. En native `.dll` har samma filändelse och ingen källkod att visa, så modulen kontrollerar det före öppning och lämnar den till den inbyggda visaren.
 
+Inställningssidan har en knapp **Kontrollera motorer**, och den är värd att trycka på: ”installerad” betyder på andra ställen bara att filen finns, och en Java-motor på en Mac utan JDK finns och kan inte köra. Kontrollen frågar varje motor efter dess version och säger vilka som faktiskt fungerar.
+
 Android täcks också: F3 på en `.dex`-fil använder **jadx** (Apache 2.0, `brew install jadx`), som gör Dalvik-bytekod till Java igen. Det krävdes en enda motorbeskrivning — samma mekanism, annat format.
 
 Modulen är **av tills du slår på den**, under Inställningar ▸ Insticksmoduler — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.

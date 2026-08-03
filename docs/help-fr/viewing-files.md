@@ -71,6 +71,8 @@ Il existe une seconde voie, plus directe : placez le curseur sur un fichier `.cl
 
 Un second plugin fait de même pour .NET : F3 sur un `.dll`, `.exe` ou `.winmd` managé affiche ses types en C#, **Décompiler l’assembly en sources** (⌘⇧N) les place dans un volet, et la recherche peut regarder dans un assembly de la même façon. Il pilote **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) pour le source, ou **monodis** de Mono pour l’IL — l’équivalent .NET de `javap`. Un `.dll` natif porte la même extension sans source à montrer : le plugin vérifie avant d’ouvrir et le laisse à la visionneuse intégrée.
 
+La page de réglages a un bouton **Vérifier les moteurs**, et il vaut la peine : « installé » ailleurs signifie seulement que le fichier est là, et un moteur Java sur un Mac sans JDK est présent et ne peut pas fonctionner. La vérification demande sa version à chaque moteur et indique lesquels marchent réellement.
+
 Android est également couvert : F3 sur un fichier `.dex` utilise **jadx** (Apache 2.0, `brew install jadx`), qui reconvertit le bytecode Dalvik en Java. Il a suffi d’une description de moteur — même mécanisme, autre format.
 
 Le module est **désactivé tant que vous ne l’activez pas**, dans Réglages ▸ Modules — la plupart des gens n’ouvrent jamais de fichier .class, et sans moteur il ne sert à rien.
