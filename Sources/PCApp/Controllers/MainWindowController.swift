@@ -5942,6 +5942,18 @@ final class PanelView: NSView {
         statusBarHeightConstraint = statusBar.heightAnchor.constraint(equalToConstant: Metrics.statusBarHeight)
         tabBarHeightConstraint = tabBar.heightAnchor.constraint(equalToConstant: 26)
         pathBarHeightConstraint = pathBar.heightAnchor.constraint(equalToConstant: 28)
+        // The four bars total 102 pt and the chain from the panel's top to its bottom is otherwise
+        // fully determined, so a panel shorter than that has no solution — which happens during window
+        // setup, before the real frame arrives, and would happen again in a very short window. Almost
+        // every conflict the regression harness reports traces back here.
+        //
+        // The bars are what should yield: the list between them has already collapsed to nothing by
+        // then, and chrome giving up a point is invisible where an unsatisfiable chain is a log full of
+        // broken constraints. 999 rather than a lower value so nothing else can outrank them.
+        for constraint in [driveBarHeightConstraint, statusBarHeightConstraint,
+                           tabBarHeightConstraint, pathBarHeightConstraint] {
+            constraint?.priority = .init(999)
+        }
         NSLayoutConstraint.activate([
             tabBar.topAnchor.constraint(equalTo: topAnchor),
             tabBar.leadingAnchor.constraint(equalTo: leadingAnchor),

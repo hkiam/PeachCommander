@@ -128,11 +128,18 @@ final class PreviewPanelView: NSView {
             infoLabel.leadingAnchor.constraint(equalTo: infoContent.leadingAnchor, constant: 10),
             infoLabel.trailingAnchor.constraint(equalTo: infoContent.trailingAnchor, constant: -10),
         ]
+        // The mode switcher spans the panel with 6 pt on each side, and a hidden panel is `width == 0`
+        // — 12 pt of inset plus a control cannot fit in nothing. Same story as the inset constraints
+        // below, and missed the first time because this pair was added later with the paging control.
+        let switcherSides = [
+            segmented.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
+            segmented.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
+        ]
+        for side in switcherSides { side.priority = .init(999) }
+        NSLayoutConstraint.activate(switcherSides)
         NSLayoutConstraint.activate(inset)
         NSLayoutConstraint.activate([
             segmented.topAnchor.constraint(equalTo: topAnchor, constant: 6),
-            segmented.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
-            segmented.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
 
             infoScroll.topAnchor.constraint(equalTo: segmented.bottomAnchor, constant: 6),
             infoScroll.leadingAnchor.constraint(equalTo: leadingAnchor),
