@@ -36,7 +36,15 @@ class StatusBarView: NSView {
 
     private func setup() {
         translatesAutoresizingMaskIntoConstraints = false
-        heightAnchor.constraint(equalToConstant: Metrics.statusBarHeight).isActive = true
+        // A *default*, not a rule. Every owner of this bar constrains its height as well — the panel
+        // to 24 so it can animate it to 0 when the bar is hidden, the viewer window to 22 — and a
+        // required self-height contradicted both. Hiding the status bar has therefore always been a
+        // contradiction (constant 0 against this 24), and the viewer's 22 against this 24 a permanent
+        // one. At `defaultLow` an owner's constraint always wins, and a bar used without one still
+        // gets the height it should have.
+        let intrinsicHeight = heightAnchor.constraint(equalToConstant: Metrics.statusBarHeight)
+        intrinsicHeight.priority = .defaultLow
+        intrinsicHeight.isActive = true
 
         // Give the bar a visible background (it was transparent, so an as-yet-empty
         // status line looked "missing"). Matches the drive bar's background.

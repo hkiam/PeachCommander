@@ -448,9 +448,14 @@ public final class FindFilesWindowController: NSWindowController {
         page.addSubview(stack)
         let stackBottom = stack.bottomAnchor.constraint(lessThanOrEqualTo: page.bottomAnchor)
         stackBottom.priority = .init(999)
+        // Same reasoning one dimension over: a page that is not the visible tab has no width either,
+        // and the rows inside carry the stack's own minimum spacings, which cannot be lowered from
+        // out here. Pinning the leading edge as a rule made those minimums the reported conflict.
+        let stackLeading = stack.leadingAnchor.constraint(equalTo: page.leadingAnchor)
+        stackLeading.priority = .init(999)
         NSLayoutConstraint.activate([
             stack.topAnchor.constraint(equalTo: page.topAnchor),
-            stack.leadingAnchor.constraint(equalTo: page.leadingAnchor),
+            stackLeading,
             stack.trailingAnchor.constraint(lessThanOrEqualTo: page.trailingAnchor),
             // An advisory bound, not a rule. Without it a tab whose rows outgrow its height drew over
             // whatever was below and nothing reported it; required, it became the loudest conflict in

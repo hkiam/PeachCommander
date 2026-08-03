@@ -6,12 +6,12 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| main-window | 4 | 4 | DriveBarView | `main-window.png` |
-| details-view | 4 | 4 | DriveBarView | `details-view.png` |
-| brief-view | 4 | 4 | DriveBarView | `brief-view.png` |
-| tree-view | 4 | 4 | DriveBarView | `tree-view.png` |
-| preview-panel | 5 | 5 | DriveBarView, PanelTreeView | `preview-panel.png` |
-| find-files | 7 | 7 | DriveBarView, PanelTreeView, unknown | `find-files.png` |
-| settings | 5 | 5 | DriveBarView, PanelTreeView | `settings.png` |
-| viewer-text | 6 | 6 | DriveBarView, PanelTreeView, SymbolSidebar | `viewer-text.png` |
-| accessibility | 5 | — | DriveBarView, PanelTreeView | `accessibility.png` |
+| main-window | 0 | 4 | — | `main-window.png` |
+| details-view | 0 | 4 | — | `details-view.png` |
+| brief-view | 0 | 4 | — | `brief-view.png` |
+| tree-view | 0 | 4 | — | `tree-view.png` |
+| preview-panel | 0 | 5 | — | `preview-panel.png` |
+| find-files | 0 | 7 | — | `find-files.png` |
+| settings | 0 | 5 | — | `settings.png` |
+| viewer-text | 0 | 6 | — | `viewer-text.png` |
+| accessibility | 0 | 5 | — | `accessibility.png` |

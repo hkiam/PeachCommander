@@ -5988,6 +5988,11 @@ final class PanelView: NSView {
             filterLabel.centerYAnchor.constraint(equalTo: pathBar.centerYAnchor)
         ])
         treeWidthConstraint = treeView.widthAnchor.constraint(equalToConstant: 0)
+        // How wide the tree column *should* be, not a rule about the world: the column and the file
+        // list together span the panel edge to edge, and during setup the panel is still zero wide, so
+        // as a required constraint 200 pt has no solution. The last conflict shape left in every panel
+        // scenario was this one.
+        treeWidthConstraint?.priority = .init(999)
         treeWidthConstraint?.isActive = true
     }
 

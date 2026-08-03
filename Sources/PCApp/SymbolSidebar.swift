@@ -59,10 +59,18 @@ final class SymbolSidebar: NSView {
         scroll.translatesAutoresizingMaskIntoConstraints = false
         addSubview(scroll)
 
-        NSLayoutConstraint.activate([
-            search.topAnchor.constraint(equalTo: topAnchor, constant: 5),
+        // A hidden sidebar is `width == 0`, and 12 pt of inset plus a search field does not fit in
+        // nothing. Third place in this app with the same shape — the preview panel's mode switcher and
+        // the Find dialog's tab pages were the others — so it is a pattern, not an accident: an inset
+        // is how something should look, and a collapsed container is a real state.
+        let searchSides = [
             search.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
             search.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
+        ]
+        for side in searchSides { side.priority = .init(999) }
+        NSLayoutConstraint.activate([
+            search.topAnchor.constraint(equalTo: topAnchor, constant: 5),
+            searchSides[0], searchSides[1],
             scroll.topAnchor.constraint(equalTo: search.bottomAnchor, constant: 5),
             scroll.leadingAnchor.constraint(equalTo: leadingAnchor),
             scroll.trailingAnchor.constraint(equalTo: trailingAnchor),
