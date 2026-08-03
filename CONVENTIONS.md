@@ -76,8 +76,16 @@ Dependency direction: `PCApp -> everything`, engine modules never import PCApp,
   standard views in a VM and holds each one's conflict count against
   `docs/metadata/layout-baseline.json`, which may only go down. Run it after touching
   a view's constraints; `--update-baseline` records an improvement, never a regression.
+  The baseline is **zero everywhere**, so any conflict at all is a regression.
   Note that AppKit prints only the *required* constraints of a conflict — lowering one
   to 999 makes it the escape valve and it disappears from the log.
+- **A size is a preference; a container's zero size is a fact.** Nearly every conflict
+  in this app was a fixed width, height or inset stated as a *required* rule against a
+  container that is legitimately zero-sized — a hidden panel, a tab page that is not
+  the visible one, a view during window setup. Give such constraints priority 999 and
+  the layout is unchanged while the contradiction disappears. And never let a view
+  constrain its own size when its owners also do: `StatusBarView` did both, which made
+  hiding it a permanent contradiction.
 - **A hand-drawn control is invisible until it says otherwise.** A view that draws
   its own controls and handles `mouseDown` exposes *nothing* to assistive technology
   — not an unlabelled button, nothing — and the screen looks identical either way.

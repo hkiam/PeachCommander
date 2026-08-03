@@ -916,6 +916,31 @@ features:
       and then dropped the second drive bar's Favorites chip, because identity-based cycle detection
       over freshly created elements re-used a released address.
 
+  - id: layout-conflict-free
+    name: Layout ohne Auto-Layout-Konflikte
+    name_en: Layout free of Auto Layout conflicts
+    category: developer
+    audiences: [internal]
+    status: stable
+    source: { modules: [PCApp], types: [PanelView, StatusBarView, PanelTreeView, SymbolSidebar] }
+    documentation: { integrated_help: false, website: false }
+    notes: >-
+      Every scenario in Tools/vm/regress.py reports zero conflicts, and the baseline records zero, so
+      any conflict is now a regression rather than a number to beat. Getting from 37+16+15… to zero
+      took four causes, and they were all one mistake in different places: a fixed size stated as a
+      *required* rule against a container that is legitimately zero-sized. The panel's four bars total
+      102 pt in a fully determined chain; the status bar's four labels span it edge to edge; the tree
+      column asks for 200 pt while the panel is still zero wide during setup; and three separate
+      views inset a control 6 pt on both sides of a container that collapses to nothing (preview
+      panel, symbol sidebar, Find dialog tab pages). All are priority 999 now — the layout is
+      pixel-identical, checked by diffing screenshots before and after.
+      The root cause of most of them was a duplicate: StatusBarView constrained its *own* height to 24
+      at required priority while every owner constrained it too — the panel to 24 so it can animate to
+      0, the viewer window to 22. So hiding the status bar had always been a contradiction and the
+      viewer's 22 a permanent one. The self-height is `defaultLow` now, which lets an owner win and
+      still gives an unconstrained bar a sensible height; hiding both bars was then verified to be
+      conflict-free and to actually hide them.
+
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
     name: Einstellungen (15 Seiten)
