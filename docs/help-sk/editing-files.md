@@ -34,6 +34,14 @@ Okraj zobrazuje čísla riadkov, riadok s kurzorom svetlejšie než ostatné; tl
 - Kliknite na tlačidlo mapy na zobrazenie alebo skrytie minimapy, zmenšeného prehľadu celého súboru, na ktorý môžete kliknúť na posun.
 - Použite ponuku Kódovanie na paneli nástrojov, ak bol súbor uložený v inom ako predvolenom kódovaní textu.
 
+## Filtrovanie príkazom shellu
+
+Kliknite na **Filtrovať…** (alebo stlačte Shift+Cmd+\), aby ste vybraný text poslali cez príkaz a nahradili ho tým, čo príkaz vypíše. Ak nie je nič vybrané, prejde celý dokument. Z nástrojov, ktoré už poznáte, sa tak stanú príkazy editora: `sort -u` odstráni duplicitné riadky, `jq .` sprehľadní odpoveď vo formáte JSON, `column -t` zarovná tabuľku, `base64 -d` dekóduje blok, `openssl x509 -noout -text` vypíše certifikát v čitateľnej podobe.
+
+Príkaz beží vo vašom prihlasovacom shelle: `PATH`, aliasy aj funkcie fungujú presne ako v Termináli a rúry aj úvodzovky znamenajú to, čo očakávate. Pracovným adresárom je zložka upravovaného súboru, takže relatívne cesty sa vyhodnotia tam, kde to čakáte. Použité príkazy sa pamätajú a nabudúce sa ponúknu v rozbaľovacom zozname.
+
+Ak príkaz zlyhá, váš text zostane nedotknutý a chybové hlásenie príkazu sa zobrazí v stavovom riadku — syntaktická chyba nástroja `jq` nikdy neskončí vložená do vášho súboru. Príkaz, ktorý nič nevypíše, vyprázdni výber; presne na to sa filtrovanie nástrojom `grep` používa a Cmd+Z ho vráti. Príkaz, ktorý sa nedokončí, sa po dvadsiatich sekundách ukončí.
+
 ## Formátovanie súboru
 
 Kliknite v editore na **Formátovať** (rovnaký príkaz je aj v prehliadači) a súbor sa znovu odsadí. Peach Commander vyberie formátovač podľa prípony a v stavovom riadku ukáže, ktorý to bol, napríklad *formatted (jq)* — takže vždy viete, čo výsledok stvárnilo.
@@ -90,6 +98,7 @@ Formátovače môžu dodávať aj zásuvné moduly — pozri [Plugins](plugins.m
 | Prejsť na riadok | Cmd+L |
 | Skočiť na zodpovedajúcu zátvorku | Cmd+\ |
 | Späť / Znova (šestnástkový editor) | Cmd+Z / Cmd+Shift+Z |
+| Filtrovať výber príkazom | Shift+Cmd+\ |
 
 ## Poznámky
 

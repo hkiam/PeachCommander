@@ -34,6 +34,14 @@ The gutter shows line numbers, with the line you are on brighter than the rest; 
 - Click the map button to show or hide the minimap, a scaled overview of the whole file you can click to scroll.
 - Use the Encoding menu in the toolbar if the file was saved in something other than the default text encoding.
 
+## Filter through a shell command
+
+Click **Filter…** (or press Shift+Cmd+\) to send the selected text through a command and replace it with whatever the command prints. With nothing selected, the whole document goes through. This turns the tools you already know into editor commands: `sort -u` to remove duplicate lines, `jq .` to make a JSON payload readable, `column -t` to line up a table, `base64 -d` to decode a blob, `openssl x509 -noout -text` to read a certificate.
+
+The command runs in your login shell, so your `PATH`, your aliases, and your functions work exactly as they do in Terminal, and pipes and quoting mean what you expect them to. It runs in the folder of the file you are editing, so relative paths resolve where you would expect. The commands you have used are remembered and offered in the dropdown the next time.
+
+If the command fails, your text is left untouched and the command's own error message appears in the status line — a `jq` syntax error never ends up pasted into your file. A command that prints nothing empties the selection, which is exactly what filtering with `grep` is for, and Cmd+Z brings it back. A command that never finishes is stopped after twenty seconds.
+
 ## Formatting a file
 
 Click **Format** in the editor (or use the same command in the viewer) to re-indent the file. Peach Commander picks a formatter based on the file's extension and shows which one it used in the status line, for example *formatted (jq)* — so you can always tell what shaped the result.
@@ -89,6 +97,7 @@ Plugins can contribute formatters too — see [Plugins](plugins.md).
 | Show/hide symbol outline | Cmd+Shift+O |
 | Go to line | Cmd+L |
 | Jump to matching bracket | Cmd+\ |
+| Filter the selection through a command | Shift+Cmd+\ |
 | Undo / redo (hex editor) | Cmd+Z / Cmd+Shift+Z |
 
 ## Notes

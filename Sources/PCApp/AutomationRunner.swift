@@ -78,6 +78,8 @@ extension MainWindowController {
             case "dump":       await dumpActivePanel(to: arg)
             case "symbols":    dumpSymbols(arg)
             case "editdump":   await editDump(arg)
+            case "editfilter": await editFilter(arg)   // editfilter <src>|<command>|<out> (F-356)
+            case "editfilterdlg": await editFilterDialog(arg)   // editfilterdlg <src> (F-356)
             case "view":       openViewer(arg)
             case "menudump":   dumpMenu(arg)
             case "a11ydump":   dumpAccessibility(arg)   // a11ydump <outfile> (I19 T06)
@@ -401,6 +403,31 @@ extension MainWindowController {
         }.joined(separator: "\n") + "\n"
         try? text.write(toFile: a[1], atomically: true, encoding: .utf8)
         NSLog("[automation] editdump \(cells.count) rendered rows → \(a[1])")
+    }
+
+    /// Open `src` in the editor, pipe the whole document through `command`, and write what the editor
+    /// shows afterwards to `out` (F-356). The window is left open so the screenshot shows the result.
+    private func editFilter(_ arg: String) async {
+        let a = arg.split(separator: "|").map(String.init)
+        guard a.count == 3 else { NSLog("[automation] editfilter needs <src>|<command>|<out>"); return }
+        let win = EditorWindowController(path: a[0])
+        automationEditors.append(win)
+        win.showWindow(nil)
+        win.window?.makeKeyAndOrderFront(nil)
+        try? await Task.sleep(nanoseconds: 800_000_000)   // let the load and the first highlight settle
+        let report = await win.automationFilter(a[1])
+        try? report.write(toFile: a[2], atomically: true, encoding: .utf8)
+        NSLog("[automation] editfilter \(a[1]) → \(a[2])")
+    }
+
+    /// Open `src` in the editor and put the filter prompt on screen for a screenshot (F-356).
+    private func editFilterDialog(_ arg: String) async {
+        let win = EditorWindowController(path: arg)
+        automationEditors.append(win)
+        win.showWindow(nil)
+        win.window?.makeKeyAndOrderFront(nil)
+        try? await Task.sleep(nanoseconds: 600_000_000)
+        win.automationShowFilterDialog()
     }
 
     /// Write the active panel's current path and visible entry names to `file`, so a

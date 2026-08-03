@@ -34,6 +34,14 @@ Marginalen visar radnummer, med raden du står på ljusare än de övriga; knapp
 - Klicka på kartknappen för att visa eller dölja minikartan, en skalad översikt över hela filen som du kan klicka på för att rulla.
 - Använd menyn Kodning i verktygsfältet om filen sparades i något annat än standardtextkodningen.
 
+## Filtrera genom ett skalkommando
+
+Klicka på **Filtrera…** (eller tryck på Shift+Cmd+\) för att skicka den markerade texten genom ett kommando och ersätta den med vad kommandot skriver ut. Är inget markerat går hela dokumentet igenom. Så blir de verktyg du redan känner till kommandon i redigeraren: `sort -u` tar bort dubblettrader, `jq .` gör ett JSON-svar läsbart, `column -t` rätar upp en tabell, `base64 -d` avkodar ett block, `openssl x509 -noout -text` visar ett certifikat i klartext.
+
+Kommandot körs i ditt inloggningsskal: din `PATH`, dina alias och dina funktioner fungerar precis som i Terminal, och rör och citattecken betyder det du förväntar dig. Arbetskatalogen är mappen för filen du redigerar, så relativa sökvägar löses där du väntar dig. De kommandon du har använt sparas och erbjuds i listan nästa gång.
+
+Om kommandot misslyckas lämnas din text orörd och kommandots eget felmeddelande visas i statusraden — ett `jq`-syntaxfel hamnar aldrig inklistrat i din fil. Ett kommando som inte skriver ut något tömmer markeringen, och det är precis vad filtrering med `grep` är till för; Cmd+Z hämtar tillbaka den. Ett kommando som aldrig blir klart stoppas efter tjugo sekunder.
+
 ## Formatera en fil
 
 Klicka på **Formatera** i redigeraren (samma kommando finns i visaren) för att indentera om filen. Peach Commander väljer formaterare efter filändelsen och visar i statusraden vilken det blev, till exempel *formatted (jq)* — så du vet alltid vad som format resultatet.
@@ -90,6 +98,7 @@ Insticksmoduler kan också bidra med formaterare — se [Plugins](plugins.md).
 | Gå till rad | Cmd+L |
 | Hoppa till matchande klammer | Cmd+\ |
 | Ångra / gör om (hex-redigerare) | Cmd+Z / Cmd+Shift+Z |
+| Filtrera markeringen genom ett kommando | Shift+Cmd+\ |
 
 ## Anteckningar
 

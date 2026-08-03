@@ -34,6 +34,14 @@ Marginesw pokazuje numery wierszy, wiersz z kursorem jaśniej niż pozostałe; p
 - Kliknij przycisk mapy, aby pokazać lub ukryć minimapę, skalowany przegląd całego pliku, w który możesz kliknąć, aby przewinąć.
 - Użyj menu Kodowanie na pasku narzędzi, jeśli plik został zapisany w innym niż domyślne kodowaniu tekstu.
 
+## Filtrowanie przez polecenie powłoki
+
+Kliknij **Filtruj…** (lub naciśnij Shift+Cmd+\), aby przesłać zaznaczony tekst przez polecenie i zastąpić go tym, co polecenie wypisze. Jeśli nic nie jest zaznaczone, przechodzi cały dokument. W ten sposób narzędzia, które już znasz, stają się poleceniami edytora: `sort -u` usuwa powtórzone wiersze, `jq .` czyni odpowiedź JSON czytelną, `column -t` wyrównuje tabelę, `base64 -d` dekoduje blok, `openssl x509 -noout -text` pokazuje certyfikat w czytelnej postaci.
+
+Polecenie działa w Twojej powłoce logowania: `PATH`, aliasy i funkcje działają dokładnie tak jak w Terminalu, a potoki i cudzysłowy znaczą to, czego się spodziewasz. Katalogiem roboczym jest folder edytowanego pliku, więc ścieżki względne rozwiązują się tam, gdzie tego oczekujesz. Użyte polecenia są zapamiętywane i następnym razem proponowane na liście rozwijanej.
+
+Jeśli polecenie zawiedzie, Twój tekst pozostaje nietknięty, a komunikat błędu polecenia pojawia się w wierszu stanu — błąd składni narzędzia `jq` nigdy nie trafi wklejony do Twojego pliku. Polecenie, które nic nie wypisze, opróżnia zaznaczenie i właśnie do tego służy filtrowanie narzędziem `grep`; Cmd+Z je przywraca. Polecenie, które się nie kończy, jest zatrzymywane po dwudziestu sekundach.
+
 ## Formatowanie pliku
 
 Kliknij **Formatuj** w edytorze (to samo polecenie jest w przeglądarce), aby ponownie wciąć plik. Peach Commander wybiera formater na podstawie rozszerzenia i pokazuje w pasku stanu, którego użył, na przykład *formatted (jq)* — zawsze wiesz, co ukształtowało wynik.
@@ -90,6 +98,7 @@ Wtyczki też mogą dostarczać formatery — zobacz [Plugins](plugins.md).
 | Przejdź do wiersza | Cmd+L |
 | Przeskocz do pasującego nawiasu | Cmd+\ |
 | Cofnij / Ponów (edytor szesnastkowy) | Cmd+Z / Cmd+Shift+Z |
+| Filtruj zaznaczenie przez polecenie | Shift+Cmd+\ |
 
 ## Uwagi
 

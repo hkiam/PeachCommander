@@ -34,6 +34,14 @@ El margen muestra los números de línea, con la línea del cursor más clara qu
 - Haga clic en el botón del mapa para mostrar u ocultar el minimapa, una vista general a escala de todo el archivo en la que puede hacer clic para desplazarse.
 - Use el menú Codificación de la barra de herramientas si el archivo se guardó en algo distinto a la codificación de texto predeterminada.
 
+## Filtrar con un comando de shell
+
+Haga clic en **Filtrar…** (o pulse Shift+Cmd+\) para enviar el texto seleccionado a un comando y sustituirlo por lo que el comando imprima. Si no hay nada seleccionado, pasa todo el documento. Así, las herramientas que ya conoce se convierten en comandos del editor: `sort -u` elimina líneas duplicadas, `jq .` hace legible una respuesta JSON, `column -t` alinea una tabla, `base64 -d` descodifica un bloque, `openssl x509 -noout -text` muestra un certificado en claro.
+
+El comando se ejecuta en su shell de inicio de sesión: su `PATH`, sus alias y sus funciones actúan igual que en Terminal, y las tuberías y las comillas significan lo que usted espera. El directorio de trabajo es la carpeta del archivo que está editando, de modo que las rutas relativas se resuelven donde cabe esperar. Los comandos que ha usado se recuerdan y se ofrecen en la lista desplegable la próxima vez.
+
+Si el comando falla, su texto queda intacto y el mensaje de error del propio comando aparece en la línea de estado: un error de sintaxis de `jq` nunca acaba pegado en su archivo. Un comando que no imprime nada vacía la selección, que es exactamente para lo que sirve filtrar con `grep`, y Cmd+Z la recupera. Un comando que no termina se detiene a los veinte segundos.
+
 ## Formatear un archivo
 
 Pulse **Formatear** en el editor (el mismo comando existe en el visor) para volver a indentar el archivo. Peach Commander elige un formateador según la extensión y muestra en la barra de estado cuál usó, por ejemplo *formatted (jq)* — así siempre sabe qué dio forma al resultado.
@@ -90,6 +98,7 @@ Los plugins también pueden aportar formateadores — véase [Plugins](plugins.m
 | Ir a la línea | Cmd+L |
 | Saltar al corchete correspondiente | Cmd+\ |
 | Deshacer / rehacer (editor hexadecimal) | Cmd+Z / Cmd+Shift+Z |
+| Filtrar la selección con un comando | Shift+Cmd+\ |
 
 ## Notas
 

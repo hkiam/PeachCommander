@@ -34,6 +34,14 @@ Margen viser linjenumre, med linja du står på lysere enn de andre; knappen ved
 - Klikk kart-knappen for å vise eller skjule minikartet, en skalert oversikt over hele filen som du kan klikke på for å rulle.
 - Bruk Tegnkoding-menyen i verktøylinjen hvis filen ble lagret i noe annet enn standard tekstkoding.
 
+## Filtrer gjennom en shell-kommando
+
+Klikk på **Filtrer…** (eller trykk Shift+Cmd+\) for å sende den valgte teksten gjennom en kommando og erstatte den med det kommandoen skriver ut. Er ingenting valgt, sendes hele dokumentet. Slik blir verktøyene du allerede kjenner til kommandoer i editoren: `sort -u` fjerner dupliserte linjer, `jq .` gjør et JSON-svar lesbart, `column -t` retter opp en tabell, `base64 -d` dekoder en blokk, `openssl x509 -noout -text` viser et sertifikat i klartekst.
+
+Kommandoen kjører i innloggingsskallet ditt: `PATH`, aliasene og funksjonene dine virker akkurat som i Terminal, og rør og hermetegn betyr det du forventer. Arbeidsmappen er mappen til filen du redigerer, slik at relative stier løses der du venter det. Kommandoene du har brukt, huskes og tilbys i nedtrekkslisten neste gang.
+
+Hvis kommandoen feiler, står teksten din urørt, og kommandoens egen feilmelding vises i statuslinjen — en `jq`-syntaksfeil havner aldri limt inn i filen din. En kommando som ikke skriver ut noe, tømmer utvalget, og det er nettopp det filtrering med `grep` er til for; Cmd+Z henter det tilbake. En kommando som aldri blir ferdig, stoppes etter tjue sekunder.
+
 ## Formatere en fil
 
 Klikk **Formater** i redigereren (samme kommando finnes i viseren) for å rykke inn fila på nytt. Peach Commander velger formaterer ut fra filendelsen og viser i statuslinja hvilken det ble, for eksempel *formatted (jq)* — så du vet alltid hva som formet resultatet.
@@ -90,6 +98,7 @@ Programtillegg kan også bidra med formaterere — se [Plugins](plugins.md).
 | Gå til linje | Cmd+L |
 | Hopp til tilhørende parentes | Cmd+\ |
 | Angre / gjør om (heksredigering) | Cmd+Z / Cmd+Shift+Z |
+| Filtrer utvalget gjennom en kommando | Shift+Cmd+\ |
 
 ## Merknader
 

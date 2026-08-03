@@ -6,12 +6,14 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| main-window | 0 | 4 | — | `main-window.png` |
-| details-view | 0 | 4 | — | `details-view.png` |
-| brief-view | 0 | 4 | — | `brief-view.png` |
-| tree-view | 0 | 4 | — | `tree-view.png` |
-| preview-panel | 0 | 5 | — | `preview-panel.png` |
-| find-files | 0 | 7 | — | `find-files.png` |
-| settings | 0 | 5 | — | `settings.png` |
-| viewer-text | 0 | 6 | — | `viewer-text.png` |
-| accessibility | 0 | 5 | — | `accessibility.png` |
+| main-window | 0 | 0 | — | `main-window.png` |
+| details-view | 0 | 0 | — | `details-view.png` |
+| brief-view | 0 | 0 | — | `brief-view.png` |
+| tree-view | 0 | 0 | — | `tree-view.png` |
+| preview-panel | 0 | 0 | — | `preview-panel.png` |
+| find-files | 0 | 0 | — | `find-files.png` |
+| settings | 0 | 0 | — | `settings.png` |
+| viewer-text | 0 | 0 | — | `viewer-text.png` |
+| editor-filter | 0 | — | — | `editor-filter.png` |
+| editor-filter-dialog | 0 | — | — | `editor-filter-dialog.png` |
+| accessibility | 0 | 0 | — | `accessibility.png` |

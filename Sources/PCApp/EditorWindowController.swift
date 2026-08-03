@@ -22,6 +22,8 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     private lazy var marks = DocumentMarksPanel(content: scrollView, host: self)
     private var markDialog: MarkColorDialog?
     private var gotoDialog: InputDialog?
+    /// Held while the filter prompt is up (a modal window controller must outlive `runModal`).
+    private var filterDialog: EditorFilterDialog?
     /// Neon incremental tree-sitter highlighter (nil for non-tree-sitter files,
     /// which use the debounced one-shot lexer path instead).
     private var neon: NeonEditorHighlighter?
@@ -102,6 +104,12 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         bracketButton.keyEquivalent = "\\"
         bracketButton.keyEquivalentModifierMask = .command
         bracketButton.toolTip = String(localized: "Jump to matching bracket (⌘\\)")
+        let filterButton = NSButton(title: String(localized: "Filter…"), target: self,
+                                    action: #selector(promptFilterCommand))
+        filterButton.bezelStyle = .rounded
+        filterButton.keyEquivalent = "\\"
+        filterButton.keyEquivalentModifierMask = [.command, .shift]
+        filterButton.toolTip = String(localized: "Send the selection through a shell command (⇧⌘\\)")
         let findButton = NSButton(title: String(localized: "Find/Replace"), target: nil,
                                   action: #selector(NSTextView.performTextFinderAction(_:)))
         findButton.bezelStyle = .rounded
@@ -135,6 +143,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         toolbar.addArrangedSubview(saveButton)
         toolbar.addArrangedSubview(formatButton)
         toolbar.addArrangedSubview(bracketButton)
+        toolbar.addArrangedSubview(filterButton)
         toolbar.addArrangedSubview(findButton)
         toolbar.addArrangedSubview(NSTextField(labelWithString: String(localized: "Encoding:")))
         toolbar.addArrangedSubview(encodingPopup)
@@ -264,6 +273,31 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Diagnostic: read the strings currently rendered into the sidebar rows (call
     /// after the parse has settled; no forced reload, so it captures the live state).
     func automationRenderedSymbols() -> [String] { symbolSidebar.renderedCellStrings() }
+
+    /// Diagnostic: put the filter prompt on screen, so its layout can be photographed and its
+    /// Auto Layout conflicts counted (F-356). A sheet over a visible window, so it does not block.
+    func automationShowFilterDialog() { promptFilterCommand() }
+
+    /// Diagnostic: run `command` over the whole document, then report what the editor now shows.
+    ///
+    /// Reads the text view back *and* leaves the window on screen: the text view is the thing that
+    /// held a whole document and rendered none of it once, so the string alone is not evidence.
+    func automationFilter(_ command: String) async -> String {
+        textView.setSelectedRange(NSRange(location: 0, length: 0))
+        let outcome = await EditorTextFilter.apply(
+            command: command, to: textView,
+            workingDirectory: (path as NSString).deletingLastPathComponent)
+        if case .replaced = outcome { afterProgrammaticEdit() }
+        let status: String
+        switch outcome {
+        case .replaced(let lines): status = "replaced lines=\(lines)"
+        case .unchanged: status = "unchanged"
+        case .failed(let message): status = "failed: \(message)"
+        }
+        return "outcome=\(status)\nundo=\(textView.undoManager?.canUndo == true)\n"
+            + "gutter=\(lineNumbers?.ruleThickness ?? 0)\nstatus=\(statusLabel.stringValue)\n"
+            + "--- text ---\n\(textView.string)"
+    }
     #endif
 
     private func setSymbolSidebar(visible: Bool) {
@@ -436,7 +470,59 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         } catch {
             NSSound.beep(); return
         }
-        textView.string = result.text
+        // Through `shouldChangeText`, not `textView.string = …`: assigning the string clears the undo
+        // stack, so ⌘Z after a reformat did nothing and the original was unrecoverable.
+        let whole = NSRange(location: 0, length: (textView.string as NSString).length)
+        EditorTextFilter.replace(whole, with: result.text, in: textView,
+                                 actionName: String(localized: "Format"))
+        afterProgrammaticEdit()
+    }
+
+    // MARK: - Filter through a shell command (F-356)
+
+    /// Ask for a command line and pipe the selection through it.
+    ///
+    /// The selection, or the whole document when there is none — see `EditorTextFilter.apply`.
+    @objc func promptFilterCommand() {
+        let selected = textView.selectedRange().length
+        let scope = selected > 0
+            ? String(format: String(localized: "Applies to the selection (%d characters)."), selected)
+            : String(localized: "Nothing is selected — applies to the whole document.")
+        let history = TextPipeHistory(configRoot: ConfigPaths.resolve().root)
+        let dialog = EditorFilterDialog(entries: history.load(), scope: scope)
+        dialog.onConfirm = { [weak self] command in
+            guard let self else { return }
+            // Remembered before running: a command that failed because of a typo in *its* arguments is
+            // the one the user wants back in the field to correct.
+            history.remember(command)
+            // The pipe runs off-main; say so, because a `find`-shaped command takes a moment and an
+            // unchanged window would look like nothing happened.
+            self.statusLabel.stringValue = String(format: String(localized: "Running %@ …"), command)
+            Task { @MainActor in
+                let outcome = await EditorTextFilter.apply(
+                    command: command, to: self.textView,
+                    workingDirectory: (self.path as NSString).deletingLastPathComponent)
+                switch outcome {
+                case .failed(let message):
+                    self.statusLabel.stringValue = message
+                    NSSound.beep()
+                case .unchanged:
+                    self.statusLabel.stringValue = String(localized: "The command changed nothing.")
+                case .replaced(let lines):
+                    self.afterProgrammaticEdit()
+                    self.statusLabel.stringValue = String(
+                        format: String(localized: "%1$@ — %2$d line(s)"), command, lines)
+                }
+            }
+        }
+        filterDialog = dialog
+        dialog.runModalDialog(over: window)
+    }
+
+    /// Bring everything that watches the text back in step after a wholesale, in-code edit.
+    ///
+    /// `NSText.didChangeNotification` covers typing; a programmatic replacement drives these by hand.
+    private func afterProgrammaticEdit() {
         refreshLineNumbers()
         isDirty = true
         refreshHighlight()

@@ -34,6 +34,14 @@ La gouttière affiche les numéros de ligne, celle du curseur plus claire que le
 - Cliquez sur le bouton carte pour afficher ou masquer la minicarte, un aperçu à l'échelle de tout le fichier sur lequel vous pouvez cliquer pour faire défiler.
 - Utilisez le menu Encodage de la barre d'outils si le fichier a été enregistré avec un encodage autre que celui par défaut.
 
+## Filtrer par une commande shell
+
+Cliquez sur **Filtrer…** (ou appuyez sur Shift+Cmd+\) pour envoyer le texte sélectionné dans une commande et le remplacer par ce que la commande affiche. Si rien n’est sélectionné, tout le document y passe. Les outils que vous connaissez déjà deviennent ainsi des commandes de l’éditeur : `sort -u` supprime les lignes en double, `jq .` rend une réponse JSON lisible, `column -t` aligne un tableau, `base64 -d` décode un bloc, `openssl x509 -noout -text` affiche un certificat en clair.
+
+La commande s’exécute dans votre shell de connexion : votre `PATH`, vos alias et vos fonctions agissent exactement comme dans le Terminal, et les tubes et les guillemets ont le sens attendu. Le répertoire de travail est celui du fichier en cours d’édition, si bien que les chemins relatifs se résolvent là où vous l’attendez. Les commandes utilisées sont mémorisées et proposées dans la liste déroulante la fois suivante.
+
+Si la commande échoue, votre texte reste intact et le message d’erreur de la commande apparaît dans la barre d’état : une erreur de syntaxe `jq` ne se retrouve jamais collée dans votre fichier. Une commande qui n’affiche rien vide la sélection — c’est exactement à cela que sert un filtrage avec `grep` — et Cmd+Z la restitue. Une commande qui ne se termine pas est arrêtée au bout de vingt secondes.
+
 ## Formater un fichier
 
 Cliquez sur **Formater** dans l’éditeur (la même commande existe dans la visionneuse) pour réindenter le fichier. Peach Commander choisit un formateur d’après l’extension et indique dans la barre d’état lequel a servi, par exemple *formatted (jq)* — vous savez donc toujours ce qui a façonné le résultat.
@@ -90,6 +98,7 @@ Les plugins peuvent aussi fournir des formateurs — voir [Plugins](plugins.md).
 | Aller à la ligne | Cmd+L |
 | Sauter à la parenthèse correspondante | Cmd+\ |
 | Annuler / rétablir (éditeur hexa) | Cmd+Z / Cmd+Maj+Z |
+| Filtrer la sélection par une commande | Shift+Cmd+\ |
 
 ## Remarques
 

@@ -34,6 +34,14 @@ Margenen viser linjenumre, med linjen du står på lysere end de andre; knappen 
 - Klik på kortknappen for at vise eller skjule minikortet, et skaleret overblik over hele filen, som du kan klikke på for at rulle.
 - Brug menuen Kodning i værktøjslinjen, hvis filen blev gemt i noget andet end standardtekstkodningen.
 
+## Filtrer gennem en shell-kommando
+
+Klik på **Filtrer…** (eller tryk på Shift+Cmd+\) for at sende den markerede tekst gennem en kommando og erstatte den med det, kommandoen udskriver. Er intet markeret, sendes hele dokumentet. Sådan bliver de værktøjer, du allerede kender, til kommandoer i editoren: `sort -u` fjerner dubletlinjer, `jq .` gør et JSON-svar læsbart, `column -t` retter en tabel op, `base64 -d` afkoder en blok, `openssl x509 -noout -text` viser et certifikat i klartekst.
+
+Kommandoen kører i din login-shell: din `PATH`, dine aliaser og dine funktioner virker præcis som i Terminal, og pipes og citationstegn betyder det, du forventer. Arbejdsmappen er mappen med den fil, du redigerer, så relative stier opløses, hvor du forventer det. De kommandoer, du har brugt, huskes og tilbydes i rullelisten næste gang.
+
+Hvis kommandoen fejler, står din tekst uberørt, og kommandoens egen fejlmeddelelse vises i statuslinjen — en `jq`-syntaksfejl ender aldrig indsat i din fil. En kommando, der ikke udskriver noget, tømmer markeringen, og det er netop, hvad filtrering med `grep` er til for; Cmd+Z henter den tilbage. En kommando, der aldrig bliver færdig, standses efter tyve sekunder.
+
 ## Formatér en fil
 
 Klik på **Formatér** i editoren (samme kommando findes i fremviseren) for at indrykke filen igen. Peach Commander vælger formatterer ud fra filendelsen og viser i statuslinjen hvilken det blev, for eksempel *formatted (jq)* — så du altid ved hvad der formede resultatet.
@@ -90,6 +98,7 @@ Plugins kan også bidrage med formatterere — se [Plugins](plugins.md).
 | Gå til linje | Cmd+L |
 | Spring til matchende parentes | Cmd+\ |
 | Fortryd / gentag (hex-editor) | Cmd+Z / Cmd+Shift+Z |
+| Filtrer markeringen gennem en kommando | Shift+Cmd+\ |
 
 ## Bemærkninger
 
