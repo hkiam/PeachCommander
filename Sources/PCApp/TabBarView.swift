@@ -199,6 +199,30 @@ public final class TabBarView: NSView {
     private var dragOriginX: CGFloat = 0
     private var isDraggingTab = false
 
+    // MARK: - Accessibility (I19 T06)
+
+    /// One radio button per tab, since exactly one is current.
+    ///
+    /// The chips are drawn, so without this a screen reader finds an opaque strip and no way to learn
+    /// which tab is open, let alone switch. `chipFrames` is the same geometry `mouseDown` hit-tests,
+    /// so the described control and the clickable one cannot come apart.
+    public override func isAccessibilityElement() -> Bool { true }
+    public override func accessibilityRole() -> NSAccessibility.Role? { .tabGroup }
+    public override func accessibilityLabel() -> String? { String(localized: "Panel tabs") }
+
+    public override func accessibilityChildren() -> [Any]? {
+        zip(tabs.indices, chipFrames).map { index, frame in
+            let tab = tabs[index]
+            // The lock is part of what the chip says, so it is part of what gets announced.
+            let label = tab.locked
+                ? String(format: String(localized: "%@ (locked)"), tab.title) : tab.title
+            return AccessibleHotspot(label: label, role: .radioButton, selected: tab.active,
+                                     frameInView: frame, parent: self) { [weak self] in
+                self?.onSelect?(index)
+            }
+        }
+    }
+
     public override func mouseDown(with event: NSEvent) {
         let point = convert(event.locationInWindow, from: nil)
         for (index, frame) in chipFrames.enumerated() where frame.contains(point) {
