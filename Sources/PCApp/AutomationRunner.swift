@@ -80,6 +80,7 @@ extension MainWindowController {
             case "editdump":   await editDump(arg)
             case "view":       openViewer(arg)
             case "menudump":   dumpMenu(arg)
+            case "a11ydump":   dumpAccessibility(arg)   // a11ydump <outfile> (I19 T06)
             case "overwritedlg": showOverwriteDialogForShot()   // screenshot the conflict dialog (F-086)
             case "hotlistmanage": showHotlistManager()   // open the hotlist manager (F-061)
             case "typecolors":                             // open the file-type colour editor (F-032)
@@ -313,6 +314,72 @@ extension MainWindowController {
         }
         try? (lines.joined(separator: "\n") + "\n").write(toFile: file, atomically: true, encoding: .utf8)
         NSLog("[automation] menudump → \(file)")
+    }
+
+    /// Walk the key window's accessibility tree and write what a screen reader would find.
+    ///
+    /// Asked of the app itself rather than through an accessibility *client*: a client needs the
+    /// Accessibility permission, which cannot be granted unattended in a fresh VM, while a process may
+    /// always inspect its own tree. That makes "is the drive bar reachable" checkable in the harness
+    /// instead of only by hand — which matters, because the failure mode for a hand-drawn control is
+    /// not a wrong label but no element at all, and nothing on screen looks different either way.
+    ///
+    /// Typed calls, not KVC. The first version asked for "accessibilityRole" by key and reflected on a
+    /// selector, and it crashed the app inside the automation script — NSView does not answer those
+    /// through KVC, and a reflected cast to a Role was never going to be sound.
+    private func dumpAccessibility(_ file: String) {
+        guard let window = NSApp.keyWindow ?? NSApp.windows.first(where: { $0.isVisible }),
+              let root = window.contentView else {
+            NSLog("[automation] a11ydump: no visible window")
+            return
+        }
+        var lines = ["window: \(window.title)"]
+        // Cycle detection over *views* only, and holding them. Keying a set on ObjectIdentifier while
+        // walking freshly created elements was wrong in a way the first dump showed straight away: the
+        // hand-drawn chips are built on demand and released as the walk moves on, so the allocator
+        // reused an address and the second drive bar's "Favorites" chip was mistaken for one already
+        // visited — it silently vanished from the report. Views live as long as the window, so their
+        // identity means something.
+        var seenViews: [NSView] = []
+
+        func describe(_ node: Any, depth: Int) {
+            guard depth < 12 else { return }
+            let role: NSAccessibility.Role?
+            let label: String?
+            let value: Any?
+            let children: [Any]
+            switch node {
+            case let view as NSView:
+                role = view.accessibilityRole()
+                label = view.accessibilityLabel()
+                value = view.accessibilityValue()
+                children = view.accessibilityChildren() ?? []
+            case let element as NSAccessibilityElement:
+                role = element.accessibilityRole()
+                label = element.accessibilityLabel()
+                value = element.accessibilityValue()
+                children = element.accessibilityChildren() ?? []
+            default:
+                return
+            }
+            // A view tree can be a graph; visiting one twice would recurse until the stack runs out.
+            if let view = node as? NSView {
+                guard !seenViews.contains(where: { $0 === view }) else { return }
+                seenViews.append(view)
+            }
+            // Only rows that say something: an unnamed group is scaffolding, not content.
+            if role != nil || !(label ?? "").isEmpty {
+                var row = String(repeating: "  ", count: depth) + (role?.rawValue ?? "?")
+                if let label, !label.isEmpty { row += " | \(label)" }
+                if let value, !(value is NSNull) { row += " = \(value)" }
+                lines.append(row)
+            }
+            for child in children { describe(child, depth: depth + 1) }
+        }
+
+        describe(root, depth: 0)
+        try? (lines.joined(separator: "\n") + "\n").write(toFile: file, atomically: true, encoding: .utf8)
+        NSLog("[automation] a11ydump → \(file) (\(lines.count) rows)")
     }
 
     /// Open the real editor on a file, let its sidebar parse, and dump the strings

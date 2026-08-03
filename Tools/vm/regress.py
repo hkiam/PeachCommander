@@ -68,7 +68,17 @@ SCENARIOS = [
                   "settingspage Layout", "wait 2500"], 10),
     ("viewer-text", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                      "focus notes.txt", "wait 500", "cmd cm_List", "wait 2000"], 10),
+    # Not a layout scenario: this one asks the app what a screen reader would find. The hand-drawn
+    # bars are the case where the failure mode is *no element at all* and nothing on screen differs,
+    # so it can only be caught by asking (I19 T06).
+    ("accessibility", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "cmd cm_OpenNewTab", "wait 600",
+                       "a11ydump /Users/admin/a11y.txt", "wait 800"], 10),
 ]
+
+# Labels that must appear in the accessibility dump. Each one is a control that draws itself and would
+# otherwise be invisible; a missing entry means somebody removed the wiring, not that a label changed.
+REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"]
 
 # What AppKit prints when it gives up on a constraint set. One message spans many lines; the first
 # constraint in the list is stable enough to name the offender.
@@ -162,9 +172,12 @@ def run_scenario(ip, host, port, pw, name, script, settle, out: Path):
     text = ssh_guest(ip, f"./regress-guest.sh {name} {settle}").stdout
     shot = out / f"{name}.png"
     sh([VNCDO, "-s", f"{host}::{port}", "-p", pw, "capture", str(shot)])
-    (out / f"{name}.log").write_text(text)
+    log, _, a11y = text.partition("===A11Y===")
+    (out / f"{name}.log").write_text(log)
+    if a11y.strip():
+        (out / f"{name}-a11y.txt").write_text(a11y.strip() + "\n")
     ssh_guest(ip, "pkill -x PeachCommander; true")
-    return conflicts(text)
+    return conflicts(log), a11y
 
 
 def conflicts(log_text: str):
@@ -215,8 +228,16 @@ def main():
         for name, script, settle in SCENARIOS:
             if args.only and name != args.only:
                 continue
-            found = run_scenario(ip, host, port, pw, name, script, settle, out)
+            found, a11y = run_scenario(ip, host, port, pw, name, script, settle, out)
             measured[name] = found
+            if a11y.strip():
+                missing = [label for label in REQUIRED_A11Y if label not in a11y]
+                if missing:
+                    failures.append(f"{name}: accessibility labels missing: {', '.join(missing)}")
+                    say(f"{name}: MISSING accessibility labels: {', '.join(missing)}")
+                else:
+                    rows = len([l for l in a11y.splitlines() if l.strip()])
+                    say(f"{name}: accessibility tree has {rows} rows, all required labels present")
             allowed = baseline.get(name, {}).get("count")
             state = f"{len(found)} conflict(s)"
             if allowed is not None and len(found) > allowed:

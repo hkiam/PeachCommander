@@ -78,6 +78,12 @@ Dependency direction: `PCApp -> everything`, engine modules never import PCApp,
   a view's constraints; `--update-baseline` records an improvement, never a regression.
   Note that AppKit prints only the *required* constraints of a conflict — lowering one
   to 999 makes it the escape valve and it disappears from the log.
+- **A hand-drawn control is invisible until it says otherwise.** A view that draws
+  its own controls and handles `mouseDown` exposes *nothing* to assistive technology
+  — not an unlabelled button, nothing — and the screen looks identical either way.
+  Give it accessibility children (`AccessibleHotspot`), and check with the
+  `accessibility` scenario in `Tools/vm/regress.py`, which asks the app what a screen
+  reader would find and fails on a missing label.
 
 ## Git
 

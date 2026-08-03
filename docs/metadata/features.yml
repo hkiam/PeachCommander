@@ -905,8 +905,16 @@ features:
       I19 T06. The helper is unit-tested in its own target — no unit-test target links the app, so it
       compiles the one file into itself the way PCThemeTests does with Theme.swift — and the target
       had to be added to *both* schemes, because a target absent from the scheme never runs and the
-      suite stays green while the test does nothing. The view-level wiring itself is not yet verified
-      end to end: that needs an accessibility query inside the VM, which the harness cannot do yet.
+      suite stays green while the test does nothing.
+      The view-level wiring is verified end to end now, through an `a11ydump` automation verb: the app
+      walks its own accessibility tree and writes what a screen reader would find. Asked of the app
+      rather than through an accessibility *client*, because a client needs the Accessibility
+      permission and that cannot be granted unattended in a fresh VM, while a process may always
+      inspect itself. Tools/vm/regress.py runs it as a scenario and fails when a required label is
+      absent — checked by removing one and watching the gate bite. The dump earned its keep on the
+      first run twice over: it crashed the app (KVC and reflected selectors instead of the typed API)
+      and then dropped the second drive bar's Favorites chip, because identity-based cycle detection
+      over freshly created elements re-used a released address.
 
   # ───────────────────────── Settings ─────────────────────────
   - id: settings

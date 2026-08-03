@@ -11,6 +11,7 @@ only go down.
 | brief-view | 4 | 4 | DriveBarView | `brief-view.png` |
 | tree-view | 4 | 4 | DriveBarView | `tree-view.png` |
 | preview-panel | 5 | 5 | DriveBarView, PanelTreeView | `preview-panel.png` |
-| find-files | 7 | 26 | DriveBarView, PanelTreeView, unknown | `find-files.png` |
+| find-files | 7 | 7 | DriveBarView, PanelTreeView, unknown | `find-files.png` |
 | settings | 5 | 5 | DriveBarView, PanelTreeView | `settings.png` |
 | viewer-text | 6 | 6 | DriveBarView, PanelTreeView, SymbolSidebar | `viewer-text.png` |
+| accessibility | 5 | — | DriveBarView, PanelTreeView | `accessibility.png` |
