@@ -727,7 +727,13 @@ features:
       file read per click; a `.pc-complete` marker is what makes reuse safe, since a directory left
       by a timeout would otherwise be served as a complete archive with classes silently missing.
       .war, .ear and .aar were claimed at first and withdrawn: no described engine can decompile
-      one, and a test now holds the claimed kinds to the engines that exist. Enter still browses a
+      one, and a test now holds the claimed kinds to the engines that exist. Verified in the VM
+      harness (Tools/vm/) rather than only through returned state, which caught two defects nothing
+      else could see: the text views were built with a zero-size container, so every one of them held
+      its source and rendered none of it — the single-class view had been blank on screen since it
+      was written — and the tree's divider was positioned before the view had a width, leaving the
+      source panel with none. Source is shown without wrapping now, since both panels offer a
+      horizontal scroller and javap output is columns. Enter still browses a
       JAR as an archive through the built-in ZIP support — F3 and Enter were always separate verbs,
       which is why both fit without a conflict.
 

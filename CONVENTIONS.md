@@ -64,6 +64,13 @@ Dependency direction: `PCApp -> everything`, engine modules never import PCApp,
 - New engine code: unit tests in the same PR/commit. UI: smoke tests per iteration.
 - Test fixtures come from `Tools/make-fixtures.sh` (creates temp trees, big files
   sparsely). Tests never touch the user's real home directory outside temp dirs.
+- **A view is only verified by a picture.** Reading state back (`textView.string`,
+  a row count, a status label) proves the data arrived, not that anything is on
+  screen: a text view with a zero-size container holds the whole text and renders
+  none of it, and a split view told to place its divider before it has a width
+  gives one pane everything. Both shipped in the decompiler plugin behind checks
+  that read state back and looked green. When the host display is locked or
+  headless, `Tools/vm/` captures the framebuffer over VNC — that is what it is for.
 
 ## Git
 

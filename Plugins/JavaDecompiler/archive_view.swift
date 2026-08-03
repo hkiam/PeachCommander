@@ -23,7 +23,7 @@ final class DecompiledArchiveView: DecompilerListerView {
     private let treeScroll = NSScrollView()
     private let outline = NSOutlineView()
     private let scroll = NSScrollView()
-    private let text = NSTextView()
+    private let text = makeSourceTextView()
 
     private let enginePopup = NSPopUpButton()
     private let revealButton = NSButton(title: L("Engine Folder…"), target: nil, action: nil)
@@ -89,10 +89,6 @@ final class DecompiledArchiveView: DecompilerListerView {
         treeScroll.hasVerticalScroller = true
         treeScroll.autohidesScrollers = true
 
-        text.isEditable = false
-        text.isRichText = false
-        text.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
-        text.textContainerInset = NSSize(width: 6, height: 6)
         scroll.documentView = text
         scroll.hasVerticalScroller = true
         scroll.hasHorizontalScroller = true
@@ -100,6 +96,7 @@ final class DecompiledArchiveView: DecompilerListerView {
 
         split.isVertical = true
         split.dividerStyle = .thin
+        split.delegate = self
         split.addArrangedSubview(treeScroll)
         split.addArrangedSubview(scroll)
         split.translatesAutoresizingMaskIntoConstraints = false
@@ -148,9 +145,25 @@ final class DecompiledArchiveView: DecompilerListerView {
             split.trailingAnchor.constraint(equalTo: trailingAnchor),
             split.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
-        // A starting split, not a rule: the divider is draggable from here on.
-        split.setPosition(280, ofDividerAt: 0)
     }
+
+    /// Place the divider once the view has a width to divide.
+    ///
+    /// This was in `build()` first, and the source panel came out with no width at all: at that
+    /// point the view's frame is still zero, and asking a zero-width split view to put its divider
+    /// at 280 leaves the first subview holding everything. A local check that only read the data
+    /// could not see it — the tree was populated and the text was set, on a panel nobody could see.
+    private var placedDivider = false
+    override func layout() {
+        super.layout()
+        guard !placedDivider, bounds.width > 2 * Self.initialTreeWidth else { return }
+        placedDivider = true
+        split.setPosition(Self.initialTreeWidth, ofDividerAt: 0)
+    }
+
+    /// Starting width of the tree. Wide enough for a package name, and only a starting point —
+    /// the divider is draggable from here on.
+    private static let initialTreeWidth: CGFloat = 280
 
     // MARK: Running the engine
 
@@ -429,6 +442,20 @@ final class DecompiledArchiveView: DecompilerListerView {
 }
 
 // MARK: - The tree
+
+extension DecompiledArchiveView: NSSplitViewDelegate {
+    /// Neither half may be dragged away entirely: a tree too narrow to read a class name in, or a
+    /// source panel with no room for a line of code, is a view with one half missing.
+    func splitView(_ splitView: NSSplitView, constrainMinCoordinate proposedMinimumPosition: CGFloat,
+                   ofSubviewAt dividerIndex: Int) -> CGFloat {
+        max(proposedMinimumPosition, 140)
+    }
+
+    func splitView(_ splitView: NSSplitView, constrainMaxCoordinate proposedMaximumPosition: CGFloat,
+                   ofSubviewAt dividerIndex: Int) -> CGFloat {
+        min(proposedMaximumPosition, max(200, splitView.bounds.width * 0.7))
+    }
+}
 
 extension DecompiledArchiveView: NSOutlineViewDataSource, NSOutlineViewDelegate {
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {

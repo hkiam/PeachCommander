@@ -21,6 +21,33 @@ import os
 /// invisible. os.Logger, not NSLog: NSLog does not reach the unified log from this app.
 let log = Logger(subsystem: "com.peachcommander", category: "JavaDecompiler")
 
+/// A read-only monospaced text view ready to be a scroll view's document view.
+///
+/// The explicit frame and container settings are not decoration. A bare `NSTextView()` has a zero
+/// frame and a zero text container, so it lays out no glyphs at all: the text is in the storage, the
+/// panel is on screen, and nothing appears. That is exactly what shipped from a check that read
+/// `text.string` back instead of looking at the window — the data was right and the view was blank.
+func makeSourceTextView() -> NSTextView {
+    let view = NSTextView(frame: NSRect(x: 0, y: 0, width: 600, height: 400))
+    view.isEditable = false
+    view.isRichText = false
+    view.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+    view.textContainerInset = NSSize(width: 6, height: 6)
+    view.minSize = NSSize(width: 0, height: 0)
+    view.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude,
+                          height: CGFloat.greatestFiniteMagnitude)
+    view.isVerticallyResizable = true
+    // No wrapping, and a container that can grow sideways: every one of these views sits in a scroll
+    // view with a horizontal scroller, and wrapping would mean that scroller could never appear.
+    // Bytecode is the case that decides it — javap output is columns, and a wrapped column is noise.
+    view.isHorizontallyResizable = true
+    view.autoresizingMask = [.width, .height]
+    view.textContainer?.widthTracksTextView = false
+    view.textContainer?.containerSize = NSSize(width: CGFloat.greatestFiniteMagnitude,
+                                               height: CGFloat.greatestFiniteMagnitude)
+    return view
+}
+
 // MARK: - What the lister ABI can ask of a view
 
 /// The commands `ListSendCommand` and `ListSearchText` forward, whichever view `ListLoad` built.
@@ -39,7 +66,7 @@ class DecompilerListerView: NSView {
 
 final class DecompiledView: DecompilerListerView {
     private let scroll = NSScrollView()
-    private let text = NSTextView()
+    private let text = makeSourceTextView()
     private let status = NSTextField(labelWithString: "")
     private let enginePopup = NSPopUpButton()
     private let revealButton = NSButton(title: L("Engine Folder…"), target: nil, action: nil)
@@ -50,7 +77,7 @@ final class DecompiledView: DecompilerListerView {
     private let compareToggle = NSButton(checkboxWithTitle: L("Compare"), target: nil, action: nil)
     private let secondPopup = NSPopUpButton()
     private let secondScroll = NSScrollView()
-    private let secondText = NSTextView()
+    private let secondText = makeSourceTextView()
     private var showingSecondPane = false
     private var splitConstraints: [NSLayoutConstraint] = []
     /// The unhighlighted source, kept because Save As and Open in Editor must write the code the
@@ -97,10 +124,6 @@ final class DecompiledView: DecompilerListerView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     private func build() {
-        text.isEditable = false
-        text.isRichText = false
-        text.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
-        text.textContainerInset = NSSize(width: 6, height: 6)
         scroll.documentView = text
         scroll.hasVerticalScroller = true
         scroll.hasHorizontalScroller = true
@@ -135,10 +158,6 @@ final class DecompiledView: DecompilerListerView {
         status.lineBreakMode = .byTruncatingTail
         status.translatesAutoresizingMaskIntoConstraints = false
 
-        secondText.isEditable = false
-        secondText.isRichText = false
-        secondText.font = text.font
-        secondText.textContainerInset = NSSize(width: 6, height: 6)
         secondScroll.documentView = secondText
         secondScroll.hasVerticalScroller = true
         secondScroll.hasHorizontalScroller = true
