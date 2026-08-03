@@ -63,3 +63,19 @@ final class LaunchOptionsTests: XCTestCase {
         XCTAssertTrue(o.positionals.isEmpty)
     }
 }
+
+extension LaunchOptionsTests {
+
+    func test_startupProbe_takesItsValue() {
+        // -StartupProbe drives the pre-first-paint check (F-360); the path must not be mistaken for a
+        // directory to open, which is what an unlisted value flag does.
+        let opts = LaunchOptions.parse(["pc", "-StartupProbe", "/tmp/probe.txt", "/Users/x"])
+        XCTAssertEqual(opts.startupProbe, "/tmp/probe.txt")
+        XCTAssertEqual(opts.positionals, ["/Users/x"])
+        XCTAssertEqual(opts.effectiveLeft, "/Users/x")
+    }
+
+    func test_startupProbe_isAbsentByDefault() {
+        XCTAssertNil(LaunchOptions.parse(["pc"]).startupProbe)
+    }
+}

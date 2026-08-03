@@ -53,3 +53,34 @@ then SSH in with `~/.ssh/id_ed25519`).
   before/without any TCC grant — the usual macOS screen-capture-permission trap.
 - To drive UI, reuse the existing `-AutomationScript` verbs (see
   `MainWindowController.runAutomationScript`) or XCUITest.
+
+## startup.py — the first seconds after launch
+
+`regress.py` deliberately waits for a window to settle before capturing, so its
+screenshots stay comparable. That made the launch itself the one thing nobody could
+look at — and "colour and layout seem to be applied a moment late" is a complaint
+about exactly that.
+
+```sh
+Tools/vm/startup.py --config Colors.Theme=norton --config Layout.CommandLine=0 \
+                    --expect theme=norton --expect commandLine=false
+```
+
+`--config Section.Key=Value` writes the guest's `peachcmd.ini` before launching: a
+configuration that differs from the defaults is the only one in which a late-applied
+setting is visible at all.
+
+The strip of frames is for looking at. The **gate** is `--expect`: the app is launched
+with `-StartupProbe <file>` (DEBUG only), which records what the window looked like *at
+the moment it was shown*, and any `--expect key=value` that disagrees fails the run.
+Frames cannot do this job — the VNC framebuffer only refreshes on change, so everything
+before the first paint captures as black.
+
+Verified by breaking it: with the synchronous pre-paint apply removed, the probe
+reported `theme=system`, `commandLine=true`, `panelsVertical=true`, `fontSize=13` —
+every configured value still at its built-in default, which is the bug it exists to
+catch.
+
+Terminal is left running in the guest on purpose: killing it in the golden image's
+auto-login session restarted the whole VM, and the app's own window covers it as soon
+as it draws.

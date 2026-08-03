@@ -25,6 +25,10 @@ public struct LaunchOptions: Equatable, Sendable {
     public var openInNewTab: Bool
     /// Path to a debug automation script (`-AutomationScript`). DEBUG builds only.
     public var automationScript: String?
+    /// Where to write the startup probe (`-StartupProbe <file>`, F-360). DEBUG builds only: it records
+    /// the window's visible state at the moment it is shown, so "the first frame is already correct"
+    /// can be checked rather than believed.
+    public var startupProbe: String?
     /// File to open directly in the viewer on launch (`-View <file>`, F-113).
     public var viewFile: String?
     /// Search term to pre-apply in that viewer (`-ViewSearch <term>`, F-113).
@@ -34,7 +38,8 @@ public struct LaunchOptions: Equatable, Sendable {
 
     public init(leftPath: String? = nil, rightPath: String? = nil, activePanel: Panel? = nil,
                 openInNewTab: Bool = false, automationScript: String? = nil,
-                viewFile: String? = nil, viewSearch: String? = nil, positionals: [String] = []) {
+                viewFile: String? = nil, viewSearch: String? = nil, positionals: [String] = [],
+                startupProbe: String? = nil) {
         self.leftPath = leftPath
         self.rightPath = rightPath
         self.activePanel = activePanel
@@ -43,6 +48,7 @@ public struct LaunchOptions: Equatable, Sendable {
         self.viewFile = viewFile
         self.viewSearch = viewSearch
         self.positionals = positionals
+        self.startupProbe = startupProbe
     }
 
     /// The effective left/right directories: explicit flags win, else the first
@@ -56,7 +62,7 @@ public struct LaunchOptions: Equatable, Sendable {
     }
 
     /// Flags that take a following value and are consumed (case-insensitive).
-    private static let valueFlags: Set<String> = ["-leftpath", "-rightpath", "-activepanel", "-configroot", "-automationscript", "-view", "-viewsearch"]
+    private static let valueFlags: Set<String> = ["-leftpath", "-rightpath", "-activepanel", "-configroot", "-automationscript", "-view", "-viewsearch", "-startupprobe"]
 
     public static func parse(_ arguments: [String]) -> LaunchOptions {
         var opts = LaunchOptions()
@@ -80,6 +86,7 @@ public struct LaunchOptions: Equatable, Sendable {
                     }
                 case "-tab": opts.openInNewTab = true
                 case "-automationscript": opts.automationScript = nextValue()
+                case "-startupprobe": opts.startupProbe = nextValue()
                 case "-view": opts.viewFile = nextValue()
                 case "-viewsearch": opts.viewSearch = nextValue()
                 default:

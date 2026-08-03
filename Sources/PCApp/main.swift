@@ -16,6 +16,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // AppKit resize it to the content's fitting size (collapsing it to a strip).
         controller.start()
         controller.showWindow(nil)
+        #if DEBUG
+        // Right after the window is shown, before anything asynchronous has had a turn: the state
+        // recorded here is the state of the first frame (F-360).
+        controller.writeStartupProbeIfRequested()
+        #endif
         NSApp.activate(ignoringOtherApps: true)
         // Let the Services menu offer services that act on file selections; the
         // active panel supplies the URLs via NSServicesMenuRequestor.

@@ -93,6 +93,18 @@ Dependency direction: `PCApp -> everything`, engine modules never import PCApp,
   the layout is unchanged while the contradiction disappears. And never let a view
   constrain its own size when its owners also do: `StatusBarView` did both, which made
   hiding it a permanent contradiction.
+- **Anything the user can see is read from config synchronously, before the first paint.**
+  `ConfigStore` is an actor, so every read is a suspension point — and the window's
+  whole appearance used to come from about fifty of them, in an async `Task` that ran
+  *after* `showWindow`. The first frame therefore showed the built-in defaults and
+  corrected itself a moment later: a light window turning dark, bars appearing and
+  disappearing, the window jumping to its saved size. Visual state belongs in
+  `applyVisualStateBeforeFirstPaint()`, read from a `ConfigSnapshot`; the async path keeps
+  the settings nobody can see until they are used. Apply each key in exactly one of the
+  two — a second pass is harmless for a setter and not for `togglePreviewPanel`, which
+  toggles. `Tools/vm/startup.py --expect` is the gate: it records what the window looked
+  like at the moment it was shown, which no screenshot can (the VNC framebuffer only
+  refreshes on change, so the frames before the first paint are black).
 - **A hand-drawn control is invisible until it says otherwise.** A view that draws
   its own controls and handles `mouseDown` exposes *nothing* to assistive technology
   — not an unlabelled button, nothing — and the screen looks identical either way.
