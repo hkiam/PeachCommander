@@ -90,22 +90,28 @@ class StatusBarView: NSView {
         addSubview(sortLabel)
 
         // Layout constraints
-        NSLayoutConstraint.activate([
+        //
+        // One gap per pair. There used to be two: `count.trailing == free.leading - 10` *and*
+        // `free.leading == count.trailing + 20`, which cannot both hold, so AppKit logged a conflict
+        // on every layout pass and broke one of them — chosen by it, not by us. That arbitrariness is
+        // what made this bar fragile; the character-by-character wrapping fixed earlier sat on top.
+        //
+        // The four labels plus their gaps span the bar edge to edge at a fixed width, so a panel
+        // narrower than their minimum has no solution and the whole set is reported. The *gaps* are
+        // what may shrink: they are whitespace, and losing a few points of it is invisible next to a
+        // log full of broken constraints. The labels themselves truncate (see above), in the order
+        // that keeps the useful part.
+        let gaps = [
+            countLabel.leadingAnchor.constraint(equalTo: pathLabel.trailingAnchor, constant: 20),
+            freeSpaceLabel.leadingAnchor.constraint(equalTo: countLabel.trailingAnchor, constant: 20),
+            sortLabel.leadingAnchor.constraint(equalTo: freeSpaceLabel.trailingAnchor, constant: 20),
+        ]
+        for gap in gaps { gap.priority = .init(999) }
+        NSLayoutConstraint.activate(gaps + [
             pathLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
             pathLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-
-            // One gap per pair. There used to be two: `count.trailing == free.leading - 10` *and*
-            // `free.leading == count.trailing + 20`, which cannot both hold, so AppKit logged a
-            // conflict on every layout pass and broke one of them — chosen by it, not by us. That
-            // arbitrariness is what made this bar fragile; the character-by-character wrapping
-            // fixed earlier sat on top of it.
-            countLabel.leadingAnchor.constraint(equalTo: pathLabel.trailingAnchor, constant: 20),
             countLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-
-            freeSpaceLabel.leadingAnchor.constraint(equalTo: countLabel.trailingAnchor, constant: 20),
             freeSpaceLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-
-            sortLabel.leadingAnchor.constraint(equalTo: freeSpaceLabel.trailingAnchor, constant: 20),
             sortLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             sortLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])

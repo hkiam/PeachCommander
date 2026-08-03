@@ -6,11 +6,11 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| main-window | 14 | 0 | DriveBarView, PanelView, PreviewPanelView | `main-window.png` |
-| details-view | 14 | 0 | DriveBarView, PanelView, PreviewPanelView | `details-view.png` |
-| brief-view | 14 | 0 | DriveBarView, PanelView, PreviewPanelView | `brief-view.png` |
-| tree-view | 14 | 0 | DriveBarView, PanelView, PreviewPanelView | `tree-view.png` |
-| preview-panel | 15 | 0 | DriveBarView, PanelTreeView, PanelView, PreviewPanelView | `preview-panel.png` |
-| find-files | 37 | 0 | DriveBarView, PanelTreeView, PanelView, PreviewPanelView, unknown | `find-files.png` |
-| settings | 15 | 0 | DriveBarView, PanelTreeView, PanelView, PreviewPanelView | `settings.png` |
-| viewer-text | 16 | 0 | DriveBarView, PanelTreeView, PanelView, PreviewPanelView, SymbolSidebar | `viewer-text.png` |
+| main-window | 4 | 14 | DriveBarView | `main-window.png` |
+| details-view | 4 | 14 | DriveBarView | `details-view.png` |
+| brief-view | 4 | 14 | DriveBarView | `brief-view.png` |
+| tree-view | 4 | 14 | DriveBarView | `tree-view.png` |
+| preview-panel | 5 | 15 | DriveBarView, PanelTreeView | `preview-panel.png` |
+| find-files | 27 | 37 | DriveBarView, PanelTreeView, unknown | `find-files.png` |
+| settings | 5 | 15 | DriveBarView, PanelTreeView | `settings.png` |
+| viewer-text | 6 | 16 | DriveBarView, PanelTreeView, SymbolSidebar | `viewer-text.png` |

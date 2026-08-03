@@ -361,14 +361,25 @@ public final class FindFilesWindowController: NSWindowController {
         buttons.addView(closeButton, in: .trailing)
         content.addSubview(buttons)
 
+        // A floor from the tallest tab's own fitting height, plus what NSTabView spends on its tab
+        // strip and border. Nothing here is a chosen number: the stacks report what they need.
+        let tallest = tabStacks.map(\.fittingSize.height).max() ?? 300
+        // NSTabView exposes the inset as contentRect, not as a function — 34 is the observed value for
+        // the top strip plus border and is used as the floor either way.
+        let chrome = tabView.frame.height - tabView.contentRect.height
+        let tabHeightConstraint = tabView.heightAnchor.constraint(
+            greaterThanOrEqualToConstant: tallest + max(34, chrome))
         NSLayoutConstraint.activate([
             tabView.topAnchor.constraint(equalTo: content.topAnchor, constant: 12),
             tabView.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 16),
             tabView.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -16),
-            // Tall enough for the General tab's nine rows. 250 was already a little short before the
-            // plugin-text row was added — "Done: n found" used to overlap the last row — and the tab
-            // has no bottom constraint, so content simply drew outside it instead of complaining.
-            tabView.heightAnchor.constraint(equalToConstant: 320),
+            // At least tall enough for the tallest tab, never exactly that. 250 was already short
+            // before the plugin-text row went in — "Done: n found" overlapped the last row — and
+            // pinning it to a measured 320 only moved the problem: with a bottom constraint added the
+            // stack's own minimum spacings no longer fit, and AppKit reported the whole set on every
+            // layout pass. A lower bound lets the tab grow with its content and leaves the arithmetic
+            // to the layout engine, which is better at it than a constant chosen by eye.
+            tabHeightConstraint,
 
             statusLabel.topAnchor.constraint(equalTo: tabView.bottomAnchor, constant: 10),
             statusLabel.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20),
@@ -415,6 +426,11 @@ public final class FindFilesWindowController: NSWindowController {
     }
 
     /// Build a tab page: a top-anchored vertical stack of `rows` inside a container.
+    /// The stacks inside the tabs, so the tab view's minimum height can be *measured* rather than
+    /// guessed. Two guesses in a row got it wrong: 250 clipped the content silently, and 320 turned
+    /// that into a reported conflict on every layout pass once the tab gained a bottom bound.
+    private var tabStacks: [NSStackView] = []
+
     private func makeTab(_ title: String, rows: [NSView]) -> NSTabViewItem {
         let item = NSTabViewItem(identifier: title)
         item.label = title
@@ -434,6 +450,7 @@ public final class FindFilesWindowController: NSWindowController {
             // over whatever is below and nothing reports it. Now it shows up as a layout conflict.
             stack.bottomAnchor.constraint(lessThanOrEqualTo: page.bottomAnchor),
         ])
+        tabStacks.append(stack)
         item.view = page
         return item
     }
