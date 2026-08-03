@@ -20,6 +20,8 @@ Za začetek povsem nove besedilne datoteke na trenutnem mestu pritisnite Shift+F
 ![Vgrajeni urejevalnik besedila, ki prikazuje poudarjanje skladnje, oris simbolov in mini zemljevid](screenshots/editor.png)
 *(Slika: urejevalnik s poudarjanjem skladnje, orisom simbolov na levi in mini zemljevidom na desni.)*
 
+Če datoteka pripada `root` — vnos v `/etc`, launchd plist, nastavitve spletnega strežnika —, shranjevanje ponudi, da to stori **kot skrbnik**: macOS zahteva odobritev kot običajno, vsebina gre prek zasebne začasne datoteke in ne prek ukazne vrstice, datoteka pa ohrani svojega lastnika in pravice, namesto da bi tiho postala vaša.
+
 ## Iskanje, zamenjava in krmarjenje
 
 - Pritisnite Cmd+F, da odprete iskalno vrstico. Za zamenjavo besedila odprite iskalno vrstico in jo preklopite na pogled zamenjave, ali kliknite Poišči/Zamenjaj v orodni vrstici.

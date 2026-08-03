@@ -20,6 +20,8 @@ Para empezar un archivo de texto completamente nuevo en la ubicación actual, pu
 ![El editor de texto integrado mostrando el resaltado de sintaxis, el esquema de símbolos y el minimapa](screenshots/editor.png)
 *(Figura: El editor con resaltado de sintaxis, el esquema de símbolos a la izquierda y el minimapa a la derecha.)*
 
+Si el archivo pertenece a `root` — una entrada en `/etc`, un plist de launchd, la configuración de un servidor web —, al guardar se ofrece hacerlo **como administrador**: macOS pide autorización de la forma habitual, el contenido se entrega mediante un archivo temporal privado en lugar de una línea de comandos, y el archivo conserva su propietario y sus permisos en vez de pasar a ser suyo sin avisar.
+
 ## Buscar, reemplazar y navegar
 
 - Pulse Cmd+F para abrir la barra de búsqueda. Para reemplazar texto, abra la barra de búsqueda y cámbiela a la vista de reemplazo, o haga clic en Buscar/Reemplazar en la barra de herramientas.

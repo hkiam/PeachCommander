@@ -20,6 +20,8 @@ Um eine ganz neue Textdatei am aktuellen Ort zu beginnen, drücken Sie Shift+F4.
 ![Der integrierte Texteditor mit Syntaxhervorhebung, der Symbolgliederung und der Minimap](screenshots/editor.png)
 *(Abbildung: Der Editor mit Syntaxhervorhebung, der Symbolgliederung links und der Minimap rechts.)*
 
+Gehört die Datei `root` — ein Eintrag in `/etc`, ein launchd-plist, die Konfiguration eines Webservers —, bietet das Speichern an, es **als Administrator** zu tun: macOS fragt wie gewohnt nach einer Autorisierung, der Inhalt wird über eine private temporäre Datei übergeben statt über eine Befehlszeile, und die Datei behält ihren Eigentümer und ihre Rechte, statt still Ihnen zu gehören.
+
 ## Suchen, Ersetzen und Navigieren
 
 - Drücken Sie Cmd+F, um die Suchleiste zu öffnen. Um Text zu ersetzen, öffnen Sie die Suchleiste und schalten Sie sie in die Ersetzen-Ansicht um oder klicken Sie in der Symbolleiste auf Suchen/Ersetzen.

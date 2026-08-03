@@ -251,6 +251,19 @@ targets:
     dependencies:
       - target: PCFoundation
 
+  PCShellQuoteTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCShellQuoteTests
+      - path: Sources/PCApp/PrivilegedRunner.swift
+    settings:
+      PRODUCT_NAME: PCShellQuoteTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
+
   PCThemeTests:
     type: bundle.unit-test
     platform: macOS
@@ -656,6 +669,7 @@ schemes:
         - PCNetTests
         - PCThemeTests
         - PCAccessibilityTests
+        - PCShellQuoteTests
 
   AllTests:
     build:
@@ -676,6 +690,7 @@ schemes:
         - PCPerfTests
         - PCThemeTests
         - PCAccessibilityTests
+        - PCShellQuoteTests
 
   UITests:
     build:

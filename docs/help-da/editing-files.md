@@ -20,6 +20,8 @@ For at starte en helt ny tekstfil på den aktuelle placering skal du trykke på 
 ![Den indbyggede teksteditor med syntaksfremhævning, symboloverblikket og minikortet](screenshots/editor.png)
 *(Figur: Editoren med syntaksfremhævning, symboloverblikket til venstre og minikortet til højre.)*
 
+Tilhører filen `root` — noget i `/etc`, en launchd-plist, en webservers konfiguration — tilbyder gemningen at gøre det **som administrator**: macOS beder om godkendelse på sædvanlig vis, indholdet overleveres via en privat midlertidig fil i stedet for en kommandolinje, og filen beholder sin egen ejer og sine rettigheder i stedet for stille at blive din.
+
 ## Søg, erstat og naviger
 
 - Tryk på Cmd+F for at åbne søgebjælken. For at erstatte tekst skal du åbne søgebjælken og skifte den til erstat-visningen eller klikke på Søg/Erstat i værktøjslinjen.
