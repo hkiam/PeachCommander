@@ -69,6 +69,8 @@ F3 op een hele `.jar`, `.apk` of `.dex` decompileert alles in één keer en toon
 
 Er is een tweede, directere route: zet de cursor op een `.class`-bestand of op een heel archief en kies **Decompileren naar broncode** (menu Opdrachten, contextmenu of ⌘⇧J). De klassen worden gedecompileerd en het resultaat opent in het andere paneel als gewone `.java`-bestanden. Vanaf daar geldt de hele bestandsbeheerder — F3 toont ze met Peach Commanders eigen Java-opmaak, Alt+F7 zoekt er dwars door, F5 kopieert ze eruit, en je kunt ze vergelijken of van tags voorzien als al het andere. Voor het meeste werk is dat beter dan een eigen venster; daarom kan de boom van de plugin worden uitgezet in Instellingen ▸ Decompiler.
 
+Een tweede plugin doet hetzelfde voor .NET: F3 op een managed `.dll`, `.exe` of `.winmd` toont de types als C#, **Assembly naar broncode decompileren** (⌘⇧N) zet ze in een paneel, en de zoekfunctie kan net zo in een assembly kijken. Het stuurt **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) aan voor broncode, of **monodis** uit Mono voor IL — de .NET-tegenhanger van `javap`. Een native `.dll` heeft dezelfde extensie en geen broncode; de plugin controleert dat vóór het openen en laat die aan de ingebouwde viewer.
+
 Android hoort er ook bij: F3 op een `.dex`-bestand gebruikt **jadx** (Apache 2.0, `brew install jadx`), dat Dalvik-bytecode terugbrengt naar Java. Daarvoor was één enginebeschrijving genoeg — hetzelfde mechanisme, ander formaat.
 
 De plug-in staat **uit tot u hem aanzet**, bij Instellingen ▸ Plug-ins — de meeste mensen openen nooit een classbestand, en zonder engine heeft hij geen nut.

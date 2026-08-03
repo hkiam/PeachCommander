@@ -149,6 +149,13 @@ struct PluginDecompilerProfile {
     let language: PluginSyntaxLanguage
     /// Extension for a single decompiled file the panel command writes ("java", "cs").
     let sourceExtension: String
+    /// Extensions that count as *result* files in a tree.
+    ///
+    /// Not cosmetic: the runner decides "did the engine produce anything" by counting these, so a
+    /// whitelist missing the platform's own extension makes a successful run look like an empty one.
+    /// That is exactly what happened when the .NET plugin first ran — ILSpy wrote its `.cs` files and
+    /// the shared list, still Java's, reported nothing.
+    let resultExtensions: Set<String>
     /// Prefixes that mark a result as *not* source but a bytecode listing, so it is not saved or
     /// named as something it is not. javap starts with "Compiled from"; monodis with ".assembly".
     let bytecodeMarkers: [String]
@@ -232,6 +239,32 @@ extension PluginDecompilerEngine {
                 archive: PluginDecompilerArchiveSupport(
                     args: ["--no-res", "-d", "{outdir}", "{input}"],
                     timeout: PluginDecompilerArchiveSupport.defaultTimeout)),
+            // .NET (F-353). ILSpy is the CFR of this platform: permissive, maintained, and it can do
+            // one type or a whole assembly. dnSpy is GPLv3 and dotPeek is proprietary and
+            // Windows-only — the same licence situation as JD-Core, so the same answer.
+            //
+            // `-p -o` writes a project tree, which is why an assembly is a *tree* kind here: one .dll
+            // holds many types, the same shape as a dex.
+            PluginDecompilerEngine(
+                id: "ilspy", name: "ILSpy", kinds: ["dll", "exe", "winmd", "netmodule"],
+                tool: "ilspycmd", args: ["{input}"],
+                enginePath: nil, output: .stdout,
+                note: "ILSpy — MIT licence. Install with `dotnet tool install -g ilspycmd` "
+                    + "(see https://github.com/icsharpcode/ILSpy).",
+                timeout: defaultTimeout,
+                archive: PluginDecompilerArchiveSupport(
+                    args: ["-p", "-o", "{outdir}", "{input}"],
+                    timeout: PluginDecompilerArchiveSupport.defaultTimeout)),
+            // The javap of .NET: prints IL, needs no download beyond Mono, and is a far better answer
+            // than an empty window when no source-producing engine is installed.
+            PluginDecompilerEngine(
+                id: "monodis", name: "monodis (IL)", kinds: ["dll", "exe", "netmodule"],
+                tool: "monodis", args: ["{input}"],
+                enginePath: nil, output: .stdout,
+                note: "monodis ships with Mono — MIT licence. Install with `brew install mono`.",
+                timeout: defaultTimeout,
+                // One long listing, not a tree; an assembly's IL is a single document.
+                archive: nil),
             PluginDecompilerEngine(
                 id: "javap", name: "javap (bytecode)", kinds: ["class"],
                 tool: "javap", args: ["-c", "-p", "-constants", "{input}"],
@@ -442,7 +475,14 @@ extension PluginDecompilerEngine {
         }
         var dirs = (ProcessInfo.processInfo.environment["PATH"] ?? "").split(separator: ":").map(String.init)
         dirs += ["/usr/bin", "/bin", "/usr/local/bin", "/opt/homebrew/bin",
-                 "/usr/libexec", "/Library/Java/JavaVirtualMachines"]
+                 "/usr/libexec", "/Library/Java/JavaVirtualMachines",
+                 // Where the .NET engines actually land, and neither is on a GUI app's PATH:
+                 // `dotnet tool install -g ilspycmd` puts it in ~/.dotnet/tools, and Homebrew's mono
+                 // keeps monodis inside the framework. Without these the engines are "not installed"
+                 // however carefully the user followed the instructions.
+                 (NSHomeDirectory() as NSString).appendingPathComponent(".dotnet/tools"),
+                 "/usr/local/share/dotnet/tools",
+                 "/Library/Frameworks/Mono.framework/Versions/Current/bin"]
         for dir in dirs {
             let candidate = (dir as NSString).appendingPathComponent(tool)
             if FileManager.default.isExecutableFile(atPath: candidate) { return candidate }
@@ -699,8 +739,9 @@ enum PluginDecompilerRunner {
     /// The directory belongs to the caller — the cache, in practice — so the result survives the
     /// call and single classes can be read from it later. Returns the relative paths of the source
     /// files produced, sorted, or a failure describing what the engine did.
-    static func runArchive(_ engine: PluginDecompilerEngine, input: String,
-                           outputDirectory: String) -> Result<[String], PluginDecompileError> {
+    static func runArchive(_ engine: PluginDecompilerEngine, input: String, outputDirectory: String,
+                           extensions: Set<String> = sourceExtensions)
+        -> Result<[String], PluginDecompileError> {
         guard let archive = engine.archive else {
             return .failure(.notReadable("\(engine.name) cannot decompile a whole archive."))
         }
@@ -722,24 +763,27 @@ enum PluginDecompilerRunner {
             return .failure(error)
         }
         expandNestedArchives(in: outputDirectory)
-        let files = sourceFiles(in: outputDirectory)
+        let files = sourceFiles(in: outputDirectory, extensions: extensions)
         guard !files.isEmpty else { return .failure(.emptyOutput(engine: engine.name)) }
         return .success(files)
     }
 
-    /// Extensions worth showing in a tree of decompiled sources.
+    /// Extensions worth showing in a tree of decompiled sources, across every platform.
     ///
     /// A whitelist and not a blacklist: engines drop all sorts of things next to the source —
     /// manifests, resources, their own logs — and listing what belongs is a shorter, more stable
-    /// rule than guessing what does not.
-    static let sourceExtensions: Set<String> = ["java", "kt", "smali", "txt", "scala", "groovy"]
+    /// rule than guessing what does not. Callers with a profile pass its narrower set; this union is
+    /// the default so a caller without one still sees results rather than none.
+    static let sourceExtensions: Set<String> = ["java", "kt", "smali", "txt", "scala", "groovy",
+                                               "cs", "vb", "fs", "il"]
 
-    /// Relative paths of the source files under `directory`, sorted so the tree is stable.
-    static func sourceFiles(in directory: String) -> [String] {
+    /// Relative paths of the result files under `directory`, sorted so the tree is stable.
+    static func sourceFiles(in directory: String,
+                            extensions: Set<String> = sourceExtensions) -> [String] {
         let fm = FileManager.default
         guard let e = fm.enumerator(atPath: directory) else { return [] }
         return (e.allObjects as? [String] ?? [])
-            .filter { sourceExtensions.contains(($0 as NSString).pathExtension.lowercased()) }
+            .filter { extensions.contains(($0 as NSString).pathExtension.lowercased()) }
             .sorted()
     }
 
@@ -1152,15 +1196,85 @@ extension PluginDecompilerProfile {
     ///
     /// `claims` is a constant true because the detect string already decides everything that matters
     /// here — an extension or the CAFEBABE magic. .NET is the case that needed more.
+    /// .NET assemblies. The interesting differences from Java are both here rather than in code.
+    ///
+    /// `treeKinds` holds the assembly itself: a `.dll` is one file with many types in it, so it takes
+    /// the same path a JAR does. And `claims` is a real check — `.dll` and `.exe` name native binaries
+    /// too, and the detect string cannot follow the pointer that tells them apart, so the plugin
+    /// declines and the host shows its own viewer.
+    static let dotNet = PluginDecompilerProfile(
+        id: "net",
+        singleKinds: [],
+        treeKinds: ["dll", "exe", "winmd", "netmodule"],
+        language: .csharp,
+        sourceExtension: "cs",
+        resultExtensions: ["cs", "vb", "fs", "il", "txt"],
+        bytecodeMarkers: [".assembly", "// Metadata version"],
+        settingsViewId: "plugin.netdecompiler.settings",
+        commandToSources: "plugin.netdecompiler.tosources",
+        commandClearCache: "plugin.netdecompiler.clearcache",
+        claims: PluginDecompilerFormats.isManagedAssembly)
+
     static let java = PluginDecompilerProfile(
         id: "java",
         singleKinds: ["class"],
         treeKinds: ["jar", "apk", "dex"],
         language: .java,
         sourceExtension: "java",
+        resultExtensions: ["java", "kt", "smali", "txt", "scala", "groovy"],
         bytecodeMarkers: ["Compiled from"],
         settingsViewId: "plugin.javadecompiler.settings",
         commandToSources: "plugin.javadecompiler.tosources",
         commandClearCache: "plugin.javadecompiler.clearcache",
         claims: { _ in true })
+}
+
+// MARK: - Formats the detect string cannot decide
+
+/// File-format questions that need more than a byte at a fixed offset.
+///
+/// The detect-string grammar tests `EXT`, `SIZE` and `[n]` — bytes at *constant* positions. Whether a
+/// `.dll` is a .NET assembly or a native library is a chain of pointers, so it cannot be asked there
+/// and is asked here instead, before the view is built.
+enum PluginDecompilerFormats {
+    /// Whether `path` is a managed (.NET) assembly.
+    ///
+    /// Walks the PE far enough to see whether the CLI header exists: `MZ`, the PE offset at 0x3C, the
+    /// `PE\0\0` signature, the optional header's magic to learn its size, then data directory 14. A
+    /// native DLL has that directory empty, which is exactly the distinction the extension cannot make.
+    ///
+    /// Reads a bounded prefix rather than the file: the answer is decided in the first few hundred
+    /// bytes, and this runs on every F3 and on every file a search walks.
+    static func isManagedAssembly(_ path: String) -> Bool {
+        guard let handle = FileHandle(forReadingAtPath: path) else { return false }
+        defer { try? handle.close() }
+        guard let head = try? handle.read(upToCount: 4096), head.count > 0x40 else { return false }
+        let bytes = [UInt8](head)
+        func u16(_ i: Int) -> Int? {
+            guard i + 1 < bytes.count else { return nil }
+            return Int(bytes[i]) | Int(bytes[i + 1]) << 8
+        }
+        func u32(_ i: Int) -> Int? {
+            guard i + 3 < bytes.count else { return nil }
+            return Int(bytes[i]) | Int(bytes[i + 1]) << 8 | Int(bytes[i + 2]) << 16 | Int(bytes[i + 3]) << 24
+        }
+        guard bytes[0] == 0x4D, bytes[1] == 0x5A else { return false }              // "MZ"
+        guard let peOffset = u32(0x3C), peOffset > 0, peOffset + 24 < bytes.count else { return false }
+        guard bytes[peOffset] == 0x50, bytes[peOffset + 1] == 0x45,
+              bytes[peOffset + 2] == 0, bytes[peOffset + 3] == 0 else { return false }  // "PE\0\0"
+        let optionalHeader = peOffset + 24
+        guard let magic = u16(optionalHeader) else { return false }
+        // 0x10B = PE32, 0x20B = PE32+. The data directories start 96 or 112 bytes into the optional
+        // header respectively; anything else is not a Windows image this can reason about.
+        let directoriesOffset: Int
+        switch magic {
+        case 0x10B: directoriesOffset = optionalHeader + 96
+        case 0x20B: directoriesOffset = optionalHeader + 112
+        default: return false
+        }
+        // Directory 14 is the CLI header: present with a non-zero size exactly for managed images.
+        let cli = directoriesOffset + 14 * 8
+        guard let rva = u32(cli), let size = u32(cli + 4) else { return false }
+        return rva != 0 && size != 0
+    }
 }

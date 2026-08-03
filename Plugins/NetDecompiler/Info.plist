@@ -2,20 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleName</key><string>JavaDecompiler</string>
-	<key>CFBundleExecutable</key><string>JavaDecompiler</string>
+	<key>CFBundleName</key><string>NetDecompiler</string>
+	<key>CFBundleExecutable</key><string>NetDecompiler</string>
 	<key>CFBundlePackageType</key><string>BNDL</string>
 	<key>CFBundleShortVersionString</key><string>1.0</string>
 	<key>CFBundleVersion</key><string>1</string>
 	<key>PCPluginType</key><string>plx</string>
 	<key>PCPluginAPIVersion</key><integer>1</integer>
-	<key>PCPluginName</key><string>Java Decompiler</string>
+	<key>PCPluginName</key><string>.NET Decompiler</string>
 	<key>PCPluginExtensions</key>
-	<array><string>class</string><string>dex</string><string>jar</string><string>apk</string></array>
+	<array><string>dll</string><string>exe</string><string>winmd</string><string>netmodule</string></array>
 	<!-- Claim .class by extension, and by the CAFEBABE magic so a class file that lost its
 	     extension inside an archive is still recognised. -->
 	<key>PCPluginDetectString</key>
-	<string>EXT="CLASS" | EXT="DEX" | EXT="JAR" | EXT="APK" | ([0]=202 &amp; [1]=254 &amp; [2]=186 &amp; [3]=190)</string>
+	<string>(EXT="DLL" | EXT="EXE" | EXT="WINMD" | EXT="NETMODULE") &amp; [0]=77 &amp; [1]=90</string>
 	<key>PCPluginMinHostVersion</key><integer>1</integer>
 	<!-- Off until switched on: it needs an engine the user installs, and most people never
 	     open a .class file. Shipped so it is one click away, not a download away. -->
@@ -28,8 +28,8 @@
 		<key>commands</key>
 		<array>
 			<dict>
-				<key>id</key><string>plugin.javadecompiler.tosources</string>
-				<key>title</key><string>Decompile to Sources</string>
+				<key>id</key><string>plugin.netdecompiler.tosources</string>
+				<key>title</key><string>Decompile Assembly to Sources</string>
 				<key>category</key><string>Tools</string>
 				<!-- The host extracts a VFS entry to a temp file before the command runs, so this
 				     works on a .class inside an archive exactly as F3 does. Without the key the
@@ -37,21 +37,21 @@
 				<key>needsLocalPath</key><true/>
 			</dict>
 			<dict>
-				<key>id</key><string>plugin.javadecompiler.clearcache</string>
-				<key>title</key><string>Clear Decompiler Cache</string>
+				<key>id</key><string>plugin.netdecompiler.clearcache</string>
+				<key>title</key><string>Clear .NET Decompiler Cache</string>
 				<key>category</key><string>Tools</string>
 			</dict>
 		</array>
 		<key>menus</key>
 		<array>
 			<dict>
-				<key>command</key><string>plugin.javadecompiler.tosources</string>
+				<key>command</key><string>plugin.netdecompiler.tosources</string>
 				<key>menu</key><string>Commands</string>
 				<key>group</key><string>2_tools</string>
 				<key>order</key><integer>110</integer>
 			</dict>
 			<dict>
-				<key>command</key><string>plugin.javadecompiler.clearcache</string>
+				<key>command</key><string>plugin.netdecompiler.clearcache</string>
 				<key>menu</key><string>Commands</string>
 				<key>group</key><string>2_tools</string>
 				<key>order</key><integer>111</integer>
@@ -60,26 +60,26 @@
 		<key>contextMenus</key>
 		<array>
 			<dict>
-				<key>command</key><string>plugin.javadecompiler.tosources</string>
+				<key>command</key><string>plugin.netdecompiler.tosources</string>
 				<key>surface</key><string>panel.item</string>
 				<key>group</key><string>9_plugins</string>
-				<key>when</key><string>cursorExt in ('class', 'jar', 'apk', 'dex')</string>
+				<key>when</key><string>cursorExt in ('dll', 'exe', 'winmd', 'netmodule')</string>
 			</dict>
 		</array>
 		<key>views</key>
 		<array>
 			<dict>
-				<key>id</key><string>plugin.javadecompiler.settings</string>
+				<key>id</key><string>plugin.netdecompiler.settings</string>
 				<key>container</key><string>settings</string>
-				<key>title</key><string>Java Decompiler</string>
+				<key>title</key><string>.NET Decompiler</string>
 			</dict>
 		</array>
 		<key>keybindings</key>
 		<array>
 			<dict>
-				<key>command</key><string>plugin.javadecompiler.tosources</string>
-				<key>key</key><string>cmd+shift+j</string>
-				<key>when</key><string>cursorExt in ('class', 'jar', 'apk', 'dex')</string>
+				<key>command</key><string>plugin.netdecompiler.tosources</string>
+				<key>key</key><string>cmd+shift+n</string>
+				<key>when</key><string>cursorExt in ('dll', 'exe', 'winmd', 'netmodule')</string>
 			</dict>
 		</array>
 	</dict>

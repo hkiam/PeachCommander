@@ -69,6 +69,8 @@ F3 på en hel `.jar`, `.apk` eller `.dex` dekompilerer alt på én gang og viser
 
 Det finnes en annen, mer direkte vei: sett markøren på en `.class`-fil eller et helt arkiv og velg **Dekompiler til kildekode** (menyen Kommandoer, kontekstmenyen eller ⌘⇧J). Klassene dekompileres, og resultatet åpnes i det andre feltet som vanlige `.java`-filer. Derfra gjelder hele filbehandleren — F3 viser dem med Peach Commanders eget Java-fargevalg, Alt+F7 søker på tvers av dem, F5 kopierer dem ut, og du kan sammenligne eller merke dem som alt annet. For det meste arbeidet slår det et eget vindu; derfor kan programtilleggets tre slås av i Innstillinger ▸ Dekompilator.
 
+Et annet programtillegg gjør det samme for .NET: F3 på en managed `.dll`, `.exe` eller `.winmd` viser typene som C#, **Dekompiler assembly til kildekode** (⌘⇧N) legger dem i et felt, og søket kan se inn i en assembly på samme måte. Det driver **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) for kildekode, eller **monodis** fra Mono for IL — .NETs motstykke til `javap`. En native `.dll` har samme endelse og ingen kildekode å vise, så tillegget sjekker det før åpning og overlater den til den innebygde viseren.
+
 Android dekkes også: F3 på en `.dex`-fil bruker **jadx** (Apache 2.0, `brew install jadx`), som gjør Dalvik-bytekode tilbake til Java. Det trengtes én motorbeskrivelse — samme mekanisme, annet format.
 
 Tillegget er **av til du slår det på**, under Innstillinger ▸ Programtillegg — de fleste åpner aldri en classfil, og uten motor gjør det ingen nytte.

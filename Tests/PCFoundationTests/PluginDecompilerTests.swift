@@ -749,3 +749,135 @@ extension PluginDecompilerArchiveTests {
                           "the readable prefix must not cost the hash its job")
     }
 }
+
+// MARK: - Managed vs native binaries (F-353)
+
+/// The check the detect string cannot make. Fixtures are built byte by byte rather than shipped:
+/// a real assembly would be a binary blob in the repo whose relevance nobody could see.
+final class PluginDecompilerFormatTests: XCTestCase {
+    private var dir = ""
+
+    override func setUpWithError() throws {
+        dir = (NSTemporaryDirectory() as NSString).appendingPathComponent("pc-pe-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+    }
+    override func tearDownWithError() throws { try? FileManager.default.removeItem(atPath: dir) }
+
+    /// A minimal PE. `cliSize` of 0 is a native image; anything else is managed.
+    private func writePE(_ name: String, magic: UInt16 = 0x10B, cliRVA: UInt32 = 0x2000,
+                         cliSize: UInt32, peOffset: UInt32 = 0x80) throws -> String {
+        var bytes = [UInt8](repeating: 0, count: 1024)
+        bytes[0] = 0x4D; bytes[1] = 0x5A                       // "MZ"
+        func put32(_ value: UInt32, at i: Int) {
+            bytes[i] = UInt8(value & 0xFF); bytes[i + 1] = UInt8((value >> 8) & 0xFF)
+            bytes[i + 2] = UInt8((value >> 16) & 0xFF); bytes[i + 3] = UInt8((value >> 24) & 0xFF)
+        }
+        put32(peOffset, at: 0x3C)
+        let pe = Int(peOffset)
+        // An offset that points past the file is a case worth testing, so the *fixture* must tolerate
+        // it rather than crash writing one: only fill in what fits.
+        let directories = pe + 24 + (magic == 0x10B ? 96 : 112)
+        if directories + 14 * 8 + 8 <= bytes.count {
+            bytes[pe] = 0x50; bytes[pe + 1] = 0x45             // "PE\0\0"
+            bytes[pe + 24] = UInt8(magic & 0xFF); bytes[pe + 25] = UInt8(magic >> 8)
+            put32(cliRVA, at: directories + 14 * 8)
+            put32(cliSize, at: directories + 14 * 8 + 4)
+        }
+        let path = (dir as NSString).appendingPathComponent(name)
+        try Data(bytes).write(to: URL(fileURLWithPath: path))
+        return path
+    }
+
+    func testAManagedAssemblyIsRecognised() throws {
+        XCTAssertTrue(PluginDecompilerFormats.isManagedAssembly(try writePE("managed.dll", cliSize: 72)))
+    }
+
+    func testPE32PlusIsRecognisedToo() throws {
+        // 64-bit images put the data directories 16 bytes further in; reading the wrong offset would
+        // make every modern assembly look native.
+        XCTAssertTrue(PluginDecompilerFormats.isManagedAssembly(
+            try writePE("managed64.dll", magic: 0x20B, cliSize: 72)))
+    }
+
+    func testANativeLibraryIsNotClaimed() throws {
+        // The whole reason this exists: same extension, same MZ, no CLI header.
+        XCTAssertFalse(PluginDecompilerFormats.isManagedAssembly(try writePE("native.dll", cliSize: 0)))
+    }
+
+    func testARubbishFileIsNotClaimed() throws {
+        let path = (dir as NSString).appendingPathComponent("notes.dll")
+        try "this is not a PE at all".write(toFile: path, atomically: true, encoding: .utf8)
+        XCTAssertFalse(PluginDecompilerFormats.isManagedAssembly(path))
+    }
+
+    func testAMissingFileIsNotClaimed() {
+        XCTAssertFalse(PluginDecompilerFormats.isManagedAssembly(
+            (dir as NSString).appendingPathComponent("absent.dll")))
+    }
+
+    func testAnOutOfRangePEOffsetIsRejectedRatherThanCrashing() throws {
+        // A truncated or hostile file must be answered, not read past its end.
+        XCTAssertFalse(PluginDecompilerFormats.isManagedAssembly(
+            try writePE("bad.dll", cliSize: 72, peOffset: 0xFFFF)))
+    }
+
+    func testTheCSharpTableCoversBothCSharpAndIL() {
+        XCTAssertTrue(PluginSyntaxLanguage.csharp.keywords.contains("namespace"))
+        XCTAssertTrue(PluginSyntaxLanguage.csharp.keywords.contains("callvirt"),
+                      "monodis output is not C#; leaving IL unhighlighted looks like a broken highlighter")
+        // `@name` is a verbatim identifier in C#, not an attribute — colouring it as one would light
+        // up ordinary variables.
+        XCTAssertNil(PluginSyntaxLanguage.csharp.annotationPrefix)
+    }
+}
+
+extension PluginDecompilerFormatTests {
+    func testTheDotNetProfileTreatsAnAssemblyAsManyTypes() {
+        let net = PluginDecompilerProfile.dotNet
+        // One .dll holds many types, so it takes the same path a JAR does rather than the single-class
+        // one — the reason `treeKinds` is about result shape and not about containers.
+        XCTAssertTrue(net.isTree(kind: "dll"))
+        XCTAssertTrue(net.handles(kind: "exe"))
+        XCTAssertFalse(net.handles(kind: "class"), "that is the other plugin's format")
+    }
+
+    func testTheTwoProfilesShareNoFormats() {
+        let java = PluginDecompilerProfile.java, net = PluginDecompilerProfile.dotNet
+        let all: (PluginDecompilerProfile) -> Set<String> = { $0.singleKinds.union($0.treeKinds) }
+        XCTAssertTrue(all(java).isDisjoint(with: all(net)),
+                      "two installed decompiler plugins must not both claim a file for F3")
+    }
+
+    func testEveryDotNetKindHasAnEngine() {
+        let registry = PluginDecompilerRegistry(configRoot: dir, profile: "net")
+        for kind in PluginDecompilerProfile.dotNet.treeKinds {
+            XCTAssertFalse(registry.engines(for: kind).isEmpty, "no engine describes .\(kind)")
+        }
+        // ILSpy can do a whole assembly; monodis answers with one listing and says so by having no
+        // archive support. Both are legitimate, and the view picks by what is installed.
+        XCTAssertTrue(registry.archiveEngines(for: "dll").contains { $0.id == "ilspy" })
+        XCTAssertFalse(registry.archiveEngines(for: "dll").contains { $0.id == "monodis" })
+    }
+
+    func testTheDotNetBytecodeMarkersMatchWhatMonodisPrints() {
+        let net = PluginDecompilerProfile.dotNet
+        XCTAssertTrue(net.isBytecodeListing(".assembly extern mscorlib\n{\n}\n"),
+                      "an IL listing must not be saved as .cs")
+        XCTAssertFalse(net.isBytecodeListing("namespace Demo;\npublic class Greeter { }\n"))
+    }
+}
+
+extension PluginDecompilerFormatTests {
+    func testEachProfileCountsItsOwnPlatformsResults() {
+        // The bug this pins: ILSpy wrote .cs files and the shared, Java-shaped whitelist counted none,
+        // so a successful run was reported as "produced no output".
+        XCTAssertTrue(PluginDecompilerProfile.dotNet.resultExtensions.contains("cs"))
+        XCTAssertTrue(PluginDecompilerProfile.java.resultExtensions.contains("java"))
+        for profile in [PluginDecompilerProfile.java, .dotNet] {
+            XCTAssertFalse(profile.resultExtensions.isEmpty, profile.id)
+            XCTAssertTrue(profile.resultExtensions.isSubset(of: PluginDecompilerRunner.sourceExtensions),
+                          "\(profile.id): the runner's default must cover every profile, or a caller "
+                          + "without a profile would silently drop that platform's files")
+        }
+    }
+}

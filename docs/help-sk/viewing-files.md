@@ -69,6 +69,8 @@ F3 na celom `.jar`, `.apk` alebo `.dex` dekompiluje všetko naraz a vedľa zdroj
 
 Existuje druhá, priamejšia cesta: postavte kurzor na súbor `.class` alebo na celý archív a zvoľte **Dekompilovať do zdrojov** (menu Príkazy, kontextové menu alebo ⌘⇧J). Triedy sa dekompilujú a výsledok sa otvorí v druhom paneli ako obyčajné súbory `.java`. Odvtedy platí celý správca súborov — F3 ich zobrazí s vlastným zvýrazňovaním Javy Peach Commandera, Alt+F7 hľadá napriek nim, F5 ich skopíruje inam a môžete ich porovnávať aj označovať ako čokoľvek iné. Pre väčšinu práce je to lepšie než vlastné okno; preto sa strom zásuvného modulu dá vypnúť v Nastaveniach ▸ Dekompilátor.
 
+Druhý zásuvný modul robí to isté pre .NET: F3 na spravovanej `.dll`, `.exe` alebo `.winmd` zobrazí jej typy ako C#, **Dekompilovať assembly do zdrojov** (⌘⇧N) ich vloží do panela a hľadanie dokáže nazrieť do assembly rovnakým spôsobom. Riadi **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) pre zdrojový kód alebo **monodis** z Mona pre IL — obdobu `javap` v .NET. Natívna `.dll` má rovnakú príponu a žiadny zdroj na zobrazenie, takže modul to pred otvorením skontroluje a prenechá ju vstavanému prehliadaču.
+
 Pokrytý je aj Android: F3 na súbore `.dex` použije **jadx** (Apache 2.0, `brew install jadx`), ktorý prevádza bajtkód Dalvik späť na Javu. Stačil jediný opis enginu — rovnaký mechanizmus, iný formát.
 
 Modul je **vypnutý, kým ho nezapnete**, v Nastavenia ▸ Zásuvné moduly — väčšina ľudí súbor .class nikdy neotvorí a bez enginu aj tak nič nezmôže.

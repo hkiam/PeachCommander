@@ -69,6 +69,8 @@ F3 auf eine ganze `.jar`, `.apk` oder `.dex` dekompiliert alles auf einmal und z
 
 Es gibt einen zweiten, direkteren Weg: Cursor auf eine `.class`-Datei oder ein ganzes Archiv setzen und **In Quelltext dekompilieren** wählen (Menü Befehle, Kontextmenü oder ⌘⇧J). Die Klassen werden dekompiliert, und das Ergebnis öffnet sich im anderen Dateipanel als gewöhnliche `.java`-Dateien. Von dort gilt der ganze Dateimanager — F3 zeigt sie mit dem Java-Highlighting von Peach Commander selbst, Alt+F7 sucht über sie hinweg, F5 kopiert sie heraus, und Sie können sie vergleichen oder mit Tags versehen wie alles andere. Für die meiste Arbeit ist das besser als ein eigenes Fenster; deshalb lässt sich der Baum des Plugins unter Einstellungen ▸ Decompiler abschalten.
 
+Ein zweites Plugin macht dasselbe für .NET: F3 auf eine verwaltete `.dll`, `.exe` oder `.winmd` zeigt ihre Typen als C#, **Assembly in Quelltext dekompilieren** (⌘⇧N) legt sie in ein Dateipanel, und die Suche kann genauso in eine Assembly hineinsehen. Es steuert **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) für Quelltext oder **monodis** aus Mono für IL — das .NET-Gegenstück zu `javap`. Eine native `.dll` hat dieselbe Endung und keinen Quelltext; das Plugin prüft das vor dem Öffnen und überlässt sie dem eingebauten Viewer.
+
 Android ist ebenfalls abgedeckt: F3 auf einer `.dex`-Datei benutzt **jadx** (Apache 2.0, `brew install jadx`), das Dalvik-Bytecode zurück in Java verwandelt. Dafür genügte eine Engine-Beschreibung — derselbe Mechanismus, ein anderes Format.
 
 Das Plugin ist **aus, bis Sie es einschalten**, unter Einstellungen ▸ Plugins — die meisten öffnen nie eine Klassendatei, und ohne Engine nützt es nichts.

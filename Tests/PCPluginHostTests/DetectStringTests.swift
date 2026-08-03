@@ -329,3 +329,59 @@ extension DetectStringTests {
                       "known overlap with Mach-O fat binaries; the engine reports it cannot read them")
     }
 }
+
+// MARK: - Every shipped plugin's own detect string (F-353)
+
+/// Reads the detect strings out of the real Info.plists and holds them to the grammar.
+///
+/// This exists because a plugin once shipped with `==` in its detect string. The dialect has a single
+/// `=`, so the expression was invalid, and an invalid expression matches nothing — the plugin loaded,
+/// claimed no file, and looked simply broken with nothing to point at. A parse check over the shipped
+/// manifests would have caught it in the commit that introduced it.
+final class ShippedDetectStringTests: XCTestCase {
+    /// Repo root, derived from this file's path so the test does not depend on the working directory.
+    private var pluginsDirectory: URL {
+        URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()   // PCPluginHostTests
+            .deletingLastPathComponent()   // Tests
+            .deletingLastPathComponent()   // repo root
+            .appendingPathComponent("Plugins")
+    }
+
+    private func manifests() throws -> [(name: String, detect: String)] {
+        let fm = FileManager.default
+        var out: [(String, String)] = []
+        for entry in try fm.contentsOfDirectory(atPath: pluginsDirectory.path).sorted() {
+            let plist = pluginsDirectory.appendingPathComponent(entry).appendingPathComponent("Info.plist")
+            guard let data = try? Data(contentsOf: plist),
+                  let dict = try? PropertyListSerialization.propertyList(
+                    from: data, format: nil) as? [String: Any],
+                  let detect = dict["PCPluginDetectString"] as? String, !detect.isEmpty else { continue }
+            out.append((entry, detect))
+        }
+        return out
+    }
+
+    func testEveryShippedDetectStringParses() throws {
+        let all = try manifests()
+        XCTAssertFalse(all.isEmpty, "no manifest declared a detect string — is the path right?")
+        for (name, detect) in all {
+            XCTAssertTrue(DetectString.isValid(detect), "\(name): invalid detect string: \(detect)")
+        }
+    }
+
+    func testTheDotNetPluginClaimsAWindowsImageAndNothingElse() throws {
+        let detect = try XCTUnwrap(manifests().first { $0.name == "NetDecompiler" }?.detect)
+        // A .dll that starts with "MZ" is a candidate; whether it is *managed* cannot be asked here —
+        // the CLI header sits behind a pointer and the grammar has fixed offsets only. The plugin
+        // checks that at load time and declines, which is what keeps native libraries out.
+        XCTAssertTrue(DetectString.matches(detect, context: DetectContext(
+            ext: "dll", size: 4096, bytes: [0x4D, 0x5A, 0x90, 0x00], isMultimedia: false)))
+        XCTAssertFalse(DetectString.matches(detect, context: DetectContext(
+            ext: "dll", size: 4096, bytes: [0x7F, 0x45, 0x4C, 0x46], isMultimedia: false)),
+                       "an ELF shared object is not a Windows image")
+        XCTAssertFalse(DetectString.matches(detect, context: DetectContext(
+            ext: "class", size: 4096, bytes: [0xCA, 0xFE, 0xBA, 0xBE], isMultimedia: false)),
+                       "that is the Java plugin's format")
+    }
+}
