@@ -66,8 +66,9 @@ final class DecompilerSettingsView: NSView {
         rows.append(heading(L("Engines")))
         let preferred = PluginDecompilerPreference.read(configRoot: configRootPath)
         for (kind, popup) in enginePopups {
-            let candidates = profile.isTree(kind: kind)
-                ? registry.archiveEngines(for: kind) : registry.engines(for: kind)
+            // Every engine that handles the kind. Filtering to tree-capable ones hid monodis, which
+            // handles a .dll perfectly well and simply answers with one listing instead of a tree.
+            let candidates = registry.engines(for: kind)
             popup.addItem(withTitle: L("First available"))
             popup.lastItem?.tag = -1
             for (i, engine) in candidates.enumerated() {
@@ -160,8 +161,7 @@ final class DecompilerSettingsView: NSView {
 
     @objc private func engineChanged(_ sender: NSPopUpButton) {
         guard let kind = sender.identifier?.rawValue else { return }
-        let candidates = profile.isTree(kind: kind)
-            ? registry.archiveEngines(for: kind) : registry.engines(for: kind)
+        let candidates = registry.engines(for: kind)
         let tag = sender.selectedItem?.tag ?? -1
         if tag < 0 {
             // "First available" is the absence of a preference, not a preference for the first entry:
@@ -200,7 +200,13 @@ final class DecompilerSettingsView: NSView {
 
     private func refreshStatus() {
         registry = PluginDecompilerRegistry(configRoot: configRootPath, profile: profile.id)
-        let installed = registry.engines.filter(\.isAvailable)
+        // Only engines for *this* plugin's formats. The whole registry lists both plugins' engines —
+        // the .NET page read "Installed: Demo Engine, Demo Engine, Demo ILSpy, …", half of it about
+        // Java files this page cannot do anything with.
+        let kinds = profile.singleKinds.union(profile.treeKinds)
+        let installed = registry.engines.filter { engine in
+            engine.isAvailable && kinds.contains { engine.handles(kind: $0) }
+        }
         engineStatus.stringValue = installed.isEmpty
             ? L("No engine is installed. Nothing is downloaded for you — “Engine Folder…” opens the folder they belong in, and its README names each engine and its licence.")
             : String(format: L("Installed: %@"), installed.map(\.name).joined(separator: ", "))

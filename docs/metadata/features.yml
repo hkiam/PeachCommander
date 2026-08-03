@@ -808,6 +808,42 @@ features:
       plugin panes too — they were reachable by mouse but not by the automation harness, so a
       plugin's settings page could not be driven or screenshotted.
 
+  - id: net-decompiler
+    name: .NET-Decompiler-Plugin (F3 auf eine Assembly)
+    name_en: .NET decompiler plugin (F3 on an assembly)
+    category: plugins
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [Commands], shortcuts: ["Cmd+Shift+N"], commands: [plugin.netdecompiler.tosources] }
+    source: { modules: [PCApp], types: [PluginDecompilerProfile, PluginDecompilerFormats] }
+    documentation: { integrated_help: true, website: false }
+    notes: >-
+      A second, separately removable decompiler plugin: F3 on a managed .dll/.exe/.winmd/.netmodule
+      shows its types as C#, the contributed command puts them in a file panel, and the host's search
+      can look inside an assembly. Drives ILSpy (MIT, `dotnet tool install -g ilspycmd`) for source or
+      monodis from Mono for IL — the .NET counterpart to javap. dnSpy is GPLv3 and dotPeek proprietary
+      and Windows-only, the same licence wall JD-Core put up on the Java side, so again nothing is
+      bundled and nothing is downloaded. Ships disabled.
+      This was the test of the claim that a new format is data. It half held: engines, runner, cache,
+      panel command and search hook took .NET unchanged, but the *views* were still in the Java plugin
+      as 1,647 format-specific lines, so they moved into the SDK behind a PluginDecompilerProfile
+      first. The plugin proper is one file of C exports plus a profile.
+      Three .NET-specific findings, all data rather than code: an assembly is one file holding many
+      types, so a .dll takes the tree path a JAR does; the view is chosen by the *installed engine*,
+      because ILSpy writes a project tree while monodis prints one IL listing of the same file, and
+      keying off the kind alone told Mono-only users no engine existed; and "is this managed" cannot be
+      a detect string — the CLI header sits behind the pointer at 0x3C and the grammar has fixed
+      offsets only — so the profile checks it at load time and declining lets `embedPlugin` fall back
+      to the host's own viewer. Verified in the VM, including that negative case: a native .dll with
+      the same extension and the same MZ header opens as hex.
+      Also fixed on the way: the runner's result-extension whitelist was Java-shaped, so ILSpy's .cs
+      files were written and then counted as nothing — a successful run reported as "produced no
+      output". Extensions are per profile now, and a test holds each profile's set inside the runner's
+      union. Engine lookup also learned where .NET tools actually live (~/.dotnet/tools and the Mono
+      framework), neither of which is on a GUI app's PATH. Every shipped manifest's detect string is
+      now parse-checked by a test — the `==` mistake that once made a plugin silently claim nothing
+      would have been caught by it.
+
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
     name: Einstellungen (15 Seiten)

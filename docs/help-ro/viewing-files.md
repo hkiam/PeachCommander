@@ -69,6 +69,8 @@ F3 pe un `.jar`, `.apk` sau `.dex` întreg îl decompilează dintr-o dată și a
 
 Există o a doua cale, mai directă: puneți cursorul pe un fișier `.class` sau pe o arhivă întreagă și alegeți **Decompilează în surse** (meniul Comenzi, meniul contextual sau ⌘⇧J). Clasele sunt decompilate, iar rezultatul se deschide în celălalt panou ca fișiere `.java` obișnuite. De acolo se aplică tot managerul de fișiere — F3 le afișează cu evidențierea Java proprie a lui Peach Commander, Alt+F7 caută prin ele, F5 le copiază în altă parte și le puteți compara sau eticheta ca orice altceva. Pentru cea mai mare parte a muncii asta bate o fereastră separată; de aceea arborele pluginului poate fi dezactivat în Setări ▸ Decompilator.
 
+Un al doilea plugin face același lucru pentru .NET: F3 pe un `.dll`, `.exe` sau `.winmd` gestionat arată tipurile ca C#, **Decompilează assembly-ul în surse** (⌘⇧N) le pune într-un panou, iar căutarea poate privi în interiorul unui assembly la fel. Conduce **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) pentru sursă, sau **monodis** din Mono pentru IL — echivalentul .NET al lui `javap`. Un `.dll` nativ are aceeași extensie și nicio sursă de arătat, deci pluginul verifică înainte de a deschide și îl lasă vizualizatorului încorporat.
+
 Android este de asemenea acoperit: F3 pe un fișier `.dex` folosește **jadx** (Apache 2.0, `brew install jadx`), care transformă bytecode-ul Dalvik înapoi în Java. A fost nevoie de o singură descriere de motor — același mecanism, alt format.
 
 Modulul este **oprit până îl porniți**, în Setări ▸ Module — cei mai mulți nu deschid niciodată un fișier .class, iar fără motor oricum nu ajută.

@@ -69,6 +69,8 @@ Az F3 egy egész `.jar`, `.apk` vagy `.dex` fájlon mindent egyszerre fejt vissz
 
 Van egy második, közvetlenebb út: állítsa a kurzort egy `.class` fájlra vagy egy egész archívumra, és válassza a **Visszafejtés forrásba** parancsot (Parancsok menü, helyi menü vagy ⌘⇧J). Az osztályok visszafejtődnek, az eredmény pedig a másik panelen nyílik meg közönséges `.java` fájlként. Onnantól a teljes fájlkezelő érvényes — az F3 a Peach Commander saját Java-kiemelésével jeleníti meg őket, az Alt+F7 keresztben keres bennük, az F5 kimásolja őket, és ugyanúgy összehasonlíthatja vagy megjelölheti őket, mint bármi mást. A munka nagy részéhez ez jobb, mint egy külön ablak; ezért a bővítmény fája kikapcsolható a Beállítások ▸ Visszafejtő alatt.
 
+Egy második bővítmény ugyanezt teszi a .NET-tel: az F3 egy felügyelt `.dll`, `.exe` vagy `.winmd` fájlon C#-ként mutatja a típusait, az **Assembly visszafejtése forrásba** (⌘⇧N) panelbe teszi őket, és a keresés ugyanígy be tud nézni egy assemblybe. Az **ILSpy**-t (MIT, `dotnet tool install -g ilspycmd`) vezérli forráshoz, vagy a Mono **monodis**-át IL-hez — ez a `javap` .NET-es megfelelője. Egy natív `.dll` ugyanezt a kiterjesztést viseli, forrása viszont nincs; a bővítmény ezt megnyitás előtt ellenőrzi, és a beépített megjelenítőre hagyja.
+
 Az Android is szerepel: egy `.dex` fájlon az F3 a **jadx**-ot használja (Apache 2.0, `brew install jadx`), amely a Dalvik bájtkódot Javára fordítja vissza. Ehhez egyetlen motorleírás kellett — ugyanaz a mechanizmus, más formátum.
 
 A bővítmény **ki van kapcsolva, amíg be nem kapcsolja**, a Beállítások ▸ Bővítmények oldalon — a legtöbben soha nem nyitnak meg .class fájlt, motor nélkül pedig úgysem használható.

@@ -194,7 +194,7 @@ final class DecompiledArchiveView: DecompilerListerView {
         // safe: a directory left behind by a timeout would otherwise be served as a complete
         // archive with classes silently missing.
         if PluginDecompilerCache.treeIsComplete(cacheDir) {
-            let found = PluginDecompilerRunner.sourceFiles(in: cacheDir)
+            let found = PluginDecompilerRunner.sourceFiles(in: cacheDir, extensions: profile.resultExtensions)
             if !found.isEmpty {
                 log.info("\(engine.id, privacy: .public): tree served from cache, \(found.count) file(s)")
                 present(files: found, directory: cacheDir, engine: engine, fromCache: true)
@@ -217,8 +217,12 @@ final class DecompiledArchiveView: DecompilerListerView {
                                    (path as NSString).lastPathComponent, engine.name)
         text.string = ""
         let file = path
+        // Captured as a value: the work runs off the main thread and must not reach back into the view
+        // to ask which extensions count.
+        let extensions = profile.resultExtensions
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            let result = PluginDecompilerRunner.runArchive(engine, input: file, outputDirectory: cacheDir)
+            let result = PluginDecompilerRunner.runArchive(engine, input: file, outputDirectory: cacheDir,
+                                                          extensions: extensions)
             DispatchQueue.main.async {
                 guard let self else { return }
                 switch result {

@@ -69,6 +69,8 @@ F3 sobre un `.jar`, `.apk` o `.dex` completo lo descompila de una vez y muestra 
 
 Hay una segunda vía, más directa: sitúe el cursor sobre un archivo `.class` o sobre un archivo comprimido completo y elija **Descompilar a fuentes** (menú Comandos, menú contextual o ⌘⇧J). Las clases se descompilan y el resultado se abre en el otro panel como archivos `.java` normales. A partir de ahí se aplica todo el gestor de archivos: F3 los muestra con el resaltado de Java propio de Peach Commander, Alt+F7 busca en ellos, F5 los copia fuera, y puede compararlos o etiquetarlos como cualquier otra cosa. Para la mayoría del trabajo esto es mejor que una ventana aparte; por eso el árbol del plugin se puede desactivar en Ajustes ▸ Descompilador.
 
+Un segundo plugin hace lo mismo con .NET: F3 sobre un `.dll`, `.exe` o `.winmd` administrado muestra sus tipos como C#, **Descompilar ensamblado a fuentes** (⌘⇧N) los deja en un panel, y la búsqueda puede mirar dentro de un ensamblado igual que antes. Usa **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) para código, o **monodis** de Mono para IL: el equivalente de `javap` en .NET. Un `.dll` nativo tiene la misma extensión y no tiene fuente que mostrar, así que el plugin lo comprueba antes de abrir y lo deja al visor integrado.
+
 Android también está cubierto: F3 sobre un archivo `.dex` usa **jadx** (Apache 2.0, `brew install jadx`), que convierte el bytecode de Dalvik de vuelta a Java. Bastó con una descripción de motor: el mismo mecanismo, otro formato.
 
 El módulo está **desactivado hasta que usted lo active**, en Ajustes ▸ Módulos: casi nadie abre un archivo .class, y sin un motor no sirve de nada.

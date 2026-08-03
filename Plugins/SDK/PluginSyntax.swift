@@ -57,6 +57,38 @@ struct PluginSyntaxLanguage {
         capitalisedIdentifiersAreTypes: true,
         lineComment: "//", blockCommentOpen: "/*", blockCommentClose: "*/",
         annotationPrefix: "@")
+
+    /// C#, plus what an IL disassembler prints.
+    ///
+    /// Same shape as `.java`, which is the claim the language-as-data design made: a second language
+    /// is a table. The IL directives and mnemonics are in the keyword set for the same reason javap's
+    /// words are in Java's — `monodis` output is not C#, and leaving it unhighlighted looks like the
+    /// highlighter gave up rather than like a different language.
+    static let csharp = PluginSyntaxLanguage(
+        keywords: [
+            "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",
+            "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else",
+            "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for",
+            "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock",
+            "long", "namespace", "new", "null", "object", "operator", "out", "override", "params",
+            "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed", "short",
+            "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw", "true",
+            "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "virtual",
+            "void", "volatile", "while",
+            // Contextual keywords a decompiler emits freely.
+            "async", "await", "dynamic", "get", "set", "init", "nameof", "partial", "record", "var",
+            "when", "where", "yield", "global", "required", "scoped", "file",
+            // IL, as printed by monodis / ildasm.
+            "assembly", "hidebysig", "cil", "managed", "maxstack", "locals", "ldarg", "ldarg.0",
+            "ldloc", "stloc", "ldstr", "ldc.i4", "ldfld", "stfld", "ldsfld", "stsfld", "call",
+            "callvirt", "newobj", "newarr", "ret", "br", "brtrue", "brfalse", "nop", "pop", "dup",
+            "box", "unbox", "castclass", "isinst", "throw", "leave", "endfinally", "ldnull",
+        ],
+        capitalisedIdentifiersAreTypes: true,
+        lineComment: "//", blockCommentOpen: "/*", blockCommentClose: "*/",
+        // C# has attributes in brackets rather than an @-prefix, and `@name` is a *verbatim
+        // identifier* — colouring that as an attribute would highlight ordinary variables.
+        annotationPrefix: nil)
 }
 
 /// The six colours the highlighter needs.

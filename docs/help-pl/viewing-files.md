@@ -69,6 +69,8 @@ F3 na całym pliku `.jar`, `.apk` lub `.dex` dekompiluje go w całości i pokazu
 
 Jest druga, bardziej bezpośrednia droga: ustaw kursor na pliku `.class` albo na całym archiwum i wybierz **Zdekompiluj do źródeł** (menu Polecenia, menu kontekstowe lub ⌘⇧J). Klasy zostaną zdekompilowane, a wynik otworzy się w drugim panelu jako zwykłe pliki `.java`. Od tej chwili obowiązuje cały menedżer plików — F3 pokazuje je z własnym podświetlaniem Javy Peach Commandera, Alt+F7 szuka wśród nich, F5 kopiuje je na zewnątrz, a porównywać i oznaczać można je jak wszystko inne. Do większości pracy bije to osobne okno; dlatego drzewo wtyczki można wyłączyć w Ustawieniach ▸ Dekompilator.
 
+Druga wtyczka robi to samo dla .NET: F3 na zarządzanym `.dll`, `.exe` lub `.winmd` pokazuje jego typy jako C#, **Zdekompiluj assembly do źródeł** (⌘⇧N) umieszcza je w panelu, a wyszukiwanie potrafi zajrzeć do assembly tak samo. Steruje **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) dla źródeł albo **monodis** z Mono dla IL — odpowiednikiem `javap` w .NET. Natywny `.dll` ma to samo rozszerzenie i nie ma źródła do pokazania, więc wtyczka sprawdza to przed otwarciem i zostawia go wbudowanej przeglądarce.
+
 Android jest również objęty: F3 na pliku `.dex` używa **jadx** (Apache 2.0, `brew install jadx`), który zamienia kod bajtowy Dalvik z powrotem na Javę. Wystarczył jeden opis silnika — ten sam mechanizm, inny format.
 
 Wtyczka jest **wyłączona, dopóki jej nie włączysz**, w Ustawienia ▸ Wtyczki — większość osób nigdy nie otwiera pliku .class, a bez silnika i tak nic nie da.

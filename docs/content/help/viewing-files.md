@@ -69,6 +69,8 @@ F3 on a whole `.jar`, `.apk` or `.dex` decompiles all of it at once and shows a 
 
 There is a second, more direct route: put the cursor on a `.class` file or a whole archive and choose **Decompile to Sources** (Commands menu, the context menu, or ⌘⇧J). The classes are decompiled and the result opens in the other file panel as ordinary `.java` files. From there the whole file manager applies — F3 views them with Peach Commander's own Java highlighting, Alt+F7 searches across them, F5 copies them out, and you can compare or tag them like anything else. For most work this beats a window of its own, which is why the plugin's own tree can be switched off in Settings ▸ Decompiler.
 
+A second plugin does the same for .NET: F3 on a managed `.dll`, `.exe` or `.winmd` shows its types as C#, **Decompile Assembly to Sources** (⌘⇧N) puts them in a file panel, and the search can look inside an assembly the same way. It drives **ILSpy** (MIT, `dotnet tool install -g ilspycmd`) for source, or **monodis** from Mono for IL — the .NET counterpart to `javap`. A native `.dll` has the same extension and no source to show, so the plugin checks before it opens and leaves those to the built-in viewer.
+
 Android is covered too: F3 on a `.dex` file uses **jadx** (Apache 2.0, `brew install jadx`), which turns Dalvik bytecode back into Java. Adding it took one engine description — the same mechanism, a different format.
 
 The plugin is **off until you turn it on**, in Settings ▸ Plugins — most people never open a class file, and it needs an engine to be useful.

@@ -20,6 +20,7 @@ SCRIPTS=(
   build-archive-plugin
   build-csvlister-plugin
   build-javadecompiler-plugin
+  build-netdecompiler-plugin
   build-git-plugin
   build-logviewer-plugin
   build-notes-plugin

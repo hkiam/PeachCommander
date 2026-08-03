@@ -101,6 +101,9 @@ final class DecompiledView: DecompilerListerView {
         self.profile = profile
         self.kind = (path as NSString).pathExtension.lowercased()
         self.registry = PluginDecompilerRegistry(configRoot: configRoot, profile: profile.id)
+        // Every engine for this kind, whatever result shape it produces: when the tree view declined
+        // because no archive-capable engine is installed, this view is what is left to show monodis's
+        // listing, and filtering the list here would leave it empty.
         self.candidates = registry.engines(
             for: profile.handles(kind: kind) ? kind : (profile.singleKinds.sorted().first ?? kind))
         super.init(frame: NSRect(x: 0, y: 0, width: 800, height: 600))
@@ -329,7 +332,11 @@ final class DecompiledView: DecompilerListerView {
             "updates them.",
             "",
         ]
-        for engine in PluginDecompilerEngine.builtIns(engineDirectory: engineDirectory) {
+        // This plugin's engines only. Both decompiler plugins write into the same folder, and a README
+        // that listed the other platform's engines would read like advice to install them.
+        let kinds = profile.singleKinds.union(profile.treeKinds)
+        for engine in PluginDecompilerEngine.builtIns(engineDirectory: engineDirectory)
+        where kinds.contains(where: { engine.handles(kind: $0) }) {
             lines.append("* \(engine.name)")
             if let note = engine.note { lines.append("  \(note)") }
             if let p = engine.enginePath {
@@ -564,7 +571,14 @@ func makeDecompilerListerView(_ file: UnsafeMutablePointer<CChar>?,
     // single class gets the single-source view. The decision is the file's kind and not the engine's,
     // because it has to be made before any engine has run.
     let kind = (path as NSString).pathExtension.lowercased()
-    let view: DecompilerListerView = profile.isTree(kind: kind)
+    // The *engine* decides the shape, not only the kind. Java never showed this: a .class has one
+    // engine shape and a JAR another. .NET does — ILSpy writes a project tree from an assembly while
+    // monodis prints one IL listing of the same file, and someone who installed only Mono would
+    // otherwise get a tree view reporting no engine for a file monodis handles perfectly well.
+    let wantsTree = profile.isTree(kind: kind)
+        && PluginDecompilerRegistry(configRoot: root, profile: profile.id)
+            .archiveEngines(for: kind).contains { $0.isAvailable }
+    let view: DecompilerListerView = wantsTree
         ? DecompiledArchiveView(path: path, configRoot: root, profile: profile)
         : DecompiledView(path: path, configRoot: root, profile: profile)
     return Unmanaged.passRetained(view).toOpaque()
