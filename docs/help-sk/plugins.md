@@ -27,6 +27,7 @@ Zvyšné vstavané zásuvné moduly sú menšie a nepotrebujú vlastnú stránku
 - **iCloud Drive** — pridáva položku *iCloud Drive* do lišty diskov, ktorá skočí priamo do vášho lokálneho priečinka iCloud Drive. Objaví sa iba vtedy, keď je iCloud Drive nastavený na vašom Macu.
 - **Notes** — držte poznámku vedľa ktoréhokoľvek súboru alebo priečinka. Malý odznak **●** označuje položky, ktoré ju majú; upravujte poznámky v ukotvenom bočnom paneli **Notes** alebo v úplnom editore formátovaného textu (**Príkazy ▸ Upraviť poznámku…**) a prehliadajte ich všetky pomocou **Prehľad poznámok…**.
 - **Log Viewer** — otvorte súbor ako farebne kódovaný, podľa úrovní klasifikovaný, živo sledovaný protokol (**Súbor ▸ Zobraziť ako protokol…**), s filtrami podľa úrovní, hľadaním a podporou bežných formátov protokolov plus vašich vlastných formátov regex. Zvláda protokoly s viacerými gigabajtmi okamžite.
+- **CSV Lister** — stlačte F3 na súbore `.csv` alebo `.tsv` a otvorí sa ako skutočná tabuľka so zoraditeľnými stĺpcami namiesto holého textu. Oddeľovač sa rozpozná automaticky, takže sa zarovnajú aj exporty oddelené bodkočiarkou, a hľadanie v prehliadači nájde hodnoty bunku po bunke.
 - **AI Column** — pridáva stĺpec *AI Language*, ktorý zisťuje dominantný jazyk každého textového súboru na zariadení (pomocou frameworku NaturalLanguage od Apple — nie cloudového modelu).
 - **Formáty archívov** — naučia aplikáciu prehliadať a rozbaľovať viac typov archívov (7z, rodina tar, gzip/bzip2/xz/zstd a RAR, kde je nainštalovaný pomocný nástroj), ktoré sa potom otvárajú ako priečinky.
 

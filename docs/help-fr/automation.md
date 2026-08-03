@@ -10,7 +10,7 @@ Peach Commander est scriptable, vous pouvez donc le piloter depuis AppleScript e
 
 ## Voir le dictionnaire
 
-1. Ouvrez **Éditeur de script** (dans `/Applications/Utilitaires`).
+1. Ouvrez **Éditeur de script** (dans `/Applications/Utilities` — « Utilitaires » dans le Finder).
 2. Choisissez **Fenêtre ▸ Bibliothèque**, puis double-cliquez sur **Peach Commander** (ajoutez-le avec **+** s'il n'est pas listé).
 3. Le dictionnaire s'ouvre, listant les commandes et propriétés ci-dessous.
 

@@ -81,9 +81,38 @@ def shape(text: str) -> dict:
         "lists": lists,
         "images": IMAGE.findall(text),
         "fences": fences,
-        # A multiset: order varies with grammar, presence should not.
-        "code": sorted(INLINE_CODE.findall(text)),
+        # A multiset of the *syntax* spans only — see `is_syntax`.
+        "code": sorted(normalise(c) for c in INLINE_CODE.findall(text) if is_syntax(c)),
     }
+
+
+PLACEHOLDER = re.compile(r"<[^>]*>")
+
+
+def normalise(token: str) -> str:
+    """Blank out placeholder contents: `go to "<path>"` and `go to "<pfad>"` are the same syntax."""
+    return PLACEHOLDER.sub("<>", token)
+
+
+def is_syntax(token: str) -> bool:
+    """Whether a backticked span is syntax the user must type as-is, rather than localisable prose.
+
+    The first version of this check compared every inline code span and reported 75 pages of drift.
+    Nearly all of it was correct translation: `Open Terminal Here` is a *label the reader invents for
+    their own menu entry*, and French writing `Ouvrir le Terminal ici` is better, not worse. Likewise
+    the German automation page writes `go to "<pfad>"` — the command word stays English because it has
+    to be typed, the placeholder is translated because it is a description.
+
+    So only spans that cannot be localised are compared: anything with a path separator, a wildcard, a
+    flag, a placeholder, an extension or an operator in it, plus single words (`jq`, `taplo`,
+    `formatters.ini`). A multi-word run of plain letters is prose in backticks and is left alone.
+    """
+    stripped = normalise(token).strip()
+    if not stripped:
+        return False
+    if any(ch in stripped for ch in "/\\*<>=|[]$%-_."):
+        return True
+    return len(stripped.split()) == 1
 
 
 def differences(en: dict, other: dict) -> list:

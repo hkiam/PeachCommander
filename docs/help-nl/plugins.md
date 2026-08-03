@@ -27,6 +27,7 @@ De overige ingebouwde plug-ins zijn kleiner en hebben geen eigen pagina nodig:
 - **iCloud Drive** — voegt een *iCloud Drive*-vermelding toe aan de schijvenbalk die direct naar je lokale iCloud Drive-map springt. Deze verschijnt alleen wanneer iCloud Drive op je Mac is ingesteld.
 - **Notes** — bewaar een notitie naast elk bestand of elke map. Een klein **●**-badge markeert items die er een hebben; bewerk notities in een vastgezette **Notes**-zijbalk of een volledige rich-text-editor (**Opdrachten ▸ Notitie bewerken…**), en blader ze allemaal door met **Notities-overzicht…**.
 - **Log Viewer** — open een bestand als een kleurgecodeerd log, ingedeeld op niveau en live meelezend (**Bestand ▸ Bekijken als log…**), met filters per niveau, zoeken en ondersteuning voor gangbare logformaten plus je eigen regex-formaten. Verwerkt logs van meerdere gigabytes direct.
+- **CSV Lister** — druk op F3 op een `.csv`- of `.tsv`-bestand en het opent als een echte tabel met sorteerbare kolommen in plaats van ruwe tekst. Het scheidingsteken wordt automatisch herkend, dus met puntkomma's gescheiden exports lijnen ook netjes uit, en het zoeken van de viewer vindt waarden cel voor cel.
 - **AI Column** — voegt een *AI Language*-kolom toe die de dominante taal van elk tekstbestand op het apparaat detecteert (met Apple's NaturalLanguage-framework — geen cloudmodel).
 - **Archiefformaten** — leert de app meer archieftypen te doorbladeren en uit te pakken (7z, de tar-familie, gzip/bzip2/xz/zstd en RAR waar een hulpprogramma is geïnstalleerd), die dan als mappen openen.
 

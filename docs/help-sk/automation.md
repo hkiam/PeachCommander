@@ -10,7 +10,7 @@ Peach Commander možno skriptovať, takže ho môžete ovládať z AppleScript a
 
 ## Zobrazenie slovníka
 
-1. Otvorte **Editor skriptov** (v `/Aplikácie/Nástroje`).
+1. Otvorte **Editor skriptov** (v `/Applications/Utilities` — „Nástroje“ vo Finderi).
 2. Vyberte **Okno ▸ Knižnica**, potom dvakrát kliknite na **Peach Commander** (pridajte ho pomocou **+**, ak nie je v zozname).
 3. Slovník sa otvorí a uvedie príkazy a vlastnosti nižšie.
 

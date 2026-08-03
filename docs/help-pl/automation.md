@@ -10,7 +10,7 @@ Peach Commander można skryptować, więc możesz sterować nim z AppleScript i 
 
 ## Zobacz słownik
 
-1. Otwórz **Edytor skryptów** (w `/Programy/Narzędzia`).
+1. Otwórz **Edytor skryptów** (w `/Applications/Utilities` — w Finderze „Narzędzia”).
 2. Wybierz **Okno ▸ Biblioteka**, a następnie kliknij dwukrotnie **Peach Commander** (dodaj go przyciskiem **+**, jeśli nie jest wymieniony).
 3. Słownik się otworzy, wymieniając polecenia i właściwości poniżej.
 

@@ -10,7 +10,7 @@ Peach Commander poate fi scriptat, astfel încât îl puteți conduce din AppleS
 
 ## Vedeți dicționarul
 
-1. Deschideți **Editor de scripturi** (în `/Aplicații/Utilitare`).
+1. Deschideți **Editor de scripturi** (în `/Applications/Utilities` — „Utilitare” în Finder).
 2. Alegeți **Fereastră ▸ Bibliotecă**, apoi faceți dublu clic pe **Peach Commander** (adăugați-l cu **+** dacă nu este listat).
 3. Dicționarul se deschide, listând comenzile și proprietățile de mai jos.
 

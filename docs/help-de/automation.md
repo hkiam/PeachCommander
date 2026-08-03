@@ -10,7 +10,7 @@ Peach Commander ist skriptfähig und lässt sich per AppleScript sowie aus der A
 
 ## Das Dictionary ansehen
 
-1. Öffnen Sie den **Skripteditor** (in `/Programme/Dienstprogramme`).
+1. Öffnen Sie den **Skripteditor** (in `/Applications/Utilities` — im Finder „Dienstprogramme“).
 2. Wählen Sie **Fenster ▸ Bibliothek** und doppelklicken Sie auf **Peach Commander** (mit **+** hinzufügen, falls nicht aufgeführt).
 3. Das Dictionary öffnet sich und listet die unten stehenden Befehle und Eigenschaften.
 
