@@ -22,6 +22,8 @@ For at starte en helt ny tekstfil på den aktuelle placering skal du trykke på 
 
 Tilhører filen `root` — noget i `/etc`, en launchd-plist, en webservers konfiguration — tilbyder gemningen at gøre det **som administrator**: macOS beder om godkendelse på sædvanlig vis, indholdet overleveres via en privat midlertidig fil i stedet for en kommandolinje, og filen beholder sin egen ejer og sine rettigheder i stedet for stille at blive din.
 
+Kan filen ikke skrives, får du det at vide, når du åbner den, og ikke først når du gemmer: titlen bærer en lås, og statuslinjen nævner forhindringen — tilhører en anden bruger, rettigheder der forbyder skrivning, en låst fil, en skrivebeskyttet diskenhed eller beskyttelse fra systemet. Kun det første kan afgøres ved at godkende gemningen, og kun der bliver det tilbudt; ved de øvrige ville det koste en adgangskode og alligevel mislykkes.
+
 Margenen viser linjenumre, med linjen du står på lysere end de andre; knappen ved siden af kodningsmenuen skjuler den. En ombrudt linje nummereres én gang, så nummeret betyder altid samme linje, som en oversætterfejl eller en gennemgangskommentar mener.
 
 ## Søg, erstat og naviger
@@ -41,6 +43,21 @@ Klik på **Filtrer…** (eller tryk på Shift+Cmd+\) for at sende den markerede 
 Kommandoen kører i din login-shell: din `PATH`, dine aliaser og dine funktioner virker præcis som i Terminal, og pipes og citationstegn betyder det, du forventer. Arbejdsmappen er mappen med den fil, du redigerer, så relative stier opløses, hvor du forventer det. De kommandoer, du har brugt, huskes og tilbydes i rullelisten næste gang.
 
 Hvis kommandoen fejler, står din tekst uberørt, og kommandoens egen fejlmeddelelse vises i statuslinjen — en `jq`-syntaksfejl ender aldrig indsat i din fil. En kommando, der ikke udskriver noget, tømmer markeringen, og det er netop, hvad filtrering med `grep` er til for; Cmd+Z henter den tilbage. En kommando, der aldrig bliver færdig, standses efter tyve sekunder.
+
+## Sortér, fjern dubletter og ryd op i linjer
+
+Menuen **Linjer** — i værktøjslinjen og, så længe editoren er forrest, i menulinjen — udfører de ændringer, der kommer igen og igen, uden en indtastet kommando og uden installeret værktøj:
+
+- Sortér A→Z eller Z→A, hvor tal sammenlignes efter værdi, så `file9` kommer før `file10`.
+- Vend linjernes rækkefølge.
+- Fjern dublerede linjer, behold den første af hver og lad resten stå i deres rækkefølge.
+- Fjern tomme linjer, også dem der kun ser tomme ud, fordi de indeholder mellemrum.
+- Fjern mellemrum i slutningen af linjen — den usynlige forskel, der gør en diff urolig.
+- Behold kun, eller fjern, de linjer der indeholder en tekst, du skriver.
+
+Er tekst markeret, arbejder hver af dem på de markerede linjer; markeringen udvides først til hele linjer, for at sortere en halv linje betyder ingenting. Uden markering gælder de hele dokumentet. Hver er et enkelt fortryd-trin, så Cmd+Z tager hele handlingen tilbage.
+
+Linjeskiftene står ved siden af menuen Tegnsæt: **LF** til Unix og macOS, **CRLF** til Windows, **CR** til det klassiske Mac OS, og *(mixed)* når én fil indeholder mere end én slags — ofte grunden til en fejl, der ikke giver mening. Vælg et andet for at konvertere hele filen i ét trin, der kan fortrydes. Linjehandlingerne ændrer aldrig linjeskiftet af sig selv: en sorteret CRLF-fil bliver ved med at være CRLF.
 
 ## Formatér en fil
 

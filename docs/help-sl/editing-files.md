@@ -22,6 +22,8 @@ Za začetek povsem nove besedilne datoteke na trenutnem mestu pritisnite Shift+F
 
 Če datoteka pripada `root` — vnos v `/etc`, launchd plist, nastavitve spletnega strežnika —, shranjevanje ponudi, da to stori **kot skrbnik**: macOS zahteva odobritev kot običajno, vsebina gre prek zasebne začasne datoteke in ne prek ukazne vrstice, datoteka pa ohrani svojega lastnika in pravice, namesto da bi tiho postala vaša.
 
+Če datoteke ni mogoče zapisati, to izveste ob odprtju in ne šele pri shranjevanju: naslov nosi ključavnico, vrstica stanja pa imenuje oviro — lastnik je drug uporabnik, dovoljenja prepovedujejo pisanje, zaklenjena datoteka, nosilec samo za branje ali zaščita sistema. Le prvo je mogoče rešiti s pooblastitvijo shranjevanja in le tam je ponujena; pri drugih bi vas stala geslo in vseeno spodletela.
+
 Rob prikazuje številke vrstic, vrstica s kazalcem je svetlejša od drugih; gumb ob meniju kodiranja ga skrije. Prelomljena vrstica je oštevilčena enkrat, zato številka vedno pomeni isto vrstico, ki jo misli napaka prevajalnika ali pripomba iz pregleda.
 
 ## Iskanje, zamenjava in krmarjenje
@@ -41,6 +43,21 @@ Kliknite **Filtriraj…** (ali pritisnite Shift+Cmd+\), da izbrano besedilo poš
 Ukaz se izvede v vaši prijavni lupini: `PATH`, vzdevki in funkcije delujejo natanko tako kot v Terminalu, cevi in narekovaji pa pomenijo to, kar pričakujete. Delovni imenik je mapa urejane datoteke, zato se relativne poti razrešijo tam, kjer pričakujete. Uporabljeni ukazi se shranijo in se naslednjič ponudijo v spustnem seznamu.
 
 Če ukaz spodleti, ostane vaše besedilo nedotaknjeno, sporočilo o napaki ukaza pa se pokaže v vrstici stanja — skladenjska napaka orodja `jq` nikoli ne konča prilepljena v vaši datoteki. Ukaz, ki ne izpiše ničesar, izprazni izbor, in prav temu je filtriranje z orodjem `grep` namenjeno; Cmd+Z ga povrne. Ukaz, ki se ne konča, se po dvajsetih sekundah ustavi.
+
+## Razvrščanje, odstranjevanje podvojenih in čiščenje vrstic
+
+Meni **Vrstice** — v orodni vrstici in, dokler je urejevalnik v ospredju, tudi v menijski vrstici — opravi spremembe, ki se vračajo znova in znova, brez vtipkanega ukaza in brez namesčenega orodja:
+
+- Razvrsti A→Z ali Z→A, pri čemer se števila primerjajo po vrednosti, tako da je `file9` pred `file10`.
+- Obrni vrstni red vrstic.
+- Odstrani podvojene vrstice, obdrži prvo od vsake in ostale pusti v njihovem vrstnem redu.
+- Odstrani prazne vrstice, tudi tiste, ki so videti prazne le zato, ker vsebujejo presledke.
+- Odstrani presledke na koncu vrstic — nevidno razliko, zaradi katere je diff nepregleden.
+- Ohrani samo vrstice, ki vsebujejo besedilo, ki ga vtipkate, ali jih prav te odstrani.
+
+Če je besedilo izbrano, vsaka od teh operacij deluje na izbranih vrsticah; izbor se najprej razširi na cele vrstice, saj razvrščanje pol vrstice ne pomeni nič. Brez izbora delujejo na celotnem dokumentu. Vsaka je en sam korak razveljavitve, zato Cmd+Z prekliče celotno operacijo.
+
+Konci vrstic so ob meniju Kodiranje: **LF** za Unix in macOS, **CRLF** za Windows, **CR** za klasični Mac OS in *(mixed)*, kadar ena datoteka vsebuje več vrst — pogosto vzrok napake, ki nima smisla. Z izbiro druge pretvorite celotno datoteko v enem koraku, ki ga je mogoče razveljaviti. Operacije nad vrsticami zaključka vrstice nikoli ne spremenijo same: razvrščena datoteka CRLF ostane CRLF.
 
 ## Oblikovanje datoteke
 

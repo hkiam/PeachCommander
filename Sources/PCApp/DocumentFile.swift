@@ -11,8 +11,13 @@ enum DocumentFile {
     /// Write `data` to `path`, making a one-time `.bak` copy of the original
     /// before the first overwrite this session. Shows an error alert on failure.
     /// Returns whether the write succeeded.
+    ///
+    /// `mayAskForAuthorization` is false when the caller already knows authorization cannot help — a
+    /// read-only volume, a SIP-protected file (F-357). Prompting there costs the user a password and
+    /// then fails anyway, which is worse than the plain error.
     @MainActor @discardableResult
-    static func writeWithBackup(_ data: Data, toPath path: String, didBackup: inout Bool) -> Bool {
+    static func writeWithBackup(_ data: Data, toPath path: String, didBackup: inout Bool,
+                                mayAskForAuthorization: Bool = true) -> Bool {
         let fm = FileManager.default
         if !didBackup, fm.fileExists(atPath: path) {
             let backup = path + ".bak"
@@ -27,7 +32,8 @@ enum DocumentFile {
             // A root-owned file is the ordinary case for an administrator, not an exception: /etc/hosts,
             // an nginx site, a launchd plist. Until now that ended here with "permission denied" and no
             // way forward, even though the app already knows how to ask for authorization (F-099).
-            if (error as NSError).isPermissionDenied, offerPrivilegedSave(data, toPath: path) {
+            if mayAskForAuthorization, (error as NSError).isPermissionDenied,
+               offerPrivilegedSave(data, toPath: path) {
                 return true
             }
             let alert = NSAlert()

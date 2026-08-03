@@ -74,6 +74,10 @@ SCENARIOS = [
     ("editor-filter", ["editfilter /Users/admin/pc-demo/hosts.txt|sort -u|/Users/admin/filter.txt",
                        "wait 2500"], 9),
     ("editor-filter-dialog", ["editfilterdlg /Users/admin/pc-demo/hosts.txt", "wait 2000"], 9),
+    # The built-in line operations over a CRLF file with duplicates, blanks and trailing spaces
+    # (F-359) — the terminator surviving is the part that fails silently.
+    ("editor-lines", ["editlines /Users/admin/pc-demo/messy.txt|/Users/admin/lines.txt",
+                      "wait 2000"], 9),
     # Not a layout scenario: this one asks the app what a screen reader would find. The hand-drawn
     # bars are the case where the failure mode is *no element at all* and nothing on screen differs,
     # so it can only be caught by asking (I19 T06).
@@ -91,6 +95,12 @@ REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"
 REPORTS = {
     "editor-filter": ("/Users/admin/filter.txt",
                       ["outcome=replaced", "undo=true", "alpha.example\nbeta.example\n"]),
+    # CRLF in, CRLF out — shown as <CR> so a terminator that vanished is visible in the report.
+    "editor-lines": ("/Users/admin/lines.txt",
+                     ["endings=CRLF", "undo=true", "keep me<CR>",
+                      # Four lines in the fixture, and the status line must say four — not "1 line(s)",
+                      # which is what splitting CRLF text on "\n" produced.
+                      "Sort A→Z — 4 line(s)"]),
 }
 
 # What AppKit prints when it gives up on a constraint set. One message spans many lines; the first
@@ -169,6 +179,8 @@ def boot(app: str, run: str):
                   "printf 'a,b\\n1,2\\n' > pc-demo/table.csv && "
                   # Unsorted, with a duplicate: `sort -u` over it has a visible, checkable result.
                   "printf 'beta.example\\nalpha.example\\nbeta.example\\n' > pc-demo/hosts.txt && "
+                  # CRLF, a duplicate, a blank line and trailing spaces: one file for every operation.
+                  "printf 'keep me  \\r\\n\\r\\nkeep me\\r\\ndrop this\\r\\n' > pc-demo/messy.txt && "
                   "printf 'x' > pc-demo/sub/nested.txt && "
                   "printf '[Colors]\\nAppearance=dark\\n' > pc-cfg/peachcmd.ini && "
                   "defaults write com.apple.dock autohide -bool true; killall Dock 2>/dev/null; "

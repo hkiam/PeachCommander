@@ -22,6 +22,8 @@ Per iniziare un file di testo nuovo di zecca nella posizione corrente, premete S
 
 Se il file appartiene a `root` — una voce in `/etc`, un plist di launchd, la configurazione di un server web —, il salvataggio propone di farlo **come amministratore**: macOS chiede l’autorizzazione come sempre, il contenuto passa da un file temporaneo privato invece che da una riga di comando, e il file mantiene proprietario e permessi invece di diventare vostro in silenzio.
 
+Se il file non è scrivibile, lo scoprite all’apertura e non al momento di salvare: il titolo porta un lucchetto e la riga di stato indica l’ostacolo — appartiene a un altro utente, permessi che vietano la scrittura, un file bloccato, un volume in sola lettura o la protezione del sistema. Solo il primo caso si risolve autorizzando il salvataggio, ed è il solo in cui viene proposto; negli altri la richiesta vi costerebbe una password e fallirebbe comunque.
+
 Il margine mostra i numeri di riga, con la riga del cursore più chiara delle altre; il pulsante accanto al menu della codifica lo nasconde. Una riga mandata a capo è numerata una volta sola, quindi il numero indica sempre la stessa riga a cui si riferisce un errore del compilatore o un commento di revisione.
 
 ## Trovare, sostituire e navigare
@@ -41,6 +43,21 @@ Fate clic su **Filtra…** (o premete Shift+Cmd+\) per inviare il testo selezion
 Il comando viene eseguito nella vostra shell di login: `PATH`, alias e funzioni si comportano esattamente come nel Terminale, e pipe e virgolette significano quello che vi aspettate. La directory di lavoro è la cartella del file che state modificando, così i percorsi relativi si risolvono dove ve li aspettate. I comandi usati vengono ricordati e riproposti nell’elenco a comparsa la volta successiva.
 
 Se il comando non riesce, il vostro testo resta intatto e il messaggio di errore del comando compare nella riga di stato: un errore di sintassi di `jq` non finisce mai incollato nel vostro file. Un comando che non stampa nulla svuota la selezione, che è esattamente ciò a cui serve filtrare con `grep`, e Cmd+Z la riporta. Un comando che non termina viene interrotto dopo venti secondi.
+
+## Ordinare, deduplicare e ripulire le righe
+
+Il menu **Righe** — nella barra strumenti e, mentre l’editor è in primo piano, nella barra dei menu — applica le modifiche che tornano continuamente, senza comandi da digitare e senza strumenti da installare:
+
+- Ordinare A→Z o Z→A, confrontando i numeri per valore, così `file9` viene prima di `file10`.
+- Invertire l’ordine delle righe.
+- Rimuovere le righe duplicate, tenendo la prima di ciascuna e lasciando le altre nel loro ordine.
+- Rimuovere le righe vuote, comprese quelle che sembrano vuote solo perché contengono spazi.
+- Rimuovere gli spazi a fine riga: la differenza invisibile che rende illeggibile un diff.
+- Mantenere solo, oppure rimuovere, le righe che contengono un testo che digitate.
+
+Con del testo selezionato ognuna di queste operazioni agisce sulle righe selezionate; la selezione viene prima estesa a righe intere, perché ordinare mezza riga non significa nulla. Senza selezione agiscono su tutto il documento. Ognuna è un unico passo di annullamento, quindi Cmd+Z ritira l’intera operazione.
+
+I fine riga stanno accanto al menu Codifica: **LF** per Unix e macOS, **CRLF** per Windows, **CR** per il Mac OS classico e *(mixed)* quando un file ne contiene più di un tipo — spesso il motivo di un errore incomprensibile. Scegliendone un altro convertite tutto il file in un passo annullabile. Le operazioni sulle righe non cambiano mai il terminatore da sole: un file CRLF ordinato resta CRLF.
 
 ## Formattare un file
 

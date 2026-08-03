@@ -22,6 +22,8 @@ För att starta en helt ny textfil på den aktuella platsen, tryck på Shift+F4.
 
 Om filen tillhör `root` — något i `/etc`, en launchd-plist, en webbservers konfiguration — erbjuder sparandet att göra det **som administratör**: macOS frågar om behörighet på vanligt sätt, innehållet lämnas över via en privat temporärfil i stället för en kommandorad, och filen behåller sin egen ägare och sina rättigheter i stället för att tyst bli din.
 
+Om filen inte kan skrivas får du veta det när du öppnar den, inte först när du sparar: titeln bär ett lås och statusraden namnger hindret — ägs av en annan användare, rättigheter som förbjuder skrivning, en låst fil, en skrivskyddad volym eller skydd från systemet. Bara det första går att lösa genom att auktorisera sparandet, och bara där erbjuds det; för de övriga skulle det kosta ett lösenord och ändå misslyckas.
+
 Marginalen visar radnummer, med raden du står på ljusare än de övriga; knappen intill kodningsmenyn döljer den. En radbruten rad numreras en gång, så numret betyder alltid samma rad som ett kompilatorfel eller en granskningskommentar menar.
 
 ## Sök, ersätt och navigera
@@ -41,6 +43,21 @@ Klicka på **Filtrera…** (eller tryck på Shift+Cmd+\) för att skicka den mar
 Kommandot körs i ditt inloggningsskal: din `PATH`, dina alias och dina funktioner fungerar precis som i Terminal, och rör och citattecken betyder det du förväntar dig. Arbetskatalogen är mappen för filen du redigerar, så relativa sökvägar löses där du väntar dig. De kommandon du har använt sparas och erbjuds i listan nästa gång.
 
 Om kommandot misslyckas lämnas din text orörd och kommandots eget felmeddelande visas i statusraden — ett `jq`-syntaxfel hamnar aldrig inklistrat i din fil. Ett kommando som inte skriver ut något tömmer markeringen, och det är precis vad filtrering med `grep` är till för; Cmd+Z hämtar tillbaka den. Ett kommando som aldrig blir klart stoppas efter tjugo sekunder.
+
+## Sortera, ta bort dubbletter och städa rader
+
+Menyn **Rader** — i verktygsfältet och, så länge redigeraren är främst, i menyraden — utför de ändringar som återkommer gång på gång, utan ett skrivet kommando och utan installerat verktyg:
+
+- Sortera A→Z eller Z→A, där tal jämförs efter värde, så att `file9` kommer före `file10`.
+- Vänd radernas ordning.
+- Ta bort dubblettrader, behåll den första av varje och låt resten stå i sin ordning.
+- Ta bort tomma rader, även de som bara ser tomma ut eftersom de innehåller blanksteg.
+- Ta bort blanksteg i radslutet — den osynliga skillnad som gör en diff orolig.
+- Behåll bara, eller ta bort, de rader som innehåller en text du skriver.
+
+Med text markerad arbetar var och en av dem på de markerade raderna; markeringen utvidgas först till hela rader, eftersom att sortera en halv rad inte betyder något. Utan markering gäller de hela dokumentet. Var och en är ett enda ångra-steg, så Cmd+Z tar tillbaka hela åtgärden.
+
+Radbrytningarna står intill menyn Teckenkodning: **LF** för Unix och macOS, **CRLF** för Windows, **CR** för klassiska Mac OS, och *(mixed)* när en fil innehåller mer än en sort — ofta orsaken till ett fel som inte verkar begripligt. Välj en annan för att konvertera hela filen i ett ångringsbart steg. Radåtgärderna ändrar aldrig radbrytningen på eget initiativ: en sorterad CRLF-fil förblir CRLF.
 
 ## Formatera en fil
 

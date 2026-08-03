@@ -80,6 +80,7 @@ extension MainWindowController {
             case "editdump":   await editDump(arg)
             case "editfilter": await editFilter(arg)   // editfilter <src>|<command>|<out> (F-356)
             case "editfilterdlg": await editFilterDialog(arg)   // editfilterdlg <src> (F-356)
+            case "editlines":  await editLines(arg)     // editlines <src>|<out> (F-359)
             case "view":       openViewer(arg)
             case "menudump":   dumpMenu(arg)
             case "a11ydump":   dumpAccessibility(arg)   // a11ydump <outfile> (I19 T06)
@@ -418,6 +419,20 @@ extension MainWindowController {
         let report = await win.automationFilter(a[1])
         try? report.write(toFile: a[2], atomically: true, encoding: .utf8)
         NSLog("[automation] editfilter \(a[1]) → \(a[2])")
+    }
+
+    /// Open `src` in the editor, run every built-in line operation, and report the result (F-359).
+    private func editLines(_ arg: String) async {
+        let a = arg.split(separator: "|").map(String.init)
+        guard a.count == 2 else { NSLog("[automation] editlines needs <src>|<out>"); return }
+        let win = EditorWindowController(path: a[0])
+        automationEditors.append(win)
+        win.showWindow(nil)
+        win.window?.makeKeyAndOrderFront(nil)
+        try? await Task.sleep(nanoseconds: 800_000_000)
+        let report = win.automationLineOperations()
+        try? report.write(toFile: a[1], atomically: true, encoding: .utf8)
+        NSLog("[automation] editlines → \(a[1])")
     }
 
     /// Open `src` in the editor and put the filter prompt on screen for a screenshot (F-356).

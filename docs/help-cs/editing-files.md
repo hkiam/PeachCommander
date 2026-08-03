@@ -22,6 +22,8 @@ Chcete-li vytvořit zcela nový textový soubor v aktuálním umístění, stisk
 
 Patří-li soubor `root` — záznam v `/etc`, launchd plist, konfigurace webového serveru —, uložení nabídne udělat to **jako správce**: macOS požádá o autorizaci jako obvykle, obsah se předá přes privátní dočasný soubor místo příkazové řádky a soubor si ponechá vlastního vlastníka i práva, místo aby se tiše stal vaším.
 
+Pokud do souboru nelze zapisovat, dozvíte se to při otevření, a ne až při ukládání: titulek nese zámek a stavový řádek pojmenuje překážku — patří jinému uživateli, oprávnění zápis zakazují, uzamčený soubor, svazek jen pro čtení nebo ochrana systémem. Jen první z nich lze vyřešit autorizací uložení a jen tam je nabídnuta; u ostatních by vás stála heslo a přesto by selhala.
+
 Okraj zobrazuje čísla řádků, řádek s kurzorem světlejší než ostatní; tlačítko vedle nabídky kódování jej skryje. Zalomený řádek je číslován jednou, takže číslo vždy znamená týž řádek, který má na mysli chyba kompilátoru nebo poznámka z revize.
 
 ## Hledání, nahrazování a navigace
@@ -41,6 +43,21 @@ Klepněte na **Filtrovat…** (nebo stiskněte Shift+Cmd+\), abyste vybraný tex
 Příkaz běží ve vašem přihlašovacím shellu: `PATH`, aliasy i funkce fungují přesně jako v Terminálu a roury i uvozovky znamenají to, co očekáváte. Pracovním adresářem je složka upravovaného souboru, takže relativní cesty se vyhodnotí tam, kde to čekáte. Použité příkazy se pamatují a příště se nabídnou v rozbalovacím seznamu.
 
 Pokud příkaz selže, váš text zůstane nedotčen a chybová zpráva příkazu se objeví ve stavovém řádku — syntaktická chyba nástroje `jq` nikdy neskončí vložená do vašeho souboru. Příkaz, který nic nevypíše, vyprázdní výběr; přesně k tomu se filtrování nástrojem `grep` používá a Cmd+Z jej vrátí. Příkaz, který se nedokončí, se po dvaceti sekundách ukončí.
+
+## Řádky setřídit, odduplikovat a uklidit
+
+Menu **Řádky** — na nástrojové liště a, dokud je editor vpředu, také v hlavní nabídce — provádí úpravy, které přicházejí znovu a znovu, bez psaného příkazu a bez nainstalovaného nástroje:
+
+- Setřídit A→Z nebo Z→A, přičemž čísla se porovnávají podle hodnoty, takže `file9` je před `file10`.
+- Obrátit pořadí řádků.
+- Odstranit duplicitní řádky, z každého ponechat první a ostatní nechat v jejich pořadí.
+- Odstranit prázdné řádky, včetně těch, které jen vypadají prázdné, protože obsahují mezery.
+- Odstranit mezery na konci řádků — nevidnitelný rozdíl, kvůli kterému je diff nepřehledný.
+- Ponechat jen řádky obsahující text, který zadáte, nebo je naopak odstranit.
+
+Je-li text vybrán, pracuje každá z operací na vybraných řádcích; výběr se nejprve rozšíří na celé řádky, protože setřídit půl řádku nemá smysl. Bez výběru platí pro celý dokument. Každá je jediným krokem zpět, takže Cmd+Z vezme zpět celou operaci.
+
+Konce řádků jsou vedle nabídky Kódování: **LF** pro Unix a macOS, **CRLF** pro Windows, **CR** pro klasický Mac OS a *(mixed)*, když jeden soubor obsahuje více druhů — často důvod chyby, která nedává smysl. Výběrem jiného převedete celý soubor jedním krokem, který lze vzít zpět. Operace s řádky konec řádku nikdy nemění samy od sebe: setříděný soubor s CRLF zůstane CRLF.
 
 ## Formátování souboru
 

@@ -22,6 +22,8 @@ Pentru a începe un fișier text nou-nouț la locația curentă, apăsați Shift
 
 Dacă fișierul aparține lui `root` — o intrare în `/etc`, un plist launchd, configurația unui server web —, salvarea propune să o facă **ca administrator**: macOS cere o autorizare în modul obișnuit, conținutul este predat printr-un fișier temporar privat și nu printr-o linie de comandă, iar fișierul își păstrează propriul proprietar și permisiunile în loc să devină al dumneavoastră pe nesimțite.
 
+Dacă fișierul nu poate fi scris, aflați la deschidere și nu abia când încercați să salvați: titlul poartă un lacăt, iar linia de stare numește obstacolul — aparține altui utilizator, permisiuni care interzic scrierea, un fișier blocat, un volum doar-citire sau protecția sistemului. Doar primul se rezolvă autorizând salvarea și doar acolo este oferită; la celelalte v-ar costa o parolă și tot ar eșua.
+
 Marginea arată numerele de linie, cu linia cursorului mai deschisă decât restul; butonul de lângă meniul de codare o ascunde. O linie continuată este numerotată o singură dată, deci numărul înseamnă mereu aceeași linie la care se referă o eroare de compilare sau o observație de recenzie.
 
 ## Căutare, înlocuire și navigare
@@ -41,6 +43,21 @@ Faceți clic pe **Filtrează…** (sau apăsați Shift+Cmd+\) pentru a trimite t
 Comanda rulează în shell-ul de conectare: `PATH`, aliasurile și funcțiile dumneavoastră se comportă exact ca în Terminal, iar conductele și ghilimelele înseamnă ceea ce vă așteptați. Directorul de lucru este folderul fișierului editat, astfel încât căile relative se rezolvă acolo unde vă așteptați. Comenzile folosite sunt memorate și oferite în lista derulantă data viitoare.
 
 Dacă comanda eșuează, textul rămâne neatins, iar mesajul de eroare al comenzii apare în linia de stare — o eroare de sintaxă a lui `jq` nu ajunge niciodată lipită în fișierul dumneavoastră. O comandă care nu afișează nimic golește selecția, exact la asta servește filtrarea cu `grep`, iar Cmd+Z o readuce. O comandă care nu se încheie este oprită după douăzeci de secunde.
+
+## Sortarea, eliminarea duplicatelor și curățarea liniilor
+
+Meniul **Linii** — în bara de instrumente și, cât timp editorul este în față, în bara de meniu — face modificările care revin mereu, fără o comandă tastată și fără vreo unealtă instalată:
+
+- Sortează A→Z sau Z→A, comparând numerele după valoare, astfel încât `file9` să fie înaintea lui `file10`.
+- Inversează ordinea liniilor.
+- Elimină liniile duplicate, păstrând prima dintre fiecare și lăsând restul în ordinea lor.
+- Elimină liniile goale, inclusiv pe cele care par goale doar pentru că au spații.
+- Elimină spațiile de la sfârșitul liniilor — diferența invizibilă care încarcă un diff.
+- Păstrează doar, sau elimină, liniile care conțin un text pe care îl scrieți.
+
+Cu text selectat, fiecare dintre acestea lucrează pe liniile selectate; selecția este mai întâi extinsă la linii întregi, fiindcă a sorta o jumătate de linie nu înseamnă nimic. Fără selecție lucrează pe tot documentul. Fiecare este un singur pas de anulare, așa că Cmd+Z retrage întreaga operație.
+
+Sfârșiturile de linie stau lângă meniul Codificare: **LF** pentru Unix și macOS, **CRLF** pentru Windows, **CR** pentru Mac OS clasic și *(mixed)* când un fișier conține mai multe feluri — adesea motivul unei erori fără sens. Alegeți altul pentru a converti tot fișierul într-un pas care se poate anula. Operațiile pe linii nu schimbă niciodată terminatorul de la sine: un fișier CRLF sortat rămâne CRLF.
 
 ## Formatarea unui fișier
 

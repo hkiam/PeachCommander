@@ -22,6 +22,8 @@ Para empezar un archivo de texto completamente nuevo en la ubicación actual, pu
 
 Si el archivo pertenece a `root` — una entrada en `/etc`, un plist de launchd, la configuración de un servidor web —, al guardar se ofrece hacerlo **como administrador**: macOS pide autorización de la forma habitual, el contenido se entrega mediante un archivo temporal privado en lugar de una línea de comandos, y el archivo conserva su propietario y sus permisos en vez de pasar a ser suyo sin avisar.
 
+Si el archivo no se puede escribir, se le dice al abrirlo y no al intentar guardar: el título lleva un candado y la línea de estado nombra el obstáculo: pertenece a otro usuario, permisos que impiden escribir, un archivo bloqueado, un volumen de solo lectura o protección del sistema. Solo el primero se resuelve autorizando el guardado, y solo ahí se ofrece; en los demás la petición le costaría una contraseña y fallaría igualmente.
+
 El margen muestra los números de línea, con la línea del cursor más clara que el resto; el botón junto al menú de codificación lo oculta. Una línea con salto se numera una sola vez, así que el número siempre significa la misma línea que un error del compilador o un comentario de revisión.
 
 ## Buscar, reemplazar y navegar
@@ -41,6 +43,21 @@ Haga clic en **Filtrar…** (o pulse Shift+Cmd+\) para enviar el texto seleccion
 El comando se ejecuta en su shell de inicio de sesión: su `PATH`, sus alias y sus funciones actúan igual que en Terminal, y las tuberías y las comillas significan lo que usted espera. El directorio de trabajo es la carpeta del archivo que está editando, de modo que las rutas relativas se resuelven donde cabe esperar. Los comandos que ha usado se recuerdan y se ofrecen en la lista desplegable la próxima vez.
 
 Si el comando falla, su texto queda intacto y el mensaje de error del propio comando aparece en la línea de estado: un error de sintaxis de `jq` nunca acaba pegado en su archivo. Un comando que no imprime nada vacía la selección, que es exactamente para lo que sirve filtrar con `grep`, y Cmd+Z la recupera. Un comando que no termina se detiene a los veinte segundos.
+
+## Ordenar, quitar duplicados y limpiar líneas
+
+El menú **Líneas** —en la barra de herramientas y, mientras el editor está delante, en la barra de menús— aplica las modificaciones que aparecen una y otra vez, sin escribir ningún comando y sin instalar ninguna herramienta:
+
+- Ordenar A→Z o Z→A, comparando los números por su valor, de modo que `file9` va antes de `file10`.
+- Invertir el orden de las líneas.
+- Eliminar líneas duplicadas, conservando la primera de cada una y dejando el resto en su orden.
+- Eliminar líneas vacías, incluidas las que solo parecen vacías porque contienen espacios.
+- Quitar los espacios al final de la línea: la diferencia invisible que ensucia un diff.
+- Conservar solo, o eliminar, las líneas que contengan un texto que usted escriba.
+
+Con texto seleccionado, cada una de estas operaciones actúa sobre las líneas seleccionadas; la selección se amplía primero a líneas completas, porque ordenar media línea no significa nada. Sin selección actúan sobre todo el documento. Cada una es un único paso de deshacer, así que Cmd+Z revierte la operación completa.
+
+Los fines de línea están junto al menú Codificación: **LF** para Unix y macOS, **CRLF** para Windows, **CR** para el Mac OS clásico, y *(mixed)* cuando un archivo contiene más de un tipo, que a menudo es la razón de un error sin sentido. Elija otro para convertir todo el archivo en un paso que se puede deshacer. Las operaciones de líneas nunca cambian el terminador por su cuenta: un archivo CRLF ordenado sigue siendo CRLF.
 
 ## Formatear un archivo
 

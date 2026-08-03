@@ -22,6 +22,8 @@ Pour créer un tout nouveau fichier texte à l'emplacement courant, appuyez sur 
 
 Si le fichier appartient à `root` — une entrée dans `/etc`, un plist launchd, la configuration d’un serveur web —, l’enregistrement propose de le faire **en tant qu’administrateur** : macOS demande une autorisation comme d’habitude, le contenu passe par un fichier temporaire privé plutôt que par une ligne de commande, et le fichier conserve son propriétaire et ses permissions au lieu de devenir discrètement le vôtre.
 
+Si le fichier ne peut pas être écrit, vous l’apprenez à l’ouverture et non au moment d’enregistrer : le titre porte un cadenas et la barre d’état nomme l’obstacle — appartenant à un autre utilisateur, des permissions qui interdisent l’écriture, un fichier verrouillé, un volume en lecture seule ou une protection par le système. Seul le premier cas se règle en autorisant l’enregistrement, et c’est le seul où il est proposé ; pour les autres, la demande coûterait un mot de passe et échouerait quand même.
+
 La gouttière affiche les numéros de ligne, celle du curseur plus claire que les autres ; le bouton à côté du menu d’encodage la masque. Une ligne repliée est numérotée une fois : le numéro désigne toujours la même ligne qu’une erreur de compilation ou une remarque de relecture.
 
 ## Rechercher, remplacer et naviguer
@@ -41,6 +43,21 @@ Cliquez sur **Filtrer…** (ou appuyez sur Shift+Cmd+\) pour envoyer le texte s�
 La commande s’exécute dans votre shell de connexion : votre `PATH`, vos alias et vos fonctions agissent exactement comme dans le Terminal, et les tubes et les guillemets ont le sens attendu. Le répertoire de travail est celui du fichier en cours d’édition, si bien que les chemins relatifs se résolvent là où vous l’attendez. Les commandes utilisées sont mémorisées et proposées dans la liste déroulante la fois suivante.
 
 Si la commande échoue, votre texte reste intact et le message d’erreur de la commande apparaît dans la barre d’état : une erreur de syntaxe `jq` ne se retrouve jamais collée dans votre fichier. Une commande qui n’affiche rien vide la sélection — c’est exactement à cela que sert un filtrage avec `grep` — et Cmd+Z la restitue. Une commande qui ne se termine pas est arrêtée au bout de vingt secondes.
+
+## Trier, dédupliquer et nettoyer des lignes
+
+Le menu **Lignes** — dans la barre d’outils, et dans la barre des menus quand l’éditeur est au premier plan — applique les modifications qui reviennent sans cesse, sans commande à taper et sans outil à installer :
+
+- Trier A→Z ou Z→A, en comparant les nombres par leur valeur, de sorte que `file9` précède `file10`.
+- Inverser l’ordre des lignes.
+- Supprimer les lignes en double, en gardant la première de chacune et en laissant les autres dans leur ordre.
+- Supprimer les lignes vides, y compris celles qui ne semblent vides que parce qu’elles contiennent des espaces.
+- Supprimer les espaces en fin de ligne — la différence invisible qui rend un diff illisible.
+- Ne garder que les lignes contenant un texte que vous saisissez, ou les supprimer.
+
+Si du texte est sélectionné, chacune de ces opérations agit sur les lignes sélectionnées ; la sélection est d’abord étendue aux lignes entières, car trier une demi-ligne n’a aucun sens. Sans sélection, elles agissent sur tout le document. Chacune est une seule étape d’annulation : Cmd+Z revient sur l’opération entière.
+
+Les fins de ligne se trouvent à côté du menu Encodage : **LF** pour Unix et macOS, **CRLF** pour Windows, **CR** pour l’ancien Mac OS, et *(mixed)* lorsqu’un fichier en contient plusieurs sortes — souvent la raison d’une erreur incompréhensible. Choisissez-en une autre pour convertir tout le fichier en une étape annulable. Les opérations sur les lignes ne changent jamais la fin de ligne d’elles-mêmes : un fichier CRLF trié reste en CRLF.
 
 ## Formater un fichier
 

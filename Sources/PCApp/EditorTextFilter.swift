@@ -89,8 +89,9 @@ enum EditorTextFilter {
             let replaced = NSRange(location: range.location, length: (out as NSString).length)
             textView.setSelectedRange(replaced)
             textView.scrollRangeToVisible(replaced)
-            return .replaced(lines: out.isEmpty ? 0 : out.split(separator: "\n",
-                                                                omittingEmptySubsequences: false).count)
+            // LineEndings.lineCount, not split(separator: "\n"): "\r\n" is one Swift Character, so
+            // splitting a CRLF result on "\n" reports one line for the whole file.
+            return .replaced(lines: LineEndings.lineCount(out))
         }
     }
 
@@ -98,6 +99,46 @@ enum EditorTextFilter {
     private static func firstLine(of message: String) -> String {
         let line = message.split(separator: "\n").first.map(String.init) ?? message
         return line.count > 140 ? String(line.prefix(140)) + "…" : line
+    }
+}
+
+/// The editor's built-in line operations (F-359).
+///
+/// Separate from the shell filter even though `sort` and `uniq` overlap with it: these work with no
+/// tools installed, on any machine, and cost one menu pick rather than a typed command line.
+enum EditorLineOperations {
+
+    /// Apply `operation` to whole lines — the selected ones, or the whole document when nothing is
+    /// selected.
+    ///
+    /// The selection is grown to line boundaries first. Sorting half a line is meaningless, and a user
+    /// who dragged across three lines from the middle of the first means those three lines.
+    @MainActor
+    static func apply(_ operation: LineOperation, to textView: NSTextView,
+                      actionName: String) -> EditorTextFilter.Outcome {
+        let text = textView.string as NSString
+        let selection = textView.selectedRange()
+        let range = selection.length > 0
+            ? text.lineRange(for: selection)
+            : NSRange(location: 0, length: text.length)
+        guard range.length > 0 else { return .unchanged }
+
+        let input = text.substring(with: range)
+        let output = LineOperations.apply(operation, to: input)
+        guard output != input else { return .unchanged }
+        guard EditorTextFilter.replace(range, with: output, in: textView, actionName: actionName) else {
+            return .failed(String(localized: "This document is not editable"))
+        }
+        let replaced = NSRange(location: range.location, length: (output as NSString).length)
+        // Keep the same lines selected, so operations chain: filter, then sort, then deduplicate.
+        if selection.length > 0 {
+            textView.setSelectedRange(replaced)
+        } else {
+            textView.setSelectedRange(NSRange(location: min(selection.location, replaced.length),
+                                              length: 0))
+        }
+        textView.scrollRangeToVisible(textView.selectedRange())
+        return .replaced(lines: LineEndings.lineCount(output))
     }
 }
 

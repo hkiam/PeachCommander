@@ -14,6 +14,7 @@ only go down.
 | find-files | 0 | 0 | — | `find-files.png` |
 | settings | 0 | 0 | — | `settings.png` |
 | viewer-text | 0 | 0 | — | `viewer-text.png` |
-| editor-filter | 0 | — | — | `editor-filter.png` |
-| editor-filter-dialog | 0 | — | — | `editor-filter-dialog.png` |
+| editor-filter | 0 | 0 | — | `editor-filter.png` |
+| editor-filter-dialog | 0 | 0 | — | `editor-filter-dialog.png` |
+| editor-lines | 0 | 0 | — | `editor-lines.png` |
 | accessibility | 0 | 0 | — | `accessibility.png` |

@@ -29,9 +29,18 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     private var neon: NeonEditorHighlighter?
     private let scrollView = NSScrollView()
     private let encodingPopup = NSPopUpButton(frame: .zero, pullsDown: false)
+    /// Line-ending picker: shows what the file uses, and converts when changed (F-358).
+    private let endingPopup = NSPopUpButton(frame: .zero, pullsDown: false)
+    /// Line operations: sort, deduplicate, filter, trim (F-359).
+    private let linesMenu = NSPopUpButton(frame: .zero, pullsDown: true)
+    private var linesDialog: InputDialog?
     private let statusLabel = NSTextField(labelWithString: "")
 
     private var encoding: TextEncodingChoice = .utf8
+    /// Whether this file can be written, determined at load (F-357).
+    private var writability: FileWritability = .writable
+    /// Which line terminators the document contains (F-358).
+    private var lineEndingSurvey = LineEndingSurvey(lf: 0, crlf: 0, cr: 0)
     private var language: SyntaxLanguage?
     private var isDirty = false
     private var didBackup = false
@@ -147,6 +156,16 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         toolbar.addArrangedSubview(findButton)
         toolbar.addArrangedSubview(NSTextField(labelWithString: String(localized: "Encoding:")))
         toolbar.addArrangedSubview(encodingPopup)
+        // Line endings are invisible until they break a script, so they get a control of their own
+        // rather than a line in a dialog (F-358). Next to the encoding picker: same kind of question.
+        for ending in LineEnding.allCases { endingPopup.addItem(withTitle: ending.displayName) }
+        endingPopup.target = self
+        endingPopup.action = #selector(lineEndingChanged)
+        endingPopup.toolTip = String(localized: "Line endings — pick one to convert the whole file")
+        endingPopup.setAccessibilityLabel(String(localized: "Line endings"))
+        toolbar.addArrangedSubview(endingPopup)
+        buildLinesMenu()
+        toolbar.addArrangedSubview(linesMenu)
         gutterToggle.bezelStyle = .rounded
         gutterToggle.image = NSImage(systemSymbolName: "list.number",
                                      accessibilityDescription: String(localized: "Line numbers"))
@@ -278,6 +297,23 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Auto Layout conflicts counted (F-356). A sheet over a visible window, so it does not block.
     func automationShowFilterDialog() { promptFilterCommand() }
 
+    /// Diagnostic: apply the built-in line operations in order and report the result (F-359).
+    ///
+    /// One pass over the real menu path, so the tag→operation mapping, the line-wise range and the
+    /// terminator preservation are all exercised where they actually run.
+    func automationLineOperations() -> String {
+        var report = ""
+        for (index, entry) in Self.lineOperations.enumerated() {
+            guard let entry, !entry.needsPrompt else { continue }
+            runLineOperation(entry.operation, named: entry.title)
+            report += "[\(index)] \(entry.title): \(statusLabel.stringValue)\n"
+        }
+        runLineOperation(.filter(needle: "keep", keep: true, caseSensitive: false), named: "filter")
+        let survey = LineEndings.survey(textView.string)
+        return report + "endings=\(survey.displayName)\nundo=\(textView.undoManager?.canUndo == true)\n"
+            + "--- text ---\n" + textView.string.replacingOccurrences(of: "\r", with: "<CR>")
+    }
+
     /// Diagnostic: run `command` over the whole document, then report what the editor now shows.
     ///
     /// Reads the text view back *and* leaves the window on screen: the text view is the thing that
@@ -348,12 +384,16 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     // MARK: - Load / save
 
     private func loadFile() {
+        // Ask at load, not at save (F-357). Finding out after ten minutes of editing that the file
+        // cannot be written is the part that wastes the ten minutes.
+        writability = FileWritabilityCheck.check(path: path)
         let data = (try? Data(contentsOf: URL(fileURLWithPath: path))) ?? Data()
         let detected = EncodingDetector.detect(Array(data.prefix(64 * 1024)))
         encoding = TextEncodingChoice.from(detected) ?? .utf8
         encodingPopup.selectItem(withTitle: encoding.displayName)
         textView.string = String(data: data, encoding: encoding.encoding) ?? String(decoding: data, as: UTF8.self)
         refreshLineNumbers()
+        refreshLineEndings()
         isDirty = false
         refreshHighlight()
         refreshSymbols()
@@ -420,8 +460,16 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         guard let data = text.data(using: encoding.encoding) ?? text.data(using: .utf8) else {
             NSSound.beep(); return
         }
-        if DocumentFile.writeWithBackup(data, toPath: path, didBackup: &didBackup) {
+        // A read-only volume or a SIP-protected file cannot be saved with authorization either, so the
+        // prompt is suppressed for those (F-357). `.writable` is the normal case and keeps the offer:
+        // a file may also have become root-owned since it was opened.
+        let mayAsk = writability.isWritable || writability.administratorMayHelp
+        if DocumentFile.writeWithBackup(data, toPath: path, didBackup: &didBackup,
+                                        mayAskForAuthorization: mayAsk) {
             isDirty = false
+            // The obstacle may be gone: an administrator save leaves a file we still cannot write, but
+            // a chmod in another window means the lock should disappear from the title.
+            writability = FileWritabilityCheck.check(path: path)
             updateTitleAndStatus()
             onSaved?()
         }
@@ -449,6 +497,145 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     /// `NSText.didChangeNotification` covers typing; setting `textView.string` — reload from disk,
     /// format, a line operation — does not post it, and the gutter would keep the old line count.
     private func refreshLineNumbers() { lineNumbers?.refresh() }
+
+    // MARK: - Line operations (F-359)
+
+    /// The line-tools menu: the shell filter, the built-in line operations, and line-ending
+    /// conversion — one builder, used for the toolbar pull-down and for the window's menu bar.
+    ///
+    /// Built twice rather than shared: an NSMenu belongs to one owner, and a pull-down additionally
+    /// needs a first item that is its title and is never chosen.
+    private func makeLineToolsMenu(forPullDown: Bool) -> NSMenu {
+        let menu = NSMenu(title: String(localized: "Lines"))
+        if forPullDown { menu.addItem(NSMenuItem(title: String(localized: "Lines"), action: nil,
+                                                 keyEquivalent: "")) }
+        let filter = NSMenuItem(title: String(localized: "Filter Through Command…"),
+                                action: #selector(promptFilterCommand), keyEquivalent: "\\")
+        filter.keyEquivalentModifierMask = [.command, .shift]
+        filter.target = self
+        menu.addItem(filter)
+        menu.addItem(.separator())
+        for (index, entry) in Self.lineOperations.enumerated() {
+            guard let entry else { menu.addItem(.separator()); continue }
+            let item = NSMenuItem(title: entry.title, action: #selector(lineOperationChosen(_:)),
+                                  keyEquivalent: "")
+            item.target = self
+            item.tag = index
+            menu.addItem(item)
+        }
+        menu.addItem(.separator())
+        for ending in LineEnding.allCases {
+            let item = NSMenuItem(title: String(format: String(localized: "Convert to %@"),
+                                                ending.displayName),
+                                  action: #selector(convertLineEndings(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = ending.displayName
+            menu.addItem(item)
+        }
+        return menu
+    }
+
+    /// Build the toolbar pull-down. A pull-down rather than a row of buttons: these are one family,
+    /// used occasionally, and seven more buttons would crowd out the controls used constantly.
+    private func buildLinesMenu() {
+        linesMenu.pullsDown = true
+        linesMenu.bezelStyle = .rounded
+        linesMenu.menu = makeLineToolsMenu(forPullDown: true)
+        linesMenu.setAccessibilityLabel(String(localized: "Line operations"))
+        linesMenu.toolTip = String(localized: "Sort, deduplicate, filter or trim the selected lines")
+    }
+
+    /// The operations, in menu order. `nil` is a separator; `needsPrompt` asks for the text to match
+    /// first. A menu item's tag is its index here, so the two cannot drift apart.
+    private static let lineOperations: [(title: String, operation: LineOperation,
+                                        needsPrompt: Bool)?] = [
+        (String(localized: "Sort A→Z"), .sort(ascending: true), false),
+        (String(localized: "Sort Z→A"), .sort(ascending: false), false),
+        (String(localized: "Reverse"), .reverse, false),
+        nil,
+        (String(localized: "Remove Duplicate Lines"), .unique, false),
+        (String(localized: "Remove Blank Lines"), .removeBlankLines, false),
+        (String(localized: "Trim Trailing Whitespace"), .trimTrailingWhitespace, false),
+        nil,
+        (String(localized: "Keep Only Lines Containing…"),
+         .filter(needle: "", keep: true, caseSensitive: false), true),
+        (String(localized: "Remove Lines Containing…"),
+         .filter(needle: "", keep: false, caseSensitive: false), true)
+    ]
+
+    @objc private func lineOperationChosen(_ sender: NSMenuItem) {
+        guard Self.lineOperations.indices.contains(sender.tag),
+              let entry = Self.lineOperations[sender.tag] else { return }
+        guard entry.needsPrompt else { return runLineOperation(entry.operation, named: entry.title) }
+        // The two filtering entries need the text to match; asked for here rather than in the operation,
+        // which stays pure and testable.
+        guard case .filter(_, let keep, _) = entry.operation else { return }
+        let dialog = InputDialog(
+            title: entry.title,
+            prompt: keep ? String(localized: "Keep only lines containing:")
+                         : String(localized: "Remove lines containing:"),
+            initialValue: "", okTitle: String(localized: "Apply"),
+            checkboxTitle: String(localized: "Match case"))
+        dialog.onConfirm = { [weak self, weak dialog] needle in
+            guard let self, !needle.isEmpty else { return }
+            self.runLineOperation(.filter(needle: needle, keep: keep,
+                                          caseSensitive: dialog?.isChecked == true),
+                                  named: entry.title)
+        }
+        linesDialog = dialog
+        dialog.runModalDialog(over: window)
+    }
+
+    private func runLineOperation(_ operation: LineOperation, named name: String) {
+        switch EditorLineOperations.apply(operation, to: textView, actionName: name) {
+        case .failed(let message):
+            statusLabel.stringValue = message
+            NSSound.beep()
+        case .unchanged:
+            statusLabel.stringValue = String(format: String(localized: "%@ — nothing to change"), name)
+        case .replaced(let lines):
+            afterProgrammaticEdit()
+            statusLabel.stringValue = String(format: String(localized: "%1$@ — %2$d line(s)"),
+                                             name, lines)
+        }
+    }
+
+    // MARK: - Line endings (F-358)
+
+    /// Convert the whole document to the terminator the user picked.
+    ///
+    /// One undoable step, and no-op when the file already uses it — a picker that reports the current
+    /// state must not mark the file dirty just for being read.
+    @objc private func lineEndingChanged() {
+        guard let title = endingPopup.titleOfSelectedItem,
+              let ending = LineEnding.allCases.first(where: { $0.displayName == title }) else { return }
+        let converted = LineEndings.convert(textView.string, to: ending)
+        guard converted != textView.string else { refreshLineEndings(); return }
+        let whole = NSRange(location: 0, length: (textView.string as NSString).length)
+        let caret = textView.selectedRange()
+        EditorTextFilter.replace(whole, with: converted, in: textView,
+                                 actionName: String(localized: "Convert Line Endings"))
+        // Keep the caret roughly where it was: replacing everything otherwise sends the view to the
+        // top, which after a conversion looks as though the file was reloaded.
+        let length = (textView.string as NSString).length
+        textView.setSelectedRange(NSRange(location: min(caret.location, length), length: 0))
+        afterProgrammaticEdit()
+        statusLabel.stringValue = String(format: String(localized: "Converted to %@"), ending.displayName)
+    }
+
+    /// Convert from the menu bar, where the choice arrives as the item rather than the popup.
+    @objc private func convertLineEndings(_ sender: NSMenuItem) {
+        guard let title = sender.representedObject as? String else { return }
+        endingPopup.selectItem(withTitle: title)
+        lineEndingChanged()
+    }
+
+    /// Show what the document currently uses, without converting anything.
+    private func refreshLineEndings() {
+        let survey = LineEndings.survey(textView.string)
+        lineEndingSurvey = survey
+        endingPopup.selectItem(withTitle: survey.dominant.displayName)
+    }
 
     @objc private func encodingChanged() {
         if let choice = TextEncodingChoice.allCases.first(where: { $0.displayName == encodingPopup.titleOfSelectedItem }) {
@@ -524,6 +711,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     /// `NSText.didChangeNotification` covers typing; a programmatic replacement drives these by hand.
     private func afterProgrammaticEdit() {
         refreshLineNumbers()
+        refreshLineEndings()
         isDirty = true
         refreshHighlight()
         refreshSymbols()
@@ -611,12 +799,41 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
 
     private func updateTitleAndStatus() {
         let name = (path as NSString).lastPathComponent
-        window?.title = (isDirty ? "• " : "") + name
+        // The lock in the title travels with the window: it is still there in the Window menu, in
+        // Mission Control and in a screenshot of a session from yesterday.
+        let lock = writability.isWritable ? "" : "🔒 "
+        window?.title = (isDirty ? "• " : "") + lock + name
         let langName = language?.name
             ?? TreeSitterLanguages.displayName(forExtension: (path as NSString).pathExtension)
             ?? String(localized: "Plain")
         let crumb = symbolPathText.isEmpty ? "" : "   ▸ \(symbolPathText)"
-        statusLabel.stringValue = "\(langName)   \(encoding.displayName)\(isDirty ? "   —   \(String(localized: "modified"))" : "")\(crumb)"
+        let readOnly = writabilityNote.isEmpty ? "" : "   —   \(writabilityNote)"
+        // Only when there is something to say: a one-line file has no terminator to report.
+        let endings = lineEndingSurvey.isEmpty ? "" : "   \(lineEndingSurvey.displayName)"
+        statusLabel.stringValue = "\(langName)   \(encoding.displayName)\(endings)\(isDirty ? "   —   \(String(localized: "modified"))" : "")\(readOnly)\(crumb)"
+    }
+
+    /// What the status line says about writing this file, and what the user can do about it.
+    ///
+    /// Each case has a different answer, so each gets its own sentence rather than one "read-only":
+    /// chmod is the user's own business, authorization is macOS's, and a read-only volume ends the
+    /// matter. See `FileWritability`.
+    private var writabilityNote: String {
+        switch writability {
+        case .writable:
+            return ""
+        case .readOnlyVolume:
+            return String(localized: "read-only volume — this file cannot be saved here")
+        case .ownedByAnotherUser(let owner):
+            return String(format: String(localized: "owned by %@ — saving will ask for authorization"),
+                          owner)
+        case .permissionsDeny:
+            return String(localized: "read-only — its permissions deny writing")
+        case .immutable:
+            return String(localized: "locked — the immutable flag is set")
+        case .systemProtected:
+            return String(localized: "protected by the system — not writable even with authorization")
+        }
     }
 
     // MARK: - Close
@@ -661,7 +878,10 @@ extension EditorWindowController: WindowContextMenuProviding {
     func makeEditMenu() -> NSMenu { AppMenu.standardEditMenu() }
 
     func toolMenus() -> [NSMenu] {
+        // The line tools get a menu of their own rather than a cap in DocumentMenus: they are the
+        // editor's alone, and the tag-to-operation mapping belongs next to the list it indexes.
         DocumentMenus.toolMenus(caps: documentCaps, editMenu: makeEditMenu(), target: self)
+            + [makeLineToolsMenu(forPullDown: false)]
     }
 }
 

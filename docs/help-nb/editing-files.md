@@ -22,6 +22,8 @@ For å starte en helt ny tekstfil på gjeldende plassering, trykk Shift+F4.
 
 Hører fila til `root` — noe i `/etc`, en launchd-plist, konfigurasjonen til en vevtjener — tilbyr lagringen å gjøre det **som administrator**: macOS ber om godkjenning på vanlig måte, innholdet overleveres via en privat midlertidig fil i stedet for en kommandolinje, og fila beholder sin egen eier og sine rettigheter i stedet for stille å bli din.
 
+Kan ikke filen skrives, får du vite det når du åpner den, og ikke først når du lagrer: tittelen bærer en lås, og statuslinjen nevner hindringen — eies av en annen bruker, rettigheter som forbyr skriving, en låst fil, et skrivebeskyttet volum eller beskyttelse fra systemet. Bare det første kan løses ved å godkjenne lagringen, og bare der blir det tilbudt; for de andre ville det koste et passord og likevel mislykkes.
+
 Margen viser linjenumre, med linja du står på lysere enn de andre; knappen ved siden av kodingsmenyen skjuler den. En brutt linje nummereres én gang, så nummeret betyr alltid samme linje som en kompilatorfeil eller en gjennomgangskommentar mener.
 
 ## Finn, erstatt og naviger
@@ -41,6 +43,21 @@ Klikk på **Filtrer…** (eller trykk Shift+Cmd+\) for å sende den valgte tekst
 Kommandoen kjører i innloggingsskallet ditt: `PATH`, aliasene og funksjonene dine virker akkurat som i Terminal, og rør og hermetegn betyr det du forventer. Arbeidsmappen er mappen til filen du redigerer, slik at relative stier løses der du venter det. Kommandoene du har brukt, huskes og tilbys i nedtrekkslisten neste gang.
 
 Hvis kommandoen feiler, står teksten din urørt, og kommandoens egen feilmelding vises i statuslinjen — en `jq`-syntaksfeil havner aldri limt inn i filen din. En kommando som ikke skriver ut noe, tømmer utvalget, og det er nettopp det filtrering med `grep` er til for; Cmd+Z henter det tilbake. En kommando som aldri blir ferdig, stoppes etter tjue sekunder.
+
+## Sortere, fjerne duplikater og rydde i linjer
+
+Menyen **Linjer** — i verktøylinjen og, så lenge editoren er fremst, i menylinjen — utfører endringene som kommer igjen og igjen, uten en skrevet kommando og uten installert verktøy:
+
+- Sorter A→Z eller Z→A, der tall sammenlignes etter verdi, slik at `file9` kommer før `file10`.
+- Snu rekkefølgen på linjene.
+- Fjern dupliserte linjer, behold den første av hver og la resten stå i sin rekkefølge.
+- Fjern tomme linjer, også de som bare ser tomme ut fordi de inneholder mellomrom.
+- Fjern mellomrom på slutten av linjen — den usynlige forskjellen som gjør en diff urolig.
+- Behold bare, eller fjern, linjene som inneholder en tekst du skriver.
+
+Er tekst valgt, virker hver av dem på de valgte linjene; utvalget utvides først til hele linjer, for å sortere en halv linje betyr ingenting. Uten utvalg gjelder de hele dokumentet. Hver er ett angre-trinn, så Cmd+Z tar tilbake hele operasjonen.
+
+Linjeskiftene står ved siden av Tegnsett-menyen: **LF** for Unix og macOS, **CRLF** for Windows, **CR** for klassisk Mac OS, og *(mixed)* når én fil inneholder mer enn én slags — ofte grunnen til en feil som ikke gir mening. Velg et annet for å konvertere hele filen i ett angrbart trinn. Linjeoperasjonene endrer aldri linjeskiftet av seg selv: en sortert CRLF-fil blir CRLF.
 
 ## Formatere en fil
 

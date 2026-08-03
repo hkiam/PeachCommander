@@ -22,6 +22,8 @@ Egy vadonatúj szövegfájl kezdéséhez az aktuális helyen nyomja meg a Shift+
 
 Ha a fájl a `root` tulajdona — egy bejegyzés az `/etc`-ben, egy launchd plist, egy webkiszolgáló beállítása —, a mentés felajánlja, hogy **rendszergazdaként** történjen: a macOS a szokott módon engedélyt kér, a tartalom egy privát ideiglenes fájlon keresztül kerül át, nem parancssoron, és a fájl megtartja a saját tulajdonosát és jogosultságait ahelyett, hogy csendben az Öné lenne.
 
+Ha a fájl nem írható, ezt a megnyitáskor tudja meg, nem a mentés pillanatában: a címben egy zár jelenik meg, az állapotsor pedig megnevezi az akadályt — más felhasználó tulajdona, az engedélyek tiltják az írást, zárolt fájl, csak olvasható kötet vagy a rendszer védelme. Csak az elsőt lehet a mentés engedélyezésével elrendezni, és csak ott ajánlja fel a program; a többinél egy jelszóba kerülne, és mégis meghiúsulna.
+
 A margó sorszámokat jelenít meg, a kurzor sorát a többinél világosabban; a kódolás menü melletti gomb elrejti. A tördelt sor egyszer kap számot, így a szám mindig ugyanazt a sort jelenti, amelyet egy fordítási hiba vagy egy átvizsgálási megjegyzés is.
 
 ## Keresés, csere és navigáció
@@ -41,6 +43,21 @@ Kattintson a **Szűrés…** elemre (vagy nyomja meg a Shift+Cmd+\-t), hogy a ki
 A parancs a bejelentkezési shellben fut: a `PATH`, az aliasok és a függvények pontosan úgy működnek, mint a Terminálban, a csővezetékek és az idézőjelek pedig azt jelentik, amit elvár. A munkakönyvtár a szerkesztett fájl mappája, így a relatív útvonalak ott oldódnak fel, ahol számít rájuk. A használt parancsokat megjegyzi a program, és legközelebb felajánlja a lenyíló listában.
 
 Ha a parancs hibára fut, a szöveg érintetlen marad, és a parancs hibaüzenete az állapotsorban jelenik meg — a `jq` szintaktikai hibája soha nem kerül be a fájlba. Az a parancs, amely semmit sem ír ki, kiüríti a kijelölést; pontosan erre való a `grep` szűrése, és a Cmd+Z visszahozza. Az a parancs, amely nem fejeződik be, húsz másodperc után leáll.
+
+## Sorok rendezése, ismétlődések eltávolítása és tisztítása
+
+A **Sorok** menü — az eszköztárban, és amíg a szerkesztő van elöl, a menüsorban is — azokat a módosításokat végzi el, amelyek újra és újra előkerülnek, beírt parancs és telepített eszköz nélkül:
+
+- Rendezés A→Z vagy Z→A, a számokat érték szerint összehasonlítva, így a `file9` a `file10` előtt áll.
+- A sorok sorrendjének megfordítása.
+- Ismétlődő sorok eltávolítása: mindegyikből az első marad, a többi a saját sorrendjében.
+- Üres sorok eltávolítása, azokkal együtt, amelyek csak szóközök miatt látszanak üresnek.
+- Sorvégi szóközök eltávolítása — az a láthatatlan különbség, amely zajossá tesz egy diffet.
+- Csak a beírt szöveget tartalmazó sorok megtartása, vagy éppen azok eltávolítása.
+
+Ha van kijelölés, mindegyik művelet a kijelölt sorokon dolgozik; a kijelölés előbb teljes sorokra bővül, mert félsort rendezni értelmetlen. Kijelölés nélkül a teljes dokumentumra érvényesek. Mindegyik egyetlen visszavonási lépés, így a Cmd+Z az egész műveletet visszavonja.
+
+A sorvégek a Kódolás menü mellett vannak: **LF** a Unixhoz és a macOS-hez, **CRLF** a Windowshoz, **CR** a klasszikus Mac OS-hez, és *(mixed)*, ha egy fájl többféle is tartalmaz — gyakran ez az oka egy értelmezhetetlen hibának. Válasszon másikat, és a program egyetlen visszavonható lépésben átalakítja az egész fájlt. A sorműveletek soha nem változtatják meg maguktól a sorvéget: egy rendezett CRLF-fájl CRLF marad.
 
 ## Fájl formázása
 
