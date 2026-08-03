@@ -18,10 +18,6 @@ DEFAULT_DIR="$HOME/Library/Application Support/PeachCommander/plugins"
 OUT_DIR="${1:-$DEFAULT_DIR}"
 BUNDLE="$OUT_DIR/JavaDecompiler.plxplugin"
 SRC="Plugins/JavaDecompiler/java_decompiler.swift"
-SRC_ARCHIVE="Plugins/JavaDecompiler/archive_view.swift"
-SRC_PANEL="Plugins/JavaDecompiler/panel_command.swift"
-SRC_CONTENT="Plugins/JavaDecompiler/content_field.swift"
-SRC_SETTINGS="Plugins/JavaDecompiler/settings_view.swift"
 PLIST="Plugins/JavaDecompiler/Info.plist"
 
 # Universal (arm64 + x86_64) plugin builds — see Tools/lib/pc-universal.sh. Required now
@@ -41,12 +37,13 @@ pc_swiftc -emit-library -O \
        -Xcc -I"$ROOT/Plugins/SDK" \
        -o "$BUNDLE/Contents/MacOS/JavaDecompiler" \
        "$SRC" \
-       "$SRC_ARCHIVE" \
-       "$SRC_PANEL" \
-       "$SRC_CONTENT" \
-       "$SRC_SETTINGS" \
        "$ROOT/Plugins/SDK/PluginLoc.swift" \
        "$ROOT/Plugins/SDK/PluginDecompiler.swift" \
+       "$ROOT/Plugins/SDK/PluginDecompilerView.swift" \
+       "$ROOT/Plugins/SDK/PluginDecompilerTreeView.swift" \
+       "$ROOT/Plugins/SDK/PluginDecompilerPanel.swift" \
+       "$ROOT/Plugins/SDK/PluginDecompilerContent.swift" \
+       "$ROOT/Plugins/SDK/PluginDecompilerSettings.swift" \
        "$ROOT/Plugins/SDK/PluginSyntax.swift"
 
 # Ship the plugin's localizations (see Plugins/SDK/LOCALIZATION.md).

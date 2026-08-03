@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// settings_view.swift — the plugin's own page in Settings (F-352).
+// PluginDecompilerSettings.swift — a decompiler plugin's own page in Settings (F-352).
 //
 // Contributed as a view in the host's "settings" container, the same way the System Monitor plugin
 // does it. Deliberately not a page built into the host: this plugin is optional and removable, and a
@@ -12,25 +12,26 @@
 
 import AppKit
 
-@_cdecl("PcMakeView")
-public func PcMakeView(_ viewId: UnsafePointer<CChar>?, _ containerId: UnsafePointer<CChar>?,
-                       _ services: UnsafePointer<PcHostServices>?) -> UnsafeMutableRawPointer? {
-    guard let viewId, String(cString: viewId) == "plugin.javadecompiler.settings" else { return nil }
+/// Build the settings pane if `viewId` is this plugin's. Each plugin's `PcMakeView` is one call here.
+func makeDecompilerSettingsView(_ viewId: UnsafePointer<CChar>?,
+                                _ services: UnsafePointer<PcHostServices>?,
+                                profile: PluginDecompilerProfile) -> UnsafeMutableRawPointer? {
+    guard let viewId, String(cString: viewId) == profile.settingsViewId else { return nil }
     // The host's config root when it offers one, so a scripted or -ConfigRoot run edits the same
     // files the rest of the plugin reads.
     let root = services.flatMap { context($0.pointee, "configRoot") } ?? configRoot()
-    let view = DecompilerSettingsView(configRoot: root)
+    let view = DecompilerSettingsView(configRoot: root, profile: profile)
     return Unmanaged.passRetained(view).toOpaque()
 }
 
-@_cdecl("PcCloseView")
-public func PcCloseView(_ view: UnsafeMutableRawPointer?) {
+func releaseDecompilerSettingsView(_ view: UnsafeMutableRawPointer?) {
     guard let view else { return }
     Unmanaged<DecompilerSettingsView>.fromOpaque(view).release()
 }
 
 final class DecompilerSettingsView: NSView {
     private let configRootPath: String
+    private let profile: PluginDecompilerProfile
     private var options: PluginDecompilerOptions
     private var registry: PluginDecompilerRegistry
 
@@ -45,13 +46,15 @@ final class DecompilerSettingsView: NSView {
     private let enginePopups: [(kind: String, popup: NSPopUpButton)]
     private let engineStatus = NSTextField(labelWithString: "")
 
-    init(configRoot: String) {
+    init(configRoot: String, profile: PluginDecompilerProfile) {
         self.configRootPath = configRoot
-        self.options = PluginDecompilerOptions.read(configRoot: configRoot)
-        self.registry = PluginDecompilerRegistry(configRoot: configRoot)
+        self.profile = profile
+        self.options = PluginDecompilerOptions.read(configRoot: configRoot, profile: profile.id)
+        self.registry = PluginDecompilerRegistry(configRoot: configRoot, profile: profile.id)
         // One row per kind the plugin handles, so "which engine for JARs" and "which for a single
         // class" are separate answers — they usually are, since javap only does the latter.
-        self.enginePopups = ["class", "jar", "apk", "dex"].map { ($0, NSPopUpButton()) }
+        self.enginePopups = (profile.singleKinds.sorted() + profile.treeKinds.sorted())
+            .map { ($0, NSPopUpButton()) }
         super.init(frame: NSRect(x: 0, y: 0, width: 520, height: 460))
         build()
     }
@@ -63,7 +66,7 @@ final class DecompilerSettingsView: NSView {
         rows.append(heading(L("Engines")))
         let preferred = PluginDecompilerPreference.read(configRoot: configRootPath)
         for (kind, popup) in enginePopups {
-            let candidates = pluginDecompilerArchiveKinds.contains(kind)
+            let candidates = profile.isTree(kind: kind)
                 ? registry.archiveEngines(for: kind) : registry.engines(for: kind)
             popup.addItem(withTitle: L("First available"))
             popup.lastItem?.tag = -1
@@ -157,7 +160,7 @@ final class DecompilerSettingsView: NSView {
 
     @objc private func engineChanged(_ sender: NSPopUpButton) {
         guard let kind = sender.identifier?.rawValue else { return }
-        let candidates = pluginDecompilerArchiveKinds.contains(kind)
+        let candidates = profile.isTree(kind: kind)
             ? registry.archiveEngines(for: kind) : registry.engines(for: kind)
         let tag = sender.selectedItem?.tag ?? -1
         if tag < 0 {
@@ -179,7 +182,7 @@ final class DecompilerSettingsView: NSView {
         options.cacheMaxAgeDays = max(1, Int(cacheAge.stringValue) ?? 30)
         // Written on every change rather than on an OK button: this is a settings pane inside the
         // host's window, and it has no OK of its own to hang a commit on.
-        options.write(configRoot: configRootPath)
+        options.write(configRoot: configRootPath, profile: profile.id)
         refreshStatus()
     }
 
@@ -190,18 +193,19 @@ final class DecompilerSettingsView: NSView {
     }
 
     @objc private func clearCache() {
-        try? FileManager.default.removeItem(atPath: PluginDecompilerCache.directory(configRoot: configRootPath))
+        try? FileManager.default.removeItem(
+            atPath: PluginDecompilerCache.directory(configRoot: configRootPath, profile: profile.id))
         refreshStatus()
     }
 
     private func refreshStatus() {
-        registry = PluginDecompilerRegistry(configRoot: configRootPath)
+        registry = PluginDecompilerRegistry(configRoot: configRootPath, profile: profile.id)
         let installed = registry.engines.filter(\.isAvailable)
         engineStatus.stringValue = installed.isEmpty
             ? L("No engine is installed. Nothing is downloaded for you — “Engine Folder…” opens the folder they belong in, and its README names each engine and its licence.")
             : String(format: L("Installed: %@"), installed.map(\.name).joined(separator: ", "))
-        let count = PluginDecompilerCache.entryCount(configRoot: configRootPath)
-        let bytes = PluginDecompilerCache.sizeInBytes(configRoot: configRootPath)
+        let count = PluginDecompilerCache.entryCount(configRoot: configRootPath, profile: profile.id)
+        let bytes = PluginDecompilerCache.sizeInBytes(configRoot: configRootPath, profile: profile.id)
         cacheLabel.stringValue = count == 0
             ? L("Nothing cached.")
             : String(format: L("%d cached result(s), %@ on disk"), count,
