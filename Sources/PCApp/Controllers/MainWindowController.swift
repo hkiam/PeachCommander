@@ -201,11 +201,20 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private struct UndoableOp { let label: String; let run: () async -> Void }
     private var undoStack: [UndoableOp] = []
 
+    /// The config as it was at launch, read synchronously so the first frame is already correct (F-360).
+    /// Read-only and never written: `mainConfig`/`session` stay the owners of the files.
+    private let startupConfig: ConfigSnapshot
+    private let startupSession: ConfigSnapshot
+
     init() {
         configPaths = ConfigPaths.resolve()
         mainConfig = ConfigStore(url: configPaths.mainConfig)
         session = ConfigStore(url: configPaths.session)
         hotlistStore = ConfigStore(url: configPaths.hotlist)
+        // The same two files, read synchronously, for everything that must be right in the first frame
+        // (F-360). See `applyVisualStateBeforeFirstPaint`.
+        startupConfig = ConfigSnapshot(url: configPaths.mainConfig)
+        startupSession = ConfigSnapshot(url: configPaths.session)
         let window = MainWindow(
             contentRect: NSMakeRect(0, 0, 1280, 800),
             styleMask: [.titled, .closable, .resizable, .miniaturizable],
@@ -223,6 +232,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         mainConfig = ConfigStore(url: configPaths.mainConfig)
         session = ConfigStore(url: configPaths.session)
         hotlistStore = ConfigStore(url: configPaths.hotlist)
+        startupConfig = ConfigSnapshot(url: configPaths.mainConfig)
+        startupSession = ConfigSnapshot(url: configPaths.session)
         super.init(coder: coder)
     }
 
@@ -355,6 +366,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             await self.applyKeymapToMenu()
         }
 
+        // Last, and before the window is shown: the appearance the user configured, not the default
+        // one (F-360). Everything above built the views; this decides what they look like.
+        applyVisualStateBeforeFirstPaint()
         logger.info("MainWindowController window loaded")
     }
 
@@ -464,45 +478,151 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     // MARK: - Session restore / save (I05-T02)
 
-    private func restoreStateAndLoad() async {
-        // Options (main config).
-        hiddenFilesShown = await mainConfig.bool("Configuration", "ShowHiddenSystem", default: false)
+    /// Apply everything the user can see, before the window is shown (F-360).
+    ///
+    /// All of this used to run in the async restore, i.e. after the window was already on screen, so
+    /// the first frame showed the built-in defaults and corrected itself a moment later: a light window
+    /// that turned dark, bars that appeared and disappeared, side-by-side panels that became stacked,
+    /// a window that jumped to its saved size. Read from a synchronous snapshot of the same files
+    /// (`ConfigSnapshot`) there is nothing to wait for, and the first paint is the right one.
+    ///
+    /// The order is the one the async version had, because some of it matters: user palettes before the
+    /// theme id that may name one of them, the appearance after the theme it derives from, and the
+    /// window frame before the divider position that is measured against it.
+    ///
+    /// Nothing here is repeated by `restoreStateAndLoad` — a second pass would be harmless for the
+    /// setters but not for `togglePreviewPanel`, which toggles, so applying it twice would close the
+    /// panel it just opened.
+    private func applyVisualStateBeforeFirstPaint() {
+        let config = startupConfig
+
+        hiddenFilesShown = config.bool("Configuration", "ShowHiddenSystem", default: false)
         leftPanelController?.setHiddenFiles(hiddenFilesShown)
         rightPanelController?.setHiddenFiles(hiddenFilesShown)
-        await startMCPServerIfEnabled()
-        // Cache the AI cloud endpoint so the AI plugin can read it via getContext
-        // (the config store is async; contribAugmentContext is sync).
-        cachedCloudBase = await mainConfig.string("AI", "CloudBaseURL", default: "")
-        cachedCloudModel = await mainConfig.string("AI", "CloudModel", default: "local")
-        let iconMode = await mainConfig.string("Configuration", "IconMode", default: "all")
-        IconLoader.shared.mode = Self.iconMode(from: iconMode)
-        displaySizeStyle = await mainConfig.string("Display", "SizeStyle", default: "kb")
-        displayTypeColors = await mainConfig.string("Display", "TypeColors", default: "")
-        displayBrackets = await mainConfig.bool("Display", "BracketDirs", default: false)
-        displayNaturalSort = await mainConfig.bool("Display", "NaturalSort", default: true)
-        displayAlternatingRows = await mainConfig.bool("Display", "AlternatingRows", default: false)
-        displayFontSize = await mainConfig.int("Display", "FontSize", default: 13)
-        displayDateFormat = await mainConfig.string("Display", "DateFormat", default: PanelDateFormatter.defaultPattern)
+        IconLoader.shared.mode = Self.iconMode(from: config.string("Configuration", "IconMode",
+                                                                  default: "all"))
+        displaySizeStyle = config.string("Display", "SizeStyle", default: "kb")
+        displayTypeColors = config.string("Display", "TypeColors", default: "")
+        displayBrackets = config.bool("Display", "BracketDirs", default: false)
+        displayNaturalSort = config.bool("Display", "NaturalSort", default: true)
+        displayAlternatingRows = config.bool("Display", "AlternatingRows", default: false)
+        displayFontSize = config.int("Display", "FontSize", default: 13)
+        displayDateFormat = config.string("Display", "DateFormat",
+                                         default: PanelDateFormatter.defaultPattern)
         applyDisplayOptionsToPanels()
         Theme.customColors = Theme.ColorOverride(                              // F-272
-            listText: NSColor(hexString: await mainConfig.string("Colors", "Foreground", default: "")),
-            listBackground: NSColor(hexString: await mainConfig.string("Colors", "Background", default: "")),
-            selectedText: NSColor(hexString: await mainConfig.string("Colors", "Selection", default: "")),
-            cursorFrame: NSColor(hexString: await mainConfig.string("Colors", "Cursor", default: "")))
+            listText: NSColor(hexString: config.string("Colors", "Foreground", default: "")),
+            listBackground: NSColor(hexString: config.string("Colors", "Background", default: "")),
+            selectedText: NSColor(hexString: config.string("Colors", "Selection", default: "")),
+            cursorFrame: NSColor(hexString: config.string("Colors", "Cursor", default: "")))
         // User themes first: the id read below may name one of them, and resolution falls back
         // to "system" for anything unknown, so loading after this would render a user theme as
         // the default on every launch.
         ThemeFile.loadUserPalettes(from: configPaths.themesDirectory)
         // Selected colour theme. "system" is the default and means: no named palette, follow
         // the appearance exactly as before — so an existing configuration renders unchanged.
-        themeId = await mainConfig.string("Colors", "Theme", default: "system")
-        let appearance = await mainConfig.string("Colors", "Appearance", default: "system")
-        applyAppearance(appearance)
-        let savedWidth = await mainConfig.int("Layout", "PreviewWidth", default: Int(Self.previewWidth))
+        themeId = config.string("Colors", "Theme", default: "system")
+        applyAppearance(config.string("Colors", "Appearance", default: "system"))
+        let savedWidth = config.int("Layout", "PreviewWidth", default: Int(Self.previewWidth))
         preferredPreviewWidth = max(PreviewResizeHandle.minWidth, CGFloat(savedWidth))
-        if await mainConfig.bool("Layout", "PreviewPanel", default: false) { togglePreviewPanel() }
-        horizontalPanels = await mainConfig.bool("Layout", "HorizontalPanels", default: false)
+        if config.bool("Layout", "PreviewPanel", default: false) { togglePreviewPanel() }
+        horizontalPanels = config.bool("Layout", "HorizontalPanels", default: false)
         if horizontalPanels { applyPanelArrangement() }
+        setCommandLineVisible(config.bool("Layout", "CommandLine", default: true))
+        setFunctionBarVisible(config.bool("Layout", "FunctionKeys", default: true))
+        setButtonBarVisible(config.bool("Layout", "ButtonBar", default: true))
+        setDriveBarVisible(config.bool("Layout", "DriveBar", default: true))
+        setStatusBarVisible(config.bool("Layout", "StatusBar", default: true))
+        setTabBarVisible(config.bool("Layout", "TabBar", default: true))
+        setPathBarVisible(config.bool("Layout", "PathBar", default: true))
+        if let mode = PanelViewMode(rawValue: config.string("Layout", "LeftViewMode",
+                                                           default: "details")) {
+            leftPanelController?.setViewMode(mode)
+        }
+        if let mode = PanelViewMode(rawValue: config.string("Layout", "RightViewMode",
+                                                           default: "details")) {
+            rightPanelController?.setViewMode(mode)
+        }
+        if config.bool("Layout", "LeftTree", default: false) { leftPanelController?.setTreeVisible(true) }
+        if config.bool("Layout", "RightTree", default: false) { rightPanelController?.setTreeVisible(true) }
+        if config.bool("Layout", "ButtonBarVertical", default: false) { setButtonBarVertical(true) }
+        // The keymap names the function-key bar's labels, so a late load relabels the bar in place.
+        loadKeymap(scheme: config.string("Configuration", "KeyScheme", default: "tc-classic"))
+
+        // Window frame + splitter (session). Restore a saved frame if present, then
+        // size the panes for the CURRENT screen and make sure the whole window
+        // (title bar included) is on-screen — a frame saved on a bigger monitor must
+        // not leave the header above a smaller screen.
+        if let savedFrame = Self.parseFrame(startupSession.string("Window", "Frame", default: "")) {
+            window?.setFrame(savedFrame, display: true)
+        } else {
+            window?.center()
+        }
+        ensureWindowOnScreen()
+        // Restore the saved divider position, otherwise center it.
+        let leftWidth = startupSession.double("Window", "LeftWidth", default: 0)
+        if leftWidth > 50 {
+            window?.contentView?.layoutSubtreeIfNeeded()
+            splitView.setPosition(leftWidth, ofDividerAt: 0)
+        } else {
+            centerDivider()
+        }
+    }
+
+
+    #if DEBUG
+    /// What the window looks like at the moment it is shown (`-StartupProbe <file>`, F-360).
+    ///
+    /// Read off the *views*, not off the flags that were set: a flag says what the code intended, and
+    /// the complaint here was about what was on screen. If any of these still held its built-in default
+    /// while the configuration said otherwise, the first frame was wrong — which is precisely what this
+    /// makes checkable instead of a matter of feel.
+    func startupProbeReport() -> String {
+        let appearance = window?.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua])?.rawValue ?? "-"
+        let frame = window?.frame ?? .zero
+        func hex(_ color: NSColor) -> String {
+            let rgb = color.usingColorSpace(.sRGB) ?? .black
+            return String(format: "#%02X%02X%02X", Int(rgb.redComponent * 255),
+                          Int(rgb.greenComponent * 255), Int(rgb.blueComponent * 255))
+        }
+        return """
+        theme=\(themeId)
+        appearance=\(appearance)
+        listBackground=\(hex(Theme.current.listBackground))
+        commandLine=\(!commandLine.isHidden)
+        functionBar=\(!functionKeyBar.isHidden)
+        buttonBar=\(!buttonBarView.isHidden && (buttonBarHeightConstraint?.constant ?? 0) > 0)
+        buttonBarVertical=\(buttonBarVertical)
+        previewPanel=\(previewIsVisible)
+        panelsVertical=\(splitView.isVertical)
+        leftViewMode=\(leftPanelController?.viewMode.rawValue ?? "-")
+        rightViewMode=\(rightPanelController?.viewMode.rawValue ?? "-")
+        hiddenFiles=\(hiddenFilesShown)
+        fontSize=\(displayFontSize)
+        frame=\(Int(frame.origin.x)),\(Int(frame.origin.y)),\(Int(frame.width)),\(Int(frame.height))
+        dividerAt=\(Int(leftPanelController?.view.frame.width ?? 0))
+
+        """
+    }
+
+    /// Write the probe if `-StartupProbe <file>` was given. Called right after the window is shown.
+    func writeStartupProbeIfRequested() {
+        guard let path = LaunchOptions.parse(CommandLine.arguments).startupProbe else { return }
+        try? startupProbeReport().write(toFile: path, atomically: true, encoding: .utf8)
+        logger.info("startup probe written to \(path, privacy: .public)")
+    }
+    #endif
+
+    private func restoreStateAndLoad() async {
+        // Everything visible — palette, appearance, which bars are shown, panel arrangement, view
+        // modes, the window frame — was applied synchronously before the first paint; see
+        // `applyVisualStateBeforeFirstPaint` (F-360). What is left here is the state nobody can see
+        // until they use it, which is exactly what may arrive a moment late.
+        await startMCPServerIfEnabled()
+        // Cache the AI cloud endpoint so the AI plugin can read it via getContext
+        // (the config store is async; contribAugmentContext is sync).
+        cachedCloudBase = await mainConfig.string("AI", "CloudBaseURL", default: "")
+        cachedCloudModel = await mainConfig.string("AI", "CloudModel", default: "local")
         DistributedNotificationCenter.default().addObserver(
             self, selector: #selector(systemAppearanceChanged),
             name: NSNotification.Name("AppleInterfaceThemeChangedNotification"), object: nil)
@@ -529,42 +649,6 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         tabLockedOpensNewTab = await mainConfig.bool("Tabs", "LockedOpensNewTab", default: true)
         applyTabDefaultsToPanels()
         ftpKeepAliveSeconds = Int(await mainConfig.string("FTP", "KeepAliveSeconds", default: "0")) ?? 0
-        setCommandLineVisible(await mainConfig.bool("Layout", "CommandLine", default: true))
-        setFunctionBarVisible(await mainConfig.bool("Layout", "FunctionKeys", default: true))
-        setButtonBarVisible(await mainConfig.bool("Layout", "ButtonBar", default: true))
-        setDriveBarVisible(await mainConfig.bool("Layout", "DriveBar", default: true))
-        setStatusBarVisible(await mainConfig.bool("Layout", "StatusBar", default: true))
-        setTabBarVisible(await mainConfig.bool("Layout", "TabBar", default: true))
-        setPathBarVisible(await mainConfig.bool("Layout", "PathBar", default: true))
-        let leftMode = await mainConfig.string("Layout", "LeftViewMode", default: "details")
-        let rightMode = await mainConfig.string("Layout", "RightViewMode", default: "details")
-        if let m = PanelViewMode(rawValue: leftMode) { leftPanelController?.setViewMode(m) }
-        if let m = PanelViewMode(rawValue: rightMode) { rightPanelController?.setViewMode(m) }
-        if await mainConfig.bool("Layout", "LeftTree", default: false) { leftPanelController?.setTreeVisible(true) }
-        if await mainConfig.bool("Layout", "RightTree", default: false) { rightPanelController?.setTreeVisible(true) }
-        if await mainConfig.bool("Layout", "ButtonBarVertical", default: false) { setButtonBarVertical(true) }
-        loadKeymap(scheme: await mainConfig.string("Configuration", "KeyScheme", default: "tc-classic"))
-
-        // Window frame + splitter (session). Restore a saved frame if present, then
-        // size the panes for the CURRENT screen and make sure the whole window
-        // (title bar included) is on-screen — a frame saved on a bigger monitor must
-        // not leave the header above a smaller screen.
-        let frameString = await session.string("Window", "Frame", default: "")
-        let leftWidth = await session.double("Window", "LeftWidth", default: 0)
-        if let savedFrame = Self.parseFrame(frameString) {
-            window?.setFrame(savedFrame, display: true)
-        } else {
-            window?.center()
-        }
-        ensureWindowOnScreen()
-        // Restore the saved divider position, otherwise center it.
-        if leftWidth > 50 {
-            window?.contentView?.layoutSubtreeIfNeeded()
-            splitView.setPosition(leftWidth, ofDividerAt: 0)
-        } else {
-            centerDivider()
-        }
-
         // Panel tabs (session).
         didRestore = true
         await restoreTabs(into: leftPanelController, prefix: "LeftPanel")

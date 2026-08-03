@@ -69,27 +69,19 @@ public actor ConfigStore {
     /// true/false/yes/no, case-insensitively. Falls back to `def` if the key
     /// is absent or unrecognized.
     public func bool(_ section: String, _ key: String, default def: Bool) -> Bool {
-        guard let raw = document.value(section: section, key: key) else { return def }
-        switch raw.lowercased() {
-        case "1", "true", "yes":
-            return true
-        case "0", "false", "no":
-            return false
-        default:
-            return def
-        }
+        // Coercion shared with ConfigSnapshot (see INIValue): the snapshot reads the same file before
+        // the first paint, and the two must agree on what "Yes" means.
+        INIValue.bool(document.value(section: section, key: key), default: def)
     }
 
     /// Read an integer, falling back to `def` if absent or unparsable.
     public func int(_ section: String, _ key: String, default def: Int) -> Int {
-        guard let raw = document.value(section: section, key: key), let parsed = Int(raw) else { return def }
-        return parsed
+        INIValue.int(document.value(section: section, key: key), default: def)
     }
 
     /// Read a double, falling back to `def` if absent or unparsable.
     public func double(_ section: String, _ key: String, default def: Double) -> Double {
-        guard let raw = document.value(section: section, key: key), let parsed = Double(raw) else { return def }
-        return parsed
+        INIValue.double(document.value(section: section, key: key), default: def)
     }
 
     /// Read a string, falling back to `def` if absent.
