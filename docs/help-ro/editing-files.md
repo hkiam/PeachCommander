@@ -20,6 +20,8 @@ Pentru a începe un fișier text nou-nouț la locația curentă, apăsați Shift
 ![Editorul de text încorporat care arată evidențierea sintaxei, conturul simbolurilor și harta miniaturală](screenshots/editor.png)
 *(Figura: editorul cu evidențierea sintaxei, conturul simbolurilor în stânga și harta miniaturală în dreapta.)*
 
+Dacă fișierul aparține lui `root` — o intrare în `/etc`, un plist launchd, configurația unui server web —, salvarea propune să o facă **ca administrator**: macOS cere o autorizare în modul obișnuit, conținutul este predat printr-un fișier temporar privat și nu printr-o linie de comandă, iar fișierul își păstrează propriul proprietar și permisiunile în loc să devină al dumneavoastră pe nesimțite.
+
 ## Căutare, înlocuire și navigare
 
 - Apăsați Cmd+F pentru a deschide bara de căutare. Pentru a înlocui text, deschideți bara de căutare și comutați-o la vizualizarea de înlocuire, sau faceți clic pe Găsește/Înlocuiește în bara de instrumente.

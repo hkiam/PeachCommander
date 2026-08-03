@@ -20,6 +20,8 @@ To start a brand-new text file at the current location, press Shift+F4.
 ![The built-in text editor showing syntax highlighting, the symbol outline, and the minimap](screenshots/editor.png)
 *(Figure: The editor with syntax highlighting, the symbol outline on the left, and the minimap on the right.)*
 
+If the file belongs to `root` — an entry in `/etc`, a launchd plist, a web server's config — saving offers to do it **as administrator**: macOS asks for authorization the usual way, the content is handed over through a private temporary file rather than a command line, and the file keeps its own owner and permissions instead of quietly becoming yours.
+
 ## Find, replace, and navigate
 
 - Press Cmd+F to open the find bar. To replace text, open the find bar and switch it to the replace view, or click Find/Replace in the toolbar.

@@ -20,6 +20,8 @@ Chcete-li vytvořit zcela nový textový soubor v aktuálním umístění, stisk
 ![Vestavěný textový editor zobrazující zvýraznění syntaxe, přehled symbolů a minimapu](screenshots/editor.png)
 *(Obrázek: editor se zvýrazněním syntaxe, přehledem symbolů vlevo a minimapou vpravo.)*
 
+Patří-li soubor `root` — záznam v `/etc`, launchd plist, konfigurace webového serveru —, uložení nabídne udělat to **jako správce**: macOS požádá o autorizaci jako obvykle, obsah se předá přes privátní dočasný soubor místo příkazové řádky a soubor si ponechá vlastního vlastníka i práva, místo aby se tiše stal vaším.
+
 ## Hledání, nahrazování a navigace
 
 - Stiskem Cmd+F otevřete lištu hledání. Chcete-li nahradit text, otevřete lištu hledání a přepněte ji na zobrazení nahrazování, nebo klepněte na Hledat/Nahradit na panelu nástrojů.

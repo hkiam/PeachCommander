@@ -20,6 +20,8 @@ Egy vadonatúj szövegfájl kezdéséhez az aktuális helyen nyomja meg a Shift+
 ![A beépített szövegszerkesztő a szintaxiskiemelést, a szimbólumvázlatot és a minitérképet mutatja](screenshots/editor.png)
 *(Ábra: a szerkesztő szintaxiskiemeléssel, a szimbólumvázlattal balra és a minitérképpel jobbra.)*
 
+Ha a fájl a `root` tulajdona — egy bejegyzés az `/etc`-ben, egy launchd plist, egy webkiszolgáló beállítása —, a mentés felajánlja, hogy **rendszergazdaként** történjen: a macOS a szokott módon engedélyt kér, a tartalom egy privát ideiglenes fájlon keresztül kerül át, nem parancssoron, és a fájl megtartja a saját tulajdonosát és jogosultságait ahelyett, hogy csendben az Öné lenne.
+
 ## Keresés, csere és navigáció
 
 - Nyomja meg a Cmd+F-et a keresősáv megnyitásához. Szöveg cseréjéhez nyissa meg a keresősávot és váltsa a csere nézetre, vagy kattintson a Keresés/Csere gombra az eszköztárban.

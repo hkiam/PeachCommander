@@ -20,6 +20,8 @@ Per iniziare un file di testo nuovo di zecca nella posizione corrente, premete S
 ![L'editor di testo integrato che mostra l'evidenziazione della sintassi, la struttura dei simboli e la minimappa](screenshots/editor.png)
 *(Figura: l'editor con l'evidenziazione della sintassi, la struttura dei simboli a sinistra e la minimappa a destra.)*
 
+Se il file appartiene a `root` — una voce in `/etc`, un plist di launchd, la configurazione di un server web —, il salvataggio propone di farlo **come amministratore**: macOS chiede l’autorizzazione come sempre, il contenuto passa da un file temporaneo privato invece che da una riga di comando, e il file mantiene proprietario e permessi invece di diventare vostro in silenzio.
+
 ## Trovare, sostituire e navigare
 
 - Premete Cmd+F per aprire la barra di ricerca. Per sostituire il testo, aprite la barra di ricerca e passate alla vista di sostituzione, oppure fate clic su Trova/Sostituisci nella barra degli strumenti.

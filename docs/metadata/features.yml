@@ -941,6 +941,34 @@ features:
       still gives an unconstrained bar a sensible height; hiding both bars was then verified to be
       conflict-free and to actually hide them.
 
+  - id: editor-save-as-admin
+    name: Editor speichert als Administrator
+    name_en: Editor saves as administrator
+    category: viewer
+    audiences: [expert]
+    status: stable
+    ui: { shortcuts: ["Cmd+S"] }
+    source: { modules: [PCApp], types: [DocumentFile, PrivilegedRunner] }
+    documentation: { integrated_help: true, website: false }
+    notes: >-
+      For an administrator, a root-owned file is the ordinary case rather than an exception: an entry in
+      /etc, a launchd plist, a web server's config. Until now saving one ended in "permission denied"
+      with no way forward, although the app already knew how to ask for authorization (F-099) for chmod
+      and delete. The editor's save path now offers the elevated retry when — and only when — the
+      failure really is about permission, which is a named test over both vocabularies Foundation uses
+      (Cocoa NSFileWriteNoPermissionError and POSIX EACCES/EPERM/EROFS) so an out-of-space error never
+      produces an authorization prompt.
+      The content goes through a temporary file created 0600 *before* anything is written to it, and the
+      privileged shell does `cat temp > target`. Not a command-line argument, because an argument list
+      is visible to every process via ps and the contents of the files edited this way are the point;
+      and `cat >` rather than `mv`, so the target keeps its own inode, owner and mode instead of
+      silently becoming the editing user's. Verified in the VM against a root:wheel 644 file: owner,
+      mode and inode unchanged, content correct, temp file gone.
+      The file name reaches a shell running as root, so `PrivilegedRunner.shellQuote` is tested against
+      a real /bin/sh with spaces, quotes, backticks and `$(id)` — the injection attempt comes back as
+      one literal argument. What is *not* verified end to end is the macOS password prompt itself: that
+      is Apple's dialog and typing a password is not something this project's tooling does.
+
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
     name: Einstellungen (15 Seiten)

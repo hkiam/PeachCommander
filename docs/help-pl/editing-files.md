@@ -20,6 +20,8 @@ Aby utworzyć zupełnie nowy plik tekstowy w bieżącej lokalizacji, naciśnij S
 ![Wbudowany edytor tekstu pokazujący podświetlanie składni, konspekt symboli i minimapę](screenshots/editor.png)
 *(Rysunek: edytor z podświetlaniem składni, konspektem symboli po lewej i minimapą po prawej.)*
 
+Jeśli plik należy do `root` — wpis w `/etc`, plist launchd, konfiguracja serwera WWW — zapis proponuje zrobić to **jako administrator**: macOS poprosi o autoryzację jak zwykle, treść jest przekazywana przez prywatny plik tymczasowy, a nie przez wiersz poleceń, i plik zachowuje własnego właściciela oraz uprawnienia, zamiast po cichu stać się twoim.
+
 ## Wyszukiwanie, zamiana i nawigacja
 
 - Naciśnij Cmd+F, aby otworzyć pasek wyszukiwania. Aby zamienić tekst, otwórz pasek wyszukiwania i przełącz go na widok zamiany, lub kliknij Znajdź/Zamień na pasku narzędzi.

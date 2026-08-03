@@ -20,6 +20,8 @@ För att starta en helt ny textfil på den aktuella platsen, tryck på Shift+F4.
 ![Den inbyggda textredigeraren som visar syntaxfärgning, symbolöversikten och minikartan](screenshots/editor.png)
 *(Figur: Redigeraren med syntaxfärgning, symbolöversikten till vänster och minikartan till höger.)*
 
+Om filen tillhör `root` — något i `/etc`, en launchd-plist, en webbservers konfiguration — erbjuder sparandet att göra det **som administratör**: macOS frågar om behörighet på vanligt sätt, innehållet lämnas över via en privat temporärfil i stället för en kommandorad, och filen behåller sin egen ägare och sina rättigheter i stället för att tyst bli din.
+
 ## Sök, ersätt och navigera
 
 - Tryck på Cmd+F för att öppna sökfältet. För att ersätta text, öppna sökfältet och växla det till ersättningsvyn, eller klicka på Sök/Ersätt i verktygsfältet.

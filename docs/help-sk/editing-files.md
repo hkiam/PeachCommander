@@ -20,6 +20,8 @@ Na začatie úplne nového textového súboru na aktuálnom mieste stlačte Shif
 ![Vstavaný textový editor zobrazujúci zvýrazňovanie syntaxe, prehľad symbolov a minimapu](screenshots/editor.png)
 *(Obrázok: editor so zvýrazňovaním syntaxe, prehľadom symbolov vľavo a minimapou vpravo.)*
 
+Ak súbor patrí `root` — záznam v `/etc`, launchd plist, konfigurácia webového servera —, uloženie navrhne urobiť to **ako správca**: macOS požiada o autorizáciu ako obvykle, obsah sa predá cez privátny dočasný súbor namiesto príkazového riadku a súbor si ponechá vlastného vlastníka aj práva namiesto toho, aby sa tichom stal vaším.
+
 ## Hľadanie, nahrádzanie a navigácia
 
 - Stlačte Cmd+F na otvorenie lišty hľadania. Na nahradenie textu otvorte lištu hľadania a prepnite ju na zobrazenie nahrádzania, alebo kliknite na Hľadať/Nahradiť na paneli nástrojov.
