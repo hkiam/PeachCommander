@@ -67,6 +67,8 @@ Vklopite **Primerjaj**, da odprete drugi pladenj z lastnim menijem pogona. Dva d
 
 F3 na celotni `.jar`, `.apk` ali `.dex` dekompilira vse naenkrat in ob izvorni kodi pokaže drevo paketov. Iskalno polje nad drevesom preišče vsak razred — prav tisto vprašanje, na katero en razred ne more odgovoriti: kje se niz, klic ali konstanta res pojavi, ko še ne veste, v katerem razredu. Zadetki zožijo drevo, prvi pa se odpre pri svoji vrstici. Enter še vedno odpre JAR kot arhiv — dejanji ostaneta ločeni.
 
+Obstaja druga, bolj neposredna pot: postavite kazalec na datoteko `.class` ali na cel arhiv in izberite **Dekompiliraj v vire** (meni Ukazi, kontekstni meni ali ⌘⇧J). Razredi se dekompilirajo, rezultat pa se odpre v drugem pladnju kot običajne datoteke `.java`. Od tam velja ves upravitelj datotek — F3 jih pokaže z lastnim poudarjanjem Jave Peach Commanderja, Alt+F7 išče po njih, F5 jih kopira ven, primerjate in označite pa jih lahko kot vse drugo. Za večino dela to prekaša lastno okno; zato je drevo vstavka mogoče izklopiti v Nastavitve ▸ Dekompilator.
+
 Pokrit je tudi Android: F3 na datoteki `.dex` uporabi **jadx** (Apache 2.0, `brew install jadx`), ki bajtno kodo Dalvik pretvori nazaj v Javo. Zadostoval je en opis pogona — isti mehanizem, drug zapis.
 
 Vtičnik je **izklopljen, dokler ga ne vklopite**, v Nastavitve ▸ Vtičniki — večina ljudi datoteke .class nikoli ne odpre, brez pogona pa tako ali tako ne koristi.

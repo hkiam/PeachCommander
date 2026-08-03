@@ -67,6 +67,8 @@ Slå på **Sammenlign** for å åpne et andre felt med sin egen motormeny. To de
 
 F3 på en hel `.jar`, `.apk` eller `.dex` dekompilerer alt på én gang og viser et pakketre ved siden av kildekoden. Søkefeltet over treet søker i hver klasse — nettopp spørsmålet en enkelt klasse ikke kan svare på: hvor en streng, et kall eller en konstant faktisk forekommer, når du ennå ikke vet i hvilken klasse. Treff snevrer inn treet, og det første åpnes på sin linje. Med Enter åpnes JAR-filen fortsatt som et arkiv; de to verbene holdes atskilt.
 
+Det finnes en annen, mer direkte vei: sett markøren på en `.class`-fil eller et helt arkiv og velg **Dekompiler til kildekode** (menyen Kommandoer, kontekstmenyen eller ⌘⇧J). Klassene dekompileres, og resultatet åpnes i det andre feltet som vanlige `.java`-filer. Derfra gjelder hele filbehandleren — F3 viser dem med Peach Commanders eget Java-fargevalg, Alt+F7 søker på tvers av dem, F5 kopierer dem ut, og du kan sammenligne eller merke dem som alt annet. For det meste arbeidet slår det et eget vindu; derfor kan programtilleggets tre slås av i Innstillinger ▸ Dekompilator.
+
 Android dekkes også: F3 på en `.dex`-fil bruker **jadx** (Apache 2.0, `brew install jadx`), som gjør Dalvik-bytekode tilbake til Java. Det trengtes én motorbeskrivelse — samme mekanisme, annet format.
 
 Tillegget er **av til du slår det på**, under Innstillinger ▸ Programtillegg — de fleste åpner aldri en classfil, og uten motor gjør det ingen nytte.

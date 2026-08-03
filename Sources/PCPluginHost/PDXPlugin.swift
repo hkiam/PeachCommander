@@ -200,7 +200,8 @@ public struct PDXContentProvider: ContentFieldProvider {
         var map: [String: Int] = [:]
         for f in try plugin.supportedFields() {
             let id = Self.fieldID(f.name)
-            fields.append(ContentField(id: id, title: f.name, unit: f.units.first))
+            fields.append(ContentField(id: id, title: f.name, unit: f.units.first,
+                                       isFullText: f.kind == .fullText))
             map[id] = f.index
         }
         self.fields = fields

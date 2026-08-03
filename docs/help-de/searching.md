@@ -24,6 +24,7 @@ Wenn Sie Dateien irgendwo auf Ihrem Mac aufspüren müssen — nach Namen, nach 
 2. Wechseln Sie zum Tab **Erweitert**, um Ergebnisse nach **Größe** (zum Beispiel `10K` bis `5M`), nach **Änderungsdatum**-Bereich oder auf Dateien einzugrenzen, die in den letzten N Tagen geändert wurden.
 3. Schalten Sie **In Archiven suchen** ein, um innerhalb von Archiven der Zip-Familie (zip, jar, war und ähnliche) zu suchen.
 4. Um die Suche auf das bereits Ausgewählte zu beschränken, schalten Sie **Nur in ausgewählten Objekten suchen** ein, bevor Sie starten.
+5. Manche Plugins können eine Datei in Text verwandeln, den die Datei selbst nicht enthält — das Decompiler-Plugin macht aus einer `.class` Java-Quelltext. Schalten Sie **Von Plugins bereitgestellten Text durchsuchen** ein, dann werden solche Dateien als dieser Text und nicht als ihre eigenen Bytes durchsucht; so findet sich eine Formulierung aus dem Quelltext in einer kompilierten Klasse. Die Option erscheint nur, wenn ein solches Plugin installiert ist, und sie ist langsamer: den Text zu erzeugen kann bedeuten, pro Datei einen Decompiler zu starten.
 
 ![Das Fenster Dateien suchen auf dem Tab Erweitert, das Größen- und Datumsfilter zeigt](screenshots/find-files-advanced.png)
 *(Abbildung: Der Tab Erweitert — filtern nach Größe, Datum und anderen Attributen.)*

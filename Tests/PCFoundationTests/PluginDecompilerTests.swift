@@ -593,7 +593,7 @@ final class PluginDecompilerArchiveTests: XCTestCase {
         // Files are present, but the run never finished — a timeout leaves exactly this state, and
         // treating it as complete would hide classes for as long as the entry lives.
         XCTAssertFalse(PluginDecompilerCache.treeIsComplete(dir))
-        PluginDecompilerCache.markTreeComplete(dir)
+        PluginDecompilerCache.markTreeComplete(dir, configRoot: root)
         XCTAssertTrue(PluginDecompilerCache.treeIsComplete(dir))
     }
 
@@ -651,5 +651,101 @@ extension PluginDecompilerArchiveTests {
 
     func testShallowestLeafOfNothingIsNothing() {
         XCTAssertNil(PluginDecompilerNode.shallowestLeaf(in: []))
+    }
+}
+
+// MARK: - Options (F-352)
+
+extension PluginDecompilerArchiveTests {
+    func testOptionsDefaultToWorkingWithoutAFile() {
+        // No options.ini yet is the normal first run: everything must be on, or the plugin would ship
+        // switched off by its own configuration.
+        let options = PluginDecompilerOptions.read(configRoot: root)
+        XCTAssertTrue(options.claimArchives)
+        XCTAssertTrue(options.allowSearchDecompile)
+        XCTAssertEqual(options.classTimeout, 0)
+        XCTAssertEqual(options.cacheMaxAgeDays, 30)
+    }
+
+    func testOptionsSurviveAWriteAndRead() {
+        var written = PluginDecompilerOptions()
+        // One flag left ON deliberately: the first version of this test set both to false and passed
+        // while the parser was reading every written value as unparsable — "1" plus the inline comment
+        // the writer emits came back as false, so "off" was the only answer it could ever give.
+        written.claimArchives = true
+        written.allowSearchDecompile = false
+        written.classTimeout = 45
+        written.archiveTimeout = 600
+        written.cacheMaxAgeDays = 7
+        written.write(configRoot: root)
+        XCTAssertEqual(PluginDecompilerOptions.read(configRoot: root), written)
+    }
+
+    func testAMangledLineCostsOnlyItsOwnSetting() throws {
+        let path = PluginDecompilerOptions.file(configRoot: root)
+        try FileManager.default.createDirectory(atPath: (path as NSString).deletingLastPathComponent,
+                                               withIntermediateDirectories: true)
+        try "[Options]\nClaimArchives = 0\nClassTimeout = not-a-number\n"
+            .write(toFile: path, atomically: true, encoding: .utf8)
+        let options = PluginDecompilerOptions.read(configRoot: root)
+        XCTAssertFalse(options.claimArchives, "the readable setting must still apply")
+        XCTAssertEqual(options.classTimeout, 0, "the unreadable one falls back to the default")
+    }
+
+    func testConfiguredTimeoutsReachEveryEngine() throws {
+        var options = PluginDecompilerOptions()
+        options.classTimeout = 11
+        options.archiveTimeout = 222
+        options.write(configRoot: root)
+        // Through the registry, because that is the only way a consumer gets an engine — a timeout
+        // honoured on one path and not another is the bug this arrangement exists to prevent.
+        let registry = PluginDecompilerRegistry(configRoot: root)
+        for engine in registry.engines {
+            XCTAssertEqual(engine.timeout, 11, engine.id)
+            if let archive = engine.archive { XCTAssertEqual(archive.timeout, 222, engine.id) }
+        }
+    }
+
+    func testZeroMeansTheEngineKeepsItsOwnTimeout() {
+        let registry = PluginDecompilerRegistry(configRoot: root)   // no options.ini
+        let jadx = registry.engines.first { $0.id == "jadx" }!
+        XCTAssertEqual(jadx.timeout, 120, "jadx sets its own 120 s; 0 must not overwrite it with 0")
+    }
+
+    func testClearingAPreferenceIsNotThesameAsPickingTheFirst() {
+        PluginDecompilerPreference.set(engine: "procyon", forKind: "class", configRoot: root)
+        XCTAssertEqual(PluginDecompilerPreference.read(configRoot: root)["class"], "procyon")
+        PluginDecompilerPreference.clear(forKind: "class", configRoot: root)
+        XCTAssertNil(PluginDecompilerPreference.read(configRoot: root)["class"],
+                     "\"first available\" must leave no id behind, or a better engine installed later "
+                     + "would never be chosen")
+    }
+}
+
+extension PluginDecompilerArchiveTests {
+    func testResultDirectoriesAreNamedAfterTheirInput() throws {
+        let file = (root as NSString).appendingPathComponent("my demo.jar")
+        try "x".write(toFile: file, atomically: true, encoding: .utf8)
+        let cfr = PluginDecompilerEngine.builtIns(engineDirectory: root).first { $0.id == "cfr" }!
+        let dir = PluginDecompilerCache.treeDirectory(path: file, engine: cfr, configRoot: root)!
+        let name = (dir as NSString).lastPathComponent
+        // The name is what a panel tab shows, so the archive has to be recognisable in it — and the
+        // space must not survive as one, since this becomes a single path component.
+        XCTAssertTrue(name.hasPrefix("my_demo.jar-"), name)
+        XCTAssertFalse(name.contains(" "), name)
+    }
+
+    func testTwoArchivesWithTheSameNameKeepSeparateResults() throws {
+        let a = (root as NSString).appendingPathComponent("a/lib.jar")
+        let b = (root as NSString).appendingPathComponent("b/lib.jar")
+        for path in [a, b] {
+            try FileManager.default.createDirectory(atPath: (path as NSString).deletingLastPathComponent,
+                                                   withIntermediateDirectories: true)
+            try path.write(toFile: path, atomically: true, encoding: .utf8)   // different contents
+        }
+        let cfr = PluginDecompilerEngine.builtIns(engineDirectory: root).first { $0.id == "cfr" }!
+        XCTAssertNotEqual(PluginDecompilerCache.treeDirectory(path: a, engine: cfr, configRoot: root),
+                          PluginDecompilerCache.treeDirectory(path: b, engine: cfr, configRoot: root),
+                          "the readable prefix must not cost the hash its job")
     }
 }

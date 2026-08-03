@@ -236,7 +236,10 @@ struct PluginDecompilerRegistry {
                 else { user.append(engine) }
             }
         }
-        engines = user + builtIns
+        // The user's timeouts applied here and nowhere else: every consumer goes through this
+        // registry, so a setting cannot be honoured on one path and ignored on another.
+        let options = PluginDecompilerOptions.read(configRoot: configRoot)
+        engines = (user + builtIns).map { $0.withTimeouts(options) }
     }
 
     /// Engines that can handle `kind`, in preference order.
@@ -420,8 +423,13 @@ extension PluginDecompilerEngine {
 /// the file, and caching it would mean installing the engine did not help until something evicted
 /// the entry.
 enum PluginDecompilerCache {
-    /// Old entries are dropped past this age so the folder cannot grow without bound.
+    /// Old entries are dropped past this age so the folder cannot grow without bound. The default;
+    /// the settings page can change it (F-352).
     static let maximumAge: TimeInterval = 30 * 24 * 3600
+
+    static func maximumAge(configRoot: String) -> TimeInterval {
+        TimeInterval(PluginDecompilerOptions.read(configRoot: configRoot).cacheMaxAgeDays) * 24 * 3600
+    }
 
     static func directory(configRoot: String) -> String {
         (PluginDecompilerRegistry.engineDirectory(configRoot: configRoot) as NSString)
@@ -460,7 +468,7 @@ enum PluginDecompilerCache {
         try? FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
         try? source.write(toFile: (dir as NSString).appendingPathComponent(key),
                           atomically: true, encoding: .utf8)
-        prune(dir)
+        prune(dir, maximumAge: maximumAge(configRoot: configRoot))
     }
 
     // MARK: Whole-archive results
@@ -477,26 +485,68 @@ enum PluginDecompilerCache {
     static func treeDirectory(path: String, engine: PluginDecompilerEngine, configRoot: String) -> String? {
         guard let key = key(path: path, engine: engine,
                             variant: engine.archive?.args.joined(separator: " ") ?? "archive") else { return nil }
-        return (directory(configRoot: configRoot) as NSString).appendingPathComponent("tree-" + key)
+        // The archive's name in the directory name, because this directory is opened *in a file panel*
+        // (F-350) and its last component becomes the tab's title. A pure hash made that tab read
+        // "tree-28au0ddiogk2x", which tells the person looking at it nothing at all. The hash stays —
+        // it is what keeps two archives of the same name apart.
+        return (directory(configRoot: configRoot) as NSString)
+            .appendingPathComponent(safeName((path as NSString).lastPathComponent) + "-" + key)
+    }
+
+    /// A file name reduced to something safe and short enough to be one path component.
+    static func safeName(_ name: String) -> String {
+        let cleaned = name.map { $0.isLetter || $0.isNumber || $0 == "." || $0 == "-" || $0 == "_" ? $0 : "_" }
+        return String(cleaned.prefix(60))
     }
 
     /// Whether `dir` holds a result that finished.
+    /// Where a single class's `.java` file belongs, named so a panel tab reads the class's name.
+    static func fileDirectory(path: String, engine: PluginDecompilerEngine, configRoot: String) -> String? {
+        guard let key = key(path: path, engine: engine, variant: "single-dir") else { return nil }
+        let stem = ((path as NSString).lastPathComponent as NSString).deletingPathExtension
+        return (directory(configRoot: configRoot) as NSString)
+            .appendingPathComponent(safeName(stem) + "-" + key)
+    }
+
     static func treeIsComplete(_ dir: String) -> Bool {
         FileManager.default.fileExists(
             atPath: (dir as NSString).appendingPathComponent(completionMarker))
     }
 
-    static func markTreeComplete(_ dir: String) {
+    static func markTreeComplete(_ dir: String, configRoot: String) {
         _ = FileManager.default.createFile(
             atPath: (dir as NSString).appendingPathComponent(completionMarker), contents: nil)
         // Prune the folder this result sits in, which is the cache root — derived from `dir` rather
         // than rebuilt from configRoot, so the two can never disagree about where the cache is.
-        prune((dir as NSString).deletingLastPathComponent)
+        prune((dir as NSString).deletingLastPathComponent,
+              maximumAge: maximumAge(configRoot: configRoot))
+    }
+
+    /// How many results are cached, and how much disk they take.
+    ///
+    /// Shown in the options window and used by the "clear cache" command, so both can say what they
+    /// are about to remove rather than asking for blind confirmation.
+    static func entryCount(configRoot: String) -> Int {
+        (try? FileManager.default.contentsOfDirectory(atPath: directory(configRoot: configRoot)))?
+            .filter { !$0.hasPrefix(".") }.count ?? 0
+    }
+
+    static func sizeInBytes(configRoot: String) -> Int64 {
+        let dir = directory(configRoot: configRoot)
+        guard let e = FileManager.default.enumerator(atPath: dir) else { return 0 }
+        var total: Int64 = 0
+        for case let rel as String in e {
+            let full = (dir as NSString).appendingPathComponent(rel)
+            if let size = (try? FileManager.default.attributesOfItem(atPath: full))?[.size] as? Int64 {
+                total += size
+            }
+        }
+        return total
     }
 
     /// Drop entries older than `maximumAge`. Cheap enough to run on every write: the folder holds
     /// one small file per (file, engine) pair a user has actually looked at.
-    private static func prune(_ dir: String) {
+    private static func prune(_ dir: String, maximumAge: TimeInterval = maximumAge) {
         let fm = FileManager.default
         guard let names = try? fm.contentsOfDirectory(atPath: dir) else { return }
         let cutoff = Date().addingTimeInterval(-maximumAge)
@@ -536,9 +586,17 @@ enum PluginDecompilerPreference {
         return out
     }
 
-    static func set(engine id: String, forKind kind: String, configRoot: String) {
+    /// Forget the preference for `kind`, so the first *available* engine wins again.
+    ///
+    /// Distinct from setting the first engine's id: "no preference" keeps following what is installed,
+    /// while an id freezes today's answer even after a better engine appears.
+    static func clear(forKind kind: String, configRoot: String) {
+        set(engine: nil, forKind: kind, configRoot: configRoot)
+    }
+
+    static func set(engine id: String?, forKind kind: String, configRoot: String) {
         var values = read(configRoot: configRoot)
-        values[kind.lowercased()] = id
+        if let id { values[kind.lowercased()] = id } else { values.removeValue(forKey: kind.lowercased()) }
         let body = ["; Engine chosen last for each file kind — written by the decompiler plugin.",
                     "[Preferred]"]
             + values.keys.sorted().map { "\($0) = \(values[$0]!)" }
@@ -887,5 +945,114 @@ enum PluginDecompilerSearch {
         }
         // Every file was read, so the answer is complete even if the budget ended up at zero.
         return (hits, false)
+    }
+}
+
+// MARK: - Options
+
+/// The settings a decompiler plugin exposes, in a file of its own.
+///
+/// Not in `decompilers.ini`: that file is hand-written, and rewriting it to record a checkbox would
+/// reformat someone's comments away. Not in the host's `peachcmd.ini` either — an optional plugin
+/// must not leave settings behind in the host's configuration when it is removed, and a host page for
+/// a plugin that may not be installed is dead UI. This is the plugin's own file, next to its engines.
+struct PluginDecompilerOptions: Equatable {
+    /// Whether F3 on a whole archive opens the decompiled tree.
+    ///
+    /// Off means the plugin does not claim `.jar`/`.apk`/`.dex` for the viewer at all, so F3 falls
+    /// back to the host's own viewer. Worth having as a switch because the panel route — decompile to
+    /// sources, then use the file manager — is the better answer for most work, and someone who works
+    /// that way should be able to stop a plugin window opening on F3.
+    var claimArchives: Bool = true
+    /// Whether the plugin may run an engine while the *host* is searching.
+    ///
+    /// The host asks before it searches (its own "search text provided by plugins" option); this is
+    /// the plugin's side of the same consent, so a machine where decompiling is too slow can refuse
+    /// once instead of the user remembering not to tick a box.
+    var allowSearchDecompile: Bool = true
+    /// Seconds for one class, and for a whole archive. Zero means "use the engine's own value".
+    var classTimeout: Int = 0
+    var archiveTimeout: Int = 0
+    /// Days a cached result survives.
+    var cacheMaxAgeDays: Int = 30
+
+    static func file(configRoot: String) -> String {
+        (PluginDecompilerRegistry.engineDirectory(configRoot: configRoot) as NSString)
+            .appendingPathComponent("options.ini")
+    }
+
+    /// Read the options, falling back to the defaults for anything missing or unparsable.
+    ///
+    /// Forgiving in the same way the theme and engine files are: a mangled line costs that one setting
+    /// rather than the whole file, because the alternative is a plugin that silently stops working
+    /// because of a stray character.
+    static func read(configRoot: String) -> PluginDecompilerOptions {
+        var options = PluginDecompilerOptions()
+        guard let text = try? String(contentsOfFile: file(configRoot: configRoot), encoding: .utf8) else {
+            return options
+        }
+        for line in text.components(separatedBy: .newlines) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard !trimmed.isEmpty, !trimmed.hasPrefix(";"), !trimmed.hasPrefix("#"),
+                  !trimmed.hasPrefix("["), let eq = trimmed.firstIndex(of: "=") else { continue }
+            let key = String(trimmed[trimmed.startIndex..<eq]).trimmingCharacters(in: .whitespaces).lowercased()
+            var value = String(trimmed[trimmed.index(after: eq)...]).trimmingCharacters(in: .whitespaces)
+            // Strip a trailing comment, the way the engine file's parser does. This file is written
+            // *with* such comments — `ClaimArchives = 1   ; F3 on a .jar …` — so not stripping them
+            // read every value as unparsable: the numbers fell back to their defaults and the flags
+            // came back false, which turned "on" into "off" on the first round trip.
+            for marker in [";", "#"] {
+                if let i = value.range(of: marker)?.lowerBound {
+                    value = String(value[value.startIndex..<i]).trimmingCharacters(in: .whitespaces)
+                }
+            }
+            switch key {
+            case "claimarchives": options.claimArchives = boolean(value)
+            case "searchdecompile": options.allowSearchDecompile = boolean(value)
+            case "classtimeout": options.classTimeout = Int(value) ?? 0
+            case "archivetimeout": options.archiveTimeout = Int(value) ?? 0
+            case "maxagedays": options.cacheMaxAgeDays = Int(value) ?? 30
+            default: break
+            }
+        }
+        return options
+    }
+
+    static func boolean(_ value: String) -> Bool {
+        ["1", "true", "yes", "on"].contains(value.lowercased())
+    }
+
+    func write(configRoot: String) {
+        let body = [
+            "; Options for the decompiler plugin — written by its settings page.",
+            "[Options]",
+            "ClaimArchives   = \(claimArchives ? 1 : 0)   ; F3 on a .jar/.apk/.dex opens the decompiled tree",
+            "SearchDecompile = \(allowSearchDecompile ? 1 : 0)   ; may decompile while the host searches",
+            "ClassTimeout    = \(classTimeout)   ; seconds for one class (0 = the engine's own value)",
+            "ArchiveTimeout  = \(archiveTimeout)   ; seconds for a whole archive (0 = the engine's own)",
+            "MaxAgeDays      = \(cacheMaxAgeDays)   ; how long a cached result survives",
+        ].joined(separator: "\n") + "\n"
+        let path = Self.file(configRoot: configRoot)
+        try? FileManager.default.createDirectory(atPath: (path as NSString).deletingLastPathComponent,
+                                                 withIntermediateDirectories: true)
+        try? body.write(toFile: path, atomically: true, encoding: .utf8)
+    }
+}
+
+extension PluginDecompilerEngine {
+    /// This engine with the user's timeouts applied, where they set any.
+    ///
+    /// Applied here rather than at each call site so no path can forget it: an engine that ignored the
+    /// configured limit would look like the setting does nothing.
+    func withTimeouts(_ options: PluginDecompilerOptions) -> PluginDecompilerEngine {
+        PluginDecompilerEngine(
+            id: id, name: name, kinds: kinds, tool: tool, args: args, enginePath: enginePath,
+            output: output, note: note,
+            timeout: options.classTimeout > 0 ? options.classTimeout : timeout,
+            archive: archive.map {
+                PluginDecompilerArchiveSupport(
+                    args: $0.args,
+                    timeout: options.archiveTimeout > 0 ? options.archiveTimeout : $0.timeout)
+            })
     }
 }

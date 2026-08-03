@@ -134,4 +134,19 @@ public extension PluginHost {
         PluginLibrary.open(path: plugin.binaryPath,
                            required: ContribSymbols.required, optional: ContribSymbols.optional)
     }
+
+    /// Open a plugin's binary resolving the *content* ABI (Plugins/SDK/pdx.h) with
+    /// nothing required, so a plugin of any type that happens to export content
+    /// fields can be asked for them.
+    ///
+    /// The same rule contributions already follow. Content fields were the one ABI
+    /// still gated on the declared type, and the gate had no reason behind it: a
+    /// lister that can turn a .class into text can answer "what is this file's text"
+    /// as well, and refusing to ask meant the decompiler could not take part in the
+    /// host's own search (F-351). A plugin that exports nothing is skipped, so this
+    /// widens what may be asked, not what must be answered.
+    static func openContentLibrary(_ plugin: DiscoveredPlugin) -> Result<PluginLibrary, PluginLibraryError> {
+        PluginLibrary.open(path: plugin.binaryPath, required: [], optional: PDXSymbols.optional
+                            + PDXSymbols.required)
+    }
 }

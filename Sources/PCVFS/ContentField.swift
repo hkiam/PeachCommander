@@ -30,10 +30,17 @@ public struct ContentField: Equatable, Sendable {
     public let id: String       // unqualified within its provider, e.g. "width"
     public let title: String    // column header, e.g. "Width"
     public let unit: String?    // e.g. "px"
-    public init(id: String, title: String, unit: String? = nil) {
+    /// A whole searchable document rather than a value to put in a column (PC_FT_FULLTEXT).
+    ///
+    /// The distinction matters in both directions: a decompiled class is useless as a column and
+    /// essential to a content search, so this is what keeps megabytes of source out of a table cell
+    /// and lets the search find it (F-351).
+    public let isFullText: Bool
+    public init(id: String, title: String, unit: String? = nil, isFullText: Bool = false) {
         self.id = id
         self.title = title
         self.unit = unit
+        self.isFullText = isFullText
     }
 }
 
@@ -65,6 +72,31 @@ public final class ContentFieldRegistry: @unchecked Sendable {
         return providers.values
             .sorted { $0.providerName < $1.providerName }
             .flatMap { provider in provider.fields.map { ("\(provider.providerName).\($0.id)", $0) } }
+    }
+
+    /// The text every full-text provider can produce for `url`, concatenated.
+    ///
+    /// This is what lets a content search look at something other than the file's own bytes: a
+    /// decompiled class, and later any other format a plugin can turn into text. Providers that offer
+    /// no full-text field, or none for this file, contribute nothing — so a file nobody claims costs
+    /// one dictionary lookup per provider and is then searched normally (F-351).
+    public func fullText(forFileAt url: URL) async -> String? {
+        lock.lock()
+        let candidates = providers.values
+            .flatMap { provider in provider.fields.filter(\.isFullText).map { (provider, $0.id) } }
+        lock.unlock()
+        var parts: [String] = []
+        for (provider, fieldID) in candidates {
+            let text = await provider.value(fieldID: fieldID, forFileAt: url).display
+            if !text.isEmpty { parts.append(text) }
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: "\n")
+    }
+
+    /// Whether any provider offers full text at all, so a caller can skip the work entirely.
+    public var hasFullTextProvider: Bool {
+        lock.lock(); defer { lock.unlock() }
+        return providers.values.contains { $0.fields.contains(where: \.isFullText) }
     }
 
     /// Resolve a qualified field id ("provider.field") to a value for a file.

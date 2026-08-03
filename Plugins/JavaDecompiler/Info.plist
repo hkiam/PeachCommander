@@ -20,5 +20,68 @@
 	<!-- Off until switched on: it needs an engine the user installs, and most people never
 	     open a .class file. Shipped so it is one click away, not a download away. -->
 	<key>PCPluginEnabledByDefault</key><false/>
+	<!-- Contribution facet (F-350). The decompiled sources belong in a file panel, where F3,
+	     Alt+F7, F5 and everything else already work — not in a window this plugin invents. The host
+	     loads contributions for any plugin type that declares them, so this stays one bundle. -->
+	<key>PCContributions</key>
+	<dict>
+		<key>commands</key>
+		<array>
+			<dict>
+				<key>id</key><string>plugin.javadecompiler.tosources</string>
+				<key>title</key><string>Decompile to Sources</string>
+				<key>category</key><string>Tools</string>
+				<!-- The host extracts a VFS entry to a temp file before the command runs, so this
+				     works on a .class inside an archive exactly as F3 does. Without the key the
+				     host passes no local path at all. -->
+				<key>needsLocalPath</key><true/>
+			</dict>
+			<dict>
+				<key>id</key><string>plugin.javadecompiler.clearcache</string>
+				<key>title</key><string>Clear Decompiler Cache</string>
+				<key>category</key><string>Tools</string>
+			</dict>
+		</array>
+		<key>menus</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.javadecompiler.tosources</string>
+				<key>menu</key><string>Commands</string>
+				<key>group</key><string>2_tools</string>
+				<key>order</key><integer>110</integer>
+			</dict>
+			<dict>
+				<key>command</key><string>plugin.javadecompiler.clearcache</string>
+				<key>menu</key><string>Commands</string>
+				<key>group</key><string>2_tools</string>
+				<key>order</key><integer>111</integer>
+			</dict>
+		</array>
+		<key>contextMenus</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.javadecompiler.tosources</string>
+				<key>surface</key><string>panel.item</string>
+				<key>group</key><string>9_plugins</string>
+				<key>when</key><string>cursorExt in ('class', 'jar', 'apk', 'dex')</string>
+			</dict>
+		</array>
+		<key>views</key>
+		<array>
+			<dict>
+				<key>id</key><string>plugin.javadecompiler.settings</string>
+				<key>container</key><string>settings</string>
+				<key>title</key><string>Decompiler</string>
+			</dict>
+		</array>
+		<key>keybindings</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.javadecompiler.tosources</string>
+				<key>key</key><string>cmd+shift+j</string>
+				<key>when</key><string>cursorExt in ('class', 'jar', 'apk', 'dex')</string>
+			</dict>
+		</array>
+	</dict>
 </dict>
 </plist>

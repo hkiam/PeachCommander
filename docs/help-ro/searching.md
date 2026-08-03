@@ -24,6 +24,7 @@ Când trebuie să depistați fișiere oriunde pe Mac-ul dvs. — după nume, dup
 2. Comutați la fila **Avansat** pentru a îngusta rezultatele după **Dimensiune** (de exemplu `10K` până la `5M`), după interval de **dată de modificare**, sau la fișiere modificate în ultimele N zile.
 3. Activați **Caută în interiorul arhivelor** pentru a privi în arhivele din familia zip (zip, jar, war și similare).
 4. Pentru a limita căutarea la ce ați ales deja, activați **Caută doar în elementele selectate** înainte de a începe.
+5. Unele pluginuri pot transforma un fișier în text pe care fișierul însuși nu îl conține — pluginul de decompilare face din `.class` sursă Java. Activați **Caută în textul oferit de pluginuri** și acele fișiere sunt căutate ca acel text în loc de octeții proprii, astfel încât o formulare din sursă se găsește într-o clasă compilată. Opțiunea apare doar când un astfel de plugin este instalat și este mai lentă: producerea textului poate însemna un decompilator pe fișier.
 
 ![Fereastra Găsește fișiere pe fila Avansat, arătând filtrele de dimensiune și dată](screenshots/find-files-advanced.png)
 *(Figura: fila Avansat — filtrați după dimensiune, dată și alte atribute.)*

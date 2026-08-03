@@ -24,6 +24,7 @@ Når du har brug for at spore filer hvor som helst på din Mac — efter navn, e
 2. Skift til fanen **Avanceret** for at indsnævre resultater efter **størrelse** (for eksempel `10K` til `5M`), efter **ændringsdato**-interval eller til filer ændret inden for de sidste N dage.
 3. Slå **Søg inde i arkiver** til for at kigge i arkiver af zip-familien (zip, jar, war og lignende).
 4. For at begrænse søgningen til det, du allerede har valgt, slå **Søg kun i valgte emner** til før start.
+5. Nogle plugins kan gøre en fil til tekst, som filen selv ikke indeholder — dekompilator-pluginet gør en `.class` til Java-kildekode. Slå **Søg i tekst fra plugins** til, og de filer søges som den tekst i stedet for som deres egne bytes, så en formulering fra kildekoden findes i en oversat klasse. Indstillingen vises kun, når et sådant plugin er installeret, og den er langsommere: at fremstille teksten kan betyde én dekompilator pr. fil.
 
 ![Vinduet Find filer på fanen Avanceret der viser størrelses- og datofiltre](screenshots/find-files-advanced.png)
 *(Figur: fanen Avanceret — filtrér efter størrelse, dato og andre attributter.)*

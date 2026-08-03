@@ -24,6 +24,7 @@ Ko morate izslediti datoteke kjer koli na svojem Macu — po imenu, po tem, kaj 
 2. Preklopite na zavihek **Napredno**, da zožite rezultate po **velikosti** (na primer od `10K` do `5M`), po obsegu **datuma spremembe**, ali na datoteke, spremenjene v zadnjih N dneh.
 3. Vklopite **Išči znotraj arhivov**, da pogledate v arhive družine zip (zip, jar, war in podobne).
 4. Za omejitev iskanja na to, kar ste že izbrali, pred začetkom vklopite **Išči le v izbranih elementih**.
+5. Nekateri vstavki znajo datoteko pretvoriti v besedilo, ki ga datoteka sama ne vsebuje — vstavek dekompilatorja iz `.class` naredi izvorno kodo Jave. Vklopite **Iskanje po besedilu, ki ga dajo vstavki**, in takšne datoteke se preiščejo kot to besedilo namesto kot lastni bajti, tako da se besedna zveza iz izvorne kode najde v prevedenem razredu. Možnost se pokaže le, kadar je tak vstavek namenščen, in je počasnejša: izdelava besedila lahko pomeni en dekompilator na datoteko.
 
 ![Okno Poišči datoteke na zavihku Napredno, ki prikazuje filtre velikosti in datuma](screenshots/find-files-advanced.png)
 *(Slika: zavihek Napredno — filtrirajte po velikosti, datumu in drugih atributih.)*

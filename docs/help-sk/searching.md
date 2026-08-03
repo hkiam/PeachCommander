@@ -24,6 +24,7 @@ Keď potrebujete vystopovať súbory kdekoľvek na svojom Macu — podľa názvu
 2. Prepnite na kartu **Rozšírené** na zúženie výsledkov podľa **veľkosti** (napríklad `10K` až `5M`), podľa rozsahu **dátumu úpravy**, alebo na súbory zmenené za posledných N dní.
 3. Zapnite **Hľadať vnútri archívov** na nazretie do archívov rodiny zip (zip, jar, war a podobné).
 4. Na obmedzenie hľadania na to, čo ste už vybrali, zapnite pred štartom **Hľadať len vo vybraných položkách**.
+5. Niektoré zásuvné moduly dokážu zo súboru urobiť text, ktorý sám súbor neobsahuje — modul dekompilátora urobí z `.class` zdrojový kód Javy. Zapnite **Hľadať v texte od zásuvných modulov** a takéto súbory sa prehľadávajú ako ten text, nie ako vlastné bajty, takže obrat zo zdrojového kódu sa nájde v skompilovanej triede. Voľba sa zobrazí len vtedy, ak je takýto modul nainštalovaný, a je pomalšia: vytvorenie textu môže znamenať jeden dekompilátor na súbor.
 
 ![Okno Nájsť súbory na karte Rozšírené zobrazujúce filtre veľkosti a dátumu](screenshots/find-files-advanced.png)
 *(Obrázok: karta Rozšírené — filtrujte podľa veľkosti, dátumu a iných atribútov.)*

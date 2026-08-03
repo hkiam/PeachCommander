@@ -220,7 +220,7 @@ final class DecompiledArchiveView: DecompilerListerView {
                 guard let self else { return }
                 switch result {
                 case .success(let found):
-                    PluginDecompilerCache.markTreeComplete(cacheDir)
+                    PluginDecompilerCache.markTreeComplete(cacheDir, configRoot: self.configRootPath)
                     log.info("\(engine.id, privacy: .public): produced \(found.count) file(s)")
                     self.present(files: found, directory: cacheDir, engine: engine, fromCache: false)
                 case .failure(let error):

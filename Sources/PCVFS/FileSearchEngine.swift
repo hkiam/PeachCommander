@@ -67,6 +67,13 @@ public struct SearchQuery: Sendable {
     public var requireReadOnly: Bool?
     /// Additional start directories walked besides `startDirectory` (F-150).
     public var extraStartDirectories: [String] = []
+    /// When true, a file that a plugin can turn into text is searched as that text instead of its own
+    /// bytes (F-351) — a .class searched as decompiled source rather than as bytecode.
+    ///
+    /// Off by default and deliberately explicit: turning a file into text can mean running a
+    /// decompiler, which is seconds per file, and nobody should pay that for a search they did not
+    /// ask to work that way. Requires a `textProvider` on the search call.
+    public var searchPluginText: Bool = false
 
     public init(
         nameMask: String,
@@ -135,6 +142,15 @@ public actor FileSearchEngine {
     /// the archive itself lives inside another archive). Returns nil if it can't.
     public typealias ArchiveOpener = @Sendable (_ fs: VirtualFileSystem, _ path: String) async -> VirtualFileSystem?
 
+    /// Text a plugin can produce for a file whose own bytes are not text (F-351): the app supplies
+    /// this, backed by the full-text fields of the loaded content plugins. Returns nil when no plugin
+    /// claims the file, which is the normal case and must stay cheap.
+    public typealias TextProvider = @Sendable (_ path: String) async -> String?
+
+    /// Set for the duration of a search, rather than threaded through the walk: it is one value that
+    /// never varies per directory, and the walk already carries six parameters.
+    private var textProvider: TextProvider?
+
     /// Zip-format extensions searched when `searchArchives` is on — plain zip plus
     /// its many specializations (Java, Android, browser, docs stay excluded here).
     public static let archiveExtensions: Set<String> =
@@ -158,8 +174,10 @@ public actor FileSearchEngine {
     /// `Task.isCancelled` between directories and entries so it stops
     /// promptly instead of running to completion in the background.
     public func search(_ query: SearchQuery, fs: VirtualFileSystem,
-                       archiveOpener: ArchiveOpener? = nil) -> AsyncStream<SearchHit> {
-        AsyncStream { continuation in
+                       archiveOpener: ArchiveOpener? = nil,
+                       textProvider: TextProvider? = nil) -> AsyncStream<SearchHit> {
+        self.textProvider = textProvider
+        return AsyncStream { continuation in
             let regexOptions: NSRegularExpression.Options = query.caseSensitive ? [] : [.caseInsensitive]
             let matchesEverything = query.nameMask.isEmpty || query.nameMask == "*" || query.nameMask == "*.*"
 
@@ -299,7 +317,12 @@ public actor FileSearchEngine {
         // are scanned concurrently over their memory maps (F-151); everything else
         // sequentially. Order within a directory is not significant for results.
         let hasContentFilter = (query.contentText?.isEmpty == false) || (query.hexContent?.isEmpty == false)
-        if fs.scheme == "file", hasContentFilter {
+        // `searchPluginText` takes the sequential path on purpose. The concurrent one is a nonisolated
+        // memory-map scan that cannot await a provider, so routing plugin-text searches through it
+        // silently ignored the provider entirely — the flag looked like it did nothing. The mmap
+        // speed-up is beside the point here anyway: producing the text can mean running a decompiler,
+        // which dwarfs any scan it saves.
+        if fs.scheme == "file", hasContentFilter, !query.searchPluginText {
             await matchFilesConcurrently(files, query: query, compiled: compiled,
                                          continuation: continuation, prefix: prefix)
         } else {
@@ -467,6 +490,14 @@ public actor FileSearchEngine {
     /// file in memory is unsafe.
     private func firstContentMatch(path: String, query: SearchQuery,
                                    contentRegex: NSRegularExpression?, fs: VirtualFileSystem) async -> (line: Int, preview: String)? {
+        // A plugin's text takes precedence over the file's own bytes, where there is any. Not an
+        // addition to the byte search but a replacement: searching a .class for "hello" as bytes
+        // finds the constant pool entry and misses everything the source says, so combining the two
+        // would report line numbers from a file the user is not looking at.
+        if query.searchPluginText, fs.scheme == "file", let textProvider,
+           let text = await textProvider(path) {
+            return Self.textMatch(text: text, query: query, contentRegex: contentRegex)
+        }
         if fs.scheme == "file", let slice = FileSlice(path: path) {
             return Self.matchInSlice(slice, query: query, contentRegex: contentRegex)
         }

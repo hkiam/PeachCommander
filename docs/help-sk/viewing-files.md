@@ -67,6 +67,8 @@ Zapnite **Porovnať**, ak chcete otvoriť druhý panel s vlastnou nabídkou engi
 
 F3 na celom `.jar`, `.apk` alebo `.dex` dekompiluje všetko naraz a vedľa zdrojového kódu zobrazí strom balíčkov. Vyhľadávacie pole nad stromom prehľadá každú triedu — práve tú otázku, na ktorú jedna trieda odpovedať nemôže: kde sa reťazec, volanie alebo konštanta skutočne vyskytuje, keď ešte neviete, v ktorej triede. Nálezy strom zúžia a prvý sa otvorí na svojom riadku. Enter otvára JAR stále ako archív — obe činnosti zostávajú oddelené.
 
+Existuje druhá, priamejšia cesta: postavte kurzor na súbor `.class` alebo na celý archív a zvoľte **Dekompilovať do zdrojov** (menu Príkazy, kontextové menu alebo ⌘⇧J). Triedy sa dekompilujú a výsledok sa otvorí v druhom paneli ako obyčajné súbory `.java`. Odvtedy platí celý správca súborov — F3 ich zobrazí s vlastným zvýrazňovaním Javy Peach Commandera, Alt+F7 hľadá napriek nim, F5 ich skopíruje inam a môžete ich porovnávať aj označovať ako čokoľvek iné. Pre väčšinu práce je to lepšie než vlastné okno; preto sa strom zásuvného modulu dá vypnúť v Nastaveniach ▸ Dekompilátor.
+
 Pokrytý je aj Android: F3 na súbore `.dex` použije **jadx** (Apache 2.0, `brew install jadx`), ktorý prevádza bajtkód Dalvik späť na Javu. Stačil jediný opis enginu — rovnaký mechanizmus, iný formát.
 
 Modul je **vypnutý, kým ho nezapnete**, v Nastavenia ▸ Zásuvné moduly — väčšina ľudí súbor .class nikdy neotvorí a bez enginu aj tak nič nezmôže.

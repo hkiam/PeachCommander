@@ -24,6 +24,7 @@ When you need to track down files anywhere on your Mac — by name, by what they
 2. Switch to the **Advanced** tab to narrow results by **Size** (for example `10K` to `5M`), by **modified date** range, or to files changed in the last N days.
 3. Turn on **Search inside archives** to look within zip-family archives (zip, jar, war, and similar).
 4. To limit the search to what you already picked, turn on **Search in selected items only** before starting.
+5. Some plugins can turn a file into text that the file itself does not contain — the decompiler plugin turns a `.class` into Java source. Turn on **Search text provided by plugins** and those files are searched as that text instead of as their own bytes, so a phrase from the source is found in a compiled class. The option only appears when such a plugin is installed, and it is slower: producing the text can mean running a decompiler once per file.
 
 ![The Find Files window on the Advanced tab, showing size and date filters](screenshots/find-files-advanced.png)
 *(Figure: The Advanced tab — filter by size, date, and other attributes.)*

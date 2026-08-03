@@ -1022,12 +1022,21 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         registry.register(BuiltinContentProvider())   // builtin.name/size/extension/modified (F-157)
         var pluginFields: [ColumnSpec] = []
         var badgeField: String?
-        for plugin in enabled where plugin.manifest.type == .pdx {
-            guard case .success(let lib) = PluginHost.openLibrary(plugin) else { continue }
+        // Content fields from any plugin that exports them, not only declared `pdx` bundles — the
+        // same rule contributions have always followed. A lister that turns a .class into text can
+        // also answer "what is this file's text", and the type gate was all that stopped the
+        // decompiler taking part in the host's search (F-351). Plugins exporting nothing are skipped.
+        for plugin in enabled {
+            let opened = plugin.manifest.type == .pdx
+                ? PluginHost.openLibrary(plugin)
+                : PluginHost.openContentLibrary(plugin)
+            guard case .success(let lib) = opened, lib.symbol("ContentGetSupportedField") != nil else { continue }
             guard let provider = try? PDXContentProvider(
                 providerName: Self.pluginSlug(plugin.manifest.name), plugin: PDXPlugin(library: lib)) else { continue }
             registry.register(provider)
-            for f in provider.fields {
+            // Full-text fields are for searching, never for a column: the value is a whole document,
+            // and a table cell holding a decompiled class would be neither readable nor cheap.
+            for f in provider.fields where !f.isFullText {
                 let qid = "\(provider.providerName).\(f.id)"
                 // Localize the column HEADER through the plugin bundle; the field
                 // id (qid) stays English so saved column sets keep matching.
@@ -2651,9 +2660,13 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             let startDir = await panel.getCurrentPath()
             let win = FindFilesWindowController(startDirectory: startDir,
                                                 templatesURL: self.configPaths.searchTemplates)
-            win.setContentFields(self.contentFieldRegistry.allQualifiedFields().map { ($0.qualifiedID, $0.field.title) })   // F-157
+            win.setContentFields(self.contentFieldRegistry.allQualifiedFields()
+                .filter { !$0.field.isFullText }
+                .map { ($0.qualifiedID, $0.field.title) })   // F-157
+            // The plugin-text option only appears if some loaded plugin can produce text (F-351).
+            win.setHasPluginText(self.contentFieldRegistry.hasFullTextProvider)
             self.findWindow = win
-            win.onStart = { [weak self, weak win] template, dir, inSelectionOnly, useSpotlight, searchArchives, notContaining, contentPredicate in
+            win.onStart = { [weak self, weak win] template, dir, inSelectionOnly, useSpotlight, searchArchives, notContaining, contentPredicate, searchPluginText in
                 guard let self, let win else { return }
                 self.searchTask?.cancel()
                 win.clearResults()
@@ -2682,6 +2695,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                     query.extraStartDirectories = scope == nil ? Array(roots.dropFirst()) : []
                     query.searchArchives = searchArchives
                     query.contentNotContaining = notContaining
+                    query.searchPluginText = searchPluginText
                     var count = 0
                     let engine = FileSearchEngine()
                     // Open a zip-family archive found during the walk as an ArchiveFS.
@@ -2698,7 +2712,18 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                         return ArchiveFS(archiveFileURL: localURL, fsID: "zip:\(localURL.path)")
                     }
                     let registry = self.contentFieldRegistry
-                    for await hit in await engine.search(query, fs: fs, archiveOpener: searchArchives ? opener : nil) {
+                    // Text from the loaded content plugins, for files whose own bytes are not text
+                    // (F-351). Passed only when asked for: producing it can run a decompiler, and the
+                    // engine must not pay that on an ordinary search.
+                    var textProvider: FileSearchEngine.TextProvider?
+                    if searchPluginText {
+                        textProvider = { path in
+                            await registry.fullText(forFileAt: URL(fileURLWithPath: path))
+                        }
+                    }
+                    for await hit in await engine.search(query, fs: fs,
+                                                         archiveOpener: searchArchives ? opener : nil,
+                                                         textProvider: textProvider) {
                         // Content-field predicate (F-157): resolve the field on the
                         // (local) hit and skip files that don't satisfy the condition.
                         if let pred = contentPredicate, fs is LocalFS {
@@ -6185,6 +6210,10 @@ extension MainWindowController: ContributionHost {
         context.set("diskMapActive", diskMapRoot != nil)
         context.set("sidebarViewRoot", diskMapRoot)
         context.set("dir", cachedActiveCwd)
+        // Which panel is active, in the same 0 = left / 1 = right terms `openPathInPanel` takes, so a
+        // plugin that produces files can put them in the *other* panel — beside the input rather than
+        // on top of it, which is what F5 and the compare tools do.
+        context.set("activeSide", activePanel === rightPanelController ? "1" : "0")
         // Config root so a plugin (e.g. the AI assistant) can persist its own data
         // under the same (possibly -ConfigRoot-overridden) location as the host.
         context.set("configRoot", configPaths.mainConfig.deletingLastPathComponent().path)

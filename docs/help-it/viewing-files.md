@@ -67,6 +67,8 @@ Attivate **Confronta** per aprire un secondo pannello con il proprio menu del mo
 
 F3 su un `.jar`, `.apk` o `.dex` intero lo decompila tutto in una volta e mostra un albero di package accanto al sorgente. Il campo di ricerca sopra l’albero cerca in ogni classe — proprio la domanda a cui una singola classe non può rispondere: dove una stringa, una chiamata o una costante compare davvero, quando non si sa ancora in quale classe. Le corrispondenze restringono l’albero e la prima si apre alla sua riga. Con Invio il JAR si apre ancora come archivio: i due verbi restano distinti.
 
+C’è una seconda via, più diretta: mettete il cursore su un file `.class` o su un intero archivio e scegliete **Decompila in sorgenti** (menu Comandi, menu contestuale o ⌘⇧J). Le classi vengono decompilate e il risultato si apre nell’altro pannello come normali file `.java`. Da lì vale tutto il file manager: F3 li mostra con l’evidenziazione Java di Peach Commander, Alt+F7 cerca fra di essi, F5 li copia fuori, e potete confrontarli o etichettarli come qualsiasi altra cosa. Per la maggior parte del lavoro questo batte una finestra a sé; per questo l’albero del plugin si può disattivare in Impostazioni ▸ Decompilatore.
+
 Anche Android è coperto: F3 su un file `.dex` usa **jadx** (Apache 2.0, `brew install jadx`), che riporta il bytecode Dalvik a Java. È bastata una descrizione di motore — stesso meccanismo, formato diverso.
 
 Il modulo è **spento finché non lo accendete**, in Impostazioni ▸ Moduli: quasi nessuno apre un file .class, e senza motore non serve.

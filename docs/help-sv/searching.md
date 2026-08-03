@@ -24,6 +24,7 @@ När du behöver spåra upp filer var som helst på din Mac — efter namn, efte
 2. Växla till fliken **Avancerat** för att smalna av resultaten efter **Storlek** (till exempel `10K` till `5M`), efter **ändringsdatum**-intervall, eller till filer ändrade de senaste N dagarna.
 3. Slå på **Sök inuti arkiv** för att titta inuti arkiv av zip-familjen (zip, jar, war och liknande).
 4. För att begränsa sökningen till det du redan valt, slå på **Sök endast i markerade objekt** innan du startar.
+5. Vissa insticksmoduler kan göra en fil till text som filen själv inte innehåller — dekompilator-modulen gör en `.class` till Java-källkod. Slå på **Sök i text som insticksmoduler tillhandahåller** och sådana filer söks som den texten i stället för som sina egna byte, så att en formulering ur källkoden hittas i en kompilerad klass. Alternativet visas bara när en sådan modul är installerad, och det är långsammare: att skapa texten kan innebära en dekompilator per fil.
 
 ![Fönstret Hitta filer på fliken Avancerat, som visar storleks- och datumfilter](screenshots/find-files-advanced.png)
 *(Bild: Fliken Avancerat — filtrera efter storlek, datum och andra attribut.)*

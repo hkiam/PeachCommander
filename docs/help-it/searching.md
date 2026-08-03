@@ -24,6 +24,7 @@ Quando devi rintracciare file ovunque sul tuo Mac — per nome, per ciò che con
 2. Passa alla scheda **Avanzate** per restringere i risultati per **Dimensione** (per esempio da `10K` a `5M`), per intervallo di **data di modifica**, o ai file modificati negli ultimi N giorni.
 3. Attiva **Cerca dentro gli archivi** per guardare negli archivi della famiglia zip (zip, jar, war e simili).
 4. Per limitare la ricerca a ciò che hai già scelto, attiva **Cerca solo negli elementi selezionati** prima di avviare.
+5. Alcuni plugin sanno trasformare un file in un testo che il file non contiene — il plugin di decompilazione trasforma un `.class` in sorgente Java. Attivate **Cerca nel testo fornito dai plugin** e quei file vengono cercati come quel testo invece che come i propri byte, così una frase del sorgente si trova in una classe compilata. L’opzione appare solo se un plugin del genere è installato, ed è più lenta: produrre il testo può significare eseguire un decompilatore per ogni file.
 
 ![La finestra Trova file nella scheda Avanzate, che mostra i filtri di dimensione e data](screenshots/find-files-advanced.png)
 *(Figura: la scheda Avanzate — filtra per dimensione, data e altri attributi.)*

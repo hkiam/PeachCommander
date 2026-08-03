@@ -26,6 +26,7 @@
 <li>Switch to the <strong>Advanced</strong> tab to narrow results by <strong>Size</strong> (for example <code>10K</code> to <code>5M</code>), by <strong>modified date</strong> range, or to files changed in the last N days.</li>
 <li>Turn on <strong>Search inside archives</strong> to look within zip-family archives (zip, jar, war, and similar).</li>
 <li>To limit the search to what you already picked, turn on <strong>Search in selected items only</strong> before starting.</li>
+<li>Some plugins can turn a file into text that the file itself does not contain — the decompiler plugin turns a <code>.class</code> into Java source. Turn on <strong>Search text provided by plugins</strong> and those files are searched as that text instead of as their own bytes, so a phrase from the source is found in a compiled class. The option only appears when such a plugin is installed, and it is slower: producing the text can mean running a decompiler once per file.</li>
 </ol>
 <p><img alt="The Find Files window on the Advanced tab, showing size and date filters" src="images/find-files-advanced.png" />
 <em>(Figure: The Advanced tab — filter by size, date, and other attributes.)</em></p>

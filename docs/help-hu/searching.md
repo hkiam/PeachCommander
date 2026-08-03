@@ -24,6 +24,7 @@ Amikor fájlokat kell felkutatnia bárhol a Macjén — név szerint, tartalmuk 
 2. Váltson a **Speciális** lapra az eredmények **méret** szerinti szűkítéséhez (például `10K`-tól `5M`-ig), **módosítási dátum** tartomány szerint, vagy az utolsó N napban módosított fájlokra.
 3. Kapcsolja be a **Keresés archívumokon belül** lehetőséget a zip-családú archívumokon (zip, jar, war és hasonlók) belüli nézéshez.
 4. A keresés arra korlátozásához, amit már kiválasztott, kapcsolja be a **Keresés csak a kijelölt elemekben** lehetőséget indítás előtt.
+5. Némely bővítmény olyan szöveggé tud alakítani egy fájlt, amit a fájl maga nem tartalmaz — a visszafejtő bővítmény egy `.class`-ból Java forrást csinál. Kapcsolja be a **Keresés a bővítmények által adott szövegben** lehetőséget, és ezeket a fájlokat a keresés ebben a szövegben végzi, nem a saját bájtjaikban, így egy forrásbeli fordulat megtalálható egy lefordított osztályban. A lehetőség csak akkor jelenik meg, ha van ilyen bővítmény, és lassabb: a szöveg előállítása fájlonként egy visszafejtő futtatását jelentheti.
 
 ![A Fájlok keresése ablak a Speciális lapon, a méret- és dátumszűrőket mutatva](screenshots/find-files-advanced.png)
 *(Ábra: a Speciális lap — szűrés méret, dátum és más attribútumok szerint.)*

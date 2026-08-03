@@ -24,6 +24,7 @@ Cuando necesitas localizar archivos en cualquier parte de tu Mac —por nombre, 
 2. Cambia a la pestaña **Avanzado** para acotar los resultados por **Tamaño** (por ejemplo, `10K` a `5M`), por rango de **fecha de modificación**, o a archivos cambiados en los últimos N días.
 3. Activa **Buscar dentro de archivos comprimidos** para mirar en archivos de la familia zip (zip, jar, war y similares).
 4. Para limitar la búsqueda a lo que ya seleccionaste, activa **Buscar solo en los elementos seleccionados** antes de empezar.
+5. Algunos plugins pueden convertir un archivo en un texto que el archivo no contiene — el plugin de descompilación convierte un `.class` en código Java. Active **Buscar en el texto que aportan los plugins** y esos archivos se buscan como ese texto en lugar de como sus propios bytes, de modo que una frase del código aparece en una clase compilada. La opción solo aparece si hay un plugin así instalado, y es más lenta: producir el texto puede implicar ejecutar un descompilador por archivo.
 
 ![La ventana Buscar archivos en la pestaña Avanzado, con filtros de tamaño y fecha](screenshots/find-files-advanced.png)
 *(Figura: La pestaña Avanzado — filtra por tamaño, fecha y otros atributos.)*

@@ -67,6 +67,8 @@ Schalten Sie **Vergleichen** ein, um ein zweites Panel mit eigenem Engine-Menü 
 
 F3 auf eine ganze `.jar`, `.apk` oder `.dex` dekompiliert alles auf einmal und zeigt einen Paketbaum neben dem Quelltext. Das Suchfeld über dem Baum durchsucht jede Klasse — genau die Frage, die eine einzelne Klasse nicht beantworten kann: wo eine Zeichenkette, ein Aufruf oder eine Konstante tatsächlich vorkommt, wenn man die Klasse noch nicht kennt. Treffer verengen den Baum, der erste öffnet sich an seiner Zeile. Mit Enter öffnet eine JAR weiterhin als Archiv — die beiden Verben bleiben getrennt.
 
+Es gibt einen zweiten, direkteren Weg: Cursor auf eine `.class`-Datei oder ein ganzes Archiv setzen und **In Quelltext dekompilieren** wählen (Menü Befehle, Kontextmenü oder ⌘⇧J). Die Klassen werden dekompiliert, und das Ergebnis öffnet sich im anderen Dateipanel als gewöhnliche `.java`-Dateien. Von dort gilt der ganze Dateimanager — F3 zeigt sie mit dem Java-Highlighting von Peach Commander selbst, Alt+F7 sucht über sie hinweg, F5 kopiert sie heraus, und Sie können sie vergleichen oder mit Tags versehen wie alles andere. Für die meiste Arbeit ist das besser als ein eigenes Fenster; deshalb lässt sich der Baum des Plugins unter Einstellungen ▸ Decompiler abschalten.
+
 Android ist ebenfalls abgedeckt: F3 auf einer `.dex`-Datei benutzt **jadx** (Apache 2.0, `brew install jadx`), das Dalvik-Bytecode zurück in Java verwandelt. Dafür genügte eine Engine-Beschreibung — derselbe Mechanismus, ein anderes Format.
 
 Das Plugin ist **aus, bis Sie es einschalten**, unter Einstellungen ▸ Plugins — die meisten öffnen nie eine Klassendatei, und ohne Engine nützt es nichts.

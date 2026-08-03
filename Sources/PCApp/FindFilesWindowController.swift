@@ -18,7 +18,8 @@ public final class FindFilesWindowController: NSWindowController {
     /// the per-run scope options (start directory, selection-only, Spotlight).
     public var onStart: ((_ template: SearchTemplate, _ startDirectory: String,
                           _ inSelectionOnly: Bool, _ useSpotlight: Bool, _ searchArchives: Bool,
-                          _ notContaining: Bool, _ contentPredicate: ContentFieldPredicate?) -> Void)?
+                          _ notContaining: Bool, _ contentPredicate: ContentFieldPredicate?,
+                          _ searchPluginText: Bool) -> Void)?
     /// Fired when the user presses Cancel/Stop during a running search.
     public var onCancel: (() -> Void)?
     /// Fired by "Feed to Listbox" with the current result paths.
@@ -56,6 +57,11 @@ public final class FindFilesWindowController: NSWindowController {
     private let notContainingCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let includeDirsCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let searchArchivesCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+    /// Search what a plugin makes of a file instead of the file's own bytes (F-351).
+    ///
+    /// Shown only when a loaded plugin actually offers full text, because a checkbox that can never
+    /// change an outcome is worse than an absent one — see `setHasPluginText`.
+    private let pluginTextCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let inSelectionCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let spotlightCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let sizeMinField = NSTextField()
@@ -87,7 +93,7 @@ public final class FindFilesWindowController: NSWindowController {
     /// the saved-template picker (Find dialog persists templates as JSON there).
     public init(startDirectory: String, templatesURL: URL? = nil) {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 640, height: 600),
+            contentRect: NSRect(x: 0, y: 0, width: 640, height: 670),
             styleMask: [.titled, .closable, .resizable],
             backing: .buffered,
             defer: false
@@ -194,6 +200,10 @@ public final class FindFilesWindowController: NSWindowController {
         searchArchivesCheckbox.title = String(localized: "Search inside archives (zip, jar, war, …)")
         searchArchivesCheckbox.font = Fonts.system13
         searchArchivesCheckbox.toolTip = String(localized: "Open zip-family archives (zip/jar/war/apk/…) and search their contents too")
+        pluginTextCheckbox.title = String(localized: "Search text provided by plugins (e.g. decompiled source)")
+        pluginTextCheckbox.font = Fonts.system13
+        pluginTextCheckbox.toolTip = String(localized: "For files a plugin can turn into text — a .class as decompiled Java — search that text instead of the file's bytes. Slower: producing the text can mean running a decompiler.")
+        pluginTextCheckbox.isHidden = true
 
         hexCheckbox.title = String(localized: "Hex content search")
         hexCheckbox.font = Fonts.system13
@@ -279,6 +289,7 @@ public final class FindFilesWindowController: NSWindowController {
             inSelectionCheckbox,
             spotlightCheckbox,
             hStack([includeDirsCheckbox, searchArchivesCheckbox], spacing: 20),
+            pluginTextCheckbox,
         ]))
         tabView.addTabViewItem(makeTab(String(localized: "Advanced"), rows: [
             sizeRow, dateRow, attrRow,
@@ -354,7 +365,10 @@ public final class FindFilesWindowController: NSWindowController {
             tabView.topAnchor.constraint(equalTo: content.topAnchor, constant: 12),
             tabView.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 16),
             tabView.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -16),
-            tabView.heightAnchor.constraint(equalToConstant: 250),
+            // Tall enough for the General tab's nine rows. 250 was already a little short before the
+            // plugin-text row was added — "Done: n found" used to overlap the last row — and the tab
+            // has no bottom constraint, so content simply drew outside it instead of complaining.
+            tabView.heightAnchor.constraint(equalToConstant: 320),
 
             statusLabel.topAnchor.constraint(equalTo: tabView.bottomAnchor, constant: 10),
             statusLabel.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 20),
@@ -416,6 +430,9 @@ public final class FindFilesWindowController: NSWindowController {
             stack.topAnchor.constraint(equalTo: page.topAnchor),
             stack.leadingAnchor.constraint(equalTo: page.leadingAnchor),
             stack.trailingAnchor.constraint(lessThanOrEqualTo: page.trailingAnchor),
+            // The bound that was missing: without it a tab whose rows outgrow the fixed height draws
+            // over whatever is below and nothing reports it. Now it shows up as a layout conflict.
+            stack.bottomAnchor.constraint(lessThanOrEqualTo: page.bottomAnchor),
         ])
         item.view = page
         return item
@@ -455,6 +472,9 @@ public final class FindFilesWindowController: NSWindowController {
         inSelectionCheckbox.isEnabled = !spotlight
         includeDirsCheckbox.isEnabled = !spotlight
         searchArchivesCheckbox.isEnabled = !spotlight
+        // Spotlight answers from its own index and never opens the file, so no plugin can contribute
+        // to it; and with no content term there is no text to search for.
+        pluginTextCheckbox.isEnabled = !spotlight && findText
         sizeMinField.isEnabled = !spotlight
         sizeMaxField.isEnabled = !spotlight
         dateAfterCheckbox.isEnabled = !spotlight
@@ -473,7 +493,16 @@ public final class FindFilesWindowController: NSWindowController {
         onStart?(currentTemplate(name: ""), startDirField.stringValue,
                  inSelectionCheckbox.state == .on, spotlightCheckbox.state == .on,
                  searchArchivesCheckbox.state == .on, notContainingCheckbox.state == .on,
-                 currentContentPredicate())
+                 currentContentPredicate(),
+                 pluginTextCheckbox.state == .on && !pluginTextCheckbox.isHidden)
+    }
+
+    /// Reveal the plugin-text option, when some loaded plugin can actually produce text.
+    ///
+    /// Hidden rather than disabled when nothing can: with no such plugin the option has no meaning at
+    /// all, and an always-grey checkbox reads as a broken feature rather than an inapplicable one.
+    public func setHasPluginText(_ available: Bool) {
+        pluginTextCheckbox.isHidden = !available
     }
 
     /// Populate the content-field popup (qualified id → title). Empty disables the row.

@@ -534,8 +534,13 @@ public func ListGetDetectString(_ buf: UnsafeMutablePointer<CChar>?, _ maxlen: I
     // through the host's built-in ZIP support, which is a different verb and a different plugin
     // type, so the two never compete. The dialect has a single `=`, never `==`: an expression with
     // `==` parses as invalid and the plugin then silently claims nothing at all.
-    let detect = "EXT=\"CLASS\" | EXT=\"DEX\" | EXT=\"JAR\" | EXT=\"APK\""
-        + " | ([0]=202 & [1]=254 & [2]=186 & [3]=190)"
+    // Archives only when the user wants F3 to open this plugin for them (F-352). Read here rather
+    // than baked into the manifest because the host calls this function: a setting that needed a
+    // rebuilt Info.plist to take effect would not be a setting.
+    let single = "EXT=\"CLASS\" | ([0]=202 & [1]=254 & [2]=186 & [3]=190)"
+    let archives = " | EXT=\"DEX\" | EXT=\"JAR\" | EXT=\"APK\""
+    let detect = PluginDecompilerOptions.read(configRoot: configRoot()).claimArchives
+        ? single + archives : single
     _ = detect.withCString { strlcpy(buf, $0, Int(maxlen)) }
 }
 
@@ -584,9 +589,12 @@ public func ListSendCommand(_ listWin: UnsafeMutableRawPointer?, _ command: Int3
 
 /// The host's configuration directory, where engines and `decompilers.ini` live.
 ///
+/// Internal, not private: the contribution facet in panel_command.swift needs the same answer, and
+/// two copies of "where does this app keep its configuration" is how they end up disagreeing.
+///
 /// Resolved the same way `ConfigPaths` does, including the -ConfigRoot override, so a scripted or
 /// sandboxed run finds the same folder the rest of the app uses.
-private func configRoot() -> String {
+func configRoot() -> String {
     let args = ProcessInfo.processInfo.arguments
     if let i = args.firstIndex(of: "-ConfigRoot"), i + 1 < args.count { return args[i + 1] }
     if let env = ProcessInfo.processInfo.environment["PEACHCMD_CONFIG_ROOT"], !env.isEmpty { return env }

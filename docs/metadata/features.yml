@@ -737,6 +737,77 @@ features:
       JAR as an archive through the built-in ZIP support — F3 and Enter were always separate verbs,
       which is why both fit without a conflict.
 
+  - id: decompile-to-panel
+    name: Dekompilierte Quellen im Dateipanel
+    name_en: Decompiled sources in a file panel
+    category: plugins
+    audiences: [user, expert]
+    status: stable
+    ui: { menus: [Commands], shortcuts: ["Cmd+Shift+J"], commands: [plugin.javadecompiler.tosources] }
+    source: { modules: [PCApp], types: [ContributionRegistry, ContribHostBridge] }
+    documentation: { integrated_help: true, website: false }
+    notes: >-
+      The decompiler's first answer to "show me this JAR" was a window of its own with a tree and a
+      search field in it — a second, smaller file manager competing with the real one. This is the
+      answer that reuses the host instead: a contributed command decompiles and hands the resulting
+      directory to the *other* file panel, where the classes are ordinary .java files. F3 then views
+      them with the host's own Java highlighting, Alt+F7 searches across them, F5 copies them out,
+      and compare/tag/rename all apply unchanged. Needed almost no new machinery: contributions are
+      already loaded for any plugin type that declares them, `openPathInPanel` already existed, and
+      the decompile cache already produced a real directory — so the delivery mechanism was already
+      there. Two small host additions: an `activeSide` context key so a plugin can target the panel
+      the cursor is *not* in, and `needsLocalPath` on the command so a class inside an archive is
+      extracted first, exactly as F3 does. Result directories are named after their input
+      ("demo.jar-<hash>") because that name becomes the panel tab's title; a pure hash read as
+      "tree-28au0ddiogk2x". The plugin's own F3 tree stays, switchable off in its settings page.
+
+  - id: search-plugin-text
+    name: Suche im Text, den Plugins liefern
+    name_en: Search text provided by plugins
+    category: search
+    audiences: [expert]
+    status: stable
+    ui: { menus: [Commands], shortcuts: ["Alt+F7"] }
+    source: { modules: [PCVFS, PCPluginHost], types: [FileSearchEngine, ContentFieldRegistry, PDXContentProvider] }
+    documentation: { integrated_help: true, website: false }
+    notes: >-
+      Searching a .class for a phrase from its source finds nothing, however obviously the phrase is
+      "in" the class. With this option on, a file that a plugin can turn into text is searched as
+      that text instead of as its own bytes — replacement and not addition, since mixing the two
+      would report a line number from a document the user is not looking at. Built on the content
+      ABI's PC_FT_FULLTEXT, which had existed from the start with no consumer: the only thing in the
+      way was that content fields were read from declared `pdx` bundles only, while contributions had
+      always been loaded for any type. Removing that inconsistency is the whole feature — a lister
+      that can decompile now also answers "what is this file's text". Full-text fields are kept out
+      of the column list (a decompiled class is not a table cell) and out of the Plugins predicate
+      popup. Off by default and hidden entirely unless some loaded plugin offers text, because
+      producing it can mean running a decompiler once per file; the plugin has its own switch too.
+      One trap found by testing: local files with a content filter go through a nonisolated,
+      concurrent mmap path that cannot await a provider, so the flag was silently ignored until that
+      path was excluded for plugin-text searches.
+
+  - id: decompiler-settings
+    name: Einstellungsseite des Decompiler-Plugins
+    name_en: Decompiler plugin settings page
+    category: settings
+    audiences: [user, expert]
+    status: stable
+    source: { modules: [PCApp], types: [SettingsWindowController, ViewContainerRegistry] }
+    documentation: { integrated_help: true, website: false }
+    notes: >-
+      A page contributed by the plugin into the host's "settings" container, the way System Monitor
+      already does it — not a page built into the host, because a host page for an optional plugin is
+      dead UI once the plugin is removed, and settings written into peachcmd.ini would outlive the
+      thing that meant something by them. Options: preferred engine per file kind (with "First
+      available", which is the absence of a preference rather than a preference for today's first
+      entry), whether F3 claims whole archives at all, whether the plugin may run an engine while the
+      host searches, timeouts for one class and for an archive, and the cache's age with its size and
+      a clear button. Timeouts are applied in the engine registry so no consumer can honour them on
+      one path and ignore them on another. The detect string is read at call time, so the archive
+      switch takes effect without a rebuilt Info.plist. Host side: `showPage(titled:)` now finds
+      plugin panes too — they were reachable by mouse but not by the automation harness, so a
+      plugin's settings page could not be driven or screenshotted.
+
   # ───────────────────────── Settings ─────────────────────────
   - id: settings
     name: Einstellungen (15 Seiten)
