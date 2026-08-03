@@ -67,6 +67,8 @@ Activez **Comparer** pour ouvrir un second volet avec son propre menu de moteur.
 
 F3 sur un `.jar`, `.apk` ou `.dex` entier le décompile d’un coup et affiche une arborescence de paquets à côté du source. Le champ de recherche au-dessus de l’arbre parcourt toutes les classes — précisément la question qu’une classe seule ne peut trancher : où une chaîne, un appel ou une constante apparaît réellement, quand on ignore encore dans quelle classe. Les correspondances réduisent l’arbre et la première s’ouvre à sa ligne. Entrée continue d’ouvrir le JAR comme une archive : les deux verbes restent distincts.
 
+Il existe une seconde voie, plus directe : placez le curseur sur un fichier `.class` ou sur une archive entière et choisissez **Décompiler en sources** (menu Commandes, menu contextuel ou ⌘⇧J). Les classes sont décompilées et le résultat s’ouvre dans l’autre volet comme de simples fichiers `.java`. Dès lors tout le gestionnaire de fichiers s’applique : F3 les affiche avec la coloration Java de Peach Commander, Alt+F7 cherche à travers elles, F5 les copie ailleurs, et vous pouvez les comparer ou les étiqueter comme n’importe quoi d’autre. Pour l’essentiel du travail cela vaut mieux qu’une fenêtre séparée ; c’est pourquoi l’arborescence du plugin peut être désactivée dans Réglages ▸ Décompilateur.
+
 Android est également couvert : F3 sur un fichier `.dex` utilise **jadx** (Apache 2.0, `brew install jadx`), qui reconvertit le bytecode Dalvik en Java. Il a suffi d’une description de moteur — même mécanisme, autre format.
 
 Le module est **désactivé tant que vous ne l’activez pas**, dans Réglages ▸ Modules — la plupart des gens n’ouvrent jamais de fichier .class, et sans moteur il ne sert à rien.

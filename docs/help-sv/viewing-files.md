@@ -67,6 +67,8 @@ Slå på **Jämför** för att öppna en andra ruta med egen motormeny. Två dek
 
 F3 på en hel `.jar`, `.apk` eller `.dex` dekompilerar allt på en gång och visar ett pakettträd intill källkoden. Sökfältet över trädet söker i varje klass — just den fråga en enskild klass inte kan svara på: var en sträng, ett anrop eller en konstant faktiskt förekommer, när man ännu inte vet i vilken klass. Träffar smalnar av trädet och den första öppnas på sin rad. Med Enter öppnas JAR-filen fortfarande som ett arkiv; de två verben hålls åtskilda.
 
+Det finns en andra, mer direkt väg: ställ markören på en `.class`-fil eller ett helt arkiv och välj **Dekompilera till källkod** (menyn Kommandon, snabbmenyn eller ⌘⇧J). Klasserna dekompileras och resultatet öppnas i den andra rutan som vanliga `.java`-filer. Därifrån gäller hela filhanteraren — F3 visar dem med Peach Commanders egen Java-färgning, Alt+F7 söker tvärs igenom dem, F5 kopierar ut dem, och du kan jämföra eller tagga dem som allt annat. För det mesta arbetet slår det ett eget fönster; därför kan insticksmodulens träd stängas av i Inställningar ▸ Dekompilator.
+
 Android täcks också: F3 på en `.dex`-fil använder **jadx** (Apache 2.0, `brew install jadx`), som gör Dalvik-bytekod till Java igen. Det krävdes en enda motorbeskrivning — samma mekanism, annat format.
 
 Modulen är **av tills du slår på den**, under Inställningar ▸ Insticksmoduler — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.

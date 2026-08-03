@@ -67,6 +67,8 @@ Zet **Vergelijken** aan om een tweede paneel met zijn eigen enginemenu te openen
 
 F3 op een hele `.jar`, `.apk` of `.dex` decompileert alles in één keer en toont een pakketboom naast de broncode. Het zoekveld boven de boom zoekt in elke klasse — precies de vraag die één klasse niet kan beantwoorden: waar een tekenreeks, een aanroep of een constante werkelijk voorkomt, als je de klasse nog niet kent. Treffers versmallen de boom en de eerste opent op zijn regel. Met Enter opent een JAR nog steeds als archief; de twee werkwoorden blijven gescheiden.
 
+Er is een tweede, directere route: zet de cursor op een `.class`-bestand of op een heel archief en kies **Decompileren naar broncode** (menu Opdrachten, contextmenu of ⌘⇧J). De klassen worden gedecompileerd en het resultaat opent in het andere paneel als gewone `.java`-bestanden. Vanaf daar geldt de hele bestandsbeheerder — F3 toont ze met Peach Commanders eigen Java-opmaak, Alt+F7 zoekt er dwars door, F5 kopieert ze eruit, en je kunt ze vergelijken of van tags voorzien als al het andere. Voor het meeste werk is dat beter dan een eigen venster; daarom kan de boom van de plugin worden uitgezet in Instellingen ▸ Decompiler.
+
 Android hoort er ook bij: F3 op een `.dex`-bestand gebruikt **jadx** (Apache 2.0, `brew install jadx`), dat Dalvik-bytecode terugbrengt naar Java. Daarvoor was één enginebeschrijving genoeg — hetzelfde mechanisme, ander formaat.
 
 De plug-in staat **uit tot u hem aanzet**, bij Instellingen ▸ Plug-ins — de meeste mensen openen nooit een classbestand, en zonder engine heeft hij geen nut.

@@ -24,6 +24,7 @@ Wanneer je bestanden ergens op je Mac wilt opsporen — op naam, op wat ze bevat
 2. Schakel naar het tabblad **Geavanceerd** om resultaten te versmallen op **Grootte** (bijvoorbeeld `10K` tot `5M`), op **gewijzigde datum**-bereik, of op bestanden die in de laatste N dagen zijn gewijzigd.
 3. Zet **In archieven zoeken** aan om binnen zip-achtige archieven te kijken (zip, jar, war en dergelijke).
 4. Om de zoekopdracht te beperken tot wat je al hebt gekozen, zet je **Alleen in geselecteerde items zoeken** aan voordat je begint.
+5. Sommige plugins kunnen een bestand omzetten in tekst die het bestand zelf niet bevat — de decompiler-plugin maakt van een `.class` Java-broncode. Zet **Zoek in tekst die plugins aanleveren** aan en die bestanden worden als die tekst doorzocht in plaats van als hun eigen bytes, zodat een zin uit de broncode in een gecompileerde klasse gevonden wordt. De optie verschijnt alleen als zo'n plugin geïnstalleerd is, en is langzamer: de tekst maken kan per bestand een decompiler starten.
 
 ![Het venster Bestanden zoeken op het tabblad Geavanceerd, met grootte- en datumfilters](screenshots/find-files-advanced.png)
 *(Afbeelding: Het tabblad Geavanceerd — filter op grootte, datum en andere attributen.)*

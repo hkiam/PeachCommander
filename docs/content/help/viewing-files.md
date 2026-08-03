@@ -67,6 +67,8 @@ Turn on **Compare** to open a second panel with its own engine menu. Two decompi
 
 F3 on a whole `.jar`, `.apk` or `.dex` decompiles all of it at once and shows a package tree beside the source. The search field above the tree searches every class, which is the question a single class cannot answer: where a string, a call or a constant actually occurs, when you do not yet know which class holds it. Matches narrow the tree and the first one opens at its line. Opening a JAR with Enter still browses it as an archive — the two verbs stay separate.
 
+There is a second, more direct route: put the cursor on a `.class` file or a whole archive and choose **Decompile to Sources** (Commands menu, the context menu, or ⌘⇧J). The classes are decompiled and the result opens in the other file panel as ordinary `.java` files. From there the whole file manager applies — F3 views them with Peach Commander's own Java highlighting, Alt+F7 searches across them, F5 copies them out, and you can compare or tag them like anything else. For most work this beats a window of its own, which is why the plugin's own tree can be switched off in Settings ▸ Decompiler.
+
 Android is covered too: F3 on a `.dex` file uses **jadx** (Apache 2.0, `brew install jadx`), which turns Dalvik bytecode back into Java. Adding it took one engine description — the same mechanism, a different format.
 
 The plugin is **off until you turn it on**, in Settings ▸ Plugins — most people never open a class file, and it needs an engine to be useful.

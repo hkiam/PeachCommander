@@ -67,6 +67,8 @@ Activați **Compară** pentru a deschide un al doilea panou cu propriul meniu de
 
 F3 pe un `.jar`, `.apk` sau `.dex` întreg îl decompilează dintr-o dată și arată un arbore de pachete lângă sursă. Câmpul de căutare de deasupra arborelui caută în fiecare clasă — exact întrebarea la care o singură clasă nu poate răspunde: unde apare de fapt un șir, un apel sau o constantă, când încă nu știți în ce clasă. Potrivirile restrâng arborele, iar prima se deschide la linia sa. Enter deschide în continuare JAR-ul ca arhivă — cele două acțiuni rămân separate.
 
+Există o a doua cale, mai directă: puneți cursorul pe un fișier `.class` sau pe o arhivă întreagă și alegeți **Decompilează în surse** (meniul Comenzi, meniul contextual sau ⌘⇧J). Clasele sunt decompilate, iar rezultatul se deschide în celălalt panou ca fișiere `.java` obișnuite. De acolo se aplică tot managerul de fișiere — F3 le afișează cu evidențierea Java proprie a lui Peach Commander, Alt+F7 caută prin ele, F5 le copiază în altă parte și le puteți compara sau eticheta ca orice altceva. Pentru cea mai mare parte a muncii asta bate o fereastră separată; de aceea arborele pluginului poate fi dezactivat în Setări ▸ Decompilator.
+
 Android este de asemenea acoperit: F3 pe un fișier `.dex` folosește **jadx** (Apache 2.0, `brew install jadx`), care transformă bytecode-ul Dalvik înapoi în Java. A fost nevoie de o singură descriere de motor — același mecanism, alt format.
 
 Modulul este **oprit până îl porniți**, în Setări ▸ Module — cei mai mulți nu deschid niciodată un fișier .class, iar fără motor oricum nu ajută.

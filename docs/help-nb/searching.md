@@ -24,6 +24,7 @@ Når du trenger å spore opp filer hvor som helst på Macen din — etter navn, 
 2. Bytt til **Avansert**-fanen for å snevre inn resultatene etter **Størrelse** (for eksempel `10K` til `5M`), etter **endret dato**-område, eller til filer som er endret de siste N dagene.
 3. Slå på **Søk inni arkiver** for å se i zip-familiens arkiver (zip, jar, war og lignende).
 4. For å begrense søket til det du allerede har valgt, slå på **Søk bare i merkede elementer** før du starter.
+5. Noen programtillegg kan gjøre en fil til tekst som filen selv ikke inneholder — dekompilator-tillegget gjør en `.class` til Java-kildekode. Slå på **Søk i tekst fra programtillegg**, og slike filer søkes som den teksten i stedet for som sine egne byte, slik at en formulering fra kildekoden finnes i en kompilert klasse. Valget vises bare når et slikt tillegg er installert, og det er tregere: å lage teksten kan bety én dekompilator per fil.
 
 ![Finn filer-vinduet på Avansert-fanen, som viser størrelse- og datofiltre](screenshots/find-files-advanced.png)
 *(Figur: Avansert-fanen — filtrer etter størrelse, dato og andre attributter.)*

@@ -1358,9 +1358,18 @@ extension SettingsWindowController: NSTableViewDataSource, NSTableViewDelegate {
     /// Programmatically show a built-in page by its (localized) title. Used by
     /// automation to screenshot a specific page (F-274).
     public func showPage(titled title: String) {
-        guard let page = SettingsPage.allCases.first(where: { $0.title == title }) else { return }
-        sourceList.selectRowIndexes(IndexSet(integer: page.rawValue), byExtendingSelection: false)
-        selectPage(page)
+        if let page = SettingsPage.allCases.first(where: { $0.title == title }) {
+            sourceList.selectRowIndexes(IndexSet(integer: page.rawValue), byExtendingSelection: false)
+            selectPage(page)
+            return
+        }
+        // Plugin-contributed panes too, not only the built-in pages. They sit in the same source list
+        // and are reachable by mouse, but this is the path the automation harness uses — so without
+        // this a plugin's own settings page could not be driven or screenshotted at all.
+        guard let index = pluginPanes.firstIndex(where: { $0.title == title }) else { return }
+        let row = builtinPageCount + index
+        sourceList.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+        selectPluginPane(index)
     }
 
     public func tableViewSelectionDidChange(_ notification: Notification) {
