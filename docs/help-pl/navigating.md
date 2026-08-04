@@ -63,6 +63,7 @@ Menu **Przejdź** przenosi aktywny panel do folderów, których używasz najczę
 
 ## Wskazówki
 
+- Panel sam się aktualizuje: plik, który inny program utworzy, zmieni lub usunie w wyświetlanym folderze, pojawia się sam, a kursor i zaznaczenia zostają tam, gdzie były. Wyłącz to w **Konfiguracja ▸ Opcje ▸ Wyświetlanie**, jeśli folder, do którego coś ciągle zapisuje, odświeża się bez przerwy.
 - Każdy panel prowadzi własną historię, więc Wstecz i Dalej wpływają tylko na aktywną stronę.
 - Jeśli wpisana ścieżka nie jest prawidłowym folderem, pasek ścieżki po cichu zachowuje ostatnią lokalizację zamiast nawigować.
 - Kosz i iCloud Drive w menu Przejdź nie mają domyślnego skrótu, ale możesz przypisać go w **Konfiguracja ▸ Opcje ▸ Klawiatura**.

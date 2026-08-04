@@ -25,7 +25,7 @@ Peach Commander does a lot, but a few features have honest limits in the current
 
 ## Directory refresh
 
-- **A panel notices outside changes on a short delay, not instantly.** Peach Commander checks the current folder for changes about every 2 seconds, so a file added or removed by another app can take a moment to appear. If you don't want to wait, refresh the active panel manually with F2 or Ctrl+R.
+- **Only folders on this Mac are watched for outside changes.** A folder on this Mac updates by itself as soon as another program adds, changes, or removes a file in it. A remote location (FTP or SFTP) and the inside of an archive are not watched, because those protocols offer no way to be told — press F2 or Ctrl+R to re-read them.
 
 ## Other current limits
 

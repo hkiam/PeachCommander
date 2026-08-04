@@ -78,6 +78,12 @@ SCENARIOS = [
     # (F-359) — the terminator surviving is the part that fails silently.
     ("editor-lines", ["editlines /Users/admin/pc-demo/messy.txt|/Users/admin/lines.txt",
                       "wait 2000"], 9),
+    # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
+    # dumps of the listing with an outside change in between, and no refresh command anywhere.
+    ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
+                           "dump /Users/admin/watch-before.txt",
+                           "mkfile /Users/admin/pc-demo/auto-appeared.txt", "wait 2500",
+                           "dump /Users/admin/watch-after.txt"], 10),
     # Not a layout scenario: this one asks the app what a screen reader would find. The hand-drawn
     # bars are the case where the failure mode is *no element at all* and nothing on screen differs,
     # so it can only be caught by asking (I19 T06).
@@ -95,6 +101,10 @@ REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"
 REPORTS = {
     "editor-filter": ("/Users/admin/filter.txt",
                       ["outcome=replaced", "undo=true", "alpha.example\nbeta.example\n"]),
+    # The file must be in the listing afterwards — and, so the check cannot pass for the wrong reason,
+    # absent before it was created (an expectation starting with "!" must NOT appear).
+    "panel-autorefresh": ("/Users/admin/watch-after.txt", ["auto-appeared.txt"]),
+    "panel-autorefresh-before": ("/Users/admin/watch-before.txt", ["!auto-appeared.txt"]),
     # CRLF in, CRLF out — shown as <CR> so a terminator that vanished is visible in the report.
     "editor-lines": ("/Users/admin/lines.txt",
                      ["endings=CRLF", "undo=true", "keep me<CR>",
@@ -257,16 +267,22 @@ def main():
                 continue
             found, a11y = run_scenario(ip, host, port, pw, name, script, settle, out)
             measured[name] = found
-            if name in REPORTS:
-                path, expected = REPORTS[name]
+            # A scenario may leave more than one report; `<name>-<suffix>` entries belong to it too.
+            for key in [name] + [k for k in REPORTS if k.startswith(name + "-")]:
+                if key not in REPORTS:
+                    continue
+                path, expected = REPORTS[key]
                 report = ssh_guest(ip, f"cat {path} 2>/dev/null").stdout
-                (out / f"{name}-report.txt").write_text(report)
-                absent = [e for e in expected if e not in report]
-                if absent:
-                    failures.append(f"{name}: report missing {absent!r}")
-                    say(f"{name}: REPORT MISSING {absent!r}")
+                (out / f"{key}-report.txt").write_text(report)
+                # "!x" means x must NOT be there — otherwise the check could pass for the wrong reason.
+                wrong = [e for e in expected
+                         if (e[1:] in report) if e.startswith("!")] + \
+                        [e for e in expected if not e.startswith("!") and e not in report]
+                if wrong:
+                    failures.append(f"{key}: report wrong about {wrong!r}")
+                    say(f"{key}: REPORT WRONG about {wrong!r}")
                 else:
-                    say(f"{name}: report ok ({report.splitlines()[0] if report else 'empty'})")
+                    say(f"{key}: report ok ({report.splitlines()[0] if report else 'empty'})")
             if a11y.strip():
                 missing = [label for label in REQUIRED_A11Y if label not in a11y]
                 if missing:

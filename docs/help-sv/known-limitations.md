@@ -25,7 +25,7 @@ Peach Commander gör mycket, men ett fåtal funktioner har ärliga begränsninga
 
 ## Kataloguppdatering
 
-- **En panel märker externa ändringar med en kort fördröjning, inte omedelbart.** Peach Commander kontrollerar den aktuella mappen för ändringar ungefär varannan sekund, så en fil som lagts till eller tagits bort av en annan app kan ta ett ögonblick att dyka upp. Om du inte vill vänta, uppdatera den aktiva panelen manuellt med F2 eller Ctrl+R.
+- **Bara mappar på den här Macen bevakas för ändringar utifrån.** En mapp på den här Macen uppdateras av sig själv så snart ett annat program lägger till, ändrar eller tar bort en fil i den. En fjärrplats (FTP eller SFTP) och insidan av ett arkiv bevakas inte, eftersom de protokollen inte erbjuder något sätt att bli underrättad — tryck på F2 eller Ctrl+R för att läsa om dem.
 
 ## Andra aktuella begränsningar
 

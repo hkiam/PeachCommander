@@ -63,6 +63,7 @@ Az **Ugrás** menü az aktív panelt a leggyakrabban használt mappákhoz viszi:
 
 ## Tippek
 
+- A panel magától naprakész marad: az a fájl, amelyet egy másik program a megjelenített mappában létrehoz, módosít vagy töröl, magától megjelenik, a kurzor és a kijelölések pedig ott maradnak, ahol voltak. A **Beállítások ▸ Opciók ▸ Megjelenítés** alatt kapcsolja ki, ha egy mappa, amelybe folyamatosan írnak, szüntelenül frissül.
 - Minden panel a saját előzményeit tartja, így a Vissza és Előre csak az aktív oldalt érinti.
 - Ha egy beírt útvonal nem érvényes mappa, az útvonalsáv csendben megtartja az utolsó helyét ahelyett, hogy navigálna.
 - A Kukának és az iCloud Drive-nak az Ugrás menüben nincs alapértelmezett billentyűparancsa, de rendelhet hozzá egyet a **Konfiguráció ▸ Beállítások ▸ Billentyűzet** alatt.

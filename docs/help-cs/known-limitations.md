@@ -25,7 +25,7 @@ Peach Commander toho zvládá hodně, ale několik funkcí má v aktuální verz
 
 ## Obnovení složky
 
-- **Panel si všimne vnějších změn s krátkým zpožděním, ne okamžitě.** Peach Commander kontroluje aktuální složku na změny zhruba každé 2 sekundy, takže soubor přidaný nebo odebraný jinou aplikací se může chvíli objevovat. Pokud nechcete čekat, obnovte aktivní panel ručně klávesou F2 nebo Ctrl+R.
+- **Na změny zvenčí se hlídají jen složky na tomto Macu.** Složka na tomto Macu se aktualizuje sama, jakmile v ní jiný program vytvoří, změní nebo odstraní soubor. Vzdálené umístění (FTP nebo SFTP) ani vnitřek archivu se nehlídají, protože tyto protokoly nenabízejí žádný způsob, jak dát vědět — tam stiskněte F2 nebo Ctrl+R pro znovupřečtení.
 
 ## Další aktuální meze
 

@@ -63,6 +63,7 @@ Menuen **Gå** fører det aktive panel til de mapper, du bruger mest:
 
 ## Tips
 
+- Et panel holder sig selv opdateret: en fil, som et andet program opretter, ændrer eller sletter i den viste mappe, kommer frem af sig selv, og markøren og dine markeringer bliver, hvor de var. Slå det fra under **Konfiguration ▸ Indstillinger ▸ Visning**, hvis en mappe, der skrives til hele tiden, bliver opdateret uafbrudt.
 - Hvert panel har sin egen historik, så Tilbage og Frem påvirker kun den aktive side.
 - Hvis en indtastet sti ikke er en gyldig mappe, bevarer stilinjen stille din seneste placering i stedet for at navigere.
 - Papirkurv og iCloud Drive i Gå-menuen har ingen standardgenvej, men du kan tildele en i **Konfiguration ▸ Indstillinger ▸ Tastatur**.

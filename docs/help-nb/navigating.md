@@ -63,6 +63,7 @@ Stilinjen øverst i hvert panel viser hvor du er og fungerer også som en måte 
 
 ## Tips
 
+- Et panel holder seg selv oppdatert: en fil som et annet program oppretter, endrer eller sletter i mappen du ser på, kommer fram av seg selv, og markøren og merkingene dine blir stående. Slå det av under **Konfigurasjon ▸ Innstillinger ▸ Visning** hvis en mappe det skrives til hele tiden oppdateres ustanselig.
 - Hvert panel beholder sin egen historikk, så Tilbake og Fremover påvirker bare den aktive siden.
 - Hvis en innskrevet sti ikke er en gyldig mappe, beholder stilinjen stille din forrige plassering i stedet for å navigere.
 - Papirkurv og iCloud Drive i Gå-menyen har ingen standardsnarvei, men du kan tildele én i **Konfigurasjon ▸ Alternativer ▸ Tastatur**.

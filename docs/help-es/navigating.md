@@ -63,6 +63,7 @@ El menú **Ir** lleva el panel activo a las carpetas que más usas:
 
 ## Consejos
 
+- Un panel se mantiene actualizado por sí mismo: un archivo que otro programa cree, modifique o elimine en la carpeta que está viendo aparece solo, y su cursor y sus marcas se quedan donde estaban. Desactívelo en **Configuración ▸ Opciones ▸ Visualización** si una carpeta en la que algo escribe constantemente se refresca sin parar.
 - Cada panel mantiene su propio historial, así que Atrás y Adelante afectan solo al lado activo.
 - Si una ruta escrita no es una carpeta válida, la barra de ruta conserva discretamente tu última ubicación en lugar de navegar.
 - Papelera e iCloud Drive en el menú Ir no tienen atajo predeterminado, pero puedes asignar uno en **Configuración ▸ Opciones ▸ Teclado**.

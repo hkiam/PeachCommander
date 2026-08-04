@@ -25,7 +25,7 @@ Peach Commander face multe, dar câteva funcții au limite oneste în versiunea 
 
 ## Reîmprospătarea folderelor
 
-- **Un panou observă modificările externe cu o mică întârziere, nu instantaneu.** Peach Commander verifică folderul curent pentru modificări aproximativ la fiecare 2 secunde, astfel încât un fișier adăugat sau eliminat de o altă aplicație poate dura un moment până să apară. Dacă nu doriți să așteptați, reîmprospătați panoul activ manual cu F2 sau Ctrl+R.
+- **Doar dosarele de pe acest Mac sunt urmărite pentru modificări din exterior.** Un dosar de pe acest Mac se actualizează singur imediat ce alt program adaugă, modifică sau elimină un fișier în el. O locație la distanță (FTP sau SFTP) și interiorul unei arhive nu sunt urmărite, fiindcă acele protocoale nu oferă nicio cale de a fi anunțat — apăsați F2 sau Ctrl+R pentru a le reciti.
 
 ## Alte limite curente
 

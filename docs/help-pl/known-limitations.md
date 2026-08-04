@@ -25,7 +25,7 @@ Peach Commander robi wiele, ale kilka funkcji ma w bieżącej wersji szczere ogr
 
 ## Odświeżanie folderów
 
-- **Panel zauważa zmiany zewnętrzne z krótkim opóźnieniem, nie natychmiast.** Peach Commander sprawdza bieżący folder pod kątem zmian mniej więcej co 2 sekundy, więc plik dodany lub usunięty przez inną aplikację może chwilę się pojawiać. Jeśli nie chcesz czekać, odśwież aktywny panel ręcznie klawiszem F2 lub Ctrl+R.
+- **Na zmiany z zewnątrz obserwowane są tylko foldery na tym Macu.** Folder na tym Macu aktualizuje się sam, gdy tylko inny program utworzy, zmieni lub usunie w nim plik. Lokalizacja zdalna (FTP lub SFTP) ani wnętrze archiwum nie są obserwowane, ponieważ te protokoły nie dają możliwości powiadomienia — tam naciśnij F2 lub Ctrl+R, aby odczytać ponownie.
 
 ## Inne bieżące ograniczenia
 
