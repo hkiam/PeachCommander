@@ -78,8 +78,25 @@ public final class SFTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, 
         do { try await session.rename(from.path, to: to.path) } catch { throw Self.mapError(error) }
     }
 
+    /// Apply what SFTP can apply, and say so for what it cannot (F-364).
+    ///
+    /// This used to be an empty body: the Attributes dialog reported success, the server never heard
+    /// about it, and the file was unchanged. Silently accepting a change is worse than refusing it —
+    /// the user has no reason to look again.
+    ///
+    /// SFTP carries permissions and timestamps, and owner/group only as *numbers*. A user name cannot be
+    /// resolved to a uid over the protocol, so a rename of the owner is refused rather than guessed at,
+    /// and macOS BSD flags do not exist on the far side at all.
     public func setAttributes(_ path: VFSPath, attributes: VFSAttributes) async throws {
-        // SFTP setstat is a later refinement; ignore for v1.
+        if attributes.ownerName != nil || attributes.groupName != nil {
+            throw VFSError.unsupported
+        }
+        if attributes.bsdFlags != nil {
+            throw VFSError.unsupported
+        }
+        guard attributes.posixMode != nil || attributes.modified != nil else { return }
+        try await session.setAttributes(path.path, mode: attributes.posixMode,
+                                        modified: attributes.modified)
     }
 
     public func watch(_ dir: VFSPath) -> AsyncStream<VFSChangeEvent>? { nil }

@@ -31,6 +31,17 @@ public final class SFTPSession: @unchecked Sendable {
         static let fxfWrite: UInt = 0x00000002
         static let fxfCreat: UInt = 0x00000008
         static let fxfTrunc: UInt = 0x00000010
+        // LIBSSH2_SFTP_ATTR_* — the `flags` field of LIBSSH2_SFTP_ATTRIBUTES says which members are
+        // meaningful, and a setstat sends only those. Spelled out because the module map does not
+        // export them, and a wrong value here would send garbage rather than fail to compile.
+        static let attrPermissions: UInt = 0x00000004
+        static let attrUIDGID: UInt = 0x00000002
+        static let attrACModTime: UInt = 0x00000008
+        /// `libssh2_sftp_stat_ex` type argument. From libssh2_sftp.h: STAT 0, LSTAT 1, **SETSTAT 2**.
+        /// The first version of this used 0 — which is a perfectly successful *stat*, so the call
+        /// returned 0, the code reported success, and the file was unchanged. Read from the header after
+        /// an independent `stat` over ssh contradicted the app's own "applied=ok".
+        static let setstat: Int32 = 2
     }
 
     private let queue = DispatchQueue(label: "com.peachcommander.sftp")
@@ -229,6 +240,47 @@ public final class SFTPSession: @unchecked Sendable {
             guard libssh2_sftp_stat_ex(sftp, path, UInt32(path.utf8.count), 1, &attrs) == 0 else { throw SFTPError.notFound(path) }
             let name = (path as NSString).lastPathComponent
             return Self.entry(name: name.isEmpty ? path : name, attrs: attrs)
+        }
+    }
+
+    /// Change permissions, owner and/or modification time on the server (F-364).
+    ///
+    /// The same call `stat` uses, with the type argument set to SETSTAT — which is the whole reason this
+    /// is a small function rather than a project: the plumbing was already here, and
+    /// `SFTPFileSystem.setAttributes` was an empty body that accepted every request and discarded it.
+    ///
+    /// `flags` decides what the server is asked to change; anything not set is left alone. uid/gid are
+    /// numeric over SFTP — the protocol has no way to resolve a user *name*, so the caller either knows
+    /// the number or must not ask.
+    public func setAttributes(_ path: String, mode: UInt16? = nil,
+                              uid: UInt32? = nil, gid: UInt32? = nil,
+                              modified: Date? = nil, accessed: Date? = nil) async throws {
+        guard mode != nil || uid != nil || gid != nil || modified != nil else { return }
+        try await run {
+            guard let sftp = self.sftp else { throw SFTPError.notConnected }
+            var attrs = LIBSSH2_SFTP_ATTRIBUTES()
+            if let mode {
+                attrs.flags |= C.attrPermissions
+                attrs.permissions = UInt(mode)
+            }
+            if uid != nil || gid != nil {
+                // Both travel together in one field pair: reading the current values first would be a
+                // second round trip, and a setstat that sends only one of them sets the other to zero on
+                // some servers — so the caller supplies both or neither.
+                attrs.flags |= C.attrUIDGID
+                attrs.uid = UInt(uid ?? 0)
+                attrs.gid = UInt(gid ?? 0)
+            }
+            if let modified {
+                attrs.flags |= C.attrACModTime
+                attrs.mtime = UInt(max(0, modified.timeIntervalSince1970))
+                // Access time is mandatory in the same record; keep the file's own when not given.
+                attrs.atime = UInt(max(0, (accessed ?? modified).timeIntervalSince1970))
+            }
+            let rc = libssh2_sftp_stat_ex(sftp, path, UInt32(path.utf8.count), C.setstat, &attrs)
+            guard rc == 0 else {
+                throw SFTPError.opFailed("setstat", rc)
+            }
         }
     }
 

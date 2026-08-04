@@ -16,7 +16,7 @@ A Peach Commander sokat tud, de néhány funkciónak őszinte határai vannak a 
 
 ## Hálózat (SFTP / SCP)
 
-- **A fájlattribútumok SFTP-n keresztüli megváltoztatásának nincs hatása ebben a verzióban.** Böngészhet, letölthet és feltölthet SFTP/SCP-n keresztül, de a jogosultságok, tulajdonlás vagy időbélyegek megváltoztatására irányuló kéréseket egy távoli kiszolgálón csendben figyelmen kívül hagyja. Ezeket a változtatásokat magán a kiszolgálón végezze, vagy egy másik protokollon keresztül.
+- **SFTP-n a jogosultságok és az időbélyegek módosíthatók, a tulajdonos nem.** A protokoll a tulajdonost és a csoportot csak számként viszi, és felhasználónevet nem lehet rajta feloldani — a tulajdonos módosítását ezért elutasítja, nem pedig megtippeli, ahogy a macOS fájljelzőit is, amelyek a túloldalon nem léteznek. Egyszerű FTP-n csak a jogosultságok állíthatók, az opcionális `SITE CHMOD` paranccsal; az a kiszolgáló, amely nem kínálja, ezt megmondja, nem pedig sikert mímel.
 - Egy SFTP-kiszolgálóhoz való első csatlakozáskor megkérik, hogy bízzon a gazdakulcsában. A Peach Commander ezután megjegyzi (első használatkori bizalom).
 
 ## Mappafrissítés

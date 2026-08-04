@@ -16,7 +16,7 @@ Peach Commander doet veel, maar een paar functies hebben in de huidige versie ee
 
 ## Netwerk (SFTP / SCP)
 
-- **Bestandsattributen wijzigen via SFTP heeft in deze versie geen effect.** Je kunt bladeren, downloaden en uploaden via SFTP/SCP, maar verzoeken om rechten, eigendom of tijdstempels op een externe server te wijzigen worden stilzwijgend genegeerd. Maak die wijzigingen op de server zelf, of via een ander protocol.
+- **Via SFTP kunnen rechten en tijdstempels worden gewijzigd, een eigenaar niet.** Het protocol draagt eigenaar en groep alleen als getallen en kan een gebruikersnaam niet opzoeken, dus een eigenaarswijziging wordt geweigerd in plaats van geraden — net als macOS-bestandsvlaggen, die aan de andere kant niet bestaan. Via gewoon FTP kunnen alleen rechten worden gezet, met de optionele opdracht `SITE CHMOD`; een server die die niet aanbiedt, zegt dat in plaats van succes voor te wenden.
 - Bij de eerste verbinding met een SFTP-server wordt gevraagd de hostsleutel te vertrouwen. Peach Commander onthoudt die daarna (vertrouwen bij eerste gebruik).
 
 ## Map verversen
