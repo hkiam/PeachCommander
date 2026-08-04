@@ -56,4 +56,4 @@ Egy meglévő ZIP-en belül fájlokat adhat hozzá vagy távolíthat el kicsomag
 - A 7z, xz, bzip2 és RAR formátumba csomagolás külső eszközökre támaszkodik. A RAR különösen megköveteli a védett RAR program telepítését; enélkül ez a formátum nem érhető el.
 - A ZIP helyben történő szerkesztése az egész archívumot újraírja, így a benne lévő fájlok módosítási időbélyegei nem őrződnek meg.
 - A nagyon nagy egyes tagok kicsomagoláskor 512 MiB-ra vannak korlátozva. A kicsomagolás futás közben megszakítható.
-- A rendkívül nagy (ZIP64) archívumok nem támogatottak.
+- A ZIP64 archívumok ugyanúgy nyílnak, mint bármely más, így a 65 535 elemnél többet tartalmazó vagy a 4 GB-nál nagyobb archívum is normálisan böngészhető; a fenti, kicsomagolt fájlonkénti korlát továbbra is érvényes.

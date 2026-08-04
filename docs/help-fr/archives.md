@@ -56,4 +56,4 @@ Vous pouvez ajouter ou retirer des fichiers dans un ZIP existant sans le décomp
 - La compression en 7z, xz, bzip2 et RAR repose sur des outils externes. RAR en particulier nécessite l'installation du programme propriétaire RAR ; sans lui, ce format est indisponible.
 - Modifier un ZIP sur place réécrit toute l'archive, de sorte que les dates de modification des fichiers à l'intérieur ne sont pas préservées.
 - Les membres individuels très volumineux sont plafonnés à 512 Mio lors de l'extraction. L'extraction peut être annulée pendant son exécution.
-- Les archives extrêmement volumineuses (ZIP64) ne sont pas prises en charge.
+- Les archives ZIP64 s’ouvrent comme les autres : une archive de plus de 65 535 éléments ou de plus de 4 Go se parcourt normalement ; la limite par membre extrait ci-dessus s’applique toujours.

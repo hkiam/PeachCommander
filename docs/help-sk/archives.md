@@ -56,4 +56,4 @@ Súbory môžete pridávať alebo odoberať vo vnútri existujúceho ZIP bez jeh
 - Balenie do 7z, xz, bzip2 a RAR sa spolieha na externé nástroje. RAR konkrétne vyžaduje nainštalovaný proprietárny program RAR; bez neho tento formát nie je dostupný.
 - Úprava ZIP na mieste prepíše celý archív, takže dátumy úprav súborov vo vnútri sa nezachovajú.
 - Veľmi veľké jednotlivé položky sú pri rozbaľovaní obmedzené na 512 MiB. Rozbaľovanie možno zrušiť počas jeho behu.
-- Extrémne veľké archívy (ZIP64) nie sú podporované.
+- Archívy ZIP64 sa otvárajú ako každé iné, archív s viac ako 65 535 položkami alebo nad 4 GB teda možno normálne prehliadať; vyššie uvedený limit na jeden rozbalený súbor platí ďalej.

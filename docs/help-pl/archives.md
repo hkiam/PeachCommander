@@ -56,4 +56,4 @@ Możesz dodawać lub usuwać pliki wewnątrz istniejącego archiwum ZIP bez jego
 - Pakowanie do 7z, xz, bzip2 i RAR opiera się na narzędziach zewnętrznych. RAR w szczególności wymaga zainstalowania własnościowego programu RAR; bez niego ten format jest niedostępny.
 - Edycja ZIP w miejscu przepisuje całe archiwum, więc daty modyfikacji plików w jego wnętrzu nie są zachowywane.
 - Bardzo duże pojedyncze elementy są ograniczone do 512 MiB podczas wypakowywania. Wypakowywanie można anulować w trakcie działania.
-- Bardzo duże archiwa (ZIP64) nie są obsługiwane.
+- Archiwa ZIP64 otwierają się jak każde inne, więc archiwum z ponad 65 535 elementami lub większe niż 4 GB przegląda się normalnie; podany wyżej limit na jeden wypakowany plik obowiązuje nadal.

@@ -56,4 +56,4 @@ Du kan tilføje eller fjerne filer inde i et eksisterende ZIP-arkiv uden at pakk
 - Pakning til 7z, xz, bzip2 og RAR er afhængig af eksterne værktøjer. Især RAR kræver, at det proprietære RAR-program er installeret; uden det er det format ikke tilgængeligt.
 - Redigering af en ZIP på stedet omskriver hele arkivet, så filernes ændringstidsstempler indeni bevares ikke.
 - Meget store enkeltmedlemmer begrænses til 512 MiB ved udpakning. Udpakning kan annulleres, mens den kører.
-- Ekstremt store arkiver (ZIP64) understøttes ikke.
+- ZIP64-arkiver åbner som alle andre, så et arkiv med mere end 65.535 emner eller over 4 GB gennemses normalt; grænsen pr. udpakket fil ovenfor gælder stadig.

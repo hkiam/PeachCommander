@@ -56,4 +56,4 @@ Du kan lägga till eller ta bort filer inuti en befintlig ZIP utan att packa upp
 - Packning till 7z, xz, bzip2 och RAR förlitar sig på externa verktyg. RAR i synnerhet kräver att det proprietära RAR-programmet är installerat; utan det är formatet inte tillgängligt.
 - Att redigera en ZIP på plats skriver om hela arkivet, så filändringstidsstämplar inuti det bevaras inte.
 - Mycket stora enskilda medlemmar begränsas till 512 MiB vid uppackning. Uppackning kan avbrytas medan den körs.
-- Extremt stora (ZIP64) arkiv stöds inte.
+- ZIP64-arkiv öppnas som alla andra, så ett arkiv med fler än 65 535 objekt eller större än 4 GB går att bläddra i som vanligt; gränsen per uppackad fil ovan gäller fortfarande.
