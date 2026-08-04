@@ -15,6 +15,7 @@ cell and this verifies that each pointer resolves:
     ev: symbol:AVPlayerView     a symbol that appears in Sources/
     ev: plugin:WebDAV           a plugin directory under Plugins/
     ev: scenario:tree-view      a scenario in Tools/vm/regress.py
+    ev: file:Tools/release.sh   a file that exists in the repository
 
 An unresolvable pointer fails the run: that is a claim about the code that the code contradicts. Rows with
 no evidence are counted and listed, not failed — most of the catalogue predates this and retrofitting all
@@ -115,7 +116,8 @@ def main():
             kind, _, value = token.partition(":")
             if not value:                      # a bare cm_ name
                 kind, value = "command", token
-            checks = {"command": lambda v: v in commands,
+            checks = {"file": lambda v: (REPO / v).exists(),
+                      "command": lambda v: v in commands,
                       "test": lambda v: v in tests,
                       "symbol": lambda v: v in sources,
                       "plugin": lambda v: v in plugins,
