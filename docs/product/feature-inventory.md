@@ -13,7 +13,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | ID | Feature | Notes | Spec | Iter | Prio | Status |
 |---|---|---|---|---|---|---|
 | F-001 | Dual fixed panels, vertical split, adjustable splitter (%) | Splitter draggable, double-click = 50% | SPEC-001 | I01 | P1 | done |
-| F-002 | Horizontal panel arrangement option (above/below) | Menu: Show > Vertical arrangement | SPEC-001 | I05 | P2 | todo |
+| F-002 | Horizontal panel arrangement option (above/below) | Menu: Show > Vertical arrangement; ev: cm_HorizontalPanels | SPEC-001 | I05 | P2 | done |
 | F-003 | One active panel concept; inactive panel dimmed header | Active path bar highlighted | SPEC-001 | I01 | P1 | done |
 | F-004 | Function key button bar (F3..F8) at bottom, clickable | Shows key labels + actions; Ctrl/Alt modifiers relabel | SPEC-001 | I01 | P1 | done |
 | F-005 | Command line above function keys, always-type-to-cmdline option | Focus model per TC | SPEC-001 | I06 | P1 | partial |
@@ -22,11 +22,11 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-008 | Tabbed panels: new/close/lock tabs, drag-reorder, tab options | Ctrl+T/W, locked tabs with * | SPEC-001 | I06 | P1 | partial |
 | F-009 | Status bar per panel: "x of y files selected, n of m KB" | Exact TC wording | SPEC-003 | I03 | P1 | done |
 | F-010 | Main button bar (toolbar) with user-definable buttons | Icons, tooltips, drag-to-add, .bar file format | SPEC-014 | I13 | P1 | done |
-| F-011 | Vertical button bar option | Off by default | SPEC-014 | I13 | P3 | todo |
+| F-011 | Vertical button bar option | Off by default; ev: cm_VerticalButtonBar | SPEC-014 | I13 | P3 | done |
 | F-012 | Window title shows active path; option % free space etc. | path (tilde) + free space | SPEC-001 | I02 | P2 | done |
 | F-013 | Full-screen & window state restore on launch | Panels, tabs, paths, sort restored | SPEC-013 | I05 | P1 | done |
 | F-014 | Flat/da Vinci-free TC visual style: dense rows, classic colors, cursor bar | See ui-reference.md; theme file | SPEC-001 | I01 | P1 | done |
-| F-015 | Separate trees / tree panel view (Ctrl+F8) | One tree per panel + shared-tree option | SPEC-016 | I17 | P2 | todo |
+| F-015 | Separate trees / tree panel view (Ctrl+F8) | One tree per panel + shared-tree option; one tree per panel done; a shared tree across both panels is not built; ev: cm_SrcTree ev: scenario:tree-view | SPEC-016 | I17 | P2 | partial |
 
 ## 2. File listing & views
 
@@ -43,7 +43,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-028 | Show hidden/system files toggle (macOS: dotfiles + hidden flag) | Ctrl+H (TC 11) | SPEC-002 | I03 | P1 | done |
 | F-029 | File icons: per-type, async load, EXE/app icons; icon off mode | NSWorkspace icon cache | SPEC-002 | I03 | P1 | done |
 | F-030 | Size display: bytes/KB/dynamic; directory sizes on Space/Alt+Shift+Enter | Space calculates dir size under cursor | SPEC-002 | I03 | P1 | done |
-| F-031 | Date format per system locale + custom format option | | SPEC-002 | I02 | P2 | todo |
+| F-031 | Date format per system locale + custom format option | ev: test:PanelDateFormatterTests | SPEC-002 | I02 | P2 | done |
 | F-032 | Row colors: by file type masks, alternating background, selection colors | Color config dialog | SPEC-013 | I05 | P2 | partial |
 | F-033 | Auto-refresh on FS changes (FSEvents), incl. size/date updates | TC: WatchDirs; coalesced | SPEC-002 | I04 | P1 | done |
 | F-034 | Branch view (Ctrl+B): current dir + all subdirs flattened | Also selected-dirs variant Shift+Ctrl+B | SPEC-016 | I17 | P1 | done |
@@ -101,7 +101,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-098 | Print file lists / print file (via macOS print) | Export list as txt/csv too | SPEC-016 | I17 | P3 | done |
 | F-099 | Privileged operations: prompt for admin when EPERM (SMJobBless/askpass) | admin-retry for chmod + delete done (osascript); copy/move pending | SPEC-004 | I18 | P2 | partial |
 | F-100 | Long-path, weird-name safety: NFC/NFD unicode, colon/slash mapping, >1023 chars | macOS specifics; tests | SPEC-004 | I04 | P1 | partial |
-| F-101 | Undo last file op where possible (move/rename/copy) | Finder-like undo stack, TC has none — extra | SPEC-004 | I18 | P3 | todo |
+| F-101 | Undo last file op where possible (move/rename/copy) | Finder-like undo stack, TC has none — extra; Edit ▸ Undo (⌘Z) routes to the panel; copy/move/rename are undoable; ev: symbol:registerUndo | SPEC-004 | I18 | P3 | done |
 
 ## 5. Viewer (Lister) & Quick View
 
@@ -114,7 +114,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-114 | Wrap/unwrap, font config, fit-to-window images | | SPEC-005 | I07 | P1 | partial |
 | F-115 | Image display (all NSImage/ImageIO formats), zoom, next/prev in dir (n/p) | Animated GIF ok | SPEC-005 | I07 | P1 | partial |
 | F-116 | HTML/RTF display modes | WKWebView (local only, JS off) / NSAttributedString | SPEC-005 | I07 | P2 | partial |
-| F-117 | Multimedia playback (audio/video) via AVKit | TC uses codecs/plugins | SPEC-005 | I07 | P2 | todo |
+| F-117 | Multimedia playback (audio/video) via AVKit | TC uses codecs/plugins; ev: symbol:AVPlayerView ev: cm_List | SPEC-005 | I07 | P2 | done |
 | F-118 | Quick View panel (Ctrl+Q) inside inactive panel | Follows cursor; same engines as Lister | SPEC-005 | I07 | P1 | partial |
 | F-119 | Lister plugins (PLX) integration + multiple viewers per type (1..n switch) | | SPEC-012 | I16 | P1 | partial |
 | F-120 | View files inside archives (extract-to-temp transparently) | Via VFS | SPEC-007 | I09 | P1 | done |
@@ -135,7 +135,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-136 | Password-protected archives: prompt, keychain option; zip AES + 7z | | SPEC-007 | I09 | P1 | done |
 | F-137 | Packer plugins (PCX) extend formats; per-extension packer association | | SPEC-012 | I14 | P1 | partial |
 | F-138 | Background packing/unpacking through operation queue | | SPEC-007 | I09 | P1 | done |
-| F-139 | Copy directly between two archives | via temp; queue-composed | SPEC-007 | I09 | P2 | todo |
+| F-139 | Copy directly between two archives | via temp; queue-composed; zip targets only — the archive is rewritten by ArchiveEditor; ev: symbol:copyInto ev: test:ArchiveEditorTests | SPEC-007 | I09 | P2 | partial |
 
 ## 7. Search
 
@@ -160,7 +160,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-171 | Placeholders: [N], [N#-#], [E], [C] counter w/ start/step/digits, [d] date/time parts, [P] parent | Full TC placeholder table in spec | SPEC-009 | I11 | P1 | done |
 | F-172 | Content-plugin fields as placeholders `[=plugin.field]` | | SPEC-012 | I16 | P2 | done |
 | F-173 | Search & replace incl. regex + subst, case conversion modes | Upper/lower/first-letter rules | SPEC-009 | I11 | P1 | done |
-| F-174 | Edit names via external editor (export list, re-import) | | SPEC-009 | I11 | P2 | todo |
+| F-174 | Edit names via external editor (export list, re-import) | ev: test:RenameByEditorTests | SPEC-009 | I11 | P2 | done |
 | F-175 | Undo rename (log kept), rename result log, collision handling | | SPEC-009 | I11 | P1 | done |
 | F-176 | Save/load rename presets | | SPEC-009 | I11 | P2 | done |
 
@@ -171,8 +171,8 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-190 | Compare by content: side-by-side diff, binary + text, editable panes, per-diff nav | TC's built-in editor-diff | SPEC-010 | I12 | P1 | partial |
 | F-191 | Compare directories (mark newer/different), mark-same hiding | cm_CompareDirs etc. | SPEC-010 | I12 | P1 | done |
 | F-192 | Synchronize dirs dialog: filters, subdirs, by content/date/size, asymmetric, preview list, copy left/right/delete | Full TC sync semantics incl. ZIP targets | SPEC-010 | I12 | P1 | partial |
-| F-193 | Sync with archive as one side; sync via FS plugins (FTP) | | SPEC-010 | I15 | P2 | todo |
-| F-194 | Save sync sessions/presets | | SPEC-010 | I12 | P2 | todo |
+| F-193 | Sync with archive as one side; sync via FS plugins (FTP) | the sync engine works on FileManager directly, so both sides are local | SPEC-010 | I15 | P2 | todo |
+| F-194 | Save sync sessions/presets | ev: test:SyncPresetStoreTests | SPEC-010 | I12 | P2 | done |
 
 ## 10. Network: FTP & friends
 
@@ -184,10 +184,10 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-213 | FTPS (TLS explicit/implicit) via Network.framework | | SPEC-011 | I15 | P1 | partial |
 | F-214 | SFTP via libssh2 plugin (key auth, agent, known_hosts) | TC does this via plugin too | SPEC-011 | I15 | P1 | done |
 | F-215 | Background/queued transfers, download list for later, bandwidth limit | | SPEC-011 | I15 | P1 | partial |
-| F-216 | FXP server-to-server copy | Rarely supported; best effort | SPEC-011 | I15 | P3 | todo |
+| F-216 | FXP server-to-server copy | Rarely supported; best effort; not built | SPEC-011 | I15 | P3 | todo |
 | F-217 | Custom FTP commands, raw command log window | | SPEC-011 | I15 | P2 | partial |
 | F-218 | SMB/network shares: mount helper UI (Finder-mount based) + smb:// cd | Replaces TC "Network Neighborhood" | SPEC-011 | I18 | P2 | done |
-| F-219 | WebDAV via FS plugin (post-1.0 sample plugin) | | SPEC-012 | — | P3 | todo |
+| F-219 | WebDAV via FS plugin (post-1.0 sample plugin) | ev: plugin:WebDAV | SPEC-012 | — | P3 | done |
 
 ## 11. Plugin system
 
@@ -195,12 +195,12 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 |---|---|---|---|---|---|---|
 | F-230 | Plugin host: load/unload C-ABI dylib bundles, crash-guard logging, version handshake | 4 types: PCX/PFX/PLX/PDX | SPEC-012 | I14 | P1 | partial |
 | F-231 | PCX packer API (OpenArchive, ReadHeader(Ex), ProcessFile, PackFiles, DeleteFiles, GetPackerCaps, callbacks…) | Function-for-function WCX port | SPEC-012 | I14 | P1 | partial |
-| F-232 | PFX file-system API (FsInit, FsFindFirst/Next/Close, FsGet/PutFile, FsMkDir, FsDelete, FsExecuteFile, FsStatusInfo, content-fields…) | WFX port; "Network" root node in panel | SPEC-012 | I15 | P1 | todo |
+| F-232 | PFX file-system API (FsInit, FsFindFirst/Next/Close, FsGet/PutFile, FsMkDir, FsDelete, FsExecuteFile, FsStatusInfo, content-fields…) | WFX port; "Network" root node in panel; ev: symbol:PFXFileSystem ev: plugin:SampleFS | SPEC-012 | I15 | P1 | done |
 | F-233 | PLX lister API (ListLoad, ListLoadNext, ListSearchText, ListSendCommand, ListGetPreviewBitmap, detect strings) | NSView* instead of HWND | SPEC-012 | I16 | P1 | done |
 | F-234 | PDX content API (ContentGetSupportedField, ContentGetValue, ContentSetValue, ContentCompareFiles, operators…) | Columns, tooltips, search, rename | SPEC-012 | I16 | P1 | done |
 | F-235 | Plugin manager UI: install from .zip (pluginst.inf analog), enable/disable, associate extensions, configure | Options > Plugins page | SPEC-012 | I14 | P1 | done |
 | F-236 | Plugin SDK: C headers, Swift package, 4 sample plugins, porting guide WCX->PCX etc. | Docs + templates in Plugins/SDK | SPEC-012 | I14–I16 | P1 | partial |
-| F-237 | Built-in plugins shipped: SFTP (PFX), 7z-extra (PCX if needed), file-info PDX sample | Prove each API | SPEC-012 | I15/I16 | P1 | todo |
+| F-237 | Built-in plugins shipped: SFTP (PFX), 7z-extra (PCX if needed), file-info PDX sample | Prove each API; each API is proven by a sample plugin; SFTP is built in (PCNet) rather than a PFX plugin; ev: plugin:SampleFS ev: plugin:SamplePacker ev: plugin:SampleContentPlugin | SPEC-012 | I15/I16 | P1 | partial |
 | F-238 | Detect strings engine (EXT=, SIZE, FORCE, MULTIMEDIA & parser) | Shared by PLX/PDX | SPEC-012 | I16 | P1 | done |
 
 ## 12. Command system, button bar, menus
@@ -213,8 +213,8 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-253 | Button bar: .bar file format, icons, cm_/em_/programs/dirs as buttons, subbars, drag files onto buttons | | SPEC-014 | I13 | P1 | partial |
 | F-254 | Keyboard remapping: any cm_ to any key; per-scheme (TC-classic vs macOS-native) | Two shipped schemes; user overrides | SPEC-014 | I13 | P1 | done |
 | F-255 | Command browser dialog (like TC "choose command") with search | Used by buttonbar/keys/menu editors | SPEC-014 | I13 | P2 | partial |
-| F-256 | Aliases in command line (cd shortcuts, user aliases) | | SPEC-014 | I13 | P3 | todo |
-| F-257 | Main menu user-editable (menu file format) + multiple menu files | .mnu analog, needed for localized menus | SPEC-014 | I19 | P3 | todo |
+| F-256 | Aliases in command line (cd shortcuts, user aliases) | ev: test:AliasStoreTests | SPEC-014 | I13 | P3 | done |
+| F-257 | Main menu user-editable (menu file format) + multiple menu files | .mnu analog, needed for localized menus; ev: test:MenuFileTests ev: symbol:MnuMenuBuilder | SPEC-014 | I19 | P3 | done |
 
 ## 13. Configuration
 
@@ -226,7 +226,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-273 | Options: Edit/View associations (viewer/editor per type) | internal associations | SPEC-013 | I07 | P1 | partial |
 | F-274 | Options: Packer, Zip settings; Plugins page; FTP page | | SPEC-013 | I09/I14/I15 | P1 | partial |
 | F-275 | INI-based config files, human-editable, reload w/o restart where safe | ADR-007; paths in configuration.md | SPEC-013 | I05 | P1 | done |
-| F-276 | Import subset of wincmd.ini (colors, hotlist, buttonbar, ftp sites) | Migration helper, best effort | SPEC-013 | I19 | P3 | todo |
+| F-276 | Import subset of wincmd.ini (colors, hotlist, buttonbar, ftp sites) | Migration helper, best effort; ev: cm_ImportWincmd | SPEC-013 | I19 | P3 | done |
 | F-277 | Portable-ish mode: config path override via launch arg/env | For tests + power users | SPEC-013 | I05 | P2 | done |
 
 ## 14. macOS-specific additions (beyond TC)
@@ -251,7 +251,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 |---|---|---|---|---|---|---|
 | F-310 | Developer ID signing + hardened runtime + notarization + stapling | Tools/release.sh | DIST | I20 | P1 | partial |
 | F-311 | DMG with layout (app + Applications symlink + background) | Tools/make-dmg.sh | DIST | I20 | P1 | done |
-| F-312 | Sparkle 2 auto-update: appcast, EdDSA keys, delta updates, channels (beta/stable) | | DIST | I20 | P1 | todo |
+| F-312 | Sparkle 2 auto-update: appcast, EdDSA keys, delta updates, channels (beta/stable) | blocked: needs an Apple Developer ID and update-feed hosting | DIST | I20 | P1 | todo |
 | F-313 | Crash reporting (local .ips collection + user-consent submit) | No 3rd-party SaaS by default | DIST | I20 | P2 | done |
 | F-314 | Versioning: semver + monotonically increasing build number; CHANGELOG.md | | DIST | I20 | P1 | done |
 | F-315 | CI release pipeline (GitHub Actions macos): build, test, sign, notarize, appcast | Manual fallback documented | DIST | I20 | P2 | done |

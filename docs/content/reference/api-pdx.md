@@ -55,6 +55,7 @@ pdx.h — Peach Commander content plugins (PDX), a WDX port (SPEC-012 §5, F-233
 | `PC_FT_FIELDEMPTY` | `(-3)` | field not present for this file |
 | `PC_FT_ONDEMAND` | `(-4)` | value is expensive; fetch only on demand |
 | `PC_FT_DELAYED` | `(-5)` | not ready yet; retry later (see flags) |
+| `PC_CONTENT_MATCHCASE` | `0x0001` | ContentSearchText: case-sensitive match |
 | `PC_CONTENT_DELAYIFSLOW` | `1` |  |
 | `PC_CMP_LESS` | `(-1)` | file1 < file2 by this field |
 | `PC_CMP_EQUAL` | `0` | equal |
@@ -114,6 +115,9 @@ extern "C" {
 #define PC_FT_ONDEMAND     (-4)   /* value is expensive; fetch only on demand  */
 #define PC_FT_DELAYED      (-5)   /* not ready yet; retry later (see flags)     */
 
+/* ---- Flags ------------------------------------------------------------- */
+#define PC_CONTENT_MATCHCASE  0x0001  /* ContentSearchText: case-sensitive match  */
+
 /* ---- ContentGetValue flags --------------------------------------------- */
 
 /* Ask the plugin to return PC_FT_DELAYED rather than block on a slow value. */
@@ -141,6 +145,22 @@ int ContentGetSupportedField(int fieldIndex, char *fieldName, char *units, int m
  * type (int32/int64/double/struct/UTF-8 string) and return that PC_FT_* type,
  * or a negative PC_FT_* status code. `flags` may carry PC_CONTENT_DELAYIFSLOW.
  */
+/* ---- Optional: search a full-text field without moving it -----------------
+ *
+ * A PC_FT_FULLTEXT field is a whole document, and fetching one through
+ * ContentGetValue means copying it into the host's buffer — which caps what the
+ * host can search at whatever that buffer happens to be. Export this instead and
+ * the search never moves the text at all: the plugin looks inside its own result
+ * and answers with the 1-based line number of the first match (0 for no match,
+ * negative for "cannot answer").
+ *
+ * `flags` carries PC_CONTENT_MATCHCASE. `matchLine` receives the matching line's
+ * text, truncated to `lineMax` — a line fits any sane buffer, a document does not.
+ *
+ * Hosts must treat this as optional and fall back to ContentGetValue.           */
+int ContentSearchText(char *fileName, int fieldIndex, const char *needle, int flags,
+                      char *matchLine, int lineMax);
+
 int ContentGetValue(char *fileName, int fieldIndex, int unitIndex,
                     void *fieldValue, int maxlen, int flags);
 

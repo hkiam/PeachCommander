@@ -2,7 +2,7 @@
 
 _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`. Do not edit by hand._
 
-**74 features** across 13 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
+**87 features** across 14 categories. AI ships as an optional, removable plugin (on-device Apple Intelligence, optional cloud model). Auto-update (Sparkle) is planned but not yet integrated.
 
 ## Navigation
 
@@ -12,6 +12,7 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 | Editable breadcrumb path bar | user | — | ✅ |
 | Favorites / directory hotlist | user | Ctrl+D | ✅ |
 | Navigation (open, up, history) | user | Enter, Ctrl+PageUp/Down, Alt+Left/Right, Backspace | ✅ |
+| Panels notice outside changes | user | — | ✅ |
 | Special "go to" directories | user | Cmd+Shift+H | ✅ |
 | Swap panels / target = source | expert | Ctrl+U, Ctrl+Shift+U, Ctrl+= | ✅ |
 
@@ -62,11 +63,13 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 | Feature | Audiences | Shortcut(s) | Status |
 |---|---|---|---|
 | Find files | user, expert | Cmd+Shift+F | ✅ |
+| Search text provided by plugins | expert | Alt+F7 | ✅ |
 
 ## Network & remote
 
 | Feature | Audiences | Shortcut(s) | Status |
 |---|---|---|---|
+| Attributes on remote servers | expert | — | ✅ |
 | Download from URL | user | Cmd+Shift+D | ✅ |
 | FTP / FTPS | user, expert | Ctrl+F, Ctrl+N | ✅ |
 | FTP console & protocol log | expert | — | ✅ |
@@ -77,7 +80,9 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 
 | Feature | Audiences | Shortcut(s) | Status |
 |---|---|---|---|
+| Editor saves as administrator | expert | Cmd+S | ✅ |
 | Info page in the side panel | user | — | ✅ |
+| Line numbers in the editor | user, expert | — | ✅ |
 | Lister / file viewer | user | F3 | ✅ |
 | Quick View & Quick Look | user | Ctrl+Q, Cmd+Y | ✅ |
 | Syntax highlighting | user, developer | — | ✅ |
@@ -87,13 +92,16 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 
 | Feature | Audiences | Shortcut(s) | Status |
 |---|---|---|---|
+| Accessibility for hand-drawn controls | user | — | ✅ |
 | Add programs to the button bar by dropping them on it | user | — | ✅ |
 | Appearance (light/dark, colors, font) | user | — | ✅ |
 | AppleScript | user, developer | — | ✅ |
 | Button bar (toolbar) | user, expert | — | ✅ |
 | Color themes (incl. Norton Commander) | user | — | ✅ |
 | Command system & browser | expert | — | ✅ |
+| Full keyboard operation | user, expert | — | ✅ |
 | Keyboard shortcuts & schemes | user, expert | — | ✅ |
+| Shortcut audit | expert | — | ✅ |
 | Start menu & user commands | expert | — | ✅ |
 | The app's own windows follow the colour theme | user | — | ✅ |
 | User-supplied color themes (themes/*.ini) | user, expert | — | ✅ |
@@ -105,6 +113,7 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 | Feature | Audiences | Shortcut(s) | Status |
 |---|---|---|---|
 | Configuration & -ConfigRoot | developer, expert | — | ✅ |
+| Decompiler plugin settings page | user, expert | — | ✅ |
 | Import wincmd.ini | expert | — | ✅ |
 | Settings (15 pages) | user, expert | Cmd+, | ✅ |
 
@@ -112,7 +121,9 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 
 | Feature | Audiences | Shortcut(s) | Status |
 |---|---|---|---|
+| .NET decompiler plugin (F3 on an assembly) | user, expert | Cmd+Shift+N | ✅ |
 | AI assistant | user | — | ✅ |
+| Decompiled sources in a file panel | user, expert | Cmd+Shift+J | ✅ |
 | Disk Map | user | — | ✅ |
 | Java decompiler plugin (F3 on a .class file) | user, expert | — | ✅ |
 | Plugin ABIs | plugin, sdk | — | ✅ |
@@ -133,6 +144,7 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 | Architecture & modules | developer | — | ✅ |
 | Automation (-AutomationScript) | developer | — | ✅ |
 | Build system & onboarding | developer | — | ✅ |
+| Layout free of Auto Layout conflicts | internal | — | ✅ |
 | Localization (en/de) | developer, plugin | — | ✅ |
 | Security & permissions | developer, user | — | ✅ |
 | Testing strategy | developer | — | ✅ |
@@ -142,3 +154,9 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 | Feature | Audiences | Shortcut(s) | Status |
 |---|---|---|---|
 | Distribution & updates | developer | — | 🅱️ |
+
+## Archives
+
+| Feature | Audiences | Shortcut(s) | Status |
+|---|---|---|---|
+| ZIP64 archives | user, expert | — | ✅ |
