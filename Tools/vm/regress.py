@@ -84,6 +84,10 @@ SCENARIOS = [
     ("sftp-attributes", ["active left", "left /Users/admin", "wait 1000",
                          "sftpchmod /Users/admin/sftp-demo/perm.txt|600|/Users/admin/sftp.txt",
                          "wait 3000"], 12),
+    # Does an SFTP download go to disk and resume, instead of through memory from the start (F-366)?
+    ("sftp-download", ["active left", "left /Users/admin", "wait 1000",
+                       "sftpget /Users/admin/sftp-demo/big.txt|/Users/admin/got.txt|"
+                       "/Users/admin/sftpget.txt|10000", "wait 4000"], 12),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -143,6 +147,9 @@ REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"
 # than the app is asked whether it really changed. `stat` over ssh is not the code under test.
 EXTERNAL_CHECKS = {
     "sftp-attributes": ("stat -f %Lp ~/sftp-demo/perm.txt", "600"),
+    # The downloaded file must be byte-identical to the original — asked of `cmp`, not of the downloader.
+    "sftp-download": ("cmp -s ~/sftp-demo/big.txt ~/got.txt && echo identical || echo differs",
+                      "identical"),
 }
 
 # Scenarios that leave a report in the guest, and what has to be in it. The screenshot proves the
@@ -185,6 +192,8 @@ REPORTS = {
     # absent before it was created (an expectation starting with "!" must NOT appear).
     "panel-autorefresh": ("/Users/admin/watch-after.txt", ["auto-appeared.txt"]),
     "sftp-attributes": ("/Users/admin/sftp.txt", ["requested=600", "applied=ok"]),
+    # 40960 bytes whole; then only the tail after 10000 travels.
+    "sftp-download": ("/Users/admin/sftpget.txt", ["full=40960", "resumedAt=10000", "tail=30960"]),
     "panel-autorefresh-before": ("/Users/admin/watch-before.txt", ["!auto-appeared.txt"]),
     # CRLF in, CRLF out — shown as <CR> so a terminator that vanished is visible in the report.
     "editor-lines": ("/Users/admin/lines.txt",
@@ -271,7 +280,10 @@ def boot(app: str, run: str):
                   "cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys; "
                   "chmod 600 ~/.ssh/authorized_keys; "
                   "mkdir -p ~/sftp-demo && printf 'x' > ~/sftp-demo/perm.txt && "
-                  "chmod 644 ~/sftp-demo/perm.txt; true")
+                  "chmod 644 ~/sftp-demo/perm.txt; "
+                  # 40 KB of known content: more than one 64 KB read would be silly, less than one is
+                  # what a single-chunk transfer looks like — enough to tell a tail from a whole file.
+                  "python3 -c \"open('$HOME/sftp-demo/big.txt','w').write('peach'*8192)\"; true")
     # A small, fixed demo tree: the scenarios need something to show, and it must not vary between
     # runs or the screenshots become impossible to compare.
     ssh_guest(ip, "mkdir -p pc-cfg pc-demo/sub && "

@@ -6,25 +6,4 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| main-window | 0 | 0 | — | `main-window.png` |
-| details-view | 0 | 0 | — | `details-view.png` |
-| brief-view | 0 | 0 | — | `brief-view.png` |
-| tree-view | 0 | 0 | — | `tree-view.png` |
-| preview-panel | 0 | 0 | — | `preview-panel.png` |
-| find-files | 0 | 0 | — | `find-files.png` |
-| settings | 0 | 0 | — | `settings.png` |
-| viewer-text | 0 | 0 | — | `viewer-text.png` |
-| editor-filter | 0 | 0 | — | `editor-filter.png` |
-| editor-filter-dialog | 0 | 0 | — | `editor-filter-dialog.png` |
-| editor-lines | 0 | 0 | — | `editor-lines.png` |
-| sftp-attributes | 0 | 0 | — | `sftp-attributes.png` |
-| panel-autorefresh | 0 | 0 | — | `panel-autorefresh.png` |
-| keys-main | 0 | 0 | — | `keys-main.png` |
-| keys-find | 0 | 0 | — | `keys-find.png` |
-| keys-settings | 0 | 0 | — | `keys-settings.png` |
-| keys-editor | 0 | 0 | — | `keys-editor.png` |
-| keys-viewer | 0 | 0 | — | `keys-viewer.png` |
-| keys-editorwin | 0 | 0 | — | `keys-editorwin.png` |
-| keys-hotlist | 0 | 0 | — | `keys-hotlist.png` |
-| keys-overwrite | 0 | 0 | — | `keys-overwrite.png` |
-| accessibility | 0 | 0 | — | `accessibility.png` |
+| sftp-download | 0 | 0 | — | `sftp-download.png` |

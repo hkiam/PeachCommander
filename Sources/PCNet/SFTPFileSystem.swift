@@ -6,7 +6,7 @@
 import Foundation
 import PCVFS
 
-public final class SFTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, @unchecked Sendable {
+public final class SFTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, @unchecked Sendable, ResumableFileDownloading {
     private let session: SFTPSession
     private let fsID: String
     /// Route file transfers (read/write) over SCP instead of SFTP, for servers where
@@ -104,6 +104,29 @@ public final class SFTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, 
     /// Close the libssh2 session when the panel leaves this mount (avoids leaking
     /// the SSH session + socket).
     public func disconnect() async { await session.close() }
+
+    /// Stream a remote file into `destination`, resuming a partial one (F-366).
+    ///
+    /// Same reasoning as the FTP side (F-212): copying a file went through `localFileIfAvailable`, which
+    /// reads all of it into memory and writes a temp copy that is then copied again to the target. SFTP
+    /// has no protocol handshake to negotiate here — a read simply starts at an offset — so resuming is
+    /// a seek, and the only judgement needed is whether the local file is a prefix of the remote one.
+    public func downloadFile(_ path: VFSPath, to destination: URL, resume: Bool) async throws
+        -> (written: Int64, resumedAt: Int64) {
+        let existing = ((try? FileManager.default
+            .attributesOfItem(atPath: destination.path)[.size] as? Int64) ?? nil) ?? 0
+        var offset: Int64 = 0
+        if resume, existing > 0 {
+            // Only when the remote file is longer: equal or shorter means the local copy is not its
+            // beginning, and appending would produce a corrupt file that looks complete.
+            let remoteSize = (try? await session.stat(path.path))?.size ?? -1
+            if remoteSize > existing { offset = existing }
+        }
+        do {
+            let written = try await session.download(path.path, to: destination, from: UInt64(offset))
+            return (written, offset)
+        } catch { throw Self.mapError(error) }
+    }
 
     public func localFileIfAvailable(_ path: VFSPath) async throws -> URL? {
         do {

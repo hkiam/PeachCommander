@@ -284,6 +284,53 @@ public final class SFTPSession: @unchecked Sendable {
         }
     }
 
+    /// Stream a remote file into `destination`, starting at `offset` (F-366).
+    ///
+    /// The counterpart to `read`, which returns the whole file as `Data`: fine for opening one in the
+    /// viewer, wrong for copying one, because a 4 GB file then needs 4 GB of memory *and* a temp copy
+    /// before it reaches its destination. Here the chunks go straight to the file, and `seek64` makes an
+    /// interrupted transfer continue instead of starting over.
+    ///
+    /// Returns how many bytes this call wrote — the tail, when resuming.
+    public func download(_ path: String, to destination: URL, from offset: UInt64 = 0) async throws -> Int64 {
+        let fm = FileManager.default
+        try fm.createDirectory(at: destination.deletingLastPathComponent(),
+                               withIntermediateDirectories: true)
+        if offset == 0 { try? fm.removeItem(at: destination) }
+        if !fm.fileExists(atPath: destination.path) { fm.createFile(atPath: destination.path, contents: nil) }
+        let file = try FileHandle(forWritingTo: destination)
+        // Before the first byte: a resumed transfer appends to exactly the bytes that were counted, and a
+        // restarted one must not keep the old tail behind what it writes.
+        try file.truncate(atOffset: offset)
+        defer { try? file.close() }
+
+        return try await run {
+            guard let sftp = self.sftp else { throw SFTPError.notConnected }
+            guard let handle = libssh2_sftp_open_ex(sftp, path, UInt32(path.utf8.count),
+                                                   C.fxfRead, 0, 0) else {
+                throw SFTPError.notFound(path)
+            }
+            defer { _ = libssh2_sftp_close_handle(handle) }
+            if offset > 0 { libssh2_sftp_seek64(handle, offset) }
+            var written: Int64 = 0
+            var buffer = [UInt8](repeating: 0, count: 64 * 1024)
+            while true {
+                let n = buffer.withUnsafeMutableBytes { p in
+                    libssh2_sftp_read(handle, p.baseAddress!.assumingMemoryBound(to: CChar.self), p.count)
+                }
+                if n > 0 {
+                    try file.write(contentsOf: buffer[0..<n])
+                    written += Int64(n)
+                } else if n == 0 {
+                    break
+                } else {
+                    throw SFTPError.opFailed("read", Int32(n))
+                }
+            }
+            return written
+        }
+    }
+
     public func read(_ path: String) async throws -> Data {
         try await run {
             guard let sftp = self.sftp else { throw SFTPError.notConnected }
