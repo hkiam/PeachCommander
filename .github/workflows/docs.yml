@@ -34,6 +34,12 @@ jobs:
         run: python3 docs/scripts/check-docs.py
       - name: Translation coverage gate (UI + Help must be kept in every language)
         run: python3 docs/scripts/check-translations.py
+      - name: Translation structure gate (a translated page must match the English shape)
+        run: python3 docs/scripts/check-translation-drift.py
+      - name: Parity catalogue gate (every "ev:" pointer must resolve)
+        run: python3 Tools/check-inventory.py
+      - name: Shortcut audit (schemes only; the menu-bar comparison needs the VM harness)
+        run: python3 Tools/check-hotkeys.py
       - name: Build Apple Help Book (all languages)
         run: python3 docs/scripts/build-helpbook.py --all
       - name: Build documentation site (all languages, strict)

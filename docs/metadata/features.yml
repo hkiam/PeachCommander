@@ -888,7 +888,7 @@ features:
     name_en: Accessibility for hand-drawn controls
     category: customization
     audiences: [user]
-    status: partial
+    status: stable
     source: { modules: [PCApp], types: [AccessibleHotspot, DriveBarView, TabBarView, PreviewResizeHandle] }
     documentation: { integrated_help: false, website: false }
     notes: >-
@@ -1186,3 +1186,81 @@ features:
     source: { modules: [PCFoundation], types: [SecretStore, KeychainSecretStore, PeachCommander.entitlements] }
     documentation: { developer_docs: true, website: true }
     notes: "App Sandbox intentionally OFF (file manager needs full disk); Developer ID + hardened runtime intended; credentials in Keychain only; disable-library-validation to load unsigned plugins."
+
+  - id: keyboard-operation
+    name: Vollständige Tastaturbedienung
+    name_en: Full keyboard operation
+    category: customization
+    audiences: [user, expert]
+    shortcuts: ["Tab"]
+    status: stable
+    source: { modules: [PCApp], types: [KeyboardLoop] }
+    documentation: { integrated_help: false, website: false }
+    notes: >-
+      Every window is built in code, and for those AppKit does not maintain a key-view loop unless
+      asked — so Tab reached almost nothing: Settings stopped at the page list with every checkbox and
+      the Close button out of reach, Find Files could be filled in but not started, and switching a
+      panel's view mode left sixteen controls unreachable. `KeyboardLoop` sets the flag for every window
+      and rebuilds the loop where views are swapped. Eight windows are gates in Tools/vm/regress.py:
+      the loop must be closed, nothing focusable may be missing from it, and nothing interactive may be
+      without a label — because a control Tab cannot reach is never announced either.
+
+  - id: shortcut-audit
+    name: Kürzel-Prüfung
+    name_en: Shortcut audit
+    category: customization
+    audiences: [expert]
+    status: stable
+    source: { modules: [], types: [check-hotkeys.py] }
+    documentation: { developer_docs: true }
+    notes: >-
+      Tools/check-hotkeys.py reads a dump of the *running* menu bar plus both key schemes and reports a
+      key bound twice, a scheme binding shadowed by a menu item for another command, one key on two menu
+      items, and anything macOS keeps for itself. It found thirteen: ⇧⌘D on both Download from URL and
+      Go ▸ Desktop (one never fired), ⌘, on two items, three accumulated copies of the Edit menu's
+      system-injected entries — one of which AppKit gave the bare letter "E" — and the Ctrl+F1…F8 row,
+      which belongs to macOS keyboard navigation and therefore fails for exactly the people who need it.
+
+  - id: panel-auto-refresh
+    name: Panels bemerken Änderungen von außen
+    name_en: Panels notice outside changes
+    category: navigation
+    audiences: [user]
+    status: stable
+    source: { modules: [PCVFS], types: [DirectoryWatcher] }
+    documentation: { integrated_help: true, website: true }
+    notes: >-
+      A file another program creates, changes or deletes in the folder on screen appears on its own,
+      with the cursor and the marks left where they were. Local folders only: FSEvents has no
+      equivalent for an FTP site or the inside of an archive, where F2 still re-reads. What was there
+      before was a watcher named after FSEvents that polled an mtime every two seconds and had no
+      callback at all, so nothing could ever arrive.
+
+  - id: zip64
+    name: ZIP64-Archive
+    name_en: ZIP64 archives
+    category: archives
+    audiences: [user, expert]
+    status: stable
+    source: { modules: [PCArchive], types: [ZipReader] }
+    documentation: { integrated_help: true, website: true }
+    notes: >-
+      Archives with more than 65,535 entries or larger than 4 GB open like any other. The silent half
+      was the reason to do it: an archive whose members exceed 4 GB used to parse without complaint and
+      list every one of them as 4294967295 bytes, then send extraction to offset 0xFFFFFFFF. The file is
+      memory-mapped, because ZIP64 exists for archives that do not fit in memory.
+
+  - id: remote-attributes
+    name: Rechte auf entfernten Servern
+    name_en: Attributes on remote servers
+    category: network
+    audiences: [expert]
+    status: stable
+    source: { modules: [PCNet], types: [SFTPSession, SFTPFileSystem, FTPFileSystem] }
+    documentation: { integrated_help: true, website: true }
+    notes: >-
+      Permissions and timestamps can be changed over SFTP; owner and group are refused, because the
+      protocol carries them as numbers only and cannot resolve a name. Over FTP only permissions, via
+      the optional SITE CHMOD, and a server that does not offer it says so. Previously SFTP's
+      setAttributes was an empty function and FTP discarded the reply, so the dialog reported success
+      while nothing changed.
