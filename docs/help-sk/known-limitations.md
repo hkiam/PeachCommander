@@ -19,10 +19,6 @@ Peach Commander dokáže veľa, ale niekoľko funkcií má v aktuálnej verzii �
 - **Zmena atribútov súborov cez SFTP nemá v tejto verzii žiadny účinok.** Môžete prehliadať, sťahovať a nahrávať cez SFTP/SCP, ale požiadavky na zmenu oprávnení, vlastníctva alebo časových značiek na vzdialenom serveri sa ticho ignorujú. Tieto zmeny vykonajte na samotnom serveri, alebo cez iný protokol.
 - Pri prvom pripojení k serveru SFTP budete požiadaní, aby ste dôverovali jeho hostiteľskému kľúču. Peach Commander si ho potom zapamätá (dôvera pri prvom použití).
 
-## Sťahovanie z URL
-
-- Príkaz **Stiahnuť z URL** (ponuka Sieť) momentálne používa skratku Cmd+Shift+D, ktorá je rovnaká skratka ako Prejsť > Plocha. Keď sú dostupné oba, ponuky môžu kolidovať — pre istotu spustite sťahovanie priamo z ponuky Sieť.
-
 ## Obnovenie priečinka
 
 - **Na zmeny zvonku sa sledujú len zložky na tomto Macu.** Zložka na tomto Macu sa aktualizuje sama, len čo v nej iný program vytvorí, zmení alebo odstráni súbor. Vzdialené umiestnenie (FTP alebo SFTP) ani vnútro archívu sa nesledujú, pretože tieto protokoly neponúkajú žiadny spôsob, ako dať vedieť — tam stlačte F2 alebo Ctrl+R na opätovné načítanie.
@@ -37,7 +33,7 @@ Peach Commander dokáže veľa, ale niekoľko funkcií má v aktuálnej verzii �
 | Akcia | Skratka |
 | --- | --- |
 | Obnoviť aktívny panel | F2 alebo Ctrl+R |
-| Stiahnuť z URL | Cmd+Shift+D |
+| Stiahnuť z URL | Cmd+Shift+U |
 
 ## Poznámky
 

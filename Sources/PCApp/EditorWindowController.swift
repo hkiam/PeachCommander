@@ -955,6 +955,11 @@ extension EditorWindowController {
 
 /// Editor text view that reports Cmd+click (for go-to-definition).
 final class EditorCodeTextView: NSTextView {
+    /// Announced instead of a nameless text area (I19 T06).
+    override func accessibilityLabel() -> String? {
+        super.accessibilityLabel() ?? String(localized: "File contents")
+    }
+
     var onCommandClick: ((Int) -> Void)?
     override func mouseDown(with event: NSEvent) {
         if event.modifierFlags.contains(.command), let onCommandClick {

@@ -19,10 +19,6 @@ Peach Commander gør meget, men nogle få funktioner har ærlige grænser i den 
 - **At ændre filattributter over SFTP har ingen effekt i denne version.** Du kan gennemse, downloade og uploade over SFTP/SCP, men anmodninger om at ændre tilladelser, ejerskab eller tidsstempler på en fjernserver ignoreres stille. Foretag de ændringer på selve serveren, eller over en anden protokol.
 - Ved første forbindelse til en SFTP-server bliver du bedt om at stole på dens værtsnøgle. Peach Commander husker den derefter (tillid ved første brug).
 
-## Download fra en URL
-
-- Kommandoen **Download fra URL** (Netværk-menuen) bruger i øjeblikket genvejen Cmd+Shift+D, som er den samme genvej som Gå > Skrivebord. Når begge er tilgængelige, kan menuerne kollidere — start downloadet direkte fra Netværk-menuen for at være sikker.
-
 ## Mappeopdatering
 
 - **Kun mapper på denne Mac overvåges for ændringer udefra.** En mappe på denne Mac opdaterer sig selv, så snart et andet program opretter, ændrer eller fjerner en fil i den. En fjern placering (FTP eller SFTP) og indersiden af et arkiv overvåges ikke, fordi de protokoller ikke giver nogen mulighed for at blive underrettet — tryk på F2 eller Ctrl+R for at læse dem igen.
@@ -37,7 +33,7 @@ Peach Commander gør meget, men nogle få funktioner har ærlige grænser i den 
 | Handling | Genvej |
 | --- | --- |
 | Opdater aktivt panel | F2 eller Ctrl+R |
-| Download fra URL | Cmd+Shift+D |
+| Download fra URL | Cmd+Shift+U |
 
 ## Bemærkninger
 

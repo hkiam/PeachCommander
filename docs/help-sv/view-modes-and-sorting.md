@@ -52,4 +52,5 @@ Mappar sorteras alltid tillsammans överst, före filer, och `..`-posten som tar
 
 - Naturlig (numerisk) sortering är på som standard, så `file2` kommer före `file10` i stället för efter. Du kan stänga av den i Konfiguration > Alternativ under visningsinställningarna.
 - Du kan bredda eller smalna av en kolumn i detaljvyn genom att dra i avdelaren mellan kolumnrubrikerna.
+- Om du använder macOS' tangentbordsnavigering (Systeminställningar ▸ Tangentbord) tillhör raden Ctrl+F1 till Ctrl+F8 systemet — menyraden, Dock, verktygsfältet — och den når aldrig Peach Commander. Ställ tangentschemat på **macOS** i inställningarna, då ligger visningslägena på Cmd+1, Cmd+2 och Cmd+3 och sorteringen på Alt+Cmd+1 till Alt+Cmd+4.
 - Visningsläge, sorteringsordning och kolumnval kommer ihåg per panel, så du kan ha den ena sidan som en detaljerad lista och den andra som ett fotogalleri.

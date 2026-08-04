@@ -80,7 +80,7 @@ public final class FindFilesWindowController: NSWindowController {
     private var templateStore: SearchTemplateStore?
     private var templates: [SearchTemplate] = []
     private let statusLabel = NSTextField(labelWithString: "")
-    private let tableView = NSTableView()
+    private let tableView = NSTableView()   // results; labelled in `build` (I19 T06)
     private let startStopButton = NSButton()
     private let viewButton = NSButton()
     private let feedButton = NSButton()
@@ -280,6 +280,8 @@ public final class FindFilesWindowController: NSWindowController {
         // --- Tabbed options area (F-150): General / Advanced / Plugins / Load & Save ---
         let tabView = optionsTabView
         tabView.translatesAutoresizingMaskIntoConstraints = false
+        // Otherwise a screen reader announces only "tab group" here (I19 T06).
+        tabView.setAccessibilityLabel(String(localized: "Search options"))
         tabView.addTabViewItem(makeTab(String(localized: "General"), rows: [
             labeledField(String(localized: "Search for:"), nameMaskField),
             labeledField(String(localized: "Search in:"), startDirField),
@@ -323,6 +325,8 @@ public final class FindFilesWindowController: NSWindowController {
         tableView.usesAlternatingRowBackgroundColors = true
         tableView.dataSource = self
         tableView.delegate = self
+        // Otherwise the results are announced as an unnamed table (I19 T06).
+        tableView.setAccessibilityLabel(String(localized: "Search results"))
         tableView.target = self
         tableView.doubleAction = #selector(handleDoubleClick)
         scrollView.documentView = tableView

@@ -11,7 +11,7 @@ Peach Commander può recuperare un file direttamente da un indirizzo web HTTP o 
 ## Scaricare un file
 
 1. Aprite la cartella del pannello in cui volete che arrivi il file.
-2. Scegliete **Rete > Scarica da URL**, oppure premete Cmd+Shift+D.
+2. Scegliete **Rete > Scarica da URL**, oppure premete Cmd+Shift+U.
 3. Incollate l'indirizzo web nella casella **URL**. Se avete copiato prima un link, viene inserito automaticamente.
 4. Controllate il nome in **Salva come** — viene suggerito dal link e potete modificarlo liberamente.
 5. Fate clic su **Scarica**.
@@ -33,7 +33,7 @@ Se un trasferimento viene interrotto, Peach Commander conserva ciò che ha già 
 
 | Azione | Scorciatoia |
 | --- | --- |
-| Scaricare da URL | Cmd+Shift+D |
+| Scaricare da URL | Cmd+Shift+U |
 
 ## Suggerimenti
 
@@ -42,4 +42,4 @@ Se un trasferimento viene interrotto, Peach Commander conserva ciò che ha già 
 - **Intestazioni personalizzate.** Aggiungete un'intestazione per riga nella casella **Intestazioni**, ad esempio `Referer: …` o `Cookie: …`, per i link che funzionano solo con intestazioni di richiesta specifiche.
 - **Proxy.** Instradate il download attraverso un proxy HTTP o SOCKS5 compilando host, porta e tipo del **Proxy**.
 - **Certificati non attendibili.** Attivate **Consenti certificato non attendibile** solo per un sito di cui vi fidate che usa un certificato autofirmato; disattiva il normale controllo di sicurezza HTTPS per quel download.
-- **Nota:** Cmd+Shift+D è usato anche altrove per andare alla cartella Scrivania; se la scorciatoia non apre questa finestra, usate invece **Rete > Scarica da URL** dal menu.
+- **Nota:** la scorciatoia era Cmd+Maiusc+D, usata anche da Vai ▸ Scrivania, quindi una delle due non scattava mai. Lo scaricamento è passato a Cmd+Maiusc+U (U di URL) e Scrivania mantiene Cmd+Maiusc+D, come nel Finder.

@@ -11,7 +11,7 @@ Peach Commander can fetch a file straight from an HTTP or HTTPS web address into
 ## Download a file
 
 1. Open the panel folder where you want the file to land.
-2. Choose **Net > Download from URL**, or press Cmd+Shift+D.
+2. Choose **Net > Download from URL**, or press Cmd+Shift+U.
 3. Paste the web address into the **URL(s)** box. If you copied a link first, it is filled in for you.
 4. Check the **Save as** name — it is suggested from the link and you can edit it freely.
 5. Click **Download**.
@@ -33,7 +33,7 @@ If a transfer is cut off, Peach Commander keeps what it has already received in 
 
 | Action | Shortcut |
 | --- | --- |
-| Download from URL | Cmd+Shift+D |
+| Download from URL | Cmd+Shift+U |
 
 ## Tips
 
@@ -42,4 +42,4 @@ If a transfer is cut off, Peach Commander keeps what it has already received in 
 - **Custom headers.** Add one header per line in the **Headers** box, for example `Referer: …` or `Cookie: …`, for links that only work with specific request headers.
 - **Proxy.** Route the download through an HTTP or SOCKS5 proxy by filling in the **Proxy** host, port, and type.
 - **Untrusted certificates.** Only turn on **Allow untrusted certificate** for a site you trust that uses a self-signed certificate; it disables the normal HTTPS security check for that download.
-- **Note:** Cmd+Shift+D is also used elsewhere for going to the Desktop folder; if the shortcut does not open this dialog, use **Net > Download from URL** from the menu instead.
+- **Note:** the shortcut used to be Cmd+Shift+D, which Go > Desktop also uses — so one of the two never fired. Downloading moved to Cmd+Shift+U (U for URL) and Desktop keeps Cmd+Shift+D, as in the Finder.

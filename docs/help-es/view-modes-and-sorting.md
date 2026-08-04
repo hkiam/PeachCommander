@@ -52,4 +52,5 @@ Las carpetas siempre se ordenan juntas al principio, por delante de los archivos
 
 - La ordenación natural (numérica) está activada por omisión, así que `file2` va antes que `file10` en lugar de después. Puedes desactivarla en Configuración > Opciones, en los ajustes de visualización.
 - Puedes ensanchar o estrechar una columna en la vista de Detalles arrastrando el divisor entre los encabezados de columna.
+- Si usa la navegación por teclado de macOS (Ajustes del Sistema ▸ Teclado), la fila de Ctrl+F1 a Ctrl+F8 pertenece al sistema —barra de menús, Dock, barra de herramientas— y nunca llega a Peach Commander. Cambie el esquema de teclas a **macOS** en los ajustes y los modos de visualización quedan en Cmd+1, Cmd+2 y Cmd+3, y la ordenación en Alt+Cmd+1 a Alt+Cmd+4.
 - El modo de vista, el orden y la elección de columnas se recuerdan por panel, así que puedes mantener un lado como una lista detallada y el otro como una galería de fotos.

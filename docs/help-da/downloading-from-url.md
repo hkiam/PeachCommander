@@ -11,7 +11,7 @@ Peach Commander kan hente en fil direkte fra en HTTP- eller HTTPS-webadresse ind
 ## Overfør en fil
 
 1. Åbn den panelmappe, hvor du vil have filen til at lande.
-2. Vælg **Net > Overfør fra URL**, eller tryk på Cmd+Shift+D.
+2. Vælg **Net > Overfør fra URL**, eller tryk på Cmd+Shift+U.
 3. Indsæt webadressen i feltet **URL('er)**. Hvis du kopierede et link først, udfyldes det for dig.
 4. Kontrollér navnet i **Gem som** — det foreslås ud fra linket, og du kan redigere det frit.
 5. Klik på **Overfør**.
@@ -33,7 +33,7 @@ Hvis en overførsel afbrydes, beholder Peach Commander det, den allerede har mod
 
 | Handling | Genvej |
 | --- | --- |
-| Overfør fra URL | Cmd+Shift+D |
+| Overfør fra URL | Cmd+Shift+U |
 
 ## Tips
 
@@ -42,4 +42,4 @@ Hvis en overførsel afbrydes, beholder Peach Commander det, den allerede har mod
 - **Brugerdefinerede headere.** Tilføj én header pr. linje i feltet **Headere**, for eksempel `Referer: …` eller `Cookie: …`, for links, der kun virker med bestemte anmodningsheadere.
 - **Proxy.** Dirigér overførslen gennem en HTTP- eller SOCKS5-proxy ved at udfylde **Proxy**-værten, -porten og -typen.
 - **Utroværdige certifikater.** Slå kun **Tillad utroværdigt certifikat** til for et websted, du stoler på, som bruger et selvsigneret certifikat; det deaktiverer det normale HTTPS-sikkerhedstjek for den overførsel.
-- **Bemærk:** Cmd+Shift+D bruges også andre steder til at gå til skrivebordsmappen; hvis genvejen ikke åbner denne dialog, skal du bruge **Net > Overfør fra URL** fra menuen i stedet.
+- **Bemærk:** genvejen var Cmd+Skift+D, som Gå ▸ Skrivebord også bruger — den ene af de to udløste altså aldrig. Download ligger nu på Cmd+Skift+U (U for URL), og Skrivebord beholder Cmd+Skift+D som i Finder.

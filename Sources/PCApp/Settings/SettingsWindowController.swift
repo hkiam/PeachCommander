@@ -472,6 +472,8 @@ public final class SettingsWindowController: NSWindowController {
         sourceList.backgroundColor = Theme.current.listBackground
         sourceList.delegate = self
         sourceList.dataSource = self
+        // The page list is the first thing Tab reaches here, and it said nothing (I19 T06).
+        sourceList.setAccessibilityLabel(String(localized: "Settings pages"))
         sourceList.allowsMultipleSelection = false
         sourceList.allowsEmptySelection = false
         sourceList.addTableColumn(NSTableColumn(identifier: NSUserInterfaceItemIdentifier("page")))
@@ -542,6 +544,23 @@ public final class SettingsWindowController: NSWindowController {
             document.trailingAnchor.constraint(equalTo: scroll.contentView.trailingAnchor),
             document.widthAnchor.constraint(equalTo: scroll.contentView.widthAnchor)
         ])
+
+        // Tab must reach the page that was just mounted (I19 T06). AppKit does not notice the exchange
+        // inside the scroll view's document view, so without this the loop stayed as it was when the
+        // window opened: the page list and nothing else, i.e. Settings could not be operated without a
+        // mouse at all. The first control on the page also becomes the starting point, so Tab begins
+        // where the user is looking rather than back in the sidebar.
+        KeyboardLoop.rebuild(for: window)
+        window?.initialFirstResponder = Self.firstFocusable(in: view)
+    }
+
+    /// The first control on a page that can take focus, in view order.
+    private static func firstFocusable(in view: NSView) -> NSView? {
+        if view.canBecomeKeyView, view is NSControl { return view }
+        for subview in view.subviews {
+            if let found = firstFocusable(in: subview) { return found }
+        }
+        return nil
     }
 
     /// Mount a plugin-contributed pane (built lazily, cached, pinned to fill).

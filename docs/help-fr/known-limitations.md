@@ -19,10 +19,6 @@ Peach Commander fait beaucoup, mais quelques fonctionnalités ont des limites ho
 - **Changer les attributs de fichier via SFTP n'a aucun effet dans cette version.** Vous pouvez parcourir, télécharger et envoyer via SFTP/SCP, mais les demandes de changement de permissions, de propriété ou d'horodatages sur un serveur distant sont ignorées en silence. Effectuez ces changements sur le serveur lui-même, ou via un autre protocole.
 - À la première connexion à un serveur SFTP, il vous sera demandé de faire confiance à sa clé d'hôte. Peach Commander la mémorise ensuite (confiance à la première utilisation).
 
-## Télécharger depuis une URL
-
-- La commande **Télécharger depuis une URL** (menu Réseau) utilise actuellement le raccourci Cmd+Maj+D, qui est le même que Aller > Bureau. Quand les deux sont disponibles, les menus peuvent entrer en conflit — lancez le téléchargement directement depuis le menu Réseau pour être sûr.
-
 ## Actualisation des dossiers
 
 - **Seuls les dossiers de ce Mac sont surveillés.** Un dossier de ce Mac se met à jour de lui-même dès qu’un autre programme y ajoute, modifie ou supprime un fichier. Un emplacement distant (FTP ou SFTP) et l’intérieur d’une archive ne sont pas surveillés, car ces protocoles n’offrent aucun moyen d’être averti — appuyez sur F2 ou Ctrl+R pour les relire.
@@ -37,7 +33,7 @@ Peach Commander fait beaucoup, mais quelques fonctionnalités ont des limites ho
 | Action | Raccourci |
 | --- | --- |
 | Actualiser le panneau actif | F2 ou Ctrl+R |
-| Télécharger depuis une URL | Cmd+Maj+D |
+| Télécharger depuis une URL | Cmd+Maj+U |
 
 ## Remarques
 

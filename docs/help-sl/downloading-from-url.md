@@ -11,7 +11,7 @@ Peach Commander lahko pridobi datoteko naravnost s spletnega naslova HTTP ali HT
 ## Prenesite datoteko
 
 1. Odprite mapo podokna, kamor želite, da datoteka pristane.
-2. Izberite **Omrežje > Prenesi z URL** ali pritisnite Cmd+Shift+D.
+2. Izberite **Omrežje > Prenesi z URL** ali pritisnite Cmd+Shift+U.
 3. Prilepite spletni naslov v polje **URL-ji**. Če ste prej kopirali povezavo, se izpolni za vas.
 4. Preverite ime **Shrani kot** — predlagano je iz povezave in ga lahko prosto uredite.
 5. Kliknite **Prenesi**.
@@ -33,7 +33,7 @@ Prilepite en spletni naslov na vrstico v polje **URL-ji**. Ko je prisotnih več 
 
 | Dejanje | Bližnjica |
 | --- | --- |
-| Prenesi z URL | Cmd+Shift+D |
+| Prenesi z URL | Cmd+Shift+U |
 
 ## Nasveti
 
@@ -42,4 +42,4 @@ Prilepite en spletni naslov na vrstico v polje **URL-ji**. Ko je prisotnih več 
 - **Poljubne glave.** Dodajte eno glavo na vrstico v polje **Glave**, na primer `Referer: …` ali `Cookie: …`, za povezave, ki delujejo le z določenimi glavami zahteve.
 - **Posrednik.** Usmerite prenos skozi posrednik HTTP ali SOCKS5 z izpolnitvijo gostitelja, vrat in vrste **Posrednika**.
 - **Nezaupljiva potrdila.** Vklopite **Dovoli nezaupljivo potrdilo** le za zaupanja vredno spletno mesto, ki uporablja samopodpisano potrdilo; to izklopi običajno varnostno preverjanje HTTPS za ta prenos.
-- **Opomba:** Cmd+Shift+D se drugje uporablja tudi za prehod v mapo Namizje; če bližnjica ne odpre tega pogovornega okna, uporabite namesto tega **Omrežje > Prenesi z URL** iz menija.
+- **Opomba:** bližnjica je bila Cmd+Shift+D, ki jo uporablja tudi Pojdi ▸ Namizje — ena od obeh se torej nikoli ni sprožila. Prenos je zdaj na Cmd+Shift+U (U kot URL), Namizje pa ohrani Cmd+Shift+D, kot v Finderju.

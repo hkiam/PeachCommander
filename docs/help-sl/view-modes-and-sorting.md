@@ -52,4 +52,5 @@ Mape se vedno razvrstijo skupaj na vrhu, pred datotekami, vnos `..`, ki vas pope
 
 - Naravno (številsko) razvrščanje je privzeto vklopljeno, tako da je `file2` pred `file10`, ne za njim. Izklopite ga lahko v Konfiguracija > Možnosti v nastavitvah pogleda.
 - Stolpec lahko v pogledu Podrobnosti razširite ali zožite z vlečenjem ločilne črte med glavami stolpcev.
+- Če uporabljate tipkovno krmarjenje macOS (Sistemske nastavitve ▸ Tipkovnica), vrsta Ctrl+F1 do Ctrl+F8 pripada sistemu — menijska vrstica, Dock, orodna vrstica — in nikoli ne doseže Peach Commanderja. V nastavitvah preklopite shemo tipk na **macOS**: načini prikaza so tedaj na Cmd+1, Cmd+2 in Cmd+3, razvrščanje pa na Alt+Cmd+1 do Alt+Cmd+4.
 - Način pogleda, vrstni red razvrščanja in izbor stolpcev se ohranijo za vsako podokno, tako da imate lahko eno stran kot podroben seznam in drugo kot fotogalerijo.

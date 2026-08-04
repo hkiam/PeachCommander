@@ -201,7 +201,11 @@ final class ButtonBarView: NSView {
         button.tag = tag
         button.bezelStyle = .texturedRounded
         button.imagePosition = .imageOnly
-        button.toolTip = model.menu.isEmpty ? model.cmd : model.menu
+        let words = model.menu.isEmpty ? model.cmd : model.menu
+        button.toolTip = words
+        // An icon-only button exposes no words at all: VoiceOver announces "button" and stops. The
+        // tooltip is the label the author already wrote, so it serves for both (I19 T06).
+        button.setAccessibilityLabel(words)
         // Accept file drops onto this button (F-067) — separators excluded.
         if !model.isSeparator {
             button.onDropFiles = { [weak self] files in self?.onDropOnButton?(model, files) }

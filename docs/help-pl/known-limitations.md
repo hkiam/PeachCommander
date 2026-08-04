@@ -19,10 +19,6 @@ Peach Commander robi wiele, ale kilka funkcji ma w bieżącej wersji szczere ogr
 - **Zmiana atrybutów plików przez SFTP nie ma efektu w tej wersji.** Możesz przeglądać, pobierać i wysyłać przez SFTP/SCP, ale żądania zmiany uprawnień, własności lub znaczników czasu na serwerze zdalnym są po cichu ignorowane. Wprowadź te zmiany na samym serwerze lub przez inny protokół.
 - Przy pierwszym połączeniu z serwerem SFTP zostaniesz poproszony o zaufanie jego kluczowi hosta. Peach Commander zapamiętuje go później (zaufanie przy pierwszym użyciu).
 
-## Pobieranie z adresu URL
-
-- Polecenie **Pobierz z adresu URL** (menu Sieć) używa obecnie skrótu Cmd+Shift+D, który jest tym samym skrótem co Przejdź > Biurko. Gdy oba są dostępne, menu mogą kolidować — dla pewności uruchom pobieranie bezpośrednio z menu Sieć.
-
 ## Odświeżanie folderów
 
 - **Na zmiany z zewnątrz obserwowane są tylko foldery na tym Macu.** Folder na tym Macu aktualizuje się sam, gdy tylko inny program utworzy, zmieni lub usunie w nim plik. Lokalizacja zdalna (FTP lub SFTP) ani wnętrze archiwum nie są obserwowane, ponieważ te protokoły nie dają możliwości powiadomienia — tam naciśnij F2 lub Ctrl+R, aby odczytać ponownie.
@@ -37,7 +33,7 @@ Peach Commander robi wiele, ale kilka funkcji ma w bieżącej wersji szczere ogr
 | Akcja | Skrót |
 | --- | --- |
 | Odśwież aktywny panel | F2 lub Ctrl+R |
-| Pobierz z adresu URL | Cmd+Shift+D |
+| Pobierz z adresu URL | Cmd+Shift+U |
 
 ## Uwagi
 

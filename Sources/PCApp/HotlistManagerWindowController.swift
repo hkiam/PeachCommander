@@ -43,6 +43,7 @@ final class HotlistManagerWindowController: NSWindowController, NSTableViewDataS
         table.addTableColumn(pathCol)
         table.dataSource = self
         table.delegate = self
+        table.setAccessibilityLabel(String(localized: "Favorites"))
         table.usesAlternatingRowBackgroundColors = true
         table.allowsEmptySelection = true
 

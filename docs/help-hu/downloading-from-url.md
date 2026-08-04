@@ -11,7 +11,7 @@ A Peach Commander egy fájlt közvetlenül egy HTTP- vagy HTTPS-webcímről tud 
 ## Fájl letöltése
 
 1. Nyissa meg a panel mappáját, ahová a fájlt szeretné.
-2. Válassza a **Hálózat > Letöltés URL-ről** lehetőséget, vagy nyomja meg a Cmd+Shift+D-t.
+2. Válassza a **Hálózat > Letöltés URL-ről** lehetőséget, vagy nyomja meg a Cmd+Shift+U-t.
 3. Illessze be a webcímet az **URL(-ek)** mezőbe. Ha előbb másolt egy hivatkozást, kitöltődik önnek.
 4. Ellenőrizze a **Mentés másként** nevet — a hivatkozásból javasolt, és szabadon szerkesztheti.
 5. Kattintson a **Letöltés**-re.
@@ -33,7 +33,7 @@ Ha egy átvitel megszakad, a Peach Commander megtartja, amit már fogadott, egy 
 
 | Művelet | Billentyűparancs |
 | --- | --- |
-| Letöltés URL-ről | Cmd+Shift+D |
+| Letöltés URL-ről | Cmd+Shift+U |
 
 ## Tippek
 
@@ -42,4 +42,4 @@ Ha egy átvitel megszakad, a Peach Commander megtartja, amit már fogadott, egy 
 - **Egyéni fejlécek.** Adjon hozzá egy fejlécet soronként a **Fejlécek** mezőbe, például `Referer: …` vagy `Cookie: …`, olyan hivatkozásokhoz, amelyek csak bizonyos kérésfejlécekkel működnek.
 - **Proxy.** Irányítsa a letöltést egy HTTP- vagy SOCKS5-proxyn keresztül a **Proxy** gazdagép, port és típus kitöltésével.
 - **Nem megbízható tanúsítványok.** Csak egy megbízható, önaláírt tanúsítványt használó oldalhoz kapcsolja be a **Nem megbízható tanúsítvány engedélyezése** lehetőséget; ez kikapcsolja a normál HTTPS-biztonsági ellenőrzést az adott letöltéshez.
-- **Megjegyzés:** A Cmd+Shift+D máshol is használatos az Asztal mappához ugráshoz; ha a billentyűparancs nem nyitja meg ezt a párbeszédet, használja helyette a **Hálózat > Letöltés URL-ről** lehetőséget a menüből.
+- **Megjegyzés:** a gyorsbillentyű korábban Cmd+Shift+D volt, amelyet az Ugrás ▸ Asztal is használ — a kettő közül az egyik tehát soha nem működött. A letöltés átkerült a Cmd+Shift+U-ra (U mint URL), az Asztal pedig megtartja a Cmd+Shift+D-t, ahogy a Finderben is.

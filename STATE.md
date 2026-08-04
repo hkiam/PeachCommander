@@ -8,13 +8,42 @@
 | Field | Value |
 |---|---|
 | Phase | **A & B done. C: I14 done; I15 plain FTP LIVE (quick-connect + connection manager, verified vs test.rebex.net; SFTP + explicit-FTPS still pending); I16 lister/content plugins mostly done. D: I17 utilities mostly done; I18 macOS integration MOSTLY DONE (Quick Look Cmd+Y, Share sheet, Open With, Finder Tags: color column + tag-filter (tag:red/#blau), Spotlight metadata in Get Info, Services menu integration, "Open Terminal Here", Full Disk Access onboarding, Go▸Trash, xattr inspector/remove in Change Attributes, privileged "retry as administrator" for chmod+delete done; ACL editing/copy-move-elevation/undo pending). Also F-063 Ctrl+Left/Right open cursor folder in other panel done.; I19 partial (perf targets validated); I20 shipping GROUNDWORK done (DMG script + release CI workflow + hardened-runtime entitlements + RELEASE.md + CHANGELOG + local crash reporting; only Developer-ID signing/notarization and Sparkle auto-update remain — both need Apple creds / update-feed hosting).** |
-| Current iteration | Docs/i18n complete. **I19 localization + help DONE (19 languages)**; **documentation system live** (SSOT → Apple Help Book + MkDocs site + generated FEATURES/README). Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update (both need Apple creds / feed hosting); accessibility (I19 T06) still open. |
+| Current iteration | **I19 T06 accessibility + keyboard operation DONE** (see the log below). Docs/i18n complete. **I19 localization + help DONE (19 languages)**; **documentation system live** (SSOT → Apple Help Book + MkDocs site + generated FEATURES/README). Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update (both need Apple creds / feed hosting); accessibility (I19 T06) **done**. |
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. |
 | Parity inventory | Reconciled against code 2026-07-23 (4-agent audit): **59 done · 70 partial · 43 todo · 7 n/a-macos · 2 post-1.0** (was 33/40/98). See docs/product/feature-inventory.md. |
 | Last updated | 2026-08-04 |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1105 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1105 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
+
+## 2026-08-04 — Accessibility & keyboard operation (I19 T06) · ZIP64
+
+**Keyboard operation (F-363) — DONE, and it was broken.** `autorecalculatesKeyViewLoop`
+is false for every window created in code, i.e. all of them, so AppKit never linked the
+controls: **Settings** reached the page list and nothing else (every checkbox, Close —
+unreachable, loop not even closed), **Find Files** could be filled in but Start, View,
+Close and the results table were unreachable, the editor's filter prompt reached only
+Cancel and Run. `KeyboardLoop.install()` sets the flag for every window centrally;
+`KeyboardLoop.rebuild(for:)` covers view *swaps*, which AppKit does not notice — a
+Settings page, and a panel's view mode, where switching modes left sixteen controls
+unreachable. Eight windows are now gates in `Tools/vm/regress.py` (`keys-*`): loop
+closed, nothing unreachable, nothing interactive unlabelled. The modal dialog needed a
+Timer in the modal run-loop modes, because `runModal` never returns to the script.
+
+**Accessibility labels — DONE.** Missing on: both file lists, the icon grid, the folder
+tree and its outline, the editor's text view, the viewer's text and XML tree, the search
+results, the search options tab group, the Settings page list, the Favorites list, the
+preview-mode switcher, and icon-only button-bar buttons (which have a tooltip and said
+nothing). 10 new UI strings in 19 languages.
+
+**Hotkeys (Tools/check-hotkeys.py) — NEW GATE, 13 findings fixed.** It reads a dump of
+the *running* menu bar plus both schemes: ⇧⌘D was on two menu items (Download from URL
+and Go ▸ Desktop — one never fired; download moved to ⇧⌘U), ⌘, was on two, and macOS
+injects AutoFill/Dictation/Emoji into any menu titled "Edit" on *each* install of the
+cached bar — they had piled up to three copies, one of which AppKit gave the bare letter
+**E** as a shortcut. Ctrl+F1…F8 is Full Keyboard Access: the macOS scheme now uses
+Cmd+1/2/3 and Alt+Cmd+1…4, TC Classic keeps the original row by decision. 14 accepted
+exceptions, each with its reason.
 
 ## 2026-08-04 — Editor for power users · startup appearance · panels notice outside changes
 

@@ -12,6 +12,12 @@ import AppKit
 import PCFoundation
 
 final class IconGridView: NSView, NSDraggingSource {
+    /// What a screen reader announces. The panel's list is this view in Icons and Thumbnails mode, and
+    /// like the table it said nothing at all (I19 T06). The owner sets which side it is.
+    override func accessibilityLabel() -> String? {
+        super.accessibilityLabel() ?? String(localized: "File list")
+    }
+
     struct Item {
         let name: String
         let icon: NSImage

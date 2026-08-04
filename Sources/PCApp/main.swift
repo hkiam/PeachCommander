@@ -9,6 +9,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let crashReports = CrashReportCollector()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Before any window exists: every window this app shows is built in code, and AppKit does not
+        // maintain a key-view loop for those unless asked (I19 T06).
+        KeyboardLoop.install()
         let controller = MainWindowController()
         mainWindow = controller
         // Build the content (and set the window frame) BEFORE showing the window.

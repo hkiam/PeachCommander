@@ -19,10 +19,6 @@ Peach Commander doet veel, maar een paar functies hebben in de huidige versie ee
 - **Bestandsattributen wijzigen via SFTP heeft in deze versie geen effect.** Je kunt bladeren, downloaden en uploaden via SFTP/SCP, maar verzoeken om rechten, eigendom of tijdstempels op een externe server te wijzigen worden stilzwijgend genegeerd. Maak die wijzigingen op de server zelf, of via een ander protocol.
 - Bij de eerste verbinding met een SFTP-server wordt gevraagd de hostsleutel te vertrouwen. Peach Commander onthoudt die daarna (vertrouwen bij eerste gebruik).
 
-## Downloaden van een URL
-
-- De opdracht **Downloaden van URL** (Netwerk-menu) gebruikt momenteel de sneltoets Cmd+Shift+D, dezelfde sneltoets als Ga > Bureaublad. Als beide beschikbaar zijn, kunnen de menu's botsen — start de download rechtstreeks vanuit het Netwerk-menu om zeker te zijn.
-
 ## Map verversen
 
 - **Alleen mappen op deze Mac worden op wijzigingen van buiten gecontroleerd.** Een map op deze Mac werkt zichzelf bij zodra een ander programma er een bestand aanmaakt, wijzigt of verwijdert. Een externe locatie (FTP of SFTP) en de binnenkant van een archief worden niet gecontroleerd, omdat die protocollen geen manier bieden om bericht te krijgen — druk daar op F2 of Ctrl+R om opnieuw te lezen.
@@ -37,7 +33,7 @@ Peach Commander doet veel, maar een paar functies hebben in de huidige versie ee
 | Actie | Sneltoets |
 | --- | --- |
 | Actief paneel verversen | F2 of Ctrl+R |
-| Downloaden van URL | Cmd+Shift+D |
+| Downloaden van URL | Cmd+Shift+U |
 
 ## Opmerkingen
 

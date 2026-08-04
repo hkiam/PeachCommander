@@ -11,7 +11,7 @@ Peach Commander puede obtener un archivo directamente desde una dirección web H
 ## Descargar un archivo
 
 1. Abra la carpeta del panel donde quiera que aterrice el archivo.
-2. Elija **Red > Descargar desde URL**, o pulse Cmd+Shift+D.
+2. Elija **Red > Descargar desde URL**, o pulse Cmd+Shift+U.
 3. Pegue la dirección web en el cuadro **URL**. Si copió un enlace antes, se rellena automáticamente.
 4. Compruebe el nombre en **Guardar como**: se sugiere a partir del enlace y puede editarlo libremente.
 5. Haga clic en **Descargar**.
@@ -33,7 +33,7 @@ Si una transferencia se corta, Peach Commander conserva lo que ya ha recibido en
 
 | Acción | Atajo |
 | --- | --- |
-| Descargar desde URL | Cmd+Shift+D |
+| Descargar desde URL | Cmd+Shift+U |
 
 ## Consejos
 
@@ -42,4 +42,4 @@ Si una transferencia se corta, Peach Commander conserva lo que ya ha recibido en
 - **Cabeceras personalizadas.** Añada una cabecera por línea en el cuadro **Cabeceras**, por ejemplo `Referer: …` o `Cookie: …`, para los enlaces que solo funcionan con cabeceras de solicitud específicas.
 - **Proxy.** Enrute la descarga a través de un proxy HTTP o SOCKS5 rellenando el host, el puerto y el tipo en **Proxy**.
 - **Certificados no fiables.** Active **Permitir certificado no fiable** únicamente para un sitio de su confianza que use un certificado autofirmado; desactiva la comprobación de seguridad HTTPS habitual para esa descarga.
-- **Nota:** Cmd+Shift+D también se usa en otro lugar para ir a la carpeta Escritorio; si el atajo no abre este cuadro de diálogo, use en su lugar **Red > Descargar desde URL** desde el menú.
+- **Nota:** el atajo era Cmd+Mayús+D, que también usa Ir ▸ Escritorio, así que uno de los dos nunca se activaba. La descarga pasó a Cmd+Mayús+U (U de URL) y Escritorio conserva Cmd+Mayús+D, como en el Finder.

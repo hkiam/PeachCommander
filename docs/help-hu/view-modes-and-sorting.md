@@ -52,4 +52,5 @@ A mappák mindig együtt rendeződnek felül, a fájlok előtt, és a `..` bejeg
 
 - A természetes (numerikus) rendezés alapértelmezetten be van kapcsolva, így a `file2` a `file10` előtt van, nem utána. Kikapcsolhatja a Konfiguráció > Beállítások alatt a nézetbeállításokban.
 - Egy oszlopot szélesebbé vagy keskenyebbé tehet a Részletek nézetben az oszlopfejlécek közötti elválasztó vonal húzásával.
+- Ha a macOS billentyűzet-navigációját használja (Rendszerbeállítások ▸ Billentyűzet), a Ctrl+F1–Ctrl+F8 sor a rendszeré — menüsor, Dock, eszköztár —, és soha nem ér el a Peach Commanderig. Állítsa a billentyűsémát **macOS**-re a beállításokban: a megjelenítési módok ekkor a Cmd+1, Cmd+2 és Cmd+3, a rendezés pedig az Alt+Cmd+1–Alt+Cmd+4 kombinációkon van.
 - A nézetmód, a rendezési sorrend és az oszlopválasztás panelenként megjegyződik, így egyik oldalt részletes listaként, a másikat fotógalériaként tarthatja.

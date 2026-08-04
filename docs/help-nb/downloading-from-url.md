@@ -11,7 +11,7 @@ Peach Commander kan hente en fil rett fra en HTTP- eller HTTPS-webadresse inn i 
 ## Last ned en fil
 
 1. Åpne panelmappen der du vil at filen skal lande.
-2. Velg **Nettverk > Last ned fra URL**, eller trykk Cmd+Shift+D.
+2. Velg **Nettverk > Last ned fra URL**, eller trykk Cmd+Shift+U.
 3. Lim inn webadressen i **URL(er)**-boksen. Hvis du kopierte en lenke først, fylles den inn for deg.
 4. Sjekk **Lagre som**-navnet – det foreslås fra lenken, og du kan endre det fritt.
 5. Klikk **Last ned**.
@@ -33,7 +33,7 @@ Hvis en overføring blir kuttet av, beholder Peach Commander det den allerede ha
 
 | Handling | Snarvei |
 | --- | --- |
-| Last ned fra URL | Cmd+Shift+D |
+| Last ned fra URL | Cmd+Shift+U |
 
 ## Tips
 
@@ -42,4 +42,4 @@ Hvis en overføring blir kuttet av, beholder Peach Commander det den allerede ha
 - **Egendefinerte hoder.** Legg til ett hode per linje i **Hoder**-boksen, for eksempel `Referer: …` eller `Cookie: …`, for lenker som bare virker med bestemte forespørselshoder.
 - **Proxy.** Rut nedlastingen gjennom en HTTP- eller SOCKS5-proxy ved å fylle inn **Proxy**-verten, porten og typen.
 - **Uklarerte sertifikater.** Slå bare på **Tillat uklarert sertifikat** for et nettsted du stoler på som bruker et selvsignert sertifikat; det slår av den vanlige HTTPS-sikkerhetssjekken for den nedlastingen.
-- **Merk:** Cmd+Shift+D brukes også andre steder for å gå til Skrivebord-mappen; hvis snarveien ikke åpner denne dialogen, bruk **Nettverk > Last ned fra URL** fra menyen i stedet.
+- **Merk:** snarveien var Cmd+Skift+D, som Gå ▸ Skrivebord også bruker — én av de to utløste altså aldri. Nedlasting ligger nå på Cmd+Skift+U (U for URL), og Skrivebord beholder Cmd+Skift+D som i Finder.

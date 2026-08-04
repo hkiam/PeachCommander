@@ -52,4 +52,5 @@ Foldery zawsze sortują się razem na górze, przed plikami, a wpis `..`, który
 
 - Sortowanie naturalne (numeryczne) jest domyślnie włączone, więc `file2` znajduje się przed `file10`, a nie po nim. Możesz je wyłączyć w Konfiguracja > Opcje w ustawieniach wyświetlania.
 - W widoku Szczegóły możesz poszerzyć lub zwęzić kolumnę, przeciągając dzielnik między nagłówkami kolumn.
+- Jeśli używasz nawigacji klawiaturowej macOS (Ustawienia systemowe ▸ Klawiatura), rząd od Ctrl+F1 do Ctrl+F8 należy do systemu — pasek menu, Dock, pasek narzędzi — i nigdy nie dotrze do Peach Commandera. Przełącz schemat klawiszy na **macOS** w ustawieniach: tryby widoku są wtedy na Cmd+1, Cmd+2 i Cmd+3, a sortowanie na Alt+Cmd+1 do Alt+Cmd+4.
 - Tryb widoku, porządek sortowania i wybór kolumn są zapamiętywane osobno dla każdego panelu, więc możesz jedną stronę zachować jako szczegółową listę, a drugą jako galerię zdjęć.

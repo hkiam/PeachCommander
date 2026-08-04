@@ -88,6 +88,21 @@ extension MainWindowController {
             case "view":       openViewer(arg)
             case "menudump":   dumpMenu(arg)
             case "a11ydump":   dumpAccessibility(arg)   // a11ydump <outfile> (I19 T06)
+            case "keyloop":    dumpKeyLoop(arg)         // keyloop <outfile> (I19 T06)
+            case "keyloopmodal":                        // keyloopmodal <outfile> (I19 T06)
+                // Call *before* opening a modal dialog: `runModal` does not return until the dialog is
+                // dismissed, so a `keyloop` line after it never runs. Scheduling in the modal run-loop
+                // modes is how the rest of this codebase reaches into a modal session.
+                // A delay, and a Timer rather than a queue block: performing immediately dumped the
+                // *main* window because the dialog had not opened yet — a false pass, caught only by
+                // reading the report. The timer is added to the modal modes so it fires while the
+                // dialog is up.
+                let target = arg
+                let timer = Timer(timeInterval: 1.2, repeats: false) { [weak self] _ in
+                    self?.dumpKeyLoop(target)
+                }
+                RunLoop.main.add(timer, forMode: .modalPanel)
+                RunLoop.main.add(timer, forMode: .default)
             case "overwritedlg": showOverwriteDialogForShot()   // screenshot the conflict dialog (F-086)
             case "hotlistmanage": showHotlistManager()   // open the hotlist manager (F-061)
             case "typecolors":                             // open the file-type colour editor (F-032)
@@ -315,12 +330,179 @@ extension MainWindowController {
             guard let sub = top.submenu else { continue }
             lines.append("# \(sub.title)")
             for it in sub.items {
-                if it.isSeparatorItem { lines.append("  ----") }
-                else { lines.append("  \(it.title)\((it.representedObject as? String).map { "  [\($0)]" } ?? "")") }
+                if it.isSeparatorItem { lines.append("  ----"); continue }
+                // The key equivalent belongs in the dump: a shortcut audit that reads the source
+                // instead of the built menu is auditing what was meant, not what is bound (I19 T06).
+                let key = it.keyEquivalent.isEmpty ? "" : "  key=" + Self.describe(
+                    key: it.keyEquivalent, mask: it.keyEquivalentModifierMask)
+                let cmd = (it.representedObject as? String).map { "  [\($0)]" } ?? ""
+                lines.append("  \(it.title)\(cmd)\(key)\(it.isEnabled ? "" : "  disabled")")
             }
         }
         try? (lines.joined(separator: "\n") + "\n").write(toFile: file, atomically: true, encoding: .utf8)
         NSLog("[automation] menudump → \(file)")
+    }
+
+    /// A shortcut in the scheme files' notation (C=Ctrl A=Alt S=Shift W=Cmd), so the menu dump and the
+    /// keymap can be compared without a translation table in the middle.
+    static func describe(key: String, mask: NSEvent.ModifierFlags) -> String {
+        var parts: [String] = []
+        if mask.contains(.control) { parts.append("C") }
+        if mask.contains(.option) { parts.append("A") }
+        if mask.contains(.shift) { parts.append("S") }
+        if mask.contains(.command) { parts.append("W") }
+        // An uppercase letter as a key equivalent means Shift, whether or not the mask says so.
+        var token = key
+        if token.count == 1, let ch = token.first, ch.isUppercase {
+            if !parts.contains("S") { parts.append("S") }
+            token = token.lowercased()
+        }
+        let named: [String: String] = ["\u{1b}": "ESC", "\r": "RETURN", "\t": "TAB",
+                                      "\u{8}": "BACKSPACE", "\u{7f}": "DELETE", " ": "SPACE",
+                                      "\u{f700}": "UP", "\u{f701}": "DOWN", "\u{f702}": "LEFT",
+                                      "\u{f703}": "RIGHT", "\u{f704}": "F1", "\u{f705}": "F2",
+                                      "\u{f706}": "F3", "\u{f707}": "F4", "\u{f708}": "F5",
+                                      "\u{f709}": "F6", "\u{f70a}": "F7", "\u{f70b}": "F8",
+                                      "\u{f70c}": "F9", "\u{f70d}": "F10", "\u{f70e}": "F11",
+                                      "\u{f70f}": "F12"]
+        return (parts + [named[token] ?? token.uppercased()]).joined(separator: "+")
+    }
+
+    /// Write what pressing Tab reaches in the key window, and what it cannot (I19 T06).
+    ///
+    /// A dialog can be perfectly labelled for a screen reader and still be unusable without a mouse: an
+    /// element that is not in the key-view loop is never focused, so its label is never read either.
+    /// Only the loop the running window actually has can answer that, which is why this is asked of the
+    /// app rather than reasoned about from the layout code.
+    private func dumpKeyLoop(_ file: String) {
+        // A modal window is the only one the user can touch while it is up, so it is the one to report.
+        guard let window = NSApp.modalWindow ?? NSApp.keyWindow
+                ?? NSApp.windows.first(where: { $0.isVisible }) else {
+            NSLog("[automation] keyloop: no visible window")
+            return
+        }
+        // Which control has focus right now, resolved through the field editor. A text field that is
+        // being edited hands first-responder status to a shared NSTextView and *itself* then reports
+        // `acceptsFirstResponder == false` — so without this the focused field looks like a control that
+        // refuses focus, and its field editor looks like an unreachable stray view. Both readings are
+        // wrong, and the first version of this dump made exactly that mistake.
+        let fieldEditor = (window.firstResponder as? NSTextView).flatMap { $0.isFieldEditor ? $0 : nil }
+        let editing = fieldEditor?.delegate as? NSView
+        var lines = ["window: \(window.title)",
+                     "fullKeyboardAccess: \(NSApp.isFullKeyboardAccessEnabled)",
+                     "focused: " + (editing.map { Self.describe($0) + " (editing)" }
+                                    ?? (window.firstResponder as? NSView).map(Self.describe)
+                                    ?? String(describing: type(of: window.firstResponder as Any))),
+                     // The suspected cause of a loop that reaches nothing: for a window built in code
+                     // this is false, so AppKit never links the controls and only accidents are reachable.
+                     "autorecalculatesKeyViewLoop: \(window.autorecalculatesKeyViewLoop)",
+                     "initialFirstResponder: \(window.initialFirstResponder.map { String(describing: type(of: $0)) } ?? "nil")"]
+
+        // Every view that says it can take focus, in tree order — plus, for the ones that say they
+        // cannot, why. "It is not in the loop" and "it refuses focus" are different defects with
+        // different fixes, and guessing which one it is has already cost time here.
+        var candidates: [NSView] = []
+        var refusers: [String] = []
+        func collect(_ view: NSView) {
+            if view.canBecomeKeyView {
+                candidates.append(view)
+            } else if view === editing {
+                // Focused, hence "refusing": it is being edited this very moment.
+                candidates.append(view)
+            } else if Self.isInteractive(view) {
+                let control = view as? NSControl
+                refusers.append("\(Self.describe(view)) "
+                    + "accepts=\(view.acceptsFirstResponder) hidden=\(view.isHidden) "
+                    + "enabled=\(control?.isEnabled ?? true) "
+                    + "refuses=\(control?.refusesFirstResponder ?? false)")
+            }
+            view.subviews.forEach(collect)
+        }
+        if let content = window.contentView { collect(content) }
+        lines.append("focusRefused: \(refusers.count)")
+        for entry in refusers { lines.append("  REFUSES: \(entry)") }
+
+        // The loop as AppKit would walk it.
+        var visited: [NSView] = []
+        var cursor = (window.initialFirstResponder ?? (window.firstResponder as? NSView))
+            ?? candidates.first
+        var guardCount = 0
+        while let view = cursor, guardCount < 200 {
+            if visited.contains(where: { $0 === view }) { break }
+            visited.append(view)
+            lines.append("  tab[\(visited.count)]: \(Self.describe(view))")
+            cursor = view.nextValidKeyView
+            guardCount += 1
+        }
+        lines.append("loopClosed: \(cursor != nil)")
+
+        // A composite control is reached through its owner: focus lands on the NSTabView and the arrow
+        // keys drive the segmented control AppKit builds inside it, so counting that segmented control as
+        // unreachable is a false alarm — and a report with false alarms in it gets ignored. Only an
+        // ancestor that is itself a control counts, or the content view would make everything "reachable".
+        func reachable(_ candidate: NSView) -> Bool {
+            if visited.contains(where: { $0 === candidate }) { return true }
+            var parent = candidate.superview
+            while let view = parent {
+                if view is NSControl || view is NSTabView, visited.contains(where: { $0 === view }) {
+                    return true
+                }
+                parent = view.superview
+            }
+            return false
+        }
+        var missed = candidates.filter { !reachable($0) }
+        if let editing, !visited.contains(where: { $0 === editing }) {
+            // A control that holds focus is reachable by definition — Tab simply starts from it.
+            missed.removeAll { $0 === editing }
+        }
+        missed.removeAll { $0 === fieldEditor }
+        lines.append("unreachable: \(missed.count)")
+        for view in missed { lines.append("  MISSED: \(Self.describe(view))") }
+        // A focusable control with nothing to announce is the other half of the same problem. Scaffolding
+        // — a container, a clip view, a scroller — legitimately has none, so only interactive views count.
+        let unlabelled = visited.filter {
+            Self.isInteractive($0) && ($0.accessibilityLabel() ?? "").isEmpty && Self.title(of: $0).isEmpty
+        }
+        lines.append("unlabelled: \(unlabelled.count)")
+        for view in unlabelled { lines.append("  UNLABELLED: \(String(describing: type(of: view)))") }
+
+        try? (lines.joined(separator: "\n") + "\n").write(toFile: file, atomically: true, encoding: .utf8)
+        NSLog("[automation] keyloop → \(file) (\(visited.count) stops, \(missed.count) unreachable)")
+    }
+
+    /// Whether a screen reader would treat this view as something to operate.
+    ///
+    /// A static label is an `NSTextField` that is neither editable nor selectable — it is not a control
+    /// that refuses focus, it is a caption, and reporting it as a defect only trains people to ignore
+    /// the report.
+    private static func isInteractive(_ view: NSView) -> Bool {
+        // Scrollers are operated by role and value, not by a name; AppKit's own do not carry labels and
+        // do not need any.
+        if view is NSScroller { return false }
+        if let field = view as? NSTextField { return field.isEditable || field.isSelectable }
+        if view is NSTextView { return true }
+        if view is NSTableView { return true }
+        return view is NSControl
+    }
+
+    /// A control's own words: its title, its placeholder, or the label it exposes.
+    private static func title(of view: NSView) -> String {
+        if let button = view as? NSButton, !button.title.isEmpty { return button.title }
+        if let field = view as? NSTextField {
+            if !field.stringValue.isEmpty { return field.stringValue }
+            if let placeholder = field.placeholderString, !placeholder.isEmpty { return placeholder }
+        }
+        if let popup = view as? NSPopUpButton { return popup.titleOfSelectedItem ?? "" }
+        return ""
+    }
+
+    private static func describe(_ view: NSView) -> String {
+        let kind = String(describing: type(of: view))
+        let label = view.accessibilityLabel() ?? ""
+        let own = title(of: view)
+        let words = [label, own].filter { !$0.isEmpty }.joined(separator: " / ")
+        return words.isEmpty ? kind : "\(kind) | \(words)"
     }
 
     /// Walk the key window's accessibility tree and write what a screen reader would find.
