@@ -56,4 +56,4 @@ Datoteke lahko dodate ali odstranite znotraj obstoječega ZIP brez razširjanja.
 - Pakiranje v 7z, xz, bzip2 in RAR se opira na zunanja orodja. RAR zlasti zahteva namestitev lastniškega programa RAR; brez njega ta oblika ni na voljo.
 - Urejanje ZIP na mestu prepiše celoten arhiv, tako da datumi spremembe datotek v njem niso ohranjeni.
 - Zelo veliki posamezni elementi so pri izvlečku omejeni na 512 MiB. Izvleček je mogoče preklicati med izvajanjem.
-- Izjemno veliki arhivi (ZIP64) niso podprti.
+- Arhivi ZIP64 se odprejo kot vsi drugi, zato je arhiv z več kot 65.535 elementi ali večji od 4 GB mogoče normalno pregledovati; zgornja omejitev na posamezno razpakirano datoteko še vedno velja.

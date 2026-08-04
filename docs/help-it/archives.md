@@ -56,4 +56,4 @@ Potete aggiungere o rimuovere file all'interno di uno ZIP esistente senza estrar
 - La compressione in 7z, xz, bzip2 e RAR si basa su strumenti esterni. RAR in particolare richiede l'installazione del programma proprietario RAR; senza di esso, quel formato non è disponibile.
 - Modificare uno ZIP sul posto riscrive l'intero archivio, quindi le date di modifica dei file al suo interno non vengono conservate.
 - I singoli elementi molto grandi sono limitati a 512 MiB durante l'estrazione. L'estrazione può essere annullata mentre è in corso.
-- Gli archivi estremamente grandi (ZIP64) non sono supportati.
+- Gli archivi ZIP64 si aprono come qualsiasi altro, quindi un archivio con più di 65.535 elementi o più grande di 4 GB si sfoglia normalmente; il limite per singolo elemento estratto indicato sopra resta valido.

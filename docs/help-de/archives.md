@@ -56,4 +56,4 @@ Sie können Dateien in einem bestehenden ZIP hinzufügen oder entfernen, ohne es
 - Das Packen nach 7z, xz, bzip2 und RAR ist auf externe Werkzeuge angewiesen. Insbesondere RAR erfordert die Installation des proprietären RAR-Programms; ohne dieses ist das Format nicht verfügbar.
 - Das direkte Bearbeiten eines ZIP schreibt das gesamte Archiv neu, sodass die Änderungszeitstempel der darin enthaltenen Dateien nicht erhalten bleiben.
 - Sehr große Einzelmitglieder werden beim Entpacken auf 512 MiB begrenzt. Das Entpacken kann während der Ausführung abgebrochen werden.
-- Extrem große (ZIP64-)Archive werden nicht unterstützt.
+- ZIP64-Archive öffnen sich wie jedes andere, ein Archiv mit mehr als 65.535 Einträgen oder über 4 GB lässt sich also normal durchsehen; die obige Grenze pro entpackter Datei gilt weiterhin.

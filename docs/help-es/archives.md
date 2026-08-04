@@ -56,4 +56,4 @@ Puede añadir o eliminar archivos dentro de un ZIP existente sin descomprimirlo.
 - Comprimir a 7z, xz, bzip2 y RAR depende de herramientas externas. RAR, en particular, requiere que el programa propietario RAR esté instalado; sin él, ese formato no está disponible.
 - Editar un ZIP sobre la marcha reescribe todo el archivo comprimido, por lo que las marcas de tiempo de modificación de los archivos que contiene no se conservan.
 - Los miembros individuales muy grandes están limitados a 512 MiB al extraer. La extracción puede cancelarse mientras se ejecuta.
-- Los archivos comprimidos extremadamente grandes (ZIP64) no son compatibles.
+- Los archivos ZIP64 se abren como cualquier otro, así que un archivo con más de 65 535 elementos o de más de 4 GB se examina con normalidad; el límite por elemento extraído indicado arriba sigue vigente.

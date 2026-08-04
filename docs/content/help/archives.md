@@ -56,4 +56,4 @@ You can add or remove files inside an existing ZIP without unpacking it. Open th
 - Packing to 7z, xz, bzip2, and RAR relies on external tools. RAR in particular requires the proprietary RAR program to be installed; without it, that format is unavailable.
 - Editing a ZIP in place rewrites the whole archive, so file modification timestamps inside it are not preserved.
 - Very large individual members are capped at 512 MiB when extracting. Extraction can be cancelled while it runs.
-- Extremely large (ZIP64) archives are not supported.
+- ZIP64 archives open like any other, so an archive with more than 65,535 items or larger than 4 GB browses normally; the per-member extraction limit above still applies.

@@ -7,9 +7,20 @@
 // with `COMPRESSION_ZLIB`, which despite the name implements raw DEFLATE,
 // i.e. RFC 1951 with no zlib/gzip header or trailer).
 //
-// ZIP64 is intentionally out of scope for this MVP: sizes, counts, and
-// offsets are read as plain 32-bit fields per the classic End Of Central
-// Directory / central-directory-header / local-file-header layout.
+// ZIP64 (F-362) is read: the classic records keep sizes, counts and offsets in 32-bit
+// fields, and an archive that outgrows them stores 0xFFFF / 0xFFFFFFFF sentinels there
+// and the real values in the ZIP64 End Of Central Directory record and in a per-entry
+// extra field (header id 0x0001). Both are parsed here.
+//
+// Reading only the classic fields did not fail cleanly, which is the reason this was
+// worth doing: an archive whose *entries* exceed 4 GB parses without complaint and shows
+// every one of them as 4294967295 bytes, while extraction jumps to offset 0xFFFFFFFF and
+// reports a bad local header. Only the two cases that break parsing outright — more than
+// 65535 entries, or a central directory past 4 GB — used to fall through to the bsdtar
+// source by accident.
+//
+// The file is memory-mapped rather than read: ZIP64 exists for archives that do not fit
+// in memory, so slurping one into a Data would have made support for it meaningless.
 
 import Compression
 import Foundation
@@ -42,7 +53,9 @@ public struct ZipEntry: Sendable {
     public let modified: Date?
 
     /// Byte offset of this entry's local file header, used by `ZipReader.data(for:)`.
-    let localHeaderOffset: UInt32
+    /// 64-bit: in a ZIP64 archive the classic field holds a sentinel and the real offset
+    /// comes from the entry's ZIP64 extra field.
+    let localHeaderOffset: UInt64
     /// Compression method from the central directory (0 = store, 8 = deflate,
     /// 99 = WinZip AES with the real method in an extra field).
     let compressionMethod: UInt16
@@ -57,7 +70,7 @@ public struct ZipEntry: Sendable {
         compressedSize: Int64,
         isDirectory: Bool,
         modified: Date?,
-        localHeaderOffset: UInt32,
+        localHeaderOffset: UInt64,
         compressionMethod: UInt16,
         crc32: UInt32 = 0,
         isEncrypted: Bool = false
@@ -89,13 +102,19 @@ extension ZipEntry: Equatable {
 
 /// Parses a zip's central directory and extracts individual entries.
 ///
-/// This is read-only and MVP-scoped: no ZIP64, no encryption, no multi-disk
-/// archives, and filenames are decoded as UTF-8 (falling back to Latin-1)
-/// rather than full IBM437/CP437 handling.
+/// Read-only: ZIP64 and both encryption schemes are handled, multi-disk archives are not,
+/// and filenames are decoded as UTF-8 (falling back to Latin-1) rather than full
+/// IBM437/CP437 handling.
 public final class ZipReader {
     private static let eocdSignature: UInt32 = 0x0605_4b50
     private static let centralDirSignature: UInt32 = 0x0201_4b50
     private static let localHeaderSignature: UInt32 = 0x0403_4b50
+    private static let zip64EOCDSignature: UInt32 = 0x0606_4b50
+    private static let zip64LocatorSignature: UInt32 = 0x0706_4b50
+    /// The value a 32-bit field carries when the real one lives in a ZIP64 record.
+    private static let sentinel32: UInt32 = 0xFFFF_FFFF
+    /// Same, for the 16-bit entry counts.
+    private static let sentinel16: UInt16 = 0xFFFF
 
     private let fileData: Data
 
@@ -106,7 +125,9 @@ public final class ZipReader {
     /// read, or is not a well-formed zip (no End Of Central Directory record,
     /// or a malformed central directory).
     public init?(fileURL: URL) {
-        guard let data = try? Data(contentsOf: fileURL) else { return nil }
+        // Mapped, not read: a ZIP64 archive can be larger than memory, and the parser only
+        // touches the central directory plus the entries actually extracted.
+        guard let data = try? Data(contentsOf: fileURL, options: [.mappedIfSafe]) else { return nil }
         guard let eocdOffset = Self.findEOCD(in: data) else { return nil }
         guard let parsed = try? Self.parseCentralDirectory(data, eocdOffset: eocdOffset) else { return nil }
         self.fileData = data
@@ -120,6 +141,10 @@ public final class ZipReader {
     public func data(for entry: ZipEntry, password: String? = nil) throws -> Data {
         guard !entry.isDirectory else { return Data() }
 
+        guard entry.localHeaderOffset <= UInt64(Int.max),
+              Int(entry.localHeaderOffset) < fileData.count else {
+            throw ZipError.malformed("local header offset outside the archive")
+        }
         var reader = ByteReader(data: fileData, at: Int(entry.localHeaderOffset))
         let signature = try reader.readUInt32LE()
         guard signature == Self.localHeaderSignature else {
@@ -262,6 +287,72 @@ public final class ZipReader {
         return nil
     }
 
+    /// The entry count and central-directory offset, from ZIP64 when the archive uses it.
+    ///
+    /// The locator sits in the twenty bytes immediately before the classic EOCD and points at
+    /// the ZIP64 EOCD record. Both are required to be there together; a locator without a
+    /// readable record is a malformed archive, not a classic one, so it is reported rather
+    /// than silently ignored — otherwise the sentinels would be used as real values.
+    private static func zip64Directory(_ data: Data, eocdOffset: Int) throws
+        -> (totalEntries: UInt64, centralDirOffset: UInt64)? {
+        let locatorSize = 20
+        guard eocdOffset >= locatorSize else { return nil }
+        var locator = ByteReader(data: data, at: eocdOffset - locatorSize)
+        guard try locator.readUInt32LE() == zip64LocatorSignature else { return nil }
+        try locator.skip(4)                      // disk with the ZIP64 EOCD record
+        let recordOffset = try locator.readUInt64LE()
+        guard recordOffset <= UInt64(Int.max), Int(recordOffset) < data.count else {
+            throw ZipError.malformed("ZIP64 EOCD record outside the archive")
+        }
+        var record = ByteReader(data: data, at: Int(recordOffset))
+        guard try record.readUInt32LE() == zip64EOCDSignature else {
+            throw ZipError.malformed("bad ZIP64 EOCD signature")
+        }
+        try record.skip(8)                       // size of this record
+        try record.skip(2)                       // version made by
+        try record.skip(2)                       // version needed to extract
+        try record.skip(4)                       // number of this disk
+        try record.skip(4)                       // disk with the start of the central directory
+        try record.skip(8)                       // entries on this disk
+        let totalEntries = try record.readUInt64LE()
+        try record.skip(8)                       // size of the central directory
+        let centralDirOffset = try record.readUInt64LE()
+        return (totalEntries, centralDirOffset)
+    }
+
+    /// The real sizes and offset from an entry's ZIP64 extra field (header id 0x0001).
+    ///
+    /// The fields are a fixed sequence — uncompressed size, compressed size, local header
+    /// offset, disk number — and, per the specification, *only the ones whose classic field
+    /// holds a sentinel are present*. So which values to read cannot be decided from the
+    /// extra field alone; the classic values decide, which is why they are passed in.
+    private static func zip64Extra(_ extra: Data, uncompressed: UInt32, compressed: UInt32,
+                                  offset: UInt32, diskStart: UInt16) throws
+        -> (uncompressed: UInt64, compressed: UInt64, offset: UInt64)? {
+        var reader = ByteReader(data: extra, at: 0)
+        var remaining = extra.count
+        while remaining >= 4 {
+            let id = try reader.readUInt16LE()
+            let size = Int(try reader.readUInt16LE())
+            remaining -= 4
+            guard size <= remaining else { break }
+            guard id == 0x0001 else {
+                try reader.skip(size)
+                remaining -= size
+                continue
+            }
+            var field = ByteReader(data: try reader.readBytes(size), at: 0)
+            let realUncompressed = uncompressed == sentinel32 ? try field.readUInt64LE()
+                                                             : UInt64(uncompressed)
+            let realCompressed = compressed == sentinel32 ? try field.readUInt64LE()
+                                                          : UInt64(compressed)
+            let realOffset = offset == sentinel32 ? try field.readUInt64LE() : UInt64(offset)
+            if diskStart == sentinel16 { try? field.skip(4) }
+            return (realUncompressed, realCompressed, realOffset)
+        }
+        return nil
+    }
+
     private static func parseCentralDirectory(_ data: Data, eocdOffset: Int) throws -> [ZipEntry] {
         var eocd = ByteReader(data: data, at: eocdOffset)
         let signature = try eocd.readUInt32LE()
@@ -269,12 +360,24 @@ public final class ZipReader {
         try eocd.skip(2) // number of this disk
         try eocd.skip(2) // disk with the start of the central directory
         try eocd.skip(2) // entries on this disk
-        let totalEntries = try eocd.readUInt16LE()
+        let classicTotalEntries = try eocd.readUInt16LE()
         try eocd.skip(4) // size of central directory
-        let centralDirOffset = try eocd.readUInt32LE()
+        let classicCentralDirOffset = try eocd.readUInt32LE()
+
+        // ZIP64 wins when it is present: the classic fields then hold sentinels, and for an
+        // archive just under the limits both agree anyway.
+        let zip64 = try zip64Directory(data, eocdOffset: eocdOffset)
+        let totalEntries = zip64?.totalEntries ?? UInt64(classicTotalEntries)
+        let centralDirOffset = zip64?.centralDirOffset ?? UInt64(classicCentralDirOffset)
+        guard centralDirOffset <= UInt64(Int.max), Int(centralDirOffset) < data.count else {
+            throw ZipError.malformed("central directory outside the archive")
+        }
 
         var entries: [ZipEntry] = []
-        entries.reserveCapacity(Int(totalEntries))
+        // Reserved against what the file could possibly hold — a central-directory record is at
+        // least 46 bytes — because a corrupt ZIP64 count is a 64-bit number and reserving it
+        // verbatim would try to allocate the address space rather than fail on the first record.
+        entries.reserveCapacity(Int(min(totalEntries, UInt64(data.count / 46))))
         var reader = ByteReader(data: data, at: Int(centralDirOffset))
 
         for _ in 0..<totalEntries {
@@ -294,13 +397,23 @@ public final class ZipReader {
             let nameLength = try reader.readUInt16LE()
             let extraLength = try reader.readUInt16LE()
             let commentLength = try reader.readUInt16LE()
-            try reader.skip(2) // disk number start
+            let diskStart = try reader.readUInt16LE()
             try reader.skip(2) // internal file attributes
             try reader.skip(4) // external file attributes
             let localHeaderOffset = try reader.readUInt32LE()
             let nameData = try reader.readBytes(Int(nameLength))
-            try reader.skip(Int(extraLength))
+            let extra = try reader.readBytes(Int(extraLength))
             try reader.skip(Int(commentLength))
+
+            // A ZIP64 extra field replaces whichever classic fields hold a sentinel. Without this
+            // the entry parses cleanly and lies: 0xFFFFFFFF reads as a size of 4294967295 and as an
+            // offset that no local header sits at.
+            let real = try zip64Extra(extra, uncompressed: uncompressedSize,
+                                      compressed: compressedSize, offset: localHeaderOffset,
+                                      diskStart: diskStart)
+            let realUncompressed = real?.uncompressed ?? UInt64(uncompressedSize)
+            let realCompressed = real?.compressed ?? UInt64(compressedSize)
+            let realOffset = real?.offset ?? UInt64(localHeaderOffset)
 
             guard let rawName = String(data: nameData, encoding: .utf8)
                 ?? String(data: nameData, encoding: .isoLatin1) else {
@@ -310,11 +423,11 @@ public final class ZipReader {
 
             entries.append(ZipEntry(
                 path: path,
-                uncompressedSize: Int64(uncompressedSize),
-                compressedSize: Int64(compressedSize),
+                uncompressedSize: Int64(clamping: realUncompressed),
+                compressedSize: Int64(clamping: realCompressed),
                 isDirectory: path.hasSuffix("/"),
                 modified: dosDateTimeToDate(time: modTime, date: modDate),
-                localHeaderOffset: localHeaderOffset,
+                localHeaderOffset: realOffset,
                 compressionMethod: method,
                 crc32: crc,
                 isEncrypted: (gpFlag & 0x0001) != 0
@@ -418,6 +531,14 @@ private struct ByteReader {
         let b3 = UInt32(data[offset + 3])
         offset += 4
         return b0 | (b1 << 8) | (b2 << 16) | (b3 << 24)
+    }
+
+    mutating func readUInt64LE() throws -> UInt64 {
+        guard offset >= 0, offset + 8 <= data.count else { throw ZipError.malformed("truncated read") }
+        var value: UInt64 = 0
+        for i in (0..<8).reversed() { value = (value << 8) | UInt64(data[offset + i]) }
+        offset += 8
+        return value
     }
 
     mutating func readBytes(_ count: Int) throws -> Data {

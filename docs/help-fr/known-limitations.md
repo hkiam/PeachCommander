@@ -10,7 +10,7 @@ Peach Commander fait beaucoup, mais quelques fonctionnalités ont des limites ho
 
 ## Archives
 
-- **Les fichiers ZIP très volumineux (ZIP64) ne peuvent pas être ouverts par le lecteur intégré.** Les archives ZIP, TAR et TAR compressées en gzip standard s'ouvrent directement comme des dossiers. Les archives ZIP64 — utilisées quand une archive contient plus d'environ 65 000 éléments ou dépasse 4 Go — sortent de ce que gère le lecteur natif, elles peuvent donc échouer à s'ouvrir ou se lister de façon incomplète.
+- **Les archives scindées (en plusieurs parties) ne peuvent pas être ouvertes.** Le ZIP standard — y compris ZIP64, donc plus de 65 535 éléments ou plus de 4 Go — ainsi que TAR et TAR compressé en gzip s’ouvrent directement comme des dossiers. Une archive répartie sur plusieurs fichiers (`.z01`, `.zip.001`) n’est pas prise en charge : réunissez d’abord les parties, ou décompressez-la avec l’outil qui l’a créée.
 - **Les archives ZIP chiffrées** (l'ancien ZipCrypto comme WinZip AES) sont prises en charge pour la navigation, mais le mot de passe vous sera demandé.
 - D'autres formats tels que CPIO, ISO, CAB, LZH, XAR et PAX s'ouvrent via un outil auxiliaire plutôt que par le lecteur natif.
 

@@ -10,7 +10,7 @@ Peach Commander gör mycket, men ett fåtal funktioner har ärliga begränsninga
 
 ## Arkiv
 
-- **Mycket stora ZIP-filer (ZIP64) kan inte öppnas av den inbyggda läsaren.** Vanliga ZIP-, TAR- och gzip-komprimerade TAR-arkiv öppnas direkt som mappar. ZIP64-arkiv – som används när ett arkiv innehåller mer än cirka 65 000 objekt eller överskrider 4 GB – ligger utanför vad den inbyggda läsaren hanterar, så de kan misslyckas med att öppnas eller listas ofullständigt.
+- **Delade arkiv (i flera delar) kan inte öppnas.** Standard-ZIP — inklusive ZIP64, alltså fler än 65 535 objekt eller över 4 GB — samt TAR och gzip-komprimerad TAR öppnas direkt som mappar. Ett arkiv fördelat över flera filer (`.z01`, `.zip.001`) stöds inte: slå ihop delarna först, eller packa upp det med verktyget som skapade det.
 - **Krypterade ZIP-arkiv** (både äldre ZipCrypto och WinZip AES) stöds för bläddring, men du kommer att bli ombedd att ange lösenordet.
 - Andra format som CPIO, ISO, CAB, LZH, XAR och PAX öppnas via ett hjälpverktyg snarare än den inbyggda läsaren.
 

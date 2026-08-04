@@ -10,7 +10,7 @@ Peach Commander does a lot, but a few features have honest limits in the current
 
 ## Archives
 
-- **Very large ZIP files (ZIP64) can't be opened by the built-in reader.** Standard ZIP, TAR, and gzip-compressed TAR archives open directly as folders. ZIP64 archives — used when an archive holds more than about 65,000 items or exceeds 4 GB — are outside what the native reader handles, so they may fail to open or list incompletely.
+- **Split (multi-part) archives can't be opened.** Standard ZIP — including ZIP64, so more than 65,535 items or more than 4 GB is fine — TAR, and gzip-compressed TAR open directly as folders. An archive split across several files (`.z01`, `.zip.001`) is not handled: join the parts first, or unpack it with the tool that made it.
 - **Encrypted ZIP archives** (both older ZipCrypto and WinZip AES) are supported for browsing, but you'll be asked for the password.
 - Other formats such as CPIO, ISO, CAB, LZH, XAR, and PAX open through a helper tool rather than the native reader.
 

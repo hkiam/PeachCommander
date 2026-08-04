@@ -56,4 +56,4 @@ Je kunt bestanden in een bestaande ZIP toevoegen of verwijderen zonder hem uit t
 - Inpakken naar 7z, xz, bzip2 en RAR steunt op externe hulpmiddelen. RAR vereist met name dat het gesloten RAR-programma is geïnstalleerd; zonder dat is dat formaat niet beschikbaar.
 - Een ZIP ter plekke bewerken herschrijft het hele archief, dus de wijzigingstijdstempels van bestanden erin blijven niet behouden.
 - Zeer grote afzonderlijke leden worden bij uitpakken begrensd op 512 MiB. Uitpakken kan tijdens het uitvoeren worden geannuleerd.
-- Extreem grote (ZIP64) archieven worden niet ondersteund.
+- ZIP64-archieven openen als elk ander archief, dus een archief met meer dan 65.535 items of groter dan 4 GB is normaal te doorzoeken; de bovenstaande grens per uitgepakt bestand geldt nog steeds.

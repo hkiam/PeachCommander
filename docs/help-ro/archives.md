@@ -56,4 +56,4 @@ Puteți adăuga sau elimina fișiere într-un ZIP existent fără a-l dezarhiva.
 - Împachetarea în 7z, xz, bzip2 și RAR se bazează pe instrumente externe. RAR în special necesită instalarea programului proprietar RAR; fără el, acel format nu este disponibil.
 - Editarea unui ZIP pe loc rescrie întreaga arhivă, astfel încât datele de modificare ale fișierelor din interior nu sunt păstrate.
 - Elementele individuale foarte mari sunt plafonate la 512 MiB la extragere. Extragerea poate fi anulată în timp ce rulează.
-- Arhivele extrem de mari (ZIP64) nu sunt acceptate.
+- Arhivele ZIP64 se deschid ca oricare altele, așa că o arhivă cu peste 65.535 de elemente sau mai mare de 4 GB se parcurge normal; limita pe element extras de mai sus rămâne valabilă.

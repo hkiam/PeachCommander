@@ -58,7 +58,21 @@ batches). Cursor and marks survive. Setting: `[Configuration] WatchDirectories`
 (default on) + a Display checkbox. The help documented a 2 s polling interval that
 never existed; corrected in 19 languages.
 
-Gates: 1678 unit tests green · 13 `regress.py` scenarios at **0** Auto Layout conflicts
+**ZIP64 (F-362) — DONE.** The reader took counts, sizes and offsets from the classic
+32-bit fields only, and the *silent* half of that was the reason to fix it: an archive
+whose members exceed 4 GB parses without complaint and lists every one of them as
+4294967295 bytes, while extraction jumps to offset 0xFFFFFFFF. (Only >65535 entries or a
+central directory past 4 GB failed outright, falling through to bsdtar by accident.) Now
+the ZIP64 EOCD record + locator and the per-entry extra field (0x0001) are parsed, offsets
+are 64-bit, and the file is memory-mapped — ZIP64 exists for archives that do not fit in
+memory, so `Data(contentsOf:)` would have made the support meaningless. A ZIP64 record
+that cannot be read is refused rather than half-trusted. Fixtures are crafted and
+**validated by python reading them back**, after three wrong ones: `force_zip64` leaves the
+true values in the classic fields (so the test passed with the code disabled), sentinels
+without a ZIP64 EOCD are a shape reference implementations reject, and the header's
+extra-field length counts the id and size too.
+
+Gates: 1687 unit tests green · 13 `regress.py` scenarios at **0** Auto Layout conflicts
 (new: editor-filter, editor-filter-dialog, editor-lines, panel-autorefresh) ·
 docs 19 languages, `drifted=0`, `behind=0`. The 46 Shortcuts strings left untranslated
 by earlier work are done.
