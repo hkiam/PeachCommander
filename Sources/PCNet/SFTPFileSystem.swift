@@ -6,7 +6,7 @@
 import Foundation
 import PCVFS
 
-public final class SFTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, @unchecked Sendable, ResumableFileDownloading {
+public final class SFTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, @unchecked Sendable, ResumableFileDownloading, ResumableFileUploading {
     private let session: SFTPSession
     private let fsID: String
     /// Route file transfers (read/write) over SCP instead of SFTP, for servers where
@@ -104,6 +104,24 @@ public final class SFTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, 
     /// Close the libssh2 session when the panel leaves this mount (avoids leaking
     /// the SSH session + socket).
     public func disconnect() async { await session.close() }
+
+    /// Send a local file to `path`, resuming a partial upload (F-212).
+    public func uploadFile(_ source: URL, to path: VFSPath, resume: Bool) async throws
+        -> (written: Int64, resumedAt: Int64) {
+        let localSize = ((try? FileManager.default
+            .attributesOfItem(atPath: source.path)[.size] as? Int64) ?? nil) ?? 0
+        var offset: Int64 = 0
+        if resume, localSize > 0 {
+            // Continue only when the remote file is shorter: a longer or equal one is not a prefix of
+            // what is being sent, so it is replaced rather than appended to.
+            let remoteSize = (try? await session.stat(path.path))?.size ?? -1
+            if remoteSize > 0 && remoteSize < localSize { offset = remoteSize }
+        }
+        do {
+            let written = try await session.upload(source, to: path.path, from: UInt64(offset))
+            return (written, offset)
+        } catch { throw Self.mapError(error) }
+    }
 
     /// Stream a remote file into `destination`, resuming a partial one (F-366).
     ///

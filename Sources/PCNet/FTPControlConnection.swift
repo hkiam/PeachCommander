@@ -218,8 +218,11 @@ public actor FTPControlConnection {
 
     /// Begin a streaming upload: open the data channel and send STOR (reads the 1xx
     /// reply). The caller writes chunks, then MUST call `finishUpload`.
-    public func beginUpload(_ path: String) async throws -> FTPDataTransport {
+    public func beginUpload(_ path: String, restartAt offset: Int64 = 0) async throws -> FTPDataTransport {
         let data = try await openData()
+        // As with `beginDownload`: the channel is open, so every later failure has to close it, and `REST`
+        // before `STOR` is how an interrupted upload continues (F-212).
+        do { try await sendRestartIfNeeded(offset) } catch { await data.close(); throw error }
         try await transport.send("STOR \(path)")
         try require(try await transport.readReply(), "STOR", accept: 100..<300)
         return data

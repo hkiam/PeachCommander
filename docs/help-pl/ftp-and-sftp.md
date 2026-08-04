@@ -39,7 +39,7 @@ Aby zobaczyć dokładnie, co mówi serwer, otwórz konsolę FTP z menu **Sieć**
 
 ## Uwagi
 
-- Przerwane pobieranie jest kontynuowane tam, gdzie się zatrzymało: jeśli plik jest już częściowo na miejscu, a serwer zgadza się na restart, przesyłana jest tylko brakująca końcówka. Serwer, który odmówi, po prostu zaczyna plik od nowa. Wysyłanie nie jest jeszcze wznawiane.
+- Przerwane pobieranie jest kontynuowane tam, gdzie się zatrzymało: jeśli plik jest już częściowo na miejscu, a serwer zgadza się na restart, przesyłana jest tylko brakująca końcówka. Serwer, który odmówi, po prostu zaczyna plik od nowa. Wysyłanie jest wznawiane tak samo, gdy plik na serwerze jest krótszy niż wysyłany.
 - W przypadku serwerów FTPS z certyfikatem z podpisem własnym włącz opcję akceptacji niezaufanego certyfikatu w ustawieniach tego połączenia.
 - Serwer proxy SOCKS5 można ustawić dla każdego połączenia w przypadku zwykłego FTP. Kierowanie zaszyfrowanego połączenia FTPS przez serwer proxy nie jest obsługiwane.
 - Istniejące połączenia FTP z Total Commandera można zaimportować.

@@ -54,6 +54,62 @@ extension PanelController {
 
     func reload() async { await loadDirectory(await getCurrentPath()) }
 
+    /// Upload the selection into a directory on `targetFS` (F-367).
+    ///
+    /// Until now F5 into a network panel handed the *remote* path to the local copy engine, which either
+    /// failed or wrote to a same-named local path and reported success — the worst of the two, because the
+    /// user has no reason to check. Files stream through the filesystem's own upload, resuming a partial
+    /// remote file where the protocol allows it (F-212).
+    ///
+    /// Only local sources: sending from one server to another is FXP (F-216) and is refused rather than
+    /// routed through a temp file behind the user's back.
+    func uploadSelection(to targetDir: String, on targetFS: VirtualFileSystem) async {
+        guard let uploader = targetFS as? ResumableFileUploading else {
+            presentError(String(localized: "Copy"),
+                         detail: String(localized: "This location cannot receive uploads."))
+            return
+        }
+        guard currentFileSystem is LocalFS else {
+            presentError(String(localized: "Copy"),
+                         detail: String(localized: "Copying straight from one server to another is not supported. Download the files first, then upload them."))
+            return
+        }
+        let items = await selectedOrCursorPaths()
+        guard !items.isEmpty else { return }
+        guard let (rawDest, _, _, _) = promptTarget(title: String(localized: "Upload"),
+                                                   count: items.count, initial: targetDir) else { return }
+        let (dest, mask) = splitTargetMask(rawDest, relativeTo: targetDir)
+
+        var uploaded = 0, failed = 0, resumed = 0
+        for item in items {
+            var isDir: ObjCBool = false
+            guard FileManager.default.fileExists(atPath: item, isDirectory: &isDir) else { failed += 1; continue }
+            if isDir.boolValue {
+                // One level only for now: a recursive upload needs directory creation and progress
+                // reporting, and saying so is better than half-copying a tree.
+                failed += 1
+                continue
+            }
+            let leaf = (item as NSString).lastPathComponent
+            let name = mask.map { CopyRenameMask.apply($0, to: leaf) } ?? leaf
+            let remote = VFSPath(filesystemId: targetFS.scheme,
+                                 path: (dest as NSString).appendingPathComponent(name))
+            do {
+                let result = try await uploader.uploadFile(URL(fileURLWithPath: item), to: remote,
+                                                           resume: true)
+                uploaded += 1
+                if result.resumedAt > 0 { resumed += 1 }
+            } catch {
+                failed += 1
+                logger.error("upload of \(leaf, privacy: .public) failed: \(error)")
+            }
+        }
+        let note = failed > 0 ? String(format: String(localized: ", %d failed (folders are not uploaded yet)"), failed) : ""
+        let continued = resumed > 0 ? String(format: String(localized: ", %d continued"), resumed) : ""
+        presentInfo(String(localized: "Upload"),
+                    String(format: String(localized: "%1$d file(s) uploaded%2$@%3$@."), uploaded, continued, note))
+    }
+
     func copySelection(to targetDir: String) async {
         let items = await selectedOrCursorPaths()
         guard !items.isEmpty else { return }

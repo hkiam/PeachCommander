@@ -39,7 +39,7 @@ För att se exakt vad servern säger, öppna FTP-konsolen från menyn **Nätverk
 
 ## Anteckningar
 
-- En avbruten hämtning fortsätter där den stannade: finns filen redan delvis och servern godtar en omstart skickas bara den saknade delen. En server som nekar börjar helt enkelt om med filen. Uppladdningar fortsätter inte än.
+- En avbruten hämtning fortsätter där den stannade: finns filen redan delvis och servern godtar en omstart skickas bara den saknade delen. En server som nekar börjar helt enkelt om med filen. En uppladdning fortsätter på samma sätt, när filen på servern är kortare än den som skickas.
 - För FTPS-servrar med ett självsignerat certifikat, slå på alternativet att acceptera ett ej betrott certifikat i den anslutningens inställningar.
 - En SOCKS5-proxy kan ställas in per anslutning för vanlig FTP. Att dirigera en krypterad FTPS-anslutning genom en proxy stöds inte.
 - Befintliga FTP-anslutningar från Total Commander kan importeras.

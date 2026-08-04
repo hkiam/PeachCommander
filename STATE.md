@@ -36,6 +36,20 @@ results, the search options tab group, the Settings page list, the Favorites lis
 preview-mode switcher, and icon-only button-bar buttons (which have a tooltip and said
 nothing). 10 new UI strings in 19 languages.
 
+**Uploading into a network panel (F-367) + upload resume (F-212 complete) — DONE, and the
+old behaviour was wrong rather than missing.** F5 from a local panel into an FTP or SFTP panel
+handed the *remote* path string to the local copy engine: no code anywhere checked the target
+filesystem, so the copy either failed against a path that does not exist locally or wrote to a
+same-named local path and reported success. Now `cm_Copy` asks the target panel whether it
+needs an upload and routes to `uploadSelection`, which streams each file through the
+filesystem's own upload and resumes a shorter remote file (`REST` before `STOR` for FTP,
+`seek64` for SFTP). Server-to-server copying is refused with a sentence rather than routed
+through a temp file behind the user's back, and folders are reported as not-yet-uploaded
+instead of silently skipped. Verified against the guest's own sshd: 40960 bytes whole, then
+`resumedAt=15000` with a 25960-byte tail, and `cmp` over ssh confirms the remote file matches;
+with the seek removed it reports "differs". Three more scripted-server tests cover the FTP
+side, including the 550-for-SIZE case that is an ordinary first upload.
+
 **SFTP downloads stream and resume (F-366) — DONE.** The same defect as the FTP one, one
 file over: `localFileIfAvailable` read the whole file into memory and wrote a temp copy that
 was then copied to the target. Now `SFTPSession.download` writes chunks straight to the
@@ -134,7 +148,7 @@ true values in the classic fields (so the test passed with the code disabled), s
 without a ZIP64 EOCD are a shape reference implementations reject, and the header's
 extra-field length counts the id and size too.
 
-Gates: 1695 unit tests green · 22 `regress.py` scenarios at **0** Auto Layout conflicts
+Gates: 1698 unit tests green · 22 `regress.py` scenarios at **0** Auto Layout conflicts
 (new: editor-filter, editor-filter-dialog, editor-lines, panel-autorefresh) ·
 docs 19 languages, `drifted=0`, `behind=0`. The 46 Shortcuts strings left untranslated
 by earlier work are done.

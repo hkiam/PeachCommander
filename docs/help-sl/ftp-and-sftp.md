@@ -39,7 +39,7 @@ Za ogled, kaj natanko pravi strežnik, odprite konzolo FTP iz menija **Omrežje*
 
 ## Opombe
 
-- Prekinjen prenos se nadaljuje tam, kjer se je ustavil: če je datoteka že deloma tam in strežnik sprejme vnovični zagon, potuje le manjkajoči rep. Strežnik, ki to zavrne, datoteko preprosto začne znova. Nalaganja se še ne nadaljujejo.
+- Prekinjen prenos se nadaljuje tam, kjer se je ustavil: če je datoteka že deloma tam in strežnik sprejme vnovični zagon, potuje le manjkajoči rep. Strežnik, ki to zavrne, datoteko preprosto začne znova. Nalaganje se nadaljuje enako, kadar je datoteka na strežniku krajša od poslane.
 - Za strežnike FTPS s samopodpisanim potrdilom vklopite možnost sprejmi nezaupljivo potrdilo v nastavitvah te povezave.
 - Posrednik SOCKS5 je mogoče nastaviti za vsako povezavo za navadni FTP. Usmerjanje šifrirane povezave FTPS skozi posrednika ni podprto.
 - Obstoječe povezave FTP iz Total Commander je mogoče uvoziti.

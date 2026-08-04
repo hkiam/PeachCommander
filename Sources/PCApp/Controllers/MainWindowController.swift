@@ -4957,6 +4957,12 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// network/plugin FS) — used to run searches over the current mount (F-153).
     var currentFileSystem: VirtualFileSystem { fs }
 
+    /// Whether this panel is on something that has to be uploaded to rather than copied into (F-367).
+    ///
+    /// An archive is deliberately not included: it has its own rewrite path (F-133), and
+    /// `currentArchiveZipPath` is what the copy command checks first.
+    var isOnNetworkFilesystem: Bool { fs is ResumableFileUploading }
+
     /// The backing .zip path when this panel is inside a rewritable zip archive
     /// (nil for plugin/network filesystems, which are not rewritten here). F-133.
     var currentArchiveZipPath: String? {

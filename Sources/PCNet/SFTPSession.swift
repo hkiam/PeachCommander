@@ -331,6 +331,43 @@ public final class SFTPSession: @unchecked Sendable {
         }
     }
 
+    /// Send a local file to `path`, starting at `offset` (F-212).
+    ///
+    /// Without an offset the remote file is truncated first, so a replaced file cannot keep a longer old
+    /// tail. With one, the handle is opened *without* TRUNC and seeked — the same mechanism as the
+    /// download side, and the reason SFTP needs no protocol negotiation for a resume.
+    public func upload(_ source: URL, to path: String, from offset: UInt64 = 0) async throws -> Int64 {
+        let file = try FileHandle(forReadingFrom: source)
+        defer { try? file.close() }
+        if offset > 0 { try file.seek(toOffset: offset) }
+
+        return try await run {
+            guard let sftp = self.sftp else { throw SFTPError.notConnected }
+            let flags = offset > 0 ? (C.fxfWrite | C.fxfCreat) : (C.fxfWrite | C.fxfCreat | C.fxfTrunc)
+            guard let handle = libssh2_sftp_open_ex(sftp, path, UInt32(path.utf8.count),
+                                                   flags, 0o644, 0) else {
+                throw SFTPError.opFailed("open for write", 0)
+            }
+            defer { _ = libssh2_sftp_close_handle(handle) }
+            if offset > 0 { libssh2_sftp_seek64(handle, offset) }
+            var written: Int64 = 0
+            while let chunk = try file.read(upToCount: 64 * 1024), !chunk.isEmpty {
+                var sent = 0
+                try chunk.withUnsafeBytes { raw in
+                    guard let base = raw.baseAddress?.assumingMemoryBound(to: CChar.self) else { return }
+                    while sent < raw.count {
+                        let n = libssh2_sftp_write(handle, base + sent, raw.count - sent)
+                        // A short write is normal on a busy channel; a negative one is a failure.
+                        if n < 0 { throw SFTPError.opFailed("write", Int32(n)) }
+                        sent += n
+                    }
+                }
+                written += Int64(sent)
+            }
+            return written
+        }
+    }
+
     public func read(_ path: String) async throws -> Data {
         try await run {
             guard let sftp = self.sftp else { throw SFTPError.notConnected }

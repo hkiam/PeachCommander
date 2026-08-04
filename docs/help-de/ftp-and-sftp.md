@@ -39,7 +39,7 @@ Um genau zu sehen, was der Server sagt, öffnen Sie die FTP-Konsole aus dem Men�
 
 ## Hinweise
 
-- Ein abgebrochener Download wird dort fortgesetzt, wo er stehen geblieben ist: liegt die Datei teilweise vor und der Server erlaubt einen Neustart, wandert nur der fehlende Rest. Lehnt der Server ab, beginnt die Datei einfach von vorn. Uploads werden noch nicht fortgesetzt.
+- Ein abgebrochener Download wird dort fortgesetzt, wo er stehen geblieben ist: liegt die Datei teilweise vor und der Server erlaubt einen Neustart, wandert nur der fehlende Rest. Lehnt der Server ab, beginnt die Datei einfach von vorn. Ein Upload wird genauso fortgesetzt, wenn die Datei auf dem Server kürzer ist als die gesendete.
 - Aktivieren Sie für FTPS-Server mit einem selbstsignierten Zertifikat in den Einstellungen dieser Verbindung die Option, ein nicht vertrauenswürdiges Zertifikat zu akzeptieren.
 - Ein SOCKS5-Proxy kann pro Verbindung für einfaches FTP festgelegt werden. Das Leiten einer verschlüsselten FTPS-Verbindung durch einen Proxy wird nicht unterstützt.
 - Bestehende FTP-Verbindungen aus Total Commander können importiert werden.

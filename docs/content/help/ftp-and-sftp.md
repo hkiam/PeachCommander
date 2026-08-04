@@ -39,7 +39,7 @@ To see exactly what the server is saying, open the FTP console from the **Net** 
 
 ## Notes
 
-- An interrupted download resumes where it stopped: if the file is already partly there and the server accepts a restart, only the missing tail travels. A server that declines simply starts the file over. Uploads do not resume yet.
+- An interrupted download resumes where it stopped: if the file is already partly there and the server accepts a restart, only the missing tail travels. A server that declines simply starts the file over. An upload resumes the same way, when the file on the server is shorter than the one being sent.
 - For FTPS servers with a self-signed certificate, turn on the option to accept an untrusted certificate in that connection's settings.
 - A SOCKS5 proxy can be set per connection for plain FTP. Routing an encrypted FTPS connection through a proxy is not supported.
 - Existing FTP connections from Total Commander can be imported.

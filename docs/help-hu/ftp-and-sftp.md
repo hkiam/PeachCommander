@@ -39,7 +39,7 @@ Ahhoz, hogy pontosan lássa, mit mond a kiszolgáló, nyissa meg az FTP-konzolt 
 
 ## Megjegyzések
 
-- A megszakadt letöltés ott folytatódik, ahol abbamaradt: ha a fájl részben már megvan, és a kiszolgáló elfogadja az újraindítást, csak a hiányzó vég utazik. Az a kiszolgáló, amely elutasítja, egyszerűen újrakezdi a fájlt. A feltöltések még nem folytatódnak.
+- A megszakadt letöltés ott folytatódik, ahol abbamaradt: ha a fájl részben már megvan, és a kiszolgáló elfogadja az újraindítást, csak a hiányzó vég utazik. Az a kiszolgáló, amely elutasítja, egyszerűen újrakezdi a fájlt. A feltöltés ugyanígy folytatódik, ha a kiszolgálón lévő fájl rövidebb a küldöttnél.
 - Az önaláírt tanúsítvánnyal rendelkező FTPS-kiszolgálókhoz kapcsolja be a nem megbízható tanúsítvány elfogadásának lehetőségét az adott kapcsolat beállításaiban.
 - Egy SOCKS5-proxy kapcsolatonként beállítható az egyszerű FTP-hez. Egy titkosított FTPS-kapcsolat proxyn keresztüli irányítása nem támogatott.
 - A Total Commander meglévő FTP-kapcsolatai importálhatók.

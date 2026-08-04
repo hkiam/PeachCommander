@@ -124,3 +124,62 @@ final class FTPResumeTests: XCTestCase {
         XCTAssertFalse(t.sent.contains { $0.hasPrefix("SIZE") }, "no need to ask: \(t.sent)")
     }
 }
+
+// MARK: - Uploads (F-212, the other direction)
+
+extension FTPResumeTests {
+
+    private func source(_ name: String, _ contents: String) throws -> URL {
+        let url = directory.appendingPathComponent(name)
+        try Data(contents.utf8).write(to: url)
+        return url
+    }
+
+    func testAFreshUploadSendsNoRestart() async throws {
+        // 550 for SIZE is what a server says about a file that is not there yet, which is the ordinary
+        // first upload. The size is asked whenever resume is on — leaving it out of the script was how
+        // this test first failed, with the EPSV reply being read as the answer to SIZE.
+        let (f, t) = fs([reply("550 no such file"),
+                         reply("229 Entering Extended Passive Mode (|||50000|)"),
+                         reply("150 opening"), reply("226 done")])
+        let result = try await f.uploadFile(try source("up.txt", "hello"),
+                                           to: VFSPath(filesystemId: "ftp", path: "/pub/up.txt"),
+                                           resume: true)
+        XCTAssertEqual(result.resumedAt, 0)
+        XCTAssertEqual(result.written, 5)
+        XCTAssertEqual(t.dataWritten.reduce(Data(), +), Data("hello".utf8))
+        XCTAssertFalse(t.sent.contains { $0.hasPrefix("REST") }, "sent: \(t.sent)")
+    }
+
+    func testAShorterRemoteFileIsContinuedFromItsLength() async throws {
+        // The server reports three bytes for a five-byte local file, so only the tail is sent — and the
+        // restart is announced before STOR, or the server would write the tail at the front.
+        let (f, t) = fs([reply("213 3"),
+                         reply("229 Entering Extended Passive Mode (|||50000|)"),
+                         reply("350 restarting at 3"),
+                         reply("150 opening"), reply("226 done")])
+        let result = try await f.uploadFile(try source("up2.txt", "hello"),
+                                           to: VFSPath(filesystemId: "ftp", path: "/pub/up.txt"),
+                                           resume: true)
+        XCTAssertEqual(result.resumedAt, 3)
+        XCTAssertEqual(result.written, 2)
+        XCTAssertEqual(t.dataWritten.reduce(Data(), +), Data("lo".utf8), "only the tail travels")
+        XCTAssertTrue(t.sent.contains("REST 3"))
+        XCTAssertLessThan(t.sent.firstIndex(of: "REST 3") ?? .max,
+                          t.sent.firstIndex(where: { $0.hasPrefix("STOR") }) ?? 0)
+    }
+
+    func testALongerRemoteFileIsReplacedRatherThanAppendedTo() async throws {
+        // Nine remote bytes for a five-byte local file: the remote is not a prefix of what we are
+        // sending, so continuing would leave four foreign bytes at the end.
+        let (f, t) = fs([reply("213 9"),
+                         reply("229 Entering Extended Passive Mode (|||50000|)"),
+                         reply("150 opening"), reply("226 done")])
+        let result = try await f.uploadFile(try source("up3.txt", "hello"),
+                                           to: VFSPath(filesystemId: "ftp", path: "/pub/up.txt"),
+                                           resume: true)
+        XCTAssertEqual(result.resumedAt, 0)
+        XCTAssertEqual(t.dataWritten.reduce(Data(), +), Data("hello".utf8))
+        XCTAssertFalse(t.sent.contains { $0.hasPrefix("REST") }, "sent: \(t.sent)")
+    }
+}

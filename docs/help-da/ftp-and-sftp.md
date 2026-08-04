@@ -39,7 +39,7 @@ For at se præcis, hvad serveren siger, skal du åbne FTP-konsollen fra menuen *
 
 ## Bemærkninger
 
-- En afbrudt download fortsætter, hvor den stoppede: er filen allerede delvist der, og serveren accepterer en genstart, sendes kun den manglende hale. En server, der afviser det, starter blot filen forfra. Uploads fortsætter endnu ikke.
+- En afbrudt download fortsætter, hvor den stoppede: er filen allerede delvist der, og serveren accepterer en genstart, sendes kun den manglende hale. En server, der afviser det, starter blot filen forfra. En upload fortsætter på samme måde, når filen på serveren er kortere end den, der sendes.
 - For FTPS-servere med et selvsigneret certifikat skal du slå indstillingen om at acceptere et utroværdigt certifikat til i den forbindelses indstillinger.
 - En SOCKS5-proxy kan indstilles pr. forbindelse for almindelig FTP. Det er ikke understøttet at dirigere en krypteret FTPS-forbindelse gennem en proxy.
 - Eksisterende FTP-forbindelser fra Total Commander kan importeres.

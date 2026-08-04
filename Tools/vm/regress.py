@@ -88,6 +88,10 @@ SCENARIOS = [
     ("sftp-download", ["active left", "left /Users/admin", "wait 1000",
                        "sftpget /Users/admin/sftp-demo/big.txt|/Users/admin/got.txt|"
                        "/Users/admin/sftpget.txt|10000", "wait 4000"], 12),
+    # And the other direction: does an upload resume instead of sending everything again (F-212)?
+    ("sftp-upload", ["active left", "left /Users/admin", "wait 1000",
+                     "sftpput /Users/admin/sftp-demo/big.txt|/Users/admin/put.txt|"
+                     "/Users/admin/sftpput.txt|15000", "wait 4000"], 12),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -150,6 +154,8 @@ EXTERNAL_CHECKS = {
     # The downloaded file must be byte-identical to the original — asked of `cmp`, not of the downloader.
     "sftp-download": ("cmp -s ~/sftp-demo/big.txt ~/got.txt && echo identical || echo differs",
                       "identical"),
+    "sftp-upload": ("cmp -s ~/sftp-demo/big.txt ~/put.txt && echo identical || echo differs",
+                    "identical"),
 }
 
 # Scenarios that leave a report in the guest, and what has to be in it. The screenshot proves the
@@ -194,6 +200,7 @@ REPORTS = {
     "sftp-attributes": ("/Users/admin/sftp.txt", ["requested=600", "applied=ok"]),
     # 40960 bytes whole; then only the tail after 10000 travels.
     "sftp-download": ("/Users/admin/sftpget.txt", ["full=40960", "resumedAt=10000", "tail=30960"]),
+    "sftp-upload": ("/Users/admin/sftpput.txt", ["full=40960", "resumedAt=15000", "tail=25960"]),
     "panel-autorefresh-before": ("/Users/admin/watch-before.txt", ["!auto-appeared.txt"]),
     # CRLF in, CRLF out — shown as <CR> so a terminator that vanished is visible in the report.
     "editor-lines": ("/Users/admin/lines.txt",
