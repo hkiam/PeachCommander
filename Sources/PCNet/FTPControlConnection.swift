@@ -175,7 +175,9 @@ public actor FTPControlConnection {
     /// that byte offset via REST (F-212); the returned data is the tail from there.
     public func download(_ path: String, restartAt offset: Int64 = 0) async throws -> Data {
         let data = try await openData()
-        try await sendRestartIfNeeded(offset)
+        // The channel is open from here on, so anything that throws has to close it — a server declining
+        // REST otherwise leaves a data connection dangling until the control connection goes away (F-212).
+        do { try await sendRestartIfNeeded(offset) } catch { await data.close(); throw error }
         try await transport.send("RETR \(path)")
         try require(try await transport.readReply(), "RETR", accept: 100..<300)
         let bytes = try await data.readAll()
@@ -197,9 +199,15 @@ public actor FTPControlConnection {
     /// `finishDownload` to read the final completion reply and close the channel.
     public func beginDownload(_ path: String, restartAt offset: Int64 = 0) async throws -> FTPDataTransport {
         let data = try await openData()
-        try await sendRestartIfNeeded(offset)
-        try await transport.send("RETR \(path)")
-        try require(try await transport.readReply(), "RETR", accept: 100..<300)
+        do {
+            // See `download`: from here the channel must be closed on every failure path.
+            try await sendRestartIfNeeded(offset)
+            try await transport.send("RETR \(path)")
+            try require(try await transport.readReply(), "RETR", accept: 100..<300)
+        } catch {
+            await data.close()
+            throw error
+        }
         return data
     }
 

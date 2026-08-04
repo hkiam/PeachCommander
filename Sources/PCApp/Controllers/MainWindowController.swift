@@ -5006,6 +5006,20 @@ final class PanelController: NSObject, PanelControllerProtocol {
                     }
                 }
             } catch { logger.error("extract list failed: \(error)") }
+        } else if let resumable = fs as? ResumableFileDownloading {
+            // Straight to the destination, and continuing a partial file when there is one (F-212).
+            // The generic path below loads the whole file into memory, writes a temp copy and then copies
+            // that to the destination — three times the work, and no way to resume a 4 GB download that
+            // stopped at 99 %.
+            do {
+                let result = try await resumable.downloadFile(vpath, to: URL(fileURLWithPath: destPath),
+                                                              resume: true)
+                if result.resumedAt > 0 {
+                    logger.info("resumed \(destPath, privacy: .public) at \(result.resumedAt) bytes")
+                }
+            } catch {
+                logger.error("download failed: \(error)")
+            }
         } else if let url = try? await fs.localFileIfAvailable(vpath) {
             try? FileManager.default.removeItem(atPath: destPath)
             try? FileManager.default.copyItem(atPath: url.path, toPath: destPath)

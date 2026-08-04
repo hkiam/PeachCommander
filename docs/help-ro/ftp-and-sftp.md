@@ -39,7 +39,7 @@ Pentru a vedea exact ce spune serverul, deschideți consola FTP din meniul **Re�
 
 ## Note
 
-- Descărcările și încărcările întrerupte pot relua de unde s-au oprit, în loc să înceapă de la capăt.
+- O descărcare întreruptă continuă de unde s-a oprit: dacă fișierul este deja parțial acolo și serverul acceptă o repornire, circulă doar coada lipsă. Un server care refuză pornește pur și simplu fișierul de la început. Încărcările nu se reiau încă.
 - Pentru serverele FTPS cu un certificat autosemnat, activați opțiunea de a accepta un certificat neîncrezut în setările acelei conexiuni.
 - Un proxy SOCKS5 poate fi setat per conexiune pentru FTP simplu. Rutarea unei conexiuni FTPS criptate printr-un proxy nu este acceptată.
 - Conexiunile FTP existente din Total Commander pot fi importate.

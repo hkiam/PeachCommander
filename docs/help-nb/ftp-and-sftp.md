@@ -39,7 +39,7 @@ For å se nøyaktig hva tjeneren sier, åpne FTP-konsollen fra **Nettverk**-meny
 
 ## Merknader
 
-- Avbrutte nedlastinger og opplastinger kan gjenopptas der de slapp, i stedet for å begynne på nytt.
+- En avbrutt nedlasting fortsetter der den stoppet: er filen allerede delvis der og tjeneren godtar en omstart, sendes bare den manglende halen. En tjener som avviser det, begynner filen på nytt. Opplastinger fortsetter ennå ikke.
 - For FTPS-tjenere med et selvsignert sertifikat, slå på valget om å godta et uklarert sertifikat i den tilkoblingens innstillinger.
 - En SOCKS5-proxy kan settes per tilkobling for vanlig FTP. Å rute en kryptert FTPS-tilkobling gjennom en proxy støttes ikke.
 - Eksisterende FTP-tilkoblinger fra Total Commander kan importeres.

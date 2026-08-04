@@ -9,7 +9,7 @@
 import Foundation
 import PCVFS
 
-public final class FTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, @unchecked Sendable {
+public final class FTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, @unchecked Sendable, ResumableFileDownloading {
     private let connection: FTPControlConnection
     private let fsID: String
     /// The raw protocol log for this session, if the transport was wrapped for
@@ -129,6 +129,76 @@ public final class FTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, @
     public func disconnect() async {
         await connection.stopKeepAlive()
         await connection.quit()
+    }
+
+    /// Stream a remote file into `destination`, resuming a partial download (F-212).
+    ///
+    /// `REST` was implemented in the control connection from the start and never called with an offset —
+    /// the plumbing was there, the tap was not, so a 4 GB download that dropped at 99 % started again from
+    /// zero. This is also the path that avoids `localFileIfAvailable`'s whole-file-in-memory copy for a
+    /// plain file copy: chunks go straight to disk.
+    ///
+    /// A server that refuses `REST` (not every one supports it, and `FEAT` is not always honest) is not an
+    /// error: the partial file is discarded and the transfer starts over, which is what the user wanted
+    /// anyway. The return value says what happened, so the caller can report a resume rather than imply it.
+    public func downloadFile(_ path: VFSPath, to destination: URL, resume: Bool) async throws
+        -> (written: Int64, resumedAt: Int64) {
+        let existing = (try? FileManager.default.attributesOfItem(atPath: destination.path)[.size] as? Int64)
+            ?? nil ?? 0
+        var offset: Int64 = 0
+        if resume, existing > 0 {
+            // Only when the remote file is *longer*: an equal or shorter one means the local copy is not a
+            // prefix of it, and appending would silently produce a corrupt file.
+            //
+            // `SIZE`, not `stat`: stat lists the whole parent directory to find one entry, which is a
+            // data connection and a full listing for a number the server will hand over in one reply.
+            // A server without SIZE answers nil, and then there is nothing to resume against.
+            let remoteSize = (try? await connection.size(path.path)) ?? nil ?? -1
+            if remoteSize > existing { offset = existing }
+        }
+        do {
+            return try await stream(path.path, to: destination, from: offset)
+        } catch let error as FTPError where offset > 0 && Self.isRestartRefusal(error) {
+            // Start over rather than fail: the file is what the user asked for, not the resume.
+            return try await stream(path.path, to: destination, from: 0)
+        } catch { throw Self.mapError(error) }
+    }
+
+    /// Whether an error is the server declining `REST` rather than a transfer failure.
+    private static func isRestartRefusal(_ error: FTPError) -> Bool {
+        if case .unexpectedReply(let command, _, _) = error { return command == "REST" }
+        return false
+    }
+
+    /// Open the data channel at `offset` and write every chunk to `destination`.
+    private func stream(_ remotePath: String, to destination: URL, from offset: Int64) async throws
+        -> (written: Int64, resumedAt: Int64) {
+        let fm = FileManager.default
+        try fm.createDirectory(at: destination.deletingLastPathComponent(),
+                               withIntermediateDirectories: true)
+        if offset == 0 { try? fm.removeItem(at: destination) }
+        if !fm.fileExists(atPath: destination.path) {
+            fm.createFile(atPath: destination.path, contents: nil)
+        }
+        let handle = try FileHandle(forWritingTo: destination)
+        // Truncate or seek *before* the first byte arrives: a resumed transfer must append to exactly the
+        // bytes that were counted, and a restarted one must not leave the old tail behind.
+        try handle.truncate(atOffset: UInt64(offset))
+        defer { try? handle.close() }
+
+        let data = try await connection.beginDownload(remotePath, restartAt: offset)
+        var written: Int64 = 0
+        do {
+            while let chunk = try await data.readChunk() {
+                try handle.write(contentsOf: chunk)
+                written += Int64(chunk.count)
+            }
+        } catch {
+            await data.close()
+            throw error
+        }
+        try await connection.finishDownload(data)
+        return (written, offset)
     }
 
     public func localFileIfAvailable(_ path: VFSPath) async throws -> URL? {
