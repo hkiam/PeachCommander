@@ -39,7 +39,7 @@ Per vedere esattamente cosa dice il server, apri la console FTP dal menu **Rete*
 
 ## Note
 
-- I download e gli upload interrotti possono riprendere da dove si erano fermati, invece di ricominciare.
+- Uno scaricamento interrotto riprende da dove si era fermato: se il file è già presente in parte e il server accetta il riavvio, viaggia solo la coda mancante. Un server che rifiuta ricomincia semplicemente il file. I caricamenti non riprendono ancora.
 - Per i server FTPS con un certificato autofirmato, attiva l'opzione per accettare un certificato non attendibile nelle impostazioni di quella connessione.
 - Un proxy SOCKS5 può essere impostato per connessione per l'FTP semplice. Instradare una connessione FTPS crittografata attraverso un proxy non è supportato.
 - Le connessioni FTP esistenti da Total Commander possono essere importate.

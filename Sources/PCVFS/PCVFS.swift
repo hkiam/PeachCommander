@@ -229,6 +229,21 @@ public struct VFSAttributes: Sendable {
     }
 }
 
+/// A filesystem that can write a remote file straight to a local destination, resuming a partial one.
+///
+/// The generic path fetches a whole file into memory and hands back a temp copy — fine for opening a file
+/// in the viewer, wasteful for copying one, and impossible to resume (F-212). A backend that can do
+/// better adopts this; callers ask with `as?` and fall back when it is absent.
+public protocol ResumableFileDownloading {
+    /// Stream `path` into `destination`.
+    ///
+    /// With `resume` and an existing shorter file, the transfer continues where it stopped and the bytes
+    /// are appended. Returns how many bytes were written *in this call*, so a caller can tell a resumed
+    /// transfer from a fresh one, and whether the server allowed the restart at all.
+    func downloadFile(_ path: VFSPath, to destination: URL, resume: Bool) async throws
+        -> (written: Int64, resumedAt: Int64)
+}
+
 /// File system change event for watching
 public struct VFSChangeEvent: Sendable {
     public enum ChangeType {

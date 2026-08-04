@@ -180,7 +180,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 |---|---|---|---|---|---|---|
 | F-210 | FTP connection manager (Ctrl+F): stored sessions, folders, master password->Keychain | wcx_ftp.ini analog, pw in Keychain | SPEC-011 | I15 | P1 | done |
 | F-211 | Quick connect (Ctrl+N) with URL ftp:// ftps:// sftp:// | ev: symbol:FtpURL ev: symbol:FtpConnectionManagerWindowController | SPEC-011 | I15 | P1 | done |
-| F-212 | FTP: passive/active, proxy (HTTP/SOCKS4/5), resume, keep-alive, MLSD/LIST parsers | passive/active, HTTP and SOCKS5 proxy, keep-alive and MLSD are in; REST-based resume is not; ev: symbol:NWFTPActiveTransport ev: symbol:NetProxy ev: symbol:keepAliveTask | SPEC-011 | I15 | P1 | partial |
+| F-212 | FTP: passive/active, proxy (HTTP/SOCKS4/5), resume, keep-alive, MLSD/LIST parsers | passive/active, HTTP and SOCKS5 proxy, keep-alive, MLSD and REST-based download resume are in; upload resume (REST before STOR) is not; ev: symbol:NWFTPActiveTransport ev: symbol:NetProxy ev: symbol:keepAliveTask ev: test:FTPResumeTests | SPEC-011 | I15 | P1 | partial |
 | F-213 | FTPS (TLS explicit/implicit) via Network.framework | implicit FTPS only (TLS from the first byte); explicit AUTH TLS is declared in FtpSite but the transport does not negotiate it; ev: symbol:NWProtocolTLS | SPEC-011 | I15 | P1 | partial |
 | F-214 | SFTP via libssh2 plugin (key auth, agent, known_hosts) | TC does this via plugin too | SPEC-011 | I15 | P1 | done |
 | F-215 | Background/queued transfers, download list for later, bandwidth limit | ev: symbol:TransferManager ev: symbol:speedLimitKBps | SPEC-011 | I15 | P1 | done |

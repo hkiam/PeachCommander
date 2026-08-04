@@ -36,6 +36,18 @@ results, the search options tab group, the Settings page list, the Favorites lis
 preview-mode switcher, and icon-only button-bar buttons (which have a tooltip and said
 nothing). 10 new UI strings in 19 languages.
 
+**FTP download resume (F-212) — DONE.** `REST` had been in the control connection from
+the start and was never called with an offset: the plumbing existed, nothing was connected
+to it, so a download that dropped at 99 % began again at zero. Copying from an FTP panel now
+streams straight to the destination and continues a partial file — which also removes
+`localFileIfAvailable`'s whole-file-in-memory detour for that path (it read the file into
+RAM, wrote a temp copy, then copied that to the target). The resume check asks `SIZE`
+instead of `stat`, which listed the entire parent directory for one number. A server that
+declines `REST` starts the file over rather than failing, and a refused restart no longer
+leaks the data channel it had already opened — found because a test script gave the scripted
+server one data channel where the fallback needs two. Uploads do not resume yet; the help
+claimed both directions did, in 19 languages, and now says what is true.
+
 **Remote attribute changes (F-364) — DONE.** `SFTPFileSystem.setAttributes` was an *empty
 function*: the Attributes dialog reported success, the server never heard about it, and the
 file was unchanged. FTP swallowed the `SITE CHMOD` reply with `try?`, so a server that does
@@ -114,7 +126,7 @@ true values in the classic fields (so the test passed with the code disabled), s
 without a ZIP64 EOCD are a shape reference implementations reject, and the header's
 extra-field length counts the id and size too.
 
-Gates: 1691 unit tests green · 22 `regress.py` scenarios at **0** Auto Layout conflicts
+Gates: 1695 unit tests green · 22 `regress.py` scenarios at **0** Auto Layout conflicts
 (new: editor-filter, editor-filter-dialog, editor-lines, panel-autorefresh) ·
 docs 19 languages, `drifted=0`, `behind=0`. The 46 Shortcuts strings left untranslated
 by earlier work are done.

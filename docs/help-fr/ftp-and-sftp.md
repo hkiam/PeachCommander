@@ -39,7 +39,7 @@ Pour voir exactement ce que dit le serveur, ouvrez la console FTP depuis le menu
 
 ## Remarques
 
-- Les téléchargements et envois interrompus peuvent reprendre là où ils se sont arrêtés, plutôt que de recommencer.
+- Un téléchargement interrompu reprend là où il s’est arrêté : si le fichier est déjà partiellement présent et que le serveur accepte une reprise, seule la fin manquante circule. Un serveur qui refuse reprend simplement le fichier au début. Les envois ne reprennent pas encore.
 - Pour les serveurs FTPS avec un certificat auto-signé, activez l'option pour accepter un certificat non fiable dans les réglages de cette connexion.
 - Un proxy SOCKS5 peut être défini par connexion pour le FTP simple. Acheminer une connexion FTPS chiffrée par un proxy n'est pas pris en charge.
 - Les connexions FTP existantes de Total Commander peuvent être importées.
