@@ -1918,7 +1918,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                     let failedNote = r.failed > 0 ? String(localized: ", \(r.failed) failed") : ""
                     self?.presentInfo(String(localized: "Change Attributes"),
                                       String(localized: "Set \(perms.symbolic) on \(r.changed) item(s)\(failedNote)."))
-                    if r.failed > 0 {
+                    // Only for local files: the privileged retry runs /bin/chmod on the *host*, so on
+                    // an SFTP or FTP mount it would either fail or, worse, hit a same-named local path.
+                    // Unreachable until now only because those filesystems silently reported success
+                    // (F-364), which is exactly the kind of bug a silent success hides.
+                    if r.failed > 0, panel.currentFileSystem is LocalFS {
                         await self?.offerPrivilegedChmod(mode: change.mode, recursive: change.recursive, panel: panel)
                     }
                 } else {

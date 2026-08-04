@@ -102,11 +102,23 @@ public final class FTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, @
         do { try await connection.rename(from.path, to: to.path) } catch { throw Self.mapError(error) }
     }
 
+    /// Change permissions via `SITE CHMOD`, and refuse the rest (F-364).
+    ///
+    /// Previously the reply was discarded with `try?`, so a server that does not support the command
+    /// reported success to the user and changed nothing. FTP has no standard way to set an owner or a
+    /// timestamp, so those are refused rather than silently dropped.
     public func setAttributes(_ path: VFSPath, attributes: VFSAttributes) async throws {
-        // Best-effort: many FTP servers accept SITE CHMOD; ignore if unsupported.
-        if let mode = attributes.posixMode {
-            let octal = String(mode & 0o777, radix: 8)
-            _ = try? await connection.rawCommand("SITE CHMOD \(octal) \(path.path)")
+        if attributes.ownerName != nil || attributes.groupName != nil || attributes.bsdFlags != nil {
+            throw VFSError.unsupported
+        }
+        guard let mode = attributes.posixMode else { return }
+        let octal = String(mode & 0o777, radix: 8)
+        do {
+            _ = try await connection.rawCommand("SITE CHMOD \(octal) \(path.path)")
+        } catch {
+            // SITE commands are optional in the protocol; a refusal is a real answer and belongs to the
+            // user, not to a swallowed error.
+            throw VFSError.unsupported
         }
     }
 

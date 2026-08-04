@@ -16,7 +16,7 @@ Peach Commander gør meget, men nogle få funktioner har ærlige grænser i den 
 
 ## Netværk (SFTP / SCP)
 
-- **At ændre filattributter over SFTP har ingen effekt i denne version.** Du kan gennemse, downloade og uploade over SFTP/SCP, men anmodninger om at ændre tilladelser, ejerskab eller tidsstempler på en fjernserver ignoreres stille. Foretag de ændringer på selve serveren, eller over en anden protokol.
+- **Over SFTP kan rettigheder og tidsstempler ændres, en ejer ikke.** Protokollen fører ejer og gruppe kun som tal og kan ikke slå et brugernavn op, så et ejerskifte afvises frem for at blive gættet — ligesom macOS-filflag, der ikke findes på den anden side. Over almindelig FTP kan kun rettigheder sættes, via den valgfri kommando `SITE CHMOD`; en server, der ikke tilbyder den, siger det i stedet for at foregive succes.
 - Ved første forbindelse til en SFTP-server bliver du bedt om at stole på dens værtsnøgle. Peach Commander husker den derefter (tillid ved første brug).
 
 ## Mappeopdatering

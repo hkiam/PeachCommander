@@ -81,6 +81,8 @@ extension MainWindowController {
             case "editfilter": await editFilter(arg)   // editfilter <src>|<command>|<out> (F-356)
             case "editfilterdlg": await editFilterDialog(arg)   // editfilterdlg <src> (F-356)
             case "editlines":  await editLines(arg)     // editlines <src>|<out> (F-359)
+            case "sftpchmod":                           // sftpchmod <path>|<octal>|<out> (F-364)
+                await sftpChmod(arg)
             case "mkfile":                              // mkfile <path> (F-361): create a file the way
                 // another program would — not through a panel operation, so nothing asks the panel to
                 // reload. If the file shows up, the watcher is what put it there.
@@ -590,6 +592,34 @@ extension MainWindowController {
         }.joined(separator: "\n") + "\n"
         try? text.write(toFile: a[1], atomically: true, encoding: .utf8)
         NSLog("[automation] editdump \(cells.count) rendered rows → \(a[1])")
+    }
+
+    /// Change a file's mode over a real SFTP connection and report what the server says afterwards.
+    ///
+    /// Against the guest's own sshd, authenticated by key — `SFTPSession` finds ~/.ssh/id_ed25519 itself,
+    /// so no password appears anywhere in the harness. The point is the read-back: an implementation that
+    /// accepts the request and discards it (which is what SFTP did) passes every other kind of check.
+    private func sftpChmod(_ arg: String) async {
+        let a = arg.split(separator: "|").map(String.init)
+        guard a.count == 3, let mode = UInt16(a[1], radix: 8) else {
+            NSLog("[automation] sftpchmod needs <path>|<octal>|<out>"); return
+        }
+        let session = SFTPSession()
+        var report = "requested=\(String(mode, radix: 8))\n"
+        do {
+            try await session.connect(host: "127.0.0.1", port: 22, user: NSUserName(),
+                                      password: nil, keyFile: nil, keyPassphrase: nil)
+            // Only the change is done here. What the mode *is* afterwards is read by the harness with
+            // `stat` over ssh — an independent witness, because a wrapper reporting on its own write is
+            // exactly the kind of evidence that let the empty implementation pass for so long.
+            try await session.setAttributes(a[0], mode: mode)
+            report += "applied=ok\n"
+        } catch {
+            report += "error=\(error)\n"
+        }
+        await session.close()
+        try? report.write(toFile: a[2], atomically: true, encoding: .utf8)
+        NSLog("[automation] sftpchmod → \(a[2])")
     }
 
     /// Open `src` in the editor, pipe the whole document through `command`, and write what the editor

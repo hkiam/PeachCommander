@@ -16,7 +16,7 @@ Peach Commander toho zvládá hodně, ale několik funkcí má v aktuální verz
 
 ## Síť (SFTP / SCP)
 
-- **Změna atributů souborů přes SFTP nemá v této verzi žádný efekt.** Můžete procházet, stahovat a nahrávat přes SFTP/SCP, ale požadavky na změnu oprávnění, vlastnictví nebo časových značek na vzdáleném serveru jsou tiše ignorovány. Tyto změny proveďte na samotném serveru, nebo přes jiný protokol.
+- **Přes SFTP lze měnit oprávnění a časové značky, vlastníka ne.** Protokol vede vlastníka a skupinu jen jako čísla a jméno uživatele přes něj rozpoznat nelze — změna vlastníka se proto odmítne, místo aby se hádala, stejně jako příznaky souborů macOS, které na druhé straně neexistují. Přes obyčejné FTP lze nastavit jen oprávnění, volitelným příkazem `SITE CHMOD`; server, který jej nenabízí, to řekne, místo aby předstíral úspěch.
 - Při prvním připojení k serveru SFTP budete požádáni, abyste důvěřovali jeho hostitelskému klíči. Peach Commander si jej poté pamatuje (důvěra při prvním použití).
 
 ## Obnovení složky

@@ -17,6 +17,7 @@ only go down.
 | editor-filter | 0 | 0 | — | `editor-filter.png` |
 | editor-filter-dialog | 0 | 0 | — | `editor-filter-dialog.png` |
 | editor-lines | 0 | 0 | — | `editor-lines.png` |
+| sftp-attributes | 0 | 0 | — | `sftp-attributes.png` |
 | panel-autorefresh | 0 | 0 | — | `panel-autorefresh.png` |
 | keys-main | 0 | 0 | — | `keys-main.png` |
 | keys-find | 0 | 0 | — | `keys-find.png` |

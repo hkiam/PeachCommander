@@ -36,6 +36,19 @@ results, the search options tab group, the Settings page list, the Favorites lis
 preview-mode switcher, and icon-only button-bar buttons (which have a tooltip and said
 nothing). 10 new UI strings in 19 languages.
 
+**Remote attribute changes (F-364) — DONE.** `SFTPFileSystem.setAttributes` was an *empty
+function*: the Attributes dialog reported success, the server never heard about it, and the
+file was unchanged. FTP swallowed the `SITE CHMOD` reply with `try?`, so a server that does
+not support it also looked successful. SFTP now sets permissions and modification time for
+real (`libssh2_sftp_stat_ex` with SETSTAT) and refuses owner/group, which the protocol
+carries as numbers only and cannot resolve from a name; FTP reports a refused `SITE CHMOD`.
+Also guarded: the privileged chmod retry runs `/bin/chmod` on the *host*, and was reachable
+for a remote path only because those filesystems used to report success. Verified end to end
+against the guest's own sshd — key auth, no password anywhere in the harness — and read back
+with `stat` over ssh. That independent witness caught the first attempt using libssh2's STAT
+constant (0) instead of SETSTAT (2): the call returned 0, the app said "applied=ok", the mode
+was untouched.
+
 **Hotkeys (Tools/check-hotkeys.py) — NEW GATE, 13 findings fixed.** It reads a dump of
 the *running* menu bar plus both schemes: ⇧⌘D was on two menu items (Download from URL
 and Go ▸ Desktop — one never fired; download moved to ⇧⌘U), ⌘, was on two, and macOS
@@ -101,7 +114,7 @@ true values in the classic fields (so the test passed with the code disabled), s
 without a ZIP64 EOCD are a shape reference implementations reject, and the header's
 extra-field length counts the id and size too.
 
-Gates: 1687 unit tests green · 13 `regress.py` scenarios at **0** Auto Layout conflicts
+Gates: 1691 unit tests green · 22 `regress.py` scenarios at **0** Auto Layout conflicts
 (new: editor-filter, editor-filter-dialog, editor-lines, panel-autorefresh) ·
 docs 19 languages, `drifted=0`, `behind=0`. The 46 Shortcuts strings left untranslated
 by earlier work are done.

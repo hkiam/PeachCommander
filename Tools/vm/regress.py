@@ -78,6 +78,12 @@ SCENARIOS = [
     # (F-359) — the terminator surviving is the part that fails silently.
     ("editor-lines", ["editlines /Users/admin/pc-demo/messy.txt|/Users/admin/lines.txt",
                       "wait 2000"], 9),
+    # Do attribute changes over SFTP actually reach the server (F-364)? They used to be discarded by an
+    # empty function while the dialog reported success. `sftpchmod` connects, changes the mode, and reports
+    # what the server says the mode is afterwards — the only answer that counts.
+    ("sftp-attributes", ["active left", "left /Users/admin", "wait 1000",
+                         "sftpchmod /Users/admin/sftp-demo/perm.txt|600|/Users/admin/sftp.txt",
+                         "wait 3000"], 12),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -133,6 +139,12 @@ SCENARIOS = [
 # otherwise be invisible; a missing entry means somebody removed the wiring, not that a label changed.
 REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"]
 
+# What an *independent* tool must say after a scenario ran: the app changed something, and something other
+# than the app is asked whether it really changed. `stat` over ssh is not the code under test.
+EXTERNAL_CHECKS = {
+    "sftp-attributes": ("stat -f %Lp ~/sftp-demo/perm.txt", "600"),
+}
+
 # Scenarios that leave a report in the guest, and what has to be in it. The screenshot proves the
 # window drew; this proves the *edit* happened — replaced, undoable, and with the expected text.
 # Keyboard reachability is a gate, not a report to skim (I19 T06). For every window listed here the
@@ -172,6 +184,7 @@ REPORTS = {
     # The file must be in the listing afterwards — and, so the check cannot pass for the wrong reason,
     # absent before it was created (an expectation starting with "!" must NOT appear).
     "panel-autorefresh": ("/Users/admin/watch-after.txt", ["auto-appeared.txt"]),
+    "sftp-attributes": ("/Users/admin/sftp.txt", ["requested=600", "applied=ok"]),
     "panel-autorefresh-before": ("/Users/admin/watch-before.txt", ["!auto-appeared.txt"]),
     # CRLF in, CRLF out — shown as <CR> so a terminator that vanished is visible in the report.
     "editor-lines": ("/Users/admin/lines.txt",
@@ -250,6 +263,15 @@ def boot(app: str, run: str):
         app.rstrip("/") + "/", f"{GUEST}@{ip}:pc-test/{APPNAME}/"])
     sh(["scp", *SSH, str(Path(__file__).with_name("regress-guest.sh")), f"{GUEST}@{ip}:regress-guest.sh"])
     ssh_guest(ip, "chmod +x regress-guest.sh")
+    # An SFTP target for the attribute scenario (F-364): the guest talks to its own sshd, authenticating
+    # with a key it generates for itself. Nothing types a password, and the app picks the key up from
+    # ~/.ssh/id_ed25519 on its own.
+    ssh_guest(ip, "test -f ~/.ssh/id_ed25519 || ssh-keygen -q -t ed25519 -N '' -f ~/.ssh/id_ed25519; "
+                  "grep -qf ~/.ssh/id_ed25519.pub ~/.ssh/authorized_keys 2>/dev/null || "
+                  "cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys; "
+                  "chmod 600 ~/.ssh/authorized_keys; "
+                  "mkdir -p ~/sftp-demo && printf 'x' > ~/sftp-demo/perm.txt && "
+                  "chmod 644 ~/sftp-demo/perm.txt; true")
     # A small, fixed demo tree: the scenarios need something to show, and it must not vary between
     # runs or the screenshots become impossible to compare.
     ssh_guest(ip, "mkdir -p pc-cfg pc-demo/sub && "
@@ -361,6 +383,16 @@ def main():
                 else:
                     stops = len([l for l in text.splitlines() if "tab[" in l])
                     say(f"{name}: keyboard ok ({stops} stops, all reachable and labelled)")
+            if name in EXTERNAL_CHECKS:
+                command, expected = EXTERNAL_CHECKS[name]
+                actual = ssh_guest(ip, command).stdout.strip()
+                (out / f"{name}-external.txt").write_text(f"{command}\n{actual}\n")
+                if actual != expected:
+                    failures.append(f"{name}: {command} says {actual!r}, expected {expected!r}")
+                    say(f"{name}: EXTERNAL CHECK FAILED — {command} says {actual!r}, "
+                        f"expected {expected!r}")
+                else:
+                    say(f"{name}: external check ok ({command} → {actual})")
             # A scenario may leave more than one report; `<name>-<suffix>` entries belong to it too.
             for key in [name] + [k for k in REPORTS if k.startswith(name + "-")]:
                 if key not in REPORTS:
