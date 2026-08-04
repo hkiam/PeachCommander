@@ -25,6 +25,7 @@ import PCFoundation
 import PCNet
 import PCOperations
 import PCAutomation
+import PCVFS
 
 /// Retains editor windows opened by the `editdump` automation verb.
 private var automationEditors: [EditorWindowController] = []
@@ -81,6 +82,8 @@ extension MainWindowController {
             case "editfilter": await editFilter(arg)   // editfilter <src>|<command>|<out> (F-356)
             case "editfilterdlg": await editFilterDialog(arg)   // editfilterdlg <src> (F-356)
             case "editlines":  await editLines(arg)     // editlines <src>|<out> (F-359)
+            case "sftpget":                             // sftpget <remote>|<local>|<out>|<partial> (F-366)
+                await sftpGet(arg)
             case "sftpchmod":                           // sftpchmod <path>|<octal>|<out> (F-364)
                 await sftpChmod(arg)
             case "mkfile":                              // mkfile <path> (F-361): create a file the way
@@ -592,6 +595,41 @@ extension MainWindowController {
         }.joined(separator: "\n") + "\n"
         try? text.write(toFile: a[1], atomically: true, encoding: .utf8)
         NSLog("[automation] editdump \(cells.count) rendered rows → \(a[1])")
+    }
+
+    /// Download a file over a real SFTP connection twice: once whole, then — after truncating the local
+    /// copy to `partial` bytes — again with resume, reporting what each pass transferred (F-366).
+    ///
+    /// The second pass is the point: `written` must be the tail only and `resumedAt` the truncation point.
+    /// Whether the *result* is correct is not judged here at all; the harness compares the file with the
+    /// original over ssh, because a downloader reporting on its own output is no witness.
+    private func sftpGet(_ arg: String) async {
+        let a = arg.split(separator: "|").map(String.init)
+        guard a.count == 4, let partial = Int64(a[3]) else {
+            NSLog("[automation] sftpget needs <remote>|<local>|<out>|<partialBytes>"); return
+        }
+        let session = SFTPSession()
+        let destination = URL(fileURLWithPath: a[1])
+        var report = ""
+        do {
+            try await session.connect(host: "127.0.0.1", port: 22, user: NSUserName(),
+                                      password: nil, keyFile: nil, keyPassphrase: nil)
+            let fs = SFTPFileSystem(session: session)
+            let path = VFSPath(filesystemId: "sftp", path: a[0])
+            let whole = try await fs.downloadFile(path, to: destination, resume: false)
+            report += "full=\(whole.written)\n"
+            // Simulate a transfer that stopped: keep the first `partial` bytes and ask for the rest.
+            let handle = try FileHandle(forWritingTo: destination)
+            try handle.truncate(atOffset: UInt64(partial))
+            try handle.close()
+            let resumed = try await fs.downloadFile(path, to: destination, resume: true)
+            report += "resumedAt=\(resumed.resumedAt)\ntail=\(resumed.written)\n"
+        } catch {
+            report += "error=\(error)\n"
+        }
+        await session.close()
+        try? report.write(toFile: a[2], atomically: true, encoding: .utf8)
+        NSLog("[automation] sftpget → \(a[2])")
     }
 
     /// Change a file's mode over a real SFTP connection and report what the server says afterwards.

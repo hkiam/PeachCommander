@@ -35,22 +35,22 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-020 | Full view: name, ext, size, date, attr columns | TC column defaults; ext as own column | SPEC-002 | I01 | P1 | done |
 | F-021 | Brief view (multi-column names only, Ctrl+F1) | Horizontal scrolling grid | SPEC-002 | I05 | P1 | done |
 | F-022 | Thumbnail view with async thumbnails | QLThumbnailGenerator, cached | SPEC-002 | I17 | P2 | done |
-| F-023 | Comments view / file comments (Ctrl+Z edits descript.ion) | descript.ion + Finder comment sync | SPEC-016 | I17 | P2 | partial |
-| F-024 | Custom columns sets w/ content-plugin fields, per-view rules | Switchable sets, auto-switch by location | SPEC-002+012 | I16 | P2 | partial |
+| F-023 | Comments view / file comments (Ctrl+Z edits descript.ion) | descript.ion + Finder comment sync; ev: symbol:CommentStore ev: symbol:FinderComment ev: test:DescriptionFileTests | SPEC-016 | I17 | P2 | done |
+| F-024 | Custom columns sets w/ content-plugin fields, per-view rules | Switchable sets, auto-switch by location; sets are stored per context (per side, and per mount as "mount:<qualifier>"); ev: symbol:ColumnSet ev: test:ColumnSetTests | SPEC-002+012 | I16 | P2 | done |
 | F-025 | Sort by name/ext/size/date (Ctrl+F3..F6), reverse, as-columns-click | Stable sort; dirs first | SPEC-002 | I02 | P1 | done |
-| F-026 | Natural/logical number sorting option + per-locale collation | TC: "alphabetical, like Explorer" choices | SPEC-002 | I02 | P2 | partial |
+| F-026 | Natural/logical number sorting option + per-locale collation | TC: "alphabetical, like Explorer" choices; ev: symbol:naturalSort ev: test:PanelDateFormatterTests | SPEC-002 | I02 | P2 | done |
 | F-027 | Directories always first; dirs sorted by name option | | SPEC-002 | I02 | P1 | done |
 | F-028 | Show hidden/system files toggle (macOS: dotfiles + hidden flag) | Ctrl+H (TC 11) | SPEC-002 | I03 | P1 | done |
 | F-029 | File icons: per-type, async load, EXE/app icons; icon off mode | NSWorkspace icon cache | SPEC-002 | I03 | P1 | done |
 | F-030 | Size display: bytes/KB/dynamic; directory sizes on Space/Alt+Shift+Enter | Space calculates dir size under cursor | SPEC-002 | I03 | P1 | done |
 | F-031 | Date format per system locale + custom format option | ev: test:PanelDateFormatterTests | SPEC-002 | I02 | P2 | done |
-| F-032 | Row colors: by file type masks, alternating background, selection colors | Color config dialog | SPEC-013 | I05 | P2 | partial |
+| F-032 | Row colors: by file type masks, alternating background, selection colors | Color config dialog; ev: symbol:TypeColorsWindowController ev: scenario:details-view | SPEC-013 | I05 | P2 | done |
 | F-033 | Auto-refresh on FS changes (FSEvents), incl. size/date updates | TC: WatchDirs; coalesced | SPEC-002 | I04 | P1 | done |
 | F-034 | Branch view (Ctrl+B): current dir + all subdirs flattened | Also selected-dirs variant Shift+Ctrl+B | SPEC-016 | I17 | P1 | done |
 | F-035 | Filter field / quick filter (Ctrl+S) narrowing visible files | Live wildcard filter | SPEC-003 | I06 | P1 | done |
 | F-036 | Symlink display (arrow overlay), follow/into behavior, show target | macOS aliases + symlinks + firmlinks; ev: symbol:symlinkTarget ev: symbol:resolveAlias | SPEC-002 | I03 | P1 | done |
 | F-037 | Free/total disk space in header; occupied by selection (Ctrl+L) | | SPEC-016 | I17 | P2 | done |
-| F-038 | File attributes column macOS-mapped (perms rwx, flags, xattr badge) | TC attr HRSA -> POSIX/BSD flags | SPEC-002 | I03 | P2 | partial |
+| F-038 | File attributes column macOS-mapped (perms rwx, flags, xattr badge) | TC attr HRSA -> POSIX/BSD flags; ev: symbol:PosixPermissions ev: symbol:bsdFlags | SPEC-002 | I03 | P2 | done |
 
 ## 3. Navigation & selection
 
@@ -65,7 +65,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-056 | Num / : restore selection before last operation | Selection history (1 level min) | SPEC-003 | I03 | P2 | done |
 | F-057 | Ctrl+A select all; Ctrl+Num+ all; same-ext selection (Alt+Num+) | | SPEC-003 | I03 | P1 | done |
 | F-058 | Shift+arrows range select (Windows style option) | Left mouse selection mode option too | SPEC-003 | I03 | P2 | done |
-| F-059 | Mouse: right-click select mode (NC style) vs left (Windows style) | Config option, default NC-right | SPEC-003 | I05 | P2 | partial |
+| F-059 | Mouse: right-click select mode (NC style) vs left (Windows style) | Config option, default NC-right; ev: symbol:setMouseMode | SPEC-003 | I05 | P2 | done |
 | F-060 | Quick search: type letters to jump (opts: with/without Ctrl+Alt, search dialog) | TC quick search modes incl. filter mode; ev: symbol:TypeAheadSearch ev: cm_QuickFilter | SPEC-003 | I06 | P1 | done |
 | F-061 | Directory hotlist (Ctrl+D): add/remove/configure, submenus | hotlist.ini; menu with shortcuts 1..9; ev: cm_DirectoryHotlist ev: symbol:HotlistManagerWindowController | SPEC-003 | I06 | P1 | done |
 | F-062 | History per panel (Alt+Down list; Alt+Left/Right back/forward) | Persisted across restart; ev: cm_HistoryList ev: cm_HistoryBack ev: symbol:NavigationHistory | SPEC-003 | I06 | P1 | done |
@@ -96,10 +96,10 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-093 | Create/edit symlink dialog; hardlink; macOS alias creation | TC: NTFS links -> POSIX equivalents | SPEC-004 | I17 | P2 | done |
 | F-094 | Change attributes dialog (Ctrl+Enter? no: Files>Change attr): perms, flags, dates, recursive, plugin fields | incl. chmod octal + owner if privileged; ev: symbol:AttributesDialog ev: symbol:PosixPermissions | SPEC-016 | I17 | P1 | done |
 | F-095 | Split file (Files>Split) into N-byte parts + .crc; Combine parts | | SPEC-016 | I17 | P2 | done |
-| F-096 | Encode/decode: Base64/UUE/MIME/XXE; binary-safe | | SPEC-016 | I17 | P2 | partial |
+| F-096 | Encode/decode: Base64/UUE/MIME/XXE; binary-safe | ev: symbol:Base64Codec ev: symbol:UUCodec ev: test:Base64CodecTests | SPEC-016 | I17 | P2 | done |
 | F-097 | Create/verify checksums: CRC32, MD5, SHA-1/256/512, BLAKE3; .sfv/.md5 files | | SPEC-016 | I17 | P1 | done |
 | F-098 | Print file lists / print file (via macOS print) | Export list as txt/csv too | SPEC-016 | I17 | P3 | done |
-| F-099 | Privileged operations: prompt for admin when EPERM (SMJobBless/askpass) | admin-retry for chmod + delete done (osascript); copy/move pending | SPEC-004 | I18 | P2 | partial |
+| F-099 | Privileged operations: prompt for admin when EPERM (SMJobBless/askpass) | chmod, delete and saving a root-owned file in the editor retry as administrator; copy and move do not; ev: symbol:PrivilegedRunner ev: symbol:offerPrivilegedSave | SPEC-004 | I18 | P2 | partial |
 | F-100 | Long-path, weird-name safety: NFC/NFD unicode, colon/slash mapping, >1023 chars | macOS specifics; tests; ev: test:PathResolverTests ev: symbol:precomposedStringWithCanonicalMapping | SPEC-004 | I04 | P1 | done |
 | F-101 | Undo last file op where possible (move/rename/copy) | Finder-like undo stack, TC has none — extra; Edit ▸ Undo (⌘Z) routes to the panel; copy/move/rename are undoable; ev: symbol:registerUndo | SPEC-004 | I18 | P3 | done |
 
@@ -113,12 +113,12 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-113 | Search in viewer (F7/Ctrl+F, F3 next), hex search, case opts | Also from command line arg; ev: symbol:ByteSearch ev: symbol:applyInitialSearch | SPEC-005 | I07 | P1 | done |
 | F-114 | Wrap/unwrap, font config, fit-to-window images | ev: symbol:applyWrap ev: symbol:wrapText | SPEC-005 | I07 | P1 | done |
 | F-115 | Image display (all NSImage/ImageIO formats), zoom, next/prev in dir (n/p) | Animated GIF ok; ev: symbol:zoomImage ev: symbol:NSImageView | SPEC-005 | I07 | P1 | done |
-| F-116 | HTML/RTF display modes | WKWebView (local only, JS off) / NSAttributedString | SPEC-005 | I07 | P2 | partial |
+| F-116 | HTML/RTF display modes | WKWebView (local only, JS off) / NSAttributedString; ev: symbol:WKWebView ev: symbol:MarkdownRenderer | SPEC-005 | I07 | P2 | done |
 | F-117 | Multimedia playback (audio/video) via AVKit | TC uses codecs/plugins; ev: symbol:AVPlayerView ev: cm_List | SPEC-005 | I07 | P2 | done |
 | F-118 | Quick View panel (Ctrl+Q) inside inactive panel | Follows cursor; same engines as Lister; ev: cm_SrcQuickview ev: symbol:updateQuickView | SPEC-005 | I07 | P1 | done |
 | F-119 | Lister plugins (PLX) integration + multiple viewers per type (1..n switch) | ev: symbol:PLXLister ev: plugin:SampleLister | SPEC-012 | I16 | P1 | done |
 | F-120 | View files inside archives (extract-to-temp transparently) | Via VFS | SPEC-007 | I09 | P1 | done |
-| F-121 | Copy text selection, save-as, print from Lister | | SPEC-005 | I07 | P2 | partial |
+| F-121 | Copy text selection, save-as, print from Lister | ev: symbol:NSPrintOperation ev: symbol:docCopy | SPEC-005 | I07 | P2 | done |
 | F-122 | F4 edit: open in configured editor (default TextEdit/VS Code detect); Shift+F4 new file | Editor per extension config; ev: symbol:FileAssociations ev: cm_Edit | SPEC-004 | I04 | P1 | done |
 | F-123 | Quick Look integration (Space alternative / dedicated key) | Cmd+Y (cm_QuickLook) | SPEC-015 | I18 | P3 | done |
 
@@ -148,7 +148,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-154 | Regex engine for names + content (ICU/NSRegularExpression) | TC regex dialect notes in spec | SPEC-008 | I10 | P1 | done |
 | F-155 | Results: feed to listbox (results become a panel), view/edit from results, goto file | Panel shows virtual search-result dir | SPEC-008 | I10 | P1 | done |
 | F-156 | Save/load search templates; use templates in select/color/sync rules | Named templates shared across features | SPEC-008 | I10 | P2 | done |
-| F-157 | Plugin (content-field) search criteria with operators | e.g. `duration > 10min` | SPEC-012 | I16 | P2 | partial |
+| F-157 | Plugin (content-field) search criteria with operators | e.g. `duration > 10min`; ev: symbol:contentFieldPopup ev: test:SearchPluginTextTests | SPEC-012 | I16 | P2 | done |
 | F-158 | Duplicate file finder (by name/size/content hash) | Part of Find Files "duplicates" | SPEC-008 | I17 | P1 | done |
 | F-159 | Spotlight-accelerated mode (optional toggle) | macOS extra: NSMetadataQuery prefilter | SPEC-015 | I18 | P3 | done |
 
@@ -182,10 +182,10 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-211 | Quick connect (Ctrl+N) with URL ftp:// ftps:// sftp:// | ev: symbol:FtpURL ev: symbol:FtpConnectionManagerWindowController | SPEC-011 | I15 | P1 | done |
 | F-212 | FTP: passive/active, proxy (HTTP/SOCKS4/5), resume, keep-alive, MLSD/LIST parsers | passive/active, HTTP and SOCKS5 proxy, keep-alive, MLSD and REST-based download resume are in; upload resume (REST before STOR) is not; ev: symbol:NWFTPActiveTransport ev: symbol:NetProxy ev: symbol:keepAliveTask ev: test:FTPResumeTests | SPEC-011 | I15 | P1 | partial |
 | F-213 | FTPS (TLS explicit/implicit) via Network.framework | implicit FTPS only (TLS from the first byte); explicit AUTH TLS is declared in FtpSite but the transport does not negotiate it; ev: symbol:NWProtocolTLS | SPEC-011 | I15 | P1 | partial |
-| F-214 | SFTP via libssh2 plugin (key auth, agent, known_hosts) | TC does this via plugin too | SPEC-011 | I15 | P1 | done |
+| F-214 | SFTP via libssh2 plugin (key auth, agent, known_hosts) | TC does this via plugin too; downloads stream to disk and resume by seeking (F-366); attribute changes reach the server (F-364) | ev: symbol:SFTPSession ev: scenario:sftp-download ev: scenario:sftp-attributes | SPEC-011 | I15 | P1 | done |
 | F-215 | Background/queued transfers, download list for later, bandwidth limit | ev: symbol:TransferManager ev: symbol:speedLimitKBps | SPEC-011 | I15 | P1 | done |
 | F-216 | FXP server-to-server copy | Rarely supported; best effort; not built | SPEC-011 | I15 | P3 | todo |
-| F-217 | Custom FTP commands, raw command log window | | SPEC-011 | I15 | P2 | partial |
+| F-217 | Custom FTP commands, raw command log window | ev: symbol:FTPConsoleWindowController ev: symbol:rawCommand | SPEC-011 | I15 | P2 | done |
 | F-218 | SMB/network shares: mount helper UI (Finder-mount based) + smb:// cd | Replaces TC "Network Neighborhood" | SPEC-011 | I18 | P2 | done |
 | F-219 | WebDAV via FS plugin (post-1.0 sample plugin) | ev: plugin:WebDAV | SPEC-012 | — | P3 | done |
 
@@ -212,7 +212,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-252 | User menu (Start menu) with user commands (em_*), parameters (%P %N %T %M %S…) | usercmd.ini analog | SPEC-014 | I13 | P1 | done |
 | F-253 | Button bar: .bar file format, icons, cm_/em_/programs/dirs as buttons, subbars, drag files onto buttons | ev: symbol:ButtonBar ev: test:ButtonBarTests | SPEC-014 | I13 | P1 | done |
 | F-254 | Keyboard remapping: any cm_ to any key; per-scheme (TC-classic vs macOS-native) | Two shipped schemes; user overrides | SPEC-014 | I13 | P1 | done |
-| F-255 | Command browser dialog (like TC "choose command") with search | Used by buttonbar/keys/menu editors | SPEC-014 | I13 | P2 | partial |
+| F-255 | Command browser dialog (like TC "choose command") with search | Used by buttonbar/keys/menu editors; ev: symbol:CommandBrowserWindowController | SPEC-014 | I13 | P2 | done |
 | F-256 | Aliases in command line (cd shortcuts, user aliases) | ev: test:AliasStoreTests | SPEC-014 | I13 | P3 | done |
 | F-257 | Main menu user-editable (menu file format) + multiple menu files | .mnu analog, needed for localized menus; ev: test:MenuFileTests ev: symbol:MnuMenuBuilder | SPEC-014 | I19 | P3 | done |
 
@@ -240,10 +240,10 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-294 | Spotlight metadata as content-plugin provider (built-in PDX "mdls") | kMDItem* fields as columns/search | SPEC-015 | I18 | P2 | done |
 | F-295 | Dark mode: full support; TC-classic light theme default option | Theme system | SPEC-001 | I05 | P1 | done |
 | F-296 | AppleScript/Shortcuts: core verbs (reveal, copy, get selection) | Automation dictionary | SPEC-015 | — | P3 | post-1.0 |
-| F-297 | Trash awareness: show Trash, put-back metadata | show done (Go ▸ Trash); put-back not via public API | SPEC-015 | I18 | P3 | partial |
-| F-298 | Permissions/ACL/xattr inspector-editor dialog | POSIX edit + xattr inspect/remove done; ACL editing pending | SPEC-015 | I18 | P2 | partial |
+| F-297 | Trash awareness: show Trash, put-back metadata | show done (Go ▸ Trash); the Trash can be opened; "put back" is not offered because macOS exposes no public API for it; ev: cm_GoToTrash | SPEC-015 | I18 | P3 | partial |
+| F-298 | Permissions/ACL/xattr inspector-editor dialog | POSIX edit + xattr inspect/remove done; POSIX permissions, xattr inspect/remove and ACL editing (from the Attributes dialog); ev: symbol:ACLEditorWindowController ev: symbol:AttributesDialog | SPEC-015 | I18 | P2 | done |
 | F-299 | Full Disk Access onboarding flow (detect & guide to System Settings) | Required for ~/Library etc. | SPEC-015 | I18 | P1 | done |
-| F-300 | Retina/HiDPI assets, trackpad gestures (swipe = history nav) | | SPEC-001 | I19 | P2 | partial |
+| F-300 | Retina/HiDPI assets, trackpad gestures (swipe = history nav) | two-finger swipe walks the panel history; ev: symbol:swipe ev: symbol:backingScaleFactor | SPEC-001 | I19 | P2 | done |
 
 ## 15. Distribution & updates
 
