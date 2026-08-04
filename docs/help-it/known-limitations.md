@@ -25,7 +25,7 @@ Peach Commander fa molto, ma alcune funzioni hanno limiti onesti nella versione 
 
 ## Aggiornamento delle cartelle
 
-- **Un pannello nota le modifiche esterne con un breve ritardo, non istantaneamente.** Peach Commander controlla la cartella corrente per modifiche circa ogni 2 secondi, quindi un file aggiunto o rimosso da un'altra app può impiegare un momento a comparire. Se non vuoi aspettare, aggiorna il pannello attivo manualmente con F2 o Ctrl+R.
+- **Vengono osservate solo le cartelle su questo Mac.** Una cartella su questo Mac si aggiorna da sé appena un altro programma vi aggiunge, modifica o elimina un file. Una posizione remota (FTP o SFTP) e l’interno di un archivio non vengono osservati, perché quei protocolli non offrono alcun modo di essere avvisati: premete F2 o Ctrl+R per rileggerli.
 
 ## Altri limiti attuali
 

@@ -166,9 +166,27 @@ public final class LocalFS: VirtualFileSystem, @unchecked Sendable {
         }
     }
 
+    /// An FSEvents-backed stream of "something in this directory changed" (F-361).
+    ///
+    /// The event carries the directory, not the individual file: FSEvents coalesces a burst, and the
+    /// consumer re-lists the directory anyway. `.modified` for the same reason — distinguishing added
+    /// from removed would mean diffing the listing, which is exactly what the re-list does.
+    ///
+    /// Cancelling the stream's task stops the watcher; nothing else has to be remembered by the caller.
     public func watch(_ dir: VFSPath) -> AsyncStream<VFSChangeEvent>? {
-        // FSEvents-backed watching is wired during the panel migration (I08-T03).
-        nil
+        guard isDirectory(atPath: dir.path) else { return nil }
+        return AsyncStream { continuation in
+            let watcher = DirectoryWatcher(path: dir.path) {
+                continuation.yield(VFSChangeEvent(path: dir, type: .modified))
+            }
+            watcher.start()
+            continuation.onTermination = { _ in watcher.stop() }
+        }
+    }
+
+    private func isDirectory(atPath path: String) -> Bool {
+        var isDir: ObjCBool = false
+        return FileManager.default.fileExists(atPath: path, isDirectory: &isDir) && isDir.boolValue
     }
 
     public func localFileIfAvailable(_ path: VFSPath) async throws -> URL? {

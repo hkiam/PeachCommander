@@ -23,6 +23,7 @@ public struct SettingsSnapshot: Sendable {
     public var mouseMode: String         // "left" (Windows) | "nc" (Norton Commander)
     public var bracketsAroundDirs: Bool
     public var naturalSort: Bool       // F-026: numeric ("file2 < file10") ordering
+    public var watchDirectories: Bool  // F-361: refresh a panel when its folder changes
     public var alternatingRows: Bool   // F-032: zebra row background
     public var fontSize: Int           // F-272: panel-list font size (points)
     public var sizeStyle: String       // "kb" | "dynamic" | "bytes"
@@ -68,7 +69,8 @@ public struct SettingsSnapshot: Sendable {
 
     public init(showHidden: Bool, iconMode: String, appearance: String, theme: String = "system",
                 confirmDelete: Bool, deleteToTrash: Bool, selectDirsWithMask: Bool,
-                bracketsAroundDirs: Bool, naturalSort: Bool = true, alternatingRows: Bool = false,
+                bracketsAroundDirs: Bool, naturalSort: Bool = true,
+                watchDirectories: Bool = true, alternatingRows: Bool = false,
                 fontSize: Int = 13, sizeStyle: String,
                 dateFormat: String = PanelDateFormatter.defaultPattern,
                 showCommandLine: Bool = true, showFunctionKeys: Bool = true,
@@ -114,6 +116,7 @@ public struct SettingsSnapshot: Sendable {
         self.mouseMode = mouseMode
         self.bracketsAroundDirs = bracketsAroundDirs
         self.naturalSort = naturalSort
+        self.watchDirectories = watchDirectories
         self.alternatingRows = alternatingRows
         self.fontSize = fontSize
         self.sizeStyle = sizeStyle
@@ -226,6 +229,7 @@ public final class SettingsWindowController: NSWindowController {
 
     // Display page controls
     private let showHiddenCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+    private let watchDirsCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let sizeStylePopup = NSPopUpButton()
     private let bracketsCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let naturalSortCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-026
@@ -969,6 +973,11 @@ public final class SettingsWindowController: NSWindowController {
                      isOn: snapshot.naturalSort, action: #selector(naturalSortChanged))
         makeCheckbox(alternatingRowsCheckbox, title: String(localized: "Alternating row background"),
                      isOn: snapshot.alternatingRows, action: #selector(alternatingRowsChanged))
+        makeCheckbox(watchDirsCheckbox,
+                     title: String(localized: "Refresh a panel when its folder changes"),
+                     isOn: snapshot.watchDirectories, action: #selector(watchDirsChanged))
+        watchDirsCheckbox.toolTip = String(localized:
+            "Local folders only. Turn this off if a folder something writes to constantly keeps refreshing.")
         let typeColorsButton = NSButton(title: String(localized: "File-Type Colors…"),
                                         target: self, action: #selector(editTypeColors))   // F-032
         typeColorsButton.bezelStyle = .rounded
@@ -992,6 +1001,7 @@ public final class SettingsWindowController: NSWindowController {
             bracketsCheckbox,
             naturalSortCheckbox,
             alternatingRowsCheckbox,
+            watchDirsCheckbox,
             typeColorsButton,
             labeledRow(title: String(localized: "Font size:"), control: fontSizePopup),
             labeledRow(title: String(localized: "Date format:"), control: dateFormatField),
@@ -1011,6 +1021,10 @@ public final class SettingsWindowController: NSWindowController {
     @objc private func dateFormatChanged() {
         updateDatePreview()
         onSetString("Display.DateFormat", dateFormatField.stringValue.trimmingCharacters(in: .whitespaces))
+    }
+
+    @objc private func watchDirsChanged() {
+        onSetBool("Configuration.WatchDirectories", watchDirsCheckbox.state == .on)
     }
 
     @objc private func showHiddenChanged() {

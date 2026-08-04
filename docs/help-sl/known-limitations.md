@@ -25,7 +25,7 @@ Peach Commander naredi veliko, a nekaj funkcij ima v trenutni različici pošten
 
 ## Osveževanje map
 
-- **Podokno opazi zunanje spremembe z majhno zakasnitvijo, ne takoj.** Peach Commander preverja trenutno mapo glede sprememb približno vsaki 2 sekundi, tako da se datoteka, ki jo doda ali odstrani druga aplikacija, lahko pojavi šele čez trenutek. Če ne želite čakati, osvežite dejavno podokno ročno s tipko F2 ali Ctrl+R.
+- **Za zunanje spremembe se spremljajo le mape na tem Macu.** Mapa na tem Macu se posodobi sama, brž ko drug program v njej ustvari, spremeni ali odstrani datoteko. Oddaljeno mesto (FTP ali SFTP) in notranjost arhiva se ne spremljata, saj ta protokola ne ponujata načina za obvestilo — tam pritisnite F2 ali Ctrl+R za ponovno branje.
 
 ## Druge trenutne meje
 

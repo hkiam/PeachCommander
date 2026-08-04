@@ -25,7 +25,7 @@ Peach Commander fait beaucoup, mais quelques fonctionnalités ont des limites ho
 
 ## Actualisation des dossiers
 
-- **Un panneau remarque les changements externes avec un léger délai, pas instantanément.** Peach Commander vérifie le dossier courant pour des changements environ toutes les 2 secondes, de sorte qu'un fichier ajouté ou retiré par une autre application peut mettre un moment à apparaître. Si vous ne voulez pas attendre, actualisez le panneau actif manuellement avec F2 ou Ctrl+R.
+- **Seuls les dossiers de ce Mac sont surveillés.** Un dossier de ce Mac se met à jour de lui-même dès qu’un autre programme y ajoute, modifie ou supprime un fichier. Un emplacement distant (FTP ou SFTP) et l’intérieur d’une archive ne sont pas surveillés, car ces protocoles n’offrent aucun moyen d’être averti — appuyez sur F2 ou Ctrl+R pour les relire.
 
 ## Autres limites actuelles
 

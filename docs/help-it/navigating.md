@@ -63,6 +63,7 @@ Il menu **Vai** porta il pannello attivo alle cartelle che usi di più:
 
 ## Suggerimenti
 
+- Un pannello si tiene aggiornato da sé: un file che un altro programma crea, modifica o elimina nella cartella che state guardando compare da solo, e il cursore e le selezioni restano dove erano. Disattivatelo in **Configurazione ▸ Opzioni ▸ Visualizzazione** se una cartella in cui qualcosa scrive continuamente si aggiorna senza sosta.
 - Ogni pannello mantiene la propria cronologia, quindi Indietro e Avanti interessano solo il lato attivo.
 - Se un percorso digitato non è una cartella valida, la barra del percorso mantiene silenziosamente la tua ultima posizione invece di navigare.
 - Cestino e iCloud Drive nel menu Vai non hanno una scorciatoia predefinita, ma puoi assegnarne una in **Configurazione ▸ Opzioni ▸ Tastiera**.

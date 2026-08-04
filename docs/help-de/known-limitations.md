@@ -25,7 +25,7 @@ Peach Commander kann viel, aber ein paar Funktionen haben in der aktuellen Versi
 
 ## Verzeichnisaktualisierung
 
-- **Ein Panel bemerkt externe Änderungen mit kurzer Verzögerung, nicht sofort.** Peach Commander prüft den aktuellen Ordner etwa alle 2 Sekunden auf Änderungen, sodass eine von einer anderen App hinzugefügte oder entfernte Datei einen Moment brauchen kann, bis sie erscheint. Wenn Sie nicht warten möchten, aktualisieren Sie das aktive Panel manuell mit F2 oder Ctrl+R.
+- **Nur Ordner auf diesem Mac werden auf Änderungen von außen überwacht.** Ein Ordner auf diesem Mac aktualisiert sich selbst, sobald ein anderes Programm darin eine Datei anlegt, ändert oder löscht. Ein entfernter Ort (FTP oder SFTP) und das Innere eines Archivs werden nicht überwacht, weil diese Protokolle keine Möglichkeit bieten, benachrichtigt zu werden — drücken Sie dort F2 oder Ctrl+R zum erneuten Einlesen.
 
 ## Weitere aktuelle Einschränkungen
 

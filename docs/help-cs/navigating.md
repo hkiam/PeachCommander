@@ -63,6 +63,7 @@ Nabídka **Přejít** přenese aktivní panel do složek, které používáte ne
 
 ## Tipy
 
+- Panel se udržuje aktuální sám: soubor, který jiný program v zobrazené složce vytvoří, změní nebo smaže, se objeví sám a kurzor i vaše označení zůstanou tam, kde byly. V **Konfigurace ▸ Možnosti ▸ Zobrazení** to vypněte, pokud se složka, do níž se neustále zapisuje, obnovuje bez přestání.
 - Každý panel si drží vlastní historii, takže Zpět a Vpřed ovlivňují jen aktivní stranu.
 - Pokud zadaná cesta není platná složka, lišta cesty tiše zachová vaše poslední umístění místo přechodu.
 - Koš a iCloud Drive v nabídce Přejít nemají výchozí zkratku, ale můžete ji přiřadit v **Konfigurace ▸ Možnosti ▸ Klávesnice**.

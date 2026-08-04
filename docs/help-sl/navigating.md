@@ -63,6 +63,7 @@ Meni **Pojdi** aktivno podokno popelje v mape, ki jih uporabljate najpogosteje:
 
 ## Namigi
 
+- Panel se posodablja sam: datoteka, ki jo drug program v prikazani mapi ustvari, spremeni ali izbriše, se pojavi sama, kazalec in izbori pa ostanejo tam, kjer so bili. V **Nastavitve ▸ Možnosti ▸ Prikaz** to izklopite, če se mapa, v katero nekaj nenehno zapisuje, osvežuje brez prestanka.
 - Vsako podokno ohranja svojo zgodovino, zato Nazaj in Naprej vplivata samo na aktivno stran.
 - Če vnesena pot ni veljavna mapa, vrstica poti tiho obdrži vašo zadnjo lokacijo, namesto da bi se premaknila.
 - Koš in iCloud Drive v meniju Pojdi nimata privzete bližnjice, lahko pa jima jo dodelite v **Konfiguracija ▸ Možnosti ▸ Tipkovnica**.

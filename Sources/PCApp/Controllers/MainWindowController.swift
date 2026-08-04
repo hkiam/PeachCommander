@@ -501,6 +501,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         rightPanelController?.setHiddenFiles(hiddenFilesShown)
         IconLoader.shared.mode = Self.iconMode(from: config.string("Configuration", "IconMode",
                                                                   default: "all"))
+        let watchDirectories = config.bool("Configuration", "WatchDirectories", default: true)
+        leftPanelController?.watchDirectories = watchDirectories
+        rightPanelController?.watchDirectories = watchDirectories
         displaySizeStyle = config.string("Display", "SizeStyle", default: "kb")
         displayTypeColors = config.string("Display", "TypeColors", default: "")
         displayBrackets = config.bool("Display", "BracketDirs", default: false)
@@ -3207,6 +3210,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             selectDirsWithMask: await mainConfig.bool("Operation", "SelectDirs", default: false),
             bracketsAroundDirs: await mainConfig.bool("Display", "BracketDirs", default: false),
             naturalSort: await mainConfig.bool("Display", "NaturalSort", default: true),
+            watchDirectories: await mainConfig.bool("Configuration", "WatchDirectories", default: true),
             alternatingRows: await mainConfig.bool("Display", "AlternatingRows", default: false),
             fontSize: await mainConfig.int("Display", "FontSize", default: 13),
             sizeStyle: await mainConfig.string("Display", "SizeStyle", default: "kb"),
@@ -3279,6 +3283,17 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             hiddenFilesShown = value
             leftPanelController?.setHiddenFiles(value)
             rightPanelController?.setHiddenFiles(value)
+        case "Configuration.WatchDirectories":
+            // Takes effect at once, in both directions: switching it on starts watching what is already
+            // open rather than waiting for the next navigation (F-361).
+            for panel in [leftPanelController, rightPanelController] {
+                panel?.watchDirectories = value
+                if value {
+                    Task { @MainActor in await panel?.startWatching(panel?.getCurrentPath() ?? "") }
+                } else {
+                    panel?.stopWatching()
+                }
+            }
         case "Display.BracketDirs":
             displayBrackets = value
             applyDisplayOptionsToPanels()
@@ -4690,6 +4705,8 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// Repeating reload for a volatile mount (e.g. TaskManager); cancelled on
     /// leaving the mount or switching tabs. See `startVolatileAutoRefresh`.
     private var volatileRefreshTask: Task<Void, Never>?
+    /// Consumes the current directory's change stream (F-361).
+    private var watchTask: Task<Void, Never>?
     private let model: DirectoryModel
     private let volumeManager: VolumeManager
     private let selectionState = SelectionState()
@@ -5061,7 +5078,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
             if recordHistory { history.push(path) }
             scheduleStatusRefresh()
             onStateChanged?()
-            Task { await model.startAutoRefresh() }
+            startWatching(path)
         } catch {
             logger.error("Failed to load directory \(path): \(error)")
         }
@@ -5288,7 +5305,40 @@ final class PanelController: NSObject, PanelControllerProtocol {
         return name.isEmpty || name == "/" ? "/" : name
     }
 
-    func stopAutoRefresh() { Task { await model.stopAutoRefresh() } }
+    // MARK: - Watch the current directory (F-361)
+
+    /// Whether directory watching is wanted at all. Off is a legitimate choice: on a slow network
+    /// mount or a folder something writes to constantly, a refresh per change is a nuisance.
+    var watchDirectories = true
+
+    /// Watch `path` and refresh this panel when its contents change.
+    ///
+    /// The filesystem decides whether it can be watched: `watch(_:)` yields a stream for a local
+    /// directory and nil for an archive, an FTP site or a plugin mount — so the "local only" condition
+    /// costs nothing here. Started after every load and replaced, so navigating away stops the old
+    /// watcher instead of accumulating one per directory, which is what the previous version did.
+    func startWatching(_ path: String) {
+        stopWatching()
+        guard watchDirectories, !isInArchive,
+              let stream = fs.watch(VFSPath(filesystemId: fs.scheme, path: path)) else { return }
+        watchTask = Task { @MainActor [weak self] in
+            for await _ in stream {
+                guard let self, !Task.isCancelled else { return }
+                // Not while a dialog is up: a rename, an overwrite prompt or a properties sheet is
+                // about the listing as it was when it opened, and re-listing underneath it changes
+                // what the user is answering about.
+                guard NSApp.modalWindow == nil else { continue }
+                // Not while an in-cell rename is open — the field editor would be destroyed.
+                guard !self.tableView.isInlineEditing else { continue }
+                await self.reloadPreservingCursor()
+            }
+        }
+    }
+
+    func stopWatching() {
+        watchTask?.cancel()
+        watchTask = nil
+    }
 
     func getCurrentPath() async -> String { await model.getPath() }
 

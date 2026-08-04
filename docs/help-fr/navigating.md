@@ -63,6 +63,7 @@ Le menu **Aller** amène le panneau actif vers les dossiers que vous utilisez le
 
 ## Astuces
 
+- Un panneau se tient à jour tout seul : un fichier qu’un autre programme crée, modifie ou supprime dans le dossier affiché apparaît de lui-même, votre curseur et vos marques restant où ils étaient. Désactivez-le dans **Configuration ▸ Options ▸ Affichage** si un dossier dans lequel on écrit sans cesse se rafraîchit continuellement.
 - Chaque panneau conserve son propre historique : Reculer et Avancer n'agissent donc que sur le côté actif.
 - Si un chemin saisi ne correspond pas à un dossier valide, la barre de chemin conserve discrètement votre dernier emplacement au lieu de naviguer.
 - La Corbeille et iCloud Drive dans le menu Aller n'ont pas de raccourci par défaut, mais vous pouvez leur en attribuer un dans **Configuration ▸ Options ▸ Clavier**.

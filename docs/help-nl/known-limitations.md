@@ -25,7 +25,7 @@ Peach Commander doet veel, maar een paar functies hebben in de huidige versie ee
 
 ## Map verversen
 
-- **Een paneel merkt externe wijzigingen met een korte vertraging op, niet meteen.** Peach Commander controleert de huidige map ongeveer elke 2 seconden op wijzigingen, dus een door een andere app toegevoegd of verwijderd bestand kan even duren voordat het verschijnt. Wil je niet wachten, ververs het actieve paneel dan handmatig met F2 of Ctrl+R.
+- **Alleen mappen op deze Mac worden op wijzigingen van buiten gecontroleerd.** Een map op deze Mac werkt zichzelf bij zodra een ander programma er een bestand aanmaakt, wijzigt of verwijdert. Een externe locatie (FTP of SFTP) en de binnenkant van een archief worden niet gecontroleerd, omdat die protocollen geen manier bieden om bericht te krijgen — druk daar op F2 of Ctrl+R om opnieuw te lezen.
 
 ## Overige huidige beperkingen
 

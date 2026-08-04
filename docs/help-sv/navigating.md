@@ -63,6 +63,7 @@ Menyn **Gå** tar den aktiva panelen till de mappar du använder mest:
 
 ## Tips
 
+- En panel håller sig själv uppdaterad: en fil som ett annat program skapar, ändrar eller tar bort i mappen du tittar på visas av sig själv, och markören och dina markeringar står kvar. Stäng av det under **Konfiguration ▸ Alternativ ▸ Visning** om en mapp som något skriver till hela tiden uppdateras oavbrutet.
 - Varje panel har sin egen historik, så Bakåt och Framåt påverkar bara den aktiva sidan.
 - Om en inskriven sökväg inte är en giltig mapp behåller sökvägsraden i tysthet din senaste plats i stället för att navigera.
 - Papperskorg och iCloud Drive i Gå-menyn har inget standardkortkommando, men du kan tilldela ett i **Konfiguration ▸ Alternativ ▸ Tangentbord**.

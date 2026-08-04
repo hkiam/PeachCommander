@@ -63,6 +63,7 @@ Het menu **Ga** brengt het actieve paneel naar de mappen die je het meest gebrui
 
 ## Tips
 
+- Een paneel houdt zich zelf bij: een bestand dat een ander programma aanmaakt, wijzigt of verwijdert in de map die u bekijkt, verschijnt van zichzelf, terwijl uw cursor en uw selectie blijven staan. Zet het uit bij **Configuratie ▸ Opties ▸ Weergave** als een map waarin voortdurend wordt geschreven blijft verversen.
 - Elk paneel houdt zijn eigen geschiedenis bij, dus Terug en Vooruit beïnvloeden alleen de actieve kant.
 - Als een getypt pad geen geldige map is, houdt de padbalk stilletjes je laatste locatie aan in plaats van te navigeren.
 - Prullenmand en iCloud Drive in het menu Ga hebben geen standaardsneltoets, maar je kunt er een toewijzen in **Configuratie ▸ Opties ▸ Toetsenbord**.

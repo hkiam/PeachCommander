@@ -12,9 +12,56 @@
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. |
 | Parity inventory | Reconciled against code 2026-07-23 (4-agent audit): **59 done · 70 partial · 43 todo · 7 n/a-macos · 2 post-1.0** (was 33/40/98). See docs/product/feature-inventory.md. |
-| Last updated | 2026-08-01 |
-| Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (991 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=991 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
+| Last updated | 2026-08-04 |
+| Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1105 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1105 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
+
+## 2026-08-04 — Editor for power users · startup appearance · panels notice outside changes
+
+**Editor, five items (F-355..359) — DONE.** Line numbers in a gutter (`LineNumberRuler`,
+NSRulerView so AppKit keeps it in step). **Filter through a shell command** (⇧⌘\):
+`TextPipe` runs `zsh -lc` with the selection on stdin, stdout and stderr kept apart —
+stdout replaces the text, stderr is reported, so a `jq` error never lands in the file —
+off-main with a 20 s deadline, and the edit is dropped if the text moved meanwhile.
+Command history in `editor-filters.txt` (0600, one per line: a command contains `=`,
+`#`, `;`). **Read-only awareness** (`FileWritability`): the reason is named at *load*
+— read-only volume, another owner, permissions, immutable flag, SIP — a lock in the
+title, and the administrator prompt is suppressed where it cannot help. **Line endings**
+(`LineEndings`): LF/CRLF/CR shown next to the encoding menu, `(mixed)` when both, one
+undoable conversion. **Line operations** (`LineOperations`): sort (numeric-aware),
+reverse, dedupe, drop blank lines, trim trailing whitespace, keep/remove matching —
+in a toolbar pull-down and the menu bar, from one list so tags cannot drift.
+Undo now goes through `shouldChangeText` everywhere: assigning `textView.string`
+(as `format()` did) **clears the undo stack**.
+
+**Startup shows the configured appearance in the first frame (F-360) — DONE.**
+`ConfigStore` is an actor, so every read suspends, and the window's whole appearance
+came from ~50 of them *after* `showWindow`: palette, appearance, bar visibility, panel
+arrangement, view modes, keymap, saved frame. New `ConfigSnapshot` reads the same files
+synchronously (read-only; the actor stays the writer) and
+`applyVisualStateBeforeFirstPaint()` applies them before the window is shown.
+`Tools/vm/startup.py --expect` records the state at the moment the window appears and
+is the gate — verified by disabling the fix, which reports theme=system,
+commandLine=true, panelsVertical=true, fontSize=13.
+
+**Panels notice outside changes (F-361) — DONE.** They never did: `FSEventsWatcher`
+polled an mtime every 2 s, logged, and had **no callback**, while
+`DirectoryModel.startAutoRefresh()` started one per directory load and never stopped
+it. Replaced by a real FSEvents `DirectoryWatcher` behind the VFS seam that already
+existed (`watch(_:)` — nil for archives, FTP, plugin mounts, so "local only" is free).
+Three properties, each measured against a standalone probe rather than assumed:
+`realpath` for the watched path (`URL.resolvingSymlinksInPath()` *strips* `/private`
+and silently discarded every event); `FileEvents` for per-item paths (without it a file
+change in the folder is indistinguishable from one three levels down); leading-edge
+throttling (FSEvents' latency is not a rate limit — 200 files still arrived in 15
+batches). Cursor and marks survive. Setting: `[Configuration] WatchDirectories`
+(default on) + a Display checkbox. The help documented a 2 s polling interval that
+never existed; corrected in 19 languages.
+
+Gates: 1678 unit tests green · 13 `regress.py` scenarios at **0** Auto Layout conflicts
+(new: editor-filter, editor-filter-dialog, editor-lines, panel-autorefresh) ·
+docs 19 languages, `drifted=0`, `behind=0`. The 46 Shortcuts strings left untranslated
+by earlier work are done.
 
 ## 2026-07-30 — Localization to 19 languages · documentation system · README · plugin docs
 ## 2026-08-01 — Colour themes · button bar programs · Finder-style Info panel · Java decompiler

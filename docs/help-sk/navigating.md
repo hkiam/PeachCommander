@@ -63,6 +63,7 @@ Ponuka **Prejsť** presunie aktívny panel do priečinkov, ktoré používate na
 
 ## Tipy
 
+- Panel sa udržuje aktuálny sám: súbor, ktorý iný program v zobrazenej zložke vytvorí, zmení alebo odstráni, sa objaví sám a kurzor aj vaše označenia zostanú tam, kde boli. V **Konfigurácia ▸ Možnosti ▸ Zobrazenie** to vypnite, ak sa zložka, do ktorej sa neustále zapisuje, obnovuje bez prestania.
 - Každý panel si udržiava vlastnú históriu, takže Späť a Dopredu ovplyvňujú len aktívnu stranu.
 - Ak zadaná cesta nie je platným priečinkom, lišta cesty potichu ponechá vaše posledné umiestnenie namiesto navigácie.
 - Kôš a iCloud Drive v ponuke Prejsť nemajú predvolenú skratku, ale môžete im ju priradiť v **Nastavenia ▸ Možnosti ▸ Klávesnica**.

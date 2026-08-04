@@ -17,4 +17,5 @@ only go down.
 | editor-filter | 0 | 0 | — | `editor-filter.png` |
 | editor-filter-dialog | 0 | 0 | — | `editor-filter-dialog.png` |
 | editor-lines | 0 | 0 | — | `editor-lines.png` |
+| panel-autorefresh | 0 | 0 | — | `panel-autorefresh.png` |
 | accessibility | 0 | 0 | — | `accessibility.png` |

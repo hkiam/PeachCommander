@@ -63,6 +63,7 @@ Meniul **Salt** duce panoul activ la folderele pe care le folosiți cel mai des:
 
 ## Sfaturi
 
+- Un panou se ține la zi singur: un fișier pe care alt program îl creează, modifică sau șterge în dosarul afișat apare de la sine, iar cursorul și selecțiile rămân unde erau. Dezactivați-l din **Configurare ▸ Opțiuni ▸ Afișare** dacă un dosar în care se scrie continuu se reîmprospătează fără oprire.
 - Fiecare panou își păstrează propriul istoric, așa că Înapoi și Înainte afectează doar partea activă.
 - Dacă o cale tastată nu este un folder valid, bara de cale păstrează în tăcere ultima locație în loc să navigheze.
 - Coșul de gunoi și iCloud Drive din meniul Salt nu au o scurtătură implicită, dar puteți atribui una în **Configurare ▸ Opțiuni ▸ Tastatură**.

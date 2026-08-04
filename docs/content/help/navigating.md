@@ -63,6 +63,7 @@ The **Go** menu takes the active panel to the folders you use most:
 
 ## Tips
 
+- A panel keeps itself up to date: a file another program creates, changes, or deletes in the folder you are looking at appears on its own, with your cursor and your marks left where they were. Turn it off in **Configuration ▸ Options ▸ Display** if a folder something writes to constantly keeps refreshing.
 - Each panel keeps its own history, so Back and Forward affect only the active side.
 - If a typed path is not a valid folder, the path bar quietly keeps your last location instead of navigating.
 - Trash and iCloud Drive in the Go menu have no default shortcut, but you can assign one in **Configuration ▸ Options ▸ Keyboard**.

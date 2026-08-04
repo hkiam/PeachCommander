@@ -81,6 +81,10 @@ extension MainWindowController {
             case "editfilter": await editFilter(arg)   // editfilter <src>|<command>|<out> (F-356)
             case "editfilterdlg": await editFilterDialog(arg)   // editfilterdlg <src> (F-356)
             case "editlines":  await editLines(arg)     // editlines <src>|<out> (F-359)
+            case "mkfile":                              // mkfile <path> (F-361): create a file the way
+                // another program would — not through a panel operation, so nothing asks the panel to
+                // reload. If the file shows up, the watcher is what put it there.
+                try? "auto\n".write(toFile: arg, atomically: true, encoding: .utf8)
             case "view":       openViewer(arg)
             case "menudump":   dumpMenu(arg)
             case "a11ydump":   dumpAccessibility(arg)   // a11ydump <outfile> (I19 T06)

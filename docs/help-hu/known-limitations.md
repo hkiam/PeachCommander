@@ -25,7 +25,7 @@ A Peach Commander sokat tud, de néhány funkciónak őszinte határai vannak a 
 
 ## Mappafrissítés
 
-- **Egy panel enyhe késleltetéssel, nem azonnal veszi észre a külső változásokat.** A Peach Commander körülbelül 2 másodpercenként ellenőrzi az aktuális mappát változások szempontjából, így egy másik app által hozzáadott vagy eltávolított fájl megjelenése eltarthat egy pillanatig. Ha nem akar várni, frissítse az aktív panelt manuálisan az F2-vel vagy Ctrl+R-rel.
+- **Külső változásokat csak az ezen a Macen lévő mappáknál figyel a program.** Egy mappa ezen a Macen magától frissül, amint egy másik program fájlt hoz létre, módosít vagy töröl benne. A távoli helyeket (FTP vagy SFTP) és az archívumok belsejét nem figyeli, mert ezek a protokollok nem adnak módot az értesítésre — ott az F2 vagy a Ctrl+R olvassa be újra.
 
 ## Egyéb jelenlegi határok
 

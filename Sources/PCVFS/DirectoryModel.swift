@@ -26,7 +26,6 @@ public actor DirectoryModel {
     private var path: String = ""
     private var currentSort: SortSpec = .init(descriptor: .name(ascending: true))
     private var filter: WildcardMask?
-    private var watcher: DirectoryWatcher?
 
     /// Sort descriptor for directory entries
     public enum SortDescriptor: Equatable {
@@ -226,27 +225,13 @@ public actor DirectoryModel {
         currentSort = .init(descriptor: currentSort.descriptor, dirsFirst: dirsFirst)
     }
 
-    // MARK: - Auto-Refresh (DirectoryWatcher)
-
-    /// Start watching the current directory for changes
-    public func startAutoRefresh() {
-        guard !path.isEmpty else { return }
-
-        watcher = DirectoryWatcher(path: path)
-        // Start the watcher (async - called from actor context)
-        Task { await self.watcher?.start() }
-    }
-
-    /// Stop watching the current directory for changes
-    public func stopAutoRefresh() {
-        Task { await self.watcher?.stop() }
-        watcher = nil
-    }
-
-    /// Check if auto-refresh is enabled
-    public func isAutoRefreshEnabled() -> Bool {
-        watcher != nil
-    }
+    // MARK: - Auto-Refresh
+    //
+    // Deliberately not here any more (F-361). The model used to own a `DirectoryWatcher` and start one
+    // on every load without ever stopping it — and the watcher had no callback, so nothing could ever
+    // arrive. Watching belongs to the filesystem, which knows whether it *can* be watched:
+    // `VirtualFileSystem.watch(_:)` returns a stream for a local directory and nil for an archive, an
+    // FTP site or a plugin mount. The panel consumes that stream; see `PanelController.startWatching`.
 
     /// Reload entries from the current path
     public func reload(lister: LocalDirectoryLister) async throws -> DirectorySnapshot {
