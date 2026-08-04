@@ -9,7 +9,7 @@
 import Foundation
 import PCVFS
 
-public final class FTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, @unchecked Sendable, ResumableFileDownloading {
+public final class FTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, @unchecked Sendable, ResumableFileDownloading, ResumableFileUploading {
     private let connection: FTPControlConnection
     private let fsID: String
     /// The raw protocol log for this session, if the transport was wrapped for
@@ -129,6 +129,51 @@ public final class FTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, @
     public func disconnect() async {
         await connection.stopKeepAlive()
         await connection.quit()
+    }
+
+    /// Send a local file to `path`, resuming a partial upload (F-212).
+    ///
+    /// `REST` before `STOR`, exactly as for the download side, and the same judgement: continue only when
+    /// the remote file is *shorter* than the local one. A longer or equal remote file is not a prefix of
+    /// what we are sending, so appending would corrupt it — it is replaced instead.
+    public func uploadFile(_ source: URL, to path: VFSPath, resume: Bool) async throws
+        -> (written: Int64, resumedAt: Int64) {
+        let localSize = ((try? FileManager.default
+            .attributesOfItem(atPath: source.path)[.size] as? Int64) ?? nil) ?? 0
+        var offset: Int64 = 0
+        if resume, localSize > 0 {
+            let remoteSize = (try? await connection.size(path.path)) ?? nil ?? -1
+            if remoteSize > 0 && remoteSize < localSize { offset = remoteSize }
+        }
+        do {
+            return try await send(source, to: path.path, from: offset)
+        } catch let error as FTPError where offset > 0 && Self.isRestartRefusal(error) {
+            return try await send(source, to: path.path, from: 0)
+        } catch { throw Self.mapError(error) }
+    }
+
+    /// Read `source` from `offset` and write it to the data channel in chunks.
+    private func send(_ source: URL, to remotePath: String, from offset: Int64)
+        async throws -> (written: Int64, resumedAt: Int64) {
+        let handle = try FileHandle(forReadingFrom: source)
+        defer { try? handle.close() }
+        if offset > 0 { try handle.seek(toOffset: UInt64(offset)) }
+
+        let data = try await connection.beginUpload(remotePath, restartAt: offset)
+        var written: Int64 = 0
+        do {
+            // 64 KB at a time: the same size the download path uses, and it keeps a large file off the
+            // heap — the point of streaming rather than handing over one Data.
+            while let chunk = try handle.read(upToCount: 64 * 1024), !chunk.isEmpty {
+                try await data.write(chunk)
+                written += Int64(chunk.count)
+            }
+        } catch {
+            await data.close()
+            throw error
+        }
+        try await connection.finishUpload(data)
+        return (written, offset)
     }
 
     /// Stream a remote file into `destination`, resuming a partial download (F-212).

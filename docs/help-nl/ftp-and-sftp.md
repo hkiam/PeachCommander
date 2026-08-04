@@ -39,7 +39,7 @@ Om precies te zien wat de server zegt, open je de FTP-console vanuit het menu **
 
 ## Opmerkingen
 
-- Een afgebroken download gaat verder waar hij stopte: staat het bestand er al deels en accepteert de server een herstart, dan reist alleen de ontbrekende staart. Een server die dat weigert, begint het bestand simpelweg opnieuw. Uploads worden nog niet voortgezet.
+- Een afgebroken download gaat verder waar hij stopte: staat het bestand er al deels en accepteert de server een herstart, dan reist alleen de ontbrekende staart. Een server die dat weigert, begint het bestand simpelweg opnieuw. Een upload gaat op dezelfde manier verder, wanneer het bestand op de server korter is dan het verzonden bestand.
 - Voor FTPS-servers met een zelfondertekend certificaat zet je de optie om een niet-vertrouwd certificaat te accepteren aan in de instellingen van die verbinding.
 - Een SOCKS5-proxy kan per verbinding worden ingesteld voor gewoon FTP. Een versleutelde FTPS-verbinding via een proxy leiden wordt niet ondersteund.
 - Bestaande FTP-verbindingen uit Total Commander kunnen worden geïmporteerd.

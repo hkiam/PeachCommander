@@ -84,6 +84,8 @@ extension MainWindowController {
             case "editlines":  await editLines(arg)     // editlines <src>|<out> (F-359)
             case "sftpget":                             // sftpget <remote>|<local>|<out>|<partial> (F-366)
                 await sftpGet(arg)
+            case "sftpput":                             // sftpput <local>|<remote>|<out>|<partial> (F-212)
+                await sftpPut(arg)
             case "sftpchmod":                           // sftpchmod <path>|<octal>|<out> (F-364)
                 await sftpChmod(arg)
             case "mkfile":                              // mkfile <path> (F-361): create a file the way
@@ -630,6 +632,43 @@ extension MainWindowController {
         await session.close()
         try? report.write(toFile: a[2], atomically: true, encoding: .utf8)
         NSLog("[automation] sftpget → \(a[2])")
+    }
+
+    /// Upload a file over a real SFTP connection, then truncate the remote copy to `partial` bytes and
+    /// upload again with resume — reporting what each pass sent (F-212).
+    ///
+    /// Truncating the *remote* file is what an interrupted upload leaves behind. Whether the result is
+    /// correct is decided by `cmp` in the harness, not here.
+    private func sftpPut(_ arg: String) async {
+        let a = arg.split(separator: "|").map(String.init)
+        guard a.count == 4, let partial = Int64(a[3]) else {
+            NSLog("[automation] sftpput needs <local>|<remote>|<out>|<partialBytes>"); return
+        }
+        let session = SFTPSession()
+        var report = ""
+        do {
+            try await session.connect(host: "127.0.0.1", port: 22, user: NSUserName(),
+                                      password: nil, keyFile: nil, keyPassphrase: nil)
+            let fs = SFTPFileSystem(session: session)
+            let source = URL(fileURLWithPath: a[0])
+            let remote = VFSPath(filesystemId: "sftp", path: a[1])
+            let whole = try await fs.uploadFile(source, to: remote, resume: false)
+            report += "full=\(whole.written)\n"
+            // Cut the remote copy back: the state an upload that stopped halfway leaves.
+            let cut = try await session.read(a[1]).prefix(Int(partial))
+            let temporary = FileManager.default.temporaryDirectory
+                .appendingPathComponent("pc-cut-\(UUID().uuidString)")
+            try Data(cut).write(to: temporary)
+            _ = try await session.upload(temporary, to: a[1], from: 0)
+            try? FileManager.default.removeItem(at: temporary)
+            let resumed = try await fs.uploadFile(source, to: remote, resume: true)
+            report += "resumedAt=\(resumed.resumedAt)\ntail=\(resumed.written)\n"
+        } catch {
+            report += "error=\(error)\n"
+        }
+        await session.close()
+        try? report.write(toFile: a[2], atomically: true, encoding: .utf8)
+        NSLog("[automation] sftpput → \(a[2])")
     }
 
     /// Change a file's mode over a real SFTP connection and report what the server says afterwards.

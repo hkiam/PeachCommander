@@ -39,7 +39,7 @@ Chcete-li vidět přesně, co server říká, otevřete konzoli FTP z nabídky *
 
 ## Poznámky
 
-- Přerušené stahování pokračuje tam, kde skončilo: je-li soubor částečně na místě a server restart přijme, přenese se jen chybějící zbytek. Server, který jej odmítne, prostě začne soubor znovu. Odesílání se zatím neobnovuje.
+- Přerušené stahování pokračuje tam, kde skončilo: je-li soubor částečně na místě a server restart přijme, přenese se jen chybějící zbytek. Server, který jej odmítne, prostě začne soubor znovu. Odesílání pokračuje stejným způsobem, je-li soubor na serveru kratší než odesílaný.
 - U serverů FTPS s podepsaným vlastním certifikátem zapněte v nastavení daného připojení možnost přijmout nedůvěryhodný certifikát.
 - Proxy SOCKS5 lze nastavit pro každé připojení u prostého FTP. Směrování šifrovaného připojení FTPS přes proxy není podporováno.
 - Existující připojení FTP z Total Commanderu lze importovat.

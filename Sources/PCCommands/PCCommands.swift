@@ -82,6 +82,12 @@ public protocol PanelControllerProtocol: AnyObject {
     /// The backing .zip path when this panel is inside a rewritable archive, else
     /// nil — lets the copy command route "copy INTO an archive" (F-133/F-139).
     var currentArchiveZipPath: String? { get }
+    /// The filesystem this panel is browsing — the upload target for the other panel (F-367).
+    var currentFileSystem: VirtualFileSystem { get }
+    /// Whether this panel needs an upload rather than a local copy (F-367).
+    var isOnNetworkFilesystem: Bool { get }
+    /// Send the selection to a directory on another panel's filesystem (F-367).
+    func uploadSelection(to targetDir: String, on targetFS: VirtualFileSystem) async
     /// Copy the selection into the archive at `archiveZip`, under `subPath`
     /// (extracting first if the source is itself inside an archive — F-139).
     func copyInto(archiveZip: String, subPath: String) async
@@ -1224,6 +1230,10 @@ private func cm_Copy_handler(_ context: CommandContext) async throws {
     if let zip = inactive.currentArchiveZipPath {
         await active.copyInto(archiveZip: zip, subPath: target)
         await inactive.reloadCurrentArchive()   // re-open the rewritten zip
+    } else if inactive.isOnNetworkFilesystem {
+        // A network target needs an upload, not a local copy against a remote path string (F-367).
+        await active.uploadSelection(to: target, on: inactive.currentFileSystem)
+        await inactive.reload()
     } else {
         await active.copySelection(to: target)
         await inactive.reload()

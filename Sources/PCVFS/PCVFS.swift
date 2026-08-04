@@ -244,6 +244,18 @@ public protocol ResumableFileDownloading {
         -> (written: Int64, resumedAt: Int64)
 }
 
+/// A filesystem that can take a local file and write it to a remote path, resuming a partial one.
+///
+/// The counterpart to ``ResumableFileDownloading``, and the reason it exists is worse than convenience:
+/// copying into a network panel used to hand the *remote* path to the local copy engine, which either
+/// failed or wrote to a same-named local path while reporting success (F-367).
+public protocol ResumableFileUploading {
+    /// Send `source` to `path`. With `resume` and a remote file that is shorter, only the tail is sent.
+    /// Returns the bytes written in this call and the offset it started at.
+    func uploadFile(_ source: URL, to path: VFSPath, resume: Bool) async throws
+        -> (written: Int64, resumedAt: Int64)
+}
+
 /// File system change event for watching
 public struct VFSChangeEvent: Sendable {
     public enum ChangeType {

@@ -39,7 +39,7 @@ Para ver exactamente lo que dice el servidor, abra la consola FTP desde el menú
 
 ## Notas
 
-- Una descarga interrumpida se retoma donde se detuvo: si el archivo ya está parcialmente ahí y el servidor acepta reiniciar, solo viaja la parte que falta. Un servidor que lo rechaza simplemente empieza el archivo de nuevo. Las subidas aún no se retoman.
+- Una descarga interrumpida se retoma donde se detuvo: si el archivo ya está parcialmente ahí y el servidor acepta reiniciar, solo viaja la parte que falta. Un servidor que lo rechaza simplemente empieza el archivo de nuevo. Una subida se retoma igual, cuando el archivo en el servidor es más corto que el que se envía.
 - Para los servidores FTPS con un certificado autofirmado, active la opción de aceptar un certificado no fiable en los ajustes de esa conexión.
 - Puede configurarse un proxy SOCKS5 por conexión para FTP simple. No se admite el enrutamiento de una conexión FTPS cifrada a través de un proxy.
 - Pueden importarse las conexiones FTP existentes de Total Commander.
