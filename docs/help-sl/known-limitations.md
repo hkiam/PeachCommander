@@ -19,10 +19,6 @@ Peach Commander naredi veliko, a nekaj funkcij ima v trenutni različici pošten
 - **Spreminjanje atributov datotek prek SFTP v tej različici nima učinka.** Prek SFTP/SCP lahko brskate, prenašate in nalagate, a zahteve za spremembo dovoljenj, lastništva ali časovnih žigov na oddaljenem strežniku so tiho prezrte. Te spremembe naredite na samem strežniku, ali prek drugega protokola.
 - Ob prvi povezavi s strežnikom SFTP boste vprašani, da zaupate njegovemu ključu gostitelja. Peach Commander si ga nato zapomni (zaupanje ob prvi uporabi).
 
-## Prenašanje z URL
-
-- Ukaz **Prenesi z URL** (meni Omrežje) trenutno uporablja bližnjico Cmd+Shift+D, ki je ista bližnjica kot Pojdi > Namizje. Ko sta na voljo oba, sta menija lahko v sporu — za gotovost zaženite prenos neposredno iz menija Omrežje.
-
 ## Osveževanje map
 
 - **Za zunanje spremembe se spremljajo le mape na tem Macu.** Mapa na tem Macu se posodobi sama, brž ko drug program v njej ustvari, spremeni ali odstrani datoteko. Oddaljeno mesto (FTP ali SFTP) in notranjost arhiva se ne spremljata, saj ta protokola ne ponujata načina za obvestilo — tam pritisnite F2 ali Ctrl+R za ponovno branje.
@@ -37,7 +33,7 @@ Peach Commander naredi veliko, a nekaj funkcij ima v trenutni različici pošten
 | Dejanje | Bližnjica |
 | --- | --- |
 | Osveži dejavno podokno | F2 ali Ctrl+R |
-| Prenesi z URL | Cmd+Shift+D |
+| Prenesi z URL | Cmd+Shift+U |
 
 ## Opombe
 

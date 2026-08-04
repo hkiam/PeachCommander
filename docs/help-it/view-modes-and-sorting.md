@@ -52,4 +52,5 @@ Le cartelle sono sempre ordinate insieme in cima, prima dei file, e la voce `..`
 
 - L'ordinamento naturale (numerico) è attivo per impostazione predefinita, così `file2` viene prima di `file10` invece che dopo. Puoi disattivarlo in Configurazione > Opzioni nelle impostazioni di visualizzazione.
 - Puoi rendere una colonna più larga o più stretta nella vista Dettagli trascinando la linea di divisione tra le intestazioni delle colonne.
+- Se usate la navigazione da tastiera di macOS (Impostazioni di Sistema ▸ Tastiera), la fila da Ctrl+F1 a Ctrl+F8 appartiene al sistema — barra dei menu, Dock, barra strumenti — e non arriva mai a Peach Commander. Impostate lo schema di tasti su **macOS** nelle impostazioni: i modi di visualizzazione passano su Cmd+1, Cmd+2 e Cmd+3 e l’ordinamento su Alt+Cmd+1 fino ad Alt+Cmd+4.
 - La modalità di visualizzazione, l'ordinamento e la scelta delle colonne sono ricordati per pannello, così puoi avere un lato come elenco dettagliato e l'altro come galleria fotografica.

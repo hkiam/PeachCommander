@@ -18,4 +18,12 @@ only go down.
 | editor-filter-dialog | 0 | 0 | — | `editor-filter-dialog.png` |
 | editor-lines | 0 | 0 | — | `editor-lines.png` |
 | panel-autorefresh | 0 | 0 | — | `panel-autorefresh.png` |
+| keys-main | 0 | 0 | — | `keys-main.png` |
+| keys-find | 0 | 0 | — | `keys-find.png` |
+| keys-settings | 0 | 0 | — | `keys-settings.png` |
+| keys-editor | 0 | 0 | — | `keys-editor.png` |
+| keys-viewer | 0 | 0 | — | `keys-viewer.png` |
+| keys-editorwin | 0 | 0 | — | `keys-editorwin.png` |
+| keys-hotlist | 0 | 0 | — | `keys-hotlist.png` |
+| keys-overwrite | 0 | 0 | — | `keys-overwrite.png` |
 | accessibility | 0 | 0 | — | `accessibility.png` |

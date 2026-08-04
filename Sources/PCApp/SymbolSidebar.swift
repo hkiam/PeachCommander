@@ -15,7 +15,7 @@ final class SymbolSidebar: NSView {
     var onAvailabilityChanged: ((Bool) -> Void)?
 
     private let search = NSSearchField()
-    private let outline = NSOutlineView()
+    private let outline = NSOutlineView()   // labelled in `setup` (I19 T06)
     private let scroll = NSScrollView()
     private let controller = SymbolOutlineController()
     private let queue = DispatchQueue(label: "com.peachcommander.symbols", qos: .utility)
@@ -35,6 +35,8 @@ final class SymbolSidebar: NSView {
         search.action = #selector(filterChanged)
         search.sendsSearchStringImmediately = true
         addSubview(search)
+
+        outline.setAccessibilityLabel(String(localized: "Symbols"))
 
         outline.headerView = nil
         outline.rowSizeStyle = .small

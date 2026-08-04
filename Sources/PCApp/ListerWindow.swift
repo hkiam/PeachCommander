@@ -655,6 +655,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         case .xmlTree:
             let root = xmlRoot ?? XMLTreeNode(name: "(empty)")
             let outline = NSOutlineView()
+            outline.setAccessibilityLabel(String(localized: "XML tree"))
             let column = NSTableColumn(identifier: .init("xml"))
             column.title = "XML"
             outline.addTableColumn(column)
@@ -1504,6 +1505,12 @@ extension ViewerTextProviding {
 /// shares the editor's mark/highlight path. (Large files fall back to the
 /// virtual TextListerView/CodeListerView.)
 final class ViewerTextView: NSTextView, ViewerTextProviding {
+    /// What a screen reader announces for the viewer's content. An NSTextView with no label is read as
+    /// "text area", which says nothing about which file is in it (I19 T06).
+    override func accessibilityLabel() -> String? {
+        super.accessibilityLabel() ?? String(localized: "File contents")
+    }
+
     /// Cmd+click on an identifier → go to definition (character index).
     var onCommandClick: ((Int) -> Void)?
     var copyText: String { string }

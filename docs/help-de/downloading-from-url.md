@@ -11,7 +11,7 @@ Peach Commander kann eine Datei direkt von einer HTTP- oder HTTPS-Webadresse in 
 ## Eine Datei herunterladen
 
 1. Öffnen Sie den Panel-Ordner, in dem die Datei landen soll.
-2. Wählen Sie **Netz ▸ Von URL herunterladen** oder drücken Sie Cmd+Shift+D.
+2. Wählen Sie **Netz ▸ Von URL herunterladen** oder drücken Sie Cmd+Shift+U.
 3. Fügen Sie die Webadresse in das Feld **URL(s)** ein. Wenn Sie zuvor einen Link kopiert haben, wird er für Sie eingetragen.
 4. Prüfen Sie den Namen unter **Speichern unter** — er wird aus dem Link vorgeschlagen und Sie können ihn frei bearbeiten.
 5. Klicken Sie auf **Herunterladen**.
@@ -33,7 +33,7 @@ Wenn eine Übertragung abgeschnitten wird, behält Peach Commander das bereits E
 
 | Aktion | Kurzbefehl |
 | --- | --- |
-| Von URL herunterladen | Cmd+Shift+D |
+| Von URL herunterladen | Cmd+Shift+U |
 
 ## Tipps
 
@@ -42,4 +42,4 @@ Wenn eine Übertragung abgeschnitten wird, behält Peach Commander das bereits E
 - **Benutzerdefinierte Header.** Fügen Sie im Feld **Header** einen Header pro Zeile hinzu, zum Beispiel `Referer: …` oder `Cookie: …`, für Links, die nur mit bestimmten Anfrage-Headern funktionieren.
 - **Proxy.** Leiten Sie den Download über einen HTTP- oder SOCKS5-Proxy, indem Sie **Proxy**-Host, -Port und -Typ ausfüllen.
 - **Nicht vertrauenswürdige Zertifikate.** Aktivieren Sie **Nicht vertrauenswürdiges Zertifikat zulassen** nur für eine Website, der Sie vertrauen und die ein selbstsigniertes Zertifikat verwendet; dies deaktiviert die normale HTTPS-Sicherheitsprüfung für diesen Download.
-- **Hinweis:** Cmd+Shift+D wird an anderer Stelle auch zum Wechsel in den Schreibtisch-Ordner verwendet; wenn der Kurzbefehl diesen Dialog nicht öffnet, verwenden Sie stattdessen **Netz ▸ Von URL herunterladen** aus dem Menü.
+- **Hinweis:** Das Kürzel war früher Cmd+Shift+D, das auch „Gehe zu ▸ Schreibtisch“ verwendet — eines von beiden feuerte also nie. Das Herunterladen liegt jetzt auf Cmd+Shift+U (U wie URL), Schreibtisch behält Cmd+Shift+D wie im Finder.

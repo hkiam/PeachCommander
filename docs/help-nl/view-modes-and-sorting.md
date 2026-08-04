@@ -52,4 +52,5 @@ Mappen sorteren altijd samen bovenaan, vóór bestanden, en het item `..` dat je
 
 - Natuurlijk (numeriek) sorteren staat standaard aan, zodat `file2` vóór `file10` komt in plaats van erna. Je kunt het uitzetten in Configuratie > Opties onder de weergave-instellingen.
 - Je kunt een kolom in de weergave Details breder of smaller maken door de scheiding tussen kolomkoppen te verslepen.
+- Gebruikt u de toetsenbordnavigatie van macOS (Systeeminstellingen ▸ Toetsenbord), dan is de rij Ctrl+F1 tot Ctrl+F8 van het systeem — menubalk, Dock, knoppenbalk — en bereikt die Peach Commander nooit. Zet het toetsenschema in de instellingen op **macOS**: de weergavemodi staan dan op Cmd+1, Cmd+2 en Cmd+3 en het sorteren op Alt+Cmd+1 tot Alt+Cmd+4.
 - Weergavemodus, sorteervolgorde en kolomkeuzes worden per paneel onthouden, zodat je de ene kant als gedetailleerde lijst en de andere als een galerij met foto's kunt houden.

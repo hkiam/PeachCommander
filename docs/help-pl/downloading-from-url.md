@@ -11,7 +11,7 @@ Peach Commander może pobrać plik prosto z adresu internetowego HTTP lub HTTPS 
 ## Pobierz plik
 
 1. Otwórz folder panelu, w którym chcesz umieścić plik.
-2. Wybierz **Sieć > Pobierz z adresu URL** lub naciśnij Cmd+Shift+D.
+2. Wybierz **Sieć > Pobierz z adresu URL** lub naciśnij Cmd+Shift+U.
 3. Wklej adres internetowy w polu **Adres(y) URL**. Jeśli wcześniej skopiowałeś łącze, jest ono wypełniane za Ciebie.
 4. Sprawdź nazwę **Zapisz jako** — jest sugerowana na podstawie łącza i możesz ją dowolnie edytować.
 5. Kliknij **Pobierz**.
@@ -33,7 +33,7 @@ Jeśli transfer zostanie przerwany, Peach Commander zachowuje to, co już otrzym
 
 | Akcja | Skrót |
 | --- | --- |
-| Pobierz z adresu URL | Cmd+Shift+D |
+| Pobierz z adresu URL | Cmd+Shift+U |
 
 ## Wskazówki
 
@@ -42,4 +42,4 @@ Jeśli transfer zostanie przerwany, Peach Commander zachowuje to, co już otrzym
 - **Niestandardowe nagłówki.** Dodaj jeden nagłówek w wierszu w polu **Nagłówki**, na przykład `Referer: …` lub `Cookie: …`, dla łączy, które działają tylko z określonymi nagłówkami żądania.
 - **Serwer proxy.** Przekieruj pobieranie przez serwer proxy HTTP lub SOCKS5, wypełniając host, port i typ **Proxy**.
 - **Niezaufane certyfikaty.** Włącz **Zezwól na niezaufany certyfikat** tylko dla zaufanej witryny używającej certyfikatu z podpisem własnym; wyłącza to normalną kontrolę bezpieczeństwa HTTPS dla tego pobierania.
-- **Uwaga:** Cmd+Shift+D jest również używany w innym miejscu do przejścia do folderu Biurko; jeśli skrót nie otwiera tego okna dialogowego, użyj zamiast tego **Sieć > Pobierz z adresu URL** z menu.
+- **Uwaga:** skrót był Cmd+Shift+D, którego używa też Idź ▸ Biurko — jeden z dwóch nigdy nie działał. Pobieranie jest teraz na Cmd+Shift+U (U jak URL), a Biurko zachowuje Cmd+Shift+D, tak jak w Finderze.

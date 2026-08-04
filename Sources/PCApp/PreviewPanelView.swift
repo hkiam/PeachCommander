@@ -67,6 +67,7 @@ final class PreviewPanelView: NSView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     private func setup() {
+        segmented.setAccessibilityLabel(String(localized: "Preview mode"))
         segmented.selectedSegment = 0
         segmented.target = self
         segmented.action = #selector(modeChanged)

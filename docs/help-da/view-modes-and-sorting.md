@@ -52,4 +52,5 @@ Mapper sorteres altid sammen øverst, foran filer, og `..`-posten, der fører di
 
 - Naturlig (numerisk) sortering er slået til som standard, så `file2` kommer før `file10` i stedet for efter. Du kan slå den fra i Konfiguration > Indstillinger under visningsindstillingerne.
 - Du kan gøre en kolonne bredere eller smallere i Detaljer-visningen ved at trække i skillelinjen mellem kolonneoverskrifterne.
+- Bruger du macOS' tastaturnavigation (Systemindstillinger ▸ Tastatur), tilhører rækken Ctrl+F1 til Ctrl+F8 systemet — menulinjen, Dock, værktøjslinjen — og den når aldrig Peach Commander. Sæt tastaturskemaet til **macOS** i indstillingerne, så ligger visningstilstandene på Cmd+1, Cmd+2 og Cmd+3 og sorteringen på Alt+Cmd+1 til Alt+Cmd+4.
 - Visningstilstand, sorteringsrækkefølge og kolonnevalg huskes pr. panel, så du kan have den ene side som en detaljeret liste og den anden som et fotogalleri.

@@ -11,7 +11,7 @@ Peach Commander poate prelua un fișier direct de la o adresă web HTTP sau HTTP
 ## Descărcați un fișier
 
 1. Deschideți folderul panoului unde doriți să ajungă fișierul.
-2. Alegeți **Rețea > Descarcă de la URL** sau apăsați Cmd+Shift+D.
+2. Alegeți **Rețea > Descarcă de la URL** sau apăsați Cmd+Shift+U.
 3. Lipiți adresa web în caseta **URL-uri**. Dacă ați copiat mai întâi un link, este completat pentru dvs.
 4. Verificați numele **Salvează ca** — este sugerat din link și îl puteți edita liber.
 5. Faceți clic pe **Descarcă**.
@@ -33,7 +33,7 @@ Dacă un transfer este întrerupt, Peach Commander păstrează ce a primit deja 
 
 | Acțiune | Comandă rapidă |
 | --- | --- |
-| Descarcă de la URL | Cmd+Shift+D |
+| Descarcă de la URL | Cmd+Shift+U |
 
 ## Sfaturi
 
@@ -42,4 +42,4 @@ Dacă un transfer este întrerupt, Peach Commander păstrează ce a primit deja 
 - **Anteturi personalizate.** Adăugați un antet pe linie în caseta **Anteturi**, de exemplu `Referer: …` sau `Cookie: …`, pentru linkuri care funcționează doar cu anumite anteturi de cerere.
 - **Proxy.** Rutați descărcarea printr-un proxy HTTP sau SOCKS5 completând gazda, portul și tipul **Proxy**.
 - **Certificate neîncrezute.** Activați **Permite certificat neîncrezut** doar pentru un site de încredere care folosește un certificat autosemnat; aceasta dezactivează verificarea de securitate HTTPS normală pentru acea descărcare.
-- **Notă:** Cmd+Shift+D este folosit și în altă parte pentru a merge la folderul Birou; dacă comanda rapidă nu deschide acest dialog, folosiți în schimb **Rețea > Descarcă de la URL** din meniu.
+- **Notă:** scurtătura era Cmd+Shift+D, folosită și de Salt ▸ Birou — așa că una dintre cele două nu se declanșa niciodată. Descărcarea a trecut pe Cmd+Shift+U (U de la URL), iar Biroul păstrează Cmd+Shift+D, ca în Finder.

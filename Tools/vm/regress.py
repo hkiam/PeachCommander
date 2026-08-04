@@ -84,6 +84,43 @@ SCENARIOS = [
                            "dump /Users/admin/watch-before.txt",
                            "mkfile /Users/admin/pc-demo/auto-appeared.txt", "wait 2500",
                            "dump /Users/admin/watch-after.txt"], 10),
+    # Keyboard reachability and the menu's real shortcuts, per window (I19 T06). Each scenario opens
+    # one window and asks it what Tab reaches and what a screen reader would find.
+    # cm_SrcLong first: the view mode is persisted in peachcmd.ini and survives between scenarios, so
+    # without it this one inherited whatever the last view scenario left behind — and in Icons mode the
+    # panel's list is a different class, which made the label gate fail for the right reason in the wrong
+    # place. Found by the full run, not by running this scenario alone.
+    ("keys-main", ["active left", "left /Users/admin/pc-demo", "wait 1200", "cmd cm_SrcLong", "wait 800",
+                   "menudump /Users/admin/menu.txt",
+                   "keyloop /Users/admin/keyloop-main.txt",
+                   "a11ydump /Users/admin/a11y-main.txt", "wait 500"], 10),
+    ("keys-find", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                   "findtab 0", "wait 1500", "keyloop /Users/admin/keyloop-find.txt",
+                   "a11ydump /Users/admin/a11y-find.txt", "wait 500"], 11),
+    ("keys-settings", ["active left", "left /Users/admin", "wait 1000",
+                       "settingspage Layout", "wait 2500",
+                       "keyloop /Users/admin/keyloop-settings.txt",
+                       "a11ydump /Users/admin/a11y-settings.txt", "wait 500"], 11),
+    ("keys-editor", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                     "editfilterdlg /Users/admin/pc-demo/notes.txt", "wait 1500",
+                     "keyloop /Users/admin/keyloop-editor.txt",
+                     "a11ydump /Users/admin/a11y-editor.txt", "wait 500"], 11),
+    ("keys-viewer", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                     "focus notes.txt", "wait 400", "cmd cm_List", "wait 2000",
+                     "keyloop /Users/admin/keyloop-viewer.txt",
+                     "a11ydump /Users/admin/a11y-viewer.txt", "wait 500"], 11),
+    ("keys-editorwin", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                        "editdump /Users/admin/pc-demo/notes.txt /Users/admin/ed.txt", "wait 1800",
+                        "keyloop /Users/admin/keyloop-editorwin.txt",
+                        "a11ydump /Users/admin/a11y-editorwin.txt", "wait 500"], 11),
+    ("keys-hotlist", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                      "hotlistmanage", "wait 1500",
+                      "keyloop /Users/admin/keyloop-hotlist.txt",
+                      "a11ydump /Users/admin/a11y-hotlist.txt", "wait 500"], 11),
+    # A modal dialog: the dump is scheduled first, because `runModal` never returns to the script.
+    ("keys-overwrite", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                        "keyloopmodal /Users/admin/keyloop-overwrite.txt",
+                        "overwritedlg", "wait 2500"], 11),
     # Not a layout scenario: this one asks the app what a screen reader would find. The hand-drawn
     # bars are the case where the failure mode is *no element at all* and nothing on screen differs,
     # so it can only be caught by asking (I19 T06).
@@ -98,6 +135,37 @@ REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"
 
 # Scenarios that leave a report in the guest, and what has to be in it. The screenshot proves the
 # window drew; this proves the *edit* happened — replaced, undoable, and with the expected text.
+# Keyboard reachability is a gate, not a report to skim (I19 T06). For every window listed here the
+# key-view loop must be closed, every focusable control must be in it, and every interactive control must
+# have something to announce — because a control Tab cannot reach is never read out either, and none of
+# that is visible in a screenshot.
+#
+# `labels` are the words that must appear somewhere in the window's accessibility tree: a renamed label is
+# fine, a *missing* one means somebody removed the wiring.
+KEYBOARD_GATES = {
+    "keyloop-main.txt": ["File list, left panel", "File list, right panel"],
+    "keyloop-find.txt": ["Search options", "Search results"],
+    "keyloop-settings.txt": ["Settings pages"],
+    "keyloop-editor.txt": ["Shell command"],
+    # The remaining windows are held to reachability and labelling; no particular wording is pinned,
+    # because these are ordinary AppKit controls whose titles already say what they are.
+    "keyloop-viewer.txt": [],
+    "keyloop-editorwin.txt": [],
+    "keyloop-hotlist.txt": [],
+    "keyloop-overwrite.txt": [],
+}
+
+KEYBOARD_REPORTS = {
+    "keys-main": ["menu.txt", "keyloop-main.txt", "a11y-main.txt"],
+    "keys-find": ["keyloop-find.txt", "a11y-find.txt"],
+    "keys-settings": ["keyloop-settings.txt", "a11y-settings.txt"],
+    "keys-editor": ["keyloop-editor.txt", "a11y-editor.txt"],
+    "keys-viewer": ["keyloop-viewer.txt", "a11y-viewer.txt"],
+    "keys-editorwin": ["keyloop-editorwin.txt", "a11y-editorwin.txt"],
+    "keys-hotlist": ["keyloop-hotlist.txt", "a11y-hotlist.txt"],
+    "keys-overwrite": ["keyloop-overwrite.txt"],
+}
+
 REPORTS = {
     "editor-filter": ("/Users/admin/filter.txt",
                       ["outcome=replaced", "undo=true", "alpha.example\nbeta.example\n"]),
@@ -267,6 +335,32 @@ def main():
                 continue
             found, a11y = run_scenario(ip, host, port, pw, name, script, settle, out)
             measured[name] = found
+            for name_ in KEYBOARD_REPORTS.get(name, []):
+                text = ssh_guest(ip, f"cat /Users/admin/{name_} 2>/dev/null").stdout
+                (out / name_).write_text(text)
+                if name_ not in KEYBOARD_GATES:
+                    say(f"{name}: {name_} ({len(text.splitlines())} lines)")
+                    continue
+                if not text.strip():
+                    failures.append(f"{name}: {name_} is empty")
+                    say(f"{name}: {name_} EMPTY — the window never wrote it")
+                    continue
+                problems = []
+                fields = dict(l.split(": ", 1) for l in text.splitlines() if ": " in l)
+                if fields.get("loopClosed") != "true":
+                    problems.append("the key-view loop is not closed")
+                for key in ("unreachable", "unlabelled"):
+                    if fields.get(key, "0") != "0":
+                        problems.append(f"{fields[key]} {key}")
+                missing = [w for w in KEYBOARD_GATES[name_] if w not in text]
+                if missing:
+                    problems.append("labels missing: " + ", ".join(missing))
+                if problems:
+                    failures.append(f"{name}: {name_}: " + "; ".join(problems))
+                    say(f"{name}: KEYBOARD PROBLEM — " + "; ".join(problems))
+                else:
+                    stops = len([l for l in text.splitlines() if "tab[" in l])
+                    say(f"{name}: keyboard ok ({stops} stops, all reachable and labelled)")
             # A scenario may leave more than one report; `<name>-<suffix>` entries belong to it too.
             for key in [name] + [k for k in REPORTS if k.startswith(name + "-")]:
                 if key not in REPORTS:
@@ -303,6 +397,14 @@ def main():
         if not args.keep:
             sh(["tart", "stop", run])
             sh(["tart", "delete", run])
+
+    if (out / "menu.txt").exists():
+        audit = sh([sys.executable, str(REPO / "Tools/check-hotkeys.py"),
+                    "--menu", str(out / "menu.txt")])
+        for line in audit.stdout.strip().splitlines():
+            say("hotkeys: " + line.strip())
+        if audit.returncode != 0:
+            failures.append("hotkeys: the shortcut audit found problems (see above)")
 
     report = ["# Layout regression report", "",
               "Generated by `Tools/vm/regress.py`. Counts are Auto Layout conflicts AppKit reported",

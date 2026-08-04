@@ -11,7 +11,7 @@ Peach Commander dokáže stiahnuť súbor priamo z webovej adresy HTTP alebo HTT
 ## Stiahnite súbor
 
 1. Otvorte priečinok panela, kam chcete, aby súbor pristál.
-2. Vyberte **Sieť > Stiahnuť z URL** alebo stlačte Cmd+Shift+D.
+2. Vyberte **Sieť > Stiahnuť z URL** alebo stlačte Cmd+Shift+U.
 3. Vložte webovú adresu do poľa **URL adresy**. Ak ste najprv skopírovali odkaz, vyplní sa za vás.
 4. Skontrolujte názov **Uložiť ako** — je navrhnutý z odkazu a môžete ho voľne upraviť.
 5. Kliknite na **Stiahnuť**.
@@ -33,7 +33,7 @@ Ak sa prenos preruší, Peach Commander uchová to, čo už prijal, v dočasnom 
 
 | Akcia | Skratka |
 | --- | --- |
-| Stiahnuť z URL | Cmd+Shift+D |
+| Stiahnuť z URL | Cmd+Shift+U |
 
 ## Tipy
 
@@ -42,4 +42,4 @@ Ak sa prenos preruší, Peach Commander uchová to, čo už prijal, v dočasnom 
 - **Vlastné hlavičky.** Pridajte jednu hlavičku na riadok do poľa **Hlavičky**, napríklad `Referer: …` alebo `Cookie: …`, pre odkazy, ktoré fungujú iba s konkrétnymi hlavičkami požiadavky.
 - **Proxy.** Nasmerujte sťahovanie cez proxy HTTP alebo SOCKS5 vyplnením hostiteľa, portu a typu **Proxy**.
 - **Nedôveryhodné certifikáty.** Zapnite **Povoliť nedôveryhodný certifikát** iba pre dôveryhodnú stránku, ktorá používa samopodpísaný certifikát; vypne to normálnu bezpečnostnú kontrolu HTTPS pre dané sťahovanie.
-- **Poznámka:** Cmd+Shift+D sa používa aj inde na prechod do priečinka Plocha; ak skratka neotvorí tento dialóg, použite namiesto toho **Sieť > Stiahnuť z URL** z ponuky.
+- **Poznámka:** skratka bola Cmd+Shift+D, ktorú používa aj Prejsť ▸ Plocha — jedna z nich teda nikdy nezabrala. Stahovanie je teraz na Cmd+Shift+U (U ako URL) a Plocha si Cmd+Shift+D ponecháva, tak ako vo Finderi.

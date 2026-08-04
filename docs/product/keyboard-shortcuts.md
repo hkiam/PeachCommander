@@ -37,12 +37,18 @@ as standard function keys" hint in onboarding, or users press Fn.
 | Shift+F6 | cm_RenameOnly | Rename in place (inline editor) |
 | Shift+F8 | cm_DeleteReal | Delete bypassing Trash |
 | Shift+F10 | cm_ContextMenu | Context menu for selection |
-| Ctrl+F3..F6 | cm_SrcByName/Ext/Size/DateTime | Sort by name/ext/size/date |
-| Ctrl+F1 / Ctrl+F2 | cm_SrcShort / cm_SrcLong | Brief / Full view |
+| Ctrl+F3..F6 | cm_SrcByName/Ext/Size/DateTime | Sort by name/ext/size/date (macOS scheme: Alt+Cmd+1..4 — see the note below) |
+| Ctrl+F1 / Ctrl+F2 | cm_SrcShort / cm_SrcLong | Brief / Full view (macOS scheme: Cmd+1 / Cmd+2) |
 | Ctrl+Shift+F1 | cm_SrcThumbs | Thumbnail view |
-| Ctrl+F8 | cm_SrcTree | Tree view in panel |
+| Ctrl+F8 | cm_SrcTree | Tree view in panel (macOS scheme: Cmd+3) |
 | Ctrl+F9 / Ctrl+Shift+F9 | cm_PrintFile / cm_PrintFileList | Print |
 | Ctrl+F10..F12 | cm_SrcAllFiles / cm_SrcExeFiles / cm_SrcUserSpec | File type filter presets |
+
+> **Ctrl+F1…F8 belongs to macOS.** That whole row drives Full Keyboard Access — focusing the menu bar,
+> the Dock, the toolbar — and it is switched on precisely by people who work without a mouse, so those
+> shortcuts never reach the app for them. The TC Classic scheme keeps them because they are Total
+> Commander's, and the **macOS** scheme uses Cmd+1/2/3 for the view modes and Alt+Cmd+1…4 for sorting
+> instead. `Tools/check-hotkeys.py` holds this: the exceptions are listed there with their reasons.
 
 ## Ctrl combos (⌃ in TC Classic, most also on ⌘ in macOS Native)
 

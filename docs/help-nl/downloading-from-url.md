@@ -11,7 +11,7 @@ Peach Commander kan een bestand rechtstreeks van een HTTP- of HTTPS-webadres in 
 ## Een bestand downloaden
 
 1. Open de paneelmap waar het bestand moet terechtkomen.
-2. Kies **Netwerk > Downloaden van URL**, of druk op Cmd+Shift+D.
+2. Kies **Netwerk > Downloaden van URL**, of druk op Cmd+Shift+U.
 3. Plak het webadres in het vak **URL('s)**. Als je eerst een koppeling hebt gekopieerd, is die al ingevuld.
 4. Controleer de naam bij **Bewaar als** — hij wordt uit de koppeling voorgesteld en je kunt hem vrij bewerken.
 5. Klik op **Download**.
@@ -33,7 +33,7 @@ Wordt een overdracht afgebroken, dan bewaart Peach Commander wat het al heeft on
 
 | Actie | Sneltoets |
 | --- | --- |
-| Downloaden van URL | Cmd+Shift+D |
+| Downloaden van URL | Cmd+Shift+U |
 
 ## Tips
 
@@ -42,4 +42,4 @@ Wordt een overdracht afgebroken, dan bewaart Peach Commander wat het al heeft on
 - **Aangepaste headers.** Voeg één header per regel toe in het vak **Headers**, bijvoorbeeld `Referer: …` of `Cookie: …`, voor koppelingen die alleen met specifieke aanvraagheaders werken.
 - **Proxy.** Leid de download via een HTTP- of SOCKS5-proxy door de **Proxy**-host, -poort en -type in te vullen.
 - **Niet-vertrouwde certificaten.** Zet **Sta niet-vertrouwd certificaat toe** alleen aan voor een site die je vertrouwt en die een zelfondertekend certificaat gebruikt; het schakelt de normale HTTPS-beveiligingscontrole voor die download uit.
-- **Let op:** Cmd+Shift+D wordt elders ook gebruikt om naar de map Bureaublad te gaan; opent de sneltoets dit venster niet, gebruik dan **Netwerk > Downloaden van URL** in het menu.
+- **Let op:** de sneltoets was Cmd+Shift+D, die Ga ▸ Bureaublad ook gebruikt — een van de twee werkte dus nooit. Downloaden staat nu op Cmd+Shift+U (U van URL) en Bureaublad houdt Cmd+Shift+D, zoals in de Finder.

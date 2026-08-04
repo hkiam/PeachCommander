@@ -52,4 +52,5 @@ Ordner werden immer gemeinsam oben sortiert, vor den Dateien, und der Eintrag `.
 
 - Die natürliche (numerische) Sortierung ist standardmäßig aktiviert, sodass `file2` vor `file10` steht statt danach. Sie können sie in Konfiguration > Optionen unter den Anzeigeeinstellungen ausschalten.
 - Sie können eine Spalte in der Detailansicht verbreitern oder verschmälern, indem Sie den Trenner zwischen den Spaltenköpfen ziehen.
+- Wenn Sie die macOS-Tastaturnavigation verwenden (Systemeinstellungen ▸ Tastatur), gehört die Reihe Ctrl+F1 bis Ctrl+F8 dem System — Menüleiste, Dock, Werkzeugleiste — und erreicht Peach Commander nie. Stellen Sie das Tastenschema in den Einstellungen auf **macOS**, dann liegen die Ansichtsmodi auf Cmd+1, Cmd+2 und Cmd+3 und die Sortierung auf Alt+Cmd+1 bis Alt+Cmd+4.
 - Ansichtsmodus, Sortierreihenfolge und Spaltenauswahl werden pro Panel gemerkt, sodass Sie eine Seite als detaillierte Liste und die andere als Galerie mit Fotos behalten können.

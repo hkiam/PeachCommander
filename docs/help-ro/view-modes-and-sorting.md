@@ -52,4 +52,5 @@ Folderele se sortează întotdeauna împreună în partea de sus, înaintea fiș
 
 - Sortarea naturală (numerică) este activată implicit, astfel încât `file2` vine înaintea lui `file10` în loc de după. O puteți dezactiva în Configurare > Opțiuni în setările de vizualizare.
 - Puteți face o coloană mai lată sau mai îngustă în vizualizarea Detalii trăgând linia de separare dintre anteturile de coloană.
+- Dacă folosiți navigarea cu tastatura din macOS (Configurări sistem ▸ Tastatură), rândul Ctrl+F1 – Ctrl+F8 aparține sistemului — bara de meniu, Dock, bara de instrumente — și nu ajunge niciodată la Peach Commander. Comutați schema de taste pe **macOS** în configurări: modurile de afișare sunt atunci pe Cmd+1, Cmd+2 și Cmd+3, iar sortarea pe Alt+Cmd+1 – Alt+Cmd+4.
 - Modul de vizualizare, ordinea de sortare și alegerea coloanelor sunt reținute per panou, astfel încât puteți avea o parte ca o listă detaliată și cealaltă ca o galerie foto.

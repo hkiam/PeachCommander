@@ -3890,6 +3890,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             contextProvider: { [weak self] in self?.contributionContext() ?? ContributionContext() })
         fullMainMenu = menu
         if wasActive {
+            AppMenu.dropDuplicateItems(in: menu)
             NSApp.mainMenu = menu
             bindStandardMenus(menu)
             Task { await applyKeymapToMenu() }
@@ -3909,6 +3910,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
            let provider = window.windowController as? WindowContextMenuProviding {
             let tool = AppMenu.buildTool(menus: provider.toolMenus(),
                                          target: self, commandAction: #selector(runMenuCommand(_:)))
+            AppMenu.dropDuplicateItems(in: tool)
             NSApp.mainMenu = tool
             bindStandardMenus(tool)
         } else if window !== self.window, let menus = toolWindowMenus[ObjectIdentifier(window)] {
@@ -3918,12 +3920,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             let tool = AppMenu.buildTool(editMenu: menus.edit ?? AppMenu.standardEditMenu(),
                                          contentMenu: content,
                                          target: self, commandAction: #selector(runMenuCommand(_:)))
+            AppMenu.dropDuplicateItems(in: tool)
             NSApp.mainMenu = tool
             bindStandardMenus(tool)
         } else if window === self.window, let full = fullMainMenu {
             // Only the main window restores the full bar. Transient windows (a tool's
             // find dialog, alerts, sheets) leave the current bar in place so the menu
             // doesn't flip to the panel menu while a tool is still the user's context.
+            AppMenu.dropDuplicateItems(in: full)
             NSApp.mainMenu = full
             bindStandardMenus(full)
         }
@@ -5905,6 +5909,12 @@ final class PanelView: NSView {
         self.pathBar = PathBarView(position: position)
         self.statusBar = StatusBarView(position: position)
         super.init(frame: .zero)
+        // The file list is where a keyboard user spends the whole session, and it announced nothing:
+        // an NSTableView with no label is read as "table" (I19 T06). Which side it is matters, because
+        // the two are told apart by nothing else.
+        tableView.setAccessibilityLabel(position == .left
+            ? String(localized: "File list, left panel")
+            : String(localized: "File list, right panel"))
         setup()
     }
 
@@ -6196,6 +6206,11 @@ final class PanelView: NSView {
             contentScroll.documentView = tableView
             window?.makeFirstResponder(tableView)
         }
+        // Exchanging the scroll view's document view breaks the key-view loop, and AppKit does not
+        // rebuild it by itself (I19 T06): after switching the view mode, Tab reached nothing in the whole
+        // window — sixteen controls unreachable and the loop left open. The same shape as the Settings
+        // page swap, and found the same way: by a scenario that switches the mode before measuring.
+        KeyboardLoop.rebuild(for: window)
     }
 
     /// Cell geometry per grid mode: compact column-major rows for brief, medium

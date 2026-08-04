@@ -42,6 +42,11 @@ final class FSTreeNode {
 
 @MainActor
 final class PanelTreeView: NSView, NSOutlineViewDataSource, NSOutlineViewDelegate {
+    /// Announced instead of an unnamed outline (I19 T06).
+    override func accessibilityLabel() -> String? {
+        super.accessibilityLabel() ?? String(localized: "Folder tree")
+    }
+
     /// Called when the user picks a folder in the tree (navigate the panel there).
     var onSelect: ((String) -> Void)?
 
@@ -58,6 +63,8 @@ final class PanelTreeView: NSView, NSOutlineViewDataSource, NSOutlineViewDelegat
         super.init(frame: frameRect)
         wantsLayer = true
         layer?.backgroundColor = Theme.current.listBackground.cgColor
+
+        outline.setAccessibilityLabel(String(localized: "Folder tree"))
 
         outline.headerView = nil
         outline.rowSizeStyle = .small

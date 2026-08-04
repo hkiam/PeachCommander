@@ -52,4 +52,5 @@ Priečinky sa vždy triedia spolu hore, pred súbormi, a položka `..`, ktorá v
 
 - Prirodzené (číselné) triedenie je predvolene zapnuté, takže `file2` je pred `file10` namiesto za ním. Môžete ho vypnúť v Konfigurácia > Možnosti v nastaveniach zobrazenia.
 - Stĺpec môžete v zobrazení Podrobnosti rozšíriť alebo zúžiť potiahnutím deliacej čiary medzi hlavičkami stĺpcov.
+- Ak používate klávesovú navigáciu macOS (Nastavenia systému ▸ Klávesnica), patrí rada Ctrl+F1 až Ctrl+F8 systému — riadok ponúk, Dock, panel nástrojov — a k Peach Commanderu sa nikdy nedostane. Prepnite v nastaveniach schému klávesov na **macOS**: režimy zobrazenia sú potom na Cmd+1, Cmd+2 a Cmd+3 a zoradenie na Alt+Cmd+1 až Alt+Cmd+4.
 - Režim zobrazenia, poradie triedenia a výber stĺpcov sa pamätajú pre každý panel, takže môžete mať jednu stranu ako podrobný zoznam a druhú ako fotogalériu.

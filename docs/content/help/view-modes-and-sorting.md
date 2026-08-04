@@ -51,5 +51,6 @@ Folders always sort together at the top, ahead of files, and the `..` entry that
 ## Tips
 
 - Natural (numeric) sorting is on by default, so `file2` comes before `file10` instead of after it. You can switch it off in Settings (Cmd+,) on the Display page.
+- If you use macOS keyboard navigation (System Settings > Keyboard), the Ctrl+F1 to Ctrl+F8 row belongs to the system — focusing the menu bar, the Dock, the toolbar — and never reaches Peach Commander. Switch the key scheme to **macOS** in Settings and the view modes are on Cmd+1, Cmd+2, and Cmd+3, with sorting on Alt+Cmd+1 to Alt+Cmd+4.
 - You can widen or narrow a column in Details view by dragging the divider between column headers.
 - View mode, sort order, and column choices are remembered per panel, so you can keep one side as a detailed list and the other as a gallery of photos.

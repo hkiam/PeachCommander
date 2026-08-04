@@ -52,4 +52,5 @@ Les dossiers sont toujours regroupés en haut, devant les fichiers, et l'entrée
 
 - Le tri naturel (numérique) est activé par défaut, si bien que `file2` vient avant `file10` plutôt qu'après. Vous pouvez le désactiver dans Configuration > Options, dans les réglages d'affichage.
 - Vous pouvez élargir ou rétrécir une colonne en vue Détails en faisant glisser la séparation entre les en-têtes de colonnes.
+- Si vous utilisez la navigation clavier de macOS (Réglages Système ▸ Clavier), la rangée Ctrl+F1 à Ctrl+F8 appartient au système — barre des menus, Dock, barre d’outils — et n’atteint jamais Peach Commander. Passez le schéma de touches sur **macOS** dans les réglages : les modes d’affichage sont alors sur Cmd+1, Cmd+2 et Cmd+3, et le tri sur Alt+Cmd+1 à Alt+Cmd+4.
 - Le mode d'affichage, l'ordre de tri et le choix des colonnes sont mémorisés par panneau : vous pouvez ainsi garder un côté sous forme de liste détaillée et l'autre sous forme de galerie de photos.

@@ -19,10 +19,6 @@ Peach Commander does a lot, but a few features have honest limits in the current
 - **Changing file attributes over SFTP has no effect in this version.** You can browse, download, and upload over SFTP/SCP, but requests to change permissions, ownership, or timestamps on a remote server are silently ignored. Make those changes on the server itself, or over a different protocol.
 - On first connection to an SFTP server you'll be asked to trust its host key. Peach Commander remembers it after that (trust on first use).
 
-## Downloading from a URL
-
-- The **Download from URL** command (Net menu) currently uses the shortcut Cmd+Shift+D, which is the same shortcut as Go > Desktop. When both are available the menus can conflict — start the download from the Net menu directly to be sure.
-
 ## Directory refresh
 
 - **Only folders on this Mac are watched for outside changes.** A folder on this Mac updates by itself as soon as another program adds, changes, or removes a file in it. A remote location (FTP or SFTP) and the inside of an archive are not watched, because those protocols offer no way to be told — press F2 or Ctrl+R to re-read them.
@@ -37,7 +33,7 @@ Peach Commander does a lot, but a few features have honest limits in the current
 | Action | Shortcut |
 | --- | --- |
 | Refresh active panel | F2 or Ctrl+R |
-| Download from URL | Cmd+Shift+D |
+| Download from URL | Cmd+Shift+U |
 
 ## Notes
 

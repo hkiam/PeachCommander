@@ -200,8 +200,10 @@ enum AppMenu {
         netMenu.addItem(command(String(localized: "FTP Console…"), cmd: "cm_FtpRawCommand",
                                 key: "", mask: [], target: target, action: commandAction))
         netMenu.addItem(.separator())
+        // ⇧⌘U, not ⇧⌘D: Go ▸ Desktop has ⇧⌘D — the same key on two items means AppKit picks the first
+        // and the other never fires, which is what happened here (U for URL).
         netMenu.addItem(command(String(localized: "Download from URL…"), cmd: "cm_DownloadFromURL",
-                                key: "d", mask: [.command, .shift], target: target, action: commandAction))
+                                key: "u", mask: [.command, .shift], target: target, action: commandAction))
         netMenu.addItem(.separator())
         // "WebDAV Connect…" is contributed by the WebDAV plugin's manifest (appears
         // only when that plugin is enabled) — no longer hard-wired here.
@@ -299,8 +301,10 @@ enum AppMenu {
         // Settings live in exactly one place — this opens the same window the app menu's
         // ⌘, does. It used to be labelled "Options…" here while the app menu called the
         // *same command* "Settings…", so one feature looked like two.
+        // No key equivalent here: the app menu's Settings… already owns ⌘, (the macOS convention), and
+        // the same key on two items leaves the second one dead.
         configMenu.addItem(command(String(localized: "Settings…"), cmd: "cm_Options",
-                                   key: ",", mask: .command, target: target, action: commandAction))
+                                   key: "", mask: [], target: target, action: commandAction))
         configMenu.addItem(.separator())
         // Below: tools with their own windows, not preferences. Labelled exactly like the
         // buttons in the Settings panes that open the same windows ("Manage Plugins…",
@@ -488,6 +492,25 @@ enum AppMenu {
                                    action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         quit.keyEquivalentModifierMask = .command
         return appItem
+    }
+
+    /// Drop items that appear twice in the same submenu.
+    ///
+    /// macOS injects AutoFill, Start Dictation and Emoji & Symbols into any menu titled "Edit" when the
+    /// bar is installed as the main menu — and this app installs a *cached* bar repeatedly (main window
+    /// vs. tool windows), so the injections piled up: three "Emoji & Symbols" entries, two "Start
+    /// Dictation…". The extra copies do not get their preferred shortcut either, and AppKit gave one of
+    /// them the bare letter **E** — a menu shortcut with no modifier, which fires on any press of "e"
+    /// outside a text field. Measured in a dump of the running menu bar (I19 T06).
+    static func dropDuplicateItems(in menu: NSMenu) {
+        for top in menu.items {
+            guard let submenu = top.submenu else { continue }
+            var seen = Set<String>()
+            for item in submenu.items where !item.isSeparatorItem {
+                let identity = item.title + "|" + (item.action.map { NSStringFromSelector($0) } ?? "")
+                if !seen.insert(identity).inserted { submenu.removeItem(item) }
+            }
+        }
     }
 
     /// A standard Edit menu (Undo/Redo/Cut/Copy/Paste/Select All) routed through the

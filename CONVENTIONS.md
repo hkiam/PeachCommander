@@ -105,6 +105,24 @@ Dependency direction: `PCApp -> everything`, engine modules never import PCApp,
   toggles. `Tools/vm/startup.py --expect` is the gate: it records what the window looked
   like at the moment it was shown, which no screenshot can (the VNC framebuffer only
   refreshes on change, so the frames before the first paint are black).
+- **A window built in code is not Tab-navigable until it is told to be.**
+  `autorecalculatesKeyViewLoop` is **false** for every window created in code, so AppKit
+  never links the controls: Settings reached the page list and nothing else, Find Files
+  could be filled in but not started. `KeyboardLoop.install()` fixes it centrally, and
+  `KeyboardLoop.rebuild(for:)` is needed wherever a view is *swapped* — a Settings page,
+  a panel's view mode — because AppKit does not notice an exchange inside a scroll
+  view's document view. A control Tab cannot reach is never announced either, so this is
+  the half of accessibility that must work first. The gate is the `keys-*` scenarios in
+  `Tools/vm/regress.py`: loop closed, nothing unreachable, nothing interactive without a
+  label. Note that the *full* run catches what a single scenario cannot — view mode and
+  other settings persist in `peachcmd.ini` between scenarios, and two real defects only
+  showed up in that order.
+- **A shortcut can be a lie in four ways.** `Tools/check-hotkeys.py` reads a dump of the
+  *running* menu bar plus both scheme files and reports: a key bound twice in one scheme,
+  a scheme binding shadowed by a menu item for another command, one key on two menu
+  items, and anything macOS keeps for itself — Ctrl+F1…F8 (Full Keyboard Access) above
+  all, since that is on for keyboard-only users. Exceptions live in `ACCEPTED` **with a
+  reason**, so they can be disagreed with rather than wondered about.
 - **A hand-drawn control is invisible until it says otherwise.** A view that draws
   its own controls and handles `mouseDown` exposes *nothing* to assistive technology
   — not an unlabelled button, nothing — and the screen looks identical either way.
