@@ -14,6 +14,10 @@ only go down.
 | find-files | 0 | 0 | — | `find-files.png` |
 | settings | 0 | 0 | — | `settings.png` |
 | viewer-text | 0 | 0 | — | `viewer-text.png` |
+| editor-yaml-outline | 0 | 0 | — | `editor-yaml-outline.png` |
+| editor-xml-outline | 0 | 0 | — | `editor-xml-outline.png` |
+| editor-structure | 0 | 0 | — | `editor-structure.png` |
+| editor-validate | 0 | 0 | — | `editor-validate.png` |
 | editor-filter | 0 | 0 | — | `editor-filter.png` |
 | editor-filter-dialog | 0 | 0 | — | `editor-filter-dialog.png` |
 | editor-lines | 0 | 0 | — | `editor-lines.png` |

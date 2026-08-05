@@ -13,17 +13,32 @@ public final class SymbolNode {
     public let line: Int             // 1-based
     public let utf16Location: Int    // start offset of the name (UTF-16), for selection
     public let start: Int            // definition node start (UTF-16), for containment
-    public let end: Int              // definition node end (UTF-16)
+    /// Definition node end (UTF-16). Settable because a scanner only learns where a node ends after it
+    /// has walked the node's contents — the tree-sitter path knows it up front and sets it in `init`.
+    public var end: Int
     public var children: [SymbolNode] = []
+    /// This node as one step of a machine-readable path — `.services`, `[0]`, `server[@id='web-1']` —
+    /// set by the parser that produced the node, nil for tree-sitter definitions (a Swift function has
+    /// no query path). `name` is for people to read and may be shortened or decorated; this is not.
+    public var pathComponent: String?
+    /// What this node contributes to its *children's* paths, when that differs from its own step.
+    ///
+    /// One YAML line can be two steps: `- name: build` is element `[0]` and key `name`, so the node's own
+    /// path ends `.steps[0].name` while `run:` beneath it is `.steps[0].run` — a sibling key in the same
+    /// mapping, even though the outline nests it for display. nil means "the same as `pathComponent`".
+    public var childPathComponent: String?
 
-    public init(name: String, kind: String, line: Int, utf16Location: Int, start: Int, end: Int) {
+    public init(name: String, kind: String, line: Int, utf16Location: Int, start: Int, end: Int,
+                pathComponent: String? = nil, childPathComponent: String? = nil) {
         self.name = name; self.kind = kind; self.line = line
         self.utf16Location = utf16Location; self.start = start; self.end = end
+        self.pathComponent = pathComponent; self.childPathComponent = childPathComponent
     }
     /// Shallow copy (children replaced by the caller) — used to build filtered trees.
     public init(copy o: SymbolNode) {
         name = o.name; kind = o.kind; line = o.line
         utf16Location = o.utf16Location; start = o.start; end = o.end
+        pathComponent = o.pathComponent; childPathComponent = o.childPathComponent
     }
 }
 

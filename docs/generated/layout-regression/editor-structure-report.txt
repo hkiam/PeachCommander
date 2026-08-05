@@ -1,0 +1,20 @@
+start=34 needle=image: nginx
+Go to First Child: sel=34+0 said=Nothing is nested here.
+Go to Next Sibling: sel=51+0 said=ports
+Go to Previous Sibling: sel=34+0 said=image
+Go to Enclosing Node: sel=25+0 said=web
+Copy Structural Path: sel=25+0 said=Copied: .services.web
+Select Enclosing Node: sel=23+51 said=Selected web — 4 line(s).
+Select Enclosing Node: sel=13+129 said=Selected services — 9 line(s).
+Validate Document: sel=13+129 said=No problem found — checked for structure, tabs, duplicate keys and quotes (not a full parse).
+transforms=escapeAsJSONString,unescapeJSONString
+Escape as JSON String: sel=158+0 said=Escape as JSON String — 1 line(s). changed=true undo=true text="version: \"3\"\nservices:\n  web:\n    image: nginx\n    ports:\n      - \"80:80\"\n  db:
+Unescape JSON String: sel=142+0 said=Unescape JSON String — 10 line(s). changed=true undo=true text=version: "3"⏎services:⏎  web:⏎    image: nginx⏎    ports:⏎      - "80:80"⏎  db:⏎    image:
+fragments=10 folds=0
+Fold Node: sel=34+0 said=Folded web. fragments=8 folds=1
+Unfold All: sel=34+0 said=Unfolded 1 node(s). fragments=10 folds=0
+Fold Top Level: sel=34+0 said=Folded 1 node(s). fragments=3 folds=1
+Unfold All: sel=34+0 said=Unfolded 1 node(s). fragments=10 folds=0
+caretIntoFold: folds=0 fragments=10
+clipboard=.services.web
+shortcuts=Go to Enclosing Node|arrow Go to First Child|arrow Go to Previous Sibling|arrow Go to Next Sibling|arrow Select Enclosing Node|a Copy Structural Path|c Validate Document|v Fold Node|arrow Unfold Node|arrow Fold Top Level|arrow Unfold All|arrow

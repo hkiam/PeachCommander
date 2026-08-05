@@ -49,9 +49,15 @@ public enum SyntaxHighlighter {
         case "c", "h", "cpp", "cc", "cxx", "hpp", "hh", "m", "mm":
             return SyntaxLanguage(name: "C", keywords: cKeywords,
                                   lineComments: ["//"], blockComment: ("/*", "*/"), stringDelimiters: ["\"", "'"])
-        case "js", "mjs", "ts", "jsx", "tsx", "json":
+        case "js", "mjs", "ts", "jsx", "tsx":
             return SyntaxLanguage(name: "JavaScript", keywords: jsKeywords,
                                   lineComments: ["//"], blockComment: ("/*", "*/"), stringDelimiters: ["\"", "'", "`"])
+        case "json", "jsonc", "geojson", "webmanifest", "jsonl", "ndjson":
+            // The same lexer as JavaScript — JSON is a subset — but not the same *name*: the status line
+            // said "JavaScript" over an open .json file, which is wrong in a window that also offers to
+            // validate the document as JSON.
+            return SyntaxLanguage(name: "JSON", keywords: jsonKeywords,
+                                  lineComments: ["//"], blockComment: ("/*", "*/"), stringDelimiters: ["\""])
         case "py", "pyw":
             return SyntaxLanguage(name: "Python", keywords: pythonKeywords,
                                   lineComments: ["#"], blockComment: nil, stringDelimiters: ["\"", "'"])
@@ -214,6 +220,10 @@ public enum SyntaxHighlighter {
         "static", "struct", "union", "enum", "typedef", "if", "else", "for", "while", "do", "switch",
         "case", "default", "return", "break", "continue", "sizeof", "goto", "extern", "volatile", "inline"
     ]
+    /// JSON's three literals. Not JavaScript's keyword list: `for` and `class` are not JSON, and
+    /// highlighting them inside a string key would be a lie about the format.
+    static let jsonKeywords: Set<String> = ["true", "false", "null"]
+
     static let jsKeywords: Set<String> = [
         "function", "var", "let", "const", "if", "else", "for", "while", "do", "switch", "case",
         "default", "return", "break", "continue", "new", "class", "extends", "import", "export",

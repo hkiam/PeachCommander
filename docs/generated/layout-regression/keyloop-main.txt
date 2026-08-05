@@ -3,8 +3,11 @@ fullKeyboardAccess: true
 focused: PanelListView | File list, left panel
 autorecalculatesKeyViewLoop: true
 initialFirstResponder: NSView
-focusRefused: 59
+focusRefused: 64
   REFUSES: NSButton | » / » accepts=true hidden=true enabled=true refuses=false
+  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
@@ -59,6 +62,8 @@ focusRefused: 59
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSTextField accepts=false hidden=false enabled=true refuses=false
   REFUSES: NSTextView accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSTextView accepts=true hidden=false enabled=true refuses=false
@@ -84,14 +89,15 @@ focusRefused: 59
   tab[19]: NSClipView
   tab[20]: PanelListView | File list, right panel
   tab[21]: NSScroller
-  tab[22]: NSSegmentedControl | Preview mode
-  tab[23]: NSTextField | command…
-  tab[24]: NSButton | F3 View / F3 View
-  tab[25]: NSButton | F4 Edit / F4 Edit
-  tab[26]: NSButton | F5 Copy / F5 Copy
-  tab[27]: NSButton | F6 Move / F6 Move
-  tab[28]: NSButton | F7 NewFolder / F7 NewFolder
-  tab[29]: NSButton | F8 Delete / F8 Delete
+  tab[22]: NSScroller
+  tab[23]: NSSegmentedControl | Preview mode
+  tab[24]: NSTextField | command…
+  tab[25]: NSButton | F3 View / F3 View
+  tab[26]: NSButton | F4 Edit / F4 Edit
+  tab[27]: NSButton | F5 Copy / F5 Copy
+  tab[28]: NSButton | F6 Move / F6 Move
+  tab[29]: NSButton | F7 NewFolder / F7 NewFolder
+  tab[30]: NSButton | F8 Delete / F8 Delete
 loopClosed: true
 unreachable: 0
 unlabelled: 0

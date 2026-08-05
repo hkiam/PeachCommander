@@ -151,6 +151,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--menu", default=str(DEFAULT_MENU),
                     help="dump of the running menu bar (Tools/vm/regress.py writes it)")
+    ap.add_argument("--window-menu", action="append", default=[],
+                    help="dump of another window's menu bar (the editor's, for example). Checked for "
+                         "duplicates and reserved keys *within itself*: only one menu bar is active at "
+                         "a time, so a key on the main window's menu and on the editor's is not a "
+                         "conflict — a key on two of the editor's own items is.")
     args = ap.parse_args()
 
     problems, notes, accepted = [], [], []
@@ -199,6 +204,26 @@ def main():
                            f"{name}: {key} → {commands[0]} is shadowed by the menu item "
                            f"{menu_name} ▸ {title}" + (f" [{menu_cmd}]" if menu_cmd else ""))
 
+    # Other windows' menu bars. The editor installs its own (File/Edit/View/Search/Lines/Structure), and
+    # nothing checked those shortcuts until the Structure menu added seven of them.
+    window_menus = 0
+    for path in args.window_menu:
+        items = read_menu(Path(path))
+        if items is None:
+            notes.append(f"no menu dump at {path}")
+            continue
+        label = Path(path).stem
+        window_menus += sum(len(v) for v in items.values())
+        for key, entries in sorted(items.items()):
+            if len(entries) > 1:
+                where = "; ".join(f"{m} ▸ {t}" for m, t, _ in entries)
+                report(label, key,
+                       f"{label}: {key} is on {len(entries)} items — AppKit takes the first: {where}")
+            if key in RESERVED:
+                report(label, key,
+                       f"{label}: {key} is {RESERVED[key]} — {entries[0][0]} ▸ {entries[0][1]} "
+                       f"never receives it")
+
     for line in accepted:
         print(f"  accepted: {line}")
     for line in notes:
@@ -208,6 +233,7 @@ def main():
     total = sum(len(b) for b in schemes.values())
     print(f"schemes={len(schemes)} bindings={total} "
           f"menu_shortcuts={0 if menu is None else sum(len(v) for v in menu.values())} "
+          f"window_menu_shortcuts={window_menus} "
           f"accepted={len(accepted)} problems={len(problems)}")
     return 1 if problems else 0
 

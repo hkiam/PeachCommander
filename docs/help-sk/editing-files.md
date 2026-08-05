@@ -30,11 +30,34 @@ Okraj zobrazuje čísla riadkov, riadok s kurzorom svetlejšie než ostatné; tl
 
 - Stlačte Cmd+F na otvorenie lišty hľadania. Na nahradenie textu otvorte lištu hľadania a prepnite ju na zobrazenie nahrádzania, alebo kliknite na Hľadať/Nahradiť na paneli nástrojov.
 - Kliknite na Formátovať JSON/XML na opätovné odsadenie dokumentu JSON alebo XML do čistého, čitateľného rozloženia.
-- Kliknite na Symboly (alebo stlačte Cmd+Shift+O) na zobrazenie bočného panela, ktorý uvádza triedy, funkcie a metódy vo vašom kóde. Kliknite na položku na priamy skok na ňu.
+- Kliknite na Symboly (alebo stlačte Cmd+Shift+O) na zobrazenie bočného panela, ktorý uvádza triedy, funkcie a metódy vo vašom kóde — alebo, pri súbore JSON, YAML či XML, jeho kľúče a prvky. Kliknite na položku na priamy skok na ňu. Na čo ešte tá štruktúra je, pozri [Práca s JSON, YAML a XML](#práca-s-json-yaml-a-xml).
 - Stlačte Cmd+L na skok na konkrétny riadok.
 - Stlačte Cmd+\ na skok medzi zátvorkou a jej zodpovedajúcim partnerom.
 - Kliknite na tlačidlo mapy na zobrazenie alebo skrytie minimapy, zmenšeného prehľadu celého súboru, na ktorý môžete kliknúť na posun.
 - Použite ponuku Kódovanie na paneli nástrojov, ak bol súbor uložený v inom ako predvolenom kódovaní textu.
+
+## Práca s JSON, YAML a XML
+
+Tieto tri formáty majú vlastné zaobchádzanie, pretože konfiguračným súborom sa prechádza podľa štruktúry, a nie podľa čísel riadkov.
+
+Bočný panel **Symboly** uvádza kľúče súboru JSON alebo YAML a prvky súboru XML, vnorené tak ako dokument sám. Prvok sa pomenuje podľa atribútu `id`, `name` alebo `key`, ak ho má, takže dvadsať položiek `<server>` sa dá rozlíšiť. Zoznam zobrazuje svoje položky ako `[0]`, `[1]`, a kde položka začína kľúčom, je uvedený aj ten — `[0] name`. Filtračné pole nad zoznamom nájde kľúč podľa názvu v súbore akejkoľvek veľkosti a stavový riadok vždy zobrazuje cestu k tomu, v čom stojí kurzor.
+
+Aj poškodený súbor dostane prehľad až po miesto, kde sa rozbije — a práve tam je najviac potrebný.
+
+Ponuka **Štruktúra** — v paneli ponúk, kým je editor vpredu — vás touto štruktúrou presúva:
+
+- **Prejsť na obklopujúci uzol** (Ctrl+Cmd+Nahor) vyjde k bloku, ktorý obsahuje kurzor: od `image:` k službe, ku ktorej patrí.
+- **Prejsť na prvého potomka** (Ctrl+Cmd+Nadol) vojde dovnútra.
+- **Prejsť na predchádzajúceho / ďalšieho súrodenca** (Ctrl+Cmd+Vľavo / Vpravo) sa pohybuje medzi položkami tej istej úrovne a preskočí celý blok medzi nimi — z jedného servera na ďalší bez prechádzania štyridsiatich riadkov nastavení.
+- **Vybrať obklopujúci uzol** (Ctrl+Cmd+A) vyberie blok, v ktorom stojí kurzor. Stlačte znova a výber sa rozšíri na blok okolo, takže vyberiete presne jednu službu alebo presne jeden prvok bez ťahania myšou.
+- **Kopírovať štruktúrnu cestu** (Ctrl+Cmd+C) skopíruje pozíciu ako výraz, ktorý prijímajú nástroje daného formátu: `.services.web.ports[0]` pre JSON a YAML, ako to očakávajú `jq` a `yq`, a `//server[@id='web-1']/port` pre XML, teda XPath. Kľúče, ktoré nie sú obyčajné slová, sa za vás uzavrú do úvodzoviek — `."content-type"` a nie `.content-type`, čo v `jq` znamená niečo úplne iné.
+- **Skontrolovať dokument** (Ctrl+Cmd+V) skontroluje súbor a postaví kurzor **na problém**, s dôvodom v titulku okna. Ohlási aj to, čo žiadny iný nástroj v reťazci neohlási: duplicitný kľúč, ktorý každý parser JSON tichu prijme a jednu z oboch hodnôt zahodí, a čiarku na konci, ktorú parser od Applu prijme, ale Python, Go a `jq` odmietnu.
+
+Dlhé súbory sa čítajú tak, že sa zbalí to, na čom sa práve nepracuje. **Zbaliť uzol** (Alt+Cmd+Vľavo) zbalí blok, v ktorom stojí kurzor — najbližší, ktorý má telo, takže stlačenie na jedinom riadku zbalí mapovanie okolo neho —, **Rozbaliť uzol** (Alt+Cmd+Vpravo) ho znova otvorí, **Zbaliť najvyššiu úroveň** (Alt+Cmd+Nahor) zbalí pre prehľad všetko na najvyššej úrovni a **Rozbaliť všetko** (Alt+Cmd+Nadol) to obnoví. Riadok s kľúčom alebo značkou zostáva viditeľný a je označený, takže zbalený blok je viditeľne zbalený; čísla riadkov preskočia to, čo je skryté. Z dokumentu sa nič neodoberá — text sa iba nekreslí, takže uloženie, vrátenie a hľadanie zostávajú bez zmeny a hľadanie nájde text aj v zbalenom bloku. Umiestnenie kurzora do zbaleného miesta ho otvorí a akákoľvek úprava otvorí všetko: zbalenie je dvojica pozícií a vložený text ich posunie.
+
+Tá istá ponuka nesie prevody, ktoré prepíšu celý dokument — alebo, ak je vybraný text, len ten — v jedinom kroku, ktorý sa dá vrátiť: **Zmenšiť (jeden riadok)** pre telo JSON, ktoré sa musí zmestiť do príkazu `curl`, **Rekurzívne zoradiť kľúče**, aby dva výstupy tých istých nastavení nevykazovali žiadny rozdiel, **Zakódovať ako reťazec JSON** a **Dekódovať reťazec JSON** pre každodennú prácu vložiť certifikát, skript alebo celý dokument JSON *do* poľa JSON, a **Previesť JSON na YAML**. Zmenšenie zachováva poradie kľúčov a presný zápis každého čísla, pretože `1.0` a `1` nie sú tá istá verzia; zoraďovanie to zámerne nerobí, keďže zoradiť znamená preskládať. Kódovanie platí pre akýkoľvek súbor, nielen pre JSON. Z YAML do JSON nič nie je a je to rozhodnutie: vyžadovalo by parser YAML, ktorý v systéme nie je, a chybný odhad o kotve alebo o `true` v úvodzovkách urobí z konfiguračného súboru iný.
+
+Pri JSON a XML súbor kontroluje skutočný parser. Pre YAML žiadny v systéme nie je, takže kontrola pokrýva chyby, ktoré sa dajú nájsť aj bez neho — tabulátor použitý na odsadenie, čo YAML výslovne zakazuje, odsadenie, ktoré nezodpovedá ničomu, duplicitný kľúč, neuzavretú úvodzovku — a povie to namiesto toho, aby súbor vyhlásila za platný.
 
 ## Filtrovanie príkazom shellu
 
@@ -114,11 +137,20 @@ Formátovače môžu dodávať aj zásuvné moduly — pozri [Plugins](plugins.m
 | Zobraziť/skryť prehľad symbolov | Cmd+Shift+O |
 | Prejsť na riadok | Cmd+L |
 | Skočiť na zodpovedajúcu zátvorku | Cmd+\ |
+| Prejsť na obklopujúci uzol (JSON/YAML/XML) | Ctrl+Cmd+Nahor |
+| Prejsť na prvého potomka | Ctrl+Cmd+Nadol |
+| Prejsť na predchádzajúceho / ďalšieho súrodenca | Ctrl+Cmd+Vľavo / Vpravo |
+| Vybrať obklopujúci uzol | Ctrl+Cmd+A |
+| Kopírovať štruktúrnu cestu | Ctrl+Cmd+C |
+| Skontrolovať dokument | Ctrl+Cmd+V |
+| Zbaliť / rozbaliť uzol | Alt+Cmd+Vľavo / Vpravo |
+| Zbaliť najvyššiu úroveň / rozbaliť všetko | Alt+Cmd+Nahor / Nadol |
 | Späť / Znova (šestnástkový editor) | Cmd+Z / Cmd+Shift+Z |
 | Filtrovať výber príkazom | Shift+Cmd+\ |
 
 ## Poznámky
 
-- Zvýrazňovanie syntaxe pokrýva JSON, C, C#, Java, JavaScript, TypeScript, Python a Rust. Iné typy súborov sa stále otvárajú a upravujú normálne so základným zafarbením, ale podrobné zvýrazňovanie a prehľad symbolov sú dostupné iba pre podporované jazyky.
+- Zvýraznenie syntaxe pokrýva JSON, C, C#, Java, JavaScript, TypeScript, Python a Rust. Ostatné typy súborov sa stále otvárajú a upravujú normálne so základným obarvením, ale podrobné zvýraznenie je dostupné len pre podporované jazyky.
+- Prehľad pokrýva podporované programovacie jazyky a navyše JSON, YAML a XML — vrátane formátov založených na XML, ako sú `.plist`, `.svg`, `.csproj` a `.storyboard`. Príkazy pre štruktúrnu navigáciu, cestu a kontrolu platia pre JSON, YAML a XML.
 - Prehľad symbolov a Prejsť na riadok platia pre textový editor. Šestnástkový editor je určený na binárnu kontrolu a úpravy na úrovni bajtov, nie na text.
 - Oba editory uchovávajú zálohu pôvodného súboru pri prvom uložení, takže náhodnú zmenu je ľahké vrátiť obnovením tej zálohy.

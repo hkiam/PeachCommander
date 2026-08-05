@@ -30,11 +30,34 @@ De kantlijn toont regelnummers, met de regel van de cursor lichter dan de rest; 
 
 - Druk op Cmd+F om de zoekbalk te openen. Om tekst te vervangen, open je de zoekbalk en schakel je over naar de vervangweergave, of klik je op Zoeken/Vervangen in de werkbalk.
 - Klik op JSON/XML opmaken om een JSON- of XML-document opnieuw in te springen tot een nette, leesbare indeling.
-- Klik op Symbolen (of druk op Cmd+Shift+O) om een zijbalk te tonen die de klassen, functies en methoden in je code opsomt. Klik op een item om er direct naartoe te springen.
+- Klik op Symbolen (of druk op Cmd+Shift+O) om een zijbalk te tonen die de klassen, functies en methoden in je code opsomt — of, bij een JSON-, YAML- of XML-bestand, de sleutels en elementen ervan. Klik op een item om er direct naartoe te springen. Zie [Werken met JSON, YAML en XML](#werken-met-json-yaml-en-xml) voor waar die structuur verder goed voor is.
 - Druk op Cmd+L om naar een specifieke regel te springen.
 - Druk op Cmd+\ om te springen tussen een haakje en zijn bijbehorende partner.
 - Klik op de kaartknop om de minimap te tonen of te verbergen, een geschaald overzicht van het hele bestand waarop je kunt klikken om te scrollen.
 - Gebruik het menu Codering in de werkbalk als het bestand is opgeslagen in iets anders dan de standaard tekstcodering.
+
+## Werken met JSON, YAML en XML
+
+Deze drie formaten krijgen een eigen behandeling, want een configuratiebestand doorloop je op structuur en niet op regelnummer.
+
+De zijbalk **Symbolen** somt de sleutels van een JSON- of YAML-bestand en de elementen van een XML-bestand op, genest zoals het document zelf. Een element wordt genoemd naar zijn attribuut `id`, `name` of `key` als het er een heeft, zodat twintig `<server>`-items van elkaar te onderscheiden zijn. Een lijst toont zijn items als `[0]`, `[1]`, en waar een item met een sleutel begint, staat die er ook bij — `[0] name`. Het filterveld boven de lijst vindt een sleutel op naam in een bestand van elke grootte, en de statusbalk toont altijd het pad naar dat waarin de cursor staat.
+
+Ook een kapot bestand krijgt een overzicht tot het punt waar het misgaat, en juist dan heb je er het meest aan.
+
+Het menu **Structuur** — in de menubalk zolang de editor vooraan staat — beweegt je door die structuur:
+
+- **Ga naar omliggende knoop** (Ctrl+Cmd+Omhoog) gaat naar buiten, naar het blok waarin de cursor staat: van `image:` naar de dienst waartoe het hoort.
+- **Ga naar eerste kind** (Ctrl+Cmd+Omlaag) gaat naar binnen.
+- **Ga naar vorige / volgende broer of zus** (Ctrl+Cmd+Links / Rechts) gaat tussen items op hetzelfde niveau en stapt over het hele blok ertussen — van de ene server naar de volgende zonder langs veertig regels instellingen te scrollen.
+- **Omliggende knoop selecteren** (Ctrl+Cmd+A) selecteert het blok waarin de cursor staat. Nog een keer indrukken laat de selectie groeien naar het blok eromheen, zodat je precies één dienst of precies één element selecteert zonder te slepen.
+- **Structuurpad kopiëren** (Ctrl+Cmd+C) kopieert de positie van de cursor als een uitdrukking die de eigen gereedschappen van het formaat aannemen: `.services.web.ports[0]` voor JSON en YAML, wat `jq` en `yq` verwachten, en `//server[@id='web-1']/port` voor XML, dus een XPath. Sleutels die geen gewone woorden zijn, worden voor je tussen aanhalingstekens gezet — `."content-type"` en niet `.content-type`, wat in `jq` iets heel anders betekent.
+- **Document valideren** (Ctrl+Cmd+V) controleert het bestand en zet de cursor **op het probleem**, met de reden in de venstertitel. Het meldt wat niets anders in de gereedschapsketen meldt: een dubbele sleutel, die elke JSON-parser stilzwijgend accepteert terwijl een van de twee waarden verdwijnt, en een komma aan het eind, die Apple's eigen parser accepteert en Python, Go en `jq` weigeren.
+
+Lange bestanden lees je door in te klappen waar je niet aan werkt. **Knoop inklappen** (Option+Cmd+Links) klapt het blok in waar de cursor staat — het naastgelegen blok dat een body heeft, zodat één regel indrukken de omliggende mapping inklapt —, **Knoop uitklappen** (Option+Cmd+Rechts) opent het weer, **Bovenste niveau inklappen** (Option+Cmd+Omhoog) klapt alles op het buitenste niveau in voor een overzicht, en **Alles uitklappen** (Option+Cmd+Omlaag) herstelt het. De regel met de sleutel of de tag blijft zichtbaar en wordt gemarkeerd, zodat een ingeklapt blok zichtbaar ingeklapt is; de regelnummers slaan over wat verborgen is. Er wordt niets uit het document verwijderd — de tekst wordt alleen niet getekend, dus bewaren, ongedaan maken en zoeken blijven gelijk, en zoeken vindt nog steeds tekst binnen een ingeklapt blok. De cursor in een inklapping zetten opent die, en elke bewerking opent alles: een inklapping is een paar posities, en ingevoegde tekst verschuift ze.
+
+Hetzelfde menu bevat de transformaties, die het hele document herschrijven — of, als er tekst geselecteerd is, alleen die tekst — in één stap die je ongedaan kunt maken: **Verkleinen (één regel)** voor een JSON-body die in een `curl`-opdracht moet passen, **Sleutels recursief sorteren** zodat twee exports van dezelfde instellingen geen verschil meer laten zien, **Als JSON-tekenreeks escapen** en **JSON-tekenreeks unescapen** voor het dagelijkse werk om een certificaat, een script of een heel JSON-document *in* een JSON-veld te zetten, en **JSON naar YAML omzetten**. Verkleinen houdt de volgorde van de sleutels en de exacte schrijfwijze van elk getal aan, want `1.0` en `1` zijn niet dezelfde versie; sorteren doet dat opzettelijk niet, omdat sorteren een herordening is. Escapen geldt voor elk bestand, niet alleen voor JSON. Van YAML naar JSON is er niets, en dat is een besluit: het zou een YAML-parser vereisen die het systeem niet heeft, en een verkeerde aanname over een anchor of een aangehaalde `true` maakt van een configuratiebestand een ander bestand.
+
+Voor JSON en XML wordt het bestand door een echte parser gecontroleerd. Voor YAML is er geen parser op het systeem, dus dekt de controle de fouten die zonder parser te vinden zijn — een tab om te indenteren, wat YAML uitdrukkelijk verbiedt, een indentatie die bij niets past, een dubbele sleutel, een niet-afgesloten aanhalingsteken — en zegt dat ook, in plaats van het bestand geldig te verklaren.
 
 ## Filteren via een shell-opdracht
 
@@ -114,11 +137,20 @@ Plugins kunnen ook opmakers aanleveren — zie [Plugins](plugins.md).
 | Symbooloverzicht tonen/verbergen | Cmd+Shift+O |
 | Ga naar regel | Cmd+L |
 | Naar bijbehorend haakje springen | Cmd+\ |
+| Ga naar omliggende knoop (JSON/YAML/XML) | Ctrl+Cmd+Omhoog |
+| Ga naar eerste kind | Ctrl+Cmd+Omlaag |
+| Ga naar vorige / volgende broer of zus | Ctrl+Cmd+Links / Rechts |
+| Omliggende knoop selecteren | Ctrl+Cmd+A |
+| Structuurpad kopiëren | Ctrl+Cmd+C |
+| Document valideren | Ctrl+Cmd+V |
+| Knoop inklappen / uitklappen | Option+Cmd+Links / Rechts |
+| Bovenste niveau inklappen / alles uitklappen | Option+Cmd+Omhoog / Omlaag |
 | Ongedaan maken / opnieuw (hex-editor) | Cmd+Z / Cmd+Shift+Z |
 | Selectie via een opdracht filteren | Shift+Cmd+\ |
 
 ## Opmerkingen
 
-- Syntaxkleuring dekt JSON, C, C#, Java, JavaScript, TypeScript, Python en Rust. Andere bestandstypen openen en bewerken nog steeds normaal met basiskleuring, maar gedetailleerde kleuring en het symbooloverzicht zijn alleen beschikbaar voor de ondersteunde talen.
+- Syntaxkleuring dekt JSON, C, C#, Java, JavaScript, TypeScript, Python en Rust. Andere bestandstypen openen en bewerken nog steeds normaal met basiskleuring, maar gedetailleerde kleuring is alleen beschikbaar voor de ondersteunde talen.
+- Het overzicht dekt de ondersteunde programmeertalen plus JSON, YAML en XML — inclusief de op XML gebaseerde formaten zoals `.plist`, `.svg`, `.csproj` en `.storyboard`. De opdrachten voor structuurnavigatie, pad en validatie gelden voor JSON, YAML en XML.
 - Het symbooloverzicht en de functie Ga naar regel gelden voor de teksteditor. De hex-editor is bedoeld voor binaire inspectie en bewerkingen op byteniveau, niet voor tekst.
 - Beide editors bewaren de eerste keer dat je opslaat een back-up van het oorspronkelijke bestand, zodat een onbedoelde wijziging eenvoudig ongedaan te maken is door die back-up te herstellen.

@@ -1,11 +1,20 @@
-window: notes.txt
+window: stack.yml
 AXUnknown
   AXScrollArea
     AXOutline | Symbols
     AXScrollBar = 0
   AXSplitGroup
     AXScrollArea
-      AXTextArea | File contents = notes, for the viewer scenario
+      AXTextArea | File contents = version: "3"
+services:
+  web:
+    image: nginx
+    ports:
+      - "80:80"
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: peach
 
       AXScrollBar = 1
       AXScrollBar = 0

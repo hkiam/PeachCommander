@@ -82,6 +82,7 @@ extension MainWindowController {
             case "editfilter": await editFilter(arg)   // editfilter <src>|<command>|<out> (F-356)
             case "editfilterdlg": await editFilterDialog(arg)   // editfilterdlg <src> (F-356)
             case "editlines":  await editLines(arg)     // editlines <src>|<out> (F-359)
+            case "editstruct": await editStructure(arg) // editstruct <src>|<needle>|<out> (F-369)
             case "sftpget":                             // sftpget <remote>|<local>|<out>|<partial> (F-366)
                 await sftpGet(arg)
             case "sftpput":                             // sftpput <local>|<remote>|<out>|<partial> (F-212)
@@ -591,10 +592,16 @@ extension MainWindowController {
         win.automationShowSidebar()                          // visible during the natural load
         try? await Task.sleep(nanoseconds: 1_400_000_000)   // let the background parse + reload settle
         let cells = win.automationRenderedSymbols()          // read live state, no forced reload
-        let text = "count=\(cells.count)\n" + cells.enumerated().map { i, s in
+        var text = "count=\(cells.count)\n" + cells.enumerated().map { i, s in
             let blank = s.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             return "\(blank ? "BLANK!" : "  ok  ")[\(i)] \(s)"
         }.joined(separator: "\n") + "\n"
+        // The status line as it stands after loading — the caret is at the top, so the breadcrumb must
+        // describe the top — and then the path for a caret placed in the middle of the document.
+        text += "status=\(win.automationStatusLine())\n"
+        text += "crumb@0=\(win.automationBreadcrumb(at: 0))\n"
+        let middle = ((try? String(contentsOfFile: a[0], encoding: .utf8))?.utf16.count ?? 0) / 2
+        text += "crumb@mid=\(win.automationBreadcrumb(at: middle))\n"
         try? text.write(toFile: a[1], atomically: true, encoding: .utf8)
         NSLog("[automation] editdump \(cells.count) rendered rows → \(a[1])")
     }
@@ -726,6 +733,24 @@ extension MainWindowController {
         let report = win.automationLineOperations()
         try? report.write(toFile: a[1], atomically: true, encoding: .utf8)
         NSLog("[automation] editlines → \(a[1])")
+    }
+
+    /// Open `src`, put the caret on `needle`, and drive the Structure menu (F-369).
+    ///
+    /// Usage: `editstruct <src>|<needle>|<out>`. The sidebar is shown so the screenshot proves the tree
+    /// and the navigation belong to the same document.
+    private func editStructure(_ arg: String) async {
+        let a = arg.split(separator: "|").map(String.init)
+        guard a.count == 3 else { NSLog("[automation] editstruct needs <src>|<needle>|<out>"); return }
+        let win = EditorWindowController(path: a[0])
+        automationEditors.append(win)
+        win.showWindow(nil)
+        win.window?.makeKeyAndOrderFront(nil)
+        win.automationShowSidebar()
+        try? await Task.sleep(nanoseconds: 1_400_000_000)      // let the background parse settle
+        let report = win.automationStructure(startAt: a[1])
+        try? report.write(toFile: a[2], atomically: true, encoding: .utf8)
+        NSLog("[automation] editstruct → \(a[2])")
     }
 
     /// Open `src` in the editor and put the filter prompt on screen for a screenshot (F-356).

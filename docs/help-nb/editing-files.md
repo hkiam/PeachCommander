@@ -30,11 +30,34 @@ Margen viser linjenumre, med linja du står på lysere enn de andre; knappen ved
 
 - Trykk Cmd+F for å åpne finn-linjen. For å erstatte tekst, åpne finn-linjen og bytt til erstatt-visningen, eller klikk Finn/Erstatt i verktøylinjen.
 - Klikk Formater JSON/XML for å innrykke et JSON- eller XML-dokument på nytt til et rent, lesbart oppsett.
-- Klikk Symboler (eller trykk Cmd+Shift+O) for å vise et sidefelt som lister opp klassene, funksjonene og metodene i koden din. Klikk på en oppføring for å hoppe rett til den.
+- Klikk Symboler (eller trykk Cmd+Shift+O) for å vise et sidefelt som lister opp klassene, funksjonene og metodene i koden din — eller, for en JSON-, YAML- eller XML-fil, nøklene og elementene i den. Klikk på en oppføring for å hoppe rett til den. Se [Arbeid med JSON, YAML og XML](#arbeid-med-json-yaml-og-xml) for hva strukturen ellers er god for.
 - Trykk Cmd+L for å hoppe til en bestemt linje.
 - Trykk Cmd+\ for å hoppe mellom en parentes og dens tilhørende motpart.
 - Klikk kart-knappen for å vise eller skjule minikartet, en skalert oversikt over hele filen som du kan klikke på for å rulle.
 - Bruk Tegnkoding-menyen i verktøylinjen hvis filen ble lagret i noe annet enn standard tekstkoding.
+
+## Arbeid med JSON, YAML og XML
+
+Disse tre formatene får sin egen behandling, for en konfigurasjonsfil navigeres etter struktur og ikke etter linjenumre.
+
+Sidefeltet **Symboler** lister nøklene i en JSON- eller YAML-fil og elementene i en XML-fil, nøstet slik dokumentet selv er. Et element navngis etter attributtet `id`, `name` eller `key` når det har ett, slik at tjue `<server>`-oppføringer kan skilles fra hverandre. En liste viser oppføringene som `[0]`, `[1]`, og der en oppføring begynner med en nøkkel, vises også den — `[0] name`. Filterfeltet over listen finner en nøkkel på navn i en fil av enhver størrelse, og statuslinjen viser alltid banen til det innsettingspunktet står i.
+
+Også en ødelagt fil får en oversikt fram til stedet der den bryter sammen, og det er nettopp da man trenger den mest.
+
+Menyen **Struktur** — i menylinjen så lenge redigeringsvinduet er fremst — flytter deg rundt i den strukturen:
+
+- **Gå til omsluttende node** (Ctrl+Cmd+Opp) går ut til blokken som inneholder innsettingspunktet: fra `image:` til tjenesten det hører til.
+- **Gå til første barn** (Ctrl+Cmd+Ned) går inn.
+- **Gå til forrige / neste søsken** (Ctrl+Cmd+Venstre / Høyre) flytter mellom oppføringer på samme nivå og hopper over hele blokken imellom — fra én tjener til den neste uten å rulle forbi førti linjer med innstillinger.
+- **Merk omsluttende node** (Ctrl+Cmd+A) merker blokken innsettingspunktet står i. Trykk igjen, og merkingen vokser til blokken rundt den, slik at du merker nøyaktig én tjeneste, eller nøyaktig ett element, uten å dra.
+- **Kopier den strukturelle banen** (Ctrl+Cmd+C) kopierer posisjonen som et uttrykk formatets egne verktøy tar imot: `.services.web.ports[0]` for JSON og YAML, som er hva `jq` og `yq` forventer, og `//server[@id='web-1']/port` for XML, altså en XPath. Nøkler som ikke er vanlige ord, settes i anførselstegn for deg — `."content-type"` og ikke `.content-type`, som i `jq` betyr noe helt annet.
+- **Valider dokumentet** (Ctrl+Cmd+V) sjekker filen og setter innsettingspunktet **på problemet**, med grunnen i vindustittelen. Den rapporterer det ingenting annet i verktøykjeden rapporterer: en duplisert nøkkel, som enhver JSON-tolker godtar i stillhet mens en av de to verdiene forsvinner, og et etterfølgende komma, som Apples egen tolker godtar, men Python, Go og `jq` avviser.
+
+Lange filer leses ved å folde sammen det man ikke arbeider med. **Fold sammen noden** (Tilvalg+Cmd+Venstre) folder sammen blokken der innsettingspunktet står — den nærmeste som har et innhold, slik at et trykk på en enkelt linje folder sammen tilordningen rundt den —, **Fold ut noden** (Tilvalg+Cmd+Høyre) åpner den igjen, **Fold sammen øverste nivå** (Tilvalg+Cmd+Opp) folder sammen alt på det ytterste nivået for en oversikt, og **Fold ut alt** (Tilvalg+Cmd+Ned) gjenoppretter det. Linjen med nøkkelen eller taggen blir synlig og merkes, slik at en sammenfoldet blokk synlig er sammenfoldet; linjenumrene hopper over det som er skjult. Ingenting fjernes fra dokumentet — teksten blir bare ikke tegnet, så lagring, angring og søk er upåvirket, og søket finner fortsatt tekst inne i en sammenfoldet blokk. Å sette innsettingspunktet inn i en folding åpner den, og enhver redigering åpner alt: en folding er et par posisjoner, og innsatt tekst flytter dem.
+
+Den samme menyen rommer omformingene, som skriver om hele dokumentet — eller, hvis tekst er merket, bare den — i ett angrbart steg: **Forminsk (én linje)** for en JSON-kropp som må passe i en `curl`-kommando, **Sorter nøkler rekursivt** slik at to eksporter av de samme innstillingene ikke lenger viser noen forskjell, **Escape som JSON-streng** og **Unescape JSON-streng** for det daglige strevet med å legge et sertifikat, et skript eller et helt JSON-dokument *inni* et JSON-felt, og **Konverter JSON til YAML**. Forminskingen beholder rekkefølgen på nøklene og den nøyaktige skrivemåten til hvert tall, for `1.0` og `1` er ikke samme versjon; sorteringen gjør det med hensikt ikke, siden sortering er en omorganisering. Escaping gjelder enhver fil, ikke bare JSON. Fra YAML til JSON finnes ingenting, og det er en beslutning: det ville kreve en YAML-tolker systemet ikke har, og en feil antakelse om et anker eller en `true` i anførselstegn gjør en konfigurasjonsfil til en annen.
+
+For JSON og XML sjekkes filen av en virkelig tolker. For YAML finnes ingen på systemet, så sjekken dekker feilene som kan finnes uten en — en tabulator brukt til innrykk, som YAML uttrykkelig forbyr, et innrykk som ikke passer med noe, en duplisert nøkkel, et uavsluttet anførselstegn — og sier det, i stedet for å erklære filen gyldig.
 
 ## Filtrer gjennom en shell-kommando
 
@@ -114,11 +137,20 @@ Programtillegg kan også bidra med formaterere — se [Plugins](plugins.md).
 | Vis/skjul symboloversikt | Cmd+Shift+O |
 | Gå til linje | Cmd+L |
 | Hopp til tilhørende parentes | Cmd+\ |
+| Gå til omsluttende node (JSON/YAML/XML) | Ctrl+Cmd+Opp |
+| Gå til første barn | Ctrl+Cmd+Ned |
+| Gå til forrige / neste søsken | Ctrl+Cmd+Venstre / Høyre |
+| Merk omsluttende node | Ctrl+Cmd+A |
+| Kopier den strukturelle banen | Ctrl+Cmd+C |
+| Valider dokumentet | Ctrl+Cmd+V |
+| Fold sammen / fold ut noden | Tilvalg+Cmd+Venstre / Høyre |
+| Fold sammen øverste nivå / fold ut alt | Tilvalg+Cmd+Opp / Ned |
 | Angre / gjør om (heksredigering) | Cmd+Z / Cmd+Shift+Z |
 | Filtrer utvalget gjennom en kommando | Shift+Cmd+\ |
 
 ## Merknader
 
-- Syntaksutheving dekker JSON, C, C#, Java, JavaScript, TypeScript, Python og Rust. Andre filtyper åpnes og redigeres fortsatt normalt med grunnleggende farging, men detaljert utheving og symboloversikten er bare tilgjengelig for de støttede språkene.
+- Syntaksutheving dekker JSON, C, C#, Java, JavaScript, TypeScript, Python og Rust. Andre filtyper åpnes og redigeres fortsatt normalt med grunnleggende farging, men detaljert utheving er bare tilgjengelig for de støttede språkene.
+- Oversikten dekker de støttede programmeringsspråkene i tillegg til JSON, YAML og XML — inkludert de XML-baserte formatene som `.plist`, `.svg`, `.csproj` og `.storyboard`. Kommandoene for strukturnavigasjon, bane og validering gjelder JSON, YAML og XML.
 - Symboloversikten og Gå til linje-funksjonene gjelder tekstredigeringsprogrammet. Det heksadesimale redigeringsprogrammet er ment for binærinspeksjon og redigering på byte-nivå, ikke for tekst.
 - Begge redigeringsprogrammene beholder en sikkerhetskopi av originalfilen første gang du lagrer, slik at en utilsiktet endring er lett å angre ved å gjenopprette den sikkerhetskopien.

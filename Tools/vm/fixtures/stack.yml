@@ -1,0 +1,10 @@
+version: "3"
+services:
+  web:
+    image: nginx
+    ports:
+      - "80:80"
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: peach

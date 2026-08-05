@@ -119,7 +119,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-119 | Lister plugins (PLX) integration + multiple viewers per type (1..n switch) | ev: symbol:PLXLister ev: plugin:SampleLister | SPEC-012 | I16 | P1 | done |
 | F-120 | View files inside archives (extract-to-temp transparently) | Via VFS | SPEC-007 | I09 | P1 | done |
 | F-121 | Copy text selection, save-as, print from Lister | ev: symbol:NSPrintOperation ev: symbol:docCopy | SPEC-005 | I07 | P2 | done |
-| F-122 | F4 edit: open in configured editor (default TextEdit/VS Code detect); Shift+F4 new file | Editor per extension config; ev: symbol:FileAssociations ev: cm_Edit | SPEC-004 | I04 | P1 | done |
+| F-122 | F4 edit: open in configured editor (default TextEdit/VS Code detect); Shift+F4 new file | Editor per extension config; the built-in editor outlines JSON/YAML/XML and navigates, selects, folds, transforms, copies a jq/XPath path and validates by structure (F-368 … F-371); ev: symbol:FileAssociations ev: cm_Edit ev: symbol:StructureOutline ev: symbol:StructureNavigation ev: test:StructurePathTests ev: test:StructureValidatorTests ev: scenario:editor-structure ev: scenario:editor-validate ev: scenario:editor-yaml-outline ev: symbol:EditorFolding ev: symbol:StructureTransforms ev: test:StructureTransformsTests | SPEC-004 | I04 | P1 | done |
 | F-123 | Quick Look integration (Space alternative / dedicated key) | Cmd+Y (cm_QuickLook) | SPEC-015 | I18 | P3 | done |
 
 ## 6. Archives

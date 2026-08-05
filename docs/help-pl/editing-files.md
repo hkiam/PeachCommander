@@ -30,11 +30,34 @@ Marginesw pokazuje numery wierszy, wiersz z kursorem jaśniej niż pozostałe; p
 
 - Naciśnij Cmd+F, aby otworzyć pasek wyszukiwania. Aby zamienić tekst, otwórz pasek wyszukiwania i przełącz go na widok zamiany, lub kliknij Znajdź/Zamień na pasku narzędzi.
 - Kliknij Formatuj JSON/XML, aby ponownie wciąć dokument JSON lub XML do czystego, czytelnego układu.
-- Kliknij Symbole (lub naciśnij Cmd+Shift+O), aby wyświetlić pasek boczny wymieniający klasy, funkcje i metody w kodzie. Kliknij wpis, aby przeskoczyć do niego bezpośrednio.
+- Kliknij Symbole (lub naciśnij Cmd+Shift+O), aby wyświetlić pasek boczny wymieniający klasy, funkcje i metody w kodzie — albo, w pliku JSON, YAML czy XML, jego klucze i elementy. Kliknij wpis, aby przeskoczyć do niego bezpośrednio. Do czego jeszcze służy ta struktura, zobacz [Praca z JSON, YAML i XML](#praca-z-json-yaml-i-xml).
 - Naciśnij Cmd+L, aby przeskoczyć do konkretnego wiersza.
 - Naciśnij Cmd+\, aby przeskakiwać między nawiasem a jego pasującym odpowiednikiem.
 - Kliknij przycisk mapy, aby pokazać lub ukryć minimapę, skalowany przegląd całego pliku, w który możesz kliknąć, aby przewinąć.
 - Użyj menu Kodowanie na pasku narzędzi, jeśli plik został zapisany w innym niż domyślne kodowaniu tekstu.
+
+## Praca z JSON, YAML i XML
+
+Te trzy formaty mają własne traktowanie, bo po pliku konfiguracyjnym poruszamy się według struktury, a nie numerów wierszy.
+
+Pasek boczny **Symbole** wymienia klucze pliku JSON lub YAML oraz elementy pliku XML, zagnieżdżone tak jak sam dokument. Element bierze nazwę ze swojego atrybutu `id`, `name` lub `key`, jeśli go ma, więc dwadzieścia wpisów `<server>` da się rozróżnić. Lista pokazuje swoje wpisy jako `[0]`, `[1]`, a gdy wpis zaczyna się kluczem, pokazany jest również on — `[0] name`. Pole filtra nad listą znajduje klucz po nazwie w pliku dowolnej wielkości, a pasek stanu zawsze pokazuje ścieżkę do tego, w czym stoi kursor.
+
+Nawet uszkodzony plik dostaje konspekt aż do miejsca, w którym się psuje — i właśnie wtedy jest najbardziej potrzebny.
+
+Menu **Struktura** — w pasku menu, dopóki edytor jest na wierzchu — przenosi cię po tej strukturze:
+
+- **Przejdź do węzła nadrzędnego** (Ctrl+Cmd+Góra) wychodzi do bloku zawierającego kursor: od `image:` do usługi, do której należy.
+- **Przejdź do pierwszego dziecka** (Ctrl+Cmd+Dół) wchodzi w głąb.
+- **Przejdź do poprzedniego / następnego rodzeństwa** (Ctrl+Cmd+Lewo / Prawo) przechodzi między wpisami tego samego poziomu, przeskakując cały blok pomiędzy — z jednego serwera na następny bez przewijania czterdziestu wierszy ustawień.
+- **Zaznacz węzeł nadrzędny** (Ctrl+Cmd+A) zaznacza blok, w którym stoi kursor. Naciśnij ponownie i zaznaczenie rośnie do bloku wokół niego, więc zaznaczysz dokładnie jedną usługę albo dokładnie jeden element bez przeciągania.
+- **Kopiuj ścieżkę strukturalną** (Ctrl+Cmd+C) kopiuje pozycję jako wyrażenie, które przyjmują narzędzia danego formatu: `.services.web.ports[0]` dla JSON i YAML, czego oczekują `jq` i `yq`, oraz `//server[@id='web-1']/port` dla XML, czyli XPath. Klucze, które nie są zwykłymi słowami, są za ciebie ujmowane w cudzysłowy — `."content-type"`, a nie `.content-type`, co w `jq` znaczy coś zupełnie innego.
+- **Sprawdź dokument** (Ctrl+Cmd+V) sprawdza plik i ustawia kursor **na problemie**, z powodem w tytule okna. Zgłasza też to, czego nie zgłosi nic innego w łańcuchu narzędzi: zduplikowany klucz, który każdy parser JSON przyjmuje w milczeniu, odrzucając jedną z dwóch wartości, oraz przecinek na końcu, który parser Apple przyjmuje, a Python, Go i `jq` odrzucają.
+
+Długie pliki czyta się, zwijając to, nad czym się w danej chwili nie pracuje. **Zwiń węzeł** (Option+Cmd+Lewo) zwija blok, w którym stoi kursor — najbliższy, który ma treść, więc naciśnięcie na pojedynczym wierszu zwija otaczające go odwzorowanie —, **Rozwiń węzeł** (Option+Cmd+Prawo) otwiera go ponownie, **Zwiń najwyższy poziom** (Option+Cmd+Góra) zwija dla przeglądu wszystko na najbardziej zewnętrznym poziomie, a **Rozwiń wszystko** (Option+Cmd+Dół) przywraca stan. Wiersz z kluczem albo znacznikiem pozostaje widoczny i jest oznaczony, więc zwinięty blok widocznie jest zwinięty; numery wierszy pomijają to, co ukryte. Z dokumentu nic nie jest usuwane — tekst po prostu nie jest rysowany, więc zapisywanie, cofanie i wyszukiwanie pozostają bez zmian, a wyszukiwanie nadal znajduje tekst wewnątrz zwiniętego bloku. Ustawienie kursora w zwinięciu otwiera je, a każda edycja otwiera wszystko: zwinięcie to para pozycji, a wstawiony tekst je przesuwa.
+
+To samo menu zawiera przekształcenia, które przepisują cały dokument — albo, gdy tekst jest zaznaczony, tylko ten fragment — w jednym kroku, który da się cofnąć: **Zmniejsz (jeden wiersz)** dla treści JSON, która musi zmieścić się w poleceniu `curl`, **Sortuj klucze rekurencyjnie**, aby dwa eksporty tych samych ustawień nie pokazywały żadnej różnicy, **Zakoduj jako łańcuch JSON** i **Odkoduj łańcuch JSON** do codziennej mozolnej pracy wstawiania certyfikatu, skryptu albo całego dokumentu JSON *do* pola JSON, oraz **Przekształć JSON na YAML**. Zmniejszanie zachowuje kolejność kluczy i dokładny zapis każdej liczby, bo `1.0` i `1` to nie ta sama wersja; sortowanie celowo tego nie robi, bo sortowanie jest zmianą kolejności. Kodowanie dotyczy każdego pliku, nie tylko JSON. Z YAML do JSON nie ma nic i jest to decyzja: wymagałoby to parsera YAML, którego system nie ma, a błędne założenie co do zakotwiczenia albo `true` w cudzysłowie zmienia plik konfiguracyjny w inny.
+
+Dla JSON i XML plik sprawdza prawdziwy parser. Dla YAML nie ma go w systemie, więc sprawdzanie obejmuje błędy, które da się znaleźć bez niego — tabulator użyty do wcięcia, czego YAML wyraźnie zabrania, wcięcie niepasujące do niczego, zduplikowany klucz, niezamknięty cudzysłów — i mówi to wprost, zamiast uznawać plik za prawidłowy.
 
 ## Filtrowanie przez polecenie powłoki
 
@@ -114,11 +137,20 @@ Wtyczki też mogą dostarczać formatery — zobacz [Plugins](plugins.md).
 | Pokaż/ukryj konspekt symboli | Cmd+Shift+O |
 | Przejdź do wiersza | Cmd+L |
 | Przeskocz do pasującego nawiasu | Cmd+\ |
+| Przejdź do węzła nadrzędnego (JSON/YAML/XML) | Ctrl+Cmd+Góra |
+| Przejdź do pierwszego dziecka | Ctrl+Cmd+Dół |
+| Przejdź do poprzedniego / następnego rodzeństwa | Ctrl+Cmd+Lewo / Prawo |
+| Zaznacz węzeł nadrzędny | Ctrl+Cmd+A |
+| Kopiuj ścieżkę strukturalną | Ctrl+Cmd+C |
+| Sprawdź dokument | Ctrl+Cmd+V |
+| Zwiń / rozwiń węzeł | Option+Cmd+Lewo / Prawo |
+| Zwiń najwyższy poziom / rozwiń wszystko | Option+Cmd+Góra / Dół |
 | Cofnij / Ponów (edytor szesnastkowy) | Cmd+Z / Cmd+Shift+Z |
 | Filtruj zaznaczenie przez polecenie | Shift+Cmd+\ |
 
 ## Uwagi
 
-- Podświetlanie składni obejmuje JSON, C, C#, Java, JavaScript, TypeScript, Python i Rust. Inne typy plików nadal otwierają się i edytują normalnie z podstawowym kolorowaniem, ale szczegółowe podświetlanie i konspekt symboli są dostępne tylko dla obsługiwanych języków.
+- Podświetlanie składni obejmuje JSON, C, C#, Java, JavaScript, TypeScript, Python i Rust. Inne typy plików nadal otwierają się i edytują normalnie z podstawowym kolorowaniem, ale szczegółowe podświetlanie jest dostępne tylko dla obsługiwanych języków.
+- Konspekt obejmuje obsługiwane języki programowania oraz JSON, YAML i XML — w tym formaty oparte na XML, takie jak `.plist`, `.svg`, `.csproj` i `.storyboard`. Polecenia nawigacji strukturalnej, ścieżki i sprawdzania dotyczą JSON, YAML i XML.
 - Konspekt symboli i Przejdź do wiersza dotyczą edytora tekstu. Edytor szesnastkowy jest przeznaczony do inspekcji binarnej i edycji na poziomie bajtów, a nie do tekstu.
 - Oba edytory zachowują kopię zapasową oryginalnego pliku przy pierwszym zapisie, więc przypadkową zmianę łatwo cofnąć, przywracając tę kopię.
