@@ -30,11 +30,34 @@ Marginea arată numerele de linie, cu linia cursorului mai deschisă decât rest
 
 - Apăsați Cmd+F pentru a deschide bara de căutare. Pentru a înlocui text, deschideți bara de căutare și comutați-o la vizualizarea de înlocuire, sau faceți clic pe Găsește/Înlocuiește în bara de instrumente.
 - Faceți clic pe Formatează JSON/XML pentru a re-indenta un document JSON sau XML într-o dispunere curată, lizibilă.
-- Faceți clic pe Simboluri (sau apăsați Cmd+Shift+O) pentru a afișa o bară laterală care listează clasele, funcțiile și metodele din codul dvs. Faceți clic pe o intrare pentru a sări direct la ea.
+- Faceți clic pe Simboluri (sau apăsați Cmd+Shift+O) pentru a afișa o bară laterală care listează clasele, funcțiile și metodele din codul dvs. — sau, pentru un fișier JSON, YAML ori XML, cheile și elementele sale. Faceți clic pe o intrare pentru a sări direct la ea. Pentru la ce mai este bună această structură, vedeți [Lucrul cu JSON, YAML și XML](#lucrul-cu-json-yaml-și-xml).
 - Apăsați Cmd+L pentru a sări la o linie anume.
 - Apăsați Cmd+\ pentru a sări între o paranteză și perechea ei.
 - Faceți clic pe butonul hartă pentru a afișa sau ascunde harta miniaturală, o prezentare generală la scară a întregului fișier pe care puteți face clic pentru a derula.
 - Folosiți meniul Codificare din bara de instrumente dacă fișierul a fost salvat în altă codificare de text decât cea implicită.
+
+## Lucrul cu JSON, YAML și XML
+
+Aceste trei formate primesc un tratament propriu, pentru că un fișier de configurare se parcurge după structură și nu după numere de linie.
+
+Bara laterală **Simboluri** listează cheile unui fișier JSON sau YAML și elementele unui fișier XML, încuibate așa cum este documentul însuși. Un element este denumit după atributul său `id`, `name` sau `key` atunci când are unul, astfel încât douăzeci de intrări `<server>` pot fi deosebite. O listă își arată intrările ca `[0]`, `[1]`, iar acolo unde o intrare începe cu o cheie, este afișată și aceasta — `[0] name`. Câmpul de filtrare de deasupra listei găsește o cheie după nume într-un fișier de orice dimensiune, iar bara de stare arată mereu calea către ceea ce conține cursorul.
+
+Chiar și un fișier defect primește un contur până la locul în care se rupe — exact atunci când ai cea mai mare nevoie de el.
+
+Meniul **Structură** — în bara de meniuri cât timp editorul este în față — te mută prin această structură:
+
+- **Salt la nodul care conține** (Ctrl+Cmd+Sus) iese la blocul care conține cursorul: de la `image:` la serviciul de care aparține.
+- **Salt la primul copil** (Ctrl+Cmd+Jos) intră.
+- **Salt la fratele anterior / următor** (Ctrl+Cmd+Stânga / Dreapta) se mută între intrări de la același nivel, sărind peste tot blocul dintre ele — de la un server la următorul fără a derula patruzeci de linii de setări.
+- **Selectează nodul care conține** (Ctrl+Cmd+A) selectează blocul în care se află cursorul. Apasă din nou și selecția crește până la blocul din jurul lui, astfel încât selectezi exact un serviciu sau exact un element fără a trage cu mausul.
+- **Copiază calea structurală** (Ctrl+Cmd+C) copiază poziția ca o expresie pe care o acceptă uneltele formatului: `.services.web.ports[0]` pentru JSON și YAML, ceea ce așteaptă `jq` și `yq`, și `//server[@id='web-1']/port` pentru XML, adică un XPath. Cheile care nu sunt cuvinte simple sunt puse între ghilimele pentru tine — `."content-type"` și nu `.content-type`, care în `jq` înseamnă cu totul altceva.
+- **Validează documentul** (Ctrl+Cmd+V) verifică fișierul și pune cursorul **pe problemă**, cu motivul în titlul ferestrei. Raportează și ceea ce nimic altceva din lanțul de unelte nu raportează: o cheie duplicată, pe care orice analizor JSON o acceptă în silențiu, renunțând la una dintre cele două valori, și o virgulă finală, pe care analizorul Apple o acceptă, dar Python, Go și `jq` o refuză.
+
+Fișierele lungi se citesc restrângând ceea ce nu vă preocupă acum. **Restrânge nodul** (Opțiune+Cmd+Stânga) restrânge blocul în care se află cursorul — cel mai apropiat care are un corp, astfel încât o apăsare pe o singură linie restrânge maparea din jurul ei —, **Extinde nodul** (Opțiune+Cmd+Dreapta) îl redeschide, **Restrânge nivelul superior** (Opțiune+Cmd+Sus) restrânge tot nivelul cel mai exterior pentru o privire de ansamblu, iar **Extinde tot** (Opțiune+Cmd+Jos) readuce totul. Linia cu cheia sau eticheta rămâne vizibilă și este marcată, astfel încât un bloc restrâns se vede ca restrâns; numerele de linie sar peste ce este ascuns. Din document nu se elimină nimic — textul pur și simplu nu este desenat, așa că salvarea, anularea și căutarea rămân neschimbate, iar căutarea găsește textul și într-un bloc restrâns. Punerea cursorului într-o restrângere o deschide, iar orice editare deschide tot: o restrângere este o pereche de poziții, iar textul inserat le mută.
+
+Același meniu poartă transformările, care rescriu întregul document — sau, când este selectat text, doar acel text — într-un singur pas ce poate fi anulat: **Micșorează (o linie)** pentru un corp JSON care trebuie să încapă într-o comandă `curl`, **Sortează cheile recursiv** pentru ca două exporturi ale acelorași setări să nu mai arate nicio diferență, **Escapează ca șir JSON** și **Deescapează șirul JSON** pentru corvoada zilnică de a pune un certificat, un script sau un document JSON întreg *în* un câmp JSON, și **Convertește JSON în YAML**. Micșorarea păstrează ordinea cheilor și scrierea exactă a fiecărui număr, pentru că `1.0` și `1` nu sunt aceeași versiune; sortarea nu o face, în mod deliberat, fiindcă a sorta însemnă a reordona. Escaparea se aplică oricărui fișier, nu doar JSON. Din YAML în JSON nu există nimic, și este o decizie: ar avea nevoie de un analizor YAML pe care sistemul nu îl are, iar o presupunere greșită despre o ancoră sau despre un `true` între ghilimele transformă un fișier de configurare în altul.
+
+Pentru JSON și XML fișierul este verificat de un analizor adevărat. Pentru YAML nu există niciunul în sistem, așa că verificarea acoperă greșelile ce pot fi găsite fără el — un tabulator folosit pentru indentare, ceea ce YAML interzice explicit, o indentare care nu corespunde nimicului, o cheie duplicată, ghilimele neînchise — și o spune, în loc să declare fișierul valid.
 
 ## Filtrare printr-o comandă shell
 
@@ -114,11 +137,20 @@ args = format -
 | Afișează/ascunde conturul simbolurilor | Cmd+Shift+O |
 | Salt la linie | Cmd+L |
 | Salt la paranteza pereche | Cmd+\ |
+| Salt la nodul care conține (JSON/YAML/XML) | Ctrl+Cmd+Sus |
+| Salt la primul copil | Ctrl+Cmd+Jos |
+| Salt la fratele anterior / următor | Ctrl+Cmd+Stânga / Dreapta |
+| Selectează nodul care conține | Ctrl+Cmd+A |
+| Copiază calea structurală | Ctrl+Cmd+C |
+| Validează documentul | Ctrl+Cmd+V |
+| Restrânge / extinde nodul | Opțiune+Cmd+Stânga / Dreapta |
+| Restrânge nivelul superior / extinde tot | Opțiune+Cmd+Sus / Jos |
 | Anulează / Refă (editor hexazecimal) | Cmd+Z / Cmd+Shift+Z |
 | Filtrează selecția printr-o comandă | Shift+Cmd+\ |
 
 ## Note
 
-- Evidențierea sintaxei acoperă JSON, C, C#, Java, JavaScript, TypeScript, Python și Rust. Alte tipuri de fișiere se deschid și se editează în continuare normal cu colorare de bază, dar evidențierea detaliată și conturul simbolurilor sunt disponibile doar pentru limbajele acceptate.
+- Evidențierea sintaxei acoperă JSON, C, C#, Java, JavaScript, TypeScript, Python și Rust. Alte tipuri de fișiere se deschid și se editează în continuare normal cu colorare de bază, dar evidențierea detaliată este disponibilă doar pentru limbajele acceptate.
+- Conturul acoperă limbajele de programare acceptate plus JSON, YAML și XML — inclusiv formatele bazate pe XML, precum `.plist`, `.svg`, `.csproj` și `.storyboard`. Comenzile de navigare structurală, cale și validare se aplică pentru JSON, YAML și XML.
 - Conturul simbolurilor și Salt la linie se aplică editorului de text. Editorul hexazecimal este destinat inspecției binare și editărilor la nivel de octet, nu textului.
 - Ambii editori păstrează o copie de rezervă a fișierului original la prima salvare, astfel încât o modificare accidentală este ușor de anulat restaurând acea copie de rezervă.

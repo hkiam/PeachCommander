@@ -68,6 +68,22 @@ SCENARIOS = [
                   "settingspage Layout", "wait 2500"], 10),
     ("viewer-text", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                      "focus notes.txt", "wait 500", "cmd cm_List", "wait 2000"], 10),
+    # Does the sidebar show the structure of a YAML or XML file (F-368)? It was empty for JSON, YAML and
+    # XML — the three formats an administrator edits most. `editdump` reports the rows actually rendered
+    # into the live outline, so an entry that exists only in the parser cannot pass here.
+    ("editor-yaml-outline", ["editdump /Users/admin/pc-demo/stack.yml /Users/admin/yaml-outline.txt",
+                             "wait 2000"], 10),
+    ("editor-xml-outline", ["editdump /Users/admin/pc-demo/hosts.xml /Users/admin/xml-outline.txt",
+                            "wait 2000"], 10),
+    # Structural navigation, selection, the path and validation, driven through the real menu items
+    # (F-369). `editstruct` sends each menu item and reports where the caret went — an item whose target
+    # is wrong is disabled on screen and works perfectly when its method is called directly.
+    ("editor-structure", ["editstruct /Users/admin/pc-demo/stack.yml|image: nginx|"
+                          "/Users/admin/structure.txt", "wait 2000"], 10),
+    # And the other half: a file with a trailing comma, which Apple's parser accepts and Python, Go and
+    # jq refuse. The caret must land on the comma.
+    ("editor-validate", ["editstruct /Users/admin/pc-demo/broken.json|\"debug\"|"
+                         "/Users/admin/validate.txt", "wait 2000"], 10),
     # The editor's filter (F-356), in two pictures: the prompt, and the document after a command ran.
     # Reading the text back is not enough — a text view has held a whole document and rendered none
     # of it, and that is exactly this window.
@@ -123,10 +139,13 @@ SCENARIOS = [
                      "focus notes.txt", "wait 400", "cmd cm_List", "wait 2000",
                      "keyloop /Users/admin/keyloop-viewer.txt",
                      "a11ydump /Users/admin/a11y-viewer.txt", "wait 500"], 11),
+    # A structured file, not notes.txt: the editor builds its Structure menu only for JSON/YAML/XML, and
+    # those seven shortcuts were unchecked by the hotkey gate until this dump existed.
     ("keys-editorwin", ["active left", "left /Users/admin/pc-demo", "wait 1200",
-                        "editdump /Users/admin/pc-demo/notes.txt /Users/admin/ed.txt", "wait 1800",
+                        "editdump /Users/admin/pc-demo/stack.yml /Users/admin/ed.txt", "wait 1800",
                         "keyloop /Users/admin/keyloop-editorwin.txt",
-                        "a11ydump /Users/admin/a11y-editorwin.txt", "wait 500"], 11),
+                        "a11ydump /Users/admin/a11y-editorwin.txt",
+                        "menudump /Users/admin/menu-editor.txt", "wait 500"], 11),
     ("keys-hotlist", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                       "hotlistmanage", "wait 1500",
                       "keyloop /Users/admin/keyloop-hotlist.txt",
@@ -186,7 +205,7 @@ KEYBOARD_REPORTS = {
     "keys-settings": ["keyloop-settings.txt", "a11y-settings.txt"],
     "keys-editor": ["keyloop-editor.txt", "a11y-editor.txt"],
     "keys-viewer": ["keyloop-viewer.txt", "a11y-viewer.txt"],
-    "keys-editorwin": ["keyloop-editorwin.txt", "a11y-editorwin.txt"],
+    "keys-editorwin": ["keyloop-editorwin.txt", "a11y-editorwin.txt", "menu-editor.txt"],
     "keys-hotlist": ["keyloop-hotlist.txt", "a11y-hotlist.txt"],
     "keys-overwrite": ["keyloop-overwrite.txt"],
 }
@@ -203,6 +222,47 @@ REPORTS = {
     "sftp-upload": ("/Users/admin/sftpput.txt", ["full=40960", "resumedAt=15000", "tail=25960"]),
     "panel-autorefresh-before": ("/Users/admin/watch-before.txt", ["!auto-appeared.txt"]),
     # CRLF in, CRLF out — shown as <CR> so a terminator that vanished is visible in the report.
+    # The rows the outline rendered, not what the parser returned: mapping keys, a nested mapping, the
+    # index label for a sequence entry — and no row that came out blank ("BLANK!" is what editdump marks
+    # a row with nothing visible in it, which is precisely the old bug's signature).
+    "editor-yaml-outline": ("/Users/admin/yaml-outline.txt",
+                            ["version", "services", "web", "image", "ports", "[0]", "db", "!BLANK!",
+                             # The caret is at the top after loading, so the breadcrumb must say so.
+                             "crumb@0=version", "crumb@mid=services \u203a web"]),
+    # Elements are labelled by their identifying attribute, so two <server> rows are told apart.
+    "editor-xml-outline": ("/Users/admin/xml-outline.txt",
+                           ["server #web-1", "port", "tls", "server #web-2", "!BLANK!",
+                            "crumb@0=", "crumb@mid=server #web-1"]),
+    # Where the caret went, not what a function returned. `stack.yml` line 4 is `image: nginx` inside
+    # `services.web`, so: in → `ports`, next → nothing (beep), out → `web`, and the copied path is a yq
+    # expression. "NOT WIRED" is what the report says for a menu item that cannot fire.
+    "editor-structure": ("/Users/admin/structure.txt",
+                         ["!NOT WIRED",
+                          "Go to First Child: sel=", "said=ports",
+                          # The path is copied *after* the move out, so it is `web`'s, not `image`'s —
+                          # the report corrected this expectation, not the other way round.
+                          "clipboard=.services.web",
+                          "Copied: .services.web",
+                          "Select Enclosing Node: sel=",
+                          # The arrow keys, so a lost key equivalent is visible as text.
+                          "Go to Enclosing Node|arrow",
+                          # A YAML file offers only the two escaping transforms; minify and sort keys are
+                          # JSON's. The menu being format-dependent is the assertion here.
+                          "transforms=escapeAsJSONString,unescapeJSONString",
+                          # Folding (F-371): fragments must *drop* when a node is folded and come back
+                          # when it is unfolded, and a caret placed inside a fold must open it.
+                          "Fold Node: sel=", "Fold Top Level:", "Unfold All:",
+                          "caretIntoFold: folds=0",
+                          "!NO SUCH ITEM"]),
+    # The same scenario also exercises the transformations (F-370), because they need a *JSON* document:
+    # keys sorted, then that minified to one line, then converted to YAML, then the whole thing escaped as
+    # a JSON string. Each step reports whether the text actually changed and whether undo is available —
+    # a transformation that clears the undo stack is the defect this project has shipped before.
+    "editor-validate": ("/Users/admin/validate.txt",
+                        ["!NOT WIRED", "!NO SUCH ITEM", "Trailing comma",
+                         "transforms=minify,sortKeys,escapeAsJSONString,unescapeJSONString,jsonToYAML",
+                         "Sort Keys", "changed=true", "undo=true",
+                         "Minify", "Convert JSON to YAML", "Escape as JSON String"]),
     "editor-lines": ("/Users/admin/lines.txt",
                      ["endings=CRLF", "undo=true", "keep me<CR>",
                       # Four lines in the fixture, and the status line must say four — not "1 line(s)",
@@ -279,6 +339,12 @@ def boot(app: str, run: str):
         app.rstrip("/") + "/", f"{GUEST}@{ip}:pc-test/{APPNAME}/"])
     sh(["scp", *SSH, str(Path(__file__).with_name("regress-guest.sh")), f"{GUEST}@{ip}:regress-guest.sh"])
     ssh_guest(ip, "chmod +x regress-guest.sh")
+    # Structured fixtures for the outline scenarios (F-368) are files, not printf: YAML and XML are
+    # significant-whitespace, quote-heavy formats, and generating them through python → ssh → sh → printf
+    # is how the first two attempts at this produced garbage on the guest.
+    ssh_guest(ip, "mkdir -p pc-demo")
+    for fixture in sorted((Path(__file__).with_name("fixtures")).glob("*")):
+        sh(["scp", *SSH, str(fixture), f"{GUEST}@{ip}:pc-demo/{fixture.name}"])
     # An SFTP target for the attribute scenario (F-364): the guest talks to its own sshd, authenticating
     # with a key it generates for itself. Nothing types a password, and the app picks the key up from
     # ~/.ssh/id_ed25519 on its own.
@@ -451,7 +517,8 @@ def main():
 
     if (out / "menu.txt").exists():
         audit = sh([sys.executable, str(REPO / "Tools/check-hotkeys.py"),
-                    "--menu", str(out / "menu.txt")])
+                    "--menu", str(out / "menu.txt"),
+                    "--window-menu", str(out / "menu-editor.txt")])
         for line in audit.stdout.strip().splitlines():
             say("hotkeys: " + line.strip())
         if audit.returncode != 0:

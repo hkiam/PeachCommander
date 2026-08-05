@@ -30,11 +30,34 @@ The gutter shows line numbers, with the line you are on brighter than the rest; 
 
 - Press Cmd+F to open the find bar. To replace text, open the find bar and switch it to the replace view, or click Find/Replace in the toolbar.
 - Click Format to re-indent the file into a clean, readable layout. See [Formatting a file](#formatting-a-file) below for which file types this covers. The button is greyed out when nothing can format the file you have open.
-- Click Symbols (or press Cmd+Shift+O) to show a sidebar that lists the classes, functions, and methods in your code. Click an entry to jump straight to it.
+- Click Symbols (or press Cmd+Shift+O) to show a sidebar that lists the classes, functions, and methods in your code — or, for a JSON, YAML or XML file, its keys and elements. Click an entry to jump straight to it. See [Work with JSON, YAML and XML](#work-with-json-yaml-and-xml) for what else that structure is good for.
 - Press Cmd+L to jump to a specific line.
 - Press Cmd+\ to jump between a bracket and its matching partner.
 - Click the map button to show or hide the minimap, a scaled overview of the whole file you can click to scroll.
 - Use the Encoding menu in the toolbar if the file was saved in something other than the default text encoding.
+
+## Work with JSON, YAML and XML
+
+These three formats get their own treatment, because a configuration file is navigated by structure and not by line number.
+
+The **Symbols** sidebar lists the keys of a JSON or YAML file and the elements of an XML file, nested the way the document is. An element is named by its `id`, `name` or `key` attribute where it has one, so twenty `<server>` entries are told apart. A list shows its entries as `[0]`, `[1]`, and where each entry starts with a key, that key is shown too — `[0] name`. The filter field above the list finds a key by name in a file of any size, and the status line always shows the path to whatever the cursor is inside.
+
+A broken file still gets an outline down to the point where it breaks, which is when you most want one.
+
+The **Structure** menu — in the menu bar while the editor is in front — moves you around that structure:
+
+- **Go to Enclosing Node** (Ctrl+Cmd+Up) moves out to the block that contains the cursor: from `image:` to the service it belongs to.
+- **Go to First Child** (Ctrl+Cmd+Down) moves in.
+- **Go to Previous / Next Sibling** (Ctrl+Cmd+Left / Right) moves between entries at the same level, stepping over the whole block in between — from one server to the next without scrolling past forty lines of settings.
+- **Select Enclosing Node** (Ctrl+Cmd+A) selects the block the cursor is in. Press it again and the selection grows to the block around that one, so you can select exactly one service, or exactly one element, without dragging.
+- **Copy Structural Path** (Ctrl+Cmd+C) copies the cursor's position as an expression the format's own tools take: `.services.web.ports[0]` for JSON and YAML, which is what `jq` and `yq` expect, and `//server[@id='web-1']/port` for XML, which is an XPath. Keys that are not plain words are quoted for you — `."content-type"`, not `.content-type`, which in `jq` means something else entirely.
+- **Validate Document** (Ctrl+Cmd+V) checks the file and puts the cursor **on the problem**, with the reason in the window title. It reports what nothing else in the toolchain will: a duplicate key, which every JSON parser accepts silently while quietly discarding one of the two values, and a trailing comma, which Apple's own parser accepts and Python, Go and `jq` refuse.
+
+Long files are read by collapsing what you are not working on. **Fold Node** (Option+Cmd+Left) collapses the block the cursor is in — the nearest one that has a body, so pressing it on a single line collapses the mapping around it — **Unfold Node** (Option+Cmd+Right) opens it again, **Fold Top Level** (Option+Cmd+Up) collapses everything at the outermost level for an overview of the whole file, and **Unfold All** (Option+Cmd+Down) restores it. The line carrying the key or the tag stays visible and is marked, so a collapsed block is visibly collapsed; the line numbers skip what is hidden. Nothing is removed from the document — the text is only not drawn, so saving, undo and Find are unaffected, and Find still finds text inside a collapsed block. Putting the cursor inside a fold opens it, and any edit opens everything: a fold is a pair of positions, and inserting text moves them.
+
+The same menu carries the transformations, which rewrite the whole document — or, when text is selected, just that text — in one undoable step: **Minify (one line)** for a JSON body that has to fit into a `curl` command, **Sort Keys Recursively** so that two exports of the same settings diff to nothing, **Escape as JSON String** and **Unescape JSON String** for the daily chore of putting a certificate, a script or a whole JSON document *inside* a JSON field, and **Convert JSON to YAML**. Minifying keeps the key order and the exact spelling of every number, because `1.0` and `1` are not the same version; sorting deliberately does not, since sorting is a reordering. Escaping applies to any file, not just JSON. There is no YAML to JSON, and that is a decision: it would need a YAML parser the system does not have, and a wrong guess about an anchor or a quoted `true` turns a config file into a different config file.
+
+For JSON and XML the file is checked by a real parser. For YAML there is no parser on the system, so the check covers the mistakes that can be found without one — a tab used for indentation, which YAML forbids outright, indentation that lines up with nothing, a duplicate key, an unterminated quote — and says so instead of claiming the file is valid.
 
 ## Filter through a shell command
 
@@ -114,11 +137,20 @@ Plugins can contribute formatters too — see [Plugins](plugins.md).
 | Show/hide symbol outline | Cmd+Shift+O |
 | Go to line | Cmd+L |
 | Jump to matching bracket | Cmd+\ |
+| Go to enclosing node (JSON/YAML/XML) | Ctrl+Cmd+Up |
+| Go to first child | Ctrl+Cmd+Down |
+| Go to previous / next sibling | Ctrl+Cmd+Left / Right |
+| Select enclosing node | Ctrl+Cmd+A |
+| Copy structural path | Ctrl+Cmd+C |
+| Validate document | Ctrl+Cmd+V |
+| Fold / unfold node | Option+Cmd+Left / Right |
+| Fold top level / unfold all | Option+Cmd+Up / Down |
 | Filter the selection through a command | Shift+Cmd+\ |
 | Undo / redo (hex editor) | Cmd+Z / Cmd+Shift+Z |
 
 ## Notes
 
-- Syntax highlighting covers JSON, C, C#, Java, JavaScript, TypeScript, Python, and Rust. Other file types still open and edit normally with basic coloring, but detailed highlighting and the symbol outline are only available for the supported languages.
+- Syntax highlighting covers JSON, C, C#, Java, JavaScript, TypeScript, Python, and Rust. Other file types still open and edit normally with basic coloring, but detailed highlighting is only available for the supported languages.
+- The outline covers the supported programming languages plus JSON, YAML and XML — including the XML-based formats such as `.plist`, `.svg`, `.csproj` and `.storyboard`. The structural navigation, path and validation commands apply to JSON, YAML and XML.
 - The symbol outline and Go to Line features apply to the text editor. The hex editor is meant for binary inspection and byte-level edits, not for text.
 - Both editors keep a backup of the original file the first time you save, so an accidental change is easy to undo by restoring that backup.

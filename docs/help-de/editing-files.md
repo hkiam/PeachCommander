@@ -30,11 +30,34 @@ Die Randspalte zeigt Zeilennummern, die Zeile mit dem Cursor heller als die übr
 
 - Drücken Sie Cmd+F, um die Suchleiste zu öffnen. Um Text zu ersetzen, öffnen Sie die Suchleiste und schalten Sie sie in die Ersetzen-Ansicht um oder klicken Sie in der Symbolleiste auf Suchen/Ersetzen.
 - Klicken Sie auf JSON/XML formatieren, um ein JSON- oder XML-Dokument in ein sauberes, lesbares Layout neu einzurücken.
-- Klicken Sie auf Symbole (oder drücken Sie Cmd+Shift+O), um eine Seitenleiste anzuzeigen, die die Klassen, Funktionen und Methoden in Ihrem Code auflistet. Klicken Sie auf einen Eintrag, um direkt dorthin zu springen.
+- Klicken Sie auf Symbole (oder drücken Sie Cmd+Shift+O), um eine Seitenleiste anzuzeigen, die die Klassen, Funktionen und Methoden in Ihrem Code auflistet — oder, bei einer JSON-, YAML- oder XML-Datei, deren Schlüssel und Elemente. Klicken Sie auf einen Eintrag, um direkt dorthin zu springen. Was diese Struktur außerdem leistet, steht unter [Mit JSON, YAML und XML arbeiten](#mit-json-yaml-und-xml-arbeiten).
 - Drücken Sie Cmd+L, um zu einer bestimmten Zeile zu springen.
 - Drücken Sie Cmd+\, um zwischen einer Klammer und ihrem zugehörigen Gegenstück zu springen.
 - Klicken Sie auf die Kartenschaltfläche, um die Minimap ein- oder auszublenden, eine verkleinerte Übersicht der gesamten Datei, die Sie zum Scrollen anklicken können.
 - Verwenden Sie das Menü Kodierung in der Symbolleiste, wenn die Datei in einer anderen als der Standard-Textkodierung gesichert wurde.
+
+## Mit JSON, YAML und XML arbeiten
+
+Diese drei Formate werden besonders behandelt, denn eine Konfigurationsdatei navigiert man über ihre Struktur und nicht über Zeilennummern.
+
+Die Seitenleiste **Symbole** listet die Schlüssel einer JSON- oder YAML-Datei und die Elemente einer XML-Datei auf, verschachtelt wie das Dokument selbst. Ein Element wird nach seinem Attribut `id`, `name` oder `key` benannt, sofern es eines hat, sodass zwanzig `<server>`-Einträge unterscheidbar sind. Eine Liste zeigt ihre Einträge als `[0]`, `[1]`, und wo ein Eintrag mit einem Schlüssel beginnt, steht dieser dabei — `[0] name`. Das Filterfeld über der Liste findet einen Schlüssel in einer Datei jeder Größe, und die Statuszeile zeigt immer den Pfad zu dem, worin die Einfügemarke steht.
+
+Auch eine defekte Datei erhält eine Gliederung bis zu der Stelle, an der sie bricht — genau dann braucht man sie am dringendsten.
+
+Das Menü **Struktur** — im Menübalken, solange der Editor vorn ist — bewegt Sie durch diese Struktur:
+
+- **Zum umgebenden Knoten** (Ctrl+Cmd+Auf) geht nach außen zu dem Block, der die Einfügemarke enthält: von `image:` zum Dienst, zu dem es gehört.
+- **Zum ersten Kindknoten** (Ctrl+Cmd+Ab) geht nach innen.
+- **Zum vorherigen / nächsten Geschwisterknoten** (Ctrl+Cmd+Links / Rechts) wechselt zwischen Einträgen derselben Ebene und überspringt den ganzen Block dazwischen — von einem Server zum nächsten, ohne an vierzig Zeilen Einstellungen vorbeizuscrollen.
+- **Umgebenden Knoten auswählen** (Ctrl+Cmd+A) wählt den Block aus, in dem die Einfügemarke steht. Noch einmal gedrückt wächst die Auswahl auf den Block darum herum, sodass Sie genau einen Dienst oder genau ein Element auswählen, ohne zu ziehen.
+- **Strukturpfad kopieren** (Ctrl+Cmd+C) kopiert die Position als Ausdruck, den die Werkzeuge des Formats selbst annehmen: `.services.web.ports[0]` für JSON und YAML, wie `jq` und `yq` es erwarten, und `//server[@id='web-1']/port` für XML, also ein XPath. Schlüssel, die keine einfachen Wörter sind, werden für Sie in Anführungszeichen gesetzt — `."content-type"` und nicht `.content-type`, was in `jq` etwas völlig anderes bedeutet.
+- **Dokument prüfen** (Ctrl+Cmd+V) prüft die Datei und setzt die Einfügemarke **auf das Problem**, mit der Begründung im Fenstertitel. Gemeldet wird auch, was sonst kein Werkzeug der Kette meldet: ein doppelter Schlüssel, den jeder JSON-Parser stillschweigend akzeptiert und dabei einen der beiden Werte verwirft, und ein nachgestelltes Komma, das Apples eigener Parser akzeptiert, Python, Go und `jq` aber ablehnen.
+
+Lange Dateien liest man, indem man zusammenklappt, woran man gerade nicht arbeitet. **Knoten falten** (Wahl+Cmd+Links) klappt den Block zu, in dem die Einfügemarke steht — den nächstliegenden mit einem Rumpf, sodass ein Druck auf einer einzelnen Zeile die Zuordnung darum herum zusammenklappt —, **Knoten aufklappen** (Wahl+Cmd+Rechts) öffnet ihn wieder, **Oberste Ebene falten** (Wahl+Cmd+Auf) klappt für einen Überblick alles auf der äußersten Ebene zu, und **Alles aufklappen** (Wahl+Cmd+Ab) stellt es wieder her. Die Zeile mit dem Schlüssel oder dem Tag bleibt sichtbar und wird markiert, sodass ein zusammengeklappter Block sichtbar zusammengeklappt ist; die Zeilennummern überspringen, was verborgen ist. Aus dem Dokument wird nichts entfernt — der Text wird nur nicht gezeichnet, also bleiben Sichern, Widerrufen und Suchen unberührt, und die Suche findet Text auch in einem zusammengeklappten Block. Die Einfügemarke in eine Faltung zu setzen öffnet sie, und jede Bearbeitung öffnet alles: eine Faltung ist ein Paar von Positionen, und eingefügter Text verschiebt sie.
+
+Dasselbe Menü enthält die Umwandlungen, die das ganze Dokument — oder, wenn Text ausgewählt ist, nur diesen — in einem widerrufbaren Schritt umschreiben: **Verkleinern (eine Zeile)** für einen JSON-Rumpf, der in einen `curl`-Aufruf passen muss, **Schlüssel rekursiv sortieren**, damit zwei Ausgaben derselben Einstellungen keinen Unterschied mehr zeigen, **Als JSON-String maskieren** und **JSON-String entmaskieren** für die tägliche Fleißarbeit, ein Zertifikat, ein Skript oder ein ganzes JSON-Dokument *in* ein JSON-Feld zu setzen, und **JSON in YAML umwandeln**. Das Verkleinern behält die Reihenfolge der Schlüssel und die genaue Schreibweise jeder Zahl, denn `1.0` und `1` sind nicht dieselbe Version; das Sortieren tut das absichtlich nicht, weil Sortieren eine Umordnung ist. Das Maskieren gilt für jede Datei, nicht nur für JSON. Von YAML nach JSON gibt es nichts, und das ist eine Entscheidung: es bräuchte einen YAML-Parser, den das System nicht hat, und eine falsche Annahme über einen Anchor oder ein quotiertes `true` macht aus einer Konfigurationsdatei eine andere.
+
+JSON und XML werden von einem echten Parser geprüft. Für YAML gibt es auf dem System keinen Parser, daher deckt die Prüfung die Fehler ab, die ohne einen zu finden sind — ein Tabulator zur Einrückung, den YAML ausdrücklich verbietet, eine Einrückung, die zu keiner Ebene passt, ein doppelter Schlüssel, ein nicht geschlossenes Anführungszeichen — und sagt das auch, statt die Datei für gültig zu erklären.
 
 ## Durch einen Shell-Befehl filtern
 
@@ -114,11 +137,20 @@ Auch Plugins können Formatierer beitragen — siehe [Plugins](plugins.md).
 | Symbolgliederung ein-/ausblenden | Cmd+Shift+O |
 | Zu Zeile springen | Cmd+L |
 | Zur zugehörigen Klammer springen | Cmd+\ |
+| Zum umgebenden Knoten (JSON/YAML/XML) | Ctrl+Cmd+Auf |
+| Zum ersten Kindknoten | Ctrl+Cmd+Ab |
+| Zum vorherigen / nächsten Geschwisterknoten | Ctrl+Cmd+Links / Rechts |
+| Umgebenden Knoten auswählen | Ctrl+Cmd+A |
+| Strukturpfad kopieren | Ctrl+Cmd+C |
+| Dokument prüfen | Ctrl+Cmd+V |
+| Knoten falten / aufklappen | Wahl+Cmd+Links / Rechts |
+| Oberste Ebene falten / alles aufklappen | Wahl+Cmd+Auf / Ab |
 | Widerrufen / Wiederholen (Hex-Editor) | Cmd+Z / Cmd+Shift+Z |
 | Auswahl durch einen Befehl filtern | Shift+Cmd+\ |
 
 ## Hinweise
 
-- Die Syntaxhervorhebung deckt JSON, C, C#, Java, JavaScript, TypeScript, Python und Rust ab. Andere Dateitypen öffnen und bearbeiten sich weiterhin normal mit einfacher Einfärbung, aber detaillierte Hervorhebung und die Symbolgliederung sind nur für die unterstützten Sprachen verfügbar.
+- Die Syntaxhervorhebung deckt JSON, C, C#, Java, JavaScript, TypeScript, Python und Rust ab. Andere Dateitypen öffnen und bearbeiten sich weiterhin normal mit einfacher Einfärbung, aber detaillierte Hervorhebung ist nur für die unterstützten Sprachen verfügbar.
+- Die Gliederung deckt die unterstützten Programmiersprachen sowie JSON, YAML und XML ab — einschließlich der XML-basierten Formate wie `.plist`, `.svg`, `.csproj` und `.storyboard`. Die Befehle für Strukturnavigation, Pfad und Prüfung gelten für JSON, YAML und XML.
 - Die Funktionen Symbolgliederung und Zu Zeile springen gelten für den Texteditor. Der Hex-Editor ist für die Binäruntersuchung und Bearbeitungen auf Byte-Ebene gedacht, nicht für Text.
 - Beide Editoren bewahren beim ersten Sichern eine Sicherungskopie der Originaldatei auf, sodass eine versehentliche Änderung durch Wiederherstellen dieser Sicherungskopie leicht rückgängig gemacht werden kann.

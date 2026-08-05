@@ -16,8 +16,8 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     /// its origin when it was downloaded from a writable network filesystem (F-214).
     var onSaved: (() -> Void)?
 
-    private let path: String
-    private let textView = EditorCodeTextView()
+    let path: String
+    let textView = EditorCodeTextView()
     private lazy var markController = TextMarkController(textView: textView)
     private lazy var marks = DocumentMarksPanel(content: scrollView, host: self)
     private var markDialog: MarkColorDialog?
@@ -47,7 +47,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     private var highlightWork: DispatchWorkItem?
 
     // Collapsible symbol outline sidebar (classes/functions/methods via tree-sitter).
-    private let symbolSidebar = SymbolSidebar()
+    let symbolSidebar = SymbolSidebar()
     private var symbolWidth: NSLayoutConstraint!
     private var symbolsVisible = false
     private let symbolToggle = NSButton()
@@ -61,6 +61,9 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     private let minimapToggle = NSButton()
     private let gutterToggle = NSButton()
     private var lineNumbers: LineNumberRuler?
+    /// Collapsed regions (F-371). Created with the text view, because it installs itself as the layout
+    /// manager's delegate.
+    lazy var folding = EditorFolding(textView: textView)
     private var minimapWork: DispatchWorkItem?
 
     init(path: String) {
@@ -208,6 +211,13 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         scrollView.hasVerticalRuler = true
         let ruler = LineNumberRuler(textView: textView, scrollView: scrollView)
         lineNumbers = ruler
+        ruler.isOffsetFolded = { [weak self] offset in self?.folding.isHidden(offset: offset) ?? false }
+        folding.onChange = { [weak self] in
+            guard let self else { return }
+            self.lineNumbers?.needsDisplay = true
+            self.textView.needsDisplay = true
+            self.minimap?.refresh()
+        }
         scrollView.verticalRulerView = ruler
         ruler.clientView = textView
         scrollView.rulersVisible = true
@@ -277,7 +287,8 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
 
     /// Debounced outline refresh after edits.
     private func scheduleSymbolRefresh() {
-        guard SymbolOutline.supports(ext: (path as NSString).pathExtension.lowercased()) else { return }
+        let ext = (path as NSString).pathExtension.lowercased()
+        guard SymbolOutline.supports(ext: ext) || StructureOutline.supports(ext: ext) else { return }
         symbolWork?.cancel()
         let work = DispatchWorkItem { [weak self] in self?.refreshSymbols() }
         symbolWork = work
@@ -292,6 +303,33 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Diagnostic: read the strings currently rendered into the sidebar rows (call
     /// after the parse has settled; no forced reload, so it captures the live state).
     func automationRenderedSymbols() -> [String] { symbolSidebar.renderedCellStrings() }
+
+    /// Diagnostic: how many line fragments the layout manager actually produced — i.e. how many lines are
+    /// on screen (F-371). Folded lines produce none, so this is the measure a fold has to move; reading
+    /// the folded ranges back would prove the bookkeeping and nothing about the screen.
+    func automationVisibleLineCount() -> Int {
+        guard let manager = textView.layoutManager, let container = textView.textContainer else { return 0 }
+        manager.ensureLayout(for: container)
+        var count = 0
+        var index = 0
+        while index < manager.numberOfGlyphs {
+            var effective = NSRange()
+            _ = manager.lineFragmentRect(forGlyphAt: index, effectiveRange: &effective)
+            count += 1
+            index = max(NSMaxRange(effective), index + 1)
+        }
+        return count
+    }
+
+    /// Diagnostic: the status line as rendered, so the breadcrumb is checked as text and not only
+    /// looked at. It described the last key in the file while the caret sat on line 1.
+    func automationStatusLine() -> String { statusLabel.stringValue }
+
+    /// Diagnostic: move the caret and report the breadcrumb that follows from it.
+    func automationBreadcrumb(at offset: Int) -> String {
+        textView.setSelectedRange(NSRange(location: offset, length: 0))
+        return symbolPathText
+    }
 
     /// Diagnostic: put the filter prompt on screen, so its layout can be photographed and its
     /// Auto Layout conflicts counted (F-356). A sheet over a visible window, so it does not block.
@@ -392,6 +430,9 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         encoding = TextEncodingChoice.from(detected) ?? .utf8
         encodingPopup.selectItem(withTitle: encoding.displayName)
         textView.string = String(data: data, encoding: encoding.encoding) ?? String(decoding: data, as: UTF8.self)
+        // Assigning the string leaves the caret behind the text, which the view does not scroll to: the
+        // document showed line 1 while the breadcrumb described the very last key in the file.
+        textView.setSelectedRange(NSRange(location: 0, length: 0))
         refreshLineNumbers()
         refreshLineEndings()
         isDirty = false
@@ -709,7 +750,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Bring everything that watches the text back in step after a wholesale, in-code edit.
     ///
     /// `NSText.didChangeNotification` covers typing; a programmatic replacement drives these by hand.
-    private func afterProgrammaticEdit() {
+    func afterProgrammaticEdit() {
         refreshLineNumbers()
         refreshLineEndings()
         isDirty = true
@@ -719,9 +760,21 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         updateTitleAndStatus()
     }
 
+    /// Redraw the gutter and the minimap after a fold changed. Named separately from
+    /// `afterProgrammaticEdit` because folding changes no text: re-highlighting or reparsing would be
+    /// wasted work on every keystroke of ⌥⌘←.
+    func refreshHighlightAfterFold() {
+        lineNumbers?.needsDisplay = true
+        textView.needsDisplay = true
+        minimap?.refresh()
+    }
+
     // MARK: - Highlighting
 
     func textViewDidChangeSelection(_ notification: Notification) {
+        // A caret inside hidden text would let the user edit what they cannot see, so reaching into a
+        // fold opens it.
+        if folding.revealIfNeeded(selection: textView.selectedRange()) { lineNumbers?.needsDisplay = true }
         updateBracketHighlight()
         updateBreadcrumb()
     }
@@ -760,6 +813,9 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
 
     func textDidChange(_ notification: Notification) {
         isDirty = true
+        // Every fold is dropped on an edit: a fold is a pair of character offsets, and inserting text
+        // moves them, so a surviving fold hides the wrong lines. See EditorFolding.
+        folding.textChanged()
         updateTitleAndStatus()
         // Neon re-highlights incrementally on its own; only the lexer path needs
         // the debounced full re-run.
@@ -882,6 +938,9 @@ extension EditorWindowController: WindowContextMenuProviding {
         // editor's alone, and the tag-to-operation mapping belongs next to the list it indexes.
         DocumentMenus.toolMenus(caps: documentCaps, editMenu: makeEditMenu(), target: self)
             + [makeLineToolsMenu(forPullDown: false)]
+            // Only for JSON, YAML and XML: for a Swift file these commands are meaningless, and a menu
+            // full of items that beep is worse than no menu.
+            + (hasNavigableStructure ? [makeStructureMenu(forPullDown: false)] : [])
     }
 }
 

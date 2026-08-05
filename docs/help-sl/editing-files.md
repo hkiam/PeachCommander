@@ -30,11 +30,34 @@ Rob prikazuje številke vrstic, vrstica s kazalcem je svetlejša od drugih; gumb
 
 - Pritisnite Cmd+F, da odprete iskalno vrstico. Za zamenjavo besedila odprite iskalno vrstico in jo preklopite na pogled zamenjave, ali kliknite Poišči/Zamenjaj v orodni vrstici.
 - Kliknite Oblikuj JSON/XML, da ponovno zamaknete dokument JSON ali XML v čisto, berljivo postavitev.
-- Kliknite Simboli (ali pritisnite Cmd+Shift+O), da prikažete stransko vrstico, ki našteje razrede, funkcije in metode v vaši kodi. Kliknite vnos, da neposredno skočite nanj.
+- Kliknite Simboli (ali pritisnite Cmd+Shift+O) za prikaz stranske vrstice, ki navaja razrede, funkcije in metode v vaši kodi — ali, pri datoteki JSON, YAML ali XML, njene ključe in elemente. Kliknite vnos, da skočite neposredno nanj. Za kaj še je ta struktura dobra, glejte [Delo z JSON, YAML in XML](#delo-z-json-yaml-in-xml).
 - Pritisnite Cmd+L, da skočite na določeno vrstico.
 - Pritisnite Cmd+\, da skočite med oklepajem in njegovim ujemajočim partnerjem.
 - Kliknite gumb zemljevida, da prikažete ali skrijete mini zemljevid, pomanjšan pregled celotne datoteke, na katerega lahko kliknete za pomikanje.
 - Uporabite meni Kodiranje v orodni vrstici, če je bila datoteka shranjena v drugem kot privzetem kodiranju besedila.
+
+## Delo z JSON, YAML in XML
+
+Te tri oblike so obravnavane posebej, saj se po konfiguracijski datoteki premikamo po strukturi in ne po številkah vrstic.
+
+Stranska vrstica **Simboli** navaja ključe datoteke JSON ali YAML in elemente datoteke XML, ugnezdene tako kot dokument sam. Element se imenuje po atributu `id`, `name` ali `key`, kadar ga ima, tako da je dvajset vnosov `<server>` mogoče razločiti. Seznam prikaže svoje vnose kot `[0]`, `[1]`, in kadar se vnos začne s ključem, je prikazan tudi ta — `[0] name`. Polje filtra nad seznamom najde ključ po imenu v datoteki katere koli velikosti, vrstica stanja pa vedno prikazuje pot do tistega, v čemer stoji kazalka.
+
+Tudi pokvarjena datoteka dobi pregled do mesta, kjer se pokvari — in prav takrat ga najbolj potrebujete.
+
+Meni **Struktura** — v menijski vrstici, dokler je urejevalnik v prvem planu — vas premika po tej strukturi:
+
+- **Pojdi na obdajajoče vozlišče** (Ctrl+Cmd+Gor) gre navzven k bloku, ki vsebuje kazalko: od `image:` k storitvi, ki ji pripada.
+- **Pojdi na prvega otroka** (Ctrl+Cmd+Dol) gre navznoter.
+- **Pojdi na prejšnjega / naslednjega sorojenca** (Ctrl+Cmd+Levo / Desno) se premika med vnosi iste ravni in preskoči cel blok vmes — z enega strežnika na naslednjega, ne da bi se pomikali skozi štirideset vrstic nastavitev.
+- **Izberi obdajajoče vozlišče** (Ctrl+Cmd+A) izbere blok, v katerem stoji kazalka. Pritisnite znova in izbor zraste na blok okoli njega, tako da izberete natanko eno storitev ali natanko en element brez vlečenja.
+- **Kopiraj strukturno pot** (Ctrl+Cmd+C) kopira položaj kot izraz, ki ga sprejmejo orodja te oblike: `.services.web.ports[0]` za JSON in YAML, kar pričakujeta `jq` in `yq`, ter `//server[@id='web-1']/port` za XML, torej XPath. Ključi, ki niso navadne besede, so za vas dani v narekovaje — `."content-type"` in ne `.content-type`, kar v `jq` pomeni nekaj povsem drugega.
+- **Preveri dokument** (Ctrl+Cmd+V) preveri datoteko in postavi kazalko **na težavo**, z razlogom v naslovu okna. Poroča tudi o tem, o čemer ne poroča nič drugega v verigi orodij: o podvojenem ključu, ki ga vsak razčlenjevalnik JSON tiho sprejme in eno od obeh vrednosti zavrže, in o vejici na koncu, ki jo Applov razčlenjevalnik sprejme, Python, Go in `jq` pa jo zavrnejo.
+
+Dolge datoteke beremo tako, da strnemo tisto, s čimer se trenutno ne ukvarjamo. **Strni vozlišče** (Alt+Cmd+Levo) strne blok, v katerem stoji kazalka — najbližji, ki ima telo, tako da pritisk v posamezni vrstici strne preslikavo okoli nje —, **Razširi vozlišče** (Alt+Cmd+Desno) ga znova odpre, **Strni najvišjo raven** (Alt+Cmd+Gor) za pregled strne vse na najbolj zunanji ravni, **Razširi vse** (Alt+Cmd+Dol) pa to povrne. Vrstica s ključem ali oznako ostane vidna in je označena, tako da je strnjen blok vidno strnjen; številke vrstic preskočijo to, kar je skrito. Iz dokumenta se nič ne odstrani — besedilo se le ne izriše, zato shranjevanje, razveljavitev in iskanje ostanejo nespremenjeni, iskanje pa besedilo najde tudi v strnjenem bloku. Če kazalko postavite v strnjeno mesto, se to odpre, in vsako urejanje odpre vse: strnitev je par položajev, vstavljeno besedilo pa ju premakne.
+
+Isti meni nosi pretvorbe, ki prepišejo celoten dokument — ali, če je izbrano besedilo, samo tega — v enem koraku, ki ga je mogoče razveljaviti: **Skrči (ena vrstica)** za telo JSON, ki se mora prilegati ukazu `curl`, **Rekurzivno razvrsti ključe**, da dva izvoza istih nastavitev ne pokažeta nobene razlike, **Ubeži kot niz JSON** in **Odubeži niz JSON** za vsakodnevno opravilo, ko je treba potrdilo, skript ali cel dokument JSON dati *v* polje JSON, ter **Pretvori JSON v YAML**. Krčenje ohrani vrstni red ključev in natančen zapis vsakega števila, saj `1.0` in `1` nista ista različica; razvrščanje tega namenoma ne stori, ker je razvrščanje prerazporeditev. Ubežanje velja za katero koli datoteko, ne le za JSON. Iz YAML v JSON ni ničesar in to je odločitev: potreboval bi razčlenjevalnik YAML, ki ga v sistemu ni, in napačna domneva o zasidranju ali o `true` v narekovajih iz nastavitvene datoteke naredi drugo.
+
+Pri JSON in XML datoteko preveri pravi razčlenjevalnik. Za YAML ga v sistemu ni, zato preverjanje zajema napake, ki jih je mogoče najti brez njega — tabulator za zamikanje, kar YAML izrecno prepoveduje, zamik, ki se ne ujema z ničemer, podvojen ključ, nezaključen narekovaj — in to tudi pove, namesto da bi datoteko razglasilo za veljavno.
 
 ## Filtriranje z ukazom lupine
 
@@ -114,11 +137,20 @@ Oblikovalnike lahko prispevajo tudi vstavki — glejte [Plugins](plugins.md).
 | Prikaži/skrij oris simbolov | Cmd+Shift+O |
 | Pojdi na vrstico | Cmd+L |
 | Skoči na ujemajoči oklepaj | Cmd+\ |
+| Pojdi na obdajajoče vozlišče (JSON/YAML/XML) | Ctrl+Cmd+Gor |
+| Pojdi na prvega otroka | Ctrl+Cmd+Dol |
+| Pojdi na prejšnjega / naslednjega sorojenca | Ctrl+Cmd+Levo / Desno |
+| Izberi obdajajoče vozlišče | Ctrl+Cmd+A |
+| Kopiraj strukturno pot | Ctrl+Cmd+C |
+| Preveri dokument | Ctrl+Cmd+V |
+| Strni / razširi vozlišče | Alt+Cmd+Levo / Desno |
+| Strni najvišjo raven / razširi vse | Alt+Cmd+Gor / Dol |
 | Razveljavi / Uveljavi (šestnajstiški urejevalnik) | Cmd+Z / Cmd+Shift+Z |
 | Filtriraj izbor z ukazom | Shift+Cmd+\ |
 
 ## Opombe
 
-- Poudarjanje skladnje pokriva JSON, C, C#, Java, JavaScript, TypeScript, Python in Rust. Druge vrste datotek se še vedno odprejo in urejajo običajno z osnovnim obarvanjem, a podrobno poudarjanje in oris simbolov sta na voljo le za podprte jezike.
+- Barvanje skladnje zajema JSON, C, C#, Java, JavaScript, TypeScript, Python in Rust. Druge vrste datotek se še vedno normalno odprejo in urejajo z osnovnim barvanjem, podrobno barvanje pa je na voljo le za podprte jezike.
+- Pregled zajema podprte programske jezike ter JSON, YAML in XML — vključno z oblikami, ki temeljijo na XML, kot so `.plist`, `.svg`, `.csproj` in `.storyboard`. Ukazi za strukturno krmarjenje, pot in preverjanje veljajo za JSON, YAML in XML.
 - Oris simbolov in Pojdi na vrstico veljata za urejevalnik besedila. Šestnajstiški urejevalnik je namenjen dvojiškemu pregledu in urejanju na ravni bajtov, ne besedilu.
 - Oba urejevalnika ohranita varnostno kopijo izvirne datoteke ob prvem shranjevanju, tako da je nenamerno spremembo enostavno razveljaviti z obnovitvijo te varnostne kopije.

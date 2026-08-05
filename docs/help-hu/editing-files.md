@@ -30,11 +30,34 @@ A margó sorszámokat jelenít meg, a kurzor sorát a többinél világosabban; 
 
 - Nyomja meg a Cmd+F-et a keresősáv megnyitásához. Szöveg cseréjéhez nyissa meg a keresősávot és váltsa a csere nézetre, vagy kattintson a Keresés/Csere gombra az eszköztárban.
 - Kattintson a JSON/XML formázása gombra egy JSON- vagy XML-dokumentum tiszta, olvasható elrendezésbe való újratagolásához.
-- Kattintson a Szimbólumok gombra (vagy nyomja meg a Cmd+Shift+O-t) egy oldalsáv megjelenítéséhez, amely felsorolja a kódjában lévő osztályokat, függvényeket és metódusokat. Kattintson egy bejegyzésre, hogy egyenesen odaugorjon.
+- Kattintson a Szimbólumok gombra (vagy nyomja meg a Cmd+Shift+O-t) egy oldalsáv megjelenítéséhez, amely felsorolja a kódjában lévő osztályokat, függvényeket és metódusokat — vagy JSON-, YAML- és XML-fájl esetén annak kulcsait és elemeit. Kattintson egy bejegyzésre, hogy egyenesen odaugorjon. Hogy mire jó még ez a szerkezet, lásd: [Munka JSON-, YAML- és XML-fájlokkal](#munka-json--yaml--és-xml-fájlokkal).
 - Nyomja meg a Cmd+L-t egy adott sorra ugráshoz.
 - Nyomja meg a Cmd+\-t egy zárójel és a párja közötti ugráshoz.
 - Kattintson a térkép gombra a minitérkép megjelenítéséhez vagy elrejtéséhez, ami az egész fájl kicsinyített áttekintése, amelyre kattintva görgethet.
 - Használja a Kódolás menüt az eszköztárban, ha a fájl nem az alapértelmezett szövegkódolással lett mentve.
+
+## Munka JSON-, YAML- és XML-fájlokkal
+
+Ez a három formátum külön kezelést kap, mert egy konfigurációs fájlban a szerkezet mentén tájékozódunk, nem sorszámok szerint.
+
+A **Szimbólumok** oldalsáv egy JSON- vagy YAML-fájl kulcsait és egy XML-fájl elemeit sorolja fel, ugyanúgy egymásba ágyazva, ahogy a dokumentum maga. Egy elem az `id`, `name` vagy `key` attribútuma szerint kap nevet, ha van neki ilyen, így húsz `<server>` bejegyzés is megkülönböztethető. Egy lista a bejegyzéseit `[0]`, `[1]` alakban mutatja, és ahol egy bejegyzés kulccsal kezdődik, ott az is megjelenik — `[0] name`. A lista fölötti szűrőmező bármilyen méretű fájlban név szerint megtalálja a kulcsot, az állapotsor pedig mindig annak az útvonalát mutatja, amiben a kurzor áll.
+
+Egy hibás fájl is kap vázlatot addig a pontig, ahol elromlik — és épp akkor van rá a legnagyobb szükség.
+
+A **Struktúra** menü — a menüsorban, amíg a szerkesztő van elöl — ebben a szerkezetben mozgat:
+
+- **Ugrás a befoglaló csomópontra** (Ctrl+Cmd+Fel) kifelé lép ahhoz a blokkhoz, amely a kurzort tartalmazza: az `image:` sorról ahhoz a szolgáltatáshoz, amelyhez tartozik.
+- **Ugrás az első gyermekre** (Ctrl+Cmd+Le) befelé lép.
+- **Ugrás az előző / következő testvérre** (Ctrl+Cmd+Balra / Jobbra) ugyanazon a szinten lévő bejegyzések között lép, átugorva a közöttük lévő teljes blokkot — egyik kiszolgálóról a következőre, negyven sor beállítás átgörgetése nélkül.
+- **A befoglaló csomópont kijelölése** (Ctrl+Cmd+A) kijelöli azt a blokkot, amelyben a kurzor áll. Nyomja meg újra, és a kijelölés a körülötte lévő blokkra nő, így pontosan egy szolgáltatást vagy pontosan egy elemet jelöl ki húzás nélkül.
+- **A strukturális útvonal másolása** (Ctrl+Cmd+C) a kurzor helyét olyan kifejezésként másolja, amelyet a formátum saját eszközei elfogadnak: `.services.web.ports[0]` JSON és YAML esetén, ahogy a `jq` és a `yq` várja, és `//server[@id='web-1']/port` XML esetén, ami egy XPath. Azokat a kulcsokat, amelyek nem egyszerű szavak, idézőjelbe teszi — `."content-type"` és nem `.content-type`, ami a `jq`-ban egészen mást jelent.
+- **A dokumentum ellenőrzése** (Ctrl+Cmd+V) ellenőrzi a fájlt, és a kurzort **a hibára** teszi, az okot pedig az ablak címében írja ki. Olyat is jelez, amit az eszközlánc többi tagja nem: a többször szereplő kulcsot, amelyet minden JSON-értelmező szó nélkül elfogad, miközben a két érték egyikét eldobja, és a záró vesszőt, amelyet az Apple saját értelmezője elfogad, a Python, a Go és a `jq` viszont elutasít.
+
+A hosszú fájlokat úgy olvassuk, hogy összecsukjuk, amin éppen nem dolgozunk. A **Csomópont összecsukása** (Option+Cmd+Balra) összecsukja azt a blokkot, amelyben a kurzor áll — a legközelebbit, amelynek van törzse, így egyetlen soron megnyomva a körülötte lévő leképezést csukja össze —, a **Csomópont kibontása** (Option+Cmd+Jobbra) újra megnyitja, a **Legfelső szint összecsukása** (Option+Cmd+Fel) áttekintés céljából mindent összecsuk a legkülső szinten, az **Összes kibontása** (Option+Cmd+Le) pedig visszaállítja. A kulcsot vagy a címkét viselő sor látható marad és meg van jelölve, így az összecsukott blokk láthatóan összecsukott; a sorszámok átlépik, ami rejtve van. A dokumentumból semmi nem kerül el — a szöveg csak nem lesz kirajzolva, így a mentés, a visszavonás és a keresés változatlan, és a keresés az összecsukott blokkban is megtalálja a szöveget. Ha a kurzort egy összecsukott részbe teszi, az kinyílik, és bármilyen szerkesztés mindent kinyit: az összecsukás pozíciók párja, a beszúrt szöveg pedig elmozdítja őket.
+
+Ugyanez a menü tartalmazza az átalakításokat, amelyek az egész dokumentumot — vagy, ha van kijelölés, csak azt — egyetlen visszavonható lépésben írják át: **Tömörítés (egy sor)** egy olyan JSON-törzshöz, amelynek bele kell férnie egy `curl` parancsba, **Kulcsok rekurzív rendezése**, hogy ugyanazon beállítások két kimenete között ne legyen különbség, **Escape-elés JSON-karakterláncként** és **JSON-karakterlánc visszafejtése** ahhoz a napi robothoz, amikor egy tanúsítványt, egy szkriptet vagy egy teljes JSON-dokumentumot kell egy JSON-mezőbe *tenni*, valamint **JSON átalakítása YAML-re**. A tömörítés megőrzi a kulcsok sorrendjét és minden szám pontos írásmódját, mert az `1.0` és az `1` nem ugyanaz a verzió; a rendezés ezt szándékosan nem teszi, hiszen a rendezés átrendezés. Az escape-elés bármely fájlra alkalmazható, nem csak JSON-ra. YAML-ből JSON-ba nincs átalakítás, és ez döntés: olyan YAML-értelmezőt igényelne, amely nincs a rendszeren, és egy hibás feltevés egy horgonyról vagy egy idézőjeles `true`-ról más konfigurációs fájlt csinál a fájlból.
+
+JSON és XML esetén a fájlt igazi értelmező ellenőrzi. YAML-hez nincs a rendszeren, ezért az ellenőrzés azokra a hibákra terjed ki, amelyek e nélkül is megtalálhatók — behúzásra használt tabulátor, amit a YAML kifejezetten megtilt, semmivel sem egyező behúzás, többször szereplő kulcs, bezáratlan idézőjel — és ezt meg is mondja, ahelyett hogy érvényesnek nevezné a fájlt.
 
 ## Szűrés shell-paranccsal
 
@@ -114,11 +137,20 @@ Bővítmények is adhatnak formázót — lásd [Plugins](plugins.md).
 | Szimbólumvázlat megjelenítése/elrejtése | Cmd+Shift+O |
 | Ugrás sorra | Cmd+L |
 | Ugrás a párzárójelre | Cmd+\ |
+| Ugrás a befoglaló csomópontra (JSON/YAML/XML) | Ctrl+Cmd+Fel |
+| Ugrás az első gyermekre | Ctrl+Cmd+Le |
+| Ugrás az előző / következő testvérre | Ctrl+Cmd+Balra / Jobbra |
+| A befoglaló csomópont kijelölése | Ctrl+Cmd+A |
+| A strukturális útvonal másolása | Ctrl+Cmd+C |
+| A dokumentum ellenőrzése | Ctrl+Cmd+V |
+| Csomópont összecsukása / kibontása | Option+Cmd+Balra / Jobbra |
+| Legfelső szint összecsukása / összes kibontása | Option+Cmd+Fel / Le |
 | Visszavonás / Ismét (hex szerkesztő) | Cmd+Z / Cmd+Shift+Z |
 | A kijelölés szűrése paranccsal | Shift+Cmd+\ |
 
 ## Megjegyzések
 
-- A szintaxiskiemelés lefedi a JSON, C, C#, Java, JavaScript, TypeScript, Python és Rust nyelveket. Más fájltípusok továbbra is normálisan nyílnak meg és szerkeszthetők alapszínezéssel, de a részletes kiemelés és a szimbólumvázlat csak a támogatott nyelvekhez elérhető.
+- A szintaxiskiemelés lefedi a JSON, C, C#, Java, JavaScript, TypeScript, Python és Rust nyelveket. Más fájltípusok továbbra is normálisan nyílnak meg és szerkeszthetők alapszínezéssel, de a részletes kiemelés csak a támogatott nyelvekhez elérhető.
+- A vázlat a támogatott programozási nyelveket, valamint a JSON, YAML és XML formátumot fedi le — az XML-alapú formátumokkal együtt, mint a `.plist`, `.svg`, `.csproj` és `.storyboard`. A szerkezeti navigáció, az útvonal és az ellenőrzés parancsai JSON-, YAML- és XML-fájlokra érvényesek.
 - A szimbólumvázlat és az Ugrás sorra a szövegszerkesztőre vonatkozik. A hex szerkesztő a bináris vizsgálatra és bájtszintű szerkesztésre való, nem a szövegre.
 - Mindkét szerkesztő biztonsági mentést tart az eredeti fájlról az első mentéskor, így egy véletlen változtatás könnyen visszavonható a biztonsági mentés visszaállításával.

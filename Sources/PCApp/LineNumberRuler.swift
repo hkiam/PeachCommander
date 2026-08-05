@@ -17,6 +17,10 @@ import AppKit
 final class LineNumberRuler: NSRulerView {
     /// Where the lines start. See `EditorLineIndex` for why this is not PCVFS's LineIndexer.
     private var index = EditorLineIndex()
+    /// Whether a character offset is currently folded away. Set by the editor; without it the numbers of
+    /// hidden lines were all drawn at the header line's y — folded text disappears, its line numbers pile
+    /// up on one row (F-371). Not named `isHidden`: a ruler is an NSView, and that name is taken.
+    var isOffsetFolded: ((Int) -> Bool)?
     private var digitsShown = 2
     private weak var editorTextView: NSTextView?
 
@@ -119,6 +123,14 @@ final class LineNumberRuler: NSRulerView {
             lineNumber += 1
             guard lineNumber <= index.count else { break }
             offset = index.starts[lineNumber - 1]
+            // Skip the lines a fold hides. Their numbers are simply not shown, which is what every editor
+            // does and what makes the jump in the numbering the sign that something is collapsed.
+            while let isOffsetFolded, lineNumber <= index.count,
+                  isOffsetFolded(index.starts[lineNumber - 1]) {
+                lineNumber += 1
+                if lineNumber <= index.count { offset = index.starts[lineNumber - 1] }
+            }
+            guard lineNumber <= index.count else { break }
         }
     }
 }

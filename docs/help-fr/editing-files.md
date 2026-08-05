@@ -30,11 +30,34 @@ La gouttière affiche les numéros de ligne, celle du curseur plus claire que le
 
 - Appuyez sur Cmd+F pour ouvrir la barre de recherche. Pour remplacer du texte, ouvrez la barre de recherche et basculez-la vers la vue de remplacement, ou cliquez sur Rechercher/Remplacer dans la barre d'outils.
 - Cliquez sur Formater JSON/XML pour réindenter un document JSON ou XML en une mise en page propre et lisible.
-- Cliquez sur Symboles (ou appuyez sur Cmd+Maj+O) pour afficher une barre latérale listant les classes, fonctions et méthodes de votre code. Cliquez sur une entrée pour y sauter directement.
+- Cliquez sur Symboles (ou appuyez sur Cmd+Maj+O) pour afficher une barre latérale listant les classes, fonctions et méthodes de votre code — ou, pour un fichier JSON, YAML ou XML, ses clés et ses éléments. Cliquez sur une entrée pour y sauter directement. Voir [Travailler avec JSON, YAML et XML](#travailler-avec-json-yaml-et-xml) pour ce que cette structure permet d'autre.
 - Appuyez sur Cmd+L pour sauter à une ligne précise.
 - Appuyez sur Cmd+\ pour sauter entre une parenthèse et son homologue correspondant.
 - Cliquez sur le bouton carte pour afficher ou masquer la minicarte, un aperçu à l'échelle de tout le fichier sur lequel vous pouvez cliquer pour faire défiler.
 - Utilisez le menu Encodage de la barre d'outils si le fichier a été enregistré avec un encodage autre que celui par défaut.
+
+## Travailler avec JSON, YAML et XML
+
+Ces trois formats bénéficient d'un traitement à part, car un fichier de configuration se parcourt par sa structure et non par ses numéros de ligne.
+
+La barre latérale **Symboles** liste les clés d'un fichier JSON ou YAML et les éléments d'un fichier XML, imbriqués comme l'est le document. Un élément est nommé d'après son attribut `id`, `name` ou `key` lorsqu'il en a un, de sorte que vingt entrées `<server>` se distinguent. Une liste affiche ses entrées sous la forme `[0]`, `[1]`, et lorsqu'une entrée commence par une clé, celle-ci est indiquée aussi — `[0] name`. Le champ de filtre au-dessus de la liste retrouve une clé par son nom dans un fichier de n'importe quelle taille, et la barre d'état affiche toujours le chemin de ce qui contient le curseur.
+
+Un fichier cassé reçoit tout de même un plan jusqu'à l'endroit où il casse — le moment où l'on en a le plus besoin.
+
+Le menu **Structure** — dans la barre des menus tant que l'éditeur est au premier plan — vous déplace dans cette structure :
+
+- **Aller au nœud englobant** (Ctrl+Cmd+Haut) sort vers le bloc qui contient le curseur : de `image:` au service auquel il appartient.
+- **Aller au premier enfant** (Ctrl+Cmd+Bas) entre.
+- **Aller au frère précédent / suivant** (Ctrl+Cmd+Gauche / Droite) passe d'une entrée à l'autre au même niveau en enjambant tout le bloc intermédiaire — d'un serveur au suivant sans défiler devant quarante lignes de réglages.
+- **Sélectionner le nœud englobant** (Ctrl+Cmd+A) sélectionne le bloc où se trouve le curseur. Appuyez à nouveau et la sélection s'étend au bloc qui l'entoure, ce qui permet de sélectionner exactement un service, ou exactement un élément, sans faire glisser la souris.
+- **Copier le chemin structurel** (Ctrl+Cmd+C) copie la position du curseur sous la forme d'une expression que les outils du format acceptent : `.services.web.ports[0]` pour JSON et YAML, ce qu'attendent `jq` et `yq`, et `//server[@id='web-1']/port` pour XML, c'est-à-dire un XPath. Les clés qui ne sont pas de simples mots sont mises entre guillemets pour vous — `."content-type"` et non `.content-type`, qui en `jq` signifie tout autre chose.
+- **Valider le document** (Ctrl+Cmd+V) vérifie le fichier et place le curseur **sur le problème**, la raison apparaissant dans le titre de la fenêtre. Il signale ce qu'aucun autre outil de la chaîne ne signalera : une clé en double, que tout analyseur JSON accepte en silence en écartant l'une des deux valeurs, et une virgule finale, que l'analyseur d'Apple accepte alors que Python, Go et `jq` la refusent.
+
+Les fichiers longs se lisent en repliant ce sur quoi on ne travaille pas. **Replier le nœud** (Option+Cmd+Gauche) replie le bloc où se trouve le curseur — le plus proche qui ait un corps, de sorte qu'un appui sur une ligne unique replie la table qui l'entoure —, **Déplier le nœud** (Option+Cmd+Droite) le rouvre, **Replier le niveau supérieur** (Option+Cmd+Haut) replie tout au niveau le plus externe pour une vue d'ensemble, et **Tout déplier** (Option+Cmd+Bas) rétablit l'affichage. La ligne portant la clé ou la balise reste visible et est marquée, si bien qu'un bloc replié se voit comme tel ; les numéros de ligne sautent ce qui est caché. Rien n'est retiré du document — le texte n'est simplement pas dessiné, donc l'enregistrement, l'annulation et la recherche ne changent pas, et la recherche trouve toujours le texte à l'intérieur d'un bloc replié. Placer le curseur dans un repli l'ouvre, et toute modification ouvre tout : un repli est une paire de positions, et insérer du texte les déplace.
+
+Le même menu porte les transformations, qui réécrivent tout le document — ou, si du texte est sélectionné, seulement celui-là — en une seule étape annulable : **Compacter (une ligne)** pour un corps JSON qui doit tenir dans une commande `curl`, **Trier les clés récursivement** pour que deux exports des mêmes réglages ne montrent plus aucune différence, **Échapper en chaîne JSON** et **Déséchapper la chaîne JSON** pour la corvée quotidienne consistant à mettre un certificat, un script ou un document JSON entier *dans* un champ JSON, et **Convertir JSON en YAML**. Le compactage conserve l'ordre des clés et l'écriture exacte de chaque nombre, car `1.0` et `1` ne sont pas la même version ; le tri ne le fait pas, délibérément, puisque trier est un réordonnancement. L'échappement s'applique à n'importe quel fichier, pas seulement à JSON. Il n'y a pas de YAML vers JSON, et c'est un choix : il faudrait un analyseur YAML que le système n'a pas, et une mauvaise supposition sur une ancre ou un `true` entre guillemets transforme un fichier de configuration en un autre.
+
+Pour JSON et XML, le fichier est vérifié par un véritable analyseur. Pour YAML, il n'y en a aucun sur le système : la vérification couvre donc les erreurs repérables sans analyseur — une tabulation utilisée pour indenter, ce que YAML interdit formellement, une indentation qui ne correspond à rien, une clé en double, un guillemet non fermé — et le dit, au lieu d'affirmer que le fichier est valide.
 
 ## Filtrer par une commande shell
 
@@ -114,11 +137,20 @@ Les plugins peuvent aussi fournir des formateurs — voir [Plugins](plugins.md).
 | Afficher/masquer le plan des symboles | Cmd+Maj+O |
 | Aller à la ligne | Cmd+L |
 | Sauter à la parenthèse correspondante | Cmd+\ |
+| Aller au nœud englobant (JSON/YAML/XML) | Ctrl+Cmd+Haut |
+| Aller au premier enfant | Ctrl+Cmd+Bas |
+| Aller au frère précédent / suivant | Ctrl+Cmd+Gauche / Droite |
+| Sélectionner le nœud englobant | Ctrl+Cmd+A |
+| Copier le chemin structurel | Ctrl+Cmd+C |
+| Valider le document | Ctrl+Cmd+V |
+| Replier / déplier le nœud | Option+Cmd+Gauche / Droite |
+| Replier le niveau supérieur / tout déplier | Option+Cmd+Haut / Bas |
 | Annuler / rétablir (éditeur hexa) | Cmd+Z / Cmd+Maj+Z |
 | Filtrer la sélection par une commande | Shift+Cmd+\ |
 
 ## Remarques
 
-- La coloration syntaxique couvre JSON, C, C#, Java, JavaScript, TypeScript, Python et Rust. Les autres types de fichiers s'ouvrent et se modifient normalement avec une coloration basique, mais la coloration détaillée et le plan des symboles ne sont disponibles que pour les langages pris en charge.
+- La coloration syntaxique couvre JSON, C, C#, Java, JavaScript, TypeScript, Python et Rust. Les autres types de fichiers s'ouvrent et se modifient normalement avec une coloration basique, mais la coloration détaillée n'est disponible que pour les langages pris en charge.
+- Le plan couvre les langages de programmation pris en charge ainsi que JSON, YAML et XML — y compris les formats fondés sur XML comme `.plist`, `.svg`, `.csproj` et `.storyboard`. Les commandes de navigation structurelle, de chemin et de validation s'appliquent à JSON, YAML et XML.
 - Le plan des symboles et Aller à la ligne s'appliquent à l'éditeur de texte. L'éditeur hexadécimal est destiné à l'inspection binaire et aux modifications au niveau de l'octet, pas au texte.
 - Les deux éditeurs conservent une sauvegarde du fichier original au premier enregistrement, de sorte qu'une modification accidentelle est facile à annuler en restaurant cette sauvegarde.

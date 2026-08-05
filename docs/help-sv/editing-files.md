@@ -30,11 +30,34 @@ Marginalen visar radnummer, med raden du står på ljusare än de övriga; knapp
 
 - Tryck på Cmd+F för att öppna sökfältet. För att ersätta text, öppna sökfältet och växla det till ersättningsvyn, eller klicka på Sök/Ersätt i verktygsfältet.
 - Klicka på Formatera JSON/XML för att indentera om ett JSON- eller XML-dokument till en ren, läsbar layout.
-- Klicka på Symboler (eller tryck på Cmd+Shift+O) för att visa en sidopanel som listar klasserna, funktionerna och metoderna i din kod. Klicka på en post för att hoppa direkt till den.
+- Klicka på Symboler (eller tryck Cmd+Shift+O) för att visa ett sidofält som listar klasserna, funktionerna och metoderna i din kod — eller, för en JSON-, YAML- eller XML-fil, dess nycklar och element. Klicka på en post för att hoppa direkt till den. Se [Arbeta med JSON, YAML och XML](#arbeta-med-json-yaml-och-xml) för vad strukturen är bra för i övrigt.
 - Tryck på Cmd+L för att hoppa till en specifik rad.
 - Tryck på Cmd+\ för att hoppa mellan en klammer och dess matchande partner.
 - Klicka på kartknappen för att visa eller dölja minikartan, en skalad översikt över hela filen som du kan klicka på för att rulla.
 - Använd menyn Kodning i verktygsfältet om filen sparades i något annat än standardtextkodningen.
+
+## Arbeta med JSON, YAML och XML
+
+Dessa tre format får en egen behandling, eftersom en konfigurationsfil navigeras efter struktur och inte efter radnummer.
+
+Sidofältet **Symboler** listar nycklarna i en JSON- eller YAML-fil och elementen i en XML-fil, nästlade som dokumentet självt. Ett element namnges efter sitt attribut `id`, `name` eller `key` när det har ett, så att tjugo `<server>`-poster går att skilja åt. En lista visar sina poster som `[0]`, `[1]`, och där en post börjar med en nyckel visas även den — `[0] name`. Filterfältet ovanför listan hittar en nyckel på namn i en fil av vilken storlek som helst, och statusraden visar alltid vägen till det som insättningspunkten står i.
+
+Även en trasig fil får en översikt fram till stället där den går sönder, och det är just då man behöver den mest.
+
+Menyn **Struktur** — i menyraden så länge redigeraren ligger främst — flyttar dig i den strukturen:
+
+- **Gå till omslutande nod** (Ctrl+Cmd+Upp) går ut till blocket som innehåller insättningspunkten: från `image:` till tjänsten den hör till.
+- **Gå till första barnet** (Ctrl+Cmd+Ner) går in.
+- **Gå till föregående / nästa syskon** (Ctrl+Cmd+Vänster / Höger) flyttar mellan poster på samma nivå och kliver över hela blocket däremellan — från en server till nästa utan att rulla förbi fyrtio rader inställningar.
+- **Markera omslutande nod** (Ctrl+Cmd+A) markerar blocket som insättningspunkten står i. Tryck igen och markeringen växer till blocket omkring det, så att du markerar exakt en tjänst, eller exakt ett element, utan att dra.
+- **Kopiera strukturell sökväg** (Ctrl+Cmd+C) kopierar positionen som ett uttryck som formatets egna verktyg tar emot: `.services.web.ports[0]` för JSON och YAML, vilket är vad `jq` och `yq` förväntar sig, och `//server[@id='web-1']/port` för XML, alltså en XPath. Nycklar som inte är enkla ord sätts inom citattecken för dig — `."content-type"` och inte `.content-type`, som i `jq` betyder något helt annat.
+- **Validera dokumentet** (Ctrl+Cmd+V) kontrollerar filen och sätter insättningspunkten **på problemet**, med skälet i fönstrets titel. Den rapporterar vad inget annat i verktygskedjan rapporterar: en dubbel nyckel, som varje JSON-tolk godtar tyst medan ett av de två värdena tappas, och ett kommatecken sist, som Apples egen tolk godtar men Python, Go och `jq` avvisar.
+
+Långa filer läses genom att fälla in det man inte arbetar med. **Fäll in noden** (Alt+Cmd+Vänster) fäller in blocket där insättningspunkten står — det närmaste som har en kropp, så att en tryckning på en enda rad fäller in mappningen runt den —, **Fäll ut noden** (Alt+Cmd+Höger) öppnar det igen, **Fäll in översta nivån** (Alt+Cmd+Upp) fäller in allt på den yttersta nivån för en överblick, och **Fäll ut allt** (Alt+Cmd+Ner) återställer. Raden med nyckeln eller taggen förblir synlig och markeras, så att ett infällt block syns som infällt; radnumren hoppar över det som är dolt. Ingenting tas bort ur dokumentet — texten ritas bara inte, så spara, ångra och sök påverkas inte, och sökningen hittar fortfarande text inuti ett infällt block. Att sätta insättningspunkten i en infällning öppnar den, och varje ändring öppnar allt: en infällning är ett par positioner, och infogad text flyttar dem.
+
+Samma meny bär transformationerna, som skriver om hela dokumentet — eller, om text är markerad, bara den — i ett enda ångringsbart steg: **Komprimera (en rad)** för en JSON-kropp som måste rymmas i ett `curl`-kommando, **Sortera nycklar rekursivt** så att två exporter av samma inställningar inte visar någon skillnad, **Escapa som JSON-sträng** och **Avescapa JSON-sträng** för det daglig göromålet att lägga ett certifikat, ett skript eller ett helt JSON-dokument *inuti* ett JSON-fält, och **Konvertera JSON till YAML**. Komprimeringen behåller nyckelordningen och den exakta stavningen av varje tal, för `1.0` och `1` är inte samma version; sorteringen gör det med avsikt inte, eftersom sortering är en omordning. Escapningen gäller vilken fil som helst, inte bara JSON. Från YAML till JSON finns ingenting, och det är ett beslut: det skulle kräva en YAML-tolk som systemet inte har, och en felaktig gissning om ett ankare eller ett citerat `true` gör en konfigurationsfil till en annan.
+
+För JSON och XML kontrolleras filen av en riktig tolk. För YAML finns ingen på systemet, så kontrollen täcker de fel som går att hitta utan en — en tabb använd för indentering, vilket YAML uttryckligen förbjuder, en indentering som inte stämmer med något, en dubbel nyckel, ett oavslutat citattecken — och säger det, i stället för att påstå att filen är giltig.
 
 ## Filtrera genom ett skalkommando
 
@@ -114,11 +137,20 @@ Insticksmoduler kan också bidra med formaterare — se [Plugins](plugins.md).
 | Visa/dölj symbolöversikt | Cmd+Shift+O |
 | Gå till rad | Cmd+L |
 | Hoppa till matchande klammer | Cmd+\ |
+| Gå till omslutande nod (JSON/YAML/XML) | Ctrl+Cmd+Upp |
+| Gå till första barnet | Ctrl+Cmd+Ner |
+| Gå till föregående / nästa syskon | Ctrl+Cmd+Vänster / Höger |
+| Markera omslutande nod | Ctrl+Cmd+A |
+| Kopiera strukturell sökväg | Ctrl+Cmd+C |
+| Validera dokumentet | Ctrl+Cmd+V |
+| Fäll in / fäll ut noden | Alt+Cmd+Vänster / Höger |
+| Fäll in översta nivån / fäll ut allt | Alt+Cmd+Upp / Ner |
 | Ångra / gör om (hex-redigerare) | Cmd+Z / Cmd+Shift+Z |
 | Filtrera markeringen genom ett kommando | Shift+Cmd+\ |
 
 ## Anteckningar
 
-- Syntaxfärgning täcker JSON, C, C#, Java, JavaScript, TypeScript, Python och Rust. Andra filtyper öppnas och redigeras ändå normalt med grundläggande färgning, men detaljerad färgning och symbolöversikten är endast tillgängliga för de språk som stöds.
+- Syntaxfärgning täcker JSON, C, C#, Java, JavaScript, TypeScript, Python och Rust. Andra filtyper öppnas och redigeras fortfarande normalt med enkel färgning, men detaljerad färgning finns bara för de språk som stöds.
+- Översikten täcker de programmeringsspråk som stöds plus JSON, YAML och XML — inklusive de XML-baserade formaten som `.plist`, `.svg`, `.csproj` och `.storyboard`. Kommandona för strukturnavigering, sökväg och validering gäller JSON, YAML och XML.
 - Symbolöversikten och funktionen Gå till rad gäller textredigeraren. Hex-redigeraren är avsedd för binärgranskning och redigeringar på byte-nivå, inte för text.
 - Båda redigerarna behåller en säkerhetskopia av originalfilen första gången du sparar, så att en oavsiktlig ändring är lätt att ångra genom att återställa den säkerhetskopian.

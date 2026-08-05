@@ -84,8 +84,17 @@ final class SymbolSidebar: NSView {
     /// Extract + display the outline for `text` (background parse). Clears when the
     /// language is unsupported, the file is empty, or it exceeds the size cap.
     func load(text: String, ext: String) {
-        guard SymbolOutline.supports(ext: ext), !text.isEmpty, text.utf16.count <= 4_000_000,
-              let handles = SymbolOutline.handles(ext: ext) else {
+        // Two sources of structure, and the choice is the extension's: tree-sitter tag queries for code,
+        // a scanner for JSON, YAML and XML — which have no tag queries and are exactly the files where a
+        // tree is most useful (F-368).
+        guard !text.isEmpty, text.utf16.count <= 4_000_000 else {
+            lastSignature = nil; setRoots([]); return
+        }
+        if SymbolOutline.supports(ext: ext) == false, StructureOutline.supports(ext: ext) {
+            loadStructure(text: text, ext: ext)
+            return
+        }
+        guard SymbolOutline.supports(ext: ext), let handles = SymbolOutline.handles(ext: ext) else {
             lastSignature = nil; setRoots([]); return
         }
         let signature = text.utf16.count &* 31 &+ text.hashValue
@@ -96,6 +105,22 @@ final class SymbolSidebar: NSView {
         let query = handles.query, language = handles.language
         queue.async { [weak self] in
             let roots = SymbolOutline.parse(text, query: query, language: language)
+            DispatchQueue.main.async {
+                guard let self, gen == self.generation else { return }
+                self.setRoots(roots)
+            }
+        }
+    }
+
+    /// Outline a structured-data file off the main thread, like the tree-sitter path.
+    private func loadStructure(text: String, ext: String) {
+        let signature = text.utf16.count &* 31 &+ text.hashValue
+        if signature == lastSignature { return }
+        lastSignature = signature
+        generation += 1
+        let gen = generation
+        queue.async { [weak self] in
+            let roots = StructureOutline.parse(text, ext: ext)
             DispatchQueue.main.async {
                 guard let self, gen == self.generation else { return }
                 self.setRoots(roots)
@@ -119,6 +144,9 @@ final class SymbolSidebar: NSView {
 
     /// The definition with the given name (depth-first), for go-to-definition.
     func definition(named name: String) -> SymbolNode? { controller.find(named: name) }
+
+    /// The whole (unfiltered) tree, for structural navigation and paths.
+    var tree: [SymbolNode] { controller.tree }
 
     private func setRoots(_ roots: [SymbolNode]) {
         controller.update(roots)
@@ -160,6 +188,10 @@ final class SymbolOutlineController: NSObject, NSOutlineViewDataSource, NSOutlin
     weak var outline: NSOutlineView?
 
     func update(_ roots: [SymbolNode]) { self.roots = roots }
+
+    /// The unfiltered tree. The filtered one is what the outline view shows; navigation must not be
+    /// confined to whatever happens to be typed in the filter field.
+    var tree: [SymbolNode] { roots }
 
     func enclosingPath(utf16 offset: Int) -> [SymbolNode] { SymbolTree.enclosingPath(roots, utf16: offset) }
 
