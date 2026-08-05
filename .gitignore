@@ -32,8 +32,12 @@ build/
 *.orig
 
 # Test fixtures (generated, not committed)
-Fixtures/
-Tools/fixtures/
+# Anchored to the paths that are actually generated. Unanchored, `Fixtures/` matched *any* directory
+# named that at any depth — and, because git is set to ignore case here, `Tools/vm/fixtures/` too. Those
+# are three small hand-written files the VM harness needs, and a fresh clone could not have run the
+# editor scenarios without them.
+/Fixtures/
+/Tools/fixtures/
 
 # macOS
 .DS_Store
