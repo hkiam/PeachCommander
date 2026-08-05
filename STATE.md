@@ -8,13 +8,103 @@
 | Field | Value |
 |---|---|
 | Phase | **A & B done. C: I14 done; I15 plain FTP LIVE (quick-connect + connection manager, verified vs test.rebex.net; SFTP + explicit-FTPS still pending); I16 lister/content plugins mostly done. D: I17 utilities mostly done; I18 macOS integration MOSTLY DONE (Quick Look Cmd+Y, Share sheet, Open With, Finder Tags: color column + tag-filter (tag:red/#blau), Spotlight metadata in Get Info, Services menu integration, "Open Terminal Here", Full Disk Access onboarding, Go▸Trash, xattr inspector/remove in Change Attributes, privileged "retry as administrator" for chmod+delete done; ACL editing/copy-move-elevation/undo pending). Also F-063 Ctrl+Left/Right open cursor folder in other panel done.; I19 partial (perf targets validated); I20 shipping GROUNDWORK done (DMG script + release CI workflow + hardened-runtime entitlements + RELEASE.md + CHANGELOG + local crash reporting; only Developer-ID signing/notarization and Sparkle auto-update remain — both need Apple creds / update-feed hosting).** |
-| Current iteration | **I19 T06 accessibility + keyboard operation DONE** (see the log below). Docs/i18n complete. **I19 localization + help DONE (19 languages)**; **documentation system live** (SSOT → Apple Help Book + MkDocs site + generated FEATURES/README). Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update (both need Apple creds / feed hosting); accessibility (I19 T06) **done**. |
+| Current iteration | **Editor: JSON/YAML/XML outline, structural navigation, paths, validation and transformations DONE (F-368/369/370)**; I19 T06 accessibility + keyboard operation DONE (see the log below). Docs/i18n complete. **I19 localization + help DONE (19 languages)**; **documentation system live** (SSOT → Apple Help Book + MkDocs site + generated FEATURES/README). Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update (both need Apple creds / feed hosting); accessibility (I19 T06) **done**. |
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-193 an FTP side for the sync, F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 156 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; 88 older `done` rows still carry none. |
-| Last updated | 2026-08-04 |
-| Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1105 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1105 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
+| Last updated | 2026-08-05 |
+| Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
+
+## 2026-08-05 — Folding, and v0.3.0
+
+**Folding (F-371) — DONE.** ⌥⌘ with the arrows: fold the node at the caret, fold the whole top level,
+unfold. Hidden through `NSLayoutManagerDelegate.shouldGenerateGlyphs` with `.null` glyphs, so the text
+storage is untouched — the document is exactly what will be saved, undo is unaffected, and Find still
+finds text inside a fold. The alternatives all change the document (an attachment, a side buffer) or add
+a second text system.
+
+Three rules keep it honest, each measured in the VM: the header line stays visible **and is marked**, an
+edit drops every fold (a fold is a pair of offsets and inserting text moves them), and a caret that
+lands inside a fold opens it. The gutter needed its own fix: with the glyphs hidden, the line numbers of
+folded lines were all drawn at the header line's y, so they piled up on one row. It now skips them, and
+the jump in the numbering is what shows something is collapsed.
+
+Two defects the measurement found: `Fold Node` on a leaf folded the *grandparent* (I asked for the
+parent of the position before the node, which lands a line earlier — it now walks the enclosing path
+outwards), and `LineNumberRuler.isHidden` silently overrode `NSView.isHidden`.
+
+**v0.3.0 cut.** `CHANGELOG.md` created — `docs/distribution/release-and-updates.md` had been referring
+to a file that did not exist. 51 new UI strings in 19 languages this cycle, the help section for
+JSON/YAML/XML in 19 languages, 1809+ tests, 28 VM scenarios at zero conflicts, all eight keyboard gates
+and the hotkey audit green.
+
+## 2026-08-04 — JSON, YAML and XML in the editor (F-368 · F-369 · F-370)
+
+**An outline for JSON, YAML and XML (F-368) — DONE.** The symbol sidebar is driven by tree-sitter
+tag queries, and for exactly the three formats an administrator edits most it showed *nothing*:
+JSON's grammar has `tagsResource: nil` (JSON has no "definitions"), and YAML and XML have no
+grammar at all. A 900-line compose file got a blank sidebar, an empty breadcrumb and no way to
+jump to a key. `StructureOutline` is a UTF-16 scanner rather than a parser, for two reasons that
+both matter: `JSONSerialization` and `XMLDocument` throw positions away, so their output cannot be
+jumped to, and a *broken* document still outlines down to the point where it breaks — which is
+when a structure view is most useful.
+
+**Structural navigation, selection, paths (F-369) — DONE.** ⌃⌘ plus the arrow keys as a four-way
+move (out, in, previous sibling, next sibling), ⌃⌘A to select the enclosing node (pressing it
+again grows outwards), ⌃⌘C to copy the caret's position as an expression the format's own tools
+take — `.services.web.ports[0]` for jq/yq, `//server[@id='web-1']/port` as an XPath — and ⌃⌘V to
+validate with the caret placed **on the problem**. `StructurePath` records path steps in the
+parser (`SymbolNode.pathComponent`) instead of recovering them from the sidebar's labels, which
+are shortened and decorated for people; keys that are not identifiers are quoted, because
+`.content-type` is a subtraction in jq and `."content-type"` is the key.
+
+**Transformations (F-370) — DONE.** Minify (one line), sort keys recursively, escape/unescape as a
+JSON string, JSON → YAML. Minifying is a text walk, not a round trip through
+`JSONSerialization`: that loses key order and rewrites numbers, so `1.0` becomes `1` and a 20-digit
+id becomes `1.23e+19`. Sorting deliberately *does* round-trip, since sorting is a reordering.
+There is no YAML → JSON, and that is a decision recorded in the code and in the help: it needs a
+YAML parser the system does not have.
+
+**What the measurements found, in order.**
+
+1. **The outline parser spun forever on any file with more than 5000 nodes.** Past the node limit
+   `value()` returned nil, the loops above it broke out *without consuming their container*, and
+   the array loop then sat on a `}` in element position — a character the scalar skipper refuses to
+   move past. On a background thread, silently, in every large JSON file. Found by running the
+   validator over this repository's own vendored tree-sitter grammars, not by a test.
+2. **The YAML check cried wolf on valid files.** Measured against Ruby's Psych over 400 real YAML
+   files: an apostrophe in prose (`the plugin's settings`) taken for a quote, a plain scalar
+   continued on a deeper line, a flow sequence wrapped over two lines, `key: &anchor` treated as a
+   value, a list item's keys judged misindented, and an escaped `\"` closing a multi-line quoted
+   scalar in the middle of a 200-line licence text. All six shapes are now tests. Final state: 400
+   files that Psych accepts, **0** flagged.
+3. **…and the reverse check, because a validator that finds nothing also has no false alarms.**
+   Over 294 deliberately broken files: tabs 95 found where Psych finds 95, indentation 38 of 61,
+   duplicate keys 64 (Psych reports none — it accepts duplicates), and **not one** flag that Psych
+   considered valid. JSON: 300 files, agreement with Python's `json` module 297/300 — the three
+   differences were **trailing commas**, which `JSONSerialization` accepts and Python, Go and jq
+   refuse, so that became a check of its own and agreement is now 300/300. XML: 236 mutated files,
+   236/236 agreement with `xmllint`.
+4. **The caret sat at the end of the document after opening a file** — the breadcrumb described the
+   last key in the file while line 1 was on screen. Assigning `textView.string` leaves the
+   selection behind the text.
+5. **The status line called a `.json` file "JavaScript".**
+6. **My own PCFoundation strings would never have been translated.** `Tools/extract-strings.sh`
+   reads PCApp's module only, so the validator's messages — written in PCFoundation — would have
+   shipped in English in all 18 languages with no gate saying a word. The validator now returns a
+   typed `Reason` and `StructureProblemText` in PCApp produces the words, which is what
+   CONVENTIONS.md asked for in the first place.
+
+**New gates.** `editor-yaml-outline`, `editor-xml-outline`, `editor-structure` and
+`editor-validate` in `Tools/vm/regress.py` (28 scenarios). The structure scenarios fire the real
+**menu items** rather than calling the methods, because an item whose target is wrong is disabled
+on screen and works perfectly when called directly. `Tools/check-hotkeys.py` grew
+`--window-menu`: the editor installs its own menu bar, and its shortcuts — now 32 of them — were
+unchecked until this run. Fixtures moved to `Tools/vm/fixtures/` and are copied with `scp`;
+generating YAML through python → ssh → sh → printf is what broke two earlier attempts.
+
+40 new UI strings in 19 languages, a new help section in 19 languages, and 1809 tests green.
 
 ## 2026-08-04 — Accessibility & keyboard operation (I19 T06) · ZIP64
 
