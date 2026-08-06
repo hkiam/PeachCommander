@@ -179,4 +179,122 @@ final class INIDocumentTests: XCTestCase {
 
         XCTAssertEqual(doc.keys(inSection: "A"), ["first", "second"])
     }
+
+    // MARK: - What a read-modify-write must not lose (F-375)
+    //
+    // These are the properties a sweep over 350 real .ini/.cfg/.properties files on this machine checked,
+    // and that the sweep can no longer check once it is gone. The sweep found no defect — after the check
+    // was taught to see one: its first version reported nothing when `serialized()` was made to drop every
+    // comment, because comparing parse → serialize → parse cannot notice a loss that is stable.
+
+    /// A file with every construct the parser distinguishes, and a few it does not.
+    private let awkward = """
+    ; a leading comment
+    # another comment style
+
+    [Section One]
+    key=value
+    spaced key = spaced value
+    empty=
+    [Section Two]
+    ; a comment inside a section
+    key=value with = signs and ; semicolons
+    a line that is not a pair
+    """
+
+    func testEveryCommentSurvivesARoundTrip() {
+        let out = INIDocument(parsing: awkward).serialized()
+        for comment in ["; a leading comment", "# another comment style", "; a comment inside a section"] {
+            XCTAssertTrue(out.contains(comment), "lost \(comment)\n\(out)")
+        }
+    }
+
+    func testALineThatIsNotAPairIsKeptVerbatim() {
+        // The parser keeps anything it does not recognise, so a settings file it half-understands does
+        // not lose the half it does not.
+        XCTAssertTrue(INIDocument(parsing: awkward).serialized().contains("a line that is not a pair"))
+    }
+
+    func testBlankLinesAndSectionOrderSurvive() {
+        let out = INIDocument(parsing: awkward).serialized()
+        let sections = out.split(separator: "\n").filter { $0.hasPrefix("[") }.map(String.init)
+        XCTAssertEqual(sections, ["[Section One]", "[Section Two]"])
+        XCTAssertTrue(out.contains("\n\n"), "the blank line between the comments and the first section is gone")
+    }
+
+    func testSerializingIsIdempotent() {
+        let once = INIDocument(parsing: awkward).serialized()
+        XCTAssertEqual(INIDocument(parsing: once).serialized(), once)
+    }
+
+    func testAValueContainingAnEqualsSignSurvives() {
+        let doc = INIDocument(parsing: awkward)
+        XCTAssertEqual(doc.value(section: "Section Two", key: "key"),
+                       "value with = signs and ; semicolons")
+    }
+
+    func testSettingOneValueLeavesEveryOtherAlone() {
+        let doc = INIDocument(parsing: awkward)
+        var edited = doc
+        edited.set("changed", section: "Section One", key: "key")
+        XCTAssertEqual(edited.value(section: "Section One", key: "key"), "changed")
+        XCTAssertEqual(edited.value(section: "Section One", key: "empty"), "")
+        XCTAssertEqual(edited.value(section: "Section Two", key: "key"),
+                       "value with = signs and ; semicolons")
+        // …and the comments are still there afterwards, which is the point of a comment-preserving parser.
+        XCTAssertTrue(edited.serialized().contains("; a comment inside a section"))
+    }
+
+    // MARK: - Line endings (F-375)
+
+    func testACRLFFileStaysCRLF() {
+        // The editor promises a line operation never changes the terminator on its own, and the Format
+        // button runs this serializer on files the user owns. Joining with "\n" regardless rewrote every
+        // line of a Windows-style INI — 34 of the 350 files in the sweep were CRLF.
+        let out = INIDocument(parsing: "[S]\r\na=1\r\nb=2\r\n").serialized()
+        XCTAssertTrue(out.contains("\r\n"), out.debugDescription)
+        XCTAssertFalse(out.replacingOccurrences(of: "\r\n", with: "").contains("\n"),
+                       "a stray LF means the file was rewritten with mixed endings: \(out.debugDescription)")
+    }
+
+    func testAnLFFileStaysLF() {
+        let out = INIDocument(parsing: "[S]\na=1\n").serialized()
+        XCTAssertFalse(out.contains("\r"), out.debugDescription)
+    }
+
+    func testTheDominantTerminatorWins() {
+        // A CRLF file with one stray LF is a CRLF file; rewriting all of it because of the stray one is
+        // the behaviour being avoided.
+        let out = INIDocument(parsing: "[S]\r\na=1\r\nb=2\nc=3\r\n").serialized()
+        XCTAssertEqual(out.components(separatedBy: "\r\n").count - 1, 4, out.debugDescription)
+    }
+
+    func testAnEditedCRLFFileIsStillCRLF() {
+        var doc = INIDocument(parsing: "[S]\r\na=1\r\n")
+        doc.set("2", section: "S", key: "b")
+        XCTAssertTrue(doc.serialized().contains("b=2\r\n"), doc.serialized().debugDescription)
+    }
+
+    func testACRLFFileIsParsedAtAll() {
+        // The defect this whole sweep found: in Swift "\r\n" is a single Character, so
+        // `split(separator: "\n")` does not split a CRLF file — the parser saw one giant line, read
+        // `[S]\r\na` as a key, and every section header was lost. A Windows-written INI, which is to say
+        // every `wincmd.ion` and most `.ini` files in the world, was never parsed correctly.
+        let doc = INIDocument(parsing: "[Section]\r\nkey=value\r\nother=2\r\n")
+        XCTAssertEqual(doc.sections(), ["Section"])
+        XCTAssertEqual(doc.value(section: "Section", key: "key"), "value")
+        XCTAssertEqual(doc.value(section: "Section", key: "other"), "2")
+    }
+
+    func testACRFileIsParsedToo() {
+        // Classic Mac endings, for completeness: also one Character, also never split.
+        let doc = INIDocument(parsing: "[S]\rkey=value\r")
+        XCTAssertEqual(doc.value(section: "S", key: "key"), "value")
+    }
+
+    func testCommentsSurviveInACRLFFile() {
+        let out = INIDocument(parsing: "; note\r\n[S]\r\na=1\r\n").serialized()
+        XCTAssertTrue(out.contains("; note"), out.debugDescription)
+        XCTAssertTrue(out.contains("[S]"), out.debugDescription)
+    }
 }

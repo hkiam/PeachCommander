@@ -226,7 +226,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-273 | Options: Edit/View associations (viewer/editor per type) | internal associations; ev: symbol:AssociationsPageView | SPEC-013 | I07 | P1 | done |
 | F-274 | Options: Packer, Zip settings; Plugins page; FTP page | ev: symbol:packDefaultFormat ev: symbol:PluginsWindowController | SPEC-013 | I09/I14/I15 | P1 | done |
 | F-275 | INI-based config files, human-editable, reload w/o restart where safe | ADR-007; paths in configuration.md | SPEC-013 | I05 | P1 | done |
-| F-276 | Import subset of wincmd.ini (colors, hotlist, buttonbar, ftp sites) | Migration helper, best effort; ev: cm_ImportWincmd | SPEC-013 | I19 | P3 | done |
+| F-276 | Import subset of wincmd.ini (colors, hotlist, buttonbar, ftp sites) | Migration helper, best effort; a CRLF wincmd.ini — i.e. every real one — used to import nothing, because "\r\n" is one Swift Character and the INI parser split on "\n" (F-375); ev: cm_ImportWincmd ev: test:WincmdImporterTests | SPEC-013 | I19 | P3 | done |
 | F-277 | Portable-ish mode: config path override via launch arg/env | For tests + power users | SPEC-013 | I05 | P2 | done |
 
 ## 14. macOS-specific additions (beyond TC)

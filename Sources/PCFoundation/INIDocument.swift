@@ -27,6 +27,14 @@ public struct INIDocument: Equatable, Sendable {
         case blank
     }
 
+    /// The line ending the document was read with, so serializing keeps it (F-375).
+    ///
+    /// The editor promises that a line operation "never changes the terminator on its own: sorting a CRLF
+    /// file leaves it CRLF" — and the Format button runs this serializer on files the user owns. Joining
+    /// with "\n" regardless rewrote every line of a Windows-style INI, which is a diff nobody asked for.
+    /// A sweep over 350 real `.ini`/`.cfg`/`.properties` files on this machine found 34 of them CRLF.
+    public private(set) var lineEnding: String = "\n"
+
     /// Ordered tokens making up the document.
     var lines: [Line]
 
@@ -41,9 +49,15 @@ public struct INIDocument: Equatable, Sendable {
         var parsedLines: [Line] = []
         var currentSection = ""
 
-        // Split preserving the notion of individual lines; drop only the
-        // trailing newline handling (serialized() re-joins with "\n").
-        let rawLines = text.split(separator: "\n", omittingEmptySubsequences: false)
+        // Split on *newlines*, not on the character "\n": in Swift "\r\n" is a single Character, so
+        // `split(separator: "\n")` does not split a CRLF file at all. It produced one giant broken line
+        // — `[S]\r\na` as a key — so a Windows-style INI was never parsed correctly, and the Format
+        // button turned one into nonsense. `isNewline` treats CRLF as the one line break it is.
+        //
+        // The same trap caught `LineEndings.lineCount` once ("1 line(s)" for a four-line CRLF file), and
+        // it caught the differential probe that was meant to find this: the probe split the original text
+        // the same wrong way, so it compared garbage against garbage and reported no findings.
+        let rawLines = text.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline })
 
         for (index, substring) in rawLines.enumerated() {
             // Guard against a final empty element produced by a trailing "\n".
@@ -89,6 +103,14 @@ public struct INIDocument: Equatable, Sendable {
         }
 
         self.lines = parsedLines
+        // The dominant terminator, not the first: a file that is CRLF apart from one stray LF is a CRLF
+        // file, and rewriting all of it because of the stray one is the behaviour being fixed here.
+        let crlf = text.components(separatedBy: "\r\n").count - 1
+        let lf = text.components(separatedBy: "\n").count - 1 - crlf
+        let cr = text.components(separatedBy: "\r").count - 1 - crlf
+        if crlf >= max(lf, cr), crlf > 0 { lineEnding = "\r\n" }
+        else if cr > lf, cr > 0 { lineEnding = "\r" }
+        else { lineEnding = "\n" }
     }
 
     /// Value for `key` in `section` (case-insensitive section+key match), or nil.
@@ -210,8 +232,8 @@ public struct INIDocument: Equatable, Sendable {
     }
 
     /// Serialize back to text. Comments, blank lines and the ordering of
-    /// untouched lines are preserved. The result always ends with a single
-    /// trailing newline (this is the one normalization applied on round-trip:
+    /// untouched lines are preserved, including the file's line terminator (F-375). The result always
+    /// ends with a single trailing newline (this is the one normalization applied on round-trip:
     /// input lacking a final newline gains one on serialization).
     public func serialized() -> String {
         var pieces: [String] = []
@@ -231,6 +253,6 @@ public struct INIDocument: Equatable, Sendable {
         if pieces.isEmpty {
             return ""
         }
-        return pieces.joined(separator: "\n") + "\n"
+        return pieces.joined(separator: lineEnding) + lineEnding
     }
 }

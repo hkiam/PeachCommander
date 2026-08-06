@@ -138,4 +138,18 @@ final class WincmdImporterTests: XCTestCase {
         XCTAssertEqual(result.buttonBar?.buttons.count, 1)
         XCTAssertTrue(result.colorsPresent)
     }
+
+    // MARK: - A real wincmd.ini has CRLF line endings (F-375)
+
+    func testAWindowsWrittenIniImportsAtAll() {
+        // The file this importer exists for is written by Total Commander on Windows, so it has CRLF —
+        // and in Swift "\r\n" is a single Character, so `INIDocument` split on "\n" never split it. Every
+        // section header was lost and the import silently found nothing. The importer was correct; the
+        // parser under it was not, and no test used a CRLF file.
+        let ini = INIDocument(parsing: "[DirMenu]\r\nmenu1=&Root\r\ncmd1=cd /\r\n"
+                              + "menu2=&Web\r\ncmd2=cd C:\\\\web\r\n")
+        let entries = WincmdImporter.parseHotlist(ini)
+        XCTAssertEqual(entries.count, 2, "a CRLF wincmd.ini must import like an LF one")
+        XCTAssertEqual(entries.first?.title, "Root", "the & accelerator marker is still stripped")
+    }
 }
