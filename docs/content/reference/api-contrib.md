@@ -57,6 +57,8 @@ contrib.h — Peach Commander plugin contributions, behavior ABI (SPEC-013).
 - `automationInvoke`
 - `automationConfirm`
 - `automationFree`
+- `getFileComment`
+- `setFileComment`
 
 
 ## Full header
@@ -174,6 +176,20 @@ typedef struct PcHostServices {
     char *(*automationInvoke)(void *host, const char *toolName, const char *argumentsJson);
     char *(*automationConfirm)(void *host, const char *token);
     void  (*automationFree)(void *host, char *str);
+
+    /* Per-file comments — the `descript.ion` entry the host shows in its Comment
+       column and edits with Ctrl+Z, mirrored into the macOS Finder comment for local
+       files. A plugin cannot reach these on its own: they live in a file the host
+       reads through the VFS, so they are available on network locations too, and the
+       Finder mirror is the host's business.
+
+       This exists so a note-taking plugin does not become a *second*, disconnected
+       place where a note about a file can live. `getFileComment` writes at most
+       `maxlen` bytes including the terminator and returns 1 on success (0 when there
+       is no comment or the path is unknown); `setFileComment` with NULL or an empty
+       string clears it. Both appended at the end for ABI compatibility. */
+    int  (*getFileComment)(void *host, const char *path, char *out, int maxlen);
+    void (*setFileComment)(void *host, const char *path, const char *comment);
 } PcHostServices;
 
 /* ---- Behavior entry points --------------------------------------------- */
