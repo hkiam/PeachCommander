@@ -26,7 +26,7 @@ Peach Commander gör mycket, men ett fåtal funktioner har ärliga begränsninga
 ## Andra aktuella begränsningar
 
 - **Vissa mycket långa absoluta sökvägar** (djupt nästlade mappar vars fullständiga sökväg är ovanligt lång) kanske inte hanteras tillförlitligt. Att arbeta närmare toppen av mappträdet undviker detta.
-- **Den här förhandsversionen är osignerad.** macOS Gatekeeper kan varna för att appen är från en oidentifierad utvecklare första gången du öppnar den. Högerklicka på appen och välj Öppna, och bekräfta sedan, för att köra den. Automatiska uppdateringar är ännu inte tillgängliga i det här bygget.
+- **Den här förhandsversionen är osignerad.** Gatekeeper blockerar den första starten, och hur du tillåter den beror på din macOS-version. På **macOS 15 Sequoia och senare**: dubbelklicka en gång, stäng varningen och gå sedan till **Systeminställningar ▸ Integritet och säkerhet** och klicka på **Öppna ändå** — Apple tog bort genvägen med högerklick för osignerad programvara i macOS 15, så högerklick hjälper inte längre. På **macOS 13–14**: högerklicka på appen och välj Öppna, bekräfta sedan. Automatiska uppdateringar finns ännu inte i den här versionen.
 
 ## Kortkommandon
 

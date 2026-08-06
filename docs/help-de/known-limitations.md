@@ -26,7 +26,7 @@ Peach Commander kann viel, aber ein paar Funktionen haben in der aktuellen Versi
 ## Weitere aktuelle Einschränkungen
 
 - **Einige sehr lange absolute Pfade** (tief verschachtelte Ordner, deren vollständiger Pfad ungewöhnlich lang ist) werden möglicherweise nicht zuverlässig verarbeitet. Näher am oberen Ende des Ordnerbaums zu arbeiten vermeidet dies.
-- **Dieser Vorschau-Build ist nicht signiert.** macOS Gatekeeper warnt beim ersten Öffnen möglicherweise, dass die App von einem nicht verifizierten Entwickler stammt. Klicken Sie mit der rechten Maustaste auf die App und wählen Sie Öffnen, bestätigen Sie dann, um sie auszuführen. Automatische Updates sind in diesem Build noch nicht verfügbar.
+- **Dieser Vorschau-Build ist nicht signiert.** Gatekeeper blockiert den ersten Start, und wie Sie ihn erlauben, hängt von Ihrer macOS-Version ab. Unter **macOS 15 Sequoia und neuer**: einmal doppelklicken, die Warnung schließen, dann in **Systemeinstellungen ▸ Datenschutz & Sicherheit** auf **Dennoch öffnen** klicken — Apple hat die Abkürzung über die rechte Maustaste für nicht signierte Software in macOS 15 entfernt, ein Rechtsklick hilft dort also nicht mehr. Unter **macOS 13–14**: mit der rechten Maustaste auf die App klicken, Öffnen wählen und bestätigen. Automatische Updates sind in diesem Build noch nicht verfügbar.
 
 ## Kurzbefehle
 

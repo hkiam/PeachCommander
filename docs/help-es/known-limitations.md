@@ -26,7 +26,7 @@ Peach Commander hace muchas cosas, pero unas cuantas funciones tienen límites r
 ## Otros límites actuales
 
 - **Algunas rutas absolutas muy largas** (carpetas profundamente anidadas cuya ruta completa es inusualmente larga) pueden no gestionarse de forma fiable. Trabajar más cerca de la parte superior del árbol de carpetas evita este problema.
-- **Esta versión preliminar no está firmada.** Gatekeeper de macOS puede advertir de que la aplicación procede de un desarrollador no identificado la primera vez que la abre. Haga clic con el botón derecho en la aplicación y elija Abrir; a continuación, confirme, para ejecutarla. Las actualizaciones automáticas aún no están disponibles en esta versión.
+- **Esta versión preliminar no está firmada.** Gatekeeper bloquea el primer arranque, y cómo permitirlo depende de su versión de macOS. En **macOS 15 Sequoia y posterior**: haga doble clic una vez, cierre el aviso y vaya a **Ajustes del Sistema ▸ Privacidad y seguridad** y pulse **Abrir de todos modos** — Apple quitó el atajo del clic derecho para software sin firmar en macOS 15, así que el clic derecho ya no sirve. En **macOS 13–14**: haga clic derecho en la app y elija Abrir, luego confirme. Las actualizaciones automáticas todavía no están disponibles en esta versión.
 
 ## Atajos
 

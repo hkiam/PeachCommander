@@ -26,7 +26,7 @@ Peach Commander face multe, dar câteva funcții au limite oneste în versiunea 
 ## Alte limite curente
 
 - **Unele căi absolute foarte lungi** (foldere imbricate adânc a căror cale completă este neobișnuit de lungă) pot să nu fie gestionate în mod fiabil. Lucrul mai aproape de vârful arborelui de foldere evită acest lucru.
-- **Această versiune de previzualizare nu este semnată.** Gatekeeper macOS poate avertiza că aplicația este de la un dezvoltator neidentificat prima dată când o deschideți. Faceți clic dreapta pe aplicație și alegeți Deschide, apoi confirmați, pentru a o rula. Actualizările automate nu sunt încă disponibile în această versiune.
+- **Această versiune de previzualizare nu este semnată.** Gatekeeper blochează prima lansare, iar modul de a o permite depinde de versiunea de macOS. Pe **macOS 15 Sequoia și mai nou**: faceți dublu clic o dată, închideți avertismentul, apoi mergeți la **Configurări sistem ▸ Confidențialitate și securitate** și apăsați **Deschide oricum** — Apple a eliminat în macOS 15 scurtătura prin clic dreapta pentru software nesemnat, așa că un clic dreapta nu mai ajută. Pe **macOS 13–14**: faceți clic dreapta pe aplicație, alegeți Deschide, apoi confirmați. Actualizările automate nu sunt încă disponibile în această versiune.
 
 ## Comenzi rapide
 
