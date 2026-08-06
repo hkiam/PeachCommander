@@ -26,7 +26,7 @@ Peach Commander does a lot, but a few features have honest limits in the current
 ## Other current limits
 
 - **Some very long absolute paths** (deeply nested folders whose full path is unusually long) may not be handled reliably. Working closer to the top of the folder tree avoids this.
-- **This preview build is unsigned.** macOS Gatekeeper may warn that the app is from an unidentified developer the first time you open it. Right-click the app and choose Open, then confirm, to run it. Automatic updates are not yet available in this build.
+- **This preview build is unsigned.** Gatekeeper blocks the first launch, and how you allow it depends on your macOS version. On **macOS 15 Sequoia and later**: double-click once, dismiss the warning, then go to System Settings ▸ Privacy & Security and click **Open Anyway** — Apple removed the right-click shortcut for unsigned software in macOS 15, so right-clicking no longer helps. On **macOS 13–14**: right-click the app and choose Open, then confirm. Automatic updates are not yet available in this build.
 
 ## Shortcuts
 

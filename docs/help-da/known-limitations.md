@@ -26,7 +26,7 @@ Peach Commander gør meget, men nogle få funktioner har ærlige grænser i den 
 ## Andre aktuelle grænser
 
 - **Nogle meget lange absolutte stier** (dybt indlejrede mapper, hvis fulde sti er usædvanligt lang) håndteres måske ikke pålideligt. At arbejde tættere på toppen af mappetræet undgår dette.
-- **Denne forhåndsversion er usigneret.** macOS Gatekeeper kan advare om, at appen er fra en uidentificeret udvikler, første gang du åbner den. Højreklik på appen og vælg Åbn, og bekræft derefter, for at køre den. Automatiske opdateringer er endnu ikke tilgængelige i denne version.
+- **Denne forhåndsversion er ikke underskrevet.** Gatekeeper blokerer den første start, og hvordan du tillader den afhænger af din macOS-version. På **macOS 15 Sequoia og nyere**: dobbeltklik én gang, luk advarslen, og gå så til **Systemindstillinger ▸ Anonymitet og sikkerhed** og klik på **Åbn alligevel** — Apple fjernede genvejen med højreklik for usigneret software i macOS 15, så højreklik hjælper ikke længere. På **macOS 13–14**: højreklik på appen og vælg Åbn, bekræft derefter. Automatiske opdateringer er endnu ikke tilgængelige i denne version.
 
 ## Genveje
 

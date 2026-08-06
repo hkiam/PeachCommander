@@ -26,7 +26,7 @@ Peach Commander toho zvládá hodně, ale několik funkcí má v aktuální verz
 ## Další aktuální meze
 
 - **Některé velmi dlouhé absolutní cesty** (hluboko vnořené složky, jejichž celá cesta je neobvykle dlouhá) nemusí být zpracovány spolehlivě. Práce blíže vrcholu stromu složek tomu předchází.
-- **Toto sestavení náhledu není podepsané.** Gatekeeper v macOS může varovat, že aplikace je od neidentifikovaného vývojáře, když ji poprvé otevřete. Klepněte na aplikaci pravým tlačítkem a zvolte Otevřít, poté potvrďte, abyste ji spustili. Automatické aktualizace v tomto sestavení zatím nejsou dostupné.
+- **Toto sestavení náhledu není podepsané.** Gatekeeper blokuje první spuštění a způsob, jak je povolit, závisí na verzi macOS. Na **macOS 15 Sequoia a novějším**: jednou poklepejte, zavřete varování a pak přejděte do **Nastavení systému ▸ Soukromí a zabezpečení** a klepněte na **Přesto otevřít** — Apple v macOS 15 odstranil zkratku pravým tlačítkem pro nepodepsaný software, klepnutí pravým tlačítkem tam tedy už nepomůže. Na **macOS 13–14**: klepněte na aplikaci pravým tlačítkem, zvolte Otevřít a potvrďte. Automatické aktualizace v tomto sestavení zatím nejsou dostupné.
 
 ## Zkratky
 

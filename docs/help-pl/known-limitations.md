@@ -26,7 +26,7 @@ Peach Commander robi wiele, ale kilka funkcji ma w bieżącej wersji szczere ogr
 ## Inne bieżące ograniczenia
 
 - **Niektóre bardzo długie ścieżki bezwzględne** (głęboko zagnieżdżone foldery, których pełna ścieżka jest niezwykle długa) mogą nie być obsługiwane niezawodnie. Praca bliżej szczytu drzewa folderów pozwala tego uniknąć.
-- **Ta wersja podglądowa nie jest podpisana.** Gatekeeper w macOS może ostrzec, że aplikacja pochodzi od niezidentyfikowanego dewelopera przy pierwszym otwarciu. Kliknij aplikację prawym przyciskiem i wybierz Otwórz, a następnie potwierdź, aby ją uruchomić. Automatyczne aktualizacje nie są jeszcze dostępne w tej wersji.
+- **Ta wersja zapoznawcza nie jest podpisana.** Gatekeeper blokuje pierwsze uruchomienie, a sposób na jego dopuszczenie zależy od wersji macOS. W **macOS 15 Sequoia i nowszym**: kliknij dwukrotnie raz, zamknij ostrzeżenie, a potem przejdź do **Ustawień systemowych ▸ Prywatność i ochrona** i kliknij **Otwórz mimo to** — Apple usunęło w macOS 15 skrót przez kliknięcie prawym przyciskiem dla niepodpisanego oprogramowania, więc kliknięcie prawym przyciskiem już nie pomaga. W **macOS 13–14**: kliknij aplikację prawym przyciskiem, wybierz Otwórz i potwierdź. Automatyczne aktualizacje nie są jeszcze dostępne w tej wersji.
 
 ## Skróty
 

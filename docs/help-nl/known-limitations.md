@@ -26,7 +26,7 @@ Peach Commander doet veel, maar een paar functies hebben in de huidige versie ee
 ## Overige huidige beperkingen
 
 - **Sommige zeer lange absolute paden** (diep geneste mappen met een ongewoon lang volledig pad) worden mogelijk niet betrouwbaar verwerkt. Dichter bij de top van de mapstructuur werken vermijdt dit.
-- **Deze previewversie is niet ondertekend.** macOS Gatekeeper kan de eerste keer waarschuwen dat de app van een niet-geïdentificeerde ontwikkelaar is. Klik met de rechtermuisknop op de app en kies Open, bevestig daarna, om hem uit te voeren. Automatische updates zijn in deze versie nog niet beschikbaar.
+- **Deze voorvertoningsbuild is niet ondertekend.** Gatekeeper blokkeert de eerste start, en hoe je die toestaat hangt af van je macOS-versie. Op **macOS 15 Sequoia en later**: dubbelklik één keer, sluit de waarschuwing en ga naar **Systeeminstellingen ▸ Privacy en beveiliging** en klik op **Toch openen** — Apple heeft de snelkoppeling via rechtsklikken voor niet-ondertekende software in macOS 15 verwijderd, dus rechtsklikken helpt daar niet meer. Op **macOS 13–14**: klik met de rechtermuisknop op de app en kies Open, bevestig daarna. Automatische updates zijn in deze build nog niet beschikbaar.
 
 ## Sneltoetsen
 

@@ -26,7 +26,7 @@ Peach Commander fait beaucoup, mais quelques fonctionnalités ont des limites ho
 ## Autres limites actuelles
 
 - **Certains chemins absolus très longs** (dossiers profondément imbriqués dont le chemin complet est inhabituellement long) peuvent ne pas être gérés de façon fiable. Travailler plus près du haut de l'arborescence évite cela.
-- **Cette version préliminaire n'est pas signée.** Gatekeeper de macOS peut avertir que l'application provient d'un développeur non identifié la première fois que vous l'ouvrez. Cliquez droit sur l'application et choisissez Ouvrir, puis confirmez, pour l'exécuter. Les mises à jour automatiques ne sont pas encore disponibles dans cette version.
+- **Cette version préliminaire n'est pas signée.** Gatekeeper bloque le premier lancement, et la façon de l'autoriser dépend de votre version de macOS. Sous **macOS 15 Sequoia et ultérieur** : double-cliquez une fois, fermez l'avertissement, puis allez dans **Réglages Système ▸ Confidentialité et sécurité** et cliquez sur **Ouvrir quand même** — Apple a supprimé le raccourci par clic droit pour les logiciels non signés dans macOS 15, le clic droit n'aide donc plus. Sous **macOS 13–14** : cliquez droit sur l'application, choisissez Ouvrir, puis confirmez. Les mises à jour automatiques ne sont pas encore disponibles dans cette version.
 
 ## Raccourcis
 

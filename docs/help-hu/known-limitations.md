@@ -26,7 +26,7 @@ A Peach Commander sokat tud, de néhány funkciónak őszinte határai vannak a 
 ## Egyéb jelenlegi határok
 
 - **Néhány nagyon hosszú abszolút útvonal** (mélyen beágyazott mappák, amelyek teljes útvonala szokatlanul hosszú) esetleg nem kezelhető megbízhatóan. A mappafa teteje közelében dolgozva ez elkerülhető.
-- **Ez az előnézeti verzió nincs aláírva.** A macOS Gatekeeper figyelmeztethet, hogy az app egy nem azonosított fejlesztőtől származik, amikor először nyitja meg. Kattintson jobb gombbal az appra és válassza a Megnyitás lehetőséget, majd erősítse meg a futtatásához. Az automatikus frissítések még nem érhetők el ebben a verzióban.
+- **Ez az előnézeti verzió nincs aláírva.** A Gatekeeper blokkolja az első indítást, és hogy miként engedélyezi, a macOS verziójától függ. **macOS 15 Sequoia és újabb** esetén: kattintson duplán egyszer, zárja be a figyelmeztetést, majd nyissa meg a **Rendszerbeállítások ▸ Adatvédelem és biztonság** panelt, és kattintson a **Megnyitás mindenképp** lehetőségre — az Apple a macOS 15-ben eltávolította a jobb gombos gyorsítót az alá nem írt szoftverekhez, így a jobb gombos kattintás ott már nem segít. **macOS 13–14** esetén: kattintson jobb gombbal az appra, válassza a Megnyitás lehetőséget, majd erősítse meg. Az automatikus frissítések még nem érhetők el ebben a verzióban.
 
 ## Billentyűparancsok
 

@@ -26,7 +26,7 @@ Peach Commander fa molto, ma alcune funzioni hanno limiti onesti nella versione 
 ## Altri limiti attuali
 
 - **Alcuni percorsi assoluti molto lunghi** (cartelle profondamente annidate il cui percorso completo è insolitamente lungo) potrebbero non essere gestiti in modo affidabile. Lavorare più vicino alla cima dell'albero delle cartelle evita questo.
-- **Questa build di anteprima non è firmata.** Gatekeeper di macOS potrebbe avvisare che l'app proviene da uno sviluppatore non identificato la prima volta che la apri. Fai clic destro sull'app e scegli Apri, poi conferma, per eseguirla. Gli aggiornamenti automatici non sono ancora disponibili in questa build.
+- **Questa versione di anteprima non è firmata.** Gatekeeper blocca il primo avvio, e il modo di consentirlo dipende dalla versione di macOS. Su **macOS 15 Sequoia e successivi**: fate doppio clic una volta, chiudete l'avviso, poi andate in **Impostazioni di Sistema ▸ Privacy e sicurezza** e fate clic su **Apri comunque** — Apple ha rimosso la scorciatoia con il clic destro per il software non firmato in macOS 15, quindi il clic destro non aiuta più. Su **macOS 13–14**: fate clic destro sull'app e scegliete Apri, poi confermate. Gli aggiornamenti automatici non sono ancora disponibili in questa versione.
 
 ## Scorciatoie
 
