@@ -121,4 +121,19 @@ final class OpenAICompatibleProviderTests: XCTestCase {
         let listed = await bridge.listed
         XCTAssertEqual(listed, "/a")   // the cloud-driven tool call really ran via the core
     }
+
+    func testACRLFDelimitedStreamIsParsed() {
+        // The SSE specification allows CR, LF or CRLF as a line terminator, and in Swift "\r\n" is a
+        // single Character — so splitting on "\n" did not split a CRLF stream at all and the whole reply
+        // arrived as one unparsable "line", i.e. an empty answer from a provider that was working.
+        let sse = "data: {\"choices\":[{\"delta\":{\"content\":\"Hallo\"}}]}\r\n"
+            + "data: {\"choices\":[{\"delta\":{\"content\":\" Welt\"}}]}\r\n"
+            + "data: [DONE]\r\n"
+        XCTAssertEqual(OpenAICompatibleProvider.parseSSEContent(sse), "Hallo Welt")
+    }
+
+    func testACRDelimitedStreamIsParsed() {
+        let sse = "data: {\"choices\":[{\"delta\":{\"content\":\"x\"}}]}\rdata: [DONE]\r"
+        XCTAssertEqual(OpenAICompatibleProvider.parseSSEContent(sse), "x")
+    }
 }

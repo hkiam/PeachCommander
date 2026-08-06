@@ -132,7 +132,10 @@ public final class SFTPSession: @unchecked Sendable {
         let path = (NSHomeDirectory() as NSString).appendingPathComponent(".ssh/known_hosts")
 
         let contents = (try? String(contentsOfFile: path, encoding: .utf8)) ?? ""
-        for rawLine in contents.split(separator: "\n") {
+        // On *newlines*: a known_hosts that has been through a Windows editor has CRLF, and in Swift
+        // "\r\n" is one Character — splitting on "\n" would then see the whole file as a single line and
+        // silently fail to recognise a host that *is* known, turning a normal connection into a warning.
+        for rawLine in contents.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }) {
             let fields = rawLine.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
             guard fields.count >= 3, !fields[0].hasPrefix("#") else { continue }
             let hosts = fields[0].split(separator: ",").map(String.init)

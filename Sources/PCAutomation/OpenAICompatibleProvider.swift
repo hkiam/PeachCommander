@@ -81,7 +81,10 @@ public struct OpenAICompatibleProvider: ModelProvider {
     /// the whole reply to detect a `TOOL:` tool call vs. a final answer).
     public static func parseSSEContent(_ sse: String) -> String {
         var out = ""
-        for rawLine in sse.split(separator: "\n") {
+        // On *newlines*, not on the character "\n": the SSE specification allows CR, LF or CRLF as a
+        // line terminator, and in Swift "\r\n" is a single Character — so `split(separator: "\n")` does
+        // not split a CRLF stream at all and the whole reply arrives as one unparsable "line".
+        for rawLine in sse.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }) {
             let line = rawLine.trimmingCharacters(in: .whitespaces)
             guard line.hasPrefix("data:") else { continue }
             let payload = line.dropFirst("data:".count).trimmingCharacters(in: .whitespaces)

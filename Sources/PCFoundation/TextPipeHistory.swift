@@ -27,7 +27,7 @@ public struct TextPipeHistory: Sendable {
     /// as "no history" — a history is a convenience and must never be an error.
     public func load() -> [String] {
         guard let text = try? String(contentsOf: url, encoding: .utf8) else { return [] }
-        return text.split(separator: "\n")
+        return text.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline })
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
     }

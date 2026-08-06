@@ -16,6 +16,42 @@
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
+## 2026-08-06 (evening) — INIDocument never parsed a CRLF file (F-375)
+
+**The differential sweep the last review recommended, and what it found.** 350 real
+`.ini`/`.cfg`/`.properties` files from this machine, checked for the properties a settings file has to
+survive: parse → serialize → parse identical, every section/key/value preserved, every comment and blank
+line preserved, section order unchanged, and `set`/`remove` touching nothing but their own key.
+
+**First result: my instrument was blind.** With `serialized()` deliberately made to drop every comment, the
+probe reported *no findings* — because comparing parse → serialize → parse cannot see a loss that is
+consistent. Extended to compare against the original text, it then caught the injected mutations (239
+comment findings, 52 blank-line, 2811 section-order) and reported the real corpus clean.
+
+**Second result, and the real one: `INIDocument` never parsed a CRLF file.** `split(separator: "\n")` does
+not split at `\r\n`, because in Swift that is a *single Character*. A Windows-written INI came out as one
+giant broken line — `[S]\r\na` as a key, every section header lost. Consequences: the Format button turned
+such a file into nonsense, and **importing a real `wincmd.ini` from Total Commander silently found
+nothing**, since that file always has CRLF. No test had ever used a CRLF fixture.
+
+**And the probe hid it, for the same reason.** It split the original text the same wrong way, so it
+compared garbage with garbage. After fixing both, the corrected probe finds exactly 34 findings for the 34
+CRLF files in the corpus when the old split is put back — the instrument can now see the defect it missed.
+This is the third time this exact trap has been found in this codebase (`LineEndings.lineCount` reporting
+"1 line(s)" for a four-line CRLF file was the first).
+
+**Swept the rest of the codebase for the same trap.** Of 23 sites splitting on `"\n"`, three were exposed
+and are fixed: the SSE stream parser (the specification allows CR, LF *or* CRLF — a CRLF-delimited reply
+arrived as one unparsable line, i.e. an empty answer from a working provider), `known_hosts` (a file that
+has been through a Windows editor would have made a known host look unknown), and the editor's filter
+history. The rest are correct: PAX tar records are newline-terminated by POSIX, and the others handle text
+this app itself just wrote.
+
+**Also fixed while here:** `serialized()` joined with `"\n"` regardless, so formatting a CRLF INI rewrote
+every line of it — against the editor's own documented promise that "a line operation never changes the
+terminator on its own". The document now remembers the terminator it was read with (the dominant one: a
+CRLF file with one stray LF is a CRLF file).
+
 ## 2026-08-06 (later still) — descript.ion as Total Commander writes it (F-374)
 
 **Two ways this app could corrupt an interchange format, both silent.**
