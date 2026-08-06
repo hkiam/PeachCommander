@@ -465,7 +465,11 @@ def run_scenario(ip, host, port, pw, name, script, settle, out: Path):
     # would make this scenario show something else entirely. (Learned the hard way — twice.)
     # The guest-side half is a script, not an ssh one-liner: the log predicate carries quotes at three
     # levels and passing it inline produced an empty capture that read as "no conflicts".
-    text = ssh_guest(ip, f"./regress-guest.sh {name} {settle}").stdout
+    # Hand the guest the report this scenario writes, so it waits for the file instead of trusting a
+    # fixed sleep. Without it, a slow launch late in the suite produced an empty report and every
+    # expectation was reported as wrong — three times, for three different scenarios.
+    expect = REPORTS.get(name, (None, None))[0] or ""
+    text = ssh_guest(ip, f"./regress-guest.sh {name} {settle} {expect}").stdout
     shot = out / f"{name}.png"
     sh([VNCDO, "-s", f"{host}::{port}", "-p", pw, "capture", str(shot)])
     log, _, a11y = text.partition("===A11Y===")
@@ -573,6 +577,13 @@ def main():
                 path, expected = REPORTS[key]
                 report = ssh_guest(ip, f"cat {path} 2>/dev/null").stdout
                 (out / f"{key}-report.txt").write_text(report)
+                # An empty report is a different failure from a wrong one: the app did not get that far.
+                # Reporting it as "every expectation is wrong" sent me looking at the wrong code twice.
+                if not report.strip():
+                    failures.append(f"{key}: report EMPTY — {path} was never written "
+                                    f"(the app may not have finished; see {key}.log)")
+                    say(f"{key}: REPORT EMPTY — {path} was never written")
+                    continue
                 # "!x" means x must NOT be there — otherwise the check could pass for the wrong reason.
                 wrong = [e for e in expected
                          if (e[1:] in report) if e.startswith("!")] + \

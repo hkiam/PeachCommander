@@ -1616,6 +1616,10 @@ final class TextListerView: NSView, ListerScrollable, ViewerTextProviding, Viewe
     }
 
     init(bytes: [UInt8], encoding: String.Encoding? = nil) {
+        // The byte-order mark is dropped from the content, not just detected: this view decodes per line
+        // from the bytes, so a kept BOM appears as an invisible character at the start of line 1 — and
+        // "column 1" then means the second character (F-376).
+        let bytes = EncodingDetector.withoutBOM(bytes)
         self.backing = .memory(bytes)
         self.encoding = encoding ?? EncodingDetector.detect(Array(bytes.prefix(64 * 1024)))
         self.lineStarts = LineIndexer.lineStarts(in: bytes).map(Int64.init)

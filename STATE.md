@@ -16,6 +16,46 @@
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
+## 2026-08-06 (night) — The encoding detector was wrong about 4 in 300 real files (F-376)
+
+Next corpus, same method: 300 real text files over 64 KB from this machine, each asked "what does the
+detector say" against "what does the *whole* file decode as". Two defects, both user-visible, both in the
+path every file open takes.
+
+**A UTF-8 file whose 64 KB sample ended mid-character was declared CP1252.** The sample is a fixed cut, so
+its last bytes are very often half of a multi-byte character; validating those as well made the check fail.
+The editor then showed mojibake and **saved it back that way**. 4 of the 300 files — all German transcripts,
+because the more non-ASCII a text is, the likelier the cut lands mid-character. For CJK, where every
+character is three bytes, it would be far more common than that. Fixed by trimming the sample to the last
+complete character, dropping at most three bytes: a longer run of continuation bytes is genuinely invalid
+input and has to stay in, or the check would call a broken file valid.
+
+My first attempt at that fix did nothing, and the probe said so: it stripped only *continuation* bytes,
+while the common case is a sample ending on the lead byte itself.
+
+**The byte-order mark was detected and then left in the data.** `String(data:encoding:)` strips it for
+UTF-8 and keeps it for UTF-16, so a UTF-16 file opened in the editor began with an invisible U+FEFF —
+column 1 on line 1 meant the second character, and saving wrote the marker into the content underneath the
+new one. There is now `EncodingDetector.decode` (and `withoutBOM` for the viewer, which decodes line by
+line from a memory map and cannot use it).
+
+**The negative cases were the important half.** Trading a false CP1252 for a false UTF-8 would be the worse
+bug — a Latin-1 file would then decode to replacement characters instead of to something a user can
+recognise and fix with the encoding menu. Latin-1 short and long, a lone high byte at the sample end, and
+continuation bytes with no lead are all still CP1252; after the fix, 0 of the 300 files are misdetected.
+
+One limitation left as it is, and now documented: bytes past the 64 KB sample are not examined, so a file
+whose first 64 KB is pure ASCII and which turns Latin-1 later is read as UTF-8. That is the nature of a
+sample, not a defect introduced here.
+
+**And the harness stopped guessing how long to wait.** Three scenarios failed in one full run with
+*every* expectation wrong — the signature of an empty report, not of a content mismatch. Late in a run of
+thirty-plus scenarios the guest is slower, the app's own log shows ten seconds of image loading before it
+is up, and the fixed settle expired before the automation wrote its file. The guest runner now waits for
+the report the scenario is supposed to produce (up to 40 s more, twice a second), and an empty report is
+reported as *empty* rather than as thirty wrong expectations. That misreading sent me looking at the wrong
+code twice.
+
 ## 2026-08-06 (evening) — INIDocument never parsed a CRLF file (F-375)
 
 **The differential sweep the last review recommended, and what it found.** 350 real
