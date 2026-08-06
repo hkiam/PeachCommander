@@ -16,6 +16,32 @@
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
+## 2026-08-06 (later) — A comment can be found again (F-373)
+
+**Find Files searches a file's comment.** A checkbox on the General tab, and the comment becomes a second
+place the search text may be: "the customer's original", "superseded by the 2026 export" — findable again
+even though nothing of the sort is inside the file. Matched by the *same* function the content path uses,
+so whole word, case and regular expressions mean exactly one thing; a hex query is not applied to a
+comment, because "these bytes" is not a question about text somebody typed. `Not containing` inverts the
+whole question — a file is listed when the term is in neither its content nor its comment — which is the
+case a naive implementation gets backwards.
+
+**I walked straight into a trap the code already documents.** There are three walk paths, and the mmap
+fast path is a nonisolated static scan that cannot await a provider. Routing comment searches through it
+meant the provider was never asked and the option found *nothing*; the comment above that dispatch
+describes the identical mistake being made once before for `searchPluginText`. Comment searches now leave
+the fast path — they keep the memory-mapped scan for the content half and lose only the concurrency, and
+the option is opt-in.
+
+**And a note is findable too, without new plumbing.** The Notes plugin's content field returned "●" — a
+marker, not text — so a note was visible as a dot and searchable by nothing. It now also exposes the
+note's text as an ordinary content field, which means the *existing* content-field condition (F-157) can
+filter on it and a panel can show it as a column. I had first written a host-side special case that
+reached into the plugin's store; that was the wrong shape, and it is gone.
+
+Small correctness detail from the picture: a comment hit showed "L0" in the results list. There is no line
+zero, so the line number is now omitted when the match is not in the file's text.
+
 ## 2026-08-06 — A note about a file, in one place (F-372)
 
 **Reviewing the notes feature found three of them.** A note about a file could live in a

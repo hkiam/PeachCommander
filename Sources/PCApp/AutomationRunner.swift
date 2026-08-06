@@ -227,6 +227,16 @@ extension MainWindowController {
                 showFindFiles()
                 let mask = arg.isEmpty ? "*.*" : arg
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in self?.findWindow?.automationStart(mask: mask) }
+            case "findcomments":                           // findcomments <mask>|<text>|<dir>|<out> (F-373)
+                let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+                if a.count == 4 {
+                    showFindFiles()
+                    try? await Task.sleep(nanoseconds: 700_000_000)
+                    findWindow?.automationSearchComments(mask: a[0], text: a[1], directory: a[2])
+                    try? await Task.sleep(nanoseconds: 2_500_000_000)   // let the walk finish
+                    try? (findWindow?.automationResults() ?? "ERROR: no find window\n")
+                        .write(toFile: a[3], atomically: true, encoding: .utf8)
+                }
             case "httpget":                                // httpget <url>|<dir>|<name>[|<sha256>] (F-330)
                 let a = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
                 if a.count >= 3 {
