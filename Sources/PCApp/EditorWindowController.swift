@@ -426,10 +426,14 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         // cannot be written is the part that wastes the ten minutes.
         writability = FileWritabilityCheck.check(path: path)
         let data = (try? Data(contentsOf: URL(fileURLWithPath: path))) ?? Data()
-        let detected = EncodingDetector.detect(Array(data.prefix(64 * 1024)))
-        encoding = TextEncodingChoice.from(detected) ?? .utf8
+        // Through `EncodingDetector.decode`, which strips the byte-order mark: `String(data:encoding:)`
+        // keeps it for UTF-16, so a UTF-16 file used to open with an invisible U+FEFF as its first
+        // character — the caret's column was off by one on line 1, and saving wrote the marker into the
+        // content on top of the new one.
+        let decoded = EncodingDetector.decode(data)
+        encoding = TextEncodingChoice.from(decoded.encoding) ?? .utf8
         encodingPopup.selectItem(withTitle: encoding.displayName)
-        textView.string = String(data: data, encoding: encoding.encoding) ?? String(decoding: data, as: UTF8.self)
+        textView.string = decoded.text
         // Assigning the string leaves the caret behind the text, which the view does not scroll to: the
         // document showed line 1 while the breadcrumb described the very last key in the file.
         textView.setSelectedRange(NSRange(location: 0, length: 0))

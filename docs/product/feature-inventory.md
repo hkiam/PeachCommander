@@ -107,7 +107,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 
 | ID | Feature | Notes | Spec | Iter | Prio | Status |
 |---|---|---|---|---|---|---|
-| F-110 | F3 Lister window: text mode w/ ANSI/ASCII/variable codepages, UTF-8/16 | Autodetect encoding; manual switch | SPEC-005 | I07 | P1 | done |
+| F-110 | F3 Lister window: text mode w/ ANSI/ASCII/variable codepages, UTF-8/16 | Autodetect encoding; manual switch; the 64 KB sample is trimmed to a character boundary before it is judged (a UTF-8 file whose sample ended mid-character was read as CP1252) and the BOM is not part of the text (F-376); ev: symbol:EncodingDetector ev: test:EncodingDetectorBoundaryTests | SPEC-005 | I07 | P1 | done |
 | F-111 | Hex mode + binary (fixed width) mode | Offsets, byte grouping; ev: symbol:HexDocument ev: symbol:HexFormatter | SPEC-005 | I07 | P1 | done |
 | F-112 | Huge files: instant open via mmap, files > memory, 2^63 bytes | Scroll a 50 GB file smoothly; ev: symbol:LineIndexer ev: test:HexDocumentTests | SPEC-005 | I07 | P1 | done |
 | F-113 | Search in viewer (F7/Ctrl+F, F3 next), hex search, case opts | Also from command line arg; ev: symbol:ByteSearch ev: symbol:applyInitialSearch | SPEC-005 | I07 | P1 | done |
