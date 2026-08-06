@@ -16,6 +16,34 @@
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
+## 2026-08-06 (later still) — descript.ion as Total Commander writes it (F-374)
+
+**Two ways this app could corrupt an interchange format, both silent.**
+
+- **UTF-16.** Total Commander writes UTF-16 with a BOM when a comment needs characters the local codepage
+  cannot hold. `CommentStore` decoded unconditionally as UTF-8, so such a file read as replacement
+  characters — and writing one comment back rewrote the whole file as UTF-8, destroying every comment in
+  that directory, including the ones nobody had touched. The encoding is now detected from the BOM and
+  the file is written back in the encoding it had.
+- **Line breaks.** The original 4DOS format cannot store one; TC asked the 4DOS authors for an extension
+  code and got 0xC2, so a multi-line comment is stored as a literal `\n` with the bytes 0x04 0xC2
+  appended to the line. This parser knew nothing about it: the marker bytes came back glued to the end of
+  the comment text. Now the escape is decoded *only* when the marker is there — without it, `\n` is two
+  characters somebody typed, and rewriting a Windows path in a stranger's comment into line breaks would
+  be its own kind of vandalism.
+
+**The gate is an independent decoder, not a round trip.** `Tools/check-descript-format.sh` writes one file
+per encoding with the real encoder and hands the bytes to **Python's** codecs, which know nothing about
+this project — a round trip verified by the code that produced it only proves the code agrees with itself.
+Wired into CI, and verified by breaking the encoder on purpose first.
+
+**And the harness lied to me for two runs.** The scenario fixture was generated on the guest through
+python → ssh → sh, which ate one escaping layer and wrote a *real* line break where the format wants a
+literal backslash-n. The report then blamed the parser, which was correct all along. The fixture is now
+144 committed bytes copied with `scp`, and the scenario prints the fixture it read so the next false
+accusation is one line away from being disproved. That is the third time quoting through that chain has
+produced the wrong bytes here.
+
 ## 2026-08-06 (later) — A comment can be found again (F-373)
 
 **Find Files searches a file's comment.** A checkbox on the General tab, and the comment becomes a second

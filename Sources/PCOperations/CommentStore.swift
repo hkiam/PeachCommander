@@ -15,14 +15,14 @@ public enum CommentStore {
     /// The comment for `name` in `dir`, or nil if none.
     public static func comment(for name: String, inDir dir: VFSPath, on fs: VirtualFileSystem) async -> String? {
         guard let data = try? await readAll(dir.joining(fileName), on: fs) else { return nil }
-        return DescriptionFile(parsing: String(decoding: data, as: UTF8.self)).comment(for: name)
+        return DescriptionFile(parsing: DescriptionFile.decode(data).text).comment(for: name)
     }
 
     /// All comments in `dir` as a name → comment map (empty if the file is missing
     /// or unreadable). Used to populate the panel's Comment column in one read.
     public static func comments(inDir dir: VFSPath, on fs: VirtualFileSystem) async -> [String: String] {
         guard let data = try? await readAll(dir.joining(fileName), on: fs) else { return [:] }
-        return DescriptionFile(parsing: String(decoding: data, as: UTF8.self)).comments
+        return DescriptionFile(parsing: DescriptionFile.decode(data).text).comments
     }
 
     /// Set (or clear, when nil/empty) the comment for `name` in `dir`. Removes the
@@ -31,15 +31,21 @@ public enum CommentStore {
                                   on fs: VirtualFileSystem) async throws {
         let path = dir.joining(fileName)
         var doc = DescriptionFile()
+        // The encoding the file already has is kept (F-374): a `descript.ion` written by Total Commander
+        // may be UTF-16, and rewriting it as UTF-8 leaves every other reader of that directory — TC
+        // included — looking at bytes it does not expect.
+        var encoding = DescriptionFile.Encoding.utf8
         if let data = try? await readAll(path, on: fs) {
-            doc = DescriptionFile(parsing: String(decoding: data, as: UTF8.self))
+            let decoded = DescriptionFile.decode(data)
+            doc = DescriptionFile(parsing: decoded.text)
+            encoding = decoded.encoding
         }
         doc.setComment(comment, for: name)
         if doc.isEmpty {
             try? await fs.delete(path)
         } else {
             let writer = try await fs.openWrite(path, options: WriteOptions())
-            try await writer.write(Data(doc.serialized().utf8))
+            try await writer.write(DescriptionFile.encode(doc.serialized(), as: encoding))
             try await writer.close()
         }
     }

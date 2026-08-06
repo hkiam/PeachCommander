@@ -125,6 +125,12 @@ SCENARIOS = [
                        "cmd cm_SrcLong", "wait 600", "column comment", "widenleft", "wait 600",
                        "commentcarry /Users/admin/pc-demo|notes.txt|renamed.txt|/Users/admin/comment.txt",
                        "wait 1500"], 10),
+    # A `descript.ion` written by Total Commander: UTF-16 with a BOM, and a multi-line comment using TC's
+    # 0x04 0xC2 extension (F-374). Read it, write one comment back, and check the file is still UTF-16 and
+    # the comment nobody touched is still there.
+    ("tc-descript", ["active left", "left /Users/admin/pc-tc", "wait 1200",
+                     "cmd cm_SrcLong", "wait 600", "column comment", "widenleft", "wait 600",
+                     "tccomment /Users/admin/pc-tc|/Users/admin/tc.txt", "wait 1200"], 10),
     # Can a comment be found again (F-373)? A file whose *content* holds nothing of the sort, found by
     # what somebody wrote about it. The comment is set through the host's own path first.
     ("find-comments", ["active left", "left /Users/admin/pc-demo", "wait 1200",
@@ -322,6 +328,12 @@ REPORTS = {
     # to explain itself.
     "find-comments": ("/Users/admin/found.txt",
                       ["count=1", "table.csv", "comment: superseded by the 2026 export", "!ERROR"]),
+    # Read as UTF-16, the multi-line comment as two lines, still UTF-16 after writing, and the untouched
+    # comment intact.
+    "tc-descript": ("/Users/admin/tc.txt",
+                    ["read16=Grüße aus Zürich", "readMulti=erste Zeile⏎zweite Zeile",
+                     "bomAfterWrite=FFFE", "kept=erste Zeile⏎zweite Zeile",
+                     "written=geändert durch die App"]),
     "editor-lines": ("/Users/admin/lines.txt",
                      ["endings=CRLF", "undo=true", "keep me<CR>",
                       # Four lines in the fixture, and the status line must say four — not "1 line(s)",
@@ -422,6 +434,13 @@ def boot(app: str, run: str):
                   # 40 KB of known content: more than one 64 KB read would be silly, less than one is
                   # what a single-chunk transfer looks like — enough to tell a tail from a whole file.
                   "python3 -c \"open('$HOME/sftp-demo/big.txt','w').write('peach'*8192)\"; true")
+    # A `descript.ion` exactly as Total Commander writes one — UTF-16 LE with a BOM and a multi-line
+    # comment using TC's registered 0x04 0xC2 extension (F-374). Copied as *bytes* from the repository:
+    # generating it through python -> ssh -> sh ate one escaping layer and produced a real line break where
+    # the format wants a literal backslash-n, and the scenario then blamed the parser for it.
+    ssh_guest(ip, "mkdir -p pc-tc && printf x > pc-tc/tc-utf16.txt && printf x > pc-tc/tc-multi.txt")
+    sh(["scp", *SSH, str(Path(__file__).with_name("fixtures-tc") / "descript.ion"),
+        f"{GUEST}@{ip}:pc-tc/descript.ion"])
     # A small, fixed demo tree: the scenarios need something to show, and it must not vary between
     # runs or the screenshots become impossible to compare.
     ssh_guest(ip, "mkdir -p pc-cfg pc-demo/sub && "

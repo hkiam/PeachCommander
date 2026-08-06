@@ -44,6 +44,13 @@ jobs:
       - name: Check the plugin SDK headers agree and compile standalone
         run: ./Tools/check-sdk-headers.sh
 
+      # `descript.ion` is an interchange format — Total Commander and several others read the same file.
+      # A unit test can only show the code agrees with itself, since it decodes with the same decoder that
+      # encoded; this hands the bytes to Python's codecs instead. Reading a UTF-16 descript.ion as UTF-8
+      # used to destroy every comment in that directory, silently. Needs no build.
+      - name: Check the descript.ion bytes against an independent decoder
+        run: ./Tools/check-descript-format.sh
+
       - name: Build project
         run: |
           ./Tools/build.sh
