@@ -125,6 +125,37 @@ extension MainWindowController {
                 if let panel = previewPanelForAutomation() {
                     NSLog("[automation] previewtab \(arg): \(panel.automationSelectTab(titled: arg))")
                 }
+            case "tccomment":                           // tccomment <dir>|<out> (F-374)
+                // Read a `descript.ion` that Total Commander would have written — UTF-16 with a BOM and a
+                // multi-line comment — then write one comment back and report what is on disk afterwards.
+                // The bytes are what matters: rewriting the file as UTF-8 destroys every comment in it,
+                // including the ones nobody touched.
+                let a = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if a.count == 2, let panel = activePanel {
+                    await panel.loadDirectory(a[0])
+                    panel.refreshComments()
+                    try? await Task.sleep(nanoseconds: 600_000_000)
+                    // The fixture itself, so a failing expectation cannot be blamed on the parser without
+                    // looking: quoting a file through python → ssh → sh has produced the wrong bytes
+                    // twice in this harness already.
+                    let fixture = (try? Data(contentsOf: URL(fileURLWithPath: a[0] + "/descript.ion"))) ?? Data()
+                    let fixtureText = DescriptionFile.decode(fixture).text
+                    var out = "fixture=\(fixtureText.replacingOccurrences(of: "\n", with: "⏎").replacingOccurrences(of: "\u{04}", with: "<04>"))\n"
+                    out += "read16=\(panel.tableView.automationComment(forName: "tc-utf16.txt") ?? "<none>")\n"
+                    let multi = panel.tableView.automationComment(forName: "tc-multi.txt") ?? "<none>"
+                    out += "readMulti=\(multi.replacingOccurrences(of: "\n", with: "⏎"))\n"
+                    panel.tableView.focusEntry(named: "tc-utf16.txt")
+                    _ = await panel.setCursorComment("geändert durch die App")
+                    try? await Task.sleep(nanoseconds: 500_000_000)
+                    let raw = (try? Data(contentsOf: URL(fileURLWithPath: a[0] + "/descript.ion"))) ?? Data()
+                    let bom = raw.prefix(2).map { String(format: "%02X", $0) }.joined()
+                    out += "bomAfterWrite=\(bom)\n"
+                    panel.refreshComments()
+                    try? await Task.sleep(nanoseconds: 500_000_000)
+                    out += "kept=\(panel.tableView.automationComment(forName: "tc-multi.txt")?.replacingOccurrences(of: "\n", with: "⏎") ?? "<none>")\n"
+                    out += "written=\(panel.tableView.automationComment(forName: "tc-utf16.txt") ?? "<none>")\n"
+                    try? out.write(toFile: a[1], atomically: true, encoding: .utf8)
+                }
             case "commentread":                         // commentread <name>|<out> (F-372)
                 let parts = arg.split(separator: "|", maxSplits: 1).map(String.init)
                 if parts.count == 2, let panel = activePanel {

@@ -44,4 +44,105 @@ final class DescriptionFileTests: XCTestCase {
         let d = DescriptionFile(parsing: "lonely.txt   \n\n  \n")
         XCTAssertTrue(d.isEmpty)
     }
+
+    // MARK: - Total Commander's multi-line extension (F-374)
+    //
+    // The format: a line break inside a comment is stored as a literal backslash-n, and the two bytes
+    // 0x04 0xC2 are appended to the line. 0x04 introduces a 4DOS extension; 0xC2 is the code Total
+    // Commander was given for "this comment uses \\n for line breaks". Without the marker, `\\n` is two
+    // characters somebody typed.
+
+    private let marker = "\u{04}\u{C2}"
+
+    func testAMultiLineCommentIsReadAsLineBreaks() {
+        let doc = DescriptionFile(parsing: "report.txt first line\\nsecond line\(marker)\n")
+        XCTAssertEqual(doc.comment(for: "report.txt"), "first line\nsecond line")
+    }
+
+    func testWithoutTheMarkerBackslashNStaysLiteral() {
+        // Somebody else's comment must not sprout line breaks: this is a Windows path, not two lines.
+        let doc = DescriptionFile(parsing: "setup.exe unpacks into C:\\new\\files\n")
+        XCTAssertEqual(doc.comment(for: "setup.exe"), "unpacks into C:\\new\\files")
+    }
+
+    func testAMultiLineCommentRoundTripsThroughTheMarker() {
+        var doc = DescriptionFile()
+        doc.setComment("first line\nsecond line", for: "a.txt")
+        let text = doc.serialized()
+        XCTAssertTrue(text.contains("first line\\nsecond line"), text.debugDescription)
+        XCTAssertTrue(text.contains(marker), "the marker is what makes the escape readable: \(text.debugDescription)")
+        XCTAssertEqual(DescriptionFile(parsing: text).comment(for: "a.txt"), "first line\nsecond line")
+    }
+
+    func testASingleLineCommentGetsNoMarker() {
+        var doc = DescriptionFile()
+        doc.setComment("just one line", for: "a.txt")
+        XCTAssertFalse(doc.serialized().contains(marker))
+    }
+
+    func testAQuotedNameWithAMultiLineComment() {
+        let doc = DescriptionFile(parsing: "\"two words.txt\" a\\nb\(marker)\n")
+        XCTAssertEqual(doc.comment(for: "two words.txt"), "a\nb")
+    }
+
+    func testTheMarkerIsNotLeftInACommentlessLine() {
+        // A line that is only a name plus the marker: nothing to comment, and the marker is not a name.
+        let doc = DescriptionFile(parsing: "lonely.txt\(marker)\n")
+        XCTAssertNil(doc.comment(for: "lonely.txt"))
+        XCTAssertNil(doc.comment(for: "lonely.txt" + marker))
+    }
+
+    // MARK: - Encodings (F-374)
+
+    func testUTF8WithoutABOM() {
+        let data = Data("a.txt hello\n".utf8)
+        let decoded = DescriptionFile.decode(data)
+        XCTAssertEqual(decoded.encoding, .utf8)
+        XCTAssertEqual(DescriptionFile(parsing: decoded.text).comment(for: "a.txt"), "hello")
+    }
+
+    func testUTF8WithABOM() {
+        var data = Data([0xEF, 0xBB, 0xBF])
+        data.append(Data("a.txt hällo\n".utf8))
+        let decoded = DescriptionFile.decode(data)
+        XCTAssertEqual(decoded.encoding, .utf8BOM)
+        XCTAssertEqual(DescriptionFile(parsing: decoded.text).comment(for: "a.txt"), "hällo")
+    }
+
+    func testUTF16LittleEndian() {
+        // What Total Commander writes when a comment needs characters the codepage cannot hold. Read as
+        // UTF-8 this is replacement characters, and writing it back destroyed every comment in the
+        // directory — including the ones nobody had touched.
+        var data = Data([0xFF, 0xFE])
+        data.append("a.txt Grüße aus Zürich\n".data(using: .utf16LittleEndian)!)
+        let decoded = DescriptionFile.decode(data)
+        XCTAssertEqual(decoded.encoding, .utf16LE)
+        XCTAssertEqual(DescriptionFile(parsing: decoded.text).comment(for: "a.txt"), "Grüße aus Zürich")
+    }
+
+    func testUTF16BigEndian() {
+        var data = Data([0xFE, 0xFF])
+        data.append("a.txt Grüße\n".data(using: .utf16BigEndian)!)
+        let decoded = DescriptionFile.decode(data)
+        XCTAssertEqual(decoded.encoding, .utf16BE)
+        XCTAssertEqual(DescriptionFile(parsing: decoded.text).comment(for: "a.txt"), "Grüße")
+    }
+
+    func testEveryEncodingRoundTripsItsOwnBytes() {
+        for encoding in [DescriptionFile.Encoding.utf8, .utf8BOM, .utf16LE, .utf16BE] {
+            let text = "a.txt Grüße\n\"b c.txt\" 日本語\n"
+            let data = DescriptionFile.encode(text, as: encoding)
+            let back = DescriptionFile.decode(data)
+            XCTAssertEqual(back.encoding, encoding, "BOM not recognised for \(encoding)")
+            XCTAssertEqual(back.text, text, "text changed for \(encoding)")
+        }
+    }
+
+    func testTheBOMIsNotPartOfTheFirstName() {
+        // The classic BOM bug: the first entry becomes "\u{FEFF}a.txt" and is never found again.
+        var data = Data([0xEF, 0xBB, 0xBF])
+        data.append(Data("a.txt hello\n".utf8))
+        let doc = DescriptionFile(parsing: DescriptionFile.decode(data).text)
+        XCTAssertEqual(doc.comments.keys.sorted(), ["a.txt"])
+    }
 }

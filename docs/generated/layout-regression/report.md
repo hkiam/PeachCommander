@@ -26,6 +26,7 @@ only go down.
 | sftp-download | 0 | 0 | — | `sftp-download.png` |
 | sftp-upload | 0 | 0 | — | `sftp-upload.png` |
 | comment-carry | 0 | 0 | — | `comment-carry.png` |
+| tc-descript | 0 | 0 | — | `tc-descript.png` |
 | find-comments | 0 | 0 | — | `find-comments.png` |
 | notes-sidebar | 0 | 0 | — | `notes-sidebar.png` |
 | panel-autorefresh | 0 | 0 | — | `panel-autorefresh.png` |

@@ -237,12 +237,72 @@ final class CommentCarryTests: XCTestCase {
 
         XCTAssertEqual(comment("a.txt", in: directory), "still here")
     }
+
+    // MARK: - Encoding and multi-line, through the store (F-374)
+
+    func testEditingAUTF16FileKeepsItUTF16AndTheOtherComments() async throws {
+        // The data-loss case. Total Commander writes UTF-16 when a comment needs characters the codepage
+        // cannot hold. Reading that as UTF-8 gives replacement characters, and writing it back as UTF-8
+        // destroys every comment in the directory — including the ones nobody touched.
+        let directory = try dir("utf16")
+        _ = try file("a.txt", in: directory)
+        _ = try file("b.txt", in: directory)
+        var bytes = Data([0xFF, 0xFE])
+        bytes.append("a.txt Grüße aus Zürich\nb.txt 日本語\n".data(using: .utf16LittleEndian)!)
+        try bytes.write(to: directory.appendingPathComponent("descript.ion"))
+
+        try await setComment("neu", for: "a.txt", in: directory)
+
+        let after = try Data(contentsOf: directory.appendingPathComponent("descript.ion"))
+        XCTAssertEqual(Array(after.prefix(2)), [0xFF, 0xFE], "the file must still be UTF-16 LE")
+        let doc = DescriptionFile(parsing: DescriptionFile.decode(after).text)
+        XCTAssertEqual(doc.comment(for: "a.txt"), "neu")
+        XCTAssertEqual(doc.comment(for: "b.txt"), "日本語",
+                       "the comment nobody touched must survive the write")
+    }
+
+    func testAMultiLineCommentSurvivesTheStore() async throws {
+        let directory = try dir("multi")
+        _ = try file("a.txt", in: directory)
+        try await setComment("erste Zeile\nzweite Zeile", for: "a.txt", in: directory)
+
+        // On disk it is the escape plus Total Commander's marker bytes…
+        let raw = try String(contentsOf: directory.appendingPathComponent("descript.ion"), encoding: .utf8)
+        XCTAssertTrue(raw.contains("erste Zeile\\nzweite Zeile"), raw.debugDescription)
+        XCTAssertTrue(raw.contains("\u{04}\u{C2}"), raw.debugDescription)
+        // …and read back through the app it is two lines again.
+        XCTAssertEqual(comment("a.txt", in: directory), "erste Zeile\nzweite Zeile")
+    }
+
+    func testAUTF8FileStaysUTF8() async throws {
+        let directory = try dir("utf8")
+        _ = try file("a.txt", in: directory)
+        try await setComment("Grüße", for: "a.txt", in: directory)
+        let after = try Data(contentsOf: directory.appendingPathComponent("descript.ion"))
+        XCTAssertNotEqual(Array(after.prefix(2)), [0xFF, 0xFE])
+        XCTAssertEqual(comment("a.txt", in: directory), "Grüße")
+    }
+
+    func testACommentCarriedOutOfAUTF16FileArrivesIntact() async throws {
+        // Carrying a comment reads one file and writes another; a non-ASCII comment must not be mangled
+        // on the way, and the target keeps its own encoding rather than inheriting the source's.
+        let from = try dir("from16"), to = try dir("to8")
+        let source = try file("a.txt", in: from)
+        var bytes = Data([0xFF, 0xFE])
+        bytes.append("a.txt Grüße aus Zürich\n".data(using: .utf16LittleEndian)!)
+        try bytes.write(to: from.appendingPathComponent("descript.ion"))
+
+        _ = try await makeMove().run(items: [source.path], toDirectory: to.path)
+
+        XCTAssertEqual(comment("a.txt", in: to), "Grüße aus Zürich")
+    }
 }
 
 /// Answers every collision with "append" — the F-086 merge path.
 private final class AppendResolver: OperationResolver {
     func resolveOverwrite(source: FileFacts, target: FileFacts) async -> OverwriteDecision { .append }
     func resolveError(_ error: OperationError, path: String) async -> ErrorDecision { .skip }
+
 }
 
 /// Answers every collision with "overwrite".
