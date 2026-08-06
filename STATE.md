@@ -47,10 +47,11 @@ whose two most-used keys are Copy and Move.
   every plugin surface in this app was unverified on screen and a scenario touching one would have passed
   by doing nothing. The harness now builds them into the bundle first, the way `make-dmg.sh` does for a
   release — about a minute for all fifteen. `notes-sidebar` is the first scenario that exercises a plugin.
-- **The two copies of every plugin ABI header were kept in step by hand.** Adding a callback to
-  `Plugins/SDK/contrib.h` and not to `Sources/CContrib/include/contrib.h` compiles cleanly on both sides
-  and mismatches the struct layout at runtime, across a `dlopen` boundary. `Tools/check-abi-headers.py`
-  now requires them byte-identical; verified by breaking one on purpose first.
+- **There are three copies of every plugin ABI header, and a gate for it already existed.** I wrote a
+  second one (`check-abi-headers.py`) before finding `Tools/check-sdk-headers.sh`, which is strictly
+  better: it covers all six app-side copies *and* the `PluginSDK` Swift-package copy I had not noticed,
+  and it compiles each header standalone. CI failed on exactly the copy my script did not know about. Mine
+  is deleted; the lesson is to look for the gate before building one.
 - **My own check for the Comment column read the wrong row.** Row 0 of the table is "..", so the cell of
   the previous file was read — a column that was drawing correctly reported an empty cell. And the first
   version of the same check passed while the column was switched *off*, because it read the model instead
