@@ -74,6 +74,17 @@ public struct SearchQuery: Sendable {
     /// decompiler, which is seconds per file, and nobody should pay that for a search they did not
     /// ask to work that way. Requires a `textProvider` on the search call.
     public var searchPluginText: Bool = false
+    /// Also look for the search text in a file's *comment* (F-373).
+    ///
+    /// A comment is where somebody wrote down why a file matters — "the customer's original", "superseded
+    /// by the 2026 version" — and until now the only way to find it again was to look at every directory
+    /// with the Comment column switched on. It is an *additional* place the text may be found, not a
+    /// replacement: a file matches when the term is in its content **or** in its comment. With
+    /// `contentNotContaining` the rule inverts as a whole — a hit is a file where the term is in neither.
+    ///
+    /// Requires a `commentProvider` on the search call; without one this does nothing, the same way
+    /// `searchPluginText` needs a `textProvider`.
+    public var searchComments: Bool = false
 
     public init(
         nameMask: String,
@@ -155,10 +166,15 @@ public actor FileSearchEngine {
     public typealias TextSearcher = @Sendable (_ path: String, _ needle: String, _ matchCase: Bool)
         async -> (line: Int, preview: String)?
 
+    /// A file's comment, for `searchComments` (F-373). The host answers from `descript.ion`, the Finder
+    /// comment, and any note a plugin contributes — this engine knows about none of those.
+    public typealias CommentProvider = @Sendable (_ path: String) async -> String?
+
     /// Set for the duration of a search, rather than threaded through the walk: they are one value
     /// each that never varies per directory, and the walk already carries six parameters.
     private var textProvider: TextProvider?
     private var textSearcher: TextSearcher?
+    private var commentProvider: CommentProvider?
 
     /// Zip-format extensions searched when `searchArchives` is on — plain zip plus
     /// its many specializations (Java, Android, browser, docs stay excluded here).
@@ -185,9 +201,11 @@ public actor FileSearchEngine {
     public func search(_ query: SearchQuery, fs: VirtualFileSystem,
                        archiveOpener: ArchiveOpener? = nil,
                        textProvider: TextProvider? = nil,
-                       textSearcher: TextSearcher? = nil) -> AsyncStream<SearchHit> {
+                       textSearcher: TextSearcher? = nil,
+                       commentProvider: CommentProvider? = nil) -> AsyncStream<SearchHit> {
         self.textProvider = textProvider
         self.textSearcher = textSearcher
+        self.commentProvider = commentProvider
         return AsyncStream { continuation in
             let regexOptions: NSRegularExpression.Options = query.caseSensitive ? [] : [.caseInsensitive]
             let matchesEverything = query.nameMask.isEmpty || query.nameMask == "*" || query.nameMask == "*.*"
@@ -333,10 +351,16 @@ public actor FileSearchEngine {
         // provider entirely and the option looked like it did nothing. But the sequential fallback is
         // the wrong home for them too: producing the text can mean starting a decompiler per file, so
         // it is the one case where concurrency matters most.
+        //
+        // Comment searches (F-373) stay off the mmap path for the same reason, and I walked into the same
+        // trap the paragraph above describes: with `searchComments` routed through the static scan the
+        // provider was never asked and the option found nothing at all. The sequential path still
+        // memory-maps each file for the content half — it loses the concurrency, not the fast scan — and
+        // it is opt-in.
         if fs.scheme == "file", hasContentFilter, query.searchPluginText {
             await matchProvidedTextConcurrently(files, query: query, compiled: compiled,
                                                 continuation: continuation, prefix: prefix)
-        } else if fs.scheme == "file", hasContentFilter {
+        } else if fs.scheme == "file", hasContentFilter, !query.searchComments {
             await matchFilesConcurrently(files, query: query, compiled: compiled,
                                          continuation: continuation, prefix: prefix)
         } else {
@@ -471,18 +495,49 @@ public actor FileSearchEngine {
         let hasContentFilter = (query.contentText?.isEmpty == false) || (query.hexContent?.isEmpty == false)
         if hasContentFilter {
             let match = await firstContentMatch(path: path, query: query, contentRegex: compiled.contentRegex, fs: fs)
+            // The comment is a second place the term may be (F-373), asked only when the content did not
+            // answer the question — one small file read per directory, and none at all for a file whose
+            // content already matched.
+            let commentMatch = (match == nil || query.contentNotContaining)
+                ? await commentMatch(path: path, query: query, contentRegex: compiled.contentRegex)
+                : nil
             if query.contentNotContaining {
-                // Hit only when the term is absent (no match line/preview to show).
-                guard match == nil else { return }
+                // Hit only when the term is in neither the content nor the comment.
+                guard match == nil, commentMatch == nil else { return }
                 continuation.yield(SearchHit(path: Self.display(prefix, path)))
-            } else {
-                guard let match else { return }
+            } else if let match {
                 continuation.yield(SearchHit(path: Self.display(prefix, path), matchLine: match.line, matchPreview: match.preview))
+            } else if let commentMatch {
+                continuation.yield(SearchHit(path: Self.display(prefix, path), matchLine: commentMatch.line,
+                                             matchPreview: commentMatch.preview))
             }
             return
         }
 
         continuation.yield(SearchHit(path: Self.display(prefix, path)))
+    }
+
+    /// Does the file's comment contain the search term (F-373)?
+    ///
+    /// Matched by `textMatch`, the same function the content path uses, so "whole word only", regular
+    /// expressions and case sensitivity mean exactly the same thing in a comment as in a file. Two
+    /// implementations of "contains" would eventually disagree, and the user would have no way to tell
+    /// which rule they were getting.
+    ///
+    /// A hex query is not applied to a comment: a comment is text somebody typed, and "these bytes" is
+    /// not a question about it.
+    private func commentMatch(path: String, query: SearchQuery,
+                              contentRegex: NSRegularExpression?) async -> (line: Int, preview: String)? {
+        guard query.searchComments, let commentProvider,
+              query.hexContent?.isEmpty ?? true,
+              query.contentText?.isEmpty == false,
+              let comment = await commentProvider(path), !comment.isEmpty,
+              Self.textMatch(text: comment, query: query, contentRegex: contentRegex) != nil
+        else { return nil }
+        // Line 0: the match is not in the file's text at all, so no line number could be honest about it.
+        // The preview says where it *was* found — a results row whose text appears nowhere in the file is
+        // baffling otherwise.
+        return (0, "comment: " + comment.replacingOccurrences(of: "\n", with: " ").prefix(160))
     }
 
     /// If `entry` is a zip-family archive and the query opts in, open it via

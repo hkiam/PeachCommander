@@ -125,6 +125,12 @@ SCENARIOS = [
                        "cmd cm_SrcLong", "wait 600", "column comment", "widenleft", "wait 600",
                        "commentcarry /Users/admin/pc-demo|notes.txt|renamed.txt|/Users/admin/comment.txt",
                        "wait 1500"], 10),
+    # Can a comment be found again (F-373)? A file whose *content* holds nothing of the sort, found by
+    # what somebody wrote about it. The comment is set through the host's own path first.
+    ("find-comments", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "comment table.csv|superseded by the 2026 export", "wait 800",
+                       "findcomments *.csv|superseded|/Users/admin/pc-demo|/Users/admin/found.txt",
+                       "wait 1000"], 11),
     # One note, three faces (F-372): the Notes plugin's sidebar shows and edits the *host's* per-file
     # comment, so a comment typed with Ctrl+Z is not invisible to the plugin and vice versa. This is also
     # the first scenario that exercises a plugin at all — the harness used to ship an app with none.
@@ -312,6 +318,10 @@ REPORTS = {
     # The summary has to be *there*: a crash leaves no report at all, which is how the crash announced
     # itself in the first place.
     "viewer-folder": ("/Users/admin/folder-view.txt", ["status=", "Folder", "!ERROR"]),
+    # The hit, and the preview saying where the term was: a row whose text is nowhere in the file needs
+    # to explain itself.
+    "find-comments": ("/Users/admin/found.txt",
+                      ["count=1", "table.csv", "comment: superseded by the 2026 export", "!ERROR"]),
     "editor-lines": ("/Users/admin/lines.txt",
                      ["endings=CRLF", "undo=true", "keep me<CR>",
                       # Four lines in the fixture, and the status line must say four — not "1 line(s)",

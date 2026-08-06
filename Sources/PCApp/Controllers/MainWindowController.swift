@@ -2767,7 +2767,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             // The plugin-text option only appears if some loaded plugin can produce text (F-351).
             win.setHasPluginText(self.contentFieldRegistry.hasFullTextProvider)
             self.findWindow = win
-            win.onStart = { [weak self, weak win] template, dir, inSelectionOnly, useSpotlight, searchArchives, notContaining, contentPredicate, searchPluginText in
+            win.onStart = { [weak self, weak win] template, dir, inSelectionOnly, useSpotlight, searchArchives, notContaining, contentPredicate, searchPluginText, searchComments in
                 guard let self, let win else { return }
                 self.searchTask?.cancel()
                 win.clearResults()
@@ -2797,6 +2797,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                     query.searchArchives = searchArchives
                     query.contentNotContaining = notContaining
                     query.searchPluginText = searchPluginText
+                    query.searchComments = searchComments
                     var count = 0
                     let engine = FileSearchEngine()
                     // Open a zip-family archive found during the walk as an ArchiveFS.
@@ -2829,10 +2830,21 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                                                           needle: needle, matchCase: matchCase)
                         }
                     }
+                    // A file's comment, from all three places one can live (F-373): the directory's
+                    // descript.ion, the macOS Finder comment, and whatever a plugin contributes as its
+                    // note field. Joined, because the user asked "is this text written about the file"
+                    // and does not care which of the three answered.
+                    var commentProvider: FileSearchEngine.CommentProvider?
+                    if searchComments {
+                        commentProvider = { [weak self] path in
+                            await MainActor.run { self?.searchableComment(forPath: path) }
+                        }
+                    }
                     for await hit in await engine.search(query, fs: fs,
                                                          archiveOpener: searchArchives ? opener : nil,
                                                          textProvider: textProvider,
-                                                         textSearcher: textSearcher) {
+                                                         textSearcher: textSearcher,
+                                                         commentProvider: commentProvider) {
                         // Content-field predicate (F-157): resolve the field on the
                         // (local) hit and skip files that don't satisfy the condition.
                         if let pred = contentPredicate, fs is LocalFS {
@@ -6381,6 +6393,20 @@ extension MainWindowController: ContributionHost {
     /// filesystem rather than the panel's VFS. A plugin view sits beside a local listing; asking the
     /// panel's async filesystem from a drawing pass would mean either blocking the main thread or
     /// answering "no comment" and correcting it a moment later.
+    /// What is written *about* a file, for the comment search (F-373).
+    ///
+    /// The host's own comment: the directory's `descript.ion`, or the macOS Finder comment when there is
+    /// none. `contribFileComment` already falls back between the two, and the user asked whether this text
+    /// is written about the file without caring which of them answered.
+    ///
+    /// A plugin's note is deliberately *not* joined in here. The Notes plugin exposes its note as an
+    /// ordinary content field, which the content-field condition in this dialog can already filter on —
+    /// one mechanism for "a plugin knows something about this file", rather than a second path that only
+    /// one plugin benefits from.
+    func searchableComment(forPath path: String) -> String? {
+        contribFileComment(path)
+    }
+
     func contribFileComment(_ path: String) -> String? {
         let dir = (path as NSString).deletingLastPathComponent
         let file = dir + "/" + CommentStore.fileName

@@ -19,7 +19,8 @@ public final class FindFilesWindowController: NSWindowController {
     public var onStart: ((_ template: SearchTemplate, _ startDirectory: String,
                           _ inSelectionOnly: Bool, _ useSpotlight: Bool, _ searchArchives: Bool,
                           _ notContaining: Bool, _ contentPredicate: ContentFieldPredicate?,
-                          _ searchPluginText: Bool) -> Void)?
+                          _ searchPluginText: Bool,
+                          _ searchComments: Bool) -> Void)?
     /// Fired when the user presses Cancel/Stop during a running search.
     public var onCancel: (() -> Void)?
     /// Fired by "Feed to Listbox" with the current result paths.
@@ -62,6 +63,8 @@ public final class FindFilesWindowController: NSWindowController {
     /// Shown only when a loaded plugin actually offers full text, because a checkbox that can never
     /// change an outcome is worse than an absent one — see `setHasPluginText`.
     private let pluginTextCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+    /// Also look for the find text in a file's comment (F-373).
+    private let commentsCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let inSelectionCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let spotlightCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let sizeMinField = NSTextField()
@@ -132,6 +135,29 @@ public final class FindFilesWindowController: NSWindowController {
     public func automationStart(mask: String) {
         nameMaskField.stringValue = mask
         handleStartStop()
+    }
+
+    /// Run a content search with "also search file comments" on, and report what came back (F-373).
+    ///
+    /// Driving the real controls — the checkbox, the find-text field, Start — because the question is
+    /// whether the option reaches the engine at all. It did not on the first attempt: the flag was set and
+    /// the local fast path ignored the provider, exactly as the plugin-text option once did.
+    public func automationSearchComments(mask: String, text: String, directory: String) {
+        nameMaskField.stringValue = mask
+        findTextCheckbox.state = .on
+        findTextField.stringValue = text
+        commentsCheckbox.state = .on
+        startDirField.stringValue = directory
+        updateOptionAvailability()
+        handleStartStop()
+    }
+
+    /// Diagnostic: the result rows as shown, one per line, with the preview column.
+    public func automationResults() -> String {
+        "count=\(results.count)\n" + results.map { row in
+            let name = (row.path as NSString).lastPathComponent
+            return "\(name)|line=\(row.line.map(String.init) ?? "-")|\(row.preview ?? "")"
+        }.joined(separator: "\n") + "\n"
     }
     #endif
 
@@ -204,6 +230,10 @@ public final class FindFilesWindowController: NSWindowController {
         pluginTextCheckbox.font = Fonts.system13
         pluginTextCheckbox.toolTip = String(localized: "For files a plugin can turn into text — a .class as decompiled Java — search that text instead of the file's bytes. Slower: producing the text can mean running a decompiler.")
         pluginTextCheckbox.isHidden = true
+        commentsCheckbox.title = String(localized: "Also search file comments")
+        commentsCheckbox.font = Fonts.system13
+        commentsCheckbox.toolTip = String(localized: "Look for the text in each file's comment as well as in its contents: the comment from Ctrl+Z, or the Finder comment when there is none. A plugin's note is a content field — filter on it under Plugins.")
+        commentsCheckbox.setAccessibilityLabel(String(localized: "Also search file comments"))
 
         hexCheckbox.title = String(localized: "Hex content search")
         hexCheckbox.font = Fonts.system13
@@ -292,6 +322,7 @@ public final class FindFilesWindowController: NSWindowController {
             spotlightCheckbox,
             hStack([includeDirsCheckbox, searchArchivesCheckbox], spacing: 20),
             pluginTextCheckbox,
+            commentsCheckbox,
         ]))
         tabView.addTabViewItem(makeTab(String(localized: "Advanced"), rows: [
             sizeRow, dateRow, attrRow,
@@ -516,6 +547,8 @@ public final class FindFilesWindowController: NSWindowController {
         // Spotlight answers from its own index and never opens the file, so no plugin can contribute
         // to it; and with no content term there is no text to search for.
         pluginTextCheckbox.isEnabled = !spotlight && findText
+        // A comment search needs text to look for, and Spotlight answers a different question entirely.
+        commentsCheckbox.isEnabled = !spotlight && findText && hexCheckbox.state != .on
         sizeMinField.isEnabled = !spotlight
         sizeMaxField.isEnabled = !spotlight
         dateAfterCheckbox.isEnabled = !spotlight
@@ -551,7 +584,8 @@ public final class FindFilesWindowController: NSWindowController {
                  inSelectionCheckbox.state == .on, spotlightCheckbox.state == .on,
                  searchArchivesCheckbox.state == .on, notContainingCheckbox.state == .on,
                  currentContentPredicate(),
-                 pluginTextCheckbox.state == .on && !pluginTextCheckbox.isHidden)
+                 pluginTextCheckbox.state == .on && !pluginTextCheckbox.isHidden,
+                 commentsCheckbox.state == .on)
     }
 
     /// Reveal the plugin-text option, when some loaded plugin can actually produce text.
@@ -730,7 +764,9 @@ extension FindFilesWindowController: NSTableViewDataSource, NSTableViewDelegate 
         let cell = tableView.makeView(withIdentifier: Self.resultCellIdentifier, owner: self) as? FindResultCellView
             ?? FindResultCellView(identifier: Self.resultCellIdentifier)
         let r = results[row]
-        let linePrefix = r.line.map { String(format: String(localized: "L%lld  "), $0) } ?? ""
+        // Line 0 means "not in the file's text at all" — a comment match (F-373). Printing "L0" there
+        // invites the reader to look for line zero, which no file has.
+        let linePrefix = r.line.flatMap { $0 > 0 ? String(format: String(localized: "L%lld  "), $0) : nil } ?? ""
         cell.configure(path: r.path, preview: r.preview.map { linePrefix + $0 })
         return cell
     }

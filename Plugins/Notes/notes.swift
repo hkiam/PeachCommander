@@ -587,20 +587,45 @@ public func PcNotifyView(_ view: UnsafeMutableRawPointer?, _ key: UnsafePointer<
 public func ContentGetSupportedField(_ index: Int32, _ fieldName: UnsafeMutablePointer<CChar>?,
                                      _ units: UnsafeMutablePointer<CChar>?, _ maxlen: Int32) -> Int32 {
     guard let fieldName, let units else { return Int32(PC_FT_NOMOREFIELDS) }
-    guard index == 0 else { units[0] = 0; return Int32(PC_FT_NOMOREFIELDS) }
-    // Not localized: the host derives a stable field id from this name (see LOCALIZATION.md).
-    _ = "Note".withCString { strlcpy(fieldName, $0, Int(maxlen)) }
-    _ = "badge".withCString { strlcpy(units, $0, Int(maxlen)) }   // opt into a name-cell badge
+    // Not localized: the host derives a stable field id from these names (see LOCALIZATION.md).
+    switch index {
+    case 0:
+        _ = "Note".withCString { strlcpy(fieldName, $0, Int(maxlen)) }
+        _ = "badge".withCString { strlcpy(units, $0, Int(maxlen)) }   // opt into a name-cell badge
+    case 1:
+        // The note's text as its own field, so Find Files can filter on it and a panel can show it as a
+        // column. Without this a note was visible as a dot and findable by nothing (F-373).
+        _ = "Note text".withCString { strlcpy(fieldName, $0, Int(maxlen)) }
+        units[0] = 0
+    default:
+        units[0] = 0
+        return Int32(PC_FT_NOMOREFIELDS)
+    }
     return Int32(PC_FT_STRING)
 }
 
 @_cdecl("ContentGetValue")
 public func ContentGetValue(_ fileName: UnsafeMutablePointer<CChar>?, _ fieldIndex: Int32, _ unitIndex: Int32,
                             _ fieldValue: UnsafeMutableRawPointer?, _ maxlen: Int32, _ flags: Int32) -> Int32 {
-    guard let fileName, let fieldValue, fieldIndex == 0 else { return Int32(PC_FT_NOSUCHFIELD) }
+    guard let fileName, let fieldValue else { return Int32(PC_FT_NOSUCHFIELD) }
     let path = String(cString: fileName)
     guard NotesStore.shared.hasNote(path) else { return Int32(PC_FT_FIELDEMPTY) }
-    _ = "●".withCString { strlcpy(fieldValue.assumingMemoryBound(to: CChar.self), $0, Int(maxlen)) }
+    switch fieldIndex {
+    case 0:
+        _ = "●".withCString { strlcpy(fieldValue.assumingMemoryBound(to: CChar.self), $0, Int(maxlen)) }
+    case 1:
+        // The note's text, as an ordinary content field (F-373). That is what makes a note *findable*:
+        // the host's Find Files can filter on any content field, so "files whose note mentions the
+        // migration" needs no new plumbing on either side. Newlines are flattened — a field value is one
+        // line, and a column or a condition is not a place to render markdown.
+        let text = NotesStore.shared.body(path)
+            .replacingOccurrences(of: "\n", with: " ")
+            .trimmingCharacters(in: .whitespaces)
+        guard !text.isEmpty else { return Int32(PC_FT_FIELDEMPTY) }
+        _ = text.withCString { strlcpy(fieldValue.assumingMemoryBound(to: CChar.self), $0, Int(maxlen)) }
+    default:
+        return Int32(PC_FT_NOSUCHFIELD)
+    }
     return Int32(PC_FT_STRING)
 }
 
