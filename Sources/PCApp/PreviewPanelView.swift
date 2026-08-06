@@ -142,10 +142,6 @@ final class PreviewPanelView: NSView {
         NSLayoutConstraint.activate([
             segmented.topAnchor.constraint(equalTo: topAnchor, constant: 6),
 
-            infoScroll.topAnchor.constraint(equalTo: segmented.bottomAnchor, constant: 6),
-            infoScroll.leadingAnchor.constraint(equalTo: leadingAnchor),
-            infoScroll.trailingAnchor.constraint(equalTo: trailingAnchor),
-            infoScroll.bottomAnchor.constraint(equalTo: bottomAnchor),
 
             infoContent.leadingAnchor.constraint(equalTo: infoScroll.leadingAnchor),
             infoContent.trailingAnchor.constraint(equalTo: infoScroll.trailingAnchor),
@@ -188,15 +184,36 @@ final class PreviewPanelView: NSView {
         for constraint in inset {
             constraint.priority = .init(999)
         }
-        for area in [activitiesScroll, logScroll, pluginContainer] {
-            NSLayoutConstraint.activate([
-                area.topAnchor.constraint(equalTo: segmented.bottomAnchor, constant: 6),
+        // Same story as the inset and switcher constraints above, and it took shipping the plugins into
+        // the VM to see it: a *collapsed* panel is `width == 0`, and a scroll view pinned to both edges
+        // as a required rule cannot also give its vertical scroller the 17 pt its clip view demands.
+        // Seven conflicts, every time the panel was closed — invisible until a scenario closed one.
+        for area in [infoScroll, activitiesScroll, logScroll, pluginContainer] {
+            let sides = [
                 area.leadingAnchor.constraint(equalTo: leadingAnchor),
                 area.trailingAnchor.constraint(equalTo: trailingAnchor),
+            ]
+            for side in sides { side.priority = .init(999) }
+            NSLayoutConstraint.activate(sides)
+            NSLayoutConstraint.activate([
+                area.topAnchor.constraint(equalTo: segmented.bottomAnchor, constant: 6),
                 area.bottomAnchor.constraint(equalTo: bottomAnchor),
             ])
         }
     }
+
+    #if DEBUG
+    /// Diagnostic: select the preview tab with this title (a built-in or a plugin view), as a click would.
+    /// Returns the titles when there is no match, so a failing scenario says what *was* there (F-372).
+    @discardableResult
+    func automationSelectTab(titled title: String) -> String {
+        let titles = (0..<segmented.segmentCount).map { segmented.label(forSegment: $0) ?? "" }
+        guard let index = titles.firstIndex(of: title) else { return "no such tab; have: " + titles.joined(separator: ", ") }
+        segmented.selectedSegment = index
+        modeChanged()
+        return "ok"
+    }
+    #endif
 
     @objc private func modeChanged() {
         let sel = segmented.selectedSegment

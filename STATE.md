@@ -12,9 +12,72 @@
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-193 an FTP side for the sync, F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 156 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; 88 older `done` rows still carry none. |
-| Last updated | 2026-08-05 |
+| Last updated | 2026-08-06 |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
+
+## 2026-08-06 — A note about a file, in one place (F-372)
+
+**Reviewing the notes feature found three of them.** A note about a file could live in a
+`descript.ion` (Ctrl+Z, the Comment column, mirrored into the Finder comment), in the Finder comment
+itself, or in the Notes plugin (markdown, `●` column, sidebar, overview) — and the three did not know
+about each other. Somebody who typed a comment with Ctrl+Z opened the Notes sidebar and saw an empty
+field.
+
+**And none of it survived F6.** Nothing in `Sources/PCOperations/` referenced `CommentStore`: renaming
+left the comment under the old name, moving left it in the source directory. Silently. In a file manager
+whose two most-used keys are Copy and Move.
+
+**Fixed, in this order:**
+
+1. `CommentStore.carry` plus one call site each in the move engine, the copy engine and the panel's own
+   two-phase rename — including its undo, because undoing a rename otherwise left the comment on a name
+   that no longer existed. Both engines now report *where* an item landed rather than a Bool: a name
+   collision may rename the target, and the comment has to go to the name the file actually got.
+   Appending is deliberately excluded — a merge keeps the target's own comment, since it is still that
+   file. 13 tests through the real engines, reading the real `descript.ion` afterwards.
+2. Two callbacks appended to `PcHostServices` (`getFileComment` / `setFileComment`), so the Notes
+   sidebar shows and edits the host's comment above the markdown body. One surface, two stores, each
+   keeping what it is good at: the short comment travels with the file in a format Total Commander and
+   others read, the markdown stays with this app.
+
+**Three things the measuring turned up on the way.**
+
+- **The VM harness shipped an app with no plugins at all.** A Debug build has no `Contents/PlugIns`, so
+  every plugin surface in this app was unverified on screen and a scenario touching one would have passed
+  by doing nothing. The harness now builds them into the bundle first, the way `make-dmg.sh` does for a
+  release — about a minute for all fifteen. `notes-sidebar` is the first scenario that exercises a plugin.
+- **The two copies of every plugin ABI header were kept in step by hand.** Adding a callback to
+  `Plugins/SDK/contrib.h` and not to `Sources/CContrib/include/contrib.h` compiles cleanly on both sides
+  and mismatches the struct layout at runtime, across a `dlopen` boundary. `Tools/check-abi-headers.py`
+  now requires them byte-identical; verified by breaking one on purpose first.
+- **My own check for the Comment column read the wrong row.** Row 0 of the table is "..", so the cell of
+  the previous file was read — a column that was drawing correctly reported an empty cell. And the first
+  version of the same check passed while the column was switched *off*, because it read the model instead
+  of the rendered cell.
+
+**And two defects that shipping the plugins into the VM exposed immediately.**
+
+- **F3 on a folder crashed the app.** The viewer's folder summary activated a width constraint against the
+  scroll view's clip view *before* assigning `documentView`, so the two were in different view
+  hierarchies — `NSInvalidArgumentException`, straight down. It stayed hidden because the viewer scenario
+  always had a *file* under the cursor; with a plugin adding a drive-bar volume the cursor landed on a
+  folder instead. New scenario `viewer-folder`, and the report is the rendered summary — a crash leaves no
+  report at all, which is how this announced itself.
+- **A collapsed preview panel logged seven Auto Layout conflicts.** A scroll view pinned to both panel
+  edges as a *required* rule cannot also give its scroller 17 pt inside a panel that is legitimately 0
+  wide. The same pattern CONVENTIONS.md already describes twice for this very view; the three areas added
+  later were never given the 999 the earlier ones have. `preview-panel` now opens, closes and reopens, so
+  the collapsed state is covered.
+
+The second one also showed that a scenario must *set* state rather than toggle it: `cmd cm_PreviewPanel`
+measured an open panel alone and a closed one in the full run, depending on what the previous scenario had
+left in `peachcmd.ini`. There is a `previewpanel on|off` verb now, and `--only` takes a comma-separated
+list so a sequence can be reproduced without waiting for all 31 scenarios.
+
+Still open from the review, in order: making comments and notes findable (Find Files does not search
+them), reading UTF-16 and multi-line `descript.ion` (Total Commander writes both), resilience against a
+rename from *outside* the app (a file-ID index), and notes bound to a position in the viewer.
 
 ## 2026-08-05 — Folding, and v0.3.0
 

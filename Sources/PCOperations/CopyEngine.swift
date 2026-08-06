@@ -46,8 +46,14 @@ public final class CopyEngine {
             // Per-item error resolution (F-089): retry / skip (continue) / abort.
             while true {
                 do {
-                    try await copyNode(from: src, to: dst)
+                    let landed = try await copyNode(from: src, to: dst)
                     processed.append(src)
+                    // The copy gets the comment too, and the source keeps its own (F-372). A name
+                    // collision may have renamed the target, so the comment goes where the file actually
+                    // landed — not to the name that was asked for.
+                    if let landed {
+                        await CommentStore.carryLocal(from: src, to: landed, keepSource: true)
+                    }
                     break
                 } catch let error as OperationError {
                     if error == .cancelled { throw error }
@@ -86,26 +92,32 @@ public final class CopyEngine {
 
     // MARK: - Recursion
 
-    private func copyNode(from src: String, to dst: String) async throws {
+    /// The path the copy ended up at, or nil if it was skipped.
+    ///
+    /// The path rather than nothing: a name collision may have renamed the target, and the caller has to
+    /// know the name the copy actually has to carry the file's comment to it (F-372).
+    @discardableResult
+    private func copyNode(from src: String, to dst: String) async throws -> String? {
         try await control.checkpoint()
         guard let kind = FSLowLevel.kind(of: src) else { throw OperationError.sourceNotFound(src) }
         switch kind {
         case .symlink:
-            try await copySymlink(from: src, to: dst)
+            return try await copySymlink(from: src, to: dst)
         case .directory:
-            try await copyDirectory(from: src, to: dst)
+            return try await copyDirectory(from: src, to: dst)
         case .file:
-            try await copyRegularFile(from: src, to: dst)
+            return try await copyRegularFile(from: src, to: dst)
         }
     }
 
-    private func copyDirectory(from src: String, to dst: String) async throws {
+    @discardableResult
+    private func copyDirectory(from src: String, to dst: String) async throws -> String? {
         // Merge into an existing directory; otherwise create it.
         if let existing = FSLowLevel.kind(of: dst) {
             if existing != .directory {
                 let decision = await resolveOverwrite(src: src, dst: dst)
                 switch decision {
-                case .skip: return
+                case .skip: return nil
                 case .abort: throw OperationError.aborted(dst)
                 case .overwrite, .append: try removeItem(dst)   // append is meaningless for a dir target
                 case .rename: break // renaming a dir merge target is unusual; fall through to create
@@ -123,18 +135,19 @@ public final class CopyEngine {
             try await copyNode(from: cs, to: cd)
         }
         if options.preserveMetadata { copyMetadata(from: src, to: dst) }
+        return dst
     }
 
-    private func copySymlink(from src: String, to dst: String) async throws {
+    @discardableResult
+    private func copySymlink(from src: String, to dst: String) async throws -> String? {
         if options.followSymlinks {
             // Resolve and copy the target instead.
             let resolved = (src as NSString).resolvingSymlinksInPath
-            try await copyNode(from: resolved, to: dst)
-            return
+            return try await copyNode(from: resolved, to: dst)
         }
         if FSLowLevel.exists(dst) {
             switch await resolveOverwrite(src: src, dst: dst) {
-            case .skip: state.filesDone += 1; report(); return
+            case .skip: state.filesDone += 1; report(); return nil
             case .abort: throw OperationError.aborted(dst)
             case .overwrite, .rename, .append: try removeItem(dst)   // append n/a for a symlink target
             }
@@ -144,20 +157,22 @@ public final class CopyEngine {
         guard rc == 0 else { throw OperationError.writeFailed(dst) }
         state.filesDone += 1
         report()
+        return dst
     }
 
-    private func copyRegularFile(from src: String, to dst0: String) async throws {
+    @discardableResult
+    private func copyRegularFile(from src: String, to dst0: String) async throws -> String? {
         var dst = dst0
         var append = false
         let size = FSLowLevel.size(of: src)
 
         if FSLowLevel.exists(dst) {
             if options.onlyNewer, !isSourceNewer(src: src, dst: dst) {
-                state.filesDone += 1; state.bytesDone += size; report(); return
+                state.filesDone += 1; state.bytesDone += size; report(); return nil
             }
             switch await resolveOverwrite(src: src, dst: dst) {
             case .skip:
-                state.filesDone += 1; state.bytesDone += size; report(); return
+                state.filesDone += 1; state.bytesDone += size; report(); return nil
             case .abort:
                 throw OperationError.aborted(dst)
             case .rename(let newLeaf):
@@ -175,6 +190,9 @@ public final class CopyEngine {
         if options.preserveMetadata, !append { copyMetadata(from: src, to: dst) }
         state.filesDone += 1
         report()
+        // An append merges content into a file that keeps its identity, so it keeps its own comment; the
+        // source's comment must not overwrite it (F-372).
+        return append ? nil : dst
     }
 
     /// Append the source file's bytes to an existing target (F-086), without

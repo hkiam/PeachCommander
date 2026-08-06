@@ -43,5 +43,7 @@ W przypadku reguł wykraczających poza podstawowy model właściciel/grupa/wszy
 ## Uwagi
 
 - Zmiana właściciela lub grupy zazwyczaj wymaga uprawnień, których nie masz jako zwykły użytkownik; gdy to nastąpi, zmiana jest zgłaszana jako nieudana, a nie stosowana, a reszta Twoich zmian nadal przechodzi.
-- Komentarze są przechowywane w pliku `descript.ion` obok Twoich elementów i mogą być również przechowywane jako komentarze Findera, w zależności od Twoich ustawień. Oba są odczytywane przy wyświetlaniu komentarza.
+- Komentarze są przechowywane w pliku `descript.ion` obok Twoich elementów i mogą być również przechowywane jako komentarze Findera, w zależności od Twoich ustawień. Oba są odczytywane przy wyświetlaniu komentarza. Format jest ten sam, którego używa Total Commander i kilku innych menedżerów plików, więc komentarz napisany tutaj da się tam przeczytać.
+- **Komentarz idzie za plikiem.** Kopiowanie, przenoszenie i zmiana nazwy zabierają go ze sobą — przy przenoszeniu i kopiowaniu do `descript.ion` folderu docelowego, przy zmianie nazwy na nową nazwę, także gdy tę zmianę cofniesz. Wyjątkiem jest dołączenie pliku na koniec innego: plik, który zostaje, zachowuje własny komentarz, bo nadal jest tym plikiem.
+- Gdy wtyczka Notatki jest włączona, jej pasek boczny pokazuje i edytuje ten sam komentarz nad tekstem notatki, żeby nie było dwóch miejsc na to samo.
 - Dowiązanie symboliczne i alias oba wskazują na cel, ale dowiązanie symboliczne przechowuje zwykłą ścieżkę, podczas gdy alias przechowuje odniesienie macOS, które nadal działa, jeśli cel zostanie przeniesiony lub zmieni nazwę. Dowiązanie twarde to druga nazwa tych samych danych pliku, a nie wskaźnik.

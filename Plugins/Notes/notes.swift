@@ -21,12 +21,39 @@ struct HostRef {
     let openPathFn: (@convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?) -> Void)?
     let presentInfoFn: (@convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?, UnsafePointer<CChar>?) -> Void)?
     let registerToolWindowFn: (@convention(c) (UnsafeMutableRawPointer?, UnsafeMutableRawPointer?, UnsafeMutableRawPointer?, UnsafeMutableRawPointer?, UnsafePointer<CChar>?) -> Void)?
+    /// Per-file comments (F-372). Optional because an older host does not have them — the field is then
+    /// nil and the sidebar simply shows no comment row, rather than crashing on a null pointer.
+    let getFileCommentFn: (@convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?, UnsafeMutablePointer<CChar>?, Int32) -> Int32)?
+    let setFileCommentFn: (@convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?, UnsafePointer<CChar>?) -> Void)?
 
     init(_ svc: PcHostServices) {
         host = svc.host
         openPathFn = svc.openPath
         presentInfoFn = svc.presentInfo
         registerToolWindowFn = svc.registerToolWindow
+        getFileCommentFn = svc.getFileComment
+        setFileCommentFn = svc.setFileComment
+    }
+
+    /// The host's `descript.ion` comment for a path, or nil.
+    func fileComment(_ path: String) -> String? {
+        guard let getFileCommentFn else { return nil }
+        var buffer = [CChar](repeating: 0, count: 4096)   // TC's own limit for one comment
+        let ok = path.withCString { p in
+            buffer.withUnsafeMutableBufferPointer { out in
+                getFileCommentFn(host, p, out.baseAddress, Int32(out.count))
+            }
+        }
+        guard ok == 1 else { return nil }
+        return String(cString: buffer)
+    }
+
+    func setFileComment(_ comment: String?, path: String) {
+        guard let setFileCommentFn else { return }
+        path.withCString { p in
+            if let comment { comment.withCString { c in setFileCommentFn(host, p, c) } }
+            else { setFileCommentFn(host, p, nil) }
+        }
     }
     func openPath(_ p: String) { p.withCString { openPathFn?(host, $0) } }
     func present(_ t: String, _ m: String) { t.withCString { tp in m.withCString { mp in presentInfoFn?(host, tp, mp) } } }
@@ -355,15 +382,30 @@ final class NotesOverviewWindow: NSWindowController, NSTableViewDataSource, NSTa
 
 // MARK: - Sidebar view (follows the active panel's cursor)
 
-final class NotesSidebarView: NSView, NSTextViewDelegate {
+final class NotesSidebarView: NSView, NSTextViewDelegate, NSTextFieldDelegate {
     private let header = NSTextField(labelWithString: "")
+    /// The file's `descript.ion` comment — the host's own per-file comment, the one its Comment column
+    /// shows and Ctrl+Z edits (F-372).
+    ///
+    /// It belongs *here* because otherwise this plugin is a second, disconnected place where a note about
+    /// a file lives: a user who typed a comment with Ctrl+Z opened this sidebar and saw an empty field,
+    /// and vice versa. One surface, two stores, each keeping what it is good at — the comment is short and
+    /// travels with the file in a format Total Commander and others read, the markdown below is the long
+    /// form and stays with this app.
+    private let commentLabel = NSTextField(labelWithString: "")
+    private let commentField = NSTextField()
     private let text = MarkdownSourceTextView()
     private let scroll = NSScrollView()
     private var currentKey = NotesStore.globalKey
+    /// The path whose comment `commentField` is showing, or nil for the global note (which has no file).
+    private var currentPath: String?
     private var dirty = false
     /// Host colour theme (F-338). This view sits in the sidebar, right beside the file panels, so
     /// leaving it in macOS colours is what looks out of place under a theme like Norton.
     private var services: UnsafePointer<PcHostServices>?
+    /// The host, for the comment callbacks. Nil until `bindServices`, and nil for a host that predates
+    /// them — `fileComment` then answers nil and the comment row stays hidden.
+    private var host: HostRef?
 
     init() {
         super.init(frame: NSRect(x: 0, y: 0, width: 260, height: 400))
@@ -373,7 +415,10 @@ final class NotesSidebarView: NSView, NSTextViewDelegate {
 
     func bindServices(_ s: UnsafePointer<PcHostServices>?) {
         services = s
+        if let s { host = HostRef(s.pointee) }
         applyTheme()
+        // The context was loaded before the host was known, so the comment row is still empty.
+        loadContext(currentKey)
     }
 
     /// Apply the host theme to the editor. Background *and* text together — a themed text colour
@@ -383,6 +428,11 @@ final class NotesSidebarView: NSView, NSTextViewDelegate {
         wantsLayer = true
         layer?.backgroundColor = theme.windowBackground.cgColor
         header.textColor = theme.secondaryText
+        commentLabel.textColor = theme.secondaryText
+        // A text field keeps its own background; under a dark theme an unthemed one is a white bar.
+        commentField.backgroundColor = theme.background
+        commentField.textColor = theme.text
+        commentField.drawsBackground = true
         text.backgroundColor = theme.background
         text.textColor = theme.text
         // The caret and the selection have to follow too, or they vanish into the new background.
@@ -397,6 +447,17 @@ final class NotesSidebarView: NSView, NSTextViewDelegate {
     required init?(coder: NSCoder) { fatalError() }
 
     private func build() {
+        commentLabel.stringValue = L("Comment (travels with the file)")
+        commentLabel.font = NSFont.systemFont(ofSize: 10, weight: .regular)
+        commentLabel.textColor = .secondaryLabelColor
+        commentLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(commentLabel)
+        commentField.placeholderString = L("One line, stored in descript.ion")
+        commentField.font = NSFont.systemFont(ofSize: 11)
+        commentField.delegate = self
+        commentField.translatesAutoresizingMaskIntoConstraints = false
+        commentField.setAccessibilityLabel(L("File comment"))
+        addSubview(commentField)
         header.font = NSFont.systemFont(ofSize: 11, weight: .semibold)
         header.textColor = .secondaryLabelColor
         header.lineBreakMode = .byTruncatingMiddle
@@ -418,7 +479,13 @@ final class NotesSidebarView: NSView, NSTextViewDelegate {
             header.topAnchor.constraint(equalTo: topAnchor, constant: 6),
             header.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
             header.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-            scroll.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 4),
+            commentLabel.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 6),
+            commentLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            commentLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+            commentField.topAnchor.constraint(equalTo: commentLabel.bottomAnchor, constant: 2),
+            commentField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
+            commentField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
+            scroll.topAnchor.constraint(equalTo: commentField.bottomAnchor, constant: 6),
             scroll.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
             scroll.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
             scroll.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -6),
@@ -436,6 +503,12 @@ final class NotesSidebarView: NSView, NSTextViewDelegate {
         currentKey = key
         header.stringValue = String(format: L("Note — %@"), NotesStore.displayName(key))
         text.string = NotesStore.shared.body(key)
+        // The global note is not about a file, so there is no file comment to show for it.
+        currentPath = key == NotesStore.globalKey ? nil : key
+        let hasFile = currentPath != nil
+        commentLabel.isHidden = !hasFile
+        commentField.isHidden = !hasFile
+        commentField.stringValue = hasFile ? (host?.fileComment(key) ?? "") : ""
         dirty = false
     }
 
@@ -447,6 +520,17 @@ final class NotesSidebarView: NSView, NSTextViewDelegate {
 
     func textDidChange(_ notification: Notification) { dirty = true }
     func textDidEndEditing(_ notification: Notification) { saveCurrent() }
+
+    /// Write the comment back through the host when the field is committed.
+    ///
+    /// On commit rather than on every keystroke: each write touches `descript.ion`, the Finder comment
+    /// and a reload of the Comment column, and doing that per character would rewrite a file eight times
+    /// while somebody types a word.
+    func controlTextDidEndEditing(_ obj: Notification) {
+        guard let path = currentPath else { return }
+        let value = commentField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        host?.setFileComment(value.isEmpty ? nil : value, path: path)
+    }
 }
 
 // MARK: - Live window references (kept alive by the plugin)

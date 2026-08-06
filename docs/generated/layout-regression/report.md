@@ -18,12 +18,15 @@ only go down.
 | editor-xml-outline | 0 | 0 | — | `editor-xml-outline.png` |
 | editor-structure | 0 | 0 | — | `editor-structure.png` |
 | editor-validate | 0 | 0 | — | `editor-validate.png` |
+| viewer-folder | 0 | 0 | — | `viewer-folder.png` |
 | editor-filter | 0 | 0 | — | `editor-filter.png` |
 | editor-filter-dialog | 0 | 0 | — | `editor-filter-dialog.png` |
 | editor-lines | 0 | 0 | — | `editor-lines.png` |
 | sftp-attributes | 0 | 0 | — | `sftp-attributes.png` |
 | sftp-download | 0 | 0 | — | `sftp-download.png` |
 | sftp-upload | 0 | 0 | — | `sftp-upload.png` |
+| comment-carry | 0 | 0 | — | `comment-carry.png` |
+| notes-sidebar | 0 | 0 | — | `notes-sidebar.png` |
 | panel-autorefresh | 0 | 0 | — | `panel-autorefresh.png` |
 | keys-main | 0 | 0 | — | `keys-main.png` |
 | keys-find | 0 | 0 | — | `keys-find.png` |

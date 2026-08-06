@@ -43,5 +43,7 @@ Pre pravidlá nad rámec základného modelu vlastník/skupina/všetci upravte z
 ## Poznámky
 
 - Zmena vlastníka alebo skupiny zvyčajne vyžaduje oprávnenia, ktoré ako bežný používateľ nemáte; keď sa to stane, zmena sa nahlási ako neúspešná namiesto aplikovania a zvyšok vašich zmien stále prejde.
-- Komentáre sú uložené v súbore `descript.ion` vedľa vašich položiek a možno ich tiež uchovať ako komentáre Finder, v závislosti od vašich nastavení. Oba sa čítajú pri zobrazení komentára.
+- Komentáre sú uložené v súbore `descript.ion` vedľa vašich položiek a možno ich tiež uchovať ako komentáre Finder, v závislosti od vašich nastavení. Oba sa čítajú pri zobrazení komentára. Formát je ten istý, aký používa Total Commander a niekoľko ďalších správcov súborov, takže komentár napísaný tu je tam čitateľný.
+- **Komentár ide so súborom.** Kopírovanie, presun aj premenovanie ho vezmú s sebou — pri presune a kopírovaní do `descript.ion` cieľovej zložky, pri premenovaní na nový názov, aj keď premenovanie vrátite. Výnimkou je pripojenie súboru na koniec iného: súbor, ktorý zostáva, si ponechá vlastný komentár, pretože je stále tým istým súborom.
+- Ak je zapnutý modul Poznámky, jeho bočný panel zobrazuje a upravuje ten istý komentár nad textom poznámky, aby neboli dve miesta pre to isté.
 - Symbolický odkaz a alias oba ukazujú na cieľ, ale symbolický odkaz ukladá obyčajnú cestu, zatiaľ čo alias ukladá odkaz macOS, ktorý funguje ďalej, ak sa cieľ presunie alebo premenuje. Pevný odkaz je druhý názov pre tie isté údaje súboru, nie ukazovateľ.

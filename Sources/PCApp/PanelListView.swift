@@ -272,6 +272,39 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         visibleColumns.contains { $0.fieldID == fieldID }
     }
 
+    #if DEBUG
+    /// Diagnostic: the comment the *table* holds for `name` — what the Comment column draws (F-372).
+    /// Reading the store instead would prove the store, and the column is fed by a separate read.
+    func automationComment(forName name: String) -> String? { commentMap[name] }
+
+    /// Diagnostic: the string actually **rendered** into the Comment cell of `name`'s row.
+    ///
+    /// The map above can be right while nothing is drawn — a column that is not in the visible set draws
+    /// no cell at all, and the first version of this check passed with the column switched off.
+    func automationRenderedComment(forName name: String) -> String {
+        guard let column = tableColumns.firstIndex(where: { $0.identifier.rawValue == PanelColumn.comment.rawValue })
+        else { return "<no such column>" }
+        // Row 0 is "..", so the table's row is the entry index plus one. Without that the cell of the
+        // *previous* file was read, which has no comment — and the check reported an empty cell for a
+        // column that was drawing correctly.
+        guard let index = visibleEntries.firstIndex(where: { $0.name == name })
+        else { return "<no such row>" }
+        let row = index + 1
+        guard let cell = view(atColumn: column, row: row, makeIfNecessary: true) else { return "<no cell>" }
+        if let field = cell as? NSTextField { return field.stringValue }
+        if let field = (cell as? NSTableCellView)?.textField { return field.stringValue }
+        return "<no text field>"
+    }
+
+    /// Diagnostic: scroll the panel fully to the right, so a wide opt-in column is inside the screenshot.
+    func automationScrollToLastColumn() {
+        guard let clip = enclosingScrollView?.contentView else { return }
+        let maxX = max(0, bounds.width - clip.bounds.width)
+        clip.scroll(to: NSPoint(x: maxX, y: clip.bounds.origin.y))
+        enclosingScrollView?.reflectScrolledClipView(clip)
+    }
+    #endif
+
     /// Supply the directory's descript.ion comments and repaint the comment column.
     func setComments(_ map: [String: String]) {
         commentMap = map

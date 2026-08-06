@@ -35,7 +35,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-020 | Full view: name, ext, size, date, attr columns | TC column defaults; ext as own column | SPEC-002 | I01 | P1 | done |
 | F-021 | Brief view (multi-column names only, Ctrl+F1) | Horizontal scrolling grid | SPEC-002 | I05 | P1 | done |
 | F-022 | Thumbnail view with async thumbnails | QLThumbnailGenerator, cached | SPEC-002 | I17 | P2 | done |
-| F-023 | Comments view / file comments (Ctrl+Z edits descript.ion) | descript.ion + Finder comment sync; ev: symbol:CommentStore ev: symbol:FinderComment ev: test:DescriptionFileTests | SPEC-016 | I17 | P2 | done |
+| F-023 | Comments view / file comments (Ctrl+Z edits descript.ion) | descript.ion + Finder comment sync; a comment follows the file through copy, move, rename and the undo of a rename (F-372), and the Notes plugin's sidebar shows and edits the same comment; ev: symbol:CommentStore ev: symbol:FinderComment ev: test:DescriptionFileTests ev: test:CommentCarryTests ev: scenario:comment-carry ev: scenario:notes-sidebar | SPEC-016 | I17 | P2 | done |
 | F-024 | Custom columns sets w/ content-plugin fields, per-view rules | Switchable sets, auto-switch by location; sets are stored per context (per side, and per mount as "mount:<qualifier>"); ev: symbol:ColumnSet ev: test:ColumnSetTests | SPEC-002+012 | I16 | P2 | done |
 | F-025 | Sort by name/ext/size/date (Ctrl+F3..F6), reverse, as-columns-click | Stable sort; dirs first | SPEC-002 | I02 | P1 | done |
 | F-026 | Natural/logical number sorting option + per-locale collation | TC: "alphabetical, like Explorer" choices; ev: symbol:naturalSort ev: test:PanelDateFormatterTests | SPEC-002 | I02 | P2 | done |

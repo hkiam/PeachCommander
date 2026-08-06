@@ -43,5 +43,7 @@ Pentru reguli dincolo de modelul de bază proprietar/grup/toți, editați lista 
 ## Note
 
 - Schimbarea proprietarului sau a grupului necesită de obicei privilegii pe care nu le aveți ca utilizator obișnuit; când se întâmplă asta, modificarea este raportată ca eșuată în loc de aplicată, iar restul modificărilor dvs. trec în continuare.
-- Comentariile sunt stocate într-un fișier `descript.ion` alături de elementele dvs. și pot fi de asemenea păstrate ca comentarii Finder, în funcție de setările dvs. Ambele sunt citite la afișarea unui comentariu.
+- Comentariile sunt stocate într-un fișier `descript.ion` alături de elementele dvs. și pot fi de asemenea păstrate ca comentarii Finder, în funcție de setările dvs. Ambele sunt citite la afișarea unui comentariu. Formatul este cel folosit de Total Commander și de alte gestionare de fișiere, așa că un comentariu scris aici se poate citi acolo.
+- **Un comentariu urmează fișierul.** Copierea, mutarea și redenumirea îl iau cu ele — în `descript.ion` al dosarului destinație la mutare și copiere, și pe noul nume la redenumire, inclusiv când anulați redenumirea. Excepția este adăugarea unui fișier la sfârșitul altuia: fișierul care rămâne își păstrează propriul comentariu, fiindcă rămâne acel fișier.
+- Dacă modulul Note este activat, bara sa laterală afișează și editează același comentariu deasupra textului notei, ca să nu existe două locuri pentru același lucru.
 - O legătură simbolică și un alias indică ambele spre o țintă, dar o legătură simbolică stochează o cale simplă, în timp ce un alias stochează o referință macOS care continuă să funcționeze dacă ținta este mutată sau redenumită. O legătură hard este un al doilea nume pentru aceleași date de fișier, nu un indicator.
