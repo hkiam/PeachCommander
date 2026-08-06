@@ -60,8 +60,13 @@ SCENARIOS = [
                     "cmd cm_SrcShort", "wait 800"], 8),
     ("tree-view", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                    "cmd cm_SrcTree", "wait 1200"], 9),
+    # Open, closed, open again: the *collapsed* panel is the state that produced seven Auto Layout
+    # conflicts, because a scroll view pinned to both edges as a required rule cannot give its scroller
+    # 17 pt inside a panel that is 0 wide. Toggling it back and forth here keeps that covered.
     ("preview-panel", ["active left", "left /Users/admin/pc-demo", "wait 1200",
-                       "cmd cm_PreviewPanel", "wait 1500"], 9),
+                       "previewpanel on", "wait 1200",
+                       "previewpanel off", "wait 800",
+                       "previewpanel on", "wait 1500"], 9),
     ("find-files", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                     "findtab 0", "wait 2000"], 10),
     ("settings", ["active left", "left /Users/admin", "wait 1000",
@@ -84,6 +89,12 @@ SCENARIOS = [
     # jq refuse. The caret must land on the comma.
     ("editor-validate", ["editstruct /Users/admin/pc-demo/broken.json|\"debug\"|"
                          "/Users/admin/validate.txt", "wait 2000"], 10),
+    # F3 on a *folder* — the viewer's folder summary. It crashed the app outright: a width constraint was
+    # activated before the container became the scroll view's document view, so the two had no common
+    # ancestor. No scenario had ever put the cursor on a folder and pressed F3.
+    ("viewer-folder", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "focus sub", "wait 400", "cmd cm_List", "wait 2500",
+                       "listerdump /Users/admin/folder-view.txt", "wait 500"], 10),
     # The editor's filter (F-356), in two pictures: the prompt, and the document after a command ran.
     # Reading the text back is not enough — a text view has held a whole document and rendered none
     # of it, and that is exactly this window.
@@ -108,6 +119,29 @@ SCENARIOS = [
     ("sftp-upload", ["active left", "left /Users/admin", "wait 1000",
                      "sftpput /Users/admin/sftp-demo/big.txt|/Users/admin/put.txt|"
                      "/Users/admin/sftpput.txt|15000", "wait 4000"], 12),
+    # Does a file's comment follow the file through a rename, in the running app (F-372)? The Comment
+    # column has to be switched on first — it is opt-in, and the column read is skipped when it is off.
+    ("comment-carry", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "cmd cm_SrcLong", "wait 600", "column comment", "widenleft", "wait 600",
+                       "commentcarry /Users/admin/pc-demo|notes.txt|renamed.txt|/Users/admin/comment.txt",
+                       "wait 1500"], 10),
+    # One note, three faces (F-372): the Notes plugin's sidebar shows and edits the *host's* per-file
+    # comment, so a comment typed with Ctrl+Z is not invisible to the plugin and vice versa. This is also
+    # the first scenario that exercises a plugin at all — the harness used to ship an app with none.
+    ("notes-sidebar", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "focus hosts.txt", "wait 400",
+                       "comment hosts.txt|a comment from the host side", "wait 800",
+                       "previewpanel on", "wait 2000",
+                       # The Notes view is a *tab* in the preview panel, and setting a comment reloads the
+                       # panel — which moves the cursor back to "..", i.e. to the global note. So: pick the
+                       # tab, then put the cursor back on the file, then read.
+                       "previewtab Notes", "wait 800",
+                       "focus hosts.txt", "wait 1200",
+                       "sidebardump /Users/admin/sidebar.txt", "wait 500",
+                       # …and the other direction: type in the plugin's field, and the host's own comment
+                       # for that file must change. `commentread` asks the host, not the plugin.
+                       "sidebarsetfield edited in the plugin", "wait 1200",
+                       "commentread hosts.txt|/Users/admin/sidebar-back.txt", "wait 400"], 11),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -263,6 +297,21 @@ REPORTS = {
                          "transforms=minify,sortKeys,escapeAsJSONString,unescapeJSONString,jsonToYAML",
                          "Sort Keys", "changed=true", "undo=true",
                          "Minify", "Convert JSON to YAML", "Escape as JSON String"]),
+    # The comment must be on the *new* name and gone from the old one — read from the table, which is
+    # what the column draws.
+    "comment-carry": ("/Users/admin/comment.txt",
+                      ["set=true", "beforeRename=carried through the rename",
+                       "afterRename=carried through the rename", "oldName=<none>",
+                       "renderedCell=carried through the rename"]),
+    # The plugin's own field, read out of the host's view tree: the comment set through the host's path
+    # has to be what the plugin shows.
+    "notes-sidebar": ("/Users/admin/sidebar.txt",
+                      ["field=a comment from the host side", "!ERROR"]),
+    "notes-sidebar-back": ("/Users/admin/sidebar-back.txt",
+                           ["hostComment=edited in the plugin", "column=edited in the plugin"]),
+    # The summary has to be *there*: a crash leaves no report at all, which is how the crash announced
+    # itself in the first place.
+    "viewer-folder": ("/Users/admin/folder-view.txt", ["status=", "Folder", "!ERROR"]),
     "editor-lines": ("/Users/admin/lines.txt",
                      ["endings=CRLF", "undo=true", "keep me<CR>",
                       # Four lines in the fixture, and the status line must say four — not "1 line(s)",
@@ -335,6 +384,12 @@ def boot(app: str, run: str):
         time.sleep(2)
     say(f"guest {ip}, VNC {host}:{port}")
 
+    # Build the plugins into the bundle before syncing, the way make-dmg.sh does for a release. A Debug
+    # build has no `Contents/PlugIns`, so until now the VM ran an app with *no plugins at all* — every
+    # plugin surface in this app was unverified on screen, and a scenario touching one would have passed
+    # by doing nothing. About a minute for all fifteen.
+    say("building plugins into the bundle…")
+    sh([str(REPO / "Tools/build-all-plugins.sh"), str(Path(app) / "Contents/PlugIns")])
     sh(["rsync", "-a", "--delete", "-e", "ssh " + " ".join(SSH),
         app.rstrip("/") + "/", f"{GUEST}@{ip}:pc-test/{APPNAME}/"])
     sh(["scp", *SSH, str(Path(__file__).with_name("regress-guest.sh")), f"{GUEST}@{ip}:regress-guest.sh"])
@@ -425,7 +480,11 @@ def main():
     ap.add_argument("--keep", action="store_true", help="leave the clone running")
     ap.add_argument("--update-baseline", action="store_true",
                     help="write the measured counts as the new baseline")
-    ap.add_argument("--only", help="run one scenario by name")
+    ap.add_argument("--only", help="run only these scenarios (comma-separated, kept in file order). A "
+                                   "list, because the defects that need a *sequence* are exactly the ones "
+                                   "a single scenario cannot show — settings persist in the guest's "
+                                   "peachcmd.ini between scenarios — and reproducing one otherwise means "
+                                   "waiting for the whole suite")
     args = ap.parse_args()
 
     app = resolve_app(args.app)
@@ -438,7 +497,7 @@ def main():
     measured, failures = {}, []
     try:
         for name, script, settle in SCENARIOS:
-            if args.only and name != args.only:
+            if args.only and name not in [s.strip() for s in args.only.split(",")]:
                 continue
             found, a11y = run_scenario(ip, host, port, pw, name, script, settle, out)
             measured[name] = found

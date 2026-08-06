@@ -43,5 +43,7 @@ For regler ud over den grundlæggende model med ejer/gruppe/alle skal du rediger
 ## Bemærkninger
 
 - Ændring af ejeren eller gruppen kræver normalt privilegier, du ikke har som almindelig bruger; når det sker, rapporteres ændringen som mislykket i stedet for at blive anvendt, og resten af dine ændringer gennemføres stadig.
-- Kommentarer gemmes i en `descript.ion`-fil ved siden af dine emner og kan også opbevares som Finder-kommentarer, afhængigt af dine indstillinger. Begge læses, når en kommentar vises.
+- Kommentarer gemmes i en `descript.ion`-fil ved siden af dine emner og kan også opbevares som Finder-kommentarer, afhængigt af dine indstillinger. Begge læses, når en kommentar vises. Formatet er det samme, som Total Commander og flere andre filhåndteringsprogrammer bruger, så en kommentar skrevet her kan læses der.
+- **En kommentar følger filen.** Kopiering, flytning og omdøbning tager den med — til målmappens `descript.ion` ved flytning og kopiering, og til det nye navn ved omdøbning, også når du fortryder omdøbningen. Undtagelsen er at lægge en fil i forlængelse af en anden: filen, der bliver tilbage, beholder sin egen kommentar, fordi den fortsat er den fil.
+- Er Noter-pluginet slået til, viser og redigerer dets sidebjælke den samme kommentar over notens tekst, så der ikke er to steder til det samme.
 - Et symbolsk link og et alias peger begge på et mål, men et symbolsk link gemmer en almindelig sti, mens et alias gemmer en macOS-reference, der bliver ved med at virke, hvis målet flyttes eller omdøbes. Et hårdt link er et andet navn for de samme fildata, ikke en peger.

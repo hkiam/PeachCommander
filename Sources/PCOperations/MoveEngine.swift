@@ -34,7 +34,15 @@ public final class MoveEngine {
             // Per-item error resolution (F-089): retry / skip (continue) / abort.
             while true {
                 do {
-                    if try await moveOne(src: src, dst: dst, dstDir: dstDir) { processed.append(src) }
+                    if let outcome = try await moveOne(src: src, dst: dst, dstDir: dstDir) {
+                        processed.append(src)
+                        // Carry the file's comment to where the file now is (F-372). Best effort, and
+                        // after the move: the bytes are already there, so a comment that cannot follow
+                        // must not turn a completed move into a failure.
+                        if outcome.carryComment {
+                            await CommentStore.carryLocal(from: src, to: outcome.path, keepSource: false)
+                        }
+                    }
                     break
                 } catch let error as OperationError {
                     if error == .cancelled { throw error }
@@ -50,8 +58,16 @@ public final class MoveEngine {
         return processed
     }
 
-    /// Returns true if the source was moved (false if skipped).
-    private func moveOne(src: String, dst dst0: String, dstDir: String) async throws -> Bool {
+    /// Where the item ended up, and whether its comment should follow — nil if it was skipped.
+    ///
+    /// The final path rather than a Bool: on a name collision the resolver may rename the target, and the
+    /// caller has to know the name the file actually has to carry its comment to it.
+    ///
+    /// `carryComment` is false for an append: appending A onto B *merges* content, so B is still B and
+    /// keeps its own comment. Letting A's comment win there would silently overwrite a comment on a file
+    /// nobody replaced.
+    private func moveOne(src: String, dst dst0: String,
+                         dstDir: String) async throws -> (path: String, carryComment: Bool)? {
         var dst = dst0
         guard let srcKind = FSLowLevel.kind(of: src) else { throw OperationError.sourceNotFound(src) }
         let targetKind = FSLowLevel.kind(of: dst)
@@ -60,7 +76,7 @@ public final class MoveEngine {
             // Directory-into-directory merges without asking; otherwise resolve.
             if !(srcKind == .directory && targetKind == .directory) {
                 switch await resolveOverwrite(src: src, dst: dst) {
-                case .skip: return false
+                case .skip: return nil
                 case .abort: throw OperationError.aborted(dst)
                 case .rename(let newLeaf):
                     dst = (dstDir as NSString).appendingPathComponent(newLeaf)
@@ -71,7 +87,7 @@ public final class MoveEngine {
                                         resolver: SkipAllResolver(), progress: progress)
                     try await ce.appendRegularFile(from: src, to: dst)
                     try? FileManager.default.removeItem(atPath: src)
-                    return true
+                    return (dst, false)
                 case .overwrite, .append:
                     // rename(2) atomically replaces a file target; remove dir/symlink targets first.
                     // (`.append` reaches here only for a non-file source → treat as replace.)
@@ -86,7 +102,7 @@ public final class MoveEngine {
         let canRename = sameDevice && !(srcKind == .directory && FSLowLevel.kind(of: dst) == .directory)
         if canRename {
             let rc = src.withCString { s in dst.withCString { d in rename(s, d) } }
-            if rc == 0 { return true }
+            if rc == 0 { return (dst, true) }
             // Fall through to copy+delete on failure (e.g. EXDEV races, dir merges).
         }
 
@@ -96,7 +112,7 @@ public final class MoveEngine {
         // Only delete the source after a successful copy.
         let del = DeleteEngine(control: control, progress: progress)
         _ = try await del.permanentDelete(items: [src])
-        return true
+        return (dst, true)
     }
 
     private func resolveOverwrite(src: String, dst: String) async -> OverwriteDecision {

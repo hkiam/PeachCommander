@@ -44,6 +44,50 @@ public enum CommentStore {
         }
     }
 
+    /// Move a comment along with the file it describes (F-372).
+    ///
+    /// Nothing in this app used to do this. A comment lives in the `descript.ion` of the directory the
+    /// file is in, keyed by the file's name — so renaming the file left the comment behind under the old
+    /// name, and moving it to another directory left the comment in the source directory. Both silently.
+    /// In a file manager whose two most-used keys are Copy and Move, a per-file comment that does not
+    /// survive either is a note-taking feature that loses notes.
+    ///
+    /// Best-effort on purpose: a comment that cannot be carried must never fail the file operation that
+    /// is carrying it. The caller has already moved the bytes; refusing afterwards would be worse.
+    ///
+    /// `keepSource` distinguishes a copy (the source keeps its comment) from a move (it does not).
+    public static func carry(name: String, from srcDir: VFSPath,
+                            toName dstName: String, in dstDir: VFSPath,
+                            on fs: VirtualFileSystem, keepSource: Bool) async {
+        // The comment file itself is not something that has a comment.
+        guard name != fileName, dstName != fileName else { return }
+        guard let comment = await comment(for: name, inDir: srcDir, on: fs), !comment.isEmpty else {
+            return                                     // nothing to carry, and no descript.ion to create
+        }
+        do {
+            try await setComment(comment, for: dstName, inDir: dstDir, on: fs)
+        } catch {
+            return                                     // target not writable: the file still moved
+        }
+        if !keepSource, srcDir != dstDir || name != dstName {
+            try? await setComment(nil, for: name, inDir: srcDir, on: fs)
+        }
+    }
+
+    /// `carry` for two local paths — what the copy, move and rename engines have.
+    ///
+    /// A separate entry point rather than making the engines build `VFSPath`s and a filesystem: they are
+    /// local-only (they work through `FSLowLevel`), and one line at the call site is what keeps this from
+    /// being forgotten at the next one.
+    public static func carryLocal(from src: String, to dst: String, keepSource: Bool) async {
+        let fs = LocalFS()
+        let srcDir = VFSPath(filesystemId: fs.scheme, path: (src as NSString).deletingLastPathComponent)
+        let dstDir = VFSPath(filesystemId: fs.scheme, path: (dst as NSString).deletingLastPathComponent)
+        await carry(name: (src as NSString).lastPathComponent, from: srcDir,
+                    toName: (dst as NSString).lastPathComponent, in: dstDir,
+                    on: fs, keepSource: keepSource)
+    }
+
     private static func readAll(_ path: VFSPath, on fs: VirtualFileSystem) async throws -> Data {
         let stream = try await fs.openRead(path)
         var data = Data()

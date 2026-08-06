@@ -43,5 +43,7 @@ Para reglas que van más allá del modelo básico de propietario/grupo/todos, ed
 ## Notas
 
 - Cambiar el propietario o el grupo suele requerir privilegios de los que no dispone como usuario normal; cuando eso ocurre, el cambio se notifica como fallido en lugar de aplicarse, y el resto de sus cambios sí se llevan a cabo.
-- Los comentarios se almacenan en un archivo `descript.ion` junto a sus elementos y también pueden conservarse como comentarios de Finder, según sus ajustes. Ambos se leen al mostrar un comentario.
+- Los comentarios se almacenan en un archivo `descript.ion` junto a sus elementos y también pueden conservarse como comentarios de Finder, según sus ajustes. Ambos se leen al mostrar un comentario. El formato es el que usan Total Commander y otros gestores de archivos, así que un comentario escrito aquí se puede leer allí.
+- **Un comentario sigue al archivo.** Copiar, mover o renombrar se lo lleva consigo: al `descript.ion` de la carpeta de destino al mover o copiar, y al nombre nuevo al renombrar, también cuando deshace el renombrado. La excepción es añadir un archivo al final de otro: el archivo que se queda conserva su propio comentario, porque sigue siendo ese archivo.
+- Si tiene activado el complemento de Notas, su barra lateral muestra y edita ese mismo comentario encima del texto de la nota, para que no haya dos sitios para lo mismo.
 - Tanto un enlace simbólico como un alias apuntan a un destino, pero un enlace simbólico almacena una ruta simple mientras que un alias almacena una referencia de macOS que sigue funcionando si el destino se mueve o se renombra. Un enlace fijo es un segundo nombre para los mismos datos del archivo, no un puntero.

@@ -43,5 +43,7 @@ För regler bortom den grundläggande modellen med ägare/grupp/alla redigerar d
 ## Anteckningar
 
 - Att ändra ägare eller grupp kräver vanligtvis behörigheter du inte har som vanlig användare; när det händer rapporteras ändringen som misslyckad snarare än tillämpad, och resten av dina ändringar går ändå igenom.
-- Kommentarer lagras i en `descript.ion`-fil bredvid dina objekt och kan även behållas som Finder-kommentarer, beroende på dina inställningar. Båda läses när en kommentar visas.
+- Kommentarer lagras i en `descript.ion`-fil bredvid dina objekt och kan även behållas som Finder-kommentarer, beroende på dina inställningar. Båda läses när en kommentar visas. Formatet är detsamma som Total Commander och flera andra filhanterare använder, så en kommentar du skriver här går att läsa där.
+- **En kommentar följer filen.** Kopiering, flytt och namnbyte tar den med — till målmappens `descript.ion` vid flytt och kopiering, och till det nya namnet vid namnbyte, även när du ångrar namnbytet. Undantaget är att lägga en fil sist i en annan: filen som blir kvar behåller sin egen kommentar, eftersom den fortfarande är den filen.
+- Med insticksmodulen Anteckningar påslagen visar och redigerar dess sidofält samma kommentar ovanför anteckningens text, så att det inte finns två ställen för samma sak.
 - En symbolisk länk och ett alias pekar båda mot ett mål, men en symbolisk länk lagrar en vanlig sökväg medan ett alias lagrar en macOS-referens som fortsätter fungera om målet flyttas eller byter namn. En hård länk är ett andra namn för samma fildata, inte en pekare.

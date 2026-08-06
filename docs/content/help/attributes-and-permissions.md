@@ -43,5 +43,7 @@ For rules beyond the basic owner/group/everyone model, edit the item's access co
 ## Notes
 
 - Changing the owner or group usually requires privileges you don't have as a normal user; when that happens the change is reported as failed rather than applied, and the rest of your changes still go through.
-- Comments are stored in a `descript.ion` file alongside your items and can also be kept as Finder comments, depending on your settings. Both are read when displaying a comment.
+- Comments are stored in a `descript.ion` file alongside your items and can also be kept as Finder comments, depending on your settings. Both are read when displaying a comment. The format is the one Total Commander and several other file managers use, so a comment you write here is readable there.
+- **A comment follows the file.** Copy, move or rename an item and its comment goes with it — to the target folder's `descript.ion` on a move or copy, and to the new name on a rename, including when you undo the rename. Appending one file onto another is the exception: the file that stays keeps its own comment, because it is still that file.
+- If you have the Notes plugin switched on, its sidebar shows and edits the same comment above the note's text, so the two are not separate places to write about the same file.
 - A symbolic link and an alias both point at a target, but a symbolic link stores a plain path while an alias stores a macOS reference that keeps working if the target is moved or renamed. A hard link is a second name for the same file data, not a pointer.

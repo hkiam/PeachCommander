@@ -22,7 +22,17 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private let logger = PCFoundationLogger.logger
 
     private let splitView = NSSplitView()
+    #if DEBUG
+    /// Diagnostic: push the divider right so a wide column fits in a screenshot (F-372).
+    func automationWidenLeftPanel() {
+        splitView.setPosition(splitView.bounds.width - 40, ofDividerAt: 0)
+    }
+    #endif
     private let previewPanel = PreviewPanelView()
+    #if DEBUG
+    /// Diagnostic: the preview panel, i.e. the host's "sidebar" plugin view container (F-372).
+    func previewPanelForAutomation() -> PreviewPanelView? { previewPanel }
+    #endif
     private let previewHandle = PreviewToggleHandle()
     private let previewResizer = PreviewResizeHandle()
     private var previewWidthConstraint: NSLayoutConstraint?
@@ -6362,6 +6372,36 @@ extension MainWindowController: ContributionHost {
         // If the window is already key, install its bar now.
         if nsWindow.isKeyWindow {
             NotificationCenter.default.post(name: NSWindow.didBecomeKeyNotification, object: nsWindow)
+        }
+    }
+
+    /// The `descript.ion` comment for a path, for a plugin that shows it (F-372).
+    ///
+    /// Synchronous, because the caller is a view being drawn — so this reads through the *local*
+    /// filesystem rather than the panel's VFS. A plugin view sits beside a local listing; asking the
+    /// panel's async filesystem from a drawing pass would mean either blocking the main thread or
+    /// answering "no comment" and correcting it a moment later.
+    func contribFileComment(_ path: String) -> String? {
+        let dir = (path as NSString).deletingLastPathComponent
+        let file = dir + "/" + CommentStore.fileName
+        guard let text = try? String(contentsOfFile: file, encoding: .utf8) else {
+            return FinderComment.read(path)          // no descript.ion: fall back to the Finder comment
+        }
+        let name = (path as NSString).lastPathComponent
+        return DescriptionFile(parsing: text).comment(for: name) ?? FinderComment.read(path)
+    }
+
+    func contribSetFileComment(_ comment: String?, path: String) {
+        let fs = LocalFS()
+        let dir = VFSPath(filesystemId: fs.scheme, path: (path as NSString).deletingLastPathComponent)
+        let name = (path as NSString).lastPathComponent
+        Task { @MainActor in
+            try? await CommentStore.setComment(comment, for: name, inDir: dir, on: fs)
+            FinderComment.write(comment, to: path)   // same mirror the host's own editor keeps (F-023)
+            // The Comment column reads separately, so it has to be told.
+            for panel in [self.leftPanelController, self.rightPanelController] {
+                panel?.refreshComments()
+            }
         }
     }
 

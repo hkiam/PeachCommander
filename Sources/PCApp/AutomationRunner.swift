@@ -89,6 +89,65 @@ extension MainWindowController {
                 await sftpPut(arg)
             case "sftpchmod":                           // sftpchmod <path>|<octal>|<out> (F-364)
                 await sftpChmod(arg)
+            case "widenleft":                           // give the left panel almost the whole window, so a
+                // wide opt-in column is actually *in* the screenshot. The report can pass with the column
+                // clipped out of view; the picture then proves nothing, which is the whole reason the
+                // pictures exist.
+                automationWidenLeftPanel()
+            case "comment":                             // comment <name>|<text>: set a file's comment the
+                // way Ctrl+Z does, so a scenario can put one there without typing into a modal dialog.
+                let parts = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if parts.count == 2, let panel = activePanel {
+                    panel.tableView.focusEntry(named: parts[0])
+                    _ = await panel.setCursorComment(parts[1])
+                }
+            case "listerdump":                          // listerdump <outfile>: what the viewer window shows
+                var out = ""
+                if let win = automationListers.last ?? nil {
+                    out = win.automationSummary()
+                } else if let win = NSApp.windows.first(where: { $0.windowController is ListerWindowController }),
+                          let controller = win.windowController as? ListerWindowController {
+                    out = controller.automationSummary()
+                } else {
+                    out = "ERROR: no lister window\n"
+                }
+                try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+            case "previewpanel":                        // previewpanel on|off: *set* it, do not toggle
+                // A toggle depends on what the previous scenario left behind — this scenario measured a
+                // closed panel in the full run and an open one when run alone, which is how a layout
+                // conflict hid for as long as it did.
+                if let panel = previewPanelForAutomation() {
+                    let wantOpen = arg.lowercased() != "off"
+                    if panel.frame.width <= 1 || panel.isHidden { if wantOpen { togglePreviewPanel() } }
+                    else if !wantOpen { togglePreviewPanel() }
+                }
+            case "previewtab":                          // previewtab <title>: pick a preview panel tab
+                if let panel = previewPanelForAutomation() {
+                    NSLog("[automation] previewtab \(arg): \(panel.automationSelectTab(titled: arg))")
+                }
+            case "commentread":                         // commentread <name>|<out> (F-372)
+                let parts = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if parts.count == 2, let panel = activePanel {
+                    let path = (await panel.getCurrentPath() as NSString).appendingPathComponent(parts[0])
+                    panel.refreshComments()
+                    try? await Task.sleep(nanoseconds: 400_000_000)
+                    let out = "hostComment=\(contribFileComment(path) ?? "<none>")\n"
+                        + "column=\(panel.tableView.automationComment(forName: parts[0]) ?? "<none>")\n"
+                    try? out.write(toFile: parts[1], atomically: true, encoding: .utf8)
+                }
+            case "sidebarsetfield":                     // sidebarsetfield <text> (F-372)
+                // Type into the *plugin's* comment field and commit it, the way a user leaving the field
+                // does. Proving the read direction alone would leave the write path — the one that changes
+                // a file on disk — unverified.
+                if let panel = previewPanelForAutomation() {
+                    NSLog("[automation] sidebarsetfield: \(automationCommitFirstEditableField(in: panel, text: arg))")
+                }
+            case "sidebardump":                         // sidebardump <outfile> (F-372)
+                dumpSidebar(arg)
+            case "column":                              // column <fieldID>: switch an opt-in column on
+                if let panel = activePanel, !panel.tableView.hasColumn(arg) { toggleColumn(arg, panel: panel) }
+            case "commentcarry":                        // commentcarry <dir>|<name>|<newName>|<out> (F-372)
+                await commentCarryProbe(arg)
             case "mkfile":                              // mkfile <path> (F-361): create a file the way
                 // another program would — not through a panel operation, so nothing asks the panel to
                 // reload. If the file shows up, the watcher is what put it there.
@@ -751,6 +810,82 @@ extension MainWindowController {
         let report = win.automationStructure(startAt: a[1])
         try? report.write(toFile: a[2], atomically: true, encoding: .utf8)
         NSLog("[automation] editstruct → \(a[2])")
+    }
+
+    /// Put `text` into the first editable text field of `root` and commit it as ending an edit does.
+    private func automationCommitFirstEditableField(in root: NSView, text: String) -> String {
+        func find(_ view: NSView) -> NSTextField? {
+            if let field = view as? NSTextField, field.isEditable, !field.isHidden { return field }
+            for sub in view.subviews { if let hit = find(sub) { return hit } }
+            return nil
+        }
+        guard let field = find(root) else { return "no editable field" }
+        field.stringValue = text
+        // The delegate acts on the end of editing, not on every keystroke, so that is what is simulated.
+        field.delegate?.controlTextDidEndEditing?(
+            Notification(name: NSControl.textDidEndEditingNotification, object: field))
+        return "committed"
+    }
+
+    /// Write every string a plugin's sidebar view is *showing* to a file (F-372).
+    ///
+    /// The preview panel is the host's "sidebar" view container, so a plugin view mounted there is a real
+    /// NSView inside the host's window — which means the host can read it, and a claim about what a plugin
+    /// displays does not have to be taken on trust. Nothing in the ABI would allow asking the plugin.
+    private func dumpSidebar(_ file: String) {
+        var lines: [String] = []
+        func walk(_ view: NSView, depth: Int) {
+            let pad = String(repeating: "  ", count: depth)
+            if let field = view as? NSTextField {
+                let kind = field.isEditable ? "field" : "label"
+                lines.append("\(pad)\(kind)=\(field.stringValue)"
+                             + (field.placeholderString.map { " placeholder=\($0)" } ?? ""))
+            } else if let text = view as? NSTextView {
+                lines.append("\(pad)text=\(text.string.replacingOccurrences(of: "\n", with: "⏎").prefix(120))")
+            }
+            for sub in view.subviews { walk(sub, depth: depth + 1) }
+        }
+        if let panel = previewPanelForAutomation() {
+            walk(panel, depth: 0)
+        } else {
+            lines.append("ERROR: no preview panel view")
+        }
+        try? (lines.joined(separator: "\n") + "\n").write(toFile: file, atomically: true, encoding: .utf8)
+        NSLog("[automation] sidebardump → \(file) (\(lines.count) rows)")
+    }
+
+    /// Does a file's comment follow the file through a rename, in the running app (F-372)?
+    ///
+    /// Usage: `commentcarry <dir>|<name>|<newName>|<out>`. Sets a comment through the panel's own path
+    /// (the same one Ctrl+Z uses), renames through the panel's rename, and reports what the *panel* shows
+    /// in its Comment column afterwards — not what the store returns. The column is the thing the user
+    /// looks at, and it is fed by a separate read.
+    private func commentCarryProbe(_ arg: String) async {
+        let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+        guard a.count == 4, let panel = activePanel else {
+            NSLog("[automation] commentcarry needs <dir>|<name>|<newName>|<out>"); return
+        }
+        let (dir, name, newName, out) = (a[0], a[1], a[2], a[3])
+        await panel.loadDirectory(dir)
+        panel.tableView.focusEntry(named: name)
+        var report = ""
+        let set = await panel.setCursorComment("carried through the rename")
+        report += "set=\(set)\n"
+        panel.refreshComments()
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        report += "beforeRename=\(panel.tableView.automationComment(forName: name) ?? "<none>")\n"
+        _ = panel.performRenames(dir: dir, pairs: [(old: name, new: newName)])
+        try? await Task.sleep(nanoseconds: 900_000_000)      // the carry runs in a detached Task
+        await panel.loadDirectory(dir)
+        panel.refreshComments()
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        report += "afterRename=\(panel.tableView.automationComment(forName: newName) ?? "<none>")\n"
+        report += "oldName=\(panel.tableView.automationComment(forName: name) ?? "<none>")\n"
+        // …and what the cell actually draws, which is not the same claim.
+        report += "renderedCell=\(panel.tableView.automationRenderedComment(forName: newName))\n"
+        panel.tableView.automationScrollToLastColumn()
+        try? report.write(toFile: out, atomically: true, encoding: .utf8)
+        NSLog("[automation] commentcarry → \(out)")
     }
 
     /// Open `src` in the editor and put the filter prompt on screen for a screenshot (F-356).

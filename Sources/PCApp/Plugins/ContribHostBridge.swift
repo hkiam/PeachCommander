@@ -33,6 +33,10 @@ public protocol ContributionHost: ToolHost {
                                    contentMenu: UnsafeMutableRawPointer?, title: String)
     /// Resolve an internal link: navigate to a folder or reveal/open a file.
     func contribOpenPath(_ path: String)
+    /// The `descript.ion` comment for a path, or nil — the one the Comment column shows (F-372).
+    func contribFileComment(_ path: String) -> String?
+    /// Set or clear it, keeping the Finder mirror in step.
+    func contribSetFileComment(_ comment: String?, path: String)
     /// Navigate a specific main panel (side 0 = left, 1 = right) to `path`
     /// (a file selects it in its parent folder).
     func contribOpenPathInPanel(side: Int, path: String)
@@ -56,6 +60,8 @@ public extension ContributionHost {
                                    editMenu: UnsafeMutableRawPointer?,
                                    contentMenu: UnsafeMutableRawPointer?, title: String) {}
     func contribOpenPath(_ path: String) {}
+    func contribFileComment(_ path: String) -> String? { nil }
+    func contribSetFileComment(_ comment: String?, path: String) {}
     func contribOpenPathInPanel(side: Int, path: String) {}
     func contribPresentSidebarView(viewId: String, root: String) {}
     func contribDismissSidebarView(viewId: String) {}
@@ -261,6 +267,32 @@ final class ContribHostBridge {
             }
         }
         s.automationFree = { _, ptr in if let ptr { free(ptr) } }
+        // Per-file comments (F-372). Synchronous by design: a plugin view asks while drawing, and the
+        // read is one small file in the directory the panel is already looking at.
+        s.getFileComment = { host, pathC, out, maxlen in
+            guard let host, let pathC, let out, maxlen > 0 else { return 0 }
+            let path = String(cString: pathC)
+            let text: String? = MainActor.assumeIsolated {
+                let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
+                return b.host?.contribFileComment(path)
+            }
+            guard let text, !text.isEmpty else { return 0 }
+            let bytes = Array(text.utf8.prefix(Int(maxlen) - 1)) + [0]
+            bytes.withUnsafeBufferPointer { src in
+                out.update(from: UnsafeRawPointer(src.baseAddress!)
+                    .assumingMemoryBound(to: CChar.self), count: bytes.count)
+            }
+            return 1
+        }
+        s.setFileComment = { host, pathC, commentC in
+            guard let host, let pathC else { return }
+            let path = String(cString: pathC)
+            let comment = commentC.map { String(cString: $0) }
+            MainActor.assumeIsolated {
+                let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
+                b.host?.contribSetFileComment(comment, path: path)
+            }
+        }
         return s
     }
 

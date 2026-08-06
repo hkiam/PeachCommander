@@ -472,6 +472,10 @@ extension PanelController {
             let oldPath = (dir as NSString).appendingPathComponent(entry.old)
             if (try? fm.moveItem(atPath: entry.temp, toPath: finalPath)) != nil {
                 log.append((from: finalPath, to: oldPath))
+                // The file's comment follows its new name (F-372). This path does not go through the
+                // move engine — it renames with FileManager in two phases to survive collisions — so it
+                // needs the carry of its own, and the undo below needs the reverse.
+                Task { await CommentStore.carryLocal(from: oldPath, to: finalPath, keepSource: false) }
             } else {
                 try? fm.moveItem(atPath: entry.temp, toPath: oldPath) // restore on failure
             }
@@ -486,7 +490,12 @@ extension PanelController {
     /// Reverse a rename log (best effort).
     func performUndo(_ log: [(from: String, to: String)]) {
         let fm = FileManager.default
-        for entry in log.reversed() { try? fm.moveItem(atPath: entry.from, toPath: entry.to) }
+        for entry in log.reversed() {
+            guard (try? fm.moveItem(atPath: entry.from, toPath: entry.to)) != nil else { continue }
+            // Undo has to take the comment back too, or undoing a rename leaves the comment on a name
+            // that no longer exists (F-372).
+            Task { await CommentStore.carryLocal(from: entry.from, to: entry.to, keepSource: false) }
+        }
     }
 
     func makeDirectory() async {

@@ -43,5 +43,7 @@ Za pravila zunaj osnovnega modela lastnik/skupina/vsi uredite seznam za nadzor d
 ## Opombe
 
 - Spreminjanje lastnika ali skupine običajno zahteva pravice, ki jih kot običajen uporabnik nimate; ko se to zgodi, se sprememba prijavi kot neuspešna namesto uporabljena, preostale vaše spremembe pa še vedno gredo skozi.
-- Komentarji so shranjeni v datoteki `descript.ion` poleg vaših elementov in jih je mogoče hraniti tudi kot komentarje Finder, odvisno od vaših nastavitev. Oba se bereta pri prikazu komentarja.
+- Komentarji so shranjeni v datoteki `descript.ion` poleg vaših elementov in jih je mogoče hraniti tudi kot komentarje Finder, odvisno od vaših nastavitev. Oba se bereta pri prikazu komentarja. Oblika je ista, kot jo uporabljajo Total Commander in več drugih upravljalnikov datotek, zato je komentar, napisan tu, tam berljiv.
+- **Komentar sledi datoteki.** Kopiranje, premikanje in preimenovanje ga vzamejo s sabo — pri premikanju in kopiranju v `descript.ion` ciljne mape, pri preimenovanju na novo ime, tudi ko preimenovanje razveljavite. Izjema je pripenjanje datoteke na konec druge: datoteka, ki ostane, ohrani svoj komentar, ker je še vedno ista datoteka.
+- Če je vstavek Zapiski vklopljen, njegova stranska vrstica prikazuje in ureja isti komentar nad besedilom zapiska, da ni dveh mest za isto stvar.
 - Simbolna povezava in vzdevek oba kažeta na cilj, vendar simbolna povezava shrani navadno pot, medtem ko vzdevek shrani sklic macOS, ki še naprej deluje, če se cilj premakne ali preimenuje. Trda povezava je drugo ime za iste podatke datoteke, ne kazalec.

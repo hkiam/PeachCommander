@@ -149,6 +149,25 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     private var xmlOutline: XMLOutlineController?
 
     private let statusLabel = NSTextField(labelWithString: "")
+    #if DEBUG
+    /// Diagnostic: the status line plus the strings the window is showing (F-372 follow-up).
+    ///
+    /// Reading the *rendered* labels, because the interesting failure here was a crash — and a crash
+    /// leaves no report at all, which is exactly how it announced itself.
+    func automationSummary() -> String {
+        var lines = ["status=\(statusLabel.stringValue)"]
+        func walk(_ view: NSView) {
+            if let field = view as? NSTextField, !field.stringValue.isEmpty {
+                lines.append("label=\(field.stringValue.replacingOccurrences(of: "\n", with: " ⏎ ").prefix(200))")
+            } else if let text = view as? NSTextView, !text.string.isEmpty {
+                lines.append("text=\(text.string.replacingOccurrences(of: "\n", with: " ⏎ ").prefix(200))")
+            }
+            for sub in view.subviews { walk(sub) }
+        }
+        if let root = window?.contentView { walk(root) }
+        return lines.joined(separator: "\n") + "\n"
+    }
+    #endif
     private let scrollView = NSScrollView()
     private var contentView: NSView?
 
@@ -748,6 +767,13 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         document.translatesAutoresizingMaskIntoConstraints = false
         label.translatesAutoresizingMaskIntoConstraints = false
         document.addSubview(label)
+        // The document view goes in FIRST. The width constraint below ties the container to the scroll
+        // view's clip view, and until `documentView` is assigned the two are in different view
+        // hierarchies — activating it then throws `NSInvalidArgumentException` ("no common ancestor") and
+        // takes the app down. Pressing F3 on a *folder* did exactly that; it stayed hidden because the
+        // scenario that covers the viewer happened to have a file under the cursor, and only did not when
+        // the panel's contents shifted.
+        scrollView.documentView = document
         NSLayoutConstraint.activate([
             label.topAnchor.constraint(equalTo: document.topAnchor, constant: 8),
             label.leadingAnchor.constraint(equalTo: document.leadingAnchor, constant: 8),
@@ -755,7 +781,6 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             label.bottomAnchor.constraint(equalTo: document.bottomAnchor, constant: -8),
             document.widthAnchor.constraint(equalTo: scrollView.contentView.widthAnchor)
         ])
-        scrollView.documentView = document
         contentView = label
         statusLabel.stringValue = "\(String(localized: "Folder"))   \(dir)"
         Task { @MainActor in
