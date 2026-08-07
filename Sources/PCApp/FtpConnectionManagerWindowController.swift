@@ -31,6 +31,10 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
     private let proxyHostField = NSTextField()   // F-212: SOCKS5 proxy for plain FTP
     private let proxyPortField = NSTextField()
     private let proxyTypePopup = NSPopUpButton()
+    // A proxy that asks for a login had a user and a password in the model and a `proxyuser` key in the
+    // ini, and no way to set either — so an authenticated proxy could not be used at all (F-210).
+    private let proxyUserField = NSTextField()
+    private let proxyPasswordField = NSSecureTextField()
     private let scpCheck = NSButton(checkboxWithTitle: "Transfer via SCP (SFTP only)", target: nil, action: nil)
     private let insecureTLSCheck = NSButton(checkboxWithTitle: "Accept self-signed certificate (FTPS)", target: nil, action: nil)
     private var updatingForm = false
@@ -96,10 +100,15 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         proxyHostField.placeholderString = String(localized: "host (blank = direct)")
         proxyPortField.placeholderString = String(localized: "port")
         proxyPortField.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        for f in [proxyHostField, proxyPortField] { f.delegate = self }
+        proxyUserField.placeholderString = String(localized: "user (blank = no login)")
+        proxyPasswordField.placeholderString = String(localized: "password")
+        for f in [proxyHostField, proxyPortField, proxyUserField] { f.delegate = self }
+        proxyPasswordField.delegate = self
         let proxyRow = NSStackView(views: [proxyHostField, proxyPortField, proxyTypePopup])
         proxyRow.orientation = .horizontal; proxyRow.spacing = 6
         proxyPortField.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        let proxyLoginRow = NSStackView(views: [proxyUserField, proxyPasswordField])
+        proxyLoginRow.orientation = .horizontal; proxyLoginRow.spacing = 6
 
         let form = NSGridView(views: [
             [label(String(localized: "Name:")), nameField],
@@ -112,6 +121,7 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
             [label(String(localized: "Remote dir:")), remoteDirField],
             [NSGridCell.emptyContentView, passiveCheck],
             [label(String(localized: "Proxy:")), proxyRow],
+            [label(String(localized: "Proxy login:")), proxyLoginRow],
             [NSGridCell.emptyContentView, scpCheck],
             [NSGridCell.emptyContentView, insecureTLSCheck]
         ])
@@ -182,6 +192,9 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         proxyHostField.stringValue = s.proxyHost ?? ""
         proxyPortField.stringValue = String(s.proxyPort)
         proxyTypePopup.selectItem(at: ProxyKind.allCases.firstIndex(of: s.proxyType) ?? 0)
+        proxyUserField.stringValue = s.proxyUser ?? ""
+        // The proxy password lives in the Keychain like the site's own, never in ftp-sites.ini.
+        proxyPasswordField.stringValue = ((try? FtpCredentials.proxyPassword(for: s, in: store)) ?? nil) ?? ""
         scpCheck.state = s.useSCP ? .on : .off
         insecureTLSCheck.state = s.allowInsecureTLS ? .on : .off
         let storedPassword = on ? ((try? FtpCredentials.password(for: s, in: store)) ?? nil) : nil
@@ -203,6 +216,12 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         s.proxyHost = ph.isEmpty ? nil : ph
         s.proxyPort = Int(proxyPortField.stringValue) ?? s.proxyPort
         s.proxyType = ProxyKind.allCases[max(0, proxyTypePopup.indexOfSelectedItem)]
+        let pu = proxyUserField.stringValue.trimmingCharacters(in: .whitespaces)
+        s.proxyUser = pu.isEmpty ? nil : pu
+        // Saved against the *committed* site, so the account key matches the host/user just typed.
+        let pp = proxyPasswordField.stringValue
+        if !pp.isEmpty { try? FtpCredentials.saveProxyPassword(pp, for: s, in: store) }
+        s.proxyPassword = pp.isEmpty ? nil : pp
         s.useSCP = scpCheck.state == .on
         s.allowInsecureTLS = insecureTLSCheck.state == .on
         sites[selected] = s

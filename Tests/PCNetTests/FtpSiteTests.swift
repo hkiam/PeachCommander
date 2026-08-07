@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import XCTest
 @testable import PCNet
+import PCFoundation
 
 final class FtpSiteTests: XCTestCase {
 
@@ -119,5 +120,61 @@ final class FtpSiteTests: XCTestCase {
         s.keepAliveSeconds = 0
         XCTAssertEqual(s.effectiveKeepAlive(globalDefault: 0), 0)    // both off → disabled
         XCTAssertEqual(s.effectiveKeepAlive(globalDefault: -5), 0)   // negative global clamped
+    }
+
+    // MARK: - Nothing secret may reach ftp-sites.ini (F-210)
+    //
+    // The rule is stated in three places in comments and was checked nowhere. It is the kind of rule
+    // that is broken by adding one convenient line, and the file is plain text in the user's config
+    // folder — backed up, synced, and readable by anything.
+
+    func testSerializingASiteNeverWritesAPassword() {
+        var site = FtpSite(name: "prod", host: "files.example.com", port: 21, proto: .ftp,
+                           user: "alice", auth: .password)
+        site.proxyHost = "proxy.example.com"
+        site.proxyPort = 1080
+        site.proxyUser = "bob"
+        site.proxyPassword = "PROXY-SECRET"
+        let text = FtpSitesFile.serialize([site])
+
+        XCTAssertFalse(text.contains("PROXY-SECRET"), "the proxy password reached the ini:\n\(text)")
+        // Key names, not the word anywhere: `auth=password` names the *method* and is not a secret. My
+        // first version banned the substring outright and failed on that line — the test was wrong.
+        let keys = text.split(whereSeparator: \.isNewline)
+            .compactMap { $0.split(separator: "=", maxSplits: 1).first.map { String($0).lowercased() } }
+        for forbidden in ["password", "proxypassword", "passphrase", "secret"] {
+            XCTAssertFalse(keys.contains(forbidden), "the ini has a \(forbidden) key:\n\(text)")
+        }
+        // …and the things that *are* meant to be there still are, so this cannot pass by writing nothing.
+        XCTAssertTrue(text.contains("files.example.com"))
+        XCTAssertTrue(text.contains("alice"))
+        XCTAssertTrue(text.contains("proxy.example.com"))
+        XCTAssertTrue(text.contains("bob"))
+    }
+
+    func testAProxyLoginRoundTripsThroughTheSecretStoreAndNotTheFile() throws {
+        var site = FtpSite(name: "prod", host: "files.example.com", port: 21, proto: .ftp,
+                           user: "alice", auth: .password)
+        site.proxyHost = "proxy.example.com"
+        site.proxyPort = 1080
+        site.proxyUser = "bob"
+
+        let store = InMemorySecretStore()
+        try FtpCredentials.saveProxyPassword("PROXY-SECRET", for: site, in: store)
+        XCTAssertEqual(try FtpCredentials.proxyPassword(for: site, in: store), "PROXY-SECRET")
+
+        // A different proxy user is a different secret; one login must not answer for another.
+        var other = site
+        other.proxyUser = "carol"
+        XCTAssertNil(try FtpCredentials.proxyPassword(for: other, in: store))
+    }
+
+    func testAProxyWithoutALoginHasNoSecretToStore() throws {
+        var site = FtpSite(name: "prod", host: "h", port: 21, proto: .ftp, user: "u", auth: .password)
+        site.proxyHost = "proxy.example.com"
+        XCTAssertNil(FtpCredentials.proxyAccount(for: site), "no user means no account key to key it by")
+        let store = InMemorySecretStore()
+        try FtpCredentials.saveProxyPassword("ignored", for: site, in: store)
+        XCTAssertNil(try FtpCredentials.proxyPassword(for: site, in: store))
     }
 }
