@@ -161,7 +161,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-172 | Content-plugin fields as placeholders `[=plugin.field]` | | SPEC-012 | I16 | P2 | done |
 | F-173 | Search & replace incl. regex + subst, case conversion modes | Upper/lower/first-letter rules | SPEC-009 | I11 | P1 | done |
 | F-174 | Edit names via external editor (export list, re-import) | ev: test:RenameByEditorTests | SPEC-009 | I11 | P2 | done |
-| F-175 | Undo rename (log kept), rename result log, collision handling | the rename list comes back from the user's own editor, and a CRLF one used to leave a carriage return in every new file name — legal on macOS, so it succeeded silently; ev: symbol:RenameByEditor ev: test:RenameByEditorTests | SPEC-009 | I11 | P1 | done |
+| F-175 | Undo rename (log kept), rename result log, collision handling | the rename list comes back from the user's own editor, and a CRLF one used to leave a carriage return in every new file name — legal on macOS, so it succeeded silently; ev: symbol:RenameByEditor ev: test:RenameByEditorTests; the batch staging that survives a cycle (a→b together with b→a) now lives in RenameBatchEngine where it can be tested — the forward direction was right, but *undo* was single-phase and silently did nothing at all for a swap or a rotation; names the batch could not deliver are reported instead of dropped; ev: symbol:RenameBatchEngine ev: test:RenameBatchEngineTests ev: scenario:comment-carry | SPEC-009 | I11 | P1 | done |
 | F-176 | Save/load rename presets | | SPEC-009 | I11 | P2 | done |
 
 ## 9. Compare & synchronize

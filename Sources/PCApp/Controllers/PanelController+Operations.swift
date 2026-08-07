@@ -454,46 +454,41 @@ extension PanelController {
         }
     }
 
-    /// Rename files in `dir` (old→new) collision-safe (two phase). Returns an undo log.
+    /// Rename files in `dir` (old→new) and return an undo log.
+    ///
+    /// The staging that survives a cycle (`a → b` with `b → a`) lives in `RenameBatchEngine`, where it
+    /// can be tested; this keeps the parts that are the panel's business — carrying each file's comment
+    /// to its new name, registering the undo, and saying so when a rename did not happen. That last one
+    /// is new: names the batch could not deliver used to be dropped without a word (F-175).
+    @discardableResult
     func performRenames(dir: String, pairs: [(old: String, new: String)]) -> [(from: String, to: String)] {
-        let fm = FileManager.default
-        var staged: [(temp: String, finalName: String, old: String)] = []
-        for (old, new) in pairs where old != new && !new.isEmpty && !new.contains("/") {
-            let oldPath = (dir as NSString).appendingPathComponent(old)
-            let tempPath = (dir as NSString).appendingPathComponent(".pcren-" + UUID().uuidString)
-            if (try? fm.moveItem(atPath: oldPath, toPath: tempPath)) != nil {
-                staged.append((tempPath, new, old))
-            }
+        let outcome = RenameBatchEngine.apply(dir: dir, pairs: pairs)
+        for step in outcome.log {
+            // This path does not go through the move engine, so the comment carry is its own (F-372).
+            Task { await CommentStore.carryLocal(from: step.to, to: step.from, keepSource: false) }
         }
-        var log: [(from: String, to: String)] = []
-        for entry in staged {
-            let finalPath = (dir as NSString).appendingPathComponent(entry.finalName)
-            let oldPath = (dir as NSString).appendingPathComponent(entry.old)
-            if (try? fm.moveItem(atPath: entry.temp, toPath: finalPath)) != nil {
-                log.append((from: finalPath, to: oldPath))
-                // The file's comment follows its new name (F-372). This path does not go through the
-                // move engine — it renames with FileManager in two phases to survive collisions — so it
-                // needs the carry of its own, and the undo below needs the reverse.
-                Task { await CommentStore.carryLocal(from: oldPath, to: finalPath, keepSource: false) }
-            } else {
-                try? fm.moveItem(atPath: entry.temp, toPath: oldPath) // restore on failure
-            }
-        }
+        let log = outcome.log.map { (from: $0.from, to: $0.to) }
         if !log.isEmpty {
             (view.window?.windowController as? MainWindowController)?
                 .pushUndo(String(localized: "Rename")) { [weak self] in self?.performUndo(log) }
         }
+        if !outcome.failed.isEmpty {
+            let list = outcome.failed.prefix(10).map { "\($0.name): \($0.reason)" }.joined(separator: "\n")
+            let more = outcome.failed.count > 10
+                ? String(localized: "\n… and \(outcome.failed.count - 10) more.") : ""
+            presentError(String(localized: "Rename"),
+                         detail: String(localized: "\(outcome.failed.count) file(s) were not renamed:\n\(list)\(more)"))
+        }
         return log
     }
 
-    /// Reverse a rename log (best effort).
+    /// Reverse a rename log. Staged in two phases for the same reason the forward direction is: undoing
+    /// a swap means putting `b` back while `a` still holds its place.
     func performUndo(_ log: [(from: String, to: String)]) {
-        let fm = FileManager.default
-        for entry in log.reversed() {
-            guard (try? fm.moveItem(atPath: entry.from, toPath: entry.to)) != nil else { continue }
-            // Undo has to take the comment back too, or undoing a rename leaves the comment on a name
-            // that no longer exists (F-372).
-            Task { await CommentStore.carryLocal(from: entry.from, to: entry.to, keepSource: false) }
+        let steps = log.map { RenameBatchEngine.Step(from: $0.from, to: $0.to) }
+        for step in RenameBatchEngine.undo(steps) {
+            // Undo has to take the comment back too, or it is left on a name that no longer exists.
+            Task { await CommentStore.carryLocal(from: step.from, to: step.to, keepSource: false) }
         }
     }
 
