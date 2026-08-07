@@ -24,6 +24,34 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-07 (evidence sweep, batch 6) — The password was in the process list
+
+Four rows (F-120, F-134, F-135, F-136), one defect.
+
+**"Test archive" really does test (F-135).** Checked by damaging an archive rather than by reading the
+code: one flipped byte inside a member's compressed data is reported, three damaged members come back as
+three, and an intact archive is not called damaged. A verifier that always answers "intact" would be
+worse than none, because it is the answer someone acts on before deleting the originals.
+
+**But my first attempt at that test reported the product broken, and it was wrong.** It flipped byte 80
+of a 140-byte archive — 4000 bytes of repeated text deflate to 32, so byte 80 is in the central
+directory and nothing the CRC covers had changed. The test now reads the local header and computes where
+the compressed data actually is. Two false alarms of mine in two batches, both from a test that assumed
+a layout instead of asking for one.
+
+**The defect: the archive password was passed as `-p<password>` (F-136)** — which puts it in the
+process's argument list, where `ps -ww` shows it in full to anything running as the same user for as long
+as the archive takes to write. Measured on a running pack, not supposed. `7z -p` with no value reads it
+from standard input instead; verified by packing that way, opening the result with the right password and
+watching a wrong one be refused. A test now asserts the password never appears in the arguments — for
+that, `command(for:…)` is internal rather than private, which is the one thing about this that cannot be
+checked from outside.
+
+Nested archives (F-134) and viewing files inside them (F-120) already had tests; those rows only needed
+their pointers recorded.
+
+Rows without evidence: 76 → 72.
+
 ## 2026-08-07 (evidence sweep, batch 5) — Archives: a dash in a name, and zip slip
 
 Two rows (F-131, F-132), two defects — and one of them is a security hole rather than an inconvenience.

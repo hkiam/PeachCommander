@@ -223,4 +223,88 @@ final class ZipReaderTests: XCTestCase {
         let entry = try XCTUnwrap(reader.entries.first { $0.path == "binary.dat" })
         XCTAssertEqual(try reader.data(for: entry), content)
     }
+
+    // MARK: - Does "test archive" actually detect anything? (F-135)
+    //
+    // A verifier that always answers "intact" is worse than none: it is the answer someone acts on
+    // before deleting the originals. Nothing checked that this one says no to a broken archive.
+
+    /// Byte range of the first member's *compressed data*, read out of its local header.
+    ///
+    /// Computed rather than guessed: my first attempt flipped byte 80 of a 140-byte archive, which is
+    /// in the central directory — 4000 bytes of repeated text deflate to 32 — so nothing the CRC covers
+    /// changed and the test reported the product broken.
+    private func firstMemberDataRange(_ bytes: Data) -> Range<Int>? {
+        func u16(_ at: Int) -> Int { Int(bytes[at]) | Int(bytes[at + 1]) << 8 }
+        func u32(_ at: Int) -> Int { u16(at) | u16(at + 2) << 16 }
+        guard bytes.count > 30, bytes[0] == 0x50, bytes[1] == 0x4B, bytes[2] == 0x03, bytes[3] == 0x04
+        else { return nil }
+        let start = 30 + u16(26) + u16(28)          // header + name + extra
+        let length = u32(18)                        // compressed size
+        guard length > 0, start + length <= bytes.count else { return nil }
+        return start..<(start + length)
+    }
+
+    private func flipAByteOfTheFirstMembersData(_ url: URL) throws {
+        var bytes = try Data(contentsOf: url)
+        let range = try XCTUnwrap(firstMemberDataRange(bytes), "could not find the compressed data")
+        bytes[range.lowerBound] = bytes[range.lowerBound] ^ 0xFF
+        try bytes.write(to: url)
+    }
+
+    func test_verify_acceptsAnIntactArchive() throws {
+        let url = tempDir.appendingPathComponent("intact.zip")
+        try ZipWriter.create(at: url, files: [
+            (path: "a.txt", data: Data(String(repeating: "content ", count: 500).utf8)),
+            (path: "b.txt", data: Data("second".utf8)),
+        ])
+        let reader = try XCTUnwrap(ZipReader(fileURL: url))
+        XCTAssertEqual(reader.verify(), [], "a good archive must not be reported as damaged either")
+    }
+
+    func test_verify_findsAFlippedByteInTheData() throws {
+        let url = tempDir.appendingPathComponent("damaged.zip")
+        let payload = Data(String(repeating: "content ", count: 500).utf8)
+        try ZipWriter.create(at: url, files: [(path: "a.txt", data: payload)])
+        // Inside the compressed bytes: the checksum in the directory still says what the file used to
+        // be, so this is exactly the damage a CRC exists to find.
+        try flipAByteOfTheFirstMembersData(url)
+
+        let reader = try XCTUnwrap(ZipReader(fileURL: url))
+        let problems = reader.verify()
+        XCTAssertFalse(problems.isEmpty, "a flipped byte went unnoticed — the archive was reported intact")
+        XCTAssertEqual(problems.first?.path, "a.txt")
+    }
+
+    func test_verify_reportsEveryDamagedMemberAndNotOnlyTheFirst() throws {
+        // Stopping at the first problem would tell the user one file is bad when three are.
+        let url = tempDir.appendingPathComponent("multi.zip")
+        let payload = Data(String(repeating: "x", count: 400).utf8)
+        try ZipWriter.create(at: url, files: [
+            (path: "one.txt", data: payload),
+            (path: "two.txt", data: payload),
+            (path: "three.txt", data: payload),
+        ])
+        // Walk the local headers and flip one byte of every member's data, so the count is exact
+        // instead of depending on where a third of the file happens to fall.
+        var bytes = try Data(contentsOf: url)
+        var cursor = 0
+        var damaged = 0
+        while cursor + 30 <= bytes.count, bytes[cursor] == 0x50, bytes[cursor + 1] == 0x4B,
+              bytes[cursor + 2] == 0x03, bytes[cursor + 3] == 0x04 {
+            func u16(_ at: Int) -> Int { Int(bytes[at]) | Int(bytes[at + 1]) << 8 }
+            func u32(_ at: Int) -> Int { u16(at) | u16(at + 2) << 16 }
+            let start = cursor + 30 + u16(cursor + 26) + u16(cursor + 28)
+            let length = u32(cursor + 18)
+            guard length > 0, start + length <= bytes.count else { break }
+            bytes[start] = bytes[start] ^ 0xFF
+            damaged += 1
+            cursor = start + length
+        }
+        XCTAssertEqual(damaged, 3, "the fixture did not have three members to damage")
+        try bytes.write(to: url)
+
+        let reader = try XCTUnwrap(ZipReader(fileURL: url))
+        XCTAssertEqual(reader.verify().count, 3, "three damaged members, \(reader.verify().count) reported")
+    }
 }
