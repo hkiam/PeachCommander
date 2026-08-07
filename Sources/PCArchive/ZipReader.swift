@@ -105,6 +105,15 @@ extension ZipEntry: Equatable {
 /// Read-only: ZIP64 and both encryption schemes are handled, multi-disk archives are not,
 /// and filenames are decoded as UTF-8 (falling back to Latin-1) rather than full
 /// IBM437/CP437 handling.
+///
+/// That last choice is deliberate and was measured (F-377). By the letter of the specification a name is
+/// CP437 unless bit 11 of the general-purpose flags marks it UTF-8 — but Info-ZIP on macOS writes UTF-8
+/// bytes *without* setting that flag, and so do most tools on Linux. Decoding those as CP437 turns
+/// `Grüße.txt` into `Gr├╝├ƒe.txt`: that is what Python's `zipfile` does, and it is what a reader that
+/// followed the specification strictly would show in the panel. Checked against Python over a generated
+/// corpus (zip stored/deflated/max, jar, tar ustar/GNU/PAX, tgz, long names, Unicode, 120-member
+/// directories): the two agree on every entry and size, and the only divergence is this one, where the
+/// pragmatic reading is the useful one. `Tools/check-archive-listing.sh` keeps that comparison honest.
 public final class ZipReader {
     private static let eocdSignature: UInt32 = 0x0605_4b50
     private static let centralDirSignature: UInt32 = 0x0201_4b50
