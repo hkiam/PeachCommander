@@ -24,6 +24,36 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-07 (evidence sweep, batch 2) — Copy metadata, clone, verify, links
+
+Four rows (F-087/088/090/093), one defect. A much better yield than batch 1, and that is worth saying:
+the copy engine holds up.
+
+**What survives a copy, asked of the file system rather than of Foundation.** `stat`, `xattr` and
+`ls -le` as witnesses — `attributesOfItem` is the same layer the engine writes through, so it would
+mostly show that one API agrees with itself. Mode (including a 0600 that must not be widened on the way
+through a 0644 create), mtime, extended attributes, resource fork, ACL, and symlinks copied *as links*
+with relative targets kept verbatim: all correct. The APFS clone path and the streaming path agree, and
+the three link kinds really are three things — the hard link shares the target's inode and raises its
+link count, the alias carries the "book" magic and still resolves after the target is renamed.
+
+**The one defect: "verify after copy" only applied to foreground copies.** Nothing said so, and the
+background queue is exactly what one picks for the large copies where verifying is worth the time. Both
+paths now go through one method, so they cannot drift apart again.
+
+**Two mistakes of mine, both in the instruments.** The clone-versus-streaming comparison originally
+checked the two runs only against each other — when I turned metadata copying off to see whether the
+tests bite, it stayed green, because both runs had lost the same thing. It is anchored to the source now.
+And both alias tests reported the product broken because *I* read a bookmark **file** as raw bytes
+instead of with `URL.bookmarkData(withContentsOf:)`.
+
+**New in the harness: `modaldump`.** It could keyboard-walk a modal dialog but never read what it *said*,
+so an alert with the wrong text — or one that should have appeared and did not — was invisible. It
+schedules into the modal run-loop mode and dismisses the alert afterwards, because `runModal` never
+returns on its own and the scenario would otherwise write no report at all.
+
+Rows without evidence: 84 → 80. 38 VM scenarios, 0 conflicts.
+
 ## 2026-08-07 (evidence sweep, batch 1) — Six defects behind five "done" rows
 
 Started working through the 87 rows the inventory calls `done` with nothing backing them, worst-damage

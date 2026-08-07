@@ -120,9 +120,8 @@ extension PanelController {
         if isInArchive {
             await extractItems(items, to: dest)
         } else if background {
-            enqueueBackground(.copy(items: items, toDirectory: dest, options: copyOptions(mask: mask, onlyNewer: onlyNewer)),
-                              title: String(localized: "Copy \(items.count) → \((dest as NSString).lastPathComponent)"),
-                              startHeld: queueForLater)
+            startBackgroundCopy(items: items, dest: dest, mask: mask,
+                                onlyNewer: onlyNewer, queueForLater: queueForLater)
         } else {
             await runTransfer(.copy(items: items, toDirectory: dest, options: copyOptions(mask: mask, onlyNewer: onlyNewer)),
                               title: String(localized: "Copying"))
@@ -640,12 +639,37 @@ extension PanelController {
 
     /// Run a copy/move in the background transfer manager (non-modal): unmark the
     /// processed items + reload on completion, and surface the manager window.
-    private func enqueueBackground(_ kind: OperationKind, title: String, startHeld: Bool = false) {
+    /// Queue a copy and verify it afterwards if the user asked for that.
+    ///
+    /// Its own method so the automation verb drives the same wiring the F5 dialog does; a verb that
+    /// rebuilt the closure would be testing a copy of it. "Verify files after copy" used to apply to
+    /// foreground copies only, with nothing saying so — and the background queue is exactly what one
+    /// picks for the large copies where a verification is worth having (F-090). The setting is read when
+    /// the job finishes, so one changed while a held job waits still decides correctly.
+    func startBackgroundCopy(items: [String], dest: String, mask: String?,
+                             onlyNewer: Bool, queueForLater: Bool) {
+        enqueueBackground(.copy(items: items, toDirectory: dest,
+                                options: copyOptions(mask: mask, onlyNewer: onlyNewer)),
+                          title: String(localized: "Copy \(items.count) → \((dest as NSString).lastPathComponent)"),
+                          startHeld: queueForLater,
+                          onFinished: { [weak self] in
+                              guard let self,
+                                    await self.config.bool("Operation", "VerifyAfterCopy", default: false)
+                              else { return }
+                              await self.verifyCopiedItems(items, destDir: dest, mask: mask)
+                          })
+    }
+
+    /// `onFinished` runs once the queued job has actually finished — which is where "verify after copy"
+    /// belongs for a background transfer, and where it was simply not happening (F-090).
+    private func enqueueBackground(_ kind: OperationKind, title: String, startHeld: Bool = false,
+                                   onFinished: (@MainActor () async -> Void)? = nil) {
         TransferManager.shared.enqueue(kind, title: title, startHeld: startHeld) { [weak self] done in
             guard let self else { return }
             Task { @MainActor in
                 await self.getSelectionState().unmarkCompleted(done)
                 await self.reload()
+                await onFinished?()
             }
         }
         (view.window?.windowController as? MainWindowController)?.showTransferManager()
