@@ -87,7 +87,7 @@ public enum PackEngine {
         try? FileManager.default.removeItem(atPath: archivePath)
         for vol in existingVolumes(of: archivePath) { try? FileManager.default.removeItem(atPath: vol) }
 
-        let (tool, args) = try command(for: options, archivePath: archivePath, names: names)
+        let (tool, args, stdin) = try command(for: options, archivePath: archivePath, names: names)
         let process = Process()
         process.executableURL = URL(fileURLWithPath: tool)
         process.arguments = args
@@ -95,7 +95,15 @@ public enum PackEngine {
         let err = Pipe()
         process.standardError = err
         process.standardOutput = FileHandle.nullDevice
+        // The password goes down the pipe, never into the argument list — see `command(for:…)`.
+        let input = Pipe()
+        process.standardInput = stdin == nil ? FileHandle.nullDevice : input
         do { try process.run() } catch { throw PackError.failed("\(error)", -1) }
+        if let stdin {
+            // Twice: the packers ask for the password and then for a confirmation.
+            try? input.fileHandleForWriting.write(contentsOf: Data("\(stdin)\n\(stdin)\n".utf8))
+            try? input.fileHandleForWriting.close()
+        }
         process.waitUntilExit()
         guard process.terminationStatus == 0 else {
             let msg = String(decoding: err.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
@@ -103,9 +111,16 @@ public enum PackEngine {
         }
     }
 
-    /// Build (tool, arguments) for the requested format/options.
-    private static func command(for options: PackOptions, archivePath: String, names: [String]) throws
-        -> (tool: String, args: [String]) {
+    /// Build (tool, arguments, stdin) for the requested format/options.
+    ///
+    /// A password is returned as `stdin` rather than placed in the arguments. `-p<password>` puts it in
+    /// the process's argument list, where `ps` shows it in full to anything running as the same user for
+    /// as long as the archive takes to write — measured, not supposed. `7z -p` with no value reads it
+    /// from standard input instead, which is where it belongs.
+    /// Internal rather than private so a test can assert the one thing that cannot be seen from
+    /// outside: that the password is never in `args`.
+    static func command(for options: PackOptions, archivePath: String, names: [String]) throws
+        -> (tool: String, args: [String], stdin: String?) {
         let pw = options.password.flatMap { $0.isEmpty ? nil : $0 }
         switch options.format {
         case .tar, .tarGz, .tarBz2, .tarXz:
@@ -121,14 +136,14 @@ public enum PackEngine {
             // said "Can't specify both -x and -c" and the whole pack failed — and a file named "-C"
             // would have been worse than a failure, because tar would have changed directory and
             // archived something else. Measured, not assumed: both tar and 7z honour `--` here.
-            return (tar, [flag, archivePath, "--"] + names)
+            return (tar, [flag, archivePath, "--"] + names, nil)
 
         case .zip, .sevenZip:
             guard let sevenZip = toolPath("7z") ?? toolPath("7za") else { throw PackError.toolNotFound("7z") }
             var args = ["a", options.format == .zip ? "-tzip" : "-t7z", "-y", "-bso0", "-bsp0",
                         "-mx=\(max(0, min(9, options.level)))"]
-            if let pw {
-                args.append("-p\(pw)")
+            if pw != nil {
+                args.append("-p")                 // value on stdin, not in argv
                 if options.format == .zip { args.append("-mem=AES256") }
                 else { args.append("-mhe=on") }   // 7z: also encrypt headers/names
             }
@@ -136,17 +151,17 @@ public enum PackEngine {
             args.append(archivePath)
             args.append("--")               // see the tar branch: a name may begin with a dash
             args.append(contentsOf: names)
-            return (sevenZip, args)
+            return (sevenZip, args, pw)
 
         case .rar:
             guard let rar = toolPath("rar") else { throw PackError.toolNotFound("rar") }
             var args = ["a", "-r", "-ep1", "-m\(max(0, min(5, options.level / 2)))"]
-            if let pw { args.append("-hp\(pw)") }         // -hp also encrypts headers
+            if pw != nil { args.append("-hp") }           // -hp also encrypts headers; value on stdin
             if let split = options.splitSize { args.append("-v\(split)b") }
             args.append(archivePath)
             args.append("--")               // as above; `rar` is not installed here, so this one is by
             args.append(contentsOf: names)  // its documentation rather than by measurement
-            return (rar, args)
+            return (rar, args, pw)
         }
     }
 

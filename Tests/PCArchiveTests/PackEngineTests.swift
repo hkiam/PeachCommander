@@ -135,4 +135,48 @@ final class PackEngineTests: XCTestCase {
                                 options: PackOptions(format: .rar))
         ) { XCTAssertEqual($0 as? PackError, .toolNotFound("rar")) }
     }
+
+    // MARK: - The password must not be in the argument list (F-136)
+    //
+    // `-p<password>` puts it in the process's argv, where `ps` shows it in full to anything running as
+    // the same user for as long as the archive takes to write. Measured before it was changed: a running
+    // pack showed "-pGEHEIMES-PASSWORT" in `ps -ww` output. `7z -p` with no value reads it from standard
+    // input instead — verified by packing that way and opening the result with the password.
+
+    func test_thePasswordNeverAppearsInTheArguments() throws {
+        let secret = "correct-horse-battery-staple"
+        for format in [PackFormat.zip, .sevenZip, .rar] {
+            let options = PackOptions(format: format, password: secret)
+            guard let built = try? PackEngine.command(for: options, archivePath: "/tmp/a.\(format.fileExtension)",
+                                                      names: ["file.txt"]) else {
+                continue    // the tool for this format is not installed here
+            }
+            XCTAssertFalse(built.args.contains { $0.contains(secret) },
+                           "\(format.rawValue): the password is in the argument list: \(built.args)")
+            XCTAssertEqual(built.stdin, secret, "\(format.rawValue): it has to reach the tool somehow")
+        }
+    }
+
+    func test_noPasswordMeansNothingOnStandardInput() throws {
+        guard let built = try? PackEngine.command(for: PackOptions(format: .zip),
+                                                  archivePath: "/tmp/a.zip", names: ["file.txt"]) else {
+            throw XCTSkip("7z is not installed here")
+        }
+        XCTAssertNil(built.stdin)
+        XCTAssertFalse(built.args.contains("-p"), "an empty -p would make the packer wait for input")
+    }
+
+    func test_aNameBeginningWithADashIsPassedAfterASeparator() throws {
+        // Without `--` the packer reads "-x.txt" as a switch; tar answered "Can't specify both -x and -c"
+        // and packing that folder failed outright, in every format.
+        for format in [PackFormat.tar, .tarGz, .zip, .sevenZip] {
+            guard let built = try? PackEngine.command(for: PackOptions(format: format),
+                                                      archivePath: "/tmp/a.\(format.fileExtension)",
+                                                      names: ["-x.txt", "plain.txt"]) else { continue }
+            let separator = try XCTUnwrap(built.args.firstIndex(of: "--"),
+                                          "\(format.rawValue): no -- before the names: \(built.args)")
+            let dash = try XCTUnwrap(built.args.firstIndex(of: "-x.txt"))
+            XCTAssertLessThan(separator, dash, "\(format.rawValue): the separator must come first")
+        }
+    }
 }
