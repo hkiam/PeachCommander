@@ -128,4 +128,97 @@ final class FTPListingTests: XCTestCase {
         let entries = FTPListParser.parse(text, referenceDate: ref)
         XCTAssertEqual(entries.map(\.name), ["sub", "f"])
     }
+
+    // MARK: - Shapes real servers emit (F-378)
+    //
+    // A battery of documented listing formats, run through the parser to see what it makes of each rather
+    // than to confirm what it was assumed to do. There is no second parser on this machine to compare
+    // against — ftplib does not parse listings and curl needs a server — so these are the shapes
+    // themselves: vsftpd, ProFTPD, wu-ftpd, IIS and MLSD per RFC 3659.
+
+    private let reference = ISO8601DateFormatter().date(from: "2026-08-07T12:00:00Z")!
+
+    func testANameWithSeveralSpacesKeepsThem() {
+        // Splitting the line into fields and rejoining them with one space turned `two  spaces.txt` into
+        // `two spaces.txt` — a name that does not exist on the server, so the file could not be opened or
+        // downloaded. The name has to come from the line itself.
+        let entry = FTPListParser.parseUnix(
+            "-rw-r--r--    1 user     group          10 Mar 03 09:15 two  spaces.txt",
+            referenceDate: reference)
+        XCTAssertEqual(entry?.name, "two  spaces.txt")
+    }
+
+    func testANameWithTrailingSpacesKeepsThem() {
+        let entry = FTPListParser.parseUnix(
+            "-rw-r--r--    1 user     group          10 Mar 03 09:15  leading.txt",
+            referenceDate: reference)
+        XCTAssertEqual(entry?.name, " leading.txt")
+    }
+
+    func testASizeOverFourGigabytesSurvives() {
+        // Not a defect that was found — a defect I briefly believed I had found, because the *probe*
+        // printed an Int64 with a 32-bit format. Pinned down so the next reader does not repeat it.
+        let entry = FTPListParser.parseUnix(
+            "-rw-r--r--    1 user     group  5368709120 Mar 03 09:15 big.iso", referenceDate: reference)
+        XCTAssertEqual(entry?.size, 5_368_709_120)
+    }
+
+    func testAnACLPlusSignInTheModeIsAccepted() {
+        let entry = FTPListParser.parseUnix(
+            "-rw-r--r--+   1 user     group         512 Mar 03 09:15 acl.txt", referenceDate: reference)
+        XCTAssertEqual(entry?.name, "acl.txt")
+        XCTAssertEqual(entry?.size, 512)
+    }
+
+    func testANameThatLooksLikeADateIsNotMistakenForOne() {
+        let entry = FTPListParser.parseUnix(
+            "-rw-r--r--    1 user     group         100 Mar 03 09:15 Mar 03 09:15", referenceDate: reference)
+        XCTAssertEqual(entry?.name, "Mar 03 09:15")
+    }
+
+    func testMLSDFactNamesAreCaseInsensitive() {
+        // RFC 3659 says fact names are case-insensitive, and servers differ on how they write them.
+        let entry = FTPListParser.parseMLSD("Type=file;Size=10;Modify=20260101120000; A.txt")
+        XCTAssertEqual(entry?.name, "A.txt")
+        XCTAssertEqual(entry?.size, 10)
+        XCTAssertFalse(entry?.isDirectory ?? true)
+    }
+
+    func testMLSDFactsInAnyOrderWithExtraFacts() {
+        let entry = FTPListParser.parseMLSD(
+            "modify=20260101120000;perm=adfr;type=file;unique=12U1;size=7; b.txt")
+        XCTAssertEqual(entry?.size, 7)
+        XCTAssertEqual(entry?.name, "b.txt")
+    }
+
+    func testMLSDNameMayContainASemicolon() {
+        // The name begins after the single space that follows the facts, so a semicolon in it is just a
+        // character — splitting the whole line on ";" would lose half the name.
+        XCTAssertEqual(FTPListParser.parseMLSD("type=file;size=5; weird;name.txt")?.name,
+                       "weird;name.txt")
+    }
+
+    func testMLSDSkipsCdirAndPdir() {
+        let entries = FTPListParser.parse("type=cdir;modify=20260101120000; /pub\r\n"
+                                          + "type=pdir;modify=20260101120000; ..\r\n"
+                                          + "type=file;size=1; real.txt\r\n", referenceDate: reference)
+        XCTAssertEqual(entries.map(\.name), ["real.txt"])
+    }
+
+    func testBlankLinesBetweenEntriesAreIgnored() {
+        let entries = FTPListParser.parse(
+            "-rw-r--r--    1 user     group         100 Mar 03 09:15 a.txt\r\n\r\n"
+            + "-rw-r--r--    1 user     group         100 Mar 03 09:15 b.txt\r\n", referenceDate: reference)
+        XCTAssertEqual(entries.map(\.name), ["a.txt", "b.txt"])
+    }
+
+    func testATotalHeaderAloneYieldsNothing() {
+        XCTAssertTrue(FTPListParser.parse("total 0\r\n", referenceDate: reference).isEmpty)
+    }
+
+    func testTheRemainderHelperKeepsInteriorSpacing() {
+        XCTAssertEqual(FTPListParser.remainder(of: "a b  c   d", afterFields: 2), " c   d")
+        XCTAssertEqual(FTPListParser.remainder(of: "a b", afterFields: 5), "")
+        XCTAssertEqual(FTPListParser.remainder(of: "", afterFields: 1), "")
+    }
 }

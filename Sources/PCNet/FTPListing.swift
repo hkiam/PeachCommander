@@ -171,8 +171,10 @@ public enum FTPListParser {
         let month = fields[dateIdx]
         let day = fields[dateIdx + 1]
         let timeOrYear = fields[dateIdx + 2]
-        let nameFields = fields[(dateIdx + 3)...]
-        var name = nameFields.joined(separator: " ")
+        // The name is taken from the *original* line, not rejoined from the split fields: splitting drops
+        // runs of spaces, so `two  spaces.txt` came back as `two spaces.txt` — a name that does not exist
+        // on the server, so the file could not be opened or downloaded (F-378).
+        var name = Self.remainder(of: trimmed, afterFields: dateIdx + 3)
         guard !name.isEmpty, name != ".", name != ".." else { return nil }
 
         var entry = RemoteFileEntry(name: name)
@@ -194,6 +196,24 @@ public enum FTPListParser {
         }
         entry.modified = parseUnixDate(month: month, day: day, timeOrYear: timeOrYear, referenceDate: referenceDate)
         return entry
+    }
+
+    /// Everything after the first `count` whitespace-separated fields, with the spacing *inside* it kept.
+    ///
+    /// A file name may contain any number of consecutive spaces, and a listing gives no way to quote them
+    /// — so the only reading that can be right is "the rest of the line", taken from the line itself.
+    static func remainder(of line: String, afterFields count: Int) -> String {
+        var index = line.startIndex
+        var seen = 0
+        while seen < count, index < line.endIndex {
+            while index < line.endIndex, line[index] == " " { index = line.index(after: index) }
+            guard index < line.endIndex else { break }
+            while index < line.endIndex, line[index] != " " { index = line.index(after: index) }
+            seen += 1
+        }
+        // Exactly one separator is consumed: the spaces after it belong to the name.
+        if index < line.endIndex, line[index] == " " { index = line.index(after: index) }
+        return String(line[index...])
     }
 
     /// UNIX listing date: `Mon DD HH:MM` (recent, year inferred) or `Mon DD YYYY`.
