@@ -19,7 +19,7 @@ Izberite **Ukazi ▸ Pomočnik UI**, da prikažete pomočnika v zasidranem podok
 
 Najhitrejši način uporabe pomočnika je podmeni **UI ▸** v priročnem meniju:
 
-- **Na datoteki** — Povzemi, Razloži, Predlagaj ime, Prevedi v angleščino, Lektoriraj, Zaznaj opravila in Ustvari tabelo.
+- **Na datoteki** — Povzemi, Razloži, Predlagaj ime, Predlagaj komentar, Prevedi v angleščino, Lektoriraj, Zaznaj opravila in Ustvari tabelo.
 - **Na ozadju podokna** — Uredi to mapo in Poišči verjetne dvojnike.
 
 Vsako dejanje **UI ▸** odpre **svoj naslovljen klepet** (na primer *Povzemi – poročilo.txt*), tako da različna opravila ostanejo ločena, namesto da se kopičijo v en dolg pogovor. Ko sami vnesete nekaj v vnosno polje, ta zahteva nadaljuje trenutni klepet.

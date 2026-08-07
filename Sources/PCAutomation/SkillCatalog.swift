@@ -40,6 +40,15 @@ public enum SkillCatalog {
               promptTemplate: "Read \"{name}\" ({path}) and proofread it — list spelling, grammar and clarity issues."),
         .init(id: "detect-tasks", title: "Detect tasks",
               promptTemplate: "Read \"{name}\" ({path}) and list any action items, tasks or deadlines it mentions."),
+        .init(id: "suggest-comment", title: "Suggest a comment",
+              // Unlike the other file skills this one *acts*: it ends in a `set_comment`, which is a
+              // write and so is shown as a plan and confirmed before anything is attached. Asked for
+              // one line because that is what a descript.ion entry is, and what the Comment column
+              // has room to show.
+              promptTemplate: "Read \"{name}\" ({path}) and write a comment for it: one short line, "
+              + "in the language the file is written in, saying what it is and what it is for — the "
+              + "kind of note someone would want to see next to the file name months from now. "
+              + "Attach it with set_comment. Do not change the file itself."),
         .init(id: "make-table", title: "Make a table",
               promptTemplate: "Read the structured data in \"{name}\" ({path}) and turn it into a Markdown table."),
     ]

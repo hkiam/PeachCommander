@@ -19,7 +19,7 @@ Scegliete **Comandi ▸ Assistente AI** per mostrare l'assistente in un pannello
 
 Il modo più rapido per usare l'assistente è il sottomenu **AI ▸** nel menu del clic destro:
 
-- **Su un file** — Riassumi, Spiega, Suggerisci un nome, Traduci in inglese, Correggi, Rileva attività e Crea una tabella.
+- **Su un file** — Riassumi, Spiega, Suggerisci un nome, Suggerisci un commento, Traduci in inglese, Correggi, Rileva attività e Crea una tabella.
 - **Sullo sfondo del pannello** — Organizza questa cartella e Trova probabili duplicati.
 
 Ogni azione **AI ▸** apre una **propria chat con titolo** (ad esempio, *Riassumi – report.txt*), così le diverse attività restano separate invece di accumularsi in un'unica lunga conversazione. Quando digitate voi stessi nel campo di immissione, quella richiesta prosegue la chat corrente.

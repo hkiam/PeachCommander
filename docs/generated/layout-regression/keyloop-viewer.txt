@@ -1,32 +1,35 @@
-window: notes.txt
+window: sub
 fullKeyboardAccess: true
 focused: ListerContainerView
 autorecalculatesKeyViewLoop: true
 initialFirstResponder: ListerContainerView
-focusRefused: 7
+focusRefused: 8
   REFUSES: NSButton | Symbols / Symbols accepts=false hidden=false enabled=false refuses=false
-  REFUSES: NSButton | Format / Format accepts=false hidden=false enabled=false refuses=false
+  REFUSES: NSButton | Minimap / Button accepts=false hidden=false enabled=false refuses=false
   REFUSES: NSButton | Search / search accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSButton | Close accepts=false hidden=true enabled=true refuses=true
+  REFUSES: NSTextField | Directory:  /Users/admin/pc-demo/sub
+
+Name:     sub
+Files:    1
+Folders:  0
+Size:     0.0 KB  (1 bytes) accepts=false hidden=false enabled=true refuses=false
   REFUSES: NSButton | Hide accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSButton | Close accepts=true hidden=false enabled=true refuses=false
   REFUSES: MarksTableView accepts=true hidden=false enabled=true refuses=false
   tab[1]: ListerContainerView
   tab[2]: NSPopUpButton | Auto
   tab[3]: NSButton | Find / Find
-  tab[4]: NSButton | Encoding / Encoding
-  tab[5]: NSButton | Mark All / Mark All
-  tab[6]: NSButton | Marks / Marks
-  tab[7]: NSButton | Save As… / Save As…
-  tab[8]: NSButton | Print… / Print…
-  tab[9]: NSButton | Minimap / Button
+  tab[4]: NSButton | Format / Format
+  tab[5]: NSButton | Encoding / Encoding
+  tab[6]: NSButton | Mark All / Mark All
+  tab[7]: NSButton | Marks / Marks
+  tab[8]: NSButton | Save As… / Save As…
+  tab[9]: NSButton | Print… / Print…
   tab[10]: NSSearchField | Filter symbols
   tab[11]: NSScrollView
   tab[12]: NSClipView
   tab[13]: NSOutlineView | Symbols
-  tab[14]: NSScrollView
-  tab[15]: NSClipView
-  tab[16]: ViewerTextView | File contents
 loopClosed: true
 unreachable: 0
 unlabelled: 0

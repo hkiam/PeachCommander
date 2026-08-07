@@ -19,7 +19,7 @@ Choisissez **Commandes ▸ Assistant IA** pour afficher l'assistant dans un pann
 
 Le moyen le plus rapide d'utiliser l'assistant est le sous-menu **IA ▸** du menu contextuel :
 
-- **Sur un fichier** — Résumer, Expliquer, Suggérer un nom, Traduire en anglais, Relire, Détecter les tâches et Créer un tableau.
+- **Sur un fichier** — Résumer, Expliquer, Suggérer un nom, Suggérer un commentaire, Traduire en anglais, Relire, Détecter les tâches et Créer un tableau.
 - **Sur l'arrière-plan du panneau** — Organiser ce dossier et Trouver les doublons probables.
 
 Chaque action **IA ▸** ouvre son **propre chat intitulé** (par exemple *Résumer – rapport.txt*), afin que les différentes tâches restent séparées au lieu de s'entasser dans une seule longue conversation. Lorsque vous saisissez vous-même dans le champ de saisie, cette requête poursuit le chat en cours.

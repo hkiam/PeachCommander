@@ -19,7 +19,7 @@ Elija **Comandos ▸ Asistente de IA** para mostrar el asistente en un panel aco
 
 La forma más rápida de usar el asistente es el submenú **IA ▸** del menú contextual:
 
-- **Sobre un archivo**: Resumir, Explicar, Sugerir un nombre, Traducir al inglés, Corregir, Detectar tareas y Crear una tabla.
+- **Sobre un archivo**: Resumir, Explicar, Sugerir un nombre, Sugerir un comentario, Traducir al inglés, Corregir, Detectar tareas y Crear una tabla.
 - **Sobre el fondo del panel**: Organizar esta carpeta y Buscar posibles duplicados.
 
 Cada acción **IA ▸** abre su **propio chat con título** (por ejemplo, *Resumir – report.txt*), de modo que las distintas tareas se mantienen separadas en lugar de amontonarse en una única conversación larga. Cuando escribe usted mismo en el campo de entrada, esa petición continúa el chat actual.

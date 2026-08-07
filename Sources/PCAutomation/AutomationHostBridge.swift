@@ -49,6 +49,14 @@ public protocol AutomationHostBridge: Sendable {
     /// `destination`, keeping a CSV header only once. Returns the resolved destination
     /// path, how many files were merged, and how many data rows were written.
     func mergeFiles(sources: [String], destination: String) async throws -> (destination: String, count: Int, rows: Int)
+
+    /// The comment attached to a path, or nil when it has none. Set or clear it (empty clears).
+    ///
+    /// A capability of the *host*, not of the file: where the comment lives (descript.ion beside the
+    /// file, the Finder comment, both) is the host's business, and a core that knew would have to know
+    /// about all of them.
+    func getComment(_ path: String) async throws -> String?
+    func setComment(_ path: String, comment: String?) async throws
 }
 
 public extension AutomationHostBridge {
@@ -62,4 +70,6 @@ public extension AutomationHostBridge {
     func mergeFiles(sources: [String], destination: String) async throws -> (destination: String, count: Int, rows: Int) {
         throw AutomationError.notImplemented("merge_files")
     }
+    func getComment(_ path: String) async throws -> String? { throw AutomationError.notImplemented("get_comment") }
+    func setComment(_ path: String, comment: String?) async throws { throw AutomationError.notImplemented("set_comment") }
 }

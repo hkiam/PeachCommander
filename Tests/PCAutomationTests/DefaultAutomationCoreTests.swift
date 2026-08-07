@@ -15,6 +15,8 @@ actor FakeBridge: AutomationHostBridge {
     var trashed: [String]?
     var madeDir: String?
     var setConfigKV: (String, String)?
+    var comments: [String: String] = ["/a/f.txt": "an existing comment"]
+    var setCommentCalls: [(path: String, comment: String?)] = []
 
     func context() -> AutomationContext {
         contextCalls += 1
@@ -45,6 +47,11 @@ actor FakeBridge: AutomationHostBridge {
     func setConfig(_ key: String, _ value: String) { setConfigKV = (key, value) }
     func moveToTrash(_ paths: [String]) { trashed = paths }
     func deletePermanently(_ paths: [String]) {}
+    func getComment(_ path: String) -> String? { comments[path] }
+    func setComment(_ path: String, comment: String?) {
+        setCommentCalls.append((path, comment))
+        if let comment { comments[path] = comment } else { comments[path] = nil }
+    }
 }
 
 final class DefaultAutomationCoreTests: XCTestCase {

@@ -19,7 +19,7 @@ Válassza a **Parancsok ▸ MI-asszisztens** menüpontot, hogy az asszisztens me
 
 Az asszisztens leggyorsabb használati módja a jobb gombos menü **MI ▸** almenüje:
 
-- **Egy fájlon** – Összefoglalás, Magyarázat, Névjavaslat, Fordítás angolra, Korrektúra, Feladatok felismerése és Táblázat készítése.
+- **Egy fájlon** – Összefoglalás, Magyarázat, Névjavaslat, Megjegyzésjavaslat, Fordítás angolra, Korrektúra, Feladatok felismerése és Táblázat készítése.
 - **A panel hátterén** – Mappa rendszerezése és Valószínű duplikátumok keresése.
 
 Minden **MI ▸** művelet a **saját, címmel ellátott csevegését** nyitja meg (például *Összefoglalás – report.txt*), így a különböző feladatok elkülönülnek, ahelyett hogy egyetlen hosszú beszélgetésbe torlódnának. Amikor Ön saját maga ír a beviteli mezőbe, az a kérés az aktuális csevegést folytatja.

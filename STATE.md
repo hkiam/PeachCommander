@@ -24,6 +24,35 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-07 (last) — The assistant can write a comment (F-380)
+
+The last item from the notes review: let the AI suggest a note for a file. Two tools — `get_comment` and
+`set_comment` — and a right-click action **AI ▸ Suggest a comment** that reads the file and proposes one
+line. Writing is gated like any other write, and the plan the user approves **quotes the words** rather
+than counting them: "write 34 characters to report.csv" is not something anyone can agree to.
+
+**A defect the tools uncovered.** Both go through the host's own comment methods rather than a second
+implementation — and reading that one revealed it was reading `descript.ion` as UTF-8. On the UTF-16 file
+Total Commander writes (F-374) that does not garble, it *throws*: the code fell through to the Finder
+comment and reported "no comment" for every TC-annotated file, while the Comment column beside it showed
+the text. Anything asking through the plugin path — the Notes sidebar, now the assistant — was blind to
+them. One line, and a VM scenario that fails without it (verified by putting the old line back).
+
+**The plugin contribution surface had never been checked.** `menudump` reads the *main* menu, so every
+AI ▸ / Notes / tag entry a plugin adds to the right-click menu was unverified. `plugin-context-menu` now
+dumps a file's context menu; it is how I know the new action is actually reachable.
+
+**Two of my own, both about instruments.** A test file added to a bundle does not run until `xcodegen`
+has seen it — the suite was green and my nine new tests had not executed. And a scenario silently claims
+every report key starting with `<its name>-`, so `notes-sidebar-tc` was adopted by `notes-sidebar` and
+checked before it had run: green alone, red in company. Renamed, and the rule written down where the
+table is defined.
+
+**And a guard that was not enough.** I have a rule not to write `regress.py` without `ast.parse` first.
+It parsed — and the file was broken anyway, because my comment had landed inside `KEYBOARD_REPORTS`,
+leaving a bare `KEYBOARD_` expression that is valid Python and a `NameError` at run time. Parsing is not
+executing.
+
 ## 2026-08-07 (later still) — A note about a *place* in a file (F-379)
 
 Notes were about files. A note about the third line of a config file had to say so in its own text, and

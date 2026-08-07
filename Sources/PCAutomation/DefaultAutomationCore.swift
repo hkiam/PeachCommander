@@ -106,6 +106,14 @@ public actor DefaultAutomationCore: AutomationCore {
             case "recall":
                 let notes = try await bridge.recall((try? a.string("query")) ?? "", limit: a.int("limit", default: 10))
                 return .ok(payload: try json(["notes": notes]))
+            case "get_comment":
+                // "" rather than a missing key: an agent that has to tell "no comment" from "the tool
+                // did not answer" will get it wrong, and the difference does not matter here.
+                return .ok(payload: try json(["comment": try await bridge.getComment(try a.string("path")) ?? ""]))
+            case "set_comment":
+                let text = try a.string("comment")
+                try await bridge.setComment(try a.string("path"), comment: text.isEmpty ? nil : text)
+                return .ok(payload: nil)
             case "list_commands": return .ok(payload: try await bridge.listCommandsJSON())
             case "list_plugins":  return .ok(payload: try await bridge.listPluginsJSON())
             case "open_path":     try await bridge.openPath(try a.string("path")); return .ok(payload: nil)
@@ -144,6 +152,13 @@ public actor DefaultAutomationCore: AutomationCore {
             let n = (try? a.strings("sources"))?.count
             let dst = (try? a.string("destination")) ?? "?"
             return "Merge \(n.map { "\($0)" } ?? "the selected") file(s) into \(dst)."
+        case "set_comment":
+            let path = (try? a.string("path")) ?? "?"
+            let text = (try? a.string("comment")) ?? ""
+            // The text itself, not its length: the user is being asked to approve *these words* being
+            // attached to their file, and "write 34 characters" does not let them decide that.
+            return text.isEmpty ? "Remove the comment on \(path)."
+                                : "Set the comment on \(path) to “\(text)”."
         case "set_config": return "Set \((try? a.string("key")) ?? "?") = \((try? a.string("value")) ?? "?")."
         case "move_to_trash": return "Move \((try? a.strings("paths").count) ?? 0) item(s) to the Trash."
         case "delete_permanently": return "Permanently delete \((try? a.strings("paths").count) ?? 0) item(s). This cannot be undone."

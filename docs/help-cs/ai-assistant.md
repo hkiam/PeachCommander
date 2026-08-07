@@ -19,7 +19,7 @@ Volbou **Příkazy ▸ AI asistent** zobrazíte asistenta v ukotveném panelu na
 
 Nejrychlejším způsobem použití asistenta je podnabídka **AI ▸** v místní nabídce (po kliknutí pravým tlačítkem):
 
-- **Na souboru** — Shrnout, Vysvětlit, Navrhnout název, Přeložit do angličtiny, Zkorigovat, Rozpoznat úkoly a Vytvořit tabulku.
+- **Na souboru** — Shrnout, Vysvětlit, Navrhnout název, Navrhnout komentář, Přeložit do angličtiny, Zkorigovat, Rozpoznat úkoly a Vytvořit tabulku.
 - **Na pozadí panelu** — Uspořádat tuto složku a Najít pravděpodobné duplikáty.
 
 Každá akce **AI ▸** otevře **vlastní pojmenovaný chat** (například *Shrnout – report.txt*), takže různé úlohy zůstávají oddělené, místo aby se hromadily do jedné dlouhé konverzace. Když do vstupního pole napíšete něco sami, tento požadavek pokračuje v aktuálním chatu.

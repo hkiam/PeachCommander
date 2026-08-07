@@ -6414,25 +6414,36 @@ extension MainWindowController: ContributionHost {
     func contribFileComment(_ path: String) -> String? {
         let dir = (path as NSString).deletingLastPathComponent
         let file = dir + "/" + CommentStore.fileName
-        guard let text = try? String(contentsOfFile: file, encoding: .utf8) else {
+        // Through `DescriptionFile.decode`, the same reading the Comment column uses. Reading the file
+        // as UTF-8 instead — which this did — fails outright on the UTF-16 descript.ion Total Commander
+        // writes (F-374): the decode threw, the code fell through to the Finder comment, and a plugin
+        // asking about a TC-annotated file was told there was no comment while the column showed one.
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: file)) else {
             return FinderComment.read(path)          // no descript.ion: fall back to the Finder comment
         }
         let name = (path as NSString).lastPathComponent
-        return DescriptionFile(parsing: text).comment(for: name) ?? FinderComment.read(path)
+        return DescriptionFile(parsing: DescriptionFile.decode(data).text).comment(for: name)
+            ?? FinderComment.read(path)
     }
 
     func contribSetFileComment(_ comment: String?, path: String) {
+        // The plugin ABI is synchronous and has no way to carry a failure back, so this stays
+        // fire-and-forget; the automation tool calls the same method and does report one.
+        Task { @MainActor in try? await self.setFileComment(comment, path: path) }
+    }
+
+    /// Set or clear the `descript.ion` comment for a local path, keeping the Finder comment in step.
+    ///
+    /// One implementation for the plugin ABI and the `set_comment` automation tool: two would drift, and
+    /// the interesting part — the Finder mirror and telling the column to re-read — is easy to forget.
+    func setFileComment(_ comment: String?, path: String) async throws {
         let fs = LocalFS()
         let dir = VFSPath(filesystemId: fs.scheme, path: (path as NSString).deletingLastPathComponent)
         let name = (path as NSString).lastPathComponent
-        Task { @MainActor in
-            try? await CommentStore.setComment(comment, for: name, inDir: dir, on: fs)
-            FinderComment.write(comment, to: path)   // same mirror the host's own editor keeps (F-023)
-            // The Comment column reads separately, so it has to be told.
-            for panel in [self.leftPanelController, self.rightPanelController] {
-                panel?.refreshComments()
-            }
-        }
+        try await CommentStore.setComment(comment, for: name, inDir: dir, on: fs)
+        FinderComment.write(comment, to: path)       // same mirror the host's own editor keeps (F-023)
+        // The Comment column reads separately, so it has to be told.
+        for panel in [leftPanelController, rightPanelController] { panel?.refreshComments() }
     }
 
     func contribOpenPath(_ path: String) {

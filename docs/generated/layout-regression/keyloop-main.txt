@@ -3,8 +3,9 @@ fullKeyboardAccess: true
 focused: PanelListView | File list, left panel
 autorecalculatesKeyViewLoop: true
 initialFirstResponder: NSView
-focusRefused: 67
+focusRefused: 68
   REFUSES: NSButton | » / » accepts=true hidden=true enabled=true refuses=false
+  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
@@ -83,24 +84,25 @@ focusRefused: 67
   tab[10]: NSScrollView
   tab[11]: NSClipView
   tab[12]: NSOutlineView | Folder tree
-  tab[13]: NSScrollView
-  tab[14]: NSClipView
-  tab[15]: PanelListView | File list, left panel
-  tab[16]: NSScroller
-  tab[17]: NSButton | Edit path / Button
-  tab[18]: NSScrollView
-  tab[19]: NSClipView
-  tab[20]: PanelListView | File list, right panel
-  tab[21]: NSScroller
+  tab[13]: NSScroller
+  tab[14]: NSScrollView
+  tab[15]: NSClipView
+  tab[16]: PanelListView | File list, left panel
+  tab[17]: NSScroller
+  tab[18]: NSButton | Edit path / Button
+  tab[19]: NSScrollView
+  tab[20]: NSClipView
+  tab[21]: PanelListView | File list, right panel
   tab[22]: NSScroller
-  tab[23]: NSSegmentedControl | Preview mode
-  tab[24]: NSTextField | command…
-  tab[25]: NSButton | F3 View / F3 View
-  tab[26]: NSButton | F4 Edit / F4 Edit
-  tab[27]: NSButton | F5 Copy / F5 Copy
-  tab[28]: NSButton | F6 Move / F6 Move
-  tab[29]: NSButton | F7 NewFolder / F7 NewFolder
-  tab[30]: NSButton | F8 Delete / F8 Delete
+  tab[23]: NSScroller
+  tab[24]: NSSegmentedControl | Preview mode
+  tab[25]: NSTextField | command…
+  tab[26]: NSButton | F3 View / F3 View
+  tab[27]: NSButton | F4 Edit / F4 Edit
+  tab[28]: NSButton | F5 Copy / F5 Copy
+  tab[29]: NSButton | F6 Move / F6 Move
+  tab[30]: NSButton | F7 NewFolder / F7 NewFolder
+  tab[31]: NSButton | F8 Delete / F8 Delete
 loopClosed: true
 unreachable: 0
 unlabelled: 0
