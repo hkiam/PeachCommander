@@ -39,4 +39,55 @@ final class ArchiveExtractorTests: XCTestCase {
         XCTAssertEqual(try String(contentsOf: dest.appendingPathComponent("docs/guide.txt"), encoding: .utf8), "guide")
         XCTAssertEqual(try String(contentsOf: dest.appendingPathComponent("docs/notes/detail.txt"), encoding: .utf8), "detail")
     }
+
+    // MARK: - A crafted archive must not write outside the destination (F-131)
+    //
+    // "Zip Slip": a member named "../../evil.txt" extracted naively lands outside the folder the user
+    // chose. Nothing here validated it, and the failure is completely silent — the extraction reports
+    // success and a file appears somewhere the user was not looking, possibly overwriting one that
+    // matters.
+
+    func test_extractAll_refusesToWriteAboveTheDestination() async throws {
+        let zipURL = tempDir.appendingPathComponent("evil.zip")
+        try ZipWriter.create(at: zipURL, files: [
+            (path: "harmless.txt", data: Data("fine".utf8)),
+            (path: "../escaped.txt", data: Data("should never be written here".utf8)),
+            (path: "../../deeper.txt", data: Data("nor here".utf8)),
+        ])
+        let fs = try XCTUnwrap(ArchiveFS(archiveFileURL: zipURL, fsID: "evil"))
+        // Two levels of private folder below `tempDir`, so both "../" and "../../" have somewhere to
+        // land that still belongs to this test. Checking the *system* temp directory instead — which is
+        // what the first version did — made this test fail on a file its own earlier, pre-fix run had
+        // left there, and the failure read as "still broken".
+        let middle = tempDir.appendingPathComponent("middle", isDirectory: true)
+        let dest = middle.appendingPathComponent("out", isDirectory: true)
+
+        _ = try? await ArchiveExtractor.extractAll(from: fs, to: dest)
+
+        for outside in ["escaped.txt", "deeper.txt"] {
+            XCTAssertFalse(FileManager.default.fileExists(atPath: middle.appendingPathComponent(outside).path),
+                           "\(outside) was written beside the chosen folder")
+            XCTAssertFalse(FileManager.default.fileExists(atPath: tempDir.appendingPathComponent(outside).path),
+                           "\(outside) was written above the chosen folder")
+        }
+        // …and the harmless member still arrives: refusing the dangerous one must not abandon the rest.
+        XCTAssertEqual(try? String(contentsOf: dest.appendingPathComponent("harmless.txt"), encoding: .utf8),
+                       "fine")
+    }
+
+    func test_extractAll_keepsAnAbsoluteMemberNameInsideTheDestination() async throws {
+        // A member stored as "/etc/passwd" is the same attack with a different spelling.
+        let zipURL = tempDir.appendingPathComponent("abs.zip")
+        try ZipWriter.create(at: zipURL, files: [
+            (path: "/absolute.txt", data: Data("contained".utf8)),
+        ])
+        let fs = try XCTUnwrap(ArchiveFS(archiveFileURL: zipURL, fsID: "abs"))
+        let dest = tempDir.appendingPathComponent("out2", isDirectory: true)
+        _ = try? await ArchiveExtractor.extractAll(from: fs, to: dest)
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: "/absolute.txt"))
+        let landed = FileManager.default.fileExists(atPath: dest.appendingPathComponent("absolute.txt").path)
+        XCTAssertTrue(landed, "it may be refused or contained, but it must not vanish without a trace "
+                      + "while the extraction reports success")
+    }
 }

@@ -65,6 +65,13 @@ jobs:
       - name: Check checksums against independent implementations
         run: ./Tools/check-checksums.sh
 
+      # The archives this app writes, read back by Python's zipfile/tarfile and by `7z t`. The corpus
+      # contains a file whose name begins with a dash, which the packers used to read as a *switch*:
+      # `tar` answered "Can't specify both -x and -c" and packing that folder failed outright — and a
+      # file called "-C" would have made tar change directory and archive something else. Needs no build.
+      - name: Check written archives against independent readers
+        run: ./Tools/check-pack-formats.sh
+
       - name: Build project
         run: |
           ./Tools/build.sh
