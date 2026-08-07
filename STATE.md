@@ -16,6 +16,26 @@
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
+## 2026-08-07 (later) — FTP listings: a name with two spaces was unopenable (F-378)
+
+Last of the parsers on the list, and the one with no second implementation to compare against — `ftplib`
+does not parse listings and `curl` needs a server. So instead of a differential test, a battery of the
+shapes real servers actually emit (vsftpd, ProFTPD, wu-ftpd, IIS, MLSD per RFC 3659), run through the
+parser to see what it makes of each.
+
+**One defect, and it makes a file unreachable.** The Unix branch split the line into fields and rejoined
+the name with single spaces, so `two  spaces.txt` came back as `two spaces.txt` — a name that does not
+exist on the server, so the file could not be opened, downloaded or deleted. A listing has no way to quote
+a name, so the only reading that can be right is "the rest of the line", taken from the line itself.
+
+**And one defect that was mine, not the app's.** The probe printed an `Int64` with `%12d`, a 32-bit
+format, so a 5 GB file appeared as 1 GB and I briefly believed the size parsing truncated. It does not.
+Both the real finding and my false one are now tests, the second so the next reader does not repeat it.
+
+Everything else in the battery was already right, including the trap that has bitten three other parsers
+in this codebase: `FTPListing.parse` normalizes CRLF *before* splitting and says why in a comment. That
+lesson had been learned here already.
+
 ## 2026-08-07 — The archive readers agree with an independent one (F-377)
 
 Third corpus, and this time the answer is that the code is right — which is worth as much as a defect,
