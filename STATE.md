@@ -24,6 +24,30 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-07 (evidence sweep, batch 4) — Undoing a batch rename did nothing
+
+One row (F-170…F-176), one defect, and it is the one that costs a folder rather than a file.
+
+A batch rename can contain a **cycle**: `a → b` together with `b → a`, or a longer rotation. Renamed one
+at a time in the obvious order, the first move destroys the second file. The forward direction knew this
+and staged every rename through a unique temporary name — correct, and it had no test.
+
+**Undo did not stage.** Reversing a swap moved `b` back onto the still-present `a`; both moves failed,
+the log was consumed, and the user was told the rename had been undone while nothing had changed. Two
+phases both ways now, and the 64 existing engine tests were no help here because they all stop at
+computing the new *names* — the losing happens afterwards.
+
+The staging moved out of the panel controller into `RenameBatchEngine`, where it can be tested at all,
+and the panel keeps what is genuinely its business: carrying each file's comment to the new name,
+registering the undo, and — new — **saying when a rename did not happen**. Names the batch could not
+deliver (a target occupied by a file outside the batch, an empty name, a name with a separator in it)
+used to be dropped without a word.
+
+Verified the way it has to be: by putting the single-phase undo back and watching the swap and rotation
+tests fail. Writing the fix and the test together tells you nothing on its own.
+
+Rows without evidence: 78, unchanged — F-175 already carried evidence from batch 1.
+
 ## 2026-08-07 (evidence sweep, batch 3) — F7 and the duplicate finder
 
 Two rows, four defects — and this time they are all about a dialog being told something and doing
