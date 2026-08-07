@@ -45,4 +45,25 @@ final class RenameByEditorTests: XCTestCase {
         }
         XCTAssertEqual(pairs, [RenamePair(old: "a", new: "z")])
     }
+
+    // MARK: - The list comes back from someone else's editor (F-175)
+
+    func testACRLFListDoesNotPutACarriageReturnInTheFileName() {
+        // The user edits this list in whatever editor they have configured, and one that writes CRLF left
+        // a "\r" on the end of every line. `.whitespaces` does not contain a carriage return, so it
+        // survived the trim and went into the new name — legal on macOS, so the rename succeeded and
+        // produced files with an invisible character nothing else matches.
+        let result = RenameByEditor.plan(originals: ["a.txt", "b.txt"],
+                                         editedText: "a.txt\treport.txt\r\nb.txt\tnotes.txt\r\n")
+        guard case .success(let pairs) = result else { return XCTFail("expected success, got \(result)") }
+        XCTAssertEqual(pairs.map(\.new), ["report.txt", "notes.txt"])
+        XCTAssertFalse(pairs.contains { $0.new.contains("\r") }, "no carriage return may reach a file name")
+    }
+
+    func testALoneCarriageReturnListIsAlsoSplit() {
+        let result = RenameByEditor.plan(originals: ["a.txt", "b.txt"],
+                                         editedText: "a.txt\tone.txt\rb.txt\ttwo.txt\r")
+        guard case .success(let pairs) = result else { return XCTFail("expected success, got \(result)") }
+        XCTAssertEqual(pairs.map(\.new), ["one.txt", "two.txt"])
+    }
 }

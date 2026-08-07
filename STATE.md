@@ -24,6 +24,45 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-07 (evidence sweep, batch 1) — Six defects behind five "done" rows
+
+Started working through the 87 rows the inventory calls `done` with nothing backing them, worst-damage
+first. One batch, five rows, six defects — and five of them are the *same* Swift trap.
+
+**`"\r\n"` is one Character.** `split(separator: "\n")` and `$0 == "\n"` therefore do not split a CRLF
+file at all. This codebase already carried that scar twice (`INIDocument`, `LineEndings`), and it turned
+out to be sitting in four more places, every one of them a format that arrives *from Windows*:
+
+  * **`.sfv` checksum files (F-097)** — 0 entries parsed. A Windows-written .sfv verified nothing at all;
+    `.md5` was worse, producing one invented entry whose filename was the rest of the file, so the user's
+    intact files were reported missing. A BOM separately swallowed the first line of any digest file.
+  * **`.crc` split sidecars (F-095)** — parse failed, so `combine` refused the set outright. `.crc` is a
+    Total Commander format, which is precisely why it exists, so this defeated its only purpose.
+  * **`descript.ion` (F-023/F-374)** — one comment survived, holding the whole rest of the file as its
+    text; every other comment vanished. This is a 4DOS format read and written by TC; CRLF is the
+    *ordinary* case. Two rounds of work on this file had never fed it one.
+  * **the rename-by-editor list (F-175)** — `components(separatedBy: "\n")` does split a CRLF file, but
+    leaves the carriage return on each line, and `.whitespaces` does not contain one. Every renamed file
+    got an invisible `\r` at the end of its name. Legal on macOS, so it succeeded quietly and produced
+    names that nothing else matches.
+
+**And one that was not about line endings.** `SplitCombineEngine.combine` read each part whole into
+memory while the type's own comment claimed "streaming keeps memory flat regardless of file size" — for
+the part sizes people actually choose, a CD or a DVD, that is hundreds of megabytes to gigabytes. Now
+streamed, and the comment is true.
+
+**What the sweep is actually worth.** Every one of these lay under a row marked `done`, and none was
+found by reading — the checksum and descript.ion features both already had unit tests, all written with
+LF, which is exactly why the defect survived. Two new gates now feed the real shapes in:
+`Tools/check-checksums.sh` (hashlib/zlib plus checksum files written by the system's own `shasum`/`md5`,
+in LF and in CRLF+BOM) and an extended `check-descript-format.sh` that now checks what the parser *makes*
+of each file, not only that the bytes survive an encoding round trip. Both verified by putting the old
+line back and watching them fail.
+
+**A mistake of mine worth keeping.** My first inventory edit appended to `cells[2]` — but a row starts
+with `|`, so that is the *feature* column, not the notes. Three rows briefly claimed the wrong thing in
+the wrong place. Rows down from 87 to 84.
+
 ## 2026-08-07 (last) — The assistant can write a comment (F-380)
 
 The last item from the notes review: let the AI suggest a note for a file. Two tools — `get_comment` and

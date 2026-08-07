@@ -58,6 +58,13 @@ jobs:
       - name: Check the archive listing against an independent reader
         run: ./Tools/check-archive-listing.sh
 
+      # Checksums against hashlib/zlib, and — the part that was actually broken — against checksum files
+      # written by the system's own shasum and md5. The parser split lines on "\n", which in Swift never
+      # matches a CRLF, so a Windows-written .sfv verified nothing at all while still reporting success
+      # for what it did read. A verification feature that is quietly wrong is worse than none. Needs no build.
+      - name: Check checksums against independent implementations
+        run: ./Tools/check-checksums.sh
+
       - name: Build project
         run: |
           ./Tools/build.sh

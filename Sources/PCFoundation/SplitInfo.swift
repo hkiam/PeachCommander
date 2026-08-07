@@ -31,7 +31,12 @@ public struct SplitInfo: Equatable, Sendable {
     /// Parse a .crc file. Returns nil if the required keys are missing/invalid.
     public static func parse(_ text: String) -> SplitInfo? {
         var values: [String: String] = [:]
-        for line in text.split(whereSeparator: { $0 == "\n" || $0 == "\r" }) {
+        // `isNewline`, not a comparison against "\n" and "\r": Swift treats a CRLF as one Character
+        // equal to neither, so a sidecar written on Windows split into nothing and `combine` refused the
+        // file outright with `badCRCFile` — and .crc is a Total Commander format, so Windows is exactly
+        // where these files come from. A leading byte-order mark would likewise hide the `filename` key.
+        for rawLine in text.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline) {
+            let line = rawLine.hasPrefix("\u{FEFF}") ? rawLine.dropFirst() : rawLine
             guard let eq = line.firstIndex(of: "=") else { continue }
             let key = line[line.startIndex..<eq].trimmingCharacters(in: .whitespaces).lowercased()
             let value = line[line.index(after: eq)...].trimmingCharacters(in: .whitespaces)

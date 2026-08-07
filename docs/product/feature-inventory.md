@@ -95,9 +95,9 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-092 | Copy names/paths to clipboard (Ctrl+Shift+C etc., cm_CopyNames…) | Full set of cm_Copy*ToClip | SPEC-014 | I13 | P2 | done |
 | F-093 | Create/edit symlink dialog; hardlink; macOS alias creation | TC: NTFS links -> POSIX equivalents | SPEC-004 | I17 | P2 | done |
 | F-094 | Change attributes dialog (Ctrl+Enter? no: Files>Change attr): perms, flags, dates, recursive, plugin fields | incl. chmod octal + owner if privileged; ev: symbol:AttributesDialog ev: symbol:PosixPermissions | SPEC-016 | I17 | P1 | done |
-| F-095 | Split file (Files>Split) into N-byte parts + .crc; Combine parts | | SPEC-016 | I17 | P2 | done |
+| F-095 | Split file (Files>Split) into N-byte parts + .crc; Combine parts | split streams; combine now streams the parts too rather than holding each one whole in memory; a .crc sidecar written on Windows (CRLF, optional BOM) used to be rejected outright, which defeated the format's whole purpose; round trips pinned for empty files, exact division, one-byte parts, missing parts and non-ASCII names; ev: symbol:SplitCombineEngine ev: test:SplitCombineEngineTests | SPEC-016 | I17 | P2 | done |
 | F-096 | Encode/decode: Base64/UUE/MIME/XXE; binary-safe | ev: symbol:Base64Codec ev: symbol:UUCodec ev: test:Base64CodecTests | SPEC-016 | I17 | P2 | done |
-| F-097 | Create/verify checksums: CRC32, MD5, SHA-1/256/512, BLAKE3; .sfv/.md5 files | | SPEC-016 | I17 | P1 | done |
+| F-097 | Create/verify checksums: CRC32, MD5, SHA-1/256/512, BLAKE3; .sfv/.md5 files | the digests are checked against Python's hashlib and zlib.crc32, and the parser against checksum files written by the system's own shasum and md5 — including the CRLF+BOM form, which used to parse to nothing so a Windows-written .sfv verified no files at all; BLAKE3 is *not* implemented (crc32/md5/sha1/sha256/sha512 are); ev: file:Tools/check-checksums.sh ev: test:ChecksumFileTests ev: test:ChecksumEngineTests | SPEC-016 | I17 | P1 | done |
 | F-098 | Print file lists / print file (via macOS print) | Export list as txt/csv too | SPEC-016 | I17 | P3 | done |
 | F-099 | Privileged operations: prompt for admin when EPERM (SMJobBless/askpass) | chmod, delete and saving a root-owned file in the editor retry as administrator; copy and move do not; ev: symbol:PrivilegedRunner ev: symbol:offerPrivilegedSave | SPEC-004 | I18 | P2 | partial |
 | F-100 | Long-path, weird-name safety: NFC/NFD unicode, colon/slash mapping, >1023 chars | macOS specifics; tests; ev: test:PathResolverTests ev: symbol:precomposedStringWithCanonicalMapping | SPEC-004 | I04 | P1 | done |
@@ -161,7 +161,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-172 | Content-plugin fields as placeholders `[=plugin.field]` | | SPEC-012 | I16 | P2 | done |
 | F-173 | Search & replace incl. regex + subst, case conversion modes | Upper/lower/first-letter rules | SPEC-009 | I11 | P1 | done |
 | F-174 | Edit names via external editor (export list, re-import) | ev: test:RenameByEditorTests | SPEC-009 | I11 | P2 | done |
-| F-175 | Undo rename (log kept), rename result log, collision handling | | SPEC-009 | I11 | P1 | done |
+| F-175 | Undo rename (log kept), rename result log, collision handling | the rename list comes back from the user's own editor, and a CRLF one used to leave a carriage return in every new file name — legal on macOS, so it succeeded silently; ev: symbol:RenameByEditor ev: test:RenameByEditorTests | SPEC-009 | I11 | P1 | done |
 | F-176 | Save/load rename presets | | SPEC-009 | I11 | P2 | done |
 
 ## 9. Compare & synchronize
