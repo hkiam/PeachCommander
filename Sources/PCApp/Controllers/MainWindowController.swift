@@ -201,6 +201,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Content-field registry (rebuilt when enabled PDX plugins change) + the
     /// plugin fields available as columns.
     private var contentFieldRegistry = ContentFieldRegistry()
+    /// The "<path>#L<line>" the viewer last asked for a note about, published through the plugin
+    /// context for the length of one command dispatch (F-379).
+    fileprivate var pendingNoteTarget: String?
     private var availablePluginFields: [ColumnSpec] = []
     private var columnsWindow: ColumnsConfigWindowController?
     private var processTreeWindow: ProcessTreeWindowController?
@@ -1145,6 +1148,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
         contentFieldRegistry = registry
         availablePluginFields = pluginFields
+        installNoteBridge(registry: registry)
         let resolve: (String, String) async -> String? = { fieldID, path in
             await registry.value(qualifiedID: fieldID, forFileAt: URL(fileURLWithPath: path)).display
         }
@@ -6470,7 +6474,46 @@ extension MainWindowController: ContributionHost {
         ViewContainerRegistry.shared.refresh(host: self)
     }
 
+    /// Let the viewer reach the Notes plugin, if it is installed (F-379).
+    ///
+    /// Installed from here because the registry is rebuilt whenever the enabled plugins change, and the
+    /// bridge must then point at the new one; disabling the plugin clears it and the viewer loses the
+    /// command and the group with it.
+    private func installNoteBridge(registry: ContentFieldRegistry) {
+        let fieldID = "\(Self.noteProviderSlug).\(Self.noteLinesFieldID)"
+        guard registry.allQualifiedFields().contains(where: { $0.qualifiedID == fieldID }) else {
+            ListerNoteBridge.shared = nil
+            return
+        }
+        ListerNoteBridge.shared = ListerNoteBridge(
+            annotatedLines: { path in
+                let display = await registry.value(qualifiedID: fieldID,
+                                                   forFileAt: URL(fileURLWithPath: path)).display
+                return ContentFieldValues.lineNumbers(display)
+            },
+            editNote: { [weak self] target in
+                guard let self else { return }
+                // Published through the ordinary context, which is how every other plugin reads host
+                // state; the plugin picks it up in its own command handler and stores the note under
+                // that key, so the overview and the search find it without knowing about viewers.
+                self.pendingNoteTarget = target
+                Task { @MainActor in
+                    // Cleared as soon as the command has read it: a target left standing would send the
+                    // *next* plain "edit note" to a line in a file the user is no longer looking at.
+                    defer { self.pendingNoteTarget = nil }
+                    _ = await ContributionRegistry.shared.dispatch("plugin.notes.edit", host: self)
+                }
+            })
+    }
+
+    /// The Notes plugin's provider slug and its "Note lines" field id (see `PDXContentProvider.fieldID`).
+    private static let noteProviderSlug = "notes"
+    private static let noteLinesFieldID = "note_lines"
+
     func contribAugmentContext(_ context: inout ContributionContext) {
+        // Only meaningful for the one command that reads it, and cleared by whoever set it — a stale
+        // target would silently send the next plain "edit note" to a line in some other file.
+        context.set("noteTarget", pendingNoteTarget)
         context.set("diskMapActive", diskMapRoot != nil)
         context.set("sidebarViewRoot", diskMapRoot)
         context.set("dir", cachedActiveCwd)

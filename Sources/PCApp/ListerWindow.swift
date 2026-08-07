@@ -157,6 +157,10 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     func automationSummary() -> String {
         var lines = ["status=\(statusLabel.stringValue)"]
         func walk(_ view: NSView) {
+            // Hidden subtrees are skipped: a dump that lists a label nobody can see cannot be used to
+            // check what is on screen. The marks panel keeps its "no marks" placeholder in the tree and
+            // merely hides it, so without this the dump said both "Notes (1)" and "No marks".
+            guard !view.isHidden else { return }
             if let field = view as? NSTextField, !field.stringValue.isEmpty {
                 lines.append("label=\(field.stringValue.replacingOccurrences(of: "\n", with: " ⏎ ").prefix(200))")
             } else if let text = view as? NSTextView, !text.string.isEmpty {
@@ -165,8 +169,31 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             for sub in view.subviews { walk(sub) }
         }
         if let root = window?.contentView { walk(root) }
+        // The marks panel's model, not its pixels: the notes group (F-379) is built from a plugin field,
+        // and walking the view tree would only see it when the panel happens to be open and tall enough.
+        for group in marksPanelGroups() {
+            lines.append("marksgroup=\(group.term) count=\(group.occurrences.count)")
+            for occurrence in group.occurrences {
+                lines.append("  mark line=\(occurrence.line) text=\(occurrence.text.prefix(80))")
+            }
+        }
         return lines.joined(separator: "\n") + "\n"
     }
+
+    /// Open the docked marks panel, so a dump reads what is on screen and not only what is in the model.
+    func automationShowMarks() { marks.show() }
+
+    /// Put the caret at the start of a 1-based line, so a scenario can exercise the *real* "which line
+    /// am I on" path rather than a shortcut around it.
+    func automationSetCaret(line: Int) {
+        guard let tv = textContentView else { return }
+        let starts = EditorLineIndex(text: tv.string as NSString).starts
+        guard starts.indices.contains(line - 1) else { return }
+        tv.setSelectedRange(NSRange(location: starts[line - 1], length: 0))
+    }
+
+    /// Ask for a note about the line the caret is on, exactly as the menu item does.
+    func automationNoteForCurrentLine() { docNote() }
     #endif
     private let scrollView = NSScrollView()
     private var contentView: NSView?
@@ -569,7 +596,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         // Recompute the symbol outline + minimap once the new content view is in
         // place (populate for code/text, clear for other modes), and re-validate the
         // toolbar: most actions only apply to some representations.
-        defer { refreshSymbols(); refreshMinimap(); refreshActionEnablement() }
+        defer { refreshSymbols(); refreshMinimap(); refreshActionEnablement(); refreshAnnotations() }
 
         // The content view (and its marks) is about to be replaced — collapse
         // the marks panel so it doesn't show stale entries for the old view.
@@ -1410,6 +1437,80 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     }
 
     /// Scroll the read-only NSTextView content to a 1-based line.
+    // MARK: - Notes bound to a line (F-379)
+
+    /// Lines of the current file that carry a note, from the Notes plugin's "Note lines" content field.
+    ///
+    /// Through the content-field mechanism rather than a new host↔plugin call: "a plugin knows something
+    /// about this file" already has exactly one way of being asked, and a note bound to a line is that.
+    /// A host without the Notes plugin installed simply gets an empty list and shows no group.
+    private var annotatedLines: [Int] = []
+
+    /// The line the caret is on (1-based); for the views that have no caret, the first visible one.
+    ///
+    /// Through `EditorLineIndex` rather than counting line breaks here: it already speaks the UTF-16
+    /// offsets `selectedRange` uses, and it gets the end of the text right — a caret one past the last
+    /// character is on the last line, not on a line after it.
+    private func currentLineNumber() -> Int {
+        if let tv = textContentView {
+            let ns = tv.string as NSString
+            return EditorLineIndex(text: ns).line(containing: min(tv.selectedRange().location, ns.length))
+        }
+        return (contentView as? ListerLineAddressable)?.firstVisibleLine ?? 1
+    }
+
+    /// Ask the Notes plugin which lines of this file are annotated, and offer them in the marks panel.
+    private func refreshAnnotations() {
+        guard let bridge = ListerNoteBridge.shared, files.indices.contains(index) else {
+            annotatedLines = []
+            wantsAnnotationPanel = false
+            return
+        }
+        let path = files[index]
+        Task { @MainActor [weak self] in
+            let lines = await bridge.annotatedLines(path)
+            guard let self, self.files.indices.contains(self.index), self.files[self.index] == path,
+                  lines != self.annotatedLines || self.wantsAnnotationPanel else { return }
+            self.annotatedLines = lines
+            // Open the panel only when the user asked for a note and one is now there; otherwise a file
+            // that happens to carry annotations would rearrange the window on every open.
+            let asked = self.wantsAnnotationPanel
+            self.wantsAnnotationPanel = false
+            if asked, !lines.isEmpty {
+                self.marks.show()
+            } else if !self.marks.isHidden {
+                self.marks.reload()
+            }
+        }
+    }
+
+    /// Write a note about the line the caret is on (F-379).
+    @objc func docNote() {
+        guard let bridge = ListerNoteBridge.shared, files.indices.contains(index) else {
+            NSSound.beep()
+            return
+        }
+        bridge.editNote("\(files[index])#L\(currentLineNumber())")
+        // The note editor is its own window, not a sheet, so there is nothing to wait for here: the
+        // annotation appears when the user comes back to the viewer (`windowDidBecomeKey`). Showing
+        // the panel now would show it empty.
+        wantsAnnotationPanel = true
+    }
+
+    /// Set when the user asked for a note, so the panel opens once the note actually exists.
+    private var wantsAnnotationPanel = false
+
+    func windowDidBecomeKey(_ notification: Notification) {
+        // The note editor is a separate window; coming back here is the moment a new note can be shown.
+        refreshAnnotations()
+    }
+
+    /// Bring a 1-based line into view in whichever representation is showing.
+    private func revealLine(_ line: Int) {
+        if let addressable = contentView as? ListerLineAddressable { addressable.scroll(toLine: line) }
+        else if textContentView != nil { scrollTextViewToLine(line) }
+    }
+
     private func scrollTextViewToLine(_ line: Int) {
         guard let tv = textContentView else { return }
         let ns = tv.string as NSString
@@ -1514,6 +1615,31 @@ protocol ListerScrollable: AnyObject {
     func scroll(toByteOffset offset: Int64)
 }
 
+/// How the viewer reaches the note plugin (F-379).
+///
+/// The viewer is opened from three places and holds no reference to the main window, so the host
+/// installs this once instead of every call site growing a parameter. Nothing is installed when the
+/// Notes plugin is absent, and the viewer then behaves exactly as it did before: no group, no command.
+@MainActor
+struct ListerNoteBridge {
+    /// The lines of `path` that carry a note, ascending.
+    let annotatedLines: (String) async -> [Int]
+    /// Open the note editor for a target key ("<path>#L<line>"), creating the note if it is new.
+    let editNote: (String) -> Void
+
+    static var shared: ListerNoteBridge?
+}
+
+/// A content view addressable by line number — what a note bound to a line needs (F-379).
+///
+/// Separate from `ListerScrollable` because the hex view scrolls too and has rows, not lines: asking it
+/// for line 40 would silently mean something else.
+protocol ListerLineAddressable: AnyObject {
+    func scroll(toLine line: Int)
+    /// The topmost visible line, 1-based — the nearest thing to a caret in a view that only scrolls.
+    var firstVisibleLine: Int { get }
+}
+
 /// A content view whose full text can be copied to the clipboard.
 protocol ViewerTextProviding: AnyObject {
     var copyText: String { get }
@@ -1555,7 +1681,7 @@ final class ViewerTextView: NSTextView, ViewerTextProviding {
 }
 
 /// Virtual-scrolling text view (CoreText), backed by a bounded prefix of the file.
-final class TextListerView: NSView, ListerScrollable, ViewerTextProviding, ViewerMarkable {
+final class TextListerView: NSView, ListerScrollable, ListerLineAddressable, ViewerTextProviding, ViewerMarkable {
     private let lineHeight: CGFloat = 15
     private let font = TextListerView.monoFont
     private let charW: CGFloat
@@ -1749,6 +1875,11 @@ final class TextListerView: NSView, ListerScrollable, ViewerTextProviding, Viewe
         let idx = max(0, min(line - 1, lineStarts.count - 1))
         scrollToVisible(NSRect(x: 0, y: CGFloat(idx) * lineHeight, width: 1, height: lineHeight * 3))
     }
+
+    var firstVisibleLine: Int {
+        guard lineHeight > 0, !lineStarts.isEmpty else { return 1 }
+        return min(Int(visibleRect.minY / lineHeight) + 1, lineStarts.count)
+    }
 }
 
 /// Virtual-scrolling hex view — renders only visible rows from the FileSlice.
@@ -1932,7 +2063,7 @@ final class XMLOutlineController: NSObject, NSOutlineViewDataSource, NSOutlineVi
 }
 
 /// Text view that colours source code using SyntaxHighlighter tokens.
-final class CodeListerView: NSView, ListerScrollable, ViewerTextProviding, ViewerMarkable {
+final class CodeListerView: NSView, ListerScrollable, ListerLineAddressable, ViewerTextProviding, ViewerMarkable {
     private let lineHeight: CGFloat = 15
     private let font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
     private let charW: CGFloat
@@ -2074,6 +2205,11 @@ final class CodeListerView: NSView, ListerScrollable, ViewerTextProviding, Viewe
         let idx = max(0, min(line - 1, lineRanges.count - 1))
         scrollToVisible(NSRect(x: 0, y: CGFloat(idx) * lineHeight, width: 1, height: lineHeight * 3))
     }
+
+    var firstVisibleLine: Int {
+        guard lineHeight > 0, !lineRanges.isEmpty else { return 1 }
+        return min(Int(visibleRect.minY / lineHeight) + 1, lineRanges.count)
+    }
 }
 
 // MARK: - Contextual menu-bar menu (TODOS #189)
@@ -2090,6 +2226,9 @@ extension ListerWindowController: WindowContextMenuProviding {
         c.marks = true
         c.saveAs = true; c.printable = true   // F-121
         c.multiFile = files.count > 1
+        // Only offered when the Notes plugin is installed: a menu item that can do nothing is worse
+        // than no menu item.
+        c.note = ListerNoteBridge.shared != nil
         return c
     }
 
@@ -2156,6 +2295,11 @@ extension ListerWindowController: WindowContextMenuProviding {
             return canGoTo
         case DocumentAction.nextFile, DocumentAction.prevFile:
             return files.count > 1
+        case DocumentAction.note:
+            // Needs a line to bind to, so the same representations that can be addressed by line —
+            // in a hex dump "line 40" would mean a different place than the one on screen.
+            return ListerNoteBridge.shared != nil
+                && (textContentView != nil || contentView is ListerLineAddressable)
         default:
             return true   // Save As, Print, representation switching, reload…
         }
@@ -2262,17 +2406,63 @@ extension ListerWindowController {
 
 extension ListerWindowController: MarksPanelHost {
     func marksPanelGroups() -> [MarksGroupVM] {
-        textMarks?.panelGroups() ?? markable?.panelGroups() ?? []
+        let backend = textMarks?.panelGroups() ?? markable?.panelGroups() ?? []
+        guard !annotatedLines.isEmpty else { return backend }
+        // Annotations first: they were written on purpose and outlive the session, unlike a search's
+        // marks. Group id -1 keeps them out of the backend's numbering.
+        // One index for the whole group: building it per occurrence would rescan the document once per
+        // note, which is the sort of thing nobody notices until a 50 MB log has forty of them.
+        let snippets = lineSnippets(for: annotatedLines)
+        let notes = MarksGroupVM(id: Self.notesGroupID, term: String(localized: "Notes"),
+                                 color: .systemYellow,
+                                 occurrences: zip(annotatedLines, snippets).map {
+                                     MarksOccurrenceVM(line: $0, text: $1)
+                                 })
+        return [notes] + backend
     }
+
+    /// Group id for the annotations, outside the backend's range.
+    private static let notesGroupID = -1
+
+    /// A little of each annotated line, so the list reads as text rather than as numbers.
+    ///
+    /// Only the text representations can answer this; for the others the notes still appear, with their
+    /// line numbers and no preview, which is better than hiding them.
+    private func lineSnippets(for lines: [Int]) -> [String] {
+        if let tv = textContentView {
+            let ns = tv.string as NSString
+            let starts = EditorLineIndex(text: ns).starts
+            return lines.map { line in
+                guard starts.indices.contains(line - 1) else { return "" }
+                let range = ns.lineRange(for: NSRange(location: starts[line - 1], length: 0))
+                return ns.substring(with: range).trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+        }
+        guard let view = contentView as? ViewerTextProviding else { return lines.map { _ in "" } }
+        // `isNewline` rather than splitting on "\n": in Swift a CRLF is a single Character, so splitting
+        // on the line feed alone would leave a carriage return on the end of every line.
+        let text = view.copyText.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline)
+        return lines.map { text.indices.contains($0 - 1) ? String(text[$0 - 1]) : "" }
+    }
+
     func marksPanelReveal(groupID: Int, occurrenceIndex: Int) {
+        if groupID == Self.notesGroupID {
+            guard annotatedLines.indices.contains(occurrenceIndex) else { return }
+            revealLine(annotatedLines[occurrenceIndex])
+            return
+        }
         if let tm = textMarks { tm.reveal(groupID: groupID, occurrenceIndex: occurrenceIndex) }
         else { markable?.reveal(groupID: groupID, occurrenceIndex: occurrenceIndex) }
     }
     func marksPanelRemoveOccurrence(groupID: Int, occurrenceIndex: Int) {
+        // A note is not a search hit: it was written on purpose, and the panel's close button must not
+        // be a way to lose it by accident. Removing it happens in the note editor.
+        if groupID == Self.notesGroupID { NSSound.beep(); return }
         if let tm = textMarks { tm.removeOccurrence(groupID: groupID, at: occurrenceIndex) }
         else { markable?.removeOccurrence(groupID: groupID, at: occurrenceIndex) }
     }
     func marksPanelRemoveGroup(groupID: Int) {
+        if groupID == Self.notesGroupID { annotatedLines = []; marks.reload(); return }
         if let tm = textMarks { tm.removeGroup(groupID) } else { markable?.removeGroup(groupID) }
     }
     func marksPanelClearAll() { backendClearAll() }

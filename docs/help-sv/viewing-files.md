@@ -25,6 +25,14 @@ Peach Commander har en inbyggd visare som låter dig titta inuti en fil utan att
 - Om texten ser förvrängd ut, klicka på Teckenkodning i verktygsfältet (eller tryck på E) för att bläddra genom teckenkodningar tills den läses korrekt; det automatiska läget brukar träffa rätt.
 - Tryck på W för att växla radbrytning för långa rader.
 
+## Anteckningar om en rad
+
+Om insticksmodulen Anteckningar är installerad kan en anteckning handla om en viss rad i en fil i stället för om hela filen.
+
+- Ställ markören på raden och välj **Visa ▸ Anteckning för denna rad…** (Cmd+Skift+N). Anteckningsredigeraren öppnas med filnamnet och radnumret i titeln.
+- Rader som redan har en anteckning visas som gruppen **Anteckningar** i märkespanelen längst ned i fönstret, bredvid sökträffarna. Cmd+Ctrl+M öppnar panelen; dubbelklicka på en post för att hoppa till raden.
+- Anteckningarna ligger tillsammans med alla andra, så anteckningsöversikten och Sök filer hittar dem på samma sätt. Radering sker i anteckningsredigeraren — panelens stängknapp döljer bara gruppen.
+
 ## Quick View och Quick Look
 
 Quick View visar en direkt förhandsvisning i den panel du *inte* använder, så att du kan fortsätta bläddra på ena sidan medan du förhandsvisar på den andra.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Visa endast filen under markören (ignorera markerade filer) | Shift+F3 |
 | Öppna i en extern visare | Option+F3 |
 | Sök inuti visaren | Ctrl+F |
+| Anteckning för raden under markören | Cmd+Skift+N |
+| Visa eller dölj märkespanelen | Cmd+Ctrl+M |
 | Nästa / föregående träff | F3 / Shift+F3 |
 | Quick View i den andra panelen | Ctrl+Q |
 | Quick Look (macOS-förhandsvisning) | Cmd+Y |

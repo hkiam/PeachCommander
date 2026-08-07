@@ -12,7 +12,7 @@
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-193 an FTP side for the sync, F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 156 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; 88 older `done` rows still carry none. |
-| Last updated | 2026-08-06 |
+| Last updated | 2026-08-07 |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
@@ -23,6 +23,37 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-07 (later still) — A note about a *place* in a file (F-379)
+
+Notes were about files. A note about the third line of a config file had to say so in its own text, and
+nothing led back from the line to the note. Now a note's key may carry a position — `<path>#L<line>` — and
+that is the whole of the storage change: to the note store it is still just a key, so the overview, the
+search and the sidebar found it without being told anything.
+
+**The viewer knows nothing about notes.** It asks the Notes plugin for a content field called "Note
+lines" — the same mechanism that puts a plugin's column in a panel — and offers whatever comes back as a
+group in its marks panel, beside the search hits. Writing one works the same way in reverse: the host
+publishes `noteTarget` in the ordinary plugin context and invokes the plugin's own edit command. Uninstall
+the plugin and the menu item and the group are simply not there; no code in the viewer changes.
+
+**Four things I had wrong before the build agreed with me.** `ContributionRegistry.invoke` and
+`ContentFieldRegistry.shared` do not exist (`dispatch(_:host:)` and a per-window instance do), the two
+viewer views have no `firstVisibleLine`, and a stored property cannot live in an extension. Guessing an
+API and building is cheap; the point is not to write the *tests* against a guess.
+
+**And one I would not have found by reading.** My hand-rolled "which line is the caret on" was wrong at
+the end of the text — the last position counted as a line of its own. `EditorLineIndex` already answers
+exactly this question and already has a test for that case, so the right fix was to delete my version.
+
+**A layout conflict that had been waiting for someone to open the panel with a tab in it.** The marks
+panel's tab strip is 28 points tall and reserved 17 of them for a scroll bar it never needs, leaving 11
+for a 22-point tab; AppKit broke the tab's height and logged it every time. `scrollerStyle = .overlay`.
+Found because the new scenario is the first that opens that panel with a group in it.
+
+**The dump now skips hidden views.** It used to report the marks panel's "No marks" placeholder *and*
+the group next to it, because the placeholder is hidden rather than removed — so a dump could not be used
+to check what is on screen. Both new scenarios read the rendered labels as well as the model behind them.
 
 ## 2026-08-07 (later) — FTP listings: a name with two spaces was unopenable (F-378)
 

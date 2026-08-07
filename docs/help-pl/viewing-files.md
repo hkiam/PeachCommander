@@ -25,6 +25,14 @@ Peach Commander ma wbudowaną przeglądarkę, która pozwala zajrzeć do wnętrz
 - Jeśli tekst wygląda na zniekształcony, kliknij Kodowanie na pasku narzędzi (lub naciśnij E), aby przełączać kodowania tekstu, dopóki nie odczyta się poprawnie; ustawienie automatyczne zwykle trafia.
 - Naciśnij W, aby przełączyć zawijanie wierszy dla długich linii.
 
+## Notatki do wiersza
+
+Jeśli wtyczka Notatki jest zainstalowana, notatka może dotyczyć konkretnego wiersza pliku, a nie całego pliku.
+
+- Ustaw kursor w wierszu i wybierz **Widok ▸ Notatka do tego wiersza…** (Cmd+Shift+N). Edytor notatek otworzy się z nazwą pliku i numerem wiersza w tytule.
+- Wiersze, które już mają notatkę, pojawiają się jako grupa **Notatki** w panelu znaczników na dole okna, obok wyników wyszukiwania. Cmd+Ctrl+M otwiera panel; dwukrotne kliknięcie pozycji przenosi do wiersza.
+- Same notatki leżą razem ze wszystkimi innymi, więc przegląd notatek i Znajdź pliki odnajdują je tak samo. Usuwa się je w edytorze notatek — przycisk zamknięcia w panelu jedynie ukrywa grupę.
+
 ## Szybki podgląd i Quick Look
 
 Szybki podgląd pokazuje podgląd na żywo w panelu, którego *nie* używasz, dzięki czemu możesz kontynuować przeglądanie po jednej stronie, podglądając po drugiej.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Wyświetl tylko plik pod kursorem (ignoruj oznaczone pliki) | Shift+F3 |
 | Otwórz w zewnętrznej przeglądarce | Option+F3 |
 | Znajdź w przeglądarce | Ctrl+F |
+| Notatka do wiersza pod kursorem | Cmd+Shift+N |
+| Pokaż lub ukryj panel znaczników | Cmd+Ctrl+M |
 | Następne / poprzednie dopasowanie | F3 / Shift+F3 |
 | Szybki podgląd w drugim panelu | Ctrl+Q |
 | Quick Look (podgląd macOS) | Cmd+Y |

@@ -25,6 +25,14 @@ Peach Commander má vestavěný prohlížeč, který umožňuje nahlédnout dovn
 - Pokud text vypadá zkomoleně, klepněte na Kódování na panelu nástrojů (nebo stiskněte E) pro procházení kódování textu, dokud se nečte správně; automatické nastavení to obvykle trefí.
 - Stiskem W přepnete zalamování slov u dlouhých řádků.
 
+## Poznámky k řádku
+
+Je-li nainstalován modul Poznámky, může se poznámka týkat konkrétního řádku souboru, nikoli souboru jako celku.
+
+- Umístěte kurzor na řádek a zvolte **Zobrazit ▸ Poznámka k tomuto řádku…** (Cmd+Shift+N). Editor poznámek se otevře s názvem souboru a číslem řádku v titulku.
+- Řádky, které již poznámku mají, se objeví jako skupina **Poznámky** v panelu značek dole v okně, vedle značek z hledání. Panel otevřete klávesou Cmd+Ctrl+M; dvojklikem na položku přejdete na daný řádek.
+- Poznámky samy leží mezi všemi ostatními, takže je přehled poznámek i Najít soubory najdou stejně jako kterékoli jiné. Mazání se provádí v editoru poznámek — tlačítko zavření v panelu skupinu jen skryje.
+
 ## Rychlý náhled a Quick Look
 
 Rychlý náhled zobrazuje živý náhled v panelu, který *nepoužíváte*, takže můžete pokračovat v prohlížení na jedné straně a zobrazovat náhled na druhé.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Zobrazit jen soubor pod kurzorem (ignorovat označené soubory) | Shift+F3 |
 | Otevřít v externím prohlížeči | Option+F3 |
 | Hledat v prohlížeči | Ctrl+F |
+| Poznámka k řádku pod kurzorem | Cmd+Shift+N |
+| Zobrazit nebo skrýt panel značek | Cmd+Ctrl+M |
 | Další / předchozí shoda | F3 / Shift+F3 |
 | Rychlý náhled v druhém panelu | Ctrl+Q |
 | Quick Look (náhled macOS) | Cmd+Y |

@@ -25,6 +25,14 @@ Peach Commander ima vgrajen pregledovalnik, ki omogoča, da pogledate v datoteko
 - Če je besedilo videti popačeno, kliknite Kodiranje v orodni vrstici (ali pritisnite E), da se pomikate skozi kodiranja besedila, dokler se ne prebere pravilno; samodejna nastavitev to običajno zadene prav.
 - Pritisnite W za preklop preloma besed za dolge vrstice.
 
+## Zapiski k vrstici
+
+Če je vtičnik Zapiski nameščen, se zapisek lahko nanaša na določeno vrstico datoteke in ne na datoteko kot celoto.
+
+- Postavite kazalec na vrstico in izberite **Pogled ▸ Zapisek za to vrstico…** (Cmd+Shift+N). Urejevalnik zapiskov se odpre z imenom datoteke in številko vrstice v naslovu.
+- Vrstice, ki zapisek že imajo, se pokažejo kot skupina **Zapiski** v plošči oznak na dnu okna, poleg zadetkov iskanja. Ploščo odprete s Cmd+Ctrl+M; dvojni klik na vnos skoči na vrstico.
+- Zapiski sami ležijo med vsemi drugimi, zato jih pregled zapiskov in Iskanje datotek najdeta enako. Brišete jih v urejevalniku zapiskov — gumb za zapiranje na plošči skupino le skrije.
+
 ## Quick View in Quick Look
 
 Quick View prikaže sprotni predogled v podoknu, ki ga *ne* uporabljate, tako da lahko na eni strani še naprej brskate, na drugi pa predoglejete.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Ogled samo datoteke pod kazalcem (prezri označene datoteke) | Shift+F3 |
 | Odpri v zunanjem pregledovalniku | Option+F3 |
 | Iskanje znotraj pregledovalnika | Ctrl+F |
+| Zapisek za vrstico pod kazalcem | Cmd+Shift+N |
+| Pokaži ali skrij ploščo oznak | Cmd+Ctrl+M |
 | Naslednje / prejšnje ujemanje | F3 / Shift+F3 |
 | Quick View v drugem podoknu | Ctrl+Q |
 | Quick Look (predogled macOS) | Cmd+Y |

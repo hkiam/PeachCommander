@@ -154,6 +154,24 @@ SCENARIOS = [
                        # for that file must change. `commentread` asks the host, not the plugin.
                        "sidebarsetfield edited in the plugin", "wait 1200",
                        "commentread hosts.txt|/Users/admin/sidebar-back.txt", "wait 400"], 11),
+    # A note bound to a *place* in a file (F-379): the viewer asks the Notes plugin which lines of the
+    # file carry a note — through the ordinary content-field mechanism, so nothing about the viewer knows
+    # what a note is — and offers them in the marks panel. The store is seeded in setup; this scenario
+    # only opens the file and asks the window what it found.
+    ("viewer-note-lines", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                           "focus annotated.txt", "wait 400", "cmd cm_List", "wait 2500",
+                           # Open the panel before dumping: a group that exists in the model but is never
+                           # drawn is not something the user has. The dump then carries both.
+                           "listermarks", "wait 800",
+                           "listerdump /Users/admin/note-lines.txt", "wait 500"], 11),
+    # The other direction (F-379): put the caret on a line, ask for a note about it, and see which note
+    # the plugin opened. The editor is the plugin's own window, so its title is the only thing the host
+    # can honestly check — and it is enough: "annotated.txt line 2" can only be there if the caret's line
+    # was worked out, published through the context, read by the plugin and parsed back into a place.
+    ("viewer-note-write", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                           "focus annotated.txt", "wait 400", "cmd cm_List", "wait 2500",
+                           "listercaret 2", "wait 400", "listernote", "wait 2000",
+                           "windowdump /Users/admin/note-write.txt", "wait 500"], 11),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -321,6 +339,18 @@ REPORTS = {
                       ["field=a comment from the host side", "!ERROR"]),
     "notes-sidebar-back": ("/Users/admin/sidebar-back.txt",
                            ["hostComment=edited in the plugin", "column=edited in the plugin"]),
+    # The line number the note was bound to, and the text of that line read out of the document — so the
+    # check cannot pass by echoing the note back at itself. "!marksgroup=Notes count=0" guards the way
+    # this fails silently: a group that is present but empty.
+    "viewer-note-lines": ("/Users/admin/note-lines.txt",
+                          ["marksgroup=Notes count=1", "mark line=3", "the annotated line",
+                           # …and the panel itself, rendered: the tab's title and the row it drew.
+                           "label=Notes", "!No marks.",
+                           "!marksgroup=Notes count=0", "!ERROR"]),
+    # Line 2 — not line 3, which already has a note, and not line 1, which is where the caret starts and
+    # would be right even if the line were never worked out at all.
+    "viewer-note-write": ("/Users/admin/note-write.txt",
+                          ["window=Note — annotated.txt line 2", "!line 1", "!line 3", "!ERROR"]),
     # The summary has to be *there*: a crash leaves no report at all, which is how the crash announced
     # itself in the first place.
     "viewer-folder": ("/Users/admin/folder-view.txt", ["status=", "Folder", "!ERROR"]),
@@ -460,6 +490,18 @@ def boot(app: str, run: str):
                   # CRLF, a duplicate, a blank line and trailing spaces: one file for every operation.
                   "printf 'keep me  \\r\\n\\r\\nkeep me\\r\\ndrop this\\r\\n' > pc-demo/messy.txt && "
                   "printf 'x' > pc-demo/sub/nested.txt && "
+                  # A file with enough lines that "line 3" is a distinguishable place, and a note bound
+                  # to it seeded straight into the plugin's store (F-379). Seeded rather than typed:
+                  # the note editor is a plugin window, and the scenario is about whether the *viewer*
+                  # finds an existing annotation, not about typing into a text field.
+                  "printf 'first line\\nsecond line\\nthe annotated line\\nfourth line\\n' "
+                  "> pc-demo/annotated.txt && "
+                  "mkdir -p ~/\"Library/Application Support/PeachCommander/notes\" && "
+                  "printf 'a note about the third line\\n' "
+                  "> ~/\"Library/Application Support/PeachCommander/notes/f379.md\" && "
+                  "printf '{\"notes\":[{\"key\":\"/Users/admin/pc-demo/annotated.txt#L3\",\"file\":\"f379.md\","
+                  "\"title\":\"a note about the third line\",\"updated\":1}]}' "
+                  "> ~/\"Library/Application Support/PeachCommander/notes/index.json\" && "
                   "printf '[Colors]\\nAppearance=dark\\n' > pc-cfg/peachcmd.ini && "
                   "defaults write com.apple.dock autohide -bool true; killall Dock 2>/dev/null; "
                   "defaults write -g AppleLanguages '(\"en-US\", \"en\")'; "

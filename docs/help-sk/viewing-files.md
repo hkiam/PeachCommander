@@ -25,6 +25,14 @@ Peach Commander má vstavaný prehliadač, ktorý vám umožňuje nazrieť do s�
 - Ak text vyzerá skreslene, kliknite na Kódovanie na paneli nástrojov (alebo stlačte E) na prechádzanie kódovaní textu, kým sa nečíta správne; automatické nastavenie to zvyčajne trafí.
 - Stlačte W na prepnutie zalamovania slov pri dlhých riadkoch.
 
+## Poznámky k riadku
+
+Ak je modul Poznámky nainštalovaný, poznámka sa môže týkať konkrétneho riadku súboru, nie súboru ako celku.
+
+- Umiestnite kurzor na riadok a zvoľte **Zobraziť ▸ Poznámka k tomuto riadku…** (Cmd+Shift+N). Editor poznámok sa otvorí s názvom súboru a číslom riadku v titulku.
+- Riadky, ktoré už poznámku majú, sa zobrazia ako skupina **Poznámky** v paneli značiek v spodnej časti okna, vedľa výsledkov hľadania. Panel otvoríte klávesmi Cmd+Ctrl+M; dvojklikom na položku prejdete na daný riadok.
+- Poznámky samotné ležia spolu so všetkými ostatnými, takže ich prehľad poznámok aj Nájsť súbory nájdu rovnako. Mažú sa v editore poznámok — tlačidlo zatvorenia v paneli skupinu iba skryje.
+
 ## Rýchle zobrazenie a Quick Look
 
 Rýchle zobrazenie ukazuje živý náhľad v paneli, ktorý *nepoužívate*, takže môžete pokračovať v prehliadaní na jednej strane a náhľade na druhej.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Zobraziť len súbor pod kurzorom (ignorovať označené súbory) | Shift+F3 |
 | Otvoriť v externom prehliadači | Option+F3 |
 | Hľadať v prehliadači | Ctrl+F |
+| Poznámka k riadku pod kurzorom | Cmd+Shift+N |
+| Zobraziť alebo skryť panel značiek | Cmd+Ctrl+M |
 | Ďalšia / predchádzajúca zhoda | F3 / Shift+F3 |
 | Rýchle zobrazenie v druhom paneli | Ctrl+Q |
 | Quick Look (náhľad macOS) | Cmd+Y |
