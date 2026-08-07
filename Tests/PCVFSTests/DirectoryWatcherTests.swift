@@ -31,6 +31,10 @@ final class DirectoryWatcherTests: XCTestCase {
 
     func testACreatedFileIsReported() throws {
         let fired = expectation(description: "change reported")
+        // FSEvents may report one change more than once — coalescing is a property of the API, not
+        // a promise about counts — so an expectation here must not police how often it fired.
+        // Without this the test failed on a slower machine with "multiple calls to fulfill".
+        fired.assertForOverFulfill = false
         let watcher = DirectoryWatcher(path: directory) { fired.fulfill() }
         watcher.start()
         defer { watcher.stop() }
@@ -42,6 +46,7 @@ final class DirectoryWatcherTests: XCTestCase {
     func testADeletedFileIsReported() throws {
         try touch("gone.txt")
         let fired = expectation(description: "change reported")
+        fired.assertForOverFulfill = false
         let watcher = DirectoryWatcher(path: directory) { fired.fulfill() }
         watcher.start()
         defer { watcher.stop() }
@@ -104,6 +109,7 @@ final class DirectoryWatcherTests: XCTestCase {
         // is what covers this.
         try touch("existing.txt")
         let fired = expectation(description: "modification reported")
+        fired.assertForOverFulfill = false
         let watcher = DirectoryWatcher(path: directory) { fired.fulfill() }
         watcher.start()
         defer { watcher.stop() }
@@ -148,6 +154,7 @@ final class DirectoryWatcherTests: XCTestCase {
         try FileManager.default.createSymbolicLink(atPath: link, withDestinationPath: directory)
         defer { try? FileManager.default.removeItem(atPath: link) }
         let fired = expectation(description: "change reported through the symlink")
+        fired.assertForOverFulfill = false
         let watcher = DirectoryWatcher(path: link) { fired.fulfill() }
         watcher.start()
         defer { watcher.stop() }
