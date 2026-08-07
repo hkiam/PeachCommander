@@ -412,8 +412,17 @@ def boot(app: str, run: str):
     # by doing nothing. About a minute for all fifteen.
     say("building plugins into the bundle…")
     sh([str(REPO / "Tools/build-all-plugins.sh"), str(Path(app) / "Contents/PlugIns")])
+    # The bundle must not be rebuilt while it is being copied. Building in another terminal during a run
+    # produced an app that launched and then did nothing — no automation at all — and every scenario that
+    # writes a report came back empty. That looked exactly like a product defect for half an hour.
+    binary = Path(app) / "Contents/MacOS" / Path(app).stem
+    before = binary.stat() if binary.exists() else None
     sh(["rsync", "-a", "--delete", "-e", "ssh " + " ".join(SSH),
         app.rstrip("/") + "/", f"{GUEST}@{ip}:pc-test/{APPNAME}/"])
+    after = binary.stat() if binary.exists() else None
+    if before and after and (before.st_mtime, before.st_size) != (after.st_mtime, after.st_size):
+        sys.exit("the app binary changed while it was being copied — something rebuilt it mid-run; "
+                 "start the suite again with nothing else touching the build")
     sh(["scp", *SSH, str(Path(__file__).with_name("regress-guest.sh")), f"{GUEST}@{ip}:regress-guest.sh"])
     ssh_guest(ip, "chmod +x regress-guest.sh")
     # Structured fixtures for the outline scenarios (F-368) are files, not printf: YAML and XML are
