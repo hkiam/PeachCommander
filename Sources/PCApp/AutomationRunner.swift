@@ -217,6 +217,35 @@ extension MainWindowController {
                 }
                 RunLoop.main.add(timer, forMode: .modalPanel)
                 RunLoop.main.add(timer, forMode: .default)
+            case "modaldump":                           // modaldump <outfile>: read a modal alert's text
+                // The harness could keyboard-walk a modal but never read what it *said*, so an alert
+                // that appeared with the wrong text — or an alert that should have appeared and did not
+                // — was invisible to it. Scheduled into the modal run-loop mode for the same reason
+                // `keyloopmodal` is, and it dismisses the alert afterwards: `runModal` never returns on
+                // its own, so leaving it up means the scenario writes no report at all.
+                let out = arg
+                let dumpTimer = Timer(timeInterval: 1.5, repeats: false) { _ in
+                    MainActor.assumeIsolated {
+                        var lines: [String] = []
+                        if let window = NSApp.modalWindow ?? NSApp.keyWindow {
+                            lines.append("modal=\(NSApp.modalWindow != nil)")
+                            func walk(_ view: NSView) {
+                                if let field = view as? NSTextField, !field.stringValue.isEmpty {
+                                    lines.append("text=\(field.stringValue.replacingOccurrences(of: "\n", with: " ⏎ "))")
+                                }
+                                view.subviews.forEach(walk)
+                            }
+                            window.contentView.map(walk)
+                        } else {
+                            lines.append("ERROR: no modal window")
+                        }
+                        try? (lines.joined(separator: "\n") + "\n")
+                            .write(toFile: out, atomically: true, encoding: .utf8)
+                        if NSApp.modalWindow != nil { NSApp.abortModal() }
+                    }
+                }
+                RunLoop.main.add(dumpTimer, forMode: .modalPanel)
+                RunLoop.main.add(dumpTimer, forMode: .default)
             case "overwritedlg": showOverwriteDialogForShot()   // screenshot the conflict dialog (F-086)
             case "hotlistmanage": showHotlistManager()   // open the hotlist manager (F-061)
             case "typecolors":                             // open the file-type colour editor (F-032)
@@ -245,6 +274,15 @@ extension MainWindowController {
                     NSLog("[automation] finder-comment readback: \(FinderComment.read(a[0]) ?? "<nil>")")
                 }
             case "errorlog":   showErrorLogForShot()   // screenshot the operation error log (F-089)
+            case "bgcopyverify":                        // bgcopyverify <src>|<dstdir> (F-090)
+                // Through the panel's own `startBackgroundCopy`, which is what the F5 dialog calls, so
+                // this exercises the real wiring: "verify after copy" applied to foreground copies only,
+                // and the background queue is what one picks for the copies worth verifying.
+                let v = arg.split(separator: "|", maxSplits: 1).map { String($0).trimmingCharacters(in: .whitespaces) }
+                if v.count == 2 {
+                    activePanel?.startBackgroundCopy(items: [v[0]], dest: v[1], mask: nil,
+                                                     onlyNewer: false, queueForLater: false)
+                }
             case "bgcopyfail":                          // bgcopyfail <realsrc>|<dstdir> (F-089 background log)
                 let a = arg.split(separator: "|", maxSplits: 1).map { String($0).trimmingCharacters(in: .whitespaces) }
                 if a.count == 2 {

@@ -33,6 +33,7 @@ only go down.
 | viewer-note-write | 0 | — | — | `viewer-note-write.png` |
 | tc-comment-sidebar | 0 | — | — | `tc-comment-sidebar.png` |
 | plugin-context-menu | 0 | — | — | `plugin-context-menu.png` |
+| bg-copy-verify | 0 | — | — | `bg-copy-verify.png` |
 | panel-autorefresh | 0 | 0 | — | `panel-autorefresh.png` |
 | keys-main | 0 | 0 | — | `keys-main.png` |
 | keys-find | 0 | 0 | — | `keys-find.png` |

@@ -189,6 +189,12 @@ SCENARIOS = [
     # agree on the same command id.
     ("plugin-context-menu", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                              "ctxdump table.csv|/Users/admin/ctxmenu.txt", "wait 800"], 11),
+    # "Verify files after copy" applied to foreground copies only (F-090) — and the background queue is
+    # exactly what one picks for the large copies where verifying is worth the time. The dump is
+    # scheduled first: the report is a modal alert, and `runModal` never returns to the script.
+    ("bg-copy-verify", ["active left", "left /Users/admin/pc-demo", "wait 1500",
+                        "modaldump /Users/admin/verify.txt",
+                        "bgcopyverify /Users/admin/pc-demo/hosts.txt|/Users/admin", "wait 4000"], 11),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -382,6 +388,11 @@ REPORTS = {
     # plugin's entry beside them so the check is about the surface and not about one plugin.
     "plugin-context-menu": ("/Users/admin/ctxmenu.txt",
                             ["Suggest a comment", "Suggest a name", "Summarize", "!ERROR"]),
+    # The alert must be there, must be the verification one, and must say the file matched. "!did not
+    # match" guards the other direction: an alert that fires but reports a mismatch for a good copy would
+    # be just as wrong and would still contain the word "verified".
+    "bg-copy-verify": ("/Users/admin/verify.txt",
+                       ["modal=true", "Verify After Copy", "verified", "!did not match", "!ERROR"]),
     # The summary has to be *there*: a crash leaves no report at all, which is how the crash announced
     # itself in the first place.
     "viewer-folder": ("/Users/admin/folder-view.txt", ["status=", "Folder", "!ERROR"]),
@@ -539,7 +550,7 @@ def boot(app: str, run: str):
                   "printf '{\"notes\":[{\"key\":\"/Users/admin/pc-demo/annotated.txt#L3\",\"file\":\"f379.md\","
                   "\"title\":\"a note about the third line\",\"updated\":1}]}' "
                   "> ~/\"Library/Application Support/PeachCommander/notes/index.json\" && "
-                  "printf '[Colors]\\nAppearance=dark\\n' > pc-cfg/peachcmd.ini && "
+                  "printf '[Colors]\\nAppearance=dark\\n[Operation]\\nVerifyAfterCopy=1\\n' > pc-cfg/peachcmd.ini && "
                   "defaults write com.apple.dock autohide -bool true; killall Dock 2>/dev/null; "
                   "defaults write -g AppleLanguages '(\"en-US\", \"en\")'; "
                   "killall cfprefsd 2>/dev/null; true")
