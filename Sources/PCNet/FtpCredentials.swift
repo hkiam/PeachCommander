@@ -29,4 +29,28 @@ public enum FtpCredentials {
     public static func deletePassword(for site: FtpSite, in store: SecretStore) throws {
         try store.deletePassword(service: service, account: account(for: site))
     }
+
+    // MARK: - Proxy credentials (F-210/F-212)
+    //
+    // A proxy that wants a login had a `proxyUser` and a `proxyPassword` in the model, a `proxyuser` key
+    // in the ini — and no way at all to set either, so it could not be used. The password gets the same
+    // treatment as the site's own: the Keychain, never the file. Keyed by the *proxy*, not by the site,
+    // because one proxy usually serves all of them and re-typing it per site would be busywork.
+
+    /// Stable account key for a proxy login: `proxy://user@host:port`.
+    public static func proxyAccount(for site: FtpSite) -> String? {
+        guard let host = site.proxyHost, !host.isEmpty,
+              let user = site.proxyUser, !user.isEmpty else { return nil }
+        return "proxy://\(user)@\(host):\(site.proxyPort)"
+    }
+
+    public static func saveProxyPassword(_ password: String, for site: FtpSite, in store: SecretStore) throws {
+        guard let account = proxyAccount(for: site) else { return }
+        try store.setPassword(password, service: service, account: account)
+    }
+
+    public static func proxyPassword(for site: FtpSite, in store: SecretStore) throws -> String? {
+        guard let account = proxyAccount(for: site) else { return nil }
+        return try store.password(service: service, account: account)
+    }
 }

@@ -34,6 +34,12 @@ jobs:
         run: python3 docs/scripts/check-docs.py
       - name: Translation coverage gate (UI + Help must be kept in every language)
         run: python3 docs/scripts/check-translations.py
+
+      # The coverage gate above reads the catalogue, so it cannot see a string that never reached it —
+      # and a String(localized:) only gets there when somebody runs Tools/extract-strings.sh. One
+      # message shipped untranslated in all nineteen languages that way, with the gate green.
+      - name: Check every user-facing literal is in the catalogue
+        run: python3 Tools/check-strings-extracted.py
       - name: Translation structure gate (a translated page must match the English shape)
         run: python3 docs/scripts/check-translation-drift.py
       - name: Parity catalogue gate (every "ev:" pointer must resolve)

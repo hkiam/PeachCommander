@@ -24,6 +24,34 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-07 (evidence sweep, batch 7) — A rule nobody checked, and a hole in a gate
+
+One row (F-210), and two findings that are both about *checking* rather than about behaviour.
+
+**"No secret ever reaches ftp-sites.ini" was stated in three comments and verified nowhere.** It holds —
+but it is exactly the kind of rule broken by adding one convenient line to a serializer, and the file is
+plain text in the config folder, backed up and synced. A test now serializes a site carrying a proxy
+password and asserts that neither the value nor a password-shaped *key* appears, while the ordinary
+fields still do, so it cannot pass by writing nothing. Verified by adding the one convenient line and
+watching it fail. (My first version of that test banned the substring "password" anywhere and failed on
+`auth=password`, which names the *method* — the test was wrong, not the code.)
+
+**An authenticated proxy could not be used at all.** The model carried `proxyUser` and `proxyPassword`,
+the ini had a `proxyuser` key that round-tripped, and the connection manager offered host, port and type
+— no login fields. So the password had nowhere to come from and nowhere to live. Added, with the
+password in the Keychain like the site's own and keyed by the proxy rather than the site, since one
+proxy usually serves all of them.
+
+**And a hole in the localization gate, found by falling into it.** `check-translations.py` reads the
+string catalogue, so it cannot see a string that never reached the catalogue — and a `String(localized:)`
+only gets there when somebody runs `extract-strings.sh`. The "%lld file(s) were not renamed" message from
+batch 4 shipped untranslated in all nineteen languages with the gate green, and stayed that way for
+three commits. `Tools/check-strings-extracted.py` now reads the *source*: every plain literal must be a
+key in the catalogue. Interpolated strings are skipped deliberately — they become format keys that cannot
+be matched textually, and a gate that cries wolf is one nobody reads.
+
+Rows without evidence: 72 → 71.
+
 ## 2026-08-07 (evidence sweep, batch 6) — The password was in the process list
 
 Four rows (F-120, F-134, F-135, F-136), one defect.
