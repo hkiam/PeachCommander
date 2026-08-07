@@ -172,6 +172,23 @@ SCENARIOS = [
                            "focus annotated.txt", "wait 400", "cmd cm_List", "wait 2500",
                            "listercaret 2", "wait 400", "listernote", "wait 2000",
                            "windowdump /Users/admin/note-write.txt", "wait 500"], 11),
+    # The plugin-facing side of a Total-Commander comment (F-380). The Comment column reads
+    # `descript.ion` through `DescriptionFile.decode`; the path plugins ask through read it as UTF-8,
+    # which throws on the UTF-16 file TC writes — so the sidebar showed nothing where the column showed
+    # "Grüße aus Zürich". Same fixture as tc-descript, asked through the plugin instead of the column.
+    ("tc-comment-sidebar", ["active left", "left /Users/admin/pc-tc-ro", "wait 1200",
+                          "focus tc-utf16.txt", "wait 400",
+                          "previewpanel on", "wait 2000",
+                          "previewtab Notes", "wait 800",
+                          "focus tc-utf16.txt", "wait 1200",
+                          "sidebardump /Users/admin/tc-sidebar.txt", "wait 500"], 11),
+    # The plugin contribution surface, which nothing checked before: `menudump` reads the *main* menu,
+    # so every AI ▸ / Notes / tag entry a plugin adds to the right-click menu was unverified. This dumps
+    # the context menu of a real file, and asks for the new "Suggest a comment" action (F-380) — which
+    # only exists if the plugin's manifest, the host's contribution registry and the skill catalogue all
+    # agree on the same command id.
+    ("plugin-context-menu", ["active left", "left /Users/admin/pc-demo", "wait 1500",
+                             "ctxdump table.csv|/Users/admin/ctxmenu.txt", "wait 800"], 11),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -274,6 +291,12 @@ KEYBOARD_REPORTS = {
     "keys-overwrite": ["keyloop-overwrite.txt"],
 }
 
+# Reports a scenario must have written, and what has to be in them ("!x" = must NOT be there).
+#
+# A scenario also claims every key that starts with "<its name>-" — that is how `notes-sidebar` owns
+# `notes-sidebar-back`. So a *scenario* whose name extends another one's gets adopted by it, and its
+# report is checked before it has run: name new scenarios so they are not a prefix-extension of an
+# existing one. (Cost a run: "notes-sidebar-tc" passed alone and failed in company.)
 REPORTS = {
     "editor-filter": ("/Users/admin/filter.txt",
                       ["outcome=replaced", "undo=true", "alpha.example\nbeta.example\n"]),
@@ -337,6 +360,10 @@ REPORTS = {
     # has to be what the plugin shows.
     "notes-sidebar": ("/Users/admin/sidebar.txt",
                       ["field=a comment from the host side", "!ERROR"]),
+    # The umlauts are the point: a UTF-8 read of a UTF-16 file does not produce mangled text, it fails
+    # outright, so the field was empty. "!field=" guards exactly that.
+    "tc-comment-sidebar": ("/Users/admin/tc-sidebar.txt",
+                          ["field=Grüße aus Zürich", "!field= placeholder", "!ERROR"]),
     "notes-sidebar-back": ("/Users/admin/sidebar-back.txt",
                            ["hostComment=edited in the plugin", "column=edited in the plugin"]),
     # The line number the note was bound to, and the text of that line read out of the document — so the
@@ -351,6 +378,10 @@ REPORTS = {
     # would be right even if the line were never worked out at all.
     "viewer-note-write": ("/Users/admin/note-write.txt",
                           ["window=Note — annotated.txt line 2", "!line 1", "!line 3", "!ERROR"]),
+    # Both AI actions, so a menu that lost its plugin entries entirely cannot pass, and the Notes
+    # plugin's entry beside them so the check is about the surface and not about one plugin.
+    "plugin-context-menu": ("/Users/admin/ctxmenu.txt",
+                            ["Suggest a comment", "Suggest a name", "Summarize", "!ERROR"]),
     # The summary has to be *there*: a crash leaves no report at all, which is how the crash announced
     # itself in the first place.
     "viewer-folder": ("/Users/admin/folder-view.txt", ["status=", "Folder", "!ERROR"]),
@@ -480,6 +511,12 @@ def boot(app: str, run: str):
     ssh_guest(ip, "mkdir -p pc-tc && printf x > pc-tc/tc-utf16.txt && printf x > pc-tc/tc-multi.txt")
     sh(["scp", *SSH, str(Path(__file__).with_name("fixtures-tc") / "descript.ion"),
         f"{GUEST}@{ip}:pc-tc/descript.ion"])
+    # A second, untouched copy. `tc-descript` *writes* a comment into pc-tc to prove the round trip, so a
+    # later scenario reading the original text out of that folder gets whatever that one left behind —
+    # which is how `tc-comment-sidebar` passed alone and failed in the full suite.
+    ssh_guest(ip, "mkdir -p pc-tc-ro && printf x > pc-tc-ro/tc-utf16.txt && printf x > pc-tc-ro/tc-multi.txt")
+    sh(["scp", *SSH, str(Path(__file__).with_name("fixtures-tc") / "descript.ion"),
+        f"{GUEST}@{ip}:pc-tc-ro/descript.ion"])
     # A small, fixed demo tree: the scenarios need something to show, and it must not vary between
     # runs or the screenshots become impossible to compare.
     ssh_guest(ip, "mkdir -p pc-cfg pc-demo/sub && "

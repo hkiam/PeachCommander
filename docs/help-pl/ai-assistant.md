@@ -19,7 +19,7 @@ Wybierz **Polecenia ▸ Asystent AI**, aby wyświetlić asystenta w zadokowanym 
 
 Najszybszym sposobem korzystania z asystenta jest podmenu **AI ▸** w menu prawego przycisku:
 
-- **Na pliku** — Podsumuj, Wyjaśnij, Zaproponuj nazwę, Przetłumacz na angielski, Sprawdź, Wykryj zadania i Utwórz tabelę.
+- **Na pliku** — Podsumuj, Wyjaśnij, Zaproponuj nazwę, Zaproponuj komentarz, Przetłumacz na angielski, Sprawdź, Wykryj zadania i Utwórz tabelę.
 - **Na tle panelu** — Uporządkuj ten folder i Znajdź prawdopodobne duplikaty.
 
 Każda akcja **AI ▸** otwiera **własny zatytułowany czat** (na przykład *Podsumuj – raport.txt*), dzięki czemu różne zadania pozostają oddzielone, zamiast piętrzyć się w jednej długiej rozmowie. Gdy sam wpisujesz coś w polu wejściowym, to zapytanie kontynuuje bieżący czat.

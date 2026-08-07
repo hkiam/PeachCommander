@@ -79,6 +79,8 @@ public enum AutomationCatalog {
         .init("recall", .read, "Recall notes from long-term memory matching a query (empty = most recent).",
               [.init("query", .string, "Text to match (optional).", required: false),
                .init("limit", .integer, "Max notes (default 10).", required: false)]),
+        .init("get_comment", .read, "Read the comment attached to a file or folder (the descript.ion comment the Comment column shows, or the macOS Finder comment when there is none). Empty when the item has no comment.",
+              [.init("path", .string, "Absolute path of the file or folder.")]),
         .init("list_commands", .read, "List the available commands (id, name, category, help)."),
         .init("list_plugins", .read, "List enabled plugins and their contributed commands and columns."),
         // navigate
@@ -107,6 +109,9 @@ public enum AutomationCatalog {
         .init("merge_files", .write, "Combine several files into one new file in a single step. For CSV files it keeps the header only once. Use this whenever the user asks to merge/combine/concatenate files into a new one — do NOT read and rewrite them by hand.",
               [.init("destination", .string, "Output file name or path for the merged result."),
                .init("sources", .array, "Absolute paths to merge, in order. Omit to use the current selection.", required: false)]),
+        .init("set_comment", .write, "Attach a comment to a file or folder, or clear it with an empty string. Use this to describe what a file is for — it is stored in descript.ion beside the file and mirrored into the macOS Finder comment, so it survives copying and is searchable.",
+              [.init("path", .string, "Absolute path of the file or folder."),
+               .init("comment", .string, "The comment text; an empty string removes the comment.")]),
         .init("set_config", .config, "Set a configuration value by its Section.Key.",
               [.init("key", .string, "Config key."), .init("value", .string, "New value.")]),
         // delete (gated / confirmed)

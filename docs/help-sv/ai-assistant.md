@@ -19,7 +19,7 @@ Välj **Kommandon ▸ AI-assistent** för att visa assistenten i en dockad panel
 
 Det snabbaste sättet att använda assistenten är undermenyn **AI ▸** i högerklicksmenyn:
 
-- **På en fil** – Sammanfatta, Förklara, Föreslå ett namn, Översätt till engelska, Korrekturläs, Identifiera uppgifter och Skapa en tabell.
+- **På en fil** – Sammanfatta, Förklara, Föreslå ett namn, Föreslå en kommentar, Översätt till engelska, Korrekturläs, Identifiera uppgifter och Skapa en tabell.
 - **På panelens bakgrund** – Organisera den här mappen och Hitta troliga dubbletter.
 
 Varje **AI ▸**-åtgärd öppnar sin **egen namngivna chatt** (till exempel *Sammanfatta – report.txt*), så att olika uppgifter hålls åtskilda istället för att staplas i en enda lång konversation. När du själv skriver i inmatningsfältet fortsätter den förfrågan den aktuella chatten.

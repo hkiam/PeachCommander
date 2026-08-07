@@ -19,7 +19,7 @@ Alegeți **Comenzi ▸ Asistent IA** pentru a afișa asistentul într-un panou a
 
 Cel mai rapid mod de a folosi asistentul este submeniul **IA ▸** din meniul cu clic dreapta:
 
-- **Pe un fișier** — Rezumă, Explică, Sugerează un nume, Traduce în engleză, Corectează, Detectează sarcini și Creează un tabel.
+- **Pe un fișier** — Rezumă, Explică, Sugerează un nume, Sugerează un comentariu, Traduce în engleză, Corectează, Detectează sarcini și Creează un tabel.
 - **Pe fundalul panoului** — Organizează acest folder și Găsește duplicate probabile.
 
 Fiecare acțiune **IA ▸** deschide **propriul chat cu titlu** (de exemplu, *Rezumă – raport.txt*), astfel încât sarcinile diferite rămân separate în loc să se îngrămădească într-o singură conversație lungă. Când tastați dvs. în câmpul de intrare, acea solicitare continuă chatul curent.

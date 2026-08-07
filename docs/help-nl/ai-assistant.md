@@ -19,7 +19,7 @@ Kies **Opdrachten ▸ AI Assistant** om de assistent te tonen in een vastgezet p
 
 De snelste manier om de assistent te gebruiken is het **AI ▸**-submenu in het rechtsklikmenu:
 
-- **Op een bestand** — Samenvatten, Uitleggen, Naam voorstellen, Vertalen naar Engels, Proeflezen, Taken detecteren en Tabel maken.
+- **Op een bestand** — Samenvatten, Uitleggen, Naam voorstellen, Opmerking voorstellen, Vertalen naar Engels, Proeflezen, Taken detecteren en Tabel maken.
 - **Op de paneelachtergrond** — Deze map ordenen en Waarschijnlijke duplicaten vinden.
 
 Elke **AI ▸**-actie opent zijn **eigen chat met titel** (bijvoorbeeld *Samenvatten – report.txt*), zodat verschillende taken gescheiden blijven in plaats van op te stapelen in één lang gesprek. Wanneer je zelf in het invoerveld typt, gaat dat verzoek verder in de huidige chat.

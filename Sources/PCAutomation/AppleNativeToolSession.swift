@@ -162,6 +162,37 @@ struct NTWriteFile: Tool {
 }
 
 @available(macOS 26, *)
+struct NTGetComment: Tool {
+    let ctx: NativeToolContext
+    var name: String { "get_comment" }
+    var description: String { "Read the comment attached to a file or folder. Empty when it has none." }
+    @Generable struct Arguments {
+        @Guide(description: "Absolute path of the file or folder") var path: String
+    }
+    func call(arguments a: Arguments) async throws -> String { await ctx.run("get_comment", ["path": a.path]) }
+}
+
+@available(macOS 26, *)
+struct NTSetComment: Tool {
+    let ctx: NativeToolContext
+    var name: String { "set_comment" }
+    var description: String {
+        "Attach a short comment to a file or folder describing what it is for, or clear it with an "
+        + "empty string. Use this when the user asks you to note, label, annotate or describe a file. "
+        + "The comment is stored beside the file and shown in the panel's Comment column."
+    }
+    @Generable struct Arguments {
+        @Guide(description: "Absolute path of the file or folder") var path: String
+        @Guide(description: "The comment text; empty removes the comment") var comment: String
+    }
+    func call(arguments a: Arguments) async throws -> String {
+        // Not ntArgs: an empty comment is how a comment is *removed*, and dropping empty strings
+        // would turn "clear this" into a call with no comment argument at all.
+        await ctx.run("set_comment", ["path": a.path, "comment": a.comment])
+    }
+}
+
+@available(macOS 26, *)
 struct NTMergeFiles: Tool {
     let ctx: NativeToolContext
     var name: String { "merge_files" }
@@ -473,6 +504,7 @@ extension AppleNativeToolSession: NativeTurnRunner {
     static func makeTools(_ ctx: NativeToolContext) -> [any Tool] {
         [NTGetContext(ctx: ctx), NTListDirectory(ctx: ctx), NTStatPath(ctx: ctx), NTReadFile(ctx: ctx),
          NTHashFile(ctx: ctx), NTWriteFile(ctx: ctx), NTMergeFiles(ctx: ctx),
+         NTGetComment(ctx: ctx), NTSetComment(ctx: ctx),
          NTSearch(ctx: ctx), NTGetConfig(ctx: ctx), NTListCommands(ctx: ctx), NTListPlugins(ctx: ctx),
          NTOpenPath(ctx: ctx), NTOpenInPanel(ctx: ctx), NTSetSelection(ctx: ctx),
          NTCopy(ctx: ctx), NTMove(ctx: ctx), NTRename(ctx: ctx), NTMakeDirectory(ctx: ctx),

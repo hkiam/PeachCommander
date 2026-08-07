@@ -19,7 +19,7 @@ Velg **Kommandoer ▸ AI Assistant** for å vise assistenten i et forankret pane
 
 Den raskeste måten å bruke assistenten på er undermenyen **AI ▸** i høyreklikkmenyen:
 
-- **På en fil** – Oppsummer, Forklar, Foreslå et navn, Oversett til engelsk, Korrekturles, Finn oppgaver og Lag en tabell.
+- **På en fil** – Oppsummer, Forklar, Foreslå et navn, Foreslå en kommentar, Oversett til engelsk, Korrekturles, Finn oppgaver og Lag en tabell.
 - **På panelbakgrunnen** – Organiser denne mappen og Finn sannsynlige duplikater.
 
 Hver **AI ▸**-handling åpner sin **egen navngitte chat** (for eksempel *Oppsummer – rapport.txt*), slik at ulike oppgaver holder seg atskilt i stedet for å hope seg opp i én lang samtale. Når du selv skriver i inndatafeltet, fortsetter forespørselen den gjeldende chatten.

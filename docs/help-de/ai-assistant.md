@@ -19,7 +19,7 @@ Wählen Sie **Befehle ▸ KI-Assistent**, um den Assistenten in einem angedockte
 
 Am schnellsten nutzen Sie den Assistenten über das Untermenü **KI ▸** im Rechtsklick-Menü:
 
-- **Auf einer Datei** – Zusammenfassen, Erläutern, Namen vorschlagen, Ins Englische übersetzen, Korrektur lesen, Aufgaben erkennen und Tabelle erstellen.
+- **Auf einer Datei** – Zusammenfassen, Erläutern, Namen vorschlagen, Kommentar vorschlagen, Ins Englische übersetzen, Korrektur lesen, Aufgaben erkennen und Tabelle erstellen.
 - **Auf dem Panel-Hintergrund** – Diesen Ordner organisieren und Mögliche Duplikate finden.
 
 Jede **KI ▸**-Aktion öffnet ihren **eigenen benannten Chat** (zum Beispiel *Zusammenfassen – report.txt*), sodass verschiedene Aufgaben getrennt bleiben und sich nicht zu einer langen Konversation aufstauen. Wenn Sie selbst in das Eingabefeld tippen, setzt diese Anfrage den aktuellen Chat fort.

@@ -19,7 +19,7 @@ Vyberte **Príkazy ▸ Asistent AI** na zobrazenie asistenta v ukotvenom paneli 
 
 Najrýchlejší spôsob použitia asistenta je podponuka **AI ▸** v kontextovej ponuke:
 
-- **Na súbore** — Zhrnúť, Vysvetliť, Navrhnúť názov, Preložiť do angličtiny, Skorigovať, Zistiť úlohy a Vytvoriť tabuľku.
+- **Na súbore** — Zhrnúť, Vysvetliť, Navrhnúť názov, Navrhnúť komentár, Preložiť do angličtiny, Skorigovať, Zistiť úlohy a Vytvoriť tabuľku.
 - **Na pozadí panela** — Usporiadať tento priečinok a Nájsť pravdepodobné duplikáty.
 
 Každá akcia **AI ▸** otvorí **svoj vlastný pomenovaný chat** (napríklad *Zhrnúť – správa.txt*), takže rôzne úlohy zostávajú oddelené namiesto toho, aby sa kopili v jednej dlhej konverzácii. Keď sami zadáte niečo do vstupného poľa, táto požiadavka pokračuje v aktuálnom chate.

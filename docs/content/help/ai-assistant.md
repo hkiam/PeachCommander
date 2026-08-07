@@ -19,7 +19,7 @@ Choose **Commands ▸ AI Assistant** to show the assistant in a docked panel on 
 
 The quickest way to use the assistant is the **AI ▸** submenu in the right-click menu:
 
-- **On a file** — Summarize, Explain, Suggest a name, Translate to English, Proofread, Detect tasks, and Make a table.
+- **On a file** — Summarize, Explain, Suggest a name, Suggest a comment, Translate to English, Proofread, Detect tasks, and Make a table.
 - **On the panel background** — Organize this folder and Find likely duplicates.
 
 Each **AI ▸** action opens its **own titled chat** (for example, *Summarize – report.txt*), so different tasks stay separate instead of piling into one long conversation. When you type into the input field yourself, that request continues the current chat.

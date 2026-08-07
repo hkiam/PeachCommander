@@ -122,6 +122,18 @@ final class HostAutomationBridge: AutomationHostBridge {
         return (hex, algo == "sha1" || algo == "md5" ? algo : "sha256")
     }
 
+    func getComment(_ path: String) async throws -> String? {
+        guard let host else { throw AutomationError.notImplemented("host released") }
+        return host.contribFileComment(path)
+    }
+
+    func setComment(_ path: String, comment: String?) async throws {
+        // The host's own method, so the Finder mirror and the Comment column's refresh cannot be
+        // forgotten here — and unlike the plugin ABI's version, a failure is reported.
+        guard let host else { throw AutomationError.notImplemented("host released") }
+        try await host.setFileComment(comment, path: path)
+    }
+
     func writeFile(_ path: String, content: String) async throws {
         try content.write(to: URL(fileURLWithPath: path), atomically: true, encoding: .utf8)
         Task { @MainActor in await host?.activePanel?.reload() }
