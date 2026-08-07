@@ -33,8 +33,15 @@ public enum ChecksumFile {
     /// Parse checksum-file text into entries (comments/blank lines skipped).
     public static func parse(_ text: String, format: ChecksumFileFormat) -> [ChecksumEntry] {
         var out: [ChecksumEntry] = []
-        for rawLine in text.split(whereSeparator: { $0 == "\n" }) {
-            let line = rawLine.hasSuffix("\r") ? String(rawLine.dropLast()) : String(rawLine)
+        // `isNewline`, not `== "\n"`: in Swift a CRLF is a *single* Character, so comparing against the
+        // line feed found no separator at all and a Windows-written .sfv — which is nearly all of them —
+        // parsed as one enormous line and verified nothing. A lone CR does the same to the classic-Mac
+        // files that still turn up beside old archives. Measured, not assumed: 0 entries for CRLF sfv,
+        // one invented entry for CRLF md5.
+        for rawLine in text.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline) {
+            // A byte-order mark belongs to the file, not to the first digest; leaving it in made the
+            // whole first line fail the hex test and disappear.
+            let line = rawLine.hasPrefix("\u{FEFF}") ? String(rawLine.dropFirst()) : String(rawLine)
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             if trimmed.isEmpty || trimmed.hasPrefix(";") || trimmed.hasPrefix("#") { continue }
             switch format {

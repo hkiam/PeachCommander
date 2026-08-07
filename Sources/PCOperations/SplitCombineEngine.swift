@@ -71,9 +71,16 @@ public enum SplitCombineEngine {
         var wroteAny = false
         while true {
             let part = dir.joining(SplitInfo.partName(info.filename, index: index))
-            guard let data = try? await readAll(part, on: fs) else { break }   // no more parts
-            try await writer.write(data)
-            crc = CRC32.update(crc, data)
+            // Streamed, not read whole: this used to pull each part into memory in one piece, which for
+            // the part sizes people actually pick — a CD or a DVD — meant holding hundreds of megabytes
+            // or several gigabytes at once, while the comment above this type claimed memory stays flat.
+            guard let stream = try? await fs.openRead(part) else { break }      // no more parts
+            for try await chunk in stream {
+                guard let data = chunk as? Data else { continue }
+                try await writer.write(data)
+                crc = CRC32.update(crc, data)
+            }
+            try? await stream.close()
             wroteAny = true
             index += 1
         }

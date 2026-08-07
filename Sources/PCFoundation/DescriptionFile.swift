@@ -31,7 +31,11 @@ public struct DescriptionFile: Equatable, Sendable {
 
     public init(parsing text: String) {
         var map: [String: String] = [:]
-        for rawLine in text.split(whereSeparator: { $0 == "\n" || $0 == "\r" }) {
+        // `isNewline`, not a comparison against "\n" and "\r" separately: Swift treats a CRLF as one
+        // Character equal to neither, so a `descript.ion` written on Windows — which, for a format that
+        // comes from 4DOS, is the ordinary case — did not split at all. Every comment but the first was
+        // lost, and the first one swallowed the rest of the file as its text.
+        for rawLine in text.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline) {
             let line = String(rawLine)
             guard let (name, comment) = Self.parseLine(line), !comment.isEmpty else { continue }
             map[name] = comment

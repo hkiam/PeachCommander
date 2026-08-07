@@ -34,7 +34,12 @@ public enum RenameByEditor {
     /// pairs whose name actually changed. Each edited line is `old<TAB>new` (or
     /// just `new`); only the part after the first tab is taken as the new name.
     public static func plan(originals: [String], editedText: String) -> Result<[RenamePair], PlanError> {
-        var lines = editedText.components(separatedBy: "\n")
+        // Split on any line break, not on "\n" alone: the text comes back from whatever editor the user
+        // has configured, and one that writes CRLF left a carriage return on the end of every line.
+        // `.whitespaces` below does not contain it, so each renamed file ended up with an invisible CR in
+        // its name — legal on macOS, so it succeeded silently and produced names nothing else matches.
+        var lines = editedText.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline)
+            .map(String.init)
         if lines.last == "" { lines.removeLast() }   // editors add a trailing newline
         guard lines.count == originals.count else {
             return .failure(.countMismatch(expected: originals.count, got: lines.count))

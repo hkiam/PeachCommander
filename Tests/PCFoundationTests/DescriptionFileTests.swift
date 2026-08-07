@@ -145,4 +145,29 @@ final class DescriptionFileTests: XCTestCase {
         let doc = DescriptionFile(parsing: DescriptionFile.decode(data).text)
         XCTAssertEqual(doc.comments.keys.sorted(), ["a.txt"])
     }
+
+    // MARK: - The line endings this format actually arrives with (F-023 / F-374)
+
+    func testACRLFDescriptionFileKeepsEveryComment() {
+        // `descript.ion` comes from 4DOS and is read and written by Total Commander, so a file written on
+        // Windows — CRLF — is the ordinary case, not the exotic one. The parser compared each Character
+        // against "\n" and "\r"; a CRLF is one Character equal to neither, so the file did not split at
+        // all: one comment survived, holding the rest of the file as its text, and the others vanished.
+        let doc = DescriptionFile(parsing: "a.txt a comment\r\nb.txt another\r\nc.txt third\r\n")
+        XCTAssertEqual(doc.comments.count, 3)
+        XCTAssertEqual(doc.comment(for: "a.txt"), "a comment")
+        XCTAssertEqual(doc.comment(for: "b.txt"), "another")
+        XCTAssertEqual(doc.comment(for: "c.txt"), "third")
+    }
+
+    func testALoneCarriageReturnFileStillParses() {
+        let doc = DescriptionFile(parsing: "a.txt one\rb.txt two\r")
+        XCTAssertEqual(doc.comment(for: "a.txt"), "one")
+        XCTAssertEqual(doc.comment(for: "b.txt"), "two")
+    }
+
+    func testMixedLineEndingsLoseNothing() {
+        let doc = DescriptionFile(parsing: "a.txt one\r\nb.txt two\nc.txt three\r\n")
+        XCTAssertEqual(doc.comments.count, 3)
+    }
 }
