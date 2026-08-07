@@ -25,6 +25,14 @@ Peach Commander dispose d'un lecteur intégré qui vous permet de regarder à l'
 - Si le texte semble déformé, cliquez sur Encodage dans la barre d'outils (ou appuyez sur E) pour faire défiler les encodages jusqu'à ce qu'il se lise correctement ; le réglage automatique est généralement juste.
 - Appuyez sur W pour basculer le retour à la ligne pour les lignes longues.
 
+## Notes sur une ligne
+
+Si le module Notes est installé, une note peut porter sur une ligne précise d'un fichier plutôt que sur le fichier entier.
+
+- Placez le curseur sur la ligne et choisissez **Affichage ▸ Note sur cette ligne…** (Cmd+Maj+N). L'éditeur de notes s'ouvre avec le nom du fichier et le numéro de ligne dans son titre.
+- Les lignes qui portent déjà une note apparaissent dans un groupe **Notes** du panneau des marques, en bas de la fenêtre, à côté des résultats de recherche. Cmd+Ctrl+M ouvre le panneau ; un double-clic sur une entrée saute à la ligne.
+- Les notes sont rangées avec toutes les autres : l'aperçu des notes et Rechercher des fichiers les trouvent comme n'importe quelle autre. La suppression se fait dans l'éditeur de notes — le bouton de fermeture du panneau ne fait que masquer le groupe.
+
 ## Aperçu rapide et Coup d'œil
 
 L'Aperçu rapide affiche un aperçu en direct dans le panneau que vous n'utilisez *pas*, de sorte que vous pouvez continuer à naviguer d'un côté tout en prévisualisant de l'autre.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Afficher seulement le fichier sous le curseur (ignorer les fichiers marqués) | Maj+F3 |
 | Ouvrir dans un lecteur externe | Option+F3 |
 | Rechercher dans le lecteur | Ctrl+F |
+| Note sur la ligne sous le curseur | Cmd+Maj+N |
+| Afficher ou masquer le panneau des marques | Cmd+Ctrl+M |
 | Correspondance suivante / précédente | F3 / Maj+F3 |
 | Aperçu rapide dans l'autre panneau | Ctrl+Q |
 | Coup d'œil (aperçu macOS) | Cmd+Y |

@@ -79,6 +79,11 @@ final class MarksPanelView: NSView, NSTableViewDataSource, NSTableViewDelegate {
         tabScroll.hasHorizontalScroller = true
         tabScroll.hasVerticalScroller = false
         tabScroll.autohidesScrollers = true
+        // Overlay, not legacy: with "Show scroll bars: Always" a legacy scroller takes 17 points out of
+        // this 28-point strip, leaving 11 for a 22-point tab — AppKit then broke the tab's height
+        // constraint and logged a conflict every time the panel opened with a tab in it. An overlay
+        // scroller floats above the tabs instead of shrinking the space they live in.
+        tabScroll.scrollerStyle = .overlay
         tabScroll.drawsBackground = false
         tabScroll.documentView = tabStack
 

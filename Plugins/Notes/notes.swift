@@ -238,8 +238,32 @@ final class NotesStore {
         return Self.displayName(key)
     }
 
+    /// The 1-based lines of `path` that carry a note, ascending (F-379).
+    ///
+    /// An annotation is an ordinary note whose key is `<path>#L<line>`, so this is a question about the
+    /// index rather than a second store. Sorted numerically: "#L2" must come before "#L10".
+    func annotatedLines(forPath path: String) -> [Int] {
+        reloadIfChanged()
+        let prefix = path + "#L"
+        return metas.keys.compactMap { key in
+            guard key.hasPrefix(prefix) else { return nil }
+            return Int(key.dropFirst(prefix.count))
+        }.sorted()
+    }
+
+    /// The path and line an annotation key refers to, or nil for a plain note.
+    static func annotation(_ key: String) -> (path: String, line: Int)? {
+        guard let range = key.range(of: "#L", options: .backwards),
+              let line = Int(key[range.upperBound...]) else { return nil }
+        return (String(key[..<range.lowerBound]), line)
+    }
+
     static func displayName(_ key: String) -> String {
-        key == globalKey ? L("Global") : (key as NSString).lastPathComponent
+        if key == globalKey { return L("Global") }
+        if let a = annotation(key) {
+            return String(format: L("%@ line %d"), (a.path as NSString).lastPathComponent, a.line)
+        }
+        return (key as NSString).lastPathComponent
     }
 }
 
@@ -597,6 +621,12 @@ public func ContentGetSupportedField(_ index: Int32, _ fieldName: UnsafeMutableP
         // column. Without this a note was visible as a dot and findable by nothing (F-373).
         _ = "Note text".withCString { strlcpy(fieldName, $0, Int(maxlen)) }
         units[0] = 0
+    case 2:
+        // The lines of this file that carry a note (F-379), comma-separated. The host's viewer reads it
+        // to list annotations beside the text; a content field is the mechanism that already exists for
+        // "a plugin knows something about this file", so binding notes to positions costs no new ABI.
+        _ = "Note lines".withCString { strlcpy(fieldName, $0, Int(maxlen)) }
+        units[0] = 0
     default:
         units[0] = 0
         return Int32(PC_FT_NOMOREFIELDS)
@@ -609,10 +639,19 @@ public func ContentGetValue(_ fileName: UnsafeMutablePointer<CChar>?, _ fieldInd
                             _ fieldValue: UnsafeMutableRawPointer?, _ maxlen: Int32, _ flags: Int32) -> Int32 {
     guard let fileName, let fieldValue else { return Int32(PC_FT_NOSUCHFIELD) }
     let path = String(cString: fileName)
-    guard NotesStore.shared.hasNote(path) else { return Int32(PC_FT_FIELDEMPTY) }
+    // Field 2 is about notes bound to *lines* of the file, which exist independently of a note about the
+    // file itself — guarding it with `hasNote` would hide every annotation in a file nobody annotated as
+    // a whole (F-379).
+    guard fieldIndex == 2 || NotesStore.shared.hasNote(path) else { return Int32(PC_FT_FIELDEMPTY) }
     switch fieldIndex {
     case 0:
         _ = "●".withCString { strlcpy(fieldValue.assumingMemoryBound(to: CChar.self), $0, Int(maxlen)) }
+    case 2:
+        // Which lines of this file have a note: the keys "<path>#L<n>" that exist for it, in order.
+        let lines = NotesStore.shared.annotatedLines(forPath: path)
+        guard !lines.isEmpty else { return Int32(PC_FT_FIELDEMPTY) }
+        let text = lines.map(String.init).joined(separator: ",")
+        _ = text.withCString { strlcpy(fieldValue.assumingMemoryBound(to: CChar.self), $0, Int(maxlen)) }
     case 1:
         // The note's text, as an ordinary content field (F-373). That is what makes a note *findable*:
         // the host's Find Files can filter on any content field, so "files whose note mentions the
@@ -636,6 +675,19 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
     let host = HostRef(services.pointee)
     switch id {
     case "plugin.notes.edit":
+        // A note about a *place* in a file, when the host asks for one (F-379). The viewer sets
+        // `noteTarget` to "<path>#L<line>" before invoking this; without it the note is about the file
+        // under the cursor, as before. The key is just a string to this store, so binding a note to a
+        // line needs no new storage and no change to the ABI — the overview and the search see it like
+        // any other note.
+        var target = [CChar](repeating: 0, count: 4096)
+        let hasTarget = services.pointee.getContext.map {
+            $0(host.host, "noteTarget", &target, 4096)
+        } ?? 0
+        if hasTarget != 0, !String(cString: target).isEmpty {
+            openEditor(key: String(cString: target), host: host)
+            break
+        }
         var buf = [CChar](repeating: 0, count: 4096)
         let ok = services.pointee.cursorPath.map { $0(host.host, &buf, 4096) } ?? 0
         openEditor(key: ok != 0 ? String(cString: buf) : NotesStore.globalKey, host: host)

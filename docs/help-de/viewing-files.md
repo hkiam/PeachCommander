@@ -25,6 +25,14 @@ Peach Commander verfügt über einen integrierten Betrachter, mit dem Sie in ein
 - Wenn Text verstümmelt aussieht, klicken Sie in der Symbolleiste auf Kodierung (oder drücken Sie E), um durch die Textkodierungen zu blättern, bis er korrekt lesbar ist; die automatische Einstellung trifft es meist richtig.
 - Drücken Sie W, um den Zeilenumbruch für lange Zeilen umzuschalten.
 
+## Notizen zu einer Zeile
+
+Ist das Notizen-Plugin installiert, kann sich eine Notiz auf eine bestimmte Zeile einer Datei beziehen statt auf die ganze Datei.
+
+- Setzen Sie den Cursor auf die Zeile und wählen Sie **Ansicht ▸ Notiz zu dieser Zeile…** (Cmd+Shift+N). Der Notiz-Editor öffnet sich mit Dateiname und Zeilennummer im Titel.
+- Zeilen, zu denen bereits eine Notiz gehört, erscheinen als Gruppe **Notizen** im Markierungs-Panel am unteren Fensterrand, neben den Fundstellen einer Suche. Mit Cmd+Ctrl+M öffnen Sie das Panel; ein Doppelklick auf einen Eintrag springt zur Zeile.
+- Die Notizen selbst liegen bei allen anderen, deshalb finden die Notizen-Übersicht und Dateien suchen sie genauso wie jede andere. Gelöscht wird im Notiz-Editor — die Schließen-Schaltfläche des Panels blendet die Gruppe nur aus.
+
 ## Quick View und Quick Look
 
 Quick View zeigt eine Live-Vorschau in dem Panel, das Sie *nicht* verwenden, sodass Sie auf der einen Seite weiterstöbern können, während Sie auf der anderen eine Vorschau ansehen.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Nur die Datei unter dem Cursor ansehen (markierte Dateien ignorieren) | Shift+F3 |
 | In einem externen Betrachter öffnen | Option+F3 |
 | Innerhalb des Betrachters suchen | Ctrl+F |
+| Notiz zur Zeile unter dem Cursor | Cmd+Shift+N |
+| Markierungs-Panel ein-/ausblenden | Cmd+Ctrl+M |
 | Nächster / vorheriger Treffer | F3 / Shift+F3 |
 | Quick View im anderen Panel | Ctrl+Q |
 | Quick Look (macOS-Vorschau) | Cmd+Y |

@@ -25,6 +25,14 @@ Peach Commander tiene un visor integrado que te permite mirar dentro de un archi
 - Si el texto se ve corrupto, haz clic en Codificación en la barra de herramientas (o pulsa E) para recorrer las codificaciones de texto hasta que se lea correctamente; el ajuste automático suele acertar.
 - Pulsa W para alternar el ajuste de línea para las líneas largas.
 
+## Notas sobre una línea
+
+Si el complemento Notas está instalado, una nota puede referirse a una línea concreta de un archivo en lugar de al archivo entero.
+
+- Sitúe el cursor en la línea y elija **Ver ▸ Nota para esta línea…** (Cmd+Shift+N). El editor de notas se abre con el nombre del archivo y el número de línea en su título.
+- Las líneas que ya tienen una nota aparecen como grupo **Notas** en el panel de marcas de la parte inferior de la ventana, junto a las marcas de búsqueda. Pulse Cmd+Ctrl+M para abrir el panel; haga doble clic en una entrada para ir a esa línea.
+- Las notas se guardan junto con todas las demás, así que el resumen de notas y Buscar archivos las encuentran igual que a cualquier otra. Se borran en el editor de notas: el botón de cierre del panel solo oculta el grupo.
+
 ## Quick View y Quick Look
 
 Quick View muestra una vista previa en directo en el panel que *no* estás usando, así puedes seguir explorando en un lado mientras previsualizas en el otro.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Ver solo el archivo bajo el cursor (ignorar archivos marcados) | Shift+F3 |
 | Abrir en un visor externo | Option+F3 |
 | Buscar dentro del visor | Ctrl+F |
+| Nota para la línea bajo el cursor | Cmd+Shift+N |
+| Mostrar u ocultar el panel de marcas | Cmd+Ctrl+M |
 | Coincidencia siguiente / anterior | F3 / Shift+F3 |
 | Quick View en el otro panel | Ctrl+Q |
 | Quick Look (vista previa de macOS) | Cmd+Y |

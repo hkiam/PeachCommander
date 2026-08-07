@@ -29,6 +29,7 @@ struct DocumentMenuCaps {
     var marks = false
     var markNav = false           // Next/Previous Mark
     var multiFile = false         // Next/Previous File
+    var note = false              // Note for This Line… (F-379; only when the Notes plugin is there)
 
     var hasRepresentations: Bool {
         reprText || reprCode || reprHex || reprImage || reprRendered || reprAuto
@@ -68,6 +69,7 @@ enum DocumentAction {
     static let clearAllMarks = Selector(("docClearAllMarks"))
     static let copy = Selector(("docCopy"))
     static let selectAll = Selector(("docSelectAll"))
+    static let note = Selector(("docNote"))
 }
 
 @MainActor
@@ -146,6 +148,9 @@ enum DocumentMenus {
         if caps.encoding { sep(); add(menu, String(localized: "Cycle Text Encoding"), DocumentAction.cycleEncoding, target, "e", [.command, .option]) }
         if caps.format { sep(); add(menu, String(localized: "Format"), DocumentAction.format, target) }
         if caps.xmlTree { sep(); add(menu, String(localized: "XML Tree"), DocumentAction.xmlTree, target) }
+        // A note about a place in the document: a view-level annotation, and the marks panel below is
+        // where it shows up, so this is the menu it belongs in.
+        if caps.note { sep(); add(menu, String(localized: "Note for This Line…"), DocumentAction.note, target, "n", [.command, .shift]) }
     }
 
     private static func appendSearch(to menu: NSMenu, _ caps: DocumentMenuCaps, _ target: AnyObject) {

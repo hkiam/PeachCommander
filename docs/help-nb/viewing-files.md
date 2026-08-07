@@ -25,6 +25,14 @@ Peach Commander har en innebygd visning som lar deg se inni en fil uten å åpne
 - Hvis teksten ser forvansket ut, klikk på Tegnkoding i verktøylinjen (eller trykk E) for å bla gjennom tegnkodinger til den leses riktig; den automatiske innstillingen treffer vanligvis riktig.
 - Trykk W for å veksle tekstbryting for lange linjer.
 
+## Notater til en linje
+
+Er Notater-tillegget installert, kan et notat handle om en bestemt linje i en fil i stedet for om hele filen.
+
+- Sett markøren på linjen og velg **Vis ▸ Notat til denne linjen…** (Cmd+Shift+N). Notatredigeringen åpnes med filnavnet og linjenummeret i tittelen.
+- Linjer som allerede har et notat, vises som gruppen **Notater** i merkepanelet nederst i vinduet, ved siden av søketreffene. Cmd+Ctrl+M åpner panelet; dobbeltklikk på en oppføring for å hoppe til linjen.
+- Notatene ligger sammen med alle de andre, så notatoversikten og Finn filer finner dem på samme måte. Sletting skjer i notatredigeringen — lukkeknappen i panelet skjuler bare gruppen.
+
 ## Quick View og Quick Look
 
 Quick View viser en direkte forhåndsvisning i panelet du *ikke* bruker, slik at du kan fortsette å bla på den ene siden mens du forhåndsviser på den andre.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Vis bare filen under markøren (ignorer merkede filer) | Shift+F3 |
 | Åpne i en ekstern visning | Option+F3 |
 | Finn i visningen | Ctrl+F |
+| Notat til linjen under markøren | Cmd+Shift+N |
+| Vis eller skjul merkepanelet | Cmd+Ctrl+M |
 | Neste / forrige treff | F3 / Shift+F3 |
 | Quick View i det andre panelet | Ctrl+Q |
 | Quick Look (macOS-forhåndsvisning) | Cmd+Y |

@@ -25,6 +25,14 @@ Peach Commander har en indbygget fremviser, der lader dig kigge inde i en fil ud
 - Hvis tekst ser forvansket ud, klik på Kodning i værktøjslinjen (eller tryk på E) for at cykle gennem tekstkodninger, indtil den læses korrekt; den automatiske indstilling rammer det som regel rigtigt.
 - Tryk på W for at skifte tekstombrydning for lange linjer.
 
+## Noter til en linje
+
+Hvis Noter-modulet er installeret, kan en note handle om en bestemt linje i en fil frem for om hele filen.
+
+- Sæt markøren på linjen og vælg **Vis ▸ Note til denne linje…** (Cmd+Shift+N). Noteeditoren åbner med filnavnet og linjenummeret i titlen.
+- Linjer, der allerede har en note, vises som gruppen **Noter** i mærkepanelet nederst i vinduet, ved siden af søgemærkerne. Tryk Cmd+Ctrl+M for at åbne panelet; dobbeltklik på en post for at gå til linjen.
+- Noterne ligger sammen med alle dine andre noter, så noteoversigten og Find filer finder dem på samme måde. Sletning sker i noteeditoren — panelets lukkeknap skjuler kun gruppen.
+
 ## Hurtigvisning og Quick Look
 
 Hurtigvisning viser en live forhåndsvisning i det panel, du *ikke* bruger, så du kan blive ved med at gennemse på den ene side, mens du forhåndsviser på den anden.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Vis kun filen under markøren (ignorér markerede filer) | Shift+F3 |
 | Åbn i en ekstern fremviser | Option+F3 |
 | Find i fremviseren | Ctrl+F |
+| Note til linjen under markøren | Cmd+Shift+N |
+| Vis eller skjul mærkepanelet | Cmd+Ctrl+M |
 | Næste / forrige match | F3 / Shift+F3 |
 | Hurtigvisning i det andet panel | Ctrl+Q |
 | Quick Look (macOS-forhåndsvisning) | Cmd+Y |

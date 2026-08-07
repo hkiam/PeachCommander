@@ -25,6 +25,14 @@ Peach Commander heeft een ingebouwde viewer waarmee je in een bestand kunt kijke
 - Als tekst er verminkt uitziet, klik je op Codering in de werkbalk (of druk je op E) om door tekstcoderingen te bladeren tot het correct leest; de automatische instelling krijgt het meestal goed.
 - Druk op W om regelterugloop voor lange regels te wisselen.
 
+## Notities bij een regel
+
+Als de Notities-plug-in is geïnstalleerd, kan een notitie over een bepaalde regel van een bestand gaan in plaats van over het hele bestand.
+
+- Zet de cursor op de regel en kies **Weergave ▸ Notitie bij deze regel…** (Cmd+Shift+N). De notitie-editor opent met de bestandsnaam en het regelnummer in de titel.
+- Regels die al een notitie hebben, verschijnen als groep **Notities** in het markeringenpaneel onderin het venster, naast de zoekresultaten. Cmd+Ctrl+M opent het paneel; dubbelklik op een regel om ernaartoe te springen.
+- De notities staan bij al uw andere notities, dus het notitieoverzicht en Bestanden zoeken vinden ze net zo goed. Verwijderen doet u in de notitie-editor — de sluitknop van het paneel verbergt alleen de groep.
+
 ## Quick View en Quick Look
 
 Quick View toont een live voorbeeld in het paneel dat je *niet* gebruikt, zodat je aan de ene kant kunt blijven bladeren terwijl je aan de andere kant een voorbeeld bekijkt.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Alleen het bestand onder de cursor bekijken (gemarkeerde bestanden negeren) | Shift+F3 |
 | Openen in een externe viewer | Option+F3 |
 | Zoeken binnen de viewer | Ctrl+F |
+| Notitie bij de regel onder de cursor | Cmd+Shift+N |
+| Markeringenpaneel tonen of verbergen | Cmd+Ctrl+M |
 | Volgende / vorige overeenkomst | F3 / Shift+F3 |
 | Quick View in het andere paneel | Ctrl+Q |
 | Quick Look (macOS-voorbeeld) | Cmd+Y |

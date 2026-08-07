@@ -25,6 +25,14 @@ Peach Commander has a built-in viewer that lets you look inside a file without o
 - If text looks garbled, click Encoding in the toolbar (or press E) to cycle through text encodings until it reads correctly; the automatic setting usually gets it right.
 - Press W to toggle word wrap for long lines.
 
+## Notes about a line
+
+If the Notes plugin is installed, a note can be about a particular line of a file rather than about the file as a whole.
+
+- Put the cursor on the line and choose **View ▸ Note for This Line…** (Cmd+Shift+N). The note editor opens with the file name and the line number in its title.
+- Lines that already carry a note appear as a **Notes** group in the marks panel at the bottom of the window, next to any search marks. Press Cmd+Ctrl+M to open the panel; double-click an entry to jump to that line.
+- The notes themselves live with all your other notes, so the notes overview and Find Files find them the same way. Deleting one is done in the note editor — the panel's close button only hides the group.
+
 ## Quick View and Quick Look
 
 Quick View shows a live preview in the panel you are *not* using, so you can keep browsing on one side while previewing on the other.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | View only the file under cursor (ignore marked files) | Shift+F3 |
 | Open in an external viewer | Option+F3 |
 | Find within the viewer | Ctrl+F |
+| Note for the line under the cursor | Cmd+Shift+N |
+| Show or hide the marks panel | Cmd+Ctrl+M |
 | Next / previous match | F3 / Shift+F3 |
 | Quick View in the other panel | Ctrl+Q |
 | Quick Look (macOS preview) | Cmd+Y |

@@ -25,6 +25,14 @@ Peach Commander are un vizualizator integrat care vă permite să priviți în i
 - Dacă textul pare deteriorat, faceți clic pe Codificare în bara de instrumente (sau apăsați E) pentru a parcurge codificările de text până când se citește corect; setarea automată reușește de obicei.
 - Apăsați W pentru a comuta încadrarea cuvintelor pentru liniile lungi.
 
+## Notițe pentru o linie
+
+Dacă modulul Notițe este instalat, o notiță se poate referi la o anumită linie a unui fișier, nu la fișierul întreg.
+
+- Puneți cursorul pe linie și alegeți **Vizualizare ▸ Notiță pentru această linie…** (Cmd+Shift+N). Editorul de notițe se deschide cu numele fișierului și numărul liniei în titlu.
+- Liniile care au deja o notiță apar ca grupul **Notițe** în panoul de marcaje din partea de jos a ferestrei, lângă rezultatele căutării. Cmd+Ctrl+M deschide panoul; un dublu clic pe o intrare sare la linia respectivă.
+- Notițele stau împreună cu toate celelalte, așa că prezentarea notițelor și Căutare fișiere le găsesc la fel. Ștergerea se face în editorul de notițe — butonul de închidere al panoului doar ascunde grupul.
+
 ## Quick View și Quick Look
 
 Quick View afișează o previzualizare în timp real în panoul pe care *nu* îl folosiți, astfel încât să puteți continua să navigați pe o parte în timp ce previzualizați pe cealaltă.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Vizualizați doar fișierul de sub cursor (ignorați fișierele marcate) | Shift+F3 |
 | Deschideți într-un vizualizator extern | Option+F3 |
 | Găsiți în vizualizator | Ctrl+F |
+| Notiță pentru linia de sub cursor | Cmd+Shift+N |
+| Afișează sau ascunde panoul de marcaje | Cmd+Ctrl+M |
 | Următoarea / precedenta potrivire | F3 / Shift+F3 |
 | Quick View în celălalt panou | Ctrl+Q |
 | Quick Look (previzualizare macOS) | Cmd+Y |

@@ -25,6 +25,14 @@ Peach Commander ha un visualizzatore integrato che ti permette di guardare dentr
 - Se il testo appare confuso, fai clic su Codifica nella barra degli strumenti (o premi E) per scorrere le codifiche di testo finché non si legge correttamente; l'impostazione automatica di solito è corretta.
 - Premi W per commutare l'a capo automatico per le righe lunghe.
 
+## Note su una riga
+
+Se il plugin Note è installato, una nota può riguardare una riga precisa di un file anziché il file nel suo insieme.
+
+- Porta il cursore sulla riga e scegli **Vista ▸ Nota per questa riga…** (Cmd+Maiusc+N). L'editor delle note si apre con il nome del file e il numero di riga nel titolo.
+- Le righe che hanno già una nota compaiono come gruppo **Note** nel pannello dei segni in fondo alla finestra, accanto ai risultati di ricerca. Cmd+Ctrl+M apre il pannello; un doppio clic su una voce salta a quella riga.
+- Le note stanno insieme a tutte le altre, quindi il riepilogo delle note e Cerca file le trovano come qualsiasi altra. Si eliminano nell'editor delle note: il pulsante di chiusura del pannello si limita a nascondere il gruppo.
+
 ## Anteprima rapida e Quick Look
 
 L'Anteprima rapida mostra un'anteprima in tempo reale nel pannello che *non* stai usando, così puoi continuare a sfogliare da un lato mentre visualizzi l'anteprima dall'altro.
@@ -100,6 +108,8 @@ timeout = 30                  ; seconds before the engine is stopped
 | Visualizza solo il file sotto il cursore (ignora i file contrassegnati) | Maiusc+F3 |
 | Apri in un visualizzatore esterno | Opzione+F3 |
 | Trova nel visualizzatore | Ctrl+F |
+| Nota per la riga sotto il cursore | Cmd+Maiusc+N |
+| Mostrare o nascondere il pannello dei segni | Cmd+Ctrl+M |
 | Corrispondenza successiva / precedente | F3 / Maiusc+F3 |
 | Anteprima rapida nell'altro pannello | Ctrl+Q |
 | Quick Look (anteprima macOS) | Cmd+Y |

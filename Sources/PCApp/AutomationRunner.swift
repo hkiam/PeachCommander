@@ -31,6 +31,16 @@ import PCVFS
 private var automationEditors: [EditorWindowController] = []
 /// Retains lister windows opened by the `view` automation verb.
 private var automationListers: [ListerWindowController] = []
+
+/// The viewer window a viewer command should act on: the one automation opened, else whichever is up.
+///
+/// One lookup, so `listerdump` and `listermarks` can never disagree about which window they mean.
+@MainActor
+private func currentLister() -> ListerWindowController? {
+    if let opened = automationListers.last { return opened }
+    return NSApp.windows.first { $0.windowController is ListerWindowController }?
+        .windowController as? ListerWindowController
+}
 /// Retains sync windows opened by the `syncdemo` automation verb (F-192).
 private var automationSyncWindows: [SyncWindowController] = []
 /// Retains type-colour editors opened by the `typecolors` verb (F-032).
@@ -101,16 +111,22 @@ extension MainWindowController {
                     panel.tableView.focusEntry(named: parts[0])
                     _ = await panel.setCursorComment(parts[1])
                 }
+            case "listercaret":                         // listercaret <line>: put the viewer's caret there
+                currentLister()?.automationSetCaret(line: Int(arg) ?? 1)
+            case "listernote":                          // listernote: write a note about the caret's line
+                currentLister()?.automationNoteForCurrentLine()
+            case "windowdump":                          // windowdump <outfile>: titles of the open windows
+                // The note editor belongs to the plugin and is its own window, so the only thing the host
+                // can honestly check about the write path is that the right window came up (F-379).
+                let titles = NSApp.windows.filter { $0.isVisible && !$0.title.isEmpty }
+                    .map { "window=\($0.title)" }.sorted().joined(separator: "\n")
+                try? (titles + "\n").write(toFile: arg, atomically: true, encoding: .utf8)
+            case "listermarks":                         // listermarks: open the viewer's docked marks panel
+                // So the next `listerdump` reads rendered labels, not just the model behind them: a group
+                // the panel never draws is not a feature the user has.
+                currentLister()?.automationShowMarks()
             case "listerdump":                          // listerdump <outfile>: what the viewer window shows
-                var out = ""
-                if let win = automationListers.last ?? nil {
-                    out = win.automationSummary()
-                } else if let win = NSApp.windows.first(where: { $0.windowController is ListerWindowController }),
-                          let controller = win.windowController as? ListerWindowController {
-                    out = controller.automationSummary()
-                } else {
-                    out = "ERROR: no lister window\n"
-                }
+                let out = currentLister()?.automationSummary() ?? "ERROR: no lister window\n"
                 try? out.write(toFile: arg, atomically: true, encoding: .utf8)
             case "previewpanel":                        // previewpanel on|off: *set* it, do not toggle
                 // A toggle depends on what the previous scenario left behind — this scenario measured a

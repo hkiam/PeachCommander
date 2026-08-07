@@ -25,6 +25,14 @@ A Peach Commander beépített megjelenítővel rendelkezik, amely lehetővé tes
 - Ha a szöveg zavarosnak tűnik, kattintson a Kódolás gombra az eszköztárban (vagy nyomja meg az E-t) a szövegkódolások végigjárásához, amíg helyesen nem olvasható; az automatikus beállítás általában eltalálja.
 - Nyomja meg a W-t a hosszú sorok sortörésének átkapcsolásához.
 
+## Jegyzetek egy sorhoz
+
+Ha a Jegyzetek bővítmény telepítve van, egy jegyzet a fájl egy adott sorára vonatkozhat, nem csak az egész fájlra.
+
+- Állítsa a kurzort a sorra, és válassza a **Nézet ▸ Jegyzet ehhez a sorhoz…** menüpontot (Cmd+Shift+N). A jegyzetszerkesztő a fájlnévvel és a sorszámmal a címében nyílik meg.
+- Azok a sorok, amelyekhez már tartozik jegyzet, **Jegyzetek** csoportként jelennek meg az ablak alján lévő jelölőpanelen, a keresési találatok mellett. A panelt a Cmd+Ctrl+M nyitja meg; egy bejegyzésre duplán kattintva a sorra ugorhat.
+- A jegyzetek a többi jegyzet mellett tárolódnak, így a jegyzetáttekintő és a Fájlok keresése ugyanúgy megtalálja őket. Törölni a jegyzetszerkesztőben lehet — a panel bezáró gombja csak elrejti a csoportot.
+
 ## Gyorsnézet és Quick Look
 
 A Gyorsnézet élő előnézetet mutat abban a panelben, amelyet *nem* használ, így folytathatja a böngészést az egyik oldalon, miközben a másikon előnéz.
@@ -100,6 +108,8 @@ A `{input}`, `{engine}` és `{outdir}` helyére futtatáskor kerül az érték. 
 | Csak a kurzor alatti fájl megtekintése (megjelölt fájlok mellőzése) | Shift+F3 |
 | Megnyitás külső megjelenítőben | Option+F3 |
 | Keresés a megjelenítőben | Ctrl+F |
+| Jegyzet a kurzor alatti sorhoz | Cmd+Shift+N |
+| Jelölőpanel megjelenítése vagy elrejtése | Cmd+Ctrl+M |
 | Következő / előző találat | F3 / Shift+F3 |
 | Gyorsnézet a másik panelben | Ctrl+Q |
 | Quick Look (macOS előnézet) | Cmd+Y |
