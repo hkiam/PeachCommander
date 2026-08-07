@@ -16,6 +16,14 @@
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
+**Harness: two failures that were mine.** A flaky test — `DirectoryWatcher` expectations were fulfilled
+twice, because FSEvents coalesces or does not as it sees fit; four of the five positive expectations
+lacked `assertForOverFulfill = false` and now have it, with the reason written down. And a whole suite of
+empty reports, which I spent half an hour reading as a product defect: I had rebuilt the app *while the
+harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
+nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
+sentence rather than letting it look like something else.
+
 ## 2026-08-07 (later) — FTP listings: a name with two spaces was unopenable (F-378)
 
 Last of the parsers on the list, and the one with no second implementation to compare against — `ftplib`
