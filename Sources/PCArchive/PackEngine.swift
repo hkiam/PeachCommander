@@ -117,7 +117,11 @@ public enum PackEngine {
             case .tarXz: flag = "-cJf"
             default: flag = "-cf"
             }
-            return (tar, [flag, archivePath] + names)
+            // `--` before the names: without it a file called "-x.txt" is read as a *switch*. tar then
+            // said "Can't specify both -x and -c" and the whole pack failed — and a file named "-C"
+            // would have been worse than a failure, because tar would have changed directory and
+            // archived something else. Measured, not assumed: both tar and 7z honour `--` here.
+            return (tar, [flag, archivePath, "--"] + names)
 
         case .zip, .sevenZip:
             guard let sevenZip = toolPath("7z") ?? toolPath("7za") else { throw PackError.toolNotFound("7z") }
@@ -130,6 +134,7 @@ public enum PackEngine {
             }
             if let split = options.splitSize { args.append("-v\(split)b") }
             args.append(archivePath)
+            args.append("--")               // see the tar branch: a name may begin with a dash
             args.append(contentsOf: names)
             return (sevenZip, args)
 
@@ -139,7 +144,8 @@ public enum PackEngine {
             if let pw { args.append("-hp\(pw)") }         // -hp also encrypts headers
             if let split = options.splitSize { args.append("-v\(split)b") }
             args.append(archivePath)
-            args.append(contentsOf: names)
+            args.append("--")               // as above; `rar` is not installed here, so this one is by
+            args.append(contentsOf: names)  // its documentation rather than by measurement
             return (rar, args)
         }
     }

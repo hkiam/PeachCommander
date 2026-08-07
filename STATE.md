@@ -24,6 +24,34 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-07 (evidence sweep, batch 5) — Archives: a dash in a name, and zip slip
+
+Two rows (F-131, F-132), two defects — and one of them is a security hole rather than an inconvenience.
+
+**A file whose name begins with a dash made packing fail completely (F-132).** The packers are driven by
+command line and the names went in unguarded, so `-x.txt` was read as a *switch*: `tar` answered "Can't
+specify both -x and -c" and the whole operation failed, in every format, with a message from the packer
+that says nothing to the person who pressed the button. A file called `-C` would have been worse than a
+failure — tar would have changed directory and archived something else. The names go after `--` now,
+which both `tar` and `7z` honour (measured, not read).
+
+**A crafted archive could write outside the folder the user chose (F-131).** "Zip slip": a member named
+`../../evil.txt`, extracted, landed beside and above the destination while the extraction reported
+success. An archive is data from somewhere else and this is the oldest trick there is. Members that
+would land outside are skipped; the harmless ones in the same archive still arrive. Absolute member
+names were already contained.
+
+**New gate:** `Tools/check-pack-formats.sh` — the archives this app writes, read back by Python's
+`zipfile`/`tarfile` and by `7z t`, with the compression level checked by comparing a stored against a
+maximum archive so a level that never reaches the tool cannot pass.
+
+**And a false alarm of my own worth writing down.** The zip-slip test asserted against the *system* temp
+directory, so on the run after the fix it failed on a file its own earlier, pre-fix run had left there —
+and the failure read as "still broken". The test now works two levels down inside its own private
+folder. A test that litters a shared directory will eventually lie to you.
+
+Rows without evidence: 78 → 76.
+
 ## 2026-08-07 (evidence sweep, batch 4) — Undoing a batch rename did nothing
 
 One row (F-170…F-176), one defect, and it is the one that costs a folder rather than a file.
