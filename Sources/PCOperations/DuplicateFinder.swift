@@ -47,10 +47,35 @@ public enum DuplicateFinder {
                 byDigest[digest, default: []].append(p.path)
             }
             for (digest, dupes) in byDigest where dupes.count > 1 {
-                groups.append(DuplicateGroup(size: size, digest: digest, paths: dupes.sorted()))
+                // Two names for one file are not two copies: deleting one frees nothing, so listing the
+                // pair as reclaimable space is simply untrue — and this window offers to delete what it
+                // finds. Symlinks never got this far (`stat` reports them as links, not files); hard
+                // links did, because they are indistinguishable by size and content.
+                let distinct = distinctFiles(dupes, on: fs)
+                guard distinct.count > 1 else { continue }
+                groups.append(DuplicateGroup(size: size, digest: digest, paths: distinct.sorted()))
             }
         }
         // Largest wasted space first (size * (count-1)).
         return groups.sorted { ($0.size * Int64($0.paths.count - 1)) > ($1.size * Int64($1.paths.count - 1)) }
+    }
+
+    /// One path per physical file, keeping the first name for each.
+    ///
+    /// Only for a file system whose paths *are* files. `localFileIfAvailable` looks like the general
+    /// way to ask, but on an archive it extracts the member to a temp file — so asking it per candidate
+    /// would unpack the whole set to learn nothing (archive members cannot share storage anyway).
+    private static func distinctFiles(_ paths: [String], on fs: VirtualFileSystem) -> [String] {
+        guard fs.scheme == "file" else { return paths }
+        var seen = Set<String>()
+        var out: [String] = []
+        for path in paths {
+            var info = stat()
+            // lstat, not stat: a symlink must be judged as itself rather than as what it points at.
+            guard lstat(path, &info) == 0 else { out.append(path); continue }
+            let identity = "\(info.st_dev):\(info.st_ino)"
+            if seen.insert(identity).inserted { out.append(path) }
+        }
+        return out
     }
 }

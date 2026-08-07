@@ -69,4 +69,44 @@ final class DuplicateFinderTests: XCTestCase {
         XCTAssertEqual(groups.count, 2)
         XCTAssertEqual(groups.first?.size, 1000)   // biggest wasted space first
     }
+
+    // MARK: - Things that look identical but are not separate copies (F-158)
+    //
+    // The results window offers to delete what this finds, so a wrong grouping is not a cosmetic
+    // problem. Two of them are worth pinning: a link and its target hold the same bytes but deleting
+    // "the duplicate" frees nothing at best and destroys the only copy at worst.
+
+    func testASymlinkIsNotReportedAsADuplicateOfItsTarget() async throws {
+        let target = try write("real.txt", "the only copy")
+        let link = dir.appendingPathComponent("link.txt")
+        try FileManager.default.createSymbolicLink(at: link, withDestinationURL: target)
+
+        let groups = await DuplicateFinder.find(paths: [vpath(target), vpath(link)], on: fs)
+        XCTAssertTrue(groups.isEmpty, "a symlink and its target are one file; offering to delete the "
+                      + "\"duplicate\" invites deleting the data and keeping the pointer. Groups: \(groups)")
+    }
+
+    func testAHardLinkIsNotReportedAsASeparateCopy() async throws {
+        // Same inode: deleting one frees no space at all, so listing the pair as recoverable waste is
+        // simply untrue.
+        let target = try write("original.txt", "shared bytes")
+        let link = dir.appendingPathComponent("hard.txt")
+        try FileManager.default.linkItem(at: target, to: link)
+
+        let groups = await DuplicateFinder.find(paths: [vpath(target), vpath(link)], on: fs)
+        XCTAssertTrue(groups.isEmpty, "two names for one file are not two copies. Groups: \(groups)")
+    }
+
+    func testTwoRealCopiesAreStillFoundAlongsideALink() async throws {
+        // The negative cases above must not be bought by making the finder blind: a genuine duplicate
+        // sitting next to a link still has to be reported.
+        let a = try write("a.txt", "same content here")
+        let b = try write("b.txt", "same content here")
+        let link = dir.appendingPathComponent("a-link.txt")
+        try FileManager.default.createSymbolicLink(at: link, withDestinationURL: a)
+
+        let groups = await DuplicateFinder.find(paths: [vpath(a), vpath(b), vpath(link)], on: fs)
+        XCTAssertEqual(groups.count, 1)
+        XCTAssertEqual(groups.first?.paths, [a.path, b.path].sorted())
+    }
 }

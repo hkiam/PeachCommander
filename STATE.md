@@ -24,6 +24,33 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-07 (evidence sweep, batch 3) — F7 and the duplicate finder
+
+Two rows, four defects — and this time they are all about a dialog being told something and doing
+something else.
+
+**F7 "create folder" (F-082).** Two tests existed, for the two shapes the feature was written for:
+`a/b/c` and `one|two|three`. A dialog receives everything else.
+
+  * `../elsewhere` created the folder *outside* the directory the panel is showing. The listing did not
+    change, nothing said why, and the obvious response is to try again.
+  * `.` reported the parent itself back as freshly created.
+  * A whitespace-only entry reported success and created nothing at all.
+
+All three refused now. Deliberately still allowed: a leading `/` means "here" (it is what anyone used to
+a shell types, and it was already contained), and a backslash is part of the name — it separates path
+components on Windows, not here, and treating it as a separator would make a legal macOS name
+unreachable.
+
+**The duplicate finder (F-158).** Symlinks were already safe — a link stats as a link, not a file, so it
+never reached the comparison. That is the direction that would have been dangerous, and it holds. But
+**two hard links to one file were reported as duplicates**: deleting one frees nothing, so the window
+offered reclaimable space that does not exist. Collapsed by device+inode now, and only for a file system
+whose paths are real files — `localFileIfAvailable` looks like the general way to ask, but on an archive
+it *extracts* the member, so asking per candidate would unpack the whole set to learn nothing.
+
+Rows without evidence: 80 → 78.
+
 ## 2026-08-07 (evidence sweep, batch 2) — Copy metadata, clone, verify, links
 
 Four rows (F-087/088/090/093), one defect. A much better yield than batch 1, and that is worth saying:
