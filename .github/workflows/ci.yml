@@ -51,6 +51,13 @@ jobs:
       - name: Check the descript.ion bytes against an independent decoder
         run: ./Tools/check-descript-format.sh
 
+      # The archive readers against Python's zipfile/tarfile, over a corpus generated here with the
+      # system's own zip and tar: stored and deflated members, ustar/GNU/PAX, gzip, long names, Unicode,
+      # and 120 members in one directory. A missing entry cannot be opened, extracted or searched, and a
+      # wrong size makes a copy out of an archive write the wrong bytes — both silent. Needs no build.
+      - name: Check the archive listing against an independent reader
+        run: ./Tools/check-archive-listing.sh
+
       - name: Build project
         run: |
           ./Tools/build.sh

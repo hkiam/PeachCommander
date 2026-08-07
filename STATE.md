@@ -16,6 +16,34 @@
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
+## 2026-08-07 — The archive readers agree with an independent one (F-377)
+
+Third corpus, and this time the answer is that the code is right — which is worth as much as a defect,
+provided the check could have found one.
+
+The archives are *generated* by the system's own `zip` and `tar` rather than found: this machine has almost
+none lying about, and generating them means the awkward cases are actually present instead of hoped for —
+stored and deflated members, jar, tar in ustar/GNU/PAX flavours, gzip, a name longer than a ustar header
+holds, Unicode names, and 120 members in one directory so an off-by-one in a central-directory walk shows
+up. The witness is Python's `zipfile`/`tarfile`: separate implementations that know nothing about this
+project. Result: 8 archives, ~1000 entries, **no disagreement on any entry or size**, and three injected
+mutations (drop every tenth zip entry, report the compressed size, drop the last tar member) are all
+caught.
+
+**The one divergence is a documented decision, not a defect.** By the letter of the zip specification a
+member name is CP437 unless bit 11 of the general-purpose flags marks it UTF-8 — but Info-ZIP on macOS
+writes UTF-8 bytes *without* setting that flag, and so do most tools on Linux. Python follows the letter
+and shows `Gr├╝├ƒe.txt`; this app reads UTF-8 and shows `Grüße.txt`, which is the name the file actually
+has. The comparison now puts both readings on the same footing by comparing the bytes, and the reason is
+recorded in `ZipReader` so nobody "fixes" it toward the specification and breaks every real archive.
+
+Two mistakes of my own on the way, both in the *comparison*: parsing `tar -tvf` output I took the owner
+column for the size, which made every entry look missing; and I read the diff backwards and briefly
+believed the app was the one mangling Unicode names. Reading the archives with a library instead of
+parsing tool output removed the first, and naming the two sides in the message removed the second.
+
+`Tools/check-archive-listing.sh` keeps it, in CI, verified by breaking `TarReader` on purpose first.
+
 ## 2026-08-06 (night) — The encoding detector was wrong about 4 in 300 real files (F-376)
 
 Next corpus, same method: 300 real text files over 64 KB from this machine, each asked "what does the

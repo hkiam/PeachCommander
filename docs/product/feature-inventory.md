@@ -126,7 +126,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 
 | ID | Feature | Notes | Spec | Iter | Prio | Status |
 |---|---|---|---|---|---|---|
-| F-130 | Enter archive like a directory (zip, tar, gz, bz2, xz, 7z, rar-read, iso, cab, cpio, lzh) | libarchive read; ev: symbol:ShellArchiveSource ev: test:ArchiveFSTests | SPEC-007 | I09 | P1 | done |
+| F-130 | Enter archive like a directory (zip, tar, gz, bz2, xz, 7z, rar-read, iso, cab, cpio, lzh) | libarchive read; ev: symbol:ShellArchiveSource ev: test:ArchiveFSTests; the listing is checked against Python's zipfile/tarfile over a generated corpus — stored/deflated, ustar/GNU/PAX, gzip, long names, Unicode (F-377); ev: file:Tools/check-archive-listing.sh | SPEC-007 | I09 | P1 | done |
 | F-131 | Unpack (Alt+F9): all/selected, with paths, overwrite handling | | SPEC-007 | I09 | P1 | done |
 | F-132 | Pack (Alt+F5): zip/tar/tgz/tbz/txz; options: compression level, store paths, encrypt (zip AES), self-extracting n/a | Move-to-archive option; TC parity | SPEC-007 | I09 | P1 | done |
 | F-133 | Copy INTO archive with F5 (add), delete/rename inside archive (F8/F6 rewrite) | zip targets only; the earlier note that cross-panel F5 add was pending is stale; ev: symbol:addToArchive ev: test:ArchiveEditorTests | SPEC-007 | I09 | P1 | done |
