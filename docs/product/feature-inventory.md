@@ -82,7 +82,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 |---|---|---|---|---|---|---|
 | F-080 | F5 Copy with dialog: target path editable, wildcard rename, options | Queue checkbox, "only newer", tree copy; ev: symbol:promptTarget ev: symbol:splitTargetMask | SPEC-004 | I04 | P1 | done |
 | F-081 | F6 Move (same dialog); Shift+F6 inline rename in panel | ev: cm_RenMov ev: symbol:beginInlineRename | SPEC-004 | I04 | P1 | done |
-| F-082 | F7 MkDir: create nested paths `a/b/c` in one go, multiple via \| | | SPEC-004 | I04 | P1 | done |
+| F-082 | F7 MkDir: create nested paths `a/b/c` in one go, multiple via \| ".." used to create the folder outside the directory the panel is showing — invisible to the user, with the listing unchanged and nothing said; "." reported the parent back as newly created, and a whitespace-only entry reported success while creating nothing. All three refused now. A leading "/" still means "here", and a backslash is part of the name (it is a separator on Windows, not on macOS); ev: symbol:MkDirEngine ev: test:MkDirEngineTests | | SPEC-004 | I04 | P1 | done |
 | F-083 | F8/Del delete: to Trash by default; Shift+F8 bypass Trash | Uses NSWorkspace recycle; permanent delete confirm | SPEC-004 | I04 | P1 | done |
 | F-084 | Progress dialog: per-file + total %, speed, remaining, pause/resume/cancel | Speed-limit option (KB/s); ev: symbol:ProgressDialog ev: symbol:speedLimitKBps | SPEC-004 | I04 | P1 | done |
 | F-085 | Background transfer manager (F5-F2 queue); multiple queues; sequential ops | TC background transfer manager window | SPEC-004 | I04 | P1 | done |
@@ -149,7 +149,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-155 | Results: feed to listbox (results become a panel), view/edit from results, goto file | Panel shows virtual search-result dir | SPEC-008 | I10 | P1 | done |
 | F-156 | Save/load search templates; use templates in select/color/sync rules | Named templates shared across features | SPEC-008 | I10 | P2 | done |
 | F-157 | Plugin (content-field) search criteria with operators | e.g. `duration > 10min`; ev: symbol:contentFieldPopup ev: test:SearchPluginTextTests | SPEC-012 | I16 | P2 | done |
-| F-158 | Duplicate file finder (by name/size/content hash) | Part of Find Files "duplicates" | SPEC-008 | I17 | P1 | done |
+| F-158 | Duplicate file finder (by name/size/content hash) | Part of Find Files "duplicates"; symlinks were already excluded (a link stats as a link, not a file), but two hard links to one file were reported as duplicates — deleting one frees nothing, so the window claimed reclaimable space that does not exist; collapsed by device+inode, and only for a file system whose paths are real files (asking an archive would extract every candidate to learn nothing); ev: symbol:DuplicateFinder ev: test:DuplicateFinderTests | SPEC-008 | I17 | P1 | done |
 | F-159 | Spotlight-accelerated mode (optional toggle) | macOS extra: NSMetadataQuery prefilter | SPEC-015 | I18 | P3 | done |
 
 ## 8. Multi-rename tool
