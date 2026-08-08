@@ -8,7 +8,7 @@
 | Field | Value |
 |---|---|
 | Phase | **A & B done. C: I14 done; I15 plain FTP LIVE (quick-connect + connection manager, verified vs test.rebex.net; SFTP + explicit-FTPS still pending); I16 lister/content plugins mostly done. D: I17 utilities mostly done; I18 macOS integration MOSTLY DONE (Quick Look Cmd+Y, Share sheet, Open With, Finder Tags: color column + tag-filter (tag:red/#blau), Spotlight metadata in Get Info, Services menu integration, "Open Terminal Here", Full Disk Access onboarding, Go▸Trash, xattr inspector/remove in Change Attributes, privileged "retry as administrator" for chmod+delete done; ACL editing/copy-move-elevation/undo pending). Also F-063 Ctrl+Left/Right open cursor folder in other panel done.; I19 partial (perf targets validated); I20 shipping GROUNDWORK done (DMG script + release CI workflow + hardened-runtime entitlements + RELEASE.md + CHANGELOG + local crash reporting; only Developer-ID signing/notarization and Sparkle auto-update remain — both need Apple creds / update-feed hosting).** |
-| Evidence sweep | **Batches 1–24 (2026-08-07/08): 73 rows checked, 33 defects fixed, 87 → 21 rows without evidence.** Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive wrote outside the chosen folder (F-131); the archive password stood in the process list (F-136); a CRLF code file rendered as one line six million characters wide (F-110); undoing a batch rename did nothing (F-175); Num/ did nothing (F-056); a wildcard selected the *wrong* file (F-055); a Windows-written .sfv verified nothing (F-097). Six defects were one Swift trap — `"\r\n"` is a single Character. New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, `check-tests-registered.py`, `check-vm-flags.sh`, plus `check-descript-format.sh` extended. Of the 21 rows left, 8 are blocked externally (Apple credentials, SMB mounts, the Services menu). |
+| Evidence sweep | **Batches 1–24 (2026-08-07/08): 73 rows checked, 33 defects fixed, 87 → 21 rows without evidence.** A follow-up *interpreter sweep* (2026-08-08, after 0.4.0) then went at one defect class on purpose — a string from somewhere else reaching something that interprets it — and found four more: the panel's extract walk wrote above the destination (F-131), an XML file could read your other files through external entities (F-368), previewing a document fetched a remote image and so reported that you opened it (F-116), and the assistant's approval gate was bypassable through `run_command`. See the entry below. Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive wrote outside the chosen folder (F-131); the archive password stood in the process list (F-136); a CRLF code file rendered as one line six million characters wide (F-110); undoing a batch rename did nothing (F-175); Num/ did nothing (F-056); a wildcard selected the *wrong* file (F-055); a Windows-written .sfv verified nothing (F-097). Six defects were one Swift trap — `"\r\n"` is a single Character. New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, `check-tests-registered.py`, `check-vm-flags.sh`, plus `check-descript-format.sh` extended. Of the 21 rows left, 8 are blocked externally (Apple credentials, SMB mounts, the Services menu). |
 | Current iteration | **Editor: JSON/YAML/XML outline, structural navigation, paths, validation and transformations DONE (F-368/369/370)**; I19 T06 accessibility + keyboard operation DONE (see the log below). Docs/i18n complete. **I19 localization + help DONE (19 languages)**; **documentation system live** (SSOT → Apple Help Book + MkDocs site + generated FEATURES/README). Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update (both need Apple creds / feed hosting); accessibility (I19 T06) **done**. |
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. |
@@ -25,6 +25,64 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-08 (interpreter sweep) — Four ways a file could act on the machine
+
+After the release, the second step of the agreed order: go through every place where a string from
+somewhere else reaches something that *interprets* it, rather than waiting for the inventory to point
+at one. The first sweep found this class three times by accident (a file name in a shell line, a member
+name in a path, a password in argv); this one looked for it on purpose.
+
+**What the class covers, and what was cleared.** Shell command lines, the AppleScript that carries a
+command to the root shell, regular expressions, CSV/TSV, packer argv, localized format strings, URL
+schemes, archive and server listings becoming local paths, XML, and the HTML the viewer renders. Checked
+and *dropped*, because assuming would have cost real code: `NSPredicate` (none exist), the regex sites
+(deliberate or already escaped), `CopyEngine`/`MoveEngine`/`DeleteEngine` (they list with
+`FileManager.contentsOfDirectory`, which never returns `..`), `NSKeyedUnarchiver` (not used anywhere),
+`XMLParser` (defaults to not resolving external entities — measured), and `javascript:` links in the
+viewer (JavaScript is off, so they do not run).
+
+**Four defects.**
+
+1. *The panel's extract walk wrote above the destination.* The archive extractor refused a member that
+   would land outside; the panel's own walk — "copy out of an archive", and the same code when the
+   source is FTP — built its paths from the same `fs.list()` entries and refused nothing. Measured, not
+   assumed: a zip containing `../escaped.txt` lists as an entry named exactly `..` of kind `.directory`,
+   so the walk created `<destination>/..` — the parent — and wrote the payload there, reporting success.
+   The rule is one implementation now (`PCFoundation.PathContainment`). Neutering either of its two
+   layers leaves the extractor's end-to-end tests green, which is why the new tests pin them separately.
+
+2. *An XML file could read your other files.* `XMLDocument(data:options: [])` resolves external
+   entities. Three places parse XML with it — the tree view, XPath, "format XML" — and all three are
+   handed a file the user merely opened. A `<!ENTITY x SYSTEM "file:///etc/passwd">` had the contents
+   substituted into what the app showed; a `http://` entity made the app fetch a URL. The first reading
+   of this was "Foundation does not do that by default", and the probe said otherwise —
+   `.nodeLoadExternalEntitiesNever` is what actually stops it, and `.SameOriginOnly` throws for the
+   data-based initializer.
+
+3. *Previewing a document told somebody that you opened it.* The viewer's comment said a previewed page
+   "cannot run active content or phone home" because JavaScript is disabled. An `<img>` needs no
+   JavaScript. Measured with a listening server: the request arrived. Two blocks, because the paths
+   differ — a CSP in the generated Markdown document, and a content rule list on the web view for HTML
+   files that are not ours to add a header to. One rule per scheme, because WebKit answers
+   `^(https?|wss?)://` with "Disjunctions are not supported yet" and a list that fails to compile fails
+   *open*.
+
+4. *The assistant's approval gate had a door beside it.* `run_command` invokes any `cm_*`, and its
+   capability was `.runCommand`, which is not one of the mutating ones. So `delete_permanently` returned
+   a plan to approve and `run_command("cm_DeleteReal")` returned `ok` — the same deletion, nothing to
+   approve. Commands are judged by what they change now, classified from the registry's category, with
+   an unrecognised category counting as mutating.
+
+**Two claims in comments turned out to be false** ("cannot phone home", "local only"), and one in the
+inventory. That is the pattern worth remembering from this sweep: the places where nobody had measured
+were exactly the places where a comment said measurement was unnecessary.
+
+**Two new VM scenarios, both mutation-verified**, because neither defect is visible in a screenshot or
+in what the app says about itself: `zip-slip` reports what is in the destination *and* in its parent
+(and says `escaped.txt` in the parent when the guard is removed), and `viewer-beacon` asks a server on
+the guest whether anything arrived — with a self-test request during setup, so "nothing arrived" cannot
+pass by the witness being dead. It answers `viewer-fetched` against a build without the blocks.
 
 ## 2026-08-08 (evidence sweep, batch 24) — A test that prevents a defect rather than finding one
 
