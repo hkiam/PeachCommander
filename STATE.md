@@ -25,6 +25,23 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 16) — Spotlight answers a different question
+
+Four rows (F-159, F-290, F-294, F-299). No defect, one honesty problem.
+
+**Ticking "Use Spotlight" changes what the search means.** The index has no notion of a regular
+expression, a depth limit or a selection scope, so those controls simply stop applying — and that was
+said only in the checkbox's tooltip, which is no help at the moment it matters, because by then the user
+is reading a result list. The status line already named the engine ("… found (Spotlight)"); it now also
+names whichever of the three was set and did not apply.
+
+Not a defect, and I nearly treated it as one: the behaviour is deliberate and documented, the fallback
+to the walker for non-local folders is there, and the predicate substitutes through `%@` rather than
+building a string, so a name mask cannot alter the query. What was missing was telling the user at the
+right time.
+
+Rows without evidence: 58 → 54.
+
 ## 2026-08-08 (evidence sweep, batch 15) — A red tag that was not red
 
 Two rows (F-291, F-292), one defect — and it is one only a non-English system, or a careful look at the

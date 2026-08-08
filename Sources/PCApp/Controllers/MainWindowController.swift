@@ -2788,7 +2788,17 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                         let paths = await self.spotlightSearch.search(nameMask: template.nameMask, contentText: template.contentText, in: dir)
                         guard !Task.isCancelled else { win.searchFinished(); return }
                         for path in paths { win.addResult(path) }
-                        win.setStatus(String(localized: "Done: \(paths.count) found (Spotlight)"))
+                        // Spotlight answers a different question from the walker: it has no notion of a
+                        // regular expression, a depth limit or a selection scope. The tooltip on the
+                        // checkbox says so, which is no help at the moment it matters — so when one of
+                        // those is actually set, the result says which of them did not apply (F-159).
+                        var ignored: [String] = []
+                        if template.useRegex { ignored.append(String(localized: "regular expressions")) }
+                        if template.maxDepth > 0 { ignored.append(String(localized: "the depth limit")) }
+                        if inSelectionOnly { ignored.append(String(localized: "the selection scope")) }
+                        win.setStatus(ignored.isEmpty
+                            ? String(localized: "Done: \(paths.count) found (Spotlight)")
+                            : String(localized: "Done: \(paths.count) found (Spotlight — \(ignored.joined(separator: ", ")) did not apply)"))
                         win.searchFinished()
                         return
                     }
