@@ -26,6 +26,11 @@ does not have.
   substituted into what the app displayed — in the XML tree view, in an XPath result, and after "format
   XML" in the editor. A `http://` entity made the app fetch a URL while you thought you were looking at
   a local file. Nothing needed to be run: opening the file was enough.
+- **Previewing a document no longer tells anyone you opened it.** A Markdown or HTML file containing
+  `![](http://…/pixel.png?who=you)` fetched that image when the viewer rendered it — a read receipt for
+  a file on your own disk. The viewer disabled JavaScript and considered the matter closed; an image
+  element does not need JavaScript. Network loads are blocked in the preview now, and images sitting
+  next to the document still appear.
 
 ## [0.4.0] — 2026-08-08
 

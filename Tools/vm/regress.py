@@ -105,9 +105,11 @@ SCENARIOS = [
     # (F-359) — the terminator surviving is the part that fails silently.
     ("editor-lines", ["editlines /Users/admin/pc-demo/messy.txt|/Users/admin/lines.txt",
                       "wait 2000"], 9),
-    # Do attribute changes over SFTP actually reach the server (F-364)? They used to be discarded by an
-    # empty function while the dialog reported success. `sftpchmod` connects, changes the mode, and reports
-    # what the server says the mode is afterwards — the only answer that counts.
+    # Does previewing a document fetch what it points at (F-116)? An <img> pointing at a server needs no
+    # JavaScript, so disabling that never stopped it: opening the file told the other end who opened it
+    # and when. The witness is the server, not the app — see EXTERNAL_CHECKS below.
+    ("viewer-beacon", ["active left", "left /Users/admin/pc-beacon", "wait 1200",
+                       "focus beacon.md", "wait 400", "cmd cm_List", "wait 3000"], 10),
     # Does a crafted archive write outside the folder the user chose (F-131)? The archive extractor
     # refused this; the panel's own extract walk — this one — did not, and nothing in the unit tests
     # reaches it, because nothing there constructs a MainWindowController. The report says where files
@@ -115,6 +117,9 @@ SCENARIOS = [
     ("zip-slip", ["active left", "left /Users/admin/pc-slip", "wait 1000",
                   "zipextract /Users/admin/pc-slip/evil.zip|/Users/admin/pc-slip/target/out"
                   "|/Users/admin/slip.txt", "wait 2500"], 10),
+    # Do attribute changes over SFTP actually reach the server (F-364)? They used to be discarded by an
+    # empty function while the dialog reported success. `sftpchmod` connects, changes the mode, and reports
+    # what the server says the mode is afterwards — the only answer that counts.
     ("sftp-attributes", ["active left", "left /Users/admin", "wait 1000",
                          "sftpchmod /Users/admin/sftp-demo/perm.txt|600|/Users/admin/sftp.txt",
                          "wait 3000"], 12),
@@ -283,6 +288,12 @@ REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"
 # than the app is asked whether it really changed. `stat` over ssh is not the code under test.
 EXTERNAL_CHECKS = {
     "sftp-attributes": ("stat -f %Lp ~/sftp-demo/perm.txt", "600"),
+    # Three distinct answers, so the interesting failure cannot hide: "viewer-fetched" means the block is
+    # not working, "server-not-running" means the witness died and the run proves nothing, and only
+    # "only-selftest" means the document was rendered and reached nobody.
+    "viewer-beacon": ("if grep -q viewer.png ~/beacon-hits.log 2>/dev/null; then echo viewer-fetched; "
+                      "elif grep -q selftest ~/beacon-hits.log 2>/dev/null; then echo only-selftest; "
+                      "else echo server-not-running; fi", "only-selftest"),
     # The downloaded file must be byte-identical to the original — asked of `cmp`, not of the downloader.
     "sftp-download": ("cmp -s ~/sftp-demo/big.txt ~/got.txt && echo identical || echo differs",
                       "identical"),
@@ -579,6 +590,17 @@ def boot(app: str, run: str):
     ssh_guest(ip, "mkdir -p pc-tc-ro && printf x > pc-tc-ro/tc-utf16.txt && printf x > pc-tc-ro/tc-multi.txt")
     sh(["scp", *SSH, str(Path(__file__).with_name("fixtures-tc") / "descript.ion"),
         f"{GUEST}@{ip}:pc-tc-ro/descript.ion"])
+    # A listening witness for the viewer's network block (F-116), plus a document that tries to reach it.
+    # The self-test request is what makes a later "no hit" mean anything: without it, a dead server and a
+    # working block produce the same empty log, and the scenario passes hardest when it proves least.
+    sh(["scp", *SSH, str(Path(__file__).with_name("beacon-server.py")), f"{GUEST}@{ip}:beacon-server.py"])
+    ssh_guest(ip, "rm -f ~/beacon-hits.log; pkill -f beacon-server.py; "
+                  "nohup python3 ~/beacon-server.py >/dev/null 2>&1 & sleep 2; "
+                  "curl -s -o /dev/null http://127.0.0.1:8731/selftest.png; "
+                  # Its own folder: a file added to pc-demo would change what every other scenario's
+                  # screenshot shows, and those are compared against a baseline.
+                  "mkdir -p pc-beacon && printf '# beacon\\n\\n"
+                  "![tracker](http://127.0.0.1:8731/viewer.png)\\n' > pc-beacon/beacon.md")
     # A crafted archive for the traversal scenario (F-131): a member stored as "../escaped.txt". Built
     # with python's zipfile, which writes the name through unchanged — the app's own ZipWriter would do
     # too, but a fixture made by the thing under test proves less. It gets its own tree, with the

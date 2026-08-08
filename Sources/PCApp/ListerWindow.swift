@@ -837,8 +837,16 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     }
 
     /// Render Markdown or HTML into a (lazily created) WKWebView layered over the
-    /// scroll-view area. JavaScript is disabled so a previewed page cannot run
-    /// active content or phone home; local sibling resources still load.
+    /// scroll-view area. JavaScript is disabled, and network loads are blocked, so a
+    /// previewed page cannot run active content or phone home; local sibling
+    /// resources still load.
+    ///
+    /// The second half used to be a claim rather than a fact. Disabling JavaScript stops scripts, not
+    /// `<img src="http://…">` — measured with a local server as the witness, and the request went out.
+    /// So a page previewed here reports back that it was opened, and from where. The generated Markdown
+    /// document carries a Content-Security-Policy for this, but an HTML file the user opens is not ours
+    /// to add a header to, and that path loads the file directly; the content rule list below covers
+    /// both, since it is applied to the web view rather than to the document.
     private func showWeb(for path: String, slice: FileSlice) {
         let web = ensureWebView()
         scrollView.isHidden = true
@@ -858,33 +866,35 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         let dir = url.deletingLastPathComponent()
         let ext = (path as NSString).pathExtension.lowercased()
 
-        if Self.htmlExts.contains(ext) {
-            let cap = 16 * 1024 * 1024
-            let raw = slice.bytes(at: 0, length: min(cap, Int(slice.count)))
-            if Self.declaresCharset(raw) {
-                // Charset is known to WebKit — load the file directly so relative
-                // CSS/images/links resolve and the declared encoding is honored.
-                web.loadFileURL(url, allowingReadAccessTo: dir)
-            } else {
-                // No charset declared: decode with the detected encoding and hand
-                // WebKit UTF-8 data so non-ASCII text is not garbled. (Such files
-                // are typically self-contained, so losing sibling-file access is OK.)
-                let enc = EncodingDetector.detect(Array(raw.prefix(64 * 1024)))
-                let text = String(bytes: raw, encoding: enc) ?? String(decoding: raw, as: UTF8.self)
-                if let data = text.data(using: .utf8) {
-                    web.load(data, mimeType: "text/html", characterEncodingName: "UTF-8", baseURL: dir)
-                } else {
+        loadWithoutNetwork(web) {
+            if Self.htmlExts.contains(ext) {
+                let cap = 16 * 1024 * 1024
+                let raw = slice.bytes(at: 0, length: min(cap, Int(slice.count)))
+                if Self.declaresCharset(raw) {
+                    // Charset is known to WebKit — load the file directly so relative
+                    // CSS/images/links resolve and the declared encoding is honored.
                     web.loadFileURL(url, allowingReadAccessTo: dir)
+                } else {
+                    // No charset declared: decode with the detected encoding and hand
+                    // WebKit UTF-8 data so non-ASCII text is not garbled. (Such files
+                    // are typically self-contained, so losing sibling-file access is OK.)
+                    let enc = EncodingDetector.detect(Array(raw.prefix(64 * 1024)))
+                    let text = String(bytes: raw, encoding: enc) ?? String(decoding: raw, as: UTF8.self)
+                    if let data = text.data(using: .utf8) {
+                        web.load(data, mimeType: "text/html", characterEncodingName: "UTF-8", baseURL: dir)
+                    } else {
+                        web.loadFileURL(url, allowingReadAccessTo: dir)
+                    }
                 }
+            } else {
+                // Treat as Markdown: decode a bounded prefix and render to HTML.
+                let cap = 8 * 1024 * 1024
+                let data = slice.bytes(at: 0, length: min(cap, Int(slice.count)))
+                let enc = EncodingDetector.detect(Array(data.prefix(64 * 1024)))
+                let text = String(bytes: data, encoding: enc) ?? String(decoding: data, as: UTF8.self)
+                let html = MarkdownRenderer.htmlDocument(from: text, title: url.lastPathComponent)
+                web.loadHTMLString(html, baseURL: dir)
             }
-        } else {
-            // Treat as Markdown: decode a bounded prefix and render to HTML.
-            let cap = 8 * 1024 * 1024
-            let data = slice.bytes(at: 0, length: min(cap, Int(slice.count)))
-            let enc = EncodingDetector.detect(Array(data.prefix(64 * 1024)))
-            let text = String(bytes: data, encoding: enc) ?? String(decoding: data, as: UTF8.self)
-            let html = MarkdownRenderer.htmlDocument(from: text, title: url.lastPathComponent)
-            web.loadHTMLString(html, baseURL: dir)
         }
     }
 
@@ -897,6 +907,49 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         let head = bytes.prefix(4096)
         let ascii = String(decoding: head, as: UTF8.self).lowercased()
         return ascii.contains("charset")
+    }
+
+    /// Every network scheme, blocked, whatever document the preview is showing.
+    ///
+    /// One rule per scheme on purpose: WebKit's filter engine rejects `^(https?|wss?)://` with
+    /// "Disjunctions are not supported yet", and a rule list that does not compile fails *open* — the
+    /// page would load and the block would exist only in the source. That was measured, not guessed,
+    /// which is why it is written the long way.
+    private static let noNetworkRules = """
+    [{"trigger":{"url-filter":"^http://"},"action":{"type":"block"}},
+     {"trigger":{"url-filter":"^https://"},"action":{"type":"block"}},
+     {"trigger":{"url-filter":"^ws://"},"action":{"type":"block"}},
+     {"trigger":{"url-filter":"^wss://"},"action":{"type":"block"}},
+     {"trigger":{"url-filter":"^ftp://"},"action":{"type":"block"}},
+     {"trigger":{"url-filter":"^ftps://"},"action":{"type":"block"}}]
+    """
+    private static var noNetworkList: WKContentRuleList?
+
+    /// Install the block on `web`, then load. `file:` and `data:` are untouched, so a document's
+    /// sibling image still appears — checked both ways.
+    ///
+    /// The load runs *in* the completion rather than beside it. Compiling is asynchronous, so loading
+    /// alongside it would leave the very first preview after launch unprotected — once, quietly, and
+    /// never in a way a later test would notice.
+    private func loadWithoutNetwork(_ web: WKWebView, _ load: @escaping () -> Void) {
+        func install(_ list: WKContentRuleList?) {
+            web.configuration.userContentController.removeAllContentRuleLists()
+            if let list { web.configuration.userContentController.add(list) }
+            load()
+        }
+        if let list = Self.noNetworkList { install(list); return }
+        guard let store = WKContentRuleListStore.default() else {
+            NSLog("[lister] no content rule list store — the preview is not blocked from the network")
+            load(); return
+        }
+        store.compileContentRuleList(forIdentifier: "pc-viewer-no-network",
+                                     encodedContentRuleList: Self.noNetworkRules) { list, error in
+            if let error {
+                NSLog("[lister] preview network block failed to compile: \(error.localizedDescription)")
+            }
+            Self.noNetworkList = list
+            install(list)
+        }
     }
 
     private func ensureWebView() -> ListerWebView {
