@@ -5078,14 +5078,24 @@ final class PanelController: NSObject, PanelControllerProtocol {
     }
 
     /// Extract items (archive-relative paths) from the current fs into a local dir.
+    ///
+    /// Nothing is written outside `destDir`. The names being turned into local paths come from the
+    /// listing — a zip's central directory, or an FTP server's LIST — and a member called ".." walks
+    /// the write up into the parent folder; `PathContainment` is where that is spelled out, and the
+    /// archive extractor asks it the same question. A refused name is skipped, not fatal: the honest
+    /// members beside it still arrive.
     func extractItems(_ items: [String], to destDir: String) async {
         for item in items {
-            let dest = (destDir as NSString).appendingPathComponent((item as NSString).lastPathComponent)
-            await extractNode(item, to: dest)
+            let name = (item as NSString).lastPathComponent
+            guard let dest = PathContainment.childPath(name, under: destDir, root: destDir) else {
+                logger.error("refused to extract \(name, privacy: .public): it would leave the destination")
+                continue
+            }
+            await extractNode(item, to: dest, root: destDir)
         }
     }
 
-    private func extractNode(_ archivePath: String, to destPath: String) async {
+    private func extractNode(_ archivePath: String, to destPath: String, root: String) async {
         let vpath = VFSPath(filesystemId: fs.scheme, path: archivePath)
         guard let entry = try? await fs.stat(vpath) else { return }
         if entry.kind == .directory {
@@ -5093,8 +5103,13 @@ final class PanelController: NSObject, PanelControllerProtocol {
             do {
                 for try await batch in fs.list(vpath) {
                     for child in batch.entries {
+                        guard let childDest = PathContainment.childPath(child.name, under: destPath,
+                                                                        root: root) else {
+                            logger.error("refused \(child.name, privacy: .public): it would leave the destination")
+                            continue
+                        }
                         await extractNode((archivePath as NSString).appendingPathComponent(child.name),
-                                          to: (destPath as NSString).appendingPathComponent(child.name))
+                                          to: childDest, root: root)
                     }
                 }
             } catch { logger.error("extract list failed: \(error)") }
