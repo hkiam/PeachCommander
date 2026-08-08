@@ -25,6 +25,29 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 18) — Two decimal separators in one status bar
+
+One row (F-030), two defects, both visible every single day and neither ever reported.
+
+**The unit ladder stopped at gigabytes.** A 4 TB volume's free space read "4096.0 GB", a 16 TB one
+"16384.0 GB". It carries on to T and P now.
+
+**And the separator did not match the line it sits in.** `String(format: "%.1f")` writes a decimal point
+whatever the language, while `SelectionSummaryFormatter` a few pixels away is locale-aware — so a German
+user read "4096.0 GB" next to "2,0 M".
+
+**The second could not be fixed on its own**, and finding out why was the useful part: the Find Files
+dialog *writes* these strings into its size fields when a template is loaded and *reads them back* when
+the search starts. Producing "1,5 MB" before `parse` accepted a comma would have turned a size filter
+into no filter at all — silently. So the parser learned both separators first, and the round trip is now
+pinned in three languages.
+
+**Two existing tests then failed, and they were wrong.** They asserted "1.5 KB" while calling the
+*machine's* locale, so they passed in CI (English) and failed on a German Mac — they were testing the
+runner's language, not the formatter. Given an explicit locale, which is what they meant.
+
+Rows without evidence: 51 → 50.
+
 ## 2026-08-08 (evidence sweep, batch 17) — A mask that selected the wrong file
 
 Three rows (F-035, F-055, F-057), one defect — in the single matcher behind select-by-wildcard, the quick

@@ -42,30 +42,44 @@ public struct ByteSize {
         self.bytes = bytes
     }
 
-    /// Format the byte count with the given style
-    public func formatted(style: Style = .bytes) -> String {
+    /// One fractional digit in the given locale's notation.
+    ///
+    /// `String(format: "%.1f")` writes a decimal *point* whatever the language, and this app shows the
+    /// result in the same status bar as `SelectionSummaryFormatter`, which is locale-aware — so a German
+    /// user read "4096.0 GB" next to "2,0 M", two separators in one line.
+    private static func decimal(_ value: Double, digits: Int, locale: Locale) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = locale
+        formatter.numberStyle = .decimal
+        formatter.usesGroupingSeparator = false
+        formatter.minimumFractionDigits = digits
+        formatter.maximumFractionDigits = digits
+        return formatter.string(from: NSNumber(value: value)) ?? String(format: "%.\(digits)f", value)
+    }
+
+    /// Format the byte count with the given style.
+    public func formatted(style: Style = .bytes, locale: Locale = .current) -> String {
+        func d(_ v: Double, _ digits: Int) -> String { Self.decimal(v, digits: digits, locale: locale) }
         switch style {
         case .bytes:
             return "\(bytes) bytes"
         case .kb:
             let value = Double(bytes) / 1024.0
             if value < 10 {
-                return String(format: "%.1f KB", value)
+                return "\(d(value, 1)) KB"
             } else if value < 1024 {
-                return String(format: "%.0f KB", value)
+                return "\(d(value, 0)) KB"
             } else {
-                let mb = value / 1024.0
-                return String(format: "%.1f MB", mb)
+                return Self(Int64(bytes)).formattedLarge(from: value / 1024.0, unitIndex: 2, locale: locale)
             }
         case .mb:
             let value = Double(bytes) / (1024.0 * 1024.0)
             if value < 10 {
-                return String(format: "%.1f MB", value)
+                return "\(d(value, 1)) MB"
             } else if value < 1024 {
-                return String(format: "%.0f MB", value)
+                return "\(d(value, 0)) MB"
             } else {
-                let gb = value / 1024.0
-                return String(format: "%.1f GB", gb)
+                return Self(Int64(bytes)).formattedLarge(from: value / 1024.0, unitIndex: 3, locale: locale)
             }
         case .bytesWithSep:
             let formatter = NumberFormatter()
@@ -73,6 +87,18 @@ public struct ByteSize {
             formatter.groupingSeparator = ","
             return "\(formatter.string(from: NSNumber(value: bytes)) ?? "") bytes"
         }
+    }
+
+    /// Units above the style's own, so a large volume does not read as four digits of gigabytes.
+    ///
+    /// A 4 TB disk's free space showed as "4096.0 GB" and a 16 TB one as "16384.0 GB", because the
+    /// ladder stopped at G. It now carries on to T and P — measured on the sizes disks actually come in.
+    private func formattedLarge(from value: Double, unitIndex: Int, locale: Locale) -> String {
+        let units = ["B", "KB", "MB", "GB", "TB", "PB"]
+        var v = value
+        var index = unitIndex
+        while v >= 1024, index + 1 < units.count { v /= 1024; index += 1 }
+        return "\(Self.decimal(v, digits: 1, locale: locale)) \(units[index])"
     }
 
     /// Parse a human byte size like "700", "10K", "1.5M", "2G", "500MB" (binary
@@ -93,6 +119,10 @@ public struct ByteSize {
             s.removeLast()
         }
         s = s.trimmingCharacters(in: .whitespaces)
+        // A comma is a decimal separator in most of the languages this app ships in, and these fields
+        // are filled *by* `formatted` when a search template is loaded — so what is written out has to
+        // read back in. Accepting both is strictly more forgiving than accepting one.
+        s = s.replacingOccurrences(of: ",", with: ".")
         guard let value = Double(s), value >= 0 else { return nil }
         let bytes = value * multiplier
         guard bytes.isFinite, bytes <= Double(Int64.max) else { return nil }
