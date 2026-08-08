@@ -25,6 +25,32 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 15) — A red tag that was not red
+
+Two rows (F-291, F-292), one defect — and it is one only a non-English system, or a careful look at the
+bytes, would show.
+
+**Reading a Finder tag was always done right.** It resolves the colour from the trailing index of the
+`_kMDItemUserTags` attribute, and its own comment explains why: the tag *names* are localized, the index
+is not. **Writing did not follow that through.** It went through `URLResourceValues.tagNames`, which
+stores a bare name — measured: setting `["Red"]` puts `"Red\n0"` on the file, and index 0 means *no
+colour*. So a label applied from this app was a grey dot in its own column, a colourless custom tag in
+the Finder, and on a German system a *second* tag sitting beside the "Rot" that was already there.
+
+Matching and writing now go by colour index, through a small `setxattr` that produces what the Finder
+actually reads. `FinderTagColor` moved into its own file to be testable at all — the cell drawing around
+it pulls in the theme and the icon cache, and neither has anything to do with what a tag is.
+
+**What was not wrong:** the share sheet already drops paths that no longer exist and beeps when nothing
+is left. I went looking there first and found it handled.
+
+**And two of my own, both about a test that does not run.** The new bundle went into an aggregate target
+instead of the `AllTests` *scheme*, so the suite was green with five tests unexecuted — the third time
+this session. Then it would not compile, because `PanelCells.swift` needs half of PCApp; that is what
+prompted the extraction, which was the right move anyway.
+
+Rows without evidence: 60 → 58.
+
 ## 2026-08-08 (evidence sweep, batch 13) — A CRLF code file was one line six million characters wide
 
 Not a row I set out to check. Six of the sweep's defects had been the same Swift trap, so instead of

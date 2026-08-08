@@ -1998,26 +1998,38 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     private func buildTagsMenu() -> NSMenu? {
         guard let path = cursorItemFullPath(), FileManager.default.fileExists(atPath: path) else { return nil }
         let url = URL(fileURLWithPath: path)
-        let current = Set((try? url.resourceValues(forKeys: [.tagNamesKey]))?.tagNames ?? [])
+        // By colour index, for the reason spelled out in `ctxToggleTag`: the stored names are localized.
+        let current = Set(FinderTagColor.tagColorIndices(forPath: url.path))
         let submenu = NSMenu()
         for tag in Self.standardTags {
             let item = NSMenuItem(title: tag, action: #selector(ctxToggleTag(_:)), keyEquivalent: "")
             item.target = self
             item.representedObject = tag
-            item.state = current.contains(tag) ? .on : .off
+            item.state = FinderTagColor.colorIndex(forName: tag).map { current.contains($0) } == true ? .on : .off
             submenu.addItem(item)
         }
         return submenu
     }
 
     @objc private func ctxToggleTag(_ sender: NSMenuItem) {
-        guard let tag = sender.representedObject as? String, let path = cursorItemFullPath() else { return }
-        let url = URL(fileURLWithPath: path)
-        var tags = (try? url.resourceValues(forKeys: [.tagNamesKey]))?.tagNames ?? []
-        if let idx = tags.firstIndex(of: tag) { tags.remove(at: idx) } else { tags.append(tag) }
-        // The URLResourceValues.tagNames setter is gated to a future OS; the NSURL
-        // Obj-C API sets Finder tags on macOS 13.
-        try? (url as NSURL).setResourceValue(tags, forKey: .tagNamesKey)
+        guard let tag = sender.representedObject as? String, let path = cursorItemFullPath(),
+              let colorIndex = FinderTagColor.colorIndex(forName: tag) else { return }
+        // Matched and written by *colour index*, not by name. The names of the standard labels are
+        // localized — a file tagged red on a German system carries "Rot\n6" — so a name comparison saw
+        // no tag, added a second one called "Red", and stored it through an API that drops the colour
+        // (index 0). The result was two tags on the file, neither of them the red label (F-291).
+        var tags = FinderTagColor.rawTags(forPath: path)
+        if let existing = tags.firstIndex(where: { entry in
+            entry.components(separatedBy: "\n").count > 1
+                ? Int(entry.components(separatedBy: "\n")[1]) == colorIndex
+                : FinderTagColor.colorIndex(forName: entry) == colorIndex
+        }) {
+            tags.remove(at: existing)
+        } else {
+            tags.append("\(tag)\n\(colorIndex)")
+        }
+        FinderTagColor.writeRawTags(tags, toPath: path)
+        needsDisplay = true      // the colour dot is drawn from the file, so redraw it
     }
 
     @objc private func ctxRunCommand(_ sender: NSMenuItem) {

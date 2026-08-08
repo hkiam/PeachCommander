@@ -234,8 +234,8 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | ID | Feature | Notes | Spec | Iter | Prio | Status |
 |---|---|---|---|---|---|---|
 | F-290 | Quick Look panel & thumbnails everywhere | | SPEC-015 | I18 | P2 | done |
-| F-291 | Finder Tags: column, edit, filter/search by tag | column+edit+filter (tag:red / #blau) done | SPEC-015 | I18 | P2 | done |
-| F-292 | Share sheet (AirDrop, Mail, Messages) for selection | | SPEC-015 | I18 | P3 | done |
+| F-291 | Finder Tags: column, edit, filter/search by tag | column+edit+filter (tag:red / #blau) done; reading was always locale-independent (it resolves the colour from the trailing index, and says so), but *writing* went through URLResourceValues.tagNames, which stores a bare name — measured: setting "Red" produced "Red\n0", index 0 meaning no colour. So a label applied here was grey in this app's own column, a colourless custom tag in the Finder, and on a German system a second tag beside the "Rot" already on the file. Toggling now matches and writes by colour index; ev: symbol:FinderTagColor ev: test:FinderTagWriteTests | SPEC-015 | I18 | P2 | done |
+| F-292 | Share sheet (AirDrop, Mail, Messages) for selection | the share sheet already drops paths that no longer exist and beeps when nothing is left; ev: symbol:NSSharingServicePicker | SPEC-015 | I18 | P3 | done |
 | F-293 | Services menu integration + "Open Terminal here" (Terminal/iTerm) | | SPEC-015 | I18 | P2 | done |
 | F-294 | Spotlight metadata as content-plugin provider (built-in PDX "mdls") | kMDItem* fields as columns/search | SPEC-015 | I18 | P2 | done |
 | F-295 | Dark mode: full support; TC-classic light theme default option | Theme system | SPEC-001 | I05 | P1 | done |
