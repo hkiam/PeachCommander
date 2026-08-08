@@ -40,4 +40,57 @@ final class FileListFormatterTests: XCTestCase {
         XCTAssertEqual(FileListFormatter.format([], as: .plain), "")
         XCTAssertEqual(FileListFormatter.format([], as: .tsv, header: false), "")
     }
+
+    // MARK: - Names that break the format (F-092)
+    //
+    // "Copy file details" puts this on the clipboard to be pasted into a spreadsheet. A row that has
+    // silently shifted a column is not obviously wrong there — it is just wrong, and it is read as data.
+    // All the names below are ones macOS will let you create.
+
+    private func row(_ name: String) -> FileListRow {
+        FileListRow(name: name, ext: "txt", size: 1, modified: Date(timeIntervalSince1970: 0))
+    }
+
+    func testACRLFInANameIsQuotedInCSV() {
+        // The guard compared each Character against "\n" and "\r"; in Swift a CRLF is one Character
+        // equal to neither, so such a name went through unquoted and split the row in two.
+        XCTAssertEqual(FileListFormatter.csvQuote("a\r\nb.txt"), "\"a\r\nb.txt\"")
+        XCTAssertEqual(FileListFormatter.csvQuote("a\nb.txt"), "\"a\nb.txt\"")
+        XCTAssertEqual(FileListFormatter.csvQuote("a\rb.txt"), "\"a\rb.txt\"")
+        XCTAssertEqual(FileListFormatter.csvQuote("plain.txt"), "plain.txt", "and nothing else is quoted")
+    }
+
+    func testATabInANameDoesNotShiftTheTSVColumns() {
+        // TSV has no quoting: a tab *is* the separator. Escaped, so the name is still readable.
+        let text = FileListFormatter.format([row("with\ttab.txt")], as: .tsv, header: false)
+        let cells = text.trimmingCharacters(in: .newlines).split(separator: "\t", omittingEmptySubsequences: false)
+        XCTAssertEqual(cells.count, 4, "four columns, whatever the name contains: \(text)")
+        XCTAssertEqual(String(cells[0]), "with\\ttab.txt")
+    }
+
+    func testALineBreakInANameDoesNotSplitTheTSVRow() {
+        for name in ["with\nnewline.txt", "with\r\ncrlf.txt", "with\rcr.txt"] {
+            let text = FileListFormatter.format([row(name)], as: .tsv, header: false)
+            let lines = text.split(omittingEmptySubsequences: true, whereSeparator: \.isNewline)
+            XCTAssertEqual(lines.count, 1, "one file must be one row; \(name) produced \(lines.count)")
+        }
+    }
+
+    func testABackslashInANameStaysDistinguishableFromAnEscape() {
+        // Without escaping the backslash itself, a file really called "a\tb.txt" and one containing a
+        // tab would come out identical, and neither could be read back.
+        let text = FileListFormatter.format([row("a\\tb.txt")], as: .tsv, header: false)
+        XCTAssertTrue(text.hasPrefix("a\\\\tb.txt\t"), "got: \(text)")
+    }
+
+    func testSixFilesAreSixRowsInTSV() {
+        let names = ["ordinary.txt", "with,comma.txt", "with\"quote.txt",
+                     "with\nnewline.txt", "with\r\ncrlf.txt", "with\ttab.txt"]
+        let text = FileListFormatter.format(names.map(row), as: .tsv, header: false)
+        let lines = text.split(omittingEmptySubsequences: true, whereSeparator: \.isNewline)
+        XCTAssertEqual(lines.count, 6)
+        for line in lines {
+            XCTAssertEqual(line.split(separator: "\t", omittingEmptySubsequences: false).count, 4)
+        }
+    }
 }

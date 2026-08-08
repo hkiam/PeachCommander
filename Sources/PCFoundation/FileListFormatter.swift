@@ -44,7 +44,8 @@ public enum FileListFormatter {
             var lines: [String] = []
             if header { lines.append("Name\tExt\tSize\tModified") }
             for r in rows {
-                lines.append("\(r.name)\t\(r.ext)\t\(sizeString(r.size))\t\(df.string(from: r.modified))")
+                lines.append("\(tsvEscape(r.name))\t\(tsvEscape(r.ext))\t\(sizeString(r.size))"
+                             + "\t\(df.string(from: r.modified))")
             }
             return lines.joined(separator: "\n") + (lines.isEmpty ? "" : "\n")
 
@@ -59,9 +60,34 @@ public enum FileListFormatter {
         }
     }
 
-    /// Quote a CSV field per RFC 4180 when it contains a comma, quote, or newline.
+    /// Quote a CSV field per RFC 4180 when it contains a comma, quote, or line break.
+    ///
+    /// `isNewline`, not a comparison against "\n" and "\r": in Swift a CRLF is one Character equal to
+    /// neither, so a file named `a<CR><LF>b.txt` — legal on macOS — went through unquoted and split the
+    /// row in two. Six files produced eight lines.
     static func csvQuote(_ field: String) -> String {
-        guard field.contains(where: { $0 == "," || $0 == "\"" || $0 == "\n" || $0 == "\r" }) else { return field }
+        guard field.contains(where: { $0 == "," || $0 == "\"" || $0.isNewline }) else { return field }
         return "\"" + field.replacingOccurrences(of: "\"", with: "\"\"") + "\""
+    }
+
+    /// A TSV field with the two characters that define the format escaped out of it.
+    ///
+    /// Tab-separated values have no quoting mechanism at all — a tab *is* the column separator and a
+    /// newline *is* the row separator, so a file name containing either simply breaks the table. This is
+    /// what "Copy file details" puts on the clipboard for pasting into a spreadsheet, where a shifted
+    /// column is not obviously wrong, it is just wrong. Escaped rather than replaced, so the original
+    /// name is still readable and recoverable.
+    static func tsvEscape(_ field: String) -> String {
+        var out = ""
+        out.reserveCapacity(field.count)
+        for character in field {
+            switch character {
+            case "\t": out += "\\t"
+            case "\\": out += "\\\\"          // so an escape can be told from a literal backslash
+            default:
+                if character.isNewline { out += "\\n" } else { out.append(character) }
+            }
+        }
+        return out
     }
 }
