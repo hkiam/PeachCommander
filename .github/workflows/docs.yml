@@ -40,6 +40,15 @@ jobs:
       # message shipped untranslated in all nineteen languages that way, with the gate green.
       - name: Check every user-facing literal is in the catalogue
         run: python3 Tools/check-strings-extracted.py
+
+      # A localized message with a placeholder *is* a format string: the code passes values and
+      # String(format:) reads them according to what the translation says. `%@` where an integer is
+      # passed does not print the wrong thing — it treats the number as a pointer. The coverage gate
+      # cannot see this; it asks whether a string is translated, not whether it still takes the same
+      # arguments. 19 languages × ~2300 values is a lot of surface for a defect that appears only when
+      # the message is finally shown.
+      - name: Check the translations take the same arguments as the English
+        run: python3 Tools/check-format-specifiers.py
       - name: Translation structure gate (a translated page must match the English shape)
         run: python3 docs/scripts/check-translation-drift.py
       - name: Parity catalogue gate (every "ev:" pointer must resolve)
