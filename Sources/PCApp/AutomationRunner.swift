@@ -111,6 +111,18 @@ extension MainWindowController {
                     panel.tableView.focusEntry(named: parts[0])
                     _ = await panel.setCursorComment(parts[1])
                 }
+            case "markone":                             // markone <name>: mark exactly that one entry
+                if let panel = activePanel {
+                    panel.tableView.focusEntry(named: arg)
+                    panel.tableView.markNames([arg])
+                }
+            case "seldump":                             // seldump <outfile>: what is marked, by name
+                // The marked *names*, not a count alone: "one is marked" and "the right one is marked"
+                // are different claims, and the selection-restore scenario needs the second (F-056).
+                let marked = (activePanel?.tableView.selectedItemPaths() ?? [])
+                    .map { ($0 as NSString).lastPathComponent }.sorted()
+                let text = "marked=\(marked.count)\n" + marked.map { "name=\($0)" }.joined(separator: "\n") + "\n"
+                try? text.write(toFile: arg, atomically: true, encoding: .utf8)
             case "listercaret":                         // listercaret <line>: put the viewer's caret there
                 currentLister()?.automationSetCaret(line: Int(arg) ?? 1)
             case "listernote":                          // listernote: write a note about the caret's line

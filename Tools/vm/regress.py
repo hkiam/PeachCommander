@@ -203,6 +203,17 @@ SCENARIOS = [
     ("viewer-crlf-lines", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                            "focus crlf.json", "wait 400", "cmd cm_List", "wait 2500",
                            "listerdump /Users/admin/crlf-lines.txt", "wait 500"], 11),
+    # Num/ brings back the selection from before the last selection operation (F-056). It was routed
+    # through the helper that saves the current selection first, so it popped what it had just pushed
+    # and did nothing. The dump reports the marked names, so "one marked" versus "everything marked" is
+    # the whole check.
+    ("selection-restore", ["active left", "left /Users/admin/pc-demo", "wait 1500",
+                           "focus hosts.txt", "wait 300", "markone hosts.txt", "wait 400",
+                           "seldump /Users/admin/sel-before.txt",
+                           "cmd cm_SelectAll", "wait 600",
+                           "seldump /Users/admin/sel-all.txt",
+                           "cmd cm_RestoreSelection", "wait 800",
+                           "seldump /Users/admin/sel-after.txt", "wait 400"], 11),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -406,6 +417,13 @@ REPORTS = {
     # not 1: that number *is* the defect, and any plausible
     # correct answer is enormous.
     "viewer-crlf-lines": ("/Users/admin/crlf-lines.txt", ["lines=300004", "!lines=1", "!ERROR"]),
+    # One name before, everything in between, that one name again afterwards.
+    #
+    # "marked=1\n" with the line break, not "marked=1": the checks are substring matches, and "marked=1"
+    # is a substring of "marked=10" — which is exactly what the unfixed code produced. The scenario
+    # reported "ok" for the broken build until the mutation run showed the number.
+    "selection-restore": ("/Users/admin/sel-after.txt",
+                          ["marked=1\n", "name=hosts.txt", "!marked=10", "!ERROR"]),
     # The summary has to be *there*: a crash leaves no report at all, which is how the crash announced
     # itself in the first place.
     "viewer-folder": ("/Users/admin/folder-view.txt", ["status=", "Folder", "!ERROR"]),

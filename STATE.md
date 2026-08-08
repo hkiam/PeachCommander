@@ -25,6 +25,27 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 20) — Num/ did nothing
+
+Eight rows (F-050…F-058), one defect, and the engine behind it was never at fault.
+
+**Restoring the selection from before the last operation did nothing at all.** In the panel every
+selection operation goes through one helper that saves the current selection to the history first —
+correct for every operation except this one, and the restore was routed through it too. So it pushed
+the current selection and then popped exactly what it had just pushed. `SelectionState` itself is right
+and has 88 tests; the defect lived entirely in two lines of wiring.
+
+**And the scenario I wrote for it passed on the broken build.** The harness checks by substring, and
+`marked=1` is a substring of `marked=10` — which is precisely what the unfixed code produced. It only
+came out because I ran the mutation and read the *number* rather than the verdict. The expectation now
+carries the line break, and `!marked=10` guards the same trap from the other side.
+
+That is the fourth time in this sweep that a check needed checking, and the pattern is consistent: a
+test written against the fixed code passes for reasons the author has not examined. Running it against
+the defect is not a formality.
+
+Rows without evidence: 47 → 40.
+
 ## 2026-08-08 (evidence sweep, batch 19) — The sort was only ever timed
 
 Three rows (F-025, F-027, F-034). No defect — but the comparator every listing in the app goes through

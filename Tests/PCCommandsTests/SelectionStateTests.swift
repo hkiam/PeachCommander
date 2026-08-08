@@ -861,4 +861,71 @@ final class SelectionStateTests: XCTestCase {
         let paths = await state.getSelectedPaths()
         XCTAssertEqual(paths, ["/dir/a.txt"]) // b.txt/c.c from before restore are gone
     }
+
+    // MARK: - Restoring the selection before the last operation (F-056)
+    //
+    // Num/ is meant to bring back what was selected before the last selection operation. In the panel
+    // *every* selection operation goes through one helper that saves the current selection first — and
+    // the restore was routed through that same helper. So it pushed the current selection and then
+    // popped the very thing it had just pushed.
+    //
+    // These tests describe the sequence the panel performs, not the actor in isolation, because the
+    // defect lives in the order of the two calls rather than in either of them.
+
+    func testRestoringBringsBackTheSelectionBeforeTheLastOperation() async {
+        let state = SelectionState()
+        await state.setEntries([SelectableEntry(path: "/a.txt", size: 1, isDirectory: false),
+                                SelectableEntry(path: "/b.txt", size: 1, isDirectory: false),
+                                SelectableEntry(path: "/c.txt", size: 1, isDirectory: false)])
+        _ = await state.select("/a.txt")
+
+        // "Select all", as the panel runs it: save, then act.
+        await state.saveSelectionToHistory()
+        _ = await state.selectAll()
+        let all = await state.getSelectedPaths()
+        XCTAssertEqual(all.count, 3)
+
+        // Num/ — a restore, and *not* preceded by a save.
+        var restoredOK = await state.restoreSelectionFromHistory()
+        XCTAssertTrue(restoredOK)
+        let restored = await state.getSelectedPaths()
+        XCTAssertEqual(restored, ["/a.txt"], "the selection from before 'select all' must come back")
+    }
+
+    func testRestoringTwiceWalksFurtherBack() async {
+        let state = SelectionState()
+        await state.setEntries([SelectableEntry(path: "/a.txt", size: 1, isDirectory: false),
+                                SelectableEntry(path: "/b.txt", size: 1, isDirectory: false)])
+        await state.saveSelectionToHistory()          // nothing selected
+        _ = await state.select("/a.txt")
+        await state.saveSelectionToHistory()          // just a.txt
+        _ = await state.select("/b.txt")
+
+        var restored = await state.restoreSelectionFromHistory()
+        XCTAssertTrue(restored)
+        let once = await state.getSelectedPaths()
+        XCTAssertEqual(once, ["/a.txt"])
+        restored = await state.restoreSelectionFromHistory()
+        XCTAssertTrue(restored)
+        let twice = await state.getSelectedPaths()
+        XCTAssertTrue(twice.isEmpty)
+        restored = await state.restoreSelectionFromHistory()
+        XCTAssertFalse(restored, "and then there is nothing left")
+    }
+
+    func testASaveBeforeTheRestoreUndoesTheRestore() async {
+        // The shape of the defect, kept as a test so the wiring cannot drift back: if the restore is
+        // routed through the helper that saves first, it pops what it just pushed and nothing changes.
+        let state = SelectionState()
+        await state.setEntries([SelectableEntry(path: "/a.txt", size: 1, isDirectory: false),
+                                SelectableEntry(path: "/b.txt", size: 1, isDirectory: false)])
+        _ = await state.select("/a.txt")
+        await state.saveSelectionToHistory()
+        _ = await state.selectAll()
+
+        await state.saveSelectionToHistory()          // the extra save that must not happen
+        _ = await state.restoreSelectionFromHistory()
+        let unchanged = await state.getSelectedPaths()
+        XCTAssertEqual(unchanged.count, 2, "this is what the defect looked like: the restore did nothing")
+    }
 }
