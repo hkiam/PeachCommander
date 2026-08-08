@@ -73,7 +73,10 @@ public struct INIFormatter: TextFormatter {
     public init() {}
 
     public func format(_ text: String) throws -> String {
-        let result = INIDocument(parsing: text).serialized()
+        // Normalizing on purpose: this is the Format command, so the point is to tidy `key = value`
+        // into `key=value`. Saving a configuration file uses the default, which leaves untouched lines
+        // exactly as their author wrote them.
+        let result = INIDocument(parsing: text).serialized(normalizing: true)
         guard !result.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw FormatError.invalidInput("INI")
         }
