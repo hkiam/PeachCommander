@@ -2802,6 +2802,13 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                     query.contentNotContaining = notContaining
                     query.searchPluginText = searchPluginText
                     query.searchComments = searchComments
+                    // A pattern that will not compile ends the search with no results and no message,
+                    // which reads exactly like "the term is not in these files" (F-154). Say so instead.
+                    if let bad = query.firstInvalidPattern() {
+                        win.setStatus(String(localized: "Invalid regular expression in the \(bad.field) field: \(bad.reason)"))
+                        win.searchFinished()
+                        return
+                    }
                     var count = 0
                     let engine = FileSearchEngine()
                     // Open a zip-family archive found during the walk as an ArchiveFS.
