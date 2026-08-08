@@ -41,7 +41,5 @@ enum PrivilegedRunner {
     }
 
     /// Quotes a POSIX path for safe inclusion in a `/bin/sh` command line.
-    static func shellQuote(_ path: String) -> String {
-        "'" + path.replacingOccurrences(of: "'", with: "'\\''") + "'"
-    }
+    static func shellQuote(_ path: String) -> String { ShellQuoting.quote(path) }
 }
