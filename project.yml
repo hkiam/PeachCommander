@@ -238,6 +238,22 @@ targets:
   # Accessibility of the hand-drawn controls (I19 T06). Compiles the helper into itself, the same
   # pattern PCThemeTests uses for Theme.swift: no unit-test target links the app, and the views
   # themselves pull in half of PCApp.
+  # Only PanelCells.swift, not the app: FinderTagColor is the piece worth testing and the views around
+  # it pull in half of PCApp. Same pattern as PCAccessibilityTests and PCThemeTests.
+  PCTagTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCTagTests
+      - path: Sources/PCApp/FinderTagColor.swift
+    settings:
+      PRODUCT_NAME: PCTagTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
+      - target: PCVFS
+
   PCAccessibilityTests:
     type: bundle.unit-test
     platform: macOS
@@ -682,6 +698,7 @@ schemes:
         - PCNetTests
         - PCThemeTests
         - PCAccessibilityTests
+        - PCTagTests
         - PCShellQuoteTests
         - PCEditorTests
 
@@ -704,6 +721,7 @@ schemes:
         - PCPerfTests
         - PCThemeTests
         - PCAccessibilityTests
+        - PCTagTests
         - PCShellQuoteTests
         - PCEditorTests
 
