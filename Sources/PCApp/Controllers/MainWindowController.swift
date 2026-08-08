@@ -973,12 +973,28 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         return listers
     }
 
+    /// Does a rename spec actually use a `[=provider.field]` placeholder?
+    ///
+    /// Resolving those means one plugin call per file per field, so it is skipped when the masks do not
+    /// ask for them. Which mask is in force is only known once the dialog is open, hence this test.
+    private static func usesContentFields(_ values: MultiRenameWindowController.SpecValues) -> Bool {
+        // Only the two masks can carry a placeholder; search/replace operate on the expanded name.
+        values.nameMask.contains("[=") || values.extMask.contains("[=")
+    }
+
     /// Populate each rename input's content-field values (built-in `fileinfo.*`
     /// plus enabled PDX plugin fields) for `[=provider.field]` masks (F-172).
-    /// Skipped when nothing is registered, or for very large selections (latency).
-    private func enrichRenameInputs(_ inputs: [RenameInput], dir: String) async -> [RenameInput] {
+    ///
+    /// `limit` guards against spending a plugin call per file when nothing needs the values. It used to
+    /// be a flat 500 applied *before* the dialog opened, so a selection of 600 files silently resolved
+    /// every `[=…]` to an empty string — and renaming 600 photos by their EXIF date is the case this
+    /// feature exists for. The cap now only applies when the masks do not ask for these fields; when
+    /// they do, the values are fetched however many files there are, because a wrong name is worse than
+    /// a slow dialog.
+    private func enrichRenameInputs(_ inputs: [RenameInput], dir: String,
+                                    limit: Int = 500) async -> [RenameInput] {
         let fields = contentFieldRegistry.allQualifiedFields()
-        guard !fields.isEmpty, inputs.count <= 500 else { return inputs }
+        guard !fields.isEmpty, inputs.count <= limit else { return inputs }
         var out: [RenameInput] = []
         out.reserveCapacity(inputs.count)
         for input in inputs {
@@ -1003,12 +1019,25 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             let (dir, baseInputs) = await panel.renameInputs()
             guard !baseInputs.isEmpty else { return }
             // Populate content-plugin field values so [=provider.field] masks work (F-172).
-            let inputs = await self.enrichRenameInputs(baseInputs, dir: dir)
+            var inputs = await self.enrichRenameInputs(baseInputs, dir: dir)
             let win = MultiRenameWindowController(oldNames: inputs.map { $0.name },
                                                  presetsURL: self.configPaths.renamePresets)
             self.renameWindow = win
             var lastResults: [RenameResult] = []
+            var enrichedOnDemand = false
             win.onSpecChanged = { values in
+                // A large selection skipped the field lookup above; if the mask turns out to need it,
+                // fetch it now rather than quietly renaming everything with an empty value in place of
+                // the field. Once per dialog, not per keystroke.
+                if !enrichedOnDemand, Self.usesContentFields(values), inputs.first?.fields.isEmpty != false {
+                    enrichedOnDemand = true
+                    Task { @MainActor in
+                        inputs = await self.enrichRenameInputs(baseInputs, dir: dir, limit: .max)
+                        let refreshed = MultiRenameEngine.compute(inputs, spec: Self.renameSpec(from: values))
+                        lastResults = refreshed
+                        win.setPreview(refreshed.map { ($0.oldName, $0.newName, $0.isValid && !$0.collides) })
+                    }
+                }
                 let results = MultiRenameEngine.compute(inputs, spec: Self.renameSpec(from: values))
                 lastResults = results
                 win.setPreview(results.map { ($0.oldName, $0.newName, $0.isValid && !$0.collides) })

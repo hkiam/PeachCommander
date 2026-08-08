@@ -25,6 +25,30 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 23) — A limit that changed the answer
+
+Five rows (F-170…F-176), one defect.
+
+**`[=provider.field]` silently expanded to nothing above 500 files.** The values are fetched before the
+rename dialog opens, and that fetch was capped "for latency" — so a selection of 600 photos renamed by
+their EXIF date got the date left out of every single name. Renaming several hundred photos by a content
+field is not an edge case; it is the case the feature exists for.
+
+The cap itself was reasonable: resolving these means a plugin call per file per field, and most renames
+never mention them. What was wrong is that it applied *before* the mask was known, so it decided the
+result rather than avoiding wasted work. It now applies only when the masks do not ask for the fields;
+when they do, the values are fetched however many files there are, once, and the preview refreshes. A
+slow dialog is better than a wrong name.
+
+**The engine's half is pinned too**, including the shape the defect took: with the values missing, every
+file resolves to the same name, and the collision flag is what stops that batch from running. So the
+damage was bounded — but only by a second mechanism, and the user saw a preview full of identical names
+with no hint why.
+
+The placeholder engine itself (64 tests) needed pointers recorded, not more tests.
+
+Rows without evidence: 30 → 25.
+
 ## 2026-08-08 (evidence sweep, batch 22) — The quoted path was the broken one
 
 Two rows (F-066, F-083), one defect.
