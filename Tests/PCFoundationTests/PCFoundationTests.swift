@@ -24,14 +24,17 @@ final class PCFoundationTests: XCTestCase {
         XCTAssertEqual(plain, ["file1", "file10", "file2"])
     }
 
+    // An explicit locale, because the separator follows it now: these two asserted "1.5 KB" while
+    // calling the machine's own locale, so they passed in CI (English) and failed on a German Mac. They
+    // were testing the test runner's language, not the formatter.
     func testByteSizeFormatting_kb() {
         let bs = ByteSize(1536)  // 1.5 KB
-        XCTAssertEqual(bs.formatted(style: .kb), "1.5 KB")
+        XCTAssertEqual(bs.formatted(style: .kb, locale: Locale(identifier: "en_US")), "1.5 KB")
     }
 
     func testByteSizeFormatting_mb() {
         let bs = ByteSize(1_572_864)  // 1.5 MB
-        XCTAssertEqual(bs.formatted(style: .mb), "1.5 MB")
+        XCTAssertEqual(bs.formatted(style: .mb, locale: Locale(identifier: "en_US")), "1.5 MB")
     }
 
     func testWildcardMask_basic() {

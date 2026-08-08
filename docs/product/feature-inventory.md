@@ -42,7 +42,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-027 | Directories always first; dirs sorted by name option | | SPEC-002 | I02 | P1 | done |
 | F-028 | Show hidden/system files toggle (macOS: dotfiles + hidden flag) | Ctrl+H (TC 11) | SPEC-002 | I03 | P1 | done |
 | F-029 | File icons: per-type, async load, EXE/app icons; icon off mode | NSWorkspace icon cache | SPEC-002 | I03 | P1 | done |
-| F-030 | Size display: bytes/KB/dynamic; directory sizes on Space/Alt+Shift+Enter | Space calculates dir size under cursor | SPEC-002 | I03 | P1 | done |
+| F-030 | Size display: bytes/KB/dynamic; directory sizes on Space/Alt+Shift+Enter | Space calculates dir size under cursor; the unit ladder stopped at gigabytes, so a 4 TB volume's free space read "4096.0 GB"; and `String(format:)` writes a decimal point whatever the language, so a German user saw that beside "2,0 M" from the locale-aware formatter in the same status bar. Both fixed — and `parse` had to accept a comma first, because the Find Files dialog writes these strings into its size fields and reads them back, so a localized value that would not parse meant a silently dropped size filter; ev: symbol:ByteSize ev: test:ByteSizeTests ev: test:SelectionSummaryFormatterTests | SPEC-002 | I03 | P1 | done |
 | F-031 | Date format per system locale + custom format option | ev: test:PanelDateFormatterTests | SPEC-002 | I02 | P2 | done |
 | F-032 | Row colors: by file type masks, alternating background, selection colors | Color config dialog; ev: symbol:TypeColorsWindowController ev: scenario:details-view | SPEC-013 | I05 | P2 | done |
 | F-033 | Auto-refresh on FS changes (FSEvents), incl. size/date updates | TC: WatchDirs; coalesced | SPEC-002 | I04 | P1 | done |
