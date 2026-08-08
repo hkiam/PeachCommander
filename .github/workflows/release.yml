@@ -116,10 +116,17 @@ jobs:
           name: PeachCommander-dmg
           path: build/PeachCommander.dmg
 
+      # The notes are the CHANGELOG entry for this version, not a list of commit subjects: the second is
+      # a record of what was done, the first describes what changed for the person downloading it. The
+      # step fails if the version has no section, so a release cannot ship with empty notes.
+      - name: Release notes from the CHANGELOG
+        if: startsWith(github.ref, 'refs/tags/')
+        run: python3 Tools/changelog-section.py "$GITHUB_REF_NAME" --out build/release-notes.md
+
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: build/PeachCommander.dmg
           draft: true
-          generate_release_notes: true
+          body_path: build/release-notes.md
