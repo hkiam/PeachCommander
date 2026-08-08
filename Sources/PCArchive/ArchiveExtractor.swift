@@ -5,6 +5,7 @@
 // is layered on top.
 
 import Foundation
+import PCFoundation
 import PCVFS
 
 public enum ArchiveExtractor {
@@ -33,14 +34,6 @@ public enum ArchiveExtractor {
         return Result(files: files, bytes: bytes)
     }
 
-    /// Is `candidate` really inside `root`? Resolved first, because the destination itself is usually
-    /// reached through a symlink (`/var` → `/private/var`) and a textual prefix test would say no.
-    private static func isInside(_ candidate: URL, root: URL) -> Bool {
-        let resolved = candidate.standardizedFileURL.resolvingSymlinksInPath().standardizedFileURL
-        guard resolved != root else { return true }
-        return resolved.path.hasPrefix(root.path.hasSuffix("/") ? root.path : root.path + "/")
-    }
-
     private static func walk(fs: VirtualFileSystem, path: String, dest: URL, root: URL) async throws -> (Int, Int64) {
         var files = 0
         var bytes: Int64 = 0
@@ -49,12 +42,9 @@ public enum ArchiveExtractor {
             for entry in batch.entries {
                 if Task.isCancelled { throw CancellationError() }
                 let child = (path == "/" ? "/" : path + "/") + entry.name
-                let outURL = dest.appendingPathComponent(entry.name)
-                // Both checks, because they fail differently: a name that is not a single component is
-                // malformed whatever it resolves to, and the containment test catches anything that
-                // slips past by a spelling not thought of here.
-                guard entry.name != "..", entry.name != ".", !entry.name.isEmpty,
-                      isInside(outURL, root: root) else { continue }
+                // The same rule the panel's extract walk uses; see PathContainment.
+                guard let outURL = PathContainment.childURL(entry.name, under: dest, root: root)
+                else { continue }
                 switch entry.kind {
                 case .directory, .appBundle, .package:
                     try FileManager.default.createDirectory(at: outURL, withIntermediateDirectories: true)
