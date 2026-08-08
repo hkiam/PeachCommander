@@ -14,6 +14,20 @@
 import Foundation
 
 public enum MarkdownRenderer {
+    /// What the rendered document is allowed to load.
+    ///
+    /// A Markdown file is content from somewhere else, and `![](http://…/x.png?who=…)` is a read
+    /// receipt: previewing the file tells that server when it was opened, and from which address. The
+    /// viewer's own comment claimed this could not happen because JavaScript is disabled — measured, and
+    /// wrong: an image element needs no JavaScript, and the request went out.
+    ///
+    /// `img-src file: data:` keeps the case that is actually wanted — a document referring to a picture
+    /// beside it, which resolves against the base URL the viewer passes. Measured too, both halves: with
+    /// this policy the sibling image still loads (naturalWidth 1) and the remote one does not (0).
+    /// `style-src 'unsafe-inline'` is for the stylesheet below, which is part of this document.
+    public static let contentSecurityPolicy =
+        "default-src 'none'; img-src file: data:; style-src 'unsafe-inline'; font-src file: data:"
+
     /// Convert Markdown to a complete, styled HTML document.
     public static func htmlDocument(from markdown: String, title: String = "") -> String {
         let body = bodyHTML(from: markdown)
@@ -21,6 +35,7 @@ public enum MarkdownRenderer {
         return """
         <!DOCTYPE html>
         <html><head><meta charset="utf-8">
+        <meta http-equiv="Content-Security-Policy" content="\(contentSecurityPolicy)">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>\(safeTitle)</title>
         <style>\(css)</style>

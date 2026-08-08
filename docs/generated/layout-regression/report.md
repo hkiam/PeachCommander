@@ -6,4 +6,4 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| zip-slip | 0 | — | — | `zip-slip.png` |
+| viewer-beacon | 0 | — | — | `viewer-beacon.png` |
