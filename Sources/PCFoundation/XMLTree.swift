@@ -42,8 +42,7 @@ public final class XMLTreeNode {
 public enum XMLTreeParser {
     /// Parse `xml` into a tree rooted at the document element, or nil if it is not well-formed.
     public static func parse(_ xml: String) -> XMLTreeNode? {
-        guard let data = xml.data(using: .utf8),
-              let doc = try? XMLDocument(data: data, options: []),
+        guard let doc = XMLParsing.document(xml),
               let root = doc.rootElement() else { return nil }
         return node(from: root)
     }

@@ -12,6 +12,21 @@ were reconstructed from the git history and the notes in `STATE.md` when it was 
 `README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
 does not have.
 
+## [Unreleased]
+
+### Security
+
+- Copying files **out of an archive or off an FTP server** could write above the folder you chose. A
+  member stored as `../escaped.txt` arrives in the listing as an entry named `..`, and the panel's
+  extract walk followed it into the parent directory — silently, while the operation reported success.
+  The archive extractor already refused this; the panel's own walk did not, and on an FTP source the
+  name is whatever the server decided to send. Both now use one rule.
+- **Opening an XML file could read your other files.** Foundation's `XMLDocument` resolves external
+  entities, so a document declaring `<!ENTITY x SYSTEM "file:///etc/passwd">` had that file's contents
+  substituted into what the app displayed — in the XML tree view, in an XPath result, and after "format
+  XML" in the editor. A `http://` entity made the app fetch a URL while you thought you were looking at
+  a local file. Nothing needed to be run: opening the file was enough.
+
 ## [0.4.0] — 2026-08-08
 
 Mostly a repair release. A systematic sweep went through the feature inventory looking for rows that
