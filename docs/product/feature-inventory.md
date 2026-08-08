@@ -150,7 +150,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-156 | Save/load search templates; use templates in select/color/sync rules | Named templates shared across features | SPEC-008 | I10 | P2 | done |
 | F-157 | Plugin (content-field) search criteria with operators | e.g. `duration > 10min`; ev: symbol:contentFieldPopup ev: test:SearchPluginTextTests | SPEC-012 | I16 | P2 | done |
 | F-158 | Duplicate file finder (by name/size/content hash) | Part of Find Files "duplicates"; symlinks were already excluded (a link stats as a link, not a file), but two hard links to one file were reported as duplicates — deleting one frees nothing, so the window claimed reclaimable space that does not exist; collapsed by device+inode, and only for a file system whose paths are real files (asking an archive would extract every candidate to learn nothing); ev: symbol:DuplicateFinder ev: test:DuplicateFinderTests | SPEC-008 | I17 | P1 | done |
-| F-159 | Spotlight-accelerated mode (optional toggle) | macOS extra: NSMetadataQuery prefilter | SPEC-015 | I18 | P3 | done |
+| F-159 | Spotlight-accelerated mode (optional toggle) | macOS extra: NSMetadataQuery prefilter; Spotlight answers a different question from the walker — it has no notion of a regular expression, a depth limit or a selection scope — and that was said only in the checkbox's tooltip, which is no help at the moment it matters. The result line now names whichever of them was set and did not apply; the predicate itself substitutes through %@ rather than string-building, so a mask cannot alter the query; ev: symbol:SpotlightPredicate ev: test:SpotlightPredicateTests | SPEC-015 | I18 | P3 | done |
 
 ## 8. Multi-rename tool
 
@@ -233,16 +233,16 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 
 | ID | Feature | Notes | Spec | Iter | Prio | Status |
 |---|---|---|---|---|---|---|
-| F-290 | Quick Look panel & thumbnails everywhere | | SPEC-015 | I18 | P2 | done |
+| F-290 | Quick Look panel & thumbnails everywhere | ev: symbol:PreviewPanelView ev: scenario:notes-sidebar | SPEC-015 | I18 | P2 | done |
 | F-291 | Finder Tags: column, edit, filter/search by tag | column+edit+filter (tag:red / #blau) done; reading was always locale-independent (it resolves the colour from the trailing index, and says so), but *writing* went through URLResourceValues.tagNames, which stores a bare name — measured: setting "Red" produced "Red\n0", index 0 meaning no colour. So a label applied here was grey in this app's own column, a colourless custom tag in the Finder, and on a German system a second tag beside the "Rot" already on the file. Toggling now matches and writes by colour index; ev: symbol:FinderTagColor ev: test:FinderTagWriteTests | SPEC-015 | I18 | P2 | done |
 | F-292 | Share sheet (AirDrop, Mail, Messages) for selection | the share sheet already drops paths that no longer exist and beeps when nothing is left; ev: symbol:NSSharingServicePicker | SPEC-015 | I18 | P3 | done |
 | F-293 | Services menu integration + "Open Terminal here" (Terminal/iTerm) | | SPEC-015 | I18 | P2 | done |
-| F-294 | Spotlight metadata as content-plugin provider (built-in PDX "mdls") | kMDItem* fields as columns/search | SPEC-015 | I18 | P2 | done |
+| F-294 | Spotlight metadata as content-plugin provider (built-in PDX "mdls") | kMDItem* fields as columns/search; ev: symbol:SpotlightPredicate ev: test:SpotlightPredicateTests | SPEC-015 | I18 | P2 | done |
 | F-295 | Dark mode: full support; TC-classic light theme default option | Theme system | SPEC-001 | I05 | P1 | done |
 | F-296 | AppleScript/Shortcuts: core verbs (reveal, copy, get selection) | Automation dictionary | SPEC-015 | — | P3 | post-1.0 |
 | F-297 | Trash awareness: show Trash, put-back metadata | show done (Go ▸ Trash); the Trash can be opened; "put back" is not offered because macOS exposes no public API for it; ev: cm_GoToTrash | SPEC-015 | I18 | P3 | partial |
 | F-298 | Permissions/ACL/xattr inspector-editor dialog | POSIX edit + xattr inspect/remove done; POSIX permissions, xattr inspect/remove and ACL editing (from the Attributes dialog); ev: symbol:ACLEditorWindowController ev: symbol:AttributesDialog | SPEC-015 | I18 | P2 | done |
-| F-299 | Full Disk Access onboarding flow (detect & guide to System Settings) | Required for ~/Library etc. | SPEC-015 | I18 | P1 | done |
+| F-299 | Full Disk Access onboarding flow (detect & guide to System Settings) | Required for ~/Library etc.; ev: symbol:FullDiskAccessGuide | SPEC-015 | I18 | P1 | done |
 | F-300 | Retina/HiDPI assets, trackpad gestures (swipe = history nav) | two-finger swipe walks the panel history; ev: symbol:swipe ev: symbol:backingScaleFactor | SPEC-001 | I19 | P2 | done |
 
 ## 15. Distribution & updates
