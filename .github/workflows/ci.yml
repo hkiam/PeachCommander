@@ -79,6 +79,13 @@ jobs:
       - name: Check the VM harness flags
         run: ./Tools/check-vm-flags.sh
 
+      # A test file that is in no bundle, or a bundle the AllTests scheme does not run, compiles nowhere
+      # and runs never — while the suite reports success. That happened four times in one session before
+      # anyone counted the passing test names. Reads project.yml, not the generated project, because a
+      # stale .xcodeproj is itself the failure being guarded against. Needs no build.
+      - name: Check every test is registered and run
+        run: python3 Tools/check-tests-registered.py
+
       - name: Build project
         run: |
           ./Tools/build.sh

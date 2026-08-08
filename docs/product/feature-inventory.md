@@ -47,7 +47,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-032 | Row colors: by file type masks, alternating background, selection colors | Color config dialog; ev: symbol:TypeColorsWindowController ev: scenario:details-view | SPEC-013 | I05 | P2 | done |
 | F-033 | Auto-refresh on FS changes (FSEvents), incl. size/date updates | TC: WatchDirs; coalesced | SPEC-002 | I04 | P1 | done |
 | F-034 | Branch view (Ctrl+B): current dir + all subdirs flattened | Also selected-dirs variant Shift+Ctrl+B | SPEC-016 | I17 | P1 | done |
-| F-035 | Filter field / quick filter (Ctrl+S) narrowing visible files | Live wildcard filter | SPEC-003 | I06 | P1 | done |
+| F-035 | Filter field / quick filter (Ctrl+S) narrowing visible files | Live wildcard filter; ev: symbol:WildcardMask ev: test:WildcardMaskTests | SPEC-003 | I06 | P1 | done |
 | F-036 | Symlink display (arrow overlay), follow/into behavior, show target | macOS aliases + symlinks + firmlinks; ev: symbol:symlinkTarget ev: symbol:resolveAlias | SPEC-002 | I03 | P1 | done |
 | F-037 | Free/total disk space in header; occupied by selection (Ctrl+L) | | SPEC-016 | I17 | P2 | done |
 | F-038 | File attributes column macOS-mapped (perms rwx, flags, xattr badge) | TC attr HRSA -> POSIX/BSD flags; ev: symbol:PosixPermissions ev: symbol:bsdFlags | SPEC-002 | I03 | P2 | done |
@@ -61,9 +61,9 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-052 | Backspace / Ctrl+PgUp: parent dir; cursor lands on dir we came from | Position memory per dir | SPEC-003 | I02 | P1 | done |
 | F-053 | Tab switches active panel; Shift+Tab option | | SPEC-003 | I01 | P1 | done |
 | F-054 | Insert: toggle select + advance; Space: toggle + dir size calc | | SPEC-003 | I03 | P1 | done |
-| F-055 | Num+ / Num- / Num*: select/deselect/invert by wildcard dialog | Expand selection dialog w/ masks | SPEC-003 | I03 | P1 | done |
+| F-055 | Num+ / Num- / Num*: select/deselect/invert by wildcard dialog | Expand selection dialog w/ masks; the one mask matcher behind select-by-wildcard, the quick filter, the search's name masks, the sync filter and the type-colour rules translated a mask to a regex escaping only the dot, so every other metacharacter kept its regex meaning — a mask of "Bericht (2026).pdf" missed the file of that name and matched "Bericht 2026.pdf" instead, i.e. selected the wrong file; eight of twelve realistic cases were wrong. Only * and ? mean anything now; ev: symbol:WildcardMask ev: test:WildcardMaskTests | SPEC-003 | I03 | P1 | done |
 | F-056 | Num / : restore selection before last operation | Selection history (1 level min) | SPEC-003 | I03 | P2 | done |
-| F-057 | Ctrl+A select all; Ctrl+Num+ all; same-ext selection (Alt+Num+) | | SPEC-003 | I03 | P1 | done |
+| F-057 | Ctrl+A select all; Ctrl+Num+ all; same-ext selection (Alt+Num+) | ev: symbol:WildcardMask ev: test:WildcardMaskTests | SPEC-003 | I03 | P1 | done |
 | F-058 | Shift+arrows range select (Windows style option) | Left mouse selection mode option too | SPEC-003 | I03 | P2 | done |
 | F-059 | Mouse: right-click select mode (NC style) vs left (Windows style) | Config option, default NC-right; ev: symbol:setMouseMode | SPEC-003 | I05 | P2 | done |
 | F-060 | Quick search: type letters to jump (opts: with/without Ctrl+Alt, search dialog) | TC quick search modes incl. filter mode; ev: symbol:TypeAheadSearch ev: cm_QuickFilter | SPEC-003 | I06 | P1 | done |

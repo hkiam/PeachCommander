@@ -25,6 +25,32 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 17) — A mask that selected the wrong file
+
+Three rows (F-035, F-055, F-057), one defect — in the single matcher behind select-by-wildcard, the quick
+filter, the search's name masks, the sync filter and the type-colour rules.
+
+**It turned a mask into a regular expression by escaping the dot and nothing else.** Every other
+metacharacter therefore kept its regex meaning, and file names are full of them. The consequence was not
+"finds nothing", which somebody would have noticed:
+
+  * `Bericht (2026).pdf` did **not** match the file of that name, and **did** match `Bericht 2026.pdf`;
+  * `a+b.txt` matched `aab.txt`; `[Entwurf].doc` matched `E.doc`; `Preis $5.txt` matched nothing.
+
+Eight of twelve realistic cases were wrong when measured. Select-by-wildcard hands its result straight to
+the next operation, so this is a wrong *selection*, not a wrong display. Only `*` and `?` mean anything
+now; everything else goes through `escapedPattern`.
+
+**And a gate for a mistake I made four times in one session.** Four new test files — `ContentFieldValues`,
+`ParamExpanderQuoting`, `FinderTagWrite`, `WildcardMask` — each sat unexecuted behind a green suite until
+I counted the passing test names, because `xcodegen` had not been re-run or the bundle went into an
+aggregate target rather than the `AllTests` *scheme*. `Tools/check-tests-registered.py` now fails if a
+test file belongs to no bundle, or a unit-test bundle is not in that scheme. It reads `project.yml`
+rather than the generated project, because a stale `.xcodeproj` is exactly the failure being guarded
+against. Verified against both cases.
+
+Rows without evidence: 54 → 51.
+
 ## 2026-08-08 (evidence sweep, batch 16) — Spotlight answers a different question
 
 Four rows (F-159, F-290, F-294, F-299). No defect, one honesty problem.
