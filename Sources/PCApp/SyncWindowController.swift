@@ -75,8 +75,10 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         rightField.stringValue = rightSide.path
         // A zip side's path is fixed and its timestamps are unreliable, so lock the
         // field and force content comparison (dates ignored).
-        if leftSide.isZip { leftField.isEditable = false }
-        if rightSide.isZip { rightField.isEditable = false }
+        // A zip or a server side is not a path the user can retype into: the first is an archive this
+        // window rewrites, the second a live connection the panel owns.
+        if leftSide.isZip || leftSide.isRemote { leftField.isEditable = false }
+        if rightSide.isZip || rightSide.isRemote { rightField.isEditable = false }
         if hasZipSide {
             byContentButton.state = .on;  byContentButton.isEnabled = false
             ignoreDateButton.state = .on; ignoreDateButton.isEnabled = false

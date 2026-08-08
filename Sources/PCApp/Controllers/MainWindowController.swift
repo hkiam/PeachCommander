@@ -2684,17 +2684,40 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             // anything else must be a local folder (F-193). Reject unsupported combos.
             let leftPath = await left.getCurrentPath()
             let rightPath = await right.getCurrentPath()
-            let leftSide: SyncSide = left.currentArchiveZipPath.map { SyncSide.zip($0) } ?? .localDir(leftPath)
-            let rightSide: SyncSide = right.currentArchiveZipPath.map { SyncSide.zip($0) } ?? .localDir(rightPath)
+            // A panel on a live connection — FTP, SFTP, a filesystem plugin — is a remote side
+            // (F-193). `DisconnectableFileSystem` is the protocol's own word for "backed by a
+            // connection", which is exactly the distinction wanted here: a tar or rar mount is also
+            // "not local", and syncing one of those is a different thing that this does not do.
+            @MainActor func side(_ panel: PanelController, _ path: String) -> SyncSide {
+                if let zip = panel.currentArchiveZipPath { return .zip(zip) }
+                if panel.isInArchive, panel.currentFileSystem is DisconnectableFileSystem {
+                    return .remote(RemoteSyncSource(fs: panel.currentFileSystem, path: path))
+                }
+                return .localDir(path)
+            }
+            let leftSide = side(left, leftPath)
+            let rightSide = side(right, rightPath)
             if leftSide.isZip && rightSide.isZip {
                 self.presentInfo(String(localized: "Synchronize Directories"),
                                  String(localized: "Synchronizing two archives is not supported."))
                 return
             }
-            if (left.isInArchive && left.currentArchiveZipPath == nil) ||
-               (right.isInArchive && right.currentArchiveZipPath == nil) {
+            if leftSide.isRemote && rightSide.isRemote {
                 self.presentInfo(String(localized: "Synchronize Directories"),
-                                 String(localized: "Only local folders and .zip archives can be synchronized."))
+                                 String(localized: "Synchronizing two servers with each other is not supported."))
+                return
+            }
+            if (leftSide.isZip && rightSide.isRemote) || (leftSide.isRemote && rightSide.isZip) {
+                self.presentInfo(String(localized: "Synchronize Directories"),
+                                 String(localized: "Synchronizing an archive with a server is not supported."))
+                return
+            }
+            // What is left over: a mount that is neither local, nor a rewritable zip, nor a connection
+            // — a tar or rar archive, which cannot be written to.
+            if (left.isInArchive && !leftSide.isZip && !leftSide.isRemote) ||
+               (right.isInArchive && !rightSide.isZip && !rightSide.isRemote) {
+                self.presentInfo(String(localized: "Synchronize Directories"),
+                                 String(localized: "Only local folders, .zip archives and server connections can be synchronized."))
                 return
             }
             let win = SyncWindowController(left: leftSide, right: rightSide,
