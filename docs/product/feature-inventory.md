@@ -169,7 +169,7 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | ID | Feature | Notes | Spec | Iter | Prio | Status |
 |---|---|---|---|---|---|---|
 | F-190 | Compare by content: side-by-side diff, binary + text, editable panes, per-diff nav | TC's built-in editor-diff; editable panes with block merge are in; ev: symbol:DiffWindowController ev: test:LineDiffTests | SPEC-010 | I12 | P1 | done |
-| F-191 | Compare directories (mark newer/different), mark-same hiding | cm_CompareDirs etc. | SPEC-010 | I12 | P1 | done |
+| F-191 | Compare directories (mark newer/different), mark-same hiding | cm_CompareDirs etc.; holds, including the macOS trap it is easiest to fail: the same name arrives decomposed from one volume and composed from another, and seen as two files each side would be marked "only here" and a sync would copy both ways for ever — Swift compares Strings canonically, so it already matches, and that is pinned because it is invisible in the source; ev: symbol:DirCompareMarker ev: test:DirCompareMarkerTests | SPEC-010 | I12 | P1 | done |
 | F-192 | Synchronize dirs dialog: filters, subdirs, by content/date/size, asymmetric, preview list, copy left/right/delete | Full TC sync semantics incl. ZIP targets; ev: symbol:SyncScanner ev: test:SyncModelTests | SPEC-010 | I12 | P1 | done |
 | F-193 | Sync with archive as one side; sync via FS plugins (FTP) | a whole .zip may be one side (content comparison forced, since ZipWriter re-stamps); an FTP site or a plugin filesystem may not; ev: symbol:SyncSide ev: symbol:walkZip | SPEC-010 | I15 | P2 | partial |
 | F-194 | Save sync sessions/presets | ev: test:SyncPresetStoreTests | SPEC-010 | I12 | P2 | done |

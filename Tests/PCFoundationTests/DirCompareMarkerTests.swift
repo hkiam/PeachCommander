@@ -186,4 +186,38 @@ final class DirCompareMarkerTests: XCTestCase {
         XCTAssertEqual(result.leftMarks, [])
         XCTAssertEqual(result.rightMarks, [])
     }
+
+    // MARK: - The same name spelled two ways (F-191)
+
+    func testAnNFDAndAnNFCNameAreTheSameFile() {
+        // macOS stores what it is given, so the same name arrives decomposed from one volume and
+        // composed from another — a Mac and a Linux server, say. Seen as two files, each side would be
+        // marked "only here" and a sync would copy both ways for ever.
+        //
+        // This works, and not by accident of this code: Swift compares Strings by canonical
+        // equivalence, so the dictionary lookup already treats the two spellings as one key. Pinned
+        // because that is invisible in the source, and a future rewrite to compare bytes or UTF-8 views
+        // would silently break it.
+        let when = Date(timeIntervalSince1970: 1_700_000_000)
+        let composed = "Grüße.txt"
+        let decomposed = "Gru\u{0308}ße.txt"
+        XCTAssertNotEqual(Array(composed.utf8), Array(decomposed.utf8), "the fixture must really differ")
+
+        let result = DirCompareMarker.compare(
+            left: [DirCompareEntry(name: composed, isDirectory: false, size: 10, modified: when)],
+            right: [DirCompareEntry(name: decomposed, isDirectory: false, size: 10, modified: when)])
+        XCTAssertTrue(result.leftMarks.isEmpty)
+        XCTAssertTrue(result.rightMarks.isEmpty)
+    }
+
+    func testTwoSpellingsWithDifferentContentAreStillOneFile() {
+        // …and when they do differ, the newer one is marked once, not both sides as "only here".
+        let older = Date(timeIntervalSince1970: 1_700_000_000)
+        let newer = older.addingTimeInterval(3600)
+        let result = DirCompareMarker.compare(
+            left: [DirCompareEntry(name: "Grüße.txt", isDirectory: false, size: 10, modified: newer)],
+            right: [DirCompareEntry(name: "Gru\u{0308}ße.txt", isDirectory: false, size: 20, modified: older)])
+        XCTAssertEqual(result.leftMarks, ["Grüße.txt"])
+        XCTAssertTrue(result.rightMarks.isEmpty)
+    }
 }
