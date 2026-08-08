@@ -213,10 +213,24 @@ final class OpenSourceWindowController: NSWindowController, NSTableViewDataSourc
     }
 
     @objc private func openWebsite() {
-        if let c = selectedComponent, let url = URL(string: c.website) { NSWorkspace.shared.open(url) }
+        openInBrowser(selectedComponent?.website)
     }
     @objc private func openRepository() {
-        if let c = selectedComponent, let url = URL(string: c.repository) { NSWorkspace.shared.open(url) }
+        openInBrowser(selectedComponent?.repository)
+    }
+
+    /// Open a web address from `ThirdPartyNotices.json`, and only a web address.
+    ///
+    /// The values come from a data file rather than from code, and `NSWorkspace.open` will act on any
+    /// scheme it is handed — `file://`, `x-apple.systempreferences:`, whatever an app has registered.
+    /// The file contains nothing but https today and is ours, so this is not a live defect; it is the
+    /// same guard `HTTPDownloader` already applies to the address a *user* types, and the reason it
+    /// applies here too is that "our own data file" is a property nobody re-checks when a file is
+    /// generated, merged or edited later.
+    private func openInBrowser(_ address: String?) {
+        guard let address, let url = URL(string: address),
+              url.scheme == "https" || url.scheme == "http" else { return }
+        NSWorkspace.shared.open(url)
     }
 
     // MARK: - NSTableView

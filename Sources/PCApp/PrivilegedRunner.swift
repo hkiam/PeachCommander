@@ -20,11 +20,7 @@ enum PrivilegedRunner {
     /// success, or a human-readable error message on failure / cancellation.
     @discardableResult
     static func runShell(_ command: String) -> String? {
-        // Escape for embedding inside the AppleScript string literal.
-        let escaped = command
-            .replacingOccurrences(of: "\\", with: "\\\\")
-            .replacingOccurrences(of: "\"", with: "\\\"")
-        let source = "do shell script \"\(escaped)\" with administrator privileges"
+        let source = "do shell script \"\(appleScriptEscaped(command))\" with administrator privileges"
         guard let script = NSAppleScript(source: source) else {
             return String(localized: "Could not build the privileged command.")
         }
@@ -41,5 +37,21 @@ enum PrivilegedRunner {
     }
 
     /// Quotes a POSIX path for safe inclusion in a `/bin/sh` command line.
-    static func shellQuote(_ path: String) -> String { ShellQuoting.quote(path) }
+    nonisolated static func shellQuote(_ path: String) -> String { ShellQuoting.quote(path) }
+
+    /// `command` escaped for embedding inside an AppleScript string literal.
+    ///
+    /// A name reaching this point has already been through `shellQuote`, so it is wrapped in single
+    /// quotes — which AppleScript does not treat specially. What is left is the two characters an
+    /// AppleScript literal itself reads: the backslash and the double quote. The backslash must be
+    /// doubled *first*, or the escapes added for the quotes get escaped in turn.
+    ///
+    /// This is its own function so the test can run the real rule rather than a copy of it. The
+    /// escaping and the quoting were written apart from each other, and this is the one path in the
+    /// app where getting their composition wrong hands a file name to a root shell.
+    nonisolated static func appleScriptEscaped(_ command: String) -> String {
+        command
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+    }
 }
