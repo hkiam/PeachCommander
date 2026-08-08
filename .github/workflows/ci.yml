@@ -72,6 +72,13 @@ jobs:
       - name: Check written archives against independent readers
         run: ./Tools/check-pack-formats.sh
 
+      # Every `tart run` must also pass --no-graphics: with the VNC flag alone tart opens the vnc:// URL,
+      # and the Screen Sharing window it launches is never closed — 136 dead windows had accumulated in
+      # one process before anyone looked. Cheap, and a one-line rule spread over three files is exactly
+      # the kind that comes back. Needs no build and no VM.
+      - name: Check the VM harness flags
+        run: ./Tools/check-vm-flags.sh
+
       - name: Build project
         run: |
           ./Tools/build.sh
