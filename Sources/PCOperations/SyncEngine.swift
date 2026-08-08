@@ -13,12 +13,48 @@ import PCArchive
 import PCFoundation
 import PCVFS
 
+/// A live filesystem as one side of a synchronisation — an FTP or SFTP mount, or a plugin's (F-193).
+///
+/// Held as a `VirtualFileSystem` rather than as an FTP client, because everything a sync needs of a
+/// side is in that protocol: list, stat, read, write, mkdir, delete. So this works for SFTP and for a
+/// filesystem plugin without knowing anything about either, which is what the feature row asks for.
+///
+/// Compared by scheme and path: a filesystem object is a live connection and has no meaningful
+/// equality, but "the same side" is a question about which mount and which folder.
+public struct RemoteSyncSource: @unchecked Sendable, Equatable {
+    public let fs: VirtualFileSystem
+    public let path: String
+
+    public init(fs: VirtualFileSystem, path: String) {
+        self.fs = fs
+        self.path = path
+    }
+
+    public static func == (a: RemoteSyncSource, b: RemoteSyncSource) -> Bool {
+        a.fs.scheme == b.fs.scheme && a.path == b.path
+    }
+
+    /// The VFS path for `rel` under this side's base.
+    func vpath(_ rel: String) -> VFSPath {
+        let base = path.hasSuffix("/") ? String(path.dropLast()) : path
+        return VFSPath(filesystemId: fs.scheme, path: rel.isEmpty ? (base.isEmpty ? "/" : base)
+                                                                  : "\(base)/\(rel)")
+    }
+}
+
 public enum SyncSide: Sendable, Equatable {
     case localDir(String)
     case zip(String)   // on-disk .zip path
+    case remote(RemoteSyncSource)
 
     public var isZip: Bool { if case .zip = self { return true } else { return false } }
-    public var path: String { switch self { case .localDir(let p), .zip(let p): return p } }
+    public var isRemote: Bool { if case .remote = self { return true } else { return false } }
+    public var path: String {
+        switch self {
+        case .localDir(let p), .zip(let p): return p
+        case .remote(let r): return r.path
+        }
+    }
 }
 
 /// Recursive scanner producing SyncItems for two sides (local dirs and/or a zip).
@@ -26,10 +62,11 @@ public enum SyncScanner {
     private struct Meta { var size: Int64; var modified: Date; var isDir: Bool }
 
     public static func scan(left: SyncSide, right: SyncSide, mask: String,
-                     withSubdirs: Bool, byContent: Bool, ignoreHidden: Bool = false) -> [SyncItem] {
+                            withSubdirs: Bool, byContent: Bool,
+                            ignoreHidden: Bool = false) async -> [SyncItem] {
         let wildcard = WildcardMask(mask.isEmpty ? "*.*" : mask)
-        let leftMeta = enumerate(left, withSubdirs: withSubdirs, wildcard: wildcard, ignoreHidden: ignoreHidden)
-        let rightMeta = enumerate(right, withSubdirs: withSubdirs, wildcard: wildcard, ignoreHidden: ignoreHidden)
+        let leftMeta = await enumerate(left, withSubdirs: withSubdirs, wildcard: wildcard, ignoreHidden: ignoreHidden)
+        let rightMeta = await enumerate(right, withSubdirs: withSubdirs, wildcard: wildcard, ignoreHidden: ignoreHidden)
         // Open each zip once for the content-comparison reads below.
         let leftZip = zipReader(left), rightZip = zipReader(right)
 
@@ -47,7 +84,11 @@ public enum SyncScanner {
                     contentEqual = filesEqual((left.path as NSString).appendingPathComponent(key),
                                               (right.path as NSString).appendingPathComponent(key))
                 } else {
-                    contentEqual = loadData(left, key: key, zip: leftZip) == loadData(right, key: key, zip: rightZip)
+                    // Comparing by content across a remote side downloads both files. That is what
+                    // ticking the box asks for, and it is why the option is not the default.
+                    let leftData = await loadData(left, key: key, zip: leftZip)
+                    let rightData = await loadData(right, key: key, zip: rightZip)
+                    contentEqual = leftData == rightData
                 }
             }
             items.append(SyncItem(relativePath: key, isDirectory: isDir,
@@ -59,11 +100,47 @@ public enum SyncScanner {
     }
 
     private static func enumerate(_ side: SyncSide, withSubdirs: Bool, wildcard: WildcardMask,
-                                  ignoreHidden: Bool) -> [String: Meta] {
+                                  ignoreHidden: Bool) async -> [String: Meta] {
         switch side {
         case .localDir(let dir): return walk(dir, withSubdirs: withSubdirs, wildcard: wildcard, ignoreHidden: ignoreHidden)
         case .zip(let url): return walkZip(url, withSubdirs: withSubdirs, wildcard: wildcard, ignoreHidden: ignoreHidden)
+        case .remote(let r): return await walkRemote(r, withSubdirs: withSubdirs, wildcard: wildcard,
+                                                     ignoreHidden: ignoreHidden)
         }
+    }
+
+    /// Enumerate a live filesystem the same way, one directory listing at a time (F-193).
+    ///
+    /// Depth-first over `fs.list`, which is what every VFS offers; no assumption that a server can
+    /// produce a recursive listing, because most cannot. A listing that fails part-way returns what was
+    /// gathered so far rather than nothing: half a comparison the user can see beats an empty window
+    /// with no reason given — the failure is visible as the missing rows.
+    private static func walkRemote(_ source: RemoteSyncSource, withSubdirs: Bool,
+                                   wildcard: WildcardMask, ignoreHidden: Bool) async -> [String: Meta] {
+        var out: [String: Meta] = [:]
+        var queue: [String] = [""]
+        while let prefix = queue.popLast() {
+            do {
+                for try await batch in source.fs.list(source.vpath(prefix)) {
+                    for entry in batch.entries {
+                        // The name comes off the wire; a component that is not a name would make the
+                        // relative key — and with it a local path on the other side — mean something
+                        // else. See PathContainment.
+                        guard PathContainment.isSafeComponent(entry.name) else { continue }
+                        let rel = prefix.isEmpty ? entry.name : "\(prefix)/\(entry.name)"
+                        if ignoreHidden, isHiddenRel(rel) { continue }
+                        let isDir = entry.kind == .directory || entry.kind == .appBundle
+                                 || entry.kind == .package
+                        if !isDir, !wildcard.matches(entry.name) { continue }
+                        out[rel] = Meta(size: max(0, entry.size), modified: entry.modified, isDir: isDir)
+                        if isDir, withSubdirs { queue.append(rel) }
+                    }
+                }
+            } catch {
+                return out
+            }
+        }
+        return out
     }
 
     /// True when any path component is a dotfile — used to skip hidden items (F-192).
@@ -96,14 +173,29 @@ public enum SyncScanner {
     }
 
     /// Load one entry's bytes from a side (for content comparison across a zip).
-    private static func loadData(_ side: SyncSide, key: String, zip: ZipReader?) -> Data? {
+    private static func loadData(_ side: SyncSide, key: String, zip: ZipReader?) async -> Data? {
         switch side {
         case .localDir(let dir):
             return try? Data(contentsOf: URL(fileURLWithPath: (dir as NSString).appendingPathComponent(key)))
         case .zip:
             guard let zip, let e = zip.entries.first(where: { entryKey($0.path) == key }) else { return nil }
             return try? zip.data(for: e)
+        case .remote(let r):
+            return try? await readAll(r, key)
         }
+    }
+
+    /// The whole of one remote file.
+    static func readAll(_ source: RemoteSyncSource, _ rel: String) async throws -> Data {
+        let stream = try await source.fs.openRead(source.vpath(rel))
+        var data = Data()
+        // `as? Data`, as everywhere else that reads a VFS stream: the protocol gives Element a default
+        // of Data but does not constrain it, so the concrete type is not known here.
+        for try await element in stream {
+            if let chunk = element as? Data { data.append(chunk) }
+        }
+        try? await stream.close()
+        return data
     }
 
     /// A zip entry path reduced to the comparison key (no trailing slash).
@@ -160,7 +252,7 @@ public enum SyncScanner {
 /// MVP) — such actions are reported as skipped.
 public enum SyncExecutor {
     public static func execute(_ results: [SyncResult], left: SyncSide, right: SyncSide,
-                        toTrash: Bool) -> [String] {
+                               toTrash: Bool) async -> [String] {
         let fm = FileManager.default
         var errors: [String] = []
         var zipAdds: [(localPath: String, arcPath: String)] = []   // local → zip, batched
@@ -171,7 +263,7 @@ public enum SyncExecutor {
         }
 
         /// Copy one file/dir from `src` side to `dst` side.
-        func copy(rel: String, isDir: Bool, src: SyncSide, dst: SyncSide) {
+        func copy(rel: String, isDir: Bool, src: SyncSide, dst: SyncSide) async {
             switch (src, dst) {
             case (.localDir, .localDir):
                 copyLocalToLocal(local(src, rel), local(dst, rel), isDir: isDir)
@@ -180,9 +272,76 @@ public enum SyncExecutor {
                 // Empty-dir entries are implicit via child arc paths; skip standalone dirs.
             case (.zip(let url), .localDir):
                 extractFromZip(url, rel: rel, to: local(dst, rel), isDir: isDir)
+            case (.localDir(let dir), .remote(let r)):
+                await upload(from: (dir as NSString).appendingPathComponent(rel), rel: rel,
+                             to: r, isDir: isDir)
+            case (.remote(let r), .localDir(let dir)):
+                await download(rel: rel, from: r, toLocalRoot: dir, isDir: isDir)
             case (.zip, .zip):
                 errors.append("\(rel): archive-to-archive sync not supported")
+            case (.remote, .remote):
+                // Not a limitation worth hiding: the bytes would go down and up again through this
+                // machine, and neither FTP nor SFTP is asked to move them directly (that is FXP, F-216).
+                errors.append("\(rel): syncing one server to another is not supported")
+            case (.zip, .remote), (.remote, .zip):
+                errors.append("\(rel): syncing an archive with a server is not supported")
             }
+        }
+
+        /// Local file → server. Written through the VFS write stream in chunks, so a large file does
+        /// not have to fit in memory.
+        func upload(from srcPath: String, rel: String, to r: RemoteSyncSource, isDir: Bool) async {
+            do {
+                if isDir { try await r.fs.mkdir(r.vpath(rel)); return }
+                // The parent must exist: a server does not create it on the way, and a sync of a new
+                // subtree copies the folder before its files only because `creates` is ordered that way.
+                let parent = (rel as NSString).deletingLastPathComponent
+                if !parent.isEmpty { try? await r.fs.mkdir(r.vpath(parent)) }
+                guard let handle = FileHandle(forReadingAtPath: srcPath) else {
+                    errors.append("\(rel): cannot read"); return
+                }
+                defer { try? handle.close() }
+                let stream = try await r.fs.openWrite(r.vpath(rel),
+                                                      options: WriteOptions(create: true, truncate: true))
+                while case let chunk = handle.readData(ofLength: 1 << 16), !chunk.isEmpty {
+                    try await stream.write(chunk)
+                }
+                try await stream.close()
+            } catch { errors.append("\(rel): \(error.localizedDescription)") }
+        }
+
+        /// Server → local file.
+        ///
+        /// The destination is built from a name the *server* chose, so it goes through the same
+        /// containment rule as an archive member: a listing offering `..` must not put the write above
+        /// the folder the user picked. The scanner already refuses such a component, and this refuses
+        /// it again — the two are far enough apart that one of them will be edited alone one day.
+        func download(rel: String, from r: RemoteSyncSource, toLocalRoot root: String, isDir: Bool) async {
+            guard let dst = safeLocalPath(rel, under: root) else {
+                errors.append("\(rel): refused — it would be written outside the folder"); return
+            }
+            do {
+                if isDir {
+                    try fm.createDirectory(atPath: dst, withIntermediateDirectories: true)
+                    return
+                }
+                let data = try await SyncScanner.readAll(r, rel)
+                try fm.createDirectory(atPath: (dst as NSString).deletingLastPathComponent,
+                                       withIntermediateDirectories: true)
+                try data.write(to: URL(fileURLWithPath: dst))
+            } catch { errors.append("\(rel): \(error.localizedDescription)") }
+        }
+
+        /// `rel` under `root`, or nil if any component of it would leave `root`.
+        func safeLocalPath(_ rel: String, under root: String) -> String? {
+            var current = root
+            for component in rel.split(separator: "/").map(String.init) {
+                guard let next = PathContainment.childPath(component, under: current, root: root) else {
+                    return nil
+                }
+                current = next
+            }
+            return current == root ? nil : current
         }
 
         func copyLocalToLocal(_ src: String, _ dst: String, isDir: Bool) {
@@ -216,9 +375,16 @@ public enum SyncExecutor {
             } catch { errors.append("\(rel): \(error.localizedDescription)") }
         }
 
-        func remove(_ side: SyncSide, _ rel: String) {
+        func remove(_ side: SyncSide, _ rel: String) async {
             if case .zip = side {                         // batched into one rewrite below (F-192)
                 zipDeletes.append(rel); return
+            }
+            if case .remote(let r) = side {
+                // `toTrash` cannot be honoured here: a server has no Trash, so this is permanent. The
+                // dialog says so before the actions run rather than reporting it afterwards.
+                do { try await r.fs.delete(r.vpath(rel)) }
+                catch { errors.append("\(rel): \(error.localizedDescription)") }
+                return
             }
             let path = local(side, rel)
             do {
@@ -236,8 +402,8 @@ public enum SyncExecutor {
 
         for r in creates + fileCopies {
             let rel = r.item.relativePath
-            if r.action == .copyToRight { copy(rel: rel, isDir: r.item.isDirectory, src: left, dst: right) }
-            else { copy(rel: rel, isDir: r.item.isDirectory, src: right, dst: left) }
+            if r.action == .copyToRight { await copy(rel: rel, isDir: r.item.isDirectory, src: left, dst: right) }
+            else { await copy(rel: rel, isDir: r.item.isDirectory, src: right, dst: left) }
         }
         // One rewrite for all files copied into the zip.
         if !zipAdds.isEmpty, let zipURL = (left.isZip ? left : right).path as String? {
@@ -245,7 +411,7 @@ public enum SyncExecutor {
             catch { errors.append("archive update failed: \(error.localizedDescription)") }
         }
         for r in deletes {
-            remove(r.action == .deleteRight ? right : left, r.item.relativePath)
+            await remove(r.action == .deleteRight ? right : left, r.item.relativePath)
         }
         // One rewrite for all entries deleted from the zip (F-192).
         if !zipDeletes.isEmpty, let zipURL = (left.isZip ? left : right).path as String? {
