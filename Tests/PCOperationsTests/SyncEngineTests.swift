@@ -225,6 +225,23 @@ final class SyncEngineTests: XCTestCase {
         XCTAssertTrue(errors[0].contains("server to another"), errors[0])
     }
 
+    func testUploadingOnlyTheFileStillCreatesItsFolderOnTheServer() async throws {
+        // The case where the folder is *not* copied as its own action: the user deselected that row, or
+        // only files were chosen. A server does not create the parent on the way, so without that step
+        // the write fails — and nothing else in the suite reaches it, because a folder normally arrives
+        // as its own action first.
+        try write("deep", to: left, "newdir/inner.txt")
+        let items = await SyncScanner.scan(left: .localDir(left.path), right: remoteSide(right),
+                                           mask: "*.*", withSubdirs: true, byContent: false)
+        let fileOnly = item(items, "newdir/inner.txt").map { [SyncResult(action: .copyToRight, item: $0)] } ?? []
+        XCTAssertEqual(fileOnly.count, 1, "the file itself must be in the comparison")
+        let errors = await SyncExecutor.execute(fileOnly, left: .localDir(left.path),
+                                                right: remoteSide(right), toTrash: false)
+        XCTAssertEqual(errors, [])
+        XCTAssertEqual(try String(contentsOf: right.appendingPathComponent("newdir/inner.txt"),
+                                  encoding: .utf8), "deep")
+    }
+
     // MARK: - The name comes off the wire
 
     func testAServerCannotNameAnEntryThatEscapesTheLocalFolder() async throws {

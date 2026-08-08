@@ -37,6 +37,14 @@ does not have.
   at which tool was called rather than at what it would do. Commands are now judged by what they
   change, and an unfamiliar command counts as changing something.
 
+### Added
+
+- **Synchronize Directories now works with a server as one side.** A panel connected to FTP or SFTP —
+  or to a filesystem plugin — can be compared against a local folder and synchronised in either
+  direction, subfolders included. Two servers with each other, and an archive with a server, are
+  refused up front rather than partway through. Deleting on a server is permanent: there is no Trash
+  there to move things to.
+
 ## [0.4.0] — 2026-08-08
 
 Mostly a repair release. A systematic sweep went through the feature inventory looking for rows that

@@ -366,6 +366,8 @@ extension MainWindowController {
                                                     right: .zip(a[0]), toTrash: false)
                     NSLog("[automation] zipdelete errors: \(errs)")
                 }
+            case "syncsftp":                               // syncsftp <localdir>|<remotedir>|<out> (F-193)
+                await syncOverSFTP(arg)
             case "zipextract":                             // zipextract <zip>|<dest>|<out> (F-131)
                 await zipExtract(arg)
             case "subbar":                                 // subbar <barfile> (F-253): descend into a subbar
@@ -872,6 +874,45 @@ extension MainWindowController {
         await session.close()
         try? report.write(toFile: a[2], atomically: true, encoding: .utf8)
         NSLog("[automation] sftpchmod → \(a[2])")
+    }
+
+    /// Synchronise a local folder with a folder on the guest's own sshd, over a real SFTP connection.
+    ///
+    /// The point is the connection: the unit tests drive the remote side through LocalFS, which is a
+    /// genuine VirtualFileSystem and exercises the same code, but says nothing about whether a server
+    /// at the other end of a socket behaves — listing formats, a write stream that has to be closed
+    /// before the file exists, a path that is not the local one.
+    ///
+    /// The report says what the sync decided and what it did. Whether the file is really on the server
+    /// is asked of `ssh` afterwards, by the harness: a wrapper reporting on its own write is not
+    /// evidence.
+    private func syncOverSFTP(_ arg: String) async {
+        let a = arg.split(separator: "|").map(String.init)
+        guard a.count == 3 else { NSLog("[automation] syncsftp needs <localdir>|<remotedir>|<out>"); return }
+        let (localDir, remoteDir, out) = (a[0], a[1], a[2])
+        var report = ""
+        let session = SFTPSession()
+        do {
+            try await session.connect(host: "127.0.0.1", port: 22, user: NSUserName(),
+                                      password: nil, keyFile: nil, keyPassphrase: nil)
+            let fs = SFTPFileSystem(session: session)
+            let right = SyncSide.remote(RemoteSyncSource(fs: fs, path: remoteDir))
+            let items = await SyncScanner.scan(left: .localDir(localDir), right: right,
+                                               mask: "*.*", withSubdirs: true, byContent: false)
+            report += "compared=\(items.count)\n"
+            let results = SyncModel.classify(items, options: SyncOptions())
+            let actionable = results.filter { $0.action != .none }
+            report += "actions=" + actionable.map { "\($0.item.relativePath):\($0.action)" }
+                .sorted().joined(separator: ",") + "\n"
+            let errors = await SyncExecutor.execute(actionable, left: .localDir(localDir),
+                                                    right: right, toTrash: false)
+            report += "errors=" + (errors.isEmpty ? "none" : errors.joined(separator: "; ")) + "\n"
+        } catch {
+            report += "error=\(error)\n"
+        }
+        await session.close()
+        try? report.write(toFile: out, atomically: true, encoding: .utf8)
+        NSLog("[automation] syncsftp → \(out)")
     }
 
     /// Enter `zip` in the panel and copy its whole root out to `dest`, reporting what landed where.

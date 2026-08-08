@@ -117,6 +117,12 @@ SCENARIOS = [
     ("zip-slip", ["active left", "left /Users/admin/pc-slip", "wait 1000",
                   "zipextract /Users/admin/pc-slip/evil.zip|/Users/admin/pc-slip/target/out"
                   "|/Users/admin/slip.txt", "wait 2500"], 10),
+    # Does a synchronisation work with a *server* as one side (F-193)? The unit tests drive the remote
+    # side through LocalFS — the same code, but nothing crosses a socket. This talks SFTP to the guest's
+    # own sshd, and what arrived is asked of ssh afterwards, not of the app.
+    ("sync-sftp", ["active left", "left /Users/admin", "wait 1000",
+                   "syncsftp /Users/admin/sync-src|/Users/admin/sync-dst|/Users/admin/syncsftp.txt",
+                   "wait 4000"], 12),
     # Do attribute changes over SFTP actually reach the server (F-364)? They used to be discarded by an
     # empty function while the dialog reported success. `sftpchmod` connects, changes the mode, and reports
     # what the server says the mode is afterwards — the only answer that counts.
@@ -287,6 +293,10 @@ REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"
 # What an *independent* tool must say after a scenario ran: the app changed something, and something other
 # than the app is asked whether it really changed. `stat` over ssh is not the code under test.
 EXTERNAL_CHECKS = {
+    # The files, on the server, asked of the shell — including the one in a subfolder, because creating
+    # the parent is the part a server does not do for you.
+    "sync-sftp": ("cat ~/sync-dst/alpha.txt ~/sync-dst/sub/beta.txt 2>/dev/null | tr '\\n' ' '",
+                  "one two"),
     "sftp-attributes": ("stat -f %Lp ~/sftp-demo/perm.txt", "600"),
     # Three distinct answers, so the interesting failure cannot hide: "viewer-fetched" means the block is
     # not working, "server-not-running" means the witness died and the run proves nothing, and only
@@ -353,6 +363,10 @@ REPORTS = {
     # extraction reports success either way.
     "zip-slip": ("/Users/admin/slip.txt",
                  ["listed=..,harmless.txt\n", "inside=harmless.txt\n", "parent=\n", "!escaped.txt"]),
+    # What the sync decided, before what it did: an empty action list with no errors would otherwise
+    # read as success.
+    "sync-sftp": ("/Users/admin/syncsftp.txt",
+                  ["compared=3", "alpha.txt:copyToRight", "sub/beta.txt:copyToRight", "errors=none"]),
     "sftp-attributes": ("/Users/admin/sftp.txt", ["requested=600", "applied=ok"]),
     # 40960 bytes whole; then only the tail after 10000 travels.
     "sftp-download": ("/Users/admin/sftpget.txt", ["full=40960", "resumedAt=10000", "tail=30960"]),
@@ -573,6 +587,10 @@ def boot(app: str, run: str):
                   "cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys; "
                   "chmod 600 ~/.ssh/authorized_keys; "
                   "mkdir -p ~/sftp-demo && printf 'x' > ~/sftp-demo/perm.txt && "
+                  # A source folder and an empty target for the sync-over-SFTP scenario (F-193).
+                  "rm -rf ~/sync-src ~/sync-dst && mkdir -p ~/sync-src ~/sync-dst && "
+                  "printf 'one\\n' > ~/sync-src/alpha.txt && "
+                  "mkdir -p ~/sync-src/sub && printf 'two\\n' > ~/sync-src/sub/beta.txt && "
                   "chmod 644 ~/sftp-demo/perm.txt; "
                   # 40 KB of known content: more than one 64 KB read would be silly, less than one is
                   # what a single-chunk transfer looks like — enough to tell a tail from a whole file.
