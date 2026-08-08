@@ -196,12 +196,12 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 | F-230 | Plugin host: load/unload C-ABI dylib bundles, crash-guard logging, version handshake | 4 types: PCX/PFX/PLX/PDX; ev: symbol:PluginHost ev: test:PluginHostTests | SPEC-012 | I14 | P1 | done |
 | F-231 | PCX packer API (OpenArchive, ReadHeader(Ex), ProcessFile, PackFiles, DeleteFiles, GetPackerCaps, callbacks…) | Function-for-function WCX port; ev: symbol:PCXArchive ev: plugin:SamplePacker | SPEC-012 | I14 | P1 | done |
 | F-232 | PFX file-system API (FsInit, FsFindFirst/Next/Close, FsGet/PutFile, FsMkDir, FsDelete, FsExecuteFile, FsStatusInfo, content-fields…) | WFX port; "Network" root node in panel; ev: symbol:PFXFileSystem ev: plugin:SampleFS | SPEC-012 | I15 | P1 | done |
-| F-233 | PLX lister API (ListLoad, ListLoadNext, ListSearchText, ListSendCommand, ListGetPreviewBitmap, detect strings) | NSView* instead of HWND | SPEC-012 | I16 | P1 | done |
-| F-234 | PDX content API (ContentGetSupportedField, ContentGetValue, ContentSetValue, ContentCompareFiles, operators…) | Columns, tooltips, search, rename | SPEC-012 | I16 | P1 | done |
-| F-235 | Plugin manager UI: install from .zip (pluginst.inf analog), enable/disable, associate extensions, configure | Options > Plugins page | SPEC-012 | I14 | P1 | done |
+| F-233 | PLX lister API (ListLoad, ListLoadNext, ListSearchText, ListSendCommand, ListGetPreviewBitmap, detect strings) | NSView* instead of HWND; ev: symbol:PLXLister ev: test:PluginHostTests | SPEC-012 | I16 | P1 | done |
+| F-234 | PDX content API (ContentGetSupportedField, ContentGetValue, ContentSetValue, ContentCompareFiles, operators…) | Columns, tooltips, search, rename; ev: symbol:PDXContentProvider ev: test:ContentFieldValuesTests | SPEC-012 | I16 | P1 | done |
+| F-235 | Plugin manager UI: install from .zip (pluginst.inf analog), enable/disable, associate extensions, configure | Options > Plugins page; installing from a .zip goes through /usr/bin/unzip, which strips absolute paths and flattens "../" into the destination — measured against a crafted archive, nothing escapes. But an *upgrade* removed the existing bundle before copying the new one and rolled back by deleting the new one, so an upgrade that failed to load left the user with nothing where they had something that worked; the old bundle is moved aside now and put back; ev: symbol:PluginManager ev: test:PluginInstallZipTests | SPEC-012 | I14 | P1 | done |
 | F-236 | Plugin SDK: C headers, Swift package, 4 sample plugins, porting guide WCX->PCX etc. | Docs + templates in Plugins/SDK; ev: plugin:SDK ev: plugin:SampleLister | SPEC-012 | I14–I16 | P1 | done |
 | F-237 | Built-in plugins shipped: SFTP (PFX), 7z-extra (PCX if needed), file-info PDX sample | Prove each API; each API is proven by a sample plugin; SFTP is built in (PCNet) rather than a PFX plugin; ev: plugin:SampleFS ev: plugin:SamplePacker ev: plugin:SampleContentPlugin | SPEC-012 | I15/I16 | P1 | partial |
-| F-238 | Detect strings engine (EXT=, SIZE, FORCE, MULTIMEDIA & parser) | Shared by PLX/PDX | SPEC-012 | I16 | P1 | done |
+| F-238 | Detect strings engine (EXT=, SIZE, FORCE, MULTIMEDIA & parser) | Shared by PLX/PDX; ev: symbol:DetectString ev: test:DetectStringTests | SPEC-012 | I16 | P1 | done |
 
 ## 12. Command system, button bar, menus
 
