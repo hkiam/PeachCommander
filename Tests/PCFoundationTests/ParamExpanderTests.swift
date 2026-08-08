@@ -1,5 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 // ParamExpanderTests - Unit tests for ParamExpander
+//
+// The expected values here changed when the quoting did (F-252). These tests used to pin the rule "quote
+// only when the value contains whitespace, and with double quotes" — which is precisely what made a file
+// called `$(id).txt` run a command when a user-defined command was invoked on its folder. Every value is
+// single-quoted now. The behaviour those old expectations described was the defect, so they had to move;
+// what a program actually *receives* is checked against a real shell in ParamExpanderQuotingTests.
 
 import XCTest
 @testable import PCFoundation
@@ -17,22 +23,22 @@ final class ParamExpanderTests: XCTestCase {
 
     func testExpand_sourceDir_P() {
         let context = ParamContext(sourceDir: "/Users/max/src")
-        XCTAssertEqual(ParamExpander.expand("%P", context: context), "/Users/max/src")
+        XCTAssertEqual(ParamExpander.expand("%P", context: context), "'/Users/max/src'")
     }
 
     func testExpand_cursorName_N() {
         let context = ParamContext(cursorName: "file.txt")
-        XCTAssertEqual(ParamExpander.expand("%N", context: context), "file.txt")
+        XCTAssertEqual(ParamExpander.expand("%N", context: context), "'file.txt'")
     }
 
     func testExpand_targetDir_T() {
         let context = ParamContext(targetDir: "/Users/max/dst")
-        XCTAssertEqual(ParamExpander.expand("%T", context: context), "/Users/max/dst")
+        XCTAssertEqual(ParamExpander.expand("%T", context: context), "'/Users/max/dst'")
     }
 
     func testExpand_targetName_M() {
         let context = ParamContext(targetName: "other.txt")
-        XCTAssertEqual(ParamExpander.expand("%M", context: context), "other.txt")
+        XCTAssertEqual(ParamExpander.expand("%M", context: context), "'other.txt'")
     }
 
     func testExpand_literalPercent() {
@@ -48,37 +54,45 @@ final class ParamExpanderTests: XCTestCase {
 
     func testExpand_selectedNames_S_single() {
         let context = ParamContext(selectedNames: ["a.txt"])
-        XCTAssertEqual(ParamExpander.expand("%S", context: context), "a.txt")
+        XCTAssertEqual(ParamExpander.expand("%S", context: context), "'a.txt'")
     }
 
     func testExpand_selectedNames_S_several() {
         let context = ParamContext(selectedNames: ["a.txt", "b.txt", "c.txt"])
-        XCTAssertEqual(ParamExpander.expand("%S", context: context), "a.txt b.txt c.txt")
+        XCTAssertEqual(ParamExpander.expand("%S", context: context), "'a.txt' 'b.txt' 'c.txt'")
     }
 
-    // MARK: - Quoting when a value contains whitespace
+    // MARK: - Quoting
 
     func testExpand_quotingWhenSingleTokenHasSpaces() {
         let context = ParamContext(sourceDir: "/Users/max/My Documents")
-        XCTAssertEqual(ParamExpander.expand("%P", context: context), "\"/Users/max/My Documents\"")
+        XCTAssertEqual(ParamExpander.expand("%P", context: context), "'/Users/max/My Documents'")
     }
 
-    func testExpand_noQuotingWhenValueHasNoSpaces() {
+    func testExpand_everyValueIsQuotedEvenWhenItLooksHarmless() {
+        // Renamed from testExpand_noQuotingWhenValueHasNoSpaces, which pinned the rule that made a file
+        // named `$(id).txt` executable: "quote only when it looks necessary" is a rule somebody has to
+        // get right for every character a shell treats specially.
         let context = ParamContext(cursorName: "file.txt")
-        XCTAssertEqual(ParamExpander.expand("%N", context: context), "file.txt")
+        XCTAssertEqual(ParamExpander.expand("%N", context: context), "'file.txt'")
     }
 
-    func testExpand_selectedNames_S_quotesOnlyNamesWithSpaces() {
+    func testExpand_selectedNames_S_quotesEveryName() {
         let context = ParamContext(selectedNames: ["a.txt", "b c.txt", "d.txt"])
-        XCTAssertEqual(ParamExpander.expand("%S", context: context), "a.txt \"b c.txt\" d.txt")
+        XCTAssertEqual(ParamExpander.expand("%S", context: context), "'a.txt' 'b c.txt' 'd.txt'")
+    }
+
+    func testExpand_aQuoteInTheNameCannotEndTheQuoting() {
+        let context = ParamContext(cursorName: "it's here.txt")
+        XCTAssertEqual(ParamExpander.expand("%N", context: context), "'it'\\''s here.txt'")
     }
 
     // MARK: - Mixed literal templates
 
     func testExpand_realisticTemplateMixingLiterals() {
         let context = ParamContext(sourceDir: "/src", cursorName: "file.txt", targetDir: "/dst")
-        let result = ParamExpander.expand("-flag %P%N -o \"%T\"", context: context)
-        XCTAssertEqual(result, "-flag /srcfile.txt -o \"/dst\"")
+        let result = ParamExpander.expand("-flag %P%N -o %T", context: context)
+        XCTAssertEqual(result, "-flag '/src''file.txt' -o '/dst'")
     }
 
     func testExpand_percentPercentDone() {
@@ -103,7 +117,7 @@ final class ParamExpanderTests: XCTestCase {
         let lower = ParamExpander.expand("%p", context: context)
         let upper = ParamExpander.expand("%P", context: context)
         XCTAssertEqual(lower, upper)
-        XCTAssertEqual(lower, "/Users/max/src")
+        XCTAssertEqual(lower, "'/Users/max/src'")
     }
 
     // MARK: - List-file tokens (%L/%F/%D/%W)
@@ -115,7 +129,7 @@ final class ParamExpanderTests: XCTestCase {
             XCTAssertEqual(kind, .fullPaths)
             return "/tmp/l.txt"
         }
-        XCTAssertEqual(result, "/tmp/l.txt")
+        XCTAssertEqual(result, "'/tmp/l.txt'")
         XCTAssertEqual(counter.count, 1)
     }
 
@@ -125,7 +139,7 @@ final class ParamExpanderTests: XCTestCase {
             counter.count += 1
             return "/tmp/l.txt"
         }
-        XCTAssertEqual(result, "/tmp/l.txt /tmp/l.txt")
+        XCTAssertEqual(result, "'/tmp/l.txt' '/tmp/l.txt'")
         XCTAssertEqual(counter.count, 1, "the closure should only be invoked once per distinct ListFileKind")
     }
 
@@ -140,19 +154,21 @@ final class ParamExpanderTests: XCTestCase {
             case .withoutPath: return "/tmp/nopath.txt"
             }
         }
-        XCTAssertEqual(result, "/tmp/full.txt /tmp/names.txt /tmp/dos.txt /tmp/nopath.txt")
+        XCTAssertEqual(result, "'/tmp/full.txt' '/tmp/names.txt' '/tmp/dos.txt' '/tmp/nopath.txt'")
         XCTAssertEqual(seenKinds, [.fullPaths, .names, .dosNames, .withoutPath])
     }
 
     func testExpand_listFileToken_nilClosureExpandsToEmpty() {
         let result = ParamExpander.expand("[%L]", context: ParamContext(), listFile: nil)
-        XCTAssertEqual(result, "[]")
+        // Empty, but still quoted — an unquoted nothing would silently remove an argument the command
+        // is expecting rather than passing it an empty one.
+        XCTAssertEqual(result, "['']")
     }
 
     func testExpand_listFileToken_quotesPathWithSpaces() {
         let result = ParamExpander.expand("%L", context: ParamContext()) { _ in
             "/tmp/my list.txt"
         }
-        XCTAssertEqual(result, "\"/tmp/my list.txt\"")
+        XCTAssertEqual(result, "'/tmp/my list.txt'")
     }
 }

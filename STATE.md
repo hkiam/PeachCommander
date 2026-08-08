@@ -24,6 +24,41 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 9) — A file name could run a command
+
+One row (F-252), and the most serious defect the sweep has turned up.
+
+**A toolbar button or a user (Start-menu) command builds a line out of `%`-tokens and hands it to
+`/bin/sh -c`.** The values come from the panel, so they are file names — untrusted input, arriving with
+a download, an extracted archive or a shared volume. The expander wrapped a value in *double* quotes,
+and only when it contained whitespace. Therefore:
+
+  * `$(id).txt` and `` `id`.txt `` went into the line raw and were executed;
+  * `a;id;b.txt`, `a|id.txt`, `a&&id.txt` likewise — no whitespace, no quoting;
+  * `he said "hi".txt` broke out of the quoting outright.
+
+Double quotes would not have been enough either: a shell substitutes `$(…)` and backticks *inside* them,
+and the `.app` branch beside this used exactly that. Every value is single-quoted now, through one shared
+`ShellQuoting.quote` that the elevated save and the toolbar path also use — there were three hand-rolled
+quoters and only the one guarding the root shell was right.
+
+**The project already knew how to do this.** `PCShellQuoteTests` has run the quoting for the elevated
+save through a real shell for a long time, with a test literally called "an injection attempt stays one
+argument". The %-expander simply never used it. Two implementations of one rule, and the one nobody was
+worried about was the wrong one.
+
+**Sixteen existing tests failed on the fix, and they were right to.** They pinned the old rule — "no
+quoting when the value has no spaces", "quotes only names with spaces". The behaviour those tests
+described *was* the defect, so the expectations moved; what a program actually receives is now checked
+against `/bin/sh` instead.
+
+**And two of my own.** The new test file did not run at all until `xcodegen` had seen it — the same trap
+as batch 6, and the suite was green while nine tests sat unexecuted. Then my test template `printf '%s\n'
+%S` failed, because `%s` is a token to this expander too: I had written the collision the `%%` escape
+exists to avoid.
+
+Rows without evidence: 69 → 68.
+
 ## 2026-08-08 (evidence sweep, batch 8) — The config file reformatted itself
 
 Two rows (F-275, F-277), one defect and one design question the existing tests settled for me.

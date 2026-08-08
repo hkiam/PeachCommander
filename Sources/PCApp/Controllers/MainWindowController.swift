@@ -4181,9 +4181,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         return url.path
     }
 
-    private static func shellQuote(_ s: String) -> String {
-        "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\""
-    }
+    /// Double quotes were not enough here either: a shell substitutes `$(…)` and backticks *inside*
+    /// them, so an app path containing either would have run. One implementation now (F-252).
+    private static func shellQuote(_ s: String) -> String { ShellQuoting.quote(s) }
 
     // MARK: - Plugins (I14)
 

@@ -59,9 +59,8 @@ public enum ParamExpander {
     ///   %% -> literal '%'. Unknown %x is passed through verbatim (including
     ///   the %).
     ///
-    /// Any expanded value that contains whitespace is wrapped in double
-    /// quotes; for %S each name is individually quoted if it contains
-    /// whitespace, then joined by single spaces. A trailing path separator is
+    /// Every expanded value is wrapped in single quotes (see `quoteIfNeeded`); for %S each name is
+    /// quoted individually and the results joined by single spaces. A trailing path separator is
     /// NOT added to %P/%T.
     ///
     /// - Parameters:
@@ -141,12 +140,14 @@ public enum ParamExpander {
         return result
     }
 
-    /// Wraps `value` in double quotes if it contains whitespace (space or
-    /// tab); otherwise returns it unchanged.
+    /// `value` as one shell word.
+    ///
+    /// Always quoted, and with single quotes. The previous version wrapped a value in *double* quotes
+    /// only when it contained whitespace — so `$(id).txt`, `` `id`.txt `` and `a;id;b.txt`, all legal
+    /// macOS file names, went into the command line raw and ran when the user invoked any user-defined
+    /// command on that folder. A name containing a double quote broke out of the quoting outright. Even
+    /// double-quoting everything would not have been enough: a shell still substitutes inside those.
     private static func quoteIfNeeded(_ value: String) -> String {
-        if value.contains(" ") || value.contains("\t") {
-            return "\"\(value)\""
-        }
-        return value
+        ShellQuoting.quote(value)
     }
 }
