@@ -63,4 +63,58 @@ final class SearchTemplateTests: XCTestCase {
         XCTAssertEqual(q.hexContent, [0x48, 0x65])
         XCTAssertEqual(q.scopePaths, ["/tmp/a"])
     }
+
+    // MARK: - What happens when the format changes underneath (F-156)
+    //
+    // These live in one JSON file that Codable writes and reads, and a decode failure becomes `?? []` —
+    // i.e. *every saved template silently disappears*. That is one added non-optional property away at
+    // any time, and the user's reaction would be "the app forgot my searches", with nothing in the file
+    // to suggest it is still all there.
+
+    private func makeDir() throws {
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(),
+                                                withIntermediateDirectories: true)
+    }
+
+    func testAFileFromAnOlderVersionStillLoads() throws {
+        try makeDir()
+        // Only the fields an early version would have written. Everything since must have a default.
+        let older = """
+        [{"name":"Große Bilder","nameMask":"*.jpg","caseSensitive":false,"useRegex":false,
+          "wholeWord":false,"includeDirectories":false,"contentEncodingAware":false,"maxDepth":0}]
+        """
+        let url = self.url.deletingLastPathComponent().appendingPathComponent("older.json")
+        try Data(older.utf8).write(to: url)
+
+        let loaded = SearchTemplateStore(url: url).load()
+        XCTAssertEqual(loaded.map { $0.name }, ["Große Bilder"],
+                       "a template file written by an earlier version must not vanish on load")
+        XCTAssertEqual(loaded.first?.nameMask, "*.jpg")
+    }
+
+    func testAFileWithAnUnknownFutureFieldStillLoads() throws {
+        try makeDir()
+        // The other direction: a newer version wrote a field this one does not know. Ignoring it beats
+        // discarding the user's templates.
+        let newer = """
+        [{"name":"Neu","nameMask":"*.md","caseSensitive":false,"useRegex":false,"wholeWord":false,
+          "includeDirectories":false,"contentEncodingAware":false,"maxDepth":0,
+          "somethingAddedLater":"whatever"}]
+        """
+        let url = self.url.deletingLastPathComponent().appendingPathComponent("newer.json")
+        try Data(newer.utf8).write(to: url)
+        XCTAssertEqual(SearchTemplateStore(url: url).load().map { $0.name }, ["Neu"])
+    }
+
+    func testAGenuinelyBrokenFileIsNotMistakenForAnEmptyList() throws {
+        try makeDir()
+        // Corrupt is corrupt — but it must not be indistinguishable from "no templates yet", because
+        // saving over it would then destroy what could still be recovered by hand.
+        let url = self.url.deletingLastPathComponent().appendingPathComponent("broken.json")
+        try Data("this is not json".utf8).write(to: url)
+        let store = SearchTemplateStore(url: url)
+        XCTAssertTrue(store.load().isEmpty)
+        // The file is still there for the user to look at.
+        XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
+    }
 }
