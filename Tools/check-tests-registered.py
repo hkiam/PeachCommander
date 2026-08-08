@@ -24,31 +24,88 @@ Usage: Tools/check-tests-registered.py
 from __future__ import annotations
 
 import pathlib
+import re
 import sys
-
-try:
-    import yaml
-except ImportError:                                  # noqa: BLE001 — a clear message beats a traceback
-    sys.exit("need pyyaml: python3 -m pip install --user pyyaml")
 
 REPO = pathlib.Path(__file__).resolve().parents[1]
 PROJECT = REPO / "project.yml"
 TESTS = REPO / "Tests"
 
 
+def read_project() -> tuple[dict[str, dict], list[str]]:
+    """(targets, AllTests scheme test targets) from project.yml, without a YAML library.
+
+    Deliberately dependency-free. The first version imported pyyaml, which the CI image does not have
+    and — being an externally managed Python — will not install; a gate that fails because of its own
+    dependency is worse than no gate, because the first fix anyone reaches for is deleting it.
+
+    Only what is needed is parsed: a target's `type`, its `sources` paths, and the list under the
+    AllTests scheme's `test: targets:`. Verified against the pyyaml reading of the same file.
+    """
+    targets: dict[str, dict] = {}
+    scheme_tests: list[str] = []
+
+    section = None          # "targets" | "schemes" | None
+    target = None           # current target name
+    in_sources = False
+    in_alltests = False
+    in_scheme_test_targets = False
+    scheme = None
+
+    for raw in PROJECT.read_text(encoding="utf-8").splitlines():
+        if not raw.strip() or raw.lstrip().startswith("#"):
+            continue
+        indent = len(raw) - len(raw.lstrip())
+        line = raw.strip()
+
+        if indent == 0:
+            section = line[:-1] if line.endswith(":") else None
+            target = scheme = None
+            in_sources = in_alltests = in_scheme_test_targets = False
+            continue
+
+        if section == "targets":
+            if indent == 2 and line.endswith(":"):
+                target = line[:-1]
+                targets[target] = {"type": "", "sources": []}
+                in_sources = False
+            elif target:
+                if indent == 4 and line.startswith("type:"):
+                    targets[target]["type"] = line.split(":", 1)[1].strip()
+                    in_sources = False
+                elif indent == 4 and line == "sources:":
+                    in_sources = True
+                elif indent == 4:
+                    in_sources = False
+                elif in_sources and line.startswith("- "):
+                    value = line[2:].strip()
+                    m = re.match(r"path:\s*(.+)$", value)
+                    targets[target]["sources"].append((m.group(1) if m else value).strip())
+        elif section == "schemes":
+            if indent == 2 and line.endswith(":"):
+                scheme = line[:-1]
+                in_alltests = scheme == "AllTests"
+                in_scheme_test_targets = False
+            elif in_alltests:
+                if line == "targets:":
+                    in_scheme_test_targets = True
+                elif line.endswith(":") and not line.startswith("- "):
+                    # `build:`/`test:` and their keys; only the list under `test:` matters, and it is
+                    # the one that follows `targets:` at the deepest level.
+                    in_scheme_test_targets = False
+                elif in_scheme_test_targets and line.startswith("- "):
+                    scheme_tests.append(line[2:].strip())
+    return targets, scheme_tests
+
+
 def main() -> int:
-    spec = yaml.safe_load(PROJECT.read_text(encoding="utf-8"))
-    targets = spec.get("targets", {})
+    targets, listed_names = read_project()
 
     # Bundles the project defines, and the directories each of them compiles.
-    unit_bundles: dict[str, list[str]] = {}
-    for name, target in targets.items():
-        if not str(target.get("type", "")).startswith("bundle."):
-            continue
-        sources = []
-        for entry in target.get("sources", []):
-            sources.append(entry["path"] if isinstance(entry, dict) else entry)
-        unit_bundles[name] = sources
+    unit_bundles: dict[str, list[str]] = {
+        name: target["sources"] for name, target in targets.items()
+        if target["type"].startswith("bundle.")
+    }
 
     problems = 0
 
@@ -61,10 +118,9 @@ def main() -> int:
             problems += 1
 
     # 2) Every unit-test bundle is in the AllTests scheme.
-    scheme = spec.get("schemes", {}).get("AllTests", {})
-    listed = set(scheme.get("test", {}).get("targets", []))
-    for name, target in targets.items():
-        if targets[name].get("type") != "bundle.unit-test":
+    listed = set(listed_names)
+    for name in targets:
+        if targets[name]["type"] != "bundle.unit-test":
             continue
         if name not in listed:
             print(f"  ⚠️  {name}: a unit-test bundle that the AllTests scheme does not run")

@@ -84,11 +84,7 @@ jobs:
       # anyone counted the passing test names. Reads project.yml, not the generated project, because a
       # stale .xcodeproj is itself the failure being guarded against. Needs no build.
       - name: Check every test is registered and run
-        # pyyaml is not in this job's image the way it is in the Docs one; installing it here keeps the
-        # gate self-contained rather than making it the next person's surprise.
-        run: |
-          python3 -m pip install --quiet --user pyyaml
-          python3 Tools/check-tests-registered.py
+        run: python3 Tools/check-tests-registered.py
 
       - name: Build project
         run: |
