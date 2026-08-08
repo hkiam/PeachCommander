@@ -280,7 +280,7 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         syncButton.isEnabled = false
         let (l, r) = (leftSide, rightSide)
         Task.detached(priority: .userInitiated) {
-            let items = SyncScanner.scan(left: l, right: r, mask: mask,
+            let items = await SyncScanner.scan(left: l, right: r, mask: mask,
                                          withSubdirs: withSubdirs, byContent: byContent,
                                          ignoreHidden: ignoreHidden)
             let classified = SyncModel.classify(items, options: opts)
@@ -327,7 +327,7 @@ final class SyncWindowController: NSWindowController, NSTableViewDataSource, NST
         let (l, r) = (leftSide, rightSide)
         statusLabel.stringValue = String(localized: "Synchronizing…")
         Task.detached(priority: .userInitiated) {
-            let errors = SyncExecutor.execute(actionable, left: l, right: r, toTrash: true)
+            let errors = await SyncExecutor.execute(actionable, left: l, right: r, toTrash: true)
             await self.reload?()
             await MainActor.run {
                 if errors.isEmpty {

@@ -362,7 +362,7 @@ extension MainWindowController {
                                         leftSize: nil, leftModified: nil,
                                         rightSize: 0, rightModified: nil)
                     let result = SyncResult(action: .deleteRight, item: item)
-                    let errs = SyncExecutor.execute([result], left: .localDir("/tmp"),
+                    let errs = await SyncExecutor.execute([result], left: .localDir("/tmp"),
                                                     right: .zip(a[0]), toTrash: false)
                     NSLog("[automation] zipdelete errors: \(errs)")
                 }
