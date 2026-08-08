@@ -297,4 +297,66 @@ final class INIDocumentTests: XCTestCase {
         XCTAssertTrue(out.contains("; note"), out.debugDescription)
         XCTAssertTrue(out.contains("[S]"), out.debugDescription)
     }
+
+    // MARK: - The file belongs to the user (F-275)
+    //
+    // These files are documented as ones people edit by hand. The serializer rebuilt every line as
+    // `key=value`, so the first time the app wrote anything it reformatted the whole file — lines nobody
+    // had touched included. A configuration file that reformats itself is one you stop hand-editing.
+
+    private var handWritten: String {
+        """
+        ; Peach Commander configuration
+        ; edited by hand — please keep the comments
+
+        [Colors]
+        Appearance = dark
+        BackColor=#101010
+
+        [Operation]
+        # a hash comment, also legal
+        VerifyAfterCopy = 1
+
+        [Empty]
+
+        [Paths]
+        Extra = a=b=c
+        """
+    }
+
+    func testReadingAndWritingWithoutChangingAnythingLeavesTheFileAlone() {
+        let doc = INIDocument(parsing: handWritten)
+        // The serializer ends the last line, which the fixture does not; that is the only difference.
+        XCTAssertEqual(doc.serialized(), handWritten + "\n")
+    }
+
+    func testSettingOneValueChangesOneLineAndKeepsItsSpacing() {
+        var doc = INIDocument(parsing: handWritten)
+        doc.set("light", section: "Colors", key: "Appearance")
+        let lines = doc.serialized().split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+        let before = handWritten.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+
+        XCTAssertEqual(lines[4], "Appearance = light", "the author's spacing around = must survive")
+        for index in before.indices where index != 4 {
+            XCTAssertEqual(lines[index], before[index], "line \(index + 1) changed and should not have")
+        }
+    }
+
+    func testASemicolonInAValueIsPartOfTheValue() {
+        // Deliberate, and worth pinning so nobody "fixes" it into inline-comment support: Windows'
+        // profile API has no inline comments either, and a path list separated by semicolons — which is
+        // what these files hold — would be truncated at the first one.
+        let doc = INIDocument(parsing: "[S]\nPaths = /one;/two;/three\n")
+        XCTAssertEqual(doc.value(section: "S", key: "Paths"), "/one;/two;/three")
+    }
+
+    func testAddingAKeyDoesNotDisturbTheLinesAlreadyThere() {
+        var doc = INIDocument(parsing: handWritten)
+        doc.set("dvorak", section: "Operation", key: "Keyboard")
+        let text = doc.serialized()
+        XCTAssertTrue(text.contains("Keyboard=dvorak"))
+        XCTAssertTrue(text.contains("; edited by hand — please keep the comments"))
+        XCTAssertTrue(text.contains("VerifyAfterCopy = 1"), "an untouched line kept its spacing")
+        XCTAssertTrue(text.contains("[Empty]"), "an empty section is still someone's placeholder")
+    }
 }

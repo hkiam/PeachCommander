@@ -12,7 +12,7 @@
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-193 an FTP side for the sync, F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 156 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; 88 older `done` rows still carry none. |
-| Last updated | 2026-08-07 |
+| Last updated | 2026-08-08 |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
@@ -23,6 +23,33 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-08 (evidence sweep, batch 8) — The config file reformatted itself
+
+Two rows (F-275, F-277), one defect and one design question the existing tests settled for me.
+
+**These files are documented as ones people edit by hand, and the first save reformatted all of them.**
+The serializer rebuilt every pair as `key=value`, so `Appearance = dark` became `Appearance=dark` on lines
+nobody had touched — a diff nobody asked for, in a file that is meant to invite hand-editing. Untouched
+lines are now written back verbatim, and setting a value changes only that line and keeps its spacing.
+Every other caller of the serializer — columns, associations, plugin config — is a save path too, so they
+all get it.
+
+**Then an existing test told me the change was half right.** `testINIRoundTripsThroughTheProjectsOwnParser`
+failed: the *Format* command's whole purpose is to tidy an INI, and a preserving serializer makes it do
+nothing. Two callers, two intents — hence `serialized(normalizing:)`. Saving preserves; Format
+normalizes. Without that test I would have shipped a Format button that reports "unchanged" on every
+file with a space around its equals sign.
+
+**Two things I deliberately did not "fix".** A semicolon stays part of a value — INI has no inline
+comments (neither does Windows' own profile API), and a semicolon-separated path list, which is what
+these files hold, would be cut at the first one. And everything after the *first* `=` is the value. Both
+were already right; treating either as a defect would have made the fix the defect.
+
+F-277 (config root via launch argument or environment) already had tests and is what the VM harness uses
+for every scenario; that row only needed its pointers recorded.
+
+Rows without evidence: 71 → 69. 38 VM scenarios, 0 conflicts.
 
 ## 2026-08-07 (evidence sweep, batch 7) — A rule nobody checked, and a hole in a gate
 

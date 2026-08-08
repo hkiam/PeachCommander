@@ -20,7 +20,13 @@ public struct INIDocument: Equatable, Sendable {
         case sectionHeader(rawName: String)
         /// A `key=value` pair. `rawKey`/`rawValue` preserve surrounding text (values are
         /// trimmed of surrounding whitespace, but original casing is preserved).
-        case keyValue(section: String, rawKey: String, rawValue: String)
+        ///
+        /// `original` is the line exactly as it was read, and is written back unchanged as long as the
+        /// value has not been set. Without it the serializer rebuilt every line as `key=value`, so the
+        /// first time the app saved anything it reformatted the *whole* file — `Appearance = dark`
+        /// became `Appearance=dark` on lines nobody had touched. This file is documented as one people
+        /// edit by hand (F-275), and a diff nobody asked for is exactly what that promise rules out.
+        case keyValue(section: String, rawKey: String, rawValue: String, original: String? = nil)
         /// A comment line (starts with `;` or `#`), stored including its marker.
         case comment(String)
         /// A blank (whitespace-only) line.
@@ -93,7 +99,8 @@ public struct INIDocument: Equatable, Sendable {
             if let equalsIndex = line.firstIndex(of: "=") {
                 let key = String(line[line.startIndex..<equalsIndex]).trimmingCharacters(in: .whitespaces)
                 let value = String(line[line.index(after: equalsIndex)...]).trimmingCharacters(in: .whitespaces)
-                parsedLines.append(.keyValue(section: currentSection, rawKey: key, rawValue: value))
+                parsedLines.append(.keyValue(section: currentSection, rawKey: key,
+                                             rawValue: value, original: line))
                 continue
             }
 
@@ -118,7 +125,7 @@ public struct INIDocument: Equatable, Sendable {
         let targetSection = section.lowercased()
         let targetKey = key.lowercased()
         for line in lines {
-            if case .keyValue(let lineSection, let rawKey, let rawValue) = line,
+            if case .keyValue(let lineSection, let rawKey, let rawValue, _) = line,
                lineSection.lowercased() == targetSection,
                rawKey.lowercased() == targetKey {
                 return rawValue
@@ -135,10 +142,20 @@ public struct INIDocument: Equatable, Sendable {
 
         // 1) Try to rewrite an existing key in place.
         for index in lines.indices {
-            if case .keyValue(let lineSection, let rawKey, _) = lines[index],
+            if case .keyValue(let lineSection, let rawKey, _, let original) = lines[index],
                lineSection.lowercased() == targetSection,
                rawKey.lowercased() == targetKey {
-                lines[index] = .keyValue(section: lineSection, rawKey: rawKey, rawValue: value)
+                // Only the value part of the line is replaced, so `Appearance = dark` stays spaced the
+                // way its author wrote it and only the word after the `=` changes.
+                let rewritten = original.flatMap { line -> String? in
+                    guard let equals = line.firstIndex(of: "=") else { return nil }
+                    let head = line[line.startIndex...equals]        // key, spaces and the `=`
+                    let tail = line[line.index(after: equals)...]
+                    let leading = tail.prefix { $0 == " " || $0 == "\t" }
+                    return String(head) + String(leading) + value
+                }
+                lines[index] = .keyValue(section: lineSection, rawKey: rawKey,
+                                         rawValue: value, original: rewritten)
                 return
             }
         }
@@ -163,7 +180,7 @@ public struct INIDocument: Equatable, Sendable {
                 if case .sectionHeader = lines[index] {
                     break
                 }
-                if case .keyValue(let lineSection, _, _) = lines[index], lineSection.lowercased() == targetSection {
+                if case .keyValue(let lineSection, _, _, _) = lines[index], lineSection.lowercased() == targetSection {
                     insertAt = index + 1
                 }
                 index += 1
@@ -189,7 +206,7 @@ public struct INIDocument: Equatable, Sendable {
         let targetSection = section.lowercased()
         let targetKey = key.lowercased()
         lines.removeAll { line in
-            if case .keyValue(let lineSection, let rawKey, _) = line,
+            if case .keyValue(let lineSection, let rawKey, _, _) = line,
                lineSection.lowercased() == targetSection,
                rawKey.lowercased() == targetKey {
                 return true
@@ -220,7 +237,7 @@ public struct INIDocument: Equatable, Sendable {
         var seen = Set<String>()
         var result: [String] = []
         for line in lines {
-            if case .keyValue(let lineSection, let rawKey, _) = line, lineSection.lowercased() == targetSection {
+            if case .keyValue(let lineSection, let rawKey, _, _) = line, lineSection.lowercased() == targetSection {
                 let lower = rawKey.lowercased()
                 if !seen.contains(lower) {
                     seen.insert(lower)
@@ -235,15 +252,24 @@ public struct INIDocument: Equatable, Sendable {
     /// untouched lines are preserved, including the file's line terminator (F-375). The result always
     /// ends with a single trailing newline (this is the one normalization applied on round-trip:
     /// input lacking a final newline gains one on serialization).
-    public func serialized() -> String {
+    /// The document as text.
+    ///
+    /// `normalizing: false` (the default) writes every untouched line back exactly as it was read —
+    /// what saving a configuration file must do, because these files are edited by hand and a save that
+    /// reformats lines nobody touched is a diff nobody asked for (F-275).
+    ///
+    /// `normalizing: true` rebuilds each pair as `key=value`, which is what the *Format* command is for:
+    /// there the user has asked for the file to be tidied, and preserving the input would make the
+    /// command do nothing at all.
+    public func serialized(normalizing: Bool = false) -> String {
         var pieces: [String] = []
         pieces.reserveCapacity(lines.count)
         for line in lines {
             switch line {
             case .sectionHeader(let rawName):
                 pieces.append("[\(rawName)]")
-            case .keyValue(_, let rawKey, let rawValue):
-                pieces.append("\(rawKey)=\(rawValue)")
+            case .keyValue(_, let rawKey, let rawValue, let original):
+                pieces.append(normalizing ? "\(rawKey)=\(rawValue)" : (original ?? "\(rawKey)=\(rawValue)"))
             case .comment(let text):
                 pieces.append(text)
             case .blank:
