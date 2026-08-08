@@ -16,8 +16,7 @@ public enum XPathQuery {
     /// Evaluate `query` against `xml`. Throws `.invalidXML` if the document does not
     /// parse, `.invalidQuery` if the XPath is malformed. Returns matched nodes as text.
     public static func evaluate(xml: String, query: String) throws -> [String] {
-        guard let data = xml.data(using: .utf8),
-              let doc = try? XMLDocument(data: data, options: []) else {
+        guard let doc = XMLParsing.document(xml) else {
             throw QueryError.invalidXML
         }
         let nodes: [XMLNode]

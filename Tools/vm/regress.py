@@ -108,6 +108,13 @@ SCENARIOS = [
     # Do attribute changes over SFTP actually reach the server (F-364)? They used to be discarded by an
     # empty function while the dialog reported success. `sftpchmod` connects, changes the mode, and reports
     # what the server says the mode is afterwards — the only answer that counts.
+    # Does a crafted archive write outside the folder the user chose (F-131)? The archive extractor
+    # refused this; the panel's own extract walk — this one — did not, and nothing in the unit tests
+    # reaches it, because nothing there constructs a MainWindowController. The report says where files
+    # actually are afterwards, in the destination and in its parent.
+    ("zip-slip", ["active left", "left /Users/admin/pc-slip", "wait 1000",
+                  "zipextract /Users/admin/pc-slip/evil.zip|/Users/admin/pc-slip/target/out"
+                  "|/Users/admin/slip.txt", "wait 2500"], 10),
     ("sftp-attributes", ["active left", "left /Users/admin", "wait 1000",
                          "sftpchmod /Users/admin/sftp-demo/perm.txt|600|/Users/admin/sftp.txt",
                          "wait 3000"], 12),
@@ -328,6 +335,13 @@ REPORTS = {
     # The file must be in the listing afterwards — and, so the check cannot pass for the wrong reason,
     # absent before it was created (an expectation starting with "!" must NOT appear).
     "panel-autorefresh": ("/Users/admin/watch-after.txt", ["auto-appeared.txt"]),
+    # Three claims, because two of them can pass for the wrong reason. `listed=` must contain ".." —
+    # otherwise the fixture never held a traversal member and the rest proves nothing. `inside=` must
+    # hold the honest member, so a walk that refuses *everything* does not count as a fix. And the
+    # parent must be empty: that is the only line that distinguishes the two behaviours, since the
+    # extraction reports success either way.
+    "zip-slip": ("/Users/admin/slip.txt",
+                 ["listed=..,harmless.txt\n", "inside=harmless.txt\n", "parent=\n", "!escaped.txt"]),
     "sftp-attributes": ("/Users/admin/sftp.txt", ["requested=600", "applied=ok"]),
     # 40960 bytes whole; then only the tail after 10000 travels.
     "sftp-download": ("/Users/admin/sftpget.txt", ["full=40960", "resumedAt=10000", "tail=30960"]),
@@ -565,6 +579,15 @@ def boot(app: str, run: str):
     ssh_guest(ip, "mkdir -p pc-tc-ro && printf x > pc-tc-ro/tc-utf16.txt && printf x > pc-tc-ro/tc-multi.txt")
     sh(["scp", *SSH, str(Path(__file__).with_name("fixtures-tc") / "descript.ion"),
         f"{GUEST}@{ip}:pc-tc-ro/descript.ion"])
+    # A crafted archive for the traversal scenario (F-131): a member stored as "../escaped.txt". Built
+    # with python's zipfile, which writes the name through unchanged — the app's own ZipWriter would do
+    # too, but a fixture made by the thing under test proves less. It gets its own tree, with the
+    # destination one level down, so the file has somewhere to escape *to* that still belongs to this
+    # scenario and cannot be confused with litter from an earlier run.
+    ssh_guest(ip, "rm -rf pc-slip && mkdir -p pc-slip/target && python3 -c \""
+                  "import zipfile; z=zipfile.ZipFile('$HOME/pc-slip/evil.zip','w'); "
+                  "z.writestr('harmless.txt','fine'); "
+                  "z.writestr('../escaped.txt','should never land here'); z.close()\"")
     # A small, fixed demo tree: the scenarios need something to show, and it must not vary between
     # runs or the screenshots become impossible to compare.
     ssh_guest(ip, "mkdir -p pc-cfg pc-demo/sub && "

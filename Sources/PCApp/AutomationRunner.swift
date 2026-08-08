@@ -366,6 +366,8 @@ extension MainWindowController {
                                                     right: .zip(a[0]), toTrash: false)
                     NSLog("[automation] zipdelete errors: \(errs)")
                 }
+            case "zipextract":                             // zipextract <zip>|<dest>|<out> (F-131)
+                await zipExtract(arg)
             case "subbar":                                 // subbar <barfile> (F-253): descend into a subbar
                 runBarButton(BarButton(cmd: arg))
             case "buttondrop":                             // buttondrop <targetdir>|<f1>,<f2> (F-067): drop files on a dir button
@@ -870,6 +872,51 @@ extension MainWindowController {
         await session.close()
         try? report.write(toFile: a[2], atomically: true, encoding: .utf8)
         NSLog("[automation] sftpchmod → \(a[2])")
+    }
+
+    /// Enter `zip` in the panel and copy its whole root out to `dest`, reporting what landed where.
+    ///
+    /// This drives `extractItems` — the panel's own extract walk, the one the archive extractor's unit
+    /// tests do not reach, because nothing in the test suite constructs a MainWindowController. A
+    /// crafted member called "../escaped.txt" arrives in the listing as an entry named exactly ".." of
+    /// kind `.directory`, and the walk used to create `<dest>/..` — the parent folder — and write the
+    /// payload into it.
+    ///
+    /// The report names what is in `dest` *and* what is in its parent, because the failure is not an
+    /// error: the extraction reports success either way, and the only difference is a file appearing one
+    /// level up. The parent listing is the witness, so the scenario asserts on where things are rather
+    /// than on the walk's own account of itself.
+    private func zipExtract(_ arg: String) async {
+        let a = arg.split(separator: "|").map(String.init)
+        guard a.count == 3 else { NSLog("[automation] zipextract needs <zip>|<dest>|<out>"); return }
+        let (zip, dest, out) = (a[0], a[1], a[2])
+        guard let panel = activePanel else { NSLog("[automation] zipextract: no active panel"); return }
+        try? FileManager.default.createDirectory(atPath: dest, withIntermediateDirectories: true)
+
+        await panel.enterArchive(zip)
+        let fs = panel.currentFileSystem
+        var names: [String] = []
+        do {
+            for try await batch in fs.list(VFSPath(filesystemId: fs.scheme, path: "/")) {
+                names += batch.entries.map { "/" + $0.name }
+            }
+        } catch {
+            NSLog("[automation] zipextract list failed: \(error)")
+        }
+        var report = "listed=" + names.map { ($0 as NSString).lastPathComponent }.sorted()
+            .joined(separator: ",") + "\n"
+
+        await panel.extractItems(names, to: dest)
+
+        let fm = FileManager.default
+        let parent = (dest as NSString).deletingLastPathComponent
+        let destName = (dest as NSString).lastPathComponent
+        report += "inside=" + ((try? fm.contentsOfDirectory(atPath: dest)) ?? []).sorted()
+            .joined(separator: ",") + "\n"
+        report += "parent=" + ((try? fm.contentsOfDirectory(atPath: parent)) ?? [])
+            .filter { $0 != destName }.sorted().joined(separator: ",") + "\n"
+        try? report.write(toFile: out, atomically: true, encoding: .utf8)
+        NSLog("[automation] zipextract → \(out)")
     }
 
     /// Open `src` in the editor, pipe the whole document through `command`, and write what the editor

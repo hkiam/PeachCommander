@@ -37,8 +37,7 @@ public struct XMLFormatter: TextFormatter {
     public init() {}
 
     public func format(_ text: String) throws -> String {
-        guard let data = text.data(using: .utf8),
-              let doc = try? XMLDocument(data: data, options: []),
+        guard let doc = XMLParsing.document(text),
               let result = String(data: doc.xmlData(options: [.nodePrettyPrint]), encoding: .utf8) else {
             throw FormatError.invalidInput("XML")
         }
