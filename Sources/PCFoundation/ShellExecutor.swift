@@ -84,8 +84,20 @@ public enum ShellExecutor {
         guard trimmedLine.hasPrefix("cd ") else {
             return nil
         }
-        let rest = trimmedLine.dropFirst("cd ".count)
-        return rest.trimmingCharacters(in: .whitespaces)
+        let rest = trimmedLine.dropFirst("cd ".count).trimmingCharacters(in: .whitespaces)
+        return unquoted(rest)
+    }
+
+    /// Strip one matching pair of surrounding quotes, the way a shell would.
+    ///
+    /// `cd "Zwei Wörter"` used to resolve to a path containing the quote characters and therefore found
+    /// nothing, while the unquoted `cd Zwei Wörter` worked — backwards from every shell a user has met,
+    /// where quoting is the form that is *supposed* to handle a space. Only a matching outer pair is
+    /// removed, so a folder whose name really contains a quote is still reachable by not quoting it.
+    private static func unquoted(_ value: String) -> String {
+        guard value.count >= 2, let first = value.first, let last = value.last,
+              first == last, first == "\"" || first == "'" else { return value }
+        return String(value.dropFirst().dropLast())
     }
 
     /// Expands `$VAR` and `${VAR}` tokens using the provided environment.

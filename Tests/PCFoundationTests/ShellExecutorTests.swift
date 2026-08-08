@@ -148,4 +148,43 @@ final class ShellExecutorTests: XCTestCase {
         )
         XCTAssertEqual(target, tempDirectory)
     }
+
+    // MARK: - cd with a quoted path (F-066)
+    //
+    // The command line is a shell-shaped field, so a user with a spaced folder name quotes it — that is
+    // what every shell teaches. It was the one form that did *not* work: the quotes ended up inside the
+    // resolved path, so nothing was found, while the unquoted `cd Zwei Wörter` was fine.
+
+    private func target(_ line: String) -> String? {
+        ShellExecutor.resolveCdTarget(line, workingDirectory: "/Users/max/Dokumente",
+                                      environment: ["HOME": "/Users/max", "PROJ": "/Users/max/Projekte"])
+    }
+
+    func testAQuotedPathWithSpacesResolvesLikeTheUnquotedOne() {
+        XCTAssertEqual(target("cd \"Zwei Wörter\""), "/Users/max/Dokumente/Zwei Wörter")
+        XCTAssertEqual(target("cd 'Zwei Wörter'"), "/Users/max/Dokumente/Zwei Wörter")
+        XCTAssertEqual(target("cd Zwei Wörter"), "/Users/max/Dokumente/Zwei Wörter")
+    }
+
+    func testQuotesAreStrippedFromAbsoluteAndHomePathsToo() {
+        XCTAssertEqual(target("cd \"/tmp/mit Leerzeichen\""), "/tmp/mit Leerzeichen")
+        XCTAssertEqual(target("cd \"~/Musik\""), "/Users/max/Musik")
+    }
+
+    func testOnlyAMatchingOuterPairIsRemoved() {
+        // A folder whose name really begins with a quote is still reachable, and a stray quote on one
+        // side is part of the name rather than a broken pair to guess at.
+        XCTAssertEqual(target("cd \"halb"), "/Users/max/Dokumente/\"halb")
+        XCTAssertEqual(target("cd 'gemischt\""), "/Users/max/Dokumente/'gemischt\"")
+    }
+
+    func testTheOrdinaryFormsStillWork() {
+        XCTAssertEqual(target("cd /tmp"), "/tmp")
+        XCTAssertEqual(target("cd .."), "/Users/max")
+        XCTAssertEqual(target("cd ~"), "/Users/max")
+        XCTAssertEqual(target("cd $PROJ"), "/Users/max/Projekte")
+        XCTAssertEqual(target("cd ${PROJ}/a"), "/Users/max/Projekte/a")
+        XCTAssertEqual(target("cd"), "/Users/max")
+        XCTAssertNil(target("ls -la"), "and a line that is not cd is still not cd")
+    }
 }

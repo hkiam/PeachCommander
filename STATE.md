@@ -25,6 +25,26 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 22) — The quoted path was the broken one
+
+Two rows (F-066, F-083), one defect.
+
+**`cd "Zwei Wörter"` did not work, while `cd Zwei Wörter` did.** The quotes ended up inside the resolved
+path, so the folder was not found — and that is backwards from every shell a user has ever met, where
+quoting is precisely the thing that handles a space. One matching outer pair is stripped now; a name that
+genuinely contains a quote is still reachable by not quoting it, which is also what a shell does.
+
+Worth noting what made this findable at all: the unquoted form working is a nicety (the whole rest of the
+line is taken as the path), and it is exactly why nobody hit the bug — the habit that fails is the one
+people bring *from* the shell, and the habit that works is the one this field taught them.
+
+**F-083 holds.** Trash is the default, Shift+F8 forces a permanent delete even when it is not, the
+confirmation says which of the two it is, and the administrator retry is offered only after a permanent
+delete has actually left something behind — quoting its paths through the single shell quoter that
+batch 9 consolidated.
+
+Rows without evidence: 32 → 30.
+
 ## 2026-08-08 (evidence sweep, batch 21) — A file macOS calls hidden was not
 
 Eight rows (F-003, F-004, F-007, F-009, F-014, F-020, F-021, F-028), one defect.
