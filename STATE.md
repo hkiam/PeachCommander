@@ -24,6 +24,22 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 10) — Compare Directories holds
+
+One row (F-191), no defect — worth recording as plainly as the defects are.
+
+The macOS trap this feature is easiest to fail is Unicode normalisation: the same name arrives decomposed
+from one volume and composed from another (a Mac and a Linux server), and seen as two files each side is
+marked "only here", so a sync copies both ways for ever. It does not happen here, and not by anything
+this code does: Swift compares Strings by canonical equivalence, so the lookup already treats the two
+spellings as one key. Pinned in a test, because that is invisible in the source and a future rewrite to
+compare bytes or UTF-8 views would break it silently.
+
+I expected a defect and did not find one. Checking beats fixing: had I "corrected" this by hand I would
+have added normalisation that was already there and possibly broken the case rules beside it.
+
+Rows without evidence: 68 → 67.
+
 ## 2026-08-08 (evidence sweep, batch 9) — A file name could run a command
 
 One row (F-252), and the most serious defect the sweep has turned up.
