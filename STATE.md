@@ -25,6 +25,29 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 19) — The sort was only ever timed
+
+Three rows (F-025, F-027, F-034). No defect — but the comparator every listing in the app goes through
+had exactly one test, and it measured *speed*: how fast it sorts 100 000 entries, never whether the
+order is right. All four orders and their reverses are pinned now, plus folders-first on and off, the
+name fallback for equal sizes, and the natural order (`file2` before `file10`).
+
+**Two hypotheses I chased and dropped**, both worth the time they cost:
+
+  * Names differing only in case — possible on a case-sensitive volume and on every Linux share — would
+    reshuffle between refreshes *if* `localizedStandardCompare` called them equal. It does not; it orders
+    them deterministically. Measured, then pinned so a future switch to a different comparison cannot
+    quietly introduce the flicker.
+  * The sort treats an `.appBundle` as a file while the *search* treats it as a directory. That looks
+    like drift and is not: they answer different questions — "does it sort with the folders?" and "can
+    one walk into it?" — and both answers are right. Changing either would have been the defect.
+
+Branch view walks only true directories, so a symlinked folder is listed rather than descended. Also
+deliberate (a link can point back up its own tree), and now written down rather than left to be
+rediscovered.
+
+Rows without evidence: 50 → 47.
+
 ## 2026-08-08 (evidence sweep, batch 18) — Two decimal separators in one status bar
 
 One row (F-030), two defects, both visible every single day and neither ever reported.
