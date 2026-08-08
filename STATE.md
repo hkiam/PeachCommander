@@ -8,7 +8,8 @@
 | Field | Value |
 |---|---|
 | Phase | **A & B done. C: I14 done; I15 plain FTP LIVE (quick-connect + connection manager, verified vs test.rebex.net; SFTP + explicit-FTPS still pending); I16 lister/content plugins mostly done. D: I17 utilities mostly done; I18 macOS integration MOSTLY DONE (Quick Look Cmd+Y, Share sheet, Open With, Finder Tags: color column + tag-filter (tag:red/#blau), Spotlight metadata in Get Info, Services menu integration, "Open Terminal Here", Full Disk Access onboarding, Go▸Trash, xattr inspector/remove in Change Attributes, privileged "retry as administrator" for chmod+delete done; ACL editing/copy-move-elevation/undo pending). Also F-063 Ctrl+Left/Right open cursor folder in other panel done.; I19 partial (perf targets validated); I20 shipping GROUNDWORK done (DMG script + release CI workflow + hardened-runtime entitlements + RELEASE.md + CHANGELOG + local crash reporting; only Developer-ID signing/notarization and Sparkle auto-update remain — both need Apple creds / update-feed hosting).** |
-| Evidence sweep | **Batches 1–10 done (2026-08-07/08): 22 rows checked, 18 defects fixed.** Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive could write outside the chosen folder (F-131); the archive password stood in the process list (F-136); undoing a batch rename silently did nothing (F-175); a Windows-written .sfv verified nothing at all (F-097). New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, plus `check-descript-format.sh` extended to CRLF and to what the parser *makes* of a file. Remaining rows are mostly panel/display and packaging; the write paths are now covered. |
+| Evidence sweep | **Batches 1–24 (2026-08-07/08): 73 rows checked, 33 defects fixed, 87 → 21 rows without evidence.** Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive wrote outside the chosen folder (F-131); the archive password stood in the process list (F-136); a CRLF code file rendered as one line six million characters wide (F-110); undoing a batch rename did nothing (F-175); Num/ did nothing (F-056); a wildcard selected the *wrong* file (F-055); a Windows-written .sfv verified nothing (F-097). Six defects were one Swift trap — `"
+"` is a single Character. New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, `check-tests-registered.py`, `check-vm-flags.sh`, plus `check-descript-format.sh` extended. Of the 21 rows left, 8 are blocked externally (Apple credentials, SMB mounts, the Services menu). |
 | Current iteration | **Editor: JSON/YAML/XML outline, structural navigation, paths, validation and transformations DONE (F-368/369/370)**; I19 T06 accessibility + keyboard operation DONE (see the log below). Docs/i18n complete. **I19 localization + help DONE (19 languages)**; **documentation system live** (SSOT → Apple Help Book + MkDocs site + generated FEATURES/README). Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update (both need Apple creds / feed hosting); accessibility (I19 T06) **done**. |
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. |
@@ -24,6 +25,24 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-08 (evidence sweep, batch 24) — A test that prevents a defect rather than finding one
+
+Four rows (F-153, F-155, F-156, F-254). No defect.
+
+Saved search templates live in one JSON file, and a decode failure becomes an empty list — every saved
+template silently gone, with the file still on disk holding all of them. That is one added non-optional
+property away, at any time, and the user's reading of it would be "the app forgot my searches".
+
+It holds today: a file written by an earlier version loads, and so does one carrying a field this
+version does not know. Both are pinned now, which is the point — the next person to add a property to
+`SearchTemplate` gets a failing test instead of a silent data loss in the field. That is the only kind of
+test worth writing for code that is already correct.
+
+The keymap (30 tests plus `check-keymap.sh`), search-in-archives and the results listing already had
+their coverage; those rows needed pointers recorded.
+
+Rows without evidence: 25 → 21.
 
 ## 2026-08-08 (evidence sweep, batch 23) — A limit that changed the answer
 
