@@ -92,18 +92,42 @@ public actor PluginManager {
     /// Install a plugin bundle by copying it into the plugins directory, then reload.
     /// Returns the discovered plugin on success. Throws on copy/validation failure.
     @discardableResult
+    /// Install (or upgrade) a plugin bundle, and leave the previous one alone unless the new one loads.
+    ///
+    /// The old bundle is moved aside rather than deleted, because these two steps used to run in the
+    /// wrong order: remove what is there, copy the new one in, and — if it fails to load — delete that
+    /// too. An upgrade that turned out to be broken therefore left the user with *nothing* where they
+    /// had something that worked, which is the one outcome an install must never produce (F-235).
+    ///
+    /// Validation happens at the final path, not at a temporary one: loading a bundle can depend on
+    /// where it is, and a check that passes somewhere else is not a check.
     public func install(bundleURL: URL) throws -> DiscoveredPlugin {
         let fm = FileManager.default
         try fm.createDirectory(at: pluginsDir, withIntermediateDirectories: true)
         let dest = pluginsDir.appendingPathComponent(bundleURL.lastPathComponent)
-        if fm.fileExists(atPath: dest.path) { try fm.removeItem(at: dest) }
-        try fm.copyItem(at: bundleURL, to: dest)
+
+        var backup: URL?
+        if fm.fileExists(atPath: dest.path) {
+            let aside = pluginsDir.appendingPathComponent(".pcinstall-\(UUID().uuidString)")
+            try fm.moveItem(at: dest, to: aside)
+            backup = aside
+        }
+        do {
+            try fm.copyItem(at: bundleURL, to: dest)
+        } catch {
+            if let backup { try? fm.moveItem(at: backup, to: dest) }
+            throw error
+        }
+
         switch PluginHost.load(bundle: dest) {
         case .success(let plugin):
+            if let backup { try? fm.removeItem(at: backup) }
             reload()
             return plugin
         case .failure(let error):
-            try? fm.removeItem(at: dest)   // roll back an invalid install
+            try? fm.removeItem(at: dest)
+            if let backup { try? fm.moveItem(at: backup, to: dest) }   // the working one comes back
+            reload()
             throw error
         }
     }
