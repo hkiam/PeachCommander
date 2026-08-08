@@ -90,21 +90,10 @@ class PathBarView: NSView, NSTextFieldDelegate {
         if !isEditing { needsDisplay = true }
     }
 
-    /// Break a path into cumulative breadcrumb segments. "/Users/maik1" →
-    /// [("/","/"), ("Users","/Users"), ("maik1","/Users/maik1")].
+    /// Breadcrumb segments for `path` — see `PathSegments.make`, which is where the logic lives so it
+    /// can be tested without a view.
     static func makeSegments(_ path: String) -> [(name: String, path: String)] {
-        guard !path.isEmpty else { return [] }
-        if path == "/" { return [("/", "/")] }
-        let trimmed = path.hasSuffix("/") ? String(path.dropLast()) : path
-        var segs: [(String, String)] = []
-        let absolute = trimmed.hasPrefix("/")
-        if absolute { segs.append(("/", "/")) }
-        var cumulative = absolute ? "" : "."
-        for comp in trimmed.split(separator: "/") {
-            cumulative += "/" + comp
-            segs.append((String(comp), cumulative))
-        }
-        return segs
+        PathSegments.make(path)
     }
 
     // MARK: - Drawing

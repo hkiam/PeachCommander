@@ -25,6 +25,32 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 21) — A file macOS calls hidden was not
+
+Eight rows (F-003, F-004, F-007, F-009, F-014, F-020, F-021, F-028), one defect.
+
+**"Show hidden files" only ever knew about the dot.** `chflags hidden` sets `UF_HIDDEN` — it is how the
+system hides `/usr` and `/bin`, and how a user hides a file without renaming it — and such a file stayed
+visible with the toggle off. The flag was *already* being read into `bsdFlags` for the attribute column,
+where it shows as "h"; it simply was never asked about. The row has promised "dotfiles + hidden flag"
+all along. Checked with the system's own `chflags`, so the fixture is what macOS considers hidden rather
+than what this code believes it wrote.
+
+**The breadcrumb had no test**, and it decides *where a click navigates* — a wrong cumulative path takes
+the panel somewhere the user did not point at, which reads as the app losing its place rather than as a
+parsing bug. Moved to `PathSegments` and pinned: doubled and trailing separators collapse to the same
+target, and every segment's path is a prefix of the next.
+
+**One hypothesis dropped:** an `smb://` address *would* come apart in that function ("smb:" becomes a
+segment). It never gets there — that form is handed to the system to mount, and the panel then shows the
+`/Volumes/…` path. Verified before deciding it was not a defect; the reason is now in the comment so the
+next reader does not have to repeat it.
+
+The remaining rows in this batch are visual and already carried by the screenshot scenarios; they needed
+their pointers recorded, not new tests.
+
+Rows without evidence: 40 → 32.
+
 ## 2026-08-08 (evidence sweep, batch 20) — Num/ did nothing
 
 Eight rows (F-050…F-058), one defect, and the engine behind it was never at fault.

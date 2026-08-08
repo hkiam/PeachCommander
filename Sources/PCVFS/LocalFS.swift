@@ -242,7 +242,12 @@ private enum LocalStat {
             created: created,
             posixMode: UInt16(info.st_mode & 0o7777),
             bsdFlags: UInt32(info.st_flags),
-            isHidden: name.hasPrefix("."),
+            // Two ways a file is hidden on macOS, and only one of them is a dot: `chflags hidden` sets
+            // UF_HIDDEN, which is how the system hides /usr and /bin and how a user hides a file
+            // without renaming it. The flag was already being read into `bsdFlags` (the attribute
+            // column shows it as "h") and simply never consulted here, so such a file stayed visible
+            // with "show hidden files" switched off (F-028).
+            isHidden: name.hasPrefix(".") || (info.st_flags & UInt32(UF_HIDDEN)) != 0,
             linkTarget: isSymlink ? readlink(full) : aliasTarget
         )
     }
