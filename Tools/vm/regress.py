@@ -468,7 +468,13 @@ def boot(app: str, run: str):
         sys.exit(f"could not clone {GOLDEN} — is the golden VM prepared? See Tools/vm/README.md")
     log = Path(f"/tmp/tart-{run}.log")
     log.unlink(missing_ok=True)
-    subprocess.Popen(["tart", "run", run, "--vnc-experimental"],
+    # `--no-graphics` as well as `--vnc-experimental`: with the VNC flag alone, tart *opens* the vnc://
+    # URL, which launches Screen Sharing — and it never closes. One dead window per run accumulates in a
+    # single Screen Sharing process, 136 of them by the time anyone looked. The VNC server itself is
+    # unaffected: the log line changes from "Opening vnc://…" to "VNC server is running at vnc://…",
+    # which `parse_vnc` still matches, and a vncdo capture through it returns the full desktop. Measured
+    # both ways before this line was changed.
+    subprocess.Popen(["tart", "run", run, "--vnc-experimental", "--no-graphics"],
                      stdout=log.open("w"), stderr=subprocess.STDOUT)
     host, port, pw = parse_vnc(log)
     ip = wait_ip(run)

@@ -45,7 +45,9 @@ say "cloning $GOLDEN -> $RUN (copy-on-write)…"
 tart clone "$GOLDEN" "$RUN"
 
 say "booting $RUN with VNC…"
-tart run "$RUN" --vnc-experimental >/tmp/tart-$RUN.log 2>&1 &
+# --no-graphics as well: the VNC flag alone makes tart open the vnc:// URL, and that Screen Sharing
+# window is never closed — one per run, piling up in a single process. The VNC server itself remains.
+tart run "$RUN" --vnc-experimental --no-graphics >/tmp/tart-$RUN.log 2>&1 &
 RUN_PID=$!
 
 say "waiting for VNC endpoint…"

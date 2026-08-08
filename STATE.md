@@ -25,6 +25,27 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 — 136 invisible windows
+
+A leftover VNC window after every run, reported from the outside. The cause is one missing flag:
+`tart run --vnc-experimental` **opens** the `vnc://` URL it prints, which launches Screen Sharing — and
+nothing ever closes it. Each run left a dead window inside a single Screen Sharing process; **136** of
+them had accumulated, one per VM this machine has booted. Invisible, because they are windows in another
+app's window list rather than processes, so nothing in a process listing or a VM listing showed it.
+
+`--no-graphics` alongside the VNC flag suppresses the window. Measured before changing anything, because
+the harness lives on those screenshots: the log line changes from "Opening vnc://…" to "VNC server is
+running at vnc://…" — which the existing parser still matches — and a `vncdo` capture through it returns
+the full desktop. A scenario run afterwards added no new connection, where every earlier run had added
+one.
+
+Three call sites had the flag missing (`regress.py`, `capture.py`, `run-test.sh`), so
+`Tools/check-vm-flags.sh` now checks them all: a one-line rule spread over three files is the kind that
+comes back when a fourth is added.
+
+What was *not* wrong: the VMs themselves. Clones are stopped and deleted properly, and `tart list` shows
+nothing orphaned — which is why this went unnoticed for so long.
+
 ## 2026-08-08 — A harness flake worth naming
 
 Twice in this session a *full* VM run reported a run of scenarios with empty reports — once the two SFTP

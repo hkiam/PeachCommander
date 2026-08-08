@@ -212,7 +212,10 @@ def main():
     run = f"pc-cap-{os.getpid()}"
     sh(["tart", "clone", GOLDEN, run])
     logf = Path(f"/tmp/tart-{run}.log")
-    proc = subprocess.Popen(["tart", "run", run, "--vnc-experimental"],
+    # `--no-graphics` too: the VNC flag on its own makes tart *open* the vnc:// URL, and the Screen
+    # Sharing window it launches is never closed — they pile up, one per run. The VNC server stays,
+    # so the screenshots are unaffected (see the note in regress.py).
+    proc = subprocess.Popen(["tart", "run", run, "--vnc-experimental", "--no-graphics"],
                             stdout=open(logf, "w"), stderr=subprocess.STDOUT)
     index_rows = []
     try:
