@@ -195,6 +195,14 @@ SCENARIOS = [
     ("bg-copy-verify", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                         "modaldump /Users/admin/verify.txt",
                         "bgcopyverify /Users/admin/pc-demo/hosts.txt|/Users/admin", "wait 4000"], 11),
+    # A Windows-style file in the *code* view (F-110). Its line ranges were built by comparing each
+    # Character against "\n", and a CRLF is one Character equal to neither — so the whole file rendered
+    # as a single line and every line-addressed feature (go to line, marks, per-line notes) pointed at
+    # nothing. messy.txt is CRLF; `cmd cm_ListCode` forces the syntax-highlighted view rather than the
+    # plain text one, which indexes bytes and was never affected.
+    ("viewer-crlf-lines", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                           "focus crlf.json", "wait 400", "cmd cm_List", "wait 2500",
+                           "listerdump /Users/admin/crlf-lines.txt", "wait 500"], 11),
     # Not a layout scenario either: does a panel notice a file another program created (F-361)? Two
     # dumps of the listing with an outside change in between, and no refresh command anywhere.
     ("panel-autorefresh", ["active left", "left /Users/admin/pc-demo", "wait 1500",
@@ -393,6 +401,11 @@ REPORTS = {
     # be just as wrong and would still contain the word "verified".
     "bg-copy-verify": ("/Users/admin/verify.txt",
                        ["modal=true", "Verify After Copy", "verified", "!did not match", "!ERROR"]),
+    # crlf.json is 300004 lines with Windows endings, and .json above 4 MB opens in the app's own ranged
+    # code view. The dump reports what that view thinks its line count is; what matters is that it is
+    # not 1: that number *is* the defect, and any plausible
+    # correct answer is enormous.
+    "viewer-crlf-lines": ("/Users/admin/crlf-lines.txt", ["lines=300004", "!lines=1", "!ERROR"]),
     # The summary has to be *there*: a crash leaves no report at all, which is how the crash announced
     # itself in the first place.
     "viewer-folder": ("/Users/admin/folder-view.txt", ["status=", "Folder", "!ERROR"]),
@@ -544,6 +557,16 @@ def boot(app: str, run: str):
                   # CRLF, a duplicate, a blank line and trailing spaces: one file for every operation.
                   "printf 'keep me  \\r\\n\\r\\nkeep me\\r\\ndrop this\\r\\n' > pc-demo/messy.txt && "
                   "printf 'x' > pc-demo/sub/nested.txt && "
+                  # A JSON file with Windows line endings, deliberately over 4 MB: below that the code
+                  # view is an NSTextView, which AppKit lines up correctly, and only above it does the
+                  # app's own ranged view take over. That one built its ranges by comparing each
+                  # Character against "\\n" — and a CRLF is one Character equal to neither — so a file
+                  # like this rendered as a single line, with go-to-line and the marks panel addressing
+                  # nothing (F-110). Generated in the guest — 6 MiB, comfortably past the 4 MiB threshold;
+                  # a first attempt at 4.0 MB was *below* it and quietly tested the AppKit path instead.
+                  "python3 -c \"open('pc-demo/crlf.json','w',newline='').write("
+                  "'{\\\\r\\\\n' + ''.join('  \\\\\"k%d\\\\\": %d,\\\\r\\\\n' % (i, i) "
+                  "for i in range(300000)) + '  \\\\\"last\\\\\": 0\\\\r\\\\n}\\\\r\\\\n')\" && "
                   # A file with enough lines that "line 3" is a distinguishable place, and a note bound
                   # to it seeded straight into the plugin's store (F-379). Seeded rather than typed:
                   # the note editor is a plugin window, and the scenario is about whether the *viewer*

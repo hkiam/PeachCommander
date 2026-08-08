@@ -123,7 +123,10 @@ public enum SyntaxHighlighter {
                 while i < n {
                     if chars[i] == "\\" { i += Swift.min(2, n - i); continue }
                     if chars[i] == c { i += 1; break }
-                    if chars[i] == "\n" { break }   // don't let an unterminated string swallow the file
+                    // `isNewline`: a CRLF is one Character and matches neither "\r" nor "\n", so on a
+                    // Windows-style file this guard never fired and an unterminated quote coloured the
+                    // rest of the document as a string.
+                    if chars[i].isNewline { break }  // don't let an unterminated string swallow the file
                     i += 1
                 }
                 tokens.append(SyntaxToken(range: start..<i, kind: .string))
