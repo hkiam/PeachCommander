@@ -196,21 +196,43 @@ public struct WildcardMask {
     }
 
     private func filenameMatch(_ filename: String, pattern: String) -> Bool {
-        // TC-style wildcard matching
-        // * matches any sequence of characters
-        // ? matches any single character
-
-        let regexPattern = pattern
-            .replacingOccurrences(of: ".", with: "\\.")
-            .replacingOccurrences(of: "*", with: ".*")
-            .replacingOccurrences(of: "?", with: ".")
-
-        guard let regex = try? NSRegularExpression(pattern: "^\(regexPattern)$", options: [.caseInsensitive]) else {
+        guard let regex = try? NSRegularExpression(pattern: Self.regexPattern(for: pattern),
+                                                   options: [.caseInsensitive]) else {
             return filename == pattern
         }
-
         let range = NSRange(location: 0, length: filename.utf16.count)
         return regex.firstMatch(in: filename, options: [], range: range) != nil
+    }
+
+    /// Translate a TC-style mask into an anchored regular expression.
+    ///
+    /// `*` and `?` are the only two characters with a meaning; **everything else is literal**. The
+    /// previous version escaped the dot and left the rest alone, so every other regex metacharacter kept
+    /// its regex meaning — and file names are full of them. A mask of `Bericht (2026).pdf` did not match
+    /// the file of that name and *did* match `Bericht 2026.pdf`: not "finds nothing", but selects the
+    /// wrong file. `a+b.txt`, `[Entwurf].doc`, `Preis $5.txt` and `a{2}.log` were all wrong the same way
+    /// — eight of twelve realistic cases when this was measured.
+    ///
+    /// Internal rather than private so the translation can be tested directly; what a mask *means* is
+    /// worth pinning independently of whether a particular file matches.
+    static func regexPattern(for mask: String) -> String {
+        var out = "^"
+        var literal = ""
+        func flush() {
+            if !literal.isEmpty {
+                out += NSRegularExpression.escapedPattern(for: literal)
+                literal = ""
+            }
+        }
+        for character in mask {
+            switch character {
+            case "*": flush(); out += ".*"
+            case "?": flush(); out += "."
+            default: literal.append(character)
+            }
+        }
+        flush()
+        return out + "$"
     }
 }
 
