@@ -25,6 +25,30 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 11) — Six files, eight lines
+
+Two rows (F-091, F-092), two defects, both in the list this app puts on the clipboard.
+
+**The TSV form had no escaping at all.** Tab-separated values have no quoting mechanism — a tab *is* the
+column separator and a line break *is* the row separator — so a file name containing either simply broke
+the table: six files came out as eight lines, and a name with a tab in it shifted every column after it.
+This is what "copy file details" produces for pasting into a spreadsheet, where a shifted column does
+not look wrong. It looks like data.
+
+**And the CSV guard had the CRLF trap in it**, for the sixth time in this sweep: it compared each
+Character against `"\n"` and `"\r"`, and in Swift a CRLF is one Character equal to neither, so a name
+containing one went through unquoted and split the row.
+
+Escaped rather than stripped, so the original name stays readable — and the backslash is escaped too, or
+a file really called `a\tb.txt` and one containing a tab would come out identical and neither could be
+read back.
+
+**One thing I got wrong on the way:** my probe reported "6 files, 7 TSV lines" after the fix and I nearly
+went looking for another defect. The seventh line is the header, which `format` writes by default. The
+measurement was right; my expectation had forgotten a parameter.
+
+Rows without evidence: 67 → 65.
+
 ## 2026-08-08 — 136 invisible windows
 
 A leftover VNC window after every run, reported from the outside. The cause is one missing flag:
