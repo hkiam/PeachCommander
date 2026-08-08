@@ -493,4 +493,48 @@ final class FileSearchEngineTests: XCTestCase {
 
         XCTAssertEqual(hits.map(\.path), [upper])
     }
+
+    // MARK: - A pattern that will not compile (F-154)
+    //
+    // The engine fails closed on an invalid regular expression: it finishes the stream with no results.
+    // That is the right behaviour and the wrong *answer* on its own, because it is indistinguishable
+    // from "the term is not in these files" — so the user believes the files are clean and stops.
+
+    private func regexQuery(name: String = "*", content: String? = nil) -> SearchQuery {
+        var q = SearchQuery(nameMask: name, startDirectory: "/tmp")
+        q.useRegex = true
+        q.contentText = content
+        return q
+    }
+
+    func testAnUnclosedGroupInTheNameMaskIsReported() throws {
+        let bad = try XCTUnwrap(regexQuery(name: "(unclosed").firstInvalidPattern())
+        XCTAssertEqual(bad.field, "name")
+        XCTAssertEqual(bad.pattern, "(unclosed")
+        XCTAssertFalse(bad.reason.isEmpty, "the reason is what makes the message worth showing")
+    }
+
+    func testABadContentPatternIsReported() throws {
+        let bad = try XCTUnwrap(regexQuery(content: "a{2,1}").firstInvalidPattern())
+        XCTAssertEqual(bad.field, "content")
+    }
+
+    func testAValidQueryReportsNothing() {
+        XCTAssertNil(regexQuery(name: "^report[0-9]+\\.txt$", content: "TODO|FIXME").firstInvalidPattern())
+    }
+
+    func testWildcardMasksAreNotJudgedAsRegexes() {
+        // Without the regex box ticked, "*.txt" is a wildcard mask and "(" is just a character in a
+        // file name — reporting either as a broken pattern would be a false alarm on every search.
+        var q = SearchQuery(nameMask: "*.txt", startDirectory: "/tmp")
+        q.contentText = "("
+        XCTAssertNil(q.firstInvalidPattern())
+    }
+
+    func testTheMatchEverythingMasksAreNotCompiled() {
+        // "*" and "*.*" mean "everything" even in regex mode and never reach the compiler, so they must
+        // not be reported as invalid patterns (a bare "*" is not a legal regex).
+        XCTAssertNil(regexQuery(name: "*").firstInvalidPattern())
+        XCTAssertNil(regexQuery(name: "*.*").firstInvalidPattern())
+    }
 }

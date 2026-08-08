@@ -11,6 +11,29 @@ import Foundation
 import PCFoundation
 
 /// Parameters for a file search.
+public extension SearchQuery {
+    /// The regular expressions this query would compile, or the first one that will not.
+    ///
+    /// An invalid pattern used to end the search immediately with no results and no word said, which is
+    /// indistinguishable from "the term is not in these files" — so the user concludes the wrong thing
+    /// and stops looking. The engine still fails closed; this lets the caller say *why* first.
+    ///
+    /// Returns nil when everything compiles, otherwise (which field, the pattern, the reason).
+    func firstInvalidPattern() -> (field: String, pattern: String, reason: String)? {
+        guard useRegex else { return nil }
+        func check(_ pattern: String, _ field: String) -> (String, String, String)? {
+            guard !pattern.isEmpty else { return nil }
+            do { _ = try NSRegularExpression(pattern: pattern); return nil }
+            catch { return (field, pattern, error.localizedDescription) }
+        }
+        // The name mask first: it is the one that is always present, so it is the one a typo lands in.
+        if !(nameMask.isEmpty || nameMask == "*" || nameMask == "*.*"),
+           let bad = check(nameMask, "name") { return bad }
+        if let text = contentText, let bad = check(text, "content") { return bad }
+        return nil
+    }
+}
+
 public struct SearchQuery: Sendable {
     /// Space-separated name masks, e.g. "*.swift *.txt" (a file matches if
     /// ANY sub-mask matches its name). Empty, "*", or "*.*" match everything.
