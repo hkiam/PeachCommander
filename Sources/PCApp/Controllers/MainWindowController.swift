@@ -6700,6 +6700,11 @@ extension MainWindowController: ContributionHost {
         }
     }
 
+    /// One command by id, for classifying what `run_command` is about to do.
+    func automationCommand(named id: String) async -> PCCommand? {
+        await commandRegistry.getAllCommands().first { $0.name == id }
+    }
+
     /// Enabled plugins (name/type) for `list_plugins`.
     func automationPlugins() async -> [[String: Any]] {
         await pluginManager.enabledPlugins().map {

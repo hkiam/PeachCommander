@@ -31,6 +31,11 @@ does not have.
   a file on your own disk. The viewer disabled JavaScript and considered the matter closed; an image
   element does not need JavaScript. Network loads are blocked in the preview now, and images sitting
   next to the document still appear.
+- **The assistant's "ask before writing" gate could be walked around.** With the default permissions,
+  asking the assistant to delete files presented a plan to approve first — but the same deletion
+  invoked as a *command* (`run_command` with `cm_DeleteReal`) ran immediately, because the gate looked
+  at which tool was called rather than at what it would do. Commands are now judged by what they
+  change, and an unfamiliar command counts as changing something.
 
 ## [0.4.0] — 2026-08-08
 

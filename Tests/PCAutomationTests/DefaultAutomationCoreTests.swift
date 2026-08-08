@@ -40,6 +40,16 @@ actor FakeBridge: AutomationHostBridge {
     func openInPanel(_ path: String, side: String) { opened = path }
     func setSelection(mask: String) {}
     func runCommand(_ id: String) { ranCommand = id }
+
+    /// Classify like the real host does: the view/navigation commands are free, everything else — and
+    /// anything unrecognised — counts as changing something.
+    func commandInfo(_ id: String) -> AutomationCommandInfo {
+        let free = ["cm_RereadSource", "cm_SrcLong", "cm_SrcShort"]
+        if free.contains(id) { return AutomationCommandInfo(capability: .runCommand, label: "Refresh") }
+        if id == "cm_DeleteReal" { return AutomationCommandInfo(capability: .write,
+                                                                label: "Delete selection permanently") }
+        return .unknown
+    }
     func copy(sources: [String], destination: String) { copied = (sources, destination) }
     func move(sources: [String], destination: String) {}
     func rename(path: String, newName: String) {}
@@ -161,5 +171,56 @@ final class DefaultAutomationCoreTests: XCTestCase {
         var it = stream.makeAsyncIterator()
         let e = await it.next()
         XCTAssertEqual(e, .panelChanged(side: .left, path: "/x"))
+    }
+
+    // MARK: - run_command must not be a way around the gate (KI-06)
+    //
+    // `run_command` can invoke any cm_* command, and some of them are what the dedicated tools gate:
+    // cm_DeleteReal deletes exactly what delete_permanently deletes. Its capability was `.runCommand`,
+    // which is not one of the mutating ones, so under the default policy delete_permanently presented a
+    // plan and run_command("cm_DeleteReal") just ran. Measured that way before it was changed.
+
+    func test_runCommand_forADestructiveCommand_needsConfirmation() async throws {
+        let bridge = FakeBridge()
+        let core = DefaultAutomationCore(bridge: bridge)
+        let out = try await core.invoke(tool: "run_command",
+                                        arguments: argsData(["command_id": "cm_DeleteReal"]),
+                                        policy: .standard)
+        guard case .needsConfirmation(let plan, let token) = out else {
+            return XCTFail("a delete ran with nothing to approve: \(out)")
+        }
+        // The plan has to name the command; "Run run_command." is not something a user can decide about.
+        XCTAssertTrue(plan.contains("cm_DeleteReal"), plan)
+        XCTAssertTrue(plan.contains("Delete selection permanently"), plan)
+        let ranBefore = await bridge.ranCommand
+        XCTAssertNil(ranBefore, "the command ran before it was approved")
+
+        _ = try await core.confirm(token: token)
+        let ranAfter = await bridge.ranCommand
+        XCTAssertEqual(ranAfter, "cm_DeleteReal")
+    }
+
+    func test_runCommand_forADestructiveCommand_isRefusedUnderReadOnly() async throws {
+        let bridge = FakeBridge()
+        let core = DefaultAutomationCore(bridge: bridge)
+        let out = try await core.invoke(tool: "run_command",
+                                        arguments: argsData(["command_id": "cm_DeleteReal"]),
+                                        policy: .readOnly)
+        guard case .refused = out else { return XCTFail("expected refused, got \(out)") }
+        let ran = await bridge.ranCommand
+        XCTAssertNil(ran)
+    }
+
+    func test_anUnrecognisedCommandIsTreatedAsChangingSomething() async throws {
+        // The gap that matters: a command the host does not classify — a new one, or a plugin's — must
+        // cost a confirmation rather than pass as harmless.
+        let bridge = FakeBridge()
+        let core = DefaultAutomationCore(bridge: bridge)
+        let out = try await core.invoke(tool: "run_command",
+                                        arguments: argsData(["command_id": "cm_SomethingNobodyClassified"]),
+                                        policy: .standard)
+        guard case .needsConfirmation = out else { return XCTFail("expected confirmation, got \(out)") }
+        let ran = await bridge.ranCommand
+        XCTAssertNil(ran)
     }
 }
