@@ -72,7 +72,15 @@ public enum ParamExpander {
     ///     path without calling the closure again. If `nil` and a list token
     ///     appears, it expands to `""`.
     /// - Returns: The expanded command-line string.
+    /// - Parameter quoting: whether each substituted value is quoted as a shell word.
+    ///
+    ///   `true` (the default) is for anything that becomes part of a command line. `false` is for the
+    ///   two places whose result is a *path* rather than a shell word — the program to run and the
+    ///   working directory — where a value wrapped in quotes names a directory that does not exist.
+    ///   Adding the quoting without this distinction broke both, which is what a `%P` working directory
+    ///   turning into `'/Users/me/docs'` looks like.
     public static func expand(_ template: String, context: ParamContext,
+                              quoting: Bool = true,
                               listFile: ((ListFileKind) -> String)? = nil) -> String {
         var result = ""
         result.reserveCapacity(template.count)
@@ -88,6 +96,8 @@ public enum ParamExpander {
             listFileCache[kind] = value
             return value
         }
+
+        func value(_ raw: String) -> String { quoting ? quoteIfNeeded(raw) : raw }
 
         var index = template.startIndex
         let end = template.endIndex
@@ -110,23 +120,23 @@ public enum ParamExpander {
             let token = template[next]
             switch token {
             case "P", "p":
-                result += quoteIfNeeded(context.sourceDir)
+                result += value(context.sourceDir)
             case "N", "n":
-                result += quoteIfNeeded(context.cursorName)
+                result += value(context.cursorName)
             case "T", "t":
-                result += quoteIfNeeded(context.targetDir)
+                result += value(context.targetDir)
             case "M", "m":
-                result += quoteIfNeeded(context.targetName)
+                result += value(context.targetName)
             case "S", "s":
-                result += context.selectedNames.map(quoteIfNeeded).joined(separator: " ")
+                result += context.selectedNames.map(value).joined(separator: " ")
             case "L", "l":
-                result += quoteIfNeeded(resolvedListFile(.fullPaths))
+                result += value(resolvedListFile(.fullPaths))
             case "F", "f":
-                result += quoteIfNeeded(resolvedListFile(.names))
+                result += value(resolvedListFile(.names))
             case "D", "d":
-                result += quoteIfNeeded(resolvedListFile(.dosNames))
+                result += value(resolvedListFile(.dosNames))
             case "W", "w":
-                result += quoteIfNeeded(resolvedListFile(.withoutPath))
+                result += value(resolvedListFile(.withoutPath))
             case "%":
                 result.append("%")
             default:

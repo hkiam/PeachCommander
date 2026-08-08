@@ -3,32 +3,9 @@ fullKeyboardAccess: true
 focused: PanelListView | File list, left panel
 autorecalculatesKeyViewLoop: true
 initialFirstResponder: NSView
-focusRefused: 68
+focusRefused: 38
   REFUSES: NSButton | » / » accepts=true hidden=true enabled=true refuses=false
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSOutlineView | Folder tree accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
@@ -59,19 +36,12 @@ focusRefused: 68
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSSegmentedControl | Preview mode accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSTextField accepts=false hidden=false enabled=true refuses=false
   REFUSES: NSTextView accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSTextView accepts=true hidden=false enabled=true refuses=false
-  REFUSES: NSImageView | Forward accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | Back accepts=false hidden=false enabled=true refuses=true
   tab[1]: NSView
   tab[2]: DroppableButton | Copy (F5)
   tab[3]: DroppableButton | Move (F6)
@@ -83,26 +53,20 @@ focusRefused: 68
   tab[9]: NSButton | Edit path / Button
   tab[10]: NSScrollView
   tab[11]: NSClipView
-  tab[12]: NSOutlineView | Folder tree
+  tab[12]: PanelListView | File list, left panel
   tab[13]: NSScroller
-  tab[14]: NSScrollView
-  tab[15]: NSClipView
-  tab[16]: PanelListView | File list, left panel
-  tab[17]: NSScroller
-  tab[18]: NSButton | Edit path / Button
-  tab[19]: NSScrollView
-  tab[20]: NSClipView
-  tab[21]: PanelListView | File list, right panel
-  tab[22]: NSScroller
-  tab[23]: NSScroller
-  tab[24]: NSSegmentedControl | Preview mode
-  tab[25]: NSTextField | command…
-  tab[26]: NSButton | F3 View / F3 View
-  tab[27]: NSButton | F4 Edit / F4 Edit
-  tab[28]: NSButton | F5 Copy / F5 Copy
-  tab[29]: NSButton | F6 Move / F6 Move
-  tab[30]: NSButton | F7 NewFolder / F7 NewFolder
-  tab[31]: NSButton | F8 Delete / F8 Delete
+  tab[14]: NSButton | Edit path / Button
+  tab[15]: NSScrollView
+  tab[16]: NSClipView
+  tab[17]: PanelListView | File list, right panel
+  tab[18]: NSScroller
+  tab[19]: NSTextField | command…
+  tab[20]: NSButton | F3 View / F3 View
+  tab[21]: NSButton | F4 Edit / F4 Edit
+  tab[22]: NSButton | F5 Copy / F5 Copy
+  tab[23]: NSButton | F6 Move / F6 Move
+  tab[24]: NSButton | F7 NewFolder / F7 NewFolder
+  tab[25]: NSButton | F8 Delete / F8 Delete
 loopClosed: true
 unreachable: 0
 unlabelled: 0

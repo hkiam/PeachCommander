@@ -4137,13 +4137,15 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         if cmd.cmd.hasPrefix("em_") { runUserCommand(cmd.cmd); return }
         Task { @MainActor in
             let ctx = await buildParamContext()
-            let program = ParamExpander.expand(cmd.cmd, context: ctx)
+            let program = ParamExpander.expand(cmd.cmd, context: ctx, quoting: false)
             let params = ParamExpander.expand(cmd.param, context: ctx, listFile: { Self.makeListFile($0, ctx: ctx) })
-            let workdir = cmd.path.isEmpty ? ctx.sourceDir : ParamExpander.expand(cmd.path, context: ctx)
+            let workdir = cmd.path.isEmpty ? ctx.sourceDir : ParamExpander.expand(cmd.path, context: ctx, quoting: false)
             guard !program.isEmpty else { return }
-            let line = program.hasSuffix(".app") || program.hasSuffix(".app/")
-                ? "open -a \(Self.shellQuote(program)) \(params)"
-                : "\(program) \(params)"
+            // Expanded unquoted so the `.app` test sees a real path. Quoted on the way into the line
+            // only when the template actually substituted something: a literal template is the user's
+            // own text and may legitimately be `ls -la`, but a program name that came out of `%N` is a
+            // file name and must not be able to carry a command with it.
+            let line = Self.commandLine(program: program, template: cmd.cmd, params: params)
             let result = await ShellExecutor.run(line, workingDirectory: workdir)
             if result.exitCode != 0 {
                 self.logger.error("User command \(name) exited \(result.exitCode): \(result.output)")
@@ -4179,6 +4181,20 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             .appendingPathComponent("pc-list-\(UUID().uuidString).txt")
         try? lines.joined(separator: "\n").write(to: url, atomically: true, encoding: .utf8)
         return url.path
+    }
+
+    /// Assemble the shell line for a user command or toolbar button.
+    ///
+    /// `program` is the expanded (unquoted) command. It is quoted only when the expansion changed the
+    /// template — i.e. a `%`-token was substituted, so the value is a file name rather than something
+    /// the user typed. Quoting unconditionally would break the long-standing habit of putting a whole
+    /// command such as `ls -la` in that field; not quoting at all would put a file name into a shell
+    /// line raw, which is the defect this pair of rules exists to close (F-252).
+    private static func commandLine(program: String, template: String, params: String) -> String {
+        let isApp = program.hasSuffix(".app") || program.hasSuffix(".app/")
+        if isApp { return "open -a \(shellQuote(program)) \(params)" }
+        let head = program == template ? program : shellQuote(program)
+        return "\(head) \(params)"
     }
 
     /// Double quotes were not enough here either: a shell substitutes `$(…)` and backticks *inside*
@@ -4590,13 +4606,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Run a bar button's external program against a specific parameter context
     /// (shared by click and drop-onto-button, F-067).
     private func runProgramButton(_ button: BarButton, context ctx: ParamContext) {
-        let program = ParamExpander.expand(button.cmd, context: ctx)
+        let program = ParamExpander.expand(button.cmd, context: ctx, quoting: false)
         let params = ParamExpander.expand(button.param, context: ctx, listFile: { Self.makeListFile($0, ctx: ctx) })
-        let workdir = button.path.isEmpty ? ctx.sourceDir : ParamExpander.expand(button.path, context: ctx)
+        let workdir = button.path.isEmpty ? ctx.sourceDir : ParamExpander.expand(button.path, context: ctx, quoting: false)
         guard !program.isEmpty else { return }
-        let line = program.hasSuffix(".app") || program.hasSuffix(".app/")
-            ? "open -a \(Self.shellQuote(program)) \(params)"
-            : "\(program) \(params)"
+        let line = Self.commandLine(program: program, template: button.cmd, params: params)
         Task { @MainActor in
             let result = await ShellExecutor.run(line, workingDirectory: workdir)
             if result.exitCode != 0 { self.logger.error("Button command exited \(result.exitCode): \(result.output)") }

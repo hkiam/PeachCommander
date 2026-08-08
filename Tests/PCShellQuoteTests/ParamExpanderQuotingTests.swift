@@ -94,4 +94,29 @@ final class ParamExpanderQuotingTests: XCTestCase {
         let context = ParamContext(sourceDir: "/tmp", cursorName: "a.txt")
         XCTAssertEqual(ParamExpander.expand("cmd %x %%", context: context), "cmd %x %")
     }
+
+    // MARK: - The two places whose result is a path, not a shell word
+
+    func testTheWorkingDirectoryIsExpandedWithoutQuotes() {
+        // `%P` in the "start path" field becomes the process's working directory. Quoting it names a
+        // directory that does not exist — a regression I introduced with the quoting and caught here.
+        let context = ParamContext(sourceDir: "/Users/me/My Documents")
+        XCTAssertEqual(ParamExpander.expand("%P", context: context, quoting: false),
+                       "/Users/me/My Documents")
+    }
+
+    func testTheProgramIsExpandedWithoutQuotesSoItsSuffixCanBeTested() {
+        // The caller checks whether the expanded program ends in ".app" to decide between `open -a` and
+        // running it directly; a trailing quote makes that test false for every bundle.
+        let context = ParamContext(cursorName: "Preview.app")
+        let program = ParamExpander.expand("%N", context: context, quoting: false)
+        XCTAssertEqual(program, "Preview.app")
+        XCTAssertTrue(program.hasSuffix(".app"))
+    }
+
+    func testQuotingIsStillTheDefault() {
+        // So that a caller which forgets the parameter gets the safe behaviour, not the raw one.
+        let context = ParamContext(cursorName: "$(id).txt")
+        XCTAssertEqual(ParamExpander.expand("%N", context: context), "'$(id).txt'")
+    }
 }
