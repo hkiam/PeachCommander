@@ -44,13 +44,26 @@ public actor DefaultAutomationCore: AutomationCore {
 
     public func invoke(tool name: String, arguments: Data?, policy: PermissionPolicy) async throws -> AutomationOutcome {
         guard let tool = toolDefinition(named: name) else { throw AutomationError.unknownTool(name) }
-        switch policy.decision(for: tool.capability) {
+        // `run_command` is judged by what the command does, not by the fact that it is a command.
+        // Otherwise the gate is bypassable by construction: `delete_permanently` presents a plan while
+        // `run_command("cm_DeleteReal")` deletes the same files with nothing to approve.
+        var capability = tool.capability
+        var commandLabel: String?
+        if name == "run_command", let id = try? Args(arguments).string("command_id") {
+            let info = await bridge.commandInfo(id)
+            capability = info.capability
+            commandLabel = info.label
+        }
+        switch policy.decision(for: capability) {
         case .refuse:
-            return .refused(reason: "The current permissions do not allow '\(tool.capability.rawValue)' actions.")
+            // The effective capability, not the tool's declared one: refusing `run_command` because it
+            // needs "runCommand" would name a permission the session actually has.
+            return .refused(reason: "The current permissions do not allow '\(capability.rawValue)' actions.")
         case .confirm:
             let token = UUID().uuidString
             pending[token] = (name, arguments)
-            return .needsConfirmation(plan: planText(tool: name, arguments: arguments), token: token)
+            return .needsConfirmation(plan: planText(tool: name, arguments: arguments,
+                                                      commandLabel: commandLabel), token: token)
         case .allow:
             return await execute(name, arguments)
         }
@@ -137,7 +150,7 @@ public actor DefaultAutomationCore: AutomationCore {
     }
 
     /// A human-readable description of what a gated action will do (best-effort).
-    private func planText(tool: String, arguments: Data?) -> String {
+    private func planText(tool: String, arguments: Data?, commandLabel: String? = nil) -> String {
         let a = Args(arguments)
         switch tool {
         case "copy":  return "Copy \((try? a.strings("sources").count) ?? 0) item(s) to \((try? a.string("destination")) ?? "?")."
@@ -162,6 +175,11 @@ public actor DefaultAutomationCore: AutomationCore {
         case "set_config": return "Set \((try? a.string("key")) ?? "?") = \((try? a.string("value")) ?? "?")."
         case "move_to_trash": return "Move \((try? a.strings("paths").count) ?? 0) item(s) to the Trash."
         case "delete_permanently": return "Permanently delete \((try? a.strings("paths").count) ?? 0) item(s). This cannot be undone."
+        case "run_command":
+            // Name the command, not the tool. "Run run_command." is what the default produced, and
+            // approving that is not a decision anybody could make.
+            guard let id = try? a.string("command_id") else { return "Run a command." }
+            return commandLabel.map { "\($0) (\(id))." } ?? "Run the command \(id)."
         default: return "Run \(tool)."
         }
     }

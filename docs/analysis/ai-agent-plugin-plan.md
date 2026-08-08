@@ -167,6 +167,14 @@ replaced.
 - **Plan-then-confirm:** destructive actions (delete, overwrite, mass move) default
   to a **dry-run plan the user approves** before execution ("zeige mir vorher den
   Plan"). Per-session autonomy level: read-only / confirm-writes / autonomous.
+  - The decision is made about the **action**, not about the tool that names it.
+    `run_command` can invoke any `cm_*`, and several are exactly what the gated
+    tools do — `cm_DeleteReal` deletes what `delete_permanently` deletes. Its
+    capability was `.runCommand`, which is not one of the mutating ones, so the
+    gate was bypassable by construction: measured, and the outcome was `ok` with
+    nothing to approve. The host now classifies the command by its registry
+    category, and a category it does not recognise counts as mutating, so a gap
+    costs a confirmation rather than a deletion.
 - **Capability allow-list per session/provider:** e.g. a cloud model may be denied
   file-content reads or deletes; local model may get more.
 - **Secrets:** API keys and MCP credentials in the Keychain; never sent to models;

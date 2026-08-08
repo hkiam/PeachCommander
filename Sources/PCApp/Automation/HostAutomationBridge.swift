@@ -224,6 +224,36 @@ final class HostAutomationBridge: AutomationHostBridge {
     func setSelection(mask: String) async throws { throw AutomationError.notImplemented("set_selection") }
     func runCommand(_ id: String) async throws { host?.contribInvokeCommand(id) }
 
+    /// What `run_command(id)` really amounts to, so the policy can judge the command rather than the
+    /// tool that names it.
+    ///
+    /// Classified by the registry's own category, because a hand-kept list of command ids rots: the
+    /// next destructive command added to the app would not be on it, and nothing would say so. The
+    /// categories that change something are named here and everything else is free; a command with a
+    /// category not listed either way — a new one, or a plugin's — is treated as mutating, so a gap
+    /// costs a confirmation instead of a deletion.
+    ///
+    /// "Network" and "Commands" are in the mutating set for reasons worth naming: they hold
+    /// `cm_FtpRawCommand` (sends whatever it is given to the server), `cm_DownloadFromURL` and
+    /// `cm_SyncDirs` (both write files), and `cm_OpenTerminal`.
+    func commandInfo(_ id: String) async -> AutomationCommandInfo {
+        let mutatingCategories: Set<String> = ["Files", "Configuration", "Network", "Commands"]
+        let freeCategories: Set<String> = ["View", "Navigation", "Sort", "Selection", "Mark",
+                                           "Tabs", "Panel", "Help", "Search", "Volume"]
+        guard let host, let command = await host.automationCommand(named: id) else {
+            return .unknown
+        }
+        let capability: Capability
+        if mutatingCategories.contains(command.category) {
+            capability = .write
+        } else if freeCategories.contains(command.category) {
+            capability = .runCommand
+        } else {
+            capability = .write            // an unclassified category: assume it changes something
+        }
+        return AutomationCommandInfo(capability: capability, label: command.help)
+    }
+
     // MARK: Write / delete / config (reached only after the policy allows/confirms)
 
     func copy(sources: [String], destination: String) async throws {
