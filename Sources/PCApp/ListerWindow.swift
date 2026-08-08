@@ -169,6 +169,9 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             for sub in view.subviews { walk(sub) }
         }
         if let root = window?.contentView { walk(root) }
+        if let addressable = contentView as? ListerLineAddressable {
+            lines.append("lines=\(addressable.lineCount)")
+        }
         // The marks panel's model, not its pixels: the notes group (F-379) is built from a plugin field,
         // and walking the view tree would only see it when the panel happens to be open and tall enough.
         for group in marksPanelGroups() {
@@ -1638,6 +1641,9 @@ protocol ListerLineAddressable: AnyObject {
     func scroll(toLine line: Int)
     /// The topmost visible line, 1-based — the nearest thing to a caret in a view that only scrolls.
     var firstVisibleLine: Int { get }
+    /// How many lines the view believes it has. Reported in the automation dump: a view that has
+    /// mis-counted them renders and scrolls perfectly, it is simply looking at the wrong file shape.
+    var lineCount: Int { get }
 }
 
 /// A content view whose full text can be copied to the clipboard.
@@ -1880,6 +1886,8 @@ final class TextListerView: NSView, ListerScrollable, ListerLineAddressable, Vie
         guard lineHeight > 0, !lineStarts.isEmpty else { return 1 }
         return min(Int(visibleRect.minY / lineHeight) + 1, lineStarts.count)
     }
+
+    var lineCount: Int { lineStarts.count }
 }
 
 /// Virtual-scrolling hex view — renders only visible rows from the FileSlice.
@@ -2092,7 +2100,11 @@ final class CodeListerView: NSView, ListerScrollable, ListerLineAddressable, Vie
         self.charW = ("0" as NSString).size(withAttributes: [.font: NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)]).width
         var ranges: [Range<Int>] = []
         var start = 0
-        for (i, ch) in chars.enumerated() where ch == "\n" { ranges.append(start..<i); start = i + 1 }
+        // `isNewline`, not `== "\n"`: `chars` is an array of *Characters*, and in Swift a CRLF is one
+        // Character equal to neither "\r" nor "\n". A file with Windows line endings therefore produced
+        // a single range — the whole file rendered as one line, with go-to-line, the marks panel and the
+        // per-line notes all pointing at nothing. Measured: 4 ranges for LF, 1 for the same text as CRLF.
+        for (i, ch) in chars.enumerated() where ch.isNewline { ranges.append(start..<i); start = i + 1 }
         ranges.append(start..<chars.count)
         self.lineRanges = ranges
         super.init(frame: .zero)
@@ -2210,6 +2222,8 @@ final class CodeListerView: NSView, ListerScrollable, ListerLineAddressable, Vie
         guard lineHeight > 0, !lineRanges.isEmpty else { return 1 }
         return min(Int(visibleRect.minY / lineHeight) + 1, lineRanges.count)
     }
+
+    var lineCount: Int { lineRanges.count }
 }
 
 // MARK: - Contextual menu-bar menu (TODOS #189)

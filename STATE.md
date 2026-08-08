@@ -25,6 +25,34 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-08 (evidence sweep, batch 13) — A CRLF code file was one line six million characters wide
+
+Not a row I set out to check. Six of the sweep's defects had been the same Swift trap, so instead of
+another row I grepped the whole tree for it — every `== "\n"`, `== "\r"` and `split(separator: "\n")`.
+Twenty hits, most of them harmless, and one that matters a great deal.
+
+**The syntax-highlighted code view built its line ranges from `[Character]`.** A CRLF is one Character
+equal to neither `"\r"` nor `"\n"`, so a Windows-style file produced exactly one range. Not merely a
+wrong line count: the view sizes its frame by the longest line, so a 6 MiB file became a single line six
+million characters wide and the layout never finished. The mutation run proves it — with the old code
+the scenario writes no report at all, because the app is still trying.
+
+**Why nobody saw it:** that view is used only between 4 and 16 MiB. Below 4 MiB an `NSTextView` does the
+wrapping, and AppKit gets CRLF right. The plain-text view indexes *bytes* and was never affected either.
+So it needed a large code file with Windows endings — which is exactly what a generated SQL dump, a
+minified bundle or an exported XML is.
+
+**Two of my own on the way there.** My first fixture was 4.0 MB and I read the scenario's silence as the
+fix not working — it was *below* the 4 MiB threshold and had quietly exercised the AppKit path instead.
+And I guessed the expected line count twice before computing it from the file.
+
+**Three sites in that grep were not defects**, and checking beat assuming: `String.contains("\n")` finds
+a CRLF (it is substring matching, not Character comparison), and the structure scanner compares single
+UTF-16 units, where `\r` and `\n` genuinely are separate. Had I "fixed" those I would have broken
+working code.
+
+Rows without evidence: 64, unchanged — F-110 already carried evidence from the encoding work.
+
 ## 2026-08-08 (evidence sweep, batch 11) — Six files, eight lines
 
 Two rows (F-091, F-092), two defects, both in the list this app puts on the clipboard.
