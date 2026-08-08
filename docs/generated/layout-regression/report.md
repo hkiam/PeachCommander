@@ -6,4 +6,4 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| viewer-beacon | 0 | — | — | `viewer-beacon.png` |
+| sync-sftp | 0 | — | — | `sync-sftp.png` |
