@@ -12,6 +12,101 @@ were reconstructed from the git history and the notes in `STATE.md` when it was 
 `README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
 does not have.
 
+## [0.4.0] — 2026-08-08
+
+Mostly a repair release. A systematic sweep went through the feature inventory looking for rows that
+claimed to be done but had nothing verifying them: 73 rows examined, **33 defects found and fixed**.
+Several of them could damage data or, in three cases, be used against you. If you are running 0.3.0,
+this is the release to take.
+
+### Security
+
+- **A file name could run a shell command.** A toolbar button or a Start-menu command substitutes
+  `%N`, `%P` and friends into a line handed to a shell. Those values are file names — they arrive with
+  a download, an extracted archive, a shared volume — and they were quoted only when they contained a
+  space, and then with double quotes, inside which a shell still substitutes. A file called
+  `$(id).txt`, `` `id`.txt `` or `a;id;b.txt` therefore executed when any user-defined command was
+  invoked on its folder. Every value is now a single-quoted shell word, through the one quoter that
+  already guarded the elevated save.
+- **A crafted archive could write outside the folder you chose.** A member named `../../evil.txt`
+  landed beside and above the destination while the extraction reported success ("zip slip"). Such
+  members are skipped now; the harmless ones in the same archive still arrive.
+- **The archive password stood in the process list.** It was passed as `-p<password>` on the packer's
+  command line, where `ps` shows it in full to anything running as the same user for as long as the
+  archive takes to write. It goes to the packer on standard input now.
+
+### Fixed — data
+
+- **Undoing a batch rename did nothing** when the batch contained a cycle (`a → b` together with
+  `b → a`). The forward direction staged through temporary names; the undo did not, so both moves
+  failed and you were told the rename had been taken back.
+- **A wildcard selected the wrong file.** Masks were turned into regular expressions with only the dot
+  escaped, so every other metacharacter kept its regex meaning: `Bericht (2026).pdf` did not match the
+  file of that name and *did* match `Bericht 2026.pdf`. This one matcher backs select-by-wildcard, the
+  quick filter, the search's name masks, the sync filter and the type-colour rules.
+- **`Num /` — restore the selection before the last operation — did nothing at all.**
+- **A checksum file written on Windows verified nothing.** `.sfv` parsed to zero entries and `.md5`
+  to one invented one, because a CRLF is a single character in Swift and the parser compared against a
+  line feed. The same mistake made a Total Commander `.crc` sidecar unreadable, so a split file could
+  not be put back together, and made a Windows-written `descript.ion` lose every comment but the first.
+- **A file whose name begins with a dash could not be packed** — in any format. The packers read it as
+  a switch; `tar` answered "Can't specify both -x and -c" and the whole operation failed.
+- **Renaming more than 500 files with a `[=plugin.field]` placeholder** left the field out of every
+  name. The values were fetched before the dialog opened, under a cap meant to save work, which instead
+  decided the result.
+- **A failed plugin upgrade took the working plugin with it.** The old bundle was removed before the
+  new one was copied in, and a new one that would not load was then deleted too.
+- **A rename that could not happen was not reported.** Names the batch could not deliver — a target
+  held by a file outside the batch, an empty name — were dropped without a word.
+
+### Fixed — things that were quietly wrong
+
+- **A code file with Windows line endings between 4 and 16 MB rendered as a single line** six million
+  characters wide, and the view never finished laying it out. Go-to-line, the marks panel and per-line
+  notes all pointed at nothing.
+- **A Finder colour label applied here was not the colour.** It was written without its colour index,
+  so it showed as a grey dot in the panel and as a colourless custom tag in the Finder — and on a
+  German system it did not merge with the "Rot" already on the file.
+- **A file macOS itself calls hidden was shown** with "show hidden files" switched off: only the
+  leading dot was consulted, never the `UF_HIDDEN` flag that `chflags hidden` sets.
+- **The free-space display stopped at gigabytes** ("4096.0 GB" for a 4 TB volume) and wrote a decimal
+  point whatever the language, next to a locale-aware number in the same status bar.
+- **Copying file details to the clipboard broke the table** when a name contained a tab or a line
+  break: six files came out as eight rows, with every column after the tab shifted.
+- **`cd "Zwei Wörter"` did not work** while the unquoted form did — the quotes ended up inside the path.
+- **The configuration files reformatted themselves.** The first save rewrote every line as `key=value`,
+  including lines nobody had touched, in files documented as ones you edit by hand.
+- **`F7` with `../name` created the folder outside the directory the panel was showing**, invisibly;
+  `.` reported the parent back as newly created; a whitespace-only entry reported success and did
+  nothing.
+- **Two hard links to one file were listed as duplicates**, so the duplicate finder offered space that
+  deleting one would not free.
+- **An invalid regular expression in Find Files reported "no results"** rather than saying the pattern
+  would not compile — indistinguishable from "the term is not in these files".
+- **Verifying after a copy applied to foreground copies only**, and the background queue is what one
+  picks for the large copies where verifying is worth the time.
+- Spotlight searches now say which of your settings — regular expressions, depth limit, selection
+  scope — the index could not apply.
+
+### Added
+
+- **A note can be about a line of a file**, not just about the file. The viewer offers the annotated
+  lines in its marks panel and writes new ones for the line under the cursor; the note itself lives with
+  all the others, so the overview and Find Files see it like any other.
+- **The AI assistant can read and write a file's comment**, with a new **AI ▸ Suggest a comment**
+  action. The plan it asks you to approve quotes the words it wants to attach.
+- An authenticated proxy can finally be configured for FTP: the model and the ini always supported one,
+  the dialog had no fields for it. The password goes to the Keychain like the site's own.
+
+### Internal
+
+- New gates in CI, each written after the defect that justified it: checksums and written archives
+  against independent readers, every user-facing string against the catalogue, every test file against
+  the project (four new test files had silently never run), and the VM harness flags — `tart` was
+  opening a Screen Sharing window per run and never closing it; 136 had accumulated.
+- 33 of the fixes above carry a test or a VM scenario that was verified by restoring the defect and
+  watching it fail.
+
 ## [0.3.0] — 2026-08-05
 
 ### Added
@@ -94,6 +189,7 @@ does not have.
 First public beta: dual-pane browsing, the file operation engine, archives, the viewer and editor, FTP,
 plugins, and the settings.
 
+[0.4.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.4.0
 [0.3.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.3.0
 [0.2.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.2.0
 [0.1.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.1.0
