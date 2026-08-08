@@ -1152,8 +1152,20 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         runSelectionOp { _ = await $0.invertSelection(); return true }
     }
 
+    /// Num/ — bring back the selection from before the last selection operation (F-056).
+    ///
+    /// Deliberately *not* through `runSelectionOp`: that helper saves the current selection to the
+    /// history before running the operation, which is right for every operation except this one. Routed
+    /// through it, the restore pushed the current selection and then popped the very thing it had just
+    /// pushed, so Num/ did nothing at all.
     func restoreSelection() {
-        runSelectionOp { await $0.restoreSelectionFromHistory() }
+        Task {
+            guard let state = selectionState else { return }
+            guard await state.restoreSelectionFromHistory() else { return }
+            await refreshSelectionMirror()
+            reloadData()
+            notifyChanged()
+        }
     }
 
     func selectSameExtensionAtCursor() {

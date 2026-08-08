@@ -6,5 +6,4 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| notes-sidebar | 0 | 0 | — | `notes-sidebar.png` |
-| keys-main | 0 | 0 | — | `keys-main.png` |
+| selection-restore | 0 | — | — | `selection-restore.png` |

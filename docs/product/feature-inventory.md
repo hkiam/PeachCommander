@@ -56,15 +56,15 @@ Master checklist for feature parity. **Grep by ID (F-xxx), do not load the whole
 
 | ID | Feature | Notes | Spec | Iter | Prio | Status |
 |---|---|---|---|---|---|---|
-| F-050 | Cursor navigation: arrows, Home/End, PgUp/PgDn; cursor ≠ selection | NC model | SPEC-003 | I02 | P1 | done |
-| F-051 | Enter: open dir / launch file / enter archive; Ctrl+PgDn force-enter | Also for app bundles: enter as dir w/ modifier | SPEC-003 | I02 | P1 | done |
-| F-052 | Backspace / Ctrl+PgUp: parent dir; cursor lands on dir we came from | Position memory per dir | SPEC-003 | I02 | P1 | done |
-| F-053 | Tab switches active panel; Shift+Tab option | | SPEC-003 | I01 | P1 | done |
-| F-054 | Insert: toggle select + advance; Space: toggle + dir size calc | | SPEC-003 | I03 | P1 | done |
+| F-050 | Cursor navigation: arrows, Home/End, PgUp/PgDn; cursor ≠ selection | NC model; ev: symbol:SelectionState ev: test:SelectionStateTests | SPEC-003 | I02 | P1 | done |
+| F-051 | Enter: open dir / launch file / enter archive; Ctrl+PgDn force-enter | Also for app bundles: enter as dir w/ modifier; ev: symbol:SelectionState ev: test:SelectionStateTests | SPEC-003 | I02 | P1 | done |
+| F-052 | Backspace / Ctrl+PgUp: parent dir; cursor lands on dir we came from | Position memory per dir; ev: symbol:SelectionState ev: test:SelectionStateTests | SPEC-003 | I02 | P1 | done |
+| F-053 | Tab switches active panel; Shift+Tab option | ev: symbol:SelectionState ev: test:SelectionStateTests | SPEC-003 | I01 | P1 | done |
+| F-054 | Insert: toggle select + advance; Space: toggle + dir size calc | ev: symbol:SelectionState ev: test:SelectionStateTests | SPEC-003 | I03 | P1 | done |
 | F-055 | Num+ / Num- / Num*: select/deselect/invert by wildcard dialog | Expand selection dialog w/ masks; the one mask matcher behind select-by-wildcard, the quick filter, the search's name masks, the sync filter and the type-colour rules translated a mask to a regex escaping only the dot, so every other metacharacter kept its regex meaning — a mask of "Bericht (2026).pdf" missed the file of that name and matched "Bericht 2026.pdf" instead, i.e. selected the wrong file; eight of twelve realistic cases were wrong. Only * and ? mean anything now; ev: symbol:WildcardMask ev: test:WildcardMaskTests | SPEC-003 | I03 | P1 | done |
-| F-056 | Num / : restore selection before last operation | Selection history (1 level min) | SPEC-003 | I03 | P2 | done |
-| F-057 | Ctrl+A select all; Ctrl+Num+ all; same-ext selection (Alt+Num+) | ev: symbol:WildcardMask ev: test:WildcardMaskTests | SPEC-003 | I03 | P1 | done |
-| F-058 | Shift+arrows range select (Windows style option) | Left mouse selection mode option too | SPEC-003 | I03 | P2 | done |
+| F-056 | Num / : restore selection before last operation | Selection history (1 level min); Num/ did nothing at all: it was routed through the helper that saves the current selection to the history before running an operation — right for every operation except this one — so it pushed the current selection and popped exactly what it had just pushed. The engine was correct; only the wiring was wrong; ev: symbol:SelectionState ev: test:SelectionStateTests ev: scenario:selection-restore | SPEC-003 | I03 | P2 | done |
+| F-057 | Ctrl+A select all; Ctrl+Num+ all; same-ext selection (Alt+Num+) | ev: symbol:WildcardMask ev: test:WildcardMaskTests; ev: symbol:SelectionState ev: test:SelectionStateTests | SPEC-003 | I03 | P1 | done |
+| F-058 | Shift+arrows range select (Windows style option) | Left mouse selection mode option too; ev: symbol:SelectionState ev: test:SelectionStateTests | SPEC-003 | I03 | P2 | done |
 | F-059 | Mouse: right-click select mode (NC style) vs left (Windows style) | Config option, default NC-right; ev: symbol:setMouseMode | SPEC-003 | I05 | P2 | done |
 | F-060 | Quick search: type letters to jump (opts: with/without Ctrl+Alt, search dialog) | TC quick search modes incl. filter mode; ev: symbol:TypeAheadSearch ev: cm_QuickFilter | SPEC-003 | I06 | P1 | done |
 | F-061 | Directory hotlist (Ctrl+D): add/remove/configure, submenus | hotlist.ini; menu with shortcuts 1..9; ev: cm_DirectoryHotlist ev: symbol:HotlistManagerWindowController | SPEC-003 | I06 | P1 | done |
