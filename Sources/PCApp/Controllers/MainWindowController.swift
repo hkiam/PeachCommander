@@ -4035,7 +4035,19 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         if persist { Task { await mainConfig.setBool(visible, "Layout", "DockVisible") } }
     }
 
-    @objc func toggleBottomDock() { setBottomDockVisible(!bottomDockVisible) }
+    /// The one key that moves between the file panels and the terminal (cm_ToggleDock, F-381).
+    ///
+    /// Not "show or hide the dock", which is what it did first and what the name still says. A
+    /// visibility toggle is the wrong gesture for the most-used integration there is: with the dock
+    /// open and the cursor in a panel, the key you reach for means *go to the terminal*, and pressing
+    /// it there means *come back*. Hiding the dock is what its close button is for.
+    ///
+    /// So: closed → open it and go there. Open, cursor elsewhere → go there. Open, already there →
+    /// back to the panel, which keeps the terminal in view rather than dismissing it mid-command.
+    @objc func toggleBottomDock() {
+        if !bottomDockVisible { setBottomDockVisible(true); return }   // setVisible focuses it
+        focusBottomDock()
+    }
 
     /// Put the keyboard into the docked view, or back into the panel if it is already there.
     ///
@@ -4112,6 +4124,56 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         if request.container == "bottom" || ViewContainerRegistry.shared.container(ofViewId: request.viewId) == "bottom" {
             if !bottomDockVisible { setBottomDockVisible(true) }
             bottomDock.selectProvider(id: request.viewId)
+        }
+    }
+
+    // MARK: - Panel ↔ terminal (F-381, plan §7)
+
+    /// Send a line to the docked terminal, opening and focusing the dock if it is not there yet.
+    ///
+    /// Returns false when nothing is listening — no terminal mounted, or its view never built — so a
+    /// command can say so instead of appearing to work.
+    @discardableResult
+    private func sendToTerminal(_ text: String) -> Bool {
+        guard let viewId = bottomDock.providerIds.first(where: { $0.contains("terminal") })
+                ?? ViewContainerRegistry.shared.container(ofViewId: "plugin.terminal.view").map({ _ in "plugin.terminal.view" })
+        else { return false }
+        if !bottomDockVisible { setBottomDockVisible(true) }
+        bottomDock.selectProvider(id: viewId)
+        return ViewContainerRegistry.shared.notifyView(viewId: viewId, key: "sendText", value: text)
+    }
+
+    /// Take the terminal to the active panel's folder (cm_TerminalCdHere, F-381).
+    ///
+    /// A `cd` typed into the shell rather than anything clever, because the shell is the thing that
+    /// knows what a directory means to it — and because a user watching the prompt change understands
+    /// what happened. Quoted through ShellQuoting, which is measured against a real shell.
+    @objc func terminalCdHere() {
+        Task { @MainActor in
+            guard let path = await activePanel?.getCurrentPath(), !path.isEmpty else { return }
+            if !sendToTerminal("cd \(ShellQuoting.quote(path))\n") {
+                presentInfo(String(localized: "Terminal"),
+                            String(localized: "No terminal is open."))
+            }
+        }
+    }
+
+    /// Put the selected file names at the terminal's prompt (cm_TerminalSendNames, F-381).
+    ///
+    /// Inserted, not executed: the user is composing a command and the names are its arguments. This
+    /// is the panel's "copy names to the command line" gesture pointed at the terminal instead, and it
+    /// goes through the same quoting, so a file called `two words.txt` or `it's here` arrives as one
+    /// argument rather than as several.
+    @objc func terminalSendNames() {
+        guard let panel = activePanel else { return }
+        var paths = panel.tableView.selectedFilePaths()
+        // Nothing marked means the file under the cursor, which is what every other command here does
+        // and what anyone coming from Total Commander expects.
+        if paths.isEmpty, let cursor = panel.tableView.cursorItemFullPath() { paths = [cursor] }
+        guard !paths.isEmpty else { return }
+        let line = paths.map { ShellQuoting.quote($0) }.joined(separator: " ")
+        if !sendToTerminal(line + " ") {
+            presentInfo(String(localized: "Terminal"), String(localized: "No terminal is open."))
         }
     }
 
@@ -4727,14 +4789,15 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// precisely that the *broadcast* reaches a view that should not act on it, and a direct call
     /// skips the broadcast.
     @discardableResult
-    func sendKeyEquivalentForAutomation(_ characters: String, flags: NSEvent.ModifierFlags) -> Bool {
+    func sendKeyEquivalentForAutomation(_ characters: String, flags: NSEvent.ModifierFlags,
+                                        keyCode: UInt16 = 0) -> Bool {
         guard let window,
               let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: flags,
                                            timestamp: ProcessInfo.processInfo.systemUptime,
                                            windowNumber: window.windowNumber, context: nil,
                                            characters: characters,
                                            charactersIgnoringModifiers: characters,
-                                           isARepeat: false, keyCode: 0) else { return false }
+                                           isARepeat: false, keyCode: keyCode) else { return false }
         return window.contentView?.performKeyEquivalent(with: event) ?? false
     }
     #endif
@@ -4748,8 +4811,13 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// future caller cannot route a key that the focused view had already claimed. Said plainly
     /// because a duplicated guard that is silently unreachable is worth knowing about.
     func focusedViewWantsRawKeyboard(_ event: NSEvent) -> Bool {
-        RawKeyboard.wantsRaw(event, firstResponder: window?.firstResponder,
-                             rawViews: ViewContainerRegistry.shared.rawKeyboardViews())
+        // The way out is never the view's to keep. See RawKeyboard.reservedCommands.
+        if let chord = KeymapMenu.chord(from: event), let cmd = keymap.command(for: chord),
+           RawKeyboard.reservedCommands.contains(cmd) {
+            return false
+        }
+        return RawKeyboard.wantsRaw(event, firstResponder: window?.firstResponder,
+                                    rawViews: ViewContainerRegistry.shared.rawKeyboardViews())
     }
 
     /// Sync menu accelerators + enablement from the active keymap and registry.

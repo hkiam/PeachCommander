@@ -397,6 +397,12 @@ enum AppMenu {
         // and KeymapMenu draws it onto this item from there like every other remappable command.
         viewMenu.addItem(command(String(localized: "Bottom Dock"), cmd: "cm_ToggleDock",
                                  key: "", mask: [], target: target, action: commandAction))
+        viewMenu.addItem(command(String(localized: "Terminal: Folder of the Active Panel"),
+                                 cmd: "cm_TerminalCdHere",
+                                 key: "", mask: [], target: target, action: commandAction))
+        viewMenu.addItem(command(String(localized: "Terminal: Insert Selected Names"),
+                                 cmd: "cm_TerminalSendNames",
+                                 key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Reset Layout"), cmd: "cm_ResetLayout",
                                  key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(.separator())

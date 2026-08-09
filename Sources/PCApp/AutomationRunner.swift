@@ -216,7 +216,12 @@ extension MainWindowController {
                     if chord.ctrl { flags.insert(.control) }
                     if chord.alt { flags.insert(.option) }
                     if chord.shift { flags.insert(.shift) }
-                    let claimed = sendKeyEquivalentForAutomation(chord.key.lowercased(), flags: flags)
+                    // BACKQUOTE names a *position*, so it has to be sent as one: the character this
+                    // key produces depends on the layout, which is the whole reason the token exists.
+                    let isPositional = chord.key == "BACKQUOTE"
+                    let claimed = sendKeyEquivalentForAutomation(
+                        isPositional ? "`" : chord.key.lowercased(), flags: flags,
+                        keyCode: isPositional ? KeymapMenu.backquoteKeyCode : 0)
                     let board = NSPasteboard.general
                     let urls = (board.readObjects(forClasses: [NSURL.self], options: nil) as? [URL]) ?? []
                     let text = board.string(forType: .string) ?? ""
@@ -288,7 +293,11 @@ extension MainWindowController {
                 // text is a real newline: a scenario line cannot carry one.
                 let a = arg.split(separator: "|", maxSplits: 1).map(String.init)
                 if a.count == 2 {
+                    // "\\n" is a real newline and "\\s" a real space: a script line is trimmed of
+                    // trailing whitespace before it gets here, so `echo ` arrived as `echo` and the
+                    // names inserted after it ran into the command.
                     let text = a[1].replacingOccurrences(of: "\\n", with: "\n")
+                                   .replacingOccurrences(of: "\\s", with: " ")
                     let sent = ViewContainerRegistry.shared.notifyView(viewId: a[0], key: "sendText",
                                                                       value: text)
                     NSLog("[automation] termsend \(a[0]): \(sent)")

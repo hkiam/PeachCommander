@@ -81,6 +81,11 @@ does not have.
 
 ### Added
 
+- **One key moves between the file panels and the terminal** (Ctrl and the key left of the "1"), and
+  back to where the cursor was. The terminal stays open either way — closing it is what its close
+  button is for. *View ▸ Terminal: Folder of the Active Panel* takes the shell where you are, and
+  *Terminal: Insert Selected Names* puts the selected files at the prompt, quoted, without running
+  anything.
 - **The embedded terminal has tabs and can be split**, and nothing you have running is disturbed by
   either. Each tab is its own shell with its own scrollback; switching tabs, splitting the area into
   two terminals, collapsing back to one, and moving the whole terminal between the side panel and the
