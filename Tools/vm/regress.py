@@ -110,6 +110,32 @@ SCENARIOS = [
     # default.bar, or it is gone at the next launch. That file is read by the shell afterwards.
     ("toolbar-drop", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                       "bardrop /System/Applications/Calculator.app", "wait 1500"], 9),
+    # Double-clicking the divider gives two equal panels (F-001). The row promised it and nothing did
+    # it — the window used an NSSplitView directly, with no click handling anywhere. Widen the left
+    # panel first, so "equal" is a result rather than the state it started in.
+    ("split-center", ["active left", "left /Users/admin/pc-demo", "wait 1000",
+                      "widenleft", "wait 600", "splitdump /Users/admin/split-before.txt", "wait 300",
+                      "splitcenter", "wait 600", "splitdump /Users/admin/split-after.txt", "wait 300"], 9),
+    # The window title carries the active path (F-012).
+    ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
+                      "windowdump /Users/admin/title.txt", "wait 400"], 8),
+    # Quick Look on the cursor file (F-123): the panel is not what has to appear, the preview is.
+    ("quick-look", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                    "focus notes.txt", "wait 400", "cmd cm_QuickLook", "wait 2500",
+                    "quicklookdump /Users/admin/quicklook.txt", "wait 400"], 10),
+    # Thumbnail view (F-022): the rows have to survive the switch, not just the screenshot look busy.
+    ("thumbnails", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                    "cmd cm_SrcThumbs", "wait 2500", "dump /Users/admin/thumbs.txt", "wait 400"], 10),
+    # The panel paths reach session.ini, which is what a restart reads (F-013). Saving is debounced by
+    # 0.3 s, so the wait matters; the file is read by the shell afterwards.
+    ("session-save", ["active left", "left /Users/admin/pc-demo", "wait 800",
+                      "right /Users/admin/sync-src", "wait 2000"], 9),
+    # Ctrl+Right: the folder under the cursor opens in the *other* panel (F-063). The dump reports the
+    # active panel, so the right one is activated afterwards — otherwise this would report where the
+    # left panel is, which never moved, and pass either way.
+    ("transfer-panel", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                        "focus sub", "wait 400", "cmd cm_TransferRight", "wait 1200",
+                        "active right", "wait 400", "dump /Users/admin/transfer.txt", "wait 400"], 9),
     # Does previewing a document fetch what it points at (F-116)? An <img> pointing at a server needs no
     # JavaScript, so disabling that never stopped it: opening the file told the other end who opened it
     # and when. The witness is the server, not the app — see EXTERNAL_CHECKS below.
@@ -307,6 +333,11 @@ EXTERNAL_CHECKS = {
     # command, so counting mentions says 2 and says nothing about which is which.
     "toolbar-drop": ("grep -c '^cmd[0-9]*=.*Calculator.app$' ~/pc-cfg/default.bar 2>/dev/null || echo 0",
                      "1"),
+    # Both panel paths in the file a restart reads.
+    # Both paths present. Counting mentions was wrong — each path appears under more than one key —
+    # so this asks the question directly and answers it in one word.
+    "session-save": ("grep -q pc-demo ~/pc-cfg/session.ini && grep -q sync-src ~/pc-cfg/session.ini "
+                     "&& echo both || echo missing", "both"),
     "sftp-attributes": ("stat -f %Lp ~/sftp-demo/perm.txt", "600"),
     # Three distinct answers, so the interesting failure cannot hide: "viewer-fetched" means the block is
     # not working, "server-not-running" means the witness died and the run proves nothing, and only
@@ -377,6 +408,23 @@ REPORTS = {
     # read as success.
     "sync-sftp": ("/Users/admin/syncsftp.txt",
                   ["compared=3", "alpha.txt:copyToRight", "sub/beta.txt:copyToRight", "errors=none"]),
+    # Equal to within a point: the two panels are laid out in float widths and an odd window cannot
+    # split evenly. `!diff=` catches nothing on its own, so the before-picture is checked too — without
+    # it, a run where `widenleft` silently did nothing would pass.
+    "split-center": ("/Users/admin/split-after.txt", ["equal=yes\n"]),
+    "split-center-before": ("/Users/admin/split-before.txt", ["equal=no\n"]),
+    "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
+    # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
+    # the wrong question: a system panel has none, so that check passed without showing anything.
+    "quick-look": ("/Users/admin/quicklook.txt", ["exists=true", "visible=true", "item=notes.txt"]),
+    # Names, not a count: a thumbnail view that renders empty tiles is exactly the failure to catch.
+    "thumbnails": ("/Users/admin/thumbs.txt", ["notes.txt", "table.csv"]),
+    # The menu dump was written and never read for content (F-293). Both halves of that row are in it:
+    # the system Services submenu, which the panels feed through NSServicesMenuRequestor, and the
+    # "Open Terminal Here" item with the command it routes to.
+    "keys-main-menu": ("/Users/admin/menu.txt",
+                       ["Services", "Open Terminal Here", "cm_OpenTerminal"]),
+    "transfer-panel": ("/Users/admin/transfer.txt", ["path=/Users/admin/pc-demo/sub\n"]),
     "sftp-attributes": ("/Users/admin/sftp.txt", ["requested=600", "applied=ok"]),
     # 40960 bytes whole; then only the tail after 10000 travels.
     "sftp-download": ("/Users/admin/sftpget.txt", ["full=40960", "resumedAt=10000", "tail=30960"]),

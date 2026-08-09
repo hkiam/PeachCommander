@@ -44,9 +44,13 @@ final class CrashReportCollector {
             return
         }
 
-        let reports = entries
-            .filter { isPeachCommanderReport($0) && modificationDate($0) > watermark }
-            .sorted { modificationDate($0) > modificationDate($1) }
+        // The two questions — is it ours, and is it new — are answered by CrashReportSelection, where
+        // they can be checked without a Library folder to arrange.
+        let selected = CrashReportSelection.newReports(
+            entries.map { (name: $0.lastPathComponent, modified: modificationDate($0)) },
+            since: watermark)
+        let byName = Dictionary(entries.map { ($0.lastPathComponent, $0) }, uniquingKeysWith: { a, _ in a })
+        let reports = selected.compactMap { byName[$0.name] }
 
         markScannedNow()
 
@@ -56,12 +60,6 @@ final class CrashReportCollector {
     }
 
     // MARK: - Detection helpers
-
-    private func isPeachCommanderReport(_ url: URL) -> Bool {
-        let name = url.lastPathComponent.lowercased()
-        guard name.hasPrefix("peachcommander") else { return false }
-        return name.hasSuffix(".ips") || name.hasSuffix(".crash")
-    }
 
     private func modificationDate(_ url: URL) -> Date {
         (try? url.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate) ?? .distantPast

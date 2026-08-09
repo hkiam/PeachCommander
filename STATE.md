@@ -8,12 +8,12 @@
 | Field | Value |
 |---|---|
 | Phase | **A & B done. C: I14 done; I15 plain FTP LIVE (quick-connect + connection manager, verified vs test.rebex.net; SFTP + explicit-FTPS still pending); I16 lister/content plugins mostly done. D: I17 utilities mostly done; I18 macOS integration MOSTLY DONE (Quick Look Cmd+Y, Share sheet, Open With, Finder Tags: color column + tag-filter (tag:red/#blau), Spotlight metadata in Get Info, Services menu integration, "Open Terminal Here", Full Disk Access onboarding, Go▸Trash, xattr inspector/remove in Change Attributes, privileged "retry as administrator" for chmod+delete done; ACL editing/copy-move-elevation/undo pending). Also F-063 Ctrl+Left/Right open cursor folder in other panel done.; I19 partial (perf targets validated); I20 shipping GROUNDWORK done (DMG script + release CI workflow + hardened-runtime entitlements + RELEASE.md + CHANGELOG + local crash reporting; only Developer-ID signing/notarization and Sparkle auto-update remain — both need Apple creds / update-feed hosting).** |
-| Evidence sweep | **Batches 1–24 (2026-08-07/08): 73 rows checked, 33 defects fixed, 87 → 21 rows without evidence.** A follow-up *interpreter sweep* (2026-08-08, after 0.4.0) then went at one defect class on purpose — a string from somewhere else reaching something that interprets it — and found four more: the panel's extract walk wrote above the destination (F-131), an XML file could read your other files through external entities (F-368), previewing a document fetched a remote image and so reported that you opened it (F-116), and the assistant's approval gate was bypassable through `run_command`. See the entry below. Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive wrote outside the chosen folder (F-131); the archive password stood in the process list (F-136); a CRLF code file rendered as one line six million characters wide (F-110); undoing a batch rename did nothing (F-175); Num/ did nothing (F-056); a wildcard selected the *wrong* file (F-055); a Windows-written .sfv verified nothing (F-097). Six defects were one Swift trap — `"\r\n"` is a single Character. New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, `check-tests-registered.py`, `check-vm-flags.sh`, plus `check-descript-format.sh` extended. Of the 21 rows left, 8 are blocked externally (Apple credentials, SMB mounts, the Services menu). |
+| Evidence sweep | **Batches 1–24 (2026-08-07/08): 73 rows checked, 33 defects fixed, 87 → 21 rows without evidence; the last 21 were then worked through on 2026-08-09 and the count is now **0** — five of them turned out not to be implemented at all (the window title, the splitter's double-click, sequential transfers, the icon-off mode and the DMG layout).** A follow-up *interpreter sweep* (2026-08-08, after 0.4.0) then went at one defect class on purpose — a string from somewhere else reaching something that interprets it — and found four more: the panel's extract walk wrote above the destination (F-131), an XML file could read your other files through external entities (F-368), previewing a document fetched a remote image and so reported that you opened it (F-116), and the assistant's approval gate was bypassable through `run_command`. See the entry below. Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive wrote outside the chosen folder (F-131); the archive password stood in the process list (F-136); a CRLF code file rendered as one line six million characters wide (F-110); undoing a batch rename did nothing (F-175); Num/ did nothing (F-056); a wildcard selected the *wrong* file (F-055); a Windows-written .sfv verified nothing (F-097). Six defects were one Swift trap — `"\r\n"` is a single Character. New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, `check-tests-registered.py`, `check-vm-flags.sh`, plus `check-descript-format.sh` extended. Of the 21 rows left, 8 are blocked externally (Apple credentials, SMB mounts, the Services menu). |
 | Current iteration | **Editor: JSON/YAML/XML outline, structural navigation, paths, validation and transformations DONE (F-368/369/370)**; I19 T06 accessibility + keyboard operation DONE (see the log below). Docs/i18n complete. **I19 localization + help DONE (19 languages)**; **documentation system live** (SSOT → Apple Help Book + MkDocs site + generated FEATURES/README). Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update (both need Apple creds / feed hosting); accessibility (I19 T06) **done**. |
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
-| Last updated | 2026-08-08 |
+| Last updated | 2026-08-09 |
 | Released | **0.4.0 (build 4), 2026-08-08** — a repair release: 33 defects from the evidence sweep, three of them security-relevant (a file name could run a shell command, a crafted archive wrote outside the chosen folder, the archive password stood in the process list). Unsigned, as every build so far. |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
@@ -25,6 +25,51 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-09 — The last 21 rows: from 21 without evidence to none
+
+The inventory had 21 `done` rows carrying no `ev:` pointer. Going through them turned up the usual
+split: some were implemented and tested and merely unlabelled, some were implemented and untested, and
+five were not implemented at all despite the row saying so.
+
+**Not built, though the row said it was.**
+
+* *F-012, the window title.* `window.title` was assigned the literal "Peach Commander" at startup and
+  never touched again. That is the text Mission Control, the Window menu and Cmd-Tab show, so two
+  windows on two folders were indistinguishable. Measured before the fix by dumping window titles in
+  the VM — one line, `window=Peach Commander`; after it, `window=~/pc-demo`.
+* *F-001, double-click the divider for 50 %.* The window used an NSSplitView directly, with no subclass
+  and no click handling anywhere; the one function that centres the divider was reached only when the
+  panel arrangement changed. AppKit has no "is this point on the divider" question, so that arithmetic
+  is ours now and is tested at the edges.
+* *F-085, "sequential ops".* "Start all" looped over the held jobs and started every one of them, each
+  with its own queue and control — twenty queued downloads became twenty concurrent transfers.
+* *F-029, "icon off mode".* The directory check came before the mode switch, so the one mode whose
+  point is that nothing is drawn still drew a folder icon on every directory row.
+* *F-311, "DMG with layout".* The image was created directly as UDZO, so its window opened at whatever
+  size the Finder last used and the two icons could land on top of each other. Now built read-write,
+  arranged, then compressed — verified by reading the positions back out of the finished image. There
+  is still no background image, and the row says so rather than claiming one.
+
+**Instruments that could not fail.** `testCommandIdsAreUnique` compared the ids coming out of the
+registry against the set of them — but the registry stores commands in a dictionary keyed by id, so a
+collision had already collapsed to one entry before the test looked. `register` does assert, and that
+is compiled out of a release build. It is a count now, plus a gate that reads the source and pins every
+name to its id: a renumbering silently makes an imported toolbar button invoke a different action.
+Similarly `check-version.sh` compared the tag to the marketing version and nothing else, so "semver +
+monotonically increasing build number" — the whole of F-314 — was unchecked.
+
+**Three of my own expectations were wrong**, and each was worth the round trip: a button writes its
+path to `.bar` twice (icon and command), each panel path appears in session.ini under more than one
+key, and two panels in a window of odd width centre to 504 and 503, not to a difference of zero. The
+tolerance now lives in the report as `equal=yes` rather than in a scenario trying to spell it as a
+substring. A fourth was subtler: the Quick Look check read window *titles*, and a system panel has
+none — so it reported only the main window and passed without showing anything. It asks Quick Look
+directly now, and gets `exists=true visible=true item=notes.txt`.
+
+**Genuinely blocked, and now said so in the row rather than left implied:** F-218 needs an SMB server
+the guest does not have, and F-315's signing, notarization and appcast need an Apple Developer ID and
+somewhere to host a feed. Both are `partial` or annotated instead of quietly `done`.
 
 ## 2026-08-08 (F-193) — A server as one side of the synchronisation
 

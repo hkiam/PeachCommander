@@ -21,6 +21,7 @@
 
 #if DEBUG
 import AppKit
+import Quartz
 import PCFoundation
 import PCNet
 import PCOperations
@@ -368,6 +369,32 @@ extension MainWindowController {
                 }
             case "syncsftp":                               // syncsftp <localdir>|<remotedir>|<out> (F-193)
                 await syncOverSFTP(arg)
+            case "splitcenter":                            // splitcenter (F-001): as a double-click on the divider
+                // The double-click itself cannot be scripted; this is the entry point the split view
+                // calls when it sees one, so the scripted run exercises the same path.
+                centerDivider()
+            case "splitdump":                              // splitdump <out> (F-001): the two panel widths
+                let l = Int((leftPanelController?.view.frame.width ?? 0).rounded())
+                let r = Int((rightPanelController?.view.frame.width ?? 0).rounded())
+                // The verdict, not just the numbers: a window of odd width cannot split into two equal
+                // halves, so "centred" is a question with a tolerance and the tolerance belongs here
+                // rather than in a scenario trying to express it as a substring. Measured: centring an
+                // 1007-point split gives 504 and 503.
+                let equal = abs(l - r) <= 2 ? "yes" : "no"
+                try? "left=\(l)\nright=\(r)\ndiff=\(abs(l - r))\nequal=\(equal)\n"
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
+            case "quicklookdump":                          // quicklookdump <out> (F-123)
+                // NSApp.windows is the wrong place to look: the Quick Look panel is a system panel and
+                // carries no title, so a dump of window titles reported only the main window and the
+                // check passed for the wrong reason — it never showed whether the preview opened.
+                var report = "exists=\(QLPreviewPanel.sharedPreviewPanelExists())\n"
+                if QLPreviewPanel.sharedPreviewPanelExists() {
+                    let panel = QLPreviewPanel.shared()
+                    report += "visible=\(panel?.isVisible ?? false)\n"
+                    let item = panel?.currentPreviewItem?.previewItemURL?.lastPathComponent ?? ""
+                    report += "item=\(item)\n"
+                }
+                try? report.write(toFile: arg, atomically: true, encoding: .utf8)
             case "zipextract":                             // zipextract <zip>|<dest>|<out> (F-131)
                 await zipExtract(arg)
             case "subbar":                                 // subbar <barfile> (F-253): descend into a subbar
