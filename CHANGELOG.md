@@ -67,6 +67,11 @@ does not have.
 
 ### Added
 
+- **Copying or moving into a folder you do not own can now be retried as administrator.** Deleting and
+  changing permissions already offered this; copying and moving stopped with "permission denied" and
+  no way forward. The offer appears only for what actually failed, and only when the destination is a
+  folder you cannot write to — a copy that ran out of disk space is not helped by doing it as root.
+  You are asked for your password once, however many files there are.
 - **Synchronize Directories now works with a server as one side.** A panel connected to FTP or SFTP —
   or to a filesystem plugin — can be compared against a local folder and synchronised in either
   direction, subfolders included. Two servers with each other, and an archive with a server, are
