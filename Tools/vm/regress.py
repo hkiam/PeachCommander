@@ -329,6 +329,17 @@ SCENARIOS = [
                           # line is preceded by a cd rather than run wherever the shell was left.
                           "termsend plugin.terminal.view|pwd > /Users/admin/cmdline-cwd.txt\\n",
                           "wait 1500"], 9),
+    # Dropping files onto the terminal (plan §7). The drag itself cannot be scripted — the same
+    # limitation as the button bar's `bardrop` — so this drives the entry point the drop calls, which
+    # is where the quoting lives and where it matters. The fixture name has a space and an apostrophe
+    # in it on purpose: a naive implementation splits it into three arguments.
+    ("terminal-drop", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "placeview plugin.terminal.view|default", "wait 800",
+                       "dock on", "wait 3500",
+                       "termsend plugin.terminal.view|echo\\s", "wait 800",
+                       "termnotify plugin.terminal.view|dropPaths|/Users/admin/pc-demo/it's a file.txt",
+                       "wait 1200",
+                       "termsend plugin.terminal.view|> /Users/admin/drop.txt\\n", "wait 1500"], 9),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -793,6 +804,8 @@ REPORTS = {
     "terminal-integration": ("/Users/admin/int-names.txt", ["/Users/admin/pc-demo/notes.txt"]),
     "terminal-cmdline": ("/Users/admin/cmdline.txt", ["/dev/ttys", "!not a tty"]),
     "terminal-cmdline-cwd": ("/Users/admin/cmdline-cwd.txt", ["/Users/admin/pc-demo"]),
+    # One line, whole: the shell parsed it as a single argument. Quoting failure splits it.
+    "terminal-drop": ("/Users/admin/drop.txt", ["/Users/admin/pc-demo/it's a file.txt"]),
     "terminal-move": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move-mounts": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
@@ -1112,6 +1125,9 @@ def boot(app: str, run: str):
                   # CRLF, a duplicate, a blank line and trailing spaces: one file for every operation.
                   "printf 'keep me  \\r\\n\\r\\nkeep me\\r\\ndrop this\\r\\n' > pc-demo/messy.txt && "
                   "printf 'x' > pc-demo/sub/nested.txt && "
+                  # A name with a space and an apostrophe, for the terminal's drop quoting: a naive
+                  # implementation turns this one file into three arguments.
+                  "printf 'dropped\\n' > \"pc-demo/it's a file.txt\" && "
                   # A JSON file with Windows line endings, deliberately over 4 MB: below that the code
                   # view is an NSTextView, which AppKit lines up correctly, and only above it does the
                   # app's own ranged view take over. That one built its ranges by comparing each
