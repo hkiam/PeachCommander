@@ -203,6 +203,10 @@ extension MainWindowController {
                 // *contributions* changes here, which is the whole question: a refresh that changes
                 // nothing must destroy nothing.
                 ViewContainerRegistry.shared.refresh(host: self)
+            case "cmdline":                             // cmdline <text> (F-381): run it, as pressing
+                // Return in the command line does — through the same entry point, so whichever route
+                // it takes (detached or into the terminal) is the real one.
+                runCommandLineForAutomation(arg)
             case "focuscmdline":                        // focuscmdline [container] (F-381)
                 focusCommandLineForAutomation(container: arg == "container")
             case "keyequiv":                            // keyequiv <mods><char>|<out> (F-381)

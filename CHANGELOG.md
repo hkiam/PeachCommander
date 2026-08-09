@@ -81,6 +81,10 @@ does not have.
 
 ### Added
 
+- **The command line can run in the embedded terminal** (*View ▸ Run Command Line in Terminal*, off by
+  default). A detached command has no terminal, so anything that asks a question never gets an answer —
+  `sudo` prompts for a password where nobody can type it. Run in the terminal the prompt is on screen,
+  output arrives as it happens, and a long command can be interrupted.
 - **One key moves between the file panels and the terminal** (Ctrl and the key left of the "1"), and
   back to where the cursor was. The terminal stays open either way — closing it is what its close
   button is for. *View ▸ Terminal: Folder of the Active Panel* takes the shell where you are, and

@@ -403,6 +403,9 @@ enum AppMenu {
         viewMenu.addItem(command(String(localized: "Terminal: Insert Selected Names"),
                                  cmd: "cm_TerminalSendNames",
                                  key: "", mask: [], target: target, action: commandAction))
+        viewMenu.addItem(command(String(localized: "Run Command Line in Terminal"),
+                                 cmd: "cm_ToggleRunInTerminal",
+                                 key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Reset Layout"), cmd: "cm_ResetLayout",
                                  key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(.separator())
