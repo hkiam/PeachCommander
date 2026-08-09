@@ -283,6 +283,36 @@ final class ViewContainerRegistry {
 
     /// Push a host context change (e.g. current cursor path / dir) to every live
     /// embedded plugin view.
+    /// Tear every mounted plugin view down, in the order they were made.
+    ///
+    /// For quitting. Nothing did this: `applicationShouldTerminate` flushed the session and replied,
+    /// and the process exited with every plugin view still standing, so `PcCloseView` — which the ABI
+    /// documents as *the* teardown hook — was never called on the way out.
+    ///
+    /// **What it buys depends on whether the app is dying, and the difference is measured.**
+    ///
+    /// *On quit* it buys tidiness, not survival. Removing this call from
+    /// `applicationShouldTerminate` still leaves no stray process behind: when the app exits, every
+    /// file descriptor it holds is closed including the pseudo-terminal's master, and the kernel then
+    /// SIGHUPs that terminal's foreground process group, whereupon the shell hups its own jobs. That
+    /// happens whether or not anybody was polite about it first. (A process the user deliberately
+    /// detached with `nohup` or `setsid` survives either way — correct, and what Terminal.app does.)
+    ///
+    /// *While the app keeps running* it is the only thing that works. `closeviews` takes this exact
+    /// path with the process still alive, and the numbers separate the failure modes: with
+    /// `PcCloseView` never called, **both** jobs survive; with it called but the plugin not signalling
+    /// the process group, **one** survives — the background job, because SwiftTerm's own `terminate`
+    /// sends SIGTERM to the shell rather than SIGHUP, and a SIGTERMed zsh does not hup its jobs.
+    /// Correct, both are gone.
+    ///
+    /// So this call is the contract as well as the mechanism: a plugin is told its view is going away
+    /// in time to do something about it, rather than having the rug pulled out from under it.
+    func closeAll() {
+        for mount in live.values { mount.close() }
+        live.removeAll()
+        for (_, mount) in mounts { mount([]) }
+    }
+
     /// Mounted plugin views that declared `rawKeyboard` and have actually been built.
     ///
     /// Only the built ones: a view that has never been made cannot contain the first responder, and

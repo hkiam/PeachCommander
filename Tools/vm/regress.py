@@ -186,7 +186,9 @@ SCENARIOS = [
     # it landed (PcNotifyView "container" was added with nothing to receive it), and that the dock
     # survives its only plugin leaving rather than showing a blank strip.
     ("terminal-session", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                          "panelsdump /Users/admin/panels-before.txt", "wait 300",
                           "dock on", "wait 2500",
+                          "panelsdump /Users/admin/panels-after.txt", "wait 300",
                           # Long waits on purpose: a pseudo-terminal takes longer to come up, print a
                           # prompt and report its size than a view takes to appear.
                           "dockdump /Users/admin/term-idle.txt", "wait 300",
@@ -194,7 +196,8 @@ SCENARIOS = [
                           # …and a full-screen program, which is the milestone: alternate screen
                           # buffer, cursor addressing, and a size the program believes.
                           "termsend plugin.terminal.view|top\\n", "wait 3500",
-                          "dockdump /Users/admin/term-top.txt", "wait 500"], 12),
+                          "dockdump /Users/admin/term-top.txt", "wait 500",
+                          "panelsdump /Users/admin/panels-end.txt", "wait 300"], 12),
     # A tripwire for an open defect (see docs/analysis/terminal-plugin-plan.md §12). Measured: with a
     # shell running in the dock, the active panel's path is /Users/admin in some runs and the folder
     # the scenario opened in others — the same scenario, twice. Three runs of *this* one, which is
@@ -206,6 +209,49 @@ SCENARIOS = [
                           "placeview plugin.terminal.view|sidebar", "wait 800",
                           "dock on", "wait 2500", "wait 1500", "wait 3500", "wait 500",
                           "dump /Users/admin/ctl-panel.txt", "wait 400"], 9),
+    # Does quitting the app leave the shell's children running (plan §5)? An end-to-end guard, and it
+    # has to quit the app itself: the harness's usual `pkill` never reaches applicationShouldTerminate.
+    #
+    # Stated plainly because it was nearly claimed as more than it is: **this passes with and without
+    # the teardown added in that method** — verified twice, the second time after a stale build had
+    # made an earlier mutation lie. Removing the closeAll() call leaves no stray sleep either, because
+    # the app exiting closes the pseudo-terminal's master fd, the kernel HUPs the terminal's foreground
+    # group, and the shell hups its own jobs. So this guards the outcome a user cares about — quit with
+    # things running, nothing is left behind — and `terminal-teardown` is what guards the code. A
+    # process deliberately detached with nohup or setsid survives, which is correct and what
+    # Terminal.app does.
+    #
+    # Two jobs on purpose, because they sit in different process groups under job control: one in the
+    # background (`&` gives it its own group, so a signal to the shell's group misses it) and one in
+    # the foreground (its group is the terminal's, so closing the master fd should HUP it). Both are
+    # named distinctly so `pgrep` cannot confuse them with anything else on the machine.
+    ("terminal-orphan", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                         "dock on", "wait 2500",
+                         "termsend plugin.terminal.view|sleep 391 &\\n", "wait 1200",
+                         "termsend plugin.terminal.view|sleep 392\\n", "wait 1500",
+                         "quit", "wait 4000"], 8),
+    # Does PcCloseView actually reach the child processes (plan §5)? The quit scenario cannot answer
+    # that — after the app exits everything dies from the master fd closing, so teardown and cleanup
+    # look identical. This takes the same teardown path with the app still running, and then asks the
+    # process table while it can still tell the difference.
+    ("terminal-teardown", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                           # Assert the precondition instead of inheriting it. Placement is persisted,
+                           # so whether the terminal is in the dock at all depends on what earlier
+                           # scenarios in the run did — which is exactly how this reported "no jobs
+                           # running" when the truth was "no terminal here to run them".
+                           "placeview plugin.terminal.view|default", "wait 800",
+                           "dock on", "wait 3500",
+                           "dockdump /Users/admin/td-dock.txt", "wait 300",
+                           # Generous waits: the probe counts jobs, and a shell that has not finished
+                           # starting yet counts as a failure rather than as a slow machine. One flaky
+                           # run said 1 where it meant 2.
+                           "termsend plugin.terminal.view|sleep 394 &\\n", "wait 2500",
+                           "termsend plugin.terminal.view|sleep 395\\n", "wait 2500",
+                           "probe /Users/admin/before.txt|pgrep -f 'sleep 39[45]' | wc -l | tr -d ' '",
+                           "wait 500",
+                           "closeviews", "wait 3000",
+                           "probe /Users/admin/after.txt|pgrep -f 'sleep 39[45]' | wc -l | tr -d ' '",
+                           "wait 500"], 8),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -216,7 +262,13 @@ SCENARIOS = [
                        "previewpanel on", "wait 1200", "previewtab Terminal", "wait 1200",
                        "termsend plugin.terminal.view|pwd\\n", "wait 1500",
                        "sidebardump /Users/admin/term-moved.txt", "wait 300",
-                       "mountdump /Users/admin/term-mounts.txt", "wait 400"], 10),
+                       "mountdump /Users/admin/term-mounts.txt", "wait 400",
+                       # Put it back. A placement override is *persisted*, so a scenario that leaves
+                       # one changes the world for every scenario after it in the run — which is how
+                       # terminal-teardown came to find no terminal in the dock and report that no
+                       # jobs were running, twice, only in full runs. dock-seam already learned this;
+                       # the lesson is that any scenario touching placement owns putting it back.
+                       "placeview plugin.terminal.view|default", "wait 1000"], 10),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -456,6 +508,11 @@ REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"
 # What an *independent* tool must say after a scenario ran: the app changed something, and something other
 # than the app is asked whether it really changed. `stat` over ssh is not the code under test.
 EXTERNAL_CHECKS = {
+    # Asked of the machine after the app is gone, which is the only witness that counts: the app cannot
+    # testify that it cleaned up after itself. Both jobs must be gone — the background one (own process
+    # group, so it dies only because the shell hups its jobs) and the foreground one (the terminal's
+    # group, HUPed by the kernel when the master fd closes). Either route failing is a leak.
+    "terminal-orphan": ("pgrep -f 'sleep 39[12]' | wc -l | tr -d ' '", "0"),
     # The files, on the server, asked of the shell — including the one in a subfolder, because creating
     # the parent is the part a server does not do for you.
     "sync-sftp": ("cat ~/sync-dst/alpha.txt ~/sync-dst/sub/beta.txt 2>/dev/null | tr '\\n' ' '",
@@ -595,11 +652,24 @@ REPORTS = {
     # terminal reporting what it runs rather than the host guessing from the process table. The
     # rendering itself is judged from the screenshot — nothing outside the plugin can read the buffer,
     # and "does htop look right" is not a question a substring can answer honestly.
+    "terminal-session-panels": ("/Users/admin/panels-after.txt", ["left=/Users/admin/pc-demo"]),
+    "terminal-session-end": ("/Users/admin/panels-end.txt", ["left=/Users/admin/pc-demo"]),
     "terminal-session-top": ("/Users/admin/term-top.txt",
                              ["panels=plugin.terminal.view", "· bottom", "!exited"]),
     # `cd /usr/lib` before the move, `pwd` after it. A rebuilt view would carry a fresh shell sitting
     # in the home directory, so this is the promise stated the way a user would notice it.
     "terminal-control": ("/Users/admin/ctl-panel.txt", ["pc-demo"]),
+    # Both halves, and the "before" is what stops the "after" passing for the wrong reason: two jobs
+    # were really running, and after teardown neither is. The failure modes are distinguishable by the
+    # number: with PcCloseView never called, 2 survive; with it called but the plugin not signalling
+    # the process group, 1 does — the background job, because SwiftTerm's terminate sends SIGTERM to
+    # the shell rather than SIGHUP and a SIGTERMed zsh does not hup its jobs.
+    # The precondition, written down: a terminal is in the dock and its shell has reported a size.
+    # Without this, "0 jobs after teardown" is also what an empty dock reports.
+    "terminal-teardown-dock": ("/Users/admin/td-dock.txt",
+                               ["panels=plugin.terminal.view", "zsh ·", "!·  0×0"]),
+    "terminal-teardown-before": ("/Users/admin/before.txt", ["2"]),
+    "terminal-teardown": ("/Users/admin/after.txt", ["0", "!2"]),
     "terminal-move": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move-mounts": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),

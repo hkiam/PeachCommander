@@ -230,6 +230,49 @@ extension MainWindowController {
                     out += "text=\(text.prefix(80))\n"
                     try? out.write(toFile: a[1], atomically: true, encoding: .utf8)
                 }
+            case "closeviews":                          // closeviews (F-381)
+                // The same teardown path quitting takes, but with the app still running — which is the
+                // only way to observe that PcCloseView did anything. After the process exits, every
+                // child dies from the pseudo-terminal's master fd closing, so a check made afterwards
+                // cannot tell teardown from cleanup.
+                ViewContainerRegistry.shared.closeAll()
+            case "probe":                               // probe <out>|<command> (F-381)
+                // Ask the machine a question while the app is alive. Not the app testifying about
+                // itself: the process table is an external fact and the app is only the messenger.
+                //
+                // The output path comes *first*, which looks backwards next to every other verb here.
+                // It has to: the argument is split on its first "|", and a shell command worth asking
+                // usually contains pipes of its own. Putting the path last silently truncated the
+                // command and wrote nothing at all.
+                let a = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if a.count == 2 {
+                    let task = Process()
+                    task.executableURL = URL(fileURLWithPath: "/bin/sh")
+                    task.arguments = ["-c", a[1]]
+                    let pipe = Pipe()
+                    task.standardOutput = pipe
+                    task.standardError = FileHandle.nullDevice
+                    task.standardInput = FileHandle.nullDevice
+                    try? task.run()
+                    let out = String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+                    task.waitUntilExit()
+                    try? out.write(toFile: a[0], atomically: true, encoding: .utf8)
+                }
+            case "quit":                                // quit (F-381)
+                // A real quit, not a kill: applicationShouldTerminate is where plugin views are torn
+                // down, and the harness's `pkill` never reaches it. Anything testing what happens on
+                // exit has to go through this door or it is testing nothing.
+                NSApp.terminate(nil)
+            case "panelsdump":                          // panelsdump <out> (F-381)
+                // Both panels and which one is active. `dump` reports the *active* panel, so it cannot
+                // tell "the left panel navigated" from "the right panel became active" — and those are
+                // very different bugs.
+                let l = await leftPanelController?.getCurrentPath() ?? "<none>"
+                let r = await rightPanelController?.getCurrentPath() ?? "<none>"
+                let side = activePanel === leftPanelController ? "left" : "right"
+                let responder = window?.firstResponder.map { String(describing: type(of: $0)) } ?? "<none>"
+                try? "active=\(side)\nleft=\(l)\nright=\(r)\nresponder=\(responder)\n"
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
             case "termsend":                            // termsend <viewId>|<text> (F-381)
                 // Types into a plugin view's pseudo-terminal through the same channel the host will
                 // use for "open terminal here" and for dropping file names at the prompt. "\n" in the

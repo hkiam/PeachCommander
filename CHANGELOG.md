@@ -81,6 +81,8 @@ does not have.
 
 ### Added
 
+- **Quitting now closes embedded plugin views before the app exits**, so a plugin holding a file, a
+  socket or a child process is told to let go instead of having the rug pulled out.
 - **Plugin views can be moved between the side panel and the dock**, and put back. Right-click the
   mode switcher (or use the ⋯ button in the dock) to send a view to the other one; *View ▸ Reset
   Layout* puts everything back where it ships, including the dock height and the side panel's width.
