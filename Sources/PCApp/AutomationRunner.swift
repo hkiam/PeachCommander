@@ -230,6 +230,17 @@ extension MainWindowController {
                     out += "text=\(text.prefix(80))\n"
                     try? out.write(toFile: a[1], atomically: true, encoding: .utf8)
                 }
+            case "termsend":                            // termsend <viewId>|<text> (F-381)
+                // Types into a plugin view's pseudo-terminal through the same channel the host will
+                // use for "open terminal here" and for dropping file names at the prompt. "\n" in the
+                // text is a real newline: a scenario line cannot carry one.
+                let a = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if a.count == 2 {
+                    let text = a[1].replacingOccurrences(of: "\\n", with: "\n")
+                    let sent = ViewContainerRegistry.shared.notifyView(viewId: a[0], key: "sendText",
+                                                                      value: text)
+                    NSLog("[automation] termsend \(a[0]): \(sent)")
+                }
             case "placeview":                           // placeview <viewId>|<container|default> (F-381)
                 // The drag cannot be scripted, so this is the entry point the drop and the menu item
                 // both call — the same rule as `bardrop`. What matters is the other end anyway: where

@@ -12,6 +12,22 @@ This product includes the following open-source software. The full license text 
 - Repository: https://github.com/sparkle-project/Sparkle
 - License text: `Resources/Licenses/Sparkle.txt`
 
+## SwiftTerm 1ca2441
+
+- **License:** MIT
+- **Copyright (c) 2019-2026 Miguel de Icaza; portions (c) 2017-2019 The xterm.js authors; (c) 2014-2016 SourceLair Private Company.**
+- Terminal emulator (xterm-compatible) behind the embedded terminal plugin.
+- Repository: https://github.com/migueldeicaza/SwiftTerm
+- License text: `Resources/Licenses/SwiftTerm.txt`
+
+## Swift Argument Parser 1.8.2
+
+- **License:** Apache-2.0
+- **Copyright (c) 2020 Apple Inc. and the Swift project authors.**
+- Resolved as a dependency of SwiftTerm's command-line sample target; not compiled into, or shipped with, this application.
+- Repository: https://github.com/apple/swift-argument-parser
+- License text: `Resources/Licenses/swift-argument-parser.txt`
+
 ## SwiftTreeSitter main (0f40435)
 
 - **License:** BSD-3-Clause

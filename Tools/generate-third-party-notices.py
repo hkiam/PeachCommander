@@ -148,6 +148,27 @@ COMPONENTS = [
          copyright="Copyright (c) 2006 Andy Matuschak and Sparkle contributors.",
          description="Software update framework that powers the app's in-app updates.",
          text=lambda: checkout_license("Sparkle")),
+    # Compiled into the Terminal plugin rather than linked into the app, which is why removing that
+    # plugin removes the emulator with it. Referenced through SwiftPM at a pinned revision — this
+    # repository carries none of its source.
+    dict(key="SwiftTerm", name="SwiftTerm", spdx="MIT", pin="swiftterm",
+         website="https://github.com/migueldeicaza/SwiftTerm",
+         repository="https://github.com/migueldeicaza/SwiftTerm",
+         copyright="Copyright (c) 2019-2026 Miguel de Icaza; portions (c) 2017-2019 The xterm.js authors; "
+                   "(c) 2014-2016 SourceLair Private Company.",
+         description="Terminal emulator (xterm-compatible) behind the embedded terminal plugin.",
+         text=lambda: checkout_license("SwiftTerm")),
+    # Pinned but not shipped: it is a dependency of SwiftTerm's own `Termcast` executable target, which
+    # this project does not build. Described because Package.resolved lists it and an undescribed pin
+    # is a warning — saying "not linked" is more honest than silencing the check.
+    dict(key="swift-argument-parser", name="Swift Argument Parser", spdx="Apache-2.0",
+         pin="swift-argument-parser",
+         website="https://github.com/apple/swift-argument-parser",
+         repository="https://github.com/apple/swift-argument-parser",
+         copyright="Copyright (c) 2020 Apple Inc. and the Swift project authors.",
+         description="Resolved as a dependency of SwiftTerm's command-line sample target; not compiled "
+                     "into, or shipped with, this application.",
+         text=lambda: checkout_license("swift-argument-parser")),
     dict(key="SwiftTreeSitter", name="SwiftTreeSitter", spdx="BSD-3-Clause", pin="swifttreesitter",
          website="https://github.com/ChimeHQ/SwiftTreeSitter",
          repository="https://github.com/ChimeHQ/SwiftTreeSitter",

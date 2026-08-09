@@ -185,14 +185,38 @@ SCENARIOS = [
     # rather than rebuilt (its instance number does not change), that a re-parented view is told where
     # it landed (PcNotifyView "container" was added with nothing to receive it), and that the dock
     # survives its only plugin leaving rather than showing a blank strip.
-    ("terminal-skeleton", ["active left", "left /Users/admin/pc-demo", "wait 1200",
-                           "dock on", "wait 1200",
-                           "dockdump /Users/admin/term-dock.txt", "wait 300",
-                           "placeview plugin.terminal.view|sidebar", "wait 1200",
-                           "previewpanel on", "wait 1200", "previewtab Terminal", "wait 1000",
-                           "sidebardump /Users/admin/term-side.txt", "wait 300",
-                           "dockdump /Users/admin/term-empty.txt", "wait 300",
-                           "mountdump /Users/admin/term-mounts.txt", "wait 400"], 9),
+    ("terminal-session", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                          "dock on", "wait 2500",
+                          # Long waits on purpose: a pseudo-terminal takes longer to come up, print a
+                          # prompt and report its size than a view takes to appear.
+                          "dockdump /Users/admin/term-idle.txt", "wait 300",
+                          "termsend plugin.terminal.view|echo PEACH-$((6*7))\\n", "wait 1500",
+                          # …and a full-screen program, which is the milestone: alternate screen
+                          # buffer, cursor addressing, and a size the program believes.
+                          "termsend plugin.terminal.view|top\\n", "wait 3500",
+                          "dockdump /Users/admin/term-top.txt", "wait 500"], 12),
+    # A tripwire for an open defect (see docs/analysis/terminal-plugin-plan.md §12). Measured: with a
+    # shell running in the dock, the active panel's path is /Users/admin in some runs and the folder
+    # the scenario opened in others — the same scenario, twice. Three runs of *this* one, which is
+    # identical except that the terminal is moved out first so no shell ever starts, gave the opened
+    # folder every time. So the shell is involved and the cause is not yet known; SwiftTerm's chdir is
+    # in the child, not the parent, so the obvious explanation is ruled out. This scenario is the
+    # control that keeps the finding honest: if it ever starts wandering too, the shell is exonerated.
+    ("terminal-control", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                          "placeview plugin.terminal.view|sidebar", "wait 800",
+                          "dock on", "wait 2500", "wait 1500", "wait 3500", "wait 500",
+                          "dump /Users/admin/ctl-panel.txt", "wait 400"], 9),
+    # The shell survives being moved between containers. That is what the whole incremental-refresh
+    # machinery exists for, and with a real process behind the view it is finally observable as
+    # something a user would notice rather than as a counter.
+    ("terminal-move", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "dock on", "wait 2500",
+                       "termsend plugin.terminal.view|cd /usr/lib\\n", "wait 1200",
+                       "placeview plugin.terminal.view|sidebar", "wait 1500",
+                       "previewpanel on", "wait 1200", "previewtab Terminal", "wait 1200",
+                       "termsend plugin.terminal.view|pwd\\n", "wait 1500",
+                       "sidebardump /Users/admin/term-moved.txt", "wait 300",
+                       "mountdump /Users/admin/term-mounts.txt", "wait 400"], 10),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -562,24 +586,23 @@ REPORTS = {
     "raw-keyboard": ("/Users/admin/key-cmdline.txt", ["claimed=false", "!responder=PanelListView"]),
     "raw-keyboard-container": ("/Users/admin/key-container.txt",
                                ["responder=CommandLineView", "claimed=false"]),
-    # Mounted where its manifest asked, and it knows it.
-    "terminal-skeleton-dock": ("/Users/admin/term-dock.txt",
-                               ["panels=plugin.terminal.view",
-                                "instance=1 container=bottom"]),
-    # After the move: the *same* instance, in the new container. instance=1 is the plugin's own account
-    # of "you did not rebuild me" — the host counts its own PcMakeView calls and agrees, but that is
-    # the host marking its own homework. container=sidebar is the only proof that PcNotifyView carried
-    # the move across, since nothing else could have told the view.
-    "terminal-skeleton": ("/Users/admin/term-side.txt", ["instance=1 container=sidebar"]),
-    # …and the dock it left *closes*. The first version of this expectation claimed the dock stayed
-    # open showing its empty-state sentence, and it passed — against a closed dock, because the label
-    # still exists behind a zero-height view and "panels=" is trivially true of a dock with nothing in
-    # it. The behaviour is deliberate (a dock kept open by a plugin that has since gone is a strip of
-    # nothing across the window) so the expectation now says so, and "visible=false" is a claim that
-    # cannot be true by accident.
-    "terminal-skeleton-empty": ("/Users/admin/term-empty.txt", ["visible=false", "panels=\nselected="]),
-    "terminal-skeleton-mounts": ("/Users/admin/term-mounts.txt",
-                                 ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
+    # A shell is running and the pseudo-terminal has a believable size. The columns are why the dock
+    # exists: measured, the side panel gives this font 44 (26 at its minimum) and the bottom of the
+    # window about 170, and `top` assumes 80.
+    "terminal-session": ("/Users/admin/term-idle.txt",
+                         ["panels=plugin.terminal.view", "· bottom", "!·  0×0", "!exited"]),
+    # The status line follows the running program's own title (OSC 0/1/2), so after `top` it is the
+    # terminal reporting what it runs rather than the host guessing from the process table. The
+    # rendering itself is judged from the screenshot — nothing outside the plugin can read the buffer,
+    # and "does htop look right" is not a question a substring can answer honestly.
+    "terminal-session-top": ("/Users/admin/term-top.txt",
+                             ["panels=plugin.terminal.view", "· bottom", "!exited"]),
+    # `cd /usr/lib` before the move, `pwd` after it. A rebuilt view would carry a fresh shell sitting
+    # in the home directory, so this is the promise stated the way a user would notice it.
+    "terminal-control": ("/Users/admin/ctl-panel.txt", ["pc-demo"]),
+    "terminal-move": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
+    "terminal-move-mounts": ("/Users/admin/term-mounts.txt",
+                             ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
     "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
     # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
     # the wrong question: a system panel has none, so that check passed without showing anything.
