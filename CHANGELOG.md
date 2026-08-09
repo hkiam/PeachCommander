@@ -76,6 +76,10 @@ does not have.
 
 ### Added
 
+- **Plugin views can be moved between the side panel and the dock**, and put back. Right-click the
+  mode switcher (or use the ⋯ button in the dock) to send a view to the other one; *View ▸ Reset
+  Layout* puts everything back where it ships, including the dock height and the side panel's width.
+  A plugin's manifest now only decides where its view starts out.
 - **A dock across the bottom of the window** (View ▸ Bottom Dock, or Ctrl and the key left of the
   "1"). Plugins can now put a view there instead of in the side panel, which matters for anything that
   needs width: the side panel is 300 points wide and gives a monospaced font 44 columns, while the

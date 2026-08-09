@@ -397,6 +397,8 @@ enum AppMenu {
         // and KeymapMenu draws it onto this item from there like every other remappable command.
         viewMenu.addItem(command(String(localized: "Bottom Dock"), cmd: "cm_ToggleDock",
                                  key: "", mask: [], target: target, action: commandAction))
+        viewMenu.addItem(command(String(localized: "Reset Layout"), cmd: "cm_ResetLayout",
+                                 key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(.separator())
         viewMenu.addItem(command(String(localized: "Cycle View Mode"), cmd: "cm_CycleViewMode",
                                  key: "m", mask: [.command, .shift], target: target, action: commandAction))

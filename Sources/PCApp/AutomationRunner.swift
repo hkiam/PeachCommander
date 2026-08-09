@@ -203,6 +203,16 @@ extension MainWindowController {
                 // *contributions* changes here, which is the whole question: a refresh that changes
                 // nothing must destroy nothing.
                 ViewContainerRegistry.shared.refresh(host: self)
+            case "placeview":                           // placeview <viewId>|<container|default> (F-381)
+                // The drag cannot be scripted, so this is the entry point the drop and the menu item
+                // both call — the same rule as `bardrop`. What matters is the other end anyway: where
+                // the view ends up, and whether it survived the trip.
+                let a = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if a.count == 2 {
+                    let target = a[1] == "default" ? nil : a[1]
+                    let moved = ViewContainerRegistry.shared.place(viewId: a[0], in: target, host: self)
+                    NSLog("[automation] placeview \(a[0]) -> \(a[1]): \(moved)")
+                }
             case "mountdump":                           // mountdump <out> (F-381)
                 try? ViewContainerRegistry.shared.automationReport()
                     .write(toFile: arg, atomically: true, encoding: .utf8)

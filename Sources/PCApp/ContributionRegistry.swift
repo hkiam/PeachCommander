@@ -112,6 +112,21 @@ final class ContributionRegistry {
         return out.sorted { $0.0.order < $1.0.order }
     }
 
+    /// Every view contribution, whatever container it names.
+    ///
+    /// `viewItems(container:)` answers "what belongs here", which was the only question while a view's
+    /// container was fixed by its manifest. Once the user may move one, the container is no longer a
+    /// property of the contribution but the *answer* — so the whole set has to be resolved first and
+    /// grouped afterwards, or a view moved out of a container would simply never be found again.
+    func allViewItems() -> [(contribution: ViewContribution, plugin: ContribPlugin, pluginId: String)] {
+        var out: [(ViewContribution, ContribPlugin, String)] = []
+        for id in order {
+            guard let e = entries[id] else { continue }
+            for v in e.contributions.views { out.append((v, e.plugin, id)) }
+        }
+        return out.sorted { $0.0.order < $1.0.order }
+    }
+
     /// Command ids a plugin has declared that should be hidden (built-in hiding).
     func hiddenCommandIds(context: ContributionContext) -> Set<String> {
         var out: Set<String> = []

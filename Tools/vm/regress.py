@@ -140,6 +140,19 @@ SCENARIOS = [
                        "mountdump /Users/admin/mounts-before.txt", "wait 300",
                        "refreshviews", "wait 800", "refreshviews", "wait 800",
                        "mountdump /Users/admin/mounts-after.txt", "wait 400"], 9),
+    # Moving a plugin view between containers (F-381). The gesture cannot be scripted, so this drives
+    # the entry point the drop and the menu item both call. Two claims: the view arrives in the dock,
+    # and it *survives the trip* — made=1 closed=0, because moving used to route through a refresh that
+    # closed everything, so a dragged terminal would have restarted its shell on arrival. Then back to
+    # the default, which must forget the override rather than write the old container back.
+    ("view-placement", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                        "previewpanel on", "wait 1500", "previewtab Notes", "wait 1200",
+                        "placeview plugin.notes.sidebar|bottom", "wait 1200",
+                        "dock on", "wait 800",
+                        "mountdump /Users/admin/placed.txt", "wait 300",
+                        "dockdump /Users/admin/placed-dock.txt", "wait 300",
+                        "placeview plugin.notes.sidebar|default", "wait 1200",
+                        "mountdump /Users/admin/placed-back.txt", "wait 400"], 9),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -486,6 +499,15 @@ REPORTS = {
                       ["plugin.notes.sidebar container=sidebar built=true made=1 closed=0"]),
     "mount-refresh-before": ("/Users/admin/mounts-before.txt",
                              ["plugin.notes.sidebar container=sidebar built=true made=1 closed=0"]),
+    # The whole line again: "container=bottom" alone would pass for a view that had been destroyed and
+    # rebuilt there, which is exactly the failure this feature had to avoid.
+    "view-placement": ("/Users/admin/placed.txt",
+                       ["plugin.notes.sidebar container=bottom built=true made=1 closed=0"]),
+    # …and the dock really shows it, rather than the registry merely believing it does.
+    "view-placement-dock": ("/Users/admin/placed-dock.txt",
+                            ["panels=plugin.notes.sidebar", "selected=plugin.notes.sidebar"]),
+    "view-placement-back": ("/Users/admin/placed-back.txt",
+                            ["plugin.notes.sidebar container=sidebar built=true made=1 closed=0"]),
     "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
     # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
     # the wrong question: a system panel has none, so that check passed without showing anything.

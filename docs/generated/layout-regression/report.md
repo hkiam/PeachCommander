@@ -8,6 +8,5 @@ only go down.
 | --- | --- | --- | --- | --- |
 | dock-seam | 0 | — | — | `dock-seam.png` |
 | mount-refresh | 0 | — | — | `mount-refresh.png` |
+| view-placement | 0 | — | — | `view-placement.png` |
 | notes-sidebar | 0 | 0 | — | `notes-sidebar.png` |
-| viewer-note-lines | 0 | — | — | `viewer-note-lines.png` |
-| tc-comment-sidebar | 0 | — | — | `tc-comment-sidebar.png` |

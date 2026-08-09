@@ -40,8 +40,9 @@ final class BottomDockView: NSView {
     /// Fired when the visible provider changes, so the owner can persist the choice.
     var onSelectionChange: ((String) -> Void)?
 
-    private let switcher = NSSegmentedControl(labels: [], trackingMode: .selectOne,
-                                              target: nil, action: nil)
+    private let switcher = PlacementSegmentedControl(labels: [], trackingMode: .selectOne,
+                                                    target: nil, action: nil)
+    private let placementButton = NSButton(title: "", target: nil, action: nil)
     private let closeButton = NSButton(title: "", target: nil, action: nil)
     private let content = NSView()
     private let emptyLabel = NSTextField(labelWithString: "")
@@ -67,6 +68,7 @@ final class BottomDockView: NSView {
         switcher.target = self
         switcher.action = #selector(switcherChanged)
         switcher.setAccessibilityLabel(String(localized: "Docked view"))
+        switcher.contextMenuProvider = { [weak self] in self?.placementMenu() }
         addSubview(switcher)
 
         closeButton.translatesAutoresizingMaskIntoConstraints = false
@@ -78,6 +80,18 @@ final class BottomDockView: NSView {
         closeButton.action = #selector(closePressed)
         closeButton.toolTip = String(localized: "Close the dock")
         addSubview(closeButton)
+
+        // The same menu the right-click offers, as a button. The dock has room for it and the sidebar
+        // does not, and a gesture nobody sees is a gesture nobody uses.
+        placementButton.translatesAutoresizingMaskIntoConstraints = false
+        placementButton.bezelStyle = .accessoryBarAction
+        placementButton.isBordered = false
+        placementButton.image = NSImage(systemSymbolName: "ellipsis",
+                                        accessibilityDescription: String(localized: "Move this view"))
+        placementButton.target = self
+        placementButton.action = #selector(placementPressed)
+        placementButton.toolTip = String(localized: "Move this view")
+        addSubview(placementButton)
 
         content.translatesAutoresizingMaskIntoConstraints = false
         addSubview(content)
@@ -105,6 +119,9 @@ final class BottomDockView: NSView {
             closeButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
             closeButton.centerYAnchor.constraint(equalTo: switcher.centerYAnchor),
             closeButton.widthAnchor.constraint(equalToConstant: 18),
+            placementButton.trailingAnchor.constraint(equalTo: closeButton.leadingAnchor, constant: -4),
+            placementButton.centerYAnchor.constraint(equalTo: switcher.centerYAnchor),
+            placementButton.widthAnchor.constraint(equalToConstant: 18),
             contentTop,
             content.leadingAnchor.constraint(equalTo: leadingAnchor),
             content.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -148,6 +165,7 @@ final class BottomDockView: NSView {
         for (i, p) in providers.enumerated() { switcher.setLabel(p.title, forSegment: i) }
         // Only worth showing when there is a choice to make.
         switcher.isHidden = providers.count < 2
+        placementButton.isHidden = providers.isEmpty
 
         if let previous, let index = providers.firstIndex(where: { $0.id == previous }) {
             switcher.selectedSegment = index
@@ -178,6 +196,22 @@ final class BottomDockView: NSView {
     }
 
     @objc private func closePressed() { onClose?() }
+
+    /// Ask for the placement menu for whatever is showing, and put it under the button.
+    @objc private func placementPressed() {
+        guard let menu = placementMenu() else { return }
+        menu.popUp(positioning: nil,
+                   at: NSPoint(x: 0, y: placementButton.bounds.height), in: placementButton)
+    }
+
+    /// Builds the menu for the view on screen; see ViewPlacementMenu for why it is not held.
+    var placementMenuProvider: ((_ viewId: String, _ title: String) -> NSMenu?)?
+
+    private func placementMenu() -> NSMenu? {
+        guard let provider = placementMenuProvider, let id = selectedProviderId,
+              let p = providers.first(where: { $0.id == id }) else { return nil }
+        return provider(id, p.title)
+    }
 
     /// Show the selected provider's view, building it on first use.
     private func showSelected() {
@@ -217,5 +251,6 @@ final class BottomDockView: NSView {
         layer?.backgroundColor = theme.windowBackground.cgColor
         emptyLabel.textColor = theme.statusBarText
         closeButton.contentTintColor = theme.statusBarText
+        placementButton.contentTintColor = theme.statusBarText
     }
 }
