@@ -39,6 +39,14 @@ does not have.
 
 ### Fixed
 
+- **The viewer no longer freezes when you look at a binary as text.** Opening an image and switching to
+  text mode could stop the app for minutes — long enough to look like a hang, because it was one. The
+  content went into the same text view used for source code, and laying out a megabyte of decoded
+  binary means asking the system for a font for each of thousands of different characters. Such
+  content now uses the view built for large files: the same switch takes about 30 ms. Looking at a
+  binary as text still works — that is how you find the strings in one.
+- **Clicking in a large text file no longer stalls.** Highlighting the matching bracket forced the
+  whole document to be laid out on every click.
 - **The window title now says where you are.** It read "Peach Commander" whatever folder you were in —
   which is the text Mission Control, the Window menu and Cmd-Tab show, so two windows on two folders
   looked the same. The active path is in it now, with free space behind an option.

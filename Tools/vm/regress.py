@@ -136,6 +136,14 @@ SCENARIOS = [
     ("transfer-panel", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                         "focus sub", "wait 400", "cmd cm_TransferRight", "wait 1200",
                         "active right", "wait 400", "dump /Users/admin/transfer.txt", "wait 400"], 9),
+    # Open a binary and switch to text. Reported as a hang: the switch handed ~900k characters drawn
+    # from thousands of different Unicode scalars to an NSTextView, and the first thing that asked for
+    # layout spent minutes in CoreText's font fallback. A hang writes no report at all, which the
+    # harness reports as an empty report — so this needs no timing threshold to catch the regression;
+    # `fast=` is there to catch a return to merely-slow.
+    ("viewer-binary-text", ["view /Users/admin/pc-demo-bin.dat", "wait 2500",
+                            "listermode text|/Users/admin/bintext.txt", "wait 2000",
+                            "listercaret 2", "wait 1500"], 10),
     # Does previewing a document fetch what it points at (F-116)? An <img> pointing at a server needs no
     # JavaScript, so disabling that never stopped it: opening the file told the other end who opened it
     # and when. The witness is the server, not the app — see EXTERNAL_CHECKS below.
@@ -425,6 +433,10 @@ REPORTS = {
     "keys-main-menu": ("/Users/admin/menu.txt",
                        ["Services", "Open Terminal Here", "cm_OpenTerminal"]),
     "transfer-panel": ("/Users/admin/transfer.txt", ["path=/Users/admin/pc-demo/sub\n"]),
+    # The view matters as much as the timing: an NSTextView holding binary content is the defect, and
+    # it looks fine until something asks it to lay out.
+    "viewer-binary-text": ("/Users/admin/bintext.txt",
+                           ["mode=text", "view=TextListerView", "fast=yes"]),
     "sftp-attributes": ("/Users/admin/sftp.txt", ["requested=600", "applied=ok"]),
     # 40960 bytes whole; then only the tail after 10000 travels.
     "sftp-download": ("/Users/admin/sftpget.txt", ["full=40960", "resumedAt=10000", "tail=30960"]),
@@ -677,6 +689,11 @@ def boot(app: str, run: str):
                   # screenshot shows, and those are compared against a baseline.
                   "mkdir -p pc-beacon && printf '# beacon\\n\\n"
                   "![tracker](http://127.0.0.1:8731/viewer.png)\\n' > pc-beacon/beacon.md")
+    # A binary file for the viewer's text mode (Viewer). Uniformly distributed bytes on purpose: that
+    # is 3.5 % control bytes, *under* the heuristic's 5 % threshold, so it is the case the byte counting
+    # alone lets through — the decode check is what has to catch it.
+    ssh_guest(ip, "python3 -c \"import pathlib; pathlib.Path('$HOME/pc-demo-bin.dat')"
+                  ".write_bytes(bytes((i*7919+13)%256 for i in range(900000)))\"")
     # A crafted archive for the traversal scenario (F-131): a member stored as "../escaped.txt". Built
     # with python's zipfile, which writes the name through unchanged — the app's own ZipWriter would do
     # too, but a fixture made by the thing under test proves less. It gets its own tree, with the
