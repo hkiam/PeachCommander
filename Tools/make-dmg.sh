@@ -123,6 +123,30 @@ hdiutil create \
 # Arranging the window means talking to the Finder, and the Finder is not always there — a headless
 # CI runner has no session to ask. So this is allowed to fail: a plain DMG is a working DMG, and a
 # release must not fall over because the icons ended up in the default position.
+# A volume of the same name already mounted makes this impossible, and silently so. The AppleScript
+# addresses the disk by name, and with two "Peach Commander" volumes the Finder picks one — on this
+# machine it picked a read-only image from a previous release and reported that it could not arrange
+# anything, while the freshly built image was left plain. Addressing the disk or the picture by POSIX
+# path does not help: the Finder still resolves the file reference against the ambiguous name.
+#
+# So the clash is named rather than worked around. Ejecting the other volume is one click, and a
+# release that quietly ships without its layout is worse than one that says why.
+CLASHES=""
+for v in /Volumes/*; do
+  [ -d "$v" ] || continue
+  n="$(basename "$v")"
+  # The volume itself, or the same name with the suffix macOS adds to a duplicate mount point.
+  if [ "$n" = "$VOLNAME" ] || [ "${n#"$VOLNAME "}" != "$n" ]; then
+    CLASHES="$CLASHES  $v
+"
+  fi
+done
+if [ -n "$CLASHES" ]; then
+  echo "    note: another volume called \"$VOLNAME\" is already mounted:" >&2
+  printf '%s' "$CLASHES" >&2
+  echo "      the Finder cannot tell them apart — eject it and run this again to get the layout" >&2
+fi
+
 echo "==> Arranging the window…"
 # Only ask the Finder for a background when there is one to set: the line is interpolated into the
 # script rather than guarded inside it, because an AppleScript that refers to a missing file fails as
