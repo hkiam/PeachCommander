@@ -126,6 +126,7 @@ extension PanelController {
             await runTransfer(.copy(items: items, toDirectory: dest, options: copyOptions(mask: mask, onlyNewer: onlyNewer)),
                               title: String(localized: "Copying"))
             registerUndo(label: String(localized: "Copy"), undoCopy: items, at: dest, mask: mask)
+            await offerPrivilegedTransfer(items, destDir: dest, mask: mask, move: false)   // F-099
             if await config.bool("Operation", "VerifyAfterCopy", default: false) {
                 await verifyCopiedItems(items, destDir: dest, mask: mask)
             }
@@ -330,6 +331,7 @@ extension PanelController {
             await runTransfer(.move(items: items, toDirectory: dest, options: copyOptions(mask: mask, onlyNewer: onlyNewer)),
                               title: String(localized: "Moving"))
             registerUndo(label: String(localized: "Move"), undoMove: items, at: dest, mask: mask)
+            await offerPrivilegedTransfer(items, destDir: dest, mask: mask, move: true)   // F-099
         }
     }
 
@@ -538,6 +540,61 @@ extension PanelController {
             let remaining = items.filter { FileManager.default.fileExists(atPath: $0) }
             if !remaining.isEmpty { await offerPrivilegedDelete(remaining) }
         }
+    }
+
+    /// The destination each item was meant to reach, honouring a copy mask (F-080).
+    private func transferPairs(_ items: [String], destDir: String, mask: String?) -> [PrivilegedTransfer.Item] {
+        items.map { item in
+            let leaf = (item as NSString).lastPathComponent
+            let name = mask.map { CopyRenameMask.apply($0, to: leaf) } ?? leaf
+            return PrivilegedTransfer.Item(source: item,
+                                           destination: (destDir as NSString).appendingPathComponent(name))
+        }
+    }
+
+    /// After a copy or move, offer to redo what did not arrive with administrator privileges (F-099).
+    ///
+    /// Asked of the file system, not of the operation's error messages: those are localized, and
+    /// matching on their text would work in English and quietly stop working in German. An item counts
+    /// as failed when its destination is missing and its source is still there — a user who chose
+    /// "skip" in the overwrite dialog leaves a destination that exists, which is how the two are told
+    /// apart. And the offer only appears when the destination folder is one this user cannot write to;
+    /// a copy that failed because the volume is full is not helped by doing it as root.
+    private func offerPrivilegedTransfer(_ items: [String], destDir: String, mask: String?,
+                                         move: Bool) async {
+        let fm = FileManager.default
+        let failed = PrivilegedTransfer.missing(transferPairs(items, destDir: destDir, mask: mask),
+                                                exists: { fm.fileExists(atPath: $0) })
+        guard !failed.isEmpty,
+              PrivilegedTransfer.wouldPrivilegeHelp(destinationDirectory: destDir,
+                                                    isWritable: { fm.isWritableFile(atPath: $0) }),
+              let command = PrivilegedTransfer.command(for: failed, move: move) else { return }
+
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = String(localized: "Retry as administrator?")
+        alert.informativeText = move
+            ? String(localized: "\(failed.count) item(s) could not be moved (permission denied). Move them with administrator privileges?")
+            : String(localized: "\(failed.count) item(s) could not be copied (permission denied). Copy them with administrator privileges?")
+        alert.addButton(withTitle: move ? String(localized: "Move as Administrator")
+                                        : String(localized: "Copy as Administrator"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+
+        if let error = PrivilegedRunner.runShell(command) {
+            presentError(String(localized: "Administrator Operation Failed"), detail: error)
+        }
+        // What arrived is read back off the disk: the shell line runs each item independently, so a
+        // partial success is the normal outcome and the run's own exit status would not say which.
+        let stillMissing = PrivilegedTransfer.missing(transferPairs(items, destDir: destDir, mask: mask),
+                                                      exists: { fm.fileExists(atPath: $0) })
+        if !stillMissing.isEmpty {
+            ErrorLogWindowController.present(
+                over: view.window,
+                summary: String(localized: "\(stillMissing.count) item(s) still could not be transferred."),
+                entries: stillMissing.map { ($0.source, String(localized: "not created at \($0.destination)")) })
+        }
+        await reload()
     }
 
     /// Offer to delete permission-protected items with administrator privileges.
