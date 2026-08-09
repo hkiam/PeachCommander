@@ -38,6 +38,21 @@ The brief says *fully removable*, and that decides it: **vendored**. The cost is
 sources are pinned in the repository, and picking up upstream fixes is a deliberate update rather than
 a version bump. Record the commit it came from next to the sources.
 
+**Measured before committing to this**, because "vendor a 25 000-line package into a shell-script build"
+is exactly the kind of recommendation that collapses on contact:
+
+| | Measured |
+|---|---|
+| Builds with plain `swiftc -emit-library`? | **Yes** — 61 sources (core + `Apple/` + `Mac/`, `iOS/` excluded), no errors |
+| Time per architecture slice | **32 s** at `-O`; universal is two slices plus `lipo`, so ≈ 64 s |
+| Size | **2.4 MB** per slice, ≈ 4.8 MB universal |
+| SwiftPM-only constructs in the way? | **None.** No `Bundle.module` (upstream deliberately avoids it), no package dependencies in the `SwiftTerm` target |
+| The `Shaders.metal` resource | **Not needed.** `useMetalRenderer` defaults to `false`; the CoreText path is the default and no `.metallib` has to be compiled or shipped |
+| Deployment target | SwiftTerm declares macOS 11; our plugins build against **13.0**, arm64 + x86_64 (`Tools/lib/pc-universal.sh`) |
+| Licence | MIT, compatible with Apache-2.0 |
+
+Pinned at commit `1ca24414f7c48831d93c01cff01b1b1a47fb9112`.
+
 ---
 
 ## 2. Where it lives — and why the sidebar alone will not do
@@ -123,10 +138,13 @@ mechanisms and only the first is generic.
 
 ### How the drag works
 
-* The panel's header (the segment in the sidebar, the tab strip's grip in the dock) is an
-  `NSDraggingSource` carrying one item: the view contribution's id, on a private pasteboard type. The
-  app already does drag and drop in three places (`bardrop`, `buttondrop`, `rowdrop`), so the idiom is
+* The drag source carries one item — the view contribution's id, on a private pasteboard type. The app
+  already does drag and drop in three places (`bardrop`, `buttondrop`, `rowdrop`), so the idiom is
   established.
+* **What you grab differs per container, and the first draft got this wrong.** Plugin views in the
+  sidebar are not panels with a header: `PreviewPanelView` appends them as extra **segments of an
+  `NSSegmentedControl`** next to Info/Activities/Log. The drag source there is the segment, found by
+  hit-testing the control; in the dock it is the tab strip's grip.
 * Every registered container is an `NSDraggingDestination` that accepts that type and highlights while
   a drag is over it — including containers that are currently *empty*, otherwise there is nowhere to
   drop the first panel.
@@ -148,6 +166,22 @@ Two changes, and both are worth making anyway:
    view attaches to them; if a view *is* rebuilt for some other reason, the sessions survive and
    reattach. §4 already asks for this so that switching tabs does not restart `top` — the same property
    makes the move safe.
+3. **`PreviewPanelView.setViewProviders` has the same defect** — it "tears down previously mounted
+   views" and rebuilds the segmented control on every call. Making `refresh` incremental and leaving
+   this one alone would fix nothing.
+4. **A moved view has to be told it moved.** `PcMakeView` receives the `containerId`, so a plugin can
+   already render differently depending on where it was built — but nothing tells it when it is
+   *re-parented*. A terminal going from 24 columns in the sidebar to 161 in the dock wants different
+   chrome, and re-parenting must therefore push `PcNotifyView(view, "container", <id>)`. The mechanism
+   exists (`notifyViews(key:value:)` already sends `theme`, `dir`, `cursorPath`); only the call is
+   missing.
+
+### A placement override can name a container that is not there
+
+Containers come and go with the window's furniture, and an override outlives the thing it names. An
+override whose container is not registered is **ignored, not honoured** — the view falls back to its
+manifest default and stays visible. Dropping it instead would make a view vanish for a reason the user
+cannot see.
 
 ### Resetting
 
@@ -166,9 +200,14 @@ plugins come and go.
 * The terminal declares **`bottom`** as its default container — that is where the columns are (§2).
 * It also declares a `sidebar` view, but as a *second* contribution the user can enable, not something
   mounted by default. Two terminals on screen out of the box would be presumptuous.
-* The dock itself starts **hidden**; the first ⌃` (or menu item) opens it. On by default in the sense
-  the brief asks for — the plugin is installed and active — without taking a third of the window from
-  someone who never asked for a terminal.
+* The dock itself starts **hidden**; the first press opens it, and from then on the state is remembered.
+  On by default in the sense the brief asks for — the plugin is installed and active — without taking a
+  quarter of the window from someone who never asked for a terminal. *(Decided.)*
+* **The toggle is ⌃ + the key left of the `1`** — keyCode 50. That is physically the same key as the US
+  layout's backtick, so it is ⌃\` for anyone on a US keyboard and the familiar VS Code / iTerm2 gesture,
+  while on a German layout it is a single unshifted key instead of ⌃⇧´ (the backtick there lives on
+  Shift + the dead-key ´). **Bind the key code, not the character** — binding the character is what makes
+  a shortcut layout-dependent. *(Decided.)*
 
 ### Mixing — the point of a session pool
 
@@ -388,20 +427,28 @@ macOS behaviour and matches Terminal.app; only the app's own non-⌘ bindings (F
 ## 11. Order of work
 
 Each stage ends in something demonstrable, in the project's usual way — a measurement, not an opinion.
+The first two stages are host work with no terminal in them at all, and §2a moved one of them forward:
+the incremental refresh is a *prerequisite* for moving a view, not a refinement of it.
 
-1. **Host: the `bottom` container and the dock.** No terminal. Mount the existing System Monitor view
-   in it to prove the seam works, then take it out again.
-2. **Host: the raw-keyboard rule.** Fix the class of bug from §8, with the command line as the
-   first beneficiary and a test that ⌘C in it does not copy files.
-3. **Plugin skeleton**: manifest, `PcMakeView`, an empty view in both containers, in
+1. **Host: the `bottom` container and the dock.** No terminal. Mount the existing System Monitor view in
+   it to prove the seam works, then take it out again. `cm_ToggleDock` on keyCode 50 + ⌃, a draggable
+   height divider, `Layout.DockHeight` / `Layout.DockVisible`.
+2. **Host: `refresh` and `setViewProviders` become incremental**, and re-parenting pushes
+   `PcNotifyView(…, "container", …)`. Demonstrated by moving a mounted view between containers and
+   showing that `PcCloseView` is *not* called — a plugin that counts its own make/close calls is the
+   witness.
+3. **Host: placement overrides + drag and drop + reset.** Only now, because 2 is what makes it safe.
+4. **Host: the raw-keyboard rule** (§8), with the command line as the first beneficiary and a test that
+   ⌘C in it does not copy files.
+5. **Plugin skeleton**: manifest, `PcMakeView`, an empty view in both containers, in
    `build-all-plugins.sh`. Prove removability *before* there is anything to lose.
-4. **SwiftTerm vendored + one session, no tabs.** Milestone: `top` renders and resizes correctly;
-   `TERM` is what we actually implement.
-5. **Lifecycle**: close, quit, disable, orphan scenario (§5). Before tabs, because tabs multiply it.
-6. **Tabs**, then **split** (§3–4).
-7. **Integration** (§7), in the order: focus toggle → cwd panel→terminal → paths/drop → OSC 7 → command
+6. **SwiftTerm vendored + one session, no tabs.** Milestone: `top` renders and resizes correctly; `TERM`
+   is what we actually implement.
+7. **Lifecycle**: close, quit, disable, orphan scenario (§5). Before tabs, because tabs multiply it.
+8. **Tabs**, then **split** (§3–4).
+9. **Integration** (§7), in the order: focus toggle → cwd panel→terminal → paths/drop → OSC 7 → command
    line → AI.
-8. **Comfort** (§6): scrollback find, theme, ⌘-click.
+10. **Comfort** (§6): scrollback find, theme, ⌘-click.
 
-Stages 1–5 are where the risk is. Stages 6–8 are additive and can stop at any point with something
+Stages 1–7 are where the risk is. Stages 8–10 are additive and can stop at any point with something
 useful shipped.
