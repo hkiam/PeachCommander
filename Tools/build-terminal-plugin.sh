@@ -56,6 +56,7 @@ pc_swiftc -emit-library -O -module-name PCTerminalPlugin -target "$TARGET" \
   -o "$BUNDLE/Contents/MacOS/Terminal" \
   "$ROOT/Plugins/Terminal/terminalplugin.swift" \
   "$ROOT/Plugins/SDK/PluginLoc.swift" \
+  "$ROOT/Plugins/SDK/PluginTheme.swift" \
   "${SWIFTTERM_SOURCES[@]}"
 
 # Ship the plugin's localizations (see Plugins/SDK/LOCALIZATION.md).

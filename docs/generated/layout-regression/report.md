@@ -6,4 +6,6 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| terminal-cmdline | 0 | — | — | `terminal-cmdline.png` |
+| terminal-session | 0 | — | — | `terminal-session.png` |
+| terminal-tabs | 0 | — | — | `terminal-tabs.png` |
+| terminal-split | 0 | — | — | `terminal-split.png` |
