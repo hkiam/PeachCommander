@@ -66,8 +66,8 @@ does not have.
 - **"Start all" in the transfer manager no longer starts everything at once.** Twenty queued downloads
   began twenty simultaneous transfers; they take turns now, and one failure does not strand the rest.
 - **"No icons" now really shows none.** Folder rows kept their icon.
-- The disk image opens with the app and the Applications folder side by side, instead of wherever the
-  Finder last left a window.
+- The disk image opens with the app and the Applications folder side by side on a proper background,
+  instead of two icons wherever the Finder last left a window.
 
 ### Added
 
