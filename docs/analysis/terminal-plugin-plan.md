@@ -98,6 +98,96 @@ plugin removable: pull it out and the dock is simply empty, exactly as the sideb
 
 ---
 
+## 2a. Placement belongs to the user, not to the manifest
+
+The first draft had each view nailed to the container its manifest names. That is how the host works
+today (`ContributionRegistry.viewItems(container:)` filters purely on the declared field, and no
+placement preference exists anywhere). It is also the wrong model as soon as there is more than one
+dock: where a panel sits is a matter of taste and screen shape, and taste is not something a plugin
+author knows.
+
+**The manifest declares the *default*; the user may move it; resetting restores the default.**
+
+That is a generic host feature — every plugin view benefits, not just the terminal.
+
+### Two different drags, and they must not be confused
+
+| | What moves | Who owns it |
+|---|---|---|
+| **Drag the panel header** | the whole view, from one dock to another | the host |
+| **Drag a tab** | one terminal session, between two mounted terminal views | the plugin |
+
+The first is "I want the terminal at the bottom instead of the right". The second is "this Codex
+session belongs in the big area, my quick shell can stay narrow". Both are wanted; they are different
+mechanisms and only the first is generic.
+
+### How the drag works
+
+* The panel's header (the segment in the sidebar, the tab strip's grip in the dock) is an
+  `NSDraggingSource` carrying one item: the view contribution's id, on a private pasteboard type. The
+  app already does drag and drop in three places (`bardrop`, `buttondrop`, `rowdrop`), so the idiom is
+  established.
+* Every registered container is an `NSDraggingDestination` that accepts that type and highlights while
+  a drag is over it — including containers that are currently *empty*, otherwise there is nowhere to
+  drop the first panel.
+* On drop, the host writes `Layout.ViewPlacement.<viewId> = <container>` and re-resolves.
+
+### The problem this uncovers
+
+`ViewContainerRegistry.refresh` starts with `live.forEach { $0.close() }` and rebuilds every mount from
+scratch. A placement change routed through it would therefore call `PcCloseView` on every plugin view —
+**and a terminal's `PcCloseView` is what kills its sessions.** Dragging the terminal from the right to
+the bottom would restart `top`, which nobody would call a feature.
+
+Two changes, and both are worth making anyway:
+
+1. **`refresh` becomes incremental.** A mount whose (plugin, viewId) is unchanged is kept and its
+   `NSView` is simply re-parented into the new container — moving a view is `addSubview`, not a
+   rebuild. Only genuinely new or removed contributions are made and closed.
+2. **The plugin keeps sessions outside the view.** Sessions live in a pool owned by the plugin, and a
+   view attaches to them; if a view *is* rebuilt for some other reason, the sessions survive and
+   reattach. §4 already asks for this so that switching tabs does not restart `top` — the same property
+   makes the move safe.
+
+### Resetting
+
+Two levels, because there are two ways to get lost:
+
+* **Per panel** — "Move back to default" in the panel header's context menu; removes that one override.
+* **Everything** — a `cm_ResetLayout` command that clears all placement overrides, and while it is
+  there, the dock height and sidebar width too. Reachable from the menu, not only from Settings: a
+  layout you cannot see is a layout you cannot fix from a dialog you also cannot see.
+
+Both restore what the manifests declare, which is the only definition of "default" that stays true when
+plugins come and go.
+
+### Defaults
+
+* The terminal declares **`bottom`** as its default container — that is where the columns are (§2).
+* It also declares a `sidebar` view, but as a *second* contribution the user can enable, not something
+  mounted by default. Two terminals on screen out of the box would be presumptuous.
+* The dock itself starts **hidden**; the first ⌃` (or menu item) opens it. On by default in the sense
+  the brief asks for — the plugin is installed and active — without taking a third of the window from
+  someone who never asked for a terminal.
+
+### Mixing — the point of a session pool
+
+Yes, and it is the reason to build the pool rather than tie sessions to a view: sessions are the
+plugin's, views are windows onto them. A quick `zsh` in the narrow sidebar and Codex in the wide dock
+is then the normal case, not a special one, and dragging a tab between the two moves the *session* —
+the process keeps running, the PTY is resized to the new geometry, and `SIGWINCH` tells the program
+about it. That resize is the only tricky part: a full-screen program moving from 40 columns to 160
+must redraw, and the ones that do it badly are exactly the ones worth testing (`top`, `htop`, `vim`).
+
+### What this does not cover
+
+The sidebar's three built-in modes (Info, Activities, Log) are not plugin views — they are segments
+inside `PreviewPanelView`. Making *them* movable means converting them to the same provider model,
+which is a worthwhile tidy-up and a separate piece of work. Until then, "every panel can be docked
+anywhere" is true of plugin views and not of those three, and the plan should not pretend otherwise.
+
+---
+
 ## 3. Splitting — yes, and it belongs to the plugin
 
 "Two instances one above the other, and then the whole area for one again" needs no host support at
