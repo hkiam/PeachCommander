@@ -21,7 +21,7 @@ import PCOperations
 final class MainWindowController: NSWindowController, WindowControllerProtocol, NSWindowDelegate, NSSplitViewDelegate {
     private let logger = PCFoundationLogger.logger
 
-    private let splitView = NSSplitView()
+    private let splitView = PanelSplitView()
     #if DEBUG
     /// Diagnostic: push the divider right so a wide column fits in a screenshot (F-372).
     func automationWidenLeftPanel() {
@@ -394,6 +394,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         splitView.isVertical = true
         splitView.dividerStyle = .thin
         splitView.delegate = self
+        // Double-clicking the divider gives two equal panels back (F-001).
+        splitView.onDividerDoubleClick = { [weak self] in self?.centerDivider() }
         splitView.translatesAutoresizingMaskIntoConstraints = false
         left.view.translatesAutoresizingMaskIntoConstraints = true
         right.view.translatesAutoresizingMaskIntoConstraints = true
@@ -422,11 +424,17 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private var isMaximized = false
 
     /// Put the divider in the middle of the split view along its current axis.
-    private func centerDivider() {
+    ///
+    /// Reached from the panel arrangement, from a launch with no saved width, and — since F-001 said so
+    /// and nothing did it — from a double-click on the divider itself, which is how Total Commander
+    /// gives you two equal panels back.
+    func centerDivider() {
         window?.contentView?.layoutSubtreeIfNeeded()
         let span = splitView.isVertical ? splitView.bounds.width : splitView.bounds.height
         guard span > 0 else { return }
-        splitView.setPosition((span - splitView.dividerThickness) / 2, ofDividerAt: 0)
+        splitView.setPosition(SplitDividerHit.centeredPosition(span: span,
+                                                               dividerThickness: splitView.dividerThickness),
+                              ofDividerAt: 0)
     }
 
     /// Apply the current panel arrangement (side-by-side vs stacked) to the split
@@ -3179,6 +3187,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     }
 
     func scheduleSaveState() {
+        refreshWindowTitle()   // navigation and tab changes come through here too (F-012)
         guard didRestore, !saveScheduled else { return }
         saveScheduled = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
@@ -3679,6 +3688,30 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private func updateActivePanelAppearance() {
         leftPanelController?.view.isHighlighted = (activePanel === leftPanelController)
         rightPanelController?.view.isHighlighted = (activePanel === rightPanelController)
+        refreshWindowTitle()
+    }
+
+    /// Put the active panel's path in the window title (F-012).
+    ///
+    /// The title used to be assigned once at startup and never touched, so it said "Peach Commander"
+    /// whatever you were looking at — and that is the text Mission Control, the Window menu and Cmd-Tab
+    /// show, which made two windows on two folders indistinguishable. The free-space part is optional,
+    /// as the row says; the wording and the abbreviation live in PCFoundation.WindowTitle.
+    func refreshWindowTitle() {
+        guard let window else { return }
+        Task { @MainActor in
+            guard let panel = self.activePanel else { return }
+            let path = await panel.getCurrentPath()
+            let showFree = await self.mainConfig.bool("Display", "TitleShowFreeSpace", default: false)
+            var free: Int64?
+            var capacity: Int64?
+            if showFree, let volume = await self.volumeManager.getVolume(for: path) {
+                free = volume.freeSpace
+                capacity = volume.capacity
+            }
+            window.title = WindowTitle.text(path: path, freeSpace: free, capacity: capacity,
+                                            showFreeSpace: showFree)
+        }
     }
 
     @objc func activateLeftPanel() {

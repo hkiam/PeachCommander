@@ -141,6 +141,12 @@ final class IconLoader {
 
     private nonisolated static func resolveOffMain(_ req: IconRequest, mode: IconMode) -> NSImage {
         let ws = NSWorkspace.shared
+        // The directory check used to come first, so "no icons" still drew a folder icon on every
+        // directory row — the one mode whose whole point is that nothing is drawn, applied to about
+        // half the list.
+        if mode == .none {
+            return NSImage(size: NSSize(width: 16, height: 16))
+        }
         if req.isDirectory {
             return ws.icon(for: .folder)
         }

@@ -1,0 +1,1052 @@
+Timestamp               Ty Process[PID:TID]
+2026-08-09 08:09:30.116 A  PeachCommander[910:1b46] (libsystem_info.dylib) Retrieve User by ID
+2026-08-09 08:09:30.116 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x103e01ca0] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
+2026-08-09 08:09:30.116 Df PeachCommander[910:1ba2] [com.apple.xpc:connection] [0x103e02410] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.agent
+2026-08-09 08:09:30.117 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x103e05ef0] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.launchservicesd
+2026-08-09 08:09:30.118 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] Registering for notification <private> on default queue, to re-boostrap client connection.
+2026-08-09 08:09:30.118 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c94000] activating connection: mach=true listener=false peer=false name=com.apple.pasteboard.1
+2026-08-09 08:09:30.118 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c94140] activating connection: mach=true listener=false peer=false name=com.apple.distributed_notifications@Uv3
+2026-08-09 08:09:30.119 Df PeachCommander[910:1b46] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) No windows open yet
+2026-08-09 08:09:30.119 A  PeachCommander[910:1b46] (TCC) TCCAccessRequest() IPC
+2026-08-09 08:09:30.119 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c94280] activating connection: mach=true listener=false peer=false name=com.apple.tccd.system
+2026-08-09 08:09:30.119 I  PeachCommander[910:1b46] [com.apple.TCC:access] SEND: 0/7 synchronous to com.apple.tccd.system: request: msgID=910.1, function=TCCAccessRequest, service=kTCCServiceListenEvent,
+2026-08-09 08:09:30.120 I  PeachCommander[910:1b46] [com.apple.TCC:access] RECV: synchronous reply <dictionary: 0x704c64000> { count = 5, transaction: 0, voucher = 0x0, contents =
+	"prompt_type" => <uint64: 0x8abf00fd3adb0177>: 1
+	"auth_value" => <uint64: 0x8abf00fd3adb0177>: 1
+	"preflight_unknown" => <bool: 0x1f0a39190>: true
+	"auth_version" => <uint64: 0x8abf00fd3adb0177>: 1
+	"auth_reason" => <uint64: 0x8abf00fd3adb0157>: 5
+}
+2026-08-09 08:09:30.120 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c94280] invalidated after the last release of the connection object
+2026-08-09 08:09:30.120 Df PeachCommander[910:1b46] [com.apple.SkyLight:default] server port 0x00003a13, session port 0x00003a13
+2026-08-09 08:09:30.122 Df PeachCommander[910:1b46] [com.apple.SkyLight:default] New connection 0x1b893 main
+2026-08-09 08:09:30.122 I  PeachCommander[910:1ba2] [com.apple.SkyLight:processes] 0[outside of RPC]: First connection id 112787 mapped to ctx = 0x70501d200
+2026-08-09 08:09:30.123 I  PeachCommander[910:1b46] [com.apple.hiservices:processmgr] Checking in with CAS, pid=910
+2026-08-09 08:09:30.123 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] LSApplicationCheckIn(), app being registered is:"/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander"
+2026-08-09 08:09:30.123 I  PeachCommander[910:1b46] [com.apple.launchservices:cas]  { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuild"="25F70", "DTPlatformName"="macosx", "DTPlatformVersion"="26.5", "DTSDKBuild"="25F70", "DTSDKName"="macosx26.5", "DTXcode"="2660", "DTXcodeBuild"="17F113", "Flavor"=3, "LSArchitecture"="arm64", "LSBundlePath"="/Users/admin/pc-test/PeachCom<…>
+2026-08-09 08:09:30.123 Df PeachCommander[910:1b46] [com.apple.processmanager:front-35286506] CHECKIN: pid=910
+2026-08-09 08:09:30.124 Df PeachCommander[910:1b46] [com.apple.processmanager:front-35286506] CHECKEDIN: pid=910 asn=0x0-0x27027 foreground=1
+2026-08-09 08:09:30.124 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] Setting processControlState to default PROC_SETPC_SUSPEND because application does not have LSProcessControlValue key
+2026-08-09 08:09:30.124 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c94280] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-08-09 08:09:30.124 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c94280] Connection returned listener port: 0x5403
+2026-08-09 08:09:30.125 Df PeachCommander[910:1ba3] [com.apple.xpc:connection] [0x705078300] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0x704c94280.peer[131].0x705078300
+2026-08-09 08:09:30.125 Df PeachCommander[910:1b46] [com.apple.processmanager:front-35286506] FRONTLOGGING: version 1
+2026-08-09 08:09:30.125 Df PeachCommander[910:1b46] [com.apple.processmanager:front-35286506] Registered, pid=910 ASN=0x0,0x27027
+2026-08-09 08:09:30.125 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c943c0] activating connection: mach=true listener=false peer=false name=com.apple.analyticsd
+2026-08-09 08:09:30.125 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Daemon status changed from 0 to 1
+2026-08-09 08:09:30.125 I  PeachCommander[910:1ba3] [com.apple.CarbonCore:coreservicesdaemon] SCSession():SCSession( id=100, this=0x0x103e13610 option=65538) created, forUID=501 mach_port_t=0x4403.
+2026-08-09 08:09:30.125 I  PeachCommander[910:1ba3] [com.apple.CarbonCore:coreservicesdaemon] SCSession():SCSession( id=101, this=0x0x103e13750 option=65538) created, forUID=501 mach_port_t=0x4303.
+2026-08-09 08:09:30.125 I  PeachCommander[910:1ba3] [com.apple.CarbonCore:coreservicesdaemon] connectToCoreServicesD():Instantiating server (coreservicesd based) SCSession, port=0x4403 serverOptions=0x10002.
+2026-08-09 08:09:30.125 I  PeachCommander[910:1b46] [com.apple.hiservices:processmgr] _RegisterApplication( pid 910 => 0x0,0x27027) type=foreground
+2026-08-09 08:09:30.125 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c94280] Connection returned listener port: 0x5403
+2026-08-09 08:09:30.126 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] CFArrayRef _LSCopyLaunchModifiers(LSSessionID, LSASNRef _Nonnull), result for psn [ kLSCurrentApp ASN, 0x0,0x2]  is 1 items.
+2026-08-09 08:09:30.126 Df PeachCommander[910:1b46] [com.apple.processmanager:front-35286506] BringForward: pid=910 asn=0x0-0x27027 bringForward=1 foreground=1 uiElement=0 launchedByLS=1 modifiersCount=1 allDisabled=0
+2026-08-09 08:09:30.126 Df PeachCommander[910:1b46] [com.apple.processmanager:front-35286506] BringFrontModifier: pid=910 asn=0x0-0x27027 Modifier 0 hideAfter=0 hideOthers=0 dontMakeFrontmost=0 mouseDown=0/0 seed=0/0
+2026-08-09 08:09:30.126 Df PeachCommander[910:1b46] [com.apple.processmanager:front-35286506] BringForward: pid=910 asn=0x0-0x27027
+2026-08-09 08:09:30.126 Df PeachCommander[910:1b46] [com.apple.processmanager:front-35286506] SetFrontProcess: asn=0x0-0x27027 options=0
+2026-08-09 08:09:30.126 I  PeachCommander[910:1b46] [com.apple.SkyLight:processes] 0[outside of RPC]: SLPSetFrontProcess(0x0-0x27027 window=0 options=0x0
+2026-08-09 08:09:30.126 Df PeachCommander[910:1ba3] [com.apple.xpc:connection] [0x704c94500] activating connection: mach=true listener=false peer=false name=com.apple.lsd.mapdb
+2026-08-09 08:09:30.126 Df PeachCommander[910:1ba4] [com.apple.CoreAnalytics:client] Received configuration update from daemon (initial)
+2026-08-09 08:09:30.127 Df PeachCommander[910:1b46] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
+2026-08-09 08:09:30.128 Df PeachCommander[910:1b46] (libMobileGestalt.dylib) No persisted cache on this platform.
+2026-08-09 08:09:30.128 I  PeachCommander[910:1ba4] [com.apple.launchservices:cas] information in shared memory for 0x0-0x27027 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777225, "CFBundleExecutablePathINode"=489888, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
+2026-08-09 08:09:30.128 Df PeachCommander[910:1b46] (libMobileGestalt.dylib) Could not get size of EAN data (IOConnectCallScalarMethod kAppleNVMeEANGetSize returned 0xE00002E2)
+2026-08-09 08:09:30.128 Df PeachCommander[910:1b46] (libMobileGestalt.dylib) Failed to copy 'aptk' from EAN
+2026-08-09 08:09:30.128 Df PeachCommander[910:1b46] (libMobileGestalt.dylib) Failed to copy APTicket properties. Falling back to default policy.
+2026-08-09 08:09:30.128 Df PeachCommander[910:1b46] (libMobileGestalt.dylib) Creating default MGSysConfigPolicy
+2026-08-09 08:09:30.128 Df PeachCommander[910:1b46] (libMobileGestalt.dylib) CFDictionaryRef copySyscfgDictionary(void) enumeration of <private> failed.
+2026-08-09 08:09:30.128 Df PeachCommander[910:1b46] (libMobileGestalt.dylib) Failed to find key <private>
+2026-08-09 08:09:30.129 Df PeachCommander[910:1b46] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
+2026-08-09 08:09:30.130 I  PeachCommander[910:1ba3] [com.apple.launchservices:db] LaunchServices database schema version: 20971544
+2026-08-09 08:09:30.130 Df PeachCommander[910:1b46] [com.apple.AppKit:Appearance] Post-registration system appearance: (HLTB: 1)
+2026-08-09 08:09:30.131 I  PeachCommander[910:1ba3] [com.apple.launchservices:default] Unable to load Info.plist exceptions (eGPUOverrides)
+2026-08-09 08:09:30.131 I  PeachCommander[910:1ba3] [com.apple.launchservices:default] Unable to load Info.plist exceptions (gameModeOverrides)
+2026-08-09 08:09:30.131 I  PeachCommander[910:1ba3] [com.apple.launchservices:default] Unable to load Info.plist exceptions (identifiedGameOverrides)
+2026-08-09 08:09:30.131 I  PeachCommander[910:1ba3] [com.apple.launchservices:default] Unable to load Info.plist exceptions (SystemHiddenPreferred)
+2026-08-09 08:09:30.132 Df PeachCommander[910:1b46] [com.apple.FrontBoard:Common] FBSWorkspace: endpoint monitoring is disabled.
+2026-08-09 08:09:30.132 Df PeachCommander[910:1b46] [com.apple.FrontBoard:Common] FBSWorkspace: default shell endpoint is disabled.
+2026-08-09 08:09:30.132 Df PeachCommander[910:1b46] [com.apple.runningboard:connection] Initializing connection
+2026-08-09 08:09:30.132 Df PeachCommander[910:1b46] [com.apple.runningboard:process] Removing all cached process handles
+2026-08-09 08:09:30.132 Df PeachCommander[910:1ba3] [com.apple.runningboard:connection] Sending handshake request attempt #1 to server
+2026-08-09 08:09:30.132 Df PeachCommander[910:1ba3] [com.apple.runningboard:connection] Creating connection to com.apple.runningboard
+2026-08-09 08:09:30.132 Df PeachCommander[910:1ba3] [com.apple.xpc:connection] [0x704c94640] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+2026-08-09 08:09:30.133 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c94280] Connection returned listener port: 0x5403
+2026-08-09 08:09:30.133 A  PeachCommander[910:1ba4] (RunningBoardServices) didChangeInheritances
+2026-08-09 08:09:30.133 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] information in shared memory for 0x0-0x27027 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777225, "CFBundleExecutablePathINode"=489888, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
+2026-08-09 08:09:30.133 Df PeachCommander[910:1ba3] [com.apple.runningboard:connection] Handshake succeeded
+2026-08-09 08:09:30.133 Df PeachCommander[910:1ba3] [com.apple.runningboard:connection] Identity resolved as app<application.com.peachcommander.app.489639.489888(501)>
+2026-08-09 08:09:30.136 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c94280] Connection returned listener port: 0x5403
+2026-08-09 08:09:30.137 A  PeachCommander[910:1ba3] (AppIntents) appintents:register process
+2026-08-09 08:09:30.137 Df PeachCommander[910:1ba3] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-09 08:09:30.137 Df PeachCommander[910:1ba3] [com.apple.xpc:connection] [0x704c94780] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-09 08:09:30.137 Df PeachCommander[910:1ba3] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-09 08:09:30.137 Df PeachCommander[910:1ba3] [com.apple.xpc:connection] [0x704c94a00] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-08-09 08:09:30.137 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] information in shared memory for 0x0-0x27027 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777225, "CFBundleExecutablePathINode"=489888, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
+2026-08-09 08:09:30.137 I  PeachCommander[910:1b46] [com.apple.hiservices:processmgr] TransformProcessType(0x0,0x2 => 1 wasFront=1 pickNew=0)
+2026-08-09 08:09:30.137 I  PeachCommander[910:1ba3] [com.apple.appintents:Execution] LNAppConnectionListener instantiated
+2026-08-09 08:09:30.137 Df PeachCommander[910:1ba3] [com.apple.xpc:connection] [0x704c94a00] Connection returned listener port: 0x6603
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba4] [com.apple.xpc:connection] [0x704c94780] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba4] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-09 08:09:30.138 E  PeachCommander[910:1ba3] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba4] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-09 08:09:30.138 A  PeachCommander[910:1ba4] (AppIntents) appintents:register process
+2026-08-09 08:09:30.138 E  PeachCommander[910:1ba3] [com.apple.AppKit:Application] Error registering app with intents framework: Error Domain=NSCocoaErrorDomain Code=4097 UserInfo={NSDebugDescription=<private>}
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba4] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba4] [com.apple.xpc:connection] [0x704c94c80] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba4] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba4] [com.apple.xpc:connection] [0x704c94a00] Connection returned listener port: 0x6603
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba3] [com.apple.xpc:connection] [0x704c94c80] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba3] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-09 08:09:30.138 E  PeachCommander[910:1ba4] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-09 08:09:30.138 E  PeachCommander[910:1ba4] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba3] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-09 08:09:30.138 A  PeachCommander[910:1ba3] (AppIntents) appintents:register process
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba3] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba3] [com.apple.xpc:connection] [0x704c94f00] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba3] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-09 08:09:30.138 Df PeachCommander[910:1ba3] [com.apple.xpc:connection] [0x704c94a00] Connection returned listener port: 0x6603
+2026-08-09 08:09:30.138 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.139 Df PeachCommander[910:1ba4] [com.apple.xpc:connection] [0x704c94f00] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-09 08:09:30.139 Df PeachCommander[910:1ba4] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-09 08:09:30.139 Df PeachCommander[910:1b46] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
+2026-08-09 08:09:30.139 A  PeachCommander[910:1ba2] (RunningBoardServices) didChangeInheritances
+2026-08-09 08:09:30.139 Df PeachCommander[910:1ba4] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-09 08:09:30.139 A  PeachCommander[910:1ba4] (AppIntents) appintents:register process
+2026-08-09 08:09:30.139 E  PeachCommander[910:1ba3] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-09 08:09:30.139 E  PeachCommander[910:1ba3] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-09 08:09:30.139 Df PeachCommander[910:1b46] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-08-09 08:09:30.139 Df PeachCommander[910:1ba4] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-09 08:09:30.139 Df PeachCommander[910:1ba4] [com.apple.xpc:connection] [0x704c95180] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-09 08:09:30.139 Df PeachCommander[910:1ba4] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-09 08:09:30.139 Df PeachCommander[910:1ba4] [com.apple.xpc:connection] [0x704c94a00] Connection returned listener port: 0x6603
+2026-08-09 08:09:30.139 Df PeachCommander[910:1b46] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-08-09 08:09:30.139 Df PeachCommander[910:1b46] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-08-09 08:09:30.139 Df PeachCommander[910:1ba3] [com.apple.xpc:connection] [0x704c95180] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-09 08:09:30.139 Df PeachCommander[910:1ba3] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-09 08:09:30.139 E  PeachCommander[910:1ba3] [com.apple.appintents:Connection] Will NOT re-try to establish the connection
+2026-08-09 08:09:30.139 E  PeachCommander[910:1ba4] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-09 08:09:30.139 E  PeachCommander[910:1ba4] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-09 08:09:30.161 A  PeachCommander[910:1b46] (CoreFoundation) Loading Preferences From System CFPrefsD
+2026-08-09 08:09:30.162 Df PeachCommander[910:1b46] (libMobileGestalt.dylib) couldn't load support library
+2026-08-09 08:09:30.162 Df PeachCommander[910:1b46] (libMobileGestalt.dylib) called dummy function!
+2026-08-09 08:09:30.162 I  PeachCommander[910:1b46] [com.apple.GenerativeModels:availability] Current availability state: unavailable, use cases: com.apple.WritingTools, language: <any>, api: <private>
+2026-08-09 08:09:30.162 Df PeachCommander[910:1b46] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.gms.availability.notification
+2026-08-09 08:09:30.162 Df PeachCommander[910:1b46] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.os-eligibility-domain.change.greymatter
+2026-08-09 08:09:30.163 Df PeachCommander[910:1b46] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.language.changed
+2026-08-09 08:09:30.163 Df PeachCommander[910:1b46] [com.apple.WritingTools:Default] isAvailable value changed: isMDMAllowed = true, gmAvailable (current) = false
+2026-08-09 08:09:30.165 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.167 Df PeachCommander[910:1b46] [com.apple.AppKit:Appearance] NSApp cache appearance:
+-NSRequiresAquaSystemAppearance: 0
+-appearance: (null)
+-effectiveAppearance: <NSCompositeAppearance: 0x705058780
+ (
+    "<NSAquaAppearance: 0x705058460>",
+    "<NSSystemAppearance: 0x7050586e0>"
+)>
+2026-08-09 08:09:30.170 A  PeachCommander[910:1b46] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-09 08:09:30.170 A  PeachCommander[910:1b46] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-09 08:09:30.174 A  PeachCommander[910:1ba3] (libsystem_info.dylib) Membership API: translate identifier
+2026-08-09 08:09:30.177 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.177 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.178 Df PeachCommander[910:1ba9] [com.apple.xpc:connection] [0x704c95a40] activating connection: mach=true listener=false peer=false name=com.apple.dock.fullscreen
+2026-08-09 08:09:30.179 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c95b80] activating connection: mach=true listener=false peer=false name=com.apple.fonts
+2026-08-09 08:09:30.184 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] information in shared memory for 0x0-0x27027 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777225, "CFBundleExecutablePathINode"=489888, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
+2026-08-09 08:09:30.184 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.184 Df PeachCommander[910:1b46] [com.apple.AppKit:AutomaticTermination] -[NSApplication(NSAppssassination) _checkForAutomaticTerminationSupportPossiblyEnablingIt]_block_invoke Enabling automatic termination support.
+2026-08-09 08:09:30.185 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c952c0] activating connection: mach=true listener=false peer=false name=com.apple.appkit.restoration_storage
+2026-08-09 08:09:30.185 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] information in shared memory for 0x0-0x27027 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777225, "CFBundleExecutablePathINode"=489888, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
+2026-08-09 08:09:30.185 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c95400] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.appleevents
+2026-08-09 08:09:30.185 I  PeachCommander[910:1b46] [com.apple.appleevents:main] _AEGetRegisteredMachPort() created default port (port:64003/0xfa03 rcv:1 send:1 limit:5) and registered it with server
+2026-08-09 08:09:30.185 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c94280] Connection returned listener port: 0x5403
+2026-08-09 08:09:30.185 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] information in shared memory for 0x0-0x27027 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777225, "CFBundleExecutablePathINode"=489888, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
+2026-08-09 08:09:30.186 Df PeachCommander[910:1b46] [com.apple.processmanager:front-35286506] SignalReady: pid=910 asn=0x0-0x27027
+2026-08-09 08:09:30.186 Df PeachCommander[910:1b46] [com.apple.processmanager:front-35286506] SIGNAL: pid=910 asn=0x0x-0x27027
+2026-08-09 08:09:30.186 I  PeachCommander[910:1b46] [com.apple.appleevents:main] aeGenerateFakeFirstOAPPEventIfNecessary()
+2026-08-09 08:09:30.186 I  PeachCommander[910:1b46] [com.apple.appleevents:main] aeGenerateFakeFirstOAPPEventIfNecessary(), needToCreateFakeOAPPEventIfFirstEvent == true
+2026-08-09 08:09:30.186 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] Removing cached information for app [ 0x0-0x27027]  "PeachCommander", as its seed is different from that in shared memory ( 533 vs 535)
+2026-08-09 08:09:30.187 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0x70522a340> ABBEE491-2978-4338-A670-B0CA3FB46FF0) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
+2026-08-09 08:09:30.187 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:cache] Rebuilding cache for 'DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0x70522a340> ABBEE491-2978-4338-A670-B0CA3FB46FF0)
+2026-08-09 08:09:30.187 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
+2026-08-09 08:09:30.187 A  PeachCommander[910:1b46] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-09 08:09:30.187 A  PeachCommander[910:1b46] (CoreFoundation) Loading Preferences From System CFPrefsD
+2026-08-09 08:09:30.187 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x70522a3e0> 8948B624-68DD-4372-84DD-BF38CF08D67C) gen: -1 item: 1 flavor: '-32766 1768845414')
+2026-08-09 08:09:30.187 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:cache] Rebuilding cache for 'AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x70522a3e0> 8948B624-68DD-4372-84DD-BF38CF08D67C)
+2026-08-09 08:09:30.187 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (310 bytes) flags: 0
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x70522a3e0> 8948B624-68DD-4372-84DD-BF38CF08D67C) gen: -1 item: 1 flavor: '-32765 1802264953')
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (306 bytes) flags: 0
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x70522a3e0> 8948B624-68DD-4372-84DD-BF38CF08D67C) gen: -1 item: 1 flavor: '-32764 1802264953')
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (281 bytes) flags: 0
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x70522a3e0> 8948B624-68DD-4372-84DD-BF38CF08D67C) gen: -1 item: 1 flavor: '-32763 1802264953')
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (318 bytes) flags: 0
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x70522a3e0> 8948B624-68DD-4372-84DD-BF38CF08D67C) gen: -1 item: 1 flavor: '-32765 1768845414')
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (303 bytes) flags: 0
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0x70522a3e0> 8948B624-68DD-4372-84DD-BF38CF08D67C) gen: -1 item: 1 flavor: '-32763 1768845414')
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-09 08:09:30.188 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (315 bytes) flags: 0
+2026-08-09 08:09:30.189 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] information in shared memory for 0x0-0x27027 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777225, "CFBundleExecutablePathINode"=489888, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
+2026-08-09 08:09:30.189 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c95e00] activating connection: mach=false listener=false peer=false name=com.apple.ViewBridgeAuxiliary
+2026-08-09 08:09:30.194 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c95cc0] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-09 08:09:30.194 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c95f40] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-08-09 08:09:30.194 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c95f40] Connection returned listener port: 0xbb03
+2026-08-09 08:09:30.194 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c95e00] invalidated after the last release of the connection object
+2026-08-09 08:09:30.195 I  PeachCommander[910:1b46] [com.apple.showhide:pr-59900543] SHOWHIDE: SHOW id=8 0x0-0x27027, err=0 eventTime=90663215750 windowID=0
+2026-08-09 08:09:30.195 I  PeachCommander[910:1b46] [com.apple.CarbonCore:coreservicesdaemon] findOrCreateCacheable():findOrCreateCacheable(), factoryName=3 cacheableName=<private> fCacheables.size()=0
+2026-08-09 08:09:30.195 I  PeachCommander[910:1b46] [com.apple.CarbonCore:coreservicesdaemon] findOrCreateCacheable():findOrCreateCacheable(), result = 0x704c9fb40 (should be non-NULL)
+2026-08-09 08:09:30.195 Df PeachCommander[910:1b46] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) Restoring windows
+2026-08-09 08:09:30.195 Df PeachCommander[910:1b46] [com.apple.AppKit:StateRestoration] -[NSApplication _reopenWindowsAsNecessaryIncludingRestorableState:withFullFidelity:completionHandler:] shouldRestoreState=1 hasPersistentStateToRestore=0 shouldStillRestoreStateAfterPrompting=0
+2026-08-09 08:09:30.195 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c95e00] activating connection: mach=true listener=false peer=false name=com.apple.window_proxies
+2026-08-09 08:09:30.195 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c95e00] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+2026-08-09 08:09:30.195 I  PeachCommander[910:1b46] [com.apple.SkyLight:processes] 0[outside of RPC]: SLSSetFrontProcessWithInfo(0x0-0x2 window=0 options=0x1
+2026-08-09 08:09:30.196 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.196 Df PeachCommander[910:1b46] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) Restoring windows
+2026-08-09 08:09:30.201 A  PeachCommander[910:1b46] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-09 08:09:30.215 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.223 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] VolumeManager initialized
+2026-08-09 08:09:30.248 Df PeachCommander[910:1b46] [com.apple.BoardServices:XPCErrors] [C:1] Alloc <private>
+2026-08-09 08:09:30.248 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704c975c0] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-09 08:09:30.249 I  PeachCommander[910:1b46] [com.apple.AppKit:Window] context (0 -> 11b35b99) for window 2c
+2026-08-09 08:09:30.250 Df PeachCommander[910:1ba3] [com.apple.corespotlight:index] (<private>) deleteSearchableItemsWithDomainIdentifiers, protectionClass:(null), domainIdentifiers number:1
+2026-08-09 08:09:30.250 A  PeachCommander[910:1ba3] (CoreSpotlight) delete-domains
+2026-08-09 08:09:30.250 Df PeachCommander[910:1ba3] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-09 08:09:30.250 Df PeachCommander[910:1ba3] (CoreSpotlight) sConnectionName: com.apple.spotlight.IndexAgent
+2026-08-09 08:09:30.250 Df PeachCommander[910:1ba3] (CoreSpotlight) Start service name com.apple.spotlight.IndexAgent
+2026-08-09 08:09:30.250 Df PeachCommander[910:1ba3] [com.apple.xpc:connection] [0x704c97840] activating connection: mach=true listener=false peer=false name=com.apple.spotlight.IndexAgent
+2026-08-09 08:09:30.250 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] MainWindowController initialized (config: <private>)
+2026-08-09 08:09:30.251 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] SelectionState initialized
+2026-08-09 08:09:30.251 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] DirectoryModel initialized
+2026-08-09 08:09:30.251 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] VolumeManager initialized
+2026-08-09 08:09:30.251 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] PanelController initialized for <private> panel
+2026-08-09 08:09:30.251 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] SelectionState initialized
+2026-08-09 08:09:30.251 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] DirectoryModel initialized
+2026-08-09 08:09:30.251 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] VolumeManager initialized
+2026-08-09 08:09:30.251 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] PanelController initialized for <private> panel
+2026-08-09 08:09:30.256 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.264 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.264 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.264 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.264 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.264 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.268 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.268 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.268 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.268 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.268 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.274 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.277 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.289 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x7045335c0] activating connection: mach=true listener=false peer=false name=com.apple.iconservices
+2026-08-09 08:09:30.290 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x704533700] activating connection: mach=true listener=false peer=false name=com.apple.iconservices.store
+2026-08-09 08:09:30.290 I  PeachCommander[910:1b46] [com.peachcommander:Theme] no user themes in /Users/admin/pc-cfg/themes
+2026-08-09 08:09:30.290 Df PeachCommander[910:1b46] [com.apple.AppKit:Appearance] Invalidate NSApp effectiveAppearance
+2026-08-09 08:09:30.291 Df PeachCommander[910:1b46] [com.apple.AppKit:Appearance] NSApp cache appearance:
+-NSRequiresAquaSystemAppearance: 0
+-appearance: <NSCompositeAppearance: 0x7050599a0
+ (
+    "<NSDarkAquaAppearance: 0x705059a40>",
+    "<NSSystemAppearance: 0x7050586e0>"
+)>
+-effectiveAppearance: <NSCompositeAppearance: 0x7050599a0
+ (
+    "<NSDarkAquaAppearance: 0x705059a40>",
+    "<NSSystemAppearance: 0x7050586e0>"
+)>
+2026-08-09 08:09:30.293 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] Theme applied: id=system, appearance=dark, dark=true, background=#333333
+2026-08-09 08:09:30.294 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] Keymap loaded: scheme=<private>, 80 effective bindings
+2026-08-09 08:09:30.316 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.317 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.317 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.323 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.323 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.324 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.326 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] MainWindowController window loaded
+2026-08-09 08:09:30.327 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] information in shared memory for 0x0-0x27027 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777225, "CFBundleExecutablePathINode"=489888, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
+2026-08-09 08:09:30.327 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] information in shared memory for 0x0-0x27027 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777225, "CFBundleExecutablePathINode"=489888, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
+2026-08-09 08:09:30.328 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.328 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.328 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.328 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.328 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.328 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.328 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.329 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.329 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.329 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.329 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.330 I  PeachCommander[910:1b46] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-09 08:09:30.336 I  PeachCommander[910:1b46] [com.apple.AppKit:Window] order window front conditionally: 2c related: 0
+2026-08-09 08:09:30.336 Df PeachCommander[910:1b46] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) No windows open yet
+2026-08-09 08:09:30.336 I  PeachCommander[910:1b46] [com.apple.AppKit:Intelligence] starting collection observation
+2026-08-09 08:09:30.336 Df PeachCommander[910:1bb7] [com.apple.UIIntelligenceSupport:xpc] establishing connection to agent
+2026-08-09 08:09:30.336 Df PeachCommander[910:1bb7] [com.apple.xpc:session] [0x70588c9b0] Session created.
+2026-08-09 08:09:30.336 Df PeachCommander[910:1bb7] [com.apple.xpc:session] [0x70588c9b0] Session created from connection [0x704728780]
+2026-08-09 08:09:30.336 Df PeachCommander[910:1bb7] [com.apple.xpc:connection] [0x704728780] activating connection: mach=true listener=false peer=false name=com.apple.uiintelligencesupport.agent
+2026-08-09 08:09:30.336 Df PeachCommander[910:1bb7] [com.apple.xpc:session] [0x70588c9b0] Session activated
+2026-08-09 08:09:30.336 I  PeachCommander[910:1b46] [com.apple.SkyLight:processes] 0[outside of RPC]: SLSSetFrontProcessWithInfo(0x0-0x2 window=0 options=0x1
+2026-08-09 08:09:30.338 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] information in shared memory for 0x0-0x27027 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777225, "CFBundleExecutablePathINode"=489888, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
+2026-08-09 08:09:30.338 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x7047288c0] activating connection: mach=true listener=false peer=false name=com.apple.FileCoordination
+2026-08-09 08:09:30.339 Df PeachCommander[910:1bb7] [com.apple.foundation.filecoordination:presenter] Adding presenter 927AFF01-8B07-4ADA-9DCC-54686B65FB5B for URL: <private>
+2026-08-09 08:09:30.339 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] information in shared memory for 0x0-0x27027 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777225, "CFBundleExecutablePathINode"=489888, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
+2026-08-09 08:09:30.340 I  PeachCommander[910:1b46] [com.apple.AppKit:Window] order all windows front 90663215750
+2026-08-09 08:09:30.340 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] information in shared memory for 0x0-0x27027 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777225, "CFBundleExecutablePathINode"=489888, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=67141632, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.4.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="4", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
+2026-08-09 08:09:30.340 I  PeachCommander[910:1b46] [com.apple.showhide:pr-59900543] SHOWHIDE: CONFIRM, id=8, err=0
+2026-08-09 08:09:30.340 I  PeachCommander[910:1b46] [com.apple.AppKit:Window] context (0 -> 4687c41c) for window 2b
+2026-08-09 08:09:30.340 I  PeachCommander[910:1b46] [com.apple.AppKit:Window] context (0 -> 19521b42) for window 2a
+2026-08-09 08:09:30.340 I  PeachCommander[910:1b46] [com.apple.AppKit:Window] context (0 -> c4b13ffb) for window 29
+2026-08-09 08:09:30.340 I  PeachCommander[910:1b46] [com.apple.AppKit:Window] context (0 -> f5f3e89b) for window 28
+2026-08-09 08:09:30.384 Df PeachCommander[910:1b46] [com.apple.AppKit:AutomaticTermination] void _updateToReflectAutomaticTerminationState(void) Setting _kLSApplicationWouldBeTerminatedByTALKey=0
+2026-08-09 08:09:30.385 I  PeachCommander[910:1b46] [com.apple.runningboard:assertion] Acquiring assertion: <RBSAssertionDescriptor| "AppNap adapter assertion" ID:(null) target:910>
+2026-08-09 08:09:30.388 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.388 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.388 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.388 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.388 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.388 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.413 A  PeachCommander[910:1bb7] (RunningBoardServices) didChangeInheritances
+2026-08-09 08:09:30.495 I  PeachCommander[910:1ba2] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:30.526 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.526 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.526 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.538 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.538 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.540 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.540 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.553 I  PeachCommander[910:1ba4] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:30.575 I  PeachCommander[910:1b46] [com.peachcommander:PCFoundation] Session restored
+2026-08-09 08:09:30.576 Df PeachCommander[910:1b46] (Foundation) <private>
+2026-08-09 08:09:30.576 Df PeachCommander[910:1b46] (Foundation) <private>
+2026-08-09 08:09:30.576 Df PeachCommander[910:1b46] (Foundation) <private>
+2026-08-09 08:09:30.577 Df PeachCommander[910:1b46] (Foundation) <private>
+2026-08-09 08:09:30.581 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.582 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.583 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.583 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.587 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.587 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.588 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.588 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.589 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.589 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.591 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.591 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.592 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.592 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.593 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.593 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.594 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.594 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.595 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.595 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.596 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.596 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.602 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.602 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.603 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.603 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.604 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.604 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.605 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.605 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.606 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.606 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.607 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.607 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.608 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.608 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.609 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.609 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.611 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.611 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.612 I  PeachCommander[910:1ba3] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:30.612 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.612 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.613 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.613 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.614 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.614 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.616 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.616 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.618 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.618 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.619 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.619 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.620 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.620 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.621 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.621 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.622 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.622 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.623 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.623 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.625 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.625 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.626 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.626 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.627 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.627 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.628 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.628 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.669 I  PeachCommander[910:1bb5] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:30.669 I  PeachCommander[910:1ba9] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:30.691 I  PeachCommander[910:1b46] [com.apple.coreanimation:Utilities] IOSurface Compression Enabled: NO
+2026-08-09 08:09:30.692 Df PeachCommander[910:1bb5] [com.apple.coreanimation:Metal] Precompiled pipelines disabled on unsupported hardware.
+2026-08-09 08:09:30.692 E  PeachCommander[910:1bb5] (libCoreFSCache.dylib) fopen failed for data file: errno = 2 (No such file or directory)
+2026-08-09 08:09:30.692 Df PeachCommander[910:1bb5] (libCoreFSCache.dylib) Invalidating cache
+2026-08-09 08:09:30.692 Df PeachCommander[910:1bb5] [com.apple.xpc:connection] [0x70472b340] activating connection: mach=false listener=false peer=false name=com.apple.MTLCompilerService
+2026-08-09 08:09:30.692 Df PeachCommander[910:1bb5] [com.apple.xpc:connection] [0x70472b480] activating connection: mach=false listener=false peer=false name=com.apple.MTLCompilerService
+2026-08-09 08:09:30.693 A  PeachCommander[910:1ba9] (Metal) Metal Compiling Shader
+2026-08-09 08:09:30.715 A  PeachCommander[910:1bef] (Metal) Metal Compiling Shader
+2026-08-09 08:09:30.717 E  PeachCommander[910:1bb5] (libCoreFSCache.dylib) fopen failed for data file: errno = 2 (No such file or directory)
+2026-08-09 08:09:30.717 Df PeachCommander[910:1bb5] (libCoreFSCache.dylib) Invalidating cache
+2026-08-09 08:09:30.717 A  PeachCommander[910:1bef] (Metal) Metal Compiling Shader
+2026-08-09 08:09:30.721 A  PeachCommander[910:1bef] (Metal) Metal Compiling Shader
+2026-08-09 08:09:30.723 I  PeachCommander[910:1bb6] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:30.723 A  PeachCommander[910:1bef] (Metal) Metal Compiling Shader
+2026-08-09 08:09:30.723 A  PeachCommander[910:1bb6] (Metal) Metal Compiling Shader
+2026-08-09 08:09:30.746 A  PeachCommander[910:1bf0] (Metal) Metal Compiling Shader
+2026-08-09 08:09:30.751 A  PeachCommander[910:1bfc] (Metal) Metal Compiling Shader
+2026-08-09 08:09:30.752 A  PeachCommander[910:1bfc] (Metal) Metal Compiling Shader
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValuesBulk SetGestaltValuesBulk( count=22 tuples=0x18732a650
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(alis 1C9) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(os   FE) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(addr 7) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(fs   3D332) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(fold 11) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(lram 7FFFF000) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(mmap 1) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cfrg 1) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(thds 7) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(tmgr E) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(vers 7) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cbon 160) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cltn 1108000) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cpnt 8) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(rsrc 3) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(rmbg 11F) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(vm   11) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(srad 4170706C) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(sysa 14) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(copl 9) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(xlat 0) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(stdf 0) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(ram  0x1872a3644) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(ramm 0x1872a3644) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cput 0x1872a3734) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cpuf 0x1872a3764) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(bclk 0x1872a3794) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(bclm 0x1872a3794) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(pclk 0x1872a3834) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(mclk 0x1872a3834) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(a/ux 0x1872a394c) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(pgsz 0x1872a3954) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(csiz 0x1872a3994) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sysv 0x18724edfc) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sys1 0x18724edfc) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sys2 0x18724edfc) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sys3 0x18724edfc) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cdfl 0x1872a39d4) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cdrm 0x1872a3c30) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cpus 0x1872a3c78) => 0
+2026-08-09 08:09:30.762 I  PeachCommander[910:1b46] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(swex 1) => 0
+2026-08-09 08:09:30.762 Df PeachCommander[910:1b46] [com.apple.xpc:connection] [0x70472b840] activating connection: mach=false listener=false peer=false name=com.apple.hiservices-xpcservice
+2026-08-09 08:09:30.763 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:entry] CopyData('ApplePerContextInputPasteboard' (<CFUUID 0x7069783a0> D0559B86-A332-400B-B01C-676AC5F86EB3) gen: -1 item: 1264739405 flavor: 'ApplePerContextInputFlavor')
+2026-08-09 08:09:30.763 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:cache] Rebuilding cache for 'ApplePerContextInputPasteboard' (<CFUUID 0x7069783a0> D0559B86-A332-400B-B01C-676AC5F86EB3)
+2026-08-09 08:09:30.763 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-09 08:09:30.763 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (182 bytes) flags: 0
+2026-08-09 08:09:30.763 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0x70522a340> ABBEE491-2978-4338-A670-B0CA3FB46FF0) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
+2026-08-09 08:09:30.763 I  PeachCommander[910:1b46] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
+2026-08-09 08:09:30.767 I  PeachCommander[910:1bf0] [com.apple.AppKit:WindowTab] Indexing 1 items
+2026-08-09 08:09:30.767 A  PeachCommander[910:1bf0] (CoreSpotlight) end-index-batch
+2026-08-09 08:09:30.767 Df PeachCommander[910:1bf0] [com.apple.corespotlight:index] *warn* MailCS ======%%% _setMailMessageAttributes skip:1
+2026-08-09 08:09:30.768 A  PeachCommander[910:1bf0] (CoreSpotlight) index-items
+2026-08-09 08:09:30.768 Df PeachCommander[910:1c04] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-09 08:09:30.768 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.768 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.769 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.769 Df PeachCommander[910:1c05] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-09 08:09:30.769 A  PeachCommander[910:1bfc] (libsystem_info.dylib) Retrieve Group by ID
+2026-08-09 08:09:30.769 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.769 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.769 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.769 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.769 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.769 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.770 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.770 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.770 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.770 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.770 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.770 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.770 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.770 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.770 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.771 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.771 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.771 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.771 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.771 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.771 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.771 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.771 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.771 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.771 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.771 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.771 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.772 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.772 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.772 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.772 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.772 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.772 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.772 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.772 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.772 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.774 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.774 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.774 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.774 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating context 30139915200 eng=0 dev=-1
+2026-08-09 08:09:30.774 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.774 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.774 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568
+2026-08-09 08:09:30.778 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.778 I  PeachCommander[910:1bfc] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.778 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.778 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=54
+2026-08-09 08:09:30.778 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.778 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.780 A  PeachCommander[910:1c05] (Metal) Metal Compiling Shader
+2026-08-09 08:09:30.783 A  PeachCommander[910:1bef] (Metal) Metal Compiling Shader
+2026-08-09 08:09:30.783 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying plan 30176578048
+2026-08-09 08:09:30.783 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying context 30139915200
+2026-08-09 08:09:30.798 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Creating context 30139915200 eng=0 dev=-1
+2026-08-09 08:09:30.798 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.798 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.798 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568
+2026-08-09 08:09:30.798 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating context 30139924416 eng=0 dev=-1
+2026-08-09 08:09:30.798 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176579328
+2026-08-09 08:09:30.798 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176579328
+2026-08-09 08:09:30.798 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176579328 path=<private> cp=65568
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bb6] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=44
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bfc] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176579328 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=16
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying plan 30176579328
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying context 30139924416
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Destroying plan 30176578048
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Destroying context 30139915200
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Creating context 30139924096 eng=0 dev=-1
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating context 30139915200 eng=0 dev=-1
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176579328
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176579328
+2026-08-09 08:09:30.799 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176579328 path=<private> cp=65568
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=40
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176579328 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=62
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.800 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.800 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.800 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Destroying plan 30176578048
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Destroying context 30139924096
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Creating context 30139924096 eng=0 dev=-1
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying plan 30176579328
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying context 30139915200
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating context 30139915200 eng=0 dev=-1
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176579328
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176579328
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176579328 path=<private> cp=65568
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=26
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176579328 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=30
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Destroying plan 30176578048
+2026-08-09 08:09:30.800 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Destroying context 30139924096
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Creating context 30139924096 eng=0 dev=-1
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying plan 30176579328
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying context 30139915200
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating context 30139924000 eng=0 dev=-1
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176579328
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176579328
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176579328 path=<private> cp=65568
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bb6] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=59
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176579328 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=4
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying plan 30176579328
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying context 30139924000
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Destroying plan 30176578048
+2026-08-09 08:09:30.801 I  PeachCommander[910:1bb6] [com.apple.espresso:espresso] Destroying context 30139924096
+2026-08-09 08:09:30.803 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.803 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.803 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.804 A  PeachCommander[910:1bef] (Metal) Metal Compiling Shader
+2026-08-09 08:09:30.806 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.806 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.806 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.808 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.808 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.808 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.813 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating context 30139911392 eng=0 dev=-1
+2026-08-09 08:09:30.813 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.813 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.813 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568
+2026-08-09 08:09:30.813 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] Creating context 30139911360 eng=0 dev=-1
+2026-08-09 08:09:30.813 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] Creating plan 30176579328
+2026-08-09 08:09:30.813 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] Creating plan 30176579328
+2026-08-09 08:09:30.813 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176579328 path=<private> cp=65568
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bfc] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bb5] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176579328 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=85
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=13
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] Destroying plan 30176579328
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] Destroying context 30139911360
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] Creating context 30139911360 eng=0 dev=-1
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] Creating plan 30176579328
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] Creating plan 30176579328
+2026-08-09 08:09:30.814 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176579328 path=<private> cp=65568
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying plan 30176578048
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying context 30139911392
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bb5] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176579328 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=88
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating context 30139924160 eng=0 dev=-1
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30176578048
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bfc] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30176578048 path=<private> cp=65568 Completed
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=88
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] Destroying plan 30176579328
+2026-08-09 08:09:30.815 I  PeachCommander[910:1bb5] [com.apple.espresso:espresso] Destroying context 30139911360
+2026-08-09 08:09:30.816 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying plan 30176578048
+2026-08-09 08:09:30.816 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying context 30139924160
+2026-08-09 08:09:30.828 I  PeachCommander[910:1bb8] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:30.828 I  PeachCommander[910:1bc0] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:30.829 I  PeachCommander[910:1bc3] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:30.829 I  PeachCommander[910:1bc1] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:30.829 I  PeachCommander[910:1bb7] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:30.849 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.849 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.849 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.850 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:30.915 A  PeachCommander[910:1b46] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-09 08:09:30.915 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "com.apple.ImageIO.readerSelection" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:30.921 I  PeachCommander[910:1b46] [com.apple.HIToolbox:MBDisplays] <private>
+2026-08-09 08:09:30.921 I  PeachCommander[910:1b46] [com.apple.HIToolbox:MBDisplays] <private>
+2026-08-09 08:09:30.921 Df PeachCommander[910:1b46] [com.apple.AppKit:Screen] NSApplication._react(to:) dock
+2026-08-09 08:09:30.921 Df PeachCommander[910:1b46] [com.apple.AppKit:Screen] NSApplication._react(to:) reactions=83
+2026-08-09 08:09:30.954 I  PeachCommander[910:1ba4] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.002 I  PeachCommander[910:1ba2] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.049 I  PeachCommander[910:1bd0] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.100 I  PeachCommander[910:1bd2] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.101 I  PeachCommander[910:1bd5] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.101 I  PeachCommander[910:1bd6] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.101 I  PeachCommander[910:1bd7] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.102 I  PeachCommander[910:1bd8] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.102 I  PeachCommander[910:1bd9] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.102 I  PeachCommander[910:1bda] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.131 I  PeachCommander[910:1bdb] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.132 I  PeachCommander[910:1bdc] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.139 Df PeachCommander[910:1bdb] [com.apple.UIIntelligenceSupport:xpc] Received agent launch notification with agent PID: 930
+2026-08-09 08:09:31.145 Df PeachCommander[910:1bdb] [com.apple.UIIntelligenceSupport:xpc] Connection established with agent PID: 930
+2026-08-09 08:09:31.158 I  PeachCommander[910:1bdd] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.184 I  PeachCommander[910:1bde] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.210 I  PeachCommander[910:1bdf] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.210 I  PeachCommander[910:1be0] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.210 I  PeachCommander[910:1be1] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.210 I  PeachCommander[910:1be2] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.210 I  PeachCommander[910:1be3] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.210 I  PeachCommander[910:1be4] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.210 I  PeachCommander[910:1be5] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.210 I  PeachCommander[910:1be6] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.210 I  PeachCommander[910:1be7] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.211 I  PeachCommander[910:1ba3] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.211 I  PeachCommander[910:1be8] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.211 I  PeachCommander[910:1be9] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.212 I  PeachCommander[910:1bea] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.212 I  PeachCommander[910:1beb] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.212 I  PeachCommander[910:1bec] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.212 I  PeachCommander[910:1bed] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.212 I  PeachCommander[910:1bee] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.249 I  PeachCommander[910:1bb5] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.282 I  PeachCommander[910:1c05] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.314 I  PeachCommander[910:1bfc] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.348 I  PeachCommander[910:1bf0] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.388 I  PeachCommander[910:1bef] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.423 I  PeachCommander[910:1c11] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.448 I  PeachCommander[910:1ba9] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.480 I  PeachCommander[910:1c04] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.480 I  PeachCommander[910:1c12] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.480 I  PeachCommander[910:1c1b] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.480 I  PeachCommander[910:1c1d] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.480 I  PeachCommander[910:1c1e] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.480 I  PeachCommander[910:1c1f] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.799 Df PeachCommander[910:1b46] (Foundation) <private>
+2026-08-09 08:09:31.802 Df PeachCommander[910:1b46] (Foundation) <private>
+2026-08-09 08:09:31.803 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.803 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.804 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.805 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.806 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.806 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.807 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.807 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.808 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.808 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.809 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.809 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.809 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.810 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.811 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.812 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.812 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.813 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.813 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.814 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.814 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.815 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.815 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.816 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.816 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.817 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.817 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.818 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.818 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.819 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.819 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.820 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.820 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:31.876 I  PeachCommander[910:1c1d] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:31.941 I  PeachCommander[910:1c1e] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.000 I  PeachCommander[910:1c1f] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.000 I  PeachCommander[910:1c1b] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.058 I  PeachCommander[910:1c12] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.058 I  PeachCommander[910:1c04] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.058 I  PeachCommander[910:1c11] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.124 I  PeachCommander[910:1ba9] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.162 I  PeachCommander[910:1bef] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.163 I  PeachCommander[910:1bf0] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.163 I  PeachCommander[910:1bfc] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.163 I  PeachCommander[910:1c05] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.164 I  PeachCommander[910:1bb5] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.164 I  PeachCommander[910:1bea] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.201 I  PeachCommander[910:1be9] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:32.209 Df PeachCommander[910:1b46] (Foundation) <private>
+2026-08-09 08:09:32.210 Df PeachCommander[910:1b46] (Foundation) <private>
+2026-08-09 08:09:32.212 I  PeachCommander[910:1b46] [com.apple.launchservices:cas] Removing cached information for app [ 0x0-0x27027]  "PeachCommander", as its seed is different from that in shared memory ( 535 vs 537)
+2026-08-09 08:09:32.220 Df PeachCommander[910:1b46] [com.apple.quicklook:General] -[QLPreviewPanel <private>] called while the panel has no controller.
+	See comments in QLPreviewPanel.h for -acceptsPreviewPanelControl:/-beginPreviewPanelControl:/-endPreviewPanelControl:.
+2026-08-09 08:09:32.222 I  PeachCommander[910:1b46] [com.apple.quicklook:Preview Loading] setting displayable from (null) to <private>
+2026-08-09 08:09:32.240 I  PeachCommander[910:1b46] [com.apple.quicklook:Preview Loading] start loading item <private>
+2026-08-09 08:09:32.240 I  PeachCommander[910:1b46] [com.apple.quicklook:Preview Loading] created <private> (customView: (null))
+2026-08-09 08:09:32.240 I  PeachCommander[910:1b46] [com.apple.quicklook:Preview Loading] start loading <private> with forced displayBundleID (null)
+2026-08-09 08:09:32.241 Df PeachCommander[910:1c21] [com.apple.foundation.filecoordination:claims] Read options: 200000 -- URL: <private> -- purposeID: 2CE1BD1A-EE78-49BE-8A41-69B4C1157E9C -- claimID: BF208170-D128-42CD-BA18-890596D6EEA1
+2026-08-09 08:09:32.243 I  PeachCommander[910:1b46] [com.apple.DesignLibrary:defaults] liveTuning=false
+2026-08-09 08:09:32.243 Df PeachCommander[910:1c21] [com.apple.foundation.filecoordination:claims] Claim BF208170-D128-42CD-BA18-890596D6EEA1 granted in client
+2026-08-09 08:09:32.243 Df PeachCommander[910:1c21] [com.apple.foundation.filecoordination:claims] Claim BF208170-D128-42CD-BA18-890596D6EEA1 invoked in client
+2026-08-09 08:09:32.243 I  PeachCommander[910:1c21] [com.apple.quicklook:Preview Loading] got displayBundleID com.apple.qldisplay.Text for <private>
+2026-08-09 08:09:32.725 I  PeachCommander[910:1b46] [com.apple.quicklook:Preview Loading] timed out loading document: <private>
+2026-08-09 08:09:32.726 I  PeachCommander[910:1b46] [com.apple.quicklook:Preview Loading] setting displayable from <private> to <private>
+2026-08-09 08:09:32.732 I  PeachCommander[910:1b46] [com.apple.AppKit:Window] context (0 -> 4d2a5a4c) for window 2d
+2026-08-09 08:09:32.736 I  PeachCommander[910:1b46] [com.apple.AppKit:Window] order window front conditionally: 2d related: 0
+2026-08-09 08:09:32.741 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:32.741 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:32.741 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:32.741 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:32.741 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:32.741 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:32.741 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:32.741 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:32.741 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:32.741 I  PeachCommander[910:1b46] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:32.753 I  PeachCommander[910:1b46] [com.apple.quicklook:Preview Loading] document <private> got display bundle <private>
+2026-08-09 08:09:32.753 I  PeachCommander[910:1b46] [com.apple.quicklook:Panel] previewView:<private> gotDisplayBundle:<private> forPreviewItem:<private>
+2026-08-09 08:09:32.753 I  PeachCommander[910:1bb7] [com.apple.quicklook:General] presentedItemURL: <private>
+2026-08-09 08:09:32.753 I  PeachCommander[910:1bb7] [com.apple.quicklook:General] presentedItemOperationQueue: <private>
+2026-08-09 08:09:32.753 Df PeachCommander[910:1bb7] [com.apple.foundation.filecoordination:presenter] Adding presenter 20656BC3-6918-40F3-880C-EA3E68E094E5 for URL: <private>
+2026-08-09 08:09:32.753 Df PeachCommander[910:1c4e] [com.apple.foundation.filecoordination:claims] Read options: 0 -- URL: <private> -- purposeID: 8CD273CE-0988-419E-AAA4-408426665433 -- claimID: 9E2EE814-549E-4F8F-8717-C837177ECF6E
+2026-08-09 08:09:32.754 Df PeachCommander[910:1bbc] [com.apple.foundation.filecoordination:claims] Claim 9E2EE814-549E-4F8F-8717-C837177ECF6E granted in client
+2026-08-09 08:09:32.754 Df PeachCommander[910:1bbc] [com.apple.foundation.filecoordination:claims] Claim 9E2EE814-549E-4F8F-8717-C837177ECF6E invoked in client
+2026-08-09 08:09:32.755 I  PeachCommander[910:1c4e] [com.apple.quicklook:default] Getting <private> for 'Text Loading Options' from UTI '<private>' #UTI
+2026-08-09 08:09:32.757 I  PeachCommander[910:1b46] [com.apple.inputAnalytics.client:IATextInputActions] initWithAnalyticsMetadataObserver service
+2026-08-09 08:09:32.757 I  PeachCommander[910:1b46] [com.apple.quicklook:General] DID LOAD <private>
+2026-08-09 08:09:32.758 I  PeachCommander[910:1b46] [com.apple.quicklook:Preview Loading] document <private> did load
+2026-08-09 08:09:32.816 I  PeachCommander[910:1bbc] [com.apple.AppKit:WindowTab] Indexing 2 items
+2026-08-09 08:09:32.816 A  PeachCommander[910:1bbc] (CoreSpotlight) end-index-batch
+2026-08-09 08:09:32.816 A  PeachCommander[910:1bbc] (CoreSpotlight) index-items
+2026-08-09 08:09:32.816 Df PeachCommander[910:1bbc] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-09 08:09:32.816 Df PeachCommander[910:1bbc] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-09 08:09:32.948 I  PeachCommander[910:1b46] [com.apple.quicklook:Preview Loading] setting displayable from <private> to <private>
+2026-08-09 08:09:32.950 A  PeachCommander[910:1b46] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-09 08:09:32.952 I  PeachCommander[910:1c21] [com.apple.inputAnalytics.client:IATextInputActions] mergeOrConsumeAction calling sendSignal:toChannel:withNullableSessionID:withPayload:
+2026-08-09 08:09:32.952 Df PeachCommander[910:1c21] [com.apple.inputAnalytics.client:IASignalAnalytics] channel:<private> signal:<private> sessionID:<private> timestamp:<private> payload:<private>
+2026-08-09 08:09:32.952 I  PeachCommander[910:1c21] [com.apple.inputAnalytics.client:IAXPCClient] IASignalAnalytics: fetching xpcClient...
+2026-08-09 08:09:32.952 I  PeachCommander[910:1c21] [com.apple.inputAnalytics.client:IAXPCClient] Initialized 0x70639dd00
+2026-08-09 08:09:32.952 I  PeachCommander[910:1c21] [com.apple.inputAnalytics.client:IAXPCClient] 0x70639dd00 using shared remote object proxy
+2026-08-09 08:09:32.952 I  PeachCommander[910:1c21] [com.apple.inputAnalytics.client:IAXPCClient] 0x70639dd00 calling connection resume after shared instance
+2026-08-09 08:09:32.952 Df PeachCommander[910:1c21] [com.apple.xpc:connection] [0x703ab4640] activating connection: mach=true listener=false peer=false name=com.apple.inputanalyticsd
+2026-08-09 08:09:32.952 I  PeachCommander[910:1c21] [com.apple.inputAnalytics.client:IAXPCClient] IAXPCclient 0x70639dd00 init created _connection 0x705a89400 _server 0x0 with IXAXPCProtocol
+2026-08-09 08:09:32.952 I  PeachCommander[910:1c21] [com.apple.inputAnalytics.client:IAXPCClient] IASignalAnalytics: ...returning xpcClient 0x70639dd00
+2026-08-09 08:09:32.952 I  PeachCommander[910:1c21] [com.apple.inputAnalytics.client:IAXPCClient] server: returning server 0x7065d5fe0
+2026-08-09 08:09:32.952 I  PeachCommander[910:1c21] [com.apple.inputAnalytics:IAServerStats] Logging <private>
+2026-08-09 08:09:32.952 I  PeachCommander[910:1c21] [com.apple.CoreAnalytics:client] Dropping "com.apple.inputAnalytics.serverStats" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:32.957 I  PeachCommander[910:1b46] [com.apple.quicklook:Panel] previewView:<private> didShowPreviewItem:<private>
+2026-08-09 08:09:32.958 I  PeachCommander[910:1b46] [com.apple.AppKit:Window] order window front conditionally: 2d related: 0
+2026-08-09 08:09:32.958 I  PeachCommander[910:1c21] [com.apple.launchservices:default] LSCopyDefaultApplicationURLForURL: <private> binds to <private>
+2026-08-09 08:09:32.960 A  PeachCommander[910:1ba2] (Metal) Metal Compiling Shader
+2026-08-09 08:09:32.966 A  PeachCommander[910:1ba2] (Metal) Metal Compiling Shader
+2026-08-09 08:09:32.967 A  PeachCommander[910:1ba2] (Metal) Metal Compiling Shader
+2026-08-09 08:09:32.967 A  PeachCommander[910:1bb7] (Metal) Metal Compiling Shader
+2026-08-09 08:09:32.973 A  PeachCommander[910:1bfc] (Metal) Metal Compiling Shader
+2026-08-09 08:09:34.820 Df PeachCommander[910:1b46] (Foundation) <private>
+2026-08-09 08:09:34.824 Df PeachCommander[910:1b46] (Foundation) <private>
+2026-08-09 08:09:35.097 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.098 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.098 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.099 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.099 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.100 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.100 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.101 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.101 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.102 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.102 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.102 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.103 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.103 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.104 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.104 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.105 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.105 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.106 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.106 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.107 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.107 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.108 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.108 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.108 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.109 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.109 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.110 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.110 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.111 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.111 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.112 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.112 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.113 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.113 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.114 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.114 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.115 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.115 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.116 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.116 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.117 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.117 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.118 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.118 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.119 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.119 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.120 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.120 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.121 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.121 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.122 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.122 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.122 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.122 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.123 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.123 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.124 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.124 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.125 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.125 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.126 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.126 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.127 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.128 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.129 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.129 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.130 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.130 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.175 I  PeachCommander[910:1ba9] [com.apple.espresso:espresso] Creating context 30139912096 eng=0 dev=-1
+2026-08-09 08:09:35.175 I  PeachCommander[910:1ba9] [com.apple.espresso:espresso] Creating plan 30158636288
+2026-08-09 08:09:35.175 I  PeachCommander[910:1ba9] [com.apple.espresso:espresso] Creating plan 30158636288
+2026-08-09 08:09:35.175 I  PeachCommander[910:1ba9] [com.apple.espresso:espresso] espresso_plan_add_network plan=30158636288 path=<private> cp=65568
+2026-08-09 08:09:35.175 I  PeachCommander[910:1bf0] [com.apple.espresso:espresso] Creating context 30139912160 eng=0 dev=-1
+2026-08-09 08:09:35.175 I  PeachCommander[910:1bf0] [com.apple.espresso:espresso] Creating plan 30149826816
+2026-08-09 08:09:35.175 I  PeachCommander[910:1bf0] [com.apple.espresso:espresso] Creating plan 30149826816
+2026-08-09 08:09:35.175 I  PeachCommander[910:1bf0] [com.apple.espresso:espresso] espresso_plan_add_network plan=30149826816 path=<private> cp=65568
+2026-08-09 08:09:35.175 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating context 30139912224 eng=0 dev=-1
+2026-08-09 08:09:35.175 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30149165056
+2026-08-09 08:09:35.175 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Creating plan 30149165056
+2026-08-09 08:09:35.175 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30149165056 path=<private> cp=65568
+2026-08-09 08:09:35.176 I  PeachCommander[910:1ba9] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:35.176 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:35.176 I  PeachCommander[910:1bef] [com.apple.espresso:espresso] Creating context 30139908160 eng=0 dev=-1
+2026-08-09 08:09:35.176 I  PeachCommander[910:1bef] [com.apple.espresso:espresso] Creating plan 30149171456
+2026-08-09 08:09:35.176 I  PeachCommander[910:1bef] [com.apple.espresso:espresso] Creating plan 30149171456
+2026-08-09 08:09:35.176 I  PeachCommander[910:1bef] [com.apple.espresso:espresso] espresso_plan_add_network plan=30149171456 path=<private> cp=65568
+2026-08-09 08:09:35.176 I  PeachCommander[910:1ba9] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:35.176 I  PeachCommander[910:1ba9] [com.apple.espresso:espresso] espresso_plan_add_network plan=30158636288 path=<private> cp=65568 Completed
+2026-08-09 08:09:35.176 I  PeachCommander[910:1bfc] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:35.176 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] espresso_plan_add_network plan=30149165056 path=<private> cp=65568 Completed
+2026-08-09 08:09:35.176 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=88
+2026-08-09 08:09:35.176 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:35.176 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:35.176 I  PeachCommander[910:1ba9] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=85
+2026-08-09 08:09:35.176 I  PeachCommander[910:1ba9] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:35.176 I  PeachCommander[910:1ba9] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bef] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bef] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bef] [com.apple.espresso:espresso] espresso_plan_add_network plan=30149171456 path=<private> cp=65568 Completed
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bef] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=40
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bef] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bef] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bef] [com.apple.espresso:espresso] Destroying plan 30149171456
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bef] [com.apple.espresso:espresso] Destroying context 30139908160
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying plan 30149165056
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bfc] [com.apple.espresso:espresso] Destroying context 30139912224
+2026-08-09 08:09:35.177 I  PeachCommander[910:1ba9] [com.apple.espresso:espresso] Destroying plan 30158636288
+2026-08-09 08:09:35.177 I  PeachCommander[910:1ba9] [com.apple.espresso:espresso] Destroying context 30139912096
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bf0] [com.apple.espresso:espresso] Loaded network: '<private>' pf=100 cp=0
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bf0] [com.apple.CoreAnalytics:client] Dropping "com.apple.Espresso.SegmentationAnalytics" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bf0] [com.apple.espresso:espresso] espresso_plan_add_network plan=30149826816 path=<private> cp=65568 Completed
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bf0] [com.apple.espresso:espresso] [change_input_shapes] index=0/3 name=<private> w=1 h=1 k=1 n=1 seq=13
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bf0] [com.apple.espresso:espresso] [change_input_shapes] index=1/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:35.177 I  PeachCommander[910:1bf0] [com.apple.espresso:espresso] [change_input_shapes] index=2/3 name=<private> w=1 h=1 k=256 n=1 seq=1
+2026-08-09 08:09:35.178 I  PeachCommander[910:1bf0] [com.apple.espresso:espresso] Destroying plan 30149826816
+2026-08-09 08:09:35.178 I  PeachCommander[910:1bf0] [com.apple.espresso:espresso] Destroying context 30139912160
+2026-08-09 08:09:35.190 I  PeachCommander[910:1be8] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:35.212 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.214 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.214 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.215 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.215 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.216 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.216 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.217 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.217 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.218 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.218 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.219 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.219 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.220 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.220 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.221 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.221 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.222 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.222 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.223 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.223 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.224 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.224 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.225 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.225 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.226 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.226 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.227 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.227 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.228 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.228 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.229 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.229 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.230 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.230 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.231 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.231 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.232 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.232 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.233 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.233 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.234 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.234 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.235 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.235 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.236 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.236 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.237 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.237 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.237 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.238 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.238 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.238 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.239 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.239 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.240 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.240 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.241 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.241 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.242 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.242 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.243 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.243 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.244 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.244 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.245 I  PeachCommander[910:1be7] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:35.245 I  PeachCommander[910:1bb7] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:35.245 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.245 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.290 Df PeachCommander[910:1b46] (Foundation) <private>
+2026-08-09 08:09:35.290 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-09 08:09:35.302 I  PeachCommander[910:1bd0] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:35.302 I  PeachCommander[910:1bf0] [com.apple.iconservices:foundation] layer data size zero
+2026-08-09 08:09:35.303 I  PeachCommander[910:1b46] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>

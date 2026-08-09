@@ -37,6 +37,18 @@ does not have.
   at which tool was called rather than at what it would do. Commands are now judged by what they
   change, and an unfamiliar command counts as changing something.
 
+### Fixed
+
+- **The window title now says where you are.** It read "Peach Commander" whatever folder you were in —
+  which is the text Mission Control, the Window menu and Cmd-Tab show, so two windows on two folders
+  looked the same. The active path is in it now, with free space behind an option.
+- **Double-clicking the splitter gives two equal panels again.** It did nothing at all.
+- **"Start all" in the transfer manager no longer starts everything at once.** Twenty queued downloads
+  began twenty simultaneous transfers; they take turns now, and one failure does not strand the rest.
+- **"No icons" now really shows none.** Folder rows kept their icon.
+- The disk image opens with the app and the Applications folder side by side, instead of wherever the
+  Finder last left a window.
+
 ### Added
 
 - **Synchronize Directories now works with a server as one side.** A panel connected to FTP or SFTP —
