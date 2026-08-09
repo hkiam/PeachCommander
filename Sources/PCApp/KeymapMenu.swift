@@ -49,6 +49,10 @@ enum KeymapMenu {
         case "END": return String(UnicodeScalar(0xF72B)!)
         case "PGUP": return String(UnicodeScalar(0xF72C)!)
         case "PGDN": return String(UnicodeScalar(0xF72D)!)
+        // A menu equivalent is a *character*, so this can only ever be drawn as the US layout's
+        // backtick. That is a display detail: dispatch goes through the key code either way, so the
+        // binding still fires on a keyboard where this key prints something else.
+        case "BACKQUOTE": return "`"
         default: return nil   // NUM+/-/*// and anything else: not representable
         }
     }
@@ -61,7 +65,13 @@ enum KeymapMenu {
                         shift: f.contains(.shift), cmd: f.contains(.command), key: token)
     }
 
+    /// The hardware key code of the key left of the "1" (ANSI_Grave). Position, not character.
+    static let backquoteKeyCode: UInt16 = 50
+
     private static func keyToken(from event: NSEvent) -> String? {
+        // Before the character lookup, because the character this key produces depends on the
+        // layout and the token deliberately does not (F-381).
+        if event.keyCode == backquoteKeyCode { return "BACKQUOTE" }
         guard let chars = event.charactersIgnoringModifiers, let scalar = chars.unicodeScalars.first else { return nil }
         // Letters / digits.
         if chars.count == 1, let c = chars.first, c.isLetter || c.isNumber { return chars.uppercased() }

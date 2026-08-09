@@ -393,6 +393,10 @@ enum AppMenu {
                                  key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Shared Tree"), cmd: "cm_TreeShared",
                                  key: "", mask: [], target: target, action: commandAction))
+        // The dock's accelerator is not set here: it is bound by key position in the keymap (F-381),
+        // and KeymapMenu draws it onto this item from there like every other remappable command.
+        viewMenu.addItem(command(String(localized: "Bottom Dock"), cmd: "cm_ToggleDock",
+                                 key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(.separator())
         viewMenu.addItem(command(String(localized: "Cycle View Mode"), cmd: "cm_CycleViewMode",
                                  key: "m", mask: [.command, .shift], target: target, action: commandAction))

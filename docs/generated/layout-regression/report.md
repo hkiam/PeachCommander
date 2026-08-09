@@ -6,4 +6,8 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
+| split-center | 0 | — | — | `split-center.png` |
+| dock-seam | 0 | — | — | `dock-seam.png` |
+| window-title | 0 | — | — | `window-title.png` |
+| transfer-panel | 0 | — | — | `transfer-panel.png` |
 | shared-tree | 0 | — | — | `shared-tree.png` |

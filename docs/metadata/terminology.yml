@@ -34,5 +34,13 @@ terms:
     definition: The strip above each panel listing mounted volumes and their free space.
   - term: path bar
     definition: The editable breadcrumb above each panel showing the current folder as clickable segments.
+  - term: dock
+    definition: >-
+      The strip across the bottom of the main window that hosts plugin views needing width — a
+      terminal, a build log, a REPL. Not macOS's own Dock, and not a panel: "panel" is reserved for
+      the two file views, so what the dock holds is a view.
+    avoid:
+      - bottom panel
+      - bottombar
   - term: function-key bar
     definition: The row of F3-F8 buttons along the bottom of the window (View, Edit, Copy, Move, New Folder, Delete).

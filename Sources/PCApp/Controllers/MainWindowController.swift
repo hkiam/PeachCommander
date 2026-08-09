@@ -44,6 +44,23 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private var previewResizerWidthConstraint: NSLayoutConstraint?
     private var previewTimer: Timer?
     private static let previewWidth: CGFloat = 300
+    /// Plugin views docked across the bottom of the window (F-381), between the panels and the
+    /// command line. Width is what a terminal or a build log needs, and the window is widest here.
+    private let bottomDock = BottomDockView()
+    private let dockResizer = DockResizeHandle()
+    private var dockHeightConstraint: NSLayoutConstraint?
+    private var dockResizerHeightConstraint: NSLayoutConstraint?
+    /// The height to restore when the dock is opened again, kept across a close.
+    private var preferredDockHeight: CGFloat = BottomDockView.defaultHeight
+    #if DEBUG
+    /// Diagnostic: the bottom dock, i.e. the host's "bottom" plugin view container (F-381).
+    func bottomDockForAutomation() -> BottomDockView? { bottomDock }
+    /// Diagnostic: the two frames the dock was inserted between, so a scenario can check the stack
+    /// rather than a visibility flag. Both are private and live in another file from the automation
+    /// extension, which is the only reason these exist.
+    func splitViewFrameForAutomation() -> NSRect { splitView.frame }
+    func commandLineFrameForAutomation() -> NSRect { commandLine.frame }
+    #endif
     /// Docked AI assistant panel (right column, left of the preview panel).
     /// Minimum width, in points, that each panel may be shrunk to by dragging.
     private let minPaneWidth: CGFloat = 200
@@ -283,8 +300,25 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         container.addSubview(previewPanel)
         container.addSubview(previewHandle)
         container.addSubview(previewResizer)
+        container.addSubview(dockResizer)
+        container.addSubview(bottomDock)
         container.addSubview(commandLine)
         container.addSubview(functionKeyBar)
+        bottomDock.translatesAutoresizingMaskIntoConstraints = false
+        dockResizer.translatesAutoresizingMaskIntoConstraints = false
+        dockHeightConstraint = bottomDock.heightAnchor.constraint(equalToConstant: 0)  // shut by default
+        // The divider collapses with the dock: a drag handle for something that is not there would be
+        // a dead strip across the window, exactly as it would beside a closed preview panel.
+        dockResizerHeightConstraint = dockResizer.heightAnchor.constraint(equalToConstant: 0)
+        dockResizer.onResize = { [weak self] height in self?.setDockHeight(height) }
+        dockResizer.onResizeFinished = { [weak self] height in
+            Task { await self?.mainConfig.setInt(Int(height), "Layout", "DockHeight")
+                   await self?.mainConfig.flush() }
+        }
+        bottomDock.onClose = { [weak self] in self?.setBottomDockVisible(false) }
+        bottomDock.onSelectionChange = { [weak self] id in
+            Task { await self?.mainConfig.setString(id, "Layout", "DockPanel") }
+        }
         previewPanel.translatesAutoresizingMaskIntoConstraints = false
         previewWidthConstraint = previewPanel.widthAnchor.constraint(equalToConstant: 0)  // hidden by default
         // The resizer collapses with the panel: a drag handle for something that is not there
@@ -324,7 +358,17 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             previewHandle.bottomAnchor.constraint(equalTo: splitView.bottomAnchor),
             previewHandle.trailingAnchor.constraint(equalTo: container.trailingAnchor),
             previewHandle.widthAnchor.constraint(equalToConstant: PreviewToggleHandle.width),
-            commandLine.topAnchor.constraint(equalTo: splitView.bottomAnchor),
+            // The dock spans the whole window between the panels and the command line, so the command
+            // line and the function-key bar stay exactly where the muscle memory expects them.
+            dockResizer.topAnchor.constraint(equalTo: splitView.bottomAnchor),
+            dockResizer.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            dockResizer.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            dockResizerHeightConstraint!,
+            bottomDock.topAnchor.constraint(equalTo: dockResizer.bottomAnchor),
+            bottomDock.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            bottomDock.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            dockHeightConstraint!,
+            commandLine.topAnchor.constraint(equalTo: bottomDock.bottomAnchor),
             commandLine.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             commandLine.trailingAnchor.constraint(equalTo: container.trailingAnchor),
             commandLineHeightConstraint!,
@@ -588,6 +632,17 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         if config.bool("Layout", "LeftTree", default: false) { leftPanelController?.setTreeVisible(true) }
         if config.bool("Layout", "RightTree", default: false) { rightPanelController?.setTreeVisible(true) }
         if config.bool("Layout", "SharedTree", default: false) { setSharedTreeVisible(true, persist: false) }
+        // The dock (F-381). Its height is restored whether or not it is open, so reopening it later
+        // gives back the size it had rather than the factory one.
+        preferredDockHeight = max(BottomDockView.minHeight,
+                                  CGFloat(config.int("Layout", "DockHeight",
+                                                     default: Int(BottomDockView.defaultHeight))))
+        let panel = config.string("Layout", "DockPanel", default: "")
+        rememberedDockPanel = panel.isEmpty ? nil : panel
+        if let rememberedDockPanel { bottomDock.selectProvider(id: rememberedDockPanel) }
+        // Shut by default: opening it needs a plugin to have something to show, and closing it again
+        // when nothing does is handled where the providers arrive.
+        if config.bool("Layout", "DockVisible", default: false) { setBottomDockVisible(true, persist: false) }
         if config.bool("Layout", "ButtonBarVertical", default: false) { setButtonBarVertical(true) }
         // The keymap names the function-key bar's labels, so a late load relabels the bar in place.
         loadKeymap(scheme: config.string("Configuration", "KeyScheme", default: "tc-classic"))
@@ -3669,6 +3724,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         buttonBarView.applyTheme()
         functionKeyBar.applyTheme()
         commandLine.applyTheme()
+        bottomDock.applyTheme()
+        dockResizer.applyTheme()
         previewPanel.applyTheme()
         previewHandle.applyTheme()
         previewResizer.applyTheme()
@@ -3949,6 +4006,59 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     @objc func toggleSharedTree() { setSharedTreeVisible(!sharedTreeVisible) }
 
+    // MARK: - The bottom dock (F-381)
+
+    /// Which docked panel was on screen last time, restored once the plugin providing it turns up.
+    private var rememberedDockPanel: String?
+
+    /// Is the plugin dock across the bottom of the window open?
+    var bottomDockVisible: Bool { (dockHeightConstraint?.constant ?? 0) > 0 }
+
+    /// Open or close the dock (cm_ToggleDock, F-381).
+    ///
+    /// It starts shut. "Installed and active" is about the plugin, not about the furniture: taking a
+    /// quarter of the window from someone who has never asked for a terminal is not a default anyone
+    /// would choose, and one keystroke is a cheap way to ask. Once opened, the state is remembered.
+    func setBottomDockVisible(_ visible: Bool, persist: Bool = true) {
+        // Reopening restores the height it had, not the factory one — a dock the user shrank to a
+        // four-line strip should come back as a four-line strip.
+        dockHeightConstraint?.constant = visible ? preferredDockHeight : 0
+        dockResizerHeightConstraint?.constant = visible ? DockResizeHandle.height : 0
+        dockResizer.dockHeight = visible ? preferredDockHeight : 0
+        bottomDock.isHidden = !visible          // no leftover sliver when collapsed
+        dockResizer.isHidden = !visible
+        setMenuCheck(cmd: "cm_ToggleDock", on: visible)
+        if visible { focusBottomDock() }
+        if persist { Task { await mainConfig.setBool(visible, "Layout", "DockVisible") } }
+    }
+
+    @objc func toggleBottomDock() { setBottomDockVisible(!bottomDockVisible) }
+
+    /// Put the keyboard into the docked view, or back into the panel if it is already there.
+    ///
+    /// This is the gesture the whole dock is for: one key between navigating files and typing at a
+    /// prompt, landing back where the cursor was. Toggling rather than always-focusing means the same
+    /// key gets you out again, which is what makes it usable without thinking.
+    func focusBottomDock() {
+        guard bottomDockVisible, let content = bottomDock.visibleContentView else { return }
+        guard let window else { return }
+        // Already inside the dock? Then this is the way back to the file list.
+        if let first = window.firstResponder as? NSView,
+           first === content || first.isDescendant(of: content) {
+            if let back = activePanel?.contentResponder { window.makeFirstResponder(back) }
+            return
+        }
+        window.makeFirstResponder(content)
+    }
+
+    /// Set the dock's height while dragging; the divider reports values already clamped.
+    private func setDockHeight(_ height: CGFloat) {
+        guard let constraint = dockHeightConstraint else { return }
+        constraint.constant = height
+        preferredDockHeight = height
+        dockResizer.dockHeight = height
+    }
+
     /// Choose a folder in the shared tree, as clicking one does — the same callback, so a scenario
     /// exercises the real path rather than a shortcut around it.
     func sharedTreeAutomationSelect(_ path: String) { sharedTree.onSelect?(path) }
@@ -4037,6 +4147,16 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // The preview panel is the first named view container ("sidebar").
         ViewContainerRegistry.shared.register(container: "sidebar") { [weak self] providers in
             self?.previewPanel.setViewProviders(providers)
+        }
+        // The dock across the bottom of the window is the "bottom" view container (F-381), for the
+        // plugins that need width rather than height — a terminal, a build log, a REPL.
+        ViewContainerRegistry.shared.register(container: "bottom") { [weak self] providers in
+            guard let self else { return }
+            self.bottomDock.setViewProviders(providers)
+            if let remembered = self.rememberedDockPanel { self.bottomDock.selectProvider(id: remembered) }
+            // A dock left open by a plugin that has since been removed would be an empty frame with
+            // an explanation nobody asked for; close it instead.
+            if providers.isEmpty, self.bottomDockVisible { self.setBottomDockVisible(false, persist: false) }
         }
         // The trailing titlebar accessory is the "titlebar" view container.
         ViewContainerRegistry.shared.register(container: "titlebar") { [weak self] providers in

@@ -71,6 +71,14 @@ does not have.
 
 ### Added
 
+- **A dock across the bottom of the window** (View ▸ Bottom Dock, or Ctrl and the key left of the
+  "1"). Plugins can now put a view there instead of in the side panel, which matters for anything that
+  needs width: the side panel is 300 points wide and gives a monospaced font 44 columns, while the
+  bottom of a 1200-point window gives 176. Nothing ships a view for it yet — this is the room being
+  made, and the dock says so plainly when it is empty rather than opening as a blank strip. It starts
+  closed, remembers the height you drag it to, and the shortcut is bound to the key's *position*, so it
+  is the familiar Ctrl+backtick on a US keyboard without turning into a dead-key gesture on a German
+  one.
 - **One folder tree for both panels** (View ▸ Shared Tree), alongside the per-panel tree that was
   already there. Choosing a folder moves whichever panel is active.
 - **Files can now be copied into tar and 7z archives, not only zip.** Pressing F5 into a `.tar` used to
