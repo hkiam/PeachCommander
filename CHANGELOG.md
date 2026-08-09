@@ -45,6 +45,11 @@ does not have.
   binary means asking the system for a font for each of thousands of different characters. Such
   content now uses the view built for large files: the same switch takes about 30 ms. Looking at a
   binary as text still works — that is how you find the strings in one.
+- **Opening a large file no longer pulls it into memory.** The viewer's outline asked for the whole
+  text of a file it was about to refuse for being too long: a 175 MB file cost 306 MB of memory to
+  show, in a view whose entire purpose is that the file need not fit. It costs 140 MB now.
+- **Compare Directories with subfolders no longer freezes the window.** Both trees were walked on the
+  main thread — about 1.6 seconds for a moderate source tree, far longer for a home folder.
 - **Clicking in a large text file no longer stalls.** Highlighting the matching bracket forced the
   whole document to be laid out on every click.
 - **The window title now says where you are.** It read "Peach Commander" whatever folder you were in —

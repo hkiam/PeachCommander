@@ -135,6 +135,26 @@ extension MainWindowController {
                                 a[0], ms, kind, ms >= 0 && ms < 3000 ? "yes" : "no")
                         .write(toFile: a[1], atomically: true, encoding: .utf8)
                 }
+            case "memdump":                             // memdump <out> (F-112): this process's memory
+                // From the kernel (`phys_footprint`, the number Activity Monitor shows), not from any
+                // bookkeeping of ours — the app is not grading its own work here, it is reading a
+                // counter. It has to be taken while the app is alive: the harness kills it before the
+                // external checks run, which is how the first version of this measured nothing at all.
+                var info = task_vm_info_data_t()
+                var count = mach_msg_type_number_t(MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
+                let kerr = withUnsafeMutablePointer(to: &info) {
+                    $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
+                        task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count)
+                    }
+                }
+                let mb = kerr == KERN_SUCCESS ? Int(info.phys_footprint) / (1024 * 1024) : -1
+                // 220 MB, from measurement rather than from a guess — and the first guess was wrong: it was
+                // taken from `ps` RSS (139 idle / 257 fixed / 434 broken) and then applied to
+                // `phys_footprint`, which does not count clean file pages and reads 140 fixed / 306
+                // broken. At 350 the guard passed the broken build. Both numbers are for the same
+                // 175 MB file.
+                try? "footprint_mb=\(mb)\nlean=\(mb >= 0 && mb < 220 ? "yes" : "no")\n"
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
             case "listercaret":                         // listercaret <line>: put the viewer's caret there
                 currentLister()?.automationSetCaret(line: Int(arg) ?? 1)
             case "listernote":                          // listernote: write a note about the caret's line

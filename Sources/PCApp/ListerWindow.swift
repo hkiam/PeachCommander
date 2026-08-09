@@ -453,16 +453,19 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     }
 
     /// Text of the current content view (bounded), for symbol extraction.
-    private var currentContentText: String? {
-        if let s = textContentView?.string { return s }
-        return (contentView as? ViewerTextProviding)?.copyText
-    }
-
     /// Recompute the outline for the current file (background parse via SymbolSidebar).
+    ///
+    /// Only from the text view, which already holds the document. The other representation is the
+    /// *virtual* view, used for files above 4 MiB and for binary content — and asking it for its text
+    /// reads and decodes the whole file. `SymbolSidebar.load` then refuses it anyway, above four
+    /// million characters or for an extension it has no grammar for, so every byte of that work was
+    /// thrown away: measured, opening a 187 MB file cost 295 MB of resident memory in a view whose
+    /// entire purpose is that the file need not fit in memory (F-112). The bound existed; it was
+    /// applied one call too late.
     private func refreshSymbols() {
         let ext = files.indices.contains(index) ? (files[index] as NSString).pathExtension.lowercased() : ""
-        if mode == .code || mode == .text {
-            symbolSidebar.load(text: currentContentText ?? "", ext: ext)
+        if mode == .code || mode == .text, let tv = textContentView {
+            symbolSidebar.load(text: tv.string, ext: ext)
         } else {
             symbolSidebar.clear()
         }
@@ -2565,11 +2568,14 @@ extension ListerWindowController: MarksPanelHost {
                 return ns.substring(with: range).trimmingCharacters(in: .whitespacesAndNewlines)
             }
         }
-        guard let view = contentView as? ViewerTextProviding else { return lines.map { _ in "" } }
-        // `isNewline` rather than splitting on "\n": in Swift a CRLF is a single Character, so splitting
-        // on the line feed alone would leave a carriage return on the end of every line.
-        let text = view.copyText.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline)
-        return lines.map { text.indices.contains($0 - 1) ? String(text[$0 - 1]) : "" }
+        // The virtual view can hand over one line at a time — it is how the marks panel already reads
+        // them. Asking it for `copyText` instead would decode the entire file to show a handful of
+        // snippets, which for the files this view exists for is the whole file in memory.
+        guard let view = contentView as? ViewerMarkable else { return lines.map { _ in "" } }
+        return lines.map { line in
+            guard line >= 1, line <= view.lineCountForMarks else { return "" }
+            return view.lineTextForMark(line - 1).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
     }
 
     func marksPanelReveal(groupID: Int, occurrenceIndex: Int) {
