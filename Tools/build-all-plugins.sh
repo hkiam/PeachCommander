@@ -28,6 +28,7 @@ SCRIPTS=(
   build-treemap-plugin
   build-uninstaller-plugin
   build-taskmanager-plugin
+  build-terminal-plugin
   build-ai-plugin
   build-aicolumn-plugin
   build-pfx-plugins
