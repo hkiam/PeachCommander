@@ -80,9 +80,33 @@ final class TransferManager {
         Task { await run(job, queue: queue) }
     }
 
-    /// Start every held download-list job (F-215).
+    /// Start the held download-list jobs, one after another (F-215, F-085).
+    ///
+    /// This used to call `startJob` on every one of them, and each job owns its own queue and control
+    /// — so twenty queued downloads became twenty concurrent transfers. Over FTP that is worse than
+    /// useless, and it is not what a background transfer manager is for; Total Commander runs them in
+    /// turn. The next one starts when the previous ends, whether it succeeded or not: one failure must
+    /// not strand the rest of the list.
     func startAllQueued() {
-        for job in jobs where job.status == .queued { startJob(job) }
+        drainingQueue = true
+        startNextQueuedJob()
+    }
+
+    /// True while "start all" is working through the list.
+    private var drainingQueue = false
+
+    /// Start the next held job, unless one is still occupying the slot.
+    ///
+    /// The rule is in `TransferSchedule` because the manager is an AppKit object no test bundle can
+    /// reach, while "one at a time" is a statement about a list of statuses.
+    private func startNextQueuedJob() {
+        guard drainingQueue else { return }
+        let statuses = jobs.map { TransferJobStatus(rawValue: $0.status.rawValue) ?? .done }
+        guard let index = TransferSchedule.nextToStart(statuses) else {
+            if !statuses.contains(.queued) { drainingQueue = false }
+            return
+        }
+        startJob(jobs[index])
     }
 
     private func run(_ job: Job, queue: TransferQueue) async {
@@ -113,6 +137,8 @@ final class TransferManager {
         }
         if !job.status.isFinished { job.status = .done }
         onChange?()
+        // Whatever the outcome, the slot is free: let the next held job have it.
+        startNextQueuedJob()
         // Continue-on-error summary for the background job (F-089).
         let problems = resolver.problems()
         if !problems.isEmpty {

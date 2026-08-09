@@ -105,6 +105,11 @@ SCENARIOS = [
     # (F-359) — the terminator surviving is the part that fails silently.
     ("editor-lines", ["editlines /Users/admin/pc-demo/messy.txt|/Users/admin/lines.txt",
                       "wait 2000"], 9),
+    # Dropping something onto the button bar (F-010). The drag itself cannot be scripted, but the entry
+    # point the bar view calls can — and what matters is the other end: the button has to reach
+    # default.bar, or it is gone at the next launch. That file is read by the shell afterwards.
+    ("toolbar-drop", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                      "bardrop /System/Applications/Calculator.app", "wait 1500"], 9),
     # Does previewing a document fetch what it points at (F-116)? An <img> pointing at a server needs no
     # JavaScript, so disabling that never stopped it: opening the file told the other end who opened it
     # and when. The witness is the server, not the app — see EXTERNAL_CHECKS below.
@@ -297,6 +302,11 @@ EXTERNAL_CHECKS = {
     # the parent is the part a server does not do for you.
     "sync-sftp": ("cat ~/sync-dst/alpha.txt ~/sync-dst/sub/beta.txt 2>/dev/null | tr '\\n' ' '",
                   "one two"),
+    # The button is in the file the app will read at the next launch, not merely in the view.
+    # The `cmd` line specifically: a button writes the path twice, once as its icon and once as the
+    # command, so counting mentions says 2 and says nothing about which is which.
+    "toolbar-drop": ("grep -c '^cmd[0-9]*=.*Calculator.app$' ~/pc-cfg/default.bar 2>/dev/null || echo 0",
+                     "1"),
     "sftp-attributes": ("stat -f %Lp ~/sftp-demo/perm.txt", "600"),
     # Three distinct answers, so the interesting failure cannot hide: "viewer-fetched" means the block is
     # not working, "server-not-running" means the witness died and the run proves nothing, and only

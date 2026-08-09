@@ -6,4 +6,4 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| sync-sftp | 0 | — | — | `sync-sftp.png` |
+| toolbar-drop | 0 | — | — | `toolbar-drop.png` |
