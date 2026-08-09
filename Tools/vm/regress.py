@@ -252,6 +252,22 @@ SCENARIOS = [
                            "closeviews", "wait 3000",
                            "probe /Users/admin/after.txt|pgrep -f 'sleep 39[45]' | wc -l | tr -d ' '",
                            "wait 500"], 8),
+    # Tabs, and the promise underneath them (plan §4): a session outlives its view, so switching tabs
+    # must not restart what is running. The witness is a job started in the first tab — if selecting
+    # another tab and coming back rebuilt the session, its shell would have been torn down and the job
+    # with it. The status line carries the session id, so a rebuilt one is visible as well as fatal.
+    ("terminal-tabs", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "placeview plugin.terminal.view|default", "wait 800",
+                       "dock on", "wait 3500",
+                       "termsend plugin.terminal.view|sleep 397 &\\n", "wait 2500",
+                       "dockdump /Users/admin/tabs-one.txt", "wait 300",
+                       "termnotify plugin.terminal.view|newTab|", "wait 2500",
+                       "dockdump /Users/admin/tabs-two.txt", "wait 300",
+                       "termnotify plugin.terminal.view|selectTab|1", "wait 1500",
+                       "dockdump /Users/admin/tabs-back.txt", "wait 300",
+                       "probe /Users/admin/tabs-alive.txt|pgrep -f 'sleep 397' | wc -l | tr -d ' '",
+                       "wait 500",
+                       "panelsdump /Users/admin/tabs-panels.txt", "wait 300"], 10),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -670,6 +686,28 @@ REPORTS = {
                                ["panels=plugin.terminal.view", "zsh ·", "!·  0×0"]),
     "terminal-teardown-before": ("/Users/admin/before.txt", ["2"]),
     "terminal-teardown": ("/Users/admin/after.txt", ["0", "!2"]),
+    # One tab, session 1, a shell with a real size.
+    "terminal-tabs-one": ("/Users/admin/tabs-one.txt", ["tab 1/1 · session 1 ·", "!·  0×0"]),
+    # A second tab is a *new* session, not a reused one — otherwise "tabs" would just be a relabelled
+    # single terminal.
+    # …with a shell that actually started. The first version of this expectation checked only the tab
+    # numbering and passed against a second tab reporting 0×0 — a terminal with no columns, whose shell
+    # had never been told a size and never would be, since a pseudo-terminal is resized only on change.
+    # …with a shell that actually started *and knows how wide it is*. Two earlier versions of this
+    # expectation passed against a broken terminal: one checked only the tab numbering (the second tab
+    # reported 0×0), and the next only that it was not 0×0 (it reported SwiftTerm's default 80×25 while
+    # showing 125 columns, so every line the shell printed wrapped in the wrong place). The size is
+    # asserted against the first tab's, because both tabs live in the same view and must agree.
+    "terminal-tabs-two": ("/Users/admin/tabs-two.txt", ["tab 2/2 · session 2 ·", "· 125×9 ·"]),
+    # …and coming back lands on session 1 again rather than on a fresh one wearing its number.
+    "terminal-tabs-back": ("/Users/admin/tabs-back.txt", ["tab 1/2 · session 1 ·"]),
+    # The claim that matters, asked of the process table: what was started in the first tab is still
+    # running after two tab switches.
+    "terminal-tabs": ("/Users/admin/tabs-alive.txt", ["1", "!0"]),
+    # The §12 tripwire on a second scenario, because the screenshot of this one showed the left panel
+    # in the home folder again — a third sighting. If it is real it will be caught here with the state
+    # written down rather than inferred from a picture.
+    "terminal-tabs-panels": ("/Users/admin/tabs-panels.txt", ["left=/Users/admin/pc-demo"]),
     "terminal-move": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move-mounts": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),

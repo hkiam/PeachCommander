@@ -14,4 +14,5 @@ only go down.
 | terminal-control | 0 | — | — | `terminal-control.png` |
 | terminal-orphan | 0 | — | — | `terminal-orphan.png` |
 | terminal-teardown | 0 | — | — | `terminal-teardown.png` |
+| terminal-tabs | 0 | — | — | `terminal-tabs.png` |
 | terminal-move | 0 | — | — | `terminal-move.png` |

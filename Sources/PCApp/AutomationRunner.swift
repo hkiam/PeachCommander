@@ -273,6 +273,15 @@ extension MainWindowController {
                 let responder = window?.firstResponder.map { String(describing: type(of: $0)) } ?? "<none>"
                 try? "active=\(side)\nleft=\(l)\nright=\(r)\nresponder=\(responder)\n"
                     .write(toFile: arg, atomically: true, encoding: .utf8)
+            case "termnotify":                          // termnotify <viewId>|<key>|<value> (F-381)
+                // The generic form of `termsend`: any host-context key, which is how the host's own
+                // terminal commands (new tab, switch tab) will reach the plugin once they exist.
+                let a = arg.split(separator: "|", maxSplits: 2).map(String.init)
+                if a.count >= 2 {
+                    let sent = ViewContainerRegistry.shared.notifyView(
+                        viewId: a[0], key: a[1], value: a.count > 2 ? a[2] : "")
+                    NSLog("[automation] termnotify \(a[0]) \(a[1]): \(sent)")
+                }
             case "termsend":                            // termsend <viewId>|<text> (F-381)
                 // Types into a plugin view's pseudo-terminal through the same channel the host will
                 // use for "open terminal here" and for dropping file names at the prompt. "\n" in the
