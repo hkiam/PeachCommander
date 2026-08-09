@@ -39,6 +39,11 @@ does not have.
 
 ### Fixed
 
+- **Side-panel plugin views no longer restart when an unrelated plugin is switched on or off.** Every
+  change to the set of enabled plugins rebuilt every embedded plugin view from scratch — invisible
+  while those views show text, and not invisible at all once one of them holds a running program.
+  Views that have not changed are now left alone.
+
 - **The viewer no longer freezes when you look at a binary as text.** Opening an image and switching to
   text mode could stop the app for minutes — long enough to look like a hang, because it was one. The
   content went into the same text view used for source code, and laying out a megabyte of decoded

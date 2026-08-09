@@ -231,21 +231,42 @@ final class PreviewPanelView: NSView {
 
     // MARK: - Plugin view providers (contribution container "sidebar")
 
-    /// Replace the plugin segments. Tears down previously mounted views, rebuilds
-    /// the segmented control, and resets to Info if the selection is now invalid.
+    /// Replace the plugin segments, keeping the views that are still here.
+    ///
+    /// This used to remove every mounted view and call `closeView()` on every provider, which was the
+    /// same defect the registry had: a refresh happens whenever *any* plugin's contributions change,
+    /// so an unrelated toggle rebuilt this panel's views — and `PcCloseView` is how a plugin destroys
+    /// whatever is behind a view. Now only views whose provider has genuinely gone are dropped, and
+    /// they are only *dropped*: the mount may have moved to another container, and closing it there
+    /// would kill it. The registry owns that decision and has already made it by the time this runs.
+    ///
+    /// Which segment is showing survives the rebuild too, by id — the segmented control is rebuilt
+    /// from scratch, so a plugin appearing earlier in the list would otherwise silently switch the
+    /// panel to a different view.
     func setViewProviders(_ providers: [PreviewViewProvider]) {
-        for v in mountedViews.values { v.removeFromSuperview() }
-        mountedViews.removeAll()
-        self.providers.forEach { $0.closeView() }
+        let previous = selectedPluginViewId
+        let keep = Set(providers.map(\.id))
+        for (id, view) in mountedViews where !keep.contains(id) {
+            view.removeFromSuperview()
+            mountedViews[id] = nil
+        }
         self.providers = providers
 
         let titles = Self.builtinTitles + providers.map(\.title)
         segmented.segmentCount = titles.count
         for (i, t) in titles.enumerated() { segmented.setLabel(t, forSegment: i) }
-        if segmented.selectedSegment < 0 || segmented.selectedSegment >= titles.count {
+        if let previous, let index = providers.firstIndex(where: { $0.id == previous }) {
+            segmented.selectedSegment = Self.builtinTitles.count + index
+        } else if segmented.selectedSegment < 0 || segmented.selectedSegment >= titles.count {
             segmented.selectedSegment = 0
         }
         modeChanged()
+    }
+
+    /// The plugin view currently selected, or nil when a built-in mode is showing.
+    private var selectedPluginViewId: String? {
+        let index = segmented.selectedSegment - Self.builtinTitles.count
+        return providers.indices.contains(index) ? providers[index].id : nil
     }
 
     /// Select the plugin segment for `id` (no-op if it isn't currently provided).

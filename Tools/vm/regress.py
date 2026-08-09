@@ -129,6 +129,17 @@ SCENARIOS = [
                    "dock on", "wait 900", "dockdump /Users/admin/dock-open.txt", "wait 300",
                    "dock off", "wait 900", "dockdump /Users/admin/dock-shut.txt", "wait 300",
                    "dock on", "wait 900"], 9),
+    # A refresh must not destroy what it is not changing (F-381). ViewContainerRegistry.refresh began
+    # with `live.forEach { $0.close() }`, so enabling or disabling *any* plugin tore down every mounted
+    # plugin view and built it again. Harmless for a comment field; for a view with a process behind it
+    # PcCloseView is how that process dies. The Notes view is opened first so there is something to
+    # destroy, then the same entry point a plugin toggle reaches is called twice, and the counters sit
+    # on the PcMakeView/PcCloseView call sites themselves rather than in the code that was changed.
+    ("mount-refresh", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "previewpanel on", "wait 1500", "previewtab Notes", "wait 1200",
+                       "mountdump /Users/admin/mounts-before.txt", "wait 300",
+                       "refreshviews", "wait 800", "refreshviews", "wait 800",
+                       "mountdump /Users/admin/mounts-after.txt", "wait 400"], 9),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -465,6 +476,16 @@ REPORTS = {
                    "!height=0"]),
     "dock-seam-shut": ("/Users/admin/dock-shut.txt",
                        ["visible=false", "height=0", "dividerGap=0", "stacked=yes"]),
+    # One whole line, not three substrings: "closed=0" is also true of every mount that never built a
+    # view, so scattered substrings would pass against a dump in which the Notes view had been
+    # destroyed and rebuilt. The claim is that *this* view survived two refreshes — still standing,
+    # built exactly once, never closed. The "before" dump is what makes it mean anything: a view that
+    # was never made cannot be destroyed. (made/closed are per plugin, which is what the ABI boundary
+    # can count; Notes contributes one view, so for this line they are the same thing.)
+    "mount-refresh": ("/Users/admin/mounts-after.txt",
+                      ["plugin.notes.sidebar container=sidebar built=true made=1 closed=0"]),
+    "mount-refresh-before": ("/Users/admin/mounts-before.txt",
+                             ["plugin.notes.sidebar container=sidebar built=true made=1 closed=0"]),
     "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
     # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
     # the wrong question: a system panel has none, so that check passed without showing anything.
