@@ -192,6 +192,12 @@ extension MainWindowController {
                     if panel.frame.width <= 1 || panel.isHidden { if wantOpen { togglePreviewPanel() } }
                     else if !wantOpen { togglePreviewPanel() }
                 }
+            case "dock":                                // dock on|off (F-381): *set* it, do not toggle
+                // Same lesson as `previewpanel`: a toggle depends on what the previous scenario left
+                // behind, which is how a layout conflict once passed alone and failed in company.
+                setBottomDockVisible(arg.lowercased() != "off")
+            case "dockdump":                            // dockdump <out> (F-381)
+                dumpBottomDock(arg)
             case "previewtab":                          // previewtab <title>: pick a preview panel tab
                 if let panel = previewPanelForAutomation() {
                     NSLog("[automation] previewtab \(arg): \(panel.automationSelectTab(titled: arg))")
@@ -1089,6 +1095,57 @@ extension MainWindowController {
         field.delegate?.controlTextDidEndEditing?(
             Notification(name: NSControl.textDidEndEditingNotification, object: field))
         return "committed"
+    }
+
+    /// Report the bottom dock and, more to the point, the layout seam it sits in (F-381).
+    ///
+    /// "Is the dock visible" is the cheap question and it can pass while the window is wrong. The dock
+    /// was inserted between the file panels and the command line by splitting one constraint
+    /// (`commandLine.top == splitView.bottom`) into three, so what can actually break is the *stack*:
+    /// a dock that opens without the panels giving up the room overlaps them, and a dock that does not
+    /// push the command line down hides it behind itself. Neither shows up in a visibility flag.
+    ///
+    /// So the four edges are measured against each other and the verdict is written next to them. The
+    /// numbers stay in the dump because a verdict alone tells you nothing about *how* it went wrong.
+    private func dumpBottomDock(_ file: String) {
+        guard let dock = bottomDockForAutomation() else {
+            try? "ERROR: no dock\n".write(toFile: file, atomically: true, encoding: .utf8)
+            return
+        }
+        let visible = bottomDockVisible
+        // AppKit's window coordinates grow upward, so going down the window is going *down* in y:
+        // the split view's bottom edge, then the divider, then the dock, then the command line's top.
+        let splitBottom = splitViewFrameForAutomation().minY
+        let dockTop = dock.frame.maxY
+        let dockBottom = dock.frame.minY
+        let commandTop = commandLineFrameForAutomation().maxY
+        let dividerGap = splitBottom - dockTop        // the resize handle lives here
+        let overlap = dockBottom - commandTop         // 0 when they meet exactly
+        // A closed dock is zero-height and the two gaps collapse; an open one must be exactly as tall
+        // as it claims, with the divider above it and the command line immediately below.
+        let stacked = abs(overlap) <= 1
+            && abs(dividerGap - (visible ? DockResizeHandle.height : 0)) <= 1
+            && (!visible || dock.frame.height >= BottomDockView.minHeight)
+        var out = "visible=\(visible)\n"
+        out += "height=\(Int(dock.frame.height.rounded()))\n"
+        out += "dividerGap=\(Int(dividerGap.rounded()))\n"
+        out += "overlap=\(Int(overlap.rounded()))\n"
+        out += "stacked=\(stacked ? "yes" : "no")\n"
+        out += "panels=\(dock.providerIds.joined(separator: ","))\n"
+        out += "selected=\(dock.selectedProviderId ?? "<none>")\n"
+        // What the dock is showing, the way `sidebardump` reads the sidebar: with no plugin mounted
+        // here this is the empty-state sentence, which is itself the thing worth asserting — an empty
+        // frame and an explained one look the same in a screenshot.
+        var labels: [String] = []
+        func walk(_ view: NSView) {
+            if let field = view as? NSTextField, !field.stringValue.isEmpty, !field.isHidden {
+                labels.append(field.stringValue)
+            }
+            view.subviews.forEach(walk)
+        }
+        walk(dock)
+        out += "text=\(labels.joined(separator: " | "))\n"
+        try? out.write(toFile: file, atomically: true, encoding: .utf8)
     }
 
     /// Write every string a plugin's sidebar view is *showing* to a file (F-372).

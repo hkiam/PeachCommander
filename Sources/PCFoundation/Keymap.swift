@@ -130,6 +130,14 @@ public struct KeyChord: Hashable, Sendable {
         keys.formUnion([
             "ENTER", "TAB", "SPACE", "ESC", "BACKSPACE", "INSERT", "DELETE",
             "LEFT", "RIGHT", "UP", "DOWN", "PGUP", "PGDN", "HOME", "END",
+            // The key left of the "1", identified by *position* rather than by the character it
+            // produces (F-381). Every other token here is layout-independent because the character
+            // is: an "A" is an "A" everywhere. This one is not — the same physical key is ` on a US
+            // layout, ^ on a German one, @ on a French one — so binding the character would make the
+            // shortcut mean a different key on every keyboard, and on a German layout the backtick
+            // additionally lives behind Shift on a dead key. The dispatcher resolves this token from
+            // the hardware key code instead; see KeymapMenu.keyToken(from:).
+            "BACKQUOTE",
         ])
         // Numpad operator keys
         keys.formUnion(["NUM+", "NUM-", "NUM*", "NUM/"])

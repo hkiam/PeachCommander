@@ -116,6 +116,19 @@ SCENARIOS = [
     ("split-center", ["active left", "left /Users/admin/pc-demo", "wait 1000",
                       "widenleft", "wait 600", "splitdump /Users/admin/split-before.txt", "wait 300",
                       "splitcenter", "wait 600", "splitdump /Users/admin/split-after.txt", "wait 300"], 9),
+    # The dock across the bottom of the window (F-381). Not "does it appear" — that passes while the
+    # window is wrong. It was inserted by splitting the one constraint that tied the command line to the
+    # panels into three, so what can break is the stack: a dock that opens without the panels giving up
+    # the room overlaps them, and one that fails to push the command line down hides it. `dockdump`
+    # measures the four edges against each other; the closed dump is the other half, because a dock that
+    # never collapses back to zero leaves a dead strip across the window.
+    # Opened, closed, then opened again — the last step only so the screenshot shows the feature
+    # rather than the window without it. The closed dump has to come after an open one or "height=0"
+    # would be true of a dock that never appeared.
+    ("dock-seam", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                   "dock on", "wait 900", "dockdump /Users/admin/dock-open.txt", "wait 300",
+                   "dock off", "wait 900", "dockdump /Users/admin/dock-shut.txt", "wait 300",
+                   "dock on", "wait 900"], 9),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -444,6 +457,14 @@ REPORTS = {
     # it, a run where `widenleft` silently did nothing would pass.
     "split-center": ("/Users/admin/split-after.txt", ["equal=yes\n"]),
     "split-center-before": ("/Users/admin/split-before.txt", ["equal=no\n"]),
+    # No plugin ships a "bottom" view yet, so the dock opens empty — and the empty state is itself worth
+    # asserting: an unexplained empty frame and an explained one look identical in a screenshot, and only
+    # one of them is a state the user can act on. `stacked=yes` is the real claim.
+    "dock-seam": ("/Users/admin/dock-open.txt",
+                  ["visible=true", "stacked=yes", "No plugin provides a view here.",
+                   "!height=0"]),
+    "dock-seam-shut": ("/Users/admin/dock-shut.txt",
+                       ["visible=false", "height=0", "dividerGap=0", "stacked=yes"]),
     "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
     # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
     # the wrong question: a system panel has none, so that check passed without showing anything.
