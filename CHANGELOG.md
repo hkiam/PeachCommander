@@ -81,6 +81,9 @@ does not have.
 
 ### Added
 
+- **Files dropped on the terminal land at the prompt**, quoted and not executed — a name with a space
+  or an apostrophe in it arrives as one argument. The terminal also follows the app's colours instead
+  of being a black rectangle in a themed window.
 - **The command line can run in the embedded terminal** (*View ▸ Run Command Line in Terminal*, off by
   default). A detached command has no terminal, so anything that asks a question never gets an answer —
   `sudo` prompts for a password where nobody can type it. Run in the terminal the prompt is on screen,

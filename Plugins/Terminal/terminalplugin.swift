@@ -31,6 +31,16 @@
 
 import AppKit
 
+/// Quote a path for a POSIX shell, the way the host's own ShellQuoting does.
+///
+/// Repeated here rather than shared because the host's copy is Swift in another module and this file
+/// is compiled into a plugin. The rule is the one that cannot be got wrong: wrap in single quotes and
+/// write a contained single quote as `'\''`. A name with a space, a quote, a `$` or a newline in it
+/// then arrives as exactly one argument.
+func shellQuoted(_ value: String) -> String {
+    "'" + value.replacingOccurrences(of: "'", with: "'\\''") + "'"
+}
+
 // MARK: - Sessions
 
 /// One pseudo-terminal, its child process and its scrollback.
@@ -291,6 +301,7 @@ final class TerminalContainerView: NSView {
         ])
         newTab()
         applyTheme()
+        registerForDraggedTypes([.fileURL])
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
@@ -460,6 +471,10 @@ final class TerminalContainerView: NSView {
         switch key {
         case "container": container = value; refreshChrome()
         case "sendText":  selectedSession?.send(value)
+        case "dropPaths":
+            // The same entry point a real drop takes. A drag cannot be scripted, so what a scenario
+            // can exercise is the other end — which is where the quoting lives and where it matters.
+            insertPaths(value.split(separator: "\n").map(String.init).filter { !$0.isEmpty })
         case "newTab":    newTab()
         case "selectTab": if let i = Int(value) { selectTab(i - 1) }   // 1-based, as the status line reads
         case "closeTab":  if let i = Int(value) { closeTab(i - 1) }
@@ -473,6 +488,37 @@ final class TerminalContainerView: NSView {
             applyTheme()
         default:          break
         }
+    }
+
+    // MARK: Dropping files
+
+    /// Put dropped paths at the prompt, quoted and separated by spaces.
+    ///
+    /// Inserted, never executed. Dropping a file onto a terminal means "I want to talk about this
+    /// file", and deciding on the user's behalf what to do with it would be both presumptuous and
+    /// occasionally destructive.
+    func insertPaths(_ paths: [String]) {
+        guard !paths.isEmpty, let session = selectedSession else { return }
+        session.send(paths.map(shellQuoted).joined(separator: " ") + " ")
+        window?.makeFirstResponder(session.view)
+    }
+
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        droppedPaths(from: sender).isEmpty ? [] : .copy
+    }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        let paths = droppedPaths(from: sender)
+        guard !paths.isEmpty else { return false }
+        insertPaths(paths)
+        return true
+    }
+
+    private func droppedPaths(from sender: NSDraggingInfo) -> [String] {
+        let options: [NSPasteboard.ReadingOptionKey: Any] = [.urlReadingFileURLsOnly: true]
+        let urls = sender.draggingPasteboard.readObjects(forClasses: [NSURL.self],
+                                                        options: options) as? [URL] ?? []
+        return urls.map(\.path)
     }
 
     /// Focus given to this view belongs to the terminal inside it.
