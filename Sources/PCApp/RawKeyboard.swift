@@ -45,6 +45,17 @@ protocol RawKeyboardConsumer: AnyObject {
 @MainActor
 enum RawKeyboard {
 
+    /// Commands a focused view may never take, however raw it wants its keyboard.
+    ///
+    /// A view that claims every key and contains the only way out of itself is a trap: the terminal
+    /// declares `rawKeyboard`, so without this the key that moves focus back to the file panels is
+    /// swallowed by the terminal and there is no keyboard route out of it at all. Measured — the
+    /// toggle simply did nothing while the terminal had focus.
+    ///
+    /// Deliberately tiny. Every entry here is a key taken away from whatever is focused, which is the
+    /// opposite of what `rawKeyboard` is for, so the bar is "without it the user is stuck".
+    static let reservedCommands: Set<String> = ["cm_ToggleDock"]
+
     /// Should this key event be left to the focused view rather than routed to a command?
     ///
     /// - Parameters:

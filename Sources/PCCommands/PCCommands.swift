@@ -272,6 +272,10 @@ public protocol WindowControllerProtocol: AnyObject {
     func toggleBottomDock()
     /// Put the window's furniture back the way it ships (cm_ResetLayout, F-381).
     func resetLayout()
+    /// Take the embedded terminal to the active panel's folder (cm_TerminalCdHere, F-381).
+    func terminalCdHere()
+    /// Put the selected file names at the terminal's prompt (cm_TerminalSendNames, F-381).
+    func terminalSendNames()
     /// Show the background transfer manager window (TODOS #135).
     func showTransferManager()
     func showOpenSourceNotices()
@@ -768,6 +772,8 @@ public actor CommandRegistry {
         register(Self.cm_TreeShared)
         register(Self.cm_ToggleDock)
         register(Self.cm_ResetLayout)
+        register(Self.cm_TerminalCdHere)
+        register(Self.cm_TerminalSendNames)
         register(Self.cm_ConfigKeyClassic)
         register(Self.cm_ConfigKeyMacOS)
         register(Self.cm_CopyNamesToClip)
@@ -960,6 +966,12 @@ public actor CommandRegistry {
     static let cm_ResetLayout = PCCommand(id: 309, name: "cm_ResetLayout", category: "View",
         help: "Put panels, dock and side panel back where they started",
         handler: { ctx in ctx.windowController?.resetLayout() })
+    static let cm_TerminalCdHere = PCCommand(id: 310, name: "cm_TerminalCdHere", category: "View",
+        help: "Change the embedded terminal to the active panel's folder",
+        handler: { ctx in ctx.windowController?.terminalCdHere() })
+    static let cm_TerminalSendNames = PCCommand(id: 311, name: "cm_TerminalSendNames", category: "View",
+        help: "Put the selected file names at the terminal's prompt",
+        handler: { ctx in ctx.windowController?.terminalSendNames() })
     static let cm_ImageInfo = PCCommand(id: 30079, name: "cm_ImageInfo", category: "Files",
         help: "Show image dimensions/metadata", handler: { ctx in ctx.windowController?.showImageInfo() })
     static let cm_ConfigKeyClassic = PCCommand(id: 30051, name: "cm_ConfigKeyClassic", category: "Configuration",

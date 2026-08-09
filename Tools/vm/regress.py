@@ -285,6 +285,33 @@ SCENARIOS = [
                         # Split again at the end, so the screenshot documents the feature rather than
                         # the window without it.
                         "termnotify plugin.terminal.view|split|", "wait 2500"], 10),
+    # The seams between the file manager and the terminal (plan §7). Three of them, each checked
+    # through the shell itself rather than through what the app believes it did.
+    #
+    # The focus key is the most-used one and had the wrong shape at first: it toggled the dock's
+    # *visibility*, so with the terminal open and the cursor in a panel it dismissed the terminal
+    # instead of going to it. It now moves the keyboard and leaves the dock alone.
+    ("terminal-integration",
+     ["active left", "left /Users/admin/pc-demo", "wait 1200",
+      "placeview plugin.terminal.view|default", "wait 800",
+      "dock on", "wait 3500",
+      # Opening the dock focuses it; the key must take us back to the panel…
+      "keyequiv C+BACKQUOTE|/Users/admin/int-key1.txt", "wait 800",
+      "panelsdump /Users/admin/int-panel.txt", "wait 300",
+      # …and again to the terminal, with the dock still open throughout.
+      "keyequiv C+BACKQUOTE|/Users/admin/int-key2.txt", "wait 800",
+      "panelsdump /Users/admin/int-term.txt", "wait 300",
+      "dockdump /Users/admin/int-dock.txt", "wait 300",
+      # cd here: the shell is asked where it is afterwards, so this is the shell answering and not
+      # the app repeating itself.
+      "cmd cm_TerminalCdHere", "wait 1500",
+      "termsend plugin.terminal.view|pwd > /Users/admin/int-cwd.txt\\n", "wait 1500",
+      # Inserted names: `echo `, then the command, then a redirect. What lands in the file is what
+      # the shell parsed — which is the only way to see that the quoting held.
+      "focus notes.txt", "wait 500",
+      "termsend plugin.terminal.view|echo\\s", "wait 800",
+      "cmd cm_TerminalSendNames", "wait 1200",
+      "termsend plugin.terminal.view|> /Users/admin/int-names.txt\\n", "wait 1500"], 10),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -738,6 +765,15 @@ REPORTS = {
     "terminal-split-one": ("/Users/admin/split-one.txt", ["pane 1/1 · tab 2/2 · session 2 ·"]),
     # …and the job started in it is still running, which is the whole point of "maximise ≠ close".
     "terminal-split": ("/Users/admin/split-alive.txt", ["1", "!0"]),
+    # The keyboard went back to the panel, and the dock stayed open — the two halves of "this is a
+    # focus toggle, not a visibility toggle".
+    "terminal-integration-panel": ("/Users/admin/int-panel.txt", ["responder=PanelListView"]),
+    "terminal-integration-term": ("/Users/admin/int-term.txt", ["responder=LocalProcessTerminalView"]),
+    "terminal-integration-dock": ("/Users/admin/int-dock.txt", ["visible=true"]),
+    # The shell's own answer to "where are you".
+    "terminal-integration-cwd": ("/Users/admin/int-cwd.txt", ["/Users/admin/pc-demo"]),
+    # …and the file name it parsed, whole. A quoting failure would split the path or lose it.
+    "terminal-integration": ("/Users/admin/int-names.txt", ["/Users/admin/pc-demo/notes.txt"]),
     "terminal-move": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move-mounts": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),

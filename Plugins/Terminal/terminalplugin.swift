@@ -451,6 +451,26 @@ final class TerminalContainerView: NSView {
         }
     }
 
+    /// Focus given to this view belongs to the terminal inside it.
+    ///
+    /// The host focuses whatever `PcMakeView` returned, which is this container — and a container is
+    /// not something that reads keys, so typing went nowhere. Redirecting rather than refusing keeps
+    /// the host's side simple: it can go on focusing "the plugin's view" without knowing what is in
+    /// it, which is the whole point of the view being opaque across the ABI.
+    override var acceptsFirstResponder: Bool { true }
+
+    override func becomeFirstResponder() -> Bool {
+        // Accept, then hand off on the next turn of the run loop. Calling `makeFirstResponder` from
+        // inside this method starts a second transition while the first is still running, and AppKit
+        // resolves that by giving up on both: measured, the window itself ended up first responder and
+        // the toggle appeared to do nothing at all.
+        DispatchQueue.main.async { [weak self] in
+            guard let self, let session = self.selectedSession, session.view.window != nil else { return }
+            self.window?.makeFirstResponder(session.view)
+        }
+        return true
+    }
+
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         selectedSession?.startIfNeeded()
