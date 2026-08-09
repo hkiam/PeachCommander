@@ -212,9 +212,24 @@ extension PanelController {
             for item in items { entries.append((item, arc(for: (item as NSString).lastPathComponent))) }
         }
 
+        // zip is rewritten in Swift; tar and 7z are added to in place by the tools themselves. Which
+        // one — and, when neither, *why* — is ArchiveWriteSupport's answer (F-139). Before this, every
+        // non-zip archive reached the zip rewriter and came back with "unreadableArchive", which was
+        // the opposite of true: the archive was readable, it simply was not a zip.
         var added = false
         do {
-            try ArchiveEditor.add(to: URL(fileURLWithPath: archiveZip), entries: entries)
+            let url = URL(fileURLWithPath: archiveZip)
+            switch ArchiveWriteSupport.capability(forArchiveAt: archiveZip) {
+            case .rewrite:
+                try ArchiveEditor.add(to: url, entries: entries)
+            case .appendTar, .sevenZip:
+                try ShellArchiveEditor.add(to: url, entries: entries)
+            case .unsupported(let reason):
+                presentError(title, detail: Self.explain(reason,
+                                                         archive: (archiveZip as NSString).lastPathComponent))
+                if let tempDir { try? FileManager.default.removeItem(at: tempDir) }
+                return
+            }
             added = true
         } catch {
             presentError(title, detail: "\(error)")
@@ -597,6 +612,21 @@ extension PanelController {
         await reload()
     }
 
+    /// Why nothing can be added to this archive, in words a user can act on.
+    ///
+    /// "This archive cannot be modified" tells nobody anything; "compressed tar archives cannot be
+    /// added to" and "7z is not installed" both suggest what to do next.
+    static func explain(_ reason: ArchiveWriteSupport.Reason, archive: String) -> String {
+        switch reason {
+        case .compressedStream:
+            return String(localized: "\(archive) is a compressed archive — files cannot be added to it without repacking it.")
+        case .toolMissing(let tool):
+            return String(localized: "Adding to this archive needs the “\(tool)” tool, which is not installed.")
+        case .formatNotWritable(let format):
+            return String(localized: "Files cannot be added to a “\(format)” archive; this app only reads that format.")
+        }
+    }
+
     /// Offer to delete permission-protected items with administrator privileges.
     private func offerPrivilegedDelete(_ paths: [String]) async {
         let alert = NSAlert()
@@ -619,6 +649,15 @@ extension PanelController {
         guard let zip = currentArchiveZipPath else {
             presentError(String(localized: "Read-only archive"),
                          detail: String(localized: "Files inside this archive cannot be deleted."))
+            return
+        }
+        // Deleting *inside* an archive is a rewrite, and only zip is rewritten here. A tar or 7z used to
+        // reach the zip rewriter and come back with "unreadableArchive" — which was false twice over:
+        // the archive is readable, and the real answer is that this app does not rewrite that format.
+        // Adding to them does work (F-139); removing from them does not, and says so.
+        guard case .rewrite = ArchiveWriteSupport.capability(forArchiveAt: zip) else {
+            presentError(String(localized: "Read-only archive"),
+                         detail: String(localized: "Files can only be deleted inside .zip archives. Files can still be added to this one."))
             return
         }
         let mustConfirm = await config.bool("Operation", "ConfirmDelete", default: true)

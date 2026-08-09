@@ -50,6 +50,10 @@ does not have.
   show, in a view whose entire purpose is that the file need not fit. It costs 140 MB now.
 - **Compare Directories with subfolders no longer freezes the window.** Both trees were walked on the
   main thread — about 1.6 seconds for a moderate source tree, far longer for a home folder.
+- **tar archives no longer contain hidden `._` companion files.** macOS's tar writes one beside every
+  file to carry its extended attributes; `tar -tf` hides them again, so they went unnoticed — but this
+  app's own archive browser showed them, and unpacking such a tar on Windows or Linux produced the same
+  litter. The trade is that Finder tags are not carried inside a tar.
 - **Copying a huge file from the viewer no longer tries to build it in memory.** With nothing selected,
   Copy meant "the whole file"; above 20 MB it now says so instead. A selection is never refused,
   however large the file it came from.
@@ -67,6 +71,10 @@ does not have.
 
 ### Added
 
+- **Files can now be copied into tar and 7z archives, not only zip.** Pressing F5 into a `.tar` used to
+  report "unreadableArchive", which was wrong twice: the archive was readable, it just was not a zip.
+  Where it still cannot be done the message says why — a compressed archive would have to be repacked,
+  or the `7z` tool is not installed. Deleting and renaming inside an archive remain zip-only.
 - **Copying or moving into a folder you do not own can now be retried as administrator.** Deleting and
   changing permissions already offered this; copying and moving stopped with "permission denied" and
   no way forward. The offer appears only for what actually failed, and only when the destination is a

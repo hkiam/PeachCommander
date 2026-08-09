@@ -2445,6 +2445,13 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 if inArchive {
                     // Rename inside the zip by rewriting it (F-133).
                     guard let zip = panel.currentArchiveZipPath else { return }
+                    // Renaming inside an archive rewrites it, and only zip is rewritten here — the
+                    // others used to reach the zip rewriter and report "unreadableArchive".
+                    guard case .rewrite = ArchiveWriteSupport.capability(forArchiveAt: zip) else {
+                        self?.presentInfo(String(localized: "Rename"),
+                                          String(localized: "Files can only be renamed inside .zip archives."))
+                        return
+                    }
                     let oldPath = (dir as NSString).appendingPathComponent(name)
                     let newPath = (dir as NSString).appendingPathComponent(trimmed)
                     Task { @MainActor in
