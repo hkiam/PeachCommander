@@ -90,6 +90,21 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
 
     func send(_ text: String) { view.send(txt: text) }
 
+    /// Wear the host's colours (F-338/F-381).
+    ///
+    /// A terminal that ignores the theme is the one thing in a dark window that is not dark, and the
+    /// ANSI palette is left alone on purpose: those sixteen colours are what programs *ask* for by
+    /// number, and repainting them to match a file manager would make `ls --color` lie about which
+    /// files are which. Only the surfaces the emulator owns — background, default text, cursor,
+    /// selection — follow the theme.
+    func applyTheme(_ theme: PluginTheme) {
+        view.nativeBackgroundColor = theme.background
+        view.nativeForegroundColor = theme.text
+        view.caretColor = theme.accent
+        view.selectedTextBackgroundColor = theme.selectionBackground
+        view.needsDisplay = true
+    }
+
     // MARK: LocalProcessTerminalViewDelegate
 
     func sizeChanged(source: LocalProcessTerminalView, newCols: Int, newRows: Int) {
@@ -204,10 +219,12 @@ final class TerminalContainerView: NSView {
     /// Kept so a new tab can start where the panel is looking. The host guarantees the services table
     /// stays valid for the view's lifetime; the struct is copied rather than the pointer held.
     private var services: PcHostServices?
+    private var theme: PluginTheme
 
     init(container: String, services: PcHostServices?) {
         self.container = container
         self.services = services
+        self.theme = PluginTheme(services)
         super.init(frame: .zero)
         wantsLayer = true
 
@@ -273,6 +290,7 @@ final class TerminalContainerView: NSView {
             status.heightAnchor.constraint(equalToConstant: Self.statusHeight),
         ])
         newTab()
+        applyTheme()
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
@@ -292,6 +310,7 @@ final class TerminalContainerView: NSView {
     func newTab() -> TerminalSession {
         let session = TerminalPool.make(directory: hostDirectory())
         session.onChange = { [weak self] in self?.refreshChrome() }
+        session.applyTheme(theme)
         tabs.append(session)
         panes[focused] = tabs.count - 1
         rebuildPanes()
@@ -329,6 +348,7 @@ final class TerminalContainerView: NSView {
         guard panes.count == 1 else { return }
         let session = TerminalPool.make(directory: hostDirectory())
         session.onChange = { [weak self] in self?.refreshChrome() }
+        session.applyTheme(theme)
         tabs.append(session)
         panes.append(tabs.count - 1)
         focused = 1
@@ -446,7 +466,11 @@ final class TerminalContainerView: NSView {
         case "split":     split()
         case "maximise":  maximise()
         case "focusPane": if let i = Int(value), panes.indices.contains(i - 1) { focused = i - 1; refreshChrome() }
-        case "theme":     needsDisplay = true
+        case "theme":
+            // Re-read rather than trusting the id: the host sends the theme's name, and what a name
+            // means is exactly what may have changed.
+            theme = PluginTheme(services)
+            applyTheme()
         default:          break
         }
     }
@@ -480,6 +504,14 @@ final class TerminalContainerView: NSView {
         super.layout()
         // The first real geometry is the earliest moment a shell can be told a truthful size.
         selectedSession?.startIfNeeded()
+    }
+
+    /// Paint this view and every session in it in the host's colours.
+    private func applyTheme() {
+        layer?.backgroundColor = theme.windowBackground.cgColor
+        status.textColor = theme.secondaryText
+        for tab in tabs { tab.applyTheme(theme) }
+        needsDisplay = true
     }
 
     /// The view is going away for good: end every session it holds.
