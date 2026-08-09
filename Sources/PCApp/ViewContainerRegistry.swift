@@ -43,6 +43,8 @@ final class PluginViewMount {
     /// Where this view is mounted. Mutable, because a view can move between containers without being
     /// rebuilt; see `move(to:)`.
     private(set) var container: String
+    /// The manifest says this view consumes key events itself (F-381).
+    private(set) var wantsRawKeyboard: Bool
     private let bridge: ContribHostBridge
     private var viewPtr: UnsafeMutableRawPointer?
 
@@ -52,6 +54,7 @@ final class PluginViewMount {
         self.plugin = plugin
         self.viewId = contribution.id
         self.container = contribution.container
+        self.wantsRawKeyboard = contribution.rawKeyboard
         self.bridge = bridge
     }
 
@@ -86,9 +89,19 @@ final class PluginViewMount {
         notify(key: "container", value: newContainer)
     }
 
-    /// Refresh the title from a re-resolved contribution (a plugin may change it, and the mount
+    /// Refresh what a re-resolved contribution says (a plugin may change either, and the mount
     /// outlives the `ViewContribution` value it was built from).
-    func updateTitle(_ newTitle: String) { title = newTitle }
+    func update(from contribution: ViewContribution) {
+        title = contribution.title
+        wantsRawKeyboard = contribution.rawKeyboard
+    }
+
+    /// The built view, without building one. Asking `makeView()` would create it, which is not what a
+    /// keyboard question should do on every key press.
+    var existingView: NSView? {
+        guard let p = viewPtr else { return nil }
+        return Unmanaged<NSView>.fromOpaque(p).takeUnretainedValue()
+    }
 
     func close() {
         if let p = viewPtr { plugin.closeView(p); viewPtr = nil }
@@ -250,7 +263,7 @@ final class ViewContainerRegistry {
         // A title can change without the mount changing (a plugin updating its manifest, a different
         // localization); the mount outlives the contribution value it was built from.
         for key in plan.keep + plan.moved.map(\.key) {
-            if let item = resolved[key] { live[key]?.updateTitle(item.contribution.title) }
+            if let item = resolved[key] { live[key]?.update(from: item.contribution) }
         }
 
         // Hand every container its list — including the ones that lost a view, which is how they learn
@@ -270,6 +283,14 @@ final class ViewContainerRegistry {
 
     /// Push a host context change (e.g. current cursor path / dir) to every live
     /// embedded plugin view.
+    /// Mounted plugin views that declared `rawKeyboard` and have actually been built.
+    ///
+    /// Only the built ones: a view that has never been made cannot contain the first responder, and
+    /// building one to answer a keyboard question would be an odd way to start a terminal.
+    func rawKeyboardViews() -> [NSView] {
+        live.values.compactMap { $0.wantsRawKeyboard ? $0.existingView : nil }
+    }
+
     func notifyViews(key: String, value: String) {
         for m in live.values { m.notify(key: key, value: value) }
     }

@@ -1184,23 +1184,23 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// Set by the window controller; consulted before menu/keyDown handling.
     var keymapRouter: ((NSEvent) -> Bool)?
 
+    /// Does the focused view want this key untouched? Set by the window controller (F-381).
+    var wantsRawKeyboard: ((NSEvent) -> Bool)?
+
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
-        // performKeyEquivalent is broadcast to every view in the window, so the
-        // panel would otherwise swallow Cmd+C/V/X/A (mapped to file-clipboard
-        // commands) even while the user is typing in the command line. When a text
-        // field is being edited, let those standard edit shortcuts reach its editor.
-        if Self.isStandardEditShortcut(event), window?.firstResponder is NSText {
-            return false
-        }
+        // performKeyEquivalent is broadcast to every view in the window, so the panel would otherwise
+        // swallow keys aimed at whatever is focused — Cmd+C/V/X/A are mapped to file-clipboard
+        // commands, and the F-keys and Ctrl combinations to everything else.
+        //
+        // This used to ask `window?.firstResponder is NSText`, and to hand over only the five standard
+        // edit shortcuts. That was a fix for the command line rather than for the class: anything
+        // focusable that is not an NSText — a terminal, a plugin's editor — walked back into the same
+        // defect, with F5 taken by "copy files" while the user was aiming at what was running inside
+        // it. `RawKeyboard` asks the focused view instead, and when the answer is yes *nothing* is
+        // taken, not merely the five.
+        if wantsRawKeyboard?(event) == true { return false }
         if keymapRouter?(event) == true { return true }
         return super.performKeyEquivalent(with: event)
-    }
-
-    /// A plain Cmd(+Shift) edit shortcut: Copy/Cut/Paste/Select-All/Undo/Redo.
-    private static func isStandardEditShortcut(_ event: NSEvent) -> Bool {
-        let mods = event.modifierFlags.intersection([.command, .control, .option, .shift])
-        guard mods == .command || mods == [.command, .shift] else { return false }
-        return ["c", "v", "x", "a", "z"].contains(event.charactersIgnoringModifiers?.lowercased() ?? "")
     }
 
     // Standard edit actions routed to the panel's file-clipboard commands. The Edit

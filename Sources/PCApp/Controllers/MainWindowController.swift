@@ -420,6 +420,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         rightPanelController?.onCursorChanged = { [weak self] in self?.updateQuickView(); self?.notifyPluginViews(); self?.emitCursorEvent(.right) }
         leftPanelController?.tableView.keymapRouter = { [weak self] in self?.routeKeymap($0) ?? false }
         rightPanelController?.tableView.keymapRouter = { [weak self] in self?.routeKeymap($0) ?? false }
+        leftPanelController?.tableView.wantsRawKeyboard = { [weak self] in self?.focusedViewWantsRawKeyboard($0) ?? false }
+        rightPanelController?.tableView.wantsRawKeyboard = { [weak self] in self?.focusedViewWantsRawKeyboard($0) ?? false }
 
         installMainMenu()
         loadUserCommands()
@@ -4709,6 +4711,47 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         logger.info("Keymap loaded: scheme=\(self.currentKeyScheme), \(self.keymap.effective.count) effective bindings")
     }
 
+    #if DEBUG
+    /// Diagnostic: put the keyboard in the command line, as clicking it does (F-381).
+    /// - Parameter container: focus the command line *view* rather than its field editor. Reachable
+    ///   in the real app, and the case that showed the `is NSText` rule was not enough on its own.
+    func focusCommandLineForAutomation(container: Bool = false) {
+        if container { window?.makeFirstResponder(commandLine) }
+        else { commandLine.focusFieldForAutomation(in: window) }
+    }
+
+    /// Diagnostic: send a key equivalent the way AppKit does — into the window's view hierarchy,
+    /// which is where `performKeyEquivalent` is broadcast from (F-381).
+    ///
+    /// Calling the panel's method directly would prove nothing: the defect being guarded against is
+    /// precisely that the *broadcast* reaches a view that should not act on it, and a direct call
+    /// skips the broadcast.
+    @discardableResult
+    func sendKeyEquivalentForAutomation(_ characters: String, flags: NSEvent.ModifierFlags) -> Bool {
+        guard let window,
+              let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: flags,
+                                           timestamp: ProcessInfo.processInfo.systemUptime,
+                                           windowNumber: window.windowNumber, context: nil,
+                                           characters: characters,
+                                           charactersIgnoringModifiers: characters,
+                                           isARepeat: false, keyCode: 0) else { return false }
+        return window.contentView?.performKeyEquivalent(with: event) ?? false
+    }
+    #endif
+
+    /// Does the focused view consume this key itself, rather than the app turning it into a command?
+    ///
+    /// One question, asked at two depths. `PanelListView.performKeyEquivalent` is the broadcast
+    /// boundary and has to refuse before `super` as well as before the keymap; `routeKeymap` is the
+    /// function that turns a key into a command and refuses on its own account. Today the panel is
+    /// the only caller of `routeKeymap`, so the second check never fires — it is there so that a
+    /// future caller cannot route a key that the focused view had already claimed. Said plainly
+    /// because a duplicated guard that is silently unreachable is worth knowing about.
+    func focusedViewWantsRawKeyboard(_ event: NSEvent) -> Bool {
+        RawKeyboard.wantsRaw(event, firstResponder: window?.firstResponder,
+                             rawViews: ViewContainerRegistry.shared.rawKeyboardViews())
+    }
+
     /// Sync menu accelerators + enablement from the active keymap and registry.
     /// Only commands that are registered AND implemented enable their menu items.
     func applyKeymapToMenu() async {
@@ -4723,7 +4766,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// (Ctrl/Alt/Cmd) that map to an implemented command, and never while a text
     /// field is focused — bare keys/F-keys stay with the menu + panel keyDown.
     private func routeKeymap(_ event: NSEvent) -> Bool {
-        if window?.firstResponder is NSText { return false }
+        // Whatever is focused gets first refusal (F-381). This asked `firstResponder is NSText`, which
+        // covered the command line and nothing else — a plugin view holding a terminal is not an
+        // NSText and would have had Ctrl+B taken by the directory branch.
+        if focusedViewWantsRawKeyboard(event) { return false }
         let f = event.modifierFlags
         guard f.contains(.control) || f.contains(.option) || f.contains(.command) else { return false }
         guard let chord = KeymapMenu.chord(from: event) else { return false }

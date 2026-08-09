@@ -56,10 +56,33 @@ public struct KeybindingContribution: Sendable, Equatable {
 /// An embedded view in a named host container.
 public struct ViewContribution: Sendable, Equatable {
     public let id: String
-    public let container: String   // "sidebar" | "preview" | "bottombar"
+    /// Where the view goes *by default*. The user may move it; see ViewPlacement (F-381).
+    public let container: String   // "sidebar" | "bottom" | "titlebar" | "settings"
     public let title: String
     public let order: Int
     public let when: String?
+    /// This view consumes key events itself; the host must not turn them into commands (F-381).
+    ///
+    /// Declared rather than asked, because a plugin's view arrives as an `NSView*` across a C ABI and
+    /// cannot adopt a Swift protocol the app defines. It is the same shape as everything else about a
+    /// contribution — placement, `when`, menus are all declarative — and it has the advantage that the
+    /// host can answer the question without calling into the plugin at all, which matters when the
+    /// answer is needed on every key press.
+    ///
+    /// Set it for a terminal, an editor, a game: anything where F5 means something to the *content*
+    /// rather than "copy files". Menu key equivalents are matched before the responder chain, so
+    /// ⌘-anything bound in the menu bar still belongs to the app — which is what Terminal.app does too.
+    public let rawKeyboard: Bool
+
+    public init(id: String, container: String, title: String, order: Int,
+                when: String?, rawKeyboard: Bool = false) {
+        self.id = id
+        self.container = container
+        self.title = title
+        self.order = order
+        self.when = when
+        self.rawKeyboard = rawKeyboard
+    }
 }
 
 /// Additive hiding of a built-in / other command's entries by id.
@@ -228,7 +251,8 @@ public enum ContributionParser {
             }
             c.views.append(ViewContribution(
                 id: id, container: container, title: title,
-                order: int(d, "order", default: 100), when: str(d, "when")))
+                order: int(d, "order", default: 100), when: str(d, "when"),
+                rawKeyboard: bool(d, "rawKeyboard")))
         }
         for d in arr("hides") {
             guard let command = str(d, "command") else {
