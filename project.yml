@@ -659,6 +659,22 @@ targets:
     frameworks:
       - XCTest
 
+  PCKeyboardTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCKeyboardTests
+      # Compiled in rather than imported: PCApp is an application, so there is no module to
+      # @testable import. Same arrangement as PCThemeTests. RawKeyboard.swift depends on AppKit
+      # and nothing else, which is what makes it possible.
+      - path: Sources/PCApp/RawKeyboard.swift
+    settings:
+      PRODUCT_NAME: PCKeyboardTests
+      CODE_SIGNING_ALLOWED: NO
+    frameworks:
+      - XCTest
+
   PCUITests:
     type: bundle.ui-testing
     platform: macOS
@@ -702,6 +718,7 @@ schemes:
         - PCTagTests
         - PCShellQuoteTests
         - PCEditorTests
+        - PCKeyboardTests
 
   AllTests:
     build:
@@ -725,6 +742,7 @@ schemes:
         - PCTagTests
         - PCShellQuoteTests
         - PCEditorTests
+        - PCKeyboardTests
 
   UITests:
     build:

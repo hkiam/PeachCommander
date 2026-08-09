@@ -8,9 +8,26 @@ import AppKit
 import PCFoundation
 
 @MainActor
+/// The command line consumes its own keys (F-381).
+///
+/// Focus normally lands on the field's editor, an `NSTextView`, which the raw-keyboard rule already
+/// recognises as text. The container itself can hold it too — a scenario making it first responder
+/// found this — and then it is just an `NSView`, so the panel would happily claim Ctrl+B out from
+/// under someone typing a command. Answering for itself covers both.
+extension CommandLineView: RawKeyboardConsumer {
+    func wantsRawKeyEvent(_ event: NSEvent) -> Bool { true }
+}
+
 final class CommandLineView: NSView, NSTextFieldDelegate {
     private let promptLabel = NSTextField(labelWithString: "")
     private let field = NSTextField()
+
+    #if DEBUG
+    /// Diagnostic: focus the field the way clicking it does — its editor, not this container (F-381).
+    func focusFieldForAutomation(in window: NSWindow?) {
+        window?.makeFirstResponder(field)
+    }
+    #endif
 
     /// Returns the active panel's current directory (for the prompt + completion).
     var cwdProvider: (() -> String)?

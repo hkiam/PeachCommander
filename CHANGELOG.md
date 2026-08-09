@@ -39,6 +39,11 @@ does not have.
 
 ### Fixed
 
+- **Keys aimed at a focused panel no longer reach the file list behind it.** Keyboard shortcuts are
+  offered to every view in the window — which is how F5 copies wherever the cursor is — and the file
+  list stepped aside only for plain text fields. Anything else that takes the keyboard had its keys
+  taken: Ctrl+B typed into the command line's own view opened a directory branch instead. The file
+  list now asks whatever is focused first.
 - **Side-panel plugin views no longer restart when an unrelated plugin is switched on or off.** Every
   change to the set of enabled plugins rebuilt every embedded plugin view from scratch — invisible
   while those views show text, and not invisible at all once one of them holds a running program.

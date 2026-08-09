@@ -203,6 +203,33 @@ extension MainWindowController {
                 // *contributions* changes here, which is the whole question: a refresh that changes
                 // nothing must destroy nothing.
                 ViewContainerRegistry.shared.refresh(host: self)
+            case "focuscmdline":                        // focuscmdline [container] (F-381)
+                focusCommandLineForAutomation(container: arg == "container")
+            case "keyequiv":                            // keyequiv <mods><char>|<out> (F-381)
+                // e.g. "W+c" for Cmd+C, "C+b" for Ctrl+B. Reports whether anything in the window
+                // claimed it, plus what the file clipboard holds afterwards — the question is not
+                // "did a key arrive" but "did the panel act on a key aimed at something else".
+                let a = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if a.count == 2, let chord = KeyChord(parsing: a[0]) {
+                    var flags: NSEvent.ModifierFlags = []
+                    if chord.cmd { flags.insert(.command) }
+                    if chord.ctrl { flags.insert(.control) }
+                    if chord.alt { flags.insert(.option) }
+                    if chord.shift { flags.insert(.shift) }
+                    let claimed = sendKeyEquivalentForAutomation(chord.key.lowercased(), flags: flags)
+                    let board = NSPasteboard.general
+                    let urls = (board.readObjects(forClasses: [NSURL.self], options: nil) as? [URL]) ?? []
+                    let text = board.string(forType: .string) ?? ""
+                    // Who had the keyboard. Without this a failure here is unreadable: "the panel
+                    // did not claim Cmd+C" has two very different causes, and only one is a bug.
+                    let responder = window?.firstResponder
+                    var out = "responder=\(responder.map { String(describing: type(of: $0)) } ?? "<none>")\n"
+                    out += "claimed=\(claimed)\n"
+                    out += "fileURLs=\(urls.count)\n"
+                    out += "names=\(urls.map { $0.lastPathComponent }.joined(separator: ","))\n"
+                    out += "text=\(text.prefix(80))\n"
+                    try? out.write(toFile: a[1], atomically: true, encoding: .utf8)
+                }
             case "placeview":                           // placeview <viewId>|<container|default> (F-381)
                 // The drag cannot be scripted, so this is the entry point the drop and the menu item
                 // both call — the same rule as `bardrop`. What matters is the other end anyway: where

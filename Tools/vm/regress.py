@@ -153,6 +153,24 @@ SCENARIOS = [
                         "dockdump /Users/admin/placed-dock.txt", "wait 300",
                         "placeview plugin.notes.sidebar|default", "wait 1200",
                         "mountdump /Users/admin/placed-back.txt", "wait 400"], 9),
+    # A key aimed at the command line must not reach the file panel (F-381). performKeyEquivalent is
+    # broadcast to every view in the window — that is how F5 copies wherever the cursor is — so the
+    # panel has to stand aside when something else is focused. It used to do that by asking
+    # `firstResponder is NSText`, which fixed the command line and nothing else; the rule now asks the
+    # focused view, which is the only form a terminal could ever answer.
+    #
+    # A file is selected first so there is something to copy: a passing "no files on the clipboard" is
+    # worth nothing if nothing could have got there. The panel-focused half is the control — the same
+    # key, the same window, and this time the panel *must* claim it.
+    ("raw-keyboard", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                      "focus notes.txt", "wait 400",
+                      "keyequiv C+b|/Users/admin/key-panel.txt", "wait 900",
+                      "focuscmdline", "wait 600",
+                      "keyequiv C+b|/Users/admin/key-cmdline.txt", "wait 900",
+                      # …and with the command line *view* focused rather than its field editor, which
+                      # is reachable and is not an NSText — the case the old rule missed.
+                      "focuscmdline container", "wait 600",
+                      "keyequiv C+b|/Users/admin/key-container.txt", "wait 900"], 9),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -508,6 +526,19 @@ REPORTS = {
                             ["panels=plugin.notes.sidebar", "selected=plugin.notes.sidebar"]),
     "view-placement-back": ("/Users/admin/placed-back.txt",
                             ["plugin.notes.sidebar container=sidebar built=true made=1 closed=0"]),
+    # Ctrl+B (the branch view) rather than Cmd+C, and that took a failed run to work out: the shipped
+    # default scheme is tc-classic, which does not bind Cmd+C at all — the panel copies files through
+    # the Edit *menu* and the responder chain there, a path this probe deliberately does not use. So
+    # Cmd+C proved nothing in either direction. Ctrl+B is bound in the keymap, which is the route that
+    # broadcasts to every view in the window, and it is exactly the key section 8 of the plan warns
+    # about: aimed at a terminal it must not open a directory branch.
+    #
+    # The control comes first and matters as much as the claim: without it, "the panel did not take
+    # the key" would also pass in a build where the panel takes no keys at all.
+    "raw-keyboard-panel": ("/Users/admin/key-panel.txt", ["responder=PanelListView", "claimed=true"]),
+    "raw-keyboard": ("/Users/admin/key-cmdline.txt", ["claimed=false", "!responder=PanelListView"]),
+    "raw-keyboard-container": ("/Users/admin/key-container.txt",
+                               ["responder=CommandLineView", "claimed=false"]),
     "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
     # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
     # the wrong question: a system panel has none, so that check passed without showing anything.
