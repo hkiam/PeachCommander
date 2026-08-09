@@ -92,6 +92,7 @@ public enum PackEngine {
         process.executableURL = URL(fileURLWithPath: tool)
         process.arguments = args
         process.currentDirectoryURL = URL(fileURLWithPath: parent.isEmpty ? "/" : parent)
+        process.environment = environmentForTools()
         let err = Pipe()
         process.standardError = err
         process.standardOutput = FileHandle.nullDevice
@@ -109,6 +110,23 @@ public enum PackEngine {
             let msg = String(decoding: err.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
             throw PackError.failed(msg.isEmpty ? "exit \(process.terminationStatus)" : msg, process.terminationStatus)
         }
+    }
+
+    /// The environment the packers run in.
+    ///
+    /// `COPYFILE_DISABLE=1` stops macOS's tar writing an AppleDouble member — a second `._name` entry
+    /// carrying extended attributes — beside every file. `tar -tf` hides those again when listing,
+    /// which is why they went unnoticed: this app's own reader shows them, so a tar packed here looked
+    /// like it had twice as many files, and unpacking it on Windows or Linux produced the same litter.
+    /// Measured: without it the reader lists `["._a.txt", "a.txt"]`, with it `["a.txt"]`.
+    ///
+    /// The cost is the extended attributes themselves — Finder tags and resource forks are not carried
+    /// in the tar. For a format whose point is that other systems can read it, that is the right way
+    /// round; a Mac-to-Mac copy has never gone through here.
+    static func environmentForTools() -> [String: String] {
+        var env = ProcessInfo.processInfo.environment
+        env["COPYFILE_DISABLE"] = "1"
+        return env
     }
 
     /// Build (tool, arguments, stdin) for the requested format/options.
