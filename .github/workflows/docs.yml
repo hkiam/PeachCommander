@@ -51,6 +51,13 @@ jobs:
         run: python3 Tools/check-format-specifiers.py
       - name: Translation structure gate (a translated page must match the English shape)
         run: python3 docs/scripts/check-translation-drift.py
+      # The name and the number are both interfaces: a .bar file, a keyboard scheme and the AI's
+      # run_command all refer to a command by one of them. The registry keys on the id, so a collision
+      # silently drops a command — and the assertion that would catch it is compiled out of a release
+      # build, while the unit test that appeared to cover it counted the ids *after* the dictionary had
+      # already collapsed them.
+      - name: Command names and ids (unique, and unchanged since they were pinned)
+        run: python3 Tools/check-command-ids.py
       - name: Parity catalogue gate (every "ev:" pointer must resolve)
         run: python3 Tools/check-inventory.py
       - name: Shortcut audit (schemes only; the menu-bar comparison needs the VM harness)

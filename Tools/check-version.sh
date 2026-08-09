@@ -60,4 +60,39 @@ if [ "$WANT" != "$SHORT" ]; then
   exit 1
 fi
 
+# The version is a semver triple. "0.4" and "0.4.0.1" both satisfy the tag comparison above and both
+# make an update feed's ordering undefined, so the shape is checked rather than assumed.
+case "$SHORT" in
+  [0-9]*.[0-9]*.[0-9]*)
+    case "$SHORT" in
+      *.*.*.*) echo "::error::CFBundleShortVersionString '$SHORT' is not a semver triple." >&2; exit 1 ;;
+    esac ;;
+  *) echo "::error::CFBundleShortVersionString '$SHORT' is not a semver triple (X.Y.Z)." >&2; exit 1 ;;
+esac
+
+# The build number must go up at every release. It is what macOS and an update feed compare — the
+# marketing version is a label, and two releases sharing a build number is how an update silently
+# fails to be offered. Nothing checked this: the row claimed "monotonically increasing" and the only
+# gate compared the tag to the marketing version.
+case "$BUILD" in
+  ''|*[!0-9]*) echo "::error::CFBundleVersion '$BUILD' is not a whole number." >&2; exit 1 ;;
+esac
+
+PREV_TAG="$(git tag --list 'v[0-9]*' --sort=-v:refname | grep -v "^$TAG\$" | head -1 || true)"
+if [ -n "$PREV_TAG" ]; then
+  PREV_BUILD="$(git show "$PREV_TAG:project.yml" 2>/dev/null |
+    sed -n 's/^[[:space:]]*CFBundleVersion:[[:space:]]*"\{0,1\}\([^"]*\)"\{0,1\}[[:space:]]*$/\1/p' |
+    head -1)"
+  case "$PREV_BUILD" in
+    ''|*[!0-9]*) echo "note: $PREV_TAG has no readable build number — nothing to compare." ;;
+    *)
+      if [ "$BUILD" -le "$PREV_BUILD" ]; then
+        echo "::error::CFBundleVersion $BUILD is not greater than $PREV_TAG's ($PREV_BUILD)."
+        echo "An update feed compares build numbers; releasing this would not be offered as an update." >&2
+        exit 1
+      fi
+      echo "✓ build $BUILD > $PREV_TAG's $PREV_BUILD" ;;
+  esac
+fi
+
 echo "✓ tag $TAG matches project.yml version $SHORT (build $BUILD)"

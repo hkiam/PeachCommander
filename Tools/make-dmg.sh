@@ -54,6 +54,7 @@ xcodebuild -project PeachCommander.xcodeproj \
   build >/dev/null
 
 APP="$DERIVED/Build/Products/$CONFIG/PeachCommander.app"
+APPNAME="$(basename "$APP")"
 if [ ! -d "$APP" ]; then
   echo "error: built app not found at $APP" >&2
   exit 1
@@ -94,12 +95,59 @@ cp -R "$APP" "$STAGING/"
 ln -s /Applications "$STAGING/Applications"
 
 echo "==> Creating disk image…"
+# Read-write first, so the window can be arranged inside it, then compressed. Creating UDZO directly
+# produces a working image whose window opens at whatever size the Finder last used — the app and the
+# Applications symlink can land on top of each other, and the drag the whole layout exists to suggest
+# is not visible at all.
+RW="build/PeachCommander-rw.dmg"
+rm -f "$RW"
 hdiutil create \
   -volname "$VOLNAME" \
   -srcfolder "$STAGING" \
-  -ov -format UDZO \
-  "$DMG" >/dev/null
+  -ov -format UDRW \
+  "$RW" >/dev/null
 
+# Arranging the window means talking to the Finder, and the Finder is not always there — a headless
+# CI runner has no session to ask. So this is allowed to fail: a plain DMG is a working DMG, and a
+# release must not fall over because the icons ended up in the default position.
+echo "==> Arranging the window…"
+MOUNT="$(hdiutil attach -readwrite -noverify -noautoopen "$RW" | grep -o '/Volumes/.*' | head -1 || true)"
+if [ -n "$MOUNT" ]; then
+  if osascript <<APPLESCRIPT >/dev/null 2>&1
+    tell application "Finder"
+      tell disk "$VOLNAME"
+        open
+        set current view of container window to icon view
+        set toolbar visible of container window to false
+        set statusbar visible of container window to false
+        set the bounds of container window to {200, 150, 800, 550}
+        set theViewOptions to the icon view options of container window
+        set arrangement of theViewOptions to not arranged
+        set icon size of theViewOptions to 128
+        set position of item "$APPNAME" of container window to {150, 200}
+        set position of item "Applications" of container window to {450, 200}
+        close
+        open
+        update without registering applications
+        delay 1
+      end tell
+    end tell
+APPLESCRIPT
+  then
+    echo "    window arranged"
+  else
+    echo "    note: the Finder could not arrange the window (headless session?) — packaging anyway"
+  fi
+  sync
+  hdiutil detach "$MOUNT" >/dev/null || hdiutil detach "$MOUNT" -force >/dev/null || true
+else
+  echo "    note: could not mount the image to arrange it — packaging anyway"
+fi
+
+echo "==> Compressing…"
+rm -f "$DMG"
+hdiutil convert "$RW" -format UDZO -o "$DMG" >/dev/null
+rm -f "$RW"
 rm -rf "$STAGING"
 
 # The image itself is signed too, so Gatekeeper can evaluate the download before

@@ -85,16 +85,38 @@ final class PCCommandsTests: XCTestCase {
         XCTAssertEqual(names.count, uniqueNames.count, "Command names must be unique")
     }
 
-    func testCommandIdsAreUnique() async {
+    func testEveryDefinedCommandSurvivesRegistration() async {
+        // This replaces a test that could not fail. It compared the ids coming out of
+        // `getAllCommands()` against the set of them — but the registry stores commands in a dictionary
+        // keyed by id, so two commands sharing one are already collapsed to a single entry by the time
+        // the test looks: `ids.count == Set(ids).count` was true no matter what the source said.
+        //
+        // Counting instead is a claim that can be wrong: a collision loses a command, and the number
+        // drops. `register` does call `assertionFailure` on a duplicate, but that is compiled out of a
+        // release build, where the second definition silently replaces the first.
+        //
+        // The number itself is checked against the source by Tools/check-command-ids.py, which also
+        // pins each name to its id — the part of "stable name + numeric id" that matters to a `.bar`
+        // file written months ago.
         let registry = CommandRegistry()
         await registry.registerDefaultCommands()
         let commands = await registry.getAllCommands()
+        // 135 real commands plus 26 not-yet-implemented placeholders; the split, and that the two
+        // blocks of ids do not overlap, is checked by the gate.
+        XCTAssertEqual(commands.count, 161,
+                       "a command defined in the source did not reach the registry — most likely two "
+                       + "of them share an id, and the dictionary kept one")
+    }
 
-        // Check for duplicate IDs
-        let ids = commands.map { $0.id }
-        let uniqueIds = Set(ids)
-
-        XCTAssertEqual(ids.count, uniqueIds.count, "Command IDs must be unique")
+    func testEveryCommandIsNamedLikeACommand() async {
+        // The name is half the interface: a .bar file, a keyboard mapping and the AI's `run_command`
+        // all name a command as a string.
+        let registry = CommandRegistry()
+        await registry.registerDefaultCommands()
+        for command in await registry.getAllCommands() {
+            XCTAssertTrue(command.name.hasPrefix("cm_"), "\(command.name) is not a cm_ name")
+            XCTAssertFalse(command.help.isEmpty, "\(command.name) has no help text to show anywhere")
+        }
     }
 
     func testCommandIdsMatchTC() async {
