@@ -34,9 +34,32 @@ the app can. The two ways out:
 | App size without the plugin | Unchanged | Carries a terminal emulator nobody uses |
 | Licence bookkeeping | `Tools/generate-third-party-notices.py` already covers this | Same |
 
-The brief says *fully removable*, and that decides it: **vendored**. The cost is honest — SwiftTerm's
-sources are pinned in the repository, and picking up upstream fixes is a deliberate update rather than
-a version bump. Record the commit it came from next to the sources.
+The brief says *fully removable*, and that decides it. **But not by vendoring** — that conclusion was
+wrong, and the repository said so: nothing here has ever carried third-party source. Sparkle, Neon and
+the tree-sitter grammars come through SwiftPM pinned in `project.yml`; libssh2 comes through Homebrew
+in `bootstrap.sh` with only a shim checked in. There are no submodules.
+
+The premise was right — plugins are built by shell scripts and cannot consume a package the way an
+Xcode target does — and the conclusion did not follow. `xcodebuild -resolvePackageDependencies
+-clonedSourcePackagesDirPath build/spm` resolves a package **no target depends on**, into a directory
+of our choosing, at the revision `project.yml` pins; the build script then compiles from the checkout.
+Measured: the plugin builds, 2.5 MB per slice, all four ABI symbols exported, 1874 SwiftTerm symbols
+inside, 32 s per architecture.
+
+That also puts SwiftTerm inside machinery that already exists.
+`Tools/generate-third-party-notices.py` reads versions straight from `Package.resolved` and *fails* on
+a pin with no licence description — it flagged both SwiftTerm and the `swift-argument-parser` that
+SwiftTerm's own sample target drags in. Vendored sources would have sat outside all of it.
+
+The costs, stated: the first build needs the network, as it already does for Sparkle; and
+`swift-argument-parser` is pinned though nothing links it, so the notices describe it as resolved but
+not shipped rather than silencing the check.
+
+Two traps, both found by building rather than reasoning. The plugin's own source must not be called
+`terminal.swift` — SwiftTerm has `Terminal.swift`, and on a case-insensitive filesystem the two
+intermediate object files overwrite each other, after which the linker reports missing symbols for
+types whose file compiled perfectly well. And the module must not be called `Terminal` either, since
+SwiftTerm declares a class of that name which a module name of the same name shadows.
 
 **Measured before committing to this**, because "vendor a 25 000-line package into a shell-script build"
 is exactly the kind of recommendation that collapses on contact:
@@ -452,3 +475,31 @@ the incremental refresh is a *prerequisite* for moving a view, not a refinement 
 
 Stages 1–7 are where the risk is. Stages 8–10 are additive and can stop at any point with something
 useful shipped.
+
+---
+
+## 12. Open: starting a shell disturbs the panels
+
+**Measured, not explained.** With a shell running in the dock, the active panel's path is
+`/Users/admin` in some runs of `terminal-session` and the folder the scenario opened in others — the
+same scenario, run twice, nothing else changed. A control scenario (`terminal-control`), identical in
+timing but with the terminal moved out of the dock so that no shell ever starts, gave the opened
+folder three times out of three.
+
+So the shell is involved. What has been ruled out:
+
+* **SwiftTerm changing the host process's working directory.** `PseudoTerminalHelpers.fork` calls
+  `chdir` inside `if pid == 0` — the child. The parent's cwd is untouched.
+* **A general startup race.** `restoreTabs` awaits `importTabs` → `switchToActiveTab` → `loadPath`
+  before the automation script runs, and `window-title`, which asserts the panel's path, has been
+  stable across dozens of runs.
+
+What has not been ruled out: the active panel *flipping* rather than navigating (the dump reports the
+active panel, and the right panel starts at `/Users/admin`), a directory watcher reacting to what a
+login shell writes in the home folder (`.zsh_history`, `.zcompdump`), or focus handling around
+`focusBottomDock`.
+
+This is not a scenario problem to be waited out. An embedded terminal that moves the user's panel when
+it starts is a defect in the feature, and it belongs in the next stage rather than in a longer `wait`.
+The nondeterministic assertion has been removed rather than left to fail half the time; the control
+scenario stays as the tripwire.

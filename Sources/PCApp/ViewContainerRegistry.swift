@@ -295,6 +295,20 @@ final class ViewContainerRegistry {
         for m in live.values { m.notify(key: key, value: value) }
     }
 
+    /// Push a value to one view rather than all of them.
+    ///
+    /// Broadcasting is right for context — every view may care where the cursor is — and wrong for
+    /// anything addressed: sending "sendText" to every plugin would type into whichever ones happened
+    /// to understand the key. Returns false when the view is not mounted or has never been built,
+    /// because "the terminal did not get it" and "there is no terminal" are different problems.
+    @discardableResult
+    func notifyView(viewId: String, key: String, value: String) -> Bool {
+        guard let mount = live.first(where: { $0.key.viewId == viewId })?.value,
+              mount.existingView != nil else { return false }
+        mount.notify(key: key, value: value)
+        return true
+    }
+
     #if DEBUG
     /// Diagnostic: every live mount, where it is, and what the ABI was asked to do (F-381).
     ///
