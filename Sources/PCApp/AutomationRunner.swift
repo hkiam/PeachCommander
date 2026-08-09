@@ -124,6 +124,17 @@ extension MainWindowController {
                     .map { ($0 as NSString).lastPathComponent }.sorted()
                 let text = "marked=\(marked.count)\n" + marked.map { "name=\($0)" }.joined(separator: "\n") + "\n"
                 try? text.write(toFile: arg, atomically: true, encoding: .utf8)
+            case "sharedtree":                             // sharedtree on|off|select <path> (F-015)
+                let a = arg.split(separator: " ", maxSplits: 1).map(String.init)
+                switch a.first {
+                case "on":  setSharedTreeVisible(true)
+                case "off": setSharedTreeVisible(false)
+                case "select" where a.count == 2:
+                    // The click itself cannot be scripted; this is the callback the tree fires when a
+                    // folder is chosen, so a scripted run goes through the same path.
+                    sharedTreeAutomationSelect(a[1])
+                default: NSLog("[automation] sharedtree needs on|off|select <path>")
+                }
             case "listermode":                          // listermode <mode>|<out> (Viewer): switch + time it
                 let a = arg.split(separator: "|", maxSplits: 1).map { String($0).trimmingCharacters(in: .whitespaces) }
                 let ms = currentLister()?.automationSetMode(a[0]) ?? -1

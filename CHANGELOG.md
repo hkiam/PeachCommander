@@ -71,6 +71,8 @@ does not have.
 
 ### Added
 
+- **One folder tree for both panels** (View ▸ Shared Tree), alongside the per-panel tree that was
+  already there. Choosing a folder moves whichever panel is active.
 - **Files can now be copied into tar and 7z archives, not only zip.** Pressing F5 into a `.tar` used to
   report "unreadableArchive", which was wrong twice: the archive was readable, it just was not a zip.
   Where it still cannot be done the message says why — a compressed archive would have to be repacked,

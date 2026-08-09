@@ -266,6 +266,8 @@ public protocol WindowControllerProtocol: AnyObject {
     func setActivePanelViewMode(_ mode: PanelViewMode)
     /// Toggle the active panel's folder-tree column (cm_SrcTree / Ctrl+F8, F-015).
     func toggleActivePanelTree()
+    /// Toggle the one-tree-for-both-panels column (cm_TreeShared, F-015).
+    func toggleSharedTree()
     /// Show the background transfer manager window (TODOS #135).
     func showTransferManager()
     func showOpenSourceNotices()
@@ -759,6 +761,7 @@ public actor CommandRegistry {
         register(Self.cm_SrcIcons)
         register(Self.cm_SrcThumbs)
         register(Self.cm_SrcTree)
+        register(Self.cm_TreeShared)
         register(Self.cm_ConfigKeyClassic)
         register(Self.cm_ConfigKeyMacOS)
         register(Self.cm_CopyNamesToClip)
@@ -942,6 +945,9 @@ public actor CommandRegistry {
     static let cm_SrcTree = PCCommand(id: 304, name: "cm_SrcTree", category: "View",
         help: "Show/hide the folder tree in the panel (Ctrl+F8)",
         handler: { ctx in ctx.windowController?.toggleActivePanelTree() })
+    static let cm_TreeShared = PCCommand(id: 307, name: "cm_TreeShared", category: "View",
+        help: "Show/hide one folder tree for both panels",
+        handler: { ctx in ctx.windowController?.toggleSharedTree() })
     static let cm_ImageInfo = PCCommand(id: 30079, name: "cm_ImageInfo", category: "Files",
         help: "Show image dimensions/metadata", handler: { ctx in ctx.windowController?.showImageInfo() })
     static let cm_ConfigKeyClassic = PCCommand(id: 30051, name: "cm_ConfigKeyClassic", category: "Configuration",
