@@ -26,6 +26,44 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-09 — Sweep: unbounded work on the main thread
+
+The reported viewer freeze turned out to be one case of a class, so the class got swept: *work whose
+size follows the input, performed where the window has to wait for it*. Five instances, and four
+surfaces measured and deliberately left alone.
+
+**Found and fixed.**
+
+1. *Binary content in an NSTextView.* Not the character count but the number of **distinct** scalars:
+   a 964 KB PNG decodes to 931,257 characters over 3,000+ scalars and CoreText hunts the font cascade
+   for each — 2.0 s in a bare view, never finishing in the app. The binary mode's 1,002,648 characters
+   over 192 Latin-1 scalars lay out in 12 ms. Same order of characters, 170× apart.
+2. *Bracket highlighting* read `NSTextView.layoutManager` on every selection change, which lays the
+   whole document out. Bounded to 200k characters.
+3. *The symbol outline* asked the virtual view for its text — decoding the entire file — and then
+   `SymbolSidebar.load` refused it for exceeding four million characters. The bound existed and was
+   applied one call too late: 306 MB of footprint for a 175 MB file, 140 MB after.
+4. *The marks panel* did the same to show a handful of line snippets, where the view can hand over one
+   line at a time.
+5. *Compare Directories with subfolders* walked both trees on the main thread — a `stat` per file,
+   ~800 ms for a 40,000-file source tree, so 1.6 s of frozen window for a moderate project.
+6. *Copying the whole file* in the viewer built the string before anyone asked how big it was. The app
+   already had an answer for text too large for the pasteboard; it was applied after the text existed.
+
+**Measured and left alone**, which is half the value of a sweep: the panel listing (perf tests already
+cover 100k entries), the duplicate finder, the checksum engine and the file search (all `actor` or
+nonisolated, so `await` really does move them off), the occupied-space calculation, and the sync
+scanner. The tree view is the interesting refusal: expanding a node with 30,000 entries costs 222 ms on
+the main thread, and moving it off would mean an asynchronous NSOutlineView data source, which the
+protocol does not support. Recorded with the number rather than half-changed.
+
+**Two mistakes of mine, both in the instrument rather than the code.** The memory check first read
+`ps -o rss` from the harness — but the harness kills the app before the external checks run, so it
+measured an empty string and reported it as a pass. Then the threshold: I took it from RSS numbers
+(139 idle / 257 fixed / 434 broken) and had the app report `phys_footprint`, which does not count clean
+file pages and reads 140 against 306. At 350 the guard passed the broken build. It is 220 now, and the
+mutation makes it fail as it should.
+
 ## 2026-08-09 — The last 21 rows: from 21 without evidence to none
 
 The inventory had 21 `done` rows carrying no `ev:` pointer. Going through them turned up the usual

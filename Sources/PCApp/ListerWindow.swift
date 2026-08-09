@@ -48,6 +48,9 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Files up to this size use a read-only NSTextView for text/code (native find
     /// bar, selection, marks); larger files fall back to the virtual custom views.
     private let textViewSizeLimit: Int64 = 4 * 1024 * 1024
+    /// Copying the *whole* file to the clipboard stops here — the same 20 MB the rest of the app uses
+    /// for exported text. A selection is never refused, however large the file it came from.
+    private static let copyAllLimit: Int64 = 20 * 1024 * 1024
     /// Above this size a code file is streamed as plain text rather than
     /// syntax-highlighted in one materialized pass (F-112).
     private static let highlightSizeLimit: Int64 = 16 * 1024 * 1024
@@ -1225,7 +1228,23 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         }
         let provider = contentView as? ViewerTextProviding
         // Prefer the mouse selection; fall back to the whole text.
-        guard let text = provider?.selectedText ?? provider?.copyText, !text.isEmpty else {
+        //
+        // The fallback is checked against the file's size *first*. Building it is the expensive part —
+        // for the virtual view "the whole text" means decoding the entire file, and this view exists
+        // for files that need not fit in memory (F-112), so on a large one this was not a slow copy but
+        // an allocation the size of the file. The app already has an answer for text too big to put on
+        // the pasteboard; it was only ever applied after the text existed.
+        let selected = provider?.selectedText
+        if (selected ?? "").isEmpty, let slice, slice.count > Self.copyAllLimit {
+            let alert = NSAlert()
+            alert.messageText = String(localized: "Copy")
+            alert.informativeText =
+                String(localized: "The result is too large for the clipboard — use Save instead.")
+            alert.addButton(withTitle: String(localized: "OK"))
+            if let window { alert.beginSheetModal(for: window) } else { alert.runModal() }
+            return
+        }
+        guard let text = selected ?? provider?.copyText, !text.isEmpty else {
             NSSound.beep(); return
         }
         NSPasteboard.general.clearContents()
