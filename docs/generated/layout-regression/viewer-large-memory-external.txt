@@ -1,0 +1,2 @@
+rss=$(ps -o rss= -p $(pgrep -x PeachCommander | head -1) | tr -d ' '); [ -n "$rss" ] && [ "$rss" -lt 358400 ] && echo lean || echo bloated:$rss
+bloated:

@@ -6,4 +6,5 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| viewer-binary-text | 0 | — | — | `viewer-binary-text.png` |
+| viewer-large-memory | 0 | — | — | `viewer-large-memory.png` |
+| compare-dirs | 0 | — | — | `compare-dirs.png` |

@@ -144,6 +144,19 @@ SCENARIOS = [
     ("viewer-binary-text", ["view /Users/admin/pc-demo-bin.dat", "wait 2500",
                             "listermode text|/Users/admin/bintext.txt", "wait 2000",
                             "listercaret 2", "wait 1500"], 10),
+    # Opening a large file must not pull it into memory (F-112). The outline asked the virtual view for
+    # its text, which decodes the whole file — and then refused it for being too long, so every byte was
+    # wasted. The witness is the process's own resident size, read by the shell while the file is open,
+    # which is why this scenario deliberately does not quit.
+    ("viewer-large-memory", ["view /Users/admin/pc-big.txt", "wait 6000",
+                             "listermode text|/Users/admin/bigmem.txt", "wait 4000",
+                             "memdump /Users/admin/bigmem-rss.txt", "wait 500"], 12),
+    # Compare Directories including subfolders (F-190). The walk moved off the main thread — it costs a
+    # stat per file over *two* trees — so this checks the result is still the same: what gets marked.
+    ("compare-dirs", ["active left", "left /Users/admin/pc-cmp/a", "wait 1000",
+                      "right /Users/admin/pc-cmp/b", "wait 1000",
+                      "cmd cm_CompareDirsWithSubdirs", "wait 2500",
+                      "seldump /Users/admin/compare.txt", "wait 500"], 9),
     # Does previewing a document fetch what it points at (F-116)? An <img> pointing at a server needs no
     # JavaScript, so disabling that never stopped it: opening the file told the other end who opened it
     # and when. The witness is the server, not the app — see EXTERNAL_CHECKS below.
@@ -437,6 +450,14 @@ REPORTS = {
     # it looks fine until something asks it to lay out.
     "viewer-binary-text": ("/Users/admin/bintext.txt",
                            ["mode=text", "view=TextListerView", "fast=yes"]),
+    "viewer-large-memory": ("/Users/admin/bigmem.txt", ["mode=text", "view=TextListerView"]),
+    # Measured on the host: 139 MB idle, 257 MB with the fix, 434 MB without — the difference being the
+    # file decoded into a String the outline then refused for being too long. The verdict's threshold
+    # (350 MB) sits between the two with room for the guest to differ.
+    "viewer-large-memory-rss": ("/Users/admin/bigmem-rss.txt", ["lean=yes"]),
+    # The left panel marks what the right one does not have, or has differently. `both.txt` is identical
+    # on both sides and must stay unmarked — otherwise "marked everything" would pass.
+    "compare-dirs": ("/Users/admin/compare.txt", ["name=only-left.txt", "name=sub", "!name=both.txt"]),
     "sftp-attributes": ("/Users/admin/sftp.txt", ["requested=600", "applied=ok"]),
     # 40960 bytes whole; then only the tail after 10000 travels.
     "sftp-download": ("/Users/admin/sftpget.txt", ["full=40960", "resumedAt=10000", "tail=30960"]),
@@ -689,6 +710,18 @@ def boot(app: str, run: str):
                   # screenshot shows, and those are compared against a baseline.
                   "mkdir -p pc-beacon && printf '# beacon\\n\\n"
                   "![tracker](http://127.0.0.1:8731/viewer.png)\\n' > pc-beacon/beacon.md")
+    # Two folders that differ, for the Compare Directories scenario: one file only on the left, one only
+    # on the right, one in a subfolder on both, and one that differs in content but not in name.
+    ssh_guest(ip, "rm -rf pc-cmp && mkdir -p pc-cmp/a/sub pc-cmp/b/sub && "
+                  "printf 'same\\n' > pc-cmp/a/both.txt && printf 'same\\n' > pc-cmp/b/both.txt && "
+                  "printf 'x\\n' > pc-cmp/a/only-left.txt && printf 'y\\n' > pc-cmp/b/only-right.txt && "
+                  "printf 'deep\\n' > pc-cmp/a/sub/nested.txt")
+    # A large text file for the viewer's memory scenario (F-112). Big enough that materialising it is
+    # visible in the process's resident size — the point of the virtual view is that it is not.
+    ssh_guest(ip, "python3 -c \"import pathlib;"
+                  "line=(b'the quick brown fox jumps over the lazy dog '*2+b'\\n');"
+                  "f=open('$HOME/pc-big.txt','wb');"
+                  "[f.write(line) for _ in range(2000000)]; f.close()\"")
     # A binary file for the viewer's text mode (Viewer). Uniformly distributed bytes on purpose: that
     # is 3.5 % control bytes, *under* the heuristic's 5 % threshold, so it is the case the byte counting
     # alone lets through — the decode check is what has to catch it.

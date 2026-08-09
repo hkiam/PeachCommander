@@ -2755,15 +2755,25 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         Task { @MainActor in
             let leftDir = await left.getCurrentPath()
             let rightDir = await right.getCurrentPath()
-            let l: [DirCompareEntry], r: [DirCompareEntry]
+            let result: DirCompareResult
             if withSubdirs {
-                l = Self.gatherRecursive(leftDir)
-                r = Self.gatherRecursive(rightDir)
+                // Off the main thread. Walking a tree costs a `stat` per file and this walks *two* of
+                // them: measured at ~800 ms for a 40,000-file source tree, so 1.6 s of frozen window
+                // for a moderate project and considerably worse for a home folder. Nothing here needs
+                // the main actor — `gatherRecursive` and `compare` are pure functions over paths — and
+                // the marking below hops back to it.
+                result = await Task.detached(priority: .userInitiated) {
+                    DirCompareMarker.compare(left: Self.gatherRecursive(leftDir),
+                                             right: Self.gatherRecursive(rightDir),
+                                             caseSensitive: false)
+                }.value
             } else {
-                l = Self.topLevelFileEntries(left)
-                r = Self.topLevelFileEntries(right)
+                // The top-level case reads the panels' own listings, which belong to the main actor —
+                // and is bounded by what is on screen anyway.
+                result = DirCompareMarker.compare(left: Self.topLevelFileEntries(left),
+                                                  right: Self.topLevelFileEntries(right),
+                                                  caseSensitive: false)
             }
-            let result = DirCompareMarker.compare(left: l, right: r, caseSensitive: false)
             let leftNames = Set(result.leftMarks.map(Self.firstPathComponent))
             let rightNames = Set(result.rightMarks.map(Self.firstPathComponent))
             left.tableView.markNames(leftNames)
