@@ -19,7 +19,7 @@ final class PreviewPanelView: NSView {
     private static let builtinTitles = [
         String(localized: "Info"), String(localized: "Activities"), String(localized: "Log"),
     ]
-    private let segmented = NSSegmentedControl(labels: builtinTitles,
+    private let segmented = PlacementSegmentedControl(labels: builtinTitles,
                                                trackingMode: .selectOne, target: nil, action: nil)
 
     // Plugin view contributions (appended as extra segments after the built-ins).
@@ -261,6 +261,25 @@ final class PreviewPanelView: NSView {
             segmented.selectedSegment = 0
         }
         modeChanged()
+    }
+
+    /// Right-clicking the mode switcher offers to move the plugin view that is showing (F-381).
+    ///
+    /// It asks for the menu when the click happens rather than holding one, because the answer depends
+    /// on which segment is selected and on where that view currently sits — a menu built once would be
+    /// wrong the first time either changed. On a built-in mode there is nothing to move, so no menu
+    /// appears at all; an empty one would suggest the feature is broken rather than inapplicable.
+    var placementMenuProvider: ((_ viewId: String, _ title: String) -> NSMenu?)? {
+        didSet { installPlacementMenu() }
+    }
+
+    private func installPlacementMenu() {
+        segmented.contextMenuProvider = { [weak self] in
+            guard let self, let provider = self.placementMenuProvider,
+                  let id = self.selectedPluginViewId,
+                  let view = self.providers.first(where: { $0.id == id }) else { return nil }
+            return provider(id, view.title)
+        }
     }
 
     /// The plugin view currently selected, or nil when a built-in mode is showing.

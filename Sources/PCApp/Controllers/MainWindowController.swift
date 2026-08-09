@@ -634,6 +634,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         if config.bool("Layout", "SharedTree", default: false) { setSharedTreeVisible(true, persist: false) }
         // The dock (F-381). Its height is restored whether or not it is open, so reopening it later
         // gives back the size it had rather than the factory one.
+        loadViewPlacements(config)
         preferredDockHeight = max(BottomDockView.minHeight,
                                   CGFloat(config.int("Layout", "DockHeight",
                                                      default: Int(BottomDockView.defaultHeight))))
@@ -4051,6 +4052,67 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         window.makeFirstResponder(content)
     }
 
+    // MARK: - Where the user put things (F-381)
+
+    /// Read the placement overrides out of preferences and hand them to the registry.
+    ///
+    /// Called before the first refresh, so a view the user moved is mounted where they left it rather
+    /// than appearing in its manifest's container and jumping.
+    private func loadViewPlacements(_ config: ConfigSnapshot) {
+        var placements: [String: String] = [:]
+        for viewId in config.keys(inSection: ViewPlacement.section) {
+            let container = config.string(ViewPlacement.section, viewId, default: "")
+            if !container.isEmpty { placements[viewId] = container }
+        }
+        ViewContainerRegistry.shared.setPlacements(placements)
+    }
+
+    /// Write the placement overrides back, key by key.
+    ///
+    /// Removing what is gone matters as much as writing what is there: an override is *absent* when
+    /// the view is in its default place, and a leftover key would mean the manifest could never take
+    /// its default back — a plugin update that moved its own view would be silently overruled.
+    private func persistViewPlacements(_ placements: [String: String]) {
+        Task {
+            let existing = await mainConfig.keys(inSection: ViewPlacement.section)
+            for viewId in existing where placements[viewId] == nil {
+                await mainConfig.remove(ViewPlacement.section, viewId)
+            }
+            for (viewId, container) in placements {
+                await mainConfig.setString(container, ViewPlacement.section, viewId)
+            }
+            await mainConfig.flush()
+        }
+    }
+
+    /// Put the window's furniture back the way it ships (cm_ResetLayout, F-381).
+    ///
+    /// In the menu rather than only in Settings, because the layout you cannot see is exactly the one
+    /// you cannot repair from a dialog you also cannot see — a panel dragged somewhere useless, a dock
+    /// pulled over the whole window.
+    @objc func resetLayout() {
+        ViewContainerRegistry.shared.resetPlacements(host: self)
+        preferredDockHeight = BottomDockView.defaultHeight
+        if bottomDockVisible { setBottomDockVisible(true) }   // re-apply the restored height
+        setPreviewWidth(Self.previewWidth)
+        Task {
+            await mainConfig.setInt(Int(BottomDockView.defaultHeight), "Layout", "DockHeight")
+            await mainConfig.setInt(Int(Self.previewWidth), "Layout", "PreviewWidth")
+            await mainConfig.flush()
+        }
+    }
+
+    /// Carry out a placement menu item (F-381).
+    @objc func movePluginViewFromMenu(_ sender: NSMenuItem) {
+        guard let request = sender.representedObject as? ViewPlacementRequest else { return }
+        ViewContainerRegistry.shared.place(viewId: request.viewId, in: request.container, host: self)
+        // A view sent to the dock is no use behind a closed dock.
+        if request.container == "bottom" || ViewContainerRegistry.shared.container(ofViewId: request.viewId) == "bottom" {
+            if !bottomDockVisible { setBottomDockVisible(true) }
+            bottomDock.selectProvider(id: request.viewId)
+        }
+    }
+
     /// Set the dock's height while dragging; the divider reports values already clamped.
     private func setDockHeight(_ height: CGFloat) {
         guard let constraint = dockHeightConstraint else { return }
@@ -4145,12 +4207,21 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     private func installMainMenu() {
         // The preview panel is the first named view container ("sidebar").
-        ViewContainerRegistry.shared.register(container: "sidebar") { [weak self] providers in
+        ViewContainerRegistry.shared.register(container: "sidebar", acceptsMoves: true) { [weak self] providers in
             self?.previewPanel.setViewProviders(providers)
         }
+        ViewContainerRegistry.shared.onPlacementsChanged = { [weak self] placements in
+            self?.persistViewPlacements(placements)
+        }
+        let placementMenu: (String, String) -> NSMenu? = { [weak self] viewId, title in
+            guard let self else { return nil }
+            return ViewPlacementMenu.menu(forViewId: viewId, title: title, host: self, controller: self)
+        }
+        previewPanel.placementMenuProvider = placementMenu
+        bottomDock.placementMenuProvider = placementMenu
         // The dock across the bottom of the window is the "bottom" view container (F-381), for the
         // plugins that need width rather than height — a terminal, a build log, a REPL.
-        ViewContainerRegistry.shared.register(container: "bottom") { [weak self] providers in
+        ViewContainerRegistry.shared.register(container: "bottom", acceptsMoves: true) { [weak self] providers in
             guard let self else { return }
             self.bottomDock.setViewProviders(providers)
             if let remembered = self.rememberedDockPanel { self.bottomDock.selectProvider(id: remembered) }

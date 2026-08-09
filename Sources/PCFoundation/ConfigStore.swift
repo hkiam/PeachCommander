@@ -107,6 +107,22 @@ public actor ConfigStore {
         setRaw(v, section, key)
     }
 
+    /// Every key present in a section, in file order.
+    ///
+    /// The typed readers all answer "what is this one setting"; a section whose keys are not known in
+    /// advance — one entry per plugin view that has been moved — has to be enumerated instead.
+    public func keys(inSection section: String) -> [String] {
+        document.keys(inSection: section)
+    }
+
+    /// Forget a setting entirely, which is not the same as writing an empty one: an absent placement
+    /// means "use what the manifest says", and that has to stay expressible.
+    public func remove(_ section: String, _ key: String) {
+        document.remove(section: section, key: key)
+        notify(section: section, key: key)
+        scheduleDebouncedWrite()
+    }
+
     private func setRaw(_ value: String, _ section: String, _ key: String) {
         document.set(value, section: section, key: key)
         ensureMetaVersion()

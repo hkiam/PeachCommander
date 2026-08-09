@@ -46,6 +46,14 @@ public struct ConfigSnapshot: Sendable {
     public func string(_ section: String, _ key: String, default def: String) -> String {
         document.value(section: section, key: key) ?? def
     }
+
+    /// Every key present in a section, in file order.
+    ///
+    /// The typed readers all ask about one known setting. A section whose keys are not known in
+    /// advance — one per plugin view the user has moved — has to be enumerated instead.
+    public func keys(inSection section: String) -> [String] {
+        document.keys(inSection: section)
+    }
 }
 
 /// How a raw INI string becomes a typed value.

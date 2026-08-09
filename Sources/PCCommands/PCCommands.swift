@@ -270,6 +270,8 @@ public protocol WindowControllerProtocol: AnyObject {
     func toggleSharedTree()
     /// Open or close the plugin dock across the bottom of the window (cm_ToggleDock, F-381).
     func toggleBottomDock()
+    /// Put the window's furniture back the way it ships (cm_ResetLayout, F-381).
+    func resetLayout()
     /// Show the background transfer manager window (TODOS #135).
     func showTransferManager()
     func showOpenSourceNotices()
@@ -765,6 +767,7 @@ public actor CommandRegistry {
         register(Self.cm_SrcTree)
         register(Self.cm_TreeShared)
         register(Self.cm_ToggleDock)
+        register(Self.cm_ResetLayout)
         register(Self.cm_ConfigKeyClassic)
         register(Self.cm_ConfigKeyMacOS)
         register(Self.cm_CopyNamesToClip)
@@ -954,6 +957,9 @@ public actor CommandRegistry {
     static let cm_ToggleDock = PCCommand(id: 308, name: "cm_ToggleDock", category: "View",
         help: "Show/hide the plugin dock across the bottom of the window",
         handler: { ctx in ctx.windowController?.toggleBottomDock() })
+    static let cm_ResetLayout = PCCommand(id: 309, name: "cm_ResetLayout", category: "View",
+        help: "Put panels, dock and side panel back where they started",
+        handler: { ctx in ctx.windowController?.resetLayout() })
     static let cm_ImageInfo = PCCommand(id: 30079, name: "cm_ImageInfo", category: "Files",
         help: "Show image dimensions/metadata", handler: { ctx in ctx.windowController?.showImageInfo() })
     static let cm_ConfigKeyClassic = PCCommand(id: 30051, name: "cm_ConfigKeyClassic", category: "Configuration",

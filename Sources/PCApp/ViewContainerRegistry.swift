@@ -129,9 +129,75 @@ final class ViewContainerRegistry {
 
     /// Register a host area under `container`; `mount` receives the current
     /// providers whenever they change.
-    func register(container: String, mount: @escaping ([PreviewViewProvider]) -> Void) {
+    ///
+    /// `acceptsMoves` is whether a user may send a view here. Off by default, because most containers
+    /// are not places anyone would choose: "settings" holds the panes of the settings dialog and
+    /// "titlebar" is a strip a few points tall. Being a *declared* destination is a separate matter —
+    /// a manifest may name any registered container, and this only governs what the user is offered.
+    func register(container: String, acceptsMoves: Bool = false,
+                  mount: @escaping ([PreviewViewProvider]) -> Void) {
         mounts[container] = mount
+        if acceptsMoves { movable.insert(container) } else { movable.remove(container) }
     }
+
+    /// The containers this window offers, which is what an override is checked against.
+    var registeredContainers: Set<String> { Set(mounts.keys) }
+
+    /// The containers a user may move a view into.
+    private(set) var moveTargets: Set<String> = []
+    private var movable: Set<String> {
+        get { moveTargets }
+        set { moveTargets = newValue }
+    }
+
+    // MARK: - Placement (F-381)
+    //
+    // The manifest declares where a view goes by default; this is where the user's disagreement with
+    // that lives. Kept here rather than in the window controller because `refresh` is the only place
+    // it is ever consulted, and a preference read in one place should live next to that place.
+
+    /// viewId -> container the user chose. See `ViewPlacement` for what makes an override valid.
+    private var placements: [String: String] = [:]
+    /// Called whenever the placements change, so the owner can write them out. Not a config
+    /// dependency here: the registry does not know where preferences live and should not.
+    var onPlacementsChanged: (([String: String]) -> Void)?
+
+    /// Load placements (from preferences at startup). Does not persist them back.
+    func setPlacements(_ placements: [String: String]) {
+        self.placements = placements
+    }
+
+    /// Where a view is right now, if it is mounted at all.
+    func container(ofViewId viewId: String) -> String? {
+        live.first { $0.key.viewId == viewId }?.value.container
+    }
+
+    /// Move a view to another container, or back to its manifest's choice with `container: nil`.
+    ///
+    /// Returns false if nothing changed, so a caller does not persist and re-resolve for a drop the
+    /// user made onto the container the view was already in.
+    @discardableResult
+    func place(viewId: String, in container: String?, host: ContributionHost) -> Bool {
+        let before = placements[viewId]
+        if let container { placements[viewId] = container } else { placements[viewId] = nil }
+        guard placements[viewId] != before else { return false }
+        refresh(host: host)
+        onPlacementsChanged?(placements)
+        return true
+    }
+
+    /// Put every view back where its manifest asked for it.
+    @discardableResult
+    func resetPlacements(host: ContributionHost) -> Bool {
+        guard !placements.isEmpty else { return false }
+        placements.removeAll()
+        refresh(host: host)
+        onPlacementsChanged?(placements)
+        return true
+    }
+
+    /// Has the user moved this view away from its declared container?
+    func isMoved(viewId: String) -> Bool { placements[viewId] != nil }
 
     /// Re-resolve every container's providers from the contribution registry.
     ///
@@ -148,19 +214,25 @@ final class ViewContainerRegistry {
 
         // Resolve everything first, then decide: a container's wanted list is meaningless on its own,
         // since a view "missing" from one container may have moved to another.
+        let registered = registeredContainers
         var wanted: [(key: ViewMountKey, container: String)] = []
         var resolved: [ViewMountKey: (contribution: ViewContribution, plugin: ContribPlugin, pluginId: String)] = [:]
         var byContainer: [String: [ViewMountKey]] = [:]
-        for container in mounts.keys {
-            let items = ContributionRegistry.shared.viewItems(container: container)
-                .filter { WhenExpression.evaluate($0.contribution.when, context: ctx) }
-            for item in items {
-                let key = ViewMountKey(pluginId: item.pluginId, viewId: item.contribution.id)
-                guard resolved[key] == nil else { continue }   // first declaration wins; see ViewMountPlan
-                resolved[key] = item
-                wanted.append((key: key, container: container))
-                byContainer[container, default: []].append(key)
-            }
+        for item in ContributionRegistry.shared.allViewItems()
+        where WhenExpression.evaluate(item.contribution.when, context: ctx) {
+            let key = ViewMountKey(pluginId: item.pluginId, viewId: item.contribution.id)
+            guard resolved[key] == nil else { continue }   // first declaration wins; see ViewMountPlan
+            // Where it *should* be: the manifest's answer unless the user has said otherwise, and only
+            // if what they said still names a container this window has.
+            let container = ViewPlacement.container(declared: item.contribution.container,
+                                                    override: placements[item.contribution.id],
+                                                    registered: registered)
+            // A container nobody registered mounts nothing — the case a manifest naming, say,
+            // "statusbar" has always fallen into, and now also a stale override's fallback.
+            guard registered.contains(container) else { continue }
+            resolved[key] = item
+            wanted.append((key: key, container: container))
+            byContainer[container, default: []].append(key)
         }
 
         let plan = ViewMountPlan.plan(live: live.mapValues(\.container), wanted: wanted)
