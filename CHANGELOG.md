@@ -50,6 +50,9 @@ does not have.
   show, in a view whose entire purpose is that the file need not fit. It costs 140 MB now.
 - **Compare Directories with subfolders no longer freezes the window.** Both trees were walked on the
   main thread — about 1.6 seconds for a moderate source tree, far longer for a home folder.
+- **Copying a huge file from the viewer no longer tries to build it in memory.** With nothing selected,
+  Copy meant "the whole file"; above 20 MB it now says so instead. A selection is never refused,
+  however large the file it came from.
 - **Clicking in a large text file no longer stalls.** Highlighting the matching bracket forced the
   whole document to be laid out on every click.
 - **The window title now says where you are.** It read "Peach Commander" whatever folder you were in —
