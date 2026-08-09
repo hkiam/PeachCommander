@@ -26,6 +26,39 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-09 — Sweep: what this app writes, read by something that is not this app
+
+The AppleDouble litter in every tar we packed was invisible for one reason: the tool that wrote it and
+the reader that read it agreed with each other. `tar -tf` hid the `._` members, our own browser showed
+them, and nobody had ever put a third party in between. So the class got swept: every format this app
+produces for other programs, handed to a reader that knows nothing about our code.
+
+**Three formats, three times correct — and that is the result, not a disappointment.**
+
+* A zip from ZipWriter: python's `zipfile` verifies the CRCs and reads `Grüße Straße.txt` exactly, with
+  the UTF-8 filename flag set as it should be.
+* A `.sha256` from ChecksumFile: `shasum -a 256 -c` answers OK for both entries, including the one whose
+  name contains a space, which is where a two-column format usually comes apart.
+* A CSV from FileListFormatter: python's `csv` module reads back exactly the five names it was given —
+  including one containing a comma, one containing a quote, and one containing a CRLF. That last one is
+  the "six files, eight lines" defect fixed in 0.4.0, confirmed for the first time by a parser that is
+  not ours.
+
+All three are permanent tests now, and the mutations land: with the CRLF comparison put back to `"\n"`
+the foreign parser splits the name into two fields, and with the UTF-8 flag cleared python reports
+`no-utf8`.
+
+**One thing that looks like a defect and is not.** macOS's bundled Info-ZIP `unzip` (6.00) ignores the
+UTF-8 filename flag: it renders that name as `Gr+++?e Stra+?e.txt` and then fails to write the file at
+all. I took this for our bug for a while. The archive is correct — the flag is set, and python and 7z
+both read the name — so `unzip` is not used as a witness, and the reason is written where the next
+person will look.
+
+**And one mistake of mine worth recording:** the first version of this probe ran `unzip -q` inside the
+test, which stopped to ask a yes/no question about the name it had mangled. Two test runs hung for
+twenty minutes each before I noticed the tool was waiting for input rather than working. Every foreign
+tool here now has its standard input on /dev/null.
+
 ## 2026-08-09 — Sweep: unbounded work on the main thread
 
 The reported viewer freeze turned out to be one case of a class, so the class got swept: *work whose
