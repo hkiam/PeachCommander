@@ -94,6 +94,19 @@ mkdir -p "$STAGING"
 cp -R "$APP" "$STAGING/"
 ln -s /Applications "$STAGING/Applications"
 
+# The window background (F-311). In a folder with a leading dot so it does not appear as a third icon
+# beside the app and the symlink. A TIFF holding both the 600×400 and the 1200×800 rendering, so the
+# picture is sharp on a Retina display and on an older one — a single PNG would be soft on one of them.
+BACKGROUND="Design/dmg/background.tiff"
+if [ -f "$BACKGROUND" ]; then
+  mkdir -p "$STAGING/.background"
+  cp "$BACKGROUND" "$STAGING/.background/background.tiff"
+else
+  # Not fatal, but not silent either: a release that quietly ships without the background would look
+  # like the arrangement had failed, which is a different problem with a different fix.
+  echo "    warning: $BACKGROUND is missing — the image will have no background picture" >&2
+fi
+
 echo "==> Creating disk image…"
 # Read-write first, so the window can be arranged inside it, then compressed. Creating UDZO directly
 # produces a working image whose window opens at whatever size the Finder last used — the app and the
@@ -111,6 +124,14 @@ hdiutil create \
 # CI runner has no session to ask. So this is allowed to fail: a plain DMG is a working DMG, and a
 # release must not fall over because the icons ended up in the default position.
 echo "==> Arranging the window…"
+# Only ask the Finder for a background when there is one to set: the line is interpolated into the
+# script rather than guarded inside it, because an AppleScript that refers to a missing file fails as
+# a whole and would take the icon positions down with it.
+if [ -f "$STAGING/.background/background.tiff" ] || [ -f "$BACKGROUND" ]; then
+  BACKGROUND_LINE='set background picture of theViewOptions to file ".background:background.tiff"'
+else
+  BACKGROUND_LINE=""
+fi
 MOUNT="$(hdiutil attach -readwrite -noverify -noautoopen "$RW" | grep -o '/Volumes/.*' | head -1 || true)"
 if [ -n "$MOUNT" ]; then
   if osascript <<APPLESCRIPT >/dev/null 2>&1
@@ -124,6 +145,7 @@ if [ -n "$MOUNT" ]; then
         set theViewOptions to the icon view options of container window
         set arrangement of theViewOptions to not arranged
         set icon size of theViewOptions to 128
+        $BACKGROUND_LINE
         set position of item "$APPNAME" of container window to {150, 200}
         set position of item "Applications" of container window to {450, 200}
         close
@@ -149,6 +171,26 @@ rm -f "$DMG"
 hdiutil convert "$RW" -format UDZO -o "$DMG" >/dev/null
 rm -f "$RW"
 rm -rf "$STAGING"
+
+# Did the arrangement actually survive into the finished image? Asked of the image rather than assumed
+# from the AppleScript's exit status: the background is recorded in the volume's .DS_Store, and that
+# file is only written when the Finder closes the window. Finder itself will not answer
+# `background picture` on a read-only mount — it raises an AppleEvent error — so the .DS_Store is read
+# directly, which is the record that matters anyway.
+#
+# A warning, not a failure: a disk image without its background still installs perfectly well, and a
+# release must not fall over for the sake of a picture.
+if [ -f "$BACKGROUND" ]; then
+  CHECK_MOUNT="$(hdiutil attach -readonly -noverify -noautoopen "$DMG" | grep -o '/Volumes/.*' | head -1 || true)"
+  if [ -n "$CHECK_MOUNT" ]; then
+    if strings -a "$CHECK_MOUNT/.DS_Store" 2>/dev/null | grep -q "background.tiff"; then
+      echo "    background recorded in the image"
+    else
+      echo "    warning: the image has no background picture — the Finder step did not take" >&2
+    fi
+    hdiutil detach "$CHECK_MOUNT" >/dev/null 2>&1 || hdiutil detach "$CHECK_MOUNT" -force >/dev/null 2>&1
+  fi
+fi
 
 # The image itself is signed too, so Gatekeeper can evaluate the download before
 # anything is copied out of it, and so notarytool has something to attach a ticket

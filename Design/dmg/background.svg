@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <!--
+    DMG background (F-311). 600 × 400 — the exact content size make-dmg.sh gives the volume window
+    ({200,150,800,550}). Everything here is placed around what Finder draws on top of it, not freely:
+
+      * icons are 128 pt with centres at (150,200) and (450,200), so they occupy x 86–214 and
+        386–514, y 136–264. Nothing decorative may sit there.
+      * their labels are drawn *below* them, roughly y 266–290. Left clear, and deliberately not
+        given a light plate: Finder draws that text in the system's label colour, which is white in
+        dark mode — a busy background there would make the names unreadable in one appearance or the
+        other. A plain, light, low-contrast field is the one thing that stays legible under both.
+      * that leaves the middle strip (x 214–386) for the arrow, and bands above and below for type.
+
+    No instructions in words. The app ships in 19 languages and the disk image is one file for all of
+    them; an English sentence here would be wrong for eighteen. An arrow between two icons is the one
+    thing that needs no translation.
+
+    Colours are the app icon's: the two peach gradients it uses for its left and right halves, which
+    are the two panels.
+  -->
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0%" stop-color="#FFFBF8"/>
+      <stop offset="100%" stop-color="#FDF0E6"/>
+    </linearGradient>
+
+    <!-- The icon's own two halves, left cooler and right warmer. -->
+    <linearGradient id="arrow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FF9D68"/>
+      <stop offset="100%" stop-color="#FF5F68"/>
+    </linearGradient>
+
+    <!-- Der Bandton: wärmer als ein Braun, aber auf derselben Helligkeit (~50 %), damit beide
+         Beschriftungsfarben lesbar bleiben. Ein Verlauf nach unten hin etwas tiefer, damit das Band
+         nicht als Fläche klebt. -->
+    <linearGradient id="band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#CE8060"/>
+      <stop offset="100%" stop-color="#B96A4E"/>
+    </linearGradient>
+    <linearGradient id="bandFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#CE8060" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#CE8060" stop-opacity="1"/>
+    </linearGradient>
+
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#FF7A3D" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#FF7A3D" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="600" height="400" fill="url(#paper)"/>
+
+  <!--
+    Variante B. Das Band beginnt bei y=264, genau dort, wo die Symbole enden und Finder die Namen
+    zeichnet. Sein Ton liegt bei rund 50 % Helligkeit — der einzige Bereich, in dem *beide*
+    Beschriftungsfarben lesbar bleiben: dunkler Text bekommt etwa 4:1, weißer etwa 3,5:1. Auf dem
+    hellen Papier von Variante A hat weißer Text unter 1,3:1 und verschwindet.
+    Nebeneffekt: die Symbole stehen auf einer Fläche, statt zu schweben.
+  -->
+  <rect x="0" y="264" width="600" height="136" fill="url(#band)"/>
+  <rect x="0" y="252" width="600" height="12" fill="url(#bandFade)"/>
+
+  <!-- A soft warmth behind each icon, so the two positions read as places rather than as coincidence.
+       Kept far below the icon's own contrast; at 10 % it is felt more than seen. -->
+  <circle cx="150" cy="200" r="120" fill="url(#glow)"/>
+  <circle cx="450" cy="200" r="120" fill="url(#glow)"/>
+
+  <!-- Wordmark. Left of centre and small: the disk image is a doorway, not a poster. -->
+  <text x="300" y="72" text-anchor="middle"
+        font-family="-apple-system, SF Pro Display, Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-size="26" font-weight="600" fill="#2B3138" letter-spacing="0.2">Peach Commander</text>
+  <rect x="256" y="88" width="88" height="2" rx="1" fill="url(#arrow)" opacity="0.85"/>
+
+  <!-- The arrow: shaft and head between the two icons, clear of both by ~18 pt. -->
+  <g>
+    <rect x="232" y="196" width="108" height="8" rx="4" fill="url(#arrow)"/>
+    <path d="M 340 186 L 370 200 L 340 214 Z" fill="#FF5F68"/>
+  </g>
+
+  <!-- A quiet line under the two positions, tying them together without crowding the labels. -->
+  <rect x="120" y="322" width="360" height="1" fill="#FFFFFF" opacity="0.18"/>
+  <!-- Die Adresse statt Lizenz und Signaturhinweis: das ist die eine Zeile, die jemand braucht, wenn
+       macOS die App beim ersten Start ablehnt oder er wissen will, woher sie kommt. Ohne "https://",
+       weil das in einem Bild niemand abtippt und die Domain allein die Auskunft ist. -->
+  <text x="300" y="348" text-anchor="middle"
+        font-family="-apple-system, SF Pro Text, Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-size="13" fill="#FFFFFF" opacity="0.85">github.com/hkiam/PeachCommander</text>
+</svg>
