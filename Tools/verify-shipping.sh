@@ -45,6 +45,24 @@ for dir in Plugins/*/; do
   fi
 done
 
+# ── 1b. Nothing half-built in a release ──────────────────────────────────────
+# A plugin under construction still has to be in the shipping set: that is how it gets built, loaded
+# and exercised in the VM, and how removability is proved before there is anything to lose. What it
+# must not do is reach a user. A plugin declares `PCPluginIncomplete` in its Info.plist while it is
+# scaffolding, and that is fatal here — but only when an actual bundle is being checked, which is the
+# release path (make-dmg.sh passes one; CI's static run does not). So development stays unblocked and
+# a DMG cannot be built by accident.
+if [ -n "$APP" ]; then
+  echo "==> Checking no plugin is still marked incomplete"
+  for plist in Plugins/*/Info.plist; do
+    name="$(basename "$(dirname "$plist")")"
+    case "$name" in Sample*|SDK) continue ;; esac
+    if /usr/libexec/PlistBuddy -c "Print :PCPluginIncomplete" "$plist" >/dev/null 2>&1; then
+      fail "$name declares PCPluginIncomplete — finish it or take it out of build-all-plugins.sh"
+    fi
+  done
+fi
+
 # ── 2. Universality of the shipped bundle ────────────────────────────────────
 if [ -n "$APP" ]; then
   [ -d "$APP" ] || { echo "  ✗ no such app bundle: $APP" >&2; exit 1; }

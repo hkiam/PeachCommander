@@ -126,8 +126,15 @@ SCENARIOS = [
     # rather than the window without it. The closed dump has to come after an open one or "height=0"
     # would be true of a dock that never appeared.
     ("dock-seam", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                   # The Terminal plugin ships a view here, and this scenario is about the *seam* — it
+                   # was written before anything mounted in the dock and should keep working when the
+                   # set of plugins changes again. So the view is moved out for the duration and put
+                   # back at the end, because a placement override is persisted and would otherwise
+                   # follow the app into every later scenario in the run.
+                   "placeview plugin.terminal.view|sidebar", "wait 800",
                    "dock on", "wait 900", "dockdump /Users/admin/dock-open.txt", "wait 300",
                    "dock off", "wait 900", "dockdump /Users/admin/dock-shut.txt", "wait 300",
+                   "placeview plugin.terminal.view|default", "wait 800",
                    "dock on", "wait 900"], 9),
     # A refresh must not destroy what it is not changing (F-381). ViewContainerRegistry.refresh began
     # with `live.forEach { $0.close() }`, so enabling or disabling *any* plugin tore down every mounted
@@ -171,6 +178,21 @@ SCENARIOS = [
                       # is reachable and is not an NSText — the case the old rule missed.
                       "focuscmdline container", "wait 600",
                       "keyequiv C+b|/Users/admin/key-container.txt", "wait 900"], 9),
+    # The Terminal plugin's skeleton (F-381) — everything except the terminal, which is the order the
+    # plan asks for: prove removability before there is a pseudo-terminal to lose. It carries no
+    # emulator and is still worth its weight, because it witnesses from the *other side of the C ABI*
+    # three things the host has so far only claimed about itself: that a moved view is re-parented
+    # rather than rebuilt (its instance number does not change), that a re-parented view is told where
+    # it landed (PcNotifyView "container" was added with nothing to receive it), and that the dock
+    # survives its only plugin leaving rather than showing a blank strip.
+    ("terminal-skeleton", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                           "dock on", "wait 1200",
+                           "dockdump /Users/admin/term-dock.txt", "wait 300",
+                           "placeview plugin.terminal.view|sidebar", "wait 1200",
+                           "previewpanel on", "wait 1200", "previewtab Terminal", "wait 1000",
+                           "sidebardump /Users/admin/term-side.txt", "wait 300",
+                           "dockdump /Users/admin/term-empty.txt", "wait 300",
+                           "mountdump /Users/admin/term-mounts.txt", "wait 400"], 9),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -503,8 +525,8 @@ REPORTS = {
     # asserting: an unexplained empty frame and an explained one look identical in a screenshot, and only
     # one of them is a state the user can act on. `stacked=yes` is the real claim.
     "dock-seam": ("/Users/admin/dock-open.txt",
-                  ["visible=true", "stacked=yes", "No plugin provides a view here.",
-                   "!height=0"]),
+                  ["visible=true", "stacked=yes", "panels=\n",
+                   "No plugin provides a view here.", "!height=0"]),
     "dock-seam-shut": ("/Users/admin/dock-shut.txt",
                        ["visible=false", "height=0", "dividerGap=0", "stacked=yes"]),
     # One whole line, not three substrings: "closed=0" is also true of every mount that never built a
@@ -521,9 +543,10 @@ REPORTS = {
     # rebuilt there, which is exactly the failure this feature had to avoid.
     "view-placement": ("/Users/admin/placed.txt",
                        ["plugin.notes.sidebar container=bottom built=true made=1 closed=0"]),
-    # …and the dock really shows it, rather than the registry merely believing it does.
-    "view-placement-dock": ("/Users/admin/placed-dock.txt",
-                            ["panels=plugin.notes.sidebar", "selected=plugin.notes.sidebar"]),
+    # …and the dock really lists it, rather than the registry merely believing it does. Not "the only
+    # panel there" and not "the selected one": the Terminal plugin also mounts here by default, so both
+    # of those were claims about the *rest* of the plugin set rather than about the move.
+    "view-placement-dock": ("/Users/admin/placed-dock.txt", ["plugin.notes.sidebar", "visible=true"]),
     "view-placement-back": ("/Users/admin/placed-back.txt",
                             ["plugin.notes.sidebar container=sidebar built=true made=1 closed=0"]),
     # Ctrl+B (the branch view) rather than Cmd+C, and that took a failed run to work out: the shipped
@@ -539,6 +562,24 @@ REPORTS = {
     "raw-keyboard": ("/Users/admin/key-cmdline.txt", ["claimed=false", "!responder=PanelListView"]),
     "raw-keyboard-container": ("/Users/admin/key-container.txt",
                                ["responder=CommandLineView", "claimed=false"]),
+    # Mounted where its manifest asked, and it knows it.
+    "terminal-skeleton-dock": ("/Users/admin/term-dock.txt",
+                               ["panels=plugin.terminal.view",
+                                "instance=1 container=bottom"]),
+    # After the move: the *same* instance, in the new container. instance=1 is the plugin's own account
+    # of "you did not rebuild me" — the host counts its own PcMakeView calls and agrees, but that is
+    # the host marking its own homework. container=sidebar is the only proof that PcNotifyView carried
+    # the move across, since nothing else could have told the view.
+    "terminal-skeleton": ("/Users/admin/term-side.txt", ["instance=1 container=sidebar"]),
+    # …and the dock it left *closes*. The first version of this expectation claimed the dock stayed
+    # open showing its empty-state sentence, and it passed — against a closed dock, because the label
+    # still exists behind a zero-height view and "panels=" is trivially true of a dock with nothing in
+    # it. The behaviour is deliberate (a dock kept open by a plugin that has since gone is a strip of
+    # nothing across the window) so the expectation now says so, and "visible=false" is a claim that
+    # cannot be true by accident.
+    "terminal-skeleton-empty": ("/Users/admin/term-empty.txt", ["visible=false", "panels=\nselected="]),
+    "terminal-skeleton-mounts": ("/Users/admin/term-mounts.txt",
+                                 ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
     "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
     # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
     # the wrong question: a system panel has none, so that check passed without showing anything.
