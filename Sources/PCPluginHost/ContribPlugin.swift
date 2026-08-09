@@ -28,6 +28,18 @@ public final class ContribPlugin {
 
     public init(library: PluginLibrary) { self.lib = library }
 
+    #if DEBUG
+    /// How many times this plugin's views were built and destroyed across the C ABI (F-381).
+    ///
+    /// The host used to close and rebuild every mounted view on every contribution change, and the
+    /// fix for that lives two levels up in `ViewContainerRegistry`. Counting here rather than there
+    /// means the check does not ask the changed code whether it behaved — these two lines sit on the
+    /// `PcMakeView` / `PcCloseView` call sites themselves, which is as close to the plugin's own
+    /// account of events as the host can get without shipping a plugin built to tell tales.
+    public private(set) var viewsMade = 0
+    public private(set) var viewsClosed = 0
+    #endif
+
     /// Whether this library actually carries the contribution behavior ABI.
     public var hasBehavior: Bool { lib.symbol("PcRunCommand") != nil }
 
@@ -42,6 +54,9 @@ public final class ContribPlugin {
     public func makeView(_ viewId: String, container containerId: String,
                          services: UnsafePointer<PcHostServices>) -> UnsafeMutableRawPointer? {
         guard let ptr = lib.symbol("PcMakeView") else { return nil }
+        #if DEBUG
+        viewsMade += 1
+        #endif
         return viewId.withCString { v in containerId.withCString { c in
             unsafeBitCast(ptr, to: MakeViewFn.self)(v, c, services)
         } }
@@ -49,6 +64,9 @@ public final class ContribPlugin {
 
     public func closeView(_ view: UnsafeMutableRawPointer) {
         guard let ptr = lib.symbol("PcCloseView") else { return }
+        #if DEBUG
+        viewsClosed += 1
+        #endif
         unsafeBitCast(ptr, to: CloseViewFn.self)(view)
     }
 

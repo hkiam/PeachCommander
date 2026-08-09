@@ -129,14 +129,16 @@ final class BottomDockView: NSView {
     ///
     /// Providers that were already here keep the view they had: the registry hands out a fresh
     /// `PreviewViewProvider` on every refresh even when the underlying contribution has not changed,
-    /// and closing a view because its wrapper object is new would restart whatever is running in it.
-    /// Only providers that have genuinely gone away are torn down.
+    /// and rebuilding a view because its wrapper object is new would restart whatever runs in it.
+    ///
+    /// A view that has gone from the list is *dropped*, not closed. It may have moved to another
+    /// container — that is what the placement work is for — and closing it there would destroy it on
+    /// arrival. The registry owns a mount's lifetime and has already closed the ones that really went.
     func setViewProviders(_ providers: [PreviewViewProvider]) {
         let keep = Set(providers.map(\.id))
-        for old in self.providers where !keep.contains(old.id) {
-            mountedViews[old.id]?.removeFromSuperview()
-            mountedViews[old.id] = nil
-            old.closeView()
+        for (id, view) in mountedViews where !keep.contains(id) {
+            view.removeFromSuperview()
+            mountedViews[id] = nil
         }
 
         let previous = selectedProviderId

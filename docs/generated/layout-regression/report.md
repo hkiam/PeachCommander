@@ -6,8 +6,8 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| split-center | 0 | — | — | `split-center.png` |
 | dock-seam | 0 | — | — | `dock-seam.png` |
-| window-title | 0 | — | — | `window-title.png` |
-| transfer-panel | 0 | — | — | `transfer-panel.png` |
-| shared-tree | 0 | — | — | `shared-tree.png` |
+| mount-refresh | 0 | — | — | `mount-refresh.png` |
+| notes-sidebar | 0 | 0 | — | `notes-sidebar.png` |
+| viewer-note-lines | 0 | — | — | `viewer-note-lines.png` |
+| tc-comment-sidebar | 0 | — | — | `tc-comment-sidebar.png` |

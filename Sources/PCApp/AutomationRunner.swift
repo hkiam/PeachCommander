@@ -198,6 +198,14 @@ extension MainWindowController {
                 setBottomDockVisible(arg.lowercased() != "off")
             case "dockdump":                            // dockdump <out> (F-381)
                 dumpBottomDock(arg)
+            case "refreshviews":                        // refreshviews (F-381)
+                // The exact entry point a plugin being enabled or disabled reaches. Nothing about the
+                // *contributions* changes here, which is the whole question: a refresh that changes
+                // nothing must destroy nothing.
+                ViewContainerRegistry.shared.refresh(host: self)
+            case "mountdump":                           // mountdump <out> (F-381)
+                try? ViewContainerRegistry.shared.automationReport()
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
             case "previewtab":                          // previewtab <title>: pick a preview panel tab
                 if let panel = previewPanelForAutomation() {
                     NSLog("[automation] previewtab \(arg): \(panel.automationSelectTab(titled: arg))")
