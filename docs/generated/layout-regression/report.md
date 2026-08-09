@@ -6,6 +6,12 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
+| dock-seam | 0 | — | — | `dock-seam.png` |
+| mount-refresh | 0 | — | — | `mount-refresh.png` |
+| view-placement | 0 | — | — | `view-placement.png` |
+| raw-keyboard | 0 | — | — | `raw-keyboard.png` |
 | terminal-session | 0 | — | — | `terminal-session.png` |
 | terminal-control | 0 | — | — | `terminal-control.png` |
+| terminal-orphan | 0 | — | — | `terminal-orphan.png` |
+| terminal-teardown | 0 | — | — | `terminal-teardown.png` |
 | terminal-move | 0 | — | — | `terminal-move.png` |

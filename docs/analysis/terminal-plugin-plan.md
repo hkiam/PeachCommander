@@ -478,28 +478,27 @@ useful shipped.
 
 ---
 
-## 12. Open: starting a shell disturbs the panels
+## 12. The panels and the shell — observed twice, then not again
 
-**Measured, not explained.** With a shell running in the dock, the active panel's path is
-`/Users/admin` in some runs of `terminal-session` and the folder the scenario opened in others — the
-same scenario, run twice, nothing else changed. A control scenario (`terminal-control`), identical in
-timing but with the terminal moved out of the dock so that no shell ever starts, gave the opened
-folder three times out of three.
+Honest status, because the first version of this section overstated it.
 
-So the shell is involved. What has been ruled out:
+**What was seen.** In two runs of `terminal-session`, one screenshot showed both panels in the home
+folder and one `dump` (which reports the *active* panel) said `/Users/admin` where the scenario had
+opened `pc-demo`. A control scenario with the terminal moved out of the dock, so that no shell ever
+starts, gave the opened folder three times out of three.
 
-* **SwiftTerm changing the host process's working directory.** `PseudoTerminalHelpers.fork` calls
-  `chdir` inside `if pid == 0` — the child. The parent's cwd is untouched.
-* **A general startup race.** `restoreTabs` awaits `importTabs` → `switchToActiveTab` → `loadPath`
-  before the automation script runs, and `window-title`, which asserts the panel's path, has been
-  stable across dozens of runs.
+**What happened next.** Instrumentation was added — `panelsdump` reports both panels, which side is
+active and who holds the keyboard, so that "the left panel navigated" can be told from "the right
+panel became active". Six further runs, three sampling straight after the shell starts and three at
+the end of the scenario after `top` has been running, all reported
+`active=left left=…/pc-demo right=/Users/admin responder=TerminalSessionView`. It has not reproduced.
 
-What has not been ruled out: the active panel *flipping* rather than navigating (the dump reports the
-active panel, and the right panel starts at `/Users/admin`), a directory watcher reacting to what a
-login shell writes in the home folder (`.zsh_history`, `.zcompdump`), or focus handling around
-`focusBottomDock`.
+**So the claim is downgraded, not withdrawn.** Two sightings against six clean runs is not enough to
+call it fixed, and not enough to call the shell guilty either: the control only showed that three runs
+without a shell were clean, which six runs *with* one now match. SwiftTerm's `chdir` is in the child,
+so the obvious mechanism was ruled out early.
 
-This is not a scenario problem to be waited out. An embedded terminal that moves the user's panel when
-it starts is a defect in the feature, and it belongs in the next stage rather than in a longer `wait`.
-The nondeterministic assertion has been removed rather than left to fail half the time; the control
-scenario stays as the tripwire.
+What it is now is a **guarded** unknown. Both `panelsdump` points are assertions, so a recurrence
+fails the suite with the state written down — which panel moved, which was active, what held the
+keyboard — instead of being noticed in a screenshot months later. That is the useful outcome
+available; hunting an intermittent that will not appear is not.

@@ -40,11 +40,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         true
     }
 
-    /// Persist session/config before quitting (async → reply when done).
+    /// Persist session/config and tear plugin views down before quitting (async → reply when done).
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        guard let controller = mainWindow else { return .terminateNow }
+        guard let controller = mainWindow else {
+            // Even with no window: a plugin view may still be holding a child process, and a reply of
+            // .terminateNow is the last moment anything can be asked to let go.
+            ViewContainerRegistry.shared.closeAll()
+            return .terminateNow
+        }
         Task { @MainActor in
             await controller.persistNow()
+            // After the session is safely on disk and before the reply, because teardown can block for
+            // as long as a child takes to die and must not cost the user their layout if it goes wrong.
+            ViewContainerRegistry.shared.closeAll()
             NSApp.reply(toApplicationShouldTerminate: true)
         }
         return .terminateLater
