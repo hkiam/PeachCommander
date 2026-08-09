@@ -168,20 +168,37 @@ enum TerminalPool {
 ///
 /// Sized and coloured to match the panel's own tab bar, so the dock does not look like a different
 /// application bolted to the bottom of the window.
+/// A tab strip over one or two panes, each showing one session.
+///
+/// Splitting belongs here rather than in the host (plan §3): the dock hands the plugin one `NSView`
+/// and what happens inside it is the plugin's business, so "two terminals stacked, then the whole area
+/// for one again" needs no host support at all.
+///
+/// Panes stack vertically, which is the only arrangement worth offering here. The dock is wide and
+/// short; splitting it side by side would give each half about sixty columns, and the point of the
+/// dock over the side panel was that it has columns to spare.
+///
+/// **Maximising is not closing.** Collapsing to one pane leaves the other session running in the pool,
+/// so it comes back with its scrollback and whatever it was doing. A toggle that quietly killed a
+/// build would be worse than no toggle.
 final class TerminalContainerView: NSView {
 
     private static let tabBarHeight: CGFloat = 26
     private static let statusHeight: CGFloat = 14
 
     /// The sessions *this* view shows, in tab order. A subset of the pool: another mounted view may
-    /// hold others, which is what lets a quick shell live in the side panel while something long
-    /// runs in the dock.
+    /// hold others, which is what lets a quick shell live in the side panel while something long runs
+    /// in the dock.
     private var tabs: [TerminalSession] = []
-    private var selected = 0
+    /// One entry per pane, each the index into `tabs` of the session that pane shows.
+    private var panes: [Int] = [0]
+    /// Which pane the tab strip and keyboard act on.
+    private var focused = 0
 
     private let tabStrip = NSStackView()
     private let addButton = NSButton(title: "+", target: nil, action: nil)
-    private let content = NSView()
+    private let splitButton = NSButton(title: "", target: nil, action: nil)
+    private let splitView = TerminalSplitView()
     private let status = NSTextField(labelWithString: "")
     private var container: String
     /// Kept so a new tab can start where the panel is looking. The host guarantees the services table
@@ -208,8 +225,21 @@ final class TerminalContainerView: NSView {
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(addButton)
 
-        content.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(content)
+        splitButton.bezelStyle = .accessoryBarAction
+        splitButton.isBordered = false
+        splitButton.image = NSImage(systemSymbolName: "rectangle.split.1x2",
+                                    accessibilityDescription: L("Split the terminal"))
+        splitButton.target = self
+        splitButton.action = #selector(splitPressed)
+        splitButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(splitButton)
+
+        splitView.isVertical = false          // horizontal dividers → panes stacked vertically
+        splitView.dividerStyle = .thin
+        splitView.translatesAutoresizingMaskIntoConstraints = false
+        // The gesture that centres the panel splitter (F-001), on the divider that stacks terminals.
+        splitView.onDividerDoubleClick = { [weak self] in self?.toggleMaximised() }
+        addSubview(splitView)
 
         status.font = .monospacedSystemFont(ofSize: 10, weight: .regular)
         status.textColor = .secondaryLabelColor
@@ -217,10 +247,10 @@ final class TerminalContainerView: NSView {
         status.translatesAutoresizingMaskIntoConstraints = false
         addSubview(status)
 
-        // One point below required on the top inset, for the same reason the dock's own header is:
-        // a collapsed view is zero points tall, and "content starts below the tab bar" and "content
+        // One point below required on the top inset, for the same reason the dock's own header is: a
+        // collapsed view is zero points tall, and "content starts below the tab bar" and "content
         // reaches the bottom" cannot both hold in zero points.
-        let contentTop = content.topAnchor.constraint(equalTo: topAnchor, constant: Self.tabBarHeight)
+        let contentTop = splitView.topAnchor.constraint(equalTo: topAnchor, constant: Self.tabBarHeight)
         contentTop.priority = .required - 1
 
         NSLayoutConstraint.activate([
@@ -230,10 +260,13 @@ final class TerminalContainerView: NSView {
             addButton.leadingAnchor.constraint(equalTo: tabStrip.trailingAnchor, constant: 4),
             addButton.centerYAnchor.constraint(equalTo: tabStrip.centerYAnchor),
             addButton.widthAnchor.constraint(equalToConstant: 20),
+            splitButton.leadingAnchor.constraint(equalTo: addButton.trailingAnchor, constant: 2),
+            splitButton.centerYAnchor.constraint(equalTo: tabStrip.centerYAnchor),
+            splitButton.widthAnchor.constraint(equalToConstant: 20),
             contentTop,
-            content.leadingAnchor.constraint(equalTo: leadingAnchor),
-            content.trailingAnchor.constraint(equalTo: trailingAnchor),
-            content.bottomAnchor.constraint(equalTo: status.topAnchor),
+            splitView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            splitView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            splitView.bottomAnchor.constraint(equalTo: status.topAnchor),
             status.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
             status.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
             status.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1),
@@ -260,64 +293,115 @@ final class TerminalContainerView: NSView {
         let session = TerminalPool.make(directory: hostDirectory())
         session.onChange = { [weak self] in self?.refreshChrome() }
         tabs.append(session)
-        selected = tabs.count - 1
-        showSelected()
+        panes[focused] = tabs.count - 1
+        rebuildPanes()
         return session
     }
 
     func selectTab(_ index: Int) {
-        guard tabs.indices.contains(index), index != selected else { return }
-        selected = index
-        showSelected()
+        guard tabs.indices.contains(index), panes[focused] != index else { return }
+        panes[focused] = index
+        rebuildPanes()
     }
 
-    /// Close the tab, and with it the session — this is the one place a session ends by request.
+    /// Close the tab, and with it the session — the one place a session ends by request.
     func closeTab(_ index: Int) {
         guard tabs.indices.contains(index) else { return }
         TerminalPool.close(tabs.remove(at: index))
-        if tabs.isEmpty { newTab() }     // an empty terminal is not a state worth showing
-        else { selected = min(selected, tabs.count - 1); showSelected() }
+        if tabs.isEmpty { panes = [0]; focused = 0; newTab(); return }
+        // Panes pointing past the end, or at the tab that just went, fall back to a neighbour rather
+        // than to nothing: a pane showing no session is a grey rectangle with no way out of it.
+        panes = panes.map { min($0 >= index ? max($0 - 1, 0) : $0, tabs.count - 1) }
+        rebuildPanes()
     }
 
-    var selectedSession: TerminalSession? { tabs.indices.contains(selected) ? tabs[selected] : nil }
+    var selectedSession: TerminalSession? {
+        let index = panes.indices.contains(focused) ? panes[focused] : 0
+        return tabs.indices.contains(index) ? tabs[index] : nil
+    }
 
-    private func showSelected() {
-        guard let session = selectedSession else { return }
-        // Hide rather than remove: taking a session's view out of the hierarchy and putting it back
-        // makes AppKit re-run its geometry, and the pseudo-terminal would be resized twice for a tab
-        // switch that changed nothing about its size.
-        for tab in tabs where tab.view.superview === content { tab.view.isHidden = tab !== session }
-        if session.view.superview !== content {
+    // MARK: Splitting
+
+    var isSplit: Bool { panes.count > 1 }
+
+    /// Add a second pane, showing a new session, and focus it.
+    func split() {
+        guard panes.count == 1 else { return }
+        let session = TerminalPool.make(directory: hostDirectory())
+        session.onChange = { [weak self] in self?.refreshChrome() }
+        tabs.append(session)
+        panes.append(tabs.count - 1)
+        focused = 1
+        rebuildPanes()
+    }
+
+    /// Collapse to the focused pane. The other pane's session keeps running and keeps its tab.
+    func maximise() {
+        guard panes.count > 1 else { return }
+        panes = [panes[focused]]
+        focused = 0
+        rebuildPanes()
+    }
+
+    func toggleMaximised() { isSplit ? maximise() : split() }
+
+    @objc private func splitPressed() { toggleMaximised() }
+
+    // MARK: Layout
+
+    /// Rebuild the pane stack and put each pane's session into it.
+    private func rebuildPanes() {
+        for view in splitView.arrangedSubviews { splitView.removeArrangedSubview(view); view.removeFromSuperview() }
+        // Detach every session view first: one that stayed in a pane that no longer exists would be
+        // retained by a dead superview and never shown again.
+        for tab in tabs { tab.view.removeFromSuperview() }
+
+        for index in panes {
+            let holder = NSView()
+            holder.translatesAutoresizingMaskIntoConstraints = false
+            splitView.addArrangedSubview(holder)
+            guard tabs.indices.contains(index) else { continue }
+            let session = tabs[index]
             session.view.isHidden = false
-            content.addSubview(session.view)
+            holder.addSubview(session.view)
             NSLayoutConstraint.activate([
-                session.view.topAnchor.constraint(equalTo: content.topAnchor),
-                session.view.leadingAnchor.constraint(equalTo: content.leadingAnchor),
-                session.view.trailingAnchor.constraint(equalTo: content.trailingAnchor),
-                session.view.bottomAnchor.constraint(equalTo: content.bottomAnchor),
+                session.view.topAnchor.constraint(equalTo: holder.topAnchor),
+                session.view.leadingAnchor.constraint(equalTo: holder.leadingAnchor),
+                session.view.trailingAnchor.constraint(equalTo: holder.trailingAnchor),
+                session.view.bottomAnchor.constraint(equalTo: holder.bottomAnchor),
             ])
         }
         refreshChrome()
-        window?.makeFirstResponder(session.view)
-        // Force the constraint engine to run before asking the session to start. A tab created after
-        // the view is on screen has constraints but no frame yet, and a shell started against a
-        // zero-width view is told it has no columns — measured: the second tab reported 0×0 and never
-        // recovered, because a pseudo-terminal's size is pushed again only when it *changes*.
+        if let session = selectedSession { window?.makeFirstResponder(session.view) }
         layoutSubtreeIfNeeded()
+        // Halve it. NSSplitView gives a newly added pane whatever is left over rather than an even
+        // share, and left over is almost nothing: measured, splitting the dock at its default height
+        // gave the second terminal **one row**. Nobody would call that a split.
+        if panes.count == 2, splitView.bounds.height > 0 {
+            splitView.setPosition(splitView.bounds.height / 2, ofDividerAt: 0)
+            layoutSubtreeIfNeeded()
+        }
+
         // The size, and only then the shell — on the next turn of the run loop.
         //
         // `TerminalView.setFrameSize` recomputes the grid only once its cell dimensions are known and
         // returns early otherwise, and those are not known until the view has been through a display
         // cycle. For the first tab that costs nothing: the window is still settling and another resize
-        // follows. For a tab created into a view that already has its final geometry, no further
-        // resize ever comes — so the terminal kept SwiftTerm's default 80×25 while showing 125
+        // follows. For a tab or pane created into a view that already has its final geometry, no
+        // further resize ever comes — so the terminal kept SwiftTerm's default 80×25 while showing 125
         // columns, and every line the shell printed wrapped in the wrong place. Measured twice: doing
         // this synchronously after `layoutSubtreeIfNeeded` is still too early.
-        DispatchQueue.main.async { [weak self, weak session] in
-            guard let session, session.view.superview != nil else { return }
-            session.view.setFrameSize(session.view.frame.size)
-            session.startIfNeeded()
-            self?.refreshChrome()
+        //
+        // Every visible pane, not just the focused one: splitting halves the height of *both*.
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            for index in self.panes where self.tabs.indices.contains(index) {
+                let session = self.tabs[index]
+                guard session.view.superview != nil else { continue }
+                session.view.setFrameSize(session.view.frame.size)
+                session.startIfNeeded()
+            }
+            self.refreshChrome()
         }
     }
 
@@ -326,20 +410,27 @@ final class TerminalContainerView: NSView {
 
     private func refreshChrome() {
         for view in tabStrip.arrangedSubviews { tabStrip.removeArrangedSubview(view); view.removeFromSuperview() }
+        let shown = Set(panes)
         for (i, tab) in tabs.enumerated() {
             let button = NSButton(title: tab.title, target: self, action: #selector(tabPressed(_:)))
             button.tag = i
             button.bezelStyle = .recessed
             button.setButtonType(.pushOnPushOff)
-            button.state = i == selected ? .on : .off
+            // On when the tab is on screen at all, so a split shows both of its sessions as current —
+            // marking only the focused one would say the other had gone somewhere.
+            button.state = shown.contains(i) ? .on : .off
             button.font = .systemFont(ofSize: 11)
             tabStrip.addArrangedSubview(button)
         }
-        // One line a scenario can assert on without a parser, and a line a user can read: which tab of
-        // how many, what is running, how big the terminal thinks it is, and where it is docked.
+        splitButton.toolTip = isSplit ? L("Use the whole area for one terminal") : L("Split the terminal")
+        // One line a scenario can assert on without a parser, and a line a user can read: which pane of
+        // how many, which tab of how many, what is running, how big the terminal thinks it is, and
+        // where it is docked.
         if let s = selectedSession {
-            status.stringValue = "tab \(selected + 1)/\(tabs.count) · session \(s.id) · \(s.title) · "
-                + "\(s.cols)×\(s.rows)" + (container.isEmpty ? "" : " · \(container)")
+            let index = panes.indices.contains(focused) ? panes[focused] : 0
+            status.stringValue = "pane \(focused + 1)/\(panes.count) · tab \(index + 1)/\(tabs.count) · "
+                + "session \(s.id) · \(s.title) · \(s.cols)×\(s.rows)"
+                + (container.isEmpty ? "" : " · \(container)")
         }
     }
 
@@ -352,6 +443,9 @@ final class TerminalContainerView: NSView {
         case "newTab":    newTab()
         case "selectTab": if let i = Int(value) { selectTab(i - 1) }   // 1-based, as the status line reads
         case "closeTab":  if let i = Int(value) { closeTab(i - 1) }
+        case "split":     split()
+        case "maximise":  maximise()
+        case "focusPane": if let i = Int(value), panes.indices.contains(i - 1) { focused = i - 1; refreshChrome() }
         case "theme":     needsDisplay = true
         default:          break
         }
@@ -375,6 +469,28 @@ final class TerminalContainerView: NSView {
     func teardown() {
         for tab in tabs { TerminalPool.close(tab) }
         tabs.removeAll()
+        panes = [0]
+    }
+}
+
+/// An `NSSplitView` whose divider answers a double-click.
+///
+/// The same gesture that centres the file panels (F-001), because a divider that can be dragged and
+/// cannot be double-clicked is a divider people drag to the edge and then cannot get back.
+final class TerminalSplitView: NSSplitView {
+    var onDividerDoubleClick: (() -> Void)?
+
+    override func mouseDown(with event: NSEvent) {
+        if event.clickCount == 2, arrangedSubviews.count > 1 {
+            // Only on the divider itself: a double-click inside a terminal is a word selection and
+            // must stay one.
+            let point = convert(event.locationInWindow, from: nil)
+            if !arrangedSubviews.contains(where: { $0.frame.contains(point) }) {
+                onDividerDoubleClick?()
+                return
+            }
+        }
+        super.mouseDown(with: event)
     }
 }
 

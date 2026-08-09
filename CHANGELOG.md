@@ -81,9 +81,11 @@ does not have.
 
 ### Added
 
-- **The embedded terminal has tabs**, and a tab keeps running when you switch away from it: each one
-  is its own shell with its own scrollback, and moving the terminal between the side panel and the
-  dock does not restart any of them.
+- **The embedded terminal has tabs and can be split**, and nothing you have running is disturbed by
+  either. Each tab is its own shell with its own scrollback; switching tabs, splitting the area into
+  two terminals, collapsing back to one, and moving the whole terminal between the side panel and the
+  dock all leave every shell exactly where it was. Collapsing a split hides the second terminal rather
+  than closing it. A new tab opens in the folder the active panel is showing.
 - **Quitting now closes embedded plugin views before the app exits**, so a plugin holding a file, a
   socket or a child process is told to let go instead of having the rug pulled out.
 - **Plugin views can be moved between the side panel and the dock**, and put back. Right-click the

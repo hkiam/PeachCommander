@@ -268,6 +268,23 @@ SCENARIOS = [
                        "probe /Users/admin/tabs-alive.txt|pgrep -f 'sleep 397' | wc -l | tr -d ' '",
                        "wait 500",
                        "panelsdump /Users/admin/tabs-panels.txt", "wait 300"], 10),
+    # Two terminals stacked, then the whole area for one again (plan §3). The claim that matters is
+    # not that a divider appears: it is that *maximising is not closing*. A job is started in the
+    # second pane, the view is collapsed back to one, and the job must still be running — a toggle
+    # that quietly killed a build would be worse than no toggle.
+    ("terminal-split", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                        "placeview plugin.terminal.view|default", "wait 800",
+                        "dock on", "wait 3500",
+                        "termnotify plugin.terminal.view|split|", "wait 3000",
+                        "dockdump /Users/admin/split-two.txt", "wait 300",
+                        "termsend plugin.terminal.view|sleep 399 &\\n", "wait 2500",
+                        "termnotify plugin.terminal.view|maximise|", "wait 2000",
+                        "dockdump /Users/admin/split-one.txt", "wait 300",
+                        "probe /Users/admin/split-alive.txt|pgrep -f 'sleep 399' | wc -l | tr -d ' '",
+                        "wait 500",
+                        # Split again at the end, so the screenshot documents the feature rather than
+                        # the window without it.
+                        "termnotify plugin.terminal.view|split|", "wait 2500"], 10),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -708,6 +725,19 @@ REPORTS = {
     # in the home folder again — a third sighting. If it is real it will be caught here with the state
     # written down rather than inferred from a picture.
     "terminal-tabs-panels": ("/Users/admin/tabs-panels.txt", ["left=/Users/admin/pc-demo"]),
+    # Split: two panes, and the second one is a second session with a size of its own. Both panes are
+    # half as tall, which is the part a naive implementation gets wrong — only the focused pane gets
+    # resized and the other keeps rendering at the full height it no longer has.
+    # A floor on the rows rather than an exact number, because the exact one depends on the dock's
+    # height and the font. The floor is what matters: the first version of this passed against a pane
+    # one row tall, since NSSplitView gives a new pane the leftovers instead of an even share.
+    "terminal-split-two": ("/Users/admin/split-two.txt",
+                           ["pane 2/2 · tab 2/2 · session 2 ·",
+                            "!×0 ·", "!×1 ·", "!×2 ·", "!· 80×25 ·"]),
+    # Collapsed back to one pane, still two tabs: the other session was not closed, only hidden.
+    "terminal-split-one": ("/Users/admin/split-one.txt", ["pane 1/1 · tab 2/2 · session 2 ·"]),
+    # …and the job started in it is still running, which is the whole point of "maximise ≠ close".
+    "terminal-split": ("/Users/admin/split-alive.txt", ["1", "!0"]),
     "terminal-move": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move-mounts": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
