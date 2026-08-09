@@ -276,6 +276,8 @@ public protocol WindowControllerProtocol: AnyObject {
     func terminalCdHere()
     /// Put the selected file names at the terminal's prompt (cm_TerminalSendNames, F-381).
     func terminalSendNames()
+    /// Run the command line in the embedded terminal instead of detached (cm_ToggleRunInTerminal, F-381).
+    func toggleRunCommandLineInTerminal()
     /// Show the background transfer manager window (TODOS #135).
     func showTransferManager()
     func showOpenSourceNotices()
@@ -774,6 +776,7 @@ public actor CommandRegistry {
         register(Self.cm_ResetLayout)
         register(Self.cm_TerminalCdHere)
         register(Self.cm_TerminalSendNames)
+        register(Self.cm_ToggleRunInTerminal)
         register(Self.cm_ConfigKeyClassic)
         register(Self.cm_ConfigKeyMacOS)
         register(Self.cm_CopyNamesToClip)
@@ -972,6 +975,9 @@ public actor CommandRegistry {
     static let cm_TerminalSendNames = PCCommand(id: 311, name: "cm_TerminalSendNames", category: "View",
         help: "Put the selected file names at the terminal's prompt",
         handler: { ctx in ctx.windowController?.terminalSendNames() })
+    static let cm_ToggleRunInTerminal = PCCommand(id: 312, name: "cm_ToggleRunInTerminal", category: "View",
+        help: "Run the command line in the embedded terminal instead of detached",
+        handler: { ctx in ctx.windowController?.toggleRunCommandLineInTerminal() })
     static let cm_ImageInfo = PCCommand(id: 30079, name: "cm_ImageInfo", category: "Files",
         help: "Show image dimensions/metadata", handler: { ctx in ctx.windowController?.showImageInfo() })
     static let cm_ConfigKeyClassic = PCCommand(id: 30051, name: "cm_ConfigKeyClassic", category: "Configuration",

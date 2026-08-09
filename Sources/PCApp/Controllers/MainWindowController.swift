@@ -646,6 +646,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // Shut by default: opening it needs a plugin to have something to show, and closing it again
         // when nothing does is handled where the providers arrive.
         if config.bool("Layout", "DockVisible", default: false) { setBottomDockVisible(true, persist: false) }
+        runCommandLineInTerminal = config.bool("Terminal", "RunCommandLine", default: false)
+        setMenuCheck(cmd: "cm_ToggleRunInTerminal", on: runCommandLineInTerminal)
         if config.bool("Layout", "ButtonBarVertical", default: false) { setButtonBarVertical(true) }
         // The keymap names the function-key bar's labels, so a late load relabels the bar in place.
         loadKeymap(scheme: config.string("Configuration", "KeyScheme", default: "tc-classic"))
@@ -3859,6 +3861,23 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             if trimmed.hasPrefix("em_") { runUserCommand(trimmed) } else { runCommandNamed(trimmed) }
             return
         }
+        // Run it in the embedded terminal instead, when the user has asked for that (F-381, plan §7).
+        //
+        // Worth having as more than a preference: a detached command has no terminal, so anything that
+        // asks a question gets no answer. `sudo` is the case everyone hits — it prompts for a password
+        // into a pipe nobody is reading and fails. In the terminal the prompt is on screen, the output
+        // arrives as it happens, and a long command can be interrupted.
+        if runCommandLineInTerminal {
+            Task { @MainActor in
+                let cwd = await panel.getCurrentPath()
+                // `cd` first, so the command runs where the panel is looking rather than wherever the
+                // shell was left. Both lines go together, so nothing can be typed in between.
+                if sendToTerminal("cd \(ShellQuoting.quote(cwd))\n\(line)\n") { return }
+                // No terminal to run it in: fall back rather than swallow the command.
+                await self.runCommandLineDetached(line, in: cwd, panel: panel)
+            }
+            return
+        }
         Task { @MainActor in
             let cwd = await panel.getCurrentPath()
             let result = await ShellExecutor.run(line, workingDirectory: cwd)
@@ -4141,6 +4160,28 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         if !bottomDockVisible { setBottomDockVisible(true) }
         bottomDock.selectProvider(id: viewId)
         return ViewContainerRegistry.shared.notifyView(viewId: viewId, key: "sendText", value: text)
+    }
+
+    /// Should the command line run in the embedded terminal? Persisted; off by default, because it
+    /// changes where output appears and that should be the user's choice rather than a surprise.
+    private(set) var runCommandLineInTerminal = false
+
+    /// Flip it (cm_ToggleRunInTerminal, F-381).
+    @objc func toggleRunCommandLineInTerminal() {
+        runCommandLineInTerminal.toggle()
+        setMenuCheck(cmd: "cm_ToggleRunInTerminal", on: runCommandLineInTerminal)
+        Task { await mainConfig.setBool(runCommandLineInTerminal, "Terminal", "RunCommandLine") }
+    }
+
+    /// The original behaviour: run it detached and show whatever it printed.
+    private func runCommandLineDetached(_ line: String, in cwd: String, panel: PanelController) async {
+        let result = await ShellExecutor.run(line, workingDirectory: cwd)
+        if let dir = result.changedDirectory {
+            await panel.loadDirectory(dir)
+        } else {
+            await panel.reload()
+            if !result.output.isEmpty { showShellOutput(command: line, output: result.output) }
+        }
     }
 
     /// Take the terminal to the active panel's folder (cm_TerminalCdHere, F-381).
@@ -4781,6 +4822,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         if container { window?.makeFirstResponder(commandLine) }
         else { commandLine.focusFieldForAutomation(in: window) }
     }
+
+    /// Diagnostic: run a command line, as pressing Return in it does (F-381).
+    func runCommandLineForAutomation(_ line: String) { runCommandLine(line) }
 
     /// Diagnostic: send a key equivalent the way AppKit does — into the window's view hierarchy,
     /// which is where `performKeyEquivalent` is broadcast from (F-381).

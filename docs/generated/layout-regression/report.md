@@ -6,4 +6,4 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| terminal-integration | 0 | — | — | `terminal-integration.png` |
+| terminal-cmdline | 0 | — | — | `terminal-cmdline.png` |

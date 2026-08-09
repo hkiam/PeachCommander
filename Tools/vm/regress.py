@@ -312,6 +312,23 @@ SCENARIOS = [
       "termsend plugin.terminal.view|echo\\s", "wait 800",
       "cmd cm_TerminalSendNames", "wait 1200",
       "termsend plugin.terminal.view|> /Users/admin/int-names.txt\\n", "wait 1500"], 10),
+    # The command line, run in the embedded terminal instead of detached (plan §7). Worth more than a
+    # preference: a detached command has no terminal, so anything that asks a question gets no answer —
+    # `sudo` prompts into a pipe nobody reads and fails. The check is that the *shell* ran it, which
+    # only holds if the line really went there.
+    ("terminal-cmdline", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                          "placeview plugin.terminal.view|default", "wait 800",
+                          "dock on", "wait 3500",
+                          "cmd cm_ToggleRunInTerminal", "wait 500",
+                          # `tty`, not `echo`: a detached command would create the file too, so the
+                          # first version of this passed with the feature switched off. Only a command
+                          # with a terminal attached can name one — which is the entire reason this
+                          # option exists, so it is the right thing to ask.
+                          "cmdline tty > /Users/admin/cmdline.txt", "wait 2500",
+                          # …and the shell is still there afterwards with the panel's folder, since the
+                          # line is preceded by a cd rather than run wherever the shell was left.
+                          "termsend plugin.terminal.view|pwd > /Users/admin/cmdline-cwd.txt\\n",
+                          "wait 1500"], 9),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -774,6 +791,8 @@ REPORTS = {
     "terminal-integration-cwd": ("/Users/admin/int-cwd.txt", ["/Users/admin/pc-demo"]),
     # …and the file name it parsed, whole. A quoting failure would split the path or lose it.
     "terminal-integration": ("/Users/admin/int-names.txt", ["/Users/admin/pc-demo/notes.txt"]),
+    "terminal-cmdline": ("/Users/admin/cmdline.txt", ["/dev/ttys", "!not a tty"]),
+    "terminal-cmdline-cwd": ("/Users/admin/cmdline-cwd.txt", ["/Users/admin/pc-demo"]),
     "terminal-move": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move-mounts": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
