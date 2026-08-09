@@ -498,7 +498,17 @@ call it fixed, and not enough to call the shell guilty either: the control only 
 without a shell were clean, which six runs *with* one now match. SwiftTerm's `chdir` is in the child,
 so the obvious mechanism was ruled out early.
 
-What it is now is a **guarded** unknown. Both `panelsdump` points are assertions, so a recurrence
-fails the suite with the state written down — which panel moved, which was active, what held the
-keyboard — instead of being noticed in a screenshot months later. That is the useful outcome
-available; hunting an intermittent that will not appear is not.
+A third sighting followed, again in a screenshot — the tabs scenario, left panel in the home folder.
+`panelsdump` was added to that scenario too and answered `left=…/pc-demo` twice running, and the very
+next screenshot of the same scenario showed `pc-demo` as well. So across three scenarios and eight
+instrumented runs the model has been right every time, and every sighting has come from a run with no
+instrumentation in it.
+
+That is worth stating precisely: what has never been observed is the *panel path being wrong when
+something was measuring it*. Whether the earlier screenshots caught a real transient or a state left
+by a neighbouring scenario is still unknown.
+
+What it is now is a **guarded** unknown, in two scenarios rather than one. A recurrence fails the suite
+with the state written down — which panel, which side is active, what holds the keyboard — instead of
+being noticed in a picture months later. That is the useful outcome available; hunting an intermittent
+that will not appear under measurement is not.
