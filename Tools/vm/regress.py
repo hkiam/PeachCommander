@@ -157,6 +157,16 @@ SCENARIOS = [
                       "right /Users/admin/pc-cmp/b", "wait 1000",
                       "cmd cm_CompareDirsWithSubdirs", "wait 2500",
                       "seldump /Users/admin/compare.txt", "wait 500"], 9),
+    # One tree for both panels (F-015). What matters is *which* panel it steers: choosing a folder must
+    # move the active one and leave the other alone, so the scenario activates the right panel first and
+    # then dumps both.
+    ("shared-tree", ["active left", "left /Users/admin/pc-demo", "wait 1000",
+                     "right /Users/admin", "wait 800",
+                     "sharedtree on", "wait 1200",
+                     "active right", "wait 500",
+                     "sharedtree select /Users/admin/pc-demo/sub", "wait 1500",
+                     "dump /Users/admin/tree-active.txt", "wait 400",
+                     "active left", "wait 400", "dump /Users/admin/tree-other.txt", "wait 400"], 10),
     # Does previewing a document fetch what it points at (F-116)? An <img> pointing at a server needs no
     # JavaScript, so disabling that never stopped it: opening the file told the other end who opened it
     # and when. The witness is the server, not the app — see EXTERNAL_CHECKS below.
@@ -458,6 +468,10 @@ REPORTS = {
     # The left panel marks what the right one does not have, or has differently. `both.txt` is identical
     # on both sides and must stay unmarked — otherwise "marked everything" would pass.
     "compare-dirs": ("/Users/admin/compare.txt", ["name=only-left.txt", "name=sub", "!name=both.txt"]),
+    "shared-tree": ("/Users/admin/tree-active.txt", ["path=/Users/admin/pc-demo/sub\n"]),
+    # …and the panel that was not active did not move. Without this the scenario would pass if the tree
+    # navigated both, which is precisely the thing to get wrong.
+    "shared-tree-other": ("/Users/admin/tree-other.txt", ["path=/Users/admin/pc-demo\n"]),
     "sftp-attributes": ("/Users/admin/sftp.txt", ["requested=600", "applied=ok"]),
     # 40960 bytes whole; then only the tail after 10000 travels.
     "sftp-download": ("/Users/admin/sftpget.txt", ["full=40960", "resumedAt=10000", "tail=30960"]),

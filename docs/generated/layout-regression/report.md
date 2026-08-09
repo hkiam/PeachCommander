@@ -6,5 +6,4 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| viewer-large-memory | 0 | — | — | `viewer-large-memory.png` |
-| compare-dirs | 0 | — | — | `compare-dirs.png` |
+| shared-tree | 0 | — | — | `shared-tree.png` |

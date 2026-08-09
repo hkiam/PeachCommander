@@ -391,6 +391,8 @@ enum AppMenu {
                                  key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Tree"), cmd: "cm_SrcTree",
                                  key: "", mask: [], target: target, action: commandAction))
+        viewMenu.addItem(command(String(localized: "Shared Tree"), cmd: "cm_TreeShared",
+                                 key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(.separator())
         viewMenu.addItem(command(String(localized: "Cycle View Mode"), cmd: "cm_CycleViewMode",
                                  key: "m", mask: [.command, .shift], target: target, action: commandAction))

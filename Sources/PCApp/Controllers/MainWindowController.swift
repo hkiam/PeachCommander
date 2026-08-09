@@ -22,6 +22,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private let logger = PCFoundationLogger.logger
 
     private let splitView = PanelSplitView()
+    /// One tree for both panels, to the left of them (F-015). Separate from the per-panel tree column:
+    /// Total Commander offers either, and they answer different questions — "where am I in this panel"
+    /// versus "one place to steer both panels from".
+    private let sharedTree = PanelTreeView()
+    private var sharedTreeWidthConstraint: NSLayoutConstraint?
     #if DEBUG
     /// Diagnostic: push the divider right so a wide column fits in a screenshot (F-372).
     func automationWidenLeftPanel() {
@@ -271,6 +276,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         splitView.translatesAutoresizingMaskIntoConstraints = false
         functionKeyBar.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(buttonBarView)
+        container.addSubview(sharedTree)
+        sharedTree.translatesAutoresizingMaskIntoConstraints = false
+        sharedTreeWidthConstraint = sharedTree.widthAnchor.constraint(equalToConstant: 0)
         container.addSubview(splitView)
         container.addSubview(previewPanel)
         container.addSubview(previewHandle)
@@ -302,6 +310,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             buttonBarView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             // The resizer sits between the file panels and the preview column, which is where a
             // divider belongs — the toggle chevron stays out at the window edge.
+            sharedTreeWidthConstraint!,
+            sharedTree.topAnchor.constraint(equalTo: splitView.topAnchor),
+            sharedTree.bottomAnchor.constraint(equalTo: splitView.bottomAnchor),
             splitView.trailingAnchor.constraint(equalTo: previewResizer.leadingAnchor),
             previewResizer.trailingAnchor.constraint(equalTo: previewPanel.leadingAnchor),
             previewResizer.topAnchor.constraint(equalTo: splitView.topAnchor),
@@ -328,7 +339,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             buttonBarView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
             buttonBarHeightConstraint!,
             splitView.topAnchor.constraint(equalTo: buttonBarView.bottomAnchor),
-            splitView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            sharedTree.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            splitView.leadingAnchor.constraint(equalTo: sharedTree.trailingAnchor),
             previewPanel.topAnchor.constraint(equalTo: buttonBarView.bottomAnchor),
             previewHandle.topAnchor.constraint(equalTo: buttonBarView.bottomAnchor),
         ]
@@ -338,7 +350,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             buttonBarView.bottomAnchor.constraint(equalTo: splitView.bottomAnchor),
             buttonBarWidthConstraint!,
             splitView.topAnchor.constraint(equalTo: container.topAnchor),
-            splitView.leadingAnchor.constraint(equalTo: buttonBarView.trailingAnchor),
+            sharedTree.leadingAnchor.constraint(equalTo: buttonBarView.trailingAnchor),
+            splitView.leadingAnchor.constraint(equalTo: sharedTree.trailingAnchor),
             previewPanel.topAnchor.constraint(equalTo: container.topAnchor),
             previewHandle.topAnchor.constraint(equalTo: container.topAnchor),
         ]
@@ -394,6 +407,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         splitView.isVertical = true
         splitView.dividerStyle = .thin
         splitView.delegate = self
+        // The shared tree steers the *active* panel (F-015).
+        sharedTree.onSelect = { [weak self] path in
+            guard let self, let panel = self.activePanel else { return }
+            Task { @MainActor in await panel.loadDirectory(path) }
+        }
         // Double-clicking the divider gives two equal panels back (F-001).
         splitView.onDividerDoubleClick = { [weak self] in self?.centerDivider() }
         splitView.translatesAutoresizingMaskIntoConstraints = false
@@ -569,6 +587,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
         if config.bool("Layout", "LeftTree", default: false) { leftPanelController?.setTreeVisible(true) }
         if config.bool("Layout", "RightTree", default: false) { rightPanelController?.setTreeVisible(true) }
+        if config.bool("Layout", "SharedTree", default: false) { setSharedTreeVisible(true, persist: false) }
         if config.bool("Layout", "ButtonBarVertical", default: false) { setButtonBarVertical(true) }
         // The keymap names the function-key bar's labels, so a late load relabels the bar in place.
         loadKeymap(scheme: config.string("Configuration", "KeyScheme", default: "tc-classic"))
@@ -3706,6 +3725,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         leftPanelController?.view.isHighlighted = (activePanel === leftPanelController)
         rightPanelController?.view.isHighlighted = (activePanel === rightPanelController)
         refreshWindowTitle()
+        revealActivePathInSharedTree()
     }
 
     /// Put the active panel's path in the window title (F-012).
@@ -3905,6 +3925,44 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let mode = panel.viewMode.rawValue
         markActiveViewMode()
         Task { await mainConfig.setString(mode, "Layout", key); await mainConfig.flush() }
+    }
+
+    /// Width of the shared tree column when it is open.
+    private static let sharedTreeWidth: CGFloat = 220
+
+    /// Is the one-tree-for-both-panels column open (F-015)?
+    var sharedTreeVisible: Bool { (sharedTreeWidthConstraint?.constant ?? 0) > 0 }
+
+    /// Show or hide the shared tree (cm_TreeShared, F-015).
+    ///
+    /// One tree for both panels, as Total Commander offers alongside the per-panel column: clicking a
+    /// folder in it navigates whichever panel is *active*, so it reads as a place to steer from rather
+    /// than as part of either panel. The per-panel trees are untouched — the two answer different
+    /// questions and TC lets you have either.
+    func setSharedTreeVisible(_ visible: Bool, persist: Bool = true) {
+        sharedTreeWidthConstraint?.constant = visible ? Self.sharedTreeWidth : 0
+        sharedTree.isHidden = !visible          // no leftover sliver when collapsed
+        setMenuCheck(cmd: "cm_TreeShared", on: visible)
+        if visible { revealActivePathInSharedTree() }
+        if persist { Task { await mainConfig.setBool(visible, "Layout", "SharedTree") } }
+    }
+
+    @objc func toggleSharedTree() { setSharedTreeVisible(!sharedTreeVisible) }
+
+    /// Choose a folder in the shared tree, as clicking one does — the same callback, so a scenario
+    /// exercises the real path rather than a shortcut around it.
+    func sharedTreeAutomationSelect(_ path: String) { sharedTree.onSelect?(path) }
+
+    /// Point the shared tree at the active panel's folder, without it navigating anything back.
+    func revealActivePathInSharedTree() {
+        guard sharedTreeVisible, let panel = activePanel else { return }
+        Task { @MainActor in
+            let path = await panel.getCurrentPath()
+            // Only a local path is a folder in this tree; inside an archive or on a server there is
+            // nothing here to point at, and pretending otherwise would jump the tree somewhere random.
+            guard !panel.isInArchive, !path.isEmpty else { return }
+            sharedTree.reveal(path: path)
+        }
     }
 
     /// Toggle the active panel's folder-tree column (cm_SrcTree / Ctrl+F8, F-015).
