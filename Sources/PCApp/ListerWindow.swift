@@ -186,6 +186,31 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Open the docked marks panel, so a dump reads what is on screen and not only what is in the model.
     func automationShowMarks() { marks.show() }
 
+    /// Switch the representation, as the 1..6 keys do, and report how long the switch took.
+    ///
+    /// The timing is the point: "open a binary and switch to text" is a thing a user does and the app
+    /// used to stop responding for it, so a scenario has to be able to say how long it took rather
+    /// than only that a view appeared.
+    /// The class of the view currently showing the content — which representation was actually chosen.
+    var automationContentViewKind: String { contentView.map { String(describing: type(of: $0)) } ?? "none" }
+
+    @discardableResult
+    func automationSetMode(_ name: String) -> Double {
+        let wanted: Mode?
+        switch name.lowercased() {
+        case "text": wanted = .text
+        case "hex": wanted = .hex
+        case "binary": wanted = .binary
+        case "code": wanted = .code
+        case "image": wanted = .image
+        default: wanted = nil
+        }
+        guard let wanted else { return -1 }
+        let t0 = DispatchTime.now().uptimeNanoseconds
+        setModeManually(wanted)
+        return Double(DispatchTime.now().uptimeNanoseconds - t0) / 1_000_000
+    }
+
     /// Put the caret at the start of a 1-based line, so a scenario can exercise the *real* "which line
     /// am I on" path rather than a shortcut around it.
     func automationSetCaret(line: Int) {
@@ -466,8 +491,19 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         if text != symbolPathText { symbolPathText = text; updateStatus() }
     }
 
+    /// Above this many characters the caret no longer highlights matching brackets.
+    ///
+    /// Not a taste decision: reading `NSTextView.layoutManager` lays the *whole* document out, and for
+    /// a document of this size that is seconds, on every single click. Bracket matching is a nicety;
+    /// a viewer that stops responding is not. Measured at 2.0 s for a 931k-character document.
+    private static let bracketMatchSizeLimit = 200_000
+
     private func updateBracketHighlight() {
-        guard let tv = textContentView, let lm = tv.layoutManager else { return }
+        guard let tv = textContentView else { return }
+        // The length *before* touching the layout manager, or the guard costs what it is guarding
+        // against. `textStorage?.length` is the character count without laying anything out.
+        guard (tv.textStorage?.length ?? 0) <= Self.bracketMatchSizeLimit else { return }
+        guard let lm = tv.layoutManager else { return }
         for r in bracketRanges { lm.removeTemporaryAttribute(.backgroundColor, forCharacterRange: r) }
         bracketRanges = []
         let sel = tv.selectedRange()
@@ -573,6 +609,14 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         return matches[min(pluginChoice, matches.count - 1)]
     }
 
+    /// Is this file's content binary, so that it must not go into an NSTextView?
+    ///
+    /// The rule, the measurements behind it and why two questions are asked rather than one live in
+    /// PCVFS.TextContentKind, where they can be checked without a window.
+    private func hasBinaryContent(_ slice: FileSlice) -> Bool {
+        decodedTextAndFidelity(slice).needsVirtualView
+    }
+
     private static func autoMode(for path: String, slice: FileSlice?) -> Mode {
         let ext = (path as NSString).pathExtension.lowercased()
         if markdownExts.contains(ext) || htmlExts.contains(ext) {
@@ -643,11 +687,14 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
                 let tv = makeRichTextContent(path: path)
                 textMarks = TextMarkController(textView: tv)
                 view = tv
-            } else if slice.count <= textViewSizeLimit {
+            } else if slice.count <= textViewSizeLimit, !hasBinaryContent(slice) {
                 let tv = makeTextContent(decodedText(slice), ext: (path as NSString).pathExtension, language: nil)
                 textMarks = TextMarkController(textView: tv)
                 view = tv
             } else {
+                // Binary content, or simply a large file: the virtual view, which indexes line starts
+                // and draws only what is on screen (F-112). An NSTextView cannot be used here — see
+                // `hasBinaryContent`.
                 view = TextListerView(slice: slice, encoding: textEncoding?.encoding)
             }
             scrollView.documentView = view
@@ -689,11 +736,11 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             let ext = (path as NSString).pathExtension.lowercased()
             let language = SyntaxHighlighter.language(forExtension: ext)
                 ?? SyntaxHighlighter.language(forExtension: "c")!
-            if slice.count <= textViewSizeLimit {
+            if slice.count <= textViewSizeLimit, !hasBinaryContent(slice) {
                 let tv = makeTextContent(decodedText(slice), ext: ext, language: language)
                 textMarks = TextMarkController(textView: tv)
                 view = tv
-            } else if slice.count <= Self.highlightSizeLimit {
+            } else if slice.count <= Self.highlightSizeLimit, !hasBinaryContent(slice) {
                 // Still small enough to highlight in one pass (materialized).
                 view = CodeListerView(text: decodedText(slice), language: language)
             } else {
@@ -1376,10 +1423,23 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
 
     /// Decode the file's bounded prefix to text using the active/auto encoding.
     private func decodedText(_ slice: FileSlice) -> String {
+        decodedTextAndFidelity(slice).text
+    }
+
+    /// The file as text, and whether that decoding was *lossy*.
+    ///
+    /// Lossy means the bytes were not valid in the encoding they were taken for, so they went through
+    /// `String(decoding:as: UTF8.self)`, which salvages what it can and replaces the rest. For real
+    /// text this practically never happens; for binary content it always does, and the result is the
+    /// expensive kind — scalars scattered across the whole of Unicode rather than one replacement
+    /// character. That is a far sharper signal than counting control bytes: measured on the reported
+    /// PNG, the byte heuristic put it at 5.8 % against a 5 % threshold, while uniformly distributed
+    /// binary sits at 3.5 % and would pass for text.
+    private func decodedTextAndFidelity(_ slice: FileSlice) -> (text: String, needsVirtualView: Bool) {
         let cap = 16 * 1024 * 1024
         let raw = slice.bytes(at: 0, length: min(cap, Int(slice.count)))
         let enc = textEncoding?.encoding ?? EncodingDetector.detect(Array(raw.prefix(64 * 1024)))
-        return String(bytes: raw, encoding: enc) ?? String(decoding: raw, as: UTF8.self)
+        return TextContentKind.decode(raw, encoding: enc)
     }
 
     /// Pretty-print the current file as JSON or XML in the text view (key `f`).

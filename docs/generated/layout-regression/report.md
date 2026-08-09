@@ -6,6 +6,4 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| quick-look | 0 | — | — | `quick-look.png` |
-| transfer-panel | 0 | — | — | `transfer-panel.png` |
-| keys-main | 0 | 0 | — | `keys-main.png` |
+| viewer-binary-text | 0 | — | — | `viewer-binary-text.png` |

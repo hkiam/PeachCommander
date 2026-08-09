@@ -124,6 +124,17 @@ extension MainWindowController {
                     .map { ($0 as NSString).lastPathComponent }.sorted()
                 let text = "marked=\(marked.count)\n" + marked.map { "name=\($0)" }.joined(separator: "\n") + "\n"
                 try? text.write(toFile: arg, atomically: true, encoding: .utf8)
+            case "listermode":                          // listermode <mode>|<out> (Viewer): switch + time it
+                let a = arg.split(separator: "|", maxSplits: 1).map { String($0).trimmingCharacters(in: .whitespaces) }
+                let ms = currentLister()?.automationSetMode(a[0]) ?? -1
+                if a.count == 2 {
+                    let kind = currentLister()?.automationContentViewKind ?? "none"
+                    // Which view was chosen matters as much as the timing: an NSTextView holding binary
+                    // content is the defect, and it is fast only until something asks it to lay out.
+                    try? String(format: "mode=%@\nswitch_ms=%.0f\nview=%@\nfast=%@\n",
+                                a[0], ms, kind, ms >= 0 && ms < 3000 ? "yes" : "no")
+                        .write(toFile: a[1], atomically: true, encoding: .utf8)
+                }
             case "listercaret":                         // listercaret <line>: put the viewer's caret there
                 currentLister()?.automationSetCaret(line: Int(arg) ?? 1)
             case "listernote":                          // listernote: write a note about the caret's line
