@@ -449,6 +449,24 @@ extension MainWindowController {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
                     self?.settingsWindow?.showPage(titled: title)
                 }
+            case "settingsdump":                          // settingsdump <out> (F-381)
+                // Every string the settings window is showing, the way `sidebardump` reads the
+                // sidebar: a plugin's page is a real NSView inside the host's window, so what it
+                // displays can be read rather than taken on trust.
+                var lines: [String] = []
+                func walk(_ view: NSView) {
+                    if let field = view as? NSTextField, !field.stringValue.isEmpty {
+                        lines.append(field.stringValue)
+                    }
+                    if let text = view as? NSTextView, !text.string.isEmpty { lines.append(text.string) }
+                    if let button = view as? NSButton, !button.title.isEmpty {
+                        lines.append("[\(button.state == .on ? "x" : " ")] \(button.title)")
+                    }
+                    view.subviews.forEach(walk)
+                }
+                if let root = settingsWindow?.window?.contentView { walk(root) }
+                try? (lines.joined(separator: "\n") + "\n")
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
             case "findercomment":                          // findercomment <path>|<text> (F-023): write + read-back
                 let a = arg.split(separator: "|", maxSplits: 1).map { String($0).trimmingCharacters(in: .whitespaces) }
                 if a.count == 2 {

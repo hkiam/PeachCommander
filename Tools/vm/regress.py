@@ -340,6 +340,13 @@ SCENARIOS = [
                        "termnotify plugin.terminal.view|dropPaths|/Users/admin/pc-demo/it's a file.txt",
                        "wait 1200",
                        "termsend plugin.terminal.view|> /Users/admin/drop.txt\\n", "wait 1500"], 9),
+    # The terminal's settings page (plan §6/§7). It exists to explain and to hold one switch that does
+    # nothing on its own: the terminal can only follow the shell if the shell reports where it is, and
+    # no shell on macOS does unless the user arranges it — Apple's own hook in /etc/zshrc is guarded to
+    # Apple Terminal. So the page shows the exact lines and touches nothing.
+    ("terminal-settings", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                           "settingspage Terminal", "wait 2000",
+                           "settingsdump /Users/admin/tset.txt", "wait 400"], 9),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -806,6 +813,10 @@ REPORTS = {
     "terminal-cmdline-cwd": ("/Users/admin/cmdline-cwd.txt", ["/Users/admin/pc-demo"]),
     # One line, whole: the shell parsed it as a single argument. Quoting failure splits it.
     "terminal-drop": ("/Users/admin/drop.txt", ["/Users/admin/pc-demo/it's a file.txt"]),
+    # The page says what it must: a switch that is off, and the exact escape sequence the user has to
+    # arrange for themselves.
+    "terminal-settings": ("/Users/admin/tset.txt",
+                          ["Let the active panel follow the terminal", "]7;file://", "add-zsh-hook"]),
     "terminal-move": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move-mounts": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
@@ -1125,6 +1136,12 @@ def boot(app: str, run: str):
                   # CRLF, a duplicate, a blank line and trailing spaces: one file for every operation.
                   "printf 'keep me  \\r\\n\\r\\nkeep me\\r\\ndrop this\\r\\n' > pc-demo/messy.txt && "
                   "printf 'x' > pc-demo/sub/nested.txt && "
+                  # The OSC 7 hook the terminal's settings page tells the user to add by hand. Set up
+                  # here because the app must never write it: that is the whole point of the setting.
+                  # Harmless for every other scenario, since acting on it is off by default.
+                  "printf '\\nautoload -Uz add-zsh-hook\\n"
+                  "_pc_osc7() { printf \\'\\\\033]7;file://%%s%%s\\\\007\\' \"$HOST\" \"${PWD// /%%20}\" }\\n"
+                  "add-zsh-hook precmd _pc_osc7\\n' >> .zshrc && "
                   # A name with a space and an apostrophe, for the terminal's drop quoting: a naive
                   # implementation turns this one file into three arguments.
                   "printf 'dropped\\n' > \"pc-demo/it's a file.txt\" && "

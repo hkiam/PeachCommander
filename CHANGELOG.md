@@ -81,6 +81,10 @@ does not have.
 
 ### Added
 
+- **The terminal has a settings page** with one switch and an explanation. Letting the file panel
+  follow the terminal's folder needs your shell to report where it is, which macOS only arranges for
+  Apple's Terminal — so the page shows the exact lines to add to your `~/.zshrc` and does not touch the
+  file itself. The switch has no effect until you add them.
 - **Files dropped on the terminal land at the prompt**, quoted and not executed — a name with a space
   or an apostrophe in it arrives as one argument. The terminal also follows the app's colours instead
   of being a black rectangle in a themed window.
