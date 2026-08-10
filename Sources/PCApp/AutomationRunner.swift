@@ -318,6 +318,16 @@ extension MainWindowController {
                                                                       value: text)
                     NSLog("[automation] termsend \(a[0]): \(sent)")
                 }
+            case "runshell":                            // runshell <out>|<command> (F-381)
+                // The assistant's run_shell, minus the assistant. Everything below the tool call is
+                // real: a tab opens, a non-interactive shell runs the line, and what it printed comes
+                // back the way the model would receive it. The output path comes first for the same
+                // reason `probe`'s does — a command worth running contains pipes.
+                let rs = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if rs.count == 2 {
+                    let out = (try? await runShellVisibly(rs[1])) ?? "ERROR"
+                    try? out.write(toFile: rs[0], atomically: true, encoding: .utf8)
+                }
             case "dropview":                            // dropview <container>|<viewId> (F-381)
                 // The drop the drag would perform, minus the drag. Everything downstream is real: the
                 // "would this do anything" rule, the placement write, opening the container if it was

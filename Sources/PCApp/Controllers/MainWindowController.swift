@@ -4094,6 +4094,61 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Split the terminal, or put it back together (cm_TerminalSplit, F-381).
     @objc func terminalSplit() { notifyTerminal(key: "toggleSplit", value: "") }
 
+    // MARK: - The assistant's shell (F-381, plan §7)
+
+    /// Marker the wrapper prints when the command is done, with its exit status after it.
+    private static let shellDoneMarker = "__PC_RUN_SHELL_DONE__"
+
+    /// Run `command` in a terminal tab the user can watch, and return what it printed.
+    ///
+    /// Visible on purpose. A hidden shell would be the same capability with the evidence removed; run
+    /// in a tab, what the assistant did is on screen afterwards, in the user's own scrollback, beside
+    /// everything else they ran that day. It is also a real terminal, so a command that asks a
+    /// question — `sudo` wanting a password — can be answered instead of failing into a pipe.
+    ///
+    /// The tab runs a **non-interactive** shell. A login shell reads the user's dotfiles, and an alias
+    /// or function there can make an approved command line mean something else entirely; the point of
+    /// showing the command is that the text on screen is the text that ran.
+    ///
+    /// Output is teed to a file because a terminal's buffer is the plugin's and there is no way to
+    /// read it back across the ABI. The approval dialog says so rather than leaving the user to
+    /// discover that the line they approved had two more clauses on it.
+    func runShellVisibly(_ command: String) async throws -> String {
+        guard ViewContainerRegistry.shared.container(ofViewId: "plugin.terminal.view") != nil else {
+            throw AutomationError.notImplemented("no terminal plugin is loaded")
+        }
+        let file = FileManager.default.temporaryDirectory
+            .appendingPathComponent("pc-run-shell-\(UUID().uuidString).log")
+        let quoted = ShellQuoting.quote(file.path)
+        // `pipestatus[1]` and not `$?`: with `tee` on the end, `$?` is tee's status and would report
+        // success for a command that failed.
+        let wrapped = "\(command) 2>&1 | tee \(quoted); "
+            + "printf '\\n\(Self.shellDoneMarker)%s\\n' \"${pipestatus[1]}\" >> \(quoted)"
+
+        if !bottomDockVisible { setBottomDockVisible(true) }
+        selectTerminalInDock()
+        guard ViewContainerRegistry.shared.notifyView(viewId: "plugin.terminal.view",
+                                                      key: "runInNewTab", value: wrapped) else {
+            throw AutomationError.notImplemented("the terminal view is not open")
+        }
+
+        // Poll for the marker. A command that never finishes is a real possibility — the assistant
+        // may have started a server — so this gives up after a while and says what it saw rather than
+        // hanging the conversation.
+        let deadline = Date().addingTimeInterval(60)
+        while Date() < deadline {
+            try? await Task.sleep(nanoseconds: 200_000_000)
+            guard let text = try? String(contentsOf: file, encoding: .utf8) else { continue }
+            guard let range = text.range(of: Self.shellDoneMarker) else { continue }
+            let output = String(text[text.startIndex..<range.lowerBound])
+            let status = text[range.upperBound...].trimmingCharacters(in: .whitespacesAndNewlines)
+            try? FileManager.default.removeItem(at: file)
+            return output + "\n[exit status \(status)]"
+        }
+        let sofar = (try? String(contentsOf: file, encoding: .utf8)) ?? ""
+        return sofar + "\n[still running after 60 s — the terminal tab is open]"
+    }
+
     /// Close the terminal tab that is showing (cm_TerminalCloseTab, F-381).
     ///
     /// The plugin asks first when something is running in it; the host does not second-guess that.

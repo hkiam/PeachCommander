@@ -133,6 +133,9 @@ public actor DefaultAutomationCore: AutomationCore {
             case "open_in_panel": try await bridge.openInPanel(try a.string("path"), side: try a.string("side")); return .ok(payload: nil)
             case "set_selection": try await bridge.setSelection(mask: try a.string("mask")); return .ok(payload: nil)
             case "run_command":   try await bridge.runCommand(try a.string("command_id")); return .ok(payload: nil)
+            case "run_shell":
+                let out = try await bridge.runShell(try a.string("command"))
+                return .ok(payload: try json(["output": out]))
             case "copy":          try await bridge.copy(sources: try a.strings("sources"), destination: try a.string("destination")); return .ok(payload: nil)
             case "move":          try await bridge.move(sources: try a.strings("sources"), destination: try a.string("destination")); return .ok(payload: nil)
             case "rename":        try await bridge.rename(path: try a.string("path"), newName: try a.string("new_name")); return .ok(payload: nil)
@@ -172,6 +175,13 @@ public actor DefaultAutomationCore: AutomationCore {
             // attached to their file, and "write 34 characters" does not let them decide that.
             return text.isEmpty ? "Remove the comment on \(path)."
                                 : "Set the comment on \(path) to “\(text)”."
+        case "run_shell":
+            // The command itself, verbatim and in full. Anything else — a summary, a truncation, the
+            // tool's name — asks the user to approve something they cannot check, and this is the one
+            // tool where the exact characters are the whole decision.
+            guard let cmd = try? a.string("command") else { return "Run a shell command." }
+            return "Run “\(cmd)” in a terminal tab. Its output is also written to a file so the "
+                 + "assistant can read it."
         case "set_config": return "Set \((try? a.string("key")) ?? "?") = \((try? a.string("value")) ?? "?")."
         case "move_to_trash": return "Move \((try? a.strings("paths").count) ?? 0) item(s) to the Trash."
         case "delete_permanently": return "Permanently delete \((try? a.strings("paths").count) ?? 0) item(s). This cannot be undone."

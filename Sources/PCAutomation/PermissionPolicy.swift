@@ -15,6 +15,11 @@ public enum Capability: String, Codable, Sendable, CaseIterable {
     case delete      // move to Trash or delete permanently
     case config      // read/write the file-manager configuration
     case runCommand  // invoke an arbitrary cm_* command
+    /// Run a shell command line. Its own capability rather than folded into `.write`, because it is
+    /// not a kind of writing — it is "run a program of your choosing", which can do everything the
+    /// other capabilities can and several things none of them cover. Naming it separately is what
+    /// lets a policy grant file operations without granting this.
+    case shell
     case network     // network access (remote FS, downloads, cloud model, MCP)
 }
 
@@ -48,7 +53,7 @@ public struct PermissionPolicy: Sendable, Equatable, Codable {
     public func permits(_ cap: Capability) -> Bool { allowed.contains(cap) }
 
     /// The mutating capabilities.
-    static let mutating: Set<Capability> = [.write, .delete, .config]
+    static let mutating: Set<Capability> = [.write, .delete, .config, .shell]
 
     /// Whether an action needing `cap` must be confirmed by the user before running.
     /// (Under `.readOnly`, mutating actions are not confirmed — they are refused; use

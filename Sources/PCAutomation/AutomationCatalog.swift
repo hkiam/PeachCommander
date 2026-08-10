@@ -122,6 +122,12 @@ public enum AutomationCatalog {
         // commands
         .init("run_command", .runCommand, "Invoke a named command (cm_*) by id.",
               [.init("command_id", .string, "The command id, e.g. \"cm_PackFiles\".")]),
+        // Runs where the user can watch it. A hidden shell would be the same capability with the
+        // evidence removed, and the point of putting it in a terminal tab is that what ran is on
+        // screen afterwards, in the user's own scrollback, next to everything else they ran.
+        .init("run_shell", .shell,
+              "Run a shell command in a visible terminal tab and return what it printed.",
+              [.init("command", .string, "The command line, exactly as it should be run.")]),
     ]
 
     /// The whole catalogue as a JSON array of tool-schema objects (LLM/MCP shape).
