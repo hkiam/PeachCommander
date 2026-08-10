@@ -24,5 +24,7 @@ only go down.
 | terminal-find | 0 | — | — | `terminal-find.png` |
 | terminal-fkeys | 0 | — | — | `terminal-fkeys.png` |
 | terminal-reveal | 0 | — | — | `terminal-reveal.png` |
+| terminal-close-ask | 0 | — | — | `terminal-close-ask.png` |
+| terminal-copy | 0 | — | — | `terminal-copy.png` |
 | terminal-move | 0 | — | — | `terminal-move.png` |
 | keys-main | 0 | 0 | — | `keys-main.png` |

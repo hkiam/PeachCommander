@@ -61,14 +61,37 @@ final class TerminalSettings {
     /// launch. Caching this would buy nothing measurable and cost the thing people notice.
     var panelFollowsTerminal: Bool {
         get { stored()?.panelFollowsTerminal ?? false }
-        set { try? JSONEncoder().encode(Stored(panelFollowsTerminal: newValue)).write(to: url) }
+        set { write { $0.panelFollowsTerminal = newValue } }
     }
 
     private func stored() -> Stored? {
         (try? Data(contentsOf: url)).flatMap { try? JSONDecoder().decode(Stored.self, from: $0) }
     }
 
-    private struct Stored: Codable { var panelFollowsTerminal: Bool }
+    /// How many lines of output a terminal keeps behind it.
+    ///
+    /// SwiftTerm's own default is 500, which is a scrollback you notice losing the moment a build
+    /// prints anything. 5 000 is the default here — measured at roughly 1.4 MB of buffer per session
+    /// at 125 columns, which is a fair trade for being able to scroll back through a compile.
+    /// Clamped rather than trusted: a hand-edited config with 50 000 000 in it would be a memory
+    /// problem the user could not see the cause of.
+    var scrollbackLines: Int {
+        get { min(max((stored()?.scrollbackLines ?? 5_000), 200), 100_000) }
+        set { write { $0.scrollbackLines = min(max(newValue, 200), 100_000) } }
+    }
+
+    private func write(_ mutate: (inout Stored) -> Void) {
+        var s = stored() ?? Stored(panelFollowsTerminal: false, scrollbackLines: 5_000)
+        mutate(&s)
+        try? JSONEncoder().encode(s).write(to: url)
+    }
+
+    private struct Stored: Codable {
+        var panelFollowsTerminal: Bool
+        // Absent in a file written before this existed, which is why it is optional here and
+        // defaulted where it is read.
+        var scrollbackLines: Int?
+    }
 
     private let url: URL = {
         let root: URL
@@ -168,7 +191,8 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
 
     /// Stable across the session's life, so a view can say which of several it is showing.
     let id: Int
-    let view = PCTerminalView(frame: .zero)
+    let view = PCTerminalView(frame: .zero, font: nil,
+                              options: TerminalOptions(scrollback: TerminalSettings.shared.scrollbackLines))
     /// What the running program calls itself (OSC 0/1/2), else the shell's name.
     private(set) var title: String
     /// The terminal's size, read from the emulator rather than mirrored from its delegate.
@@ -298,6 +322,36 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
         }
         let path = url.path
         return path.isEmpty ? nil : path
+    }
+
+    /// The name of whatever is in the foreground, when it is not the shell itself.
+    ///
+    /// A terminal's foreground process group is what the keyboard talks to, and `tcgetpgrp` on the
+    /// pseudo-terminal is how the kernel answers "who is that". When it is the shell's own group,
+    /// nothing is running and the tab can go without ceremony; when it is not, something was started
+    /// and is still going. Terminal.app asks in exactly this case, and losing an hour-long build to a
+    /// stray ⌘W is the failure people remember.
+    var foregroundJob: String? {
+        let fd = view.process.childfd
+        let shell = view.process.shellPid
+        guard fd >= 0, shell > 0 else { return nil }
+        let group = tcgetpgrp(fd)
+        guard group > 0, group != shell else { return nil }
+        // The name, so the question can say what it is about. `ps` rather than a private API: this
+        // runs once, when a tab is closed, and being able to read the answer matters more than
+        // shaving a fork off it.
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/bin/ps")
+        task.arguments = ["-o", "comm=", "-p", String(group)]
+        let pipe = Pipe()
+        task.standardOutput = pipe
+        task.standardError = FileHandle.nullDevice
+        task.standardInput = FileHandle.nullDevice
+        guard (try? task.run()) != nil else { return "?" }
+        let out = String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+        task.waitUntilExit()
+        let name = (out.trimmingCharacters(in: .whitespacesAndNewlines) as NSString).lastPathComponent
+        return name.isEmpty ? "?" : name
     }
 
     /// Stop the shell and everything it started.
@@ -498,14 +552,34 @@ final class TerminalContainerView: NSView {
     }
 
     /// Close the tab, and with it the session — the one place a session ends by request.
-    func closeTab(_ index: Int) {
+    ///
+    /// Asks first when something is still running in it. Only here: quitting the app and switching
+    /// the plugin off go through `teardown`, and a second dialog on the way out would be asking the
+    /// user to confirm a decision they already made.
+    func closeTab(_ index: Int, confirm: Bool = true) {
         guard tabs.indices.contains(index) else { return }
+        if confirm, let job = tabs[index].foregroundJob, !shouldClose(runningJob: job) { return }
         TerminalPool.close(tabs.remove(at: index))
         if tabs.isEmpty { panes = [0]; focused = 0; newTab(); return }
         // Panes pointing past the end, or at the tab that just went, fall back to a neighbour rather
         // than to nothing: a pane showing no session is a grey rectangle with no way out of it.
         panes = panes.map { min($0 >= index ? max($0 - 1, 0) : $0, tabs.count - 1) }
         rebuildPanes()
+    }
+
+    /// "`make` is still running in this tab. Close it anyway?"
+    ///
+    /// Modal and blocking, deliberately: the alternative is closing the tab and telling the user
+    /// afterwards, which is not a question. Cancel is the default button, because the expensive
+    /// mistake is the one that discards work.
+    private func shouldClose(runningJob job: String) -> Bool {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = String(format: L("“%@” is still running in this tab."), job)
+        alert.informativeText = L("Closing the tab stops it.")
+        alert.addButton(withTitle: L("Cancel"))
+        alert.addButton(withTitle: L("Close Anyway"))
+        return alert.runModal() == .alertSecondButtonReturn
     }
 
     var selectedSession: TerminalSession? {
@@ -602,6 +676,12 @@ final class TerminalContainerView: NSView {
     }
 
     @objc private func newTabPressed() { newTab() }
+    @objc private func closeTabPressed(_ sender: NSButton) { closeTab(sender.tag) }
+
+    /// Close the tab that is showing, for the host's menu command.
+    func closeSelectedTab() {
+        closeTab(panes.indices.contains(focused) ? panes[focused] : 0)
+    }
     @objc private func tabPressed(_ sender: NSButton) { selectTab(sender.tag) }
 
     private func refreshChrome() {
@@ -616,7 +696,26 @@ final class TerminalContainerView: NSView {
             // marking only the focused one would say the other had gone somewhere.
             button.state = shown.contains(i) ? .on : .off
             button.font = .systemFont(ofSize: 11)
-            tabStrip.addArrangedSubview(button)
+
+            // A close button on every tab, not only the selected one. Hover-only would be tidier and
+            // is how Terminal.app does it; always-visible is how anyone finds it without being told,
+            // and the strip has the room. There was no way to close a tab at all before this —
+            // `closeTab` existed and nothing called it.
+            let close = NSButton(title: "", target: self, action: #selector(closeTabPressed(_:)))
+            close.tag = i
+            close.bezelStyle = .accessoryBarAction
+            close.isBordered = false
+            close.image = NSImage(systemSymbolName: "xmark", accessibilityDescription: L("Close this tab"))
+            close.imageScaling = .scaleProportionallyDown
+            close.toolTip = L("Close this tab")
+            close.contentTintColor = theme.secondaryText
+            close.setContentHuggingPriority(.required, for: .horizontal)
+
+            let cell = NSStackView(views: [button, close])
+            cell.orientation = .horizontal
+            cell.spacing = 1
+            cell.alignment = .centerY
+            tabStrip.addArrangedSubview(cell)
         }
         splitButton.toolTip = isSplit ? L("Use the whole area for one terminal") : L("Split the terminal")
         // One line a scenario can assert on without a parser, and a line a user can read: which pane of
@@ -654,6 +753,9 @@ final class TerminalContainerView: NSView {
         case "newTab":    newTab()
         case "selectTab": if let i = Int(value) { selectTab(i - 1) }   // 1-based, as the status line reads
         case "closeTab":  if let i = Int(value) { closeTab(i - 1) }
+        case "closeCurrentTab": closeSelectedTab()
+        // For scenarios and for a host that wants to close without a dialog.
+        case "closeTabForce": if let i = Int(value) { closeTab(i - 1, confirm: false) }
         case "split":     split()
         case "maximise":  maximise()
         // What a menu item wants: one key that splits and then puts it back, so the host does not
@@ -780,6 +882,8 @@ final class TerminalContainerView: NSView {
     /// Only the sessions in *this* view's tabs. Another mounted view's sessions are not this one's to
     /// end, which is the point of the pool being shared.
     func teardown() {
+        // No questions here: the app is quitting or the plugin is being switched off, and both are
+        // decisions the user has already taken.
         for tab in tabs { TerminalPool.close(tab) }
         tabs.removeAll()
         panes = [0]
@@ -817,6 +921,7 @@ final class TerminalSettingsView: NSView {
 
     private let followCheck = NSButton(checkboxWithTitle: L("Let the active panel follow the terminal"),
                                        target: nil, action: nil)
+    private let scrollbackField = NSTextField()
     private let snippet = NSTextView()
 
     init() {
@@ -827,6 +932,21 @@ final class TerminalSettingsView: NSView {
         followCheck.action = #selector(followChanged)
         followCheck.translatesAutoresizingMaskIntoConstraints = false
         addSubview(followCheck)
+
+        // How much output a terminal keeps behind it. SwiftTerm's own default is 500 lines, which is a
+        // scrollback you notice losing the moment a build prints anything; 5 000 is roughly 1.4 MB of
+        // buffer per session at 125 columns, which is a fair trade for being able to scroll back
+        // through a compile. Applies to terminals opened afterwards — resizing a live buffer would
+        // mean deciding which lines to throw away, and the user did not ask for that.
+        let scrollbackLabel = NSTextField(labelWithString: L("Lines of scrollback:"))
+        scrollbackLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(scrollbackLabel)
+        scrollbackField.stringValue = String(TerminalSettings.shared.scrollbackLines)
+        scrollbackField.alignment = .right
+        scrollbackField.target = self
+        scrollbackField.action = #selector(scrollbackChanged)
+        scrollbackField.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(scrollbackField)
 
         let explanation = NSTextField(wrappingLabelWithString: L(
             "The terminal can only follow your shell if the shell reports its folder (OSC 7). macOS "
@@ -856,7 +976,12 @@ final class TerminalSettingsView: NSView {
         addSubview(copyButton)
 
         NSLayoutConstraint.activate([
-            followCheck.topAnchor.constraint(equalTo: topAnchor, constant: 16),
+            scrollbackLabel.topAnchor.constraint(equalTo: topAnchor, constant: 18),
+            scrollbackLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            scrollbackField.leadingAnchor.constraint(equalTo: scrollbackLabel.trailingAnchor, constant: 8),
+            scrollbackField.centerYAnchor.constraint(equalTo: scrollbackLabel.centerYAnchor),
+            scrollbackField.widthAnchor.constraint(equalToConstant: 80),
+            followCheck.topAnchor.constraint(equalTo: scrollbackLabel.bottomAnchor, constant: 16),
             followCheck.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             explanation.topAnchor.constraint(equalTo: followCheck.bottomAnchor, constant: 10),
             explanation.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
@@ -871,6 +996,13 @@ final class TerminalSettingsView: NSView {
         ])
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    @objc private func scrollbackChanged() {
+        TerminalSettings.shared.scrollbackLines = Int(scrollbackField.stringValue) ?? 5_000
+        // Read it back: the store clamps, and a field that keeps showing what the user typed while
+        // the setting is something else is a small lie that costs a bug report.
+        scrollbackField.stringValue = String(TerminalSettings.shared.scrollbackLines)
+    }
 
     @objc private func followChanged() {
         TerminalSettings.shared.panelFollowsTerminal = followCheck.state == .on

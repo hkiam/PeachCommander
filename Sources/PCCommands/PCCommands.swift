@@ -284,6 +284,8 @@ public protocol WindowControllerProtocol: AnyObject {
     func terminalNewTab()
     /// Split the terminal in two, or put it back together (cm_TerminalSplit, F-381).
     func terminalSplit()
+    /// Close the terminal tab that is showing (cm_TerminalCloseTab, F-381).
+    func terminalCloseTab()
     /// Show the background transfer manager window (TODOS #135).
     func showTransferManager()
     func showOpenSourceNotices()
@@ -786,6 +788,7 @@ public actor CommandRegistry {
         register(Self.cm_TerminalFocus)
         register(Self.cm_TerminalNewTab)
         register(Self.cm_TerminalSplit)
+        register(Self.cm_TerminalCloseTab)
         register(Self.cm_ConfigKeyClassic)
         register(Self.cm_ConfigKeyMacOS)
         register(Self.cm_CopyNamesToClip)
@@ -993,6 +996,9 @@ public actor CommandRegistry {
     static let cm_TerminalNewTab = PCCommand(id: 314, name: "cm_TerminalNewTab", category: "Terminal",
         help: "Open another terminal tab",
         handler: { ctx in ctx.windowController?.terminalNewTab() })
+    static let cm_TerminalCloseTab = PCCommand(id: 316, name: "cm_TerminalCloseTab", category: "Terminal",
+        help: "Close the terminal tab that is showing, asking first if something is running in it",
+        handler: { ctx in ctx.windowController?.terminalCloseTab() })
     static let cm_TerminalSplit = PCCommand(id: 315, name: "cm_TerminalSplit", category: "Terminal",
         help: "Split the terminal in two, or put it back together",
         handler: { ctx in ctx.windowController?.terminalSplit() })

@@ -461,6 +461,8 @@ enum AppMenu {
         terminalMenu.addItem(.separator())
         terminalMenu.addItem(command(String(localized: "New Terminal Tab"), cmd: "cm_TerminalNewTab",
                                      key: "", mask: [], target: target, action: commandAction))
+        terminalMenu.addItem(command(String(localized: "Close the Terminal Tab"), cmd: "cm_TerminalCloseTab",
+                                     key: "", mask: [], target: target, action: commandAction))
         terminalMenu.addItem(command(String(localized: "Split the Terminal"), cmd: "cm_TerminalSplit",
                                      key: "", mask: [], target: target, action: commandAction))
         terminalMenu.addItem(.separator())

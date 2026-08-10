@@ -4094,6 +4094,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Split the terminal, or put it back together (cm_TerminalSplit, F-381).
     @objc func terminalSplit() { notifyTerminal(key: "toggleSplit", value: "") }
 
+    /// Close the terminal tab that is showing (cm_TerminalCloseTab, F-381).
+    ///
+    /// The plugin asks first when something is running in it; the host does not second-guess that.
+    @objc func terminalCloseTab() { notifyTerminal(key: "closeCurrentTab", value: "") }
+
     /// Ask the terminal to do something, opening and focusing it first.
     ///
     /// The host does not know what a tab is — that is the plugin's word — so these commands are a
