@@ -43,7 +43,17 @@ public struct PermissionPolicy: Sendable, Equatable, Codable {
     }
 
     /// The recommended default: read/navigate/run freely, but writes need approval.
-    public static let standard = PermissionPolicy(autonomy: .confirmWrites)
+    ///
+    /// **Without `.shell`.** Every other capability here is something a file manager's assistant is
+    /// for; running a program of its choosing is not, and a dialog is a poor place to meet a
+    /// capability for the first time. Switching it on is a decision taken once, in Settings, in the
+    /// quiet — not one taken under time pressure with a command already written.
+    public static let standard = PermissionPolicy(
+        autonomy: .confirmWrites, allowed: Set(Capability.allCases).subtracting([.shell]))
+
+    /// `standard`, plus the shell — what the setting grants when it is switched on. The approval per
+    /// command still applies; this only decides whether the tool exists for the session at all.
+    public static let standardWithShell = PermissionPolicy(autonomy: .confirmWrites)
 
     /// A safe read-only policy (analysis/suggestions only).
     public static let readOnly = PermissionPolicy(

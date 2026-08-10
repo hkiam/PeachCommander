@@ -3446,6 +3446,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             aiMCPPort: await mainConfig.int("Automation", "MCPPort", default: 8790),
             aiMCPToken: await mainConfig.string("Automation", "MCPAuthToken", default: ""),
             aiAutonomy: await mainConfig.string("AI", "Autonomy", default: "confirm"),
+            aiAllowShell: await mainConfig.bool("AI", "AllowShell", default: false),
             aiCloudBase: await mainConfig.string("AI", "CloudBaseURL", default: ""),
             aiCloudModel: await mainConfig.string("AI", "CloudModel", default: "local"),
             aiHasCloudKey: Self.cloudKeyExists(),
@@ -7410,10 +7411,21 @@ extension MainWindowController: ContributionHost {
 
     /// The permission policy for new AI sessions, from the AI.Autonomy setting.
     func currentAutonomyPolicy() async -> PermissionPolicy {
+        // Off unless asked for, and asked for in Settings rather than in a dialog. Every other
+        // capability the assistant has is something a file manager's assistant is *for*; running a
+        // program of its choosing is not, and the first time somebody meets that capability should
+        // not be in a modal with a command already written in it.
+        //
+        // Autonomous is deliberately not exempt. "Do not ask me about writes" is a statement about
+        // file operations, made before this existed; reading it as "and you may run programs" would
+        // be putting words in the user's mouth.
+        let shell = await mainConfig.bool("AI", "AllowShell", default: false)
         switch await mainConfig.string("AI", "Autonomy", default: "confirm") {
         case "readonly":   return .readOnly
-        case "autonomous": return PermissionPolicy(autonomy: .autonomous)
-        default:           return .standard
+        case "autonomous":
+            let allowed = shell ? Set(Capability.allCases) : Set(Capability.allCases).subtracting([.shell])
+            return PermissionPolicy(autonomy: .autonomous, allowed: allowed)
+        default:           return shell ? .standardWithShell : .standard
         }
     }
 

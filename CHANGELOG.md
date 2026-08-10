@@ -16,7 +16,7 @@ does not have.
 
 ### Added
 
-- **The assistant can run a shell command — visibly, and only after you agree.** It opens a terminal
+- **The assistant can run a shell command — off unless you switch it on** (*Settings ▸ AI*), visibly, and only after you agree to each one. It opens a terminal
   tab, so what was run is on screen afterwards next to everything else you ran, and a command that
   asks a question can be answered. The approval quotes the command in full, because that is the whole
   decision. The tab runs a *non-interactive* shell: aliases and functions from your `~/.zshrc` do not

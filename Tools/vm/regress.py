@@ -477,7 +477,13 @@ SCENARIOS = [
                    "mountdump /Users/admin/drop-moved.txt", "wait 300",
                    "sidebardump /Users/admin/drop-side.txt", "wait 400",
                    "placeview plugin.terminal.view|default", "wait 1000"], 18),
-    # The assistant's shell (plan §7). It runs where the user can watch it: a hidden shell would be
+    # The assistant's shell (plan §7). This drives the *execution* — the host method the tool calls —
+    # and so goes past the permission gate on purpose: whether the tool exists for a session at all,
+    # and whether it is refused without approval, are decided in DefaultAutomationCore and tested
+    # there, where a fake bridge can prove nothing ran. What only a real machine can show is this:
+    # a tab opens, a non-interactive shell runs the line, and the dotfiles do not rewrite it.
+    #
+    # It runs where the user can watch it: a hidden shell would be
     # the same capability with the evidence removed, and the point of a terminal tab is that what the
     # assistant did is on screen afterwards, in the user's own scrollback.
     #
