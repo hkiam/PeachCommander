@@ -24,7 +24,7 @@ sudo -n pkill -x PeachCommander 2>/dev/null
 sleep 1
 # Per-scenario reset: persisted view mode or directory from the previous scenario would make this one
 # show something else entirely.
-rm -f "$HOME/pc-cfg/session.ini" "$HOME/pc-cfg/workspaces.ini"
+rm -f "$HOME/pc-cfg/session.ini" "$HOME/pc-cfg/workspaces.ini" "$HOME/pc-cfg/terminal/session.json"
 
 START=$(date "+%Y-%m-%d %H:%M:%S")
 # open, not the binary: LaunchServices puts the app in the auto-logged-in Aqua session. The log comes

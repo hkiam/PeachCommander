@@ -23,6 +23,10 @@ does not have.
 
 ### Added
 
+- **Terminal tabs come back after a restart**, in the folders they were in. The shells cannot come
+  back — those processes ended with the app — but three terminals in three checkouts no longer become
+  three prompts in your home folder. A tab the assistant opened for one command is deliberately not
+  restored.
 - **The assistant can run a shell command — off unless you switch it on** (*Settings ▸ AI*), visibly, and only after you agree to each one. It opens a terminal
   tab, so what was run is on screen afterwards next to everything else you ran, and a command that
   asks a question can be answered. The approval quotes the command in full, because that is the whole

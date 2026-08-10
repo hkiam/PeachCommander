@@ -111,6 +111,29 @@ final class TerminalSettings {
 
     private init() {}
 
+    /// Where the tabs were, per container, so they can come back.
+    ///
+    /// Sessions cannot be restored — the processes died with the app — so what is remembered is the
+    /// folders. That is what people actually lose: three terminals in three checkouts, and after a
+    /// restart three prompts in the home directory. Everything else in this application remembers
+    /// where it was; the terminal not doing so was the odd one out.
+    ///
+    /// In a file of its own rather than in the settings: this is session state, and mixing "what I
+    /// chose" with "where I happened to be" makes resetting one of them mean the other.
+    private var sessionURL: URL { url.deletingLastPathComponent().appendingPathComponent("session.json") }
+
+    func rememberTabs(_ directories: [String], container: String) {
+        var all = restoredTabs()
+        all[container] = directories
+        try? JSONEncoder().encode(all).write(to: sessionURL)
+    }
+
+    func restoredTabs() -> [String: [String]] {
+        (try? Data(contentsOf: sessionURL)).flatMap {
+            try? JSONDecoder().decode([String: [String]].self, from: $0)
+        } ?? [:]
+    }
+
     /// The line the user would have to add to their shell's startup file for any of this to happen.
     ///
     /// **Shown, never written.** Editing somebody's `.zshrc` behind their back is not a thing an
@@ -217,6 +240,9 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
 
     /// Called whenever anything a view might display has changed.
     var onChange: (() -> Void)?
+    /// Was this session started to run one command rather than to be a shell?
+    var isCommandTab: Bool { command != nil }
+
     /// Called when the shell reports a new working directory (OSC 7), if it reports one at all.
     var onDirectoryChange: ((String) -> Void)?
     /// Called with a path the user ⌘-clicked in the scrollback.
@@ -531,7 +557,15 @@ final class TerminalContainerView: NSView {
             status.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1),
             status.heightAnchor.constraint(equalToConstant: Self.statusHeight),
         ])
-        newTab()
+        // Bring back the folders the tabs were in, or open one where the panel is looking.
+        let remembered = TerminalSettings.shared.restoredTabs()[container] ?? []
+        if remembered.isEmpty {
+            newTab()
+        } else {
+            for directory in remembered { newTab(directory: directory) }
+            panes = [0]; focused = 0
+            rebuildPanes()
+        }
         applyTheme()
         registerForDraggedTypes([.fileURL])
     }
@@ -550,8 +584,8 @@ final class TerminalContainerView: NSView {
     }
 
     @discardableResult
-    func newTab(command: String? = nil) -> TerminalSession {
-        let session = TerminalPool.make(directory: hostDirectory(), command: command)
+    func newTab(command: String? = nil, directory: String? = nil) -> TerminalSession {
+        let session = TerminalPool.make(directory: directory ?? hostDirectory(), command: command)
         session.onChange = { [weak self] in self?.refreshChrome() }
         session.onDirectoryChange = { [weak self] path in self?.steerPanel(to: path) }
         session.onRevealPath = { [weak self] path in self?.revealInPanel(path) }
@@ -559,6 +593,7 @@ final class TerminalContainerView: NSView {
         tabs.append(session)
         panes[focused] = tabs.count - 1
         rebuildPanes()
+        rememberTabs()
         return session
     }
 
@@ -791,6 +826,16 @@ final class TerminalContainerView: NSView {
         }
     }
 
+    /// Write down the folders this view's tabs are in.
+    ///
+    /// A tab running one command — the assistant's — is deliberately left out. Restoring those on the
+    /// next launch would re-run somebody's command without asking, which is the opposite of the whole
+    /// arrangement around them.
+    private func rememberTabs() {
+        let directories = tabs.filter { !$0.isCommandTab }.compactMap(\.directory)
+        TerminalSettings.shared.rememberTabs(directories, container: container)
+    }
+
     /// Take the active panel to where the shell says it is — if the user asked for that.
     ///
     /// Only from the *focused* session: with two panes open, a background build printing its way
@@ -902,6 +947,9 @@ final class TerminalContainerView: NSView {
     /// Only the sessions in *this* view's tabs. Another mounted view's sessions are not this one's to
     /// end, which is the point of the pool being shared.
     func teardown() {
+        // Last chance to write down where the tabs were: on quit this is the only place that still
+        // knows, and once the sessions are closed their directories go with them.
+        rememberTabs()
         // No questions here: the app is quitting or the plugin is being switched off, and both are
         // decisions the user has already taken.
         for tab in tabs { TerminalPool.close(tab) }
