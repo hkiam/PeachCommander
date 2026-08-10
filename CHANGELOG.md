@@ -14,6 +14,13 @@ does not have.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Piping a selection through a command that stops reading early no longer quits the app.** `head -1`
+  is an ordinary filter — it takes one line and leaves — and the rest of the text then had nowhere to
+  go, which ends a program on macOS unless it says otherwise. Affected the editor's filter, the
+  external formatters and anything else that pipes text through a tool.
+
 ### Added
 
 - **The assistant can run a shell command — off unless you switch it on** (*Settings ▸ AI*), visibly, and only after you agree to each one. It opens a terminal
