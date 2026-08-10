@@ -1,0 +1,33 @@
+window: stack.yml
+fullKeyboardAccess: true
+focused: NSSearchField | Filter symbols (editing)
+autorecalculatesKeyViewLoop: true
+initialFirstResponder: NSView
+focusRefused: 5
+  REFUSES: NSButton | Search / search accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSButton | Close accepts=false hidden=true enabled=true refuses=true
+  REFUSES: NSButton | Hide accepts=true hidden=false enabled=true refuses=false
+  REFUSES: NSButton | Close accepts=true hidden=false enabled=true refuses=false
+  REFUSES: MarksTableView accepts=true hidden=false enabled=true refuses=false
+  tab[1]: NSView
+  tab[2]: NSButton | Symbols / Symbols
+  tab[3]: NSButton | Save / Save
+  tab[4]: NSButton | Format / Format
+  tab[5]: NSButton | { } / { }
+  tab[6]: NSButton | Filter… / Filter…
+  tab[7]: NSButton | Find/Replace / Find/Replace
+  tab[8]: NSPopUpButton | UTF-8
+  tab[9]: NSPopUpButton | Line endings / LF
+  tab[10]: NSPopUpButton | Line operations / Lines
+  tab[11]: NSButton | Line numbers / Button
+  tab[12]: NSButton | Minimap / Button
+  tab[13]: NSSearchField | Filter symbols
+  tab[14]: NSScrollView
+  tab[15]: NSClipView
+  tab[16]: NSOutlineView | Symbols
+  tab[17]: NSScrollView
+  tab[18]: NSClipView
+  tab[19]: EditorCodeTextView | File contents
+loopClosed: true
+unreachable: 0
+unlabelled: 0

@@ -588,6 +588,15 @@ SCENARIOS = [
                              "theme midnight", "wait 1500",
                              "theme norton", "wait 1500",
                              "panelsdump /Users/admin/still-alive.txt", "wait 600"], 16),
+    # Which half is broken (F-015 follow-up)? Six keys-* scenarios write neither their key-loop dump
+    # nor the accessibility dump that follows it. Two possibilities with different fixes: the script
+    # stops at the window (a modal session never returns to it) or the script runs and `dumpKeyLoop`
+    # writes nothing. A dump *after* the keyloop step answers it — if this file exists, the script
+    # ran past the keyloop and the dump itself is the problem.
+    ("keys-probe", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                    "settingspage Layout", "wait 2500",
+                    "keyloop /Users/admin/probe-loop.txt",
+                    "panelsdump /Users/admin/probe-after.txt", "wait 800"], 14),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -789,30 +798,36 @@ SCENARIOS = [
                    "panelsdump /Users/admin/keys-main-done.txt", "wait 300"], 14),
     ("keys-find", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                    "findtab 0", "wait 1500", "keyloop /Users/admin/keyloop-find.txt",
-                   "a11ydump /Users/admin/a11y-find.txt", "wait 500"], 11),
+                   "a11ydump /Users/admin/a11y-find.txt", "wait 500",
+                   "panelsdump /Users/admin/keys-find-done.txt", "wait 300"], 14),
     ("keys-settings", ["active left", "left /Users/admin", "wait 1000",
                        "settingspage Layout", "wait 2500",
                        "keyloop /Users/admin/keyloop-settings.txt",
-                       "a11ydump /Users/admin/a11y-settings.txt", "wait 500"], 11),
+                       "a11ydump /Users/admin/a11y-settings.txt", "wait 500",
+                   "panelsdump /Users/admin/keys-settings-done.txt", "wait 300"], 14),
     ("keys-editor", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                      "editfilterdlg /Users/admin/pc-demo/notes.txt", "wait 1500",
                      "keyloop /Users/admin/keyloop-editor.txt",
-                     "a11ydump /Users/admin/a11y-editor.txt", "wait 500"], 11),
+                     "a11ydump /Users/admin/a11y-editor.txt", "wait 500",
+                   "panelsdump /Users/admin/keys-editor-done.txt", "wait 300"], 14),
     ("keys-viewer", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                      "focus notes.txt", "wait 400", "cmd cm_List", "wait 2000",
                      "keyloop /Users/admin/keyloop-viewer.txt",
-                     "a11ydump /Users/admin/a11y-viewer.txt", "wait 500"], 11),
+                     "a11ydump /Users/admin/a11y-viewer.txt", "wait 500",
+                   "panelsdump /Users/admin/keys-viewer-done.txt", "wait 300"], 14),
     # A structured file, not notes.txt: the editor builds its Structure menu only for JSON/YAML/XML, and
     # those seven shortcuts were unchecked by the hotkey gate until this dump existed.
     ("keys-editorwin", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                         "editdump /Users/admin/pc-demo/stack.yml /Users/admin/ed.txt", "wait 1800",
                         "keyloop /Users/admin/keyloop-editorwin.txt",
                         "a11ydump /Users/admin/a11y-editorwin.txt",
-                        "menudump /Users/admin/menu-editor.txt", "wait 500"], 11),
+                        "menudump /Users/admin/menu-editor.txt", "wait 500",
+                        "panelsdump /Users/admin/keys-editorwin-done.txt", "wait 300"], 14),
     ("keys-hotlist", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                       "hotlistmanage", "wait 1500",
                       "keyloop /Users/admin/keyloop-hotlist.txt",
-                      "a11ydump /Users/admin/a11y-hotlist.txt", "wait 500"], 11),
+                      "a11ydump /Users/admin/a11y-hotlist.txt", "wait 500",
+                   "panelsdump /Users/admin/keys-hotlist-done.txt", "wait 300"], 14),
     # A modal dialog: the dump is scheduled first, because `runModal` never returns to the script.
     ("keys-overwrite", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                         "keyloopmodal /Users/admin/keyloop-overwrite.txt",
@@ -832,6 +847,10 @@ REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"
 # What an *independent* tool must say after a scenario ran: the app changed something, and something other
 # than the app is asked whether it really changed. `stat` over ssh is not the code under test.
 EXTERNAL_CHECKS = {
+    # Does the key-loop dump land on the guest at all? Asked of the machine rather than of the
+    # harness's fetch, because "the file is empty here" has two causes — nothing was written, or
+    # something was written and did not come back — and they need different fixes.
+    "keys-probe": ("test -s ~/probe-loop.txt && echo written || echo nothing", "written"),
     # Asked of the machine after the app is gone, because that is when the question makes sense: two
     # tabs were open, and the file that survives the app has to name both of their folders.
     "terminal-restore": ("python3 -c \"import json;print(len(json.load(open('$HOME/pc-cfg/terminal/session.json'))['bottom']))\" 2>/dev/null || echo 0", "2"),
@@ -1130,6 +1149,20 @@ REPORTS = {
     "terminal-move": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
     "keys-main": ("/Users/admin/keys-main-done.txt", ["left=/Users/admin/pc-demo"]),
+    # The same last-file-to-wait-for that keys-main has had all along. Without it the guest kills the
+    # app after the settle time whether or not the script got that far, and these six never did: every
+    # one of them wrote nothing at all, for months, while reporting only that a file was empty. The
+    # dump above proves the app writes it happily when given the time.
+    "keys-find": ("/Users/admin/keys-find-done.txt", ["left="]),
+    "keys-settings": ("/Users/admin/keys-settings-done.txt", ["left="]),
+    "keys-editor": ("/Users/admin/keys-editor-done.txt", ["left="]),
+    "keys-viewer": ("/Users/admin/keys-viewer-done.txt", ["left="]),
+    "keys-editorwin": ("/Users/admin/keys-editorwin-done.txt", ["left="]),
+    "keys-hotlist": ("/Users/admin/keys-hotlist-done.txt", ["left="]),
+    # This one cannot have a trailing dump: `overwritedlg` runs a modal session that never returns to
+    # the script, which is why its keyloop is *scheduled* beforehand. So the thing to wait for is the
+    # keyloop dump itself, which the timer writes while the dialog is up.
+    "keys-overwrite": ("/Users/admin/keyloop-overwrite.txt", ["window:"]),
     # Every line must end in "ok", so a single palette going wrong fails the check — and the numbers
     # stay in the dump because "WRONG" alone does not say which half.
     "tree-colours": ("/Users/admin/treecolours.txt",
@@ -1148,6 +1181,7 @@ REPORTS = {
     # The dump is written last and only by a living app: if the theme change killed it, this file is
     # never written and the scenario fails with an empty report, which is the whole question.
     "plugin-theme-switch": ("/Users/admin/still-alive.txt", ["left="]),
+    "keys-probe": ("/Users/admin/probe-after.txt", ["left="]),
     "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
     # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
     # the wrong question: a system panel has none, so that check passed without showing anything.

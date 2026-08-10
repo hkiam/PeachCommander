@@ -65,6 +65,21 @@ The app keeps working right away with reduced access — you'll browse and manag
 
 For more on why this permission matters and where your data lives, see [Privacy & security](privacy-and-security.md).
 
+## The local-network question on first launch
+
+Shortly after the first launch, macOS may ask whether Peach Commander may **find devices on your
+local network**. The wording is Apple's and sounds broader than what is happening: the throughput
+figures in the title bar (**Net ↓ ↑**) are read from your Mac's own network interface counters, and
+macOS asks for this permission the moment any app looks at those counters at all.
+
+Peach Commander does not search for, list, or connect to anything on your network to draw them.
+
+**You can decline.** Nothing else changes: every other feature works exactly as before, and the two
+throughput numbers stop updating. Connections you make yourself — FTP, SFTP, WebDAV, a mounted
+network share — are unaffected either way, because those go to a server you named rather than to a
+search of the network. You can change the answer later in **System Settings ▸ Privacy & Security ▸
+Local Network**.
+
 ## Keeping Peach Commander up to date
 
 **For now, updates are manual.** When a new preview build is available, download the new `.dmg` from the downloads page and repeat the install: drag the new **Peach Commander** onto your **Applications** folder and choose to replace the older copy. Your settings, saved connections, and Keychain-stored passwords are kept separately from the app, so they carry over to the new build.
