@@ -81,6 +81,9 @@ does not have.
 
 ### Added
 
+- **⌘-click a path in the terminal and the panel shows it** — a name from `ls`, a compiler error, a
+  line of `git status`. Relative names resolve against the shell's folder, and a word that is not a
+  path does nothing rather than navigating somewhere arbitrary.
 - **The F-key bar dims while the terminal has the keyboard**, because F3 and F5 go to whatever is
   running in there and a bar reading "F3 View  F5 Copy" at full strength would be claiming otherwise.
 - **⌘F searches the terminal's scrollback.** Edit ▸ Find now goes to whatever is focused, so the
