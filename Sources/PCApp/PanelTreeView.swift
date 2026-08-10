@@ -96,10 +96,61 @@ final class PanelTreeView: NSView, NSOutlineViewDataSource, NSOutlineViewDelegat
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
+    #if DEBUG
+    /// Diagnostic: what this tree is actually painted with, as opposed to what it was told (F-015).
+    ///
+    /// The row colour is read from a row rather than from the class, because that is where the defect
+    /// lived: cells are made once and reused, so what the theme says and what the user sees are two
+    /// different questions.
+    var automationColours: (background: NSColor, text: NSColor) {
+        // Lay out first. `reloadData` only marks the rows as needing rebuilding; on screen that
+        // happens before the next frame, but this reads in the same turn it was called from and
+        // would otherwise find no row views at all and report the default colour as if it were the
+        // theme's — a red herring that cost an hour once already.
+        outline.layoutSubtreeIfNeeded()
+        let text = (outline.view(atColumn: 0, row: 0, makeIfNecessary: false) as? NSTableCellView)?
+            .textField?.textColor
+        return (outline.backgroundColor, text ?? .labelColor)
+    }
+
+    /// Diagnostic: the colour of a row the user opens *after* the theme changed (F-015).
+    ///
+    /// A different question from `automationColours`, which reads a row that was on screen when the
+    /// theme was applied and so was rebuilt by the reload. A row opened afterwards may come from the
+    /// reuse pool instead.
+    ///
+    /// Measured, not assumed: with the colour set only where a cell is *constructed*, this probe still
+    /// read the right colour — after a reload the pool hands back nothing stale here. So it is not
+    /// evidence for the current arrangement, it is a guard on the case that would break if a later
+    /// change dropped the reload or started reusing across one.
+    var automationColourOfRowOpenedLater: NSColor {
+        guard outline.numberOfRows > 0, let first = outline.item(atRow: 0) else { return .labelColor }
+        outline.expandItem(first)
+        outline.layoutSubtreeIfNeeded()
+        guard outline.numberOfRows > 1 else { return .labelColor }
+        return (outline.view(atColumn: 0, row: 1, makeIfNecessary: true) as? NSTableCellView)?
+            .textField?.textColor ?? .labelColor
+    }
+    #endif
+
+    /// Repaint in the current theme.
+    ///
+    /// This existed and nobody called it, which is the whole of the bug: the colours were read once
+    /// when the view was built — before the theme is loaded from the configuration — so the tree kept
+    /// the light defaults whatever the user had chosen. With Midnight that is a white column of pale
+    /// text beside two dark panels.
+    ///
+    /// The row text is not set here. It is set where a row is built, and the reload below runs that
+    /// for every row — which also keeps the expansion state, because the data source has not changed.
     func applyTheme() {
         layer?.backgroundColor = Theme.current.listBackground.cgColor
         outline.backgroundColor = Theme.current.listBackground
         scroll.backgroundColor = Theme.current.listBackground
+        // The enclosing clip view paints the area below the last row; without it a short tree in a
+        // tall column is theme-coloured at the top and white underneath.
+        scroll.contentView.wantsLayer = true
+        scroll.contentView.layer?.backgroundColor = Theme.current.listBackground.cgColor
+        scroll.drawsBackground = true
         outline.reloadData()
     }
 
@@ -170,6 +221,11 @@ final class PanelTreeView: NSView, NSOutlineViewDataSource, NSOutlineViewDelegat
         let cell = (outlineView.makeView(withIdentifier: id, owner: self) as? NSTableCellView)
             ?? Self.makeCell(id: id)
         cell.textField?.stringValue = folder === root ? "/" : folder.name
+        // The one place the row colour is set. Not where the cell is *made*: `makeView` hands back
+        // recycled cells, so a colour set at construction is whatever the theme was the first time
+        // that cell appeared. Setting it in both places is worse than it looks — either one alone
+        // then covers for the other, so neither can be shown to be doing the work.
+        cell.textField?.textColor = Theme.current.listText
         cell.imageView?.image = NSWorkspace.shared.icon(forFile: folder.url.path)
         return cell
     }
@@ -183,7 +239,6 @@ final class PanelTreeView: NSView, NSOutlineViewDataSource, NSOutlineViewDelegat
         text.translatesAutoresizingMaskIntoConstraints = false
         text.lineBreakMode = .byTruncatingTail
         text.font = NSFont.systemFont(ofSize: 11)
-        text.textColor = Theme.current.listText
         cell.addSubview(icon)
         cell.addSubview(text)
         cell.imageView = icon

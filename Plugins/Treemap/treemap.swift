@@ -111,10 +111,15 @@ final class DiskMapView: NSView {
     /// show. Chrome follows the host, data keeps its own palette.
     private var theme = PluginTheme.systemFallback
     /// Valid for this view's lifetime per the contrib ABI, so it can be re-read on a theme change.
-    private var services: UnsafePointer<PcHostServices>?
+    /// Host colour theme (F-338). Kept **by value**: the host hands out a pointer to a table it
+    /// owns for the duration of the call, so storing the pointer and reading it later — which is
+    /// exactly what a theme change does — dereferences memory that has been reused. It corrupted the
+    /// heap and killed the app on "open this view, then pick another colour scheme". The table is a
+    /// plain struct of function pointers, so a copy stays valid as long as the plugin is loaded.
+    private var services: PcHostServices?
 
     func bindServices(_ s: UnsafePointer<PcHostServices>?) {
-        services = s
+        services = s?.pointee
         applyTheme()
     }
 

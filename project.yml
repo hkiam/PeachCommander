@@ -22,11 +22,17 @@ settings:
   # a keg prefix but whose dylibs are arm64+x86_64 — a keg only ever holds the host
   # architecture, so the universal release build cannot link against it.
   PC_SSH2_PREFIX: /opt/homebrew/opt/libssh2
-  LIBRARY_SEARCH_PATHS: $(inherited) $(PC_SSH2_PREFIX)/lib
+  # Both Homebrew prefixes are listed after it: /opt/homebrew on Apple silicon and /usr/local on
+  # Intel. A search path that does not exist is ignored, so naming both costs nothing and is the
+  # difference between "clone and build" and "clone, then work out why the headers are missing" on
+  # a machine that is not this one. PC_SSH2_PREFIX stays first, so the universal release build
+  # still links its own dylibs rather than a host-architecture keg.
+  PC_SSH2_ALT: /usr/local/opt/libssh2
+  LIBRARY_SEARCH_PATHS: $(inherited) $(PC_SSH2_PREFIX)/lib $(PC_SSH2_ALT)/lib
   # Global -I so the CSSH2 clang module resolves <libssh2.h> in every consumer
   # context (module builds use the importing target's clang flags).
-  OTHER_CFLAGS: $(inherited) -I$(PC_SSH2_PREFIX)/include
-  OTHER_SWIFT_FLAGS: $(inherited) -Xcc -I$(PC_SSH2_PREFIX)/include
+  OTHER_CFLAGS: $(inherited) -I$(PC_SSH2_PREFIX)/include -I$(PC_SSH2_ALT)/include
+  OTHER_SWIFT_FLAGS: $(inherited) -Xcc -I$(PC_SSH2_PREFIX)/include -Xcc -I$(PC_SSH2_ALT)/include
 
 packages:
   Sparkle:
@@ -233,6 +239,11 @@ targets:
         NSDownloadsDirectoryUsageDescription: Peach Commander needs to access downloads to manage files.
         NSDesktopDirectoryUsageDescription: Peach Commander needs to access the desktop to manage files.
         NSNetworkVolumesUsageDescription: Peach Commander needs to access network volumes.
+        # macOS asks for local-network access the moment anything enumerates network interfaces,
+        # which the title bar's throughput display does to read its byte counters. Without this key
+        # the prompt appears with no reason given at all, on first launch, before the user has done
+        # anything — which reads as an application asking to look around the network.
+        NSLocalNetworkUsageDescription: Peach Commander reads network interface counters to show upload and download rates in the title bar. It does not search for or connect to devices on your network.
         NSRemovableVolumesUsageDescription: Peach Commander needs to access removable volumes.
         NSMicrophoneUsageDescription: Peach Commander uses the microphone for voice input in the AI assistant.
         NSSpeechRecognitionUsageDescription: Peach Commander transcribes your speech for voice input in the AI assistant.
@@ -305,6 +316,9 @@ targets:
       - Tests/PCThemeTests
       - path: Sources/PCApp/Theme.swift
       - path: Sources/PCApp/ThemeFile.swift
+      # Theme derives the plugins' secondary text through this, so the palettes cannot be compiled
+      # without it — and the readability rule it encodes is worth a golden test of its own.
+      - path: Sources/PCApp/ColourContrast.swift
       # The SDK helper plugins compile into themselves. Included here so the *plugin* side of the
       # theme bridge is tested against a fake host table, not just the host side.
       - path: Plugins/SDK/PluginTheme.swift
@@ -501,7 +515,7 @@ targets:
       PRODUCT_NAME: CSSH2
       DEFINES_MODULE: YES
       MODULEMAP_FILE: Sources/CSSH2/include/module.modulemap
-      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CSSH2/include $(PC_SSH2_PREFIX)/include
+      HEADER_SEARCH_PATHS: $(SRCROOT)/Sources/CSSH2/include $(PC_SSH2_PREFIX)/include $(PC_SSH2_ALT)/include
       CODE_SIGNING_ALLOWED: NO
 
   # Vendored tree-sitter grammars (parser.c + scanner.c compiled unconditionally,
@@ -622,7 +636,7 @@ targets:
       CODE_SIGNING_ALLOWED: NO
       ENABLE_PRIVATE_SYMBOLS: NO
       SWIFT_INCLUDE_PATHS: $(SRCROOT)/Sources/CSSH2/include
-      HEADER_SEARCH_PATHS: $(inherited) $(PC_SSH2_PREFIX)/include
+      HEADER_SEARCH_PATHS: $(inherited) $(PC_SSH2_PREFIX)/include $(PC_SSH2_ALT)/include
     info:
       path: Sources/PCNet/Info.plist
     dependencies:

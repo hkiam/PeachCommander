@@ -556,7 +556,12 @@ public struct Theme {
             "theme.background": pluginHex(colors.listBackground),
             "theme.windowBackground": pluginHex(colors.windowBackground),
             "theme.text": pluginHex(colors.listText),
-            "theme.secondaryText": pluginHex(colors.pathBarFreeSpaceText),
+            // Derived, not borrowed. Every palette colour is defined *against a surface*, and this
+            // one used to come from `pathBarFreeSpaceText` — black in Norton, which is right on that
+            // palette's cyan path bar and unreadable on its blue panels, where the plugins actually
+            // draw. The terminal's status line was black on blue because of it.
+            "theme.secondaryText": pluginHex(ColourContrast.quietened(colors.listText,
+                                                                     on: colors.listBackground)),
             "theme.accent": pluginHex(colors.activeCursorFrame),
             "theme.separator": pluginHex(colors.columnSeparator),
             "theme.selectionBackground": pluginHex(colors.selectionFillActive),

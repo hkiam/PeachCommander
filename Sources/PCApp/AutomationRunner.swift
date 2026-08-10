@@ -277,6 +277,10 @@ extension MainWindowController {
                 // down, and the harness's `pkill` never reaches it. Anything testing what happens on
                 // exit has to go through this door or it is testing nothing.
                 NSApp.terminate(nil)
+            case "treecolors":                          // treecolors <out> (F-015)
+                dumpTreeColours(arg)
+            case "surfacecolors":                       // surfacecolors <out> (F-015)
+                dumpSurfaceColours(arg)
             case "fkeydump":                            // fkeydump <out> (F-381)
                 // Whether the function-key bar is claiming keys it does not have. Reported next to the
                 // responder, because "dimmed" only means anything alongside "and this is what has the
@@ -690,9 +694,9 @@ extension MainWindowController {
     /// skipped-file entries so a screenshot can confirm the summary window.
     private func showErrorLogForShot() {
         let entries = [
-            (path: "/Users/maik1/src/locked.bin", message: "writeFailed(\"/Volumes/Backup/locked.bin\")"),
-            (path: "/Users/maik1/src/secret.key", message: "readFailed(\"/Users/maik1/src/secret.key\")"),
-            (path: "/Users/maik1/src/huge.iso", message: "cannotCreateFile(\"/Volumes/Backup/huge.iso\")"),
+            (path: "/Users/me/src/locked.bin", message: "writeFailed(\"/Volumes/Backup/locked.bin\")"),
+            (path: "/Users/me/src/secret.key", message: "readFailed(\"/Users/me/src/secret.key\")"),
+            (path: "/Users/me/src/huge.iso", message: "cannotCreateFile(\"/Volumes/Backup/huge.iso\")"),
         ]
         ErrorLogWindowController.present(over: window,
                                          summary: String(localized: "\(entries.count) item(s) were skipped due to errors."),

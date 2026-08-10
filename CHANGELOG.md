@@ -16,6 +16,24 @@ does not have.
 
 ### Fixed
 
+- **The local-network prompt on first launch now says what it is for.** macOS asks the moment
+  anything enumerates network interfaces, which the title bar's throughput display does to read its
+  byte counters — and with no explanation supplied, the prompt appeared before you had done anything
+  and looked like an application asking to search your network. It now states the reason, and the
+  reason is the whole of it: counters are read, nothing is searched for or connected to.
+- **Changing the colour scheme with the Notes or Disk Map panel open no longer quits the app.** The
+  two panels kept a reference to a table of host functions that is only valid while the host is
+  handing it over; reading it later — which is what a theme change does — corrupted memory and
+  killed the app outright. Found by the colour sweep below, not by the crash reports, because
+  nothing had ever switched a theme with one of those panels open.
+- **The terminal's status line is readable under Norton Commander colours.** It took its grey from a
+  colour the palette defines for the path bar, which is black there and sat on a blue background
+  here. Plugin panels now derive that grey from the surface they actually draw on, so it follows any
+  palette instead of happening to suit some.
+- **The folder tree follows the colour scheme.** Both of them — *View ▸ Tree* beside a panel and
+  *View ▸ Shared Tree* — used to keep the light default whatever you had chosen, so under Midnight a
+  white column of pale, barely readable text stood between two dark panels. The tree knew how to
+  repaint itself and was never asked to.
 - **Piping a selection through a command that stops reading early no longer quits the app.** `head -1`
   is an ordinary filter — it takes one line and leaves — and the rest of the text then had nowhere to
   go, which ends a program on macOS unless it says otherwise. Affected the editor's filter, the

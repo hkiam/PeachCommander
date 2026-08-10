@@ -11,10 +11,10 @@ import XCTest
 @testable import PCFoundation
 
 final class WindowTitleTests: XCTestCase {
-    private let home = "/Users/maik"
+    private let home = "/Users/me"
 
     func testThePathIsTheTitle() {
-        XCTAssertEqual(WindowTitle.text(path: "/Users/maik/Documents", home: home), "~/Documents")
+        XCTAssertEqual(WindowTitle.text(path: "/Users/me/Documents", home: home), "~/Documents")
     }
 
     func testTheHomeFolderItself() {
@@ -27,10 +27,10 @@ final class WindowTitleTests: XCTestCase {
     }
 
     func testASiblingWhoseNameStartsWithTheHomePathIsNotAbbreviated() {
-        // "/Users/maiko" begins with "/Users/maik" and is somebody else's folder. Without the
-        // separator check it would be shown as "~o".
-        XCTAssertEqual(WindowTitle.text(path: "/Users/maiko/Documents", home: home),
-                       "/Users/maiko/Documents")
+        // "/Users/mel" begins with "/Users/me" and is somebody else's folder. Without the
+        // separator check it would be shown as "~l".
+        XCTAssertEqual(WindowTitle.text(path: "/Users/mel/Documents", home: home),
+                       "/Users/mel/Documents")
     }
 
     func testAnEmptyPathFallsBackToTheApplicationName() {

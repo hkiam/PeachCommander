@@ -57,7 +57,7 @@ for base in "${BASES[@]}"; do fix_refs "$FW/$base"; done
 #    links it directly). fix_refs is idempotent, so re-touching the bundled
 #    dylibs is harmless.
 while IFS= read -r f; do
-  if otool -L "$f" 2>/dev/null | grep -qE "/opt/homebrew.*/lib(ssh2|ssl|crypto)\."; then fix_refs "$f"; fi
+  if otool -L "$f" 2>/dev/null | grep -qE "(/opt/homebrew|/usr/local)/.*/lib(ssh2|ssl|crypto)\."; then fix_refs "$f"; fi
 done < <(find "$APP" -type f)
 
 # 4) Ensure the main executable can find @rpath libs (usually already present).

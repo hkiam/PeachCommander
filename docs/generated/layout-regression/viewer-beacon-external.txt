@@ -1,2 +1,2 @@
 if grep -q viewer.png ~/beacon-hits.log 2>/dev/null; then echo viewer-fetched; elif grep -q selftest ~/beacon-hits.log 2>/dev/null; then echo only-selftest; else echo server-not-running; fi
-viewer-fetched
+only-selftest

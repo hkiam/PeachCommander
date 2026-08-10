@@ -44,8 +44,8 @@ public enum WindowTitle {
 
     /// `path` with the home directory replaced by `~`, the way the Finder and the shell write it.
     ///
-    /// Only a real prefix counts: `/Users/maiko` must not become `~o` because it starts with
-    /// `/Users/maik`. The home folder itself is `~`, and the root stays `/`.
+    /// Only a real prefix counts: `/Users/mel` must not become `~o` because it starts with
+    /// `/Users/me`. The home folder itself is `~`, and the root stays `/`.
     public static func abbreviate(_ path: String, home: String = NSHomeDirectory()) -> String {
         guard !home.isEmpty, path == home || path.hasPrefix(home + "/") else { return path }
         return path == home ? "~" : "~" + path.dropFirst(home.count)
