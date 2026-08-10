@@ -14,8 +14,8 @@ final class PathSegmentsTests: XCTestCase {
     private func paths(_ path: String) -> [String] { PathSegments.make(path).map(\.path) }
 
     func testAnOrdinaryPath() {
-        XCTAssertEqual(names("/Users/maik1"), ["/", "Users", "maik1"])
-        XCTAssertEqual(paths("/Users/maik1"), ["/", "/Users", "/Users/maik1"])
+        XCTAssertEqual(names("/Users/me"), ["/", "Users", "me"])
+        XCTAssertEqual(paths("/Users/me"), ["/", "/Users", "/Users/me"])
     }
 
     func testTheRootIsOneSegment() {
@@ -27,19 +27,19 @@ final class PathSegmentsTests: XCTestCase {
     }
 
     func testATrailingSeparatorDoesNotAddAnEmptySegment() {
-        XCTAssertEqual(names("/Users/maik1/"), ["/", "Users", "maik1"])
-        XCTAssertEqual(paths("/Users/maik1/"), paths("/Users/maik1"))
+        XCTAssertEqual(names("/Users/me/"), ["/", "Users", "me"])
+        XCTAssertEqual(paths("/Users/me/"), paths("/Users/me"))
     }
 
     func testDoubledSeparatorsCollapse() {
         // These arise from joining paths, and a breadcrumb built from them must navigate to the same
-        // place as the plain form — not to "/Users//maik1", which some servers treat differently.
-        XCTAssertEqual(paths("//Users//maik1"), ["/", "/Users", "/Users/maik1"])
+        // place as the plain form — not to "/Users//me", which some servers treat differently.
+        XCTAssertEqual(paths("//Users//me"), ["/", "/Users", "/Users/me"])
     }
 
     func testANameWithSpacesStaysOneSegment() {
-        XCTAssertEqual(names("/Users/maik1/Ordner mit Leerzeichen"),
-                       ["/", "Users", "maik1", "Ordner mit Leerzeichen"])
+        XCTAssertEqual(names("/Users/me/Ordner mit Leerzeichen"),
+                       ["/", "Users", "me", "Ordner mit Leerzeichen"])
     }
 
     func testAPathInsideAnArchiveIsJustAPath() {
@@ -51,7 +51,7 @@ final class PathSegmentsTests: XCTestCase {
     func testEverySegmentPathIsAPrefixOfTheOneAfterIt() {
         // The property that makes a breadcrumb a breadcrumb: clicking the nth segment must land inside
         // the path the (n+1)th describes, never beside it.
-        for path in ["/Users/maik1/Documents/2026", "/Volumes/Backup/x", "/tmp/a.zip/b/c"] {
+        for path in ["/Users/me/Documents/2026", "/Volumes/Backup/x", "/tmp/a.zip/b/c"] {
             let segs = PathSegments.make(path)
             for (earlier, later) in zip(segs, segs.dropFirst()) {
                 XCTAssertTrue(later.path.hasPrefix(earlier.path),

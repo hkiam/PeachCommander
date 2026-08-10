@@ -270,20 +270,32 @@ final class CursorRowView: NSTableRowView {
         for case let cell as CursorRowAwareCell in subviews { cell.applyCursorRowText(onBar) }
     }
 
+    /// What this row paints behind its cells, or nil when it paints nothing.
+    ///
+    /// A property rather than a decision inside `draw`, because the surface audit needs the same
+    /// answer: a row's text is readable or not against *this*, not against the panel background
+    /// underneath. Two copies of the rule would drift, and the audit would then report contrast
+    /// against a colour that is not on screen — which it did, for every cursor row under Norton.
+    var rowFill: NSColor? {
+        // Cursor first: a cursor row is never also zebra-shaded, which is what the old `!isCursor`
+        // on the zebra branch said.
+        if isCursor {
+            // Accent tint on the active panel, faint grey on the inactive one, so the cursor row
+            // stays readable but marks the active side.
+            return isActivePanel ? Theme.current.selectionFillActive
+                                 : Theme.current.selectionFillInactive
+        }
+        if zebra, isOddRow { return Theme.current.zebraRow }
+        return nil
+    }
+
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        // Faint alternating shade on non-cursor odd rows (drawn under the content).
-        if zebra, isOddRow, !isCursor {
-            Theme.current.zebraRow.setFill()
+        if let fill = rowFill {
+            fill.setFill()
             bounds.fill()
         }
         guard isCursor else { return }
-        // Subtle background fill: accent tint on the active panel, faint grey on the
-        // inactive one, so the cursor row stays readable but marks the active side.
-        let fill = isActivePanel ? Theme.current.selectionFillActive
-                                 : Theme.current.selectionFillInactive
-        fill.setFill()
-        bounds.fill()
         // Thin frame around the cursor row.
         let frame = bounds.insetBy(dx: 0.5, dy: 0.5)
         let path = NSBezierPath(rect: frame)
@@ -295,6 +307,13 @@ final class CursorRowView: NSTableRowView {
     // TC list uses text-color marking, not row highlighting.
     override func drawSelection(in dirtyRect: NSRect) {}
 }
+
+#if DEBUG
+extension CursorRowView: SelfPaintedBackground {
+    /// Exactly what `draw` fills with — the same property, not a copy of the rule.
+    var auditBackgroundFill: NSColor? { rowFill }
+}
+#endif
 
 
 /// Cell that renders Finder tag colors as small dots (Finder-style).

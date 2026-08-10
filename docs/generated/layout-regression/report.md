@@ -6,15 +6,10 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| dock-seam | 0 | — | — | `dock-seam.png` |
-| mount-refresh | 0 | — | — | `mount-refresh.png` |
-| view-placement | 0 | — | — | `view-placement.png` |
-| raw-keyboard | 0 | — | — | `raw-keyboard.png` |
-| terminal-session | 0 | — | — | `terminal-session.png` |
-| terminal-tabs | 0 | — | — | `terminal-tabs.png` |
-| terminal-split | 0 | — | — | `terminal-split.png` |
-| terminal-close-ask | 0 | — | — | `terminal-close-ask.png` |
-| view-drop | 0 | — | — | `view-drop.png` |
-| terminal-runshell | 0 | — | — | `terminal-runshell.png` |
-| terminal-restore | 0 | — | — | `terminal-restore.png` |
-| terminal-restored | 0 | — | — | `terminal-restored.png` |
+| keys-find | 0 | 0 | — | `keys-find.png` |
+| keys-settings | 0 | 0 | — | `keys-settings.png` |
+| keys-editor | 0 | 0 | — | `keys-editor.png` |
+| keys-viewer | 0 | 0 | — | `keys-viewer.png` |
+| keys-editorwin | 0 | 0 | — | `keys-editorwin.png` |
+| keys-hotlist | 0 | 0 | — | `keys-hotlist.png` |
+| keys-overwrite | 0 | 0 | — | `keys-overwrite.png` |

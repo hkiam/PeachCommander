@@ -206,6 +206,14 @@ final class PreviewPanelView: NSView {
     #if DEBUG
     /// Diagnostic: select the preview tab with this title (a built-in or a plugin view), as a click would.
     /// Returns the titles when there is no match, so a failing scenario says what *was* there (F-372).
+    /// Diagnostic: the tab titles, so a sweep can visit every one without knowing what is installed.
+    var automationTabTitles: [String] {
+        (0..<segmented.segmentCount).map { segmented.label(forSegment: $0) ?? "" }
+    }
+
+    /// Diagnostic: which tab is showing, so a sweep can put it back.
+    var automationSelectedTab: String { segmented.label(forSegment: segmented.selectedSegment) ?? "" }
+
     @discardableResult
     func automationSelectTab(titled title: String) -> String {
         let titles = (0..<segmented.segmentCount).map { segmented.label(forSegment: $0) ?? "" }

@@ -3,7 +3,7 @@
 //
 // macOS ACLs are surfaced by `/bin/ls -le` as one line per entry:
 //
-//      0: user:maik1 allow read,write,delete
+//      0: user:me allow read,write,delete
 //      1: group:everyone deny delete
 //
 // and are rewritten with `/bin/chmod +a "<subject> <action> <perms>"`. This type
@@ -29,7 +29,7 @@ public struct ACLEntry: Equatable {
         self.permissions = permissions
     }
 
-    /// The `chmod +a` rule string, e.g. `user:maik1 allow read,write`.
+    /// The `chmod +a` rule string, e.g. `user:me allow read,write`.
     public var ruleString: String {
         "\(kind.rawValue):\(name) \(action.rawValue) \(permissions.joined(separator: ","))"
     }

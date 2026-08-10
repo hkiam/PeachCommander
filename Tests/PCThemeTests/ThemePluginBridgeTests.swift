@@ -115,7 +115,14 @@ final class ThemePluginBridgeTests: XCTestCase {
         XCTAssertEqual(v["theme.markedText"], v["theme.color.selectedText"])
         XCTAssertEqual(v["theme.controlBackground"], v["theme.color.driveBarBackground"])
         XCTAssertEqual(v["theme.controlText"], v["theme.color.driveBarText"])
-        XCTAssertEqual(v["theme.secondaryText"], v["theme.color.pathBarFreeSpaceText"])
+        // `theme.secondaryText` is deliberately *not* in this list. It used to equal
+        // `pathBarFreeSpaceText` and this test held that in place — which is how the terminal's
+        // status line came to be black on Norton's blue panels: that colour is defined against the
+        // path bar, a surface plugins do not draw on. It is now derived from the list colours, so
+        // there is no raw counterpart to agree with; `PluginSecondaryTextTests` checks the property
+        // that actually matters, which is that it can be read.
+        XCTAssertNotEqual(v["theme.secondaryText"], v["theme.color.pathBarFreeSpaceText"],
+                          "Norton's path-bar black is the one colour this must not be")
     }
 
     /// `selectionText` is what a plugin draws *on* `selectionBackground`. A palette that inverts its

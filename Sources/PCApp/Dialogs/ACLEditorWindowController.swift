@@ -152,7 +152,10 @@ final class ACLEditorWindowController: NSWindowController {
         kind.widthAnchor.constraint(equalToConstant: 90).isActive = true
 
         let name = NSTextField(string: entry?.name ?? "")
-        name.placeholderString = "maik1"
+        // The person using the app, not the person who wrote it: this shipped showing the author's
+        // account name, which is both a privacy slip and useless as a hint. `NSUserName` is the
+        // short name an ACL actually wants, and it is right on every machine.
+        name.placeholderString = NSUserName()
         name.widthAnchor.constraint(equalToConstant: 130).isActive = true
 
         let action = NSPopUpButton()

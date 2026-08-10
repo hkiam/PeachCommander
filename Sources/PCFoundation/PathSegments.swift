@@ -9,9 +9,9 @@ import Foundation
 public enum PathSegments {
     /// Break a path into cumulative breadcrumb segments.
     ///
-    /// `"/Users/maik1"` → `[("/", "/"), ("Users", "/Users"), ("maik1", "/Users/maik1")]`.
+    /// `"/Users/me"` → `[("/", "/"), ("Users", "/Users"), ("me", "/Users/me")]`.
     ///
-    /// Doubled separators collapse and a trailing one is ignored, so `//Users//maik1/` gives the same
+    /// Doubled separators collapse and a trailing one is ignored, so `//Users//me/` gives the same
     /// three segments as the plain form — those arise from joining paths and must not produce a
     /// breadcrumb that navigates somewhere else.
     ///

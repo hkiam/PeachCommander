@@ -3738,6 +3738,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         previewPanel.applyTheme()
         previewHandle.applyTheme()
         previewResizer.applyTheme()
+        // Both folder trees: the shared column and the one inside each panel (F-015). Neither was
+        // repainted on a theme change, and neither was painted at launch either — the theme is read
+        // from the configuration after the window is built.
+        sharedTree.applyTheme()
+        leftPanelController?.view.applyTreeTheme()
+        rightPanelController?.view.applyTreeTheme()
         // Plugin-drawn UI (F-338): mounted views get the context key, plugin-owned windows get
         // the broadcast. Both are no-ops for plugins that do not implement them.
         ViewContainerRegistry.shared.notifyViews(key: "theme", value: themeId)
@@ -4937,6 +4943,119 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     func focusCommandLineForAutomation(container: Bool = false) {
         if container { window?.makeFirstResponder(commandLine) }
         else { commandLine.focusFieldForAutomation(in: window) }
+    }
+
+    /// Diagnostic: are the folder trees painted in the theme, in every palette (F-015)?
+    ///
+    /// Every combination rather than the one that was reported: the bug was a repaint nobody called,
+    /// so any palette applied after the view was built looked wrong, and "it is fine in Dark" would
+    /// have been an accident of which colours happen to be close. Both trees, because they are two
+    /// instances of the same class reached by different routes, and only one of them was noticed.
+    func dumpTreeColours(_ file: String) {
+        func hex(_ c: NSColor) -> String {
+            guard let rgb = c.usingColorSpace(.sRGB) else { return "?" }
+            return String(format: "#%02X%02X%02X", Int(rgb.redComponent * 255),
+                          Int(rgb.greenComponent * 255), Int(rgb.blueComponent * 255))
+        }
+        let original = themeId
+        var lines: [String] = []
+        for palette in Theme.palettes {
+            themeId = palette.id
+            applyAppearance(appearanceSetting)
+            let expectedBackground = hex(Theme.current.listBackground)
+            let expectedText = hex(Theme.current.listText)
+            for (name, tree) in [("shared", sharedTree),
+                                 ("panel", leftPanelController?.view.treeForAutomation)] {
+                guard let tree else { continue }
+                let actual = tree.automationColours
+                let ok = hex(actual.background) == expectedBackground && hex(actual.text) == expectedText
+                lines.append("\(palette.id)/\(name) want=\(expectedBackground)/\(expectedText) "
+                             + "got=\(hex(actual.background))/\(hex(actual.text)) \(ok ? "ok" : "WRONG")")
+                // And a row opened after the switch, which is vended from the reuse pool rather than
+                // rebuilt by the reload — the half of the fix the visible rows do not exercise.
+                let opened = hex(tree.automationColourOfRowOpenedLater)
+                lines.append("\(palette.id)/\(name)/opened want=\(expectedText) got=\(opened) "
+                             + "\(opened == expectedText ? "ok" : "WRONG")")
+            }
+        }
+        themeId = original
+        applyAppearance(appearanceSetting)
+        try? (lines.joined(separator: "\n") + "\n").write(toFile: file, atomically: true, encoding: .utf8)
+    }
+
+    /// Diagnostic: every visible window's surfaces, in every palette (F-015).
+    ///
+    /// Broader than `dumpTreeColours` on purpose. That one knows what the tree should be and checks
+    /// it; this one knows nothing about any particular widget and instead reports surfaces that
+    /// violate the two properties the tree defect violated — a bright box in a dark window, and text
+    /// too close in colour to what is behind it. Whatever it lists is then judged one at a time; a
+    /// bright surface is not automatically a defect.
+    ///
+    /// All windows rather than this one, so a scenario can open the viewer, the editor or a dialog
+    /// first and have it audited without this knowing such things exist.
+    func dumpSurfaceColours(_ file: String) {
+        let original = themeId
+        var lines: [String] = []
+        var audited = 0
+        for palette in Theme.palettes {
+            themeId = palette.id
+            applyAppearance(appearanceSetting)
+            for window in NSApp.windows where window.isVisible {
+                // Lay out before reading, for the same reason the tree probe does: a repaint that
+                // has only been *requested* has not happened yet, and reading early reports the
+                // colour from before the switch as though the switch had failed.
+                window.contentView?.layoutSubtreeIfNeeded()
+                let name = window.title.isEmpty ? String(describing: type(of: window)) : window.title
+                audited += 1
+                lines += SurfaceColourAudit.audit(window: window,
+                                                  label: "\(palette.id)/\(name)").map(\.line)
+            }
+            // Both container tab strips show one view at a time, so a single pass sees one plugin
+            // view and misses every other installed one. Visiting each in turn is the difference
+            // between "the terminal is fine" and "the plugin views are fine".
+            lines += auditHiddenTabs(palette: palette.id, audited: &audited)
+        }
+        themeId = original
+        applyAppearance(appearanceSetting)
+        // Last line, and it carries the window count: an empty findings list means "nothing found"
+        // only if something was actually looked at, and a scenario that opened no window would
+        // otherwise produce a clean report by doing nothing.
+        lines.append("windows=\(audited) findings=\(lines.count)")
+        try? (lines.joined(separator: "\n") + "\n").write(toFile: file, atomically: true, encoding: .utf8)
+    }
+
+    /// Every plugin view that is mounted but currently behind another tab, brought to the front one
+    /// at a time and audited (F-015).
+    ///
+    /// The selection is put back afterwards, so the scenario's screenshot shows what it would have
+    /// shown anyway and a later step is not surprised by a tab it did not choose.
+    private func auditHiddenTabs(palette: String, audited: inout Int) -> [String] {
+        guard let window else { return [] }
+        var lines: [String] = []
+
+        func sweep(_ names: [String], label: String, select: (String) -> Void) {
+            for name in names {
+                select(name)
+                window.contentView?.layoutSubtreeIfNeeded()
+                audited += 1
+                lines += SurfaceColourAudit.audit(window: window,
+                                                  label: "\(palette)/\(label):\(name)").map(\.line)
+            }
+        }
+
+        if let panel = previewPanelForAutomation() {
+            let restore = panel.automationSelectedTab
+            sweep(panel.automationTabTitles, label: "side") { panel.automationSelectTab(titled: $0) }
+            panel.automationSelectTab(titled: restore)
+        }
+        if let dock = bottomDockForAutomation() {
+            let ids = dock.providerIds
+            let restore = ids.first
+            sweep(ids, label: "dock") { _ = dock.selectProvider(id: $0) }
+            if let restore { _ = dock.selectProvider(id: restore) }
+        }
+        window.contentView?.layoutSubtreeIfNeeded()
+        return lines
     }
 
     /// Diagnostic: the function-key bar, to ask whether it is claiming keys it does not have (F-381).
@@ -6593,6 +6712,14 @@ final class PanelView: NSView {
     let iconGrid = IconGridView()
     private let contentScroll = NSScrollView()
     private let treeView = PanelTreeView()                  // F-015: optional folder-tree column
+
+    /// Repaint the panel's folder tree in the current theme.
+    func applyTreeTheme() { treeView.applyTheme() }
+
+    #if DEBUG
+    /// Diagnostic: the panel's folder tree (F-015).
+    var treeForAutomation: PanelTreeView { treeView }
+    #endif
     private var treeWidthConstraint: NSLayoutConstraint?
     private(set) var isTreeVisible = false
     private(set) var viewMode: PanelViewMode = .details

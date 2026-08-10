@@ -424,9 +424,14 @@ final class NotesSidebarView: NSView, NSTextViewDelegate, NSTextFieldDelegate {
     /// The path whose comment `commentField` is showing, or nil for the global note (which has no file).
     private var currentPath: String?
     private var dirty = false
-    /// Host colour theme (F-338). This view sits in the sidebar, right beside the file panels, so
-    /// leaving it in macOS colours is what looks out of place under a theme like Norton.
-    private var services: UnsafePointer<PcHostServices>?
+    /// This view sits in the sidebar, right beside the file panels, so leaving it in macOS colours
+    /// is what looks out of place under a theme like Norton.
+    /// Host colour theme (F-338). Kept **by value**: the host hands out a pointer to a table it
+    /// owns for the duration of the call, so storing the pointer and reading it later — which is
+    /// exactly what a theme change does — dereferences memory that has been reused. It corrupted the
+    /// heap and killed the app on "open this view, then pick another colour scheme". The table is a
+    /// plain struct of function pointers, so a copy stays valid as long as the plugin is loaded.
+    private var services: PcHostServices?
     /// The host, for the comment callbacks. Nil until `bindServices`, and nil for a host that predates
     /// them — `fileComment` then answers nil and the comment row stays hidden.
     private var host: HostRef?
@@ -438,7 +443,7 @@ final class NotesSidebarView: NSView, NSTextViewDelegate, NSTextFieldDelegate {
     }
 
     func bindServices(_ s: UnsafePointer<PcHostServices>?) {
-        services = s
+        services = s?.pointee
         if let s { host = HostRef(s.pointee) }
         applyTheme()
         // The context was loaded before the host was known, so the comment row is still empty.

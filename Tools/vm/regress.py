@@ -548,6 +548,46 @@ SCENARIOS = [
                        # jobs were running, twice, only in full runs. dock-seam already learned this;
                        # the lesson is that any scenario touching placement owns putting it back.
                        "placeview plugin.terminal.view|default", "wait 1000"], 20),
+    # Do the folder trees follow the colour scheme — in *every* palette (F-015)? Reported against
+    # Midnight: a white column of pale text beside two dark panels. The cause was a repaint nobody
+    # called, so no palette applied after the view was built ever reached it; "it looks right in Dark"
+    # would have been an accident of which colours happen to be close.
+    #
+    # Both trees, because they are two instances of the same class reached by different routes — the
+    # shared column and the one inside a panel — and only one of them was noticed.
+    ("tree-colours", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                      "cmd cm_TreeShared", "wait 1000",
+                      "cmd cm_SrcTree", "wait 1200",
+                      "treecolors /Users/admin/treecolours.txt", "wait 600"], 14),
+    # The rest of the surfaces (F-015). `tree-colours` knows what the tree should be and checks it;
+    # this one knows nothing about any widget and reports surfaces that break the two properties the
+    # tree defect broke — a bright box in a dark window, and text too close to what is behind it.
+    #
+    # As much as possible on screen first, because the audit can only see what is mounted: both trees,
+    # the preview panel, the bottom area with its terminal, and the settings window, which is a second
+    # window and so a second chance for a palette to have been forgotten.
+    ("surface-colours", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                         "cmd cm_TreeShared", "wait 800",
+                         "cmd cm_SrcTree", "wait 800",
+                         "previewpanel on", "wait 1000",
+                         "dock on", "wait 2500",
+                         "settingspage Layout", "wait 2500",
+                         "surfacecolors /Users/admin/surfaces.txt", "wait 1200",
+                         # Leave a dark palette on screen. The dump restores the palette it started
+                         # from, so without this the screenshot shows Light and cannot be used to
+                         # judge a finding — and a finding about a bright surface is exactly the kind
+                         # that has to be looked at before it is believed.
+                         "theme midnight", "wait 1500"], 28),
+    # Plain user behaviour, no sweep: open the Notes view, then change the colour scheme (F-015).
+    # The surface audit crashed the app doing this incidentally; this asks whether the crash belongs
+    # to the product rather than to the measurement, because "switch theme with a plugin view open"
+    # is a thing people do and a crash there is not a diagnostics problem.
+    ("plugin-theme-switch", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                             "previewpanel on", "wait 1000",
+                             "previewtab Notes", "wait 1500",
+                             "theme midnight", "wait 1500",
+                             "theme norton", "wait 1500",
+                             "panelsdump /Users/admin/still-alive.txt", "wait 600"], 16),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -1090,6 +1130,24 @@ REPORTS = {
     "terminal-move": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
     "keys-main": ("/Users/admin/keys-main-done.txt", ["left=/Users/admin/pc-demo"]),
+    # Every line must end in "ok", so a single palette going wrong fails the check — and the numbers
+    # stay in the dump because "WRONG" alone does not say which half.
+    "tree-colours": ("/Users/admin/treecolours.txt",
+                     ["light/shared", "dark/shared", "midnight/shared", "norton/shared",
+                      "midnight/panel",
+                      # Named, not left to "!WRONG": a row opened *after* the switch is a separate
+                      # question from the rows the reload rebuilt, and if that probe ever disappeared
+                      # the absence of a WRONG line would look like a pass.
+                      "midnight/shared/opened", "!WRONG"]),
+    # Every finding of the first run has been judged: the bright surfaces were AppKit helper views at
+    # zero alpha, the cursor-row contrast was the audit reading the wrong background, and the one real
+    # defect (the terminal status line, black on Norton blue) is fixed. So the expectation is now
+    # "nothing" — and the window count is asserted with it, because nothing found by looking at
+    # nothing is not the same claim.
+    "surface-colours": ("/Users/admin/surfaces.txt", ["windows=32", "findings=0"]),
+    # The dump is written last and only by a living app: if the theme change killed it, this file is
+    # never written and the scenario fails with an empty report, which is the whole question.
+    "plugin-theme-switch": ("/Users/admin/still-alive.txt", ["left="]),
     "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
     # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
     # the wrong question: a system panel has none, so that check passed without showing anything.
@@ -1467,6 +1525,8 @@ def run_scenario(ip, host, port, pw, name, script, settle, out: Path):
     # fixed sleep. Without it, a slow launch late in the suite produced an empty report and every
     # expectation was reported as wrong — three times, for three different scenarios.
     expect = REPORTS.get(name, (None, None))[0] or ""
+    # Clear old crash reports first, so whatever is there afterwards belongs to this scenario.
+    ssh_guest(ip, "rm -f ~/Library/Logs/DiagnosticReports/PeachCommander*.ips; true")
     text = ssh_guest(ip, f"./regress-guest.sh {name} {settle} {expect}").stdout
     shot = out / f"{name}.png"
     sh([VNCDO, "-s", f"{host}::{port}", "-p", pw, "capture", str(shot)])
@@ -1474,6 +1534,13 @@ def run_scenario(ip, host, port, pw, name, script, settle, out: Path):
     (out / f"{name}.log").write_text(log)
     if a11y.strip():
         (out / f"{name}-a11y.txt").write_text(a11y.strip() + "\n")
+    # A crash used to leave nothing behind but an empty report and a screenshot of the desktop, and
+    # the report that says *why* was deleted with the VM clone at the end of the run. Fetching it
+    # costs one ssh call and is the difference between reading the answer and guessing at it.
+    crash = ssh_guest(ip, "cat ~/Library/Logs/DiagnosticReports/PeachCommander*.ips 2>/dev/null; true").stdout
+    if crash.strip():
+        (out / f"{name}-crash.ips").write_text(crash)
+        say(f"{name}: CRASHED — report saved to {name}-crash.ips")
     ssh_guest(ip, "pkill -x PeachCommander; true")
     return conflicts(log), a11y
 
