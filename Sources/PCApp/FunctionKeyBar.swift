@@ -131,6 +131,21 @@ final class FunctionKeyBar: NSView {
         }
     }
 
+    /// Are these keys currently the file manager's, or is something else reading them?
+    ///
+    /// With a terminal focused, F3 and F5 go to whatever is running in it — the raw-keyboard rule
+    /// hands them over — so a bar that still reads "F3 View  F5 Copy" is claiming something untrue.
+    /// Dimmed rather than hidden or relabelled: the row keeps its place and its size, the labels
+    /// still say what the keys *would* do, and the greying says they are not doing it now. Hiding it
+    /// would move the command line under the user's cursor every time they clicked into the terminal.
+    var keysAreOurs = true {
+        didSet {
+            guard keysAreOurs != oldValue else { return }
+            for button in buttons { button.alphaValue = keysAreOurs ? 1.0 : 0.4 }
+            toolTip = keysAreOurs ? nil : String(localized: "The function keys go to the terminal.")
+        }
+    }
+
     func applyTheme() {
         layer?.backgroundColor = Theme.current.functionButtonBackground.cgColor
     }
