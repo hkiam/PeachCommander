@@ -67,4 +67,33 @@ final class TextPipeTests: XCTestCase {
         // So `wc -l < file` and other relative references resolve next to the edited file.
         XCTAssertEqual(out.trimmingCharacters(in: .whitespacesAndNewlines), "/usr")
     }
+
+    // MARK: - A filter that stops reading early
+
+    func testAFilterThatExitsBeforeReadingEverythingStillReturnsItsOutput() {
+        // `head -1` is not an edge case, it is a filter people use: it takes one line and leaves. The
+        // rest of the input then has nowhere to go, and `FileHandle.write(_:)` answers that by raising
+        // an Objective-C exception from a background queue — which no `do/catch` at the call site can
+        // catch and the process does not survive.
+        //
+        // Big enough that it cannot fit in a pipe buffer, or the write finishes before the tool exits
+        // and the bug hides. 64 KiB is the usual buffer; this is well past it.
+        let big = String(repeating: "line of text\n", count: 40_000)
+        let result = TextPipe.run("head -1", over: big)
+        guard case .output(let text) = result else {
+            return XCTFail("expected the first line back, got \(result)")
+        }
+        XCTAssertEqual(text, "line of text\n")
+    }
+
+    func testAFilterThatFailsImmediatelyIsReportedRatherThanCrashing() {
+        // The same shape with no output at all: /usr/bin/false exits before reading a byte. This is
+        // the test that failed once in CI and never locally, which is exactly what a race looks like.
+        let big = String(repeating: "x\n", count: 100_000)
+        let result = TextPipe.run("false", over: big)
+        guard case .failed(let code, _) = result else {
+            return XCTFail("expected a failure, got \(result)")
+        }
+        XCTAssertNotEqual(code, 0)
+    }
 }

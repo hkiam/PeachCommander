@@ -1,5 +1,17 @@
 # Terminal plugin — design
 
+> **Status: built.** Every stage in §11 is done and shipped in 0.5.0, so read this as the reasoning
+> behind the feature rather than as a description of what exists. What exists is described where it
+> is maintained: the row for F-381 in `docs/product/feature-inventory.md`, the code comments in
+> `Sources/PCApp/BottomDockView.swift`, `ViewContainerRegistry.swift`, `RawKeyboard.swift` and
+> `Plugins/Terminal/terminalplugin.swift`, and the scenarios named `terminal-*`, `dock-seam`,
+> `view-placement`, `view-drop`, `raw-keyboard` and `mount-refresh` in `Tools/vm/regress.py`.
+>
+> Three sections are corrections rather than plans and are worth keeping: §1 records that vendoring the
+> emulator was the wrong call and why referencing it works, §12 records a nondeterminism that was
+> seen three times and never once under measurement, and §13 records the two faults behind "the panel
+> does not follow the terminal", the first of which hid the second.
+
 An embedded terminal, tabbed, able to run full-screen TUI programs (`top`, `htop`, `vim`, Claude Code,
 Codex), living in a removable `ptx` plugin that ships in the standard set and is on by default.
 

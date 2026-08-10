@@ -63,8 +63,23 @@ public enum TextPipe {
         // Write and read concurrently. A filter that emits more than a pipe buffer while we are still
         // writing deadlocks otherwise — and that is exactly the large-selection case this is for.
         let input = Data(text.utf8)
+        // A filter may stop reading before it has taken everything. `head -1` does it by design, and
+        // so does any command that fails early — at which point writing the rest hits a pipe with no
+        // reader, and the default answer to that is SIGPIPE, which kills the whole application.
+        //
+        // `F_SETNOSIGPIPE` turns that into a plain EPIPE on this one descriptor, which is what the
+        // situation actually is: the tool did not want the rest. Set on the descriptor rather than by
+        // ignoring the signal process-wide, because a library has no business changing how the whole
+        // application answers a signal.
+        //
+        // Found through a test that failed once in CI and never locally — on a fast machine the text
+        // fits in the pipe buffer before the tool exits, so nobody notices. The bug was never the
+        // test's: piping a selection through `head -1` crashed the app.
+        var nosigpipe: Int32 = 1
+        _ = fcntl(stdin.fileHandleForWriting.fileDescriptor, F_SETNOSIGPIPE, nosigpipe)
+        nosigpipe = 0
         DispatchQueue.global(qos: .userInitiated).async {
-            stdin.fileHandleForWriting.write(input)
+            try? stdin.fileHandleForWriting.write(contentsOf: input)
             try? stdin.fileHandleForWriting.close()
         }
         var outData = Data(), errData = Data()
