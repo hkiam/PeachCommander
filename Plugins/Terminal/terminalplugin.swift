@@ -41,6 +41,70 @@ func shellQuoted(_ value: String) -> String {
     "'" + value.replacingOccurrences(of: "'", with: "'\\''") + "'"
 }
 
+// MARK: - Settings
+
+/// The plugin's own settings, in the plugin's own file.
+///
+/// Under the host's config root so an isolated `-ConfigRoot` is honoured, and in a directory of its
+/// own so that removing the plugin leaves nothing behind in the host's `peachcmd.ini` — which is what
+/// "fully removable" has to mean in practice.
+final class TerminalSettings {
+    static let shared = TerminalSettings()
+
+    /// May the terminal steer the file panel when its shell reports a new folder?
+    ///
+    /// Off, and it stays off until asked. A panel that moves on its own the first time someone types
+    /// `cd` is startling, and the direction people expect is the other one.
+    ///
+    /// Read from the file rather than cached: it is a few hundred bytes, it is consulted at most once
+    /// per shell prompt, and reading it means a change takes effect at once instead of at the next
+    /// launch. Caching this would buy nothing measurable and cost the thing people notice.
+    var panelFollowsTerminal: Bool {
+        get { stored()?.panelFollowsTerminal ?? false }
+        set { try? JSONEncoder().encode(Stored(panelFollowsTerminal: newValue)).write(to: url) }
+    }
+
+    private func stored() -> Stored? {
+        (try? Data(contentsOf: url)).flatMap { try? JSONDecoder().decode(Stored.self, from: $0) }
+    }
+
+    private struct Stored: Codable { var panelFollowsTerminal: Bool }
+
+    private let url: URL = {
+        let root: URL
+        let args = CommandLine.arguments
+        if let i = args.firstIndex(of: "-ConfigRoot"), i + 1 < args.count {
+            root = URL(fileURLWithPath: args[i + 1], isDirectory: true)
+        } else if let env = ProcessInfo.processInfo.environment["PEACHCMD_CONFIG_ROOT"], !env.isEmpty {
+            root = URL(fileURLWithPath: env, isDirectory: true)
+        } else {
+            root = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+                .appendingPathComponent("PeachCommander", isDirectory: true)
+        }
+        let base = root.appendingPathComponent("terminal", isDirectory: true)
+        try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
+        return base.appendingPathComponent("config.json")
+    }()
+
+    private init() {}
+
+    /// The line the user would have to add to their shell's startup file for any of this to happen.
+    ///
+    /// **Shown, never written.** Editing somebody's `.zshrc` behind their back is not a thing an
+    /// application gets to do, however convenient — and this is the one place where the feature cannot
+    /// work without their cooperation, so the honest move is to say exactly what is needed and stop.
+    ///
+    /// macOS does ship an OSC 7 hook in `/etc/zshrc`, and it is guarded by
+    /// `[[ $TERM_PROGRAM == Apple_Terminal ]]` — so it fires for Apple's terminal and for nothing else,
+    /// including this one.
+    static let shellSnippet = """
+    # Report the working directory to the terminal (OSC 7), for Peach Commander
+    autoload -Uz add-zsh-hook
+    _pc_osc7() { printf '\\033]7;file://%s%s\\007' "$HOST" "${PWD// /%20}" }
+    add-zsh-hook precmd _pc_osc7
+    """
+}
+
 // MARK: - Sessions
 
 /// One pseudo-terminal, its child process and its scrollback.
@@ -69,6 +133,8 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
 
     /// Called whenever anything a view might display has changed.
     var onChange: (() -> Void)?
+    /// Called when the shell reports a new working directory (OSC 7), if it reports one at all.
+    var onDirectoryChange: ((String) -> Void)?
 
     static var loginShell: String {
         let shell = ProcessInfo.processInfo.environment["SHELL"] ?? ""
@@ -129,8 +195,13 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
     }
 
     func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {
-        // OSC 7. Only some shells emit it, so this is a bonus rather than something to rely on.
-        if let directory, !directory.isEmpty { self.directory = directory }
+        // OSC 7. No shell emits it here unless the user has asked it to — macOS's own hook is guarded
+        // to Apple Terminal — so this is a capability that appears when configured and is simply
+        // absent otherwise. Nothing else in the plugin depends on it.
+        guard let directory, !directory.isEmpty else { return }
+        self.directory = directory
+        onChange?()
+        onDirectoryChange?(directory)
     }
 
     func processTerminated(source: TerminalView, exitCode: Int32?) {
@@ -321,6 +392,7 @@ final class TerminalContainerView: NSView {
     func newTab() -> TerminalSession {
         let session = TerminalPool.make(directory: hostDirectory())
         session.onChange = { [weak self] in self?.refreshChrome() }
+        session.onDirectoryChange = { [weak self] path in self?.steerPanel(to: path) }
         session.applyTheme(theme)
         tabs.append(session)
         panes[focused] = tabs.count - 1
@@ -359,6 +431,7 @@ final class TerminalContainerView: NSView {
         guard panes.count == 1 else { return }
         let session = TerminalPool.make(directory: hostDirectory())
         session.onChange = { [weak self] in self?.refreshChrome() }
+        session.onDirectoryChange = { [weak self] path in self?.steerPanel(to: path) }
         session.applyTheme(theme)
         tabs.append(session)
         panes.append(tabs.count - 1)
@@ -459,9 +532,13 @@ final class TerminalContainerView: NSView {
         // where it is docked.
         if let s = selectedSession {
             let index = panes.indices.contains(focused) ? panes[focused] : 0
+            // The folder is in here because a terminal should say where it is — and because it is the
+            // only visible sign that the shell reports it at all (OSC 7), which is a thing the user
+            // has to arrange and therefore a thing they need to be able to check.
+            let cwd = s.directory.map { " · \(($0 as NSString).abbreviatingWithTildeInPath)" } ?? ""
             status.stringValue = "pane \(focused + 1)/\(panes.count) · tab \(index + 1)/\(tabs.count) · "
                 + "session \(s.id) · \(s.title) · \(s.cols)×\(s.rows)"
-                + (container.isEmpty ? "" : " · \(container)")
+                + (container.isEmpty ? "" : " · \(container)") + cwd
         }
     }
 
@@ -488,6 +565,24 @@ final class TerminalContainerView: NSView {
             applyTheme()
         default:          break
         }
+    }
+
+    /// Take the active panel to where the shell says it is — if the user asked for that.
+    ///
+    /// Only from the *focused* session: with two panes open, a background build printing its way
+    /// through a tree would otherwise drag the panel along behind it.
+    private func steerPanel(to path: String) {
+        guard TerminalSettings.shared.panelFollowsTerminal,
+              let svc = services, let open = svc.openPathInPanel,
+              let session = selectedSession, session.directory == path else { return }
+        // Whichever panel is active, in the 0 = left / 1 = right terms the host uses.
+        var side: Int32 = 0
+        if let get = svc.getContext {
+            var buf = [CChar](repeating: 0, count: 8)
+            let ok = "activeSide".withCString { key in get(svc.host, key, &buf, 8) }
+            if ok != 0, String(cString: buf) == "1" { side = 1 }
+        }
+        path.withCString { open(svc.host, side, $0) }
     }
 
     // MARK: Dropping files
@@ -592,12 +687,93 @@ final class TerminalSplitView: NSSplitView {
     }
 }
 
+/// The plugin's page in the host's settings dialog.
+///
+/// Its job is mostly to explain. The one switch here does nothing on its own: the terminal can only
+/// follow the shell if the shell says where it is, and no shell on macOS says so unless the user has
+/// arranged it — Apple's own hook in `/etc/zshrc` is guarded to Apple Terminal. So the page shows the
+/// exact lines that would be needed, in a field they can select and copy, and does not touch anything.
+final class TerminalSettingsView: NSView {
+
+    private let followCheck = NSButton(checkboxWithTitle: L("Let the active panel follow the terminal"),
+                                       target: nil, action: nil)
+    private let snippet = NSTextView()
+
+    init() {
+        super.init(frame: NSRect(x: 0, y: 0, width: 520, height: 300))
+
+        followCheck.state = TerminalSettings.shared.panelFollowsTerminal ? .on : .off
+        followCheck.target = self
+        followCheck.action = #selector(followChanged)
+        followCheck.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(followCheck)
+
+        let explanation = NSTextField(wrappingLabelWithString: L(
+            "The terminal can only follow your shell if the shell reports its folder (OSC 7). macOS "
+            + "does that for Apple's Terminal only, so it has to be set up once. Peach Commander will "
+            + "not edit your shell's startup file: add these lines to ~/.zshrc yourself."))
+        explanation.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        explanation.textColor = .secondaryLabelColor
+        explanation.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(explanation)
+
+        // Selectable, in a monospaced face, because it is meant to be copied and pasted verbatim.
+        snippet.string = TerminalSettings.shellSnippet
+        snippet.isEditable = false
+        snippet.isSelectable = true
+        snippet.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
+        snippet.drawsBackground = true
+        snippet.backgroundColor = .textBackgroundColor
+        let scroll = NSScrollView()
+        scroll.documentView = snippet
+        scroll.hasVerticalScroller = true
+        scroll.borderType = .bezelBorder
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(scroll)
+
+        let copyButton = NSButton(title: L("Copy"), target: self, action: #selector(copySnippet))
+        copyButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(copyButton)
+
+        NSLayoutConstraint.activate([
+            followCheck.topAnchor.constraint(equalTo: topAnchor, constant: 16),
+            followCheck.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            explanation.topAnchor.constraint(equalTo: followCheck.bottomAnchor, constant: 10),
+            explanation.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            explanation.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            scroll.topAnchor.constraint(equalTo: explanation.bottomAnchor, constant: 10),
+            scroll.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            scroll.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            scroll.heightAnchor.constraint(equalToConstant: 92),
+            copyButton.topAnchor.constraint(equalTo: scroll.bottomAnchor, constant: 8),
+            copyButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            copyButton.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -16),
+        ])
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    @objc private func followChanged() {
+        TerminalSettings.shared.panelFollowsTerminal = followCheck.state == .on
+    }
+
+    @objc private func copySnippet() {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(TerminalSettings.shellSnippet, forType: .string)
+    }
+
+    /// Diagnostic: everything this page is showing, so a scenario can read it (F-381).
+    var automationSummary: String {
+        "follow=\(TerminalSettings.shared.panelFollowsTerminal)\nsnippet=\(snippet.string.contains("]7;file://"))\n"
+    }
+}
+
 // MARK: - The contribution ABI
 
 @_cdecl("PcMakeView")
 public func PcMakeView(_ viewId: UnsafePointer<CChar>?, _ container: UnsafePointer<CChar>?,
                        _ services: UnsafePointer<PcHostServices>?) -> UnsafeMutableRawPointer? {
     let where_ = container.map { String(cString: $0) } ?? ""
+    if where_ == "settings" { return Unmanaged.passRetained(TerminalSettingsView()).toOpaque() }
     let view = TerminalContainerView(container: where_, services: services?.pointee)
     return Unmanaged.passRetained(view).toOpaque()
 }
@@ -605,6 +781,7 @@ public func PcMakeView(_ viewId: UnsafePointer<CChar>?, _ container: UnsafePoint
 @_cdecl("PcCloseView")
 public func PcCloseView(_ view: UnsafeMutableRawPointer?) {
     guard let view else { return }
+    // A settings page holds nothing; only the terminal has anything to let go of.
     (Unmanaged<NSView>.fromOpaque(view).takeUnretainedValue() as? TerminalContainerView)?.teardown()
     Unmanaged<NSView>.fromOpaque(view).release()
 }

@@ -512,3 +512,32 @@ What it is now is a **guarded** unknown, in two scenarios rather than one. A rec
 with the state written down — which panel, which side is active, what holds the keyboard — instead of
 being noticed in a picture months later. That is the useful outcome available; hunting an intermittent
 that will not appear under measurement is not.
+
+---
+
+## 13. Open: the panel following the terminal is built but unproven
+
+The settings page is done and verified: it carries one switch, off by default, and the exact lines the
+user would have to add to `~/.zshrc` for the shell to report its folder at all — shown in a field they
+can select and copy, and **never written by the app**. macOS ships an OSC 7 hook in `/etc/zshrc` and it
+is guarded by `[[ $TERM_PROGRAM == Apple_Terminal ]]`, so it fires for Apple's terminal and for nothing
+else, including this one. A scenario reads the page back out of the host's settings window and asserts
+both the switch and the escape sequence.
+
+The behaviour behind the switch — `openPathInPanel` on OSC 7, from the focused session only — is
+written and does not work end to end. What was measured:
+
+* The plugin's config file is written correctly (`{"panelFollowsTerminal":true}`), so the switch is on.
+* The session reports a working directory of `~` in the status line and never changes it, where the
+  scenario had `cd /usr/lib`.
+* A probe reading `~/.zshrc` back never produced a file at all, so **whether the hook is actually
+  installed in the test VM is unknown** — and without that, the shell emits nothing and there is
+  nothing for the plugin to act on.
+
+So the failure is not localised: it could be the fixture (the hook never landed), the shell (not
+emitting), the emulator (not parsing our `file://` form), or the plugin (refusing to steer). The
+scenario was **removed rather than left red**, because a permanently failing check teaches the suite to
+be ignored — and this is written here instead so it cannot be quietly forgotten.
+
+Next step when this is picked up: confirm the hook is in the guest's `~/.zshrc` first, by a means that
+does not go through the same probe that failed to report.

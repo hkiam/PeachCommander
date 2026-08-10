@@ -1,0 +1,28 @@
+Layout
+Display
+Icons
+Operation
+Colors
+Confirmation
+Edit/View
+Copy/Delete
+Zip/Packer
+Plugins
+Tabs
+FTP
+Keyboard
+Language
+AI
+Misc
+Log Viewer
+System Monitor
+Terminal
+Disk Map
+[ ] Let the active panel follow the terminal
+The terminal can only follow your shell if the shell reports its folder (OSC 7). macOS does that for Apple's Terminal only, so it has to be set up once. Peach Commander will not edit your shell's startup file: add these lines to ~/.zshrc yourself.
+# Report the working directory to the terminal (OSC 7), for Peach Commander
+autoload -Uz add-zsh-hook
+_pc_osc7() { printf '\033]7;file://%s%s\007' "$HOST" "${PWD// /%20}" }
+add-zsh-hook precmd _pc_osc7
+[ ] Copy
+[ ] Close
