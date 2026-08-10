@@ -64,7 +64,7 @@ public enum VolumeEjection {
 
     /// Whether `path` is inside `volume` — on a component boundary, so `/Volumes/Backup2` is not
     /// treated as living inside `/Volumes/Backup`. The volume itself counts as inside itself.
-    static func contains(volume: String, path: String) -> Bool {
+    public static func contains(volume: String, path: String) -> Bool {
         let root = trimmed(volume), inside = trimmed(path)
         if root == inside { return true }
         if root == "" { return true }        // "/" contains everything

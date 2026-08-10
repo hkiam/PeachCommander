@@ -1912,6 +1912,12 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         }
         action(String(localized: "Quick Look"), #selector(ctxQuickLook))
         action(String(localized: "Reveal in Finder"), #selector(ctxRevealInFinder))
+        // Only when there is something to eject. The command knows exactly which volume that is and
+        // says so by name, which is why the title can: "Eject" alone, on a machine with two sticks
+        // plugged in, is a question rather than an action.
+        if let volume = (window?.windowController as? MainWindowController)?.ejectableVolumeUnderCursor() {
+            cmd(String(localized: "Eject “\(volume.name)”"), "cm_EjectVolume")
+        }
         action(String(localized: "Share…"), #selector(ctxShare))
         menu.addItem(.separator())
         cmd(String(localized: "View (F3)"), "cm_List")

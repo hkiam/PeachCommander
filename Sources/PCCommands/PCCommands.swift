@@ -306,6 +306,8 @@ public protocol WindowControllerProtocol: AnyObject {
     /// Native Quick Look preview of the selection (Cmd+Y) — cm_QuickLook.
     func showQuickLook()
     /// Explain Full Disk Access and offer to open System Settings — cm_FullDiskAccess.
+    /// Eject the removable volume the cursor or the current folder is on (F-006).
+    func ejectVolumeUnderCursor()
     func showFullDiskAccessInfo()
     /// Verify the integrity of the archive under the cursor (or the one we are
     /// inside) — cm_TestArchive.
@@ -765,6 +767,7 @@ public actor CommandRegistry {
         register(Self.cm_ImportWincmd)
         register(Self.cm_ConfigMainMenu)
         register(Self.cm_QuickLook)
+        register(Self.cm_EjectVolume)
         register(Self.cm_FullDiskAccess)
         register(Self.cm_TestArchive)
         register(Self.cm_UnpackFiles)
@@ -930,6 +933,9 @@ public actor CommandRegistry {
     static let cm_QuickLook = PCCommand(id: 30093, name: "cm_QuickLook", category: "View",
         help: "Quick Look preview of the selection",
         handler: { ctx in ctx.windowController?.showQuickLook() })
+    static let cm_EjectVolume = PCCommand(id: 30123, name: "cm_EjectVolume", category: "Commands",
+        help: "Eject the removable volume the cursor or the current folder is on",
+        handler: { ctx in ctx.windowController?.ejectVolumeUnderCursor() })
     static let cm_FullDiskAccess = PCCommand(id: 30094, name: "cm_FullDiskAccess", category: "Configuration",
         help: "Full Disk Access: explain and open System Settings",
         handler: { ctx in ctx.windowController?.showFullDiskAccessInfo() })

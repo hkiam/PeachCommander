@@ -2619,6 +2619,67 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     }
 
     /// Explain Full Disk Access and offer to open System Settings (F-299).
+    /// Eject the removable volume the cursor — or, failing that, the current folder — is on (F-006).
+    ///
+    /// Which volume that is lives in `VolumeEjection` and is tested there, because the ways it goes
+    /// wrong are silent: the startup disk contains every path, and one stick's name can be a prefix
+    /// of another's.
+    func ejectVolumeUnderCursor() {
+        let panel = activePanel
+        let cursor = panel?.tableView.cursorItemFullPath()
+        let here = panel?.view.currentPathValue ?? ""
+        switch VolumeEjection.target(focusedPath: cursor, currentDirectory: here,
+                                     volumes: panel?.driveVolumes ?? []) {
+        case .success(let volume):
+            eject(volume)
+        case .failure(.bootVolume):
+            reportEjectProblem(String(localized: "The startup disk cannot be ejected."), detail: nil)
+        case .failure(.notEjectable(let name)):
+            reportEjectProblem(String(localized: "“\(name)” cannot be ejected."),
+                               detail: String(localized: "Network shares and internal disks stay mounted."))
+        case .failure(.noVolume):
+            reportEjectProblem(String(localized: "Nothing here is on a removable volume."), detail: nil)
+        }
+    }
+
+    /// The volume an eject would act on, or nil. Used to decide whether the entry is worth showing:
+    /// an "Eject" on every file's context menu is noise, and one that is always there and usually
+    /// complains teaches people to stop reading it.
+    func ejectableVolumeUnderCursor() -> Volume? {
+        let panel = activePanel
+        return try? VolumeEjection.target(focusedPath: panel?.tableView.cursorItemFullPath(),
+                                          currentDirectory: panel?.view.currentPathValue ?? "",
+                                          volumes: panel?.driveVolumes ?? []).get()
+    }
+
+    private func eject(_ volume: Volume) {
+        do {
+            try NSWorkspace.shared.unmountAndEjectDevice(at: URL(fileURLWithPath: volume.path))
+            // Leave before the panel is standing on a folder that no longer exists, which reads as
+            // the eject having failed. Both panels, because either may be inside it.
+            for panel in [leftPanelController, rightPanelController].compactMap({ $0 }) {
+                if VolumeEjection.contains(volume: volume.path, path: panel.view.currentPathValue) {
+                    Task { await panel.loadDirectory("/Volumes") }
+                }
+            }
+        } catch {
+            // The system's own words. It knows which application is holding the volume open and this
+            // is the only place that information exists — replacing it with "could not eject" would
+            // throw away the one thing that tells the user what to close.
+            let ns = error as NSError
+            reportEjectProblem(String(localized: "“\(volume.name)” could not be ejected."),
+                               detail: ns.localizedRecoverySuggestion ?? ns.localizedDescription)
+        }
+    }
+
+    private func reportEjectProblem(_ message: String, detail: String?) {
+        let alert = NSAlert()
+        alert.messageText = message
+        if let detail { alert.informativeText = detail }
+        alert.alertStyle = .warning
+        alert.beginSheetModal(for: window ?? NSApp.mainWindow ?? NSWindow()) { _ in }
+    }
+
     func showFullDiskAccessInfo() {
         FullDiskAccessGuide.presentPrompt()
     }
@@ -5554,6 +5615,9 @@ final class PanelController: NSObject, PanelControllerProtocol {
     private var volumeLastPath: [String: String] = [:]
     private var driveBarPopulated = false
     private var cachedDriveVolumes: [Volume] = []
+    /// What this panel's drive bar is showing. The eject command needs it and the panel is the only
+    /// thing that has already asked the system.
+    var driveVolumes: [Volume] { cachedDriveVolumes }
 
     /// Fired when persistable panel state changes (path, sort) — drives session save.
     var onStateChanged: (() -> Void)?

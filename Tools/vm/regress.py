@@ -597,6 +597,11 @@ SCENARIOS = [
                     "settingspage Layout", "wait 2500",
                     "keyloop /Users/admin/probe-loop.txt",
                     "panelsdump /Users/admin/probe-after.txt", "wait 800"], 14),
+    # The eject command is reachable from the main menu (F-006). Ejecting itself cannot be shown in
+    # this VM — there is no removable volume to eject — so what is checked is the half that was
+    # missing for the user: that the command exists and is offered somewhere findable.
+    ("eject-menu", ["active left", "left /Users/admin/pc-demo", "wait 1500",
+                    "menudump /Users/admin/menu-eject.txt", "wait 500"], 10),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -1182,6 +1187,7 @@ REPORTS = {
     # never written and the scenario fails with an empty report, which is the whole question.
     "plugin-theme-switch": ("/Users/admin/still-alive.txt", ["left="]),
     "keys-probe": ("/Users/admin/probe-after.txt", ["left="]),
+    "eject-menu": ("/Users/admin/menu-eject.txt", ["Eject Volume"]),
     "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
     # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
     # the wrong question: a system panel has none, so that check passed without showing anything.
