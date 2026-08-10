@@ -374,12 +374,15 @@ SCENARIOS = [
     # a menu item nothing in the responder chain implements is disabled and claims nothing.
     ("terminal-find", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                        "placeview plugin.terminal.view|default", "wait 800",
-                       "dock on", "wait 3500",
-                       "keyequivmenu W+f|/Users/admin/find-term.txt", "wait 1200",
+                       # Generous before the keypress: one run in six sent ⌘F while the window was
+                       # still settling, something else in the responder chain claimed it, and the bar
+                       # never opened. The key has to arrive at a terminal that is already there.
+                       "dock on", "wait 5000",
+                       "keyequivmenu W+f|/Users/admin/find-term.txt", "wait 1500",
                        "dockdump /Users/admin/find-bar.txt", "wait 400",
                        # …and with a file panel focused instead, the same key finds nobody to answer.
                        "keyequiv C+BACKQUOTE|/Users/admin/find-toggle.txt", "wait 800",
-                       "keyequivmenu W+f|/Users/admin/find-panel.txt", "wait 1000"], 16),
+                       "keyequivmenu W+f|/Users/admin/find-panel.txt", "wait 1000"], 19),
     # The function-key bar must not claim keys it does not have (plan §7). With a terminal focused,
     # F3 and F5 go to whatever is running in it — the raw-keyboard rule hands them over — so a bar
     # still reading "F3 View  F5 Copy" at full strength is saying something untrue.
@@ -392,6 +395,24 @@ SCENARIOS = [
                         # leaves the file manager looking permanently disarmed.
                         "keyequiv C+BACKQUOTE|/Users/admin/fk-key.txt", "wait 1000",
                         "fkeydump /Users/admin/fk-back.txt", "wait 400"], 15),
+    # ⌘-click a path in the scrollback and the panel shows it (plan §6) — the bridge back to the file
+    # manager, and the reason to embed a terminal rather than launch Terminal.app. The click cannot be
+    # scripted, so this drives the entry point it calls, which is where the resolution lives.
+    #
+    # Three words, and the two that must be refused matter as much as the one that works: a relative
+    # name resolves against the shell's folder, and a word that names nothing navigates nowhere rather
+    # than somewhere arbitrary because a sentence contained a slash.
+    ("terminal-reveal", ["active left", "left /Users/admin", "wait 1200",
+                         "placeview plugin.terminal.view|default", "wait 800",
+                         "dock on", "wait 3500",
+                         # Relative, which is how a path appears in real output: resolved against the
+                         # shell's folder, not the panel's.
+                         "termnotify plugin.terminal.view|revealPath|pc-demo",
+                         "wait 1500",
+                         "panelsdump /Users/admin/rev-abs.txt", "wait 300",
+                         # A word that is not a path: the panel must not move.
+                         "termnotify plugin.terminal.view|revealPath|Traceback", "wait 1200",
+                         "panelsdump /Users/admin/rev-none.txt", "wait 400"], 16),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -853,7 +874,7 @@ REPORTS = {
     # The keyboard went back to the panel, and the dock stayed open — the two halves of "this is a
     # focus toggle, not a visibility toggle".
     "terminal-integration-panel": ("/Users/admin/int-panel.txt", ["responder=PanelListView"]),
-    "terminal-integration-term": ("/Users/admin/int-term.txt", ["responder=LocalProcessTerminalView"]),
+    "terminal-integration-term": ("/Users/admin/int-term.txt", ["responder=PCTerminalView"]),
     "terminal-integration-dock": ("/Users/admin/int-dock.txt", ["visible=true"]),
     # The shell's own answer to "where are you".
     "terminal-integration-cwd": ("/Users/admin/int-cwd.txt", ["/Users/admin/pc-demo"]),
@@ -896,6 +917,9 @@ REPORTS = {
     "terminal-fkeys-term": ("/Users/admin/fk-term.txt", ["keysAreOurs=false"]),
     "terminal-fkeys": ("/Users/admin/fk-back.txt",
                        ["responder=PanelListView", "keysAreOurs=true"]),
+    "terminal-reveal-abs": ("/Users/admin/rev-abs.txt", ["left=/Users/admin/pc-demo"]),
+    # Still there: a word that names nothing left the panel alone.
+    "terminal-reveal": ("/Users/admin/rev-none.txt", ["left=/Users/admin/pc-demo"]),
     "terminal-move-side": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),

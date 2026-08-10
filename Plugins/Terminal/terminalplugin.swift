@@ -105,6 +105,59 @@ final class TerminalSettings {
     """
 }
 
+/// A terminal view that treats ⌘-click as "show me this file".
+///
+/// The bridge back to the file manager, and the reason to embed a terminal rather than launch
+/// Terminal.app (plan §6). A path printed by `ls`, a compiler error, `git status` — one click and the
+/// panel is looking at it.
+///
+/// Only ⌘-click, and only when the word under the pointer resolves to something that exists. A plain
+/// click still selects, a double-click still selects a word, and a ⌘-click on prose does nothing
+/// rather than something surprising: refusing quietly is better than navigating somewhere arbitrary
+/// because a sentence happened to contain a slash.
+final class PCTerminalView: LocalProcessTerminalView {
+    /// Called with an existing path the user ⌘-clicked. Set by the session.
+    var onRevealPath: ((String) -> Void)?
+    /// Where relative paths are relative to.
+    var workingDirectory: (() -> String?)?
+
+    override func mouseDown(with event: NSEvent) {
+        guard event.modifierFlags.contains(.command), let path = pathUnderPointer(event) else {
+            super.mouseDown(with: event)
+            return
+        }
+        onRevealPath?(path)
+    }
+
+    /// Resolve a word from the scrollback as a path on this machine, or nil.
+    func resolvePath(_ word: String) -> String? {
+        let trimmed = word.trimmingCharacters(in: .whitespacesAndNewlines)
+            .trimmingCharacters(in: CharacterSet(charactersIn: ",;:\"')]}"))
+        guard !trimmed.isEmpty else { return nil }
+        var candidate = (trimmed as NSString).expandingTildeInPath
+        if !candidate.hasPrefix("/") {
+            guard let cwd = workingDirectory?() else { return nil }
+            candidate = (cwd as NSString).appendingPathComponent(candidate)
+        }
+        candidate = (candidate as NSString).standardizingPath
+        return FileManager.default.fileExists(atPath: candidate) ? candidate : nil
+    }
+
+    private func pathUnderPointer(_ event: NSEvent) -> String? {
+        let hit = calculateMouseHit(with: event)
+        // The emulator already knows where a "word or expression" begins and ends — the same rule a
+        // double-click uses — so a path with dots and slashes in it comes back whole.
+        selection.selectWordOrExpression(at: Position(col: hit.grid.col, row: hit.grid.row),
+                                         in: terminal.displayBuffer)
+        let word = selection.getSelectedText().trimmingCharacters(in: .whitespacesAndNewlines)
+        selection.active = false
+        setNeedsDisplay(bounds)
+        // Trailing punctuation is how paths appear in prose and in compiler output:
+        // "see main.swift:" — handled by resolvePath, which the automation path shares.
+        return resolvePath(word)
+    }
+}
+
 // MARK: - Sessions
 
 /// One pseudo-terminal, its child process and its scrollback.
@@ -115,7 +168,7 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
 
     /// Stable across the session's life, so a view can say which of several it is showing.
     let id: Int
-    let view = LocalProcessTerminalView(frame: .zero)
+    let view = PCTerminalView(frame: .zero)
     /// What the running program calls itself (OSC 0/1/2), else the shell's name.
     private(set) var title: String
     /// The terminal's size, read from the emulator rather than mirrored from its delegate.
@@ -135,6 +188,10 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
     var onChange: (() -> Void)?
     /// Called when the shell reports a new working directory (OSC 7), if it reports one at all.
     var onDirectoryChange: ((String) -> Void)?
+    /// Called with a path the user ⌘-clicked in the scrollback.
+    var onRevealPath: ((String) -> Void)? {
+        didSet { view.onRevealPath = onRevealPath }
+    }
 
     static var loginShell: String {
         let shell = ProcessInfo.processInfo.environment["SHELL"] ?? ""
@@ -148,6 +205,9 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
         super.init()
         view.processDelegate = self
         view.translatesAutoresizingMaskIntoConstraints = false
+        // Relative paths resolve against wherever the shell says it is — falling back to where it was
+        // started, since OSC 7 is something the user has to arrange and most will not have.
+        view.workingDirectory = { [weak self] in self?.directory }
     }
 
     /// Start the shell, once, and only when the view has real geometry.
@@ -165,6 +225,14 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
     }
 
     func send(_ text: String) { view.send(txt: text) }
+
+    /// Resolve a word as ⌘-click would and hand it over if it names something that exists.
+    ///
+    /// Shared with the click rather than reimplemented beside it: a scenario that exercised a second
+    /// copy of the rule would prove nothing about the first.
+    func revealIfExists(_ word: String) {
+        if let path = view.resolvePath(word) { onRevealPath?(path) }
+    }
 
     /// Wear the host's colours (F-338/F-381).
     ///
@@ -415,6 +483,7 @@ final class TerminalContainerView: NSView {
         let session = TerminalPool.make(directory: hostDirectory())
         session.onChange = { [weak self] in self?.refreshChrome() }
         session.onDirectoryChange = { [weak self] path in self?.steerPanel(to: path) }
+        session.onRevealPath = { [weak self] path in self?.revealInPanel(path) }
         session.applyTheme(theme)
         tabs.append(session)
         panes[focused] = tabs.count - 1
@@ -454,6 +523,7 @@ final class TerminalContainerView: NSView {
         let session = TerminalPool.make(directory: hostDirectory())
         session.onChange = { [weak self] in self?.refreshChrome() }
         session.onDirectoryChange = { [weak self] path in self?.steerPanel(to: path) }
+        session.onRevealPath = { [weak self] path in self?.revealInPanel(path) }
         session.applyTheme(theme)
         tabs.append(session)
         panes.append(tabs.count - 1)
@@ -570,6 +640,10 @@ final class TerminalContainerView: NSView {
         switch key {
         case "container": container = value; refreshChrome()
         case "sendText":  selectedSession?.send(value)
+        case "revealPath":
+            // The same entry point ⌘-click takes. A click cannot be scripted, so what a scenario can
+            // exercise is the resolution and the hand-off — which is where the work is.
+            selectedSession?.revealIfExists(value)
         case "dropPaths":
             // The same entry point a real drop takes. A drag cannot be scripted, so what a scenario
             // can exercise is the other end — which is where the quoting lives and where it matters.
@@ -604,6 +678,24 @@ final class TerminalContainerView: NSView {
             let ok = "activeSide".withCString { key in get(svc.host, key, &buf, 8) }
             if ok != 0, String(cString: buf) == "1" { side = 1 }
         }
+        path.withCString { open(svc.host, side, $0) }
+    }
+
+    /// Show a ⌘-clicked path in the file panel.
+    ///
+    /// Unconditional, unlike `steerPanel`: this is a click the user just made *on that path*, not a
+    /// side effect of the shell moving around. There is nothing to gate — they asked.
+    private func revealInPanel(_ path: String) {
+        guard let svc = services, let open = svc.openPathInPanel else { return }
+        var side: Int32 = 0
+        if let get = svc.getContext {
+            var buf = [CChar](repeating: 0, count: 8)
+            let ok = "activeSide".withCString { key in get(svc.host, key, &buf, 8) }
+            if ok != 0, String(cString: buf) == "1" { side = 1 }
+        }
+        // A folder is opened; a file has its folder opened, since a panel shows folders. The host
+        // puts the cursor on the file when handed one, which is the behaviour `openPathInPanel`
+        // already has for every other plugin that uses it.
         path.withCString { open(svc.host, side, $0) }
     }
 
