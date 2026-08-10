@@ -498,6 +498,39 @@ SCENARIOS = [
                            "dockdump /Users/admin/rs-dock.txt", "wait 400",
                            # …and the alias the fixture defines must not apply.
                            "runshell /Users/admin/rs-alias.txt|pcalias", "wait 3000"], 22),
+    # Terminal tabs come back after a restart, in the folders they were in. The sessions cannot —
+    # those processes died with the app — so what is restored is where they were, which is what people
+    # actually lose: three terminals in three checkouts, and after a restart three prompts at home.
+    #
+    # Two launches in one scenario is not something this harness does, so the state file is written by
+    # the first half and read by a `quit` and the automatic relaunch the guest script performs.
+    ("terminal-restore", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                          "placeview plugin.terminal.view|default", "wait 800",
+                          "dock on", "wait 3500",
+                          "cmd cm_TerminalNewTab", "wait 2500",
+                          "termsend plugin.terminal.view|cd /usr/lib\\n", "wait 2000",
+                          "dockdump /Users/admin/restore-before.txt", "wait 400",
+                          # The state is written when tabs change and again on teardown, so quitting
+                          # is what makes the answer worth reading — and the answer has to be asked
+                          # for from outside, because after `quit` there is nobody left to ask.
+                          "quit", "wait 3000"], 18),
+    # …and the other half: with folders written down, opening the area brings them back. The view is
+    # built when the area first shows it, so seeding the file before `dock on` is the same order a
+    # launch has. \042 is a double quote — a literal one has to survive python → ssh → sh → the app's
+    # script parser.
+    ("terminal-restored", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                           # Tear down first, *then* write the state, then build again — the order a
+                           # real launch has. Seeding before the teardown does not work and the reason
+                           # is the feature working: teardown writes the state, so it overwrote the
+                           # seed with the single tab the app had started with.
+                           "closeviews", "wait 800",
+                           "probe /Users/admin/seed.txt|mkdir -p ~/pc-cfg/terminal && printf "
+                           "'{\\042bottom\\042:[\\042/usr/lib\\042,\\042/usr/share\\042]}' "
+                           "> ~/pc-cfg/terminal/session.json && cat ~/pc-cfg/terminal/session.json",
+                           "wait 800",
+                           "refreshviews", "wait 1500",
+                           "dock on", "wait 4000",
+                           "dockdump /Users/admin/restored.txt", "wait 500"], 18),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -759,6 +792,9 @@ REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"
 # What an *independent* tool must say after a scenario ran: the app changed something, and something other
 # than the app is asked whether it really changed. `stat` over ssh is not the code under test.
 EXTERNAL_CHECKS = {
+    # Asked of the machine after the app is gone, because that is when the question makes sense: two
+    # tabs were open, and the file that survives the app has to name both of their folders.
+    "terminal-restore": ("python3 -c \"import json;print(len(json.load(open('$HOME/pc-cfg/terminal/session.json'))['bottom']))\" 2>/dev/null || echo 0", "2"),
     # Is the OSC 7 hook the settings page describes actually in the guest's .zshrc? Asked over ssh
     # after the app is dead, because the probe that was supposed to answer this from inside the app
     # never produced a file at all — and a question about the fixture should not be routed through the
@@ -1045,6 +1081,11 @@ REPORTS = {
     # The alias the user's .zshrc defines does *not* apply: a non-interactive shell never read it, so
     # the command fails as an unknown command instead of quietly meaning something else.
     "terminal-runshell": ("/Users/admin/rs-alias.txt", ["!ALIAS-RAN", "!exit status 0"]),
+    "terminal-restore": ("/Users/admin/restore-before.txt", ["tab 2/2"]),
+    # Two tabs came back, and the one showing is in the folder that was written down rather than in
+    # the panel's — which is the difference between restoring and starting fresh.
+    "terminal-restored-seed": ("/Users/admin/seed.txt", ["bottom"]),
+    "terminal-restored": ("/Users/admin/restored.txt", ["tab 1/2", "/usr/lib"]),
     "terminal-move-side": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
