@@ -25,6 +25,22 @@ public struct MCPServer: Sendable {
         self.policy = policy
     }
 
+    /// Capabilities that are not offered over MCP at all, whatever the policy says.
+    ///
+    /// The gate here is *plan then confirm*, and the thing that confirms is the external client —
+    /// that is what "the external client stays in control" means, and it is the right shape for the
+    /// file operations an agent was connected to perform. It is the wrong shape for running a program
+    /// of the agent's choosing, where the same arrangement reads as the agent approving itself.
+    ///
+    /// In the app, `run_shell` puts a dialog in front of a person with the command quoted in full.
+    /// There is no equivalent over a socket, so the tool is simply not there. Refusing it at
+    /// `tools/list` as well as at the call means a client never sees a capability it cannot have.
+    static let notOfferedRemotely: Set<Capability> = [.shell]
+
+    static func offered(_ tools: [ToolDefinition]) -> [ToolDefinition] {
+        tools.filter { !notOfferedRemotely.contains($0.capability) }
+    }
+
     /// The confirm pseudo-tool exposed alongside the catalogue.
     static let confirmTool = ToolDefinition(
         "pc_confirm", .runCommand, "Confirm and execute a previously returned plan.",
@@ -52,7 +68,7 @@ public struct MCPServer: Sendable {
         case "notifications/initialized":
             return nil   // notification
         case "tools/list":
-            let tools = (core.tools + [Self.confirmTool]).map { $0.schemaObject() }
+            let tools = (Self.offered(core.tools) + [Self.confirmTool]).map { $0.schemaObject() }
             return Self.result(id: id, ["tools": tools])
         case "tools/call":
             return await handleToolsCall(id: id, params: params)
@@ -73,6 +89,13 @@ public struct MCPServer: Sendable {
             if name == Self.confirmTool.name {
                 let token = arguments["token"] as? String ?? ""
                 outcome = try await core.confirm(token: token)
+            } else if let tool = core.tools.first(where: { $0.name == name }),
+                      Self.notOfferedRemotely.contains(tool.capability) {
+                // Not listed, and refused if asked for anyway: a client that guessed the name — or
+                // one written against a future version — must not get it because the listing was the
+                // only thing standing in the way.
+                return Self.errorResponse(id: id, code: -32601,
+                                          message: "\(name) is not available over MCP")
             } else {
                 outcome = try await core.invoke(tool: name, arguments: argsData, policy: policy)
             }

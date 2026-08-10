@@ -21,7 +21,9 @@ does not have.
   asks a question can be answered. The approval quotes the command in full, because that is the whole
   decision. The tab runs a *non-interactive* shell: aliases and functions from your `~/.zshrc` do not
   apply, so the line you approved is the line that runs. A session set to read-only cannot use it at
-  all.
+  all, and it is not offered to external agents over MCP — those confirm their own plans, which is
+  the right arrangement for file work they were connected to do and the wrong one for running a
+  program of their choosing.
 - **Panels can be dragged between the side panel and the bottom area.** Grab the mode switcher and
   drop it on the other one; the target lights up, and a panel dropped where it already is does
   nothing rather than pretending. The menu route (right-click the switcher) does the same thing and

@@ -143,6 +143,33 @@ final class DefaultAutomationCoreTests: XCTestCase {
         XCTAssertTrue(plan.contains(command), "the plan must quote the command in full, got: \(plan)")
     }
 
+    func test_runShell_isNotOfferedOverMCP() async throws {
+        // The MCP gate is "plan, then the *external client* confirms" — the right shape for the file
+        // operations an agent was connected to perform, and the wrong one for running a program of
+        // the agent's choosing, where it amounts to the agent approving itself. There is no dialog
+        // over a socket, so the tool is not there.
+        let server = MCPServer(core: DefaultAutomationCore(bridge: FakeBridge()))
+        let listed = await server.handle(try XCTUnwrap(
+            #"{"jsonrpc":"2.0","id":1,"method":"tools/list"}"#.data(using: .utf8)))
+        let text = String(decoding: try XCTUnwrap(listed), as: UTF8.self)
+        XCTAssertFalse(text.contains("run_shell"), "run_shell must not be listed over MCP")
+        XCTAssertTrue(text.contains("list_directory"), "…but the rest of the catalogue still is")
+    }
+
+    func test_runShell_overMCP_isRefusedEvenWhenAskedForByName() async throws {
+        // Not listing it is not enough: a client that guessed the name, or one written against a
+        // future version, must not get it because the listing was the only thing in the way.
+        let bridge = FakeBridge()
+        let server = MCPServer(core: DefaultAutomationCore(bridge: bridge))
+        let called = await server.handle(try XCTUnwrap(
+            #"{"jsonrpc":"2.0","id":2,"method":"tools/call","arguments":{},"params":{"name":"run_shell","arguments":{"command":"id"}}}"#
+                .data(using: .utf8)))
+        let text = String(decoding: try XCTUnwrap(called), as: UTF8.self)
+        XCTAssertTrue(text.contains("not available over MCP"), "expected a refusal, got: \(text)")
+        let ran = await bridge.ranShell
+        XCTAssertNil(ran, "and nothing may have run")
+    }
+
     func test_writeTool_underReadOnly_isRefused_andNotExecuted() async throws {
         let bridge = FakeBridge()
         let core = DefaultAutomationCore(bridge: bridge)
