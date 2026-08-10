@@ -318,6 +318,20 @@ extension MainWindowController {
                                                                       value: text)
                     NSLog("[automation] termsend \(a[0]): \(sent)")
                 }
+            case "dropview":                            // dropview <container>|<viewId> (F-381)
+                // The drop the drag would perform, minus the drag. Everything downstream is real: the
+                // "would this do anything" rule, the placement write, opening the container if it was
+                // shut, and bringing the view to the front.
+                let d = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if d.count == 2 {
+                    let ok: Bool
+                    switch d[0] {
+                    case "sidebar": ok = previewPanelForAutomation()?.dropViewForAutomation(id: d[1]) ?? false
+                    case "bottom":  ok = bottomDockForAutomation()?.dropViewForAutomation(id: d[1]) ?? false
+                    default:        ok = false
+                    }
+                    NSLog("[automation] dropview \(d[0]) \(d[1]): \(ok)")
+                }
             case "placeview":                           // placeview <viewId>|<container|default> (F-381)
                 // The drag cannot be scripted, so this is the entry point the drop and the menu item
                 // both call — the same rule as `bardrop`. What matters is the other end anyway: where

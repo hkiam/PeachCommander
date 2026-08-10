@@ -14,6 +14,13 @@ does not have.
 
 ## [Unreleased]
 
+### Added
+
+- **Panels can be dragged between the side panel and the bottom area.** Grab the mode switcher and
+  drop it on the other one; the target lights up, and a panel dropped where it already is does
+  nothing rather than pretending. The menu route (right-click the switcher) does the same thing and
+  remains the one that works from the keyboard.
+
 ## [0.5.0] — 2026-08-10
 
 ### Security

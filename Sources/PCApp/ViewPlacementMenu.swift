@@ -27,7 +27,9 @@ enum ViewPlacementMenu {
     static func displayName(forContainer container: String) -> String {
         switch container {
         case "sidebar": return String(localized: "Side Panel")
-        case "bottom": return String(localized: "Bottom Dock")
+        // The same words the View menu uses. "Move to Bottom Dock" against a menu item called
+        // "Bottom Area" is two names for one place, which is how a user learns to distrust both.
+        case "bottom": return String(localized: "Bottom Area")
         default: return container
         }
     }
@@ -89,11 +91,122 @@ final class ViewPlacementRequest: NSObject {
     }
 }
 
-/// A segmented control that asks for its context menu when it is needed rather than holding one.
+/// The pasteboard type a plugin view is dragged on.
+///
+/// Private to the app: a view id means nothing outside it, and a drag that other applications could
+/// accept would let someone drop a panel into a text editor and wonder why nothing happened.
+extension NSPasteboard.PasteboardType {
+    static let pcPluginView = NSPasteboard.PasteboardType("com.peachcommander.plugin-view")
+}
+
+/// A segmented control that asks for its context menu when it is needed, and can be dragged.
 ///
 /// The menu depends on which segment is selected and on where the view currently sits, so a menu
 /// assigned once would be stale the first time either changed.
-final class PlacementSegmentedControl: NSSegmentedControl {
+///
+/// Dragging carries the *showing* view, for the same reason the menu acts on it: a segmented control
+/// does not publish its per-segment rectangles, so working out which one the finger went down on
+/// means guessing at its internal metrics.
+final class PlacementSegmentedControl: NSSegmentedControl, NSDraggingSource {
     var contextMenuProvider: (() -> NSMenu?)?
+    /// The view id to drag, or nil when what is showing is not movable (a built-in mode).
+    var draggableViewId: (() -> String?)?
+    /// A picture for the drag. Without one the pointer carries nothing and the gesture feels broken.
+    var dragImageProvider: (() -> NSImage?)?
+
     override func menu(for event: NSEvent) -> NSMenu? { contextMenuProvider?() }
+
+    private var mouseDownPoint: NSPoint?
+
+    override func mouseDown(with event: NSEvent) {
+        mouseDownPoint = convert(event.locationInWindow, from: nil)
+        super.mouseDown(with: event)
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        // A threshold, or every slightly imprecise click on a segment becomes a drag and the control
+        // stops being clickable.
+        guard let start = mouseDownPoint, let id = draggableViewId?() else {
+            super.mouseDragged(with: event)
+            return
+        }
+        let here = convert(event.locationInWindow, from: nil)
+        guard abs(here.x - start.x) > 4 || abs(here.y - start.y) > 4 else {
+            super.mouseDragged(with: event)
+            return
+        }
+        mouseDownPoint = nil
+
+        let item = NSPasteboardItem()
+        item.setString(id, forType: .pcPluginView)
+        let dragItem = NSDraggingItem(pasteboardWriter: item)
+        let image = dragImageProvider?() ?? NSImage(size: NSSize(width: 60, height: 20))
+        dragItem.setDraggingFrame(NSRect(origin: here, size: image.size), contents: image)
+        beginDraggingSession(with: [dragItem], event: event, source: self)
+    }
+
+    func draggingSession(_ session: NSDraggingSession,
+                         sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
+        context == .withinApplication ? .move : []
+    }
+}
+
+/// What a container does with a dropped plugin view.
+///
+/// Shared by the side panel and the bottom area so the two cannot drift: both light up for the same
+/// drag, refuse the same ones, and hand the same id to the same place.
+@MainActor
+final class ViewDropTarget {
+    /// Called with the dropped view id. The container knows nothing about placement.
+    var onDrop: ((String) -> Void)?
+    /// The container's own name, so a view already here is refused rather than "moved" to itself.
+    let container: String
+    private(set) var isHighlighted = false
+
+    init(container: String) { self.container = container }
+
+    func draggedViewId(_ sender: NSDraggingInfo) -> String? {
+        sender.draggingPasteboard.string(forType: .pcPluginView)
+    }
+
+    /// Would this drop do anything? A view already in this container would not — and refusing it is
+    /// not pedantry: accepting would light the container up as a destination and then do nothing,
+    /// which is the drag equivalent of a button that does not work.
+    ///
+    /// Decided on the id rather than on the drag, so the rule can be exercised without a drag. The
+    /// gesture itself cannot be scripted, the same limitation the button bar's `bardrop` has.
+    func accepts(viewId: String) -> Bool {
+        ViewContainerRegistry.shared.container(ofViewId: viewId) != container
+    }
+
+    func accepts(_ sender: NSDraggingInfo) -> Bool {
+        draggedViewId(sender).map(accepts(viewId:)) ?? false
+    }
+
+    func setHighlighted(_ on: Bool, in view: NSView) {
+        guard isHighlighted != on else { return }
+        isHighlighted = on
+        view.needsDisplay = true
+    }
+
+    /// Draw the "drop here" outline. Inset by a point so it is not clipped by the view's own edge.
+    func drawHighlight(in view: NSView) {
+        guard isHighlighted else { return }
+        let path = NSBezierPath(rect: view.bounds.insetBy(dx: 1.5, dy: 1.5))
+        path.lineWidth = 3
+        NSColor.controlAccentColor.setStroke()
+        path.stroke()
+    }
+
+    @discardableResult
+    func perform(viewId: String) -> Bool {
+        guard accepts(viewId: viewId) else { return false }
+        onDrop?(viewId)
+        return true
+    }
+
+    func perform(_ sender: NSDraggingInfo) -> Bool {
+        guard let id = draggedViewId(sender) else { return false }
+        return perform(viewId: id)
+    }
 }
