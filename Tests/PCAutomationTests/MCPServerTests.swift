@@ -37,7 +37,13 @@ final class MCPServerTests: XCTestCase {
         let resp = decode(await makeServer().handle(req(["jsonrpc": "2.0", "id": 2, "method": "tools/list"])))
         let tools = (resp["result"] as? [String: Any])?["tools"] as? [[String: Any]] ?? []
         let names = tools.compactMap { $0["name"] as? String }
-        XCTAssertEqual(tools.count, AutomationCatalog.tools.count + 1)
+        // The catalogue, minus what is deliberately withheld from remote clients, plus pc_confirm.
+        // Written as the subtraction rather than as a number so that adding a tool does not silently
+        // become "and it is offered over MCP too" — the withholding is a decision, and this is where
+        // it is recorded. See MCPServer.notOfferedRemotely.
+        let withheld = AutomationCatalog.tools.filter { MCPServer.notOfferedRemotely.contains($0.capability) }
+        XCTAssertEqual(tools.count, AutomationCatalog.tools.count - withheld.count + 1)
+        XCTAssertFalse(withheld.isEmpty, "if nothing is withheld any more, that was a decision too")
         XCTAssertTrue(names.contains("get_context"))
         XCTAssertTrue(names.contains("copy"))
         XCTAssertTrue(names.contains("pc_confirm"))
