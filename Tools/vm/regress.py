@@ -422,6 +422,42 @@ SCENARIOS = [
                          # A word that is not a path: the panel must not move.
                          "termnotify plugin.terminal.view|revealPath|Traceback", "wait 1200",
                          "panelsdump /Users/admin/rev-none.txt", "wait 400"], 16),
+    # Closing a tab with something running asks first (plan §5). Losing an hour-long build to a stray
+    # Cmd+W is the failure people remember, so the terminal checks the pseudo-terminal's foreground
+    # process group against the shell's own — the same question Terminal.app asks — and puts up a
+    # dialog naming what is running.
+    #
+    # `modaldump` is scheduled *before* the dialog opens, reads it, and aborts it; an aborted modal is
+    # neither button, which the code treats as "do not close". So the tab must still be there after.
+    ("terminal-close-ask", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                            "placeview plugin.terminal.view|default", "wait 800",
+                            "dock on", "wait 3500",
+                            # Foreground, not backgrounded: a job in its own group with `&` leaves the
+                            # shell in the foreground and there would be nothing to warn about.
+                            "termsend plugin.terminal.view|sleep 396\\n", "wait 2500",
+                            "modaldump /Users/admin/close-alert.txt",
+                            "termnotify plugin.terminal.view|closeTab|1", "wait 3000",
+                            "dockdump /Users/admin/close-after.txt", "wait 500",
+                            # …and then a tab that has nothing running closes without ceremony,
+                            # through the command the ✕ on the tab and the menu both call. Two tabs
+                            # first, so there is something to count.
+                            "cmd cm_TerminalNewTab", "wait 2500",
+                            # Between the two, or the "one tab afterwards" claim is true before the
+                            # close as well and proves nothing.
+                            "dockdump /Users/admin/close-two.txt", "wait 400",
+                            "cmd cm_TerminalCloseTab", "wait 2000",
+                            "dockdump /Users/admin/close-gone.txt", "wait 500"], 27),
+    # ⌘C in the terminal copies text, not files. Both the panel and the terminal implement `copy:`,
+    # and the Edit menu sends it to whatever is focused — so this is the one place where the file
+    # manager and the terminal want the same key for different things, and getting it wrong means
+    # someone copies a file when they meant a command.
+    ("terminal-copy", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "placeview plugin.terminal.view|default", "wait 800",
+                       "focus notes.txt", "wait 400",
+                       "dock on", "wait 4000",
+                       "termsend plugin.terminal.view|echo PEACH-COPY\\n", "wait 2000",
+                       "keyequivmenu W+a|/Users/admin/copy-all.txt", "wait 800",
+                       "keyequivmenu W+c|/Users/admin/copy-done.txt", "wait 1000"], 18),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -937,6 +973,22 @@ REPORTS = {
     "terminal-reveal-abs": ("/Users/admin/rev-abs.txt", ["left=/Users/admin/pc-demo"]),
     # Still there: a word that names nothing left the panel alone.
     "terminal-reveal": ("/Users/admin/rev-none.txt", ["left=/Users/admin/pc-demo"]),
+    # The dialog appeared and named the job. "sleep" is what the foreground process group resolves to,
+    # which is the whole mechanism working end to end.
+    "terminal-close-ask-alert": ("/Users/admin/close-alert.txt",
+                                 ["modal=true", "sleep", "still running"]),
+    # …and the tab is still there, with a live shell. A dialog that appears and closes the tab anyway
+    # would be worse than no dialog.
+    "terminal-close-ask-two": ("/Users/admin/close-two.txt", ["tab 2/2"]),
+    "terminal-close-ask-kept": ("/Users/admin/close-after.txt",
+                                ["panels=plugin.terminal.view", "!exited", "!tab "]),
+    # The other half: a tab with nothing running closes, and the count goes back to one — which is
+    # what "no tab bookkeeping in the status line" means once there is a single tab again.
+    "terminal-close-ask": ("/Users/admin/close-gone.txt",
+                           ["panels=plugin.terminal.view", "!tab ", "!exited"]),
+    # The scrollback is on the clipboard as text, and no file went with it: "fileURLs=0" is the half
+    # that would have failed if the panel had answered instead.
+    "terminal-copy": ("/Users/admin/copy-done.txt", ["PEACH-COPY", "fileURLs=0", "!notes.txt"]),
     "terminal-move-side": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),

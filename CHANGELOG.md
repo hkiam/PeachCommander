@@ -81,6 +81,11 @@ does not have.
 
 ### Added
 
+- **Terminal tabs can be closed** — an ✕ on each tab, and *Terminal ▸ Close the Terminal Tab*. If
+  something is still running in it you are asked first, naming what it is, because losing an hour-long
+  build to a stray click is the mistake you remember.
+- **How much scrollback the terminal keeps is yours to set** (*Settings ▸ Terminal*). The default is
+  5 000 lines instead of the emulator's 500, which is roughly 1.4 MB per terminal.
 - **The terminal's status line only shows what there is to show.** With one tab and one terminal it
   reads `zsh · ~/work · 125×9`; the tab and pane counters appear when there is more than one of them.
 - **The terminal has its own menu.** Everything it can do is in one place under *Terminal* — switch

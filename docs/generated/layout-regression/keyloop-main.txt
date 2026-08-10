@@ -3,7 +3,7 @@ fullKeyboardAccess: true
 focused: PanelListView | File list, left panel
 autorecalculatesKeyViewLoop: true
 initialFirstResponder: NSView
-focusRefused: 53
+focusRefused: 54
   REFUSES: NSButton | » / » accepts=true hidden=true enabled=true refuses=false
   REFUSES: NSOutlineView | Folder tree accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
@@ -55,6 +55,7 @@ focusRefused: 53
   REFUSES: NSButton | Close the dock accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSButton | Move this view accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSButton | zsh / zsh accepts=true hidden=false enabled=true refuses=false
+  REFUSES: NSButton | Close this tab accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSButton | + / + accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSButton | Split the terminal accepts=true hidden=false enabled=true refuses=false
   tab[1]: NSView
