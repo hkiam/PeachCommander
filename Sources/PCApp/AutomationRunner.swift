@@ -209,7 +209,11 @@ extension MainWindowController {
                 runCommandLineForAutomation(arg)
             case "focuscmdline":                        // focuscmdline [container] (F-381)
                 focusCommandLineForAutomation(container: arg == "container")
-            case "keyequiv":                            // keyequiv <mods><char>|<out> (F-381)
+            case "keyequiv", "keyequivmenu":            // keyequiv[menu] <mods><char>|<out> (F-381)
+                // Two verbs because there are two paths and they answer different questions.
+                // `keyequiv` broadcasts to the view hierarchy, which is what the raw-keyboard rule
+                // governs; `keyequivmenu` asks the main menu first, as AppKit does, which is the only
+                // way to reach a shortcut that exists solely as a menu item.
                 // e.g. "W+c" for Cmd+C, "C+b" for Ctrl+B. Reports whether anything in the window
                 // claimed it, plus what the file clipboard holds afterwards — the question is not
                 // "did a key arrive" but "did the panel act on a key aimed at something else".
@@ -225,7 +229,8 @@ extension MainWindowController {
                     let isPositional = chord.key == "BACKQUOTE"
                     let claimed = sendKeyEquivalentForAutomation(
                         isPositional ? "`" : chord.key.lowercased(), flags: flags,
-                        keyCode: isPositional ? KeymapMenu.backquoteKeyCode : 0)
+                        keyCode: isPositional ? KeymapMenu.backquoteKeyCode : 0,
+                        viaMenu: verb == "keyequivmenu")
                     let board = NSPasteboard.general
                     let urls = (board.readObjects(forClasses: [NSURL.self], options: nil) as? [URL]) ?? []
                     let text = board.string(forType: .string) ?? ""
@@ -1279,6 +1284,12 @@ extension MainWindowController {
         func walk(_ view: NSView) {
             if let field = view as? NSTextField, !field.stringValue.isEmpty, !field.isHidden {
                 labels.append(field.stringValue)
+            }
+            // Button titles too: a plugin's chrome is mostly buttons, and whether a panel is *there*
+            // is a steadier thing to ask than where the keyboard happens to be a second later — the
+            // find bar's options are visible from the moment it opens, its focus is not.
+            if let button = view as? NSButton, !button.title.isEmpty, !button.isHidden {
+                labels.append(button.title)
             }
             view.subviews.forEach(walk)
         }

@@ -81,6 +81,11 @@ does not have.
 
 ### Added
 
+- **⌘F searches the terminal's scrollback.** Edit ▸ Find now goes to whatever is focused, so the
+  terminal answers with its own search bar — case, whole-word and regular-expression options included.
+- **The file panel can follow the terminal** once you add the two lines the terminal's settings page
+  shows you — a shell only reports its folder if asked, and macOS only asks on Apple's Terminal's
+  behalf. A folder reported from an `ssh` session on another machine is ignored rather than followed.
 - **The terminal has a settings page** with one switch and an explanation. Letting the file panel
   follow the terminal's folder needs your shell to report where it is, which macOS only arranges for
   Apple's Terminal — so the page shows the exact lines to add to your `~/.zshrc` and does not touch the

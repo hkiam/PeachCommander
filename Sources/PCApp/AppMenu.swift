@@ -145,6 +145,23 @@ enum AppMenu {
         AppMenu.editItem(editMenu, String(localized: "Copy"), action: #selector(NSText.copy(_:)), target: nil, key: "c")
         AppMenu.editItem(editMenu, String(localized: "Cut"), action: #selector(NSText.cut(_:)), target: nil, key: "x")
         AppMenu.editItem(editMenu, String(localized: "Paste"), action: #selector(NSText.paste(_:)), target: nil, key: "v")
+        editMenu.addItem(.separator())
+        // Find, through the responder chain (F-381). Whatever is focused and can search answers it —
+        // SwiftTerm's terminal view opens its own find bar over the scrollback. Nothing of ours is
+        // involved, which is why the scrollback became searchable without a line of search code, and
+        // why the item disables itself when the focused thing cannot search. ⌘F was free: the app
+        // binds ⌘⇧F to Find Files and Ctrl+F / Ctrl+Shift+F to the FTP commands.
+        for (title, tag, key, mask) in [
+            (String(localized: "Find…"), NSFindPanelAction.showFindPanel, "f", NSEvent.ModifierFlags.command),
+            (String(localized: "Find Next"), NSFindPanelAction.next, "g", NSEvent.ModifierFlags.command),
+            (String(localized: "Find Previous"), NSFindPanelAction.previous, "g", [.command, .shift]),
+        ] {
+            let item = NSMenuItem(title: title, action: Selector(("performFindPanelAction:")),
+                                  keyEquivalent: key)
+            item.keyEquivalentModifierMask = mask
+            item.tag = Int(tag.rawValue)
+            editMenu.addItem(item)   // target nil → first responder
+        }
 
         // Commands menu (search etc.)
         let cmdItem = NSMenuItem()
@@ -546,6 +563,34 @@ enum AppMenu {
         add(String(localized: "Copy"), #selector(NSText.copy(_:)), "c")
         add(String(localized: "Paste"), #selector(NSText.paste(_:)), "v")
         add(String(localized: "Select All"), #selector(NSText.selectAll(_:)), "a")
+        menu.addItem(.separator())
+        // Find, through the responder chain rather than as a command of ours (F-381).
+        //
+        // Whatever is focused and knows how to search answers it: SwiftTerm's terminal view opens its
+        // own find bar over the scrollback, a text view uses the system find. Nothing of ours is
+        // involved, which is why the scrollback became searchable without a line of search code —
+        // and why the item disables itself when the focused thing cannot search.
+        //
+        // ⌘F was free: the app binds ⌘⇧F to Find Files, and Ctrl+F / Ctrl+Shift+F to the FTP
+        // commands, so this takes nothing away.
+        let find = NSMenuItem(title: String(localized: "Find…"),
+                              action: Selector(("performFindPanelAction:")),
+                              keyEquivalent: "f")
+        find.keyEquivalentModifierMask = .command
+        find.tag = Int(NSFindPanelAction.showFindPanel.rawValue)
+        menu.addItem(find)
+        let findNext = NSMenuItem(title: String(localized: "Find Next"),
+                                  action: Selector(("performFindPanelAction:")),
+                                  keyEquivalent: "g")
+        findNext.keyEquivalentModifierMask = .command
+        findNext.tag = Int(NSFindPanelAction.next.rawValue)
+        menu.addItem(findNext)
+        let findPrev = NSMenuItem(title: String(localized: "Find Previous"),
+                                  action: Selector(("performFindPanelAction:")),
+                                  keyEquivalent: "g")
+        findPrev.keyEquivalentModifierMask = [.command, .shift]
+        findPrev.tag = Int(NSFindPanelAction.previous.rawValue)
+        menu.addItem(findPrev)
         return menu
     }
 

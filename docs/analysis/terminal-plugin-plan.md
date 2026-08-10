@@ -515,29 +515,33 @@ that will not appear under measurement is not.
 
 ---
 
-## 13. Open: the panel following the terminal is built but unproven
+## 13. The panel following the terminal — closed, and it was two faults
 
-The settings page is done and verified: it carries one switch, off by default, and the exact lines the
-user would have to add to `~/.zshrc` for the shell to report its folder at all — shown in a field they
-can select and copy, and **never written by the app**. macOS ships an OSC 7 hook in `/etc/zshrc` and it
-is guarded by `[[ $TERM_PROGRAM == Apple_Terminal ]]`, so it fires for Apple's terminal and for nothing
-else, including this one. A scenario reads the page back out of the host's settings window and asserts
-both the switch and the escape sequence.
+Both halves now work, and the way it was found is worth keeping.
 
-The behaviour behind the switch — `openPathInPanel` on OSC 7, from the focused session only — is
-written and does not work end to end. What was measured:
+The settings page carries one switch, off by default, and the exact lines the user must add to
+`~/.zshrc` for the shell to report its folder at all — shown in a field they can select and copy, and
+**never written by the app**. macOS ships an OSC 7 hook in `/etc/zshrc` guarded by
+`[[ $TERM_PROGRAM == Apple_Terminal ]]`, so it fires for Apple's terminal and for nothing else.
 
-* The plugin's config file is written correctly (`{"panelFollowsTerminal":true}`), so the switch is on.
-* The session reports a working directory of `~` in the status line and never changes it, where the
-  scenario had `cd /usr/lib`.
-* A probe reading `~/.zshrc` back never produced a file at all, so **whether the hook is actually
-  installed in the test VM is unknown** — and without that, the shell emits nothing and there is
-  nothing for the plugin to act on.
+It failed for two independent reasons, and the first one hid the second.
 
-So the failure is not localised: it could be the fixture (the hook never landed), the shell (not
-emitting), the emulator (not parsing our `file://` form), or the plugin (refusing to steer). The
-scenario was **removed rather than left red**, because a permanently failing check teaches the suite to
-be ignored — and this is written here instead so it cannot be quietly forgotten.
+**The fixture never landed.** The hook had been woven into the setup's long
+`printf … && printf … &&` chain, and its escapes did not survive python → ssh → sh → zsh. Every
+attempt to diagnose this from *inside* the app came back empty, which looked like the feature failing.
+An external check — asked of the guest over ssh, after the app was dead — answered `0` in one line.
+The lesson is the general one: when the question is about the fixture, do not route it through the
+thing whose behaviour is in doubt. The hook now goes in through a quoted here-document of its own.
 
-Next step when this is picked up: confirm the hook is in the guest's `~/.zshrc` first, by a means that
-does not go through the same probe that failed to report.
+**The payload was never parsed.** With the shell finally speaking, the terminal reported its directory
+as `file://Manageds-Virtual-Machine.local/usr/lib` — SwiftTerm hands the sequence's contents over
+verbatim, so parsing is the plugin's job, including percent-decoding (`%20` back to a space, which the
+suggested hook emits). `URL` does it.
+
+That raised a question worth answering deliberately rather than by accident: **a host that is not this
+machine is refused.** An `ssh` session inside the terminal reports the *remote* working directory, and
+steering the local panel to a path that happens to exist on both machines is the kind of quietly wrong
+that costs somebody an afternoon.
+
+The mutation separates the two concerns cleanly: with the switch off, the terminal still knows it is in
+`/usr/lib` — the status line says so — and the panel stays where it was.

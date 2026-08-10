@@ -4832,9 +4832,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Calling the panel's method directly would prove nothing: the defect being guarded against is
     /// precisely that the *broadcast* reaches a view that should not act on it, and a direct call
     /// skips the broadcast.
+    /// - Parameter viaMenu: consult the main menu first, as AppKit does. Off by default, and the
+    ///   default is the interesting one: the raw-keyboard rule governs the *broadcast* to the view
+    ///   hierarchy, and a chord that is also a menu shortcut — Ctrl+B is `cm_DirBranch` — is claimed
+    ///   by the menu wherever the cursor is, which would drown the very distinction being measured.
+    ///   Turn it on for a shortcut that only exists in the menu, such as Edit ▸ Find.
     @discardableResult
     func sendKeyEquivalentForAutomation(_ characters: String, flags: NSEvent.ModifierFlags,
-                                        keyCode: UInt16 = 0) -> Bool {
+                                        keyCode: UInt16 = 0, viaMenu: Bool = false) -> Bool {
         guard let window,
               let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: flags,
                                            timestamp: ProcessInfo.processInfo.systemUptime,
@@ -4842,6 +4847,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                                            characters: characters,
                                            charactersIgnoringModifiers: characters,
                                            isARepeat: false, keyCode: keyCode) else { return false }
+        if viaMenu, NSApp.mainMenu?.performKeyEquivalent(with: event) == true { return true }
         return window.contentView?.performKeyEquivalent(with: event) ?? false
     }
     #endif
