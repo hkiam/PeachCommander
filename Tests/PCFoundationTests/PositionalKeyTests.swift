@@ -42,16 +42,17 @@ final class PositionalKeyTests: XCTestCase {
         XCTAssertNil(KeyChord(parsing: "C+^"))
     }
 
-    func testTheDockIsBoundInBothShippedSchemes() throws {
-        // The binding is product, not decoration: the dock is unreachable from the keyboard without
-        // it, and the two schemes are edited independently often enough that one drifting is likely.
+    func testTheTerminalKeyIsBoundInBothShippedSchemes() throws {
+        // The binding is product, not decoration: the terminal is unreachable from the keyboard
+        // without it, and the two schemes are edited independently often enough that one drifting is
+        // likely.
         for name in ["keymap-macos", "keymap-tc-classic"] {
             let url = URL(fileURLWithPath: #filePath)
                 .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
                 .appendingPathComponent("Sources/PCApp/Resources/\(name).ini")
             let scheme = KeymapScheme(parsing: try String(contentsOf: url, encoding: .utf8))
             let chord = try XCTUnwrap(KeyChord(parsing: "C+BACKQUOTE"))
-            XCTAssertEqual(scheme.bindings[chord], "cm_ToggleDock", name)
+            XCTAssertEqual(scheme.bindings[chord], "cm_TerminalFocus", name)
         }
     }
 }

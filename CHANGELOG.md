@@ -81,6 +81,14 @@ does not have.
 
 ### Added
 
+- **The terminal's status line only shows what there is to show.** With one tab and one terminal it
+  reads `zsh · ~/work · 125×9`; the tab and pane counters appear when there is more than one of them.
+- **The terminal has its own menu.** Everything it can do is in one place under *Terminal* — switch
+  between the panel and the terminal, a new tab, split it, go to the panel's folder, insert the
+  selected file names, run the command line in it. Previously these sat in *View*, wedged between
+  "Tree" and "Reset Layout" under a heading called "Bottom Dock" that said nothing about a terminal.
+  The area itself is now *View ▸ Bottom Area*, next to *Preview Panel*, which is the same kind of
+  thing on the other edge of the window.
 - **⌘-click a path in the terminal and the panel shows it** — a name from `ls`, a compiler error, a
   line of `git status`. Relative names resolve against the shell's folder, and a word that is not a
   path does nothing rather than navigating somewhere arbitrary.

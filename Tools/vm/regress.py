@@ -261,7 +261,9 @@ SCENARIOS = [
                        "dock on", "wait 3500",
                        "termsend plugin.terminal.view|sleep 397 &\\n", "wait 2500",
                        "dockdump /Users/admin/tabs-one.txt", "wait 300",
-                       "termnotify plugin.terminal.view|newTab|", "wait 2500",
+                       # Through the command a user reaches from the Terminal menu, so the whole
+                       # chain is exercised: command → host → PcNotifyView → plugin.
+                       "cmd cm_TerminalNewTab", "wait 2500",
                        "dockdump /Users/admin/tabs-two.txt", "wait 300",
                        "termnotify plugin.terminal.view|selectTab|1", "wait 1500",
                        "dockdump /Users/admin/tabs-back.txt", "wait 300",
@@ -275,16 +277,18 @@ SCENARIOS = [
     ("terminal-split", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                         "placeview plugin.terminal.view|default", "wait 800",
                         "dock on", "wait 3500",
-                        "termnotify plugin.terminal.view|split|", "wait 3000",
+                        "cmd cm_TerminalSplit", "wait 3000",
                         "dockdump /Users/admin/split-two.txt", "wait 300",
                         "termsend plugin.terminal.view|sleep 399 &\\n", "wait 2500",
-                        "termnotify plugin.terminal.view|maximise|", "wait 2000",
+                        # The same command again: it is a toggle, so the host asks and the plugin
+                        # decides which way — the host has no business tracking a layout it cannot see.
+                        "cmd cm_TerminalSplit", "wait 2000",
                         "dockdump /Users/admin/split-one.txt", "wait 300",
                         "probe /Users/admin/split-alive.txt|pgrep -f 'sleep 399' | wc -l | tr -d ' '",
                         "wait 500",
                         # Split again at the end, so the screenshot documents the feature rather than
                         # the window without it.
-                        "termnotify plugin.terminal.view|split|", "wait 2500"], 25),
+                        "cmd cm_TerminalSplit", "wait 2500"], 25),
     # The seams between the file manager and the terminal (plan §7). Three of them, each checked
     # through the shell itself rather than through what the app believes it did.
     #
@@ -319,7 +323,7 @@ SCENARIOS = [
     ("terminal-cmdline", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                           "placeview plugin.terminal.view|default", "wait 800",
                           "dock on", "wait 3500",
-                          "cmd cm_ToggleRunInTerminal", "wait 500",
+                          "cmd cm_TerminalRunCommandLine", "wait 500",
                           # `tty`, not `echo`: a detached command would create the file too, so the
                           # first version of this passed with the feature switched off. Only a command
                           # with a terminal attached can name one — which is the entire reason this
@@ -378,7 +382,12 @@ SCENARIOS = [
                        # still settling, something else in the responder chain claimed it, and the bar
                        # never opened. The key has to arrive at a terminal that is already there.
                        "dock on", "wait 5000",
+                       # Twice, and it is not superstition: one run in six had ⌘F claimed by
+                       # something else in the responder chain while the window was still settling,
+                       # and the bar never opened. Asking again is harmless — a find bar that is
+                       # already open just takes the keyboard back.
                        "keyequivmenu W+f|/Users/admin/find-term.txt", "wait 1500",
+                       "keyequivmenu W+f|/Users/admin/find-term2.txt", "wait 1000",
                        "dockdump /Users/admin/find-bar.txt", "wait 400",
                        # …and with a file panel focused instead, the same key finds nobody to answer.
                        "keyequiv C+BACKQUOTE|/Users/admin/find-toggle.txt", "wait 800",
@@ -623,7 +632,12 @@ SCENARIOS = [
     ("keys-main", ["active left", "left /Users/admin/pc-demo", "wait 1200", "cmd cm_SrcLong", "wait 800",
                    "menudump /Users/admin/menu.txt",
                    "keyloop /Users/admin/keyloop-main.txt",
-                   "a11ydump /Users/admin/a11y-main.txt", "wait 500"], 10),
+                   "a11ydump /Users/admin/a11y-main.txt", "wait 500",
+                   # A last file the guest can wait for. Without one this scenario had nothing but its
+                   # settle time between launch and being killed, which is the flaw
+                   # check-scenario-reports.py exempts the keyboard scenarios from — and it duly
+                   # produced an empty menu dump the first time the menu bar grew.
+                   "panelsdump /Users/admin/keys-main-done.txt", "wait 300"], 14),
     ("keys-find", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                    "findtab 0", "wait 1500", "keyloop /Users/admin/keyloop-find.txt",
                    "a11ydump /Users/admin/a11y-find.txt", "wait 500"], 11),
@@ -837,7 +851,9 @@ REPORTS = {
     "terminal-teardown-before": ("/Users/admin/before.txt", ["2"]),
     "terminal-teardown": ("/Users/admin/after.txt", ["0", "!2"]),
     # One tab, session 1, a shell with a real size.
-    "terminal-tabs-one": ("/Users/admin/tabs-one.txt", ["tab 1/1 · session 1 ·", "!·  0×0"]),
+    # One tab and one pane, so the status line carries no bookkeeping at all — which is the claim:
+    # "tab 1/1 · session 1" is noise and must not be there.
+    "terminal-tabs-one": ("/Users/admin/tabs-one.txt", ["zsh · ", "!tab ", "!pane ", "!× 0"]),
     # A second tab is a *new* session, not a reused one — otherwise "tabs" would just be a relabelled
     # single terminal.
     # …with a shell that actually started. The first version of this expectation checked only the tab
@@ -848,9 +864,9 @@ REPORTS = {
     # reported 0×0), and the next only that it was not 0×0 (it reported SwiftTerm's default 80×25 while
     # showing 125 columns, so every line the shell printed wrapped in the wrong place). The size is
     # asserted against the first tab's, because both tabs live in the same view and must agree.
-    "terminal-tabs-two": ("/Users/admin/tabs-two.txt", ["tab 2/2 · session 2 ·", "· 125×9 ·"]),
+    "terminal-tabs-two": ("/Users/admin/tabs-two.txt", ["tab 2/2 · session 2", "· 125×9 ·"]),
     # …and coming back lands on session 1 again rather than on a fresh one wearing its number.
-    "terminal-tabs-back": ("/Users/admin/tabs-back.txt", ["tab 1/2 · session 1 ·"]),
+    "terminal-tabs-back": ("/Users/admin/tabs-back.txt", ["tab 1/2 · session 1"]),
     # The claim that matters, asked of the process table: what was started in the first tab is still
     # running after two tab switches.
     "terminal-tabs-alive": ("/Users/admin/tabs-alive.txt", ["1", "!0"]),
@@ -865,10 +881,11 @@ REPORTS = {
     # height and the font. The floor is what matters: the first version of this passed against a pane
     # one row tall, since NSSplitView gives a new pane the leftovers instead of an even share.
     "terminal-split-two": ("/Users/admin/split-two.txt",
-                           ["pane 2/2 · tab 2/2 · session 2 ·",
+                           ["tab 2/2 · session 2 · pane 2/2",
                             "!×0 ·", "!×1 ·", "!×2 ·", "!· 80×25 ·"]),
     # Collapsed back to one pane, still two tabs: the other session was not closed, only hidden.
-    "terminal-split-one": ("/Users/admin/split-one.txt", ["pane 1/1 · tab 2/2 · session 2 ·"]),
+    # Collapsed: two tabs still, and no pane bookkeeping because there is only one pane again.
+    "terminal-split-one": ("/Users/admin/split-one.txt", ["tab 2/2 · session 2", "!pane "]),
     # …and the job started in it is still running, which is the whole point of "maximise ≠ close".
     "terminal-split": ("/Users/admin/split-alive.txt", ["1", "!0"]),
     # The keyboard went back to the panel, and the dock stayed open — the two halves of "this is a
@@ -923,6 +940,7 @@ REPORTS = {
     "terminal-move-side": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
+    "keys-main": ("/Users/admin/keys-main-done.txt", ["left=/Users/admin/pc-demo"]),
     "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
     # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
     # the wrong question: a system panel has none, so that check passed without showing anything.

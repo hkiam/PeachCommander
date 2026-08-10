@@ -179,6 +179,11 @@ final class BottomDockView: NSView {
     @discardableResult
     func selectProvider(id: String) -> Bool {
         guard let index = providers.firstIndex(where: { $0.id == id }) else { return false }
+        // Already showing: do nothing at all, rather than the same thing again. `showSelected` hides
+        // every other mounted view before unhiding this one, and hiding a view that contains the
+        // first responder makes the window drop it — so a redundant call cost the focus toggle its
+        // memory of where the keyboard was, and "go back to the panel" turned into "stay here".
+        guard switcher.selectedSegment != index else { return true }
         switcher.selectedSegment = index
         showSelected()
         return true
