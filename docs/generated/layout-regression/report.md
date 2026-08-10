@@ -25,3 +25,4 @@ only go down.
 | terminal-fkeys | 0 | — | — | `terminal-fkeys.png` |
 | terminal-reveal | 0 | — | — | `terminal-reveal.png` |
 | terminal-move | 0 | — | — | `terminal-move.png` |
+| keys-main | 0 | 0 | — | `keys-main.png` |

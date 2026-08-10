@@ -268,7 +268,7 @@ public protocol WindowControllerProtocol: AnyObject {
     func toggleActivePanelTree()
     /// Toggle the one-tree-for-both-panels column (cm_TreeShared, F-015).
     func toggleSharedTree()
-    /// Open or close the plugin dock across the bottom of the window (cm_ToggleDock, F-381).
+    /// Open or close the plugin dock across the bottom of the window (cm_BottomArea, F-381).
     func toggleBottomDock()
     /// Put the window's furniture back the way it ships (cm_ResetLayout, F-381).
     func resetLayout()
@@ -276,8 +276,14 @@ public protocol WindowControllerProtocol: AnyObject {
     func terminalCdHere()
     /// Put the selected file names at the terminal's prompt (cm_TerminalSendNames, F-381).
     func terminalSendNames()
-    /// Run the command line in the embedded terminal instead of detached (cm_ToggleRunInTerminal, F-381).
+    /// Run the command line in the embedded terminal instead of detached (cm_TerminalRunCommandLine, F-381).
     func toggleRunCommandLineInTerminal()
+    /// Move the keyboard between the file panel and the terminal (cm_TerminalFocus, F-381).
+    func focusTerminal()
+    /// Open another terminal tab (cm_TerminalNewTab, F-381).
+    func terminalNewTab()
+    /// Split the terminal in two, or put it back together (cm_TerminalSplit, F-381).
+    func terminalSplit()
     /// Show the background transfer manager window (TODOS #135).
     func showTransferManager()
     func showOpenSourceNotices()
@@ -772,11 +778,14 @@ public actor CommandRegistry {
         register(Self.cm_SrcThumbs)
         register(Self.cm_SrcTree)
         register(Self.cm_TreeShared)
-        register(Self.cm_ToggleDock)
+        register(Self.cm_BottomArea)
         register(Self.cm_ResetLayout)
         register(Self.cm_TerminalCdHere)
         register(Self.cm_TerminalSendNames)
-        register(Self.cm_ToggleRunInTerminal)
+        register(Self.cm_TerminalRunCommandLine)
+        register(Self.cm_TerminalFocus)
+        register(Self.cm_TerminalNewTab)
+        register(Self.cm_TerminalSplit)
         register(Self.cm_ConfigKeyClassic)
         register(Self.cm_ConfigKeyMacOS)
         register(Self.cm_CopyNamesToClip)
@@ -963,20 +972,33 @@ public actor CommandRegistry {
     static let cm_TreeShared = PCCommand(id: 307, name: "cm_TreeShared", category: "View",
         help: "Show/hide one folder tree for both panels",
         handler: { ctx in ctx.windowController?.toggleSharedTree() })
-    static let cm_ToggleDock = PCCommand(id: 308, name: "cm_ToggleDock", category: "View",
-        help: "Show/hide the plugin dock across the bottom of the window",
+    // Named for what the user sees rather than for the mechanism: the menu says "Bottom Area", and a
+    // command called cm_ToggleDock sent anyone searching the command browser looking for a dock. The
+    // house style has no Toggle prefix either — cm_PreviewPanel, cm_ButtonBar.
+    static let cm_BottomArea = PCCommand(id: 308, name: "cm_BottomArea", category: "View",
+        help: "Show or hide the area across the bottom of the window, where the terminal lives",
         handler: { ctx in ctx.windowController?.toggleBottomDock() })
     static let cm_ResetLayout = PCCommand(id: 309, name: "cm_ResetLayout", category: "View",
         help: "Put panels, dock and side panel back where they started",
         handler: { ctx in ctx.windowController?.resetLayout() })
-    static let cm_TerminalCdHere = PCCommand(id: 310, name: "cm_TerminalCdHere", category: "View",
+    static let cm_TerminalCdHere = PCCommand(id: 310, name: "cm_TerminalCdHere", category: "Terminal",
         help: "Change the embedded terminal to the active panel's folder",
         handler: { ctx in ctx.windowController?.terminalCdHere() })
-    static let cm_TerminalSendNames = PCCommand(id: 311, name: "cm_TerminalSendNames", category: "View",
+    static let cm_TerminalSendNames = PCCommand(id: 311, name: "cm_TerminalSendNames", category: "Terminal",
         help: "Put the selected file names at the terminal's prompt",
         handler: { ctx in ctx.windowController?.terminalSendNames() })
-    static let cm_ToggleRunInTerminal = PCCommand(id: 312, name: "cm_ToggleRunInTerminal", category: "View",
-        help: "Run the command line in the embedded terminal instead of detached",
+    static let cm_TerminalFocus = PCCommand(id: 313, name: "cm_TerminalFocus", category: "Terminal",
+        help: "Move the keyboard between the file panel and the terminal",
+        handler: { ctx in ctx.windowController?.focusTerminal() })
+    static let cm_TerminalNewTab = PCCommand(id: 314, name: "cm_TerminalNewTab", category: "Terminal",
+        help: "Open another terminal tab",
+        handler: { ctx in ctx.windowController?.terminalNewTab() })
+    static let cm_TerminalSplit = PCCommand(id: 315, name: "cm_TerminalSplit", category: "Terminal",
+        help: "Split the terminal in two, or put it back together",
+        handler: { ctx in ctx.windowController?.terminalSplit() })
+    // cm_Terminal* throughout, so the six of them sort together in the command browser.
+    static let cm_TerminalRunCommandLine = PCCommand(id: 312, name: "cm_TerminalRunCommandLine", category: "Terminal",
+        help: "Run the command line in the terminal instead of detached, so prompts and output are visible",
         handler: { ctx in ctx.windowController?.toggleRunCommandLineInTerminal() })
     static let cm_ImageInfo = PCCommand(id: 30079, name: "cm_ImageInfo", category: "Files",
         help: "Show image dimensions/metadata", handler: { ctx in ctx.windowController?.showImageInfo() })

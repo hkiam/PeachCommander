@@ -27,8 +27,11 @@ reports = SRC[SRC.index("\nREPORTS = {"):]
 # The keyboard/accessibility scenarios collect their files through KEYBOARD_REPORTS instead, which the
 # host reads after the run rather than the guest waiting on. Different mechanism, not a mistake — and
 # `accessibility` writes its dump for the A11Y section of the report rather than for an expectation.
-keyboard_only = set(re.findall(r'^    "([a-z0-9-]+)":', SRC[SRC.index("KEYBOARD_REPORTS = {"):]
-                               .split("}")[0], re.M)) | {"accessibility"}
+keyboard_only = (set(re.findall(r'^    "([a-z0-9-]+)":', SRC[SRC.index("KEYBOARD_REPORTS = {"):]
+                                .split("}")[0], re.M)) | {"accessibility"})
+# …except the ones that have since been given a report of their own, which is the better arrangement
+# and should be held to the rule like everything else.
+keyboard_only -= set(re.findall(r'^    "([a-z0-9-]+)": \("/Users/admin/', reports, re.M))
 
 problems = 0
 checked = 0

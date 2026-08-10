@@ -624,13 +624,16 @@ final class TerminalContainerView: NSView {
         // where it is docked.
         if let s = selectedSession {
             let index = panes.indices.contains(focused) ? panes[focused] : 0
-            // The folder is in here because a terminal should say where it is — and because it is the
-            // only visible sign that the shell reports it at all (OSC 7), which is a thing the user
-            // has to arrange and therefore a thing they need to be able to check.
+            // What is running, where it is, how big — in that order, because that is the order the
+            // questions are asked in.
             let cwd = s.directory.map { " · \(($0 as NSString).abbreviatingWithTildeInPath)" } ?? ""
-            status.stringValue = "pane \(focused + 1)/\(panes.count) · tab \(index + 1)/\(tabs.count) · "
-                + "session \(s.id) · \(s.title) · \(s.cols)×\(s.rows)"
-                + (container.isEmpty ? "" : " · \(container)") + cwd
+            var line = "\(s.title)\(cwd) · \(s.cols)×\(s.rows)"
+            if !container.isEmpty { line += " · \(container)" }
+            // Bookkeeping only when there is any. "pane 1/1 · tab 1/1 · session 1" told the user
+            // nothing they could not see, and it was the first thing the eye hit.
+            if tabs.count > 1 { line += " · tab \(index + 1)/\(tabs.count) · session \(s.id)" }
+            if panes.count > 1 { line += " · pane \(focused + 1)/\(panes.count)" }
+            status.stringValue = line
         }
     }
 
@@ -653,6 +656,9 @@ final class TerminalContainerView: NSView {
         case "closeTab":  if let i = Int(value) { closeTab(i - 1) }
         case "split":     split()
         case "maximise":  maximise()
+        // What a menu item wants: one key that splits and then puts it back, so the host does not
+        // have to track a layout it cannot see.
+        case "toggleSplit": toggleMaximised()
         case "focusPane": if let i = Int(value), panes.indices.contains(i - 1) { focused = i - 1; refreshChrome() }
         case "theme":
             // Re-read rather than trusting the id: the host sends the theme's name, and what a name

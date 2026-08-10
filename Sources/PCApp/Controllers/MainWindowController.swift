@@ -650,7 +650,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // when nothing does is handled where the providers arrive.
         if config.bool("Layout", "DockVisible", default: false) { setBottomDockVisible(true, persist: false) }
         runCommandLineInTerminal = config.bool("Terminal", "RunCommandLine", default: false)
-        setMenuCheck(cmd: "cm_ToggleRunInTerminal", on: runCommandLineInTerminal)
+        setMenuCheck(cmd: "cm_TerminalRunCommandLine", on: runCommandLineInTerminal)
         if config.bool("Layout", "ButtonBarVertical", default: false) { setButtonBarVertical(true) }
         // The keymap names the function-key bar's labels, so a late load relabels the bar in place.
         loadKeymap(scheme: config.string("Configuration", "KeyScheme", default: "tc-classic"))
@@ -4039,7 +4039,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Is the plugin dock across the bottom of the window open?
     var bottomDockVisible: Bool { (dockHeightConstraint?.constant ?? 0) > 0 }
 
-    /// Open or close the dock (cm_ToggleDock, F-381).
+    /// Open or close the dock (cm_BottomArea, F-381).
     ///
     /// It starts shut. "Installed and active" is about the plugin, not about the furniture: taking a
     /// quarter of the window from someone who has never asked for a terminal is not a default anyone
@@ -4052,23 +4052,61 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         dockResizer.dockHeight = visible ? preferredDockHeight : 0
         bottomDock.isHidden = !visible          // no leftover sliver when collapsed
         dockResizer.isHidden = !visible
-        setMenuCheck(cmd: "cm_ToggleDock", on: visible)
+        setMenuCheck(cmd: "cm_BottomArea", on: visible)
         if visible { focusBottomDock() }
         if persist { Task { await mainConfig.setBool(visible, "Layout", "DockVisible") } }
     }
 
-    /// The one key that moves between the file panels and the terminal (cm_ToggleDock, F-381).
+    /// Show or hide the bottom area (cm_BottomArea, F-381).
     ///
-    /// Not "show or hide the dock", which is what it did first and what the name still says. A
-    /// visibility toggle is the wrong gesture for the most-used integration there is: with the dock
-    /// open and the cursor in a panel, the key you reach for means *go to the terminal*, and pressing
-    /// it there means *come back*. Hiding the dock is what its close button is for.
+    /// Plain visibility, and generic: the area is a mount point any plugin view can be moved into, so
+    /// this command is about the furniture rather than about the terminal. Moving the keyboard is
+    /// `cm_TerminalFocus`, which is what the shortcut is bound to and what people actually reach for
+    /// — those were briefly the same command and the name fitted neither half.
+    @objc func toggleBottomDock() { setBottomDockVisible(!bottomDockVisible) }
+
+    /// Move the keyboard between the file panel and the terminal (cm_TerminalFocus, F-381).
     ///
-    /// So: closed → open it and go there. Open, cursor elsewhere → go there. Open, already there →
-    /// back to the panel, which keeps the terminal in view rather than dismissing it mid-command.
-    @objc func toggleBottomDock() {
-        if !bottomDockVisible { setBottomDockVisible(true); return }   // setVisible focuses it
+    /// The most-used integration there is, so it must do the obvious thing from every state: closed →
+    /// open it and go there; open with the cursor elsewhere → go there; already there → back to the
+    /// panel. Coming back leaves the terminal on screen, because dismissing it mid-command is not what
+    /// "let me look at the file list for a second" means.
+    @objc func focusTerminal() {
+        if !bottomDockVisible {
+            setBottomDockVisible(true)      // which focuses it
+            selectTerminalInDock()
+            return
+        }
+        selectTerminalInDock()
         focusBottomDock()
+    }
+
+    /// Bring the terminal to the front of the bottom area, if it is mounted there.
+    private func selectTerminalInDock() {
+        if let id = bottomDock.providerIds.first(where: { $0.contains("terminal") }) {
+            bottomDock.selectProvider(id: id)
+        }
+    }
+
+    /// Open another terminal tab (cm_TerminalNewTab, F-381).
+    @objc func terminalNewTab() { notifyTerminal(key: "newTab", value: "") }
+
+    /// Split the terminal, or put it back together (cm_TerminalSplit, F-381).
+    @objc func terminalSplit() { notifyTerminal(key: "toggleSplit", value: "") }
+
+    /// Ask the terminal to do something, opening and focusing it first.
+    ///
+    /// The host does not know what a tab is — that is the plugin's word — so these commands are a
+    /// message rather than a call. The same channel carries "cd here" and the dropped file names.
+    private func notifyTerminal(key: String, value: String) {
+        guard let viewId = ViewContainerRegistry.shared.container(ofViewId: "plugin.terminal.view")
+                .map({ _ in "plugin.terminal.view" }) else {
+            presentInfo(String(localized: "Terminal"), String(localized: "No terminal is open."))
+            return
+        }
+        if !bottomDockVisible { setBottomDockVisible(true) }
+        selectTerminalInDock()
+        _ = ViewContainerRegistry.shared.notifyView(viewId: viewId, key: key, value: value)
     }
 
     /// Put the keyboard into the docked view, or back into the panel if it is already there.
@@ -4169,10 +4207,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// changes where output appears and that should be the user's choice rather than a surprise.
     private(set) var runCommandLineInTerminal = false
 
-    /// Flip it (cm_ToggleRunInTerminal, F-381).
+    /// Flip it (cm_TerminalRunCommandLine, F-381).
     @objc func toggleRunCommandLineInTerminal() {
         runCommandLineInTerminal.toggle()
-        setMenuCheck(cmd: "cm_ToggleRunInTerminal", on: runCommandLineInTerminal)
+        setMenuCheck(cmd: "cm_TerminalRunCommandLine", on: runCommandLineInTerminal)
         Task { await mainConfig.setBool(runCommandLineInTerminal, "Terminal", "RunCommandLine") }
     }
 

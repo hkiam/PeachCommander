@@ -1295,8 +1295,12 @@ extension MainWindowController {
             // Button titles too: a plugin's chrome is mostly buttons, and whether a panel is *there*
             // is a steadier thing to ask than where the keyboard happens to be a second later — the
             // find bar's options are visible from the moment it opens, its focus is not.
-            if let button = view as? NSButton, !button.title.isEmpty, !button.isHidden {
-                labels.append(button.title)
+            if let button = view as? NSButton {
+                if !button.title.isEmpty, !button.isHidden { labels.append(button.title) }
+                // …and stop. A borderless NSButton keeps its title in an internal NSTextField, so
+                // walking into it lists the same "+" twice — which read like a duplicated button in
+                // the dump and was not one on screen.
+                return
             }
             view.subviews.forEach(walk)
         }

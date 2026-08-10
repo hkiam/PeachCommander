@@ -54,7 +54,7 @@ enum RawKeyboard {
     ///
     /// Deliberately tiny. Every entry here is a key taken away from whatever is focused, which is the
     /// opposite of what `rawKeyboard` is for, so the bar is "without it the user is stuck".
-    static let reservedCommands: Set<String> = ["cm_ToggleDock"]
+    static let reservedCommands: Set<String> = ["cm_TerminalFocus"]
 
     /// Should this key event be left to the focused view rather than routed to a command?
     ///

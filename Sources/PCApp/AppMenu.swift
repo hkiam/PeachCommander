@@ -149,8 +149,12 @@ enum AppMenu {
         // Find, through the responder chain (F-381). Whatever is focused and can search answers it —
         // SwiftTerm's terminal view opens its own find bar over the scrollback. Nothing of ours is
         // involved, which is why the scrollback became searchable without a line of search code, and
-        // why the item disables itself when the focused thing cannot search. ⌘F was free: the app
-        // binds ⌘⇧F to Find Files and Ctrl+F / Ctrl+Shift+F to the FTP commands.
+        // why the item disables itself when the focused thing cannot search.
+        //
+        // ⌘F was *not* free, though it looked it: the menus bind ⌘⇧F to Find Files and Ctrl+F to the
+        // FTP commands, but the macOS key scheme also had ⌘F on Find Files — which the shortcut audit
+        // found and a grep of the menus did not. Find Files keeps Alt+F7 and ⌘⇧F, the two routes its
+        // own menu item advertises, and ⌘F goes to the thing macOS users expect it to.
         for (title, tag, key, mask) in [
             (String(localized: "Find…"), NSFindPanelAction.showFindPanel, "f", NSEvent.ModifierFlags.command),
             (String(localized: "Find Next"), NSFindPanelAction.next, "g", NSEvent.ModifierFlags.command),
@@ -370,6 +374,8 @@ enum AppMenu {
                                  key: "q", mask: .control, target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Quick Look"), cmd: "cm_QuickLook",
                                  key: "y", mask: .command, target: target, action: commandAction))
+        viewMenu.addItem(command(String(localized: "Bottom Area"), cmd: "cm_BottomArea",
+                                 key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Preview Panel"), cmd: "cm_PreviewPanel",
                                  key: "p", mask: [.command, .shift], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Horizontal Panels"), cmd: "cm_HorizontalPanels",
@@ -410,19 +416,6 @@ enum AppMenu {
                                  key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Shared Tree"), cmd: "cm_TreeShared",
                                  key: "", mask: [], target: target, action: commandAction))
-        // The dock's accelerator is not set here: it is bound by key position in the keymap (F-381),
-        // and KeymapMenu draws it onto this item from there like every other remappable command.
-        viewMenu.addItem(command(String(localized: "Bottom Dock"), cmd: "cm_ToggleDock",
-                                 key: "", mask: [], target: target, action: commandAction))
-        viewMenu.addItem(command(String(localized: "Terminal: Folder of the Active Panel"),
-                                 cmd: "cm_TerminalCdHere",
-                                 key: "", mask: [], target: target, action: commandAction))
-        viewMenu.addItem(command(String(localized: "Terminal: Insert Selected Names"),
-                                 cmd: "cm_TerminalSendNames",
-                                 key: "", mask: [], target: target, action: commandAction))
-        viewMenu.addItem(command(String(localized: "Run Command Line in Terminal"),
-                                 cmd: "cm_ToggleRunInTerminal",
-                                 key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(command(String(localized: "Reset Layout"), cmd: "cm_ResetLayout",
                                  key: "", mask: [], target: target, action: commandAction))
         viewMenu.addItem(.separator())
@@ -446,14 +439,54 @@ enum AppMenu {
         viewMenu.addItem(command(String(localized: "Refresh"), cmd: "cm_RereadSource",
                                  key: "r", mask: .command, target: target, action: commandAction))
 
+        // ── Terminal ────────────────────────────────────────────────────────────────────────────
+        //
+        // Its own menu, because the alternative was worse and was tried: the terminal's commands sat
+        // in View, wedged between "Tree" and "Reset Layout", under a heading called "Bottom Dock" that
+        // said nothing about a terminal to anyone who had not built one. A feature people look for by
+        // name should be findable by name.
+        //
+        // Names spelled out rather than shortened. "Switch Between Panel and Terminal" is long for a
+        // menu item and it is exactly what the command does — including that pressing it again comes
+        // back, which "Go to Terminal" would have promised falsely.
+        let terminalItem = NSMenuItem()
+        main.addItem(terminalItem)
+        let terminalMenu = NSMenu(title: String(localized: "Terminal"))
+        terminalItem.submenu = terminalMenu
+        // No accelerator set here: it is bound by key *position* in the keymap (F-381), and
+        // KeymapMenu draws it onto this item from there like every other remappable command.
+        terminalMenu.addItem(command(String(localized: "Switch Between Panel and Terminal"),
+                                     cmd: "cm_TerminalFocus",
+                                     key: "", mask: [], target: target, action: commandAction))
+        terminalMenu.addItem(.separator())
+        terminalMenu.addItem(command(String(localized: "New Terminal Tab"), cmd: "cm_TerminalNewTab",
+                                     key: "", mask: [], target: target, action: commandAction))
+        terminalMenu.addItem(command(String(localized: "Split the Terminal"), cmd: "cm_TerminalSplit",
+                                     key: "", mask: [], target: target, action: commandAction))
+        terminalMenu.addItem(.separator())
+        terminalMenu.addItem(command(String(localized: "Go to the Panel's Folder"),
+                                     cmd: "cm_TerminalCdHere",
+                                     key: "", mask: [], target: target, action: commandAction))
+        terminalMenu.addItem(command(String(localized: "Insert the Selected File Names"),
+                                     cmd: "cm_TerminalSendNames",
+                                     key: "", mask: [], target: target, action: commandAction))
+        terminalMenu.addItem(.separator())
+        terminalMenu.addItem(command(String(localized: "Run the Command Line in the Terminal"),
+                                     cmd: "cm_TerminalRunCommandLine",
+                                     key: "", mask: [], target: target, action: commandAction))
+
         let windowItem = windowMenuItem()
         let helpItem = helpMenuItem(target: target, commandAction: commandAction)
         // Reorder the top-level bar to the Total Commander menu order (F-251):
-        // File · Edit · Mark · Commands · Net · Go · Show(View) · Configuration · Start,
+        // File · Edit · Mark · Commands · Net · Go · Show(View) · Terminal · Configuration · Start,
         // plus the macOS-standard Window/Help. (Menus are built above in a different
         // order; only their final placement changes here.)
+        //
+        // Terminal sits after View because that is where the eye goes looking for it — it is about
+        // what the window shows — and before Configuration, which is where settings live rather than
+        // things you do.
         let ordered = [appItem, fileItem, editItem, markItem, cmdItem, netItem,
-                       goItem, viewItem, configItem, startItem, windowItem, helpItem]
+                       goItem, viewItem, terminalItem, configItem, startItem, windowItem, helpItem]
         main.removeAllItems()
         for item in ordered { main.addItem(item) }
         return main
