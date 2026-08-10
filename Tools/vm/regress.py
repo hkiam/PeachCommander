@@ -380,6 +380,18 @@ SCENARIOS = [
                        # …and with a file panel focused instead, the same key finds nobody to answer.
                        "keyequiv C+BACKQUOTE|/Users/admin/find-toggle.txt", "wait 800",
                        "keyequivmenu W+f|/Users/admin/find-panel.txt", "wait 1000"], 16),
+    # The function-key bar must not claim keys it does not have (plan §7). With a terminal focused,
+    # F3 and F5 go to whatever is running in it — the raw-keyboard rule hands them over — so a bar
+    # still reading "F3 View  F5 Copy" at full strength is saying something untrue.
+    ("terminal-fkeys", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                        "placeview plugin.terminal.view|default", "wait 800",
+                        "fkeydump /Users/admin/fk-panel.txt", "wait 400",
+                        "dock on", "wait 3500",
+                        "fkeydump /Users/admin/fk-term.txt", "wait 400",
+                        # …and back: the bar has to come *back*, or it is a one-way dimming that
+                        # leaves the file manager looking permanently disarmed.
+                        "keyequiv C+BACKQUOTE|/Users/admin/fk-key.txt", "wait 1000",
+                        "fkeydump /Users/admin/fk-back.txt", "wait 400"], 15),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -879,6 +891,11 @@ REPORTS = {
     # The control, restated around what actually distinguishes the two: with a file panel focused,
     # nothing opens and the keyboard stays where it was.
     "terminal-find": ("/Users/admin/find-panel.txt", ["responder=PanelListView"]),
+    "terminal-fkeys-panel": ("/Users/admin/fk-panel.txt",
+                             ["responder=PanelListView", "keysAreOurs=true"]),
+    "terminal-fkeys-term": ("/Users/admin/fk-term.txt", ["keysAreOurs=false"]),
+    "terminal-fkeys": ("/Users/admin/fk-back.txt",
+                       ["responder=PanelListView", "keysAreOurs=true"]),
     "terminal-move-side": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),

@@ -277,6 +277,13 @@ extension MainWindowController {
                 // down, and the harness's `pkill` never reaches it. Anything testing what happens on
                 // exit has to go through this door or it is testing nothing.
                 NSApp.terminate(nil)
+            case "fkeydump":                            // fkeydump <out> (F-381)
+                // Whether the function-key bar is claiming keys it does not have. Reported next to the
+                // responder, because "dimmed" only means anything alongside "and this is what has the
+                // keyboard".
+                let responder = window?.firstResponder.map { String(describing: type(of: $0)) } ?? "<none>"
+                try? "responder=\(responder)\nkeysAreOurs=\(functionKeyBarForAutomation()?.keysAreOurs ?? true)\n"
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
             case "panelsdump":                          // panelsdump <out> (F-381)
                 // Both panels and which one is active. `dump` reports the *active* panel, so it cannot
                 // tell "the left panel navigated" from "the right panel became active" — and those are

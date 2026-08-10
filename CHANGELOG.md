@@ -81,6 +81,8 @@ does not have.
 
 ### Added
 
+- **The F-key bar dims while the terminal has the keyboard**, because F3 and F5 go to whatever is
+  running in there and a bar reading "F3 View  F5 Copy" at full strength would be claiming otherwise.
 - **⌘F searches the terminal's scrollback.** Edit ▸ Find now goes to whatever is focused, so the
   terminal answers with its own search bar — case, whole-word and regular-expression options included.
 - **The file panel can follow the terminal** once you add the two lines the terminal's settings page

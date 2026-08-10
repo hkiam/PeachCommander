@@ -6,23 +6,4 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| dock-seam | 0 | — | — | `dock-seam.png` |
-| mount-refresh | 0 | — | — | `mount-refresh.png` |
-| view-placement | 0 | — | — | `view-placement.png` |
-| raw-keyboard | 0 | — | — | `raw-keyboard.png` |
-| terminal-session | 0 | — | — | `terminal-session.png` |
-| terminal-control | 0 | — | — | `terminal-control.png` |
-| terminal-orphan | 0 | — | — | `terminal-orphan.png` |
-| terminal-teardown | 0 | — | — | `terminal-teardown.png` |
-| terminal-tabs | 0 | — | — | `terminal-tabs.png` |
-| terminal-split | 0 | — | — | `terminal-split.png` |
-| terminal-integration | 0 | — | — | `terminal-integration.png` |
-| terminal-cmdline | 0 | — | — | `terminal-cmdline.png` |
-| terminal-drop | 0 | — | — | `terminal-drop.png` |
-| terminal-settings | 0 | — | — | `terminal-settings.png` |
-| terminal-follow | 0 | — | — | `terminal-follow.png` |
-| terminal-find | 0 | — | — | `terminal-find.png` |
-| terminal-move | 0 | — | — | `terminal-move.png` |
-| viewer-large-memory | 0 | — | — | `viewer-large-memory.png` |
-| shared-tree | 0 | — | — | `shared-tree.png` |
-| notes-sidebar | 0 | 0 | — | `notes-sidebar.png` |
+| terminal-fkeys | 0 | — | — | `terminal-fkeys.png` |

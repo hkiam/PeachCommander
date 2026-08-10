@@ -420,6 +420,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         rightPanelController?.onCursorChanged = { [weak self] in self?.updateQuickView(); self?.notifyPluginViews(); self?.emitCursorEvent(.right) }
         leftPanelController?.tableView.keymapRouter = { [weak self] in self?.routeKeymap($0) ?? false }
         rightPanelController?.tableView.keymapRouter = { [weak self] in self?.routeKeymap($0) ?? false }
+        (window as? MainWindow)?.onFirstResponderChange = { [weak self] in
+            self?.refreshFunctionKeyOwnership()
+        }
         leftPanelController?.tableView.wantsRawKeyboard = { [weak self] in self?.focusedViewWantsRawKeyboard($0) ?? false }
         rightPanelController?.tableView.wantsRawKeyboard = { [weak self] in self?.focusedViewWantsRawKeyboard($0) ?? false }
 
@@ -4823,6 +4826,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         else { commandLine.focusFieldForAutomation(in: window) }
     }
 
+    /// Diagnostic: the function-key bar, to ask whether it is claiming keys it does not have (F-381).
+    func functionKeyBarForAutomation() -> FunctionKeyBar? { functionKeyBar }
+
     /// Diagnostic: run a command line, as pressing Return in it does (F-381).
     func runCommandLineForAutomation(_ line: String) { runCommandLine(line) }
 
@@ -4851,6 +4857,19 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         return window.contentView?.performKeyEquivalent(with: event) ?? false
     }
     #endif
+
+    /// Keep the function-key bar honest about whose keys these are (F-381).
+    ///
+    /// Asked with a plain F5, because that is the key the question is about: whatever is focused
+    /// either takes the function keys or it does not.
+    func refreshFunctionKeyOwnership() {
+        guard let window else { return }
+        let probe = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [],
+                                     timestamp: 0, windowNumber: window.windowNumber, context: nil,
+                                     characters: "\u{F708}", charactersIgnoringModifiers: "\u{F708}",
+                                     isARepeat: false, keyCode: 0)
+        functionKeyBar.keysAreOurs = !(probe.map { focusedViewWantsRawKeyboard($0) } ?? false)
+    }
 
     /// Does the focused view consume this key itself, rather than the app turning it into a command?
     ///
@@ -6413,6 +6432,19 @@ final class MainWindow: NSWindow {
     /// Invoked when Tab / Shift-Tab is pressed, to switch the active panel instead
     /// of running AppKit's default key-view-loop focus traversal.
     var onTabSwitch: (() -> Void)?
+
+    /// Invoked after the first responder changes.
+    ///
+    /// AppKit posts no notification for this, and polling for it would be a timer running forever to
+    /// catch something that happens a few times a minute. Overriding the one method every route goes
+    /// through — clicks, `makeFirstResponder`, the key-view loop — is both cheaper and exact.
+    var onFirstResponderChange: (() -> Void)?
+
+    override func makeFirstResponder(_ responder: NSResponder?) -> Bool {
+        let changed = super.makeFirstResponder(responder)
+        if changed { onFirstResponderChange?() }
+        return changed
+    }
 
     override func selectNextKeyView(_ sender: Any?) {
         if let onTabSwitch { onTabSwitch() } else { super.selectNextKeyView(sender) }
