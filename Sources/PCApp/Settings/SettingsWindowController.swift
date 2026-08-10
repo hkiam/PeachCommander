@@ -54,6 +54,8 @@ public struct SettingsSnapshot: Sendable {
     public var aiMCPPort: Int = 8790               // Automation.MCPPort
     public var aiMCPToken: String = ""             // Automation.MCPAuthToken ("" = no auth)
     public var aiAutonomy: String = "confirm"      // AI.Autonomy: "readonly" | "confirm" | "autonomous"
+    /// AI.AllowShell — may the assistant offer to run shell commands at all (F-381)?
+    public var aiAllowShell: Bool = false
     public var aiCloudBase: String = ""            // AI.CloudBaseURL ("" = on-device)
     public var aiCloudModel: String = "local"      // AI.CloudModel
     public var aiHasCloudKey: Bool = false         // whether a Cloud API key is stored (Keychain)
@@ -87,6 +89,7 @@ public struct SettingsSnapshot: Sendable {
                 ftpKeepAliveSeconds: Int = 0,
                 aiMCPEnabled: Bool = false, aiMCPPort: Int = 8790, aiMCPToken: String = "",
                 aiAutonomy: String = "confirm",
+                aiAllowShell: Bool = false,
                 aiCloudBase: String = "", aiCloudModel: String = "local", aiHasCloudKey: Bool = false,
                 aiModelPreference: String = "auto", aiSystemPrompt: String = "",
                 customForeground: String = "", customBackground: String = "",
@@ -95,6 +98,7 @@ public struct SettingsSnapshot: Sendable {
         self.aiMCPPort = aiMCPPort
         self.aiMCPToken = aiMCPToken
         self.aiAutonomy = aiAutonomy
+        self.aiAllowShell = aiAllowShell
         self.aiCloudBase = aiCloudBase
         self.aiCloudModel = aiCloudModel
         self.aiHasCloudKey = aiHasCloudKey
@@ -296,6 +300,9 @@ public final class SettingsWindowController: NSWindowController {
     private let aiPortField = NSTextField()
     private let aiTokenField = NSTextField()
     private let aiAutonomyPopup = NSPopUpButton()
+    private let aiAllowShellCheck = NSButton(checkboxWithTitle:
+        String(localized: "Let the assistant run shell commands (asks every time)"),
+        target: nil, action: nil)
     private let aiCloudBaseField = NSTextField()
     private let aiCloudModelField = NSTextField()
     private let aiCloudKeyField = NSSecureTextField()
@@ -762,6 +769,10 @@ public final class SettingsWindowController: NSWindowController {
         }
         aiAutonomyPopup.target = self
         aiAutonomyPopup.action = #selector(aiChanged)
+        aiAllowShellCheck.state = snapshot.aiAllowShell ? .on : .off
+        aiAllowShellCheck.target = self
+        aiAllowShellCheck.action = #selector(aiChanged)
+        aiAllowShellCheck.toolTip = String(localized: "Off by default. When on, the assistant may propose a command; it runs in a visible terminal tab and only after you approve the exact wording. Never offered to external agents over MCP.")
         aiCloudBaseField.stringValue = snapshot.aiCloudBase
         aiCloudBaseField.placeholderString = "https://api.openai.com/v1  (empty = on-device)"
         aiCloudBaseField.target = self; aiCloudBaseField.action = #selector(aiChanged)
@@ -801,6 +812,7 @@ public final class SettingsWindowController: NSWindowController {
             labeledRow(title: String(localized: "Cloud model:"), control: aiCloudModelField),
             labeledRow(title: String(localized: "Cloud API key:"), control: aiCloudKeyField),
             labeledRow(title: String(localized: "Assistant autonomy:"), control: aiAutonomyPopup),
+            aiAllowShellCheck,
             sectionLabel(String(localized: "Custom system prompt (optional):")),
             promptScroll,
             aiMCPCheckbox,
@@ -818,6 +830,7 @@ public final class SettingsWindowController: NSWindowController {
         onSetString("AI.CloudModel", aiCloudModelField.stringValue.trimmingCharacters(in: .whitespaces))
         let i = aiAutonomyPopup.indexOfSelectedItem
         onSetString("AI.Autonomy", aiAutonomies.indices.contains(i) ? aiAutonomies[i].raw : "confirm")
+        onSetString("AI.AllowShell", aiAllowShellCheck.state == .on ? "1" : "0")
         let m = aiModelPrefPopup.indexOfSelectedItem
         onSetString("AIPlugin.ModelPreference", aiModelPrefs.indices.contains(m) ? aiModelPrefs[m].raw : "auto")
     }
