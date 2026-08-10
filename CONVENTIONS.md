@@ -117,6 +117,24 @@ Dependency direction: `PCApp -> everything`, engine modules never import PCApp,
   label. Note that the *full* run catches what a single scenario cannot — view mode and
   other settings persist in `peachcmd.ini` between scenarios, and two real defects only
   showed up in that order.
+
+  **A scenario needs a last file for the guest to wait for**, or it is killed after its
+  settle time whether or not it got that far. Six of the seven `keys-*` scenarios lacked
+  one and wrote *nothing* for months while reporting only "the file is empty" — and the
+  report gate exempted them, so nothing said so. Give every scenario a report under its
+  own name; the exemption then disappears by itself. When the first of them finally ran,
+  it found a real missing label on its first attempt.
+- **A colour is a testable property, and screenshots do not test it.** A white column of
+  pale text is a perfectly well-laid-out white column, which is how a folder tree stayed
+  in the light palette under every theme: of 59 scenarios not one looked at a colour.
+  `surface-colours` reads what is actually on screen and reports two things — a bright
+  surface in a dark window, and text too close to what is behind it — over every window
+  and mounted plugin view in every palette. No per-widget table, which would be a second
+  copy of the theme and wrong on the first palette change. A view that paints its own
+  background conforms to `SelfPaintedBackground` and returns *the same property its
+  `draw` uses*, or the audit judges contrast against a colour nobody sees. Findings are
+  judged one at a time: a bright surface is not automatically a defect, and two of the
+  first batch were the audit's own blind spots rather than the app's.
 - **A shortcut can be a lie in four ways.** `Tools/check-hotkeys.py` reads a dump of the
   *running* menu bar plus both scheme files and reports: a key bound twice in one scheme,
   a scheme binding shadowed by a menu item for another command, one key on two menu

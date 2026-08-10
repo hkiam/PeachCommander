@@ -808,8 +808,13 @@ extension MainWindowController {
     /// app rather than reasoned about from the layout code.
     private func dumpKeyLoop(_ file: String) {
         // A modal window is the only one the user can touch while it is up, so it is the one to report.
+        // Front to back, not `windows` order. `windows` is whatever order AppKit happens to hold them
+        // in, so when nothing is key — which happens in an automated session more often than in front
+        // of a person — this reported the *main* window while a dialog stood open in front of it, and
+        // then complained that the dialog's controls were missing from it. `orderedWindows` is the
+        // order they are stacked on screen, so its first visible entry is the one being looked at.
         guard let window = NSApp.modalWindow ?? NSApp.keyWindow
-                ?? NSApp.windows.first(where: { $0.isVisible }) else {
+                ?? NSApp.orderedWindows.first(where: { $0.isVisible }) else {
             NSLog("[automation] keyloop: no visible window")
             return
         }

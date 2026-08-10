@@ -53,6 +53,14 @@ then SSH in with `~/.ssh/id_ed25519`).
   before/without any TCC grant — the usual macOS screen-capture-permission trap.
 - To drive UI, reuse the existing `-AutomationScript` verbs (see
   `MainWindowController.runAutomationScript`) or XCUITest.
+- **Every scenario needs a last file the guest can wait for**, named in `REPORTS` under
+  the scenario's own name. Without one the guest sleeps its settle time and kills the
+  app, whether or not the script got that far — six scenarios wrote nothing at all for
+  months that way, reporting only "the file is empty". `Tools/check-scenario-reports.py`
+  is the gate; it also insists the report be the *last* file the scenario writes.
+- **A crash leaves a report** in `<scenario>-crash.ips`, fetched before the VM clone is
+  destroyed. Without it a crash looks exactly like a slow scenario: an empty report and
+  a screenshot of the desktop.
 
 ## startup.py — the first seconds after launch
 

@@ -260,6 +260,10 @@ Coming from Total Commander? Keep the keys you know (**Configuration ▸ Keyboar
 
 ## ⚠️ Known limitations
 
+- On first launch macOS may ask whether the app may find devices on your local network. That prompt
+  is Apple's wording for reading your Mac's own network interface counters, which is how the title
+  bar shows upload and download rates. Nothing is searched for or connected to, and declining costs
+  you only those two numbers.
 - Not code-signed or notarized during the beta — macOS blocks the first launch until you allow it once (System Settings ▸ Privacy & Security on macOS 15+, right-click ▸ Open on macOS 13–14).
 - Auto-update (Sparkle) is planned but not wired up yet.
 - Very large **ZIP64** archives aren't handled by the built-in reader.
