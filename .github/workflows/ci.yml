@@ -79,6 +79,13 @@ jobs:
       - name: Check the VM harness flags
         run: ./Tools/check-vm-flags.sh
 
+      # The guest kills the app as soon as a scenario's primary report appears, so a report written in
+      # the middle of the script makes every later one a race — which passes when a scenario is run
+      # alone and fails in a full suite, the worst shape a test can have. Mechanical rule, mechanical
+      # check. Needs no build and no VM.
+      - name: Check VM scenario report ordering
+        run: python3 Tools/check-scenario-reports.py
+
       # A test file that is in no bundle, or a bundle the AllTests scheme does not run, compiles nowhere
       # and runs never — while the suite reports success. That happened four times in one session before
       # anyone counted the passing test names. Reads project.yml, not the generated project, because a

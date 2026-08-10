@@ -196,18 +196,40 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
 
     func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {
         // OSC 7. No shell emits it here unless the user has asked it to — macOS's own hook is guarded
-        // to Apple Terminal — so this is a capability that appears when configured and is simply
-        // absent otherwise. Nothing else in the plugin depends on it.
-        guard let directory, !directory.isEmpty else { return }
-        self.directory = directory
+        // to Apple Terminal — so this is a capability that appears when configured and is absent
+        // otherwise. Nothing else in the plugin depends on it.
+        guard let directory, let path = Self.localPath(fromOSC7: directory) else { return }
+        self.directory = path
         onChange?()
-        onDirectoryChange?(directory)
+        onDirectoryChange?(path)
     }
 
     func processTerminated(source: TerminalView, exitCode: Int32?) {
         exited = true
         title = exitCode.map { "exited (\($0))" } ?? "exited"
         onChange?()
+    }
+
+    /// Turn an OSC 7 payload into a local directory path, or nil if it is not one.
+    ///
+    /// The emulator hands the sequence's contents over verbatim — `file://host/path`, percent-encoded
+    /// — so the parsing is ours. `URL` does the work, including decoding `%20` back into a space,
+    /// which matters because the hook the settings page suggests encodes exactly that.
+    ///
+    /// **A host that is not this machine is refused.** An `ssh` session inside the terminal reports
+    /// the *remote* working directory, and steering the local file panel to a path that happens to
+    /// exist on both machines would be quietly wrong in the way that costs someone an afternoon.
+    static func localPath(fromOSC7 value: String) -> String? {
+        // Some shells send a bare path instead of a URL; take it as it is.
+        guard value.hasPrefix("file:") else { return value.hasPrefix("/") ? value : nil }
+        guard let url = URL(string: value) else { return nil }
+        let host = url.host ?? ""
+        if !host.isEmpty, host.lowercased() != "localhost" {
+            let short = { (name: String) in name.split(separator: ".").first.map(String.init)?.lowercased() ?? "" }
+            guard short(host) == short(ProcessInfo.processInfo.hostName) else { return nil }
+        }
+        let path = url.path
+        return path.isEmpty ? nil : path
     }
 
     /// Stop the shell and everything it started.

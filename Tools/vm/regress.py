@@ -135,7 +135,7 @@ SCENARIOS = [
                    "dock on", "wait 900", "dockdump /Users/admin/dock-open.txt", "wait 300",
                    "dock off", "wait 900", "dockdump /Users/admin/dock-shut.txt", "wait 300",
                    "placeview plugin.terminal.view|default", "wait 800",
-                   "dock on", "wait 900"], 9),
+                   "dock on", "wait 900"], 15),
     # A refresh must not destroy what it is not changing (F-381). ViewContainerRegistry.refresh began
     # with `live.forEach { $0.close() }`, so enabling or disabling *any* plugin tore down every mounted
     # plugin view and built it again. Harmless for a comment field; for a view with a process behind it
@@ -146,7 +146,7 @@ SCENARIOS = [
                        "previewpanel on", "wait 1500", "previewtab Notes", "wait 1200",
                        "mountdump /Users/admin/mounts-before.txt", "wait 300",
                        "refreshviews", "wait 800", "refreshviews", "wait 800",
-                       "mountdump /Users/admin/mounts-after.txt", "wait 400"], 9),
+                       "mountdump /Users/admin/mounts-after.txt", "wait 400"], 15),
     # Moving a plugin view between containers (F-381). The gesture cannot be scripted, so this drives
     # the entry point the drop and the menu item both call. Two claims: the view arrives in the dock,
     # and it *survives the trip* — made=1 closed=0, because moving used to route through a refresh that
@@ -159,7 +159,7 @@ SCENARIOS = [
                         "mountdump /Users/admin/placed.txt", "wait 300",
                         "dockdump /Users/admin/placed-dock.txt", "wait 300",
                         "placeview plugin.notes.sidebar|default", "wait 1200",
-                        "mountdump /Users/admin/placed-back.txt", "wait 400"], 9),
+                        "mountdump /Users/admin/placed-back.txt", "wait 400"], 17),
     # A key aimed at the command line must not reach the file panel (F-381). performKeyEquivalent is
     # broadcast to every view in the window — that is how F5 copies wherever the cursor is — so the
     # panel has to stand aside when something else is focused. It used to do that by asking
@@ -177,7 +177,7 @@ SCENARIOS = [
                       # …and with the command line *view* focused rather than its field editor, which
                       # is reachable and is not an NSText — the case the old rule missed.
                       "focuscmdline container", "wait 600",
-                      "keyequiv C+b|/Users/admin/key-container.txt", "wait 900"], 9),
+                      "keyequiv C+b|/Users/admin/key-container.txt", "wait 900"], 14),
     # The Terminal plugin's skeleton (F-381) — everything except the terminal, which is the order the
     # plan asks for: prove removability before there is a pseudo-terminal to lose. It carries no
     # emulator and is still worth its weight, because it witnesses from the *other side of the C ABI*
@@ -197,7 +197,7 @@ SCENARIOS = [
                           # buffer, cursor addressing, and a size the program believes.
                           "termsend plugin.terminal.view|top\\n", "wait 3500",
                           "dockdump /Users/admin/term-top.txt", "wait 500",
-                          "panelsdump /Users/admin/panels-end.txt", "wait 300"], 12),
+                          "panelsdump /Users/admin/panels-end.txt", "wait 300"], 19),
     # A tripwire for an open defect (see docs/analysis/terminal-plugin-plan.md §12). Measured: with a
     # shell running in the dock, the active panel's path is /Users/admin in some runs and the folder
     # the scenario opened in others — the same scenario, twice. Three runs of *this* one, which is
@@ -208,7 +208,7 @@ SCENARIOS = [
     ("terminal-control", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                           "placeview plugin.terminal.view|sidebar", "wait 800",
                           "dock on", "wait 2500", "wait 1500", "wait 3500", "wait 500",
-                          "dump /Users/admin/ctl-panel.txt", "wait 400"], 9),
+                          "dump /Users/admin/ctl-panel.txt", "wait 400"], 19),
     # Does quitting the app leave the shell's children running (plan §5)? An end-to-end guard, and it
     # has to quit the app itself: the harness's usual `pkill` never reaches applicationShouldTerminate.
     #
@@ -229,7 +229,7 @@ SCENARIOS = [
                          "dock on", "wait 2500",
                          "termsend plugin.terminal.view|sleep 391 &\\n", "wait 1200",
                          "termsend plugin.terminal.view|sleep 392\\n", "wait 1500",
-                         "quit", "wait 4000"], 8),
+                         "quit", "wait 4000"], 19),
     # Does PcCloseView actually reach the child processes (plan §5)? The quit scenario cannot answer
     # that — after the app exits everything dies from the master fd closing, so teardown and cleanup
     # look identical. This takes the same teardown path with the app still running, and then asks the
@@ -251,7 +251,7 @@ SCENARIOS = [
                            "wait 500",
                            "closeviews", "wait 3000",
                            "probe /Users/admin/after.txt|pgrep -f 'sleep 39[45]' | wc -l | tr -d ' '",
-                           "wait 500"], 8),
+                           "wait 500"], 23),
     # Tabs, and the promise underneath them (plan §4): a session outlives its view, so switching tabs
     # must not restart what is running. The witness is a job started in the first tab — if selecting
     # another tab and coming back rebuilt the session, its shell would have been torn down and the job
@@ -267,7 +267,7 @@ SCENARIOS = [
                        "dockdump /Users/admin/tabs-back.txt", "wait 300",
                        "probe /Users/admin/tabs-alive.txt|pgrep -f 'sleep 397' | wc -l | tr -d ' '",
                        "wait 500",
-                       "panelsdump /Users/admin/tabs-panels.txt", "wait 300"], 10),
+                       "panelsdump /Users/admin/tabs-panels.txt", "wait 300"], 22),
     # Two terminals stacked, then the whole area for one again (plan §3). The claim that matters is
     # not that a divider appears: it is that *maximising is not closing*. A job is started in the
     # second pane, the view is collapsed back to one, and the job must still be running — a toggle
@@ -284,7 +284,7 @@ SCENARIOS = [
                         "wait 500",
                         # Split again at the end, so the screenshot documents the feature rather than
                         # the window without it.
-                        "termnotify plugin.terminal.view|split|", "wait 2500"], 10),
+                        "termnotify plugin.terminal.view|split|", "wait 2500"], 25),
     # The seams between the file manager and the terminal (plan §7). Three of them, each checked
     # through the shell itself rather than through what the app believes it did.
     #
@@ -311,7 +311,7 @@ SCENARIOS = [
       "focus notes.txt", "wait 500",
       "termsend plugin.terminal.view|echo\\s", "wait 800",
       "cmd cm_TerminalSendNames", "wait 1200",
-      "termsend plugin.terminal.view|> /Users/admin/int-names.txt\\n", "wait 1500"], 10),
+      "termsend plugin.terminal.view|> /Users/admin/int-names.txt\\n", "wait 1500"], 23),
     # The command line, run in the embedded terminal instead of detached (plan §7). Worth more than a
     # preference: a detached command has no terminal, so anything that asks a question gets no answer —
     # `sudo` prompts into a pipe nobody reads and fails. The check is that the *shell* ran it, which
@@ -328,7 +328,7 @@ SCENARIOS = [
                           # …and the shell is still there afterwards with the panel's folder, since the
                           # line is preceded by a cd rather than run wherever the shell was left.
                           "termsend plugin.terminal.view|pwd > /Users/admin/cmdline-cwd.txt\\n",
-                          "wait 1500"], 9),
+                          "wait 1500"], 18),
     # Dropping files onto the terminal (plan §7). The drag itself cannot be scripted — the same
     # limitation as the button bar's `bardrop` — so this drives the entry point the drop calls, which
     # is where the quoting lives and where it matters. The fixture name has a space and an apostrophe
@@ -339,14 +339,47 @@ SCENARIOS = [
                        "termsend plugin.terminal.view|echo\\s", "wait 800",
                        "termnotify plugin.terminal.view|dropPaths|/Users/admin/pc-demo/it's a file.txt",
                        "wait 1200",
-                       "termsend plugin.terminal.view|> /Users/admin/drop.txt\\n", "wait 1500"], 9),
+                       "termsend plugin.terminal.view|> /Users/admin/drop.txt\\n", "wait 1500"], 17),
     # The terminal's settings page (plan §6/§7). It exists to explain and to hold one switch that does
     # nothing on its own: the terminal can only follow the shell if the shell reports where it is, and
     # no shell on macOS does unless the user arranges it — Apple's own hook in /etc/zshrc is guarded to
     # Apple Terminal. So the page shows the exact lines and touches nothing.
     ("terminal-settings", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                            "settingspage Terminal", "wait 2000",
-                           "settingsdump /Users/admin/tset.txt", "wait 400"], 9),
+                           "settingsdump /Users/admin/tset.txt", "wait 400"], 12),
+    # …and with the switch on and the shell arranged, the panel follows a `cd`. The switch is set by
+    # writing the plugin's own config file, which is exactly what ticking the box does — the box itself
+    # is covered by terminal-settings, since a checkbox cannot be clicked from a script.
+    ("terminal-follow", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                         "placeview plugin.terminal.view|default", "wait 800",
+                         # \042 is a double quote: a literal one has to survive python → ssh → sh →
+                         # the app's script parser, and this harness has lost bytes to that before.
+                         "probe /Users/admin/set.txt|mkdir -p ~/pc-cfg/terminal && "
+                         "printf '{\\042panelFollowsTerminal\\042:true}' > ~/pc-cfg/terminal/config.json && "
+                         "cat ~/pc-cfg/terminal/config.json",
+                         "wait 800",
+                         "dock on", "wait 3500",
+                         "panelsdump /Users/admin/follow-before.txt", "wait 300",
+                         "termsend plugin.terminal.view|cd /usr/lib\\n", "wait 2500",
+                         "panelsdump /Users/admin/follow-after.txt", "wait 400",
+                         "dockdump /Users/admin/follow-dock.txt", "wait 300",
+                         # Leave the world as it was found: the setting is persisted and the next
+                         # scenario in the run would inherit it.
+                         "probe /Users/admin/unset.txt|printf "
+                         "'{\\042panelFollowsTerminal\\042:false}' > ~/pc-cfg/terminal/config.json && "
+                         "echo unset", "wait 500"], 22),
+    # ⌘F over the scrollback (plan §6). No search code of ours is involved: the Edit menu's Find item
+    # goes to the first responder, and SwiftTerm's terminal view answers it with its own find bar. So
+    # what is worth asserting is that the item is *enabled and answered* with the terminal focused —
+    # a menu item nothing in the responder chain implements is disabled and claims nothing.
+    ("terminal-find", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "placeview plugin.terminal.view|default", "wait 800",
+                       "dock on", "wait 3500",
+                       "keyequivmenu W+f|/Users/admin/find-term.txt", "wait 1200",
+                       "dockdump /Users/admin/find-bar.txt", "wait 400",
+                       # …and with a file panel focused instead, the same key finds nobody to answer.
+                       "keyequiv C+BACKQUOTE|/Users/admin/find-toggle.txt", "wait 800",
+                       "keyequivmenu W+f|/Users/admin/find-panel.txt", "wait 1000"], 16),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -363,7 +396,7 @@ SCENARIOS = [
                        # terminal-teardown came to find no terminal in the dock and report that no
                        # jobs were running, twice, only in full runs. dock-seam already learned this;
                        # the lesson is that any scenario touching placement owns putting it back.
-                       "placeview plugin.terminal.view|default", "wait 1000"], 10),
+                       "placeview plugin.terminal.view|default", "wait 1000"], 20),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -603,6 +636,11 @@ REQUIRED_A11Y = ["Drive bar", "Panel tabs", "Preview panel width", "All volumes"
 # What an *independent* tool must say after a scenario ran: the app changed something, and something other
 # than the app is asked whether it really changed. `stat` over ssh is not the code under test.
 EXTERNAL_CHECKS = {
+    # Is the OSC 7 hook the settings page describes actually in the guest's .zshrc? Asked over ssh
+    # after the app is dead, because the probe that was supposed to answer this from inside the app
+    # never produced a file at all — and a question about the fixture should not be routed through the
+    # thing whose behaviour is in doubt.
+    "terminal-settings": ("grep -c '^add-zsh-hook precmd _pc_osc7' ~/.zshrc 2>/dev/null || echo 0", "1"),
     # Asked of the machine after the app is gone, which is the only witness that counts: the app cannot
     # testify that it cleaned up after itself. Both jobs must be gone — the background one (own process
     # group, so it dies only because the shell hups its jobs) and the foreground one (the terminal's
@@ -700,10 +738,10 @@ REPORTS = {
     # No plugin ships a "bottom" view yet, so the dock opens empty — and the empty state is itself worth
     # asserting: an unexplained empty frame and an explained one look identical in a screenshot, and only
     # one of them is a state the user can act on. `stacked=yes` is the real claim.
-    "dock-seam": ("/Users/admin/dock-open.txt",
+    "dock-seam-open": ("/Users/admin/dock-open.txt",
                   ["visible=true", "stacked=yes", "panels=\n",
                    "No plugin provides a view here.", "!height=0"]),
-    "dock-seam-shut": ("/Users/admin/dock-shut.txt",
+    "dock-seam": ("/Users/admin/dock-shut.txt",
                        ["visible=false", "height=0", "dividerGap=0", "stacked=yes"]),
     # One whole line, not three substrings: "closed=0" is also true of every mount that never built a
     # view, so scattered substrings would pass against a dump in which the Notes view had been
@@ -717,13 +755,13 @@ REPORTS = {
                              ["plugin.notes.sidebar container=sidebar built=true made=1 closed=0"]),
     # The whole line again: "container=bottom" alone would pass for a view that had been destroyed and
     # rebuilt there, which is exactly the failure this feature had to avoid.
-    "view-placement": ("/Users/admin/placed.txt",
+    "view-placement-moved": ("/Users/admin/placed.txt",
                        ["plugin.notes.sidebar container=bottom built=true made=1 closed=0"]),
     # …and the dock really lists it, rather than the registry merely believing it does. Not "the only
     # panel there" and not "the selected one": the Terminal plugin also mounts here by default, so both
     # of those were claims about the *rest* of the plugin set rather than about the move.
     "view-placement-dock": ("/Users/admin/placed-dock.txt", ["plugin.notes.sidebar", "visible=true"]),
-    "view-placement-back": ("/Users/admin/placed-back.txt",
+    "view-placement": ("/Users/admin/placed-back.txt",
                             ["plugin.notes.sidebar container=sidebar built=true made=1 closed=0"]),
     # Ctrl+B (the branch view) rather than Cmd+C, and that took a failed run to work out: the shipped
     # default scheme is tc-classic, which does not bind Cmd+C at all — the panel copies files through
@@ -735,20 +773,20 @@ REPORTS = {
     # The control comes first and matters as much as the claim: without it, "the panel did not take
     # the key" would also pass in a build where the panel takes no keys at all.
     "raw-keyboard-panel": ("/Users/admin/key-panel.txt", ["responder=PanelListView", "claimed=true"]),
-    "raw-keyboard": ("/Users/admin/key-cmdline.txt", ["claimed=false", "!responder=PanelListView"]),
-    "raw-keyboard-container": ("/Users/admin/key-container.txt",
+    "raw-keyboard-cmdline": ("/Users/admin/key-cmdline.txt", ["claimed=false", "!responder=PanelListView"]),
+    "raw-keyboard": ("/Users/admin/key-container.txt",
                                ["responder=CommandLineView", "claimed=false"]),
     # A shell is running and the pseudo-terminal has a believable size. The columns are why the dock
     # exists: measured, the side panel gives this font 44 (26 at its minimum) and the bottom of the
     # window about 170, and `top` assumes 80.
-    "terminal-session": ("/Users/admin/term-idle.txt",
+    "terminal-session-idle": ("/Users/admin/term-idle.txt",
                          ["panels=plugin.terminal.view", "· bottom", "!·  0×0", "!exited"]),
     # The status line follows the running program's own title (OSC 0/1/2), so after `top` it is the
     # terminal reporting what it runs rather than the host guessing from the process table. The
     # rendering itself is judged from the screenshot — nothing outside the plugin can read the buffer,
     # and "does htop look right" is not a question a substring can answer honestly.
     "terminal-session-panels": ("/Users/admin/panels-after.txt", ["left=/Users/admin/pc-demo"]),
-    "terminal-session-end": ("/Users/admin/panels-end.txt", ["left=/Users/admin/pc-demo"]),
+    "terminal-session": ("/Users/admin/panels-end.txt", ["left=/Users/admin/pc-demo"]),
     "terminal-session-top": ("/Users/admin/term-top.txt",
                              ["panels=plugin.terminal.view", "· bottom", "!exited"]),
     # `cd /usr/lib` before the move, `pwd` after it. A rebuilt view would carry a fresh shell sitting
@@ -782,11 +820,11 @@ REPORTS = {
     "terminal-tabs-back": ("/Users/admin/tabs-back.txt", ["tab 1/2 · session 1 ·"]),
     # The claim that matters, asked of the process table: what was started in the first tab is still
     # running after two tab switches.
-    "terminal-tabs": ("/Users/admin/tabs-alive.txt", ["1", "!0"]),
+    "terminal-tabs-alive": ("/Users/admin/tabs-alive.txt", ["1", "!0"]),
     # The §12 tripwire on a second scenario, because the screenshot of this one showed the left panel
     # in the home folder again — a third sighting. If it is real it will be caught here with the state
     # written down rather than inferred from a picture.
-    "terminal-tabs-panels": ("/Users/admin/tabs-panels.txt", ["left=/Users/admin/pc-demo"]),
+    "terminal-tabs": ("/Users/admin/tabs-panels.txt", ["left=/Users/admin/pc-demo"]),
     # Split: two panes, and the second one is a second session with a size of its own. Both panes are
     # half as tall, which is the part a naive implementation gets wrong — only the focused pane gets
     # resized and the other keeps rendering at the full height it no longer has.
@@ -809,16 +847,40 @@ REPORTS = {
     "terminal-integration-cwd": ("/Users/admin/int-cwd.txt", ["/Users/admin/pc-demo"]),
     # …and the file name it parsed, whole. A quoting failure would split the path or lose it.
     "terminal-integration": ("/Users/admin/int-names.txt", ["/Users/admin/pc-demo/notes.txt"]),
-    "terminal-cmdline": ("/Users/admin/cmdline.txt", ["/dev/ttys", "!not a tty"]),
-    "terminal-cmdline-cwd": ("/Users/admin/cmdline-cwd.txt", ["/Users/admin/pc-demo"]),
+    "terminal-cmdline-tty": ("/Users/admin/cmdline.txt", ["/dev/ttys", "!not a tty"]),
+    "terminal-cmdline": ("/Users/admin/cmdline-cwd.txt", ["/Users/admin/pc-demo"]),
     # One line, whole: the shell parsed it as a single argument. Quoting failure splits it.
     "terminal-drop": ("/Users/admin/drop.txt", ["/Users/admin/pc-demo/it's a file.txt"]),
     # The page says what it must: a switch that is off, and the exact escape sequence the user has to
     # arrange for themselves.
     "terminal-settings": ("/Users/admin/tset.txt",
                           ["Let the active panel follow the terminal", "]7;file://", "add-zsh-hook"]),
-    "terminal-move": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
-    "terminal-move-mounts": ("/Users/admin/term-mounts.txt",
+    "terminal-follow-set": ("/Users/admin/set.txt", ["panelFollowsTerminal", "true"]),
+    # The panel started where the scenario put it…
+    "terminal-follow-before": ("/Users/admin/follow-before.txt", ["left=/Users/admin/pc-demo"]),
+    # …and followed the shell. The only scenario in which the terminal may steer a panel at all, which
+    # is why every other one asserts the panel stays put.
+    "terminal-follow-panel": ("/Users/admin/follow-after.txt", ["left=/usr/lib"]),
+    # The terminal's own account of where it thinks it is, so a failure says which half broke: the
+    # shell not reporting, or the host not being steered.
+    # The cleanup is the last thing written, so it is what the guest waits for: killing the app before
+    # it resets the setting would leave the next scenario in the run with the terminal steering panels.
+    "terminal-follow": ("/Users/admin/unset.txt", ["unset"]),
+    "terminal-follow-dock": ("/Users/admin/follow-dock.txt", ["/usr/lib"]),
+    # The find bar opened and took the keyboard: after ⌘F the first responder is the search field's
+    # editor rather than the terminal. That focus move is the signal, and "claimed" is not — measured,
+    # the key is claimed with a file panel focused too, because AppKit finds *something* in the
+    # responder chain willing to answer performFindPanelAction:.
+    # The bar is *there*, which is steadier than where the keyboard is: focus moves into the search
+    # field asynchronously and one run reported the terminal still holding it. "Word" is one of the
+    # bar's own option buttons, so it cannot appear unless the bar opened.
+    "terminal-find-term": ("/Users/admin/find-term.txt", ["claimed=true"]),
+    "terminal-find-bar": ("/Users/admin/find-bar.txt", ["Word"]),
+    # The control, restated around what actually distinguishes the two: with a file panel focused,
+    # nothing opens and the keyboard stays where it was.
+    "terminal-find": ("/Users/admin/find-panel.txt", ["responder=PanelListView"]),
+    "terminal-move-side": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
+    "terminal-move": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
     "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
     # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
@@ -836,18 +898,18 @@ REPORTS = {
     # it looks fine until something asks it to lay out.
     "viewer-binary-text": ("/Users/admin/bintext.txt",
                            ["mode=text", "view=TextListerView", "fast=yes"]),
-    "viewer-large-memory": ("/Users/admin/bigmem.txt", ["mode=text", "view=TextListerView"]),
+    "viewer-large-memory-text": ("/Users/admin/bigmem.txt", ["mode=text", "view=TextListerView"]),
     # Measured on the host: 139 MB idle, 257 MB with the fix, 434 MB without — the difference being the
     # file decoded into a String the outline then refused for being too long. The verdict's threshold
     # (350 MB) sits between the two with room for the guest to differ.
-    "viewer-large-memory-rss": ("/Users/admin/bigmem-rss.txt", ["lean=yes"]),
+    "viewer-large-memory": ("/Users/admin/bigmem-rss.txt", ["lean=yes"]),
     # The left panel marks what the right one does not have, or has differently. `both.txt` is identical
     # on both sides and must stay unmarked — otherwise "marked everything" would pass.
     "compare-dirs": ("/Users/admin/compare.txt", ["name=only-left.txt", "name=sub", "!name=both.txt"]),
-    "shared-tree": ("/Users/admin/tree-active.txt", ["path=/Users/admin/pc-demo/sub\n"]),
+    "shared-tree-active": ("/Users/admin/tree-active.txt", ["path=/Users/admin/pc-demo/sub\n"]),
     # …and the panel that was not active did not move. Without this the scenario would pass if the tree
     # navigated both, which is precisely the thing to get wrong.
-    "shared-tree-other": ("/Users/admin/tree-other.txt", ["path=/Users/admin/pc-demo\n"]),
+    "shared-tree": ("/Users/admin/tree-other.txt", ["path=/Users/admin/pc-demo\n"]),
     "sftp-attributes": ("/Users/admin/sftp.txt", ["requested=600", "applied=ok"]),
     # 40960 bytes whole; then only the tail after 10000 travels.
     "sftp-download": ("/Users/admin/sftpget.txt", ["full=40960", "resumedAt=10000", "tail=30960"]),
@@ -903,13 +965,13 @@ REPORTS = {
                        "renderedCell=carried through the rename"]),
     # The plugin's own field, read out of the host's view tree: the comment set through the host's path
     # has to be what the plugin shows.
-    "notes-sidebar": ("/Users/admin/sidebar.txt",
+    "notes-sidebar-field": ("/Users/admin/sidebar.txt",
                       ["field=a comment from the host side", "!ERROR"]),
     # The umlauts are the point: a UTF-8 read of a UTF-16 file does not produce mangled text, it fails
     # outright, so the field was empty. "!field=" guards exactly that.
     "tc-comment-sidebar": ("/Users/admin/tc-sidebar.txt",
                           ["field=Grüße aus Zürich", "!field= placeholder", "!ERROR"]),
-    "notes-sidebar-back": ("/Users/admin/sidebar-back.txt",
+    "notes-sidebar": ("/Users/admin/sidebar-back.txt",
                            ["hostComment=edited in the plugin", "column=edited in the plugin"]),
     # The line number the note was bound to, and the text of that line read out of the document — so the
     # check cannot pass by echoing the note back at itself. "!marksgroup=Notes count=0" guards the way
@@ -1136,12 +1198,6 @@ def boot(app: str, run: str):
                   # CRLF, a duplicate, a blank line and trailing spaces: one file for every operation.
                   "printf 'keep me  \\r\\n\\r\\nkeep me\\r\\ndrop this\\r\\n' > pc-demo/messy.txt && "
                   "printf 'x' > pc-demo/sub/nested.txt && "
-                  # The OSC 7 hook the terminal's settings page tells the user to add by hand. Set up
-                  # here because the app must never write it: that is the whole point of the setting.
-                  # Harmless for every other scenario, since acting on it is off by default.
-                  "printf '\\nautoload -Uz add-zsh-hook\\n"
-                  "_pc_osc7() { printf \\'\\\\033]7;file://%%s%%s\\\\007\\' \"$HOST\" \"${PWD// /%%20}\" }\\n"
-                  "add-zsh-hook precmd _pc_osc7\\n' >> .zshrc && "
                   # A name with a space and an apostrophe, for the terminal's drop quoting: a naive
                   # implementation turns this one file into three arguments.
                   "printf 'dropped\\n' > \"pc-demo/it's a file.txt\" && "
@@ -1171,6 +1227,21 @@ def boot(app: str, run: str):
                   "defaults write com.apple.dock autohide -bool true; killall Dock 2>/dev/null; "
                   "defaults write -g AppleLanguages '(\"en-US\", \"en\")'; "
                   "killall cfprefsd 2>/dev/null; true")
+
+    # The OSC 7 hook the terminal's settings page tells the user to add by hand — set up here because
+    # the app must never write it, which is the whole point of that setting. Harmless for every other
+    # scenario: acting on it is off by default.
+    #
+    # In a here-document of its own rather than inside the chain above. The first attempt wove it into
+    # that `printf ... && printf ...` string and it never arrived; an external check asking the guest
+    # directly said `0`, which is how the terminal came to be "not following" a shell that had never
+    # been asked to speak. Escapes surviving python → ssh → sh → zsh is a bet this harness has lost
+    # before; a quoted here-document takes the bet off the table.
+    ssh_guest(ip, "cat >> ~/.zshrc <<'PCZSHRC'\n"
+                  "autoload -Uz add-zsh-hook\n"
+                  "_pc_osc7() { printf '\\033]7;file://%s%s\\007' \"$HOST\" \"${PWD// /%20}\" }\n"
+                  "add-zsh-hook precmd _pc_osc7\n"
+                  "PCZSHRC")
     return ip, host, port, pw
 
 
