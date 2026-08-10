@@ -6,7 +6,4 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| keys-settings | 0 | 0 | — | `keys-settings.png` |
-| keys-editor | 0 | 0 | — | `keys-editor.png` |
-| keys-viewer | 0 | 0 | — | `keys-viewer.png` |
-| keys-hotlist | 0 | 0 | — | `keys-hotlist.png` |
+| eject-menu | 0 | — | — | `eject-menu.png` |

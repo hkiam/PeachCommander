@@ -172,6 +172,12 @@ enum AppMenu {
         main.addItem(cmdItem)
         let cmdMenu = NSMenu(title: String(localized: "Commands"))
         cmdItem.submenu = cmdMenu
+        // No default shortcut: every free combination is free for a reason, and `check-hotkeys.py`
+        // would rightly complain about the ones that are not. The menu and the context menu are the
+        // routes; a user who wants a key can bind cm_EjectVolume in the keyboard settings.
+        cmdMenu.addItem(command(String(localized: "Eject Volume"), cmd: "cm_EjectVolume",
+                                key: "", mask: [], target: target, action: commandAction))
+        cmdMenu.addItem(.separator())
         cmdMenu.addItem(command(String(localized: "Find Files…"), cmd: "cm_SearchFor",
                                 key: "f", mask: [.command, .shift], target: target, action: commandAction))
         cmdMenu.addItem(command(String(localized: "Multi-Rename Tool…"), cmd: "cm_MultiRenameFiles",

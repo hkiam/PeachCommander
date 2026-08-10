@@ -41,6 +41,15 @@ does not have.
 
 ### Added
 
+- **Eject a removable volume without switching to Finder.** Right-click a volume — or anything on it
+  — and the menu offers *Eject “name”*; the same command is in **Commands ▸ Eject Volume** and can be
+  given a key of your own in the keyboard settings. It works from inside the volume too, not only
+  from the folder above it. The startup disk is never offered, a network share says so rather than
+  failing silently, and when something still has the volume open, macOS's own explanation of *what*
+  is holding it is passed straight through — that sentence is the only thing that tells you what to
+  close. This was listed as done and was not built at all: the app read which volumes were ejectable
+  and then had no way to eject one.
+
 - **Terminal tabs come back after a restart**, in the folders they were in. The shells cannot come
   back — those processes ended with the app — but three terminals in three checkouts no longer become
   three prompts in your home folder. A tab the assistant opened for one command is deliberately not
