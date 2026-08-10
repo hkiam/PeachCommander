@@ -4370,6 +4370,20 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
         previewPanel.placementMenuProvider = placementMenu
         bottomDock.placementMenuProvider = placementMenu
+        // Dropping a view onto a container moves it there — the same call the menu item makes, so the
+        // two gestures cannot mean different things.
+        previewPanel.onViewDropped = { [weak self] viewId in
+            guard let self else { return }
+            ViewContainerRegistry.shared.place(viewId: viewId, in: "sidebar", host: self)
+            if !previewIsVisible { togglePreviewPanel() }
+            previewPanel.selectPluginView(id: viewId)
+        }
+        bottomDock.onViewDropped = { [weak self] viewId in
+            guard let self else { return }
+            ViewContainerRegistry.shared.place(viewId: viewId, in: "bottom", host: self)
+            if !bottomDockVisible { setBottomDockVisible(true) }
+            bottomDock.selectProvider(id: viewId)
+        }
         // The dock across the bottom of the window is the "bottom" view container (F-381), for the
         // plugins that need width rather than height — a terminal, a build log, a REPL.
         ViewContainerRegistry.shared.register(container: "bottom", acceptsMoves: true) { [weak self] providers in

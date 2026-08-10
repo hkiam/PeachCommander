@@ -73,6 +73,7 @@ final class PreviewPanelView: NSView {
         segmented.action = #selector(modeChanged)
         segmented.translatesAutoresizingMaskIntoConstraints = false
         addSubview(segmented)
+        registerForDraggedTypes([.pcPluginView])
 
         // Info: a large preview on top, then name/kind, then details (all scrollable).
         previewHost.translatesAutoresizingMaskIntoConstraints = false
@@ -273,13 +274,78 @@ final class PreviewPanelView: NSView {
         didSet { installPlacementMenu() }
     }
 
+    /// Dropping a plugin view here moves it here (F-381).
+    private let dropTarget = ViewDropTarget(container: "sidebar")
+
+    /// Set by the window controller; called with the id of a view dropped on this panel.
+    var onViewDropped: ((String) -> Void)? {
+        didSet { dropTarget.onDrop = onViewDropped }
+    }
+
+    #if DEBUG
+    /// Diagnostic: the drop path, without a drag (F-381). A drag cannot be scripted.
+    @discardableResult
+    func dropViewForAutomation(id: String) -> Bool { dropTarget.perform(viewId: id) }
+    #endif
+
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        guard dropTarget.accepts(sender) else { return [] }
+        dropTarget.setHighlighted(true, in: self)
+        return .move
+    }
+
+    override func draggingExited(_ sender: NSDraggingInfo?) { dropTarget.setHighlighted(false, in: self) }
+    override func draggingEnded(_ sender: NSDraggingInfo) { dropTarget.setHighlighted(false, in: self) }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        dropTarget.setHighlighted(false, in: self)
+        return dropTarget.perform(sender)
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        dropTarget.drawHighlight(in: self)
+    }
+
     private func installPlacementMenu() {
+        // Dragging carries whatever plugin view is showing; a built-in mode is not movable and
+        // returning nil there leaves the segmented control behaving as a plain control.
+        segmented.draggableViewId = { [weak self] in self?.selectedPluginViewId }
+        segmented.dragImageProvider = { [weak self] in
+            guard let self, let id = self.selectedPluginViewId,
+                  let title = self.providers.first(where: { $0.id == id })?.title else { return nil }
+            return Self.dragImage(for: title)
+        }
         segmented.contextMenuProvider = { [weak self] in
             guard let self, let provider = self.placementMenuProvider,
                   let id = self.selectedPluginViewId,
                   let view = self.providers.first(where: { $0.id == id }) else { return nil }
             return provider(id, view.title)
         }
+    }
+
+    /// A small label to carry under the pointer while dragging a view somewhere else.
+    ///
+    /// Without one the drag has no picture at all, and a gesture that shows nothing reads as a gesture
+    /// that is not working.
+    static func dragImage(for title: String) -> NSImage {
+        let text = title as NSString
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: 11),
+            .foregroundColor: NSColor.labelColor,
+        ]
+        let textSize = text.size(withAttributes: attributes)
+        let size = NSSize(width: textSize.width + 16, height: textSize.height + 8)
+        let image = NSImage(size: size)
+        image.lockFocus()
+        NSColor.controlBackgroundColor.withAlphaComponent(0.9).setFill()
+        let box = NSBezierPath(roundedRect: NSRect(origin: .zero, size: size), xRadius: 4, yRadius: 4)
+        box.fill()
+        NSColor.separatorColor.setStroke()
+        box.stroke()
+        text.draw(at: NSPoint(x: 8, y: 4), withAttributes: attributes)
+        image.unlockFocus()
+        return image
     }
 
     /// The plugin view currently selected, or nil when a built-in mode is showing.

@@ -47,6 +47,20 @@ final class BottomDockView: NSView {
     private let content = NSView()
     private let emptyLabel = NSTextField(labelWithString: "")
 
+    /// Dropping a plugin view here moves it here (F-381).
+    private let dropTarget = ViewDropTarget(container: "bottom")
+
+    /// Set by the window controller; called with the id of a view dropped on this area.
+    var onViewDropped: ((String) -> Void)? {
+        didSet { dropTarget.onDrop = onViewDropped }
+    }
+
+    #if DEBUG
+    /// Diagnostic: the drop path, without a drag (F-381). A drag cannot be scripted.
+    @discardableResult
+    func dropViewForAutomation(id: String) -> Bool { dropTarget.perform(viewId: id) }
+    #endif
+
     private var providers: [PreviewViewProvider] = []
     /// Views already built, by provider id. Kept across selection changes — see the header.
     private var mountedViews: [String: NSView] = [:]
@@ -69,7 +83,14 @@ final class BottomDockView: NSView {
         switcher.action = #selector(switcherChanged)
         switcher.setAccessibilityLabel(String(localized: "Docked view"))
         switcher.contextMenuProvider = { [weak self] in self?.placementMenu() }
+        switcher.draggableViewId = { [weak self] in self?.selectedProviderId }
+        switcher.dragImageProvider = { [weak self] in
+            guard let self, let id = self.selectedProviderId,
+                  let title = self.providers.first(where: { $0.id == id })?.title else { return nil }
+            return PreviewPanelView.dragImage(for: title)
+        }
         addSubview(switcher)
+        registerForDraggedTypes([.pcPluginView])
 
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         closeButton.bezelStyle = .accessoryBarAction
@@ -249,6 +270,25 @@ final class BottomDockView: NSView {
             return
         }
         view.isHidden = false
+    }
+
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        guard dropTarget.accepts(sender) else { return [] }
+        dropTarget.setHighlighted(true, in: self)
+        return .move
+    }
+
+    override func draggingExited(_ sender: NSDraggingInfo?) { dropTarget.setHighlighted(false, in: self) }
+    override func draggingEnded(_ sender: NSDraggingInfo) { dropTarget.setHighlighted(false, in: self) }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        dropTarget.setHighlighted(false, in: self)
+        return dropTarget.perform(sender)
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        dropTarget.drawHighlight(in: self)
     }
 
     func applyTheme() {

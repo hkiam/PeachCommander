@@ -458,6 +458,25 @@ SCENARIOS = [
                        "termsend plugin.terminal.view|echo PEACH-COPY\\n", "wait 2000",
                        "keyequivmenu W+a|/Users/admin/copy-all.txt", "wait 800",
                        "keyequivmenu W+c|/Users/admin/copy-done.txt", "wait 1000"], 18),
+    # Dropping a view onto a container moves it there (plan §2a). The drag cannot be scripted — the
+    # same limitation the button bar's `bardrop` has — so this drives the drop, which is where the
+    # decisions are: whether the drop would do anything, the placement write, opening the container if
+    # it was shut, and bringing the view to the front.
+    #
+    # The refusal is checked as carefully as the move: dropping a view onto the container it is
+    # already in must do nothing, because a container that lights up as a destination and then does
+    # nothing is the drag equivalent of a button that does not work.
+    ("view-drop", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                   "placeview plugin.terminal.view|default", "wait 800",
+                   "dock on", "wait 3000",
+                   # Onto the container it is already in: refused, and the world is unchanged.
+                   "dropview bottom|plugin.terminal.view", "wait 1000",
+                   "mountdump /Users/admin/drop-same.txt", "wait 300",
+                   # …and onto the other one, which opens the side panel and shows it.
+                   "dropview sidebar|plugin.terminal.view", "wait 1500",
+                   "mountdump /Users/admin/drop-moved.txt", "wait 300",
+                   "sidebardump /Users/admin/drop-side.txt", "wait 400",
+                   "placeview plugin.terminal.view|default", "wait 1000"], 18),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -989,6 +1008,14 @@ REPORTS = {
     # The scrollback is on the clipboard as text, and no file went with it: "fileURLs=0" is the half
     # that would have failed if the panel had answered instead.
     "terminal-copy": ("/Users/admin/copy-done.txt", ["PEACH-COPY", "fileURLs=0", "!notes.txt"]),
+    "view-drop-same": ("/Users/admin/drop-same.txt",
+                       ["plugin.terminal.view container=bottom built=true made=1 closed=0"]),
+    # Moved, and the same view: made=1 closed=0 says the drop went through the re-parenting path and
+    # not through a rebuild, which for a terminal is the difference between moving it and losing it.
+    "view-drop-moved": ("/Users/admin/drop-moved.txt",
+                        ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
+    # …and the side panel is showing it rather than merely holding it.
+    "view-drop": ("/Users/admin/drop-side.txt", ["zsh · ", "· sidebar"]),
     "terminal-move-side": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
