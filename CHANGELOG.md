@@ -14,6 +14,8 @@ does not have.
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-08-10
+
 ### Security
 
 - Copying files **out of an archive or off an FTP server** could write above the folder you chose. A
