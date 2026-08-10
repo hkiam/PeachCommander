@@ -224,6 +224,11 @@ final class HostAutomationBridge: AutomationHostBridge {
     func setSelection(mask: String) async throws { throw AutomationError.notImplemented("set_selection") }
     func runCommand(_ id: String) async throws { host?.contribInvokeCommand(id) }
 
+    func runShell(_ command: String) async throws -> String {
+        guard let host else { throw AutomationError.notImplemented("run_shell") }
+        return try await host.runShellVisibly(command)
+    }
+
     /// What `run_command(id)` really amounts to, so the policy can judge the command rather than the
     /// tool that names it.
     ///

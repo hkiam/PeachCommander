@@ -207,6 +207,13 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
     /// Where the shell was started, and where OSC 7 says it is now.
     private(set) var directory: String?
     private var started = false
+    /// When set, the session runs this instead of an interactive login shell.
+    ///
+    /// Non-interactive on purpose (`zsh -c`, no `-l`, no `-i`): a login shell reads the user's
+    /// dotfiles, and an alias or function there can make an approved command line mean something else
+    /// entirely. The whole value of showing the assistant's command is that the text on screen is the
+    /// text that ran.
+    private let command: String?
 
     /// Called whenever anything a view might display has changed.
     var onChange: (() -> Void)?
@@ -222,10 +229,11 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
         return FileManager.default.isExecutableFile(atPath: shell) ? shell : "/bin/zsh"
     }
 
-    init(id: Int, directory: String?) {
+    init(id: Int, directory: String?, command: String? = nil) {
         self.id = id
         self.directory = directory
-        self.title = (Self.loginShell as NSString).lastPathComponent
+        self.command = command
+        self.title = command.map { String($0.prefix(24)) } ?? (Self.loginShell as NSString).lastPathComponent
         super.init()
         view.processDelegate = self
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -243,9 +251,14 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
         guard !started, view.window != nil, view.frame.width > 1 else { return }
         started = true
         let shell = Self.loginShell
-        view.startProcess(executable: shell, args: ["-l"], environment: nil,
-                          execName: "-" + (shell as NSString).lastPathComponent,
-                          currentDirectory: directory)
+        if let command {
+            view.startProcess(executable: shell, args: ["-c", command], environment: nil,
+                              execName: nil, currentDirectory: directory)
+        } else {
+            view.startProcess(executable: shell, args: ["-l"], environment: nil,
+                              execName: "-" + (shell as NSString).lastPathComponent,
+                              currentDirectory: directory)
+        }
     }
 
     func send(_ text: String) { view.send(txt: text) }
@@ -298,7 +311,11 @@ final class TerminalSession: NSObject, LocalProcessTerminalViewDelegate {
 
     func processTerminated(source: TerminalView, exitCode: Int32?) {
         exited = true
-        title = exitCode.map { "exited (\($0))" } ?? "exited"
+        // A tab that ran one command keeps its name and gains the status. Replacing it with
+        // "exited (0)" is what three of the assistant's tabs looked like side by side: all the same,
+        // and no way to tell which was which.
+        let status = exitCode.map { "(\($0))" } ?? "(?)"
+        title = command.map { "\(String($0.prefix(24))) \(status)" } ?? "exited \(status)"
         onChange?()
     }
 
@@ -388,8 +405,8 @@ enum TerminalPool {
     private(set) static var sessions: [TerminalSession] = []
     private static var nextId = 1
 
-    static func make(directory: String?) -> TerminalSession {
-        let session = TerminalSession(id: nextId, directory: directory)
+    static func make(directory: String?, command: String? = nil) -> TerminalSession {
+        let session = TerminalSession(id: nextId, directory: directory, command: command)
         nextId += 1
         sessions.append(session)
         return session
@@ -533,8 +550,8 @@ final class TerminalContainerView: NSView {
     }
 
     @discardableResult
-    func newTab() -> TerminalSession {
-        let session = TerminalPool.make(directory: hostDirectory())
+    func newTab(command: String? = nil) -> TerminalSession {
+        let session = TerminalPool.make(directory: hostDirectory(), command: command)
         session.onChange = { [weak self] in self?.refreshChrome() }
         session.onDirectoryChange = { [weak self] path in self?.steerPanel(to: path) }
         session.onRevealPath = { [weak self] path in self?.revealInPanel(path) }
@@ -751,6 +768,9 @@ final class TerminalContainerView: NSView {
             // can exercise is the other end — which is where the quoting lives and where it matters.
             insertPaths(value.split(separator: "\n").map(String.init).filter { !$0.isEmpty })
         case "newTab":    newTab()
+        // A tab that runs one command and stops, for the assistant's run_shell. The text is passed
+        // straight to `zsh -c`, so what is on screen is what ran.
+        case "runInNewTab": newTab(command: value)
         case "selectTab": if let i = Int(value) { selectTab(i - 1) }   // 1-based, as the status line reads
         case "closeTab":  if let i = Int(value) { closeTab(i - 1) }
         case "closeCurrentTab": closeSelectedTab()

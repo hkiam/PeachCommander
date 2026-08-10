@@ -477,6 +477,21 @@ SCENARIOS = [
                    "mountdump /Users/admin/drop-moved.txt", "wait 300",
                    "sidebardump /Users/admin/drop-side.txt", "wait 400",
                    "placeview plugin.terminal.view|default", "wait 1000"], 18),
+    # The assistant's shell (plan §7). It runs where the user can watch it: a hidden shell would be
+    # the same capability with the evidence removed, and the point of a terminal tab is that what the
+    # assistant did is on screen afterwards, in the user's own scrollback.
+    #
+    # The tab runs a *non-interactive* shell. A login shell reads the user's dotfiles, and an alias
+    # there could make an approved command line mean something else — so the fixture defines one and
+    # the scenario checks it does not take effect. That is the difference between "we show you the
+    # command" and "the command we show you is the command that runs".
+    ("terminal-runshell", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                           "placeview plugin.terminal.view|default", "wait 800",
+                           "dock on", "wait 3500",
+                           "runshell /Users/admin/rs-out.txt|echo PEACH-SHELL-$((6*7))", "wait 3000",
+                           "dockdump /Users/admin/rs-dock.txt", "wait 400",
+                           # …and the alias the fixture defines must not apply.
+                           "runshell /Users/admin/rs-alias.txt|pcalias", "wait 3000"], 22),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -1016,6 +1031,14 @@ REPORTS = {
                         ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
     # …and the side panel is showing it rather than merely holding it.
     "view-drop": ("/Users/admin/drop-side.txt", ["zsh · ", "· sidebar"]),
+    # What the model would receive: the output, and the exit status the wrapper reports through
+    # pipestatus rather than tee's own.
+    "terminal-runshell-out": ("/Users/admin/rs-out.txt", ["PEACH-SHELL-42", "[exit status 0]"]),
+    # A tab opened for it, and it is not the login shell.
+    "terminal-runshell-dock": ("/Users/admin/rs-dock.txt", ["panels=plugin.terminal.view", "tab 2/2"]),
+    # The alias the user's .zshrc defines does *not* apply: a non-interactive shell never read it, so
+    # the command fails as an unknown command instead of quietly meaning something else.
+    "terminal-runshell": ("/Users/admin/rs-alias.txt", ["!ALIAS-RAN", "!exit status 0"]),
     "terminal-move-side": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
@@ -1375,6 +1398,9 @@ def boot(app: str, run: str):
     # directly said `0`, which is how the terminal came to be "not following" a shell that had never
     # been asked to speak. Escapes surviving python → ssh → sh → zsh is a bet this harness has lost
     # before; a quoted here-document takes the bet off the table.
+    # An alias that only an interactive shell would ever see, so a scenario can prove the assistant's
+    # command line is not silently rewritten by the user's dotfiles.
+    ssh_guest(ip, "printf 'alias pcalias=\\'echo ALIAS-RAN\\'\\n' >> ~/.zshrc")
     ssh_guest(ip, "cat >> ~/.zshrc <<'PCZSHRC'\n"
                   "autoload -Uz add-zsh-hook\n"
                   "_pc_osc7() { printf '\\033]7;file://%s%s\\007' \"$HOST\" \"${PWD// /%20}\" }\n"

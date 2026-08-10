@@ -50,6 +50,10 @@ actor RealFSBridge: AutomationHostBridge {
     func openInPanel(_ path: String, side: String) {}
     func setSelection(mask: String) {}
     func runCommand(_ id: String) {}
+    /// Records rather than runs. A fake that actually shelled out would be testing the machine, and
+    /// the thing under test here is the policy: whether this tool is even reached without approval.
+    var ranShell: String?
+    func runShell(_ command: String) async throws -> String { ranShell = command; return "" }
     func copy(sources: [String], destination: String) throws { throw AutomationError.notImplemented("copy") }
     func move(sources: [String], destination: String) throws { throw AutomationError.notImplemented("move") }
     func rename(path: String, newName: String) throws { throw AutomationError.notImplemented("rename") }

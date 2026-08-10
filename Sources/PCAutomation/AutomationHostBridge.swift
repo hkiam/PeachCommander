@@ -53,6 +53,8 @@ public protocol AutomationHostBridge: Sendable {
     func openInPanel(_ path: String, side: String) async throws
     func setSelection(mask: String) async throws
     func runCommand(_ id: String) async throws
+    /// Run `command` in a terminal tab the user can see, and return what it printed.
+    func runShell(_ command: String) async throws -> String
 
     /// What invoking `id` amounts to, so `run_command` is held to the same policy as the tool that
     /// does the same thing directly. See `AutomationCommandInfo`.
