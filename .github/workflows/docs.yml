@@ -7,9 +7,9 @@ name: Docs
 
 on:
   push:
-    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings, Resources/PeachCommander.help/**, .github/workflows/docs.yml]
+    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings, Resources/PeachCommander.help/**, .github/workflows/docs.yml, README.md, Tools/check-readme.py]
   pull_request:
-    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings, Resources/PeachCommander.help/**, .github/workflows/docs.yml]
+    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings, Resources/PeachCommander.help/**, .github/workflows/docs.yml, README.md, Tools/check-readme.py]
 
 jobs:
   docs:
@@ -32,6 +32,14 @@ jobs:
           fi
       - name: Quality gate
         run: python3 docs/scripts/check-docs.py
+
+      # The README is the first thing anybody reads and was the one user-facing document nothing
+      # looked at: it spent a week contradicting the in-app help it points at — ZIP64, SFTP
+      # attributes, a refresh delay that had never existed — with every job green, because prose has
+      # nothing to compare against. This does not judge prose. It checks the claims that have a
+      # machine-readable counterpart, which is where the rot was.
+      - name: Check the README's checkable claims
+        run: python3 Tools/check-readme.py
       - name: Translation coverage gate (UI + Help must be kept in every language)
         run: python3 docs/scripts/check-translations.py
 
