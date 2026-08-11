@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dekompilering af Java og .NET</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Dekompilering af Java og .NET</h1>
+<p>Tryk <strong>F3</strong> på en oversat fil, og se kildetekst i stedet for byte. To plugins gør det — et til Java (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) og et til .NET (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) — og de opfører sig ens, så denne side dækker begge. Hvert af dem kan slås fra eller fjernes for sig under <strong>Konfiguration ▸ Plugins…</strong>.</p>
+<p>Et arkiv vises som et træ af sine klasser; en enkelt klasse som én fil. <strong>Dekompiler til kildetekst</strong> i menuen Kommandoer skriver resultatet ud og lægger det i et panel, så du kan søge, sammenligne og kopiere i det som i enhver anden mappe med kildetekst.</p>
+<h2 id="motoren-installerer-du-selv">Motoren installerer du selv</h2>
+<p>Ingen dekompilator følger med, og der hentes intet for dig. Det er med vilje, af to grunde: JD-Core, den mest kendte Java-dekompilator, er GPLv3 og kunne ikke leveres inde i en Apache-2.0-app — og motorer bliver bedre, så at skifte en bør ikke kræve en ny udgave af Peach Commander.</p>
+<p><strong>Motormappe…</strong> i fremviseren åbner den mappe, de hører til i. README-filen dér nævner hver motor og dens licens.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (til Androids <code>.dex</code> og <code>.apk</code>) og <code>javap</code> til ren bytekode</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy og <code>monodis</code> til IL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Kontroller motorer</strong> kører hver motors versionskommando og skelner mellem tre ting: installeret og virker, ikke installeret, og <em>installeret, men ude af stand til at køre</em> — et Java-værktøj uden JDK er til stede og starter alligevel ikke, og kun ved faktisk at køre det viser det sig.</p>
+<p>En motor beskrives af data og ikke af kode, så du kan selv tilføje en:</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>Når flere motorer kan klare en fil, bruges den første tilgængelige, medmindre du vælger en. Med to installeret viser <strong>Sammenlign</strong> begge resultater side om side — nyttigt, når den ene motor giver op på en metode, den anden klarer.</p>
+<h2 id="at-sge-i-oversat-kode">At søge i oversat kode</h2>
+<p><strong>Søg i alle klasser</strong> gennemgår den dekompilerede tekst i stedet for byte, så du kan finde en tekstkonstant eller et metodenavn i en JAR.</p>
+<p>At dekompilere under en <em>indholdssøgning</em> på tværs af mange filer er en særskilt indstilling, slået fra som standard: at frembringe teksten kan betyde, at motoren køres én gang pr. klasse, hvilket på en langsom maskine ikke er noget rimeligt at bruge på en søgning. Hovedsøgevinduet spørger særskilt; her afvises det også.</p>
+<h2 id="cache-og-grnser">Cache og grænser</h2>
+<p>Resultater gemmes i cachen, for at dekompilere den samme klasse to gange er ren ventetid. I indstillingerne står, hvor mange dage resultater beholdes, og en <strong>størrelsesgrænse</strong> for cachen; <strong>Tøm cachen nu</strong> tømmer den og melder, hvor meget der blev frigjort.</p>
+<p>To tidsgrænser beskytter mod en motor, der ikke bliver færdig: én for en enkelt klasse eller type, én for et helt arkiv. Begge accepterer 0, hvilket betyder “brug motorens egen standard”.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Visning af filer</a></li><li><a href="searching.html">Find filer</a></li></ul></section>
+</main>
+</body>
+</html>

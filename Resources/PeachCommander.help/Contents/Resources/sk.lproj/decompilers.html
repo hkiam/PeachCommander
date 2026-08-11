@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dekompilácia Javy a .NET</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Dekompilácia Javy a .NET</h1>
+<p>Stlačte <strong>F3</strong> na preloženom súbore a uvidíte zdrojový kód namiesto bajtov. Robia to dva pluginy — jeden pre Javu (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) a jeden pre .NET (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) — a správajú sa rovnako, preto táto stránka pokrýva oba. Každý sa dá samostatne vypnúť alebo odstrániť v <strong>Konfigurácia ▸ Pluginy…</strong>.</p>
+<p>Archív sa ukáže ako strom svojich tried, jednotlivá trieda ako jeden súbor. <strong>Dekompilovať do zdrojov</strong> v ponuke Príkazy výsledok zapíše a umiestni do panela, takže v ňom môžete hľadať, porovnávať a kopírovať ako v každom inom priečinku so zdrojmi.</p>
+<h2 id="engine-si-nainstalujete-sami">Engine si nainštalujete sami</h2>
+<p>Žiadny dekompilátor nie je pribalený a nič sa za vás nesťahuje. Je to zámer z dvoch dôvodov: JD-Core, najznámejší dekompilátor Javy, je pod GPLv3 a nemohol by byť dodávaný vnútri aplikácie pod Apache-2.0 — a enginy sa zlepšujú, takže ich výmena by nemala vyžadovať novú verziu Peach Commandera.</p>
+<p><strong>Priečinok s enginmi…</strong> v prehliadači otvorí priečinok, kam patria. Tamojší README menuje každý engine a jeho licenciu.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (pre androidí <code>.dex</code> a <code>.apk</code>) a <code>javap</code> pre čistý bajtkód</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy a <code>monodis</code> pre IL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Skontrolovať enginy</strong> spustí pri každom engine príkaz na zistenie verzie a rozlíši tri veci: nainštalované a funkčné, nenainštalované, a <em>nainštalované, ale nedá sa spustiť</em> — nástroj Javy bez JDK je prítomný a napriek tomu sa nespustí, a odhalí to až skutočné spustenie.</p>
+<p>Engine je opísaný dátami, nie kódom, takže si môžete pridať vlastný:</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>Ak súbor zvládne viac enginov, použije sa prvý dostupný, pokiaľ si jeden nevyberiete. Ak sú nainštalované dva, <strong>Porovnať</strong> ukáže oba výsledky vedľa seba — hodí sa, keď jeden engine pri metóde vzdá to, čo druhý zvládne.</p>
+<h2 id="hladanie-v-prelozenom-kode">Hľadanie v preloženom kóde</h2>
+<p><strong>Prehľadať všetky triedy</strong> prechádza dekompilovaný text namiesto bajtov, takže v JAR-e nájdete textový literál alebo názov metódy.</p>
+<p>Dekompilácia počas <em>hľadania v obsahu</em> naprieč mnohými súbormi je samostatný prepínač, v predvolenom stave vypnutý: vytvoriť text môže znamenať spustiť engine raz na každú triedu, čo na pomalom stroji nie je rozumné míňať na hľadanie. Hlavný dialóg hľadania sa pýta zvlášť; tu sa to takisto odmieta.</p>
+<h2 id="vyrovnavacia-pamat-a-limity">Vyrovnávacia pamäť a limity</h2>
+<p>Výsledky sa ukladajú do vyrovnávacej pamäte, pretože dekompilovať tú istú triedu dvakrát je čisté čakanie. V predvoľbách je, koľko dní sa výsledky uchovávajú, a <strong>limit veľkosti</strong> vyrovnávacej pamäte; <strong>Vymazať vyrovnávaciu pamäť</strong> ju vyprázdni a oznámi, koľko sa uvoľnilo.</p>
+<p>Dva časové limity chránia pred enginom, ktorý neskončí: jeden pre jednu triedu či typ, jeden pre celý archív. Oba prijímajú 0, čo znamená „použiť predvolenú hodnotu enginu“.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="viewing-files.html">Zobrazenie súborov</a></li><li><a href="searching.html">Hľadanie súborov</a></li></ul></section>
+</main>
+</body>
+</html>

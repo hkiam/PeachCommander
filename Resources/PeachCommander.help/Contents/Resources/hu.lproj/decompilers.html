@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Java és .NET visszafejtése</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Java és .NET visszafejtése</h1>
+<p>Nyomja meg az <strong>F3</strong> billentyűt egy lefordított fájlon, és bájtok helyett forráskódot lát. Ezt két bővítmény végzi — egy a Javához (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) és egy a .NET-hez (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) —, és egyformán viselkednek, ezért ez az oldal mindkettőt lefedi. Mindkettő külön kikapcsolható vagy eltávolítható a <strong>Konfiguráció ▸ Bővítmények…</strong> alatt.</p>
+<p>Egy archívum az osztályai fájaként jelenik meg, egyetlen osztály egy fájlként. A <strong>Visszafejtés forrássá</strong> a Parancsok menüben kiírja az eredményt és egy panelbe teszi, így kereshet, összehasonlíthat és másolhat benne, mint bármely más forrásmappában.</p>
+<h2 id="a-motort-on-telepiti">A motort Ön telepíti</h2>
+<p>Semmilyen visszafejtő nincs mellékelve, és semmi sem töltődik le Ön helyett. Ez két okból szándékos: a JD-Core, a legismertebb Java-visszafejtő, GPLv3 alatt áll, és nem lehetett volna egy Apache-2.0-ás alkalmazáson belül szállítani — a motorok pedig javulnak, így a cseréjük ne igényelje a Peach Commander új változatát.</p>
+<p>A megjelenítőben a <strong>Motorok mappája…</strong> megnyitja a mappát, ahová valók. Az ottani README megnevezi az egyes motorokat és a licencüket.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (androidos <code>.dex</code> és <code>.apk</code> fájlokhoz) és <code>javap</code> a nyers bájtkódhoz</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy, valamint <code>monodis</code> az IL-hez</td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>Motorok ellenőrzése</strong> lefuttatja minden motor verzióparancsát, és három dolgot különböztet meg: telepítve és működik, nincs telepítve, valamint <em>telepítve, de nem tud futni</em> — egy JDK nélküli Java eszköz jelen van, mégsem indul el, és ez csak a tényleges futtatásból derül ki.</p>
+<p>A motort adat írja le, nem kód, így magának is felvehet egyet:</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>Ha egy fájlt több motor is kezelni tud, az első elérhetőt használja, hacsak nem választ egyet. Két telepített motor esetén az <strong>Összehasonlítás</strong> egymás mellett mutatja mindkét eredményt — hasznos, amikor az egyik motor feladja egy metódusnál, amellyel a másik megbirkózik.</p>
+<h2 id="kereses-leforditott-kodban">Keresés lefordított kódban</h2>
+<p>A <strong>Keresés az összes osztályban</strong> a visszafejtett szövegben néz, nem a bájtokban, így egy JAR-ban megtalál egy szöveges literált vagy egy metódusnevet.</p>
+<p>A visszafejtés <em>tartalomkeresés</em> közben sok fájlon külön kapcsoló, és alapértelmezés szerint ki van kapcsolva: a szöveg előállítása azt jelentheti, hogy a motor osztályonként egyszer lefut, ami lassú gépen nem ésszerű dolog egy keresésre költeni. A fő keresőablak külön rákérdez; itt szintén elutasításra kerül.</p>
+<h2 id="gyorsitotar-es-korlatok">Gyorsítótár és korlátok</h2>
+<p>Az eredmények gyorsítótárba kerülnek, mert ugyanazt az osztályt kétszer visszafejteni merő várakozás. A beállításokban található, hány napig őrzi meg az eredményeket, és a gyorsítótár <strong>méretkorlátja</strong>; a <strong>Gyorsítótár ürítése most</strong> kiüríti, és jelenti, mennyi szabadult fel.</p>
+<p>Két időkorlát véd az olyan motortól, amely nem fejezi be: egy egyetlen osztályra vagy típusra, egy pedig egy teljes archívumra. Mindkettő elfogadja a 0-t, ami azt jelenti: „használd a motor saját alapértékét”.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="viewing-files.html">Fájlok megtekintése</a></li><li><a href="searching.html">Fájlok keresése</a></li></ul></section>
+</main>
+</body>
+</html>

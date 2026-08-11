@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Java en .NET decompileren</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Java en .NET decompileren</h1>
+<p>Druk op <strong>F3</strong> op een gecompileerd bestand en zie broncode in plaats van bytes. Twee plug-ins doen dat — één voor Java (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) en één voor .NET (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) — en ze gedragen zich hetzelfde, dus deze pagina behandelt beide. Elk kan afzonderlijk worden uitgeschakeld of verwijderd via <strong>Configuratie ▸ Plug-ins…</strong>.</p>
+<p>Een archief verschijnt als een structuur van zijn klassen; een losse klasse als één bestand. <strong>Decompileren naar bronnen</strong> in het menu Opdrachten schrijft het resultaat weg en zet het in een paneel, zodat u erin kunt zoeken, vergelijken en kopiëren als in elke andere map met broncode.</p>
+<h2 id="de-engine-installeert-u-zelf">De engine installeert u zelf</h2>
+<p>Er wordt geen decompiler meegeleverd en er wordt niets voor u gedownload. Dat is met opzet, om twee redenen: JD-Core, de bekendste Java-decompiler, valt onder GPLv3 en kon niet in een Apache-2.0-app worden meegeleverd — en engines worden beter, dus er een vervangen zou geen nieuwe versie van Peach Commander moeten vereisen.</p>
+<p><strong>Motorenmap…</strong> in de viewer opent de map waar ze thuishoren. De README daar noemt elke engine en zijn licentie.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (voor Android-<code>.dex</code> en <code>.apk</code>) en <code>javap</code> voor kale bytecode</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy en <code>monodis</code> voor IL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Motoren controleren</strong> voert het versiecommando van elke engine uit en onderscheidt drie dingen: geïnstalleerd en werkend, niet geïnstalleerd, en <em>geïnstalleerd maar niet in staat te draaien</em> — een Java-hulpprogramma zonder JDK is aanwezig en start toch niet, en alleen het echt uitvoeren brengt dat aan het licht.</p>
+<p>Een engine wordt beschreven door gegevens en niet door code, dus u kunt er zelf een toevoegen:</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>Kunnen meerdere engines een bestand aan, dan wordt de eerst beschikbare gebruikt tenzij u er een kiest. Met twee geïnstalleerd toont <strong>Vergelijk</strong> beide resultaten naast elkaar — handig wanneer de ene engine het opgeeft bij een methode die de andere wel aankan.</p>
+<h2 id="zoeken-in-gecompileerde-code">Zoeken in gecompileerde code</h2>
+<p><strong>Alle klassen doorzoeken</strong> kijkt door de gedecompileerde tekst in plaats van door de bytes, zodat u een tekstconstante of een methodenaam in een JAR kunt vinden.</p>
+<p>Decompileren tijdens een <em>inhoudszoekopdracht</em> over veel bestanden is een aparte instelling, standaard uit: de tekst produceren kan betekenen dat de engine één keer per klasse draait, wat op een trage machine geen redelijke besteding is voor een zoekopdracht. Het hoofdzoekvenster vraagt het apart; hier wordt het eveneens geweigerd.</p>
+<h2 id="cache-en-limieten">Cache en limieten</h2>
+<p>Resultaten worden gecachet, want dezelfde klasse twee keer decompileren is puur wachten. In de instellingen staan hoeveel dagen resultaten bewaard blijven en een <strong>groottelimiet</strong> voor de cache; <strong>Cache nu wissen</strong> leegt hem en meldt hoeveel er is vrijgekomen.</p>
+<p>Twee time-outs beschermen tegen een engine die niet klaarkomt: één voor één klasse of type, één voor een heel archief. Beide accepteren 0, wat betekent ‘gebruik de standaard van de engine’.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="viewing-files.html">Bestanden bekijken</a></li><li><a href="searching.html">Bestanden vinden</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Décompiler Java et .NET</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Décompiler Java et .NET</h1>
+<p>Appuyez sur <strong>F3</strong> sur un fichier compilé et voyez du code source plutôt que des octets. Deux extensions le font — une pour Java (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) et une pour .NET (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) — et elles se comportent de la même façon, d’où cette page commune. Chacune peut être désactivée ou supprimée séparément dans <strong>Configuration ▸ Extensions…</strong>.</p>
+<p>Une archive apparaît comme une arborescence de ses classes ; une classe seule apparaît comme un fichier. <strong>Décompiler vers les sources</strong> dans le menu Commandes écrit le résultat et le place dans un panneau, pour y chercher, comparer et copier comme dans n’importe quel dossier de sources.</p>
+<h2 id="cest-vous-qui-installez-le-moteur">C’est vous qui installez le moteur</h2>
+<p>Aucun décompilateur n’est fourni et rien n’est téléchargé pour vous. C’est délibéré, pour deux raisons : JD-Core, le décompilateur Java le plus connu, est sous GPLv3 et ne pouvait pas être livré dans une app Apache-2.0 — et les moteurs progressent, en changer ne devrait donc pas exiger une nouvelle version de Peach Commander.</p>
+<p><strong>Dossier des moteurs…</strong> dans la visionneuse ouvre le dossier auquel ils appartiennent. Le README qui s’y trouve nomme chaque moteur et sa licence.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (pour les <code>.dex</code> et <code>.apk</code> Android) et <code>javap</code> pour le bytecode brut</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy, et <code>monodis</code> pour l’IL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Vérifier les moteurs</strong> exécute la commande de version de chaque moteur et distingue trois choses : installé et fonctionnel, non installé, et <em>installé mais incapable de s’exécuter</em> — un outil Java sans JDK est présent et ne démarre pas pour autant, ce que seule une exécution réelle révèle.</p>
+<p>Un moteur est décrit par des données et non par du code, vous pouvez donc en ajouter un vous-même :</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>Quand plusieurs moteurs peuvent traiter un fichier, le premier disponible est utilisé, sauf si vous en choisissez un. Avec deux installés, <strong>Comparer</strong> montre les deux résultats côte à côte — utile lorsqu’un moteur renonce sur une méthode que l’autre traite.</p>
+<h2 id="chercher-dans-du-code-compile">Chercher dans du code compilé</h2>
+<p><strong>Rechercher dans toutes les classes</strong> parcourt le texte décompilé plutôt que les octets : vous pouvez donc trouver une chaîne littérale ou un nom de méthode dans un JAR.</p>
+<p>Décompiler pendant une <em>recherche de contenu</em> sur de nombreux fichiers est un réglage distinct, désactivé par défaut : produire le texte peut vouloir dire lancer le moteur une fois par classe, ce qui sur une machine lente n’est pas une chose raisonnable à dépenser pour une recherche. La fenêtre de recherche principale pose la question séparément ; ici aussi, c’est refusé.</p>
+<h2 id="cache-et-limites">Cache et limites</h2>
+<p>Les résultats sont mis en cache, car décompiler deux fois la même classe n’est que de l’attente. Les réglages contiennent le nombre de jours de conservation et une <strong>limite de taille</strong> pour le cache ; <strong>Vider le cache maintenant</strong> le vide et indique ce qui a été libéré.</p>
+<p>Deux délais protègent contre un moteur qui ne finit pas : un pour une seule classe ou un seul type, un pour une archive entière. Tous deux acceptent 0, qui signifie « utiliser la valeur par défaut du moteur ».</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Extensions</a></li><li><a href="viewing-files.html">Afficher des fichiers</a></li><li><a href="searching.html">Rechercher des fichiers</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decompiling Java and .NET</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Decompiling Java and .NET</h1>
+<p>Press <strong>F3</strong> on a compiled file and see source instead of bytes. Two plugins do this — one for Java (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) and one for .NET (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) — and they behave the same way, so this page covers both. Each can be turned off or removed on its own in <strong>Configuration ▸ Plugins…</strong>.</p>
+<p>An archive shows as a tree of its classes; a single class shows as one file. <strong>Decompile to Sources</strong> in the Commands menu writes the result out and puts it in a panel, so you can search, compare and copy from it like any other folder of source.</p>
+<h2 id="you-install-the-engine">You install the engine</h2>
+<p>No decompiler is bundled and nothing is downloaded for you. That is deliberate on two counts: JD-Core, the best-known Java decompiler, is GPLv3 and could not ship inside an Apache-2.0 app — and engines improve, so swapping one should not require a new version of Peach Commander.</p>
+<p><strong>Engine Folder…</strong> in the viewer opens the folder they belong in. The README there names each engine and its licence.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (for Android <code>.dex</code> and <code>.apk</code>), and <code>javap</code> for plain bytecode</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy, and <code>monodis</code> for IL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Check Engines</strong> runs each engine's version command and tells you three different things apart: installed and working, not installed, and <em>installed but unable to run</em> — a Java tool without a JDK is present and still cannot start, and only actually running it reveals that.</p>
+<p>An engine is described by data rather than code, so you can add one yourself:</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>When more than one engine can handle a file, the first available is used unless you pick one. With two installed, <strong>Compare</strong> shows both results side by side — useful when one engine gives up on a method the other handles.</p>
+<h2 id="searching-inside-compiled-code">Searching inside compiled code</h2>
+<p><strong>Search all classes</strong> looks through the decompiled text rather than the bytes, so you can find a string literal or a method name in a JAR.</p>
+<p>Decompiling during a <em>content search</em> over many files is a separate switch, off by default: producing the text can mean running the engine once per class, which on a slow machine is not a reasonable thing to spend a search on. The main search dialog asks separately; this refuses it here too.</p>
+<h2 id="cache-and-limits">Cache and limits</h2>
+<p>Results are cached, because decompiling the same class twice is pure waiting. The settings hold how many days to keep results and a <strong>size limit</strong> for the cache; <strong>Clear Cache Now</strong> empties it and reports how much it freed.</p>
+<p>Two timeouts guard against an engine that will not finish: one for a single class or type, one for a whole archive. Both accept 0, which means "use the engine's own default".</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Viewing files</a></li><li><a href="searching.html">Finding files</a></li></ul></section>
+</main>
+</body>
+</html>
