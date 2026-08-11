@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Servery WebDAV</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Servery WebDAV</h1>
+<p>Server WebDAV — Nextcloud, ownCloud, Synology, univerzitní úložiště — lze procházet v panelu jako každou složku. Zvolte <strong>Připojit WebDAV…</strong> v nabídce Síť, zadejte URL a server se objeví v aktivním panelu.</p>
+<p>Je to plugin: můžete jej vypnout nebo odstranit v <strong>Konfigurace ▸ Pluginy…</strong>.</p>
+<h2 id="pripojeni">Připojení</h2>
+<p>URL je kolekce, ve které chcete přistát, s vaším uživatelským jménem před hostitelem:</p>
+<div class="codehilite"><pre><span></span><code>https://anna@files.example.com/remote.php/dav/files/anna/
+</code></pre></div>
+
+<p>Na heslo se ptá zvlášť a putuje přes aplikaci do <strong>klíčenky</strong>, nikdy do konfiguračního souboru. Nechte je při dalším připojení prázdné a použije se uložené.</p>
+<p>Každá URL, ke které se připojíte, se zapamatuje — posledních třicet, nejnovější první — a příště se nabídne v rozbalovací nabídce. Tento seznam leží v <code>~/Library/Application Support/PeachCommander/webdav/sites.json</code> a obsahuje <strong>pouze URL</strong>; heslo se tam nikdy nezapisuje.</p>
+<h2 id="pouzivejte-https">Používejte https</h2>
+<p>Ověřování probíhá přes HTTP Basic, což znamená, že vaše uživatelské jméno a heslo cestují zakódované v base64 — zakódované, ne zašifrované. Přes <code>https://</code> je spojení chrání. Přes <code>http://</code> jsou prakticky nechráněné a vše mezi vámi a serverem si je může přečíst. Prosté <code>http://</code> se přijímá, protože server na vlastním počítači nebo v uzavřené laboratorní síti je legitimní případ — dobré výchozí nastavení to ale není.</p>
+<h2 id="co-muzete-delat">Co můžete dělat</h2>
+<p>Výpis, čtení, zápis, vytváření složek, mazání, přejmenování i přesun fungují — mapují se na WebDAV slovesa <code>PROPFIND</code>, <code>GET</code>, <code>PUT</code>, <code>MKCOL</code>, <code>DELETE</code> a <code>MOVE</code>. Panel na serveru WebDAV se tedy při běžné práci chová jako panel na disku.</p>
+<h2 id="s-cim-pocitat">S čím počítat</h2>
+<p><strong>Přenosy probíhají po celých souborech.</strong> Soubor se stáhne nebo odešle v jednom kuse; přenos po rozsazích neexistuje, takže přerušený přenos velkého souboru začne znovu, místo aby navázal.</p>
+<p><strong>Kopírování uvnitř serveru jde přes váš Mac.</strong> Plugin nepoužívá sloveso <code>COPY</code>, takže duplikace souboru na serveru jej stáhne a znovu nahraje. Na pomalé lince je přesun — který server zvládne sám — mnohem rychlejší než kopírování.</p>
+<p><strong>Nic se nezamyká.</strong> WebDAV <code>LOCK</code> se nepoužívá, takže píší-li dva lidé stejný soubor současně, rozhodne ten, kdo uloží poslední — přesně jako na síťovém sdílení bez zamykání.</p>
+<p><strong>Pouze ověřování Basic.</strong> Servery vyžadující Digest, bearer token nebo jednotné přihlášení spojení odmítnou. Mnohé z nich místo toho nabízejí heslo pro konkrétní aplikaci, a to zde funguje.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="ftp-and-sftp.html">Připojení k FTP a SFTP</a></li><li><a href="network-shares.html">Síťová sdílení</a></li></ul></section>
+</main>
+</body>
+</html>

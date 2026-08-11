@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebDAV-servrar</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>WebDAV-servrar</h1>
+<p>En WebDAV-server — Nextcloud, ownCloud, en Synology, ett universitets fillager — kan bläddras i en panel som vilken mapp som helst. Välj <strong>Anslut via WebDAV…</strong> i menyn Nätverk, ange en URL, så dyker servern upp i den aktiva panelen.</p>
+<p>Det är ett tillägg: du kan stänga av det eller ta bort det under <strong>Konfiguration ▸ Tillägg…</strong>.</p>
+<h2 id="att-ansluta">Att ansluta</h2>
+<p>URL:en är den samling du vill landa i, med ditt användarnamn före värden:</p>
+<div class="codehilite"><pre><span></span><code>https://anna@files.example.com/remote.php/dav/files/anna/
+</code></pre></div>
+
+<p>Lösenordet efterfrågas separat och hamnar i <strong>nyckelringen</strong> via appen, aldrig i en konfigurationsfil. Lämna det tomt vid en senare anslutning så används det sparade.</p>
+<p>Varje URL du ansluter till kommer ihåg — de trettio senaste, den nyaste först — och erbjuds nästa gång i popupmenyn. Den listan ligger i <code>~/Library/Application Support/PeachCommander/webdav/sites.json</code> och innehåller <strong>bara URL:er</strong>; något lösenord skrivs aldrig dit.</p>
+<h2 id="anvand-https">Använd https</h2>
+<p>Autentiseringen är HTTP Basic, vilket betyder att ditt användarnamn och lösenord färdas base64-kodade — kodade, inte krypterade. Över <code>https://</code> skyddar förbindelsen dem. Över <code>http://</code> går de i praktiken i klartext, och allt mellan dig och servern kan läsa dem. Rent <code>http://</code> accepteras, eftersom en server på din egen maskin eller i ett slutet labbnät är ett legitimt fall — något bra förval är det inte.</p>
+<h2 id="vad-du-kan-gora">Vad du kan göra</h2>
+<p>Lista, läsa, skriva, skapa mappar, radera, byta namn och flytta fungerar allihop — de motsvarar WebDAV-verben <code>PROPFIND</code>, <code>GET</code>, <code>PUT</code>, <code>MKCOL</code>, <code>DELETE</code> och <code>MOVE</code>. En panel på en WebDAV-server beter sig alltså i det dagliga arbetet som en panel på en disk.</p>
+<h2 id="vad-du-kan-vanta-dig">Vad du kan vänta dig</h2>
+<p><strong>Överföringar sker för hela filen.</strong> En fil hämtas eller skickas i ett stycke; det finns ingen intervallöverföring, så en avbruten överföring av en stor fil börjar om i stället för att återupptas.</p>
+<p><strong>Att kopiera inne på servern går via din Mac.</strong> Tillägget använder inte verbet <code>COPY</code>, så att duplicera en fil på servern laddar ner den och upp den igen. På en långsam förbindelse är det mycket snabbare att flytta — vilket servern gör själv — än att kopiera.</p>
+<p><strong>Ingenting låses.</strong> WebDAV:s <code>LOCK</code> används inte, så om två personer skriver samma fil samtidigt avgör den som sparar sist, precis som på en nätverksresurs utan låsning.</p>
+<p><strong>Endast Basic-autentisering.</strong> Servrar som kräver Digest, en bearer-token eller ett enkel inloggnings-flöde nekar anslutningen. Många av dem erbjuder i stället ett appspecifikt lösenord, och det fungerar här.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="ftp-and-sftp.html">Ansluta till FTP och SFTP</a></li><li><a href="network-shares.html">Nätverksresurser</a></li></ul></section>
+</main>
+</body>
+</html>

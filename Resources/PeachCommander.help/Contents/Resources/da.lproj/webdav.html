@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebDAV-servere</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>WebDAV-servere</h1>
+<p>En WebDAV-server — Nextcloud, ownCloud, en Synology, et universitets fillager — kan gennemses i et panel som enhver anden mappe. Vælg <strong>Forbind via WebDAV…</strong> i menuen Netværk, angiv en URL, og serveren dukker op i det aktive panel.</p>
+<p>Det er et plugin: du kan slå det fra eller fjerne det under <strong>Konfiguration ▸ Plugins…</strong>.</p>
+<h2 id="at-forbinde">At forbinde</h2>
+<p>URL’en er den samling, du vil lande i, med dit brugernavn foran værten:</p>
+<div class="codehilite"><pre><span></span><code>https://anna@files.example.com/remote.php/dav/files/anna/
+</code></pre></div>
+
+<p>Der spørges særskilt om adgangskoden, og den havner i <strong>nøgleringen</strong> via appen, aldrig i en konfigurationsfil. Lad den stå tom ved en senere forbindelse, så bruges den gemte.</p>
+<p>Hver URL, du forbinder til, huskes — de seneste tredive, den nyeste først — og tilbydes næste gang i lokalmenuen. Den liste ligger i <code>~/Library/Application Support/PeachCommander/webdav/sites.json</code> og indeholder <strong>kun URL’er</strong>; der skrives aldrig en adgangskode dertil.</p>
+<h2 id="brug-https">Brug https</h2>
+<p>Godkendelsen er HTTP Basic, hvilket betyder, at dit brugernavn og din adgangskode rejser base64-kodet — kodet, ikke krypteret. Over <code>https://</code> beskytter forbindelsen dem. Over <code>http://</code> ligger de reelt i klartekst, og alt mellem dig og serveren kan læse dem. Rent <code>http://</code> accepteres, fordi en server på din egen maskine eller på et lukket labnetværk er et legitimt tilfælde — nogen god standard er det ikke.</p>
+<h2 id="hvad-du-kan">Hvad du kan</h2>
+<p>At vise, læse, skrive, oprette mapper, slette, omdøbe og flytte virker alt sammen — det svarer til WebDAV-verberne <code>PROPFIND</code>, <code>GET</code>, <code>PUT</code>, <code>MKCOL</code>, <code>DELETE</code> og <code>MOVE</code>. Et panel på en WebDAV-server opfører sig altså i det daglige som et panel på en disk.</p>
+<h2 id="hvad-du-kan-forvente">Hvad du kan forvente</h2>
+<p><strong>Overførsler går på hele filen.</strong> En fil hentes eller sendes i ét stykke; der er ingen intervaloverførsel, så en afbrudt overførsel af en stor fil begynder forfra i stedet for at fortsætte.</p>
+<p><strong>At kopiere inde på serveren går gennem din Mac.</strong> Pluginet bruger ikke verbet <code>COPY</code>, så at duplikere en fil på serveren henter den ned og sender den op igen. På en langsom forbindelse er det meget hurtigere at flytte — hvilket serveren selv klarer — end at kopiere.</p>
+<p><strong>Intet låses.</strong> WebDAVs <code>LOCK</code> bruges ikke, så hvis to personer skriver den samme fil samtidig, afgør den, der arkiverer sidst — præcis som på en netværksdeling uden låsning.</p>
+<p><strong>Kun Basic-godkendelse.</strong> Servere, der kræver Digest, et bearer-token eller et single sign-on-forløb, afviser forbindelsen. Mange af dem tilbyder i stedet en app-specifik adgangskode, og den virker her.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="ftp-and-sftp.html">Tilslutning til FTP og SFTP</a></li><li><a href="network-shares.html">Netværksshares</a></li></ul></section>
+</main>
+</body>
+</html>
