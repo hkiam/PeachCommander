@@ -27,6 +27,13 @@
 <li>Če je besedilo videti popačeno, kliknite Kodiranje v orodni vrstici (ali pritisnite E), da se pomikate skozi kodiranja besedila, dokler se ne prebere pravilno; samodejna nastavitev to običajno zadene prav.</li>
 <li>Pritisnite W za preklop preloma besed za dolge vrstice.</li>
 </ul>
+<h2 id="zapiski-k-vrstici">Zapiski k vrstici</h2>
+<p>Če je vtičnik Zapiski nameščen, se zapisek lahko nanaša na določeno vrstico datoteke in ne na datoteko kot celoto.</p>
+<ul>
+<li>Postavite kazalec na vrstico in izberite <strong>Pogled ▸ Zapisek za to vrstico…</strong> (Cmd+Shift+N). Urejevalnik zapiskov se odpre z imenom datoteke in številko vrstice v naslovu.</li>
+<li>Vrstice, ki zapisek že imajo, se pokažejo kot skupina <strong>Zapiski</strong> v plošči oznak na dnu okna, poleg zadetkov iskanja. Ploščo odprete s Cmd+Ctrl+M; dvojni klik na vnos skoči na vrstico.</li>
+<li>Zapiski sami ležijo med vsemi drugimi, zato jih pregled zapiskov in Iskanje datotek najdeta enako. Brišete jih v urejevalniku zapiskov — gumb za zapiranje na plošči skupino le skrije.</li>
+</ul>
 <h2 id="quick-view-in-quick-look">Quick View in Quick Look</h2>
 <p>Quick View prikaže sprotni predogled v podoknu, ki ga <em>ne</em> uporabljate, tako da lahko na eni strani še naprej brskate, na drugi pa predoglejete.</p>
 <ol>
@@ -55,6 +62,11 @@
 <p>Pogon zamenjate z menijem na vrhu pregledovalnika; izbrani se uporabi takoj, rezultat pa se ohrani, tako da je primerjava dveh pogonov na isti datoteki hipna.</p>
 <p>Izvorna koda je barvno označena, dva gumba pa vodita dalje: <strong>Shrani kot …</strong> jo zapiše v datoteko, <strong>Odpri v urejevalniku</strong> pa jo izroči tistemu, kar na vašem Macu odpira <code>.java</code>. Zelo velik rezultat je prikazan brez označevanja, da se pokaže takoj in ne po premoru; vrstica stanja to pove.</p>
 <p>Rezultati se shranjujejo v predpomnilnik na disku, zato je ponovno odpiranje že ogledane datoteke hipno; ključ vsebuje velikost in datum datoteke ter argumente pogona, zato se znova zgrajen razred ali spremenjeno stikalo dekompilira na novo. Izbrani pogon se zapomni za vsako vrsto datoteke. Profil lahko z <code>extends = cfr</code> podeduje vgrajen pogon in nadomesti le stikala — priročno, če imate dve prednastavitvi istega pogona.</p>
+<p>Vklopite <strong>Primerjaj</strong>, da odprete drugi pladenj z lastnim menijem pogona. Dva dekompilatorja odpovesta na različnih mestih, zato je videti ju drug ob drugem pogosto hitreje kot odločati, katerem zaupati; če na eni strani izberete <code>javap</code>, stoji bajtna koda ob izvorni. Oba pladnja si delita predpomnilnik, zato je preklapljanje med že zaganjanimi pogoni hipno.</p>
+<p>F3 na celotni <code>.jar</code>, <code>.apk</code> ali <code>.dex</code> dekompilira vse naenkrat in ob izvorni kodi pokaže drevo paketov. Iskalno polje nad drevesom preišče vsak razred — prav tisto vprašanje, na katero en razred ne more odgovoriti: kje se niz, klic ali konstanta res pojavi, ko še ne veste, v katerem razredu. Zadetki zožijo drevo, prvi pa se odpre pri svoji vrstici. Enter še vedno odpre JAR kot arhiv — dejanji ostaneta ločeni.</p>
+<p>Obstaja druga, bolj neposredna pot: postavite kazalec na datoteko <code>.class</code> ali na cel arhiv in izberite <strong>Dekompiliraj v vire</strong> (meni Ukazi, kontekstni meni ali ⌘⇧J). Razredi se dekompilirajo, rezultat pa se odpre v drugem pladnju kot običajne datoteke <code>.java</code>. Od tam velja ves upravitelj datotek — F3 jih pokaže z lastnim poudarjanjem Jave Peach Commanderja, Alt+F7 išče po njih, F5 jih kopira ven, primerjate in označite pa jih lahko kot vse drugo. Za večino dela to prekaša lastno okno; zato je drevo vstavka mogoče izklopiti v Nastavitve ▸ Dekompilator.</p>
+<p>Drugi vstavek naredi isto za .NET: F3 na upravljani <code>.dll</code>, <code>.exe</code> ali <code>.winmd</code> pokaže njene tipe kot C#, <strong>Dekompiliraj zbirko v vire</strong> (⌘⇧N) jih položi v pladenj, iskanje pa lahko pogleda v zbirko enako kot prej. Poganja <strong>ILSpy</strong> (MIT, <code>dotnet tool install -g ilspycmd</code>) za izvorno kodo ali <strong>monodis</strong> iz Mona za IL — .NET-ov protipol <code>javap</code>. Domorodna <code>.dll</code> ima enako končnico in nobene izvorne kode za prikaz, zato vstavek to preveri pred odprtjem in jo prepusti vgrajenemu pregledovalniku.</p>
+<p>Stran z nastavitvami ima gumb <strong>Preveri pogone</strong> in splača se ga pritisniti: »namenščeno« drugje pomeni le, da je datoteka na disku, pogon za Javo na Macu brez JDK pa je prisoten in ne more delovati. Preverjanje vsak pogon vpraša po različici in pove, kateri res delujejo.</p>
 <p>Pokrit je tudi Android: F3 na datoteki <code>.dex</code> uporabi <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), ki bajtno kodo Dalvik pretvori nazaj v Javo. Zadostoval je en opis pogona — isti mehanizem, drug zapis.</p>
 <p>Vtičnik je <strong>izklopljen, dokler ga ne vklopite</strong>, v Nastavitve ▸ Vtičniki — večina ljudi datoteke .class nikoli ne odpre, brez pogona pa tako ali tako ne koristi.</p>
 <p>Svoj pogon dodate tako, da v mapi pogonov ustvarite <code>decompilers.ini</code>:</p>
@@ -93,6 +105,14 @@
 <tr>
 <td>Iskanje znotraj pregledovalnika</td>
 <td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Zapisek za vrstico pod kazalcem</td>
+<td>Cmd+Shift+N</td>
+</tr>
+<tr>
+<td>Pokaži ali skrij ploščo oznak</td>
+<td>Cmd+Ctrl+M</td>
 </tr>
 <tr>
 <td>Naslednje / prejšnje ujemanje</td>

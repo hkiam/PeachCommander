@@ -21,16 +21,103 @@
 <p>For at starte en helt ny tekstfil på den aktuelle placering skal du trykke på Shift+F4.</p>
 <p><img alt="Den indbyggede teksteditor med syntaksfremhævning, symboloverblikket og minikortet" src="images/editor.png" />
 <em>(Figur: Editoren med syntaksfremhævning, symboloverblikket til venstre og minikortet til højre.)</em></p>
+<p>Tilhører filen <code>root</code> — noget i <code>/etc</code>, en launchd-plist, en webservers konfiguration — tilbyder gemningen at gøre det <strong>som administrator</strong>: macOS beder om godkendelse på sædvanlig vis, indholdet overleveres via en privat midlertidig fil i stedet for en kommandolinje, og filen beholder sin egen ejer og sine rettigheder i stedet for stille at blive din.</p>
+<p>Kan filen ikke skrives, får du det at vide, når du åbner den, og ikke først når du gemmer: titlen bærer en lås, og statuslinjen nævner forhindringen — tilhører en anden bruger, rettigheder der forbyder skrivning, en låst fil, en skrivebeskyttet diskenhed eller beskyttelse fra systemet. Kun det første kan afgøres ved at godkende gemningen, og kun der bliver det tilbudt; ved de øvrige ville det koste en adgangskode og alligevel mislykkes.</p>
+<p>Margenen viser linjenumre, med linjen du står på lysere end de andre; knappen ved siden af kodningsmenuen skjuler den. En ombrudt linje nummereres én gang, så nummeret betyder altid samme linje, som en oversætterfejl eller en gennemgangskommentar mener.</p>
 <h2 id="sg-erstat-og-naviger">Søg, erstat og naviger</h2>
 <ul>
 <li>Tryk på Cmd+F for at åbne søgebjælken. For at erstatte tekst skal du åbne søgebjælken og skifte den til erstat-visningen eller klikke på Søg/Erstat i værktøjslinjen.</li>
 <li>Klik på Formatér JSON/XML for at genindrykke et JSON- eller XML-dokument til et rent, læsbart layout.</li>
-<li>Klik på Symboler (eller tryk på Cmd+Shift+O) for at vise en sidebjælke, der viser klasserne, funktionerne og metoderne i din kode. Klik på en post for at springe direkte til den.</li>
+<li>Klik på Symboler (eller tryk på Cmd+Shift+O) for at vise en sidebjælke, der viser klasserne, funktionerne og metoderne i din kode — eller, for en JSON-, YAML- eller XML-fil, dens nøgler og elementer. Klik på en post for at springe direkte til den. Se <a href="#arbejd-med-json-yaml-og-xml">Arbejd med JSON, YAML og XML</a> for hvad den struktur ellers er god til.</li>
 <li>Tryk på Cmd+L for at springe til en bestemt linje.</li>
 <li>Tryk på Cmd+\ for at springe mellem en parentes og dens matchende makker.</li>
 <li>Klik på kortknappen for at vise eller skjule minikortet, et skaleret overblik over hele filen, som du kan klikke på for at rulle.</li>
 <li>Brug menuen Kodning i værktøjslinjen, hvis filen blev gemt i noget andet end standardtekstkodningen.</li>
 </ul>
+<h2 id="arbejd-med-json-yaml-og-xml">Arbejd med JSON, YAML og XML</h2>
+<p>Disse tre formater får deres egen behandling, for en konfigurationsfil navigeres efter struktur og ikke efter linjenumre.</p>
+<p>Sidebjælken <strong>Symboler</strong> viser nøglerne i en JSON- eller YAML-fil og elementerne i en XML-fil, indlejret som dokumentet selv. Et element navngives efter sin attribut <code>id</code>, <code>name</code> eller <code>key</code>, når det har en, så tyve <code>&lt;server&gt;</code>-poster kan skelnes. En liste viser sine poster som <code>[0]</code>, <code>[1]</code>, og hvor en post begynder med en nøgle, vises den også — <code>[0] name</code>. Filterfeltet over listen finder en nøgle på navn i en fil af enhver størrelse, og statuslinjen viser altid stien til det, indsætningspunktet står i.</p>
+<p>Selv en ødelagt fil får et overblik frem til det sted, hvor den går i stykker, og det er netop dér, man har mest brug for det.</p>
+<p>Menuen <strong>Struktur</strong> — i menulinjen, så længe redigeringsvinduet er forrest — flytter dig rundt i den struktur:</p>
+<ul>
+<li><strong>Gå til omsluttende knude</strong> (Ctrl+Cmd+Op) går ud til den blok, der indeholder indsætningspunktet: fra <code>image:</code> til den tjeneste, det hører til.</li>
+<li><strong>Gå til første barn</strong> (Ctrl+Cmd+Ned) går ind.</li>
+<li><strong>Gå til forrige / næste søskende</strong> (Ctrl+Cmd+Venstre / Højre) flytter mellem poster på samme niveau og springer hele blokken imellem over — fra en server til den næste uden at rulle forbi fyrre linjer indstillinger.</li>
+<li><strong>Vælg omsluttende knude</strong> (Ctrl+Cmd+A) vælger den blok, indsætningspunktet står i. Tryk igen, og markeringen vokser til blokken omkring den, så du vælger præcis én tjeneste eller præcis ét element uden at trække.</li>
+<li><strong>Kopier den strukturelle sti</strong> (Ctrl+Cmd+C) kopierer positionen som et udtryk, formatets egne værktøjer tager imod: <code>.services.web.ports[0]</code> for JSON og YAML, hvad <code>jq</code> og <code>yq</code> forventer, og <code>//server[@id='web-1']/port</code> for XML, altså en XPath. Nøgler, der ikke er almindelige ord, sættes i anførselstegn for dig — <code>."content-type"</code> og ikke <code>.content-type</code>, som i <code>jq</code> betyder noget helt andet.</li>
+<li><strong>Valider dokumentet</strong> (Ctrl+Cmd+V) kontrollerer filen og sætter indsætningspunktet <strong>på problemet</strong> med årsagen i vinduets titel. Den rapporterer det, intet andet i værktøjskæden rapporterer: en dubleret nøgle, som enhver JSON-fortolker accepterer i stilhed, mens en af de to værdier forsvinder, og et efterstillet komma, som Apples egen fortolker accepterer, men Python, Go og <code>jq</code> afviser.</li>
+</ul>
+<p>Lange filer læses ved at folde det sammen, man ikke arbejder med. <strong>Fold knuden sammen</strong> (Alternativ+Cmd+Venstre) folder den blok sammen, hvor indsætningspunktet står — den nærmeste med et indhold, så et tryk på en enkelt linje folder tilknytningen omkring den sammen —, <strong>Fold knuden ud</strong> (Alternativ+Cmd+Højre) åbner den igen, <strong>Fold øverste niveau sammen</strong> (Alternativ+Cmd+Op) folder alt på det yderste niveau sammen for et overblik, og <strong>Fold alt ud</strong> (Alternativ+Cmd+Ned) genskaber det. Linjen med nøglen eller mærket forbliver synlig og markeres, så en sammenfoldet blok tydeligt er sammenfoldet; linjenumrene springer det skjulte over. Der fjernes intet fra dokumentet — teksten tegnes blot ikke, så gem, fortryd og søg er uændrede, og søgningen finder stadig tekst inde i en sammenfoldet blok. At sætte indsætningspunktet ind i en foldning åbner den, og enhver redigering åbner alt: en foldning er et par positioner, og indsat tekst flytter dem.</p>
+<p>Den samme menu rummer omdannelserne, som skriver hele dokumentet om — eller, hvis der er markeret tekst, kun den — i ét trin, der kan fortrydes: <strong>Formindsk (én linje)</strong> til en JSON-krop, der skal kunne være i en <code>curl</code>-kommando, <strong>Sortér nøgler rekursivt</strong>, så to eksporter af de samme indstillinger ikke længere viser nogen forskel, <strong>Escape som JSON-streng</strong> og <strong>Unescape JSON-streng</strong> til det daglige slid med at lægge et certifikat, et script eller et helt JSON-dokument <em>ind i</em> et JSON-felt, og <strong>Konvertér JSON til YAML</strong>. Formindskelsen bevarer nøglernes rækkefølge og den præcise skrivemåde for hvert tal, for <code>1.0</code> og <code>1</code> er ikke den samme version; sorteringen gør det med vilje ikke, da sortering er en omrokering. Escaping gælder for enhver fil, ikke kun JSON. Fra YAML til JSON findes der intet, og det er en beslutning: det ville kræve en YAML-fortolker, som systemet ikke har, og et fejlgæt om et anker eller et <code>true</code> i anførselstegn gør en konfigurationsfil til en anden.</p>
+<p>For JSON og XML kontrolleres filen af en rigtig fortolker. For YAML findes der ingen på systemet, så kontrollen dækker de fejl, der kan findes uden — en tabulator brugt til indrykning, hvilket YAML udtrykkeligt forbyder, en indrykning der ikke passer til noget, en dubleret nøgle, et uafsluttet anførselstegn — og siger det i stedet for at erklære filen gyldig.</p>
+<h2 id="filtrer-gennem-en-shell-kommando">Filtrer gennem en shell-kommando</h2>
+<p>Klik på <strong>Filtrer…</strong> (eller tryk på Shift+Cmd+) for at sende den markerede tekst gennem en kommando og erstatte den med det, kommandoen udskriver. Er intet markeret, sendes hele dokumentet. Sådan bliver de værktøjer, du allerede kender, til kommandoer i editoren: <code>sort -u</code> fjerner dubletlinjer, <code>jq .</code> gør et JSON-svar læsbart, <code>column -t</code> retter en tabel op, <code>base64 -d</code> afkoder en blok, <code>openssl x509 -noout -text</code> viser et certifikat i klartekst.</p>
+<p>Kommandoen kører i din login-shell: din <code>PATH</code>, dine aliaser og dine funktioner virker præcis som i Terminal, og pipes og citationstegn betyder det, du forventer. Arbejdsmappen er mappen med den fil, du redigerer, så relative stier opløses, hvor du forventer det. De kommandoer, du har brugt, huskes og tilbydes i rullelisten næste gang.</p>
+<p>Hvis kommandoen fejler, står din tekst uberørt, og kommandoens egen fejlmeddelelse vises i statuslinjen — en <code>jq</code>-syntaksfejl ender aldrig indsat i din fil. En kommando, der ikke udskriver noget, tømmer markeringen, og det er netop, hvad filtrering med <code>grep</code> er til for; Cmd+Z henter den tilbage. En kommando, der aldrig bliver færdig, standses efter tyve sekunder.</p>
+<h2 id="sorter-fjern-dubletter-og-ryd-op-i-linjer">Sortér, fjern dubletter og ryd op i linjer</h2>
+<p>Menuen <strong>Linjer</strong> — i værktøjslinjen og, så længe editoren er forrest, i menulinjen — udfører de ændringer, der kommer igen og igen, uden en indtastet kommando og uden installeret værktøj:</p>
+<ul>
+<li>Sortér A→Z eller Z→A, hvor tal sammenlignes efter værdi, så <code>file9</code> kommer før <code>file10</code>.</li>
+<li>Vend linjernes rækkefølge.</li>
+<li>Fjern dublerede linjer, behold den første af hver og lad resten stå i deres rækkefølge.</li>
+<li>Fjern tomme linjer, også dem der kun ser tomme ud, fordi de indeholder mellemrum.</li>
+<li>Fjern mellemrum i slutningen af linjen — den usynlige forskel, der gør en diff urolig.</li>
+<li>Behold kun, eller fjern, de linjer der indeholder en tekst, du skriver.</li>
+</ul>
+<p>Er tekst markeret, arbejder hver af dem på de markerede linjer; markeringen udvides først til hele linjer, for at sortere en halv linje betyder ingenting. Uden markering gælder de hele dokumentet. Hver er et enkelt fortryd-trin, så Cmd+Z tager hele handlingen tilbage.</p>
+<p>Linjeskiftene står ved siden af menuen Tegnsæt: <strong>LF</strong> til Unix og macOS, <strong>CRLF</strong> til Windows, <strong>CR</strong> til det klassiske Mac OS, og <em>(mixed)</em> når én fil indeholder mere end én slags — ofte grunden til en fejl, der ikke giver mening. Vælg et andet for at konvertere hele filen i ét trin, der kan fortrydes. Linjehandlingerne ændrer aldrig linjeskiftet af sig selv: en sorteret CRLF-fil bliver ved med at være CRLF.</p>
+<h2 id="formater-en-fil">Formatér en fil</h2>
+<p>Klik på <strong>Formatér</strong> i editoren (samme kommando findes i fremviseren) for at indrykke filen igen. Peach Commander vælger formatterer ud fra filendelsen og viser i statuslinjen hvilken det blev, for eksempel <em>formatted (jq)</em> — så du altid ved hvad der formede resultatet.</p>
+<p><strong>Uden at installere noget</strong>: JSON, XML, SVG, plists, HTML, INI-lignende konfiguration og YAML. YAML er et særtilfælde: den ryddes op i stedet for at blive indrykket igen, for i YAML <em>er</em> indrykningen strukturen, og at skrive den om uden en rigtig YAML-parser kan ændre filens betydning. Mellemrum i linjeslutninger forsvinder, forvildede tabulatorer i indrykningen bliver mellemrum, rækker af tomme linjer skrumper — og alt inde i en blokskalar (<code>|</code> eller <code>&gt;</code>) står præcis som det står, for der er blanktegn indhold.</p>
+<p><strong>Bedre formatterere tager over automatisk.</strong> Har du en af dem installeret, bruger Peach Commander den, fordi et dedikeret værktøj som regel svarer til hvad økosystemet forventer — og for konfigurationsformater bevarer det dine kommentarer:</p>
+<table>
+<thead>
+<tr>
+<th>Installér</th>
+<th>og du får</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yq</code> eller <code>prettier</code></td>
+<td>fuld YAML-formatering, kommentarer bevares</td>
+</tr>
+<tr>
+<td><code>taplo</code></td>
+<td>TOML</td>
+</tr>
+<tr>
+<td><code>sqlformat</code> eller <code>sql-formatter</code></td>
+<td>SQL</td>
+</tr>
+<tr>
+<td><code>prettier</code></td>
+<td>Markdown</td>
+</tr>
+<tr>
+<td><code>jq</code></td>
+<td>JSON i den sædvanlige stil</td>
+</tr>
+<tr>
+<td><code>xmllint</code></td>
+<td>XML og SVG</td>
+</tr>
+</tbody>
+</table>
+<p>Har en filtype ingen formatterer, er knappen grå og menupunktet slået fra. Prøver du alligevel, får du at vide hvorfor — <em>“taplo er ikke installeret”</em> læses anderledes end <em>“Ikke gyldig JSON”</em>.</p>
+<h3 id="brug-din-egen-formatterer">Brug din egen formatterer</h3>
+<p>For at formatere en type Peach Commander ikke kender, eller for at bruge et andet værktøj, opret <code>formatters.ini</code> i konfigurationsmappen — én sektion per endelse:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[swift]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">swiftformat</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">--quiet stdin</span>
+
+<span class="k">[sql]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/opt/homebrew/bin/sqlfluff</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">format -</span>
+</code></pre></div>
+
+<p><code>tool</code> er et programnavn (slås op som din shell gør) eller en absolut sti; <code>args</code> sendes videre uændret. Filens tekst går ind via standard input, og den formaterede tekst læses fra standard output, så enhver velopdragen kommandolinjeformatterer virker. Dine poster vinder over alt andet. Ved første start oprettes en kommenteret skabelon — åbn filen og udfyld den.</p>
+<p>Plugins kan også bidrage med formatterere — se <a href="plugins.md">Plugins</a>.</p>
 <h2 id="rediger-en-fil-byte-for-byte">Redigér en fil byte for byte</h2>
 <ol>
 <li>Markér filen i et panel.</li>
@@ -76,14 +163,51 @@
 <td>Cmd+\</td>
 </tr>
 <tr>
+<td>Gå til omsluttende knude (JSON/YAML/XML)</td>
+<td>Ctrl+Cmd+Op</td>
+</tr>
+<tr>
+<td>Gå til første barn</td>
+<td>Ctrl+Cmd+Ned</td>
+</tr>
+<tr>
+<td>Gå til forrige / næste søskende</td>
+<td>Ctrl+Cmd+Venstre / Højre</td>
+</tr>
+<tr>
+<td>Vælg omsluttende knude</td>
+<td>Ctrl+Cmd+A</td>
+</tr>
+<tr>
+<td>Kopier den strukturelle sti</td>
+<td>Ctrl+Cmd+C</td>
+</tr>
+<tr>
+<td>Valider dokumentet</td>
+<td>Ctrl+Cmd+V</td>
+</tr>
+<tr>
+<td>Fold knuden sammen / ud</td>
+<td>Alternativ+Cmd+Venstre / Højre</td>
+</tr>
+<tr>
+<td>Fold øverste niveau sammen / fold alt ud</td>
+<td>Alternativ+Cmd+Op / Ned</td>
+</tr>
+<tr>
 <td>Fortryd / gentag (hex-editor)</td>
 <td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+<tr>
+<td>Filtrer markeringen gennem en kommando</td>
+<td>Shift+Cmd+\</td>
 </tr>
 </tbody>
 </table>
 <h2 id="bemrkninger">Bemærkninger</h2>
 <ul>
-<li>Syntaksfremhævning dækker JSON, C, C#, Java, JavaScript, TypeScript, Python og Rust. Andre filtyper åbner og redigeres stadig normalt med grundlæggende farvning, men detaljeret fremhævning og symboloverblikket er kun tilgængelige for de understøttede sprog.</li>
+<li>Syntaksfremhævning dækker JSON, C, C#, Java, JavaScript, TypeScript, Python og Rust. Andre filtyper åbner og redigeres stadig normalt med grundlæggende farvning, men detaljeret fremhævning er kun tilgængelig for de understøttede sprog.</li>
+<li>Overblikket dækker de understøttede programmeringssprog samt JSON, YAML og XML — inklusive de XML-baserede formater som <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> og <code>.storyboard</code>. Kommandoerne til strukturnavigation, sti og validering gælder for JSON, YAML og XML.</li>
 <li>Symboloverblikket og funktionerne Gå til linje gælder for teksteditoren. Hex-editoren er beregnet til binær inspektion og redigering på byteniveau, ikke til tekst.</li>
 <li>Begge editorer beholder en backup af den oprindelige fil, første gang du gemmer, så en utilsigtet ændring er let at fortryde ved at gendanne den backup.</li>
 </ul>

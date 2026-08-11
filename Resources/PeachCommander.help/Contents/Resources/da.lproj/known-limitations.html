@@ -13,27 +13,23 @@
 <p>Peach Commander gør meget, men nogle få funktioner har ærlige grænser i den aktuelle version. At kende disse på forhånd sparer forvirring, når noget opfører sig uventet. Denne side viser de aktuelle begrænsninger og, hvor det er muligt, en simpel løsning.</p>
 <h2 id="arkiver">Arkiver</h2>
 <ul>
-<li><strong>Meget store ZIP-filer (ZIP64) kan ikke åbnes af den indbyggede læser.</strong> Standard ZIP, TAR og gzip-komprimeret TAR åbner direkte som mapper. ZIP64-arkiver — brugt når et arkiv indeholder mere end omkring 65.000 emner eller overstiger 4 GB — er uden for, hvad den indfødte læser håndterer, så de kan mislykkes i at åbne eller vises ufuldstændigt.</li>
+<li><strong>Opdelte arkiver (i flere dele) kan ikke åbnes.</strong> Standard-ZIP — inklusive ZIP64, altså mere end 65.535 emner eller over 4 GB — samt TAR og gzip-komprimeret TAR åbner direkte som mapper. Et arkiv fordelt over flere filer (<code>.z01</code>, <code>.zip.001</code>) understøttes ikke: saml delene først, eller pak det ud med det værktøj, der lavede det.</li>
 <li><strong>Krypterede ZIP-arkiver</strong> (både ældre ZipCrypto og WinZip AES) understøttes til gennemsyn, men du bliver bedt om adgangskoden.</li>
 <li>Andre formater som CPIO, ISO, CAB, LZH, XAR og PAX åbner gennem et hjælpeværktøj i stedet for den indfødte læser.</li>
 </ul>
 <h2 id="netvrk-sftp-scp">Netværk (SFTP / SCP)</h2>
 <ul>
-<li><strong>At ændre filattributter over SFTP har ingen effekt i denne version.</strong> Du kan gennemse, downloade og uploade over SFTP/SCP, men anmodninger om at ændre tilladelser, ejerskab eller tidsstempler på en fjernserver ignoreres stille. Foretag de ændringer på selve serveren, eller over en anden protokol.</li>
+<li><strong>Over SFTP kan rettigheder og tidsstempler ændres, en ejer ikke.</strong> Protokollen fører ejer og gruppe kun som tal og kan ikke slå et brugernavn op, så et ejerskifte afvises frem for at blive gættet — ligesom macOS-filflag, der ikke findes på den anden side. Over almindelig FTP kan kun rettigheder sættes, via den valgfri kommando <code>SITE CHMOD</code>; en server, der ikke tilbyder den, siger det i stedet for at foregive succes.</li>
 <li>Ved første forbindelse til en SFTP-server bliver du bedt om at stole på dens værtsnøgle. Peach Commander husker den derefter (tillid ved første brug).</li>
-</ul>
-<h2 id="download-fra-en-url">Download fra en URL</h2>
-<ul>
-<li>Kommandoen <strong>Download fra URL</strong> (Netværk-menuen) bruger i øjeblikket genvejen Cmd+Shift+D, som er den samme genvej som Gå &gt; Skrivebord. Når begge er tilgængelige, kan menuerne kollidere — start downloadet direkte fra Netværk-menuen for at være sikker.</li>
 </ul>
 <h2 id="mappeopdatering">Mappeopdatering</h2>
 <ul>
-<li><strong>Et panel bemærker eksterne ændringer med en kort forsinkelse, ikke øjeblikkeligt.</strong> Peach Commander tjekker den aktuelle mappe for ændringer cirka hvert 2. sekund, så en fil tilføjet eller fjernet af en anden app kan tage et øjeblik at dukke op. Hvis du ikke vil vente, opdater det aktive panel manuelt med F2 eller Ctrl+R.</li>
+<li><strong>Kun mapper på denne Mac overvåges for ændringer udefra.</strong> En mappe på denne Mac opdaterer sig selv, så snart et andet program opretter, ændrer eller fjerner en fil i den. En fjern placering (FTP eller SFTP) og indersiden af et arkiv overvåges ikke, fordi de protokoller ikke giver nogen mulighed for at blive underrettet — tryk på F2 eller Ctrl+R for at læse dem igen.</li>
 </ul>
 <h2 id="andre-aktuelle-grnser">Andre aktuelle grænser</h2>
 <ul>
 <li><strong>Nogle meget lange absolutte stier</strong> (dybt indlejrede mapper, hvis fulde sti er usædvanligt lang) håndteres måske ikke pålideligt. At arbejde tættere på toppen af mappetræet undgår dette.</li>
-<li><strong>Denne forhåndsversion er usigneret.</strong> macOS Gatekeeper kan advare om, at appen er fra en uidentificeret udvikler, første gang du åbner den. Højreklik på appen og vælg Åbn, og bekræft derefter, for at køre den. Automatiske opdateringer er endnu ikke tilgængelige i denne version.</li>
+<li><strong>Denne forhåndsversion er ikke underskrevet.</strong> Gatekeeper blokerer den første start, og hvordan du tillader den afhænger af din macOS-version. På <strong>macOS 15 Sequoia og nyere</strong>: dobbeltklik én gang, luk advarslen, og gå så til <strong>Systemindstillinger ▸ Anonymitet og sikkerhed</strong> og klik på <strong>Åbn alligevel</strong> — Apple fjernede genvejen med højreklik for usigneret software i macOS 15, så højreklik hjælper ikke længere. På <strong>macOS 13–14</strong>: højreklik på appen og vælg Åbn, bekræft derefter. Automatiske opdateringer er endnu ikke tilgængelige i denne version.</li>
 </ul>
 <h2 id="genveje">Genveje</h2>
 <table>
@@ -50,7 +46,7 @@
 </tr>
 <tr>
 <td>Download fra URL</td>
-<td>Cmd+Shift+D</td>
+<td>Cmd+Shift+U</td>
 </tr>
 </tbody>
 </table>

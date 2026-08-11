@@ -13,27 +13,23 @@
 <p>Peach Commander fa molto, ma alcune funzioni hanno limiti onesti nella versione attuale. Conoscerli in anticipo evita confusione quando qualcosa si comporta in modo inatteso. Questa pagina elenca i vincoli attuali e, dove possibile, una soluzione semplice.</p>
 <h2 id="archivi">Archivi</h2>
 <ul>
-<li><strong>I file ZIP molto grandi (ZIP64) non possono essere aperti dal lettore integrato.</strong> Gli archivi ZIP, TAR e TAR compressi con gzip standard si aprono direttamente come cartelle. Gli archivi ZIP64 — usati quando un archivio contiene più di circa 65.000 elementi o supera i 4 GB — sono al di fuori di ciò che il lettore nativo gestisce, quindi potrebbero non aprirsi o elencarsi in modo incompleto.</li>
+<li><strong>Gli archivi divisi (in più parti) non possono essere aperti.</strong> Lo ZIP standard — compreso ZIP64, quindi più di 65.535 elementi o più di 4 GB — come TAR e TAR compresso con gzip si aprono direttamente come cartelle. Un archivio diviso su più file (<code>.z01</code>, <code>.zip.001</code>) non è supportato: unite prima le parti oppure scompattatelo con lo strumento che lo ha creato.</li>
 <li><strong>Gli archivi ZIP crittografati</strong> (sia il vecchio ZipCrypto sia WinZip AES) sono supportati per la navigazione, ma ti verrà chiesta la password.</li>
 <li>Altri formati come CPIO, ISO, CAB, LZH, XAR e PAX si aprono tramite uno strumento ausiliario invece del lettore nativo.</li>
 </ul>
 <h2 id="rete-sftp-scp">Rete (SFTP / SCP)</h2>
 <ul>
-<li><strong>Cambiare gli attributi dei file tramite SFTP non ha effetto in questa versione.</strong> Puoi sfogliare, scaricare e caricare tramite SFTP/SCP, ma le richieste di modifica di permessi, proprietà o marche temporali su un server remoto vengono ignorate silenziosamente. Effettua quelle modifiche sul server stesso, o tramite un protocollo diverso.</li>
+<li><strong>Via SFTP si possono cambiare permessi e date, il proprietario no.</strong> Il protocollo trasporta proprietario e gruppo solo come numeri e non consente di risolvere un nome utente: un cambio di proprietario viene quindi rifiutato invece di essere indovinato, così come i flag di file di macOS, che dall’altra parte non esistono. Via FTP semplice si possono impostare solo i permessi, con il comando opzionale <code>SITE CHMOD</code>; un server che non lo offre lo dice invece di far finta di riuscire.</li>
 <li>Alla prima connessione a un server SFTP ti verrà chiesto di fidarti della sua chiave host. Peach Commander la ricorda in seguito (fiducia al primo uso).</li>
-</ul>
-<h2 id="scaricare-da-un-url">Scaricare da un URL</h2>
-<ul>
-<li>Il comando <strong>Scarica da URL</strong> (menu Rete) usa attualmente la scorciatoia Cmd+Maiusc+D, che è la stessa scorciatoia di Vai &gt; Scrivania. Quando entrambi sono disponibili i menu possono entrare in conflitto — avvia il download direttamente dal menu Rete per sicurezza.</li>
 </ul>
 <h2 id="aggiornamento-delle-cartelle">Aggiornamento delle cartelle</h2>
 <ul>
-<li><strong>Un pannello nota le modifiche esterne con un breve ritardo, non istantaneamente.</strong> Peach Commander controlla la cartella corrente per modifiche circa ogni 2 secondi, quindi un file aggiunto o rimosso da un'altra app può impiegare un momento a comparire. Se non vuoi aspettare, aggiorna il pannello attivo manualmente con F2 o Ctrl+R.</li>
+<li><strong>Vengono osservate solo le cartelle su questo Mac.</strong> Una cartella su questo Mac si aggiorna da sé appena un altro programma vi aggiunge, modifica o elimina un file. Una posizione remota (FTP o SFTP) e l’interno di un archivio non vengono osservati, perché quei protocolli non offrono alcun modo di essere avvisati: premete F2 o Ctrl+R per rileggerli.</li>
 </ul>
 <h2 id="altri-limiti-attuali">Altri limiti attuali</h2>
 <ul>
 <li><strong>Alcuni percorsi assoluti molto lunghi</strong> (cartelle profondamente annidate il cui percorso completo è insolitamente lungo) potrebbero non essere gestiti in modo affidabile. Lavorare più vicino alla cima dell'albero delle cartelle evita questo.</li>
-<li><strong>Questa build di anteprima non è firmata.</strong> Gatekeeper di macOS potrebbe avvisare che l'app proviene da uno sviluppatore non identificato la prima volta che la apri. Fai clic destro sull'app e scegli Apri, poi conferma, per eseguirla. Gli aggiornamenti automatici non sono ancora disponibili in questa build.</li>
+<li><strong>Questa versione di anteprima non è firmata.</strong> Gatekeeper blocca il primo avvio, e il modo di consentirlo dipende dalla versione di macOS. Su <strong>macOS 15 Sequoia e successivi</strong>: fate doppio clic una volta, chiudete l'avviso, poi andate in <strong>Impostazioni di Sistema ▸ Privacy e sicurezza</strong> e fate clic su <strong>Apri comunque</strong> — Apple ha rimosso la scorciatoia con il clic destro per il software non firmato in macOS 15, quindi il clic destro non aiuta più. Su <strong>macOS 13–14</strong>: fate clic destro sull'app e scegliete Apri, poi confermate. Gli aggiornamenti automatici non sono ancora disponibili in questa versione.</li>
 </ul>
 <h2 id="scorciatoie">Scorciatoie</h2>
 <table>
@@ -50,7 +46,7 @@
 </tr>
 <tr>
 <td>Scarica da URL</td>
-<td>Cmd+Maiusc+D</td>
+<td>Cmd+Maiusc+U</td>
 </tr>
 </tbody>
 </table>

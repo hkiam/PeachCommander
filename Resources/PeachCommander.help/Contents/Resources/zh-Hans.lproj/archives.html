@@ -75,7 +75,7 @@
 <li>打包为 7z、xz、bzip2 和 RAR 依赖外部工具。RAR 尤其需要安装专有的 RAR 程序；没有它，该格式将不可用。</li>
 <li>就地编辑 ZIP 会重写整个压缩包，因此其中的文件修改时间戳不会被保留。</li>
 <li>解压时，单个成员文件被限制在 512 MiB 以内。解压过程可在运行时取消。</li>
-<li>不支持超大（ZIP64）压缩包。</li>
+<li>ZIP64 压缩包与其他压缩包一样可以打开，因此项目超过 65,535 个或大于 4 GB 的压缩包也能正常浏览；上面提到的单个成员解压上限仍然适用。</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">复制文件</a></li></ul></section>
 </main>

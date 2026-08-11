@@ -13,27 +13,23 @@
 <p>Peach Commander face multe, dar câteva funcții au limite oneste în versiunea curentă. Cunoașterea lor în avans scutește confuzia când ceva se comportă neașteptat. Această pagină listează constrângerile curente și, unde este posibil, o soluție simplă.</p>
 <h2 id="arhive">Arhive</h2>
 <ul>
-<li><strong>Fișierele ZIP foarte mari (ZIP64) nu pot fi deschise de cititorul încorporat.</strong> Arhivele ZIP, TAR și TAR comprimate cu gzip standard se deschid direct ca foldere. Arhivele ZIP64 — folosite când o arhivă conține mai mult de aproximativ 65.000 de elemente sau depășește 4 GB — sunt în afara a ceea ce gestionează cititorul nativ, astfel încât pot eșua să se deschidă sau să se listeze incomplet.</li>
+<li><strong>Arhivele împărțite (în mai multe părți) nu pot fi deschise.</strong> ZIP standard — inclusiv ZIP64, adică peste 65.535 de elemente sau peste 4 GB — precum și TAR și TAR comprimat cu gzip se deschid direct ca dosare. O arhivă împărțită în mai multe fișiere (<code>.z01</code>, <code>.zip.001</code>) nu este acceptată: uniți mai întâi părțile sau dezarhivați-o cu unealta care a creat-o.</li>
 <li><strong>Arhivele ZIP criptate</strong> (atât ZipCrypto mai vechi, cât și WinZip AES) sunt acceptate pentru parcurgere, dar vi se va cere parola.</li>
 <li>Alte formate precum CPIO, ISO, CAB, LZH, XAR și PAX se deschid printr-un instrument ajutător în loc de cititorul nativ.</li>
 </ul>
 <h2 id="retea-sftp-scp">Rețea (SFTP / SCP)</h2>
 <ul>
-<li><strong>Schimbarea atributelor de fișier peste SFTP nu are efect în această versiune.</strong> Puteți parcurge, descărca și încărca peste SFTP/SCP, dar cererile de a schimba permisiunile, proprietatea sau marcajele de timp pe un server la distanță sunt ignorate în tăcere. Faceți acele modificări pe serverul însuși, sau printr-un alt protocol.</li>
+<li><strong>Prin SFTP se pot schimba permisiunile și datele, proprietarul nu.</strong> Protocolul poartă proprietarul și grupul doar ca numere și nu permite rezolvarea unui nume de utilizator, așa că o schimbare de proprietar este refuzată, nu ghicită — la fel ca indicatoarele de fișier macOS, care nu există de cealaltă parte. Prin FTP simplu se pot stabili doar permisiunile, cu comanda opțională <code>SITE CHMOD</code>; un server care nu o oferă o spune, în loc să pară că a reușit.</li>
 <li>La prima conexiune la un server SFTP vi se va cere să aveți încredere în cheia sa gazdă. Peach Commander o reține după aceea (încredere la prima utilizare).</li>
-</ul>
-<h2 id="descarcare-de-la-un-url">Descărcare de la un URL</h2>
-<ul>
-<li>Comanda <strong>Descarcă de la URL</strong> (meniul Rețea) folosește în prezent comanda rapidă Cmd+Shift+D, care este aceeași comandă rapidă ca Salt &gt; Birou. Când ambele sunt disponibile, meniurile pot intra în conflict — porniți descărcarea direct din meniul Rețea pentru siguranță.</li>
 </ul>
 <h2 id="reimprospatarea-folderelor">Reîmprospătarea folderelor</h2>
 <ul>
-<li><strong>Un panou observă modificările externe cu o mică întârziere, nu instantaneu.</strong> Peach Commander verifică folderul curent pentru modificări aproximativ la fiecare 2 secunde, astfel încât un fișier adăugat sau eliminat de o altă aplicație poate dura un moment până să apară. Dacă nu doriți să așteptați, reîmprospătați panoul activ manual cu F2 sau Ctrl+R.</li>
+<li><strong>Doar dosarele de pe acest Mac sunt urmărite pentru modificări din exterior.</strong> Un dosar de pe acest Mac se actualizează singur imediat ce alt program adaugă, modifică sau elimină un fișier în el. O locație la distanță (FTP sau SFTP) și interiorul unei arhive nu sunt urmărite, fiindcă acele protocoale nu oferă nicio cale de a fi anunțat — apăsați F2 sau Ctrl+R pentru a le reciti.</li>
 </ul>
 <h2 id="alte-limite-curente">Alte limite curente</h2>
 <ul>
 <li><strong>Unele căi absolute foarte lungi</strong> (foldere imbricate adânc a căror cale completă este neobișnuit de lungă) pot să nu fie gestionate în mod fiabil. Lucrul mai aproape de vârful arborelui de foldere evită acest lucru.</li>
-<li><strong>Această versiune de previzualizare nu este semnată.</strong> Gatekeeper macOS poate avertiza că aplicația este de la un dezvoltator neidentificat prima dată când o deschideți. Faceți clic dreapta pe aplicație și alegeți Deschide, apoi confirmați, pentru a o rula. Actualizările automate nu sunt încă disponibile în această versiune.</li>
+<li><strong>Această versiune de previzualizare nu este semnată.</strong> Gatekeeper blochează prima lansare, iar modul de a o permite depinde de versiunea de macOS. Pe <strong>macOS 15 Sequoia și mai nou</strong>: faceți dublu clic o dată, închideți avertismentul, apoi mergeți la <strong>Configurări sistem ▸ Confidențialitate și securitate</strong> și apăsați <strong>Deschide oricum</strong> — Apple a eliminat în macOS 15 scurtătura prin clic dreapta pentru software nesemnat, așa că un clic dreapta nu mai ajută. Pe <strong>macOS 13–14</strong>: faceți clic dreapta pe aplicație, alegeți Deschide, apoi confirmați. Actualizările automate nu sunt încă disponibile în această versiune.</li>
 </ul>
 <h2 id="comenzi-rapide">Comenzi rapide</h2>
 <table>
@@ -50,7 +46,7 @@
 </tr>
 <tr>
 <td>Descarcă de la URL</td>
-<td>Cmd+Shift+D</td>
+<td>Cmd+Shift+U</td>
 </tr>
 </tbody>
 </table>

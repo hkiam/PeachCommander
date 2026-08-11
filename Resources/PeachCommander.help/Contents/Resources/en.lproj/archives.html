@@ -75,7 +75,7 @@
 <li>Packing to 7z, xz, bzip2, and RAR relies on external tools. RAR in particular requires the proprietary RAR program to be installed; without it, that format is unavailable.</li>
 <li>Editing a ZIP in place rewrites the whole archive, so file modification timestamps inside it are not preserved.</li>
 <li>Very large individual members are capped at 512 MiB when extracting. Extraction can be cancelled while it runs.</li>
-<li>Extremely large (ZIP64) archives are not supported.</li>
+<li>ZIP64 archives open like any other, so an archive with more than 65,535 items or larger than 4 GB browses normally; the per-member extraction limit above still applies.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="copying-files.html">Copying files</a></li></ul></section>
 </main>

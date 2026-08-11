@@ -21,16 +21,103 @@
 <p>Pour créer un tout nouveau fichier texte à l'emplacement courant, appuyez sur Maj+F4.</p>
 <p><img alt="L'éditeur de texte intégré montrant la coloration syntaxique, le plan des symboles et la minicarte" src="images/editor.png" />
 <em>(Figure : l'éditeur avec la coloration syntaxique, le plan des symboles à gauche et la minicarte à droite.)</em></p>
+<p>Si le fichier appartient à <code>root</code> — une entrée dans <code>/etc</code>, un plist launchd, la configuration d’un serveur web —, l’enregistrement propose de le faire <strong>en tant qu’administrateur</strong> : macOS demande une autorisation comme d’habitude, le contenu passe par un fichier temporaire privé plutôt que par une ligne de commande, et le fichier conserve son propriétaire et ses permissions au lieu de devenir discrètement le vôtre.</p>
+<p>Si le fichier ne peut pas être écrit, vous l’apprenez à l’ouverture et non au moment d’enregistrer : le titre porte un cadenas et la barre d’état nomme l’obstacle — appartenant à un autre utilisateur, des permissions qui interdisent l’écriture, un fichier verrouillé, un volume en lecture seule ou une protection par le système. Seul le premier cas se règle en autorisant l’enregistrement, et c’est le seul où il est proposé ; pour les autres, la demande coûterait un mot de passe et échouerait quand même.</p>
+<p>La gouttière affiche les numéros de ligne, celle du curseur plus claire que les autres ; le bouton à côté du menu d’encodage la masque. Une ligne repliée est numérotée une fois : le numéro désigne toujours la même ligne qu’une erreur de compilation ou une remarque de relecture.</p>
 <h2 id="rechercher-remplacer-et-naviguer">Rechercher, remplacer et naviguer</h2>
 <ul>
 <li>Appuyez sur Cmd+F pour ouvrir la barre de recherche. Pour remplacer du texte, ouvrez la barre de recherche et basculez-la vers la vue de remplacement, ou cliquez sur Rechercher/Remplacer dans la barre d'outils.</li>
 <li>Cliquez sur Formater JSON/XML pour réindenter un document JSON ou XML en une mise en page propre et lisible.</li>
-<li>Cliquez sur Symboles (ou appuyez sur Cmd+Maj+O) pour afficher une barre latérale listant les classes, fonctions et méthodes de votre code. Cliquez sur une entrée pour y sauter directement.</li>
+<li>Cliquez sur Symboles (ou appuyez sur Cmd+Maj+O) pour afficher une barre latérale listant les classes, fonctions et méthodes de votre code — ou, pour un fichier JSON, YAML ou XML, ses clés et ses éléments. Cliquez sur une entrée pour y sauter directement. Voir <a href="#travailler-avec-json-yaml-et-xml">Travailler avec JSON, YAML et XML</a> pour ce que cette structure permet d'autre.</li>
 <li>Appuyez sur Cmd+L pour sauter à une ligne précise.</li>
 <li>Appuyez sur Cmd+\ pour sauter entre une parenthèse et son homologue correspondant.</li>
 <li>Cliquez sur le bouton carte pour afficher ou masquer la minicarte, un aperçu à l'échelle de tout le fichier sur lequel vous pouvez cliquer pour faire défiler.</li>
 <li>Utilisez le menu Encodage de la barre d'outils si le fichier a été enregistré avec un encodage autre que celui par défaut.</li>
 </ul>
+<h2 id="travailler-avec-json-yaml-et-xml">Travailler avec JSON, YAML et XML</h2>
+<p>Ces trois formats bénéficient d'un traitement à part, car un fichier de configuration se parcourt par sa structure et non par ses numéros de ligne.</p>
+<p>La barre latérale <strong>Symboles</strong> liste les clés d'un fichier JSON ou YAML et les éléments d'un fichier XML, imbriqués comme l'est le document. Un élément est nommé d'après son attribut <code>id</code>, <code>name</code> ou <code>key</code> lorsqu'il en a un, de sorte que vingt entrées <code>&lt;server&gt;</code> se distinguent. Une liste affiche ses entrées sous la forme <code>[0]</code>, <code>[1]</code>, et lorsqu'une entrée commence par une clé, celle-ci est indiquée aussi — <code>[0] name</code>. Le champ de filtre au-dessus de la liste retrouve une clé par son nom dans un fichier de n'importe quelle taille, et la barre d'état affiche toujours le chemin de ce qui contient le curseur.</p>
+<p>Un fichier cassé reçoit tout de même un plan jusqu'à l'endroit où il casse — le moment où l'on en a le plus besoin.</p>
+<p>Le menu <strong>Structure</strong> — dans la barre des menus tant que l'éditeur est au premier plan — vous déplace dans cette structure :</p>
+<ul>
+<li><strong>Aller au nœud englobant</strong> (Ctrl+Cmd+Haut) sort vers le bloc qui contient le curseur : de <code>image:</code> au service auquel il appartient.</li>
+<li><strong>Aller au premier enfant</strong> (Ctrl+Cmd+Bas) entre.</li>
+<li><strong>Aller au frère précédent / suivant</strong> (Ctrl+Cmd+Gauche / Droite) passe d'une entrée à l'autre au même niveau en enjambant tout le bloc intermédiaire — d'un serveur au suivant sans défiler devant quarante lignes de réglages.</li>
+<li><strong>Sélectionner le nœud englobant</strong> (Ctrl+Cmd+A) sélectionne le bloc où se trouve le curseur. Appuyez à nouveau et la sélection s'étend au bloc qui l'entoure, ce qui permet de sélectionner exactement un service, ou exactement un élément, sans faire glisser la souris.</li>
+<li><strong>Copier le chemin structurel</strong> (Ctrl+Cmd+C) copie la position du curseur sous la forme d'une expression que les outils du format acceptent : <code>.services.web.ports[0]</code> pour JSON et YAML, ce qu'attendent <code>jq</code> et <code>yq</code>, et <code>//server[@id='web-1']/port</code> pour XML, c'est-à-dire un XPath. Les clés qui ne sont pas de simples mots sont mises entre guillemets pour vous — <code>."content-type"</code> et non <code>.content-type</code>, qui en <code>jq</code> signifie tout autre chose.</li>
+<li><strong>Valider le document</strong> (Ctrl+Cmd+V) vérifie le fichier et place le curseur <strong>sur le problème</strong>, la raison apparaissant dans le titre de la fenêtre. Il signale ce qu'aucun autre outil de la chaîne ne signalera : une clé en double, que tout analyseur JSON accepte en silence en écartant l'une des deux valeurs, et une virgule finale, que l'analyseur d'Apple accepte alors que Python, Go et <code>jq</code> la refusent.</li>
+</ul>
+<p>Les fichiers longs se lisent en repliant ce sur quoi on ne travaille pas. <strong>Replier le nœud</strong> (Option+Cmd+Gauche) replie le bloc où se trouve le curseur — le plus proche qui ait un corps, de sorte qu'un appui sur une ligne unique replie la table qui l'entoure —, <strong>Déplier le nœud</strong> (Option+Cmd+Droite) le rouvre, <strong>Replier le niveau supérieur</strong> (Option+Cmd+Haut) replie tout au niveau le plus externe pour une vue d'ensemble, et <strong>Tout déplier</strong> (Option+Cmd+Bas) rétablit l'affichage. La ligne portant la clé ou la balise reste visible et est marquée, si bien qu'un bloc replié se voit comme tel ; les numéros de ligne sautent ce qui est caché. Rien n'est retiré du document — le texte n'est simplement pas dessiné, donc l'enregistrement, l'annulation et la recherche ne changent pas, et la recherche trouve toujours le texte à l'intérieur d'un bloc replié. Placer le curseur dans un repli l'ouvre, et toute modification ouvre tout : un repli est une paire de positions, et insérer du texte les déplace.</p>
+<p>Le même menu porte les transformations, qui réécrivent tout le document — ou, si du texte est sélectionné, seulement celui-là — en une seule étape annulable : <strong>Compacter (une ligne)</strong> pour un corps JSON qui doit tenir dans une commande <code>curl</code>, <strong>Trier les clés récursivement</strong> pour que deux exports des mêmes réglages ne montrent plus aucune différence, <strong>Échapper en chaîne JSON</strong> et <strong>Déséchapper la chaîne JSON</strong> pour la corvée quotidienne consistant à mettre un certificat, un script ou un document JSON entier <em>dans</em> un champ JSON, et <strong>Convertir JSON en YAML</strong>. Le compactage conserve l'ordre des clés et l'écriture exacte de chaque nombre, car <code>1.0</code> et <code>1</code> ne sont pas la même version ; le tri ne le fait pas, délibérément, puisque trier est un réordonnancement. L'échappement s'applique à n'importe quel fichier, pas seulement à JSON. Il n'y a pas de YAML vers JSON, et c'est un choix : il faudrait un analyseur YAML que le système n'a pas, et une mauvaise supposition sur une ancre ou un <code>true</code> entre guillemets transforme un fichier de configuration en un autre.</p>
+<p>Pour JSON et XML, le fichier est vérifié par un véritable analyseur. Pour YAML, il n'y en a aucun sur le système : la vérification couvre donc les erreurs repérables sans analyseur — une tabulation utilisée pour indenter, ce que YAML interdit formellement, une indentation qui ne correspond à rien, une clé en double, un guillemet non fermé — et le dit, au lieu d'affirmer que le fichier est valide.</p>
+<h2 id="filtrer-par-une-commande-shell">Filtrer par une commande shell</h2>
+<p>Cliquez sur <strong>Filtrer…</strong> (ou appuyez sur Shift+Cmd+) pour envoyer le texte sélectionné dans une commande et le remplacer par ce que la commande affiche. Si rien n’est sélectionné, tout le document y passe. Les outils que vous connaissez déjà deviennent ainsi des commandes de l’éditeur : <code>sort -u</code> supprime les lignes en double, <code>jq .</code> rend une réponse JSON lisible, <code>column -t</code> aligne un tableau, <code>base64 -d</code> décode un bloc, <code>openssl x509 -noout -text</code> affiche un certificat en clair.</p>
+<p>La commande s’exécute dans votre shell de connexion : votre <code>PATH</code>, vos alias et vos fonctions agissent exactement comme dans le Terminal, et les tubes et les guillemets ont le sens attendu. Le répertoire de travail est celui du fichier en cours d’édition, si bien que les chemins relatifs se résolvent là où vous l’attendez. Les commandes utilisées sont mémorisées et proposées dans la liste déroulante la fois suivante.</p>
+<p>Si la commande échoue, votre texte reste intact et le message d’erreur de la commande apparaît dans la barre d’état : une erreur de syntaxe <code>jq</code> ne se retrouve jamais collée dans votre fichier. Une commande qui n’affiche rien vide la sélection — c’est exactement à cela que sert un filtrage avec <code>grep</code> — et Cmd+Z la restitue. Une commande qui ne se termine pas est arrêtée au bout de vingt secondes.</p>
+<h2 id="trier-dedupliquer-et-nettoyer-des-lignes">Trier, dédupliquer et nettoyer des lignes</h2>
+<p>Le menu <strong>Lignes</strong> — dans la barre d’outils, et dans la barre des menus quand l’éditeur est au premier plan — applique les modifications qui reviennent sans cesse, sans commande à taper et sans outil à installer :</p>
+<ul>
+<li>Trier A→Z ou Z→A, en comparant les nombres par leur valeur, de sorte que <code>file9</code> précède <code>file10</code>.</li>
+<li>Inverser l’ordre des lignes.</li>
+<li>Supprimer les lignes en double, en gardant la première de chacune et en laissant les autres dans leur ordre.</li>
+<li>Supprimer les lignes vides, y compris celles qui ne semblent vides que parce qu’elles contiennent des espaces.</li>
+<li>Supprimer les espaces en fin de ligne — la différence invisible qui rend un diff illisible.</li>
+<li>Ne garder que les lignes contenant un texte que vous saisissez, ou les supprimer.</li>
+</ul>
+<p>Si du texte est sélectionné, chacune de ces opérations agit sur les lignes sélectionnées ; la sélection est d’abord étendue aux lignes entières, car trier une demi-ligne n’a aucun sens. Sans sélection, elles agissent sur tout le document. Chacune est une seule étape d’annulation : Cmd+Z revient sur l’opération entière.</p>
+<p>Les fins de ligne se trouvent à côté du menu Encodage : <strong>LF</strong> pour Unix et macOS, <strong>CRLF</strong> pour Windows, <strong>CR</strong> pour l’ancien Mac OS, et <em>(mixed)</em> lorsqu’un fichier en contient plusieurs sortes — souvent la raison d’une erreur incompréhensible. Choisissez-en une autre pour convertir tout le fichier en une étape annulable. Les opérations sur les lignes ne changent jamais la fin de ligne d’elles-mêmes : un fichier CRLF trié reste en CRLF.</p>
+<h2 id="formater-un-fichier">Formater un fichier</h2>
+<p>Cliquez sur <strong>Formater</strong> dans l’éditeur (la même commande existe dans la visionneuse) pour réindenter le fichier. Peach Commander choisit un formateur d’après l’extension et indique dans la barre d’état lequel a servi, par exemple <em>formatted (jq)</em> — vous savez donc toujours ce qui a façonné le résultat.</p>
+<p><strong>Sans rien installer</strong> : JSON, XML, SVG, plists, HTML, configuration de type INI et YAML. YAML est un cas à part : il est nettoyé plutôt que réindenté, car en YAML l’indentation <em>est</em> la structure, et la réécrire sans un vrai analyseur YAML pourrait changer le sens du fichier. Les espaces en fin de ligne disparaissent, les tabulations égarées dans l’indentation deviennent des espaces, les suites de lignes vides se réduisent — et tout ce qui est dans un scalaire de bloc (<code>|</code> ou <code>&gt;</code>) reste tel quel, car là l’espace est du contenu.</p>
+<p><strong>Les meilleurs formateurs prennent le relais automatiquement.</strong> Si l’un d’eux est installé, Peach Commander l’utilise : un outil dédié correspond généralement à ce qu’attend l’écosystème — et pour les formats de configuration, il préserve vos commentaires :</p>
+<table>
+<thead>
+<tr>
+<th>Installez</th>
+<th>et vous obtenez</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yq</code> ou <code>prettier</code></td>
+<td>formatage YAML complet, commentaires préservés</td>
+</tr>
+<tr>
+<td><code>taplo</code></td>
+<td>TOML</td>
+</tr>
+<tr>
+<td><code>sqlformat</code> ou <code>sql-formatter</code></td>
+<td>SQL</td>
+</tr>
+<tr>
+<td><code>prettier</code></td>
+<td>Markdown</td>
+</tr>
+<tr>
+<td><code>jq</code></td>
+<td>JSON, dans le style habituel</td>
+</tr>
+<tr>
+<td><code>xmllint</code></td>
+<td>XML et SVG</td>
+</tr>
+</tbody>
+</table>
+<p>Si un type de fichier n’a pas de formateur, le bouton est grisé et l’entrée de menu désactivée. Essayer quand même vous dit pourquoi — <em>« taplo n’est pas installé »</em> ne se lit pas comme <em>« JSON invalide »</em>.</p>
+<h3 id="utiliser-votre-propre-formateur">Utiliser votre propre formateur</h3>
+<p>Pour formater un type que Peach Commander ne connaît pas, ou pour employer un autre outil, créez <code>formatters.ini</code> dans le dossier de configuration — une section par extension :</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[swift]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">swiftformat</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">--quiet stdin</span>
+
+<span class="k">[sql]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/opt/homebrew/bin/sqlfluff</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">format -</span>
+</code></pre></div>
+
+<p><code>tool</code> est un nom d’exécutable (recherché comme le ferait votre shell) ou un chemin absolu ; <code>args</code> sont passés tels quels. Le texte du fichier entre par l’entrée standard et le texte formaté est relu sur la sortie standard, donc tout formateur en ligne de commande bien élevé fonctionne. Vos entrées l’emportent sur tout le reste. Un modèle commenté est créé au premier lancement : ouvrez le fichier et complétez-le.</p>
+<p>Les plugins peuvent aussi fournir des formateurs — voir <a href="plugins.md">Plugins</a>.</p>
 <h2 id="modifier-un-fichier-octet-par-octet">Modifier un fichier octet par octet</h2>
 <ol>
 <li>Sélectionnez le fichier dans un panneau.</li>
@@ -76,14 +163,51 @@
 <td>Cmd+\</td>
 </tr>
 <tr>
+<td>Aller au nœud englobant (JSON/YAML/XML)</td>
+<td>Ctrl+Cmd+Haut</td>
+</tr>
+<tr>
+<td>Aller au premier enfant</td>
+<td>Ctrl+Cmd+Bas</td>
+</tr>
+<tr>
+<td>Aller au frère précédent / suivant</td>
+<td>Ctrl+Cmd+Gauche / Droite</td>
+</tr>
+<tr>
+<td>Sélectionner le nœud englobant</td>
+<td>Ctrl+Cmd+A</td>
+</tr>
+<tr>
+<td>Copier le chemin structurel</td>
+<td>Ctrl+Cmd+C</td>
+</tr>
+<tr>
+<td>Valider le document</td>
+<td>Ctrl+Cmd+V</td>
+</tr>
+<tr>
+<td>Replier / déplier le nœud</td>
+<td>Option+Cmd+Gauche / Droite</td>
+</tr>
+<tr>
+<td>Replier le niveau supérieur / tout déplier</td>
+<td>Option+Cmd+Haut / Bas</td>
+</tr>
+<tr>
 <td>Annuler / rétablir (éditeur hexa)</td>
 <td>Cmd+Z / Cmd+Maj+Z</td>
+</tr>
+<tr>
+<td>Filtrer la sélection par une commande</td>
+<td>Shift+Cmd+\</td>
 </tr>
 </tbody>
 </table>
 <h2 id="remarques">Remarques</h2>
 <ul>
-<li>La coloration syntaxique couvre JSON, C, C#, Java, JavaScript, TypeScript, Python et Rust. Les autres types de fichiers s'ouvrent et se modifient normalement avec une coloration basique, mais la coloration détaillée et le plan des symboles ne sont disponibles que pour les langages pris en charge.</li>
+<li>La coloration syntaxique couvre JSON, C, C#, Java, JavaScript, TypeScript, Python et Rust. Les autres types de fichiers s'ouvrent et se modifient normalement avec une coloration basique, mais la coloration détaillée n'est disponible que pour les langages pris en charge.</li>
+<li>Le plan couvre les langages de programmation pris en charge ainsi que JSON, YAML et XML — y compris les formats fondés sur XML comme <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> et <code>.storyboard</code>. Les commandes de navigation structurelle, de chemin et de validation s'appliquent à JSON, YAML et XML.</li>
 <li>Le plan des symboles et Aller à la ligne s'appliquent à l'éditeur de texte. L'éditeur hexadécimal est destiné à l'inspection binaire et aux modifications au niveau de l'octet, pas au texte.</li>
 <li>Les deux éditeurs conservent une sauvegarde du fichier original au premier enregistrement, de sorte qu'une modification accidentelle est facile à annuler en restaurant cette sauvegarde.</li>
 </ul>

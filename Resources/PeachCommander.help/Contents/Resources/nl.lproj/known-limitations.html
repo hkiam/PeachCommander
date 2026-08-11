@@ -13,27 +13,23 @@
 <p>Peach Commander doet veel, maar een paar functies hebben in de huidige versie eerlijke beperkingen. Die vooraf kennen voorkomt verwarring als iets zich onverwacht gedraagt. Deze pagina somt de huidige beperkingen op en, waar mogelijk, een eenvoudige tijdelijke oplossing.</p>
 <h2 id="archieven">Archieven</h2>
 <ul>
-<li><strong>Zeer grote ZIP-bestanden (ZIP64) kunnen niet door de ingebouwde lezer worden geopend.</strong> Standaard ZIP-, TAR- en met gzip gecomprimeerde TAR-archieven openen rechtstreeks als mappen. ZIP64-archieven — gebruikt wanneer een archief meer dan ongeveer 65.000 items bevat of groter is dan 4 GB — vallen buiten wat de ingebouwde lezer aankan, dus ze kunnen mislukken bij het openen of onvolledig worden getoond.</li>
+<li><strong>Gesplitste archieven (in meerdere delen) kunnen niet worden geopend.</strong> Standaard-ZIP — inclusief ZIP64, dus meer dan 65.535 items of groter dan 4 GB — en ook TAR en met gzip gecomprimeerde TAR openen direct als map. Een archief dat over meerdere bestanden is verdeeld (<code>.z01</code>, <code>.zip.001</code>) wordt niet ondersteund: voeg de delen eerst samen of pak het uit met het programma dat het heeft gemaakt.</li>
 <li><strong>Versleutelde ZIP-archieven</strong> (zowel ouder ZipCrypto als WinZip AES) worden ondersteund om te doorbladeren, maar er wordt om het wachtwoord gevraagd.</li>
 <li>Andere formaten zoals CPIO, ISO, CAB, LZH, XAR en PAX openen via een hulpprogramma in plaats van de ingebouwde lezer.</li>
 </ul>
 <h2 id="netwerk-sftp-scp">Netwerk (SFTP / SCP)</h2>
 <ul>
-<li><strong>Bestandsattributen wijzigen via SFTP heeft in deze versie geen effect.</strong> Je kunt bladeren, downloaden en uploaden via SFTP/SCP, maar verzoeken om rechten, eigendom of tijdstempels op een externe server te wijzigen worden stilzwijgend genegeerd. Maak die wijzigingen op de server zelf, of via een ander protocol.</li>
+<li><strong>Via SFTP kunnen rechten en tijdstempels worden gewijzigd, een eigenaar niet.</strong> Het protocol draagt eigenaar en groep alleen als getallen en kan een gebruikersnaam niet opzoeken, dus een eigenaarswijziging wordt geweigerd in plaats van geraden — net als macOS-bestandsvlaggen, die aan de andere kant niet bestaan. Via gewoon FTP kunnen alleen rechten worden gezet, met de optionele opdracht <code>SITE CHMOD</code>; een server die die niet aanbiedt, zegt dat in plaats van succes voor te wenden.</li>
 <li>Bij de eerste verbinding met een SFTP-server wordt gevraagd de hostsleutel te vertrouwen. Peach Commander onthoudt die daarna (vertrouwen bij eerste gebruik).</li>
-</ul>
-<h2 id="downloaden-van-een-url">Downloaden van een URL</h2>
-<ul>
-<li>De opdracht <strong>Downloaden van URL</strong> (Netwerk-menu) gebruikt momenteel de sneltoets Cmd+Shift+D, dezelfde sneltoets als Ga &gt; Bureaublad. Als beide beschikbaar zijn, kunnen de menu's botsen — start de download rechtstreeks vanuit het Netwerk-menu om zeker te zijn.</li>
 </ul>
 <h2 id="map-verversen">Map verversen</h2>
 <ul>
-<li><strong>Een paneel merkt externe wijzigingen met een korte vertraging op, niet meteen.</strong> Peach Commander controleert de huidige map ongeveer elke 2 seconden op wijzigingen, dus een door een andere app toegevoegd of verwijderd bestand kan even duren voordat het verschijnt. Wil je niet wachten, ververs het actieve paneel dan handmatig met F2 of Ctrl+R.</li>
+<li><strong>Alleen mappen op deze Mac worden op wijzigingen van buiten gecontroleerd.</strong> Een map op deze Mac werkt zichzelf bij zodra een ander programma er een bestand aanmaakt, wijzigt of verwijdert. Een externe locatie (FTP of SFTP) en de binnenkant van een archief worden niet gecontroleerd, omdat die protocollen geen manier bieden om bericht te krijgen — druk daar op F2 of Ctrl+R om opnieuw te lezen.</li>
 </ul>
 <h2 id="overige-huidige-beperkingen">Overige huidige beperkingen</h2>
 <ul>
 <li><strong>Sommige zeer lange absolute paden</strong> (diep geneste mappen met een ongewoon lang volledig pad) worden mogelijk niet betrouwbaar verwerkt. Dichter bij de top van de mapstructuur werken vermijdt dit.</li>
-<li><strong>Deze previewversie is niet ondertekend.</strong> macOS Gatekeeper kan de eerste keer waarschuwen dat de app van een niet-geïdentificeerde ontwikkelaar is. Klik met de rechtermuisknop op de app en kies Open, bevestig daarna, om hem uit te voeren. Automatische updates zijn in deze versie nog niet beschikbaar.</li>
+<li><strong>Deze voorvertoningsbuild is niet ondertekend.</strong> Gatekeeper blokkeert de eerste start, en hoe je die toestaat hangt af van je macOS-versie. Op <strong>macOS 15 Sequoia en later</strong>: dubbelklik één keer, sluit de waarschuwing en ga naar <strong>Systeeminstellingen ▸ Privacy en beveiliging</strong> en klik op <strong>Toch openen</strong> — Apple heeft de snelkoppeling via rechtsklikken voor niet-ondertekende software in macOS 15 verwijderd, dus rechtsklikken helpt daar niet meer. Op <strong>macOS 13–14</strong>: klik met de rechtermuisknop op de app en kies Open, bevestig daarna. Automatische updates zijn in deze build nog niet beschikbaar.</li>
 </ul>
 <h2 id="sneltoetsen">Sneltoetsen</h2>
 <table>
@@ -50,7 +46,7 @@
 </tr>
 <tr>
 <td>Downloaden van URL</td>
-<td>Cmd+Shift+D</td>
+<td>Cmd+Shift+U</td>
 </tr>
 </tbody>
 </table>

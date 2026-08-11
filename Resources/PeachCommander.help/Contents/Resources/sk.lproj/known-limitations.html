@@ -13,27 +13,23 @@
 <p>Peach Commander dokáže veľa, ale niekoľko funkcií má v aktuálnej verzii úprimné hranice. Ich znalosť vopred ušetrí zmätok, keď sa niečo správa nečakane. Táto stránka uvádza aktuálne obmedzenia a, kde je to možné, jednoduché obídenie.</p>
 <h2 id="archivy">Archívy</h2>
 <ul>
-<li><strong>Veľmi veľké súbory ZIP (ZIP64) nemožno otvoriť vstavaným čítačom.</strong> Štandardné archívy ZIP, TAR a TAR komprimovaný gzipom sa otvárajú priamo ako priečinky. Archívy ZIP64 — používané, keď archív obsahuje viac ako približne 65 000 položiek alebo presahuje 4 GB — sú mimo toho, čo zvláda natívny čítač, takže sa môžu nepodariť otvoriť alebo vypísať neúplne.</li>
+<li><strong>Rozdelené (viacdielne) archívy nie je možné otvoriť.</strong> Štandardný ZIP — vrátane ZIP64, teda viac ako 65 535 položiek alebo nad 4 GB — a tiež TAR a TAR komprimovaný gzipom sa otvárajú priamo ako zložky. Archív rozdelený do viacerých súborov (<code>.z01</code>, <code>.zip.001</code>) podporovaný nie je: najprv časti spojte alebo ho rozbaľte nástrojom, ktorý ho vytvoril.</li>
 <li><strong>Šifrované archívy ZIP</strong> (staršie ZipCrypto aj WinZip AES) sú podporované na prehliadanie, ale budete požiadaní o heslo.</li>
 <li>Iné formáty ako CPIO, ISO, CAB, LZH, XAR a PAX sa otvárajú cez pomocný nástroj namiesto natívneho čítača.</li>
 </ul>
 <h2 id="siet-sftp-scp">Sieť (SFTP / SCP)</h2>
 <ul>
-<li><strong>Zmena atribútov súborov cez SFTP nemá v tejto verzii žiadny účinok.</strong> Môžete prehliadať, sťahovať a nahrávať cez SFTP/SCP, ale požiadavky na zmenu oprávnení, vlastníctva alebo časových značiek na vzdialenom serveri sa ticho ignorujú. Tieto zmeny vykonajte na samotnom serveri, alebo cez iný protokol.</li>
+<li><strong>Cez SFTP možno meniť oprávnenia a časové značky, vlastníka nie.</strong> Protokol vedie vlastníka a skupinu len ako čísla a meno používateľa cez neho rozpoznať nemožno — zmena vlastníka sa preto odmietne, namiesto toho, aby sa hádala, rovnako ako príznaky súborov macOS, ktoré na druhej strane neexistujú. Cez obyčajné FTP možno nastaviť len oprávnenia, voliteľným príkazom <code>SITE CHMOD</code>; server, ktorý ho neponúka, to povie, namiesto toho, aby predstieral úspech.</li>
 <li>Pri prvom pripojení k serveru SFTP budete požiadaní, aby ste dôverovali jeho hostiteľskému kľúču. Peach Commander si ho potom zapamätá (dôvera pri prvom použití).</li>
-</ul>
-<h2 id="stahovanie-z-url">Sťahovanie z URL</h2>
-<ul>
-<li>Príkaz <strong>Stiahnuť z URL</strong> (ponuka Sieť) momentálne používa skratku Cmd+Shift+D, ktorá je rovnaká skratka ako Prejsť &gt; Plocha. Keď sú dostupné oba, ponuky môžu kolidovať — pre istotu spustite sťahovanie priamo z ponuky Sieť.</li>
 </ul>
 <h2 id="obnovenie-priecinka">Obnovenie priečinka</h2>
 <ul>
-<li><strong>Panel si všimne vonkajšie zmeny s malým oneskorením, nie okamžite.</strong> Peach Commander kontroluje aktuálny priečinok na zmeny približne každé 2 sekundy, takže súbor pridaný alebo odstránený inou aplikáciou sa môže objaviť až po chvíli. Ak nechcete čakať, obnovte aktívny panel manuálne klávesom F2 alebo Ctrl+R.</li>
+<li><strong>Na zmeny zvonku sa sledujú len zložky na tomto Macu.</strong> Zložka na tomto Macu sa aktualizuje sama, len čo v nej iný program vytvorí, zmení alebo odstráni súbor. Vzdialené umiestnenie (FTP alebo SFTP) ani vnútro archívu sa nesledujú, pretože tieto protokoly neponúkajú žiadny spôsob, ako dať vedieť — tam stlačte F2 alebo Ctrl+R na opätovné načítanie.</li>
 </ul>
 <h2 id="ine-aktualne-hranice">Iné aktuálne hranice</h2>
 <ul>
 <li><strong>Niektoré veľmi dlhé absolútne cesty</strong> (hlboko vnorené priečinky, ktorých úplná cesta je nezvyčajne dlhá) nemusia byť spracované spoľahlivo. Práca bližšie k vrcholu stromu priečinkov sa tomu vyhne.</li>
-<li><strong>Toto ukážkové zostavenie nie je podpísané.</strong> Gatekeeper v macOS môže varovať, že aplikácia je od neidentifikovaného vývojára, keď ju prvýkrát otvoríte. Kliknite pravým tlačidlom na aplikáciu a vyberte Otvoriť, potom potvrďte, na jej spustenie. Automatické aktualizácie v tomto zostavení zatiaľ nie sú dostupné.</li>
+<li><strong>Toto zostavenie náhľadu nie je podpísané.</strong> Gatekeeper blokuje prvé spustenie a spôsob, ako ho povoliť, závisí od verzie macOS. Na <strong>macOS 15 Sequoia a novšom</strong>: raz dvakrát kliknite, zavrite varovanie a potom prejdite do <strong>Nastavení systému ▸ Súkromie a bezpečnosť</strong> a kliknite na <strong>Aj tak otvoriť</strong> — Apple v macOS 15 odstránil skratku pravým tlačidlom pre nepodpísaný softvér, takže kliknutie pravým tlačidlom tam už nepomôže. Na <strong>macOS 13–14</strong>: kliknite na aplikáciu pravým tlačidlom, zvoľte Otvoriť a potvrďte. Automatické aktualizácie v tomto zostavení zatiaľ nie sú dostupné.</li>
 </ul>
 <h2 id="skratky">Skratky</h2>
 <table>
@@ -50,7 +46,7 @@
 </tr>
 <tr>
 <td>Stiahnuť z URL</td>
-<td>Cmd+Shift+D</td>
+<td>Cmd+Shift+U</td>
 </tr>
 </tbody>
 </table>

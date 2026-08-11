@@ -27,6 +27,13 @@
 <li>Als tekst er verminkt uitziet, klik je op Codering in de werkbalk (of druk je op E) om door tekstcoderingen te bladeren tot het correct leest; de automatische instelling krijgt het meestal goed.</li>
 <li>Druk op W om regelterugloop voor lange regels te wisselen.</li>
 </ul>
+<h2 id="notities-bij-een-regel">Notities bij een regel</h2>
+<p>Als de Notities-plug-in is geïnstalleerd, kan een notitie over een bepaalde regel van een bestand gaan in plaats van over het hele bestand.</p>
+<ul>
+<li>Zet de cursor op de regel en kies <strong>Weergave ▸ Notitie bij deze regel…</strong> (Cmd+Shift+N). De notitie-editor opent met de bestandsnaam en het regelnummer in de titel.</li>
+<li>Regels die al een notitie hebben, verschijnen als groep <strong>Notities</strong> in het markeringenpaneel onderin het venster, naast de zoekresultaten. Cmd+Ctrl+M opent het paneel; dubbelklik op een regel om ernaartoe te springen.</li>
+<li>De notities staan bij al uw andere notities, dus het notitieoverzicht en Bestanden zoeken vinden ze net zo goed. Verwijderen doet u in de notitie-editor — de sluitknop van het paneel verbergt alleen de groep.</li>
+</ul>
 <h2 id="quick-view-en-quick-look">Quick View en Quick Look</h2>
 <p>Quick View toont een live voorbeeld in het paneel dat je <em>niet</em> gebruikt, zodat je aan de ene kant kunt blijven bladeren terwijl je aan de andere kant een voorbeeld bekijkt.</p>
 <ol>
@@ -55,6 +62,11 @@
 <p>Wissel van engine met het menu bovenin de weergave; de gekozen engine wordt meteen gebruikt en het resultaat bewaard, zodat twee engines op hetzelfde bestand vergelijken direct gaat.</p>
 <p>De broncode wordt syntaxgemarkeerd, en twee knoppen gaan verder: <strong>Bewaar als…</strong> schrijft hem naar een bestand en <strong>Open in editor</strong> geeft hem aan wat op uw Mac <code>.java</code> opent. Een heel groot resultaat wordt zonder markering getoond zodat het meteen verschijnt in plaats van na een pauze; de statusregel meldt dat.</p>
 <p>Resultaten worden op schijf gecachet, zodat een eerder bekeken bestand meteen opengaat; de sleutel bevat de grootte en datum van het bestand en de argumenten van de engine, dus een opnieuw gebouwde class of een gewijzigde optie wordt opnieuw gedecompileerd. De gekozen engine wordt per bestandssoort onthouden. Een profiel kan met <code>extends = cfr</code> van een ingebouwde engine erven en alleen de opties overschrijven — handig bij twee presets van dezelfde engine.</p>
+<p>Zet <strong>Vergelijken</strong> aan om een tweede paneel met zijn eigen enginemenu te openen. Twee decompilers falen op verschillende plekken, dus ze naast elkaar zien is vaak sneller dan beslissen welke je vertrouwt; kies je aan één kant <code>javap</code>, dan staat de bytecode naast de broncode. Beide panelen delen de cache, dus wisselen tussen al uitgevoerde engines gaat direct.</p>
+<p>F3 op een hele <code>.jar</code>, <code>.apk</code> of <code>.dex</code> decompileert alles in één keer en toont een pakketboom naast de broncode. Het zoekveld boven de boom zoekt in elke klasse — precies de vraag die één klasse niet kan beantwoorden: waar een tekenreeks, een aanroep of een constante werkelijk voorkomt, als je de klasse nog niet kent. Treffers versmallen de boom en de eerste opent op zijn regel. Met Enter opent een JAR nog steeds als archief; de twee werkwoorden blijven gescheiden.</p>
+<p>Er is een tweede, directere route: zet de cursor op een <code>.class</code>-bestand of op een heel archief en kies <strong>Decompileren naar broncode</strong> (menu Opdrachten, contextmenu of ⌘⇧J). De klassen worden gedecompileerd en het resultaat opent in het andere paneel als gewone <code>.java</code>-bestanden. Vanaf daar geldt de hele bestandsbeheerder — F3 toont ze met Peach Commanders eigen Java-opmaak, Alt+F7 zoekt er dwars door, F5 kopieert ze eruit, en je kunt ze vergelijken of van tags voorzien als al het andere. Voor het meeste werk is dat beter dan een eigen venster; daarom kan de boom van de plugin worden uitgezet in Instellingen ▸ Decompiler.</p>
+<p>Een tweede plugin doet hetzelfde voor .NET: F3 op een managed <code>.dll</code>, <code>.exe</code> of <code>.winmd</code> toont de types als C#, <strong>Assembly naar broncode decompileren</strong> (⌘⇧N) zet ze in een paneel, en de zoekfunctie kan net zo in een assembly kijken. Het stuurt <strong>ILSpy</strong> (MIT, <code>dotnet tool install -g ilspycmd</code>) aan voor broncode, of <strong>monodis</strong> uit Mono voor IL — de .NET-tegenhanger van <code>javap</code>. Een native <code>.dll</code> heeft dezelfde extensie en geen broncode; de plugin controleert dat vóór het openen en laat die aan de ingebouwde viewer.</p>
+<p>De instellingenpagina heeft een knop <strong>Engines controleren</strong>, en die is het waard: 'geïnstalleerd' betekent elders alleen dat het bestand er is, en een Java-engine op een Mac zonder JDK is aanwezig en kan niet werken. De controle vraagt elke engine om zijn versie en zegt welke echt werken.</p>
 <p>Android hoort er ook bij: F3 op een <code>.dex</code>-bestand gebruikt <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), dat Dalvik-bytecode terugbrengt naar Java. Daarvoor was één enginebeschrijving genoeg — hetzelfde mechanisme, ander formaat.</p>
 <p>De plug-in staat <strong>uit tot u hem aanzet</strong>, bij Instellingen ▸ Plug-ins — de meeste mensen openen nooit een classbestand, en zonder engine heeft hij geen nut.</p>
 <p>Wilt u een eigen engine toevoegen, maak dan <code>decompilers.ini</code> in de enginemap:</p>
@@ -93,6 +105,14 @@
 <tr>
 <td>Zoeken binnen de viewer</td>
 <td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Notitie bij de regel onder de cursor</td>
+<td>Cmd+Shift+N</td>
+</tr>
+<tr>
+<td>Markeringenpaneel tonen of verbergen</td>
+<td>Cmd+Ctrl+M</td>
 </tr>
 <tr>
 <td>Volgende / vorige overeenkomst</td>

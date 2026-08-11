@@ -55,7 +55,7 @@
 </table>
 <h2 id="bemrkninger">Bemærkninger</h2>
 <ul>
-<li>Afbrudte overførsler og uploads kan genoptage, hvor de slap, i stedet for at starte forfra.</li>
+<li>En afbrudt download fortsætter, hvor den stoppede: er filen allerede delvist der, og serveren accepterer en genstart, sendes kun den manglende hale. En server, der afviser det, starter blot filen forfra. En upload fortsætter på samme måde, når filen på serveren er kortere end den, der sendes.</li>
 <li>For FTPS-servere med et selvsigneret certifikat skal du slå indstillingen om at acceptere et utroværdigt certifikat til i den forbindelses indstillinger.</li>
 <li>En SOCKS5-proxy kan indstilles pr. forbindelse for almindelig FTP. Det er ikke understøttet at dirigere en krypteret FTPS-forbindelse gennem en proxy.</li>
 <li>Eksisterende FTP-forbindelser fra Total Commander kan importeres.</li>

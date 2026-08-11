@@ -53,7 +53,10 @@
 <h2 id="opombe">Opombe</h2>
 <ul>
 <li>Spreminjanje lastnika ali skupine običajno zahteva pravice, ki jih kot običajen uporabnik nimate; ko se to zgodi, se sprememba prijavi kot neuspešna namesto uporabljena, preostale vaše spremembe pa še vedno gredo skozi.</li>
-<li>Komentarji so shranjeni v datoteki <code>descript.ion</code> poleg vaših elementov in jih je mogoče hraniti tudi kot komentarje Finder, odvisno od vaših nastavitev. Oba se bereta pri prikazu komentarja.</li>
+<li>Komentarji so shranjeni v datoteki <code>descript.ion</code> poleg vaših elementov in jih je mogoče hraniti tudi kot komentarje Finder, odvisno od vaših nastavitev. Oba se bereta pri prikazu komentarja. Oblika je ista, kot jo uporabljajo Total Commander in več drugih upravljalnikov datotek, zato je komentar, napisan tu, tam berljiv.</li>
+<li>Komentarji s <strong>prelomi vrstic</strong> in komentarji v <strong>UTF-16</strong> se berejo in zapisujejo tako, kot to počne Total Commander: prelom vrstice je shranjen kot <code>\n</code>, ki mu sledita dva označevalna bajta, ki jih je TC dal registrirati za to, in datoteka, ki je bila UTF-16, ostane UTF-16, ko v njej spremenite en komentar. Brez te oznake je <code>\n</code> v komentarju nekoga drugega dva natipkana znaka in ostane nedotaknjen.</li>
+<li><strong>Komentar sledi datoteki.</strong> Kopiranje, premikanje in preimenovanje ga vzamejo s sabo — pri premikanju in kopiranju v <code>descript.ion</code> ciljne mape, pri preimenovanju na novo ime, tudi ko preimenovanje razveljavite. Izjema je pripenjanje datoteke na konec druge: datoteka, ki ostane, ohrani svoj komentar, ker je še vedno ista datoteka.</li>
+<li>Če je vstavek Zapiski vklopljen, njegova stranska vrstica prikazuje in ureja isti komentar nad besedilom zapiska, da ni dveh mest za isto stvar.</li>
 <li>Simbolna povezava in vzdevek oba kažeta na cilj, vendar simbolna povezava shrani navadno pot, medtem ko vzdevek shrani sklic macOS, ki še naprej deluje, če se cilj premakne ali preimenuje. Trda povezava je drugo ime za iste podatke datoteke, ne kazalec.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="file-utilities.html">Datotečni pripomočki</a></li></ul></section>

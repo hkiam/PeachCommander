@@ -27,6 +27,13 @@
 <li>Ha a szöveg zavarosnak tűnik, kattintson a Kódolás gombra az eszköztárban (vagy nyomja meg az E-t) a szövegkódolások végigjárásához, amíg helyesen nem olvasható; az automatikus beállítás általában eltalálja.</li>
 <li>Nyomja meg a W-t a hosszú sorok sortörésének átkapcsolásához.</li>
 </ul>
+<h2 id="jegyzetek-egy-sorhoz">Jegyzetek egy sorhoz</h2>
+<p>Ha a Jegyzetek bővítmény telepítve van, egy jegyzet a fájl egy adott sorára vonatkozhat, nem csak az egész fájlra.</p>
+<ul>
+<li>Állítsa a kurzort a sorra, és válassza a <strong>Nézet ▸ Jegyzet ehhez a sorhoz…</strong> menüpontot (Cmd+Shift+N). A jegyzetszerkesztő a fájlnévvel és a sorszámmal a címében nyílik meg.</li>
+<li>Azok a sorok, amelyekhez már tartozik jegyzet, <strong>Jegyzetek</strong> csoportként jelennek meg az ablak alján lévő jelölőpanelen, a keresési találatok mellett. A panelt a Cmd+Ctrl+M nyitja meg; egy bejegyzésre duplán kattintva a sorra ugorhat.</li>
+<li>A jegyzetek a többi jegyzet mellett tárolódnak, így a jegyzetáttekintő és a Fájlok keresése ugyanúgy megtalálja őket. Törölni a jegyzetszerkesztőben lehet — a panel bezáró gombja csak elrejti a csoportot.</li>
+</ul>
 <h2 id="gyorsnezet-es-quick-look">Gyorsnézet és Quick Look</h2>
 <p>A Gyorsnézet élő előnézetet mutat abban a panelben, amelyet <em>nem</em> használ, így folytathatja a böngészést az egyik oldalon, miközben a másikon előnéz.</p>
 <ol>
@@ -55,6 +62,11 @@
 <p>A motort a megjelenítő tetején lévő menüvel váltja; a választott azonnal érvényes, az eredmény pedig megmarad, így két motor összehasonlítása ugyanazon a fájlon azonnali.</p>
 <p>A forráskód szintaxiskiemelést kap, és két gomb visz továbbra: a <strong>Mentés másként…</strong> fájlba írja, az <strong>Megnyitás szerkesztőben</strong> pedig átadja annak, ami a Macen a <code>.java</code> fájlokat megnyitja. A nagyon nagy eredmény kiemelés nélkül jelenik meg, hogy azonnal látszódjon és ne szünet után; az állapotsor jelzi, ha ez történik.</p>
 <p>Az eredmények lemezen gyorsítótárba kerülnek, így egy korábban megnyitott fájl azonnal megjelenik; a kulcs tartalmazza a fájl méretét és dátumát, valamint a motor argumentumait, ezért egy újraépített osztály vagy megváltozott kapcsoló ismét visszafejtésre kerül. A választott motor fájltípusonként megmarad. Egy profil az <code>extends = cfr</code> sorral örökölhet egy beépített motortól, és csak a kapcsolókat írja felül — hasznos, ha ugyanabból a motorból két beállítást tart.</p>
+<p>Kapcsolja be az <strong>Összehasonlítás</strong>t, hogy megnyíljon egy második panel a saját motormenüjével. Két visszafejtő más helyeken hibázik, ezért egymás mellett látni őket gyakran gyorsabb, mint eldönteni, melyikben bízzon; ha az egyik oldalon a <code>javap</code>-ot választja, a bájtkód a forrás mellé kerül. A két panel közös gyorsítótárat használ, így a már lefuttatott motorok közti váltás azonnali.</p>
+<p>Az F3 egy egész <code>.jar</code>, <code>.apk</code> vagy <code>.dex</code> fájlon mindent egyszerre fejt vissza, és a forrás mellett csomagfát jelenít meg. A fa fölötti keresőmező minden osztályban keres — épp az a kérdés, amit egyetlen osztály nem tud megválaszolni: hol fordul elő valóban egy szöveg, egy hívás vagy egy konstans, amikor még nem tudja, melyik osztályban. A találatok szűkítik a fát, az első pedig a saját során nyílik meg. Az Enter továbbra is archívumként nyitja a JAR-t — a két művelet elkülönül.</p>
+<p>Van egy második, közvetlenebb út: állítsa a kurzort egy <code>.class</code> fájlra vagy egy egész archívumra, és válassza a <strong>Visszafejtés forrásba</strong> parancsot (Parancsok menü, helyi menü vagy ⌘⇧J). Az osztályok visszafejtődnek, az eredmény pedig a másik panelen nyílik meg közönséges <code>.java</code> fájlként. Onnantól a teljes fájlkezelő érvényes — az F3 a Peach Commander saját Java-kiemelésével jeleníti meg őket, az Alt+F7 keresztben keres bennük, az F5 kimásolja őket, és ugyanúgy összehasonlíthatja vagy megjelölheti őket, mint bármi mást. A munka nagy részéhez ez jobb, mint egy külön ablak; ezért a bővítmény fája kikapcsolható a Beállítások ▸ Visszafejtő alatt.</p>
+<p>Egy második bővítmény ugyanezt teszi a .NET-tel: az F3 egy felügyelt <code>.dll</code>, <code>.exe</code> vagy <code>.winmd</code> fájlon C#-ként mutatja a típusait, az <strong>Assembly visszafejtése forrásba</strong> (⌘⇧N) panelbe teszi őket, és a keresés ugyanígy be tud nézni egy assemblybe. Az <strong>ILSpy</strong>-t (MIT, <code>dotnet tool install -g ilspycmd</code>) vezérli forráshoz, vagy a Mono <strong>monodis</strong>-át IL-hez — ez a <code>javap</code> .NET-es megfelelője. Egy natív <code>.dll</code> ugyanezt a kiterjesztést viseli, forrása viszont nincs; a bővítmény ezt megnyitás előtt ellenőrzi, és a beépített megjelenítőre hagyja.</p>
+<p>A beállítási lapon van egy <strong>Motorok ellenőrzése</strong> gomb, és érdemes megnyomni: az „telepítve” másutt csak azt jelenti, hogy a fájl megvan, és egy Java-motor JDK nélküli Macen jelen van, futni pedig nem tud. Az ellenőrzés minden motortól elkéri a verzióját, és megmondja, melyik működik valóban.</p>
 <p>Az Android is szerepel: egy <code>.dex</code> fájlon az F3 a <strong>jadx</strong>-ot használja (Apache 2.0, <code>brew install jadx</code>), amely a Dalvik bájtkódot Javára fordítja vissza. Ehhez egyetlen motorleírás kellett — ugyanaz a mechanizmus, más formátum.</p>
 <p>A bővítmény <strong>ki van kapcsolva, amíg be nem kapcsolja</strong>, a Beállítások ▸ Bővítmények oldalon — a legtöbben soha nem nyitnak meg .class fájlt, motor nélkül pedig úgysem használható.</p>
 <p>Saját motor hozzáadásához hozzon létre egy <code>decompilers.ini</code> fájlt a motorok mappájában:</p>
@@ -93,6 +105,14 @@
 <tr>
 <td>Keresés a megjelenítőben</td>
 <td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Jegyzet a kurzor alatti sorhoz</td>
+<td>Cmd+Shift+N</td>
+</tr>
+<tr>
+<td>Jelölőpanel megjelenítése vagy elrejtése</td>
+<td>Cmd+Ctrl+M</td>
 </tr>
 <tr>
 <td>Következő / előző találat</td>

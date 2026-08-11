@@ -27,6 +27,13 @@
 <li>Ak text vyzerá skreslene, kliknite na Kódovanie na paneli nástrojov (alebo stlačte E) na prechádzanie kódovaní textu, kým sa nečíta správne; automatické nastavenie to zvyčajne trafí.</li>
 <li>Stlačte W na prepnutie zalamovania slov pri dlhých riadkoch.</li>
 </ul>
+<h2 id="poznamky-k-riadku">Poznámky k riadku</h2>
+<p>Ak je modul Poznámky nainštalovaný, poznámka sa môže týkať konkrétneho riadku súboru, nie súboru ako celku.</p>
+<ul>
+<li>Umiestnite kurzor na riadok a zvoľte <strong>Zobraziť ▸ Poznámka k tomuto riadku…</strong> (Cmd+Shift+N). Editor poznámok sa otvorí s názvom súboru a číslom riadku v titulku.</li>
+<li>Riadky, ktoré už poznámku majú, sa zobrazia ako skupina <strong>Poznámky</strong> v paneli značiek v spodnej časti okna, vedľa výsledkov hľadania. Panel otvoríte klávesmi Cmd+Ctrl+M; dvojklikom na položku prejdete na daný riadok.</li>
+<li>Poznámky samotné ležia spolu so všetkými ostatnými, takže ich prehľad poznámok aj Nájsť súbory nájdu rovnako. Mažú sa v editore poznámok — tlačidlo zatvorenia v paneli skupinu iba skryje.</li>
+</ul>
 <h2 id="rychle-zobrazenie-a-quick-look">Rýchle zobrazenie a Quick Look</h2>
 <p>Rýchle zobrazenie ukazuje živý náhľad v paneli, ktorý <em>nepoužívate</em>, takže môžete pokračovať v prehliadaní na jednej strane a náhľade na druhej.</p>
 <ol>
@@ -55,6 +62,11 @@
 <p>Engine prepnete ponukou v hornej časti prehliadača; zvolený sa použije ihneď a výsledok sa uchová, takže porovnanie dvoch enginov nad tým istým súborom je okamžité.</p>
 <p>Zdrojový kód sa farebne zvýrazňuje a dve tlačidlá vedú ďalej: <strong>Uložiť ako…</strong> ho zapíše do súboru a <strong>Otvoriť v editore</strong> ho predá tomu, čo na vašom Macu otvára <code>.java</code>. Veľmi rozsiahly výsledok sa zobrazí bez zvýraznenia, aby sa objavil hneď a nie po čakaní; stavový riadok to uvedie.</p>
 <p>Výsledky sa ukladajú do diskovej vyrovnávacej pamäte, takže opätovné otvorenie už zobrazeného súboru je okamžité; kľúč obsahuje veľkosť a dátum súboru aj argumenty enginu, preto sa znovu zostavená trieda alebo zmenený prepínač dekompiluje znova. Zvolený engine sa pamätá pre každý druh súboru. Profil môže dediť z vstavaného enginu pomocou <code>extends = cfr</code> a prepísať len prepínače — vhodné, ak máte dve predvoľby toho istého enginu.</p>
+<p>Zapnite <strong>Porovnať</strong>, ak chcete otvoriť druhý panel s vlastnou nabídkou enginu. Dva dekompilátory zlyhávajú na iných miestach, vidieť ich vedľa seba je preto často rýchlejšie ako rozhodovať, ktorému veriť; ak na jednej strane zvolíte <code>javap</code>, stojí bajtkód vedľa zdrojového kódu. Oba panely majú spoločnú vyrovnávaciu pamäť, prepínanie medzi už spustenými enginmi je teda okamžité.</p>
+<p>F3 na celom <code>.jar</code>, <code>.apk</code> alebo <code>.dex</code> dekompiluje všetko naraz a vedľa zdrojového kódu zobrazí strom balíčkov. Vyhľadávacie pole nad stromom prehľadá každú triedu — práve tú otázku, na ktorú jedna trieda odpovedať nemôže: kde sa reťazec, volanie alebo konštanta skutočne vyskytuje, keď ešte neviete, v ktorej triede. Nálezy strom zúžia a prvý sa otvorí na svojom riadku. Enter otvára JAR stále ako archív — obe činnosti zostávajú oddelené.</p>
+<p>Existuje druhá, priamejšia cesta: postavte kurzor na súbor <code>.class</code> alebo na celý archív a zvoľte <strong>Dekompilovať do zdrojov</strong> (menu Príkazy, kontextové menu alebo ⌘⇧J). Triedy sa dekompilujú a výsledok sa otvorí v druhom paneli ako obyčajné súbory <code>.java</code>. Odvtedy platí celý správca súborov — F3 ich zobrazí s vlastným zvýrazňovaním Javy Peach Commandera, Alt+F7 hľadá napriek nim, F5 ich skopíruje inam a môžete ich porovnávať aj označovať ako čokoľvek iné. Pre väčšinu práce je to lepšie než vlastné okno; preto sa strom zásuvného modulu dá vypnúť v Nastaveniach ▸ Dekompilátor.</p>
+<p>Druhý zásuvný modul robí to isté pre .NET: F3 na spravovanej <code>.dll</code>, <code>.exe</code> alebo <code>.winmd</code> zobrazí jej typy ako C#, <strong>Dekompilovať assembly do zdrojov</strong> (⌘⇧N) ich vloží do panela a hľadanie dokáže nazrieť do assembly rovnakým spôsobom. Riadi <strong>ILSpy</strong> (MIT, <code>dotnet tool install -g ilspycmd</code>) pre zdrojový kód alebo <strong>monodis</strong> z Mona pre IL — obdobu <code>javap</code> v .NET. Natívna <code>.dll</code> má rovnakú príponu a žiadny zdroj na zobrazenie, takže modul to pred otvorením skontroluje a prenechá ju vstavanému prehliadaču.</p>
+<p>Stránka nastavení má tlačidlo <strong>Skontrolovať enginy</strong> a stojí za to ho stlačiť: „nainštalované“ inde znamená len to, že súbor existuje, a engine pre Javu na Macu bez JDK je prítomný a nemôže bežať. Kontrola sa každého enginu spýta na verziu a povie, ktoré skutočne fungujú.</p>
 <p>Pokrytý je aj Android: F3 na súbore <code>.dex</code> použije <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), ktorý prevádza bajtkód Dalvik späť na Javu. Stačil jediný opis enginu — rovnaký mechanizmus, iný formát.</p>
 <p>Modul je <strong>vypnutý, kým ho nezapnete</strong>, v Nastavenia ▸ Zásuvné moduly — väčšina ľudí súbor .class nikdy neotvorí a bez enginu aj tak nič nezmôže.</p>
 <p>Vlastný engine pridáte vytvorením <code>decompilers.ini</code> v priečinku enginov:</p>
@@ -93,6 +105,14 @@
 <tr>
 <td>Hľadať v prehliadači</td>
 <td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Poznámka k riadku pod kurzorom</td>
+<td>Cmd+Shift+N</td>
+</tr>
+<tr>
+<td>Zobraziť alebo skryť panel značiek</td>
+<td>Cmd+Ctrl+M</td>
 </tr>
 <tr>
 <td>Ďalšia / predchádzajúca zhoda</td>

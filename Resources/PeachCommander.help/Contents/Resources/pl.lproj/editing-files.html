@@ -21,16 +21,103 @@
 <p>Aby utworzyć zupełnie nowy plik tekstowy w bieżącej lokalizacji, naciśnij Shift+F4.</p>
 <p><img alt="Wbudowany edytor tekstu pokazujący podświetlanie składni, konspekt symboli i minimapę" src="images/editor.png" />
 <em>(Rysunek: edytor z podświetlaniem składni, konspektem symboli po lewej i minimapą po prawej.)</em></p>
+<p>Jeśli plik należy do <code>root</code> — wpis w <code>/etc</code>, plist launchd, konfiguracja serwera WWW — zapis proponuje zrobić to <strong>jako administrator</strong>: macOS poprosi o autoryzację jak zwykle, treść jest przekazywana przez prywatny plik tymczasowy, a nie przez wiersz poleceń, i plik zachowuje własnego właściciela oraz uprawnienia, zamiast po cichu stać się twoim.</p>
+<p>Jeśli do pliku nie można pisać, dowiesz się o tym przy otwarciu, a nie dopiero przy zapisie: tytuł nosi kłódkę, a wiersz stanu nazywa przeszkodę — należy do innego użytkownika, uprawnienia zabraniają zapisu, plik jest zablokowany, wolumin jest tylko do odczytu albo chroni go system. Tylko pierwszą da się rozwiązać, autoryzując zapis, i tylko tam jest to proponowane; w pozostałych kosztowałoby to hasło i mimo to by się nie udało.</p>
+<p>Marginesw pokazuje numery wierszy, wiersz z kursorem jaśniej niż pozostałe; przycisk obok menu kodowania go ukrywa. Zawinięty wiersz jest numerowany raz, więc numer zawsze oznacza ten sam wiersz, o którym mówi błąd kompilatora albo uwaga z przeglądu.</p>
 <h2 id="wyszukiwanie-zamiana-i-nawigacja">Wyszukiwanie, zamiana i nawigacja</h2>
 <ul>
 <li>Naciśnij Cmd+F, aby otworzyć pasek wyszukiwania. Aby zamienić tekst, otwórz pasek wyszukiwania i przełącz go na widok zamiany, lub kliknij Znajdź/Zamień na pasku narzędzi.</li>
 <li>Kliknij Formatuj JSON/XML, aby ponownie wciąć dokument JSON lub XML do czystego, czytelnego układu.</li>
-<li>Kliknij Symbole (lub naciśnij Cmd+Shift+O), aby wyświetlić pasek boczny wymieniający klasy, funkcje i metody w kodzie. Kliknij wpis, aby przeskoczyć do niego bezpośrednio.</li>
+<li>Kliknij Symbole (lub naciśnij Cmd+Shift+O), aby wyświetlić pasek boczny wymieniający klasy, funkcje i metody w kodzie — albo, w pliku JSON, YAML czy XML, jego klucze i elementy. Kliknij wpis, aby przeskoczyć do niego bezpośrednio. Do czego jeszcze służy ta struktura, zobacz <a href="#praca-z-json-yaml-i-xml">Praca z JSON, YAML i XML</a>.</li>
 <li>Naciśnij Cmd+L, aby przeskoczyć do konkretnego wiersza.</li>
 <li>Naciśnij Cmd+\, aby przeskakiwać między nawiasem a jego pasującym odpowiednikiem.</li>
 <li>Kliknij przycisk mapy, aby pokazać lub ukryć minimapę, skalowany przegląd całego pliku, w który możesz kliknąć, aby przewinąć.</li>
 <li>Użyj menu Kodowanie na pasku narzędzi, jeśli plik został zapisany w innym niż domyślne kodowaniu tekstu.</li>
 </ul>
+<h2 id="praca-z-json-yaml-i-xml">Praca z JSON, YAML i XML</h2>
+<p>Te trzy formaty mają własne traktowanie, bo po pliku konfiguracyjnym poruszamy się według struktury, a nie numerów wierszy.</p>
+<p>Pasek boczny <strong>Symbole</strong> wymienia klucze pliku JSON lub YAML oraz elementy pliku XML, zagnieżdżone tak jak sam dokument. Element bierze nazwę ze swojego atrybutu <code>id</code>, <code>name</code> lub <code>key</code>, jeśli go ma, więc dwadzieścia wpisów <code>&lt;server&gt;</code> da się rozróżnić. Lista pokazuje swoje wpisy jako <code>[0]</code>, <code>[1]</code>, a gdy wpis zaczyna się kluczem, pokazany jest również on — <code>[0] name</code>. Pole filtra nad listą znajduje klucz po nazwie w pliku dowolnej wielkości, a pasek stanu zawsze pokazuje ścieżkę do tego, w czym stoi kursor.</p>
+<p>Nawet uszkodzony plik dostaje konspekt aż do miejsca, w którym się psuje — i właśnie wtedy jest najbardziej potrzebny.</p>
+<p>Menu <strong>Struktura</strong> — w pasku menu, dopóki edytor jest na wierzchu — przenosi cię po tej strukturze:</p>
+<ul>
+<li><strong>Przejdź do węzła nadrzędnego</strong> (Ctrl+Cmd+Góra) wychodzi do bloku zawierającego kursor: od <code>image:</code> do usługi, do której należy.</li>
+<li><strong>Przejdź do pierwszego dziecka</strong> (Ctrl+Cmd+Dół) wchodzi w głąb.</li>
+<li><strong>Przejdź do poprzedniego / następnego rodzeństwa</strong> (Ctrl+Cmd+Lewo / Prawo) przechodzi między wpisami tego samego poziomu, przeskakując cały blok pomiędzy — z jednego serwera na następny bez przewijania czterdziestu wierszy ustawień.</li>
+<li><strong>Zaznacz węzeł nadrzędny</strong> (Ctrl+Cmd+A) zaznacza blok, w którym stoi kursor. Naciśnij ponownie i zaznaczenie rośnie do bloku wokół niego, więc zaznaczysz dokładnie jedną usługę albo dokładnie jeden element bez przeciągania.</li>
+<li><strong>Kopiuj ścieżkę strukturalną</strong> (Ctrl+Cmd+C) kopiuje pozycję jako wyrażenie, które przyjmują narzędzia danego formatu: <code>.services.web.ports[0]</code> dla JSON i YAML, czego oczekują <code>jq</code> i <code>yq</code>, oraz <code>//server[@id='web-1']/port</code> dla XML, czyli XPath. Klucze, które nie są zwykłymi słowami, są za ciebie ujmowane w cudzysłowy — <code>."content-type"</code>, a nie <code>.content-type</code>, co w <code>jq</code> znaczy coś zupełnie innego.</li>
+<li><strong>Sprawdź dokument</strong> (Ctrl+Cmd+V) sprawdza plik i ustawia kursor <strong>na problemie</strong>, z powodem w tytule okna. Zgłasza też to, czego nie zgłosi nic innego w łańcuchu narzędzi: zduplikowany klucz, który każdy parser JSON przyjmuje w milczeniu, odrzucając jedną z dwóch wartości, oraz przecinek na końcu, który parser Apple przyjmuje, a Python, Go i <code>jq</code> odrzucają.</li>
+</ul>
+<p>Długie pliki czyta się, zwijając to, nad czym się w danej chwili nie pracuje. <strong>Zwiń węzeł</strong> (Option+Cmd+Lewo) zwija blok, w którym stoi kursor — najbliższy, który ma treść, więc naciśnięcie na pojedynczym wierszu zwija otaczające go odwzorowanie —, <strong>Rozwiń węzeł</strong> (Option+Cmd+Prawo) otwiera go ponownie, <strong>Zwiń najwyższy poziom</strong> (Option+Cmd+Góra) zwija dla przeglądu wszystko na najbardziej zewnętrznym poziomie, a <strong>Rozwiń wszystko</strong> (Option+Cmd+Dół) przywraca stan. Wiersz z kluczem albo znacznikiem pozostaje widoczny i jest oznaczony, więc zwinięty blok widocznie jest zwinięty; numery wierszy pomijają to, co ukryte. Z dokumentu nic nie jest usuwane — tekst po prostu nie jest rysowany, więc zapisywanie, cofanie i wyszukiwanie pozostają bez zmian, a wyszukiwanie nadal znajduje tekst wewnątrz zwiniętego bloku. Ustawienie kursora w zwinięciu otwiera je, a każda edycja otwiera wszystko: zwinięcie to para pozycji, a wstawiony tekst je przesuwa.</p>
+<p>To samo menu zawiera przekształcenia, które przepisują cały dokument — albo, gdy tekst jest zaznaczony, tylko ten fragment — w jednym kroku, który da się cofnąć: <strong>Zmniejsz (jeden wiersz)</strong> dla treści JSON, która musi zmieścić się w poleceniu <code>curl</code>, <strong>Sortuj klucze rekurencyjnie</strong>, aby dwa eksporty tych samych ustawień nie pokazywały żadnej różnicy, <strong>Zakoduj jako łańcuch JSON</strong> i <strong>Odkoduj łańcuch JSON</strong> do codziennej mozolnej pracy wstawiania certyfikatu, skryptu albo całego dokumentu JSON <em>do</em> pola JSON, oraz <strong>Przekształć JSON na YAML</strong>. Zmniejszanie zachowuje kolejność kluczy i dokładny zapis każdej liczby, bo <code>1.0</code> i <code>1</code> to nie ta sama wersja; sortowanie celowo tego nie robi, bo sortowanie jest zmianą kolejności. Kodowanie dotyczy każdego pliku, nie tylko JSON. Z YAML do JSON nie ma nic i jest to decyzja: wymagałoby to parsera YAML, którego system nie ma, a błędne założenie co do zakotwiczenia albo <code>true</code> w cudzysłowie zmienia plik konfiguracyjny w inny.</p>
+<p>Dla JSON i XML plik sprawdza prawdziwy parser. Dla YAML nie ma go w systemie, więc sprawdzanie obejmuje błędy, które da się znaleźć bez niego — tabulator użyty do wcięcia, czego YAML wyraźnie zabrania, wcięcie niepasujące do niczego, zduplikowany klucz, niezamknięty cudzysłów — i mówi to wprost, zamiast uznawać plik za prawidłowy.</p>
+<h2 id="filtrowanie-przez-polecenie-powoki">Filtrowanie przez polecenie powłoki</h2>
+<p>Kliknij <strong>Filtruj…</strong> (lub naciśnij Shift+Cmd+), aby przesłać zaznaczony tekst przez polecenie i zastąpić go tym, co polecenie wypisze. Jeśli nic nie jest zaznaczone, przechodzi cały dokument. W ten sposób narzędzia, które już znasz, stają się poleceniami edytora: <code>sort -u</code> usuwa powtórzone wiersze, <code>jq .</code> czyni odpowiedź JSON czytelną, <code>column -t</code> wyrównuje tabelę, <code>base64 -d</code> dekoduje blok, <code>openssl x509 -noout -text</code> pokazuje certyfikat w czytelnej postaci.</p>
+<p>Polecenie działa w Twojej powłoce logowania: <code>PATH</code>, aliasy i funkcje działają dokładnie tak jak w Terminalu, a potoki i cudzysłowy znaczą to, czego się spodziewasz. Katalogiem roboczym jest folder edytowanego pliku, więc ścieżki względne rozwiązują się tam, gdzie tego oczekujesz. Użyte polecenia są zapamiętywane i następnym razem proponowane na liście rozwijanej.</p>
+<p>Jeśli polecenie zawiedzie, Twój tekst pozostaje nietknięty, a komunikat błędu polecenia pojawia się w wierszu stanu — błąd składni narzędzia <code>jq</code> nigdy nie trafi wklejony do Twojego pliku. Polecenie, które nic nie wypisze, opróżnia zaznaczenie i właśnie do tego służy filtrowanie narzędziem <code>grep</code>; Cmd+Z je przywraca. Polecenie, które się nie kończy, jest zatrzymywane po dwudziestu sekundach.</p>
+<h2 id="sortowanie-usuwanie-duplikatow-i-porzadkowanie-wierszy">Sortowanie, usuwanie duplikatów i porządkowanie wierszy</h2>
+<p>Menu <strong>Wiersze</strong> — na pasku narzędzi i, dopóki edytor jest na wierzchu, na pasku menu — wykonuje zmiany, które wracają wciąż od nowa, bez wpisywanego polecenia i bez zainstalowanego narzędzia:</p>
+<ul>
+<li>Sortuj A→Z lub Z→A, porównując liczby według wartości, tak że <code>file9</code> jest przed <code>file10</code>.</li>
+<li>Odwróć kolejność wierszy.</li>
+<li>Usuń powtórzone wiersze, zachowując pierwszy z każdego i pozostawiając resztę w ich kolejności.</li>
+<li>Usuń puste wiersze, w tym te, które tylko wyglądają na puste, bo zawierają spacje.</li>
+<li>Usuń spacje na końcu wiersza — niewidoczną różnicę, która zaśmieca diff.</li>
+<li>Zachowaj tylko wiersze zawierające wpisany przez Ciebie tekst albo właśnie je usuń.</li>
+</ul>
+<p>Gdy tekst jest zaznaczony, każda z tych operacji działa na zaznaczonych wierszach; zaznaczenie jest najpierw rozszerzane do całych wierszy, bo sortowanie połowy wiersza nic nie znaczy. Bez zaznaczenia działają na całym dokumencie. Każda jest jednym krokiem cofnięcia, więc Cmd+Z wycofuje całą operację.</p>
+<p>Końce wierszy znajdują się obok menu Kodowanie: <strong>LF</strong> dla Uniksa i macOS, <strong>CRLF</strong> dla Windows, <strong>CR</strong> dla klasycznego Mac OS oraz <em>(mixed)</em>, gdy jeden plik zawiera więcej niż jeden rodzaj — często powód błędu, który nie ma sensu. Wybierz inny, aby przekonwertować cały plik jednym krokiem, który da się cofnąć. Operacje na wierszach nigdy nie zmieniają końca wiersza same z siebie: posortowany plik CRLF pozostaje plikiem CRLF.</p>
+<h2 id="formatowanie-pliku">Formatowanie pliku</h2>
+<p>Kliknij <strong>Formatuj</strong> w edytorze (to samo polecenie jest w przeglądarce), aby ponownie wciąć plik. Peach Commander wybiera formater na podstawie rozszerzenia i pokazuje w pasku stanu, którego użył, na przykład <em>formatted (jq)</em> — zawsze wiesz, co ukształtowało wynik.</p>
+<p><strong>Bez instalowania czegokolwiek</strong>: JSON, XML, SVG, plisty, HTML, konfiguracja w stylu INI i YAML. YAML jest przypadkiem osobnym: jest porządkowany, a nie wcinany od nowa, bo w YAML wcięcie <em>jest</em> strukturą, a przepisanie go bez prawdziwego parsera YAML mogłoby zmienić znaczenie pliku. Spacje na końcu wiersza znikają, zabłąkane tabulatory we wcięciu stają się spacjami, ciągi pustych wierszy się skracają — a wszystko wewnątrz skalara blokowego (<code>|</code> albo <code>&gt;</code>) zostaje dokładnie tak, jak jest, bo tam biały znak jest treścią.</p>
+<p><strong>Lepsze formatery przejmują automatycznie.</strong> Jeśli masz jeden z nich, Peach Commander używa go, bo dedykowane narzędzie zwykle odpowiada temu, czego oczekuje ekosystem — a w formatach konfiguracji zachowuje twoje komentarze:</p>
+<table>
+<thead>
+<tr>
+<th>Zainstaluj</th>
+<th>i otrzymasz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yq</code> albo <code>prettier</code></td>
+<td>pełne formatowanie YAML, komentarze zachowane</td>
+</tr>
+<tr>
+<td><code>taplo</code></td>
+<td>TOML</td>
+</tr>
+<tr>
+<td><code>sqlformat</code> albo <code>sql-formatter</code></td>
+<td>SQL</td>
+</tr>
+<tr>
+<td><code>prettier</code></td>
+<td>Markdown</td>
+</tr>
+<tr>
+<td><code>jq</code></td>
+<td>JSON w przyjętym stylu</td>
+</tr>
+<tr>
+<td><code>xmllint</code></td>
+<td>XML i SVG</td>
+</tr>
+</tbody>
+</table>
+<p>Jeśli typ pliku nie ma formatera, przycisk jest wyszarzony, a pozycja menu wyłączona. Próba i tak powie dlaczego — <em>„taplo nie jest zainstalowany”</em> czyta się inaczej niż <em>„Nieprawidłowy JSON”</em>.</p>
+<h3 id="uzycie-wasnego-formatera">Użycie własnego formatera</h3>
+<p>Aby sformatować typ, którego Peach Commander nie zna, albo użyć innego narzędzia, utwórz <code>formatters.ini</code> w folderze konfiguracji — jedna sekcja na rozszerzenie:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[swift]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">swiftformat</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">--quiet stdin</span>
+
+<span class="k">[sql]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/opt/homebrew/bin/sqlfluff</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">format -</span>
+</code></pre></div>
+
+<p><code>tool</code> to nazwa programu (szukana tak, jak zrobiłaby to twoja powłoka) albo ścieżka bezwzględna; <code>args</code> są przekazywane bez zmian. Tekst pliku wchodzi standardowym wejściem, a sformatowany wraca standardowym wyjściem, więc działa każdy dobrze wychowany formater wiersza poleceń. Twoje wpisy wygrywają ze wszystkim innym. Przy pierwszym uruchomieniu tworzony jest szablon z komentarzami — otwórz plik i wypełnij go.</p>
+<p>Wtyczki też mogą dostarczać formatery — zobacz <a href="plugins.md">Plugins</a>.</p>
 <h2 id="edytuj-plik-bajt-po-bajcie">Edytuj plik bajt po bajcie</h2>
 <ol>
 <li>Zaznacz plik w panelu.</li>
@@ -76,14 +163,51 @@
 <td>Cmd+\</td>
 </tr>
 <tr>
+<td>Przejdź do węzła nadrzędnego (JSON/YAML/XML)</td>
+<td>Ctrl+Cmd+Góra</td>
+</tr>
+<tr>
+<td>Przejdź do pierwszego dziecka</td>
+<td>Ctrl+Cmd+Dół</td>
+</tr>
+<tr>
+<td>Przejdź do poprzedniego / następnego rodzeństwa</td>
+<td>Ctrl+Cmd+Lewo / Prawo</td>
+</tr>
+<tr>
+<td>Zaznacz węzeł nadrzędny</td>
+<td>Ctrl+Cmd+A</td>
+</tr>
+<tr>
+<td>Kopiuj ścieżkę strukturalną</td>
+<td>Ctrl+Cmd+C</td>
+</tr>
+<tr>
+<td>Sprawdź dokument</td>
+<td>Ctrl+Cmd+V</td>
+</tr>
+<tr>
+<td>Zwiń / rozwiń węzeł</td>
+<td>Option+Cmd+Lewo / Prawo</td>
+</tr>
+<tr>
+<td>Zwiń najwyższy poziom / rozwiń wszystko</td>
+<td>Option+Cmd+Góra / Dół</td>
+</tr>
+<tr>
 <td>Cofnij / Ponów (edytor szesnastkowy)</td>
 <td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+<tr>
+<td>Filtruj zaznaczenie przez polecenie</td>
+<td>Shift+Cmd+\</td>
 </tr>
 </tbody>
 </table>
 <h2 id="uwagi">Uwagi</h2>
 <ul>
-<li>Podświetlanie składni obejmuje JSON, C, C#, Java, JavaScript, TypeScript, Python i Rust. Inne typy plików nadal otwierają się i edytują normalnie z podstawowym kolorowaniem, ale szczegółowe podświetlanie i konspekt symboli są dostępne tylko dla obsługiwanych języków.</li>
+<li>Podświetlanie składni obejmuje JSON, C, C#, Java, JavaScript, TypeScript, Python i Rust. Inne typy plików nadal otwierają się i edytują normalnie z podstawowym kolorowaniem, ale szczegółowe podświetlanie jest dostępne tylko dla obsługiwanych języków.</li>
+<li>Konspekt obejmuje obsługiwane języki programowania oraz JSON, YAML i XML — w tym formaty oparte na XML, takie jak <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> i <code>.storyboard</code>. Polecenia nawigacji strukturalnej, ścieżki i sprawdzania dotyczą JSON, YAML i XML.</li>
 <li>Konspekt symboli i Przejdź do wiersza dotyczą edytora tekstu. Edytor szesnastkowy jest przeznaczony do inspekcji binarnej i edycji na poziomie bajtów, a nie do tekstu.</li>
 <li>Oba edytory zachowują kopię zapasową oryginalnego pliku przy pierwszym zapisie, więc przypadkową zmianę łatwo cofnąć, przywracając tę kopię.</li>
 </ul>

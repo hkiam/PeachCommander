@@ -55,7 +55,7 @@
 </table>
 <h2 id="megjegyzesek">Megjegyzések</h2>
 <ul>
-<li>A megszakadt letöltések és feltöltések onnan folytatódhatnak, ahol megálltak, ahelyett hogy elölről kezdenék.</li>
+<li>A megszakadt letöltés ott folytatódik, ahol abbamaradt: ha a fájl részben már megvan, és a kiszolgáló elfogadja az újraindítást, csak a hiányzó vég utazik. Az a kiszolgáló, amely elutasítja, egyszerűen újrakezdi a fájlt. A feltöltés ugyanígy folytatódik, ha a kiszolgálón lévő fájl rövidebb a küldöttnél.</li>
 <li>Az önaláírt tanúsítvánnyal rendelkező FTPS-kiszolgálókhoz kapcsolja be a nem megbízható tanúsítvány elfogadásának lehetőségét az adott kapcsolat beállításaiban.</li>
 <li>Egy SOCKS5-proxy kapcsolatonként beállítható az egyszerű FTP-hez. Egy titkosított FTPS-kapcsolat proxyn keresztüli irányítása nem támogatott.</li>
 <li>A Total Commander meglévő FTP-kapcsolatai importálhatók.</li>

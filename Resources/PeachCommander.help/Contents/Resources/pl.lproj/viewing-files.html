@@ -27,6 +27,13 @@
 <li>Jeśli tekst wygląda na zniekształcony, kliknij Kodowanie na pasku narzędzi (lub naciśnij E), aby przełączać kodowania tekstu, dopóki nie odczyta się poprawnie; ustawienie automatyczne zwykle trafia.</li>
 <li>Naciśnij W, aby przełączyć zawijanie wierszy dla długich linii.</li>
 </ul>
+<h2 id="notatki-do-wiersza">Notatki do wiersza</h2>
+<p>Jeśli wtyczka Notatki jest zainstalowana, notatka może dotyczyć konkretnego wiersza pliku, a nie całego pliku.</p>
+<ul>
+<li>Ustaw kursor w wierszu i wybierz <strong>Widok ▸ Notatka do tego wiersza…</strong> (Cmd+Shift+N). Edytor notatek otworzy się z nazwą pliku i numerem wiersza w tytule.</li>
+<li>Wiersze, które już mają notatkę, pojawiają się jako grupa <strong>Notatki</strong> w panelu znaczników na dole okna, obok wyników wyszukiwania. Cmd+Ctrl+M otwiera panel; dwukrotne kliknięcie pozycji przenosi do wiersza.</li>
+<li>Same notatki leżą razem ze wszystkimi innymi, więc przegląd notatek i Znajdź pliki odnajdują je tak samo. Usuwa się je w edytorze notatek — przycisk zamknięcia w panelu jedynie ukrywa grupę.</li>
+</ul>
 <h2 id="szybki-podglad-i-quick-look">Szybki podgląd i Quick Look</h2>
 <p>Szybki podgląd pokazuje podgląd na żywo w panelu, którego <em>nie</em> używasz, dzięki czemu możesz kontynuować przeglądanie po jednej stronie, podglądając po drugiej.</p>
 <ol>
@@ -55,6 +62,11 @@
 <p>Silnik zmieniasz menu u góry podglądu; wybrany działa natychmiast, a wynik jest zachowywany, więc porównanie dwóch silników na tym samym pliku jest błyskawiczne.</p>
 <p>Kod jest podświetlany składniowo, a dwa przyciski prowadzą dalej: <strong>Zapisz jako…</strong> zapisuje go do pliku, a <strong>Otwórz w edytorze</strong> przekazuje go temu, co otwiera <code>.java</code> na twoim Macu. Bardzo duży wynik pokazywany jest bez podświetlenia, aby pojawił się od razu, a nie po chwili; wiersz stanu o tym informuje.</p>
 <p>Wyniki są zapisywane w pamięci podręcznej na dysku, więc ponowne otwarcie już oglądanego pliku jest natychmiastowe; klucz obejmuje rozmiar i datę pliku oraz argumenty silnika, dlatego przebudowana klasa lub zmieniona opcja jest dekompilowana ponownie. Wybrany silnik jest pamiętany dla każdego rodzaju plików. Profil może dziedziczyć po silniku wbudowanym przez <code>extends = cfr</code> i nadpisywać tylko opcje — przydatne, gdy utrzymujesz dwa warianty tego samego silnika.</p>
+<p>Włącz <strong>Porównaj</strong>, aby otworzyć drugi panel z własnym menu silnika. Dwa dekompilatory zawodzą w różnych miejscach, więc zobaczenie ich obok siebie jest często szybsze niż rozstrzyganie, któremu zaufać; wybór <code>javap</code> z jednej strony stawia kod bajtowy obok źródła. Oba panele dzielą pamięć podręczną, więc przełączanie między już uruchomionymi silnikami jest natychmiastowe.</p>
+<p>F3 na całym pliku <code>.jar</code>, <code>.apk</code> lub <code>.dex</code> dekompiluje go w całości i pokazuje drzewo pakietów obok źródła. Pole wyszukiwania nad drzewem przeszukuje każdą klasę — dokładnie to pytanie, na które jedna klasa odpowiedzieć nie może: gdzie napis, wywołanie albo stała rzeczywiście występuje, gdy jeszcze nie wiadomo, w której klasie. Trafienia zawężają drzewo, a pierwsze otwiera się na swojej linii. Enter nadal otwiera JAR jako archiwum — oba czasowniki pozostają rozdzielone.</p>
+<p>Jest druga, bardziej bezpośrednia droga: ustaw kursor na pliku <code>.class</code> albo na całym archiwum i wybierz <strong>Zdekompiluj do źródeł</strong> (menu Polecenia, menu kontekstowe lub ⌘⇧J). Klasy zostaną zdekompilowane, a wynik otworzy się w drugim panelu jako zwykłe pliki <code>.java</code>. Od tej chwili obowiązuje cały menedżer plików — F3 pokazuje je z własnym podświetlaniem Javy Peach Commandera, Alt+F7 szuka wśród nich, F5 kopiuje je na zewnątrz, a porównywać i oznaczać można je jak wszystko inne. Do większości pracy bije to osobne okno; dlatego drzewo wtyczki można wyłączyć w Ustawieniach ▸ Dekompilator.</p>
+<p>Druga wtyczka robi to samo dla .NET: F3 na zarządzanym <code>.dll</code>, <code>.exe</code> lub <code>.winmd</code> pokazuje jego typy jako C#, <strong>Zdekompiluj assembly do źródeł</strong> (⌘⇧N) umieszcza je w panelu, a wyszukiwanie potrafi zajrzeć do assembly tak samo. Steruje <strong>ILSpy</strong> (MIT, <code>dotnet tool install -g ilspycmd</code>) dla źródeł albo <strong>monodis</strong> z Mono dla IL — odpowiednikiem <code>javap</code> w .NET. Natywny <code>.dll</code> ma to samo rozszerzenie i nie ma źródła do pokazania, więc wtyczka sprawdza to przed otwarciem i zostawia go wbudowanej przeglądarce.</p>
+<p>Strona ustawień ma przycisk <strong>Sprawdź silniki</strong> i warto go użyć: „zainstalowany” gdzie indziej znaczy tylko, że plik jest na dysku, a silnik Javy na Macu bez JDK jest obecny i nie może działać. Sprawdzenie pyta każdy silnik o wersję i mówi, które naprawdę działają.</p>
 <p>Android jest również objęty: F3 na pliku <code>.dex</code> używa <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), który zamienia kod bajtowy Dalvik z powrotem na Javę. Wystarczył jeden opis silnika — ten sam mechanizm, inny format.</p>
 <p>Wtyczka jest <strong>wyłączona, dopóki jej nie włączysz</strong>, w Ustawienia ▸ Wtyczki — większość osób nigdy nie otwiera pliku .class, a bez silnika i tak nic nie da.</p>
 <p>Aby dodać własny silnik, utwórz <code>decompilers.ini</code> w folderze silników:</p>
@@ -93,6 +105,14 @@
 <tr>
 <td>Znajdź w przeglądarce</td>
 <td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Notatka do wiersza pod kursorem</td>
+<td>Cmd+Shift+N</td>
+</tr>
+<tr>
+<td>Pokaż lub ukryj panel znaczników</td>
+<td>Cmd+Ctrl+M</td>
 </tr>
 <tr>
 <td>Następne / poprzednie dopasowanie</td>
