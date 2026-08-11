@@ -7,9 +7,9 @@ name: Docs
 
 on:
   push:
-    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings]
+    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings, Resources/PeachCommander.help/**]
   pull_request:
-    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings]
+    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings, Resources/PeachCommander.help/**]
 
 jobs:
   docs:
@@ -62,7 +62,19 @@ jobs:
         run: python3 Tools/check-inventory.py
       - name: Shortcut audit (schemes only; the menu-bar comparison needs the VM harness)
         run: python3 Tools/check-hotkeys.py
-      - name: Build Apple Help Book (all languages)
-        run: python3 docs/scripts/build-helpbook.py --all
+      # The Help Book is a build output that ships inside the app, and nothing but this workflow
+      # builds it — so it is only as fresh as the last person who remembered to run the script.
+      # It went thirteen topics stale in all nineteen languages that way, with this job green:
+      # building it proves it *can* be built, not that what we ship matches the sources.
+      # The .helpindex files are excluded because hiutil is not reproducible — two runs over
+      # identical input give different bytes — so they would fail this check every time.
+      - name: Build Apple Help Book (all languages, must be committed & up to date)
+        run: |
+          python3 docs/scripts/build-helpbook.py --all
+          if ! git diff --quiet -- Resources/PeachCommander.help ':!*.helpindex'; then
+            echo "::error::The shipped Help Book is stale — run docs/scripts/build-helpbook.py --all and commit."
+            git --no-pager diff --stat -- Resources/PeachCommander.help ':!*.helpindex'
+            exit 1
+          fi
       - name: Build documentation site (all languages, strict)
         run: python3 docs/scripts/build-site.py
