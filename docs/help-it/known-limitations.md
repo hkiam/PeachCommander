@@ -25,7 +25,7 @@ Peach Commander fa molto, ma alcune funzioni hanno limiti onesti nella versione 
 
 ## Altri limiti attuali
 
-- **Alcuni percorsi assoluti molto lunghi** (cartelle profondamente annidate il cui percorso completo è insolitamente lungo) potrebbero non essere gestiti in modo affidabile. Lavorare più vicino alla cima dell'albero delle cartelle evita questo.
+- **Percorsi molto lunghi: sfogliare funziona, copiare non ancora.** macOS rifiuta come argomento di chiamata qualsiasi percorso oltre 1024 byte, e cartelle annidate fino a tanto esistono. Elencare, aprire, rinominare, creare ed eliminare le raggiungono; **F5 Copia e F6 Sposta non ancora**, e lì segnalano un errore. Lavorare più vicino alla cima dell’albero delle cartelle evita il caso rimanente.
 - **Questa versione di anteprima non è firmata.** Gatekeeper blocca il primo avvio, e il modo di consentirlo dipende dalla versione di macOS. Su **macOS 15 Sequoia e successivi**: fate doppio clic una volta, chiudete l'avviso, poi andate in **Impostazioni di Sistema ▸ Privacy e sicurezza** e fate clic su **Apri comunque** — Apple ha rimosso la scorciatoia con il clic destro per il software non firmato in macOS 15, quindi il clic destro non aiuta più. Su **macOS 13–14**: fate clic destro sull'app e scegliete Apri, poi confermate. Gli aggiornamenti automatici non sono ancora disponibili in questa versione.
 
 ## Scorciatoie

@@ -25,7 +25,7 @@ Peach Commander robi wiele, ale kilka funkcji ma w bieżącej wersji szczere ogr
 
 ## Inne bieżące ograniczenia
 
-- **Niektóre bardzo długie ścieżki bezwzględne** (głęboko zagnieżdżone foldery, których pełna ścieżka jest niezwykle długa) mogą nie być obsługiwane niezawodnie. Praca bliżej szczytu drzewa folderów pozwala tego uniknąć.
+- **Bardzo długie ścieżki: przeglądanie działa, kopiowanie jeszcze nie.** macOS odrzuca jako argument wywołania każdą ścieżkę dłuższą niż 1024 bajty, a foldery zagnieżdżone aż tak głęboko się zdarzają. Wyświetlanie, otwieranie, zmiana nazwy, tworzenie i usuwanie do nich docierają; **F5 Kopiuj i F6 Przenieś jeszcze nie** i zgłaszają tam błąd. Praca bliżej szczytu drzewa folderów omija pozostały przypadek.
 - **Ta wersja zapoznawcza nie jest podpisana.** Gatekeeper blokuje pierwsze uruchomienie, a sposób na jego dopuszczenie zależy od wersji macOS. W **macOS 15 Sequoia i nowszym**: kliknij dwukrotnie raz, zamknij ostrzeżenie, a potem przejdź do **Ustawień systemowych ▸ Prywatność i ochrona** i kliknij **Otwórz mimo to** — Apple usunęło w macOS 15 skrót przez kliknięcie prawym przyciskiem dla niepodpisanego oprogramowania, więc kliknięcie prawym przyciskiem już nie pomaga. W **macOS 13–14**: kliknij aplikację prawym przyciskiem, wybierz Otwórz i potwierdź. Automatyczne aktualizacje nie są jeszcze dostępne w tej wersji.
 
 ## Skróty

@@ -25,7 +25,7 @@ Peach Commander gør meget, men nogle få funktioner har ærlige grænser i den 
 
 ## Andre aktuelle grænser
 
-- **Nogle meget lange absolutte stier** (dybt indlejrede mapper, hvis fulde sti er usædvanligt lang) håndteres måske ikke pålideligt. At arbejde tættere på toppen af mappetræet undgår dette.
+- **Meget lange stier: gennemsyn virker, kopiering endnu ikke.** macOS afviser enhver sti på over 1024 byte som kaldsargument, og mapper, der er indlejret dybt nok til det, forekommer. Visning, åbning, omdøbning, oprettelse og sletning når dem; **F5 Kopier og F6 Flyt gør det endnu ikke** og melder fejl der. At arbejde tættere på toppen af mappetræet undgår det resterende tilfælde.
 - **Denne forhåndsversion er ikke underskrevet.** Gatekeeper blokerer den første start, og hvordan du tillader den afhænger af din macOS-version. På **macOS 15 Sequoia og nyere**: dobbeltklik én gang, luk advarslen, og gå så til **Systemindstillinger ▸ Anonymitet og sikkerhed** og klik på **Åbn alligevel** — Apple fjernede genvejen med højreklik for usigneret software i macOS 15, så højreklik hjælper ikke længere. På **macOS 13–14**: højreklik på appen og vælg Åbn, bekræft derefter. Automatiske opdateringer er endnu ikke tilgængelige i denne version.
 
 ## Genveje

@@ -25,7 +25,7 @@ Peach Commander dokáže veľa, ale niekoľko funkcií má v aktuálnej verzii �
 
 ## Iné aktuálne hranice
 
-- **Niektoré veľmi dlhé absolútne cesty** (hlboko vnorené priečinky, ktorých úplná cesta je nezvyčajne dlhá) nemusia byť spracované spoľahlivo. Práca bližšie k vrcholu stromu priečinkov sa tomu vyhne.
+- **Veľmi dlhé cesty: prehliadanie funguje, kopírovanie zatiaľ nie.** macOS odmietne ako argument volania každú cestu dlhšiu než 1024 bajtov a takto hlboko vnorené priečinky sa vyskytujú. Výpis, otvorenie, premenovanie, vytvorenie aj odstránenie sa k nim dostanú; **F5 Kopírovať a F6 Presunúť zatiaľ nie** a ohlásia tam chybu. Práca bližšie k vrcholu stromu priečinkov zvyšný prípad obíde.
 - **Toto zostavenie náhľadu nie je podpísané.** Gatekeeper blokuje prvé spustenie a spôsob, ako ho povoliť, závisí od verzie macOS. Na **macOS 15 Sequoia a novšom**: raz dvakrát kliknite, zavrite varovanie a potom prejdite do **Nastavení systému ▸ Súkromie a bezpečnosť** a kliknite na **Aj tak otvoriť** — Apple v macOS 15 odstránil skratku pravým tlačidlom pre nepodpísaný softvér, takže kliknutie pravým tlačidlom tam už nepomôže. Na **macOS 13–14**: kliknite na aplikáciu pravým tlačidlom, zvoľte Otvoriť a potvrďte. Automatické aktualizácie v tomto zostavení zatiaľ nie sú dostupné.
 
 ## Skratky
