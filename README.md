@@ -269,7 +269,7 @@ Coming from Total Commander? Keep the keys you know (**Configuration ▸ Keyboar
 - Auto-update (Sparkle) is planned but not wired up yet.
 - **Split (multi-part) archives** open for ZIP (`.z01…`/`.zip.001…`, all parts in one folder) but not for TAR.
 - **Very long paths** (over macOS's 1024-byte limit for a path argument) work throughout, except that such a file cannot be moved to the **Trash** — macOS has no way to trash a file it cannot name. Shift+Delete does work.
-- **Remote locations and the inside of an archive** aren't watched for outside changes, because neither protocol offers a way to be told — **F2** / **Ctrl+R** re-reads them. Folders on this Mac update by themselves.
+- **Remote locations** (FTP/SFTP) aren't watched for outside changes, because those protocols offer no way to be told — **F2** / **Ctrl+R** re-reads them. Folders on this Mac and an archive you have open both update by themselves.
 
 Full list: **Help ▸ Known limitations** inside the app.
 

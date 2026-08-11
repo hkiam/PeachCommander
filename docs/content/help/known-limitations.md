@@ -21,7 +21,7 @@ Peach Commander does a lot, but a few features have honest limits in the current
 
 ## Directory refresh
 
-- **Only folders on this Mac are watched for outside changes.** A folder on this Mac updates by itself as soon as another program adds, changes, or removes a file in it. A remote location (FTP or SFTP) and the inside of an archive are not watched, because those protocols offer no way to be told — press F2 or Ctrl+R to re-read them.
+- **Remote locations are not watched; an open archive now is.** A folder on this Mac updates by itself as soon as another program adds, changes, or removes a file in it, and so does an archive you are looking inside: the `.zip` is a local file, so when something rewrites it the panel re-reads it. A remote location (FTP or SFTP) is not watched, because those protocols offer no way to be told — press F2 or Ctrl+R to re-read it.
 
 ## Other current limits
 

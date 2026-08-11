@@ -21,7 +21,7 @@ Peach Commander naredi veliko, a nekaj funkcij ima v trenutni različici pošten
 
 ## Osveževanje map
 
-- **Za zunanje spremembe se spremljajo le mape na tem Macu.** Mapa na tem Macu se posodobi sama, brž ko drug program v njej ustvari, spremeni ali odstrani datoteko. Oddaljeno mesto (FTP ali SFTP) in notranjost arhiva se ne spremljata, saj ta protokola ne ponujata načina za obvestilo — tam pritisnite F2 ali Ctrl+R za ponovno branje.
+- **Oddaljena mesta se ne spremljajo; odprt arhiv pa zdaj že.** Mapa na tem Macu se posodobi sama, brž ko drug program v njej ustvari, spremeni ali odstrani datoteko — in tako tudi arhiv, v katerega gledate: `.zip` je krajevna datoteka, zato ga plošča znova prebere, če ga kaj prepiše. Oddaljeno mesto (FTP ali SFTP) se ne spremlja, ker ti protokoli ne ponujajo načina za obvestilo — pritisnite F2 ali Ctrl+R.
 
 ## Druge trenutne meje
 

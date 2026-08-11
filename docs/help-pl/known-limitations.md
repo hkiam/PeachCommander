@@ -21,7 +21,7 @@ Peach Commander robi wiele, ale kilka funkcji ma w bieżącej wersji szczere ogr
 
 ## Odświeżanie folderów
 
-- **Na zmiany z zewnątrz obserwowane są tylko foldery na tym Macu.** Folder na tym Macu aktualizuje się sam, gdy tylko inny program utworzy, zmieni lub usunie w nim plik. Lokalizacja zdalna (FTP lub SFTP) ani wnętrze archiwum nie są obserwowane, ponieważ te protokoły nie dają możliwości powiadomienia — tam naciśnij F2 lub Ctrl+R, aby odczytać ponownie.
+- **Lokalizacje zdalne nie są obserwowane; otwarte archiwum teraz tak.** Folder na tym Macu aktualizuje się sam, gdy tylko inny program utworzy, zmieni lub usunie w nim plik — i tak samo archiwum, do którego zaglądasz: `.zip` to plik lokalny, więc gdy coś go nadpisze, panel odczyta go ponownie. Lokalizacja zdalna (FTP lub SFTP) nie jest obserwowana, bo te protokoły nie dają sposobu na powiadomienie — naciśnij F2 lub Ctrl+R.
 
 ## Inne bieżące ograniczenia
 

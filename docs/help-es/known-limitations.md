@@ -21,7 +21,7 @@ Peach Commander hace muchas cosas, pero unas cuantas funciones tienen límites r
 
 ## Actualización de directorios
 
-- **Solo se vigilan las carpetas de este Mac.** Una carpeta de este Mac se actualiza por sí sola en cuanto otro programa añade, cambia o elimina un archivo en ella. Una ubicación remota (FTP o SFTP) y el interior de un archivo comprimido no se vigilan, porque esos protocolos no ofrecen forma de avisar: pulse F2 o Ctrl+R para volver a leerlos.
+- **Las ubicaciones remotas no se vigilan; un archivo comprimido abierto sí, ahora.** Una carpeta de este Mac se actualiza por sí sola en cuanto otro programa añade, cambia o elimina un archivo en ella — y también lo hace un archivo comprimido que esté abierto: el `.zip` es un fichero local, así que si algo lo reescribe el panel vuelve a leerlo. Una ubicación remota (FTP o SFTP) no se vigila, porque esos protocolos no ofrecen forma de avisar — pulse F2 o Ctrl+R.
 
 ## Otros límites actuales
 

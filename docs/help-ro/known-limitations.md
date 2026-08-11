@@ -21,7 +21,7 @@ Peach Commander face multe, dar câteva funcții au limite oneste în versiunea 
 
 ## Reîmprospătarea folderelor
 
-- **Doar dosarele de pe acest Mac sunt urmărite pentru modificări din exterior.** Un dosar de pe acest Mac se actualizează singur imediat ce alt program adaugă, modifică sau elimină un fișier în el. O locație la distanță (FTP sau SFTP) și interiorul unei arhive nu sunt urmărite, fiindcă acele protocoale nu oferă nicio cale de a fi anunțat — apăsați F2 sau Ctrl+R pentru a le reciti.
+- **Locațiile la distanță nu sunt urmărite; o arhivă deschisă acum este.** Un dosar de pe acest Mac se actualizează singur imediat ce alt program adaugă, modifică sau elimină un fișier în el — la fel și o arhivă în care vă uitați: `.zip`-ul este un fișier local, așa că dacă ceva îl rescrie, panoul îl recitește. O locație la distanță (FTP sau SFTP) nu este urmărită, fiindcă acele protocoale nu oferă nicio cale de a fi anunțate — apăsați F2 sau Ctrl+R.
 
 ## Alte limite curente
 

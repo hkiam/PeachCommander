@@ -21,7 +21,7 @@ Peach Commander fait beaucoup, mais quelques fonctionnalités ont des limites ho
 
 ## Actualisation des dossiers
 
-- **Seuls les dossiers de ce Mac sont surveillés.** Un dossier de ce Mac se met à jour de lui-même dès qu’un autre programme y ajoute, modifie ou supprime un fichier. Un emplacement distant (FTP ou SFTP) et l’intérieur d’une archive ne sont pas surveillés, car ces protocoles n’offrent aucun moyen d’être averti — appuyez sur F2 ou Ctrl+R pour les relire.
+- **Les emplacements distants ne sont pas surveillés ; une archive ouverte l’est désormais.** Un dossier de ce Mac se met à jour de lui-même dès qu’un autre programme y ajoute, modifie ou supprime un fichier — et une archive que vous parcourez aussi : le `.zip` est un fichier local, donc si quelque chose le réécrit, le panneau le relit. Un emplacement distant (FTP ou SFTP) n’est pas surveillé, car ces protocoles n’offrent aucun moyen d’être prévenu — appuyez sur F2 ou Ctrl+R.
 
 ## Autres limites actuelles
 
