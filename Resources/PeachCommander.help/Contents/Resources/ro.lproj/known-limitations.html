@@ -13,7 +13,7 @@
 <p>Peach Commander face multe, dar câteva funcții au limite oneste în versiunea curentă. Cunoașterea lor în avans scutește confuzia când ceva se comportă neașteptat. Această pagină listează constrângerile curente și, unde este posibil, o soluție simplă.</p>
 <h2 id="arhive">Arhive</h2>
 <ul>
-<li><strong>Arhivele împărțite (în mai multe părți) nu pot fi deschise.</strong> ZIP standard — inclusiv ZIP64, adică peste 65.535 de elemente sau peste 4 GB — precum și TAR și TAR comprimat cu gzip se deschid direct ca dosare. O arhivă împărțită în mai multe fișiere (<code>.z01</code>, <code>.zip.001</code>) nu este acceptată: uniți mai întâi părțile sau dezarhivați-o cu unealta care a creat-o.</li>
+<li><strong>Arhivele ZIP împărțite (în mai multe părți) se deschid, dar toate părțile trebuie să fie prezente.</strong> ZIP standard — inclusiv ZIP64, adică peste 65.535 de elemente sau peste 4 GB — precum și TAR și TAR comprimat cu gzip se deschid direct ca dosare. O arhivă împărțită în mai multe fișiere se deschide și ea: apăsați Enter pe fișierul <code>.zip</code> al unui set <code>.z01</code>, <code>.z02</code>, … sau pe fișierul <code>.001</code> al unui set <code>name.zip.001</code>. Toate părțile trebuie să se afle în același dosar, iar un set căruia îi lipsește una este refuzat în loc să fie deschis citit pe jumătate. Arhivele TAR împărțite nu sunt acoperite.</li>
 <li><strong>Arhivele ZIP criptate</strong> (atât ZipCrypto mai vechi, cât și WinZip AES) sunt acceptate pentru parcurgere, dar vi se va cere parola.</li>
 <li>Alte formate precum CPIO, ISO, CAB, LZH, XAR și PAX se deschid printr-un instrument ajutător în loc de cititorul nativ.</li>
 </ul>

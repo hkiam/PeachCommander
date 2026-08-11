@@ -10,7 +10,7 @@ Peach Commander fait beaucoup, mais quelques fonctionnalités ont des limites ho
 
 ## Archives
 
-- **Les archives scindées (en plusieurs parties) ne peuvent pas être ouvertes.** Le ZIP standard — y compris ZIP64, donc plus de 65 535 éléments ou plus de 4 Go — ainsi que TAR et TAR compressé en gzip s’ouvrent directement comme des dossiers. Une archive répartie sur plusieurs fichiers (`.z01`, `.zip.001`) n’est pas prise en charge : réunissez d’abord les parties, ou décompressez-la avec l’outil qui l’a créée.
+- **Les archives ZIP scindées (en plusieurs parties) s’ouvrent, mais toutes les parties doivent être présentes.** Le ZIP standard — y compris ZIP64, donc plus de 65 535 éléments ou plus de 4 Go — ainsi que TAR et TAR compressé en gzip s’ouvrent directement comme des dossiers. Une archive répartie sur plusieurs fichiers s’ouvre également : appuyez sur Entrée sur le `.zip` d’un jeu `.z01`, `.z02`, … ou sur le `.001` d’un jeu `name.zip.001`. Toutes les parties doivent se trouver dans le même dossier, et un jeu auquel il en manque une est refusé plutôt qu’ouvert à moitié lu. Les archives TAR scindées ne sont pas couvertes.
 - **Les archives ZIP chiffrées** (l'ancien ZipCrypto comme WinZip AES) sont prises en charge pour la navigation, mais le mot de passe vous sera demandé.
 - D'autres formats tels que CPIO, ISO, CAB, LZH, XAR et PAX s'ouvrent via un outil auxiliaire plutôt que par le lecteur natif.
 

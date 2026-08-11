@@ -13,7 +13,7 @@
 <p>Peach Commander gør meget, men nogle få funktioner har ærlige grænser i den aktuelle version. At kende disse på forhånd sparer forvirring, når noget opfører sig uventet. Denne side viser de aktuelle begrænsninger og, hvor det er muligt, en simpel løsning.</p>
 <h2 id="arkiver">Arkiver</h2>
 <ul>
-<li><strong>Opdelte arkiver (i flere dele) kan ikke åbnes.</strong> Standard-ZIP — inklusive ZIP64, altså mere end 65.535 emner eller over 4 GB — samt TAR og gzip-komprimeret TAR åbner direkte som mapper. Et arkiv fordelt over flere filer (<code>.z01</code>, <code>.zip.001</code>) understøttes ikke: saml delene først, eller pak det ud med det værktøj, der lavede det.</li>
+<li><strong>Opdelte ZIP-arkiver (i flere dele) kan åbnes, men alle dele skal være til stede.</strong> Standard-ZIP — inklusive ZIP64, altså mere end 65.535 emner eller over 4 GB — samt TAR og gzip-komprimeret TAR åbner direkte som mapper. Et arkiv fordelt over flere filer åbnes også: tryk på Enter på <code>.zip</code>-filen i et sæt med <code>.z01</code>, <code>.z02</code>, … eller på <code>.001</code>-filen i et <code>name.zip.001</code>-sæt. Alle dele skal ligge i samme mappe, og et sæt, hvor én mangler, afvises i stedet for at blive åbnet halvt læst. Opdelte TAR-arkiver er ikke omfattet.</li>
 <li><strong>Krypterede ZIP-arkiver</strong> (både ældre ZipCrypto og WinZip AES) understøttes til gennemsyn, men du bliver bedt om adgangskoden.</li>
 <li>Andre formater som CPIO, ISO, CAB, LZH, XAR og PAX åbner gennem et hjælpeværktøj i stedet for den indfødte læser.</li>
 </ul>

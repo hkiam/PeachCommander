@@ -10,7 +10,7 @@ Peach Commander face multe, dar câteva funcții au limite oneste în versiunea 
 
 ## Arhive
 
-- **Arhivele împărțite (în mai multe părți) nu pot fi deschise.** ZIP standard — inclusiv ZIP64, adică peste 65.535 de elemente sau peste 4 GB — precum și TAR și TAR comprimat cu gzip se deschid direct ca dosare. O arhivă împărțită în mai multe fișiere (`.z01`, `.zip.001`) nu este acceptată: uniți mai întâi părțile sau dezarhivați-o cu unealta care a creat-o.
+- **Arhivele ZIP împărțite (în mai multe părți) se deschid, dar toate părțile trebuie să fie prezente.** ZIP standard — inclusiv ZIP64, adică peste 65.535 de elemente sau peste 4 GB — precum și TAR și TAR comprimat cu gzip se deschid direct ca dosare. O arhivă împărțită în mai multe fișiere se deschide și ea: apăsați Enter pe fișierul `.zip` al unui set `.z01`, `.z02`, … sau pe fișierul `.001` al unui set `name.zip.001`. Toate părțile trebuie să se afle în același dosar, iar un set căruia îi lipsește una este refuzat în loc să fie deschis citit pe jumătate. Arhivele TAR împărțite nu sunt acoperite.
 - **Arhivele ZIP criptate** (atât ZipCrypto mai vechi, cât și WinZip AES) sunt acceptate pentru parcurgere, dar vi se va cere parola.
 - Alte formate precum CPIO, ISO, CAB, LZH, XAR și PAX se deschid printr-un instrument ajutător în loc de cititorul nativ.
 

@@ -125,7 +125,7 @@ public final class ZipReader {
     /// Same, for the 16-bit entry counts.
     private static let sentinel16: UInt16 = 0xFFFF
 
-    private let fileData: Data
+    private let volumes: ZipVolumes
 
     /// All entries parsed from the central directory, in central-directory order.
     public let entries: [ZipEntry]
@@ -135,11 +135,13 @@ public final class ZipReader {
     /// or a malformed central directory).
     public init?(fileURL: URL) {
         // Mapped, not read: a ZIP64 archive can be larger than memory, and the parser only
-        // touches the central directory plus the entries actually extracted.
-        guard let data = try? Data(contentsOf: fileURL, options: [.mappedIfSafe]) else { return nil }
-        guard let eocdOffset = Self.findEOCD(in: data) else { return nil }
-        guard let parsed = try? Self.parseCentralDirectory(data, eocdOffset: eocdOffset) else { return nil }
-        self.fileData = data
+        // touches the central directory plus the entries actually extracted. `ZipVolumes` also
+        // gathers the other parts when this is the last disk of a split set (F-382); for an
+        // ordinary archive it is one mapping and every offset below translates by zero.
+        guard let volumes = ZipVolumes.open(fileURL: fileURL) else { return nil }
+        guard let eocdOffset = Self.findEOCD(in: volumes) else { return nil }
+        guard let parsed = try? Self.parseCentralDirectory(volumes, eocdOffset: eocdOffset) else { return nil }
+        self.volumes = volumes
         self.entries = parsed
     }
 
@@ -151,10 +153,10 @@ public final class ZipReader {
         guard !entry.isDirectory else { return Data() }
 
         guard entry.localHeaderOffset <= UInt64(Int.max),
-              Int(entry.localHeaderOffset) < fileData.count else {
+              Int(entry.localHeaderOffset) < volumes.count else {
             throw ZipError.malformed("local header offset outside the archive")
         }
-        var reader = ByteReader(data: fileData, at: Int(entry.localHeaderOffset))
+        var reader = ByteReader(data: volumes, at: Int(entry.localHeaderOffset))
         let signature = try reader.readUInt32LE()
         guard signature == Self.localHeaderSignature else {
             throw ZipError.malformed("bad local file header signature")
@@ -280,7 +282,7 @@ public final class ZipReader {
     /// Scans backwards from the end of `data` for the EOCD signature,
     /// allowing for a trailing archive comment of up to 64 KB (the maximum
     /// a 16-bit comment-length field can express).
-    private static func findEOCD(in data: Data) -> Int? {
+    static func findEOCD(in data: ZipVolumes) -> Int? {
         let minSize = 22
         guard data.count >= minSize else { return nil }
         let maxCommentSize = 65_535
@@ -302,14 +304,23 @@ public final class ZipReader {
     /// the ZIP64 EOCD record. Both are required to be there together; a locator without a
     /// readable record is a malformed archive, not a classic one, so it is reported rather
     /// than silently ignored — otherwise the sentinels would be used as real values.
-    private static func zip64Directory(_ data: Data, eocdOffset: Int) throws
-        -> (totalEntries: UInt64, centralDirOffset: UInt64)? {
+    private static func zip64Directory(_ data: ZipVolumes, eocdOffset: Int) throws
+        -> (totalEntries: UInt64, centralDirOffset: UInt64, diskWithCentralDir: Int)? {
         let locatorSize = 20
         guard eocdOffset >= locatorSize else { return nil }
         var locator = ByteReader(data: data, at: eocdOffset - locatorSize)
         guard try locator.readUInt32LE() == zip64LocatorSignature else { return nil }
-        try locator.skip(4)                      // disk with the ZIP64 EOCD record
-        let recordOffset = try locator.readUInt64LE()
+        // The record's offset is relative to the disk named here, exactly like every other offset in
+        // a split archive; on a single-file archive that disk is 0 and this adds nothing.
+        let recordDisk = Int(try locator.readUInt32LE())
+        let relativeRecord = try locator.readUInt64LE()
+        guard let recordBase = data.base(ofDisk: recordDisk) else {
+            throw ZipError.malformed("ZIP64 EOCD record on a disk that is not part of this archive")
+        }
+        guard relativeRecord <= UInt64(Int.max) else {
+            throw ZipError.malformed("ZIP64 EOCD record outside the archive")
+        }
+        let recordOffset = UInt64(recordBase) + relativeRecord
         guard recordOffset <= UInt64(Int.max), Int(recordOffset) < data.count else {
             throw ZipError.malformed("ZIP64 EOCD record outside the archive")
         }
@@ -321,12 +332,12 @@ public final class ZipReader {
         try record.skip(2)                       // version made by
         try record.skip(2)                       // version needed to extract
         try record.skip(4)                       // number of this disk
-        try record.skip(4)                       // disk with the start of the central directory
+        let diskWithCentralDir = Int(try record.readUInt32LE())
         try record.skip(8)                       // entries on this disk
         let totalEntries = try record.readUInt64LE()
         try record.skip(8)                       // size of the central directory
         let centralDirOffset = try record.readUInt64LE()
-        return (totalEntries, centralDirOffset)
+        return (totalEntries, centralDirOffset, diskWithCentralDir)
     }
 
     /// The real sizes and offset from an entry's ZIP64 extra field (header id 0x0001).
@@ -338,7 +349,7 @@ public final class ZipReader {
     private static func zip64Extra(_ extra: Data, uncompressed: UInt32, compressed: UInt32,
                                   offset: UInt32, diskStart: UInt16) throws
         -> (uncompressed: UInt64, compressed: UInt64, offset: UInt64)? {
-        var reader = ByteReader(data: extra, at: 0)
+        var reader = ByteReader(data: ZipVolumes(parts: [extra]), at: 0)
         var remaining = extra.count
         while remaining >= 4 {
             let id = try reader.readUInt16LE()
@@ -350,7 +361,7 @@ public final class ZipReader {
                 remaining -= size
                 continue
             }
-            var field = ByteReader(data: try reader.readBytes(size), at: 0)
+            var field = ByteReader(data: ZipVolumes(parts: [try reader.readBytes(size)]), at: 0)
             let realUncompressed = uncompressed == sentinel32 ? try field.readUInt64LE()
                                                              : UInt64(uncompressed)
             let realCompressed = compressed == sentinel32 ? try field.readUInt64LE()
@@ -362,12 +373,12 @@ public final class ZipReader {
         return nil
     }
 
-    private static func parseCentralDirectory(_ data: Data, eocdOffset: Int) throws -> [ZipEntry] {
+    private static func parseCentralDirectory(_ data: ZipVolumes, eocdOffset: Int) throws -> [ZipEntry] {
         var eocd = ByteReader(data: data, at: eocdOffset)
         let signature = try eocd.readUInt32LE()
         guard signature == eocdSignature else { throw ZipError.malformed("bad EOCD signature") }
         try eocd.skip(2) // number of this disk
-        try eocd.skip(2) // disk with the start of the central directory
+        let diskWithCentralDir = Int(try eocd.readUInt16LE())
         try eocd.skip(2) // entries on this disk
         let classicTotalEntries = try eocd.readUInt16LE()
         try eocd.skip(4) // size of central directory
@@ -377,7 +388,17 @@ public final class ZipReader {
         // archive just under the limits both agree anyway.
         let zip64 = try zip64Directory(data, eocdOffset: eocdOffset)
         let totalEntries = zip64?.totalEntries ?? UInt64(classicTotalEntries)
-        let centralDirOffset = zip64?.centralDirOffset ?? UInt64(classicCentralDirOffset)
+        let relativeCentralDir = zip64?.centralDirOffset ?? UInt64(classicCentralDirOffset)
+        // Every offset in a split archive is relative to the disk that holds the thing it points at,
+        // so it only becomes an index into the stream once that disk's start is added. For a
+        // single-file archive the disk is 0 and the base is 0, which is the same arithmetic.
+        guard let centralDirBase = data.base(ofDisk: zip64?.diskWithCentralDir ?? diskWithCentralDir) else {
+            throw ZipError.malformed("central directory on a disk that is not part of this archive")
+        }
+        guard relativeCentralDir <= UInt64(Int.max) else {
+            throw ZipError.malformed("central directory outside the archive")
+        }
+        let centralDirOffset = UInt64(centralDirBase) + relativeCentralDir
         guard centralDirOffset <= UInt64(Int.max), Int(centralDirOffset) < data.count else {
             throw ZipError.malformed("central directory outside the archive")
         }
@@ -422,7 +443,11 @@ public final class ZipReader {
                                       diskStart: diskStart)
             let realUncompressed = real?.uncompressed ?? UInt64(uncompressedSize)
             let realCompressed = real?.compressed ?? UInt64(compressedSize)
-            let realOffset = real?.offset ?? UInt64(localHeaderOffset)
+            let relativeOffset = real?.offset ?? UInt64(localHeaderOffset)
+            guard let entryBase = data.base(ofDisk: Int(diskStart)) else {
+                throw ZipError.malformed("entry on a disk that is not part of this archive")
+            }
+            let realOffset = UInt64(entryBase) + relativeOffset
 
             guard let rawName = String(data: nameData, encoding: .utf8)
                 ?? String(data: nameData, encoding: .isoLatin1) else {
@@ -516,10 +541,10 @@ public final class ZipReader {
 /// scanned sequentially; local file headers are seeked to directly), so this
 /// keeps every multi-byte read guarded against running off the end of the file.
 private struct ByteReader {
-    private let data: Data
+    private let data: ZipVolumes
     private var offset: Int
 
-    init(data: Data, at offset: Int) {
+    init(data: ZipVolumes, at offset: Int) {
         self.data = data
         self.offset = offset
     }
@@ -554,9 +579,7 @@ private struct ByteReader {
         guard count >= 0, offset >= 0, offset + count <= data.count else {
             throw ZipError.malformed("truncated read")
         }
-        let start = data.index(data.startIndex, offsetBy: offset)
-        let end = data.index(start, offsetBy: count)
-        let slice = data.subdata(in: start..<end)
+        let slice = data.subdata(in: offset..<(offset + count))
         offset += count
         return slice
     }

@@ -258,6 +258,18 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         archiveExtensions.formUnion(exts.map { $0.lowercased() })
     }
 
+    /// `name.zip.001`, the first part of a plainly split archive (F-382).
+    ///
+    /// Not simply "001" in `archiveExtensions`: a numbered part belongs to whatever was split, and
+    /// most of those are not archives. Anything not recognised here is handed to NSWorkspace, so
+    /// claiming every `.001` would take that away from the ones that are not zips and give them a
+    /// beep instead. The stem has to say `.zip` for this to be our business.
+    static func isFirstPartOfSplitZip(_ path: String) -> Bool {
+        let ext = (path as NSString).pathExtension
+        guard ext.count == 3, ext.allSatisfy(\.isNumber), Int(ext) == 1 else { return false }
+        return ((path as NSString).deletingPathExtension as NSString).pathExtension.lowercased() == "zip"
+    }
+
     // The ordered, configurable set of visible columns. Built-in columns keep
     // fieldID == PanelColumn.rawValue (so sort/arrow code is unchanged); plugin
     // columns carry a qualified content-field id ("provider.field").
@@ -1481,7 +1493,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         case .appBundle:
             NSWorkspace.shared.open(URL(fileURLWithPath: path))
         case .file, .symlinkFile:
-            if archiveExtensions.contains(entry.ext.lowercased()) {
+            if archiveExtensions.contains(entry.ext.lowercased()) || Self.isFirstPartOfSplitZip(path) {
                 onEnterArchive?(path)
             } else {
                 NSWorkspace.shared.open(URL(fileURLWithPath: path))

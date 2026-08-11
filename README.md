@@ -267,7 +267,7 @@ Coming from Total Commander? Keep the keys you know (**Configuration ▸ Keyboar
   connected to, and declining costs you only those two numbers.
 - Not code-signed or notarized during the beta — macOS blocks the first launch until you allow it once (System Settings ▸ Privacy & Security on macOS 15+, right-click ▸ Open on macOS 13–14).
 - Auto-update (Sparkle) is planned but not wired up yet.
-- **Split (multi-part) archives** — `.z01`, `.zip.001` — can't be opened; join the parts first. (Splitting and combining *files* is a separate tool and works.)
+- **Split (multi-part) archives** open for ZIP (`.z01…`/`.zip.001…`, all parts in one folder) but not for TAR.
 - Some **very long absolute paths** may not be handled reliably; working closer to the top of the tree avoids it.
 - **Remote locations and the inside of an archive** aren't watched for outside changes, because neither protocol offers a way to be told — **F2** / **Ctrl+R** re-reads them. Folders on this Mac update by themselves.
 

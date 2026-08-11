@@ -10,7 +10,7 @@ Peach Commander robi wiele, ale kilka funkcji ma w bieżącej wersji szczere ogr
 
 ## Archiwa
 
-- **Archiwów podzielonych (wieloczęściowych) nie można otworzyć.** Standardowy ZIP — w tym ZIP64, czyli ponad 65 535 elementów lub powyżej 4 GB — a także TAR i TAR skompresowany gzipem otwierają się bezpośrednio jako foldery. Archiwum rozłożone na kilka plików (`.z01`, `.zip.001`) nie jest obsługiwane: najpierw połącz części albo rozpakuj je narzędziem, które je utworzyło.
+- **Archiwa ZIP podzielone (wieloczęściowe) można otworzyć, ale muszą być wszystkie części.** Standardowy ZIP — w tym ZIP64, czyli ponad 65 535 elementów lub powyżej 4 GB — a także TAR i TAR skompresowany gzipem otwierają się bezpośrednio jako foldery. Archiwum rozłożone na kilka plików również się otworzy: naciśnij Enter na pliku `.zip` zestawu `.z01`, `.z02`, … albo na pliku `.001` zestawu `name.zip.001`. Wszystkie części muszą leżeć w tym samym folderze, a zestaw, w którym jednej brakuje, zostaje odrzucony, zamiast otworzyć się przeczytany do połowy. Podzielone archiwa TAR nie są objęte.
 - **Zaszyfrowane archiwa ZIP** (zarówno starsze ZipCrypto, jak i WinZip AES) są obsługiwane do przeglądania, ale zostaniesz poproszony o hasło.
 - Inne formaty, takie jak CPIO, ISO, CAB, LZH, XAR i PAX, otwierają się przez narzędzie pomocnicze, a nie natywny czytnik.
 
