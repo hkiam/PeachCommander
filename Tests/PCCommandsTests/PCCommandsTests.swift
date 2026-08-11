@@ -101,9 +101,9 @@ final class PCCommandsTests: XCTestCase {
         let registry = CommandRegistry()
         await registry.registerDefaultCommands()
         let commands = await registry.getAllCommands()
-        // 145 real commands plus 26 not-yet-implemented placeholders; the split, and that the two
+        // 146 real commands plus 26 not-yet-implemented placeholders; the split, and that the two
         // blocks of ids do not overlap, is checked by the gate.
-        XCTAssertEqual(commands.count, 171,
+        XCTAssertEqual(commands.count, 172,
                        "a command defined in the source did not reach the registry — most likely two "
                        + "of them share an id, and the dictionary kept one")
     }
