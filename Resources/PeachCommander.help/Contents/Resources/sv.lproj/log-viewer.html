@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loggvisaren</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Loggvisaren</h1>
+<p>Sätt markören på en loggfil och välj <strong>Visa som logg…</strong> för att öppna den i ett fönster byggt för loggar i stället för för text: en rad per rad, nivån på varje rad igenkänd och färgad, ett filter, och en följning som håller jämna steg medan filen fortfarande skrivs.</p>
+<p>Det är ett tillägg: du kan stänga av det eller ta bort det under <strong>Konfiguration ▸ Tillägg…</strong>. Utan det visar F3 en logg som vilken annan textfil som helst.</p>
+<h2 id="varfor-den-oppnas-direkt">Varför den öppnas direkt</h2>
+<p>Filen mappas i minnet och bara ett index över var varje rad börjar byggs, i bakgrunden. Ingenting läses in som text innan det står på skärmen, och bara de rader som faktiskt syns avkodas. En logg på flera gigabyte öppnas lika snabbt som en liten, och att gå till slutet läser inte mitten.</p>
+<h2 id="nivaer-och-farg">Nivåer och färg</h2>
+<p>Varje rad klassificeras — <strong>Fel</strong>, <strong>Varning</strong>, <strong>Info</strong>, <strong>Felsökning</strong>, <strong>Spårning</strong>, eller <strong>Okänd</strong> när formatet inte avslöjar något — och färgas därefter. Standardfärgerna följer det ljusa eller mörka utseendet; ange egna i tilläggets inställningar så används dina.</p>
+<p>Kolumnen <strong>Nivå</strong> visar med en blick var felen sitter, och filterfältet smalnar av listan till det du söker. Slå på <strong>Regex</strong> för att filtrera med ett reguljärt uttryck i stället för ren text.</p>
+<h2 id="folja-en-fil-som-fortfarande-vaxer">Följa en fil som fortfarande växer</h2>
+<p>Slå på <strong>Direkt (rulla automatiskt)</strong> så följer fönstret filens slut medan nya rader kommer: indexet utökas över de tillagda byten i stället för att byggas om, så det förblir billigt hur lång filen än blir. Rulla upp så läser du historik; följningen fortsätter under.</p>
+<h2 id="hitta-ratt">Hitta rätt</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sök…</strong></td>
+<td>Söker i meddelandena; <strong>Sök (markera och hoppa)…</strong> markerar varje träff så att du kan stega mellan dem</td>
+</tr>
+<tr>
+<td><strong>Gå till rad…</strong></td>
+<td>Hoppar till ett fysiskt radnummer</td>
+</tr>
+<tr>
+<td><strong>Gå till datum/tid…</strong></td>
+<td>Hoppar till första raden från och med en tidsstämpel, t.ex. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>Kopieringen vet vad en loggrad är: <strong>Kopiera rad</strong> tar raden under markören, <strong>Kopiera post (alla rader)</strong> tar hela posten när en post sträcker sig över flera rader — en stackspårning till exempel — och <strong>Kopiera markerade rader</strong> tar exakt det du markerat.</p>
+<h2 id="format">Format</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> och <strong>CSV</strong> är inbyggda, och formatet känns igen automatiskt; fönstret visar vilket det stannade för. Är dina loggar inget av dem lägger du till ett eget under <strong>Loggformat</strong> i inställningarna: ett reguljärt uttryck med namngivna grupper för de delar som betyder något.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>En rad som uttrycket inte matchar visas ändå — den klassificeras helt enkelt som Okänd i stället för att kastas, för en logg man inte kan läsa är värre än en logg utan färger.</p>
+<h2 id="visning">Visning</h2>
+<p><strong>Visa radnummer</strong> och <strong>Radbryt långa rader</strong> finns i inställningarna. Detaljytan under listan visar alltid hela texten för den markerade posten, radbruten, vad listan än gör.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="viewing-files.html">Visa filer</a></li><li><a href="searching.html">Hitta filer</a></li></ul></section>
+</main>
+</body>
+</html>

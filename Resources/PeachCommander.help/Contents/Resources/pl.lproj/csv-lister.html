@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pliki CSV jako tabela</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Pliki CSV jako tabela</h1>
+<p>Naciśnij <strong>F3</strong> na pliku <code>.csv</code> lub <code>.tsv</code>, a otworzy się jako prawdziwa tabela — kolumny, nagłówki, sortowanie i filtr — zamiast jako wiersze tekstu z przecinkami.</p>
+<p>To wtyczka: możesz ją wyłączyć lub usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>. Bez niej F3 pokazuje plik jako zwykły tekst, co przy małym pliku wciąż dobrze się czyta.</p>
+<h2 id="separator-jest-ustalany-a-nie-zakadany">Separator jest ustalany, a nie zakładany</h2>
+<p>Przecinek, średnik, tabulator, kreska pionowa i dwukropek — wszystkie wchodzą w grę. Wtyczka liczy każdy z nich w pierwszych dwudziestu wierszach i wybiera ten, który w największej liczbie wierszy występuje tyle samo razy: plik, w którym każdy wiersz ma cztery średniki, jest plikiem ze średnikami, cokolwiek mówi rozszerzenie. W praktyce to ma znaczenie: <code>.csv</code> wyeksportowany przez arkusz kalkulacyjny na polskim systemie zwykle jest rozdzielony średnikami, a <code>.tsv</code> nie zawsze tabulatorami.</p>
+<p>Pierwszy wiersz traktowany jest jako nagłówek i staje się tytułami kolumn.</p>
+<h2 id="sortowanie-i-filtrowanie">Sortowanie i filtrowanie</h2>
+<p>Kliknij nagłówek kolumny, aby po niej posortować, kliknij ponownie, aby odwrócić. Sortowanie jest <strong>liczbowe, gdy obie wartości są liczbami</strong>, a w przeciwnym razie alfabetyczne, więc kolumna z rozmiarami ustawi 9 przed 10, a nie po nim.</p>
+<p>Pole wyszukiwania filtruje w trakcie pisania, bez rozróżniania wielkości liter. Domyślnie zagląda do wszystkich kolumn; wybierz kolumnę w menu obok, aby szukać tylko w niej.</p>
+<h2 id="czego-nie-robi">Czego nie robi</h2>
+<p>Parser jest celowo niewielki, a jedno ograniczenie warto znać, zanim cię zaskoczy: <strong>separator wewnątrz pola w cudzysłowie nadal jest traktowany jako separator.</strong> Wiersz taki jak</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>daje trzy komórki zamiast dwóch. Otaczające cudzysłowy są usuwane, gdy obejmują całe pole, ale poza tym cytowanie nie jest interpretowane. Do pliku, w którym to ma znaczenie, lepszym narzędziem jest wbudowana przeglądarka lub arkusz kalkulacyjny.</p>
+<p>Puste wiersze są pomijane, a pole rozciągające się na kilka wierszy nie jest obsługiwane.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="viewing-files.html">Podgląd plików</a></li><li><a href="log-viewer.html">Przeglądarka logów</a></li></ul></section>
+</main>
+</body>
+</html>

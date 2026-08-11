@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSV-Dateien als Tabelle</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>CSV-Dateien als Tabelle</h1>
+<p>Drücken Sie <strong>F3</strong> auf einer <code>.csv</code>- oder <code>.tsv</code>-Datei, und sie öffnet sich als echte Tabelle — Spalten, Überschriften, Sortierung und Filter — statt als Textzeilen mit Kommas darin.</p>
+<p>Es ist ein Plugin, Sie können es also unter <strong>Konfiguration ▸ Plugins…</strong> abschalten oder entfernen. Ohne es zeigt F3 die Datei als reinen Text, was bei einer kleinen durchaus lesbar bleibt.</p>
+<h2 id="das-trennzeichen-wird-ermittelt-nicht-angenommen">Das Trennzeichen wird ermittelt, nicht angenommen</h2>
+<p>Komma, Semikolon, Tabulator, senkrechter Strich und Doppelpunkt kommen alle in Frage. Das Plugin zählt jedes davon über die ersten zwanzig Zeilen und nimmt dasjenige, das auf den meisten Zeilen gleich oft vorkommt — eine Datei, in der jede Zeile vier Semikolons hat, ist eine Semikolon-Datei, was auch immer die Endung sagt. Das ist praktisch relevant: eine von einer Tabellenkalkulation auf einem deutschen System exportierte <code>.csv</code> ist meist semikolongetrennt, und eine <code>.tsv</code> ist nicht immer tabgetrennt.</p>
+<p>Die erste Zeile gilt als Kopfzeile und wird zu den Spaltentiteln.</p>
+<h2 id="sortieren-und-filtern">Sortieren und filtern</h2>
+<p>Klicken Sie auf eine Spaltenüberschrift, um danach zu sortieren, noch einmal für die Gegenrichtung. Sortiert wird <strong>numerisch, wenn beide Werte Zahlen sind</strong>, sonst alphabetisch — eine Spalte mit Größen sortiert also 9 vor 10 und nicht dahinter.</p>
+<p>Das Suchfeld filtert beim Tippen, ohne auf Groß- und Kleinschreibung zu achten. Standardmäßig sieht es in allen Spalten nach; wählen Sie im Aufklappmenü daneben eine Spalte, um nur dort zu suchen.</p>
+<h2 id="was-es-nicht-kann">Was es nicht kann</h2>
+<p>Der Parser ist bewusst klein, und eine Grenze sollten Sie kennen, bevor sie Sie überrascht: <strong>Ein Trennzeichen innerhalb eines Feldes in Anführungszeichen gilt trotzdem als Trennzeichen.</strong> Eine Zeile wie</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>wird zu drei Zellen statt zu zweien. Umschließende Anführungszeichen werden entfernt, wenn sie ein ganzes Feld einfassen, darüber hinaus wird Quoting aber nicht ausgewertet. Für eine Datei, bei der das zählt, ist der eingebaute Betrachter oder eine Tabellenkalkulation das bessere Werkzeug.</p>
+<p>Leerzeilen werden übersprungen, und ein Feld, das über mehrere Zeilen geht, wird nicht unterstützt.</p>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Dateien ansehen</a></li><li><a href="log-viewer.html">Der Log-Betrachter</a></li></ul></section>
+</main>
+</body>
+</html>

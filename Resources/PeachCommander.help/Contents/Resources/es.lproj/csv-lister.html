@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Archivos CSV como tabla</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Archivos CSV como tabla</h1>
+<p>Pulsa <strong>F3</strong> sobre un archivo <code>.csv</code> o <code>.tsv</code> y se abrirá como una tabla de verdad —columnas, encabezados, ordenación y filtro— en lugar de como líneas de texto con comas.</p>
+<p>Es un plugin: puedes desactivarlo o eliminarlo en <strong>Configuración ▸ Plugins…</strong>. Sin él, F3 muestra el archivo como texto plano, lo que sigue siendo perfectamente legible en uno pequeño.</p>
+<h2 id="el-delimitador-se-deduce-no-se-supone">El delimitador se deduce, no se supone</h2>
+<p>Coma, punto y coma, tabulador, barra vertical y dos puntos son todos candidatos. El plugin cuenta cada uno en las primeras veinte líneas y elige el que aparece el mismo número de veces en más líneas: un archivo en el que cada fila tiene cuatro puntos y coma es un archivo de puntos y coma, diga lo que diga su extensión. Esto importa en la práctica: un <code>.csv</code> exportado por una hoja de cálculo en un sistema español suele estar separado por puntos y coma, y un <code>.tsv</code> no siempre está separado por tabuladores.</p>
+<p>La primera línea se trata como fila de encabezado y pasa a ser los títulos de las columnas.</p>
+<h2 id="ordenar-y-filtrar">Ordenar y filtrar</h2>
+<p>Haz clic en un encabezado de columna para ordenar por él, y otra vez para invertirlo. La ordenación es <strong>numérica cuando ambos valores son números</strong> y alfabética en caso contrario, de modo que una columna de tamaños ordena 9 antes que 10 y no después.</p>
+<p>El campo de búsqueda filtra mientras escribes, sin distinguir mayúsculas. Por omisión mira en todas las columnas; elige una columna en el menú de al lado para mirar solo ahí.</p>
+<h2 id="lo-que-no-hace">Lo que no hace</h2>
+<p>El analizador es deliberadamente pequeño, y conviene conocer un límite antes de que te sorprenda: <strong>un delimitador dentro de un campo entrecomillado sigue tratándose como delimitador.</strong> Una fila como</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>da tres celdas en lugar de dos. Las comillas envolventes se quitan cuando rodean un campo entero, pero el entrecomillado no se interpreta más allá. Para un archivo donde eso importe, el visor integrado o una hoja de cálculo es la herramienta adecuada.</p>
+<p>Las líneas vacías se omiten, y no se admite un campo que abarque varias líneas.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="viewing-files.html">Ver archivos</a></li><li><a href="log-viewer.html">El visor de registros</a></li></ul></section>
+</main>
+</body>
+</html>

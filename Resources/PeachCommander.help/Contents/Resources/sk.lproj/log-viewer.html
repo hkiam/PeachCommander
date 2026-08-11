@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prehliadač logov</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Prehliadač logov</h1>
+<p>Umiestnite kurzor na súbor s logom a zvoľte <strong>Zobraziť ako log…</strong>, aby sa otvoril v okne postavenom pre logy, nie pre text: jeden riadok na riadok, úroveň každého riadka rozpoznaná a zafarbená, filter a sledovanie, ktoré stíha, aj keď sa súbor stále zapisuje.</p>
+<p>Je to plugin: môžete ho vypnúť alebo odstrániť v <strong>Konfigurácia ▸ Pluginy…</strong>. Bez neho zobrazí F3 log ako každý iný textový súbor.</p>
+<h2 id="preco-sa-otvori-okamzite">Prečo sa otvorí okamžite</h2>
+<p>Súbor sa namapuje do pamäte a na pozadí sa vytvorí iba index, kde ktorý riadok začína. Nič sa nenačíta ako text, kým to nie je na obrazovke, a dekódujú sa len skutočne viditeľné riadky. Log s niekoľkými gigabajtmi sa otvorí rovnako rýchlo ako malý a skok na koniec nečíta stred.</p>
+<h2 id="urovne-a-farba">Úrovne a farba</h2>
+<p>Každý riadok sa zaradí — <strong>Chyba</strong>, <strong>Varovanie</strong>, <strong>Info</strong>, <strong>Ladenie</strong>, <strong>Trasovanie</strong>, alebo <strong>Neznáme</strong>, keď formát nič neprezradí — a podľa toho zafarbí. Predvolené farby sledujú svetlý či tmavý vzhľad; nastavte si vlastné v predvoľbách pluginu a použijú sa vaše.</p>
+<p>V stĺpci <strong>Úroveň</strong> je na prvý pohľad vidieť, kde sú chyby, a filtračné pole zúži zoznam na to, čo hľadáte. Zapnite <strong>Regex</strong> a filtrujte regulárnym výrazom namiesto obyčajného textu.</p>
+<h2 id="sledovat-subor-ktory-stale-rastie">Sledovať súbor, ktorý stále rastie</h2>
+<p>Zapnite <strong>Naživo (automatické posúvanie)</strong> a okno bude sledovať koniec súboru, ako pribúdajú nové riadky: index sa rozšíri o pripojené bajty namiesto toho, aby sa staval nanovo, takže to zostane lacné, nech je súbor akokoľvek dlhý. Posuňte sa nahor a čítate históriu; sledovanie beží ďalej pod tým.</p>
+<h2 id="ako-sa-v-tom-vyznat">Ako sa v tom vyznať</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Nájsť…</strong></td>
+<td>Prehľadá správy; <strong>Nájsť (označiť a prejsť)…</strong> označí každý nález, takže medzi nimi môžete krokovať</td>
+</tr>
+<tr>
+<td><strong>Prejsť na riadok…</strong></td>
+<td>Skočí na fyzické číslo riadka</td>
+</tr>
+<tr>
+<td><strong>Prejsť na dátum/čas…</strong></td>
+<td>Skočí na prvý riadok od zadanej časovej značky, napr. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>Kopírovanie vie, čo je riadok logu: <strong>Kopírovať riadok</strong> vezme riadok pod kurzorom, <strong>Kopírovať záznam (všetky riadky)</strong> vezme celý záznam, keď sa ťahá cez niekoľko riadkov — napríklad výpis zásobníka — a <strong>Kopírovať vybrané riadky</strong> vezme presne to, čo ste vybrali.</p>
+<h2 id="formaty">Formáty</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> a <strong>CSV</strong> sú vstavané a formát sa rozpozná automaticky; okno ukáže, na ktorom sa ustálilo. Ak vaše logy nie sú žiadny z nich, pridajte si vlastný v predvoľbách pod <strong>Formáty logov</strong>: regulárny výraz s pomenovanými skupinami pre časti, na ktorých záleží.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>Riadok, na ktorý výraz nesedí, sa napriek tomu zobrazí — len sa zaradí ako Neznáme namiesto toho, aby bol zahodený, pretože log, ktorý sa nedá čítať, je horší než log bez farieb.</p>
+<h2 id="zobrazenie">Zobrazenie</h2>
+<p><strong>Zobraziť čísla riadkov</strong> a <strong>Zalamovať dlhé riadky</strong> sú v predvoľbách. Oblasť s podrobnosťami pod zoznamom vždy ukazuje celý text vybraného záznamu, zalomený, nech zoznam robí čokoľvek.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="viewing-files.html">Zobrazenie súborov</a></li><li><a href="searching.html">Hľadanie súborov</a></li></ul></section>
+</main>
+</body>
+</html>

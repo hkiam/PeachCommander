@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pregledovalnik dnevnikov</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Pregledovalnik dnevnikov</h1>
+<p>Postavite kazalec na datoteko dnevnika in izberite <strong>Pokaži kot dnevnik…</strong>, da se odpre v oknu, zgrajenem za dnevnike in ne za besedilo: ena vrstica na vrstico, raven vsake prepoznana in obarvana, filter in sledenje, ki drži korak, medtem ko se datoteka še zapisuje.</p>
+<p>To je vtičnik: izklopite ali odstranite ga lahko v <strong>Konfiguracija ▸ Vtičniki…</strong>. Brez njega F3 pokaže dnevnik tako kot vsako drugo besedilno datoteko.</p>
+<h2 id="zakaj-se-odpre-takoj">Zakaj se odpre takoj</h2>
+<p>Datoteka se preslika v pomnilnik, v ozadju pa se zgradi le kazalo, kje se začne posamezna vrstica. Nič se ne naloži kot besedilo, dokler ni na zaslonu, in dekodirajo se le dejansko vidne vrstice. Dnevnik z več gigabajti se odpre enako hitro kot majhen, skok na konec pa ne prebere sredine.</p>
+<h2 id="ravni-in-barva">Ravni in barva</h2>
+<p>Vsaka vrstica se uvrsti — <strong>Napaka</strong>, <strong>Opozorilo</strong>, <strong>Info</strong>, <strong>Razhroščevanje</strong>, <strong>Sledenje</strong> ali <strong>Neznano</strong>, kadar zapis ničesar ne izda — in se temu ustrezno obarva. Privzete barve sledijo svetlemu ali temnemu videzu; nastavite svoje v nastavitvah vtičnika in uporabljene bodo vaše.</p>
+<p>Stolpec <strong>Raven</strong> na prvi pogled pokaže, kje so napake, filtrirno polje pa zoži seznam na to, kar iščete. Vklopite <strong>Regex</strong>, da filtrirate z regularnim izrazom namesto z navadnim besedilom.</p>
+<h2 id="slediti-datoteki-ki-se-raste">Slediti datoteki, ki še raste</h2>
+<p>Vklopite <strong>V živo (samodejno drsenje)</strong> in okno bo sledilo koncu datoteke, ko prihajajo nove vrstice: kazalo se razširi čez pripete bajte, namesto da bi se zgradilo znova, zato ostane poceni, ne glede na to, kako dolga postane datoteka. Podrsajte navzgor in berete zgodovino; sledenje teče naprej spodaj.</p>
+<h2 id="znajti-se">Znajti se</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Poišči…</strong></td>
+<td>Išče po sporočilih; <strong>Poišči (označi in skoči)…</strong> označi vsak zadetek, da lahko koračite med njimi</td>
+</tr>
+<tr>
+<td><strong>Pojdi na vrstico…</strong></td>
+<td>Skoči na fizično številko vrstice</td>
+</tr>
+<tr>
+<td><strong>Pojdi na datum/čas…</strong></td>
+<td>Skoči na prvo vrstico od navedenega časovnega žiga naprej, npr. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>Kopiranje ve, kaj je vrstica dnevnika: <strong>Kopiraj vrstico</strong> vzame vrstico pod kazalcem, <strong>Kopiraj vnos (vse vrstice)</strong> vzame celoten vnos, kadar se ta razteza čez več vrstic — na primer izpis sklada — in <strong>Kopiraj izbrane vrstice</strong> vzame natanko to, kar ste izbrali.</p>
+<h2 id="zapisi">Zapisi</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> in <strong>CSV</strong> so vgrajeni, zapis pa se prepozna samodejno; okno pokaže, pri katerem se je ustavilo. Če vaši dnevniki niso nobeden od teh, dodajte svojega v nastavitvah pod <strong>Zapisi dnevnikov</strong>: regularni izraz z imenovanimi skupinami za dele, ki štejejo.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>Vrstica, ki se izrazu ne ujema, se vseeno prikaže — preprosto se uvrsti kot Neznano, namesto da bi bila zavržena, kajti dnevnik, ki ga ni mogoče brati, je slabši od dnevnika brez barv.</p>
+<h2 id="prikaz">Prikaz</h2>
+<p><strong>Pokaži številke vrstic</strong> in <strong>Prelomi dolge vrstice</strong> sta v nastavitvah. Območje s podrobnostmi pod seznamom vedno pokaže celotno besedilo izbranega vnosa, prelomljeno, ne glede na to, kaj počne seznam.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="viewing-files.html">Ogled datotek</a></li><li><a href="searching.html">Iskanje datotek</a></li></ul></section>
+</main>
+</body>
+</html>

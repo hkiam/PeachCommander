@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vizualizatorul de jurnale</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Vizualizatorul de jurnale</h1>
+<p>Puneți cursorul pe un fișier de jurnal și alegeți <strong>Arată ca jurnal…</strong> pentru a-l deschide într-o fereastră construită pentru jurnale, nu pentru text: un rând pe linie, nivelul fiecărei linii recunoscut și colorat, un filtru și o urmărire care ține pasul cât timp fișierul încă se scrie.</p>
+<p>Este o extensie: o puteți dezactiva sau elimina din <strong>Configurare ▸ Extensii…</strong>. Fără ea, F3 arată un jurnal ca pe orice alt fișier text.</p>
+<h2 id="de-ce-se-deschide-instantaneu">De ce se deschide instantaneu</h2>
+<p>Fișierul este mapat în memorie și se construiește doar un index cu locul unde începe fiecare linie, în fundal. Nimic nu este încărcat ca text înainte de a fi pe ecran, iar doar liniile efectiv vizibile sunt decodate. Un jurnal de mai mulți gigaocteți se deschide la fel de repede ca unul mic, iar saltul la sfârșit nu citește mijlocul.</p>
+<h2 id="niveluri-si-culoare">Niveluri și culoare</h2>
+<p>Fiecare linie este clasificată — <strong>Eroare</strong>, <strong>Avertisment</strong>, <strong>Info</strong>, <strong>Depanare</strong>, <strong>Urmărire</strong> sau <strong>Necunoscut</strong> când formatul nu spune nimic — și colorată în consecință. Culorile implicite urmează aspectul luminos sau întunecat; stabiliți-le pe ale dumneavoastră în configurările extensiei și acelea se vor folosi.</p>
+<p>Coloana <strong>Nivel</strong> arată dintr-o privire unde stau erorile, iar câmpul de filtrare restrânge lista la ce căutați. Activați <strong>Regex</strong> pentru a filtra cu o expresie regulată în loc de text simplu.</p>
+<h2 id="urmarirea-unui-fisier-care-inca-creste">Urmărirea unui fișier care încă crește</h2>
+<p>Activați <strong>Live (derulare automată)</strong> și fereastra urmărește sfârșitul fișierului pe măsură ce sosesc linii noi: indexul este extins peste octeții adăugați în loc să fie reconstruit, așa că rămâne ieftin oricât de lung ar deveni fișierul. Derulați în sus și citiți istoricul; urmărirea continuă dedesubt.</p>
+<h2 id="orientarea">Orientarea</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Caută…</strong></td>
+<td>Caută în mesaje; <strong>Caută (marchează și sari)…</strong> marchează fiecare potrivire ca să puteți trece de la una la alta</td>
+</tr>
+<tr>
+<td><strong>Mergi la linia…</strong></td>
+<td>Sare la un număr fizic de linie</td>
+</tr>
+<tr>
+<td><strong>Mergi la dată/oră…</strong></td>
+<td>Sare la prima linie începând cu un moment de timp, de ex. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>Copierea știe ce este o linie de jurnal: <strong>Copiază linia</strong> ia linia de sub cursor, <strong>Copiază intrarea (toate liniile)</strong> ia intrarea întreagă când se întinde pe mai multe linii — o urmă de stivă, de pildă — iar <strong>Copiază liniile selectate</strong> ia exact ce ați selectat.</p>
+<h2 id="formate">Formate</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> și <strong>CSV</strong> sunt integrate, iar formatul este recunoscut automat; fereastra arată pe care s-a oprit. Dacă jurnalele dumneavoastră nu sunt niciunul dintre ele, adăugați-l pe al dumneavoastră la <strong>Formate de jurnal</strong> în configurări: o expresie regulată cu grupuri denumite pentru părțile care contează.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>O linie pe care expresia nu o potrivește apare oricum — este pur și simplu clasificată drept Necunoscut în loc să fie aruncată, fiindcă un jurnal pe care nu îl poți citi este mai rău decât un jurnal fără culori.</p>
+<h2 id="afisare">Afișare</h2>
+<p><strong>Arată numerele de linie</strong> și <strong>Încadrează liniile lungi</strong> se află în configurări. Zona de detalii de sub listă arată întotdeauna textul complet al intrării selectate, încadrat, orice ar face lista.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="viewing-files.html">Vizualizarea fișierelor</a></li><li><a href="searching.html">Găsirea fișierelor</a></li></ul></section>
+</main>
+</body>
+</html>

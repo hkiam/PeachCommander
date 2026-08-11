@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSV 파일을 표로 보기</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>CSV 파일을 표로 보기</h1>
+<p><code>.csv</code> 또는 <code>.tsv</code> 파일에서 <strong>F3</strong> 을 누르면 쉼표가 섞인 텍스트 줄이 아니라 진짜 표—열, 머리글, 정렬, 필터—로 열립니다.</p>
+<p>플러그인이므로 <strong>환경설정 ▸ 플러그인…</strong> 에서 끄거나 제거할 수 있습니다. 없으면 F3은 파일을 일반 텍스트로 보여 주며, 작은 파일이라면 그래도 충분히 읽을 만합니다.</p>
+<h2 id="_1">구분자는 추정하지 않고 알아냅니다</h2>
+<p>쉼표, 세미콜론, 탭, 세로줄, 콜론이 모두 후보입니다. 플러그인은 처음 스무 줄에서 각각을 세어, 가장 많은 줄에서 같은 횟수로 나타나는 것을 고릅니다. 모든 행에 세미콜론이 네 개씩 있는 파일은 확장자가 무엇이라 하든 세미콜론 파일입니다. 이는 실제로 중요합니다. 유럽식 환경의 스프레드시트가 내보낸 <code>.csv</code> 는 보통 세미콜론으로 구분되어 있고, <code>.tsv</code> 가 항상 탭으로 구분된 것도 아닙니다.</p>
+<p>첫 줄은 머리글 행으로 간주되어 열 제목이 됩니다.</p>
+<h2 id="_2">정렬과 필터</h2>
+<p>열 머리글을 클릭하면 그 열로 정렬되고, 다시 클릭하면 순서가 뒤집힙니다. 정렬은 <strong>두 값이 모두 숫자일 때는 숫자로</strong>, 그 밖에는 사전순으로 이루어집니다. 그래서 크기가 담긴 열은 9를 10 뒤가 아니라 앞에 둡니다.</p>
+<p>검색 필드는 입력하는 대로 대소문자를 구분하지 않고 필터링합니다. 기본적으로 모든 열을 살피며, 옆의 팝업에서 열을 고르면 그 열만 살핍니다.</p>
+<h2 id="_3">하지 못하는 것</h2>
+<p>파서는 의도적으로 작으며, 놀라기 전에 알아 둘 만한 한계가 하나 있습니다. <strong>따옴표로 감싼 필드 안의 구분자도 여전히 구분자로 취급됩니다.</strong> 다음과 같은 행은</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>두 개가 아니라 세 개의 셀이 됩니다. 필드 전체를 감싼 따옴표는 제거되지만, 그 밖에 따옴표 처리는 해석하지 않습니다. 그것이 중요한 파일이라면 기본 뷰어나 스프레드시트가 더 나은 도구입니다.</p>
+<p>빈 줄은 건너뛰며, 여러 줄에 걸친 필드는 지원하지 않습니다.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">플러그인</a></li><li><a href="viewing-files.html">파일 보기</a></li><li><a href="log-viewer.html">로그 뷰어</a></li></ul></section>
+</main>
+</body>
+</html>

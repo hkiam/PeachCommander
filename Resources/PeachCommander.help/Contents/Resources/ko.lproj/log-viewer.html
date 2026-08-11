@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로그 뷰어</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>로그 뷰어</h1>
+<p>로그 파일에 커서를 놓고 <strong>로그로 보기…</strong> 를 선택하면, 텍스트가 아니라 로그를 위해 만들어진 창에서 열립니다. 한 줄에 한 행, 각 줄의 수준을 인식해 색으로 표시하고, 필터가 있으며, 파일이 아직 기록되는 동안에도 따라가는 추적이 있습니다.</p>
+<p>플러그인이므로 <strong>환경설정 ▸ 플러그인…</strong> 에서 끄거나 제거할 수 있습니다. 없으면 F3은 로그를 다른 텍스트 파일과 똑같이 보여 줍니다.</p>
+<h2 id="_1">왜 즉시 열리는가</h2>
+<p>파일은 메모리에 매핑되고, 각 줄이 어디서 시작하는지에 대한 색인만 백그라운드에서 만들어집니다. 화면에 나오기 전에는 아무것도 텍스트로 읽어들이지 않으며, 실제로 보이는 줄만 디코딩합니다. 수 기가바이트짜리 로그도 작은 로그만큼 빨리 열리고, 끝으로 이동해도 중간을 읽지 않습니다.</p>
+<h2 id="_2">수준과 색상</h2>
+<p>각 줄은 <strong>오류</strong>, <strong>경고</strong>, <strong>정보</strong>, <strong>디버그</strong>, <strong>추적</strong>, 또는 포맷이 아무것도 알려 주지 않을 때 <strong>알 수 없음</strong> 으로 분류되어 그에 맞게 색이 입혀집니다. 기본 색상은 밝은/어두운 모드를 따릅니다. 플러그인 설정에서 직접 지정하면 그 색이 쓰입니다.</p>
+<p><strong>수준</strong> 열을 보면 오류가 어디에 있는지 한눈에 알 수 있고, 필터 필드는 목록을 찾는 것으로 좁혀 줍니다. <strong>정규식</strong> 을 켜면 일반 텍스트 대신 정규 표현식으로 필터링합니다.</p>
+<h2 id="_3">아직 커지는 파일 따라가기</h2>
+<p><strong>실시간(자동 스크롤)</strong> 을 켜면 새 줄이 들어오는 대로 창이 파일 끝을 따라갑니다. 색인은 다시 만드는 대신 덧붙은 바이트만큼 확장되므로, 파일이 아무리 길어져도 비용이 낮게 유지됩니다. 위로 스크롤하면 지난 내용을 읽게 되며, 추적은 그 아래에서 계속 돕니다.</p>
+<h2 id="_4">길 찾기</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>찾기…</strong></td>
+<td>메시지에서 검색합니다. <strong>찾기(표시 후 이동)…</strong> 는 모든 일치 항목을 표시해 사이를 옮겨 다닐 수 있게 합니다</td>
+</tr>
+<tr>
+<td><strong>줄로 이동…</strong></td>
+<td>물리적 줄 번호로 이동합니다</td>
+</tr>
+<tr>
+<td><strong>날짜/시간으로 이동…</strong></td>
+<td>지정한 타임스탬프 이후의 첫 줄로 이동합니다(예: <code>2024-01-15 10:23:45</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>복사는 로그 한 줄이 무엇인지 압니다. <strong>줄 복사</strong> 는 커서 아래 줄을, <strong>항목 복사(모든 줄)</strong> 는 한 항목이 여러 줄에 걸칠 때—예를 들어 스택 추적—항목 전체를, <strong>선택한 줄 복사</strong> 는 선택한 그대로를 가져갑니다.</p>
+<h2 id="_5">포맷</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong>, <strong>CSV</strong> 가 기본 제공되며 포맷은 자동으로 인식됩니다. 어떤 것으로 판단했는지는 창에 표시됩니다. 로그가 그중 어느 것도 아니라면 설정의 <strong>로그 포맷</strong> 에서 직접 추가하십시오. 중요한 부분에 이름 있는 그룹을 쓴 정규 표현식이면 됩니다.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>표현식과 맞지 않는 줄도 그대로 나타납니다. 버려지는 대신 알 수 없음으로 분류될 뿐입니다. 읽을 수 없는 로그가 색이 없는 로그보다 나쁘기 때문입니다.</p>
+<h2 id="_6">표시</h2>
+<p><strong>줄 번호 표시</strong> 와 <strong>긴 줄 자동 줄바꿈</strong> 은 설정에 있습니다. 목록 아래의 세부 영역은 목록이 무엇을 하든 항상 선택한 항목의 전체 텍스트를 줄바꿈하여 보여 줍니다.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">플러그인</a></li><li><a href="viewing-files.html">파일 보기</a></li><li><a href="searching.html">파일 찾기</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A naplónéző</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>A naplónéző</h1>
+<p>Vigye a kurzort egy naplófájlra, és válassza a <strong>Megjelenítés naplóként…</strong> lehetőséget, hogy naplókra és ne szövegre készült ablakban nyíljon meg: soronként egy sor, minden sor szintje felismerve és színezve, egy szűrő, és egy követés, amely lépést tart, amíg a fájl még íródik.</p>
+<p>Bővítmény: kikapcsolhatja vagy eltávolíthatja a <strong>Konfiguráció ▸ Bővítmények…</strong> alatt. Nélküle az F3 úgy mutat egy naplót, mint bármely más szövegfájlt.</p>
+<h2 id="miert-nyilik-meg-azonnal">Miért nyílik meg azonnal</h2>
+<p>A fájl a memóriába kerül leképezve, és a háttérben csak arról épül index, hol kezdődik az egyes sorok. Semmi sem töltődik be szövegként, amíg nincs a képernyőn, és csak a ténylegesen látható sorok kerülnek dekódolásra. Egy több gigabájtos napló ugyanolyan gyorsan nyílik meg, mint egy kicsi, és a végére ugrás nem olvassa el a közepét.</p>
+<h2 id="szintek-es-szin">Szintek és szín</h2>
+<p>Minden sor besorolást kap — <strong>Hiba</strong>, <strong>Figyelmeztetés</strong>, <strong>Infó</strong>, <strong>Hibakeresés</strong>, <strong>Nyomkövetés</strong>, vagy <strong>Ismeretlen</strong>, ha a formátum semmit sem árul el — és ennek megfelelően színeződik. Az alapértelmezett színek a világos vagy sötét megjelenést követik; adja meg a sajátjait a bővítmény beállításaiban, és azok lesznek használatban.</p>
+<p>A <strong>Szint</strong> oszlopban egy pillantással látszik, hol vannak a hibák, a szűrőmező pedig leszűkíti a listát arra, amit keres. Kapcsolja be a <strong>Regex</strong> lehetőséget, hogy sima szöveg helyett reguláris kifejezéssel szűrjön.</p>
+<h2 id="egy-meg-novekvo-fajl-kovetese">Egy még növekvő fájl követése</h2>
+<p>Kapcsolja be az <strong>Élő (automatikus görgetés)</strong> lehetőséget, és az ablak követi a fájl végét, ahogy új sorok érkeznek: az index a hozzáfűzött bájtokra bővül, nem épül újra, így ez olcsó marad, bármilyen hosszúra nő a fájl. Görgessen felfelé, és a múltat olvassa; a követés alatta tovább fut.</p>
+<h2 id="tajekozodas">Tájékozódás</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Keresés…</strong></td>
+<td>Az üzenetek között keres; a <strong>Keresés (megjelölés és ugrás)…</strong> minden találatot megjelöl, hogy lépkedhessen köztük</td>
+</tr>
+<tr>
+<td><strong>Ugrás sorra…</strong></td>
+<td>Fizikai sorszámra ugrik</td>
+</tr>
+<tr>
+<td><strong>Ugrás dátumra/időre…</strong></td>
+<td>Az adott időbélyegtől kezdődő első sorra ugrik, pl. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>A másolás tudja, mi az a naplósor: a <strong>Sor másolása</strong> a kurzor alatti sort veszi, a <strong>Bejegyzés másolása (minden sor)</strong> a teljes bejegyzést, ha az több sorra terjed — például egy veremkiírás —, a <strong>Kijelölt sorok másolása</strong> pedig pontosan azt, amit kijelölt.</p>
+<h2 id="formatumok">Formátumok</h2>
+<p>A <strong>log4j</strong>, a <strong>log4net</strong> és a <strong>CSV</strong> be van építve, a formátum felismerése automatikus; az ablak mutatja, melyiknél állapodott meg. Ha a naplói egyik sem, vegyen fel sajátot a beállításokban a <strong>Naplóformátumok</strong> alatt: egy reguláris kifejezés elnevezett csoportokkal a lényeges részekre.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>Az a sor, amelyre a kifejezés nem illik, akkor is megjelenik — csupán Ismeretlenként sorolódik be ahelyett, hogy eldobnák, mert egy olvashatatlan napló rosszabb, mint egy szín nélküli.</p>
+<h2 id="megjelenites">Megjelenítés</h2>
+<p>A <strong>Sorszámok megjelenítése</strong> és a <strong>Hosszú sorok tördelése</strong> a beállításokban található. A lista alatti részletterület mindig a kijelölt bejegyzés teljes szövegét mutatja, tördelve, bármit is csinál a lista.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="viewing-files.html">Fájlok megtekintése</a></li><li><a href="searching.html">Fájlok keresése</a></li></ul></section>
+</main>
+</body>
+</html>

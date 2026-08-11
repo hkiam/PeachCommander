@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>把 CSV 文件当作表格</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>把 CSV 文件当作表格</h1>
+<p>在 <code>.csv</code> 或 <code>.tsv</code> 文件上按 <strong>F3</strong>，它会作为一个真正的表格打开——有列、表头、排序和筛选——而不是一行行带逗号的文本。</p>
+<p>它是一个插件：可以在<strong>配置 ▸ 插件…</strong>中关闭或移除。没有它时，F3 会把文件显示为纯文本，对小文件来说依然完全可读。</p>
+<h2 id="_1">分隔符是算出来的，不是假定的</h2>
+<p>逗号、分号、制表符、竖线和冒号都是候选。插件在前二十行里分别统计它们，选出在最多行上出现次数相同的那一个——每行都有四个分号的文件就是分号文件，无论扩展名怎么说。这在实践中很重要：欧洲系统上电子表格导出的 <code>.csv</code> 通常是分号分隔的，而 <code>.tsv</code> 也不总是制表符分隔。</p>
+<p>第一行被当作表头行，成为各列的标题。</p>
+<h2 id="_2">排序与筛选</h2>
+<p>点按列标题即按该列排序，再点一次反向。排序在<strong>两个值都是数字时按数值</strong>进行，否则按字母顺序，所以一列尺寸会把 9 排在 10 前面而不是后面。</p>
+<p>搜索框在你输入时即时筛选，不区分大小写。默认它会查看所有列；在旁边的弹出菜单里选一列，就只查看那一列。</p>
+<h2 id="_3">它不做的事</h2>
+<p>解析器是刻意做小的，有一个限制值得在它让你意外之前知道：<strong>引号包围的字段里的分隔符仍然被当作分隔符。</strong>像这样的一行</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>会变成三个单元格而不是两个。当引号包住整个字段时会被去掉，但除此之外并不解释引用规则。对于这一点很重要的文件，内置查看器或电子表格是更合适的工具。</p>
+<p>空行会被跳过，跨越多行的字段不受支持。</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="viewing-files.html">查看文件</a></li><li><a href="log-viewer.html">日志查看器</a></li></ul></section>
+</main>
+</body>
+</html>

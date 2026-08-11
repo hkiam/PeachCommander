@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fișiere CSV ca tabel</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Fișiere CSV ca tabel</h1>
+<p>Apăsați <strong>F3</strong> pe un fișier <code>.csv</code> sau <code>.tsv</code> și se deschide ca un tabel adevărat — coloane, antete, sortare și filtru — în loc de linii de text cu virgule în ele.</p>
+<p>Este o extensie: o puteți dezactiva sau elimina din <strong>Configurare ▸ Extensii…</strong>. Fără ea, F3 arată fișierul ca text simplu, ceea ce pentru unul mic rămâne perfect lizibil.</p>
+<h2 id="delimitatorul-este-dedus-nu-presupus">Delimitatorul este dedus, nu presupus</h2>
+<p>Virgula, punctul și virgula, tabulatorul, bara verticală și două puncte sunt toate candidate. Extensia le numără pe fiecare în primele douăzeci de linii și o alege pe cea care apare de același număr de ori pe cele mai multe linii — un fișier în care fiecare rând are patru puncte și virgulă este un fișier cu punct și virgulă, orice ar spune extensia numelui. Contează în practică: un <code>.csv</code> exportat de un program de calcul tabelar pe un sistem românesc este de obicei separat prin punct și virgulă, iar un <code>.tsv</code> nu este întotdeauna separat prin tabulatori.</p>
+<p>Prima linie este tratată drept rând de antet și devine titlurile coloanelor.</p>
+<h2 id="sortare-si-filtrare">Sortare și filtrare</h2>
+<p>Faceți clic pe antetul unei coloane pentru a sorta după ea, din nou pentru a inversa. Sortarea este <strong>numerică atunci când ambele valori sunt numere</strong> și alfabetică altfel, astfel încât o coloană de dimensiuni pune 9 înainte de 10, nu după.</p>
+<p>Câmpul de căutare filtrează pe măsură ce scrieți, fără a ține cont de majuscule. Implicit se uită în toate coloanele; alegeți o coloană din meniul alăturat pentru a căuta doar acolo.</p>
+<h2 id="ce-nu-face">Ce nu face</h2>
+<p>Analizorul este intenționat mic, iar o limită merită cunoscută înainte să vă surprindă: <strong>un delimitator aflat într-un câmp între ghilimele este tot tratat ca delimitator.</strong> Un rând precum</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>devine trei celule în loc de două. Ghilimelele din jur sunt eliminate când încadrează un câmp întreg, dar dincolo de asta ghilimelele nu sunt interpretate. Pentru un fișier unde asta contează, vizualizatorul integrat sau un program de calcul tabelar este unealta potrivită.</p>
+<p>Liniile goale sunt sărite, iar un câmp care se întinde pe mai multe linii nu este acceptat.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="viewing-files.html">Vizualizarea fișierelor</a></li><li><a href="log-viewer.html">Vizualizatorul de jurnale</a></li></ul></section>
+</main>
+</body>
+</html>

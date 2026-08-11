@@ -12,7 +12,12 @@
 #     shared automation core in PCAutomation; on-device Apple Intelligence + optional
 #     cloud. See features `ai-assistant`. (The original inventory predated it.)
 #   * Auto-update (Sparkle) is declared but NOT integrated; app ships unsigned today.
-#   * FSEventsWatcher currently POLLS (2 s); true FSEvents is a placeholder.
+#     (Still true. The release pipeline signs, notarizes and staples already and only wants a
+#     certificate; Sparkle is a pinned dependency with nothing calling it.)
+#   * Directory watching is a real FSEvents stream (F-361). This note used to say it polled every
+#     2 s and that FSEvents was a placeholder — it was the other way round twice over: the old
+#     watcher polled but had no callback, so nothing was ever refreshed, and the two seconds were
+#     documented rather than real. Corrected here because this file feeds generated pages.
 #   * Five plugin types exist: pcx, pfx, plx, pdx, ptx (+ orthogonal contrib ABI).
 
 meta:

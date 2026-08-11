@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loggviseren</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Loggviseren</h1>
+<p>Sett markøren på en loggfil og velg <strong>Vis som logg…</strong> for å åpne den i et vindu bygget for logger i stedet for for tekst: én rad per linje, nivået på hver linje gjenkjent og farget, et filter, og en følging som holder tritt mens filen fortsatt skrives.</p>
+<p>Det er et programtillegg: du kan slå det av eller fjerne det under <strong>Konfigurasjon ▸ Programtillegg…</strong>. Uten det viser F3 en logg som enhver annen tekstfil.</p>
+<h2 id="hvorfor-den-apnes-umiddelbart">Hvorfor den åpnes umiddelbart</h2>
+<p>Filen legges i minnet, og det bygges bare en indeks over hvor hver linje begynner — i bakgrunnen. Ingenting lastes inn som tekst før det er på skjermen, og bare linjene som faktisk er synlige, dekodes. En logg på flere gigabyte åpnes like raskt som en liten, og å gå til slutten leser ikke midten.</p>
+<h2 id="nivaer-og-farge">Nivåer og farge</h2>
+<p>Hver linje klassifiseres — <strong>Feil</strong>, <strong>Advarsel</strong>, <strong>Info</strong>, <strong>Feilsøking</strong>, <strong>Sporing</strong>, eller <strong>Ukjent</strong> når formatet ikke røper noe — og farges deretter. Standardfargene følger det lyse eller mørke utseendet; angi dine egne i programtilleggets innstillinger, så brukes dine.</p>
+<p>Kolonnen <strong>Nivå</strong> viser med et blikk hvor feilene sitter, og filterfeltet snevrer listen inn til det du leter etter. Slå på <strong>Regex</strong> for å filtrere med et regulært uttrykk i stedet for ren tekst.</p>
+<h2 id="a-flge-en-fil-som-fortsatt-vokser">Å følge en fil som fortsatt vokser</h2>
+<p>Slå på <strong>Direkte (rull automatisk)</strong>, så følger vinduet slutten av filen mens nye linjer kommer: indeksen utvides over de tilføyde bytene i stedet for å bygges om, så dette forblir billig uansett hvor lang filen blir. Rull opp, og du leser historikk; følgingen går videre under.</p>
+<h2 id="a-finne-fram">Å finne fram</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Finn…</strong></td>
+<td>Søker i meldingene; <strong>Finn (merk og hopp)…</strong> merker hvert treff så du kan gå mellom dem</td>
+</tr>
+<tr>
+<td><strong>Gå til linje…</strong></td>
+<td>Hopper til et fysisk linjenummer</td>
+</tr>
+<tr>
+<td><strong>Gå til dato/tid…</strong></td>
+<td>Hopper til den første linjen fra og med et tidsstempel, f.eks. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>Kopieringen vet hva en logglinje er: <strong>Kopier linje</strong> tar linjen under markøren, <strong>Kopier post (alle linjer)</strong> tar hele posten når en post går over flere linjer — en stakksporing for eksempel — og <strong>Kopier merkede linjer</strong> tar nøyaktig det du merket.</p>
+<h2 id="formater">Formater</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> og <strong>CSV</strong> er innebygd, og formatet gjenkjennes automatisk; vinduet viser hvilket det landet på. Er loggene dine ingen av dem, legger du til ditt eget under <strong>Loggformater</strong> i innstillingene: et regulært uttrykk med navngitte grupper for delene som betyr noe.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>En linje uttrykket ikke passer på, vises likevel — den klassifiseres ganske enkelt som Ukjent i stedet for å bli forkastet, for en logg man ikke kan lese er verre enn en logg uten farger.</p>
+<h2 id="visning">Visning</h2>
+<p><strong>Vis linjenumre</strong> og <strong>Bryt lange linjer</strong> ligger i innstillingene. Detaljområdet under listen viser alltid hele teksten for den merkede posten, med linjebryting, uansett hva listen gjør.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="viewing-files.html">Vise filer</a></li><li><a href="searching.html">Finne filer</a></li></ul></section>
+</main>
+</body>
+</html>

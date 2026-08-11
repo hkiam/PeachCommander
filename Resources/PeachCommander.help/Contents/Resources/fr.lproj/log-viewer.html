@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La visionneuse de journaux</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>La visionneuse de journaux</h1>
+<p>Placez le curseur sur un fichier journal et choisissez <strong>Afficher comme journal…</strong> pour l’ouvrir dans une fenêtre conçue pour les journaux plutôt que pour du texte : une ligne par ligne, le niveau de chacune reconnu et coloré, un filtre, et un suivi qui tient le rythme pendant que le fichier s’écrit encore.</p>
+<p>C’est une extension : vous pouvez la désactiver ou la supprimer dans <strong>Configuration ▸ Extensions…</strong>. Sans elle, F3 affiche un journal comme n’importe quel autre fichier texte.</p>
+<h2 id="pourquoi-elle-souvre-instantanement">Pourquoi elle s’ouvre instantanément</h2>
+<p>Le fichier est mappé en mémoire et seul un index du début de chaque ligne est construit, en arrière-plan. Rien n’est chargé sous forme de texte avant d’être à l’écran, et seules les lignes réellement visibles sont décodées. Un journal de plusieurs gigaoctets s’ouvre aussi vite qu’un petit, et aller à la fin ne lit pas le milieu.</p>
+<h2 id="niveaux-et-couleur">Niveaux et couleur</h2>
+<p>Chaque ligne est classée — <strong>Erreur</strong>, <strong>Avertissement</strong>, <strong>Info</strong>, <strong>Débogage</strong>, <strong>Trace</strong>, ou <strong>Inconnu</strong> quand le format ne dit rien — et colorée en conséquence. Les couleurs par défaut suivent l’apparence claire ou sombre ; définissez les vôtres dans les réglages de l’extension et ce sont elles qui servent.</p>
+<p>La colonne <strong>Niveau</strong> montre d’un coup d’œil où sont les erreurs, et le champ de filtre restreint la liste à ce que vous cherchez. Activez <strong>Regex</strong> pour filtrer avec une expression régulière plutôt qu’avec du texte brut.</p>
+<h2 id="suivre-un-fichier-qui-grossit-encore">Suivre un fichier qui grossit encore</h2>
+<p>Activez <strong>En direct (défilement auto)</strong> et la fenêtre suit la fin du fichier à mesure que les lignes arrivent : l’index est étendu sur les octets ajoutés plutôt que reconstruit, ce qui reste peu coûteux quelle que soit la longueur du fichier. Remontez et vous lisez l’historique ; le suivi continue en dessous.</p>
+<h2 id="sy-retrouver">S’y retrouver</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rechercher…</strong></td>
+<td>Cherche dans les messages ; <strong>Rechercher (marquer et aller)…</strong> marque chaque occurrence pour passer de l’une à l’autre</td>
+</tr>
+<tr>
+<td><strong>Aller à la ligne…</strong></td>
+<td>Saute à un numéro de ligne physique</td>
+</tr>
+<tr>
+<td><strong>Aller à la date/heure…</strong></td>
+<td>Saute à la première ligne à partir d’un horodatage, p. ex. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>La copie sait ce qu’est une ligne de journal : <strong>Copier la ligne</strong> prend la ligne sous le curseur, <strong>Copier l’entrée (toutes les lignes)</strong> prend l’entrée entière lorsqu’elle s’étend sur plusieurs lignes — une trace d’appels, par exemple — et <strong>Copier les lignes sélectionnées</strong> prend exactement ce que vous avez sélectionné.</p>
+<h2 id="formats">Formats</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> et <strong>CSV</strong> sont intégrés, et le format est détecté automatiquement ; la fenêtre indique celui qu’elle a retenu. Si vos journaux ne sont aucun de ceux-là, ajoutez le vôtre sous <strong>Formats de journal</strong> dans les réglages : une expression régulière avec des groupes nommés pour les parties qui comptent.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>Une ligne que l’expression ne reconnaît pas apparaît quand même — elle est simplement classée Inconnu plutôt qu’écartée, car un journal qu’on ne peut pas lire est pire qu’un journal sans couleurs.</p>
+<h2 id="affichage">Affichage</h2>
+<p><strong>Afficher les numéros de ligne</strong> et <strong>Renvoyer à la ligne</strong> sont dans les réglages. La zone de détail sous la liste montre toujours le texte complet de l’entrée sélectionnée, avec retour à la ligne, quoi que fasse la liste.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Extensions</a></li><li><a href="viewing-files.html">Afficher des fichiers</a></li><li><a href="searching.html">Rechercher des fichiers</a></li></ul></section>
+</main>
+</body>
+</html>

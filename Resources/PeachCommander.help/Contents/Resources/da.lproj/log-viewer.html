@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logfremviseren</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Logfremviseren</h1>
+<p>Sæt markøren på en logfil, og vælg <strong>Vis som log…</strong> for at åbne den i et vindue bygget til logfiler frem for til tekst: én række pr. linje, niveauet for hver linje genkendt og farvet, et filter, og en følgning der holder trit, mens filen stadig skrives.</p>
+<p>Det er et plugin: du kan slå det fra eller fjerne det under <strong>Konfiguration ▸ Plugins…</strong>. Uden det viser F3 en logfil som enhver anden tekstfil.</p>
+<h2 id="hvorfor-den-abner-med-det-samme">Hvorfor den åbner med det samme</h2>
+<p>Filen lægges i hukommelsen, og der bygges kun et indeks over, hvor hver linje begynder — i baggrunden. Intet indlæses som tekst, før det er på skærmen, og kun de linjer, der faktisk er synlige, afkodes. En logfil på flere gigabyte åbner lige så hurtigt som en lille, og at gå til slutningen læser ikke midten.</p>
+<h2 id="niveauer-og-farve">Niveauer og farve</h2>
+<p>Hver linje klassificeres — <strong>Fejl</strong>, <strong>Advarsel</strong>, <strong>Info</strong>, <strong>Fejlfinding</strong>, <strong>Sporing</strong> eller <strong>Ukendt</strong>, når formatet ikke røber noget — og farves derefter. Standardfarverne følger det lyse eller mørke udseende; angiv dine egne i pluginets indstillinger, så bruges dine.</p>
+<p>Kolonnen <strong>Niveau</strong> viser med et blik, hvor fejlene sidder, og filterfeltet indsnævrer listen til det, du leder efter. Slå <strong>Regex</strong> til for at filtrere med et regulært udtryk i stedet for almindelig tekst.</p>
+<h2 id="at-flge-en-fil-der-stadig-vokser">At følge en fil, der stadig vokser</h2>
+<p>Slå <strong>Live (rul automatisk)</strong> til, så følger vinduet filens slutning, mens nye linjer kommer til: indekset udvides over de tilføjede byte i stedet for at blive bygget om, så det forbliver billigt, uanset hvor lang filen bliver. Rul op, og du læser historik; følgningen kører videre nedenunder.</p>
+<h2 id="at-finde-rundt">At finde rundt</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Find…</strong></td>
+<td>Søger i beskederne; <strong>Find (marker og hop)…</strong> markerer hvert fund, så du kan gå fra det ene til det næste</td>
+</tr>
+<tr>
+<td><strong>Gå til linje…</strong></td>
+<td>Hopper til et fysisk linjenummer</td>
+</tr>
+<tr>
+<td><strong>Gå til dato/tid…</strong></td>
+<td>Hopper til den første linje fra og med et tidsstempel, f.eks. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>Kopieringen ved, hvad en loglinje er: <strong>Kopier linje</strong> tager linjen under markøren, <strong>Kopier post (alle linjer)</strong> tager hele posten, når en post strækker sig over flere linjer — et stakspor for eksempel — og <strong>Kopier valgte linjer</strong> tager præcis det, du valgte.</p>
+<h2 id="formater">Formater</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> og <strong>CSV</strong> er indbygget, og formatet genkendes automatisk; vinduet viser, hvilket det landede på. Er dine logfiler ingen af dem, tilføjer du dit eget under <strong>Logformater</strong> i indstillingerne: et regulært udtryk med navngivne grupper til de dele, der betyder noget.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>En linje, udtrykket ikke passer på, vises alligevel — den klassificeres blot som Ukendt i stedet for at blive smidt væk, for en logfil, man ikke kan læse, er værre end en logfil uden farver.</p>
+<h2 id="visning">Visning</h2>
+<p><strong>Vis linjenumre</strong> og <strong>Ombryd lange linjer</strong> står i indstillingerne. Detaljeområdet under listen viser altid hele teksten for den valgte post, ombrudt, uanset hvad listen gør.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Visning af filer</a></li><li><a href="searching.html">Find filer</a></li></ul></section>
+</main>
+</body>
+</html>

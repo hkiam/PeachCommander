@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De logviewer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>De logviewer</h1>
+<p>Zet de cursor op een logbestand en kies <strong>Tonen als log…</strong> om het te openen in een venster dat voor logs is gemaakt en niet voor tekst: één rij per regel, het niveau van elke regel herkend en gekleurd, een filter, en een tail die bijblijft terwijl het bestand nog wordt geschreven.</p>
+<p>Het is een plug-in: u kunt hem uitschakelen of verwijderen via <strong>Configuratie ▸ Plug-ins…</strong>. Zonder hem toont F3 een log zoals elk ander tekstbestand.</p>
+<h2 id="waarom-het-meteen-opent">Waarom het meteen opent</h2>
+<p>Het bestand wordt in het geheugen gekoppeld en er wordt alleen een index gebouwd van waar elke regel begint, op de achtergrond. Er wordt niets als tekst geladen voordat het op het scherm staat, en alleen de daadwerkelijk zichtbare regels worden gedecodeerd. Een log van meerdere gigabytes opent even snel als een klein, en naar het einde springen leest het midden niet.</p>
+<h2 id="niveaus-en-kleur">Niveaus en kleur</h2>
+<p>Elke regel wordt ingedeeld — <strong>Fout</strong>, <strong>Waarschuwing</strong>, <strong>Info</strong>, <strong>Debug</strong>, <strong>Trace</strong>, of <strong>Onbekend</strong> als het formaat niets prijsgeeft — en dienovereenkomstig gekleurd. De standaardkleuren volgen de lichte of donkere weergave; stel de uwe in bij de instellingen van de plug-in en die worden gebruikt.</p>
+<p>In de kolom <strong>Niveau</strong> ziet u in één oogopslag waar de fouten zitten, en het filterveld beperkt de lijst tot wat u zoekt. Zet <strong>Regex</strong> aan om met een reguliere expressie te filteren in plaats van met platte tekst.</p>
+<h2 id="een-bestand-volgen-dat-nog-groeit">Een bestand volgen dat nog groeit</h2>
+<p>Zet <strong>Live (automatisch scrollen)</strong> aan en het venster volgt het einde van het bestand terwijl er regels bij komen: de index wordt uitgebreid over de toegevoegde bytes in plaats van opnieuw gebouwd, dus dit blijft goedkoop hoe lang het bestand ook wordt. Scrol omhoog en u leest geschiedenis; de tail loopt eronder door.</p>
+<h2 id="uw-weg-vinden">Uw weg vinden</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Zoek…</strong></td>
+<td>Doorzoekt de berichten; <strong>Zoek (markeer en spring)…</strong> markeert elke treffer zodat u ertussen kunt stappen</td>
+</tr>
+<tr>
+<td><strong>Ga naar regel…</strong></td>
+<td>Springt naar een fysiek regelnummer</td>
+</tr>
+<tr>
+<td><strong>Ga naar datum/tijd…</strong></td>
+<td>Springt naar de eerste regel vanaf een tijdstempel, bijv. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>Het kopiëren weet wat een logregel is: <strong>Kopieer regel</strong> neemt de regel onder de cursor, <strong>Kopieer regelgroep (alle regels)</strong> neemt de hele groep wanneer die over meerdere regels loopt — een stacktrace bijvoorbeeld — en <strong>Kopieer geselecteerde regels</strong> neemt precies wat u selecteerde.</p>
+<h2 id="structuren">Structuren</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> en <strong>CSV</strong> zijn ingebouwd, en de structuur wordt automatisch herkend; het venster toont waarvoor het gekozen heeft. Zijn uw logs geen van die, voeg dan uw eigen toe onder <strong>Logstructuren</strong> in de instellingen: een reguliere expressie met benoemde groepen voor de delen die ertoe doen.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>Een regel die de expressie niet herkent, verschijnt toch — hij wordt eenvoudig als Onbekend ingedeeld in plaats van weggelaten, want een log dat u niet kunt lezen is erger dan een log zonder kleuren.</p>
+<h2 id="weergave">Weergave</h2>
+<p><strong>Toon regelnummers</strong> en <strong>Lange regels afbreken</strong> staan in de instellingen. Het detailgebied onder de lijst toont altijd de volledige tekst van het geselecteerde item, afgebroken, wat de lijst ook doet.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="viewing-files.html">Bestanden bekijken</a></li><li><a href="searching.html">Bestanden vinden</a></li></ul></section>
+</main>
+</body>
+</html>

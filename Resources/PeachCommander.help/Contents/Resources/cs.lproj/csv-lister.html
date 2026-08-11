@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soubory CSV jako tabulka</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Soubory CSV jako tabulka</h1>
+<p>Stiskněte <strong>F3</strong> na souboru <code>.csv</code> nebo <code>.tsv</code> a otevře se jako skutečná tabulka — sloupce, záhlaví, řazení a filtr — místo jako textové řádky s čárkami.</p>
+<p>Je to plugin: můžete jej vypnout nebo odstranit v <strong>Konfigurace ▸ Pluginy…</strong>. Bez něj zobrazí F3 soubor jako prostý text, což je u malého souboru stále dobře čitelné.</p>
+<h2 id="oddelovac-se-zjisti-nepredpoklada-se">Oddělovač se zjistí, nepředpokládá se</h2>
+<p>Čárka, středník, tabulátor, svislítko a dvojtečka přicházejí v úvahu všechny. Plugin každý z nich spočítá přes prvních dvacet řádků a vezme ten, který se na nejvíce řádcích vyskytuje stejněkrát — soubor, kde má každý řádek čtyři středníky, je souborem se středníky, ať přípona říká cokoli. V praxi na tom záleží: <code>.csv</code> vyexportované tabulkovým procesorem na českém systému bývá oddělené středníky a <code>.tsv</code> není vždy oddělené tabulátory.</p>
+<p>První řádek se považuje za záhlaví a stane se z něj názvy sloupců.</p>
+<h2 id="razeni-a-filtrovani">Řazení a filtrování</h2>
+<p>Klepnutím na záhlaví sloupce se podle něj seřadí, dalším klepnutím se pořadí obrátí. Řadí se <strong>číselně, když jsou obě hodnoty čísla</strong>, jinak abecedně, takže sloupec s velikostmi seřadí 9 před 10, a ne za.</p>
+<p>Vyhledávací pole filtruje během psaní, bez ohledu na velikost písmen. Ve výchozím stavu hledá ve všech sloupcích; výběrem sloupce v nabídce vedle hledá jen v něm.</p>
+<h2 id="co-nedokaze">Co nedokáže</h2>
+<p>Parser je záměrně malý a jedno omezení je dobré znát dřív, než vás překvapí: <strong>oddělovač uvnitř pole v uvozovkách se stále považuje za oddělovač.</strong> Řádek jako</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>se stane třemi buňkami místo dvou. Obklopující uvozovky se odstraní, pokud obepínají celé pole, dál se ale uvozování nevyhodnocuje. U souboru, kde na tom záleží, je lepším nástrojem vestavěný prohlížeč nebo tabulkový procesor.</p>
+<p>Prázdné řádky se přeskakují a pole přesahující několik řádků podporováno není.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="viewing-files.html">Prohlížení souborů</a></li><li><a href="log-viewer.html">Prohlížeč logů</a></li></ul></section>
+</main>
+</body>
+</html>
