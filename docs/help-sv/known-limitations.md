@@ -25,7 +25,7 @@ Peach Commander gör mycket, men ett fåtal funktioner har ärliga begränsninga
 
 ## Andra aktuella begränsningar
 
-- **Mycket långa sökvägar: att bläddra fungerar, att kopiera ännu inte.** macOS avvisar varje sökväg över 1024 byte som anropsargument, och mappar som är nästlade så djupt förekommer. Listning, öppning, namnbyte, skapande och radering når dem; **F5 Kopiera och F6 Flytta gör det ännu inte** och rapporterar fel där. Att arbeta närmare toppen av mappträdet undviker det återstående fallet.
+- **Mycket långa sökvägar fungerar, utom papperskorgen.** macOS avvisar varje sökväg över 1024 byte som anropsargument, och mappar som är nästlade så djupt förekommer. Att bläddra, öppna, kopiera, flytta, byta namn, skapa och radera permanent når dem alla. Det enda undantaget är **att flytta till papperskorgen**: macOS erbjuder inget sätt att slänga en fil den inte kan namnge, så Delete rapporterar fel där — Skift+Delete (radera permanent) fungerar.
 - **Den här förhandsversionen är osignerad.** Gatekeeper blockerar den första starten, och hur du tillåter den beror på din macOS-version. På **macOS 15 Sequoia och senare**: dubbelklicka en gång, stäng varningen och gå sedan till **Systeminställningar ▸ Integritet och säkerhet** och klicka på **Öppna ändå** — Apple tog bort genvägen med högerklick för osignerad programvara i macOS 15, så högerklick hjälper inte längre. På **macOS 13–14**: högerklicka på appen och välj Öppna, bekräfta sedan. Automatiska uppdateringar finns ännu inte i den här versionen.
 
 ## Kortkommandon

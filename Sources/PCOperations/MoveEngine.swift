@@ -86,13 +86,13 @@ public final class MoveEngine {
                     let ce = CopyEngine(options: options, control: control,
                                         resolver: SkipAllResolver(), progress: progress)
                     try await ce.appendRegularFile(from: src, to: dst)
-                    try? FileManager.default.removeItem(atPath: src)
+                    _ = DeepPath.removeItem(src)
                     return (dst, false)
                 case .overwrite, .append:
                     // rename(2) atomically replaces a file target; remove dir/symlink targets first.
                     // (`.append` reaches here only for a non-file source → treat as replace.)
                     if FSLowLevel.kind(of: dst) == .directory || srcKind != .file {
-                        try? FileManager.default.removeItem(atPath: dst)
+                        _ = DeepPath.removeItem(dst)
                     }
                 }
             }
@@ -101,7 +101,7 @@ public final class MoveEngine {
         let sameDevice = FSLowLevel.sameDevice(src, dst)
         let canRename = sameDevice && !(srcKind == .directory && FSLowLevel.kind(of: dst) == .directory)
         if canRename {
-            let rc = src.withCString { s in dst.withCString { d in rename(s, d) } }
+            let rc = DeepPath.rename(src, to: dst)
             if rc == 0 { return (dst, true) }
             // Fall through to copy+delete on failure (e.g. EXDEV races, dir merges).
         }

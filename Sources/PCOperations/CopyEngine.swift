@@ -82,7 +82,7 @@ public final class CopyEngine {
                 files += 1
                 bytes += FSLowLevel.size(of: path)
             case .directory:
-                if let children = try? FileManager.default.contentsOfDirectory(atPath: path) {
+                if let children = DeepPath.contentsOfDirectory(path) {
                     for c in children { stack.append((path as NSString).appendingPathComponent(c)) }
                 }
             }
@@ -127,7 +127,7 @@ public final class CopyEngine {
         if !FSLowLevel.exists(dst) {
             guard mkdirPath(dst, 0o755) == 0 else { throw OperationError.cannotCreateDirectory(dst) }
         }
-        let children = (try? FileManager.default.contentsOfDirectory(atPath: src)) ?? []
+        let children = DeepPath.contentsOfDirectory(src) ?? []
         for child in children.sorted() {
             try await control.checkpoint()
             let cs = (src as NSString).appendingPathComponent(child)
@@ -153,7 +153,7 @@ public final class CopyEngine {
             }
         }
         guard let target = FSLowLevel.readSymlink(src) else { throw OperationError.readFailed(src) }
-        let rc = target.withCString { t in dst.withCString { d in symlink(t, d) } }
+        let rc = DeepPath.symlink(target, at: dst)
         guard rc == 0 else { throw OperationError.writeFailed(dst) }
         state.filesDone += 1
         report()
@@ -207,7 +207,7 @@ public final class CopyEngine {
     private func copyFileData(from src: String, to dst: String, size: Int64, appendMode: Bool = false) async throws {
         // Clone fast path (same volume, target must not exist). Never for append.
         if !appendMode, options.useCloneWhenPossible, !FSLowLevel.exists(dst) {
-            let rc = src.withCString { s in dst.withCString { d in clonefile(s, d, 0) } }
+            let rc = DeepPath.clone(src, to: dst)
             if rc == 0 {
                 state.bytesDone += size
                 report()
@@ -216,14 +216,14 @@ public final class CopyEngine {
             // errno EXDEV / ENOTSUP / EEXIST → fall through to streaming.
         }
 
-        let inFD = src.withCString { open($0, O_RDONLY) }
+        let inFD = DeepPath.open(src, O_RDONLY)
         guard inFD >= 0 else { throw OperationError.readFailed(src) }
         defer { close(inFD) }
 
         // Append opens the existing target for O_APPEND writes; a normal copy
         // truncates (or creates) the target.
         let outFlags = appendMode ? (O_WRONLY | O_APPEND | O_CREAT) : (O_WRONLY | O_CREAT | O_TRUNC)
-        let outFD = dst.withCString { open($0, outFlags, 0o644) }
+        let outFD = DeepPath.open(dst, outFlags, 0o644)
         guard outFD >= 0 else { throw OperationError.cannotCreateFile(dst) }
 
         let buf = UnsafeMutableRawPointer.allocate(byteCount: options.chunkSize, alignment: 16)
@@ -249,7 +249,7 @@ public final class CopyEngine {
             close(outFD)
             // Clean up a partially written NEW target; never unlink an append target
             // (that would destroy the pre-existing data we appended to).
-            if !appendMode { _ = dst.withCString { unlink($0) } }   // SPEC-004 §1
+            if !appendMode { _ = DeepPath.unlink(dst) }   // SPEC-004 §1
             throw error
         }
         close(outFD)
@@ -258,23 +258,15 @@ public final class CopyEngine {
     // MARK: - Metadata / helpers
 
     private func copyMetadata(from src: String, to dst: String) {
-        _ = src.withCString { s in
-            dst.withCString { d in
-                copyfile(s, d, nil, copyfile_flags_t(COPYFILE_METADATA))
-            }
-        }
+        DeepPath.copyMetadata(from: src, to: dst)
     }
 
     private func removeItem(_ path: String) throws {
-        do {
-            try FileManager.default.removeItem(atPath: path)
-        } catch {
-            throw OperationError.writeFailed(path)
-        }
+        guard DeepPath.removeItem(path) else { throw OperationError.writeFailed(path) }
     }
 
     private func mkdirPath(_ path: String, _ mode: mode_t) -> Int32 {
-        path.withCString { mkdir($0, mode) }
+        DeepPath.mkdir(path, mode)
     }
 
     private func isSourceNewer(src: String, dst: String) -> Bool {

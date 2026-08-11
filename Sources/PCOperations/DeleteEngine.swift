@@ -24,6 +24,9 @@ public final class DeleteEngine {
         for path in items {
             try await control.checkpoint()
             do {
+                // `trashItem` is URL-only and there is no fd-relative equivalent, so an item whose
+                // path is past PATH_MAX cannot be put in the Trash — it throws here and the caller
+                // reports a failed delete. Permanent delete below does reach it (F-383).
                 try FileManager.default.trashItem(at: URL(fileURLWithPath: path), resultingItemURL: nil)
                 processed.append(path)
             } catch {
@@ -55,16 +58,16 @@ public final class DeleteEngine {
         switch kind {
         case .file, .symlink:
             // unlink removes the link itself, never the symlink target.
-            let rc = path.withCString { unlink($0) }
+            let rc = DeepPath.unlink(path)
             guard rc == 0 else { throw OperationError.deleteFailed(path) }
             state.filesDone += 1
             report()
         case .directory:
-            let children = (try? FileManager.default.contentsOfDirectory(atPath: path)) ?? []
+            let children = DeepPath.contentsOfDirectory(path) ?? []
             for child in children {
                 try await deleteNode((path as NSString).appendingPathComponent(child))
             }
-            let rc = path.withCString { rmdir($0) }
+            let rc = DeepPath.rmdir(path)
             guard rc == 0 else { throw OperationError.deleteFailed(path) }
             state.filesDone += 1
             report()
@@ -77,7 +80,7 @@ public final class DeleteEngine {
         while let path = stack.popLast() {
             guard let kind = FSLowLevel.kind(of: path) else { continue }
             count += 1
-            if kind == .directory, let children = try? FileManager.default.contentsOfDirectory(atPath: path) {
+            if kind == .directory, let children = DeepPath.contentsOfDirectory(path) {
                 for c in children { stack.append((path as NSString).appendingPathComponent(c)) }
             }
         }

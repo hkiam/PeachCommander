@@ -25,7 +25,7 @@ Peach Commander toho zvládá hodně, ale několik funkcí má v aktuální verz
 
 ## Další aktuální meze
 
-- **Velmi dlouhé cesty: procházení funguje, kopírování zatím ne.** macOS odmítne jakoukoli cestu delší než 1024 bajtů jako argument volání a složky vnořené natolik hluboko se vyskytují. Výpis, otevření, přejmenování, vytvoření i odstranění se k nim dostanou; **F5 Kopírovat a F6 Přesunout zatím ne** a ohlásí tam chybu. Práce blíže k vrcholu stromu složek zbývající případ obchází.
+- **Velmi dlouhé cesty fungují, kromě koše.** macOS odmítne jakoukoli cestu delší než 1024 bajtů jako argument volání a složky vnořené natolik hluboko se vyskytují. Procházení, otevírání, kopírování, přesouvání, přejmenování, vytváření i trvalé mazání se k nim dostanou. Jedinou výjimkou je **přesun do koše**: macOS nenabízí způsob, jak vyhodit soubor, který neumí pojmenovat, takže Delete tam ohlásí chybu — Shift+Delete (trvale smazat) funguje.
 - **Toto sestavení náhledu není podepsané.** Gatekeeper blokuje první spuštění a způsob, jak je povolit, závisí na verzi macOS. Na **macOS 15 Sequoia a novějším**: jednou poklepejte, zavřete varování a pak přejděte do **Nastavení systému ▸ Soukromí a zabezpečení** a klepněte na **Přesto otevřít** — Apple v macOS 15 odstranil zkratku pravým tlačítkem pro nepodepsaný software, klepnutí pravým tlačítkem tam tedy už nepomůže. Na **macOS 13–14**: klepněte na aplikaci pravým tlačítkem, zvolte Otevřít a potvrďte. Automatické aktualizace v tomto sestavení zatím nejsou dostupné.
 
 ## Zkratky

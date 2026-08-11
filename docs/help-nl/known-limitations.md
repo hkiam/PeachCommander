@@ -25,7 +25,7 @@ Peach Commander doet veel, maar een paar functies hebben in de huidige versie ee
 
 ## Overige huidige beperkingen
 
-- **Zeer lange paden: bladeren werkt, kopiëren nog niet.** macOS weigert elk pad van meer dan 1024 bytes als aanroepargument, en zo diep geneste mappen komen voor. Weergeven, openen, hernoemen, aanmaken en verwijderen bereiken ze; **F5 Kopiëren en F6 Verplaatsen nog niet** en melden daar een fout. Dichter bij de top van de mappenboom werken vermijdt het resterende geval.
+- **Zeer lange paden werken, behalve de prullenmand.** macOS weigert elk pad van meer dan 1024 bytes als aanroepargument, en zo diep geneste mappen komen voor. Bladeren, openen, kopiëren, verplaatsen, hernoemen, aanmaken en definitief verwijderen bereiken ze allemaal. De enige uitzondering is **naar de prullenmand verplaatsen**: macOS biedt geen manier om een bestand weg te gooien dat het niet kan benoemen, dus Delete meldt daar een fout — Shift+Delete (definitief verwijderen) werkt wel.
 - **Deze voorvertoningsbuild is niet ondertekend.** Gatekeeper blokkeert de eerste start, en hoe je die toestaat hangt af van je macOS-versie. Op **macOS 15 Sequoia en later**: dubbelklik één keer, sluit de waarschuwing en ga naar **Systeeminstellingen ▸ Privacy en beveiliging** en klik op **Toch openen** — Apple heeft de snelkoppeling via rechtsklikken voor niet-ondertekende software in macOS 15 verwijderd, dus rechtsklikken helpt daar niet meer. Op **macOS 13–14**: klik met de rechtermuisknop op de app en kies Open, bevestig daarna. Automatische updates zijn in deze build nog niet beschikbaar.
 
 ## Sneltoetsen

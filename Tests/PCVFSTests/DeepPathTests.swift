@@ -13,6 +13,7 @@
 
 import XCTest
 @testable import PCVFS
+import PCFoundation
 
 final class DeepPathTests: XCTestCase {
     private var root: URL!
