@@ -57,7 +57,10 @@ def apply(plugin, lang, keys):
         value = translations.get(key)
         if not value:
             continue          # left out entirely: `L` falls back to the English key
-        lines.append(f'"{escape(key)}" = "{escape(value)}";')
+        # The key is written back exactly as it stands in en.lproj — it was read out of that file
+        # and is already in .strings form. Escaping it again turns `\n` into `\\n`, which is a
+        # different key: the lookup then misses and the gate reports it as stale, both correctly.
+        lines.append(f'"{key}" = "{escape(value)}";')
         written += 1
 
     out_dir = os.path.join(PLUGINS, plugin, "Resources", f"{lang}.lproj")
