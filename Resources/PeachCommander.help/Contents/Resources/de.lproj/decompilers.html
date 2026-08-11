@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Java und .NET dekompilieren</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Java und .NET dekompilieren</h1>
+<p>Drücken Sie <strong>F3</strong> auf einer kompilierten Datei und sehen Sie Quelltext statt Bytes. Zwei Plugins tun das — eines für Java (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) und eines für .NET (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) — und sie verhalten sich gleich, deshalb behandelt diese Seite beide. Jedes lässt sich einzeln unter <strong>Konfiguration ▸ Plugins…</strong> abschalten oder entfernen.</p>
+<p>Ein Archiv erscheint als Baum seiner Klassen, eine einzelne Klasse als eine Datei. <strong>In Quelltext dekompilieren</strong> im Menü Befehle schreibt das Ergebnis heraus und legt es in ein Panel, sodass Sie darin suchen, vergleichen und kopieren können wie in jedem anderen Quelltextordner.</p>
+<h2 id="die-engine-installieren-sie">Die Engine installieren Sie</h2>
+<p>Kein Dekompilierer liegt bei, und nichts wird für Sie heruntergeladen. Das ist in zweierlei Hinsicht Absicht: JD-Core, der bekannteste Java-Dekompilierer, steht unter GPLv3 und könnte nicht in einer Apache-2.0-App mitgeliefert werden — und Engines werden besser, ein Austausch sollte also keine neue Version von Peach Commander erfordern.</p>
+<p><strong>Engine-Ordner…</strong> im Betrachter öffnet den Ordner, in den sie gehören. Die README dort nennt jede Engine und ihre Lizenz.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (für Android-<code>.dex</code> und <code>.apk</code>) und <code>javap</code> für reinen Bytecode</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy und <code>monodis</code> für IL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Engines prüfen</strong> führt den Versionsbefehl jeder Engine aus und unterscheidet drei Dinge: installiert und lauffähig, nicht installiert, und <em>installiert, aber nicht lauffähig</em> — ein Java-Werkzeug ohne JDK ist vorhanden und startet trotzdem nicht, und das zeigt sich erst, wenn man es wirklich ausführt.</p>
+<p>Eine Engine wird durch Daten beschrieben, nicht durch Code, Sie können also selbst eine hinzufügen:</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>Können mehrere Engines eine Datei verarbeiten, wird die erste verfügbare genommen, sofern Sie keine auswählen. Sind zwei installiert, zeigt <strong>Vergleichen</strong> beide Ergebnisse nebeneinander — nützlich, wenn eine Engine bei einer Methode aufgibt, die die andere schafft.</p>
+<h2 id="in-kompiliertem-code-suchen">In kompiliertem Code suchen</h2>
+<p><strong>Alle Klassen durchsuchen</strong> sieht den dekompilierten Text durch statt der Bytes, Sie finden also ein Stringliteral oder einen Methodennamen in einer JAR.</p>
+<p>Das Dekompilieren während einer <em>Inhaltssuche</em> über viele Dateien ist ein eigener Schalter und standardmäßig aus: den Text zu erzeugen kann bedeuten, die Engine einmal pro Klasse laufen zu lassen, was auf einer langsamen Maschine nichts ist, das man an eine Suche verschwenden sollte. Der Hauptsuchdialog fragt getrennt; hier wird es ebenfalls abgelehnt.</p>
+<h2 id="zwischenspeicher-und-grenzen">Zwischenspeicher und Grenzen</h2>
+<p>Ergebnisse werden zwischengespeichert, denn dieselbe Klasse zweimal zu dekompilieren ist reines Warten. In den Einstellungen stehen, wie viele Tage Ergebnisse bleiben, und eine <strong>Größengrenze</strong> für den Zwischenspeicher; <strong>Zwischenspeicher jetzt leeren</strong> räumt ihn und meldet, wie viel frei wurde.</p>
+<p>Zwei Zeitlimits schützen vor einer Engine, die nicht fertig wird: eines für eine einzelne Klasse oder einen Typ, eines für ein ganzes Archiv. Beide nehmen 0 an, was „die Voreinstellung der Engine verwenden“ bedeutet.</p>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Dateien ansehen</a></li><li><a href="searching.html">Dateien finden</a></li></ul></section>
+</main>
+</body>
+</html>

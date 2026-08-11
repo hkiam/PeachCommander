@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dekompilace Javy a .NET</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Dekompilace Javy a .NET</h1>
+<p>Stiskněte <strong>F3</strong> na přeloženém souboru a uvidíte zdrojový kód místo bajtů. Dělají to dva pluginy — jeden pro Javu (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) a jeden pro .NET (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) — a chovají se stejně, proto tato stránka pokrývá oba. Každý lze samostatně vypnout nebo odstranit v <strong>Konfigurace ▸ Pluginy…</strong>.</p>
+<p>Archiv se ukáže jako strom svých tříd, jednotlivá třída jako jeden soubor. <strong>Dekompilovat do zdrojů</strong> v nabídce Příkazy výsledek zapíše a umístí do panelu, takže v něm můžete hledat, porovnávat a kopírovat jako v každé jiné složce se zdroji.</p>
+<h2 id="engine-si-nainstalujete-sami">Engine si nainstalujete sami</h2>
+<p>Žádný dekompilátor není přibalen a nic se za vás nestahuje. Je to záměr ze dvou důvodů: JD-Core, nejznámější dekompilátor Javy, je pod GPLv3 a nemohl by být dodáván uvnitř aplikace pod Apache-2.0 — a enginy se zlepšují, takže jejich výměna by neměla vyžadovat novou verzi Peach Commanderu.</p>
+<p><strong>Složka s enginy…</strong> v prohlížeči otevře složku, kam patří. Tamní README jmenuje každý engine a jeho licenci.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (pro androidí <code>.dex</code> a <code>.apk</code>) a <code>javap</code> pro čistý bytekód</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy a <code>monodis</code> pro IL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Zkontrolovat enginy</strong> spustí u každého enginu příkaz pro zjištění verze a rozliší tři věci: nainstalováno a funkční, nenainstalováno, a <em>nainstalováno, ale nelze spustit</em> — nástroj Javy bez JDK je přítomen a přesto se nespustí, a odhalí to teprve skutečné spuštění.</p>
+<p>Engine je popsán daty, nikoli kódem, takže si můžete přidat vlastní:</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>Zvládne-li soubor více enginů, použije se první dostupný, pokud si jeden nevyberete. Jsou-li nainstalovány dva, <strong>Porovnat</strong> ukáže oba výsledky vedle sebe — hodí se, když jeden engine u metody vzdá to, co druhý zvládne.</p>
+<h2 id="hledani-v-prelozenem-kodu">Hledání v přeloženém kódu</h2>
+<p><strong>Prohledat všechny třídy</strong> prochází dekompilovaný text místo bajtů, takže v JARu najdete textový literál nebo název metody.</p>
+<p>Dekompilace během <em>hledání v obsahu</em> napříč mnoha soubory je samostatný přepínač, ve výchozím stavu vypnutý: vytvořit text může znamenat spustit engine jednou na každou třídu, což na pomalém stroji není rozumné utrácet za hledání. Hlavní dialog hledání se ptá zvlášť; zde se to rovněž odmítá.</p>
+<h2 id="mezipamet-a-limity">Mezipaměť a limity</h2>
+<p>Výsledky se ukládají do mezipaměti, protože dekompilovat tutéž třídu dvakrát je čisté čekání. V předvolbách je, kolik dní se výsledky uchovávají, a <strong>limit velikosti</strong> mezipaměti; <strong>Vymazat mezipaměť</strong> ji vyprázdní a oznámí, kolik se uvolnilo.</p>
+<p>Dva časové limity chrání před enginem, který neskončí: jeden pro jednu třídu či typ, jeden pro celý archiv. Oba přijímají 0, což znamená „použít výchozí hodnotu enginu“.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="viewing-files.html">Prohlížení souborů</a></li><li><a href="searching.html">Hledání souborů</a></li></ul></section>
+</main>
+</body>
+</html>

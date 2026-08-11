@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dekompilere Java og .NET</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Dekompilere Java og .NET</h1>
+<p>Trykk <strong>F3</strong> på en kompilert fil og se kildekode i stedet for byte. To programtillegg gjør dette — ett for Java (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) og ett for .NET (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) — og de oppfører seg likt, så denne siden dekker begge. Hvert av dem kan slås av eller fjernes for seg under <strong>Konfigurasjon ▸ Programtillegg…</strong>.</p>
+<p>Et arkiv vises som et tre av klassene sine; en enkelt klasse som én fil. <strong>Dekompiler til kilde</strong> i Kommandoer-menyen skriver ut resultatet og legger det i et panel, så du kan søke, sammenligne og kopiere i det som i enhver annen kildekodemappe.</p>
+<h2 id="motoren-installerer-du-selv">Motoren installerer du selv</h2>
+<p>Ingen dekompilator følger med, og ingenting lastes ned for deg. Det er med vilje, av to grunner: JD-Core, den mest kjente Java-dekompilatoren, er GPLv3 og kunne ikke leveres inne i en Apache-2.0-app — og motorer blir bedre, så å bytte en bør ikke kreve en ny versjon av Peach Commander.</p>
+<p><strong>Motormappe…</strong> i viseren åpner mappen de hører hjemme i. README-filen der navngir hver motor og lisensen dens.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (for Androids <code>.dex</code> og <code>.apk</code>) og <code>javap</code> for ren bytekode</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy, og <code>monodis</code> for IL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Kontroller motorer</strong> kjører versjonskommandoen til hver motor og skiller mellom tre ting: installert og fungerer, ikke installert, og <em>installert, men ute av stand til å kjøre</em> — et Java-verktøy uten JDK er til stede og starter likevel ikke, og bare det å faktisk kjøre det avslører dette.</p>
+<p>En motor beskrives av data og ikke av kode, så du kan legge til en selv:</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>Når flere motorer klarer en fil, brukes den første tilgjengelige med mindre du velger en. Med to installert viser <strong>Sammenlign</strong> begge resultatene side om side — nyttig når den ene motoren gir opp på en metode den andre klarer.</p>
+<h2 id="a-ske-i-kompilert-kode">Å søke i kompilert kode</h2>
+<p><strong>Søk i alle klasser</strong> går gjennom den dekompilerte teksten i stedet for bytene, så du kan finne en tekststreng eller et metodenavn i en JAR.</p>
+<p>Å dekompilere under et <em>innholdssøk</em> over mange filer er en egen innstilling, av som standard: å produsere teksten kan bety at motoren kjøres én gang per klasse, noe som på en treg maskin ikke er rimelig å bruke på et søk. Hovedsøkevinduet spør separat; her avvises det også.</p>
+<h2 id="buffer-og-grenser">Buffer og grenser</h2>
+<p>Resultater bufres, for å dekompilere den samme klassen to ganger er ren venting. I innstillingene står hvor mange dager resultater beholdes, og en <strong>størrelsesgrense</strong> for bufferen; <strong>Tøm bufferen nå</strong> tømmer den og melder hvor mye som ble frigjort.</p>
+<p>To tidsgrenser beskytter mot en motor som ikke blir ferdig: én for én klasse eller type, én for et helt arkiv. Begge godtar 0, som betyr «bruk motorens egen standard».</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="viewing-files.html">Vise filer</a></li><li><a href="searching.html">Finne filer</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decompilarea Java și .NET</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Decompilarea Java și .NET</h1>
+<p>Apăsați <strong>F3</strong> pe un fișier compilat și veți vedea cod sursă în loc de octeți. Fac asta două extensii — una pentru Java (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) și una pentru .NET (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) — și se comportă la fel, așa că pagina aceasta le acoperă pe amândouă. Fiecare poate fi dezactivată sau eliminată separat din <strong>Configurare ▸ Extensii…</strong>.</p>
+<p>O arhivă apare ca un arbore al claselor sale; o clasă singură, ca un fișier. <strong>Decompilează în surse</strong> din meniul Comenzi scrie rezultatul și îl pune într-un panou, ca să puteți căuta, compara și copia în el ca în orice alt dosar cu surse.</p>
+<h2 id="motorul-il-instalati-dumneavoastra">Motorul îl instalați dumneavoastră</h2>
+<p>Niciun decompilator nu este inclus și nimic nu se descarcă pentru dumneavoastră. Este intenționat, din două motive: JD-Core, cel mai cunoscut decompilator Java, este sub GPLv3 și nu ar fi putut fi livrat într-o aplicație Apache-2.0 — iar motoarele se îmbunătățesc, deci schimbarea unuia n-ar trebui să ceară o versiune nouă de Peach Commander.</p>
+<p><strong>Dosarul motoarelor…</strong> din vizualizator deschide dosarul căruia îi aparțin. README-ul de acolo numește fiecare motor și licența lui.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (pentru <code>.dex</code> și <code>.apk</code> de Android) și <code>javap</code> pentru bytecode brut</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy și <code>monodis</code> pentru IL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verifică motoarele</strong> rulează comanda de versiune a fiecărui motor și distinge trei lucruri: instalat și funcțional, neinstalat, și <em>instalat, dar incapabil să ruleze</em> — un instrument Java fără JDK este prezent și totuși nu pornește, iar asta se vede doar rulându-l cu adevărat.</p>
+<p>Un motor este descris prin date, nu prin cod, așa că puteți adăuga singur unul:</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>Când mai multe motoare pot prelucra un fișier, se folosește primul disponibil, dacă nu alegeți unul anume. Cu două instalate, <strong>Compară</strong> arată ambele rezultate alăturat — util când un motor renunță la o metodă pe care celălalt o rezolvă.</p>
+<h2 id="cautarea-in-cod-compilat">Căutarea în cod compilat</h2>
+<p><strong>Caută în toate clasele</strong> parcurge textul decompilat în loc de octeți, așa că puteți găsi un literal text sau numele unei metode într-un JAR.</p>
+<p>Decompilarea în timpul unei <em>căutări în conținut</em> peste multe fișiere este un comutator separat, dezactivat implicit: producerea textului poate însemna rularea motorului o dată pentru fiecare clasă, ceea ce pe o mașină lentă nu este un lucru rezonabil de cheltuit pe o căutare. Fereastra principală de căutare întreabă separat; și aici se refuză.</p>
+<h2 id="cache-si-limite">Cache și limite</h2>
+<p>Rezultatele sunt puse în cache, fiindcă a decompila de două ori aceeași clasă este pură așteptare. În configurări se află câte zile se păstrează rezultatele și o <strong>limită de dimensiune</strong> pentru cache; <strong>Golește cacheul acum</strong> îl golește și raportează cât a eliberat.</p>
+<p>Două limite de timp protejează împotriva unui motor care nu se termină: una pentru o singură clasă sau tip, una pentru o arhivă întreagă. Ambele acceptă 0, ceea ce înseamnă „folosește valoarea implicită a motorului”.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="viewing-files.html">Vizualizarea fișierelor</a></li><li><a href="searching.html">Găsirea fișierelor</a></li></ul></section>
+</main>
+</body>
+</html>

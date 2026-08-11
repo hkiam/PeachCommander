@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dekompilacja Javy i .NET</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Dekompilacja Javy i .NET</h1>
+<p>Naciśnij <strong>F3</strong> na skompilowanym pliku i zobacz kod źródłowy zamiast bajtów. Robią to dwie wtyczki — jedna dla Javy (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) i jedna dla .NET (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) — a zachowują się tak samo, więc ta strona obejmuje obie. Każdą można osobno wyłączyć lub usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>.</p>
+<p>Archiwum pokazuje się jako drzewo swoich klas, pojedyncza klasa jako jeden plik. <strong>Dekompiluj do źródeł</strong> w menu Polecenia zapisuje wynik i umieszcza go w panelu, więc możesz w nim szukać, porównywać i kopiować jak w każdym innym folderze ze źródłami.</p>
+<h2 id="silnik-instalujesz-sam">Silnik instalujesz sam</h2>
+<p>Żaden dekompilator nie jest dołączony i nic nie jest za ciebie pobierane. To celowe z dwóch powodów: JD-Core, najbardziej znany dekompilator Javy, jest na GPLv3 i nie mógłby być dostarczany wewnątrz aplikacji na Apache-2.0 — a silniki się poprawiają, więc wymiana jednego nie powinna wymagać nowej wersji Peach Commandera.</p>
+<p><strong>Folder silników…</strong> w przeglądarce otwiera folder, do którego należą. Tamtejszy README wymienia każdy silnik i jego licencję.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (dla androidowych <code>.dex</code> i <code>.apk</code>) oraz <code>javap</code> dla surowego kodu bajtowego</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy oraz <code>monodis</code> dla IL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sprawdź silniki</strong> uruchamia polecenie wersji każdego silnika i rozróżnia trzy rzeczy: zainstalowany i działający, niezainstalowany oraz <em>zainstalowany, ale niezdolny do uruchomienia</em> — narzędzie Javy bez JDK jest obecne i mimo to nie wystartuje, a ujawnia to dopiero faktyczne uruchomienie.</p>
+<p>Silnik opisują dane, a nie kod, więc możesz dodać własny:</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>Gdy z plikiem poradzi sobie więcej niż jeden silnik, używany jest pierwszy dostępny, chyba że wybierzesz konkretny. Przy dwóch zainstalowanych <strong>Porównaj</strong> pokazuje oba wyniki obok siebie — przydatne, gdy jeden silnik poddaje się przy metodzie, z którą drugi sobie radzi.</p>
+<h2 id="szukanie-w-skompilowanym-kodzie">Szukanie w skompilowanym kodzie</h2>
+<p><strong>Przeszukaj wszystkie klasy</strong> przegląda zdekompilowany tekst zamiast bajtów, więc w pliku JAR znajdziesz literał tekstowy albo nazwę metody.</p>
+<p>Dekompilacja podczas <em>przeszukiwania zawartości</em> wielu plików to osobne ustawienie, domyślnie wyłączone: wytworzenie tekstu może oznaczać uruchomienie silnika raz na klasę, co na wolnej maszynie nie jest rozsądnym wydatkiem na wyszukiwanie. Główne okno wyszukiwania pyta osobno; tutaj również jest to odrzucane.</p>
+<h2 id="pamiec-podreczna-i-ograniczenia">Pamięć podręczna i ograniczenia</h2>
+<p>Wyniki trafiają do pamięci podręcznej, bo dekompilowanie tej samej klasy dwa razy to czyste czekanie. W ustawieniach jest, ile dni przechowywać wyniki, oraz <strong>ograniczenie rozmiaru</strong> pamięci podręcznej; <strong>Wyczyść pamięć podręczną</strong> opróżnia ją i podaje, ile zwolniono.</p>
+<p>Dwa limity czasu chronią przed silnikiem, który nie kończy: jeden dla pojedynczej klasy lub typu, drugi dla całego archiwum. Oba przyjmują 0, co oznacza „użyj domyślnej wartości silnika”.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="viewing-files.html">Podgląd plików</a></li><li><a href="searching.html">Wyszukiwanie plików</a></li></ul></section>
+</main>
+</body>
+</html>

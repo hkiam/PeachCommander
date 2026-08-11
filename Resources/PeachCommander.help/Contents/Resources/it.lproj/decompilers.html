@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decompilare Java e .NET</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Decompilare Java e .NET</h1>
+<p>Premete <strong>F3</strong> su un file compilato e vedrete codice sorgente invece di byte. Lo fanno due plugin — uno per Java (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) e uno per .NET (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) — e si comportano allo stesso modo, perciò questa pagina copre entrambi. Ciascuno si può disattivare o rimuovere per conto suo in <strong>Configurazione ▸ Plugin…</strong>.</p>
+<p>Un archivio compare come albero delle sue classi; una singola classe come un file. <strong>Decompila nei sorgenti</strong> nel menu Comandi scrive il risultato e lo mette in un pannello, così potete cercarci dentro, confrontare e copiare come in qualsiasi altra cartella di sorgenti.</p>
+<h2 id="il-motore-lo-installate-voi">Il motore lo installate voi</h2>
+<p>Nessun decompilatore è incluso e nulla viene scaricato per voi. È voluto, per due ragioni: JD-Core, il decompilatore Java più noto, è GPLv3 e non poteva essere distribuito dentro un’app Apache-2.0 — e i motori migliorano, quindi sostituirne uno non dovrebbe richiedere una nuova versione di Peach Commander.</p>
+<p><strong>Cartella dei motori…</strong> nel visualizzatore apre la cartella a cui appartengono. Il README lì dentro nomina ogni motore e la sua licenza.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (per <code>.dex</code> e <code>.apk</code> Android) e <code>javap</code> per il bytecode puro</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy e <code>monodis</code> per l’IL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verifica i motori</strong> esegue il comando di versione di ciascun motore e distingue tre cose: installato e funzionante, non installato, e <em>installato ma incapace di partire</em> — uno strumento Java senza JDK è presente e comunque non si avvia, e solo eseguendolo davvero lo si scopre.</p>
+<p>Un motore è descritto da dati e non da codice, quindi potete aggiungerne uno voi stessi:</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>Quando più motori possono gestire un file, si usa il primo disponibile a meno che non ne scegliate uno. Con due installati, <strong>Confronta</strong> mostra entrambi i risultati affiancati — utile quando un motore rinuncia su un metodo che l’altro riesce a gestire.</p>
+<h2 id="cercare-dentro-codice-compilato">Cercare dentro codice compilato</h2>
+<p><strong>Cerca in tutte le classi</strong> scorre il testo decompilato invece dei byte, così potete trovare una stringa letterale o il nome di un metodo dentro un JAR.</p>
+<p>Decompilare durante una <em>ricerca nei contenuti</em> su molti file è un’impostazione separata, disattiva per impostazione predefinita: produrre il testo può voler dire eseguire il motore una volta per classe, il che su una macchina lenta non è una cosa ragionevole da spendere per una ricerca. La finestra di ricerca principale lo chiede a parte; anche qui viene rifiutato.</p>
+<h2 id="cache-e-limiti">Cache e limiti</h2>
+<p>I risultati vengono messi in cache, perché decompilare due volte la stessa classe è solo attesa. Nelle preferenze ci sono per quanti giorni conservare i risultati e un <strong>limite di dimensione</strong> per la cache; <strong>Svuota la cache adesso</strong> la svuota e riferisce quanto ha liberato.</p>
+<p>Due timeout proteggono da un motore che non finisce: uno per una singola classe o tipo, uno per un intero archivio. Entrambi accettano 0, che significa «usa il valore predefinito del motore».</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="viewing-files.html">Visualizzazione dei file</a></li><li><a href="searching.html">Trovare i file</a></li></ul></section>
+</main>
+</body>
+</html>

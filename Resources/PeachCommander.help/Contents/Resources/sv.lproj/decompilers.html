@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dekompilera Java och .NET</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Dekompilera Java och .NET</h1>
+<p>Tryck <strong>F3</strong> på en kompilerad fil och se källkod i stället för byte. Två tillägg gör det — ett för Java (<code>.class</code>, <code>.jar</code>, <code>.apk</code>, <code>.dex</code>) och ett för .NET (<code>.dll</code>, <code>.exe</code>, <code>.winmd</code>, <code>.netmodule</code>) — och de beter sig likadant, så den här sidan täcker båda. Vart och ett kan stängas av eller tas bort för sig under <strong>Konfiguration ▸ Tillägg…</strong>.</p>
+<p>Ett arkiv visas som ett träd av sina klasser; en ensam klass som en fil. <strong>Dekompilera till källkod</strong> i menyn Kommandon skriver ut resultatet och lägger det i en panel, så att du kan söka, jämföra och kopiera i det som i vilken annan källkodsmapp som helst.</p>
+<h2 id="motorn-installerar-du-sjalv">Motorn installerar du själv</h2>
+<p>Ingen dekompilator följer med och ingenting hämtas åt dig. Det är medvetet, av två skäl: JD-Core, den mest kända Java-dekompilatorn, är GPLv3 och kunde inte levereras inuti en Apache-2.0-app — och motorer blir bättre, så att byta en borde inte kräva en ny version av Peach Commander.</p>
+<p><strong>Motormapp…</strong> i visaren öppnar mappen de hör hemma i. README-filen där namnger varje motor och dess licens.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>CFR, Vineflower, Procyon, jadx (för Androids <code>.dex</code> och <code>.apk</code>) och <code>javap</code> för ren bytekod</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td>ILSpy, och <code>monodis</code> för IL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Kontrollera motorer</strong> kör varje motors versionskommando och skiljer på tre saker: installerad och fungerande, inte installerad, och <em>installerad men oförmögen att köra</em> — ett Java-verktyg utan JDK finns där och startar ändå inte, och bara att verkligen köra det avslöjar detta.</p>
+<p>En motor beskrivs av data och inte av kod, så du kan lägga till en själv:</p>
+<div class="codehilite"><pre><span></span><code>[cfr]
+kinds  = class, jar
+tool   = java
+args   = -jar {engine} {input}
+engine = ~/Library/Application Support/PeachCommander/decompilers/cfr.jar
+output = stdout
+</code></pre></div>
+
+<p>När fler än en motor klarar en fil används den första tillgängliga om du inte väljer en. Med två installerade visar <strong>Jämför</strong> båda resultaten sida vid sida — användbart när den ena motorn ger upp på en metod som den andra klarar.</p>
+<h2 id="soka-i-kompilerad-kod">Söka i kompilerad kod</h2>
+<p><strong>Sök i alla klasser</strong> går igenom den dekompilerade texten i stället för byten, så att du kan hitta en stränglitteral eller ett metodnamn i en JAR.</p>
+<p>Att dekompilera under en <em>innehållssökning</em> över många filer är en egen inställning, av som förval: att producera texten kan innebära att motorn körs en gång per klass, vilket på en långsam maskin inte är något rimligt att lägga på en sökning. Huvudsökrutan frågar separat; här nekas det också.</p>
+<h2 id="cache-och-granser">Cache och gränser</h2>
+<p>Resultat cachas, för att dekompilera samma klass två gånger är rent väntande. I inställningarna finns hur många dagar resultat behålls och en <strong>storleksgräns</strong> för cachen; <strong>Töm cachen nu</strong> tömmer den och rapporterar hur mycket som frigjordes.</p>
+<p>Två tidsgränser skyddar mot en motor som inte blir klar: en för en enda klass eller typ, en för ett helt arkiv. Båda accepterar 0, vilket betyder ”använd motorns egen standard”.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="viewing-files.html">Visa filer</a></li><li><a href="searching.html">Hitta filer</a></li></ul></section>
+</main>
+</body>
+</html>
