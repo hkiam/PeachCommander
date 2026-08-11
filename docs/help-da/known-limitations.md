@@ -21,7 +21,7 @@ Peach Commander gør meget, men nogle få funktioner har ærlige grænser i den 
 
 ## Mappeopdatering
 
-- **Kun mapper på denne Mac overvåges for ændringer udefra.** En mappe på denne Mac opdaterer sig selv, så snart et andet program opretter, ændrer eller fjerner en fil i den. En fjern placering (FTP eller SFTP) og indersiden af et arkiv overvåges ikke, fordi de protokoller ikke giver nogen mulighed for at blive underrettet — tryk på F2 eller Ctrl+R for at læse dem igen.
+- **Fjernplaceringer overvåges ikke; et åbent arkiv gør nu.** En mappe på denne Mac opdaterer sig selv, så snart et andet program opretter, ændrer eller fjerner en fil i den — og det gør et arkiv, du kigger ind i, også: `.zip`-filen er en lokal fil, så når noget skriver den om, læser panelet den igen. En fjern placering (FTP eller SFTP) overvåges ikke, fordi de protokoller ikke tilbyder nogen måde at få besked — tryk F2 eller Ctrl+R.
 
 ## Andre aktuelle grænser
 

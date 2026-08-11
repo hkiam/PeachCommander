@@ -5599,6 +5599,8 @@ final class PanelController: NSObject, PanelControllerProtocol {
     private var volatileRefreshTask: Task<Void, Never>?
     /// Consumes the current directory's change stream (F-361).
     private var watchTask: Task<Void, Never>?
+    /// The archive file's identity when it was last parsed, while the panel is inside it (F-384).
+    private var watchedArchiveStamp: FileStamp?
     private let model: DirectoryModel
     private let volumeManager: VolumeManager
     private let selectionState = SelectionState()
@@ -5866,6 +5868,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
               let fresh = ArchiveFS(archiveFileURL: URL(fileURLWithPath: zip), fsID: "zip:\(zip)") else { return }
         let sub = await model.getPath()
         fs = fresh
+        watchedArchiveStamp = FileStamp.of(zip)
         await loadDirectory(sub)
     }
 
@@ -6249,8 +6252,9 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// watcher instead of accumulating one per directory, which is what the previous version did.
     func startWatching(_ path: String) {
         stopWatching()
-        guard watchDirectories, !isInArchive,
-              let stream = fs.watch(VFSPath(filesystemId: fs.scheme, path: path)) else { return }
+        guard watchDirectories else { return }
+        if isInArchive { startWatchingArchiveFile(); return }
+        guard let stream = fs.watch(VFSPath(filesystemId: fs.scheme, path: path)) else { return }
         watchTask = Task { @MainActor [weak self] in
             for await _ in stream {
                 guard let self, !Task.isCancelled else { return }
@@ -6265,9 +6269,38 @@ final class PanelController: NSObject, PanelControllerProtocol {
         }
     }
 
+    /// Inside an archive there is nothing to watch — and yet there is: the listing on screen was
+    /// parsed out of a local file, and that file can be watched even though the archive cannot (F-384).
+    /// Another program rewriting the .zip, or this app doing it from a second window, otherwise leaves
+    /// the panel showing members that no longer exist, and Enter on one of them fails for no visible
+    /// reason.
+    ///
+    /// The watcher is on the *containing folder*, because that is what FSEvents watches, so it wakes
+    /// for every sibling too. The stamp is what decides: only the archive's own bytes matter.
+    private func startWatchingArchiveFile() {
+        guard let archive = currentArchiveZipPath else { return }
+        let folder = (archive as NSString).deletingLastPathComponent
+        guard let stream = LocalFS().watch(LocalFS.path(folder)) else { return }
+        watchedArchiveStamp = FileStamp.of(archive)
+        watchTask = Task { @MainActor [weak self] in
+            for await _ in stream {
+                guard let self, !Task.isCancelled else { return }
+                guard NSApp.modalWindow == nil, !self.tableView.isInlineEditing else { continue }
+                let now = FileStamp.of(archive)
+                guard now != self.watchedArchiveStamp else { continue }
+                self.watchedArchiveStamp = now
+                // Gone rather than rewritten: leave what is on screen. Re-parsing nothing would empty
+                // the panel, and the file may be a moment away from being renamed back into place.
+                guard now != nil else { continue }
+                await self.reloadCurrentArchive()
+            }
+        }
+    }
+
     func stopWatching() {
         watchTask?.cancel()
         watchTask = nil
+        watchedArchiveStamp = nil
     }
 
     func getCurrentPath() async -> String { await model.getPath() }

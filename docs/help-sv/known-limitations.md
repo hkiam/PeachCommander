@@ -21,7 +21,7 @@ Peach Commander gör mycket, men ett fåtal funktioner har ärliga begränsninga
 
 ## Kataloguppdatering
 
-- **Bara mappar på den här Macen bevakas för ändringar utifrån.** En mapp på den här Macen uppdateras av sig själv så snart ett annat program lägger till, ändrar eller tar bort en fil i den. En fjärrplats (FTP eller SFTP) och insidan av ett arkiv bevakas inte, eftersom de protokollen inte erbjuder något sätt att bli underrättad — tryck på F2 eller Ctrl+R för att läsa om dem.
+- **Fjärrplatser bevakas inte; ett öppet arkiv gör det nu.** En mapp på den här Macen uppdateras av sig själv så snart ett annat program lägger till, ändrar eller tar bort en fil i den — och det gör ett arkiv du tittar in i också: `.zip`-filen är en lokal fil, så när något skriver om den läser panelen om den. En fjärrplats (FTP eller SFTP) bevakas inte, eftersom de protokollen inte erbjuder något sätt att bli underrättad — tryck F2 eller Ctrl+R.
 
 ## Andra aktuella begränsningar
 

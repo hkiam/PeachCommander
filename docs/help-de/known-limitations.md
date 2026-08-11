@@ -21,7 +21,7 @@ Peach Commander kann viel, aber ein paar Funktionen haben in der aktuellen Versi
 
 ## Verzeichnisaktualisierung
 
-- **Nur Ordner auf diesem Mac werden auf Änderungen von außen überwacht.** Ein Ordner auf diesem Mac aktualisiert sich selbst, sobald ein anderes Programm darin eine Datei anlegt, ändert oder löscht. Ein entfernter Ort (FTP oder SFTP) und das Innere eines Archivs werden nicht überwacht, weil diese Protokolle keine Möglichkeit bieten, benachrichtigt zu werden — drücken Sie dort F2 oder Ctrl+R zum erneuten Einlesen.
+- **Entfernte Orte werden nicht überwacht; ein geöffnetes Archiv jetzt schon.** Ein Ordner auf diesem Mac aktualisiert sich selbst, sobald ein anderes Programm darin eine Datei anlegt, ändert oder löscht — und ebenso ein Archiv, in das Sie hineinsehen: die `.zip` ist eine lokale Datei, wird sie überschrieben, liest das Panel sie neu. Ein entfernter Ort (FTP oder SFTP) wird nicht überwacht, weil diese Protokolle keine Möglichkeit bieten, benachrichtigt zu werden — drücken Sie F2 oder Ctrl+R.
 
 ## Weitere aktuelle Einschränkungen
 

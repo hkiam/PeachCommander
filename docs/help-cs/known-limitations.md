@@ -21,7 +21,7 @@ Peach Commander toho zvládá hodně, ale několik funkcí má v aktuální verz
 
 ## Obnovení složky
 
-- **Na změny zvenčí se hlídají jen složky na tomto Macu.** Složka na tomto Macu se aktualizuje sama, jakmile v ní jiný program vytvoří, změní nebo odstraní soubor. Vzdálené umístění (FTP nebo SFTP) ani vnitřek archivu se nehlídají, protože tyto protokoly nenabízejí žádný způsob, jak dát vědět — tam stiskněte F2 nebo Ctrl+R pro znovupřečtení.
+- **Vzdálená umístění se nehlídají; otevřený archiv nyní ano.** Složka na tomto Macu se aktualizuje sama, jakmile v ní jiný program vytvoří, změní nebo odstraní soubor — a stejně tak archiv, do kterého se díváte: `.zip` je místní soubor, takže když jej něco přepíše, panel jej znovu načte. Vzdálené umístění (FTP nebo SFTP) se nehlídá, protože tyto protokoly nenabízejí způsob, jak dát vědět — stiskněte F2 nebo Ctrl+R.
 
 ## Další aktuální meze
 

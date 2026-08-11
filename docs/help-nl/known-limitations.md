@@ -21,7 +21,7 @@ Peach Commander doet veel, maar een paar functies hebben in de huidige versie ee
 
 ## Map verversen
 
-- **Alleen mappen op deze Mac worden op wijzigingen van buiten gecontroleerd.** Een map op deze Mac werkt zichzelf bij zodra een ander programma er een bestand aanmaakt, wijzigt of verwijdert. Een externe locatie (FTP of SFTP) en de binnenkant van een archief worden niet gecontroleerd, omdat die protocollen geen manier bieden om bericht te krijgen — druk daar op F2 of Ctrl+R om opnieuw te lezen.
+- **Externe locaties worden niet gecontroleerd; een geopend archief nu wel.** Een map op deze Mac werkt zichzelf bij zodra een ander programma er een bestand aanmaakt, wijzigt of verwijdert — en een archief waarin u kijkt ook: het `.zip`-bestand is een lokaal bestand, dus als iets het herschrijft, leest het paneel het opnieuw. Een externe locatie (FTP of SFTP) wordt niet gecontroleerd, omdat die protocollen geen manier bieden om het te laten weten — druk op F2 of Ctrl+R.
 
 ## Overige huidige beperkingen
 
