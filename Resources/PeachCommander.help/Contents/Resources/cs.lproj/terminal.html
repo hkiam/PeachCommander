@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vestavěný terminál</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Vestavěný terminál</h1>
+<p>Peach Commander umí spustit skutečný shell přímo ve svém okně, v pruhu u dolního okraje zvaném dok. Je to váš přihlašovací shell — ten, který určuje <code>$SHELL</code>, nebo <code>/bin/zsh</code>, pokud použitelný není — takže vaše <code>PATH</code>, vaše aliasy i vaše funkce tam jsou, přesně jako v Terminálu.</p>
+<p>Není to totéž jako <strong>Otevřít terminál zde</strong>, což spustí Apple Terminál v aktuální složce a nechá vás se dvěma okny. Vestavěný zůstává tam, kde jsou vaše soubory, a ví o nich.</p>
+<p>Je to plugin: pokud jej nechcete, vypněte jej nebo odstraňte v <strong>Konfigurace ▸ Pluginy…</strong> a dok zmizí s ním.</p>
+<h2 id="otevreni-a-prepinani">Otevření a přepínání</h2>
+<p>Stiskněte <strong>Ctrl</strong> spolu s klávesou vlevo od „1“ a klávesnice se přesune mezi souborový panel a terminál. Tato zkratka je vázaná na <em>pozici</em> klávesy, ne na její znak, takže je to tatáž fyzická klávesa, ať ji vaše rozložení nazývá jakkoli: obrácený apostrof na americké klávesnici, <code>^</code> na německé, <code>@</code> na francouzské.</p>
+<p>Vše ostatní je v nabídce <strong>Terminál</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Co dělá</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Přepnout mezi panelem a terminálem</td>
+<td>Přesune zaměření klávesnice, jinak nezmění nic</td>
+</tr>
+<tr>
+<td>Nový panel terminálu</td>
+<td>Další shell, ve stejné složce</td>
+</tr>
+<tr>
+<td>Zavřít panel terminálu</td>
+<td>Zavře jej — a předtím se zeptá, pokud v něm ještě něco běží</td>
+</tr>
+<tr>
+<td>Rozdělit terminál</td>
+<td>Dva shelly vedle sebe v jedné kartě</td>
+</tr>
+<tr>
+<td>Přejít do složky panelu</td>
+<td>Provede v terminálu <code>cd</code> tam, kde stojí aktivní panel</td>
+</tr>
+<tr>
+<td>Vložit vybrané názvy souborů</td>
+<td>Napíše vybraná jména na příkazový řádek, v uvozovkách</td>
+</tr>
+<tr>
+<td>Spouštět příkazový řádek v terminálu</td>
+<td>Pošle to, co jste napsali na příkazovou řádku, shellu místo aby to spustil neviditelně</td>
+</tr>
+</tbody>
+</table>
+<p>Dokud má terminál zaměření, jdou <strong>funkční klávesy tam</strong>, ne do souborového panelu — F5 v textovém editoru uvnitř terminálu se musí dostat k editoru. Lišta funkčních kláves to říká, místo aby ukazovala klávesy, které nic neudělají.</p>
+<h2 id="most-zpet-do-panelu">Most zpět do panelu</h2>
+<p><strong>Cmd-klikněte na cestu</strong> ve výstupu terminálu a panel tam přejde. Soubor z <code>ls</code>, cesta v chybě překladače, jméno z <code>git status</code> — jedno kliknutí a díváte se na něj.</p>
+<p>Zareaguje jen tehdy, když slovo pod ukazatelem opravdu odpovídá něčemu existujícímu. Cmd-kliknutí na běžný text neudělá nic, místo aby navigovalo někam nahodile, a obyčejné kliknutí stále vybírá text jako dřív.</p>
+<p><strong>Přetáhněte soubory na terminál</strong> a jejich cesty přistanou na příkazovém řádku, v uvozovkách, připravené pro příkaz, který máte rozepsaný.</p>
+<h2 id="nechat-panel-nasledovat-shell">Nechat panel následovat shell</h2>
+<p>Ve výchozím stavu vypnuto: když v terminálu provedete <code>cd</code> jinam, panel zůstane, kde je. Zapněte <strong>Nechat aktivní panel následovat terminál</strong> na stránce nastavení terminálu a bude jej následovat.</p>
+<p>Vyžaduje to součinnost vašeho shellu, protože shell neoznamuje, kam přešel. Stránka nastavení ukazuje krátký úryvek do vaší <code>~/.zshrc</code> a tlačítko pro zkopírování; přiměje zsh hlásit svůj pracovní adresář (escape sekvence OSC 7) před každým příkazovým řádkem. Bez úryvku je nastavení zapnuté a nic nenásleduje — proto je úryvek hned vedle.</p>
+<h2 id="hledani-a-historie-vypisu">Hledání a historie výpisu</h2>
+<p><strong>Cmd+F</strong> hledá v tom, co terminál vypsal.</p>
+<p>Terminál si ve výchozím stavu drží <strong>5 000 řádků</strong> historie — dost na to, aby se dalo rolovat zpět skrz překlad. Změníte to na stránce nastavení. Velmi vysoké hodnoty se omezují, protože historie o padesáti milionech řádků je paměťový problém, jehož příčinu zvenčí nelze poznat.</p>
+<h2 id="kde-sedi">Kde sedí</h2>
+<p>Terminál se otevře v doku u dolního okraje, protože takový tvar potřebuje: shell potřebuje šířku, a boční panel se svými výchozími 300 body pojme asi 44 sloupců, zatímco dolní okraj okna o šířce 1200 bodů jich pojme 176.</p>
+<p>Přesto jej můžete přesunout. Přetáhněte jej do bočního panelu, pokud vám to vyhovuje víc, nebo použijte ovládání umístění popsané v <a href="plugins.md">Pluginy</a>; přesunutím se <strong>přepojí tentýž shell</strong> místo spuštění nového, takže cokoli v něm běží, běží dál.</p>
+<p>Karty se vrátí, když aplikaci spustíte znovu, ve složkách, ve kterých byly. To, co v nich <em>běželo</em>, ne — restart tyto procesy ukončí, jako v každém terminálu.</p>
+<h2 id="pri-ukonceni">Při ukončení</h2>
+<p>Zavření aplikace zavře shelly. To, co v nich ještě běží, se ukončí, stejně jako zavření okna Terminálu ukončí to, co je v něm. Proto se zavření karty, v níž něco běží, nejdřív zeptá.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="opening-files.html">Otevírání souborů a složek</a></li><li><a href="macos-integration.html">Integrace s macOS</a></li><li><a href="keyboard-shortcuts.html">Klávesnice a zkratky</a></li></ul></section>
+</main>
+</body>
+</html>

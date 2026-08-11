@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The built-in terminal</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>The built-in terminal</h1>
+<p>Peach Commander can run a real shell inside its own window, in a strip across the bottom called the dock. It is your login shell — the one <code>$SHELL</code> names, or <code>/bin/zsh</code> if that is not usable — so your <code>PATH</code>, your aliases and your functions are all there, exactly as in Terminal.</p>
+<p>This is not the same thing as <strong>Open Terminal Here</strong>, which launches Apple's Terminal app in the current folder and leaves you with two windows. The built-in one stays where your files are, and knows about them.</p>
+<p>It is a plugin, so if you do not want it, turn it off or remove it in <strong>Configuration ▸ Plugins…</strong> and the dock goes with it.</p>
+<h2 id="open-it-and-move-around">Open it and move around</h2>
+<p>Press <strong>Ctrl</strong> together with the key to the left of the "1" to move the keyboard between the file panel and the terminal. That shortcut is bound to the key's <em>position</em>, not its character, so it is the same physical key whatever your layout calls it: the backtick on a US keyboard, <code>^</code> on a German one, <code>@</code> on a French one.</p>
+<p>Everything else is in the <strong>Terminal</strong> menu:</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Switch Between Panel and Terminal</td>
+<td>Moves the keyboard focus, without changing anything</td>
+</tr>
+<tr>
+<td>New Terminal Tab</td>
+<td>Another shell, in the same folder</td>
+</tr>
+<tr>
+<td>Close the Terminal Tab</td>
+<td>Closes it — and asks first if something is still running in it</td>
+</tr>
+<tr>
+<td>Split the Terminal</td>
+<td>Two shells side by side in the same tab</td>
+</tr>
+<tr>
+<td>Go to the Panel's Folder</td>
+<td><code>cd</code>s the terminal to where the active panel is</td>
+</tr>
+<tr>
+<td>Insert the Selected File Names</td>
+<td>Types the selected names at the prompt, quoted</td>
+</tr>
+<tr>
+<td>Run the Command Line in the Terminal</td>
+<td>Sends what you typed on the command line to the shell instead of running it invisibly</td>
+</tr>
+</tbody>
+</table>
+<p>While the terminal has the focus the <strong>function keys go to it</strong>, not to the file panel — F5 in a text editor inside the terminal has to reach the editor. The function-key bar says so rather than showing keys that will not fire.</p>
+<h2 id="the-bridge-back-to-the-panel">The bridge back to the panel</h2>
+<p><strong>Cmd-click a path</strong> in the terminal's output and the panel goes there. A file from <code>ls</code>, a path in a compiler error, a name from <code>git status</code> — one click and you are looking at it.</p>
+<p>It only acts when the word under the pointer really resolves to something that exists. Cmd-clicking prose does nothing rather than navigating somewhere arbitrary, and a plain click still selects text the way it always did.</p>
+<p><strong>Drop files on the terminal</strong> and their paths land at the prompt, quoted, ready for a command you are half way through typing.</p>
+<h2 id="letting-the-panel-follow-the-shell">Letting the panel follow the shell</h2>
+<p>Off by default: when you <code>cd</code> somewhere in the terminal, the panel stays where it is. Switch on <strong>Let the active panel follow the terminal</strong> in the terminal's settings page and it follows along instead.</p>
+<p>This needs your shell's help, because a shell does not announce where it has gone. The settings page shows a short snippet to add to your <code>~/.zshrc</code> and a button to copy it; it makes zsh report its working directory (the OSC 7 escape sequence) before each prompt. Without the snippet the setting is on and nothing follows, which is why the snippet sits right next to it.</p>
+<h2 id="searching-and-scrollback">Searching and scrollback</h2>
+<p><strong>Cmd+F</strong> searches what the terminal has printed.</p>
+<p>A terminal keeps <strong>5,000 lines</strong> of scrollback by default — enough to scroll back through a compile. Change it on the settings page. Very large values are clamped, because a scrollback of fifty million lines is a memory problem whose cause is impossible to see from the outside.</p>
+<h2 id="where-it-sits">Where it sits</h2>
+<p>The terminal opens in the dock across the bottom, because that is the shape it wants: a shell needs width, and the side panel at its default 300 points fits about 44 columns where the bottom of a 1200-point window fits 176.</p>
+<p>You can still move it. Drag it to the side panel if that suits you better, or use the placement controls described in <a href="plugins.md">Plugins</a>; moving it <strong>re-parents the same shell</strong> rather than starting a new one, so whatever is running keeps running.</p>
+<p>Tabs come back when you start the app again, in the folders they were in. What was <em>running</em> in them does not — a restart ends those processes, as it would in any terminal.</p>
+<h2 id="when-you-quit">When you quit</h2>
+<p>Closing the app closes the shells. Anything still running in them is ended, the way closing a Terminal window ends what is in it. That is why closing a tab with something running in it asks first.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="opening-files.html">Opening files &amp; folders</a></li><li><a href="macos-integration.html">macOS integration</a></li><li><a href="keyboard-shortcuts.html">Keyboard &amp; shortcuts</a></li></ul></section>
+</main>
+</body>
+</html>

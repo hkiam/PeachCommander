@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A beépített terminál</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>A beépített terminál</h1>
+<p>A Peach Commander valódi parancsértelmezőt tud futtatni a saját ablakán belül, egy alul lévő sávban, amelyet doknak hívunk. Ez az ön bejelentkezési parancsértelmezője — amelyet a <code>$SHELL</code> jelöl ki, vagy <code>/bin/zsh</code>, ha az nem használható —, tehát a <code>PATH</code>-ja, az aliasai és a függvényei mind ott vannak, pontosan úgy, mint a Terminálban.</p>
+<p>Ez nem ugyanaz, mint a <strong>Terminál megnyitása itt</strong>, amely az Apple Terminál alkalmazását indítja el az aktuális mappában, és két ablakkal hagyja ott. A beépített ott marad, ahol a fájljai vannak, és tud róluk.</p>
+<p>Bővítmény: ha nem kéri, kapcsolja ki vagy távolítsa el a <strong>Konfiguráció ▸ Bővítmények…</strong> alatt, és a dok is vele megy.</p>
+<h2 id="megnyitas-es-valtas">Megnyitás és váltás</h2>
+<p>Nyomja meg a <strong>Ctrl</strong> billentyűt az „1”-től balra lévővel együtt, hogy a billentyűzet a fájlpanel és a terminál között váltson. Ez a gyorsbillentyű a billentyű <em>helyzetéhez</em> kötődik, nem a karakteréhez, tehát ugyanaz a fizikai billentyű, bárhogy is hívja azt a kiosztása: tompa ékezet amerikai billentyűzeten, <code>^</code> németen, <code>@</code> francián.</p>
+<p>Minden más a <strong>Terminál</strong> menüben van:</p>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Mit tesz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Váltás a panel és a terminál között</td>
+<td>Áthelyezi a billentyűzetfókuszt, mást nem változtat</td>
+</tr>
+<tr>
+<td>Új terminállap</td>
+<td>Még egy parancsértelmező, ugyanabban a mappában</td>
+</tr>
+<tr>
+<td>Terminállap bezárása</td>
+<td>Bezárja — és előbb rákérdez, ha még fut benne valami</td>
+</tr>
+<tr>
+<td>Terminál felosztása</td>
+<td>Két parancsértelmező egymás mellett ugyanazon a lapon</td>
+</tr>
+<tr>
+<td>Ugrás a panel mappájába</td>
+<td>A terminálban <code>cd</code>-t hajt végre oda, ahol az aktív panel áll</td>
+</tr>
+<tr>
+<td>A kijelölt fájlnevek beszúrása</td>
+<td>A kijelölt neveket beírja a promptba, idézőjelek között</td>
+</tr>
+<tr>
+<td>A parancssor futtatása a terminálban</td>
+<td>Amit a parancssorba írt, a parancsértelmezőnek küldi, ahelyett hogy láthatatlanul futtatná</td>
+</tr>
+</tbody>
+</table>
+<p>Amíg a terminálé a fókusz, a <strong>funkcióbillentyűk oda kerülnek</strong>, nem a fájlpanelhez — a terminálon belüli szövegszerkesztőben az F5-nek el kell érnie a szerkesztőt. A funkcióbillentyű-sáv ezt kiírja, ahelyett hogy olyan billentyűket mutatna, amelyek nem sülnek el.</p>
+<h2 id="a-hid-vissza-a-panelhez">A híd vissza a panelhez</h2>
+<p><strong>Cmd-kattintson egy útvonalra</strong> a terminál kimenetében, és a panel odamegy. Egy fájl az <code>ls</code>-ből, egy útvonal egy fordítói hibában, egy név a <code>git status</code>-ból — egy kattintás, és már nézi is.</p>
+<p>Csak akkor lép működésbe, ha a mutató alatti szó tényleg valami létezőre mutat. A folyó szövegre való Cmd-kattintás nem tesz semmit, ahelyett hogy valahová találomra navigálna, az egyszerű kattintás pedig továbbra is szöveget jelöl ki, mint eddig.</p>
+<p><strong>Ejtsen fájlokat a terminálra</strong>, és az útvonaluk a promptnál landol, idézőjelek között, készen a félig begépelt parancshoz.</p>
+<h2 id="hagyni-hogy-a-panel-kovesse-a-parancsertelmezot">Hagyni, hogy a panel kövesse a parancsértelmezőt</h2>
+<p>Alapértelmezés szerint kikapcsolva: ha a terminálban <code>cd</code>-vel máshová lép, a panel ott marad, ahol volt. Kapcsolja be a <strong>Kövesse az aktív panel a terminált</strong> lehetőséget a terminál beállítási lapján, és követni fogja.</p>
+<p>Ehhez kell a parancsértelmező segítsége, mert az nem jelenti be, hová ment. A beállítási lap egy rövid részletet mutat a <code>~/.zshrc</code>-be, és egy gombot a másoláshoz; ez veszi rá a zsh-t, hogy minden prompt előtt jelentse a munkakönyvtárát (az OSC 7 vezérlőszekvenciát). A részlet nélkül a beállítás be van kapcsolva, és semmi sem követ semmit — ezért van a részlet közvetlenül mellette.</p>
+<h2 id="kereses-es-visszagorgetes">Keresés és visszagörgetés</h2>
+<p>A <strong>Cmd+F</strong> abban keres, amit a terminál kiírt.</p>
+<p>Egy terminál alapértelmezés szerint <strong>5000 sort</strong> tart meg visszagörgetésre — épp eleget ahhoz, hogy egy fordításon vissza lehessen görgetni. A beállítási lapon módosítható. A nagyon nagy értékek korlátozva vannak, mert egy ötvenmillió soros visszagörgetés olyan memóriaprobléma, amelynek az okát kívülről lehetetlen látni.</p>
+<h2 id="hol-helyezkedik-el">Hol helyezkedik el</h2>
+<p>A terminál az alsó dokban nyílik meg, mert erre az alakra van szüksége: egy parancsértelmezőnek szélesség kell, és az oldalpanel az alapértelmezett 300 pontján körülbelül 44 oszlopot fogad be, míg egy 1200 pontos ablak alja 176-ot.</p>
+<p>Azért elmozdíthatja. Húzza az oldalpanelbe, ha az jobban megfelel, vagy használja az <a href="plugins.md">Bővítmények</a> leírt elhelyezési vezérlőit; az áthelyezés <strong>ugyanazt a parancsértelmezőt akasztja át</strong>, nem indít újat, tehát ami fut, az fut tovább.</p>
+<p>A lapok visszatérnek, amikor újraindítja az alkalmazást, abban a mappában, ahol voltak. Ami <em>futott</em> bennük, az nem — az újraindítás befejezi azokat a folyamatokat, mint bármelyik terminálban.</p>
+<h2 id="kilepeskor">Kilépéskor</h2>
+<p>Az alkalmazás bezárása bezárja a parancsértelmezőket. Ami még fut bennük, az befejeződik, ahogy egy Terminál-ablak bezárása is befejezi, ami benne van. Ezért kérdez rá előbb egy olyan lap bezárása, amelyben fut valami.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="opening-files.html">Fájlok és mappák megnyitása</a></li><li><a href="macos-integration.html">macOS-integráció</a></li><li><a href="keyboard-shortcuts.html">Billentyűzet és billentyűparancsok</a></li></ul></section>
+</main>
+</body>
+</html>
