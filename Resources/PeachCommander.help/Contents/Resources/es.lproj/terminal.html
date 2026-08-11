@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La terminal integrada</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>La terminal integrada</h1>
+<p>Peach Commander puede ejecutar una terminal real dentro de su propia ventana, en una franja inferior llamada el dock. Es tu shell de inicio de sesión —la que indica <code>$SHELL</code>, o <code>/bin/zsh</code> si esa no sirve—, así que tu <code>PATH</code>, tus alias y tus funciones están ahí, igual que en Terminal.</p>
+<p>No es lo mismo que <strong>Abrir Terminal aquí</strong>, que lanza la app Terminal de Apple en la carpeta actual y te deja con dos ventanas. La integrada se queda donde están tus archivos, y sabe de ellos.</p>
+<p>Es un plugin: si no lo quieres, desactívalo o elimínalo en <strong>Configuración ▸ Plugins…</strong>, y el dock se va con él.</p>
+<h2 id="abrirla-y-moverse">Abrirla y moverse</h2>
+<p>Pulsa <strong>Ctrl</strong> junto con la tecla a la izquierda del «1» para mover el teclado entre el panel de archivos y la terminal. Ese atajo está ligado a la <em>posición</em> de la tecla, no a su carácter, así que es la misma tecla física la llame como la llame tu distribución: el acento grave en un teclado US, <code>^</code> en uno alemán, <code>@</code> en uno francés.</p>
+<p>Todo lo demás está en el menú <strong>Terminal</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cambiar entre el panel y la terminal</td>
+<td>Mueve el foco del teclado, sin cambiar nada más</td>
+</tr>
+<tr>
+<td>Nueva pestaña de terminal</td>
+<td>Otra shell, en la misma carpeta</td>
+</tr>
+<tr>
+<td>Cerrar la pestaña de terminal</td>
+<td>La cierra —y pregunta antes si algo sigue ejecutándose en ella</td>
+</tr>
+<tr>
+<td>Dividir la terminal</td>
+<td>Dos shells una al lado de otra en la misma pestaña</td>
+</tr>
+<tr>
+<td>Ir a la carpeta del panel</td>
+<td>Hace <code>cd</code> en la terminal hasta donde está el panel activo</td>
+</tr>
+<tr>
+<td>Insertar los nombres de archivo seleccionados</td>
+<td>Escribe los nombres seleccionados en el prompt, entrecomillados</td>
+</tr>
+<tr>
+<td>Ejecutar la línea de comandos en la terminal</td>
+<td>Envía lo que escribiste en la línea de comandos a la shell en lugar de ejecutarlo de forma invisible</td>
+</tr>
+</tbody>
+</table>
+<p>Mientras la terminal tiene el foco, las <strong>teclas de función van a ella</strong>, no al panel de archivos: F5 en un editor de texto dentro de la terminal tiene que llegar al editor. La barra de teclas de función lo indica, en vez de mostrar teclas que no van a funcionar.</p>
+<h2 id="el-puente-de-vuelta-al-panel">El puente de vuelta al panel</h2>
+<p><strong>Cmd-clic en una ruta</strong> de la salida de la terminal y el panel va allí. Un archivo de <code>ls</code>, una ruta en un error del compilador, un nombre de <code>git status</code>: un clic y lo estás mirando.</p>
+<p>Solo actúa cuando la palabra bajo el puntero corresponde de verdad a algo que existe. Un Cmd-clic sobre texto normal no hace nada, en lugar de navegar a un sitio arbitrario, y un clic simple sigue seleccionando texto como siempre.</p>
+<p><strong>Suelta archivos sobre la terminal</strong> y sus rutas aparecen en el prompt, entrecomilladas, listas para un comando que estás escribiendo a medias.</p>
+<h2 id="dejar-que-el-panel-siga-a-la-shell">Dejar que el panel siga a la shell</h2>
+<p>Desactivado por omisión: cuando haces <code>cd</code> en la terminal, el panel se queda donde está. Activa <strong>Que el panel activo siga a la terminal</strong> en la página de ajustes de la terminal y la seguirá.</p>
+<p>Esto necesita la ayuda de tu shell, porque una shell no anuncia adónde ha ido. La página de ajustes muestra un fragmento breve para añadir a tu <code>~/.zshrc</code> y un botón para copiarlo; hace que zsh informe de su directorio de trabajo (la secuencia de escape OSC 7) antes de cada prompt. Sin el fragmento el ajuste está activado y nada sigue a nada, y por eso el fragmento está justo al lado.</p>
+<h2 id="busqueda-e-historial">Búsqueda e historial</h2>
+<p><strong>Cmd+F</strong> busca en lo que la terminal ha impreso.</p>
+<p>Una terminal guarda <strong>5.000 líneas</strong> de historial por omisión, suficiente para volver atrás por una compilación. Se cambia en la página de ajustes. Los valores muy grandes se limitan, porque un historial de cincuenta millones de líneas es un problema de memoria cuya causa es imposible de ver desde fuera.</p>
+<h2 id="donde-se-coloca">Dónde se coloca</h2>
+<p>La terminal se abre en el dock inferior porque esa es la forma que necesita: una shell necesita ancho, y el panel lateral, con sus 300 puntos por omisión, cabe unas 44 columnas donde la parte inferior de una ventana de 1200 puntos cabe 176.</p>
+<p>Aun así puedes moverla. Arrástrala al panel lateral si te va mejor, o usa los controles de colocación descritos en <a href="plugins.md">Plugins</a>; moverla <strong>reubica la misma shell</strong> en vez de arrancar otra, así que lo que esté ejecutándose sigue ejecutándose.</p>
+<p>Las pestañas vuelven al iniciar la app de nuevo, en las carpetas en las que estaban. Lo que <em>se ejecutaba</em> en ellas, no: un reinicio termina esos procesos, como en cualquier terminal.</p>
+<h2 id="al-salir">Al salir</h2>
+<p>Cerrar la app cierra las shells. Lo que siga ejecutándose en ellas se termina, igual que cerrar una ventana de Terminal termina lo que hay dentro. Por eso cerrar una pestaña con algo en marcha pregunta antes.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="opening-files.html">Abrir archivos y carpetas</a></li><li><a href="macos-integration.html">Integración con macOS</a></li><li><a href="keyboard-shortcuts.html">Teclado y atajos</a></li></ul></section>
+</main>
+</body>
+</html>

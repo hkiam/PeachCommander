@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Das eingebaute Terminal</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Das eingebaute Terminal</h1>
+<p>Peach Commander kann eine echte Shell im eigenen Fenster ausführen, in einem Streifen am unteren Rand, dem Dock. Es ist Ihre Login-Shell — die, die <code>$SHELL</code> nennt, oder <code>/bin/zsh</code>, wenn diese nicht brauchbar ist — Ihr <code>PATH</code>, Ihre Aliase und Ihre Funktionen sind also alle da, genau wie im Terminal.</p>
+<p>Das ist nicht dasselbe wie <strong>Terminal hier öffnen</strong>, das Apples Terminal im aktuellen Ordner startet und Ihnen zwei Fenster hinterlässt. Das eingebaute bleibt dort, wo Ihre Dateien sind, und weiß von ihnen.</p>
+<p>Es ist ein Plugin: Wenn Sie es nicht wollen, schalten Sie es unter <strong>Konfiguration ▸ Plugins…</strong> ab oder entfernen es, und der Dock geht mit.</p>
+<h2 id="offnen-und-bewegen">Öffnen und bewegen</h2>
+<p>Drücken Sie <strong>Ctrl</strong> zusammen mit der Taste links neben der „1“, um die Tastatur zwischen Dateipanel und Terminal zu bewegen. Dieses Kürzel ist an die <em>Position</em> der Taste gebunden, nicht an ihr Zeichen; es ist also dieselbe physische Taste, wie Ihr Layout sie auch nennt: das Backtick auf einer US-Tastatur, <code>^</code> auf einer deutschen, <code>@</code> auf einer französischen.</p>
+<p>Alles Weitere steht im Menü <strong>Terminal</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Was sie tut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Zwischen Panel und Terminal wechseln</td>
+<td>Bewegt den Tastaturfokus, ohne sonst etwas zu ändern</td>
+</tr>
+<tr>
+<td>Neuer Terminal-Tab</td>
+<td>Noch eine Shell, im selben Ordner</td>
+</tr>
+<tr>
+<td>Terminal-Tab schließen</td>
+<td>Schließt ihn — und fragt vorher, wenn darin noch etwas läuft</td>
+</tr>
+<tr>
+<td>Terminal teilen</td>
+<td>Zwei Shells nebeneinander im selben Tab</td>
+</tr>
+<tr>
+<td>In den Ordner des Panels wechseln</td>
+<td>Führt im Terminal ein <code>cd</code> dorthin aus, wo das aktive Panel steht</td>
+</tr>
+<tr>
+<td>Ausgewählte Dateinamen einfügen</td>
+<td>Tippt die ausgewählten Namen an der Eingabeaufforderung, in Anführungszeichen</td>
+</tr>
+<tr>
+<td>Kommandozeile im Terminal ausführen</td>
+<td>Schickt das, was Sie auf der Kommandozeile getippt haben, an die Shell, statt es unsichtbar auszuführen</td>
+</tr>
+</tbody>
+</table>
+<p>Solange das Terminal den Fokus hat, gehen die <strong>Funktionstasten dorthin</strong>, nicht ans Dateipanel — F5 in einem Texteditor im Terminal muss den Editor erreichen. Die Funktionstastenleiste sagt das, statt Tasten zu zeigen, die nicht auslösen.</p>
+<h2 id="die-brucke-zuruck-ins-panel">Die Brücke zurück ins Panel</h2>
+<p><strong>Cmd-klicken Sie einen Pfad</strong> in der Ausgabe des Terminals, und das Panel geht dorthin. Eine Datei aus <code>ls</code>, ein Pfad in einer Compiler-Meldung, ein Name aus <code>git status</code> — ein Klick, und Sie sehen sie an.</p>
+<p>Es reagiert nur, wenn das Wort unter dem Zeiger wirklich auf etwas Vorhandenes zeigt. Ein Cmd-Klick auf Fließtext tut nichts, statt irgendwohin zu navigieren, und ein einfacher Klick markiert Text weiterhin wie immer.</p>
+<p><strong>Ziehen Sie Dateien auf das Terminal</strong>, und ihre Pfade landen an der Eingabeaufforderung, in Anführungszeichen, bereit für einen Befehl, den Sie halb getippt haben.</p>
+<h2 id="das-panel-der-shell-folgen-lassen">Das Panel der Shell folgen lassen</h2>
+<p>Standardmäßig aus: Wenn Sie im Terminal mit <code>cd</code> irgendwohin wechseln, bleibt das Panel, wo es ist. Schalten Sie <strong>Aktives Panel dem Terminal folgen lassen</strong> auf der Einstellungsseite des Terminals ein, und es folgt stattdessen mit.</p>
+<p>Dafür braucht es die Mithilfe Ihrer Shell, denn eine Shell verkündet nicht, wohin sie gegangen ist. Die Einstellungsseite zeigt ein kurzes Stück Code für Ihre <code>~/.zshrc</code> und einen Knopf zum Kopieren; es lässt zsh vor jeder Eingabeaufforderung ihr Arbeitsverzeichnis melden (die Escape-Sequenz OSC 7). Ohne dieses Stück ist die Einstellung an und nichts folgt — deshalb steht es direkt daneben.</p>
+<h2 id="suchen-und-verlauf">Suchen und Verlauf</h2>
+<p><strong>Cmd+F</strong> durchsucht, was das Terminal ausgegeben hat.</p>
+<p>Ein Terminal behält standardmäßig <strong>5.000 Zeilen</strong> Verlauf — genug, um durch einen Build zurückzuscrollen. Ändern lässt sich das auf der Einstellungsseite. Sehr große Werte werden begrenzt, denn ein Verlauf von fünfzig Millionen Zeilen ist ein Speicherproblem, dessen Ursache von außen nicht zu erkennen ist.</p>
+<h2 id="wo-es-sitzt">Wo es sitzt</h2>
+<p>Das Terminal öffnet sich im Dock am unteren Rand, weil das die Form ist, die es braucht: Eine Shell braucht Breite, und das Seitenpanel fasst bei seinen voreingestellten 300 Punkten etwa 44 Spalten, während der untere Rand eines 1200-Punkte-Fensters 176 fasst.</p>
+<p>Verschieben können Sie es trotzdem. Ziehen Sie es ins Seitenpanel, wenn Ihnen das besser passt, oder nutzen Sie die Platzierungsfunktionen aus <a href="plugins.md">Plugins</a>; beim Verschieben wird <strong>dieselbe Shell umgehängt</strong> statt eine neue gestartet, was auch immer darin läuft, läuft weiter.</p>
+<p>Tabs kommen beim nächsten Start der App zurück, in den Ordnern, in denen sie waren. Was darin <em>lief</em>, nicht — ein Neustart beendet diese Prozesse, wie in jedem Terminal.</p>
+<h2 id="beim-beenden">Beim Beenden</h2>
+<p>Das Schließen der App schließt die Shells. Was darin noch läuft, wird beendet, so wie das Schließen eines Terminal-Fensters beendet, was darin ist. Deshalb fragt das Schließen eines Tabs, in dem etwas läuft, vorher nach.</p>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="opening-files.html">Dateien &amp; Ordner öffnen</a></li><li><a href="macos-integration.html">macOS-Integration</a></li><li><a href="keyboard-shortcuts.html">Tastatur &amp; Kurzbefehle</a></li></ul></section>
+</main>
+</body>
+</html>

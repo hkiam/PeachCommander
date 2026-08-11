@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Den innebygde terminalen</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Den innebygde terminalen</h1>
+<p>Peach Commander kan kjøre et ekte skall i sitt eget vindu, i en stripe nederst som kalles dokken. Det er innloggingsskallet ditt — det <code>$SHELL</code> peker på, eller <code>/bin/zsh</code> hvis det ikke er brukbart — så <code>PATH</code>-en din, aliasene dine og funksjonene dine er alle der, akkurat som i Terminal.</p>
+<p>Dette er ikke det samme som <strong>Åpne Terminal her</strong>, som starter Apples Terminal i gjeldende mappe og etterlater deg med to vinduer. Den innebygde blir der filene dine er, og vet om dem.</p>
+<p>Det er et programtillegg: vil du ikke ha det, slå det av eller fjern det under <strong>Konfigurasjon ▸ Programtillegg…</strong>, så følger dokken med.</p>
+<h2 id="apne-den-og-flytte-deg">Åpne den og flytte deg</h2>
+<p>Trykk <strong>Ctrl</strong> sammen med tasten til venstre for «1» for å flytte tastaturet mellom filpanelet og terminalen. Snarveien er bundet til tastens <em>posisjon</em>, ikke tegnet, så det er den samme fysiske tasten uansett hva oppsettet ditt kaller den: gravaksent på et US-tastatur, <code>^</code> på et tysk, <code>@</code> på et fransk.</p>
+<p>Alt annet ligger i menyen <strong>Terminal</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Hva den gjør</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bytt mellom panel og terminal</td>
+<td>Flytter tastaturfokus, uten å endre noe annet</td>
+</tr>
+<tr>
+<td>Ny terminalfane</td>
+<td>Enda et skall, i samme mappe</td>
+</tr>
+<tr>
+<td>Lukk terminalfanen</td>
+<td>Lukker den — og spør først hvis noe fortsatt kjører i den</td>
+</tr>
+<tr>
+<td>Del terminalen</td>
+<td>To skall side om side i samme fane</td>
+</tr>
+<tr>
+<td>Gå til panelets mappe</td>
+<td>Gjør <code>cd</code> i terminalen dit det aktive panelet står</td>
+</tr>
+<tr>
+<td>Sett inn de valgte filnavnene</td>
+<td>Skriver de valgte navnene ved ledeteksten, i anførselstegn</td>
+</tr>
+<tr>
+<td>Kjør kommandolinjen i terminalen</td>
+<td>Sender det du skrev på kommandolinjen til skallet i stedet for å kjøre det usynlig</td>
+</tr>
+</tbody>
+</table>
+<p>Så lenge terminalen har fokus, går <strong>funksjonstastene dit</strong>, ikke til filpanelet — F5 i et tekstredigeringsprogram inne i terminalen må nå redigeringsprogrammet. Funksjonstastraden sier det, i stedet for å vise taster som ikke vil utløse noe.</p>
+<h2 id="broen-tilbake-til-panelet">Broen tilbake til panelet</h2>
+<p><strong>Cmd-klikk på en bane</strong> i terminalens utdata, og panelet går dit. En fil fra <code>ls</code>, en bane i en kompilatorfeil, et navn fra <code>git status</code> — ett klikk og du ser på den.</p>
+<p>Det skjer bare når ordet under pekeren virkelig svarer til noe som finnes. Et Cmd-klikk på vanlig tekst gjør ingenting i stedet for å navigere et tilfeldig sted, og et vanlig klikk merker fortsatt tekst som før.</p>
+<p><strong>Slipp filer på terminalen</strong>, så havner banene deres ved ledeteksten, i anførselstegn, klare for en kommando du er halvveis i å skrive.</p>
+<h2 id="la-panelet-flge-skallet">La panelet følge skallet</h2>
+<p>Av som standard: når du gjør <code>cd</code> i terminalen, blir panelet der det er. Slå på <strong>La det aktive panelet følge terminalen</strong> på terminalens innstillingsside, så følger det med i stedet.</p>
+<p>Det krever hjelp fra skallet ditt, for et skall kunngjør ikke hvor det har gått. Innstillingssiden viser et kort utdrag til <code>~/.zshrc</code> og en knapp for å kopiere det; det får zsh til å melde arbeidsmappen sin (escape-sekvensen OSC 7) før hver ledetekst. Uten utdraget er innstillingen på og ingenting følger — derfor står utdraget rett ved siden av.</p>
+<h2 id="sk-og-rulleminne">Søk og rulleminne</h2>
+<p><strong>Cmd+F</strong> søker i det terminalen har skrevet ut.</p>
+<p>En terminal beholder <strong>5 000 linjer</strong> rulleminne som standard — nok til å rulle tilbake gjennom en kompilering. Endres på innstillingssiden. Svært store verdier begrenses, fordi et rulleminne på femti millioner linjer er et minneproblem hvis årsak er umulig å se utenfra.</p>
+<h2 id="hvor-den-sitter">Hvor den sitter</h2>
+<p>Terminalen åpnes i dokken nederst, fordi det er formen den trenger: et skall trenger bredde, og sidepanelet rommer ved sine 300 punkter som standard omtrent 44 kolonner der bunnen av et vindu på 1200 punkter rommer 176.</p>
+<p>Du kan likevel flytte den. Dra den til sidepanelet hvis det passer deg bedre, eller bruk plasseringsvalgene beskrevet i <a href="plugins.md">Programtillegg</a>; å flytte den <strong>henger om det samme skallet</strong> i stedet for å starte et nytt, så det som kjører, fortsetter å kjøre.</p>
+<p>Fanene kommer tilbake når du starter appen igjen, i mappene de var i. Det som <em>kjørte</em> i dem, gjør ikke det — en omstart avslutter de prosessene, som i enhver terminal.</p>
+<h2 id="nar-du-avslutter">Når du avslutter</h2>
+<p>Å lukke appen lukker skallene. Det som fortsatt kjører i dem, avsluttes, slik det å lukke et Terminal-vindu avslutter det som er i det. Derfor spør det først når du lukker en fane der noe kjører.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="opening-files.html">Åpne filer og mapper</a></li><li><a href="macos-integration.html">macOS-integrasjon</a></li><li><a href="keyboard-shortcuts.html">Tastatur og snarveier</a></li></ul></section>
+</main>
+</body>
+</html>

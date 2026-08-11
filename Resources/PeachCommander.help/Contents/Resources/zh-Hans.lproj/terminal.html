@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>内置终端</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>内置终端</h1>
+<p>Peach Commander 可以在自己的窗口内运行一个真正的 shell，位于底部一条名为“坞”的横条中。它就是你的登录 shell——<code>$SHELL</code> 指向的那个，如果不可用则为 <code>/bin/zsh</code>——所以你的 <code>PATH</code>、别名和函数都在，和在“终端”里一模一样。</p>
+<p>这和<strong>在此打开终端</strong>不是一回事：那个会在当前文件夹启动 Apple 的“终端”应用，留给你两个窗口。内置的这个留在你的文件所在之处，并且知道它们。</p>
+<p>它是一个插件：不想要就在<strong>配置 ▸ 插件…</strong>中关闭或移除，坞也随之消失。</p>
+<h2 id="_1">打开与切换</h2>
+<p>按 <strong>Ctrl</strong> 加上“1”左边的那个键，把键盘在文件面板和终端之间移动。该快捷键绑定的是键的<em>位置</em>而非字符，所以无论你的布局称它为什么，都是同一个物理按键：美式键盘上是反引号，德式是 <code>^</code>，法式是 <code>@</code>。</p>
+<p>其余的都在<strong>终端</strong>菜单里：</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>在面板与终端之间切换</td>
+<td>移动键盘焦点，不改变其他任何东西</td>
+</tr>
+<tr>
+<td>新建终端标签页</td>
+<td>在同一文件夹再开一个 shell</td>
+</tr>
+<tr>
+<td>关闭终端标签页</td>
+<td>关闭它——若其中仍有东西在运行，会先询问</td>
+</tr>
+<tr>
+<td>拆分终端</td>
+<td>同一标签页中并排两个 shell</td>
+</tr>
+<tr>
+<td>转到面板的文件夹</td>
+<td>在终端里 <code>cd</code> 到活动面板所在之处</td>
+</tr>
+<tr>
+<td>插入所选文件名</td>
+<td>在提示符处键入选中的名称，带引号</td>
+</tr>
+<tr>
+<td>在终端中运行命令行</td>
+<td>把你在命令行里输入的内容发给 shell，而不是不可见地执行</td>
+</tr>
+</tbody>
+</table>
+<p>只要终端处于焦点，<strong>功能键就归它</strong>，不归文件面板——终端里文本编辑器中的 F5 必须抵达那个编辑器。功能键条会这样说明，而不是显示一些不会触发的键。</p>
+<h2 id="_2">回到面板的桥</h2>
+<p>在终端输出中 <strong>Cmd-点按一个路径</strong>，面板就会前往那里。<code>ls</code> 列出的文件、编译错误里的路径、<code>git status</code> 中的名称——一次点按，你就在看它了。</p>
+<p>只有当指针下的词确实对应某个存在的东西时才会生效。对普通文字 Cmd-点按不会做任何事，而不是导航到某个随意的地方；普通点按依然像从前一样选择文本。</p>
+<p><strong>把文件拖放到终端上</strong>，它们的路径会带引号落在提示符处，正好接上你输入到一半的命令。</p>
+<h2 id="shell">让面板跟随 shell</h2>
+<p>默认关闭：你在终端里 <code>cd</code> 到别处时，面板留在原处。在终端的设置页中打开<strong>让活动面板跟随终端</strong>，它就会跟着走。</p>
+<p>这需要你的 shell 配合，因为 shell 不会宣告自己去了哪里。设置页会显示一小段要加进 <code>~/.zshrc</code> 的代码和一个复制按钮；它让 zsh 在每次提示符之前报告自己的工作目录（OSC 7 转义序列）。没有这段代码，设置是开着的却什么也不会跟随——所以这段代码就放在它旁边。</p>
+<h2 id="_3">搜索与回滚</h2>
+<p><strong>Cmd+F</strong> 在终端已打印的内容中搜索。</p>
+<p>终端默认保留 <strong>5,000 行</strong>回滚——足够翻回一次编译的开头。可在设置页更改。非常大的数值会被限制，因为五千万行的回滚是一个从外面看不出原因的内存问题。</p>
+<h2 id="_4">它在哪里</h2>
+<p>终端在底部的坞中打开，因为那正是它需要的形状：shell 需要宽度，而侧栏在默认的 300 点下约容纳 44 列，1200 点宽窗口的底部则容纳 176 列。</p>
+<p>你仍然可以移动它。如果那样更合适，就把它拖到侧栏，或使用 <a href="plugins.md">插件</a> 中说明的位置控制；移动会<strong>把同一个 shell 重新挂上</strong>而不是启动新的，所以正在运行的东西继续运行。</p>
+<p>再次启动应用时标签页会回来，回到它们原先所在的文件夹。其中<em>正在运行</em>的东西不会——重启会结束那些进程，任何终端都是如此。</p>
+<h2 id="_5">退出时</h2>
+<p>关闭应用会关闭这些 shell。其中仍在运行的东西会被结束，就像关闭一个“终端”窗口会结束其中的内容一样。这正是关闭一个有东西在运行的标签页时会先询问的原因。</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="opening-files.html">打开文件与文件夹</a></li><li><a href="macos-integration.html">macOS 集成</a></li><li><a href="keyboard-shortcuts.html">键盘与快捷键</a></li></ul></section>
+</main>
+</body>
+</html>

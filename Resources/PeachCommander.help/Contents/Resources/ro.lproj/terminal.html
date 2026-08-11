@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terminalul încorporat</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Terminalul încorporat</h1>
+<p>Peach Commander poate rula un shell adevărat în propria fereastră, într-o bandă de jos numită doc. Este shell-ul dumneavoastră de autentificare — cel indicat de <code>$SHELL</code>, sau <code>/bin/zsh</code> dacă acela nu este utilizabil — deci <code>PATH</code>-ul, aliasurile și funcțiile dumneavoastră sunt toate acolo, exact ca în Terminal.</p>
+<p>Nu este același lucru cu <strong>Deschide Terminal aici</strong>, care lansează aplicația Terminal de la Apple în dosarul curent și vă lasă cu două ferestre. Cel încorporat rămâne unde sunt fișierele dumneavoastră și știe de ele.</p>
+<p>Este o extensie: dacă nu o doriți, dezactivați-o sau eliminați-o din <strong>Configurare ▸ Extensii…</strong>, iar docul pleacă odată cu ea.</p>
+<h2 id="deschiderea-si-deplasarea">Deschiderea și deplasarea</h2>
+<p>Apăsați <strong>Ctrl</strong> împreună cu tasta din stânga lui „1” pentru a muta tastatura între panoul de fișiere și terminal. Scurtătura este legată de <em>poziția</em> tastei, nu de caracterul ei, deci este aceeași tastă fizică oricum ar numi-o aranjamentul dumneavoastră: accentul grav pe o tastatură US, <code>^</code> pe una germană, <code>@</code> pe una franceză.</p>
+<p>Tot restul se află în meniul <strong>Terminal</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Ce face</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Comută între panou și terminal</td>
+<td>Mută focalizarea tastaturii, fără să schimbe altceva</td>
+</tr>
+<tr>
+<td>Filă nouă de terminal</td>
+<td>Încă un shell, în același dosar</td>
+</tr>
+<tr>
+<td>Închide fila de terminal</td>
+<td>Îl închide — și întreabă întâi dacă mai rulează ceva în el</td>
+</tr>
+<tr>
+<td>Împarte terminalul</td>
+<td>Două shell-uri alăturate în aceeași filă</td>
+</tr>
+<tr>
+<td>Mergi în dosarul panoului</td>
+<td>Face <code>cd</code> în terminal acolo unde se află panoul activ</td>
+</tr>
+<tr>
+<td>Inserează numele fișierelor selectate</td>
+<td>Scrie numele selectate la prompt, între ghilimele</td>
+</tr>
+<tr>
+<td>Rulează linia de comandă în terminal</td>
+<td>Trimite shell-ului ce ați scris în linia de comandă, în loc să execute invizibil</td>
+</tr>
+</tbody>
+</table>
+<p>Cât timp terminalul are focalizarea, <strong>tastele funcționale merg acolo</strong>, nu la panoul de fișiere — F5 într-un editor de text din terminal trebuie să ajungă la editor. Bara tastelor funcționale spune asta, în loc să arate taste care nu vor declanșa nimic.</p>
+<h2 id="puntea-inapoi-spre-panou">Puntea înapoi spre panou</h2>
+<p><strong>Cmd-clic pe o cale</strong> din ieșirea terminalului și panoul merge acolo. Un fișier din <code>ls</code>, o cale dintr-o eroare de compilare, un nume din <code>git status</code> — un clic și îl priviți.</p>
+<p>Acționează numai când cuvântul de sub indicator corespunde într-adevăr cu ceva care există. Un Cmd-clic pe text obișnuit nu face nimic, în loc să navigheze undeva la întâmplare, iar un clic simplu selectează textul ca înainte.</p>
+<p><strong>Trageți fișiere pe terminal</strong> și căile lor ajung la prompt, între ghilimele, gata pentru o comandă pe care o scrieți pe jumătate.</p>
+<h2 id="lasati-panoul-sa-urmeze-shell-ul">Lăsați panoul să urmeze shell-ul</h2>
+<p>Dezactivat implicit: când faceți <code>cd</code> altundeva în terminal, panoul rămâne unde este. Activați <strong>Lasă panoul activ să urmeze terminalul</strong> în pagina de configurări a terminalului și va urma.</p>
+<p>Este nevoie de ajutorul shell-ului dumneavoastră, fiindcă un shell nu anunță unde a plecat. Pagina de configurări arată un fragment scurt de adăugat în <code>~/.zshrc</code> și un buton pentru a-l copia; face ca zsh să raporteze dosarul de lucru (secvența de evadare OSC 7) înaintea fiecărui prompt. Fără fragment, configurarea este pornită și nimic nu urmează — de aceea fragmentul stă chiar alături.</p>
+<h2 id="cautare-si-derulare-inapoi">Căutare și derulare înapoi</h2>
+<p><strong>Cmd+F</strong> caută în ce a tipărit terminalul.</p>
+<p>Un terminal păstrează implicit <strong>5.000 de linii</strong> de derulare înapoi — destul cât să parcurgeți o compilare. Se schimbă în pagina de configurări. Valorile foarte mari sunt limitate, fiindcă o derulare de cincizeci de milioane de linii este o problemă de memorie a cărei cauză este imposibil de văzut din afară.</p>
+<h2 id="unde-sta">Unde stă</h2>
+<p>Terminalul se deschide în docul de jos, fiindcă aceasta este forma de care are nevoie: un shell are nevoie de lățime, iar panoul lateral, la cele 300 de puncte implicite, încape circa 44 de coloane acolo unde partea de jos a unei ferestre de 1200 de puncte încape 176.</p>
+<p>Îl puteți totuși muta. Trageți-l în panoul lateral dacă vă convine mai mult, sau folosiți comenzile de plasare descrise în <a href="plugins.md">Extensii</a>; mutarea <strong>reatașează același shell</strong> în loc să pornească unul nou, așa că ce rulează continuă să ruleze.</p>
+<p>Filele revin când porniți aplicația din nou, în dosarele în care erau. Ce <em>rula</em> în ele, nu — o repornire încheie acele procese, ca în orice terminal.</p>
+<h2 id="cand-iesiti">Când ieșiți</h2>
+<p>Închiderea aplicației închide shell-urile. Ce mai rulează în ele este încheiat, așa cum închiderea unei ferestre Terminal încheie ce se află în ea. De aceea închiderea unei file în care rulează ceva întreabă întâi.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="opening-files.html">Deschiderea fișierelor și folderelor</a></li><li><a href="macos-integration.html">Integrare macOS</a></li><li><a href="keyboard-shortcuts.html">Tastatură și comenzi rapide</a></li></ul></section>
+</main>
+</body>
+</html>

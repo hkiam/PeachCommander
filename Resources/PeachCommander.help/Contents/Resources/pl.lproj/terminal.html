@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wbudowany terminal</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Wbudowany terminal</h1>
+<p>Peach Commander potrafi uruchomić prawdziwą powłokę we własnym oknie, w pasie u dołu zwanym dokiem. To twoja powłoka logowania — ta, którą wskazuje <code>$SHELL</code>, albo <code>/bin/zsh</code>, jeśli tamta się nie nadaje — więc twoja <code>PATH</code>, twoje aliasy i twoje funkcje są na miejscu, dokładnie jak w Terminalu.</p>
+<p>To nie to samo co <strong>Otwórz Terminal tutaj</strong>, które uruchamia Terminal firmy Apple w bieżącym folderze i zostawia cię z dwoma oknami. Wbudowany zostaje tam, gdzie są twoje pliki, i wie o nich.</p>
+<p>To wtyczka: jeśli jej nie chcesz, wyłącz ją lub usuń w <strong>Konfiguracja ▸ Wtyczki…</strong>, a dok zniknie razem z nią.</p>
+<h2 id="otwieranie-i-przechodzenie">Otwieranie i przechodzenie</h2>
+<p>Naciśnij <strong>Ctrl</strong> razem z klawiszem na lewo od „1”, aby przenieść klawiaturę między panelem plików a terminalem. Ten skrót jest przypisany do <em>pozycji</em> klawisza, nie do jego znaku, więc jest to ten sam fizyczny klawisz, jakkolwiek nazywa go twój układ: akcent słaby na klawiaturze US, <code>^</code> na niemieckiej, <code>@</code> na francuskiej.</p>
+<p>Cała reszta jest w menu <strong>Terminal</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Czynność</th>
+<th>Co robi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Przełącz między panelem a terminalem</td>
+<td>Przenosi fokus klawiatury, nie zmieniając niczego więcej</td>
+</tr>
+<tr>
+<td>Nowa karta terminala</td>
+<td>Kolejna powłoka, w tym samym folderze</td>
+</tr>
+<tr>
+<td>Zamknij kartę terminala</td>
+<td>Zamyka ją — i pyta wcześniej, jeśli coś jeszcze w niej działa</td>
+</tr>
+<tr>
+<td>Podziel terminal</td>
+<td>Dwie powłoki obok siebie w tej samej karcie</td>
+</tr>
+<tr>
+<td>Przejdź do folderu panelu</td>
+<td>Wykonuje w terminalu <code>cd</code> tam, gdzie stoi aktywny panel</td>
+</tr>
+<tr>
+<td>Wstaw zaznaczone nazwy plików</td>
+<td>Wpisuje zaznaczone nazwy w wierszu zachęty, w cudzysłowach</td>
+</tr>
+<tr>
+<td>Uruchamiaj wiersz poleceń w terminalu</td>
+<td>Wysyła to, co wpisałeś w wierszu poleceń, do powłoki zamiast wykonywać to niewidocznie</td>
+</tr>
+</tbody>
+</table>
+<p>Dopóki terminal ma fokus, <strong>klawisze funkcyjne trafiają do niego</strong>, nie do panelu plików — F5 w edytorze tekstu wewnątrz terminala musi dotrzeć do edytora. Pasek klawiszy funkcyjnych to mówi, zamiast pokazywać klawisze, które niczego nie uruchomią.</p>
+<h2 id="most-z-powrotem-do-panelu">Most z powrotem do panelu</h2>
+<p><strong>Kliknij ścieżkę z Cmd</strong> w wyjściu terminala, a panel tam przejdzie. Plik z <code>ls</code>, ścieżka w błędzie kompilatora, nazwa z <code>git status</code> — jedno kliknięcie i już na nią patrzysz.</p>
+<p>Zadziała tylko wtedy, gdy słowo pod wskaźnikiem naprawdę odpowiada czemuś, co istnieje. Cmd-kliknięcie w zwykły tekst nie robi nic, zamiast nawigować gdzieś przypadkowo, a zwykłe kliknięcie nadal zaznacza tekst jak dotąd.</p>
+<p><strong>Upuść pliki na terminal</strong>, a ich ścieżki wylądują w wierszu zachęty, w cudzysłowach, gotowe do polecenia, które masz w połowie napisane.</p>
+<h2 id="niech-panel-podaza-za-powoka">Niech panel podąża za powłoką</h2>
+<p>Domyślnie wyłączone: gdy wykonasz <code>cd</code> gdzieś w terminalu, panel zostaje na miejscu. Włącz <strong>Niech aktywny panel podąża za terminalem</strong> na stronie ustawień terminala, a będzie podążał.</p>
+<p>Potrzebna jest do tego pomoc twojej powłoki, bo powłoka nie ogłasza, dokąd poszła. Strona ustawień pokazuje krótki fragment do <code>~/.zshrc</code> i przycisk do skopiowania go; sprawia on, że zsh zgłasza swój katalog roboczy (sekwencja sterująca OSC 7) przed każdym wierszem zachęty. Bez fragmentu ustawienie jest włączone i nic nie podąża — dlatego fragment stoi tuż obok.</p>
+<h2 id="wyszukiwanie-i-historia">Wyszukiwanie i historia</h2>
+<p><strong>Cmd+F</strong> przeszukuje to, co terminal wypisał.</p>
+<p>Terminal domyślnie trzyma <strong>5000 wierszy</strong> historii — dość, by przewinąć się przez kompilację. Zmienia się to na stronie ustawień. Bardzo duże wartości są ograniczane, bo historia pięćdziesięciu milionów wierszy to problem z pamięcią, którego przyczyny nie da się zobaczyć z zewnątrz.</p>
+<h2 id="gdzie-sie-miesci">Gdzie się mieści</h2>
+<p>Terminal otwiera się w doku u dołu, bo takiego kształtu potrzebuje: powłoka potrzebuje szerokości, a panel boczny przy domyślnych 300 punktach mieści około 44 kolumn, podczas gdy dół okna o szerokości 1200 punktów mieści ich 176.</p>
+<p>Mimo to możesz go przenieść. Przeciągnij go do panelu bocznego, jeśli tak ci wygodniej, albo użyj ustawień rozmieszczenia opisanych w <a href="plugins.md">Wtyczki</a>; przeniesienie <strong>przepina tę samą powłokę</strong> zamiast uruchamiać nową, więc cokolwiek działa, działa dalej.</p>
+<p>Karty wracają po ponownym uruchomieniu aplikacji, w folderach, w których były. To, co w nich <em>działało</em>, nie — restart kończy te procesy, jak w każdym terminalu.</p>
+<h2 id="przy-zamykaniu">Przy zamykaniu</h2>
+<p>Zamknięcie aplikacji zamyka powłoki. To, co jeszcze w nich działa, zostaje zakończone, tak jak zamknięcie okna Terminala kończy to, co jest w środku. Dlatego zamknięcie karty, w której coś działa, najpierw pyta.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="opening-files.html">Otwieranie plików i folderów</a></li><li><a href="macos-integration.html">Integracja z macOS</a></li><li><a href="keyboard-shortcuts.html">Klawiatura i skróty</a></li></ul></section>
+</main>
+</body>
+</html>

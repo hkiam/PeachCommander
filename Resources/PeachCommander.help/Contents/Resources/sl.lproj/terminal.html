@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vgrajeni terminal</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Vgrajeni terminal</h1>
+<p>Peach Commander lahko požene pravo lupino kar v svojem oknu, v pasu ob spodnjem robu, ki mu pravimo dok. To je vaša prijavna lupina — tista, ki jo določa <code>$SHELL</code>, ali <code>/bin/zsh</code>, če ta ni uporabna — zato so vaš <code>PATH</code>, vaši vzdevki in vaše funkcije vsi tam, natanko kot v Terminalu.</p>
+<p>To ni isto kot <strong>Odpri Terminal tukaj</strong>, ki zažene Applov Terminal v trenutni mapi in vas pusti z dvema oknoma. Vgrajeni ostane tam, kjer so vaše datoteke, in ve zanje.</p>
+<p>Je vtičnik: če ga nočete, ga izklopite ali odstranite v <strong>Konfiguracija ▸ Vtičniki…</strong>, in dok gre z njim.</p>
+<h2 id="odpiranje-in-premikanje">Odpiranje in premikanje</h2>
+<p>Pritisnite <strong>Ctrl</strong> skupaj s tipko levo od »1«, da premaknete tipkovnico med ploščo z datotekami in terminalom. Ta bližnjica je vezana na <em>položaj</em> tipke, ne na njen znak, zato je to ista fizična tipka, kakor koli jo že imenuje vaša razporeditev: krativec na ameriški tipkovnici, <code>^</code> na nemški, <code>@</code> na francoski.</p>
+<p>Vse drugo je v meniju <strong>Terminal</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Kaj naredi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Preklopi med ploščo in terminalom</td>
+<td>Premakne pozornost tipkovnice, drugega ne spremeni</td>
+</tr>
+<tr>
+<td>Nov zavihek terminala</td>
+<td>Še ena lupina, v isti mapi</td>
+</tr>
+<tr>
+<td>Zapri zavihek terminala</td>
+<td>Zapre jo — in prej vpraša, če v njej še kaj teče</td>
+</tr>
+<tr>
+<td>Razdeli terminal</td>
+<td>Dve lupini druga ob drugi v istem zavihku</td>
+</tr>
+<tr>
+<td>Pojdi v mapo plošče</td>
+<td>V terminalu naredi <code>cd</code> tja, kjer stoji dejavna plošča</td>
+</tr>
+<tr>
+<td>Vstavi izbrana imena datotek</td>
+<td>Izbrana imena vpiše v poziv, v narekovajih</td>
+</tr>
+<tr>
+<td>Zaženi ukazno vrstico v terminalu</td>
+<td>Kar ste vtipkali v ukazno vrstico, pošlje lupini, namesto da bi to izvedel nevidno</td>
+</tr>
+</tbody>
+</table>
+<p>Dokler ima terminal pozornost, gredo <strong>funkcijske tipke tja</strong>, ne na ploščo z datotekami — F5 v urejevalniku besedila znotraj terminala mora doseči urejevalnik. Vrstica s funkcijskimi tipkami to pove, namesto da bi kazala tipke, ki ne bodo sprožile ničesar.</p>
+<h2 id="most-nazaj-na-plosco">Most nazaj na ploščo</h2>
+<p><strong>Cmd-kliknite pot</strong> v izpisu terminala in plošča gre tja. Datoteka iz <code>ls</code>, pot v napaki prevajalnika, ime iz <code>git status</code> — en klik in jo že gledate.</p>
+<p>Deluje le, kadar beseda pod kazalcem res ustreza nečemu, kar obstaja. Cmd-klik na navadno besedilo ne naredi ničesar, namesto da bi krmaril nekam poljubno, navaden klik pa še vedno izbira besedilo kot doslej.</p>
+<p><strong>Spustite datoteke na terminal</strong> in njihove poti pristanejo v pozivu, v narekovajih, pripravljene za ukaz, ki ga tipkate na pol.</p>
+<h2 id="naj-plosca-sledi-lupini">Naj plošča sledi lupini</h2>
+<p>Privzeto izklopljeno: ko v terminalu naredite <code>cd</code> drugam, plošča ostane, kjer je. Vklopite <strong>Naj dejavna plošča sledi terminalu</strong> na strani z nastavitvami terminala in ji bo sledila.</p>
+<p>Za to je potrebna pomoč vaše lupine, saj lupina ne naznani, kam je šla. Stran z nastavitvami pokaže kratek odlomek za vaš <code>~/.zshrc</code> in gumb za kopiranje; ta pripravi zsh, da pred vsakim pozivom sporoči svojo delovno mapo (ubežno zaporedje OSC 7). Brez odlomka je nastavitev vklopljena in nič ne sledi — zato odlomek stoji tik ob njej.</p>
+<h2 id="iskanje-in-pomikanje-nazaj">Iskanje in pomikanje nazaj</h2>
+<p><strong>Cmd+F</strong> išče po tem, kar je terminal izpisal.</p>
+<p>Terminal privzeto hrani <strong>5.000 vrstic</strong> za pomikanje nazaj — dovolj, da se pomaknete skozi prevajanje. Spremenite jo na strani z nastavitvami. Zelo velike vrednosti so omejene, kajti pomnilnik za petdeset milijonov vrstic je težava, katere vzroka od zunaj ni mogoče videti.</p>
+<h2 id="kje-sedi">Kje sedi</h2>
+<p>Terminal se odpre v doku ob spodnjem robu, ker takšno obliko potrebuje: lupina potrebuje širino, stranska plošča pa pri privzetih 300 točkah sprejme okoli 44 stolpcev, medtem ko jih dno okna širine 1200 točk sprejme 176.</p>
+<p>Kljub temu ga lahko premaknete. Povlecite ga v stransko ploščo, če vam tako bolj ustreza, ali uporabite nadzor postavitve, opisan v <a href="plugins.md">Vtičniki</a>; premik <strong>prevesi isto lupino</strong> namesto da bi zagnal novo, zato tisto, kar teče, teče naprej.</p>
+<p>Zavihki se vrnejo, ko aplikacijo znova zaženete, v mapah, v katerih so bili. Kar je v njih <em>teklo</em>, pa ne — ponovni zagon konča te procese, kot v vsakem terminalu.</p>
+<h2 id="ob-izhodu">Ob izhodu</h2>
+<p>Zaprtje aplikacije zapre lupine. Kar v njih še teče, se konča, tako kot zaprtje okna Terminala konča tisto, kar je v njem. Zato zaprtje zavihka, v katerem kaj teče, prej vpraša.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="opening-files.html">Odpiranje datotek in map</a></li><li><a href="macos-integration.html">Integracija z macOS</a></li><li><a href="keyboard-shortcuts.html">Tipkovnica in bližnjice</a></li></ul></section>
+</main>
+</body>
+</html>

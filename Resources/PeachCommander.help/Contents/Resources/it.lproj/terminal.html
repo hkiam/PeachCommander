@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Il terminale integrato</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Il terminale integrato</h1>
+<p>Peach Commander può eseguire una shell vera dentro la propria finestra, in una striscia in basso chiamata dock. È la vostra shell di login — quella indicata da <code>$SHELL</code>, oppure <code>/bin/zsh</code> se non è utilizzabile — quindi il vostro <code>PATH</code>, i vostri alias e le vostre funzioni ci sono tutti, esattamente come nel Terminale.</p>
+<p>Non è la stessa cosa di <strong>Apri Terminale qui</strong>, che avvia l’app Terminale di Apple nella cartella corrente e vi lascia con due finestre. Quello integrato resta dove sono i vostri file, e li conosce.</p>
+<p>È un plugin: se non lo volete, disattivatelo o rimuovetelo in <strong>Configurazione ▸ Plugin…</strong>, e il dock se ne va con lui.</p>
+<h2 id="aprirlo-e-spostarsi">Aprirlo e spostarsi</h2>
+<p>Premete <strong>Ctrl</strong> insieme al tasto a sinistra dell’«1» per spostare la tastiera fra il pannello dei file e il terminale. Quella scorciatoia è legata alla <em>posizione</em> del tasto, non al suo carattere: è quindi lo stesso tasto fisico comunque lo chiami la vostra disposizione: l’accento grave su una tastiera US, <code>^</code> su una tedesca, <code>@</code> su una francese.</p>
+<p>Tutto il resto è nel menu <strong>Terminale</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Che cosa fa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Passa dal pannello al terminale</td>
+<td>Sposta il fuoco della tastiera, senza cambiare altro</td>
+</tr>
+<tr>
+<td>Nuova scheda del terminale</td>
+<td>Un’altra shell, nella stessa cartella</td>
+</tr>
+<tr>
+<td>Chiudi la scheda del terminale</td>
+<td>La chiude — e chiede prima se qualcosa è ancora in esecuzione</td>
+</tr>
+<tr>
+<td>Dividi il terminale</td>
+<td>Due shell affiancate nella stessa scheda</td>
+</tr>
+<tr>
+<td>Vai alla cartella del pannello</td>
+<td>Porta il terminale con <code>cd</code> dove si trova il pannello attivo</td>
+</tr>
+<tr>
+<td>Inserisci i nomi dei file selezionati</td>
+<td>Scrive i nomi selezionati al prompt, fra virgolette</td>
+</tr>
+<tr>
+<td>Esegui la riga di comando nel terminale</td>
+<td>Manda alla shell quello che avete scritto nella riga di comando, invece di eseguirlo invisibilmente</td>
+</tr>
+</tbody>
+</table>
+<p>Finché il terminale ha il fuoco, i <strong>tasti funzione vanno lì</strong>, non al pannello dei file: F5 in un editor di testo dentro il terminale deve raggiungere l’editor. La barra dei tasti funzione lo dice, invece di mostrare tasti che non faranno nulla.</p>
+<h2 id="il-ponte-di-ritorno-al-pannello">Il ponte di ritorno al pannello</h2>
+<p><strong>Cmd-clic su un percorso</strong> nell’output del terminale e il pannello ci va. Un file da <code>ls</code>, un percorso in un errore del compilatore, un nome da <code>git status</code>: un clic e lo state guardando.</p>
+<p>Agisce solo quando la parola sotto il puntatore corrisponde davvero a qualcosa che esiste. Un Cmd-clic sul testo normale non fa nulla, invece di navigare da qualche parte a caso, e un clic semplice seleziona il testo come ha sempre fatto.</p>
+<p><strong>Trascinate dei file sul terminale</strong> e i loro percorsi arrivano al prompt, fra virgolette, pronti per un comando che state scrivendo a metà.</p>
+<h2 id="lasciare-che-il-pannello-segua-la-shell">Lasciare che il pannello segua la shell</h2>
+<p>Disattivo per impostazione predefinita: quando fate <code>cd</code> nel terminale, il pannello resta dov’è. Attivate <strong>Lascia che il pannello attivo segua il terminale</strong> nella pagina delle impostazioni del terminale e lo seguirà.</p>
+<p>Serve l’aiuto della vostra shell, perché una shell non annuncia dove è andata. La pagina delle impostazioni mostra un breve frammento da aggiungere al vostro <code>~/.zshrc</code> e un pulsante per copiarlo; fa sì che zsh riporti la sua cartella di lavoro (la sequenza di escape OSC 7) prima di ogni prompt. Senza il frammento l’impostazione è attiva e non segue niente, ed è per questo che il frammento sta lì accanto.</p>
+<h2 id="ricerca-e-scorrimento">Ricerca e scorrimento</h2>
+<p><strong>Cmd+F</strong> cerca in ciò che il terminale ha stampato.</p>
+<p>Un terminale conserva <strong>5.000 righe</strong> di scorrimento all’indietro per impostazione predefinita — abbastanza per ripercorrere una compilazione. Si cambia nella pagina delle impostazioni. I valori molto grandi vengono limitati, perché uno scorrimento di cinquanta milioni di righe è un problema di memoria la cui causa è impossibile da vedere dall’esterno.</p>
+<h2 id="dove-sta">Dove sta</h2>
+<p>Il terminale si apre nel dock in basso, perché è la forma che gli serve: una shell ha bisogno di larghezza, e il pannello laterale, ai suoi 300 punti predefiniti, contiene circa 44 colonne là dove il fondo di una finestra da 1200 punti ne contiene 176.</p>
+<p>Potete comunque spostarlo. Trascinatelo nel pannello laterale se vi va meglio, o usate i controlli di posizionamento descritti in <a href="plugins.md">Plugin</a>; spostarlo <strong>riaggancia la stessa shell</strong> invece di avviarne una nuova, quindi quello che è in esecuzione continua.</p>
+<p>Le schede tornano al riavvio dell’app, nelle cartelle in cui erano. Quello che vi <em>girava</em> dentro no: un riavvio termina quei processi, come in qualsiasi terminale.</p>
+<h2 id="quando-uscite">Quando uscite</h2>
+<p>Chiudere l’app chiude le shell. Quello che vi sta ancora girando viene terminato, come chiudere una finestra del Terminale termina ciò che contiene. Per questo chiudere una scheda con qualcosa in esecuzione chiede prima conferma.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="opening-files.html">Apertura di file e cartelle</a></li><li><a href="macos-integration.html">Integrazione con macOS</a></li><li><a href="keyboard-shortcuts.html">Tastiera e scorciatoie</a></li></ul></section>
+</main>
+</body>
+</html>
