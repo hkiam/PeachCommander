@@ -71,7 +71,8 @@ func run() {
 run()
 SWIFT
 swiftc -o "$WORK/probe" "$WORK/probe-src/main.swift" \
-    Sources/PCArchive/ZipReader.swift Sources/PCArchive/TarReader.swift \
+    Sources/PCArchive/ZipReader.swift Sources/PCArchive/ZipVolumes.swift \
+    Sources/PCArchive/TarReader.swift \
     Sources/PCArchive/ArchiveSource.swift Sources/PCArchive/WinZipAES.swift \
     Sources/PCArchive/ZipWriter.swift
 "$WORK/probe" "$WORK/list.txt" > "$WORK/probe-out.txt"
