@@ -252,23 +252,24 @@ Coming from Total Commander? Keep the keys you know (**Configuration ▸ Keyboar
 
 ## 🗺️ Roadmap
 
-- Code signing + notarization, and Sparkle auto-updates (groundwork is in place)
-- A stable, documented plugin SDK for third-party plugins
+- Code signing + notarization — the release pipeline signs, notarizes and staples already; it needs a Developer ID certificate, and until one is configured every build comes out unsigned
+- Sparkle auto-updates — the dependency is pinned, nothing is wired to it yet
+- A plugin SDK stable enough for third parties — the headers and the reference are there and versioned (`PC_API_VERSION`), but the ABI is pre-1.0 and still expects additive change
 - Deeper Total Commander feature parity (the master checklist lives in `docs/product/feature-inventory.md`)
-- More archive formats and remote protocols
+- More archive formats and remote protocols — today FTP, SFTP and HTTP download
 - Growing the AI assistant out of Alpha
 
 ## ⚠️ Known limitations
 
 - On first launch macOS may ask whether the app may find devices on your local network. That prompt
-  is Apple's wording for reading your Mac's own network interface counters, which is how the title
-  bar shows upload and download rates. Nothing is searched for or connected to, and declining costs
-  you only those two numbers.
+  is Apple's wording for reading your Mac's own network interface counters, which is how the System
+  Monitor plugin shows upload and download rates in the title bar. Nothing is searched for or
+  connected to, and declining costs you only those two numbers.
 - Not code-signed or notarized during the beta — macOS blocks the first launch until you allow it once (System Settings ▸ Privacy & Security on macOS 15+, right-click ▸ Open on macOS 13–14).
 - Auto-update (Sparkle) is planned but not wired up yet.
-- Very large **ZIP64** archives aren't handled by the built-in reader.
-- Changing file **attributes over SFTP** has no effect in this version.
-- Panels notice outside changes on a short (~2 s) delay; **F2** / **Ctrl+R** refreshes now.
+- **Split (multi-part) archives** — `.z01`, `.zip.001` — can't be opened; join the parts first. (Splitting and combining *files* is a separate tool and works.)
+- Some **very long absolute paths** may not be handled reliably; working closer to the top of the tree avoids it.
+- **Remote locations and the inside of an archive** aren't watched for outside changes, because neither protocol offers a way to be told — **F2** / **Ctrl+R** re-reads them. Folders on this Mac update by themselves.
 
 Full list: **Help ▸ Known limitations** inside the app.
 
