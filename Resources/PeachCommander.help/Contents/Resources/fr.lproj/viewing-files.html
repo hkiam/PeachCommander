@@ -27,6 +27,13 @@
 <li>Si le texte semble déformé, cliquez sur Encodage dans la barre d'outils (ou appuyez sur E) pour faire défiler les encodages jusqu'à ce qu'il se lise correctement ; le réglage automatique est généralement juste.</li>
 <li>Appuyez sur W pour basculer le retour à la ligne pour les lignes longues.</li>
 </ul>
+<h2 id="notes-sur-une-ligne">Notes sur une ligne</h2>
+<p>Si le module Notes est installé, une note peut porter sur une ligne précise d'un fichier plutôt que sur le fichier entier.</p>
+<ul>
+<li>Placez le curseur sur la ligne et choisissez <strong>Affichage ▸ Note sur cette ligne…</strong> (Cmd+Maj+N). L'éditeur de notes s'ouvre avec le nom du fichier et le numéro de ligne dans son titre.</li>
+<li>Les lignes qui portent déjà une note apparaissent dans un groupe <strong>Notes</strong> du panneau des marques, en bas de la fenêtre, à côté des résultats de recherche. Cmd+Ctrl+M ouvre le panneau ; un double-clic sur une entrée saute à la ligne.</li>
+<li>Les notes sont rangées avec toutes les autres : l'aperçu des notes et Rechercher des fichiers les trouvent comme n'importe quelle autre. La suppression se fait dans l'éditeur de notes — le bouton de fermeture du panneau ne fait que masquer le groupe.</li>
+</ul>
 <h2 id="apercu-rapide-et-coup-dil">Aperçu rapide et Coup d'œil</h2>
 <p>L'Aperçu rapide affiche un aperçu en direct dans le panneau que vous n'utilisez <em>pas</em>, de sorte que vous pouvez continuer à naviguer d'un côté tout en prévisualisant de l'autre.</p>
 <ol>
@@ -55,6 +62,11 @@
 <p>Changez de moteur avec le menu en haut de la visionneuse ; celui que vous choisissez est utilisé immédiatement et le résultat est conservé, si bien que comparer deux moteurs sur le même fichier est instantané.</p>
 <p>Le source est coloré syntaxiquement, et deux boutons vont plus loin : <strong>Enregistrer sous…</strong> l’écrit dans un fichier, et <strong>Ouvrir dans l’éditeur</strong> le confie à ce qui ouvre les <code>.java</code> sur votre Mac. Un résultat très volumineux s’affiche sans coloration afin de paraître immédiatement plutôt qu’après une pause ; la ligne d’état l’indique.</p>
 <p>Les résultats sont mis en cache sur le disque : réouvrir un fichier déjà consulté est immédiat. La clé comprend la taille et la date du fichier ainsi que les arguments du moteur, si bien qu’une classe recompilée ou une option modifiée est décompilée à nouveau. Le moteur choisi est mémorisé par type de fichier. Un profil peut hériter d’un moteur intégré avec <code>extends = cfr</code> et ne redéfinir que les options — utile si vous gardez deux préréglages du même moteur.</p>
+<p>Activez <strong>Comparer</strong> pour ouvrir un second volet avec son propre menu de moteur. Deux décompilateurs échouent à des endroits différents : les voir côte à côte est souvent plus rapide que de décider auquel se fier ; en choisissant <code>javap</code> d’un côté, le bytecode se place à côté du source. Les deux volets partagent le cache, donc passer d’un moteur déjà exécuté à l’autre est immédiat.</p>
+<p>F3 sur un <code>.jar</code>, <code>.apk</code> ou <code>.dex</code> entier le décompile d’un coup et affiche une arborescence de paquets à côté du source. Le champ de recherche au-dessus de l’arbre parcourt toutes les classes — précisément la question qu’une classe seule ne peut trancher : où une chaîne, un appel ou une constante apparaît réellement, quand on ignore encore dans quelle classe. Les correspondances réduisent l’arbre et la première s’ouvre à sa ligne. Entrée continue d’ouvrir le JAR comme une archive : les deux verbes restent distincts.</p>
+<p>Il existe une seconde voie, plus directe : placez le curseur sur un fichier <code>.class</code> ou sur une archive entière et choisissez <strong>Décompiler en sources</strong> (menu Commandes, menu contextuel ou ⌘⇧J). Les classes sont décompilées et le résultat s’ouvre dans l’autre volet comme de simples fichiers <code>.java</code>. Dès lors tout le gestionnaire de fichiers s’applique : F3 les affiche avec la coloration Java de Peach Commander, Alt+F7 cherche à travers elles, F5 les copie ailleurs, et vous pouvez les comparer ou les étiqueter comme n’importe quoi d’autre. Pour l’essentiel du travail cela vaut mieux qu’une fenêtre séparée ; c’est pourquoi l’arborescence du plugin peut être désactivée dans Réglages ▸ Décompilateur.</p>
+<p>Un second plugin fait de même pour .NET : F3 sur un <code>.dll</code>, <code>.exe</code> ou <code>.winmd</code> managé affiche ses types en C#, <strong>Décompiler l’assembly en sources</strong> (⌘⇧N) les place dans un volet, et la recherche peut regarder dans un assembly de la même façon. Il pilote <strong>ILSpy</strong> (MIT, <code>dotnet tool install -g ilspycmd</code>) pour le source, ou <strong>monodis</strong> de Mono pour l’IL — l’équivalent .NET de <code>javap</code>. Un <code>.dll</code> natif porte la même extension sans source à montrer : le plugin vérifie avant d’ouvrir et le laisse à la visionneuse intégrée.</p>
+<p>La page de réglages a un bouton <strong>Vérifier les moteurs</strong>, et il vaut la peine : « installé » ailleurs signifie seulement que le fichier est là, et un moteur Java sur un Mac sans JDK est présent et ne peut pas fonctionner. La vérification demande sa version à chaque moteur et indique lesquels marchent réellement.</p>
 <p>Android est également couvert : F3 sur un fichier <code>.dex</code> utilise <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), qui reconvertit le bytecode Dalvik en Java. Il a suffi d’une description de moteur — même mécanisme, autre format.</p>
 <p>Le module est <strong>désactivé tant que vous ne l’activez pas</strong>, dans Réglages ▸ Modules — la plupart des gens n’ouvrent jamais de fichier .class, et sans moteur il ne sert à rien.</p>
 <p>Pour ajouter votre propre moteur, créez <code>decompilers.ini</code> dans le dossier des moteurs :</p>
@@ -93,6 +105,14 @@
 <tr>
 <td>Rechercher dans le lecteur</td>
 <td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Note sur la ligne sous le curseur</td>
+<td>Cmd+Maj+N</td>
+</tr>
+<tr>
+<td>Afficher ou masquer le panneau des marques</td>
+<td>Cmd+Ctrl+M</td>
 </tr>
 <tr>
 <td>Correspondance suivante / précédente</td>

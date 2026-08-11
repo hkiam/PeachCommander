@@ -13,27 +13,23 @@
 <p>Peach Commander fait beaucoup, mais quelques fonctionnalités ont des limites honnêtes dans la version actuelle. Les connaître à l'avance évite la confusion quand quelque chose se comporte de façon inattendue. Cette page liste les contraintes actuelles et, quand c'est possible, une solution de contournement simple.</p>
 <h2 id="archives">Archives</h2>
 <ul>
-<li><strong>Les fichiers ZIP très volumineux (ZIP64) ne peuvent pas être ouverts par le lecteur intégré.</strong> Les archives ZIP, TAR et TAR compressées en gzip standard s'ouvrent directement comme des dossiers. Les archives ZIP64 — utilisées quand une archive contient plus d'environ 65 000 éléments ou dépasse 4 Go — sortent de ce que gère le lecteur natif, elles peuvent donc échouer à s'ouvrir ou se lister de façon incomplète.</li>
+<li><strong>Les archives scindées (en plusieurs parties) ne peuvent pas être ouvertes.</strong> Le ZIP standard — y compris ZIP64, donc plus de 65 535 éléments ou plus de 4 Go — ainsi que TAR et TAR compressé en gzip s’ouvrent directement comme des dossiers. Une archive répartie sur plusieurs fichiers (<code>.z01</code>, <code>.zip.001</code>) n’est pas prise en charge : réunissez d’abord les parties, ou décompressez-la avec l’outil qui l’a créée.</li>
 <li><strong>Les archives ZIP chiffrées</strong> (l'ancien ZipCrypto comme WinZip AES) sont prises en charge pour la navigation, mais le mot de passe vous sera demandé.</li>
 <li>D'autres formats tels que CPIO, ISO, CAB, LZH, XAR et PAX s'ouvrent via un outil auxiliaire plutôt que par le lecteur natif.</li>
 </ul>
 <h2 id="reseau-sftp-scp">Réseau (SFTP / SCP)</h2>
 <ul>
-<li><strong>Changer les attributs de fichier via SFTP n'a aucun effet dans cette version.</strong> Vous pouvez parcourir, télécharger et envoyer via SFTP/SCP, mais les demandes de changement de permissions, de propriété ou d'horodatages sur un serveur distant sont ignorées en silence. Effectuez ces changements sur le serveur lui-même, ou via un autre protocole.</li>
+<li><strong>En SFTP, les permissions et les dates peuvent être modifiées, le propriétaire non.</strong> Le protocole ne transporte propriétaire et groupe que sous forme de nombres et ne permet pas de résoudre un nom d’utilisateur : un changement de propriétaire est donc refusé plutôt que deviné, comme les indicateurs de fichier macOS, qui n’existent pas en face. En FTP simple, seules les permissions peuvent être définies, via la commande optionnelle <code>SITE CHMOD</code> ; un serveur qui ne la propose pas le dit au lieu de faire semblant de réussir.</li>
 <li>À la première connexion à un serveur SFTP, il vous sera demandé de faire confiance à sa clé d'hôte. Peach Commander la mémorise ensuite (confiance à la première utilisation).</li>
-</ul>
-<h2 id="telecharger-depuis-une-url">Télécharger depuis une URL</h2>
-<ul>
-<li>La commande <strong>Télécharger depuis une URL</strong> (menu Réseau) utilise actuellement le raccourci Cmd+Maj+D, qui est le même que Aller &gt; Bureau. Quand les deux sont disponibles, les menus peuvent entrer en conflit — lancez le téléchargement directement depuis le menu Réseau pour être sûr.</li>
 </ul>
 <h2 id="actualisation-des-dossiers">Actualisation des dossiers</h2>
 <ul>
-<li><strong>Un panneau remarque les changements externes avec un léger délai, pas instantanément.</strong> Peach Commander vérifie le dossier courant pour des changements environ toutes les 2 secondes, de sorte qu'un fichier ajouté ou retiré par une autre application peut mettre un moment à apparaître. Si vous ne voulez pas attendre, actualisez le panneau actif manuellement avec F2 ou Ctrl+R.</li>
+<li><strong>Seuls les dossiers de ce Mac sont surveillés.</strong> Un dossier de ce Mac se met à jour de lui-même dès qu’un autre programme y ajoute, modifie ou supprime un fichier. Un emplacement distant (FTP ou SFTP) et l’intérieur d’une archive ne sont pas surveillés, car ces protocoles n’offrent aucun moyen d’être averti — appuyez sur F2 ou Ctrl+R pour les relire.</li>
 </ul>
 <h2 id="autres-limites-actuelles">Autres limites actuelles</h2>
 <ul>
 <li><strong>Certains chemins absolus très longs</strong> (dossiers profondément imbriqués dont le chemin complet est inhabituellement long) peuvent ne pas être gérés de façon fiable. Travailler plus près du haut de l'arborescence évite cela.</li>
-<li><strong>Cette version préliminaire n'est pas signée.</strong> Gatekeeper de macOS peut avertir que l'application provient d'un développeur non identifié la première fois que vous l'ouvrez. Cliquez droit sur l'application et choisissez Ouvrir, puis confirmez, pour l'exécuter. Les mises à jour automatiques ne sont pas encore disponibles dans cette version.</li>
+<li><strong>Cette version préliminaire n'est pas signée.</strong> Gatekeeper bloque le premier lancement, et la façon de l'autoriser dépend de votre version de macOS. Sous <strong>macOS 15 Sequoia et ultérieur</strong> : double-cliquez une fois, fermez l'avertissement, puis allez dans <strong>Réglages Système ▸ Confidentialité et sécurité</strong> et cliquez sur <strong>Ouvrir quand même</strong> — Apple a supprimé le raccourci par clic droit pour les logiciels non signés dans macOS 15, le clic droit n'aide donc plus. Sous <strong>macOS 13–14</strong> : cliquez droit sur l'application, choisissez Ouvrir, puis confirmez. Les mises à jour automatiques ne sont pas encore disponibles dans cette version.</li>
 </ul>
 <h2 id="raccourcis">Raccourcis</h2>
 <table>
@@ -50,7 +46,7 @@
 </tr>
 <tr>
 <td>Télécharger depuis une URL</td>
-<td>Cmd+Maj+D</td>
+<td>Cmd+Maj+U</td>
 </tr>
 </tbody>
 </table>

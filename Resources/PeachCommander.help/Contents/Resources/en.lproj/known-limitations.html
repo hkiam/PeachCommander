@@ -13,27 +13,23 @@
 <p>Peach Commander does a lot, but a few features have honest limits in the current version. Knowing these ahead of time saves confusion when something behaves unexpectedly. This page lists the current constraints and, where possible, a simple workaround.</p>
 <h2 id="archives">Archives</h2>
 <ul>
-<li><strong>Very large ZIP files (ZIP64) can't be opened by the built-in reader.</strong> Standard ZIP, TAR, and gzip-compressed TAR archives open directly as folders. ZIP64 archives — used when an archive holds more than about 65,000 items or exceeds 4 GB — are outside what the native reader handles, so they may fail to open or list incompletely.</li>
+<li><strong>Split (multi-part) archives can't be opened.</strong> Standard ZIP — including ZIP64, so more than 65,535 items or more than 4 GB is fine — TAR, and gzip-compressed TAR open directly as folders. An archive split across several files (<code>.z01</code>, <code>.zip.001</code>) is not handled: join the parts first, or unpack it with the tool that made it.</li>
 <li><strong>Encrypted ZIP archives</strong> (both older ZipCrypto and WinZip AES) are supported for browsing, but you'll be asked for the password.</li>
 <li>Other formats such as CPIO, ISO, CAB, LZH, XAR, and PAX open through a helper tool rather than the native reader.</li>
 </ul>
 <h2 id="network-sftp-scp">Network (SFTP / SCP)</h2>
 <ul>
-<li><strong>Changing file attributes over SFTP has no effect in this version.</strong> You can browse, download, and upload over SFTP/SCP, but requests to change permissions, ownership, or timestamps on a remote server are silently ignored. Make those changes on the server itself, or over a different protocol.</li>
+<li><strong>Over SFTP, permissions and timestamps can be changed; an owner cannot.</strong> The protocol carries owner and group as numbers only, and there is no way to look up a user name over it, so a change of owner is refused rather than guessed at — as are macOS file flags, which do not exist on the far side. Over plain FTP only permissions can be set, through the optional <code>SITE CHMOD</code> command, and a server that does not offer it says so instead of appearing to succeed.</li>
 <li>On first connection to an SFTP server you'll be asked to trust its host key. Peach Commander remembers it after that (trust on first use).</li>
-</ul>
-<h2 id="downloading-from-a-url">Downloading from a URL</h2>
-<ul>
-<li>The <strong>Download from URL</strong> command (Net menu) currently uses the shortcut Cmd+Shift+D, which is the same shortcut as Go &gt; Desktop. When both are available the menus can conflict — start the download from the Net menu directly to be sure.</li>
 </ul>
 <h2 id="directory-refresh">Directory refresh</h2>
 <ul>
-<li><strong>A panel notices outside changes on a short delay, not instantly.</strong> Peach Commander checks the current folder for changes about every 2 seconds, so a file added or removed by another app can take a moment to appear. If you don't want to wait, refresh the active panel manually with F2 or Ctrl+R.</li>
+<li><strong>Only folders on this Mac are watched for outside changes.</strong> A folder on this Mac updates by itself as soon as another program adds, changes, or removes a file in it. A remote location (FTP or SFTP) and the inside of an archive are not watched, because those protocols offer no way to be told — press F2 or Ctrl+R to re-read them.</li>
 </ul>
 <h2 id="other-current-limits">Other current limits</h2>
 <ul>
 <li><strong>Some very long absolute paths</strong> (deeply nested folders whose full path is unusually long) may not be handled reliably. Working closer to the top of the folder tree avoids this.</li>
-<li><strong>This preview build is unsigned.</strong> macOS Gatekeeper may warn that the app is from an unidentified developer the first time you open it. Right-click the app and choose Open, then confirm, to run it. Automatic updates are not yet available in this build.</li>
+<li><strong>This preview build is unsigned.</strong> Gatekeeper blocks the first launch, and how you allow it depends on your macOS version. On <strong>macOS 15 Sequoia and later</strong>: double-click once, dismiss the warning, then go to System Settings ▸ Privacy &amp; Security and click <strong>Open Anyway</strong> — Apple removed the right-click shortcut for unsigned software in macOS 15, so right-clicking no longer helps. On <strong>macOS 13–14</strong>: right-click the app and choose Open, then confirm. Automatic updates are not yet available in this build.</li>
 </ul>
 <h2 id="shortcuts">Shortcuts</h2>
 <table>
@@ -50,7 +46,7 @@
 </tr>
 <tr>
 <td>Download from URL</td>
-<td>Cmd+Shift+D</td>
+<td>Cmd+Shift+U</td>
 </tr>
 </tbody>
 </table>

@@ -21,16 +21,103 @@
 <p>Para empezar un archivo de texto completamente nuevo en la ubicación actual, pulse Shift+F4.</p>
 <p><img alt="El editor de texto integrado mostrando el resaltado de sintaxis, el esquema de símbolos y el minimapa" src="images/editor.png" />
 <em>(Figura: El editor con resaltado de sintaxis, el esquema de símbolos a la izquierda y el minimapa a la derecha.)</em></p>
+<p>Si el archivo pertenece a <code>root</code> — una entrada en <code>/etc</code>, un plist de launchd, la configuración de un servidor web —, al guardar se ofrece hacerlo <strong>como administrador</strong>: macOS pide autorización de la forma habitual, el contenido se entrega mediante un archivo temporal privado en lugar de una línea de comandos, y el archivo conserva su propietario y sus permisos en vez de pasar a ser suyo sin avisar.</p>
+<p>Si el archivo no se puede escribir, se le dice al abrirlo y no al intentar guardar: el título lleva un candado y la línea de estado nombra el obstáculo: pertenece a otro usuario, permisos que impiden escribir, un archivo bloqueado, un volumen de solo lectura o protección del sistema. Solo el primero se resuelve autorizando el guardado, y solo ahí se ofrece; en los demás la petición le costaría una contraseña y fallaría igualmente.</p>
+<p>El margen muestra los números de línea, con la línea del cursor más clara que el resto; el botón junto al menú de codificación lo oculta. Una línea con salto se numera una sola vez, así que el número siempre significa la misma línea que un error del compilador o un comentario de revisión.</p>
 <h2 id="buscar-reemplazar-y-navegar">Buscar, reemplazar y navegar</h2>
 <ul>
 <li>Pulse Cmd+F para abrir la barra de búsqueda. Para reemplazar texto, abra la barra de búsqueda y cámbiela a la vista de reemplazo, o haga clic en Buscar/Reemplazar en la barra de herramientas.</li>
 <li>Haga clic en Formatear JSON/XML para volver a sangrar un documento JSON o XML con una disposición limpia y legible.</li>
-<li>Haga clic en Símbolos (o pulse Cmd+Shift+O) para mostrar una barra lateral que enumera las clases, funciones y métodos de su código. Haga clic en una entrada para saltar directamente a ella.</li>
+<li>Haga clic en Símbolos (o pulse Cmd+Shift+O) para mostrar una barra lateral que enumera las clases, funciones y métodos de su código — o, en un archivo JSON, YAML o XML, sus claves y elementos. Haga clic en una entrada para saltar directamente a ella. Consulte <a href="#trabajar-con-json-yaml-y-xml">Trabajar con JSON, YAML y XML</a> para ver para qué más sirve esa estructura.</li>
 <li>Pulse Cmd+L para saltar a una línea concreta.</li>
 <li>Pulse Cmd+\ para saltar entre un corchete y su pareja correspondiente.</li>
 <li>Haga clic en el botón del mapa para mostrar u ocultar el minimapa, una vista general a escala de todo el archivo en la que puede hacer clic para desplazarse.</li>
 <li>Use el menú Codificación de la barra de herramientas si el archivo se guardó en algo distinto a la codificación de texto predeterminada.</li>
 </ul>
+<h2 id="trabajar-con-json-yaml-y-xml">Trabajar con JSON, YAML y XML</h2>
+<p>Estos tres formatos reciben un trato propio, porque un archivo de configuración se recorre por su estructura y no por números de línea.</p>
+<p>La barra lateral <strong>Símbolos</strong> enumera las claves de un archivo JSON o YAML y los elementos de un archivo XML, anidados igual que el documento. Un elemento se nombra por su atributo <code>id</code>, <code>name</code> o <code>key</code> cuando lo tiene, de modo que veinte entradas <code>&lt;server&gt;</code> se distinguen entre sí. Una lista muestra sus entradas como <code>[0]</code>, <code>[1]</code>, y cuando una entrada empieza por una clave, esa clave también aparece — <code>[0] name</code>. El campo de filtro situado sobre la lista encuentra una clave por su nombre en un archivo de cualquier tamaño, y la barra de estado muestra siempre la ruta de aquello en lo que está el cursor.</p>
+<p>Un archivo roto sigue teniendo un esquema hasta el punto en que se rompe, que es justo cuando más falta hace.</p>
+<p>El menú <strong>Estructura</strong> — en la barra de menús mientras el editor está delante — le mueve por esa estructura:</p>
+<ul>
+<li><strong>Ir al nodo contenedor</strong> (Ctrl+Cmd+Arriba) sale al bloque que contiene el cursor: de <code>image:</code> al servicio al que pertenece.</li>
+<li><strong>Ir al primer hijo</strong> (Ctrl+Cmd+Abajo) entra.</li>
+<li><strong>Ir al hermano anterior / siguiente</strong> (Ctrl+Cmd+Izquierda / Derecha) se mueve entre entradas del mismo nivel saltando el bloque intermedio completo — de un servidor al siguiente sin pasar por cuarenta líneas de ajustes.</li>
+<li><strong>Seleccionar el nodo contenedor</strong> (Ctrl+Cmd+A) selecciona el bloque en el que está el cursor. Púlselo otra vez y la selección crece hasta el bloque que lo rodea, de modo que puede seleccionar exactamente un servicio, o exactamente un elemento, sin arrastrar.</li>
+<li><strong>Copiar la ruta estructural</strong> (Ctrl+Cmd+C) copia la posición del cursor como una expresión que aceptan las propias herramientas del formato: <code>.services.web.ports[0]</code> para JSON y YAML, que es lo que esperan <code>jq</code> y <code>yq</code>, y <code>//server[@id='web-1']/port</code> para XML, es decir, un XPath. Las claves que no son palabras sencillas se entrecomillan por usted — <code>."content-type"</code> y no <code>.content-type</code>, que en <code>jq</code> significa algo completamente distinto.</li>
+<li><strong>Validar el documento</strong> (Ctrl+Cmd+V) comprueba el archivo y pone el cursor <strong>sobre el problema</strong>, con el motivo en el título de la ventana. Informa de lo que nada más en la cadena de herramientas dirá: una clave duplicada, que todo analizador de JSON acepta en silencio descartando uno de los dos valores, y una coma final, que el analizador de Apple acepta y Python, Go y <code>jq</code> rechazan.</li>
+</ul>
+<p>Los archivos largos se leen plegando aquello en lo que no se está trabajando. <strong>Plegar el nodo</strong> (Opción+Cmd+Izquierda) pliega el bloque donde está el cursor — el más cercano que tenga cuerpo, de modo que pulsarlo en una sola línea pliega la asignación que la rodea —, <strong>Desplegar el nodo</strong> (Opción+Cmd+Derecha) lo vuelve a abrir, <strong>Plegar el nivel superior</strong> (Opción+Cmd+Arriba) pliega todo el nivel más externo para tener una vista general, y <strong>Desplegar todo</strong> (Opción+Cmd+Abajo) lo restaura. La línea que lleva la clave o la etiqueta permanece visible y queda marcada, así que un bloque plegado se ve plegado; los números de línea se saltan lo oculto. Del documento no se quita nada — el texto simplemente no se dibuja, así que guardar, deshacer y buscar no cambian, y la búsqueda sigue encontrando texto dentro de un bloque plegado. Poner el cursor dentro de un pliegue lo abre, y cualquier edición abre todo: un pliegue es un par de posiciones, y al insertar texto se desplazan.</p>
+<p>El mismo menú incluye las transformaciones, que reescriben todo el documento — o, si hay texto seleccionado, solo ese texto — en un único paso que se puede deshacer: <strong>Compactar (una línea)</strong> para un cuerpo JSON que tiene que caber en un comando <code>curl</code>, <strong>Ordenar las claves recursivamente</strong> para que dos exportaciones de los mismos ajustes no muestren ninguna diferencia, <strong>Escapar como cadena JSON</strong> y <strong>Desescapar la cadena JSON</strong> para la tarea diaria de meter un certificado, un script o un documento JSON completo <em>dentro</em> de un campo JSON, y <strong>Convertir JSON en YAML</strong>. Al compactar se conserva el orden de las claves y la escritura exacta de cada número, porque <code>1.0</code> y <code>1</code> no son la misma versión; al ordenar no, y es a propósito, ya que ordenar es reordenar. El escapado se aplica a cualquier archivo, no solo a JSON. No hay YAML a JSON, y es una decisión: haría falta un analizador de YAML que el sistema no tiene, y una suposición equivocada sobre un ancla o un <code>true</code> entre comillas convierte un archivo de configuración en otro distinto.</p>
+<p>Para JSON y XML el archivo se comprueba con un analizador de verdad. Para YAML no hay ninguno en el sistema, así que la comprobación abarca los errores que pueden encontrarse sin él — un tabulador usado para indentar, algo que YAML prohíbe expresamente, una indentación que no coincide con nada, una clave duplicada, una comilla sin cerrar — y lo dice, en lugar de afirmar que el archivo es válido.</p>
+<h2 id="filtrar-con-un-comando-de-shell">Filtrar con un comando de shell</h2>
+<p>Haga clic en <strong>Filtrar…</strong> (o pulse Shift+Cmd+) para enviar el texto seleccionado a un comando y sustituirlo por lo que el comando imprima. Si no hay nada seleccionado, pasa todo el documento. Así, las herramientas que ya conoce se convierten en comandos del editor: <code>sort -u</code> elimina líneas duplicadas, <code>jq .</code> hace legible una respuesta JSON, <code>column -t</code> alinea una tabla, <code>base64 -d</code> descodifica un bloque, <code>openssl x509 -noout -text</code> muestra un certificado en claro.</p>
+<p>El comando se ejecuta en su shell de inicio de sesión: su <code>PATH</code>, sus alias y sus funciones actúan igual que en Terminal, y las tuberías y las comillas significan lo que usted espera. El directorio de trabajo es la carpeta del archivo que está editando, de modo que las rutas relativas se resuelven donde cabe esperar. Los comandos que ha usado se recuerdan y se ofrecen en la lista desplegable la próxima vez.</p>
+<p>Si el comando falla, su texto queda intacto y el mensaje de error del propio comando aparece en la línea de estado: un error de sintaxis de <code>jq</code> nunca acaba pegado en su archivo. Un comando que no imprime nada vacía la selección, que es exactamente para lo que sirve filtrar con <code>grep</code>, y Cmd+Z la recupera. Un comando que no termina se detiene a los veinte segundos.</p>
+<h2 id="ordenar-quitar-duplicados-y-limpiar-lineas">Ordenar, quitar duplicados y limpiar líneas</h2>
+<p>El menú <strong>Líneas</strong> —en la barra de herramientas y, mientras el editor está delante, en la barra de menús— aplica las modificaciones que aparecen una y otra vez, sin escribir ningún comando y sin instalar ninguna herramienta:</p>
+<ul>
+<li>Ordenar A→Z o Z→A, comparando los números por su valor, de modo que <code>file9</code> va antes de <code>file10</code>.</li>
+<li>Invertir el orden de las líneas.</li>
+<li>Eliminar líneas duplicadas, conservando la primera de cada una y dejando el resto en su orden.</li>
+<li>Eliminar líneas vacías, incluidas las que solo parecen vacías porque contienen espacios.</li>
+<li>Quitar los espacios al final de la línea: la diferencia invisible que ensucia un diff.</li>
+<li>Conservar solo, o eliminar, las líneas que contengan un texto que usted escriba.</li>
+</ul>
+<p>Con texto seleccionado, cada una de estas operaciones actúa sobre las líneas seleccionadas; la selección se amplía primero a líneas completas, porque ordenar media línea no significa nada. Sin selección actúan sobre todo el documento. Cada una es un único paso de deshacer, así que Cmd+Z revierte la operación completa.</p>
+<p>Los fines de línea están junto al menú Codificación: <strong>LF</strong> para Unix y macOS, <strong>CRLF</strong> para Windows, <strong>CR</strong> para el Mac OS clásico, y <em>(mixed)</em> cuando un archivo contiene más de un tipo, que a menudo es la razón de un error sin sentido. Elija otro para convertir todo el archivo en un paso que se puede deshacer. Las operaciones de líneas nunca cambian el terminador por su cuenta: un archivo CRLF ordenado sigue siendo CRLF.</p>
+<h2 id="formatear-un-archivo">Formatear un archivo</h2>
+<p>Pulse <strong>Formatear</strong> en el editor (el mismo comando existe en el visor) para volver a indentar el archivo. Peach Commander elige un formateador según la extensión y muestra en la barra de estado cuál usó, por ejemplo <em>formatted (jq)</em> — así siempre sabe qué dio forma al resultado.</p>
+<p><strong>Sin instalar nada</strong>: JSON, XML, SVG, plists, HTML, configuración tipo INI y YAML. YAML es un caso aparte: se ordena en lugar de reindentarse, porque en YAML la indentación <em>es</em> la estructura y reescribirla sin un analizador YAML de verdad podría cambiar el significado. Los espacios finales desaparecen, los tabuladores sueltos en la indentación pasan a espacios, las series de líneas vacías se reducen — y todo lo que está dentro de un escalar de bloque (<code>|</code> o <code>&gt;</code>) queda igual, porque allí el espacio es contenido.</p>
+<p><strong>Los formateadores mejores toman el relevo automáticamente.</strong> Si tiene alguno instalado, Peach Commander lo usa, porque una herramienta dedicada suele coincidir con lo que espera el ecosistema — y en formatos de configuración conserva sus comentarios:</p>
+<table>
+<thead>
+<tr>
+<th>Instale</th>
+<th>y obtiene</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yq</code> o <code>prettier</code></td>
+<td>formateo completo de YAML, comentarios conservados</td>
+</tr>
+<tr>
+<td><code>taplo</code></td>
+<td>TOML</td>
+</tr>
+<tr>
+<td><code>sqlformat</code> o <code>sql-formatter</code></td>
+<td>SQL</td>
+</tr>
+<tr>
+<td><code>prettier</code></td>
+<td>Markdown</td>
+</tr>
+<tr>
+<td><code>jq</code></td>
+<td>JSON, en el estilo habitual</td>
+</tr>
+<tr>
+<td><code>xmllint</code></td>
+<td>XML y SVG</td>
+</tr>
+</tbody>
+</table>
+<p>Si un tipo de archivo no tiene formateador, el botón se ve atenuado y la entrada de menú está desactivada. Intentarlo igualmente le dice por qué — <em>«taplo no está instalado»</em> se lee distinto de <em>«JSON no válido»</em>.</p>
+<h3 id="usar-su-propio-formateador">Usar su propio formateador</h3>
+<p>Para formatear un tipo que Peach Commander no conoce, o para usar otra herramienta, cree <code>formatters.ini</code> en la carpeta de configuración — una sección por extensión:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[swift]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">swiftformat</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">--quiet stdin</span>
+
+<span class="k">[sql]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/opt/homebrew/bin/sqlfluff</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">format -</span>
+</code></pre></div>
+
+<p><code>tool</code> es un nombre de ejecutable (se busca como lo haría su shell) o una ruta absoluta; <code>args</code> se pasan tal cual. El texto del archivo entra por la entrada estándar y el texto formateado se lee de la salida estándar, así que sirve cualquier formateador de línea de comandos bien educado. Sus entradas ganan a todo lo demás. En el primer arranque se crea una plantilla comentada: abra el archivo y rellénelo.</p>
+<p>Los plugins también pueden aportar formateadores — véase <a href="plugins.md">Plugins</a>.</p>
 <h2 id="editar-un-archivo-byte-a-byte">Editar un archivo byte a byte</h2>
 <ol>
 <li>Seleccione el archivo en un panel.</li>
@@ -76,14 +163,51 @@
 <td>Cmd+\</td>
 </tr>
 <tr>
+<td>Ir al nodo contenedor (JSON/YAML/XML)</td>
+<td>Ctrl+Cmd+Arriba</td>
+</tr>
+<tr>
+<td>Ir al primer hijo</td>
+<td>Ctrl+Cmd+Abajo</td>
+</tr>
+<tr>
+<td>Ir al hermano anterior / siguiente</td>
+<td>Ctrl+Cmd+Izquierda / Derecha</td>
+</tr>
+<tr>
+<td>Seleccionar el nodo contenedor</td>
+<td>Ctrl+Cmd+A</td>
+</tr>
+<tr>
+<td>Copiar la ruta estructural</td>
+<td>Ctrl+Cmd+C</td>
+</tr>
+<tr>
+<td>Validar el documento</td>
+<td>Ctrl+Cmd+V</td>
+</tr>
+<tr>
+<td>Plegar / desplegar el nodo</td>
+<td>Opción+Cmd+Izquierda / Derecha</td>
+</tr>
+<tr>
+<td>Plegar el nivel superior / desplegar todo</td>
+<td>Opción+Cmd+Arriba / Abajo</td>
+</tr>
+<tr>
 <td>Deshacer / rehacer (editor hexadecimal)</td>
 <td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+<tr>
+<td>Filtrar la selección con un comando</td>
+<td>Shift+Cmd+\</td>
 </tr>
 </tbody>
 </table>
 <h2 id="notas">Notas</h2>
 <ul>
-<li>El resaltado de sintaxis abarca JSON, C, C#, Java, JavaScript, TypeScript, Python y Rust. Otros tipos de archivo también se abren y editan con normalidad con un coloreado básico, pero el resaltado detallado y el esquema de símbolos solo están disponibles para los lenguajes compatibles.</li>
+<li>El resaltado de sintaxis abarca JSON, C, C#, Java, JavaScript, TypeScript, Python y Rust. Otros tipos de archivo también se abren y editan con normalidad con un coloreado básico, pero el resaltado detallado solo está disponible para los lenguajes compatibles.</li>
+<li>El esquema abarca los lenguajes de programación compatibles además de JSON, YAML y XML — incluidos los formatos basados en XML como <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> y <code>.storyboard</code>. Los comandos de navegación estructural, ruta y validación se aplican a JSON, YAML y XML.</li>
 <li>El esquema de símbolos y la función Ir a la línea se aplican al editor de texto. El editor hexadecimal está pensado para la inspección binaria y las ediciones a nivel de byte, no para texto.</li>
 <li>Ambos editores conservan una copia de seguridad del archivo original la primera vez que guarda, de modo que un cambio accidental es fácil de deshacer restaurando esa copia.</li>
 </ul>

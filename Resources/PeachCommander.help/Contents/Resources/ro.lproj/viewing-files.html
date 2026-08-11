@@ -27,6 +27,13 @@
 <li>Dacă textul pare deteriorat, faceți clic pe Codificare în bara de instrumente (sau apăsați E) pentru a parcurge codificările de text până când se citește corect; setarea automată reușește de obicei.</li>
 <li>Apăsați W pentru a comuta încadrarea cuvintelor pentru liniile lungi.</li>
 </ul>
+<h2 id="notite-pentru-o-linie">Notițe pentru o linie</h2>
+<p>Dacă modulul Notițe este instalat, o notiță se poate referi la o anumită linie a unui fișier, nu la fișierul întreg.</p>
+<ul>
+<li>Puneți cursorul pe linie și alegeți <strong>Vizualizare ▸ Notiță pentru această linie…</strong> (Cmd+Shift+N). Editorul de notițe se deschide cu numele fișierului și numărul liniei în titlu.</li>
+<li>Liniile care au deja o notiță apar ca grupul <strong>Notițe</strong> în panoul de marcaje din partea de jos a ferestrei, lângă rezultatele căutării. Cmd+Ctrl+M deschide panoul; un dublu clic pe o intrare sare la linia respectivă.</li>
+<li>Notițele stau împreună cu toate celelalte, așa că prezentarea notițelor și Căutare fișiere le găsesc la fel. Ștergerea se face în editorul de notițe — butonul de închidere al panoului doar ascunde grupul.</li>
+</ul>
 <h2 id="quick-view-si-quick-look">Quick View și Quick Look</h2>
 <p>Quick View afișează o previzualizare în timp real în panoul pe care <em>nu</em> îl folosiți, astfel încât să puteți continua să navigați pe o parte în timp ce previzualizați pe cealaltă.</p>
 <ol>
@@ -55,6 +62,11 @@
 <p>Schimbați motorul din meniul aflat în partea de sus a vizualizatorului; cel ales este folosit imediat, iar rezultatul este păstrat, așa că este instantaneu să comparați două motoare pe același fișier.</p>
 <p>Codul este evidențiat sintactic, iar două butoane merg mai departe: <strong>Salvează ca…</strong> îl scrie într-un fișier, iar <strong>Deschide în editor</strong> îl predă programului care deschide <code>.java</code> pe Mac-ul dumneavoastră. Un rezultat foarte mare este afișat fără evidențiere, ca să apară imediat și nu după o pauză; linia de stare o menționează.</p>
 <p>Rezultatele sunt păstrate în cache pe disc, așa că redeschiderea unui fișier deja vizualizat este imediată; cheia include dimensiunea și data fișierului, precum și argumentele motorului, astfel încât o clasă recompilată sau o opțiune schimbată este decompilată din nou. Motorul ales este reținut pentru fiecare tip de fișier. Un profil poate moșteni de la un motor inclus prin <code>extends = cfr</code> și poate rescrie doar opțiunile — util când păstrați două presetări ale aceluiași motor.</p>
+<p>Activați <strong>Compară</strong> pentru a deschide un al doilea panou cu propriul meniu de motor. Două decompilatoare greșesc în locuri diferite, așa că a le vedea alături este adesea mai rapid decât a decide în care să aveți încredere; alegând <code>javap</code> pe o parte, bytecode-ul stă lângă sursă. Ambele panouri împart cache-ul, deci comutarea între motoare deja rulate este imediată.</p>
+<p>F3 pe un <code>.jar</code>, <code>.apk</code> sau <code>.dex</code> întreg îl decompilează dintr-o dată și arată un arbore de pachete lângă sursă. Câmpul de căutare de deasupra arborelui caută în fiecare clasă — exact întrebarea la care o singură clasă nu poate răspunde: unde apare de fapt un șir, un apel sau o constantă, când încă nu știți în ce clasă. Potrivirile restrâng arborele, iar prima se deschide la linia sa. Enter deschide în continuare JAR-ul ca arhivă — cele două acțiuni rămân separate.</p>
+<p>Există o a doua cale, mai directă: puneți cursorul pe un fișier <code>.class</code> sau pe o arhivă întreagă și alegeți <strong>Decompilează în surse</strong> (meniul Comenzi, meniul contextual sau ⌘⇧J). Clasele sunt decompilate, iar rezultatul se deschide în celălalt panou ca fișiere <code>.java</code> obișnuite. De acolo se aplică tot managerul de fișiere — F3 le afișează cu evidențierea Java proprie a lui Peach Commander, Alt+F7 caută prin ele, F5 le copiază în altă parte și le puteți compara sau eticheta ca orice altceva. Pentru cea mai mare parte a muncii asta bate o fereastră separată; de aceea arborele pluginului poate fi dezactivat în Setări ▸ Decompilator.</p>
+<p>Un al doilea plugin face același lucru pentru .NET: F3 pe un <code>.dll</code>, <code>.exe</code> sau <code>.winmd</code> gestionat arată tipurile ca C#, <strong>Decompilează assembly-ul în surse</strong> (⌘⇧N) le pune într-un panou, iar căutarea poate privi în interiorul unui assembly la fel. Conduce <strong>ILSpy</strong> (MIT, <code>dotnet tool install -g ilspycmd</code>) pentru sursă, sau <strong>monodis</strong> din Mono pentru IL — echivalentul .NET al lui <code>javap</code>. Un <code>.dll</code> nativ are aceeași extensie și nicio sursă de arătat, deci pluginul verifică înainte de a deschide și îl lasă vizualizatorului încorporat.</p>
+<p>Pagina de setări are un buton <strong>Verifică motoarele</strong>, și merită apăsat: „instalat” în altă parte înseamnă doar că fișierul există, iar un motor Java pe un Mac fără JDK este prezent și nu poate rula. Verificarea cere fiecărui motor versiunea și spune care funcționează într-adevăr.</p>
 <p>Android este de asemenea acoperit: F3 pe un fișier <code>.dex</code> folosește <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), care transformă bytecode-ul Dalvik înapoi în Java. A fost nevoie de o singură descriere de motor — același mecanism, alt format.</p>
 <p>Modulul este <strong>oprit până îl porniți</strong>, în Setări ▸ Module — cei mai mulți nu deschid niciodată un fișier .class, iar fără motor oricum nu ajută.</p>
 <p>Pentru a adăuga un motor propriu, creați <code>decompilers.ini</code> în dosarul motoarelor:</p>
@@ -93,6 +105,14 @@
 <tr>
 <td>Găsiți în vizualizator</td>
 <td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Notiță pentru linia de sub cursor</td>
+<td>Cmd+Shift+N</td>
+</tr>
+<tr>
+<td>Afișează sau ascunde panoul de marcaje</td>
+<td>Cmd+Ctrl+M</td>
 </tr>
 <tr>
 <td>Următoarea / precedenta potrivire</td>

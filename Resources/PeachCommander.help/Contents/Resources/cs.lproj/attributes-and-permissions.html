@@ -53,7 +53,10 @@
 <h2 id="poznamky">Poznámky</h2>
 <ul>
 <li>Změna vlastníka nebo skupiny obvykle vyžaduje oprávnění, která jako běžný uživatel nemáte; když k tomu dojde, změna se nahlásí jako neúspěšná namísto provedení a zbytek vašich změn stále projde.</li>
-<li>Komentáře se ukládají do souboru <code>descript.ion</code> vedle vašich položek a v závislosti na nastavení je lze uchovávat i jako komentáře Finderu. Při zobrazení komentáře se čtou oba.</li>
+<li>Komentáře se ukládají do souboru <code>descript.ion</code> vedle vašich položek a v závislosti na nastavení je lze uchovávat i jako komentáře Finderu. Při zobrazení komentáře se čtou oba. Formát je týž, jaký používá Total Commander a několik dalších správců souborů, takže komentář napsaný zde je tam čitelný.</li>
+<li>Komentáře s <strong>zlomy řádků</strong> a komentáře v <strong>UTF-16</strong> se čtou a zapisují tak, jak to dělá Total Commander: zlom řádku je uložen jako <code>\n</code> následované dvěma značkovacími bajty, které si TC pro tento účel nechal zaregistrovat, a soubor, který byl v UTF-16, v UTF-16 zůstane, když v něm změníte jeden komentář. Bez této značky jsou <code>\n</code> v cizím komentáři dva napsané znaky a zůstanou nedotčené.</li>
+<li><strong>Komentář jde s souborem.</strong> Kopírování, přesun i přejmenování jej vezmou s sebou — při přesunu a kopírování do <code>descript.ion</code> cílové složky, při přejmenování na nový název, i když přejmenování vrátíte. Výjimkou je připojení souboru na konec jiného: soubor, který zůstává, si ponechá svůj vlastní komentář, protože je stále týmž souborem.</li>
+<li>Je-li zapnutý modul Poznámky, jeho postranní panel zobrazuje a upravuje týž komentář nad textem poznámky, aby nebyla dvě místa pro totéž.</li>
 <li>Symbolický odkaz i alias oba ukazují na cíl, ale symbolický odkaz ukládá prostou cestu, zatímco alias ukládá odkaz macOS, který funguje dál i po přesunu nebo přejmenování cíle. Pevný odkaz je druhý název pro stejná data souboru, nikoli ukazatel.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="file-utilities.html">Souborové nástroje</a></li></ul></section>

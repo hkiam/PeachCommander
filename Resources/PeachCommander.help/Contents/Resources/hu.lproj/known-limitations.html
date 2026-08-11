@@ -13,27 +13,23 @@
 <p>A Peach Commander sokat tud, de néhány funkciónak őszinte határai vannak a jelenlegi verzióban. Ha ezeket előre ismeri, elkerüli a zavart, amikor valami váratlanul viselkedik. Ez az oldal felsorolja a jelenlegi korlátozásokat, és ahol lehetséges, egy egyszerű megkerülő megoldást.</p>
 <h2 id="archivumok">Archívumok</h2>
 <ul>
-<li><strong>A nagyon nagy ZIP-fájlokat (ZIP64) nem tudja megnyitni a beépített olvasó.</strong> A szabványos ZIP, TAR és gzip-tömörített TAR archívumok közvetlenül mappaként nyílnak meg. A ZIP64 archívumok — amelyeket akkor használnak, amikor egy archívum több mint körülbelül 65 000 elemet tartalmaz vagy meghaladja a 4 GB-ot — kívül esnek azon, amit a natív olvasó kezel, így előfordulhat, hogy nem nyílnak meg vagy hiányosan listázódnak.</li>
+<li><strong>A felosztott (többrészes) archívumok nem nyithatók meg.</strong> A szokásos ZIP — beleértve a ZIP64-et, tehát a 65 535 elemnél többet vagy a 4 GB-nál nagyobbat — valamint a TAR és a gzippel tömörített TAR közvetlenül mappaként nyílik. A több fájlra osztott archívum (<code>.z01</code>, <code>.zip.001</code>) nem támogatott: először fűzze össze a részeket, vagy csomagolja ki azzal az eszközzel, amely létrehozta.</li>
 <li><strong>A titkosított ZIP-archívumok</strong> (a régebbi ZipCrypto és a WinZip AES egyaránt) böngészésre támogatottak, de a jelszót kérni fogja.</li>
 <li>Más formátumok, mint a CPIO, ISO, CAB, LZH, XAR és PAX, egy segédeszközön keresztül nyílnak meg a natív olvasó helyett.</li>
 </ul>
 <h2 id="halozat-sftp-scp">Hálózat (SFTP / SCP)</h2>
 <ul>
-<li><strong>A fájlattribútumok SFTP-n keresztüli megváltoztatásának nincs hatása ebben a verzióban.</strong> Böngészhet, letölthet és feltölthet SFTP/SCP-n keresztül, de a jogosultságok, tulajdonlás vagy időbélyegek megváltoztatására irányuló kéréseket egy távoli kiszolgálón csendben figyelmen kívül hagyja. Ezeket a változtatásokat magán a kiszolgálón végezze, vagy egy másik protokollon keresztül.</li>
+<li><strong>SFTP-n a jogosultságok és az időbélyegek módosíthatók, a tulajdonos nem.</strong> A protokoll a tulajdonost és a csoportot csak számként viszi, és felhasználónevet nem lehet rajta feloldani — a tulajdonos módosítását ezért elutasítja, nem pedig megtippeli, ahogy a macOS fájljelzőit is, amelyek a túloldalon nem léteznek. Egyszerű FTP-n csak a jogosultságok állíthatók, az opcionális <code>SITE CHMOD</code> paranccsal; az a kiszolgáló, amely nem kínálja, ezt megmondja, nem pedig sikert mímel.</li>
 <li>Egy SFTP-kiszolgálóhoz való első csatlakozáskor megkérik, hogy bízzon a gazdakulcsában. A Peach Commander ezután megjegyzi (első használatkori bizalom).</li>
-</ul>
-<h2 id="letoltes-url-rol">Letöltés URL-ről</h2>
-<ul>
-<li>A <strong>Letöltés URL-ről</strong> parancs (Hálózat menü) jelenleg a Cmd+Shift+D billentyűparancsot használja, ami ugyanaz a billentyűparancs, mint az Ugrás &gt; Asztal. Amikor mindkettő elérhető, a menük ütközhetnek — a biztonság kedvéért indítsa a letöltést közvetlenül a Hálózat menüből.</li>
 </ul>
 <h2 id="mappafrissites">Mappafrissítés</h2>
 <ul>
-<li><strong>Egy panel enyhe késleltetéssel, nem azonnal veszi észre a külső változásokat.</strong> A Peach Commander körülbelül 2 másodpercenként ellenőrzi az aktuális mappát változások szempontjából, így egy másik app által hozzáadott vagy eltávolított fájl megjelenése eltarthat egy pillanatig. Ha nem akar várni, frissítse az aktív panelt manuálisan az F2-vel vagy Ctrl+R-rel.</li>
+<li><strong>Külső változásokat csak az ezen a Macen lévő mappáknál figyel a program.</strong> Egy mappa ezen a Macen magától frissül, amint egy másik program fájlt hoz létre, módosít vagy töröl benne. A távoli helyeket (FTP vagy SFTP) és az archívumok belsejét nem figyeli, mert ezek a protokollok nem adnak módot az értesítésre — ott az F2 vagy a Ctrl+R olvassa be újra.</li>
 </ul>
 <h2 id="egyeb-jelenlegi-hatarok">Egyéb jelenlegi határok</h2>
 <ul>
 <li><strong>Néhány nagyon hosszú abszolút útvonal</strong> (mélyen beágyazott mappák, amelyek teljes útvonala szokatlanul hosszú) esetleg nem kezelhető megbízhatóan. A mappafa teteje közelében dolgozva ez elkerülhető.</li>
-<li><strong>Ez az előnézeti verzió nincs aláírva.</strong> A macOS Gatekeeper figyelmeztethet, hogy az app egy nem azonosított fejlesztőtől származik, amikor először nyitja meg. Kattintson jobb gombbal az appra és válassza a Megnyitás lehetőséget, majd erősítse meg a futtatásához. Az automatikus frissítések még nem érhetők el ebben a verzióban.</li>
+<li><strong>Ez az előnézeti verzió nincs aláírva.</strong> A Gatekeeper blokkolja az első indítást, és hogy miként engedélyezi, a macOS verziójától függ. <strong>macOS 15 Sequoia és újabb</strong> esetén: kattintson duplán egyszer, zárja be a figyelmeztetést, majd nyissa meg a <strong>Rendszerbeállítások ▸ Adatvédelem és biztonság</strong> panelt, és kattintson a <strong>Megnyitás mindenképp</strong> lehetőségre — az Apple a macOS 15-ben eltávolította a jobb gombos gyorsítót az alá nem írt szoftverekhez, így a jobb gombos kattintás ott már nem segít. <strong>macOS 13–14</strong> esetén: kattintson jobb gombbal az appra, válassza a Megnyitás lehetőséget, majd erősítse meg. Az automatikus frissítések még nem érhetők el ebben a verzióban.</li>
 </ul>
 <h2 id="billentyuparancsok">Billentyűparancsok</h2>
 <table>
@@ -50,7 +46,7 @@
 </tr>
 <tr>
 <td>Letöltés URL-ről</td>
-<td>Cmd+Shift+D</td>
+<td>Cmd+Shift+U</td>
 </tr>
 </tbody>
 </table>

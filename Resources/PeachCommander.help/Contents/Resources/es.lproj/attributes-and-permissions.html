@@ -53,7 +53,10 @@
 <h2 id="notas">Notas</h2>
 <ul>
 <li>Cambiar el propietario o el grupo suele requerir privilegios de los que no dispone como usuario normal; cuando eso ocurre, el cambio se notifica como fallido en lugar de aplicarse, y el resto de sus cambios sí se llevan a cabo.</li>
-<li>Los comentarios se almacenan en un archivo <code>descript.ion</code> junto a sus elementos y también pueden conservarse como comentarios de Finder, según sus ajustes. Ambos se leen al mostrar un comentario.</li>
+<li>Los comentarios se almacenan en un archivo <code>descript.ion</code> junto a sus elementos y también pueden conservarse como comentarios de Finder, según sus ajustes. Ambos se leen al mostrar un comentario. El formato es el que usan Total Commander y otros gestores de archivos, así que un comentario escrito aquí se puede leer allí.</li>
+<li>Los comentarios con <strong>saltos de línea</strong> y los que están en <strong>UTF-16</strong> se leen y se escriben como lo hace Total Commander: un salto de línea se guarda como <code>\n</code> seguido de los dos bytes de marca que TC registró para ello, y un archivo que era UTF-16 sigue siendo UTF-16 cuando edita un comentario dentro. Sin esa marca, un <code>\n</code> en el comentario de alguien son dos caracteres que escribió, y se dejan tal cual.</li>
+<li><strong>Un comentario sigue al archivo.</strong> Copiar, mover o renombrar se lo lleva consigo: al <code>descript.ion</code> de la carpeta de destino al mover o copiar, y al nombre nuevo al renombrar, también cuando deshace el renombrado. La excepción es añadir un archivo al final de otro: el archivo que se queda conserva su propio comentario, porque sigue siendo ese archivo.</li>
+<li>Si tiene activado el complemento de Notas, su barra lateral muestra y edita ese mismo comentario encima del texto de la nota, para que no haya dos sitios para lo mismo.</li>
 <li>Tanto un enlace simbólico como un alias apuntan a un destino, pero un enlace simbólico almacena una ruta simple mientras que un alias almacena una referencia de macOS que sigue funcionando si el destino se mueve o se renombra. Un enlace fijo es un segundo nombre para los mismos datos del archivo, no un puntero.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="file-utilities.html">Utilidades de archivos</a></li></ul></section>

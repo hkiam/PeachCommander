@@ -27,6 +27,13 @@
 <li>Wenn Text verstümmelt aussieht, klicken Sie in der Symbolleiste auf Kodierung (oder drücken Sie E), um durch die Textkodierungen zu blättern, bis er korrekt lesbar ist; die automatische Einstellung trifft es meist richtig.</li>
 <li>Drücken Sie W, um den Zeilenumbruch für lange Zeilen umzuschalten.</li>
 </ul>
+<h2 id="notizen-zu-einer-zeile">Notizen zu einer Zeile</h2>
+<p>Ist das Notizen-Plugin installiert, kann sich eine Notiz auf eine bestimmte Zeile einer Datei beziehen statt auf die ganze Datei.</p>
+<ul>
+<li>Setzen Sie den Cursor auf die Zeile und wählen Sie <strong>Ansicht ▸ Notiz zu dieser Zeile…</strong> (Cmd+Shift+N). Der Notiz-Editor öffnet sich mit Dateiname und Zeilennummer im Titel.</li>
+<li>Zeilen, zu denen bereits eine Notiz gehört, erscheinen als Gruppe <strong>Notizen</strong> im Markierungs-Panel am unteren Fensterrand, neben den Fundstellen einer Suche. Mit Cmd+Ctrl+M öffnen Sie das Panel; ein Doppelklick auf einen Eintrag springt zur Zeile.</li>
+<li>Die Notizen selbst liegen bei allen anderen, deshalb finden die Notizen-Übersicht und Dateien suchen sie genauso wie jede andere. Gelöscht wird im Notiz-Editor — die Schließen-Schaltfläche des Panels blendet die Gruppe nur aus.</li>
+</ul>
 <h2 id="quick-view-und-quick-look">Quick View und Quick Look</h2>
 <p>Quick View zeigt eine Live-Vorschau in dem Panel, das Sie <em>nicht</em> verwenden, sodass Sie auf der einen Seite weiterstöbern können, während Sie auf der anderen eine Vorschau ansehen.</p>
 <ol>
@@ -55,6 +62,11 @@
 <p>Die Engine wechseln Sie über das Menü oben im Betrachter; die gewählte wird sofort verwendet und das Ergebnis behalten, sodass der Vergleich zweier Engines an derselben Datei ohne Wartezeit geht.</p>
 <p>Der Quelltext wird syntaxhervorgehoben, und zwei Schaltflächen führen weiter: <strong>Speichern unter …</strong> schreibt ihn in eine Datei, <strong>In Editor öffnen</strong> übergibt ihn dem Programm, das auf Ihrem Mac <code>.java</code> öffnet. Ein sehr großes Ergebnis wird ohne Hervorhebung gezeigt, damit es sofort erscheint statt nach einer Pause; die Statuszeile sagt, wenn das passiert.</p>
 <p>Ergebnisse werden auf der Platte zwischengespeichert, das erneute Öffnen einer schon betrachteten Datei ist damit sofortig; der Schlüssel enthält Größe und Datum der Datei sowie die Argumente der Engine, eine neu gebaute Klasse oder ein geänderter Schalter wird also erneut dekompiliert. Die gewählte Engine wird je Dateiart gemerkt. Ein Profil kann mit <code>extends = cfr</code> von einer eingebauten Engine erben und nur die Schalter überschreiben — praktisch, wenn Sie zwei Voreinstellungen derselben Engine pflegen.</p>
+<p>Schalten Sie <strong>Vergleichen</strong> ein, um ein zweites Panel mit eigenem Engine-Menü zu öffnen. Zwei Decompiler scheitern an unterschiedlichen Stellen, sie nebeneinander zu sehen ist deshalb oft schneller als die Entscheidung, welchem man traut; wählt man auf einer Seite <code>javap</code>, steht der Bytecode neben dem Quelltext. Beide Panels teilen den Cache, das Umschalten zwischen bereits gelaufenen Engines ist also sofortig.</p>
+<p>F3 auf eine ganze <code>.jar</code>, <code>.apk</code> oder <code>.dex</code> dekompiliert alles auf einmal und zeigt einen Paketbaum neben dem Quelltext. Das Suchfeld über dem Baum durchsucht jede Klasse — genau die Frage, die eine einzelne Klasse nicht beantworten kann: wo eine Zeichenkette, ein Aufruf oder eine Konstante tatsächlich vorkommt, wenn man die Klasse noch nicht kennt. Treffer verengen den Baum, der erste öffnet sich an seiner Zeile. Mit Enter öffnet eine JAR weiterhin als Archiv — die beiden Verben bleiben getrennt.</p>
+<p>Es gibt einen zweiten, direkteren Weg: Cursor auf eine <code>.class</code>-Datei oder ein ganzes Archiv setzen und <strong>In Quelltext dekompilieren</strong> wählen (Menü Befehle, Kontextmenü oder ⌘⇧J). Die Klassen werden dekompiliert, und das Ergebnis öffnet sich im anderen Dateipanel als gewöhnliche <code>.java</code>-Dateien. Von dort gilt der ganze Dateimanager — F3 zeigt sie mit dem Java-Highlighting von Peach Commander selbst, Alt+F7 sucht über sie hinweg, F5 kopiert sie heraus, und Sie können sie vergleichen oder mit Tags versehen wie alles andere. Für die meiste Arbeit ist das besser als ein eigenes Fenster; deshalb lässt sich der Baum des Plugins unter Einstellungen ▸ Decompiler abschalten.</p>
+<p>Ein zweites Plugin macht dasselbe für .NET: F3 auf eine verwaltete <code>.dll</code>, <code>.exe</code> oder <code>.winmd</code> zeigt ihre Typen als C#, <strong>Assembly in Quelltext dekompilieren</strong> (⌘⇧N) legt sie in ein Dateipanel, und die Suche kann genauso in eine Assembly hineinsehen. Es steuert <strong>ILSpy</strong> (MIT, <code>dotnet tool install -g ilspycmd</code>) für Quelltext oder <strong>monodis</strong> aus Mono für IL — das .NET-Gegenstück zu <code>javap</code>. Eine native <code>.dll</code> hat dieselbe Endung und keinen Quelltext; das Plugin prüft das vor dem Öffnen und überlässt sie dem eingebauten Viewer.</p>
+<p>Die Einstellungsseite hat einen Knopf <strong>Engines prüfen</strong>, und der lohnt sich: „installiert“ heißt an anderer Stelle nur, dass die Datei vorhanden ist, und eine Java-Engine auf einem Mac ohne JDK ist vorhanden und kann nicht laufen. Die Prüfung fragt jede Engine nach ihrer Version und sagt, welche tatsächlich funktionieren.</p>
 <p>Android ist ebenfalls abgedeckt: F3 auf einer <code>.dex</code>-Datei benutzt <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), das Dalvik-Bytecode zurück in Java verwandelt. Dafür genügte eine Engine-Beschreibung — derselbe Mechanismus, ein anderes Format.</p>
 <p>Das Plugin ist <strong>aus, bis Sie es einschalten</strong>, unter Einstellungen ▸ Plugins — die meisten öffnen nie eine Klassendatei, und ohne Engine nützt es nichts.</p>
 <p>Um eine eigene Engine einzutragen, legen Sie <code>decompilers.ini</code> im Engine-Ordner an:</p>
@@ -93,6 +105,14 @@
 <tr>
 <td>Innerhalb des Betrachters suchen</td>
 <td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Notiz zur Zeile unter dem Cursor</td>
+<td>Cmd+Shift+N</td>
+</tr>
+<tr>
+<td>Markierungs-Panel ein-/ausblenden</td>
+<td>Cmd+Ctrl+M</td>
 </tr>
 <tr>
 <td>Nächster / vorheriger Treffer</td>

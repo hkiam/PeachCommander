@@ -53,7 +53,10 @@
 <h2 id="anteckningar">Anteckningar</h2>
 <ul>
 <li>Att ändra ägare eller grupp kräver vanligtvis behörigheter du inte har som vanlig användare; när det händer rapporteras ändringen som misslyckad snarare än tillämpad, och resten av dina ändringar går ändå igenom.</li>
-<li>Kommentarer lagras i en <code>descript.ion</code>-fil bredvid dina objekt och kan även behållas som Finder-kommentarer, beroende på dina inställningar. Båda läses när en kommentar visas.</li>
+<li>Kommentarer lagras i en <code>descript.ion</code>-fil bredvid dina objekt och kan även behållas som Finder-kommentarer, beroende på dina inställningar. Båda läses när en kommentar visas. Formatet är detsamma som Total Commander och flera andra filhanterare använder, så en kommentar du skriver här går att läsa där.</li>
+<li>Kommentarer med <strong>radbrytningar</strong> och kommentarer i <strong>UTF-16</strong> läses och skrivs som Total Commander gör det: en radbrytning lagras som <code>\n</code> följt av de två markörbyte som TC fick registrerade för det, och en fil som var UTF-16 förblir UTF-16 när du ändrar en kommentar i den. Utan den markören är ett <code>\n</code> i någons kommentar två tecken som de skrev, och de lämnas i fred.</li>
+<li><strong>En kommentar följer filen.</strong> Kopiering, flytt och namnbyte tar den med — till målmappens <code>descript.ion</code> vid flytt och kopiering, och till det nya namnet vid namnbyte, även när du ångrar namnbytet. Undantaget är att lägga en fil sist i en annan: filen som blir kvar behåller sin egen kommentar, eftersom den fortfarande är den filen.</li>
+<li>Med insticksmodulen Anteckningar påslagen visar och redigerar dess sidofält samma kommentar ovanför anteckningens text, så att det inte finns två ställen för samma sak.</li>
 <li>En symbolisk länk och ett alias pekar båda mot ett mål, men en symbolisk länk lagrar en vanlig sökväg medan ett alias lagrar en macOS-referens som fortsätter fungera om målet flyttas eller byter namn. En hård länk är ett andra namn för samma fildata, inte en pekare.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="file-utilities.html">Filverktyg</a></li></ul></section>

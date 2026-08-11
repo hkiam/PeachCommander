@@ -21,16 +21,103 @@
 <p>Um eine ganz neue Textdatei am aktuellen Ort zu beginnen, drücken Sie Shift+F4.</p>
 <p><img alt="Der integrierte Texteditor mit Syntaxhervorhebung, der Symbolgliederung und der Minimap" src="images/editor.png" />
 <em>(Abbildung: Der Editor mit Syntaxhervorhebung, der Symbolgliederung links und der Minimap rechts.)</em></p>
+<p>Gehört die Datei <code>root</code> — ein Eintrag in <code>/etc</code>, ein launchd-plist, die Konfiguration eines Webservers —, bietet das Speichern an, es <strong>als Administrator</strong> zu tun: macOS fragt wie gewohnt nach einer Autorisierung, der Inhalt wird über eine private temporäre Datei übergeben statt über eine Befehlszeile, und die Datei behält ihren Eigentümer und ihre Rechte, statt still Ihnen zu gehören.</p>
+<p>Ist die Datei nicht beschreibbar, erfahren Sie das beim Öffnen und nicht erst beim Speichern: der Titel trägt ein Schloss, und die Statuszeile nennt das Hindernis — einem anderen Benutzer gehörend, Rechte, die das Schreiben verbieten, eine gesperrte Datei, ein Read-only-Volume oder Schutz durch das System. Nur das Erste lässt sich durch Autorisieren des Speichervorgangs lösen, und nur dort wird es angeboten; bei den übrigen würde das Passwort kosten und trotzdem scheitern.</p>
+<p>Die Randspalte zeigt Zeilennummern, die Zeile mit dem Cursor heller als die übrigen; der Knopf neben dem Kodierungsmenü blendet sie aus. Eine umgebrochene Zeile wird einmal gezählt, die Nummer meint also immer dieselbe Zeile, die ein Compilerfehler oder ein Review-Kommentar meint.</p>
 <h2 id="suchen-ersetzen-und-navigieren">Suchen, Ersetzen und Navigieren</h2>
 <ul>
 <li>Drücken Sie Cmd+F, um die Suchleiste zu öffnen. Um Text zu ersetzen, öffnen Sie die Suchleiste und schalten Sie sie in die Ersetzen-Ansicht um oder klicken Sie in der Symbolleiste auf Suchen/Ersetzen.</li>
 <li>Klicken Sie auf JSON/XML formatieren, um ein JSON- oder XML-Dokument in ein sauberes, lesbares Layout neu einzurücken.</li>
-<li>Klicken Sie auf Symbole (oder drücken Sie Cmd+Shift+O), um eine Seitenleiste anzuzeigen, die die Klassen, Funktionen und Methoden in Ihrem Code auflistet. Klicken Sie auf einen Eintrag, um direkt dorthin zu springen.</li>
+<li>Klicken Sie auf Symbole (oder drücken Sie Cmd+Shift+O), um eine Seitenleiste anzuzeigen, die die Klassen, Funktionen und Methoden in Ihrem Code auflistet — oder, bei einer JSON-, YAML- oder XML-Datei, deren Schlüssel und Elemente. Klicken Sie auf einen Eintrag, um direkt dorthin zu springen. Was diese Struktur außerdem leistet, steht unter <a href="#mit-json-yaml-und-xml-arbeiten">Mit JSON, YAML und XML arbeiten</a>.</li>
 <li>Drücken Sie Cmd+L, um zu einer bestimmten Zeile zu springen.</li>
 <li>Drücken Sie Cmd+\, um zwischen einer Klammer und ihrem zugehörigen Gegenstück zu springen.</li>
 <li>Klicken Sie auf die Kartenschaltfläche, um die Minimap ein- oder auszublenden, eine verkleinerte Übersicht der gesamten Datei, die Sie zum Scrollen anklicken können.</li>
 <li>Verwenden Sie das Menü Kodierung in der Symbolleiste, wenn die Datei in einer anderen als der Standard-Textkodierung gesichert wurde.</li>
 </ul>
+<h2 id="mit-json-yaml-und-xml-arbeiten">Mit JSON, YAML und XML arbeiten</h2>
+<p>Diese drei Formate werden besonders behandelt, denn eine Konfigurationsdatei navigiert man über ihre Struktur und nicht über Zeilennummern.</p>
+<p>Die Seitenleiste <strong>Symbole</strong> listet die Schlüssel einer JSON- oder YAML-Datei und die Elemente einer XML-Datei auf, verschachtelt wie das Dokument selbst. Ein Element wird nach seinem Attribut <code>id</code>, <code>name</code> oder <code>key</code> benannt, sofern es eines hat, sodass zwanzig <code>&lt;server&gt;</code>-Einträge unterscheidbar sind. Eine Liste zeigt ihre Einträge als <code>[0]</code>, <code>[1]</code>, und wo ein Eintrag mit einem Schlüssel beginnt, steht dieser dabei — <code>[0] name</code>. Das Filterfeld über der Liste findet einen Schlüssel in einer Datei jeder Größe, und die Statuszeile zeigt immer den Pfad zu dem, worin die Einfügemarke steht.</p>
+<p>Auch eine defekte Datei erhält eine Gliederung bis zu der Stelle, an der sie bricht — genau dann braucht man sie am dringendsten.</p>
+<p>Das Menü <strong>Struktur</strong> — im Menübalken, solange der Editor vorn ist — bewegt Sie durch diese Struktur:</p>
+<ul>
+<li><strong>Zum umgebenden Knoten</strong> (Ctrl+Cmd+Auf) geht nach außen zu dem Block, der die Einfügemarke enthält: von <code>image:</code> zum Dienst, zu dem es gehört.</li>
+<li><strong>Zum ersten Kindknoten</strong> (Ctrl+Cmd+Ab) geht nach innen.</li>
+<li><strong>Zum vorherigen / nächsten Geschwisterknoten</strong> (Ctrl+Cmd+Links / Rechts) wechselt zwischen Einträgen derselben Ebene und überspringt den ganzen Block dazwischen — von einem Server zum nächsten, ohne an vierzig Zeilen Einstellungen vorbeizuscrollen.</li>
+<li><strong>Umgebenden Knoten auswählen</strong> (Ctrl+Cmd+A) wählt den Block aus, in dem die Einfügemarke steht. Noch einmal gedrückt wächst die Auswahl auf den Block darum herum, sodass Sie genau einen Dienst oder genau ein Element auswählen, ohne zu ziehen.</li>
+<li><strong>Strukturpfad kopieren</strong> (Ctrl+Cmd+C) kopiert die Position als Ausdruck, den die Werkzeuge des Formats selbst annehmen: <code>.services.web.ports[0]</code> für JSON und YAML, wie <code>jq</code> und <code>yq</code> es erwarten, und <code>//server[@id='web-1']/port</code> für XML, also ein XPath. Schlüssel, die keine einfachen Wörter sind, werden für Sie in Anführungszeichen gesetzt — <code>."content-type"</code> und nicht <code>.content-type</code>, was in <code>jq</code> etwas völlig anderes bedeutet.</li>
+<li><strong>Dokument prüfen</strong> (Ctrl+Cmd+V) prüft die Datei und setzt die Einfügemarke <strong>auf das Problem</strong>, mit der Begründung im Fenstertitel. Gemeldet wird auch, was sonst kein Werkzeug der Kette meldet: ein doppelter Schlüssel, den jeder JSON-Parser stillschweigend akzeptiert und dabei einen der beiden Werte verwirft, und ein nachgestelltes Komma, das Apples eigener Parser akzeptiert, Python, Go und <code>jq</code> aber ablehnen.</li>
+</ul>
+<p>Lange Dateien liest man, indem man zusammenklappt, woran man gerade nicht arbeitet. <strong>Knoten falten</strong> (Wahl+Cmd+Links) klappt den Block zu, in dem die Einfügemarke steht — den nächstliegenden mit einem Rumpf, sodass ein Druck auf einer einzelnen Zeile die Zuordnung darum herum zusammenklappt —, <strong>Knoten aufklappen</strong> (Wahl+Cmd+Rechts) öffnet ihn wieder, <strong>Oberste Ebene falten</strong> (Wahl+Cmd+Auf) klappt für einen Überblick alles auf der äußersten Ebene zu, und <strong>Alles aufklappen</strong> (Wahl+Cmd+Ab) stellt es wieder her. Die Zeile mit dem Schlüssel oder dem Tag bleibt sichtbar und wird markiert, sodass ein zusammengeklappter Block sichtbar zusammengeklappt ist; die Zeilennummern überspringen, was verborgen ist. Aus dem Dokument wird nichts entfernt — der Text wird nur nicht gezeichnet, also bleiben Sichern, Widerrufen und Suchen unberührt, und die Suche findet Text auch in einem zusammengeklappten Block. Die Einfügemarke in eine Faltung zu setzen öffnet sie, und jede Bearbeitung öffnet alles: eine Faltung ist ein Paar von Positionen, und eingefügter Text verschiebt sie.</p>
+<p>Dasselbe Menü enthält die Umwandlungen, die das ganze Dokument — oder, wenn Text ausgewählt ist, nur diesen — in einem widerrufbaren Schritt umschreiben: <strong>Verkleinern (eine Zeile)</strong> für einen JSON-Rumpf, der in einen <code>curl</code>-Aufruf passen muss, <strong>Schlüssel rekursiv sortieren</strong>, damit zwei Ausgaben derselben Einstellungen keinen Unterschied mehr zeigen, <strong>Als JSON-String maskieren</strong> und <strong>JSON-String entmaskieren</strong> für die tägliche Fleißarbeit, ein Zertifikat, ein Skript oder ein ganzes JSON-Dokument <em>in</em> ein JSON-Feld zu setzen, und <strong>JSON in YAML umwandeln</strong>. Das Verkleinern behält die Reihenfolge der Schlüssel und die genaue Schreibweise jeder Zahl, denn <code>1.0</code> und <code>1</code> sind nicht dieselbe Version; das Sortieren tut das absichtlich nicht, weil Sortieren eine Umordnung ist. Das Maskieren gilt für jede Datei, nicht nur für JSON. Von YAML nach JSON gibt es nichts, und das ist eine Entscheidung: es bräuchte einen YAML-Parser, den das System nicht hat, und eine falsche Annahme über einen Anchor oder ein quotiertes <code>true</code> macht aus einer Konfigurationsdatei eine andere.</p>
+<p>JSON und XML werden von einem echten Parser geprüft. Für YAML gibt es auf dem System keinen Parser, daher deckt die Prüfung die Fehler ab, die ohne einen zu finden sind — ein Tabulator zur Einrückung, den YAML ausdrücklich verbietet, eine Einrückung, die zu keiner Ebene passt, ein doppelter Schlüssel, ein nicht geschlossenes Anführungszeichen — und sagt das auch, statt die Datei für gültig zu erklären.</p>
+<h2 id="durch-einen-shell-befehl-filtern">Durch einen Shell-Befehl filtern</h2>
+<p>Klicken Sie auf <strong>Filtern…</strong> (oder drücken Sie Shift+Cmd+), um den markierten Text durch einen Befehl zu schicken und durch dessen Ausgabe zu ersetzen. Ist nichts markiert, geht das ganze Dokument durch. Damit werden die Werkzeuge, die Sie ohnehin kennen, zu Editor-Befehlen: <code>sort -u</code> entfernt doppelte Zeilen, <code>jq .</code> macht eine JSON-Antwort lesbar, <code>column -t</code> richtet eine Tabelle aus, <code>base64 -d</code> dekodiert einen Block, <code>openssl x509 -noout -text</code> zeigt ein Zertifikat im Klartext.</p>
+<p>Der Befehl läuft in Ihrer Login-Shell: <code>PATH</code>, Aliase und Funktionen wirken genau wie im Terminal, und Pipes und Anführungszeichen bedeuten das, was Sie erwarten. Als Arbeitsverzeichnis dient der Ordner der bearbeiteten Datei, sodass relative Pfade dort aufgelöst werden, wo Sie es erwarten. Benutzte Befehle werden gespeichert und beim nächsten Mal in der Auswahlliste angeboten.</p>
+<p>Schlägt der Befehl fehl, bleibt Ihr Text unverändert und die Fehlermeldung des Befehls erscheint in der Statuszeile — ein <code>jq</code>-Syntaxfehler landet nie in Ihrer Datei. Ein Befehl ohne Ausgabe leert die Markierung; genau dafür filtert man mit <code>grep</code>, und Cmd+Z holt sie zurück. Ein Befehl, der nicht fertig wird, wird nach zwanzig Sekunden abgebrochen.</p>
+<h2 id="zeilen-sortieren-entdoppeln-und-aufraumen">Zeilen sortieren, entdoppeln und aufräumen</h2>
+<p>Das Menü <strong>Zeilen</strong> — in der Werkzeugleiste und, solange der Editor vorn ist, in der Menüleiste — führt die Bearbeitungen aus, die immer wieder anfallen, ohne getippten Befehl und ohne installiertes Werkzeug:</p>
+<ul>
+<li>Sortieren A→Z oder Z→A, wobei Zahlen dem Wert nach verglichen werden, sodass <code>file9</code> vor <code>file10</code> kommt.</li>
+<li>Die Reihenfolge der Zeilen umkehren.</li>
+<li>Doppelte Zeilen entfernen, jeweils die erste behalten und die übrigen in ihrer Reihenfolge lassen.</li>
+<li>Leere Zeilen entfernen, auch die, die nur leer aussehen, weil sie Leerzeichen enthalten.</li>
+<li>Leerzeichen am Zeilenende entfernen — der unsichtbare Unterschied, der einen Diff unruhig macht.</li>
+<li>Nur die Zeilen behalten oder entfernen, die einen von Ihnen eingegebenen Text enthalten.</li>
+</ul>
+<p>Ist Text markiert, arbeitet jede dieser Operationen auf den markierten Zeilen; die Markierung wird zuvor auf ganze Zeilen erweitert, denn eine halbe Zeile zu sortieren ergibt keinen Sinn. Ohne Markierung gilt sie für das ganze Dokument. Jede ist ein einzelner Undo-Schritt, Cmd+Z nimmt also die ganze Operation zurück.</p>
+<p>Die Zeilenenden stehen neben dem Menü „Kodierung": <strong>LF</strong> für Unix und macOS, <strong>CRLF</strong> für Windows, <strong>CR</strong> für das klassische Mac OS, und <em>(mixed)</em>, wenn eine Datei mehr als eine Art enthält — häufig der Grund für einen Fehler, der keinen Sinn ergibt. Wählen Sie eine andere, um die ganze Datei in einem widerrufbaren Schritt umzuwandeln. Die Zeilenoperationen ändern das Zeilenende nie von sich aus: eine sortierte CRLF-Datei bleibt CRLF.</p>
+<h2 id="eine-datei-formatieren">Eine Datei formatieren</h2>
+<p>Klicken Sie im Editor auf <strong>Formatieren</strong> (im Viewer gibt es denselben Befehl), um die Datei neu einzurücken. Peach Commander wählt den Formatierer anhand der Dateiendung und zeigt in der Statuszeile, welcher es war, etwa <em>formatted (jq)</em> — so wissen Sie immer, was das Ergebnis geformt hat.</p>
+<p><strong>Ohne Zutun</strong> funktionieren JSON, XML, SVG, plists, HTML, INI-artige Konfiguration und YAML. YAML ist ein Sonderfall: es wird aufgeräumt statt neu eingerückt, denn in YAML <em>ist</em> die Einrückung die Struktur, und sie ohne echten YAML-Parser umzuschreiben könnte die Bedeutung ändern. Leerzeichen am Zeilenende fallen weg, versprengte Tabulatoren in der Einrückung werden Leerzeichen, Folgen von Leerzeilen schrumpfen — und alles innerhalb eines Blockskalars (<code>|</code> oder <code>&gt;</code>) bleibt genau so, denn dort ist Weißraum Inhalt.</p>
+<p><strong>Bessere Formatierer übernehmen automatisch.</strong> Ist einer davon installiert, benutzt Peach Commander ihn, weil ein eigens dafür gebautes Werkzeug meist dem entspricht, was das übrige Ökosystem erwartet — und bei Konfigurationsformaten Ihre Kommentare erhält:</p>
+<table>
+<thead>
+<tr>
+<th>Installieren</th>
+<th>und Sie erhalten</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yq</code> oder <code>prettier</code></td>
+<td>vollständige YAML-Formatierung, Kommentare bleiben</td>
+</tr>
+<tr>
+<td><code>taplo</code></td>
+<td>TOML</td>
+</tr>
+<tr>
+<td><code>sqlformat</code> oder <code>sql-formatter</code></td>
+<td>SQL</td>
+</tr>
+<tr>
+<td><code>prettier</code></td>
+<td>Markdown</td>
+</tr>
+<tr>
+<td><code>jq</code></td>
+<td>JSON im üblichen Stil</td>
+</tr>
+<tr>
+<td><code>xmllint</code></td>
+<td>XML und SVG</td>
+</tr>
+</tbody>
+</table>
+<p>Hat ein Dateityp keinen Formatierer, ist der Knopf ausgegraut und der Menüeintrag deaktiviert. Wer es dennoch versucht, erfährt den Grund — <em>„taplo ist nicht installiert“</em> liest sich anders als <em>„Kein gültiges JSON“</em>.</p>
+<h3 id="einen-eigenen-formatierer-verwenden">Einen eigenen Formatierer verwenden</h3>
+<p>Um einen Dateityp zu formatieren, den Peach Commander nicht kennt, oder um ein anderes Werkzeug zu nutzen, legen Sie <code>formatters.ini</code> im Konfigurationsordner an — ein Abschnitt pro Endung:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[swift]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">swiftformat</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">--quiet stdin</span>
+
+<span class="k">[sql]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/opt/homebrew/bin/sqlfluff</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">format -</span>
+</code></pre></div>
+
+<p><code>tool</code> ist ein ausführbarer Name (wird gesucht wie in Ihrer Shell) oder ein absoluter Pfad; <code>args</code> werden unverändert übergeben. Der Text der Datei geht über die Standardeingabe hinein, der formatierte Text kommt über die Standardausgabe zurück — so funktioniert jeder wohlerzogene Kommandozeilen-Formatierer. Ihre Einträge gewinnen gegen alles andere. Eine kommentierte Vorlage wird beim ersten Start angelegt, Sie können die Datei also einfach öffnen und ausfüllen.</p>
+<p>Auch Plugins können Formatierer beitragen — siehe <a href="plugins.md">Plugins</a>.</p>
 <h2 id="eine-datei-byte-fur-byte-bearbeiten">Eine Datei Byte für Byte bearbeiten</h2>
 <ol>
 <li>Wählen Sie die Datei in einem Panel aus.</li>
@@ -76,14 +163,51 @@
 <td>Cmd+\</td>
 </tr>
 <tr>
+<td>Zum umgebenden Knoten (JSON/YAML/XML)</td>
+<td>Ctrl+Cmd+Auf</td>
+</tr>
+<tr>
+<td>Zum ersten Kindknoten</td>
+<td>Ctrl+Cmd+Ab</td>
+</tr>
+<tr>
+<td>Zum vorherigen / nächsten Geschwisterknoten</td>
+<td>Ctrl+Cmd+Links / Rechts</td>
+</tr>
+<tr>
+<td>Umgebenden Knoten auswählen</td>
+<td>Ctrl+Cmd+A</td>
+</tr>
+<tr>
+<td>Strukturpfad kopieren</td>
+<td>Ctrl+Cmd+C</td>
+</tr>
+<tr>
+<td>Dokument prüfen</td>
+<td>Ctrl+Cmd+V</td>
+</tr>
+<tr>
+<td>Knoten falten / aufklappen</td>
+<td>Wahl+Cmd+Links / Rechts</td>
+</tr>
+<tr>
+<td>Oberste Ebene falten / alles aufklappen</td>
+<td>Wahl+Cmd+Auf / Ab</td>
+</tr>
+<tr>
 <td>Widerrufen / Wiederholen (Hex-Editor)</td>
 <td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+<tr>
+<td>Auswahl durch einen Befehl filtern</td>
+<td>Shift+Cmd+\</td>
 </tr>
 </tbody>
 </table>
 <h2 id="hinweise">Hinweise</h2>
 <ul>
-<li>Die Syntaxhervorhebung deckt JSON, C, C#, Java, JavaScript, TypeScript, Python und Rust ab. Andere Dateitypen öffnen und bearbeiten sich weiterhin normal mit einfacher Einfärbung, aber detaillierte Hervorhebung und die Symbolgliederung sind nur für die unterstützten Sprachen verfügbar.</li>
+<li>Die Syntaxhervorhebung deckt JSON, C, C#, Java, JavaScript, TypeScript, Python und Rust ab. Andere Dateitypen öffnen und bearbeiten sich weiterhin normal mit einfacher Einfärbung, aber detaillierte Hervorhebung ist nur für die unterstützten Sprachen verfügbar.</li>
+<li>Die Gliederung deckt die unterstützten Programmiersprachen sowie JSON, YAML und XML ab — einschließlich der XML-basierten Formate wie <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> und <code>.storyboard</code>. Die Befehle für Strukturnavigation, Pfad und Prüfung gelten für JSON, YAML und XML.</li>
 <li>Die Funktionen Symbolgliederung und Zu Zeile springen gelten für den Texteditor. Der Hex-Editor ist für die Binäruntersuchung und Bearbeitungen auf Byte-Ebene gedacht, nicht für Text.</li>
 <li>Beide Editoren bewahren beim ersten Sichern eine Sicherungskopie der Originaldatei auf, sodass eine versehentliche Änderung durch Wiederherstellen dieser Sicherungskopie leicht rückgängig gemacht werden kann.</li>
 </ul>

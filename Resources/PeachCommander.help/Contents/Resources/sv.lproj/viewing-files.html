@@ -27,6 +27,13 @@
 <li>Om texten ser förvrängd ut, klicka på Teckenkodning i verktygsfältet (eller tryck på E) för att bläddra genom teckenkodningar tills den läses korrekt; det automatiska läget brukar träffa rätt.</li>
 <li>Tryck på W för att växla radbrytning för långa rader.</li>
 </ul>
+<h2 id="anteckningar-om-en-rad">Anteckningar om en rad</h2>
+<p>Om insticksmodulen Anteckningar är installerad kan en anteckning handla om en viss rad i en fil i stället för om hela filen.</p>
+<ul>
+<li>Ställ markören på raden och välj <strong>Visa ▸ Anteckning för denna rad…</strong> (Cmd+Skift+N). Anteckningsredigeraren öppnas med filnamnet och radnumret i titeln.</li>
+<li>Rader som redan har en anteckning visas som gruppen <strong>Anteckningar</strong> i märkespanelen längst ned i fönstret, bredvid sökträffarna. Cmd+Ctrl+M öppnar panelen; dubbelklicka på en post för att hoppa till raden.</li>
+<li>Anteckningarna ligger tillsammans med alla andra, så anteckningsöversikten och Sök filer hittar dem på samma sätt. Radering sker i anteckningsredigeraren — panelens stängknapp döljer bara gruppen.</li>
+</ul>
 <h2 id="quick-view-och-quick-look">Quick View och Quick Look</h2>
 <p>Quick View visar en direkt förhandsvisning i den panel du <em>inte</em> använder, så att du kan fortsätta bläddra på ena sidan medan du förhandsvisar på den andra.</p>
 <ol>
@@ -55,6 +62,11 @@
 <p>Byt motor med menyn högst upp i visaren; den du väljer används genast och resultatet sparas, så att jämföra två motorer på samma fil går direkt.</p>
 <p>Källkoden syntaxmarkeras, och två knappar tar den vidare: <strong>Spara som…</strong> skriver den till en fil och <strong>Öppna i redigerare</strong> lämnar den till det som öppnar <code>.java</code> på din Mac. Ett mycket stort resultat visas omarkerat så att det syns direkt i stället för efter en paus; statusraden säger till när det händer.</p>
 <p>Resultat cachas på disk, så att öppna en fil du redan sett igen går direkt; nyckeln omfattar filens storlek och datum samt motorns argument, så en ombyggd class eller en ändrad flagga dekompileras på nytt. Den valda motorn kommer ihåg per filtyp. En profil kan ärva från en inbyggd motor med <code>extends = cfr</code> och bara ersätta flaggorna — bra när du har två förinställningar av samma motor.</p>
+<p>Slå på <strong>Jämför</strong> för att öppna en andra ruta med egen motormeny. Två dekompilatorer misslyckas på olika ställen, så att se dem sida vid sida går ofta snabbare än att avgöra vilken man ska lita på; väljer du <code>javap</code> på ena sidan står bytekoden intill källkoden. Båda rutorna delar cachen, så att växla mellan motorer du redan kört går direkt.</p>
+<p>F3 på en hel <code>.jar</code>, <code>.apk</code> eller <code>.dex</code> dekompilerar allt på en gång och visar ett pakettträd intill källkoden. Sökfältet över trädet söker i varje klass — just den fråga en enskild klass inte kan svara på: var en sträng, ett anrop eller en konstant faktiskt förekommer, när man ännu inte vet i vilken klass. Träffar smalnar av trädet och den första öppnas på sin rad. Med Enter öppnas JAR-filen fortfarande som ett arkiv; de två verben hålls åtskilda.</p>
+<p>Det finns en andra, mer direkt väg: ställ markören på en <code>.class</code>-fil eller ett helt arkiv och välj <strong>Dekompilera till källkod</strong> (menyn Kommandon, snabbmenyn eller ⌘⇧J). Klasserna dekompileras och resultatet öppnas i den andra rutan som vanliga <code>.java</code>-filer. Därifrån gäller hela filhanteraren — F3 visar dem med Peach Commanders egen Java-färgning, Alt+F7 söker tvärs igenom dem, F5 kopierar ut dem, och du kan jämföra eller tagga dem som allt annat. För det mesta arbetet slår det ett eget fönster; därför kan insticksmodulens träd stängas av i Inställningar ▸ Dekompilator.</p>
+<p>En andra insticksmodul gör samma sak för .NET: F3 på en hanterad <code>.dll</code>, <code>.exe</code> eller <code>.winmd</code> visar dess typer som C#, <strong>Dekompilera assembly till källkod</strong> (⌘⇧N) lägger dem i en ruta, och sökningen kan se in i en assembly på samma sätt. Den kör <strong>ILSpy</strong> (MIT, <code>dotnet tool install -g ilspycmd</code>) för källkod, eller <strong>monodis</strong> ur Mono för IL — .NET:s motsvarighet till <code>javap</code>. En native <code>.dll</code> har samma filändelse och ingen källkod att visa, så modulen kontrollerar det före öppning och lämnar den till den inbyggda visaren.</p>
+<p>Inställningssidan har en knapp <strong>Kontrollera motorer</strong>, och den är värd att trycka på: ”installerad” betyder på andra ställen bara att filen finns, och en Java-motor på en Mac utan JDK finns och kan inte köra. Kontrollen frågar varje motor efter dess version och säger vilka som faktiskt fungerar.</p>
 <p>Android täcks också: F3 på en <code>.dex</code>-fil använder <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), som gör Dalvik-bytekod till Java igen. Det krävdes en enda motorbeskrivning — samma mekanism, annat format.</p>
 <p>Modulen är <strong>av tills du slår på den</strong>, under Inställningar ▸ Insticksmoduler — de flesta öppnar aldrig en classfil, och utan motor gör den ingen nytta.</p>
 <p>Lägg till en egen motor genom att skapa <code>decompilers.ini</code> i motormappen:</p>
@@ -93,6 +105,14 @@
 <tr>
 <td>Sök inuti visaren</td>
 <td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Anteckning för raden under markören</td>
+<td>Cmd+Skift+N</td>
+</tr>
+<tr>
+<td>Visa eller dölj märkespanelen</td>
+<td>Cmd+Ctrl+M</td>
 </tr>
 <tr>
 <td>Nästa / föregående träff</td>

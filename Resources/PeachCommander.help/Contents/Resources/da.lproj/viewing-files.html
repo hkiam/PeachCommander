@@ -27,6 +27,13 @@
 <li>Hvis tekst ser forvansket ud, klik på Kodning i værktøjslinjen (eller tryk på E) for at cykle gennem tekstkodninger, indtil den læses korrekt; den automatiske indstilling rammer det som regel rigtigt.</li>
 <li>Tryk på W for at skifte tekstombrydning for lange linjer.</li>
 </ul>
+<h2 id="noter-til-en-linje">Noter til en linje</h2>
+<p>Hvis Noter-modulet er installeret, kan en note handle om en bestemt linje i en fil frem for om hele filen.</p>
+<ul>
+<li>Sæt markøren på linjen og vælg <strong>Vis ▸ Note til denne linje…</strong> (Cmd+Shift+N). Noteeditoren åbner med filnavnet og linjenummeret i titlen.</li>
+<li>Linjer, der allerede har en note, vises som gruppen <strong>Noter</strong> i mærkepanelet nederst i vinduet, ved siden af søgemærkerne. Tryk Cmd+Ctrl+M for at åbne panelet; dobbeltklik på en post for at gå til linjen.</li>
+<li>Noterne ligger sammen med alle dine andre noter, så noteoversigten og Find filer finder dem på samme måde. Sletning sker i noteeditoren — panelets lukkeknap skjuler kun gruppen.</li>
+</ul>
 <h2 id="hurtigvisning-og-quick-look">Hurtigvisning og Quick Look</h2>
 <p>Hurtigvisning viser en live forhåndsvisning i det panel, du <em>ikke</em> bruger, så du kan blive ved med at gennemse på den ene side, mens du forhåndsviser på den anden.</p>
 <ol>
@@ -55,6 +62,11 @@
 <p>Skift motor med menuen øverst i fremviseren; den valgte bruges straks, og resultatet bevares, så det er øjeblikkeligt at sammenligne to motorer på den samme fil.</p>
 <p>Kildekoden syntaksfremhæves, og to knapper fører videre: <strong>Arkivér som…</strong> skriver den til en fil, og <strong>Åbn i redigering</strong> giver den til det, der åbner <code>.java</code> på din Mac. Et meget stort resultat vises uden fremhævning, så det kommer frem straks i stedet for efter en pause; statuslinjen siger til.</p>
 <p>Resultater caches på disken, så det er øjeblikkeligt at åbne en fil, du har set før; nøglen omfatter filens størrelse og dato samt motorens argumenter, så en genbygget class eller et ændret flag dekompileres igen. Den valgte motor huskes pr. filtype. En profil kan arve fra en indbygget motor med <code>extends = cfr</code> og kun overskrive flagene — nyttigt hvis du har to forudindstillinger af samme motor.</p>
+<p>Slå <strong>Sammenlign</strong> til for at åbne endnu et felt med sin egen motormenu. To dekompilatorer fejler forskellige steder, så at se dem side om side er ofte hurtigere end at afgøre, hvilken man skal tro på; vælger du <code>javap</code> i den ene side, står bytekoden ved siden af kildekoden. Begge felter deler cachen, så det er øjeblikkeligt at skifte mellem motorer, du allerede har kørt.</p>
+<p>F3 på en hel <code>.jar</code>, <code>.apk</code> eller <code>.dex</code> dekompilerer det hele på én gang og viser et pakketræ ved siden af kildekoden. Søgefeltet over træet søger i hver klasse — netop det spørgsmål, en enkelt klasse ikke kan besvare: hvor en streng, et kald eller en konstant faktisk forekommer, når man endnu ikke ved i hvilken klasse. Fund indsnævrer træet, og det første åbnes ved sin linje. Med Enter åbnes JAR-filen stadig som et arkiv; de to verber holdes adskilt.</p>
+<p>Der er en anden, mere direkte vej: sæt markøren på en <code>.class</code>-fil eller et helt arkiv og vælg <strong>Dekompilér til kildekode</strong> (menuen Kommandoer, genvejsmenuen eller ⌘⇧J). Klasserne dekompileres, og resultatet åbnes i det andet felt som almindelige <code>.java</code>-filer. Derfra gælder hele filhåndteringen — F3 viser dem med Peach Commanders egen Java-farvning, Alt+F7 søger på tværs af dem, F5 kopierer dem ud, og du kan sammenligne eller mærke dem som alt andet. Til det meste arbejde slår det et selvstændigt vindue; derfor kan pluginets træ slås fra i Indstillinger ▸ Dekompilator.</p>
+<p>Et andet plugin gør det samme for .NET: F3 på en managed <code>.dll</code>, <code>.exe</code> eller <code>.winmd</code> viser dens typer som C#, <strong>Dekompilér assembly til kildekode</strong> (⌘⇧N) lægger dem i et felt, og søgningen kan se ind i en assembly på samme måde. Det driver <strong>ILSpy</strong> (MIT, <code>dotnet tool install -g ilspycmd</code>) for kildekode eller <strong>monodis</strong> fra Mono for IL — .NET's modstykke til <code>javap</code>. En native <code>.dll</code> har samme endelse og ingen kildekode at vise, så pluginet tjekker det før åbning og overlader den til den indbyggede fremviser.</p>
+<p>Indstillingssiden har en knap <strong>Tjek motorer</strong>, og den er værd at trykke på: “installeret” betyder andre steder kun, at filen er der, og en Java-motor på en Mac uden JDK er til stede og kan ikke køre. Tjekket spørger hver motor om dens version og siger, hvilke der faktisk virker.</p>
 <p>Android er også dækket: F3 på en <code>.dex</code>-fil bruger <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), som laver Dalvik-bytekode tilbage til Java. Det krævede én motorbeskrivelse — samme mekanisme, andet format.</p>
 <p>Pluginet er <strong>slået fra, indtil du slår det til</strong>, under Indstillinger ▸ Plugins — de fleste åbner aldrig en classfil, og uden en motor gør det ingen nytte.</p>
 <p>Tilføj din egen motor ved at oprette <code>decompilers.ini</code> i motormappen:</p>
@@ -93,6 +105,14 @@
 <tr>
 <td>Find i fremviseren</td>
 <td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Note til linjen under markøren</td>
+<td>Cmd+Shift+N</td>
+</tr>
+<tr>
+<td>Vis eller skjul mærkepanelet</td>
+<td>Cmd+Ctrl+M</td>
 </tr>
 <tr>
 <td>Næste / forrige match</td>

@@ -21,16 +21,103 @@
 <p>Egy vadonatúj szövegfájl kezdéséhez az aktuális helyen nyomja meg a Shift+F4-et.</p>
 <p><img alt="A beépített szövegszerkesztő a szintaxiskiemelést, a szimbólumvázlatot és a minitérképet mutatja" src="images/editor.png" />
 <em>(Ábra: a szerkesztő szintaxiskiemeléssel, a szimbólumvázlattal balra és a minitérképpel jobbra.)</em></p>
+<p>Ha a fájl a <code>root</code> tulajdona — egy bejegyzés az <code>/etc</code>-ben, egy launchd plist, egy webkiszolgáló beállítása —, a mentés felajánlja, hogy <strong>rendszergazdaként</strong> történjen: a macOS a szokott módon engedélyt kér, a tartalom egy privát ideiglenes fájlon keresztül kerül át, nem parancssoron, és a fájl megtartja a saját tulajdonosát és jogosultságait ahelyett, hogy csendben az Öné lenne.</p>
+<p>Ha a fájl nem írható, ezt a megnyitáskor tudja meg, nem a mentés pillanatában: a címben egy zár jelenik meg, az állapotsor pedig megnevezi az akadályt — más felhasználó tulajdona, az engedélyek tiltják az írást, zárolt fájl, csak olvasható kötet vagy a rendszer védelme. Csak az elsőt lehet a mentés engedélyezésével elrendezni, és csak ott ajánlja fel a program; a többinél egy jelszóba kerülne, és mégis meghiúsulna.</p>
+<p>A margó sorszámokat jelenít meg, a kurzor sorát a többinél világosabban; a kódolás menü melletti gomb elrejti. A tördelt sor egyszer kap számot, így a szám mindig ugyanazt a sort jelenti, amelyet egy fordítási hiba vagy egy átvizsgálási megjegyzés is.</p>
 <h2 id="kereses-csere-es-navigacio">Keresés, csere és navigáció</h2>
 <ul>
 <li>Nyomja meg a Cmd+F-et a keresősáv megnyitásához. Szöveg cseréjéhez nyissa meg a keresősávot és váltsa a csere nézetre, vagy kattintson a Keresés/Csere gombra az eszköztárban.</li>
 <li>Kattintson a JSON/XML formázása gombra egy JSON- vagy XML-dokumentum tiszta, olvasható elrendezésbe való újratagolásához.</li>
-<li>Kattintson a Szimbólumok gombra (vagy nyomja meg a Cmd+Shift+O-t) egy oldalsáv megjelenítéséhez, amely felsorolja a kódjában lévő osztályokat, függvényeket és metódusokat. Kattintson egy bejegyzésre, hogy egyenesen odaugorjon.</li>
+<li>Kattintson a Szimbólumok gombra (vagy nyomja meg a Cmd+Shift+O-t) egy oldalsáv megjelenítéséhez, amely felsorolja a kódjában lévő osztályokat, függvényeket és metódusokat — vagy JSON-, YAML- és XML-fájl esetén annak kulcsait és elemeit. Kattintson egy bejegyzésre, hogy egyenesen odaugorjon. Hogy mire jó még ez a szerkezet, lásd: <a href="#munka-json--yaml--és-xml-fájlokkal">Munka JSON-, YAML- és XML-fájlokkal</a>.</li>
 <li>Nyomja meg a Cmd+L-t egy adott sorra ugráshoz.</li>
 <li>Nyomja meg a Cmd+-t egy zárójel és a párja közötti ugráshoz.</li>
 <li>Kattintson a térkép gombra a minitérkép megjelenítéséhez vagy elrejtéséhez, ami az egész fájl kicsinyített áttekintése, amelyre kattintva görgethet.</li>
 <li>Használja a Kódolás menüt az eszköztárban, ha a fájl nem az alapértelmezett szövegkódolással lett mentve.</li>
 </ul>
+<h2 id="munka-json-yaml-es-xml-fajlokkal">Munka JSON-, YAML- és XML-fájlokkal</h2>
+<p>Ez a három formátum külön kezelést kap, mert egy konfigurációs fájlban a szerkezet mentén tájékozódunk, nem sorszámok szerint.</p>
+<p>A <strong>Szimbólumok</strong> oldalsáv egy JSON- vagy YAML-fájl kulcsait és egy XML-fájl elemeit sorolja fel, ugyanúgy egymásba ágyazva, ahogy a dokumentum maga. Egy elem az <code>id</code>, <code>name</code> vagy <code>key</code> attribútuma szerint kap nevet, ha van neki ilyen, így húsz <code>&lt;server&gt;</code> bejegyzés is megkülönböztethető. Egy lista a bejegyzéseit <code>[0]</code>, <code>[1]</code> alakban mutatja, és ahol egy bejegyzés kulccsal kezdődik, ott az is megjelenik — <code>[0] name</code>. A lista fölötti szűrőmező bármilyen méretű fájlban név szerint megtalálja a kulcsot, az állapotsor pedig mindig annak az útvonalát mutatja, amiben a kurzor áll.</p>
+<p>Egy hibás fájl is kap vázlatot addig a pontig, ahol elromlik — és épp akkor van rá a legnagyobb szükség.</p>
+<p>A <strong>Struktúra</strong> menü — a menüsorban, amíg a szerkesztő van elöl — ebben a szerkezetben mozgat:</p>
+<ul>
+<li><strong>Ugrás a befoglaló csomópontra</strong> (Ctrl+Cmd+Fel) kifelé lép ahhoz a blokkhoz, amely a kurzort tartalmazza: az <code>image:</code> sorról ahhoz a szolgáltatáshoz, amelyhez tartozik.</li>
+<li><strong>Ugrás az első gyermekre</strong> (Ctrl+Cmd+Le) befelé lép.</li>
+<li><strong>Ugrás az előző / következő testvérre</strong> (Ctrl+Cmd+Balra / Jobbra) ugyanazon a szinten lévő bejegyzések között lép, átugorva a közöttük lévő teljes blokkot — egyik kiszolgálóról a következőre, negyven sor beállítás átgörgetése nélkül.</li>
+<li><strong>A befoglaló csomópont kijelölése</strong> (Ctrl+Cmd+A) kijelöli azt a blokkot, amelyben a kurzor áll. Nyomja meg újra, és a kijelölés a körülötte lévő blokkra nő, így pontosan egy szolgáltatást vagy pontosan egy elemet jelöl ki húzás nélkül.</li>
+<li><strong>A strukturális útvonal másolása</strong> (Ctrl+Cmd+C) a kurzor helyét olyan kifejezésként másolja, amelyet a formátum saját eszközei elfogadnak: <code>.services.web.ports[0]</code> JSON és YAML esetén, ahogy a <code>jq</code> és a <code>yq</code> várja, és <code>//server[@id='web-1']/port</code> XML esetén, ami egy XPath. Azokat a kulcsokat, amelyek nem egyszerű szavak, idézőjelbe teszi — <code>."content-type"</code> és nem <code>.content-type</code>, ami a <code>jq</code>-ban egészen mást jelent.</li>
+<li><strong>A dokumentum ellenőrzése</strong> (Ctrl+Cmd+V) ellenőrzi a fájlt, és a kurzort <strong>a hibára</strong> teszi, az okot pedig az ablak címében írja ki. Olyat is jelez, amit az eszközlánc többi tagja nem: a többször szereplő kulcsot, amelyet minden JSON-értelmező szó nélkül elfogad, miközben a két érték egyikét eldobja, és a záró vesszőt, amelyet az Apple saját értelmezője elfogad, a Python, a Go és a <code>jq</code> viszont elutasít.</li>
+</ul>
+<p>A hosszú fájlokat úgy olvassuk, hogy összecsukjuk, amin éppen nem dolgozunk. A <strong>Csomópont összecsukása</strong> (Option+Cmd+Balra) összecsukja azt a blokkot, amelyben a kurzor áll — a legközelebbit, amelynek van törzse, így egyetlen soron megnyomva a körülötte lévő leképezést csukja össze —, a <strong>Csomópont kibontása</strong> (Option+Cmd+Jobbra) újra megnyitja, a <strong>Legfelső szint összecsukása</strong> (Option+Cmd+Fel) áttekintés céljából mindent összecsuk a legkülső szinten, az <strong>Összes kibontása</strong> (Option+Cmd+Le) pedig visszaállítja. A kulcsot vagy a címkét viselő sor látható marad és meg van jelölve, így az összecsukott blokk láthatóan összecsukott; a sorszámok átlépik, ami rejtve van. A dokumentumból semmi nem kerül el — a szöveg csak nem lesz kirajzolva, így a mentés, a visszavonás és a keresés változatlan, és a keresés az összecsukott blokkban is megtalálja a szöveget. Ha a kurzort egy összecsukott részbe teszi, az kinyílik, és bármilyen szerkesztés mindent kinyit: az összecsukás pozíciók párja, a beszúrt szöveg pedig elmozdítja őket.</p>
+<p>Ugyanez a menü tartalmazza az átalakításokat, amelyek az egész dokumentumot — vagy, ha van kijelölés, csak azt — egyetlen visszavonható lépésben írják át: <strong>Tömörítés (egy sor)</strong> egy olyan JSON-törzshöz, amelynek bele kell férnie egy <code>curl</code> parancsba, <strong>Kulcsok rekurzív rendezése</strong>, hogy ugyanazon beállítások két kimenete között ne legyen különbség, <strong>Escape-elés JSON-karakterláncként</strong> és <strong>JSON-karakterlánc visszafejtése</strong> ahhoz a napi robothoz, amikor egy tanúsítványt, egy szkriptet vagy egy teljes JSON-dokumentumot kell egy JSON-mezőbe <em>tenni</em>, valamint <strong>JSON átalakítása YAML-re</strong>. A tömörítés megőrzi a kulcsok sorrendjét és minden szám pontos írásmódját, mert az <code>1.0</code> és az <code>1</code> nem ugyanaz a verzió; a rendezés ezt szándékosan nem teszi, hiszen a rendezés átrendezés. Az escape-elés bármely fájlra alkalmazható, nem csak JSON-ra. YAML-ből JSON-ba nincs átalakítás, és ez döntés: olyan YAML-értelmezőt igényelne, amely nincs a rendszeren, és egy hibás feltevés egy horgonyról vagy egy idézőjeles <code>true</code>-ról más konfigurációs fájlt csinál a fájlból.</p>
+<p>JSON és XML esetén a fájlt igazi értelmező ellenőrzi. YAML-hez nincs a rendszeren, ezért az ellenőrzés azokra a hibákra terjed ki, amelyek e nélkül is megtalálhatók — behúzásra használt tabulátor, amit a YAML kifejezetten megtilt, semmivel sem egyező behúzás, többször szereplő kulcs, bezáratlan idézőjel — és ezt meg is mondja, ahelyett hogy érvényesnek nevezné a fájlt.</p>
+<h2 id="szures-shell-paranccsal">Szűrés shell-paranccsal</h2>
+<p>Kattintson a <strong>Szűrés…</strong> elemre (vagy nyomja meg a Shift+Cmd+-t), hogy a kijelölt szöveget egy parancsnak adja át, és a parancs kimenetével helyettesítse. Ha nincs kijelölés, a teljes dokumentum megy át. Így a már ismert eszközök az editor parancsaivá válnak: a <code>sort -u</code> eltávolítja az ismétlődő sorokat, a <code>jq .</code> olvashatóvá tesz egy JSON-választ, a <code>column -t</code> kiegyenesít egy táblázatot, a <code>base64 -d</code> dekódol egy blokkot, az <code>openssl x509 -noout -text</code> olvashatóan kiírja egy tanúsítványt.</p>
+<p>A parancs a bejelentkezési shellben fut: a <code>PATH</code>, az aliasok és a függvények pontosan úgy működnek, mint a Terminálban, a csővezetékek és az idézőjelek pedig azt jelentik, amit elvár. A munkakönyvtár a szerkesztett fájl mappája, így a relatív útvonalak ott oldódnak fel, ahol számít rájuk. A használt parancsokat megjegyzi a program, és legközelebb felajánlja a lenyíló listában.</p>
+<p>Ha a parancs hibára fut, a szöveg érintetlen marad, és a parancs hibaüzenete az állapotsorban jelenik meg — a <code>jq</code> szintaktikai hibája soha nem kerül be a fájlba. Az a parancs, amely semmit sem ír ki, kiüríti a kijelölést; pontosan erre való a <code>grep</code> szűrése, és a Cmd+Z visszahozza. Az a parancs, amely nem fejeződik be, húsz másodperc után leáll.</p>
+<h2 id="sorok-rendezese-ismetlodesek-eltavolitasa-es-tisztitasa">Sorok rendezése, ismétlődések eltávolítása és tisztítása</h2>
+<p>A <strong>Sorok</strong> menü — az eszköztárban, és amíg a szerkesztő van elöl, a menüsorban is — azokat a módosításokat végzi el, amelyek újra és újra előkerülnek, beírt parancs és telepített eszköz nélkül:</p>
+<ul>
+<li>Rendezés A→Z vagy Z→A, a számokat érték szerint összehasonlítva, így a <code>file9</code> a <code>file10</code> előtt áll.</li>
+<li>A sorok sorrendjének megfordítása.</li>
+<li>Ismétlődő sorok eltávolítása: mindegyikből az első marad, a többi a saját sorrendjében.</li>
+<li>Üres sorok eltávolítása, azokkal együtt, amelyek csak szóközök miatt látszanak üresnek.</li>
+<li>Sorvégi szóközök eltávolítása — az a láthatatlan különbség, amely zajossá tesz egy diffet.</li>
+<li>Csak a beírt szöveget tartalmazó sorok megtartása, vagy éppen azok eltávolítása.</li>
+</ul>
+<p>Ha van kijelölés, mindegyik művelet a kijelölt sorokon dolgozik; a kijelölés előbb teljes sorokra bővül, mert félsort rendezni értelmetlen. Kijelölés nélkül a teljes dokumentumra érvényesek. Mindegyik egyetlen visszavonási lépés, így a Cmd+Z az egész műveletet visszavonja.</p>
+<p>A sorvégek a Kódolás menü mellett vannak: <strong>LF</strong> a Unixhoz és a macOS-hez, <strong>CRLF</strong> a Windowshoz, <strong>CR</strong> a klasszikus Mac OS-hez, és <em>(mixed)</em>, ha egy fájl többféle is tartalmaz — gyakran ez az oka egy értelmezhetetlen hibának. Válasszon másikat, és a program egyetlen visszavonható lépésben átalakítja az egész fájlt. A sorműveletek soha nem változtatják meg maguktól a sorvéget: egy rendezett CRLF-fájl CRLF marad.</p>
+<h2 id="fajl-formazasa">Fájl formázása</h2>
+<p>Kattintson a szerkesztőben a <strong>Formázás</strong> gombra (ugyanez a parancs a megjelenítőben is megvan), és a fájl újra behúzásra kerül. A Peach Commander a kiterjesztés alapján választ formázót, és az állapotsorban megmutatja, melyiket használta, például <em>formatted (jq)</em> — így mindig tudja, mi alakította az eredményt.</p>
+<p><strong>Telepítés nélkül</strong> működik: JSON, XML, SVG, plist, HTML, INI-jellegű konfiguráció és YAML. A YAML külön eset: rendbe teszi, nem újra behúzza, mert YAML-ben a behúzás <em>maga</em> a szerkezet, és igazi YAML-értelmező nélkül átírni megváltoztathatná a fájl jelentését. A sorvégi szóközök eltűnnek, a behúzásba keveredett tabulátorok szóközzé válnak, az üres sorok sorozatai összezsugorodnak — és minden, ami blokkskaláron (<code>|</code> vagy <code>&gt;</code>) belül van, pontosan úgy marad, mert ott a szóköz tartalom.</p>
+<p><strong>A jobb formázók automatikusan átveszik a munkát.</strong> Ha valamelyik telepítve van, a Peach Commander azt használja, mert egy erre készült eszköz általában megfelel annak, amit a szélesebb ökoszisztéma elvár — konfigurációs formátumoknál pedig megőrzi a megjegyzéseit:</p>
+<table>
+<thead>
+<tr>
+<th>Telepítse</th>
+<th>és megkapja</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yq</code> vagy <code>prettier</code></td>
+<td>teljes YAML-formázás, a megjegyzések megmaradnak</td>
+</tr>
+<tr>
+<td><code>taplo</code></td>
+<td>TOML</td>
+</tr>
+<tr>
+<td><code>sqlformat</code> vagy <code>sql-formatter</code></td>
+<td>SQL</td>
+</tr>
+<tr>
+<td><code>prettier</code></td>
+<td>Markdown</td>
+</tr>
+<tr>
+<td><code>jq</code></td>
+<td>JSON, a megszokott stílusban</td>
+</tr>
+<tr>
+<td><code>xmllint</code></td>
+<td>XML és SVG</td>
+</tr>
+</tbody>
+</table>
+<p>Ha egy fájltípushoz nincs formázó, a gomb szürke és a menüpont letiltott. Ha mégis megpróbálja, megtudja, miért — <em>„a taplo nincs telepítve”</em> máshogy hangzik, mint <em>„Nem érvényes JSON”</em>.</p>
+<h3 id="sajat-formazo-hasznalata">Saját formázó használata</h3>
+<p>Olyan típus formázásához, amelyet a Peach Commander nem ismer, vagy más eszköz használatához hozzon létre egy <code>formatters.ini</code> fájlt a beállítási mappában — kiterjesztésenként egy szakaszt:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[swift]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">swiftformat</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">--quiet stdin</span>
+
+<span class="k">[sql]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/opt/homebrew/bin/sqlfluff</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">format -</span>
+</code></pre></div>
+
+<p>A <code>tool</code> egy programnév (úgy keresi meg, ahogy a shell tenné) vagy egy teljes útvonal; az <code>args</code> változtatás nélkül kerül átadásra. A fájl szövege a standard bemeneten megy be, a formázott szöveg a standard kimeneten jön vissza, így minden jól nevelt parancssori formázó működik. Az Ön bejegyzései mindent felülírnak. Az első indításnál megjegyzésekkel ellátott minta készül — nyissa meg a fájlt és töltse ki.</p>
+<p>Bővítmények is adhatnak formázót — lásd <a href="plugins.md">Plugins</a>.</p>
 <h2 id="fajl-szerkesztese-bajtrol-bajtra">Fájl szerkesztése bájtról bájtra</h2>
 <ol>
 <li>Jelölje ki a fájlt egy panelben.</li>
@@ -76,14 +163,51 @@
 <td>Cmd+\</td>
 </tr>
 <tr>
+<td>Ugrás a befoglaló csomópontra (JSON/YAML/XML)</td>
+<td>Ctrl+Cmd+Fel</td>
+</tr>
+<tr>
+<td>Ugrás az első gyermekre</td>
+<td>Ctrl+Cmd+Le</td>
+</tr>
+<tr>
+<td>Ugrás az előző / következő testvérre</td>
+<td>Ctrl+Cmd+Balra / Jobbra</td>
+</tr>
+<tr>
+<td>A befoglaló csomópont kijelölése</td>
+<td>Ctrl+Cmd+A</td>
+</tr>
+<tr>
+<td>A strukturális útvonal másolása</td>
+<td>Ctrl+Cmd+C</td>
+</tr>
+<tr>
+<td>A dokumentum ellenőrzése</td>
+<td>Ctrl+Cmd+V</td>
+</tr>
+<tr>
+<td>Csomópont összecsukása / kibontása</td>
+<td>Option+Cmd+Balra / Jobbra</td>
+</tr>
+<tr>
+<td>Legfelső szint összecsukása / összes kibontása</td>
+<td>Option+Cmd+Fel / Le</td>
+</tr>
+<tr>
 <td>Visszavonás / Ismét (hex szerkesztő)</td>
 <td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+<tr>
+<td>A kijelölés szűrése paranccsal</td>
+<td>Shift+Cmd+\</td>
 </tr>
 </tbody>
 </table>
 <h2 id="megjegyzesek">Megjegyzések</h2>
 <ul>
-<li>A szintaxiskiemelés lefedi a JSON, C, C#, Java, JavaScript, TypeScript, Python és Rust nyelveket. Más fájltípusok továbbra is normálisan nyílnak meg és szerkeszthetők alapszínezéssel, de a részletes kiemelés és a szimbólumvázlat csak a támogatott nyelvekhez elérhető.</li>
+<li>A szintaxiskiemelés lefedi a JSON, C, C#, Java, JavaScript, TypeScript, Python és Rust nyelveket. Más fájltípusok továbbra is normálisan nyílnak meg és szerkeszthetők alapszínezéssel, de a részletes kiemelés csak a támogatott nyelvekhez elérhető.</li>
+<li>A vázlat a támogatott programozási nyelveket, valamint a JSON, YAML és XML formátumot fedi le — az XML-alapú formátumokkal együtt, mint a <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> és <code>.storyboard</code>. A szerkezeti navigáció, az útvonal és az ellenőrzés parancsai JSON-, YAML- és XML-fájlokra érvényesek.</li>
 <li>A szimbólumvázlat és az Ugrás sorra a szövegszerkesztőre vonatkozik. A hex szerkesztő a bináris vizsgálatra és bájtszintű szerkesztésre való, nem a szövegre.</li>
 <li>Mindkét szerkesztő biztonsági mentést tart az eredeti fájlról az első mentéskor, így egy véletlen változtatás könnyen visszavonható a biztonsági mentés visszaállításával.</li>
 </ul>

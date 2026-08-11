@@ -55,7 +55,7 @@
 </table>
 <h2 id="uwagi">Uwagi</h2>
 <ul>
-<li>Przerwane pobierania i wysyłania mogą wznowić się w miejscu, w którym się zatrzymały, zamiast zaczynać od nowa.</li>
+<li>Przerwane pobieranie jest kontynuowane tam, gdzie się zatrzymało: jeśli plik jest już częściowo na miejscu, a serwer zgadza się na restart, przesyłana jest tylko brakująca końcówka. Serwer, który odmówi, po prostu zaczyna plik od nowa. Wysyłanie jest wznawiane tak samo, gdy plik na serwerze jest krótszy niż wysyłany.</li>
 <li>W przypadku serwerów FTPS z certyfikatem z podpisem własnym włącz opcję akceptacji niezaufanego certyfikatu w ustawieniach tego połączenia.</li>
 <li>Serwer proxy SOCKS5 można ustawić dla każdego połączenia w przypadku zwykłego FTP. Kierowanie zaszyfrowanego połączenia FTPS przez serwer proxy nie jest obsługiwane.</li>
 <li>Istniejące połączenia FTP z Total Commandera można zaimportować.</li>

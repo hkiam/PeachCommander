@@ -22,17 +22,50 @@
 <p><img alt="The built-in text editor showing syntax highlighting, the symbol outline, and the minimap" src="images/editor.png" />
 <em>(Figure: The editor with syntax highlighting, the symbol outline on the left, and the minimap on the right.)</em></p>
 <p>If the file belongs to <code>root</code> — an entry in <code>/etc</code>, a launchd plist, a web server's config — saving offers to do it <strong>as administrator</strong>: macOS asks for authorization the usual way, the content is handed over through a private temporary file rather than a command line, and the file keeps its own owner and permissions instead of quietly becoming yours.</p>
+<p>If the file cannot be written, you are told when you open it rather than when you try to save: the title carries a lock and the status line says which obstacle it is — owned by another user, permissions that deny writing, a locked file, a read-only volume, or protection by the system. Only the first of those can be settled by authorizing the save, and only that one offers it; for the others the offer would cost you a password and fail anyway.</p>
 <p>The gutter shows line numbers, with the line you are on brighter than the rest; the button beside the encoding menu hides it. A wrapped line is numbered once, so the number always means the same line a compiler error or a review comment means.</p>
 <h2 id="find-replace-and-navigate">Find, replace, and navigate</h2>
 <ul>
 <li>Press Cmd+F to open the find bar. To replace text, open the find bar and switch it to the replace view, or click Find/Replace in the toolbar.</li>
 <li>Click Format to re-indent the file into a clean, readable layout. See <a href="#formatting-a-file">Formatting a file</a> below for which file types this covers. The button is greyed out when nothing can format the file you have open.</li>
-<li>Click Symbols (or press Cmd+Shift+O) to show a sidebar that lists the classes, functions, and methods in your code. Click an entry to jump straight to it.</li>
+<li>Click Symbols (or press Cmd+Shift+O) to show a sidebar that lists the classes, functions, and methods in your code — or, for a JSON, YAML or XML file, its keys and elements. Click an entry to jump straight to it. See <a href="#work-with-json-yaml-and-xml">Work with JSON, YAML and XML</a> for what else that structure is good for.</li>
 <li>Press Cmd+L to jump to a specific line.</li>
 <li>Press Cmd+\ to jump between a bracket and its matching partner.</li>
 <li>Click the map button to show or hide the minimap, a scaled overview of the whole file you can click to scroll.</li>
 <li>Use the Encoding menu in the toolbar if the file was saved in something other than the default text encoding.</li>
 </ul>
+<h2 id="work-with-json-yaml-and-xml">Work with JSON, YAML and XML</h2>
+<p>These three formats get their own treatment, because a configuration file is navigated by structure and not by line number.</p>
+<p>The <strong>Symbols</strong> sidebar lists the keys of a JSON or YAML file and the elements of an XML file, nested the way the document is. An element is named by its <code>id</code>, <code>name</code> or <code>key</code> attribute where it has one, so twenty <code>&lt;server&gt;</code> entries are told apart. A list shows its entries as <code>[0]</code>, <code>[1]</code>, and where each entry starts with a key, that key is shown too — <code>[0] name</code>. The filter field above the list finds a key by name in a file of any size, and the status line always shows the path to whatever the cursor is inside.</p>
+<p>A broken file still gets an outline down to the point where it breaks, which is when you most want one.</p>
+<p>The <strong>Structure</strong> menu — in the menu bar while the editor is in front — moves you around that structure:</p>
+<ul>
+<li><strong>Go to Enclosing Node</strong> (Ctrl+Cmd+Up) moves out to the block that contains the cursor: from <code>image:</code> to the service it belongs to.</li>
+<li><strong>Go to First Child</strong> (Ctrl+Cmd+Down) moves in.</li>
+<li><strong>Go to Previous / Next Sibling</strong> (Ctrl+Cmd+Left / Right) moves between entries at the same level, stepping over the whole block in between — from one server to the next without scrolling past forty lines of settings.</li>
+<li><strong>Select Enclosing Node</strong> (Ctrl+Cmd+A) selects the block the cursor is in. Press it again and the selection grows to the block around that one, so you can select exactly one service, or exactly one element, without dragging.</li>
+<li><strong>Copy Structural Path</strong> (Ctrl+Cmd+C) copies the cursor's position as an expression the format's own tools take: <code>.services.web.ports[0]</code> for JSON and YAML, which is what <code>jq</code> and <code>yq</code> expect, and <code>//server[@id='web-1']/port</code> for XML, which is an XPath. Keys that are not plain words are quoted for you — <code>."content-type"</code>, not <code>.content-type</code>, which in <code>jq</code> means something else entirely.</li>
+<li><strong>Validate Document</strong> (Ctrl+Cmd+V) checks the file and puts the cursor <strong>on the problem</strong>, with the reason in the window title. It reports what nothing else in the toolchain will: a duplicate key, which every JSON parser accepts silently while quietly discarding one of the two values, and a trailing comma, which Apple's own parser accepts and Python, Go and <code>jq</code> refuse.</li>
+</ul>
+<p>Long files are read by collapsing what you are not working on. <strong>Fold Node</strong> (Option+Cmd+Left) collapses the block the cursor is in — the nearest one that has a body, so pressing it on a single line collapses the mapping around it — <strong>Unfold Node</strong> (Option+Cmd+Right) opens it again, <strong>Fold Top Level</strong> (Option+Cmd+Up) collapses everything at the outermost level for an overview of the whole file, and <strong>Unfold All</strong> (Option+Cmd+Down) restores it. The line carrying the key or the tag stays visible and is marked, so a collapsed block is visibly collapsed; the line numbers skip what is hidden. Nothing is removed from the document — the text is only not drawn, so saving, undo and Find are unaffected, and Find still finds text inside a collapsed block. Putting the cursor inside a fold opens it, and any edit opens everything: a fold is a pair of positions, and inserting text moves them.</p>
+<p>The same menu carries the transformations, which rewrite the whole document — or, when text is selected, just that text — in one undoable step: <strong>Minify (one line)</strong> for a JSON body that has to fit into a <code>curl</code> command, <strong>Sort Keys Recursively</strong> so that two exports of the same settings diff to nothing, <strong>Escape as JSON String</strong> and <strong>Unescape JSON String</strong> for the daily chore of putting a certificate, a script or a whole JSON document <em>inside</em> a JSON field, and <strong>Convert JSON to YAML</strong>. Minifying keeps the key order and the exact spelling of every number, because <code>1.0</code> and <code>1</code> are not the same version; sorting deliberately does not, since sorting is a reordering. Escaping applies to any file, not just JSON. There is no YAML to JSON, and that is a decision: it would need a YAML parser the system does not have, and a wrong guess about an anchor or a quoted <code>true</code> turns a config file into a different config file.</p>
+<p>For JSON and XML the file is checked by a real parser. For YAML there is no parser on the system, so the check covers the mistakes that can be found without one — a tab used for indentation, which YAML forbids outright, indentation that lines up with nothing, a duplicate key, an unterminated quote — and says so instead of claiming the file is valid.</p>
+<h2 id="filter-through-a-shell-command">Filter through a shell command</h2>
+<p>Click <strong>Filter…</strong> (or press Shift+Cmd+) to send the selected text through a command and replace it with whatever the command prints. With nothing selected, the whole document goes through. This turns the tools you already know into editor commands: <code>sort -u</code> to remove duplicate lines, <code>jq .</code> to make a JSON payload readable, <code>column -t</code> to line up a table, <code>base64 -d</code> to decode a blob, <code>openssl x509 -noout -text</code> to read a certificate.</p>
+<p>The command runs in your login shell, so your <code>PATH</code>, your aliases, and your functions work exactly as they do in Terminal, and pipes and quoting mean what you expect them to. It runs in the folder of the file you are editing, so relative paths resolve where you would expect. The commands you have used are remembered and offered in the dropdown the next time.</p>
+<p>If the command fails, your text is left untouched and the command's own error message appears in the status line — a <code>jq</code> syntax error never ends up pasted into your file. A command that prints nothing empties the selection, which is exactly what filtering with <code>grep</code> is for, and Cmd+Z brings it back. A command that never finishes is stopped after twenty seconds.</p>
+<h2 id="sort-deduplicate-and-clean-up-lines">Sort, deduplicate and clean up lines</h2>
+<p>The <strong>Lines</strong> menu — in the toolbar, and in the menu bar while the editor is in front — applies the edits that come up again and again, with no command typed and no tool installed:</p>
+<ul>
+<li>Sort A→Z or Z→A, comparing numbers by value, so <code>file9</code> comes before <code>file10</code>.</li>
+<li>Reverse the order of the lines.</li>
+<li>Remove duplicate lines, keeping the first of each and leaving the rest in their original order.</li>
+<li>Remove blank lines, including the ones that only look empty because they hold spaces.</li>
+<li>Trim trailing whitespace — the invisible difference that makes a diff noisy.</li>
+<li>Keep only, or remove, the lines containing a piece of text you type.</li>
+</ul>
+<p>With text selected, each of these works on the selected lines; the selection is grown to whole lines first, because sorting half a line means nothing. With nothing selected they work on the whole document. Each one is a single undo step, so Cmd+Z takes back the whole operation.</p>
+<p>Line endings sit next to the Encoding menu: <strong>LF</strong> for Unix and macOS, <strong>CRLF</strong> for Windows, <strong>CR</strong> for classic Mac OS, and <em>(mixed)</em> when one file contains more than one kind — often the reason a script fails with an error that makes no sense. Pick another one to convert the whole file in one undoable step. The line operations never change the terminator on their own: sorting a CRLF file leaves it CRLF.</p>
 <h2 id="formatting-a-file">Formatting a file</h2>
 <p>Click <strong>Format</strong> in the editor (or use the same command in the viewer) to re-indent the file. Peach Commander picks a formatter based on the file's extension and shows which one it used in the status line, for example <em>formatted (jq)</em> — so you can always tell what shaped the result.</p>
 <p><strong>Works out of the box</strong> for JSON, XML, SVG, plists, HTML, INI-style configuration, and YAML. YAML is a special case: it is tidied rather than re-indented, because in YAML the indentation <em>is</em> the structure, and rewriting it without a real YAML parser could change what the file means. Trailing spaces go, stray tabs in the indentation become spaces, runs of blank lines collapse — and anything inside a block scalar (<code>|</code> or <code>&gt;</code>) is left exactly as it is, because whitespace is content there.</p>
@@ -130,6 +163,42 @@
 <td>Cmd+\</td>
 </tr>
 <tr>
+<td>Go to enclosing node (JSON/YAML/XML)</td>
+<td>Ctrl+Cmd+Up</td>
+</tr>
+<tr>
+<td>Go to first child</td>
+<td>Ctrl+Cmd+Down</td>
+</tr>
+<tr>
+<td>Go to previous / next sibling</td>
+<td>Ctrl+Cmd+Left / Right</td>
+</tr>
+<tr>
+<td>Select enclosing node</td>
+<td>Ctrl+Cmd+A</td>
+</tr>
+<tr>
+<td>Copy structural path</td>
+<td>Ctrl+Cmd+C</td>
+</tr>
+<tr>
+<td>Validate document</td>
+<td>Ctrl+Cmd+V</td>
+</tr>
+<tr>
+<td>Fold / unfold node</td>
+<td>Option+Cmd+Left / Right</td>
+</tr>
+<tr>
+<td>Fold top level / unfold all</td>
+<td>Option+Cmd+Up / Down</td>
+</tr>
+<tr>
+<td>Filter the selection through a command</td>
+<td>Shift+Cmd+\</td>
+</tr>
+<tr>
 <td>Undo / redo (hex editor)</td>
 <td>Cmd+Z / Cmd+Shift+Z</td>
 </tr>
@@ -137,7 +206,8 @@
 </table>
 <h2 id="notes">Notes</h2>
 <ul>
-<li>Syntax highlighting covers JSON, C, C#, Java, JavaScript, TypeScript, Python, and Rust. Other file types still open and edit normally with basic coloring, but detailed highlighting and the symbol outline are only available for the supported languages.</li>
+<li>Syntax highlighting covers JSON, C, C#, Java, JavaScript, TypeScript, Python, and Rust. Other file types still open and edit normally with basic coloring, but detailed highlighting is only available for the supported languages.</li>
+<li>The outline covers the supported programming languages plus JSON, YAML and XML — including the XML-based formats such as <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> and <code>.storyboard</code>. The structural navigation, path and validation commands apply to JSON, YAML and XML.</li>
 <li>The symbol outline and Go to Line features apply to the text editor. The hex editor is meant for binary inspection and byte-level edits, not for text.</li>
 <li>Both editors keep a backup of the original file the first time you save, so an accidental change is easy to undo by restoring that backup.</li>
 </ul>

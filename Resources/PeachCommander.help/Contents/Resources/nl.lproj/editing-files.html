@@ -21,16 +21,103 @@
 <p>Om een gloednieuw tekstbestand op de huidige locatie te starten, druk je op Shift+F4.</p>
 <p><img alt="De ingebouwde teksteditor met syntaxkleuring, het symbooloverzicht en de minimap" src="images/editor.png" />
 <em>(Afbeelding: De editor met syntaxkleuring, het symbooloverzicht links en de minimap rechts.)</em></p>
+<p>Hoort het bestand bij <code>root</code> — iets in <code>/etc</code>, een launchd-plist, de configuratie van een webserver — dan biedt opslaan aan het <strong>als beheerder</strong> te doen: macOS vraagt op de gebruikelijke manier om autorisatie, de inhoud gaat via een privé tijdelijk bestand in plaats van via een opdrachtregel, en het bestand houdt zijn eigen eigenaar en rechten in plaats van stil van jou te worden.</p>
+<p>Als het bestand niet schrijfbaar is, hoort u dat bij het openen en niet pas bij het opslaan: de titel draagt een slotje en de statusregel noemt het obstakel — eigendom van een andere gebruiker, rechten die schrijven verbieden, een vergrendeld bestand, een alleen-lezen volume of bescherming door het systeem. Alleen het eerste is op te lossen door het opslaan te autoriseren, en alleen daar wordt dat aangeboden; bij de andere zou het u een wachtwoord kosten en toch mislukken.</p>
+<p>De kantlijn toont regelnummers, met de regel van de cursor lichter dan de rest; de knop naast het coderingsmenu verbergt hem. Een afgebroken regel wordt één keer genummerd, dus het nummer betekent altijd dezelfde regel als een compilerfout of een reviewopmerking.</p>
 <h2 id="zoeken-vervangen-en-navigeren">Zoeken, vervangen en navigeren</h2>
 <ul>
 <li>Druk op Cmd+F om de zoekbalk te openen. Om tekst te vervangen, open je de zoekbalk en schakel je over naar de vervangweergave, of klik je op Zoeken/Vervangen in de werkbalk.</li>
 <li>Klik op JSON/XML opmaken om een JSON- of XML-document opnieuw in te springen tot een nette, leesbare indeling.</li>
-<li>Klik op Symbolen (of druk op Cmd+Shift+O) om een zijbalk te tonen die de klassen, functies en methoden in je code opsomt. Klik op een item om er direct naartoe te springen.</li>
+<li>Klik op Symbolen (of druk op Cmd+Shift+O) om een zijbalk te tonen die de klassen, functies en methoden in je code opsomt — of, bij een JSON-, YAML- of XML-bestand, de sleutels en elementen ervan. Klik op een item om er direct naartoe te springen. Zie <a href="#werken-met-json-yaml-en-xml">Werken met JSON, YAML en XML</a> voor waar die structuur verder goed voor is.</li>
 <li>Druk op Cmd+L om naar een specifieke regel te springen.</li>
 <li>Druk op Cmd+\ om te springen tussen een haakje en zijn bijbehorende partner.</li>
 <li>Klik op de kaartknop om de minimap te tonen of te verbergen, een geschaald overzicht van het hele bestand waarop je kunt klikken om te scrollen.</li>
 <li>Gebruik het menu Codering in de werkbalk als het bestand is opgeslagen in iets anders dan de standaard tekstcodering.</li>
 </ul>
+<h2 id="werken-met-json-yaml-en-xml">Werken met JSON, YAML en XML</h2>
+<p>Deze drie formaten krijgen een eigen behandeling, want een configuratiebestand doorloop je op structuur en niet op regelnummer.</p>
+<p>De zijbalk <strong>Symbolen</strong> somt de sleutels van een JSON- of YAML-bestand en de elementen van een XML-bestand op, genest zoals het document zelf. Een element wordt genoemd naar zijn attribuut <code>id</code>, <code>name</code> of <code>key</code> als het er een heeft, zodat twintig <code>&lt;server&gt;</code>-items van elkaar te onderscheiden zijn. Een lijst toont zijn items als <code>[0]</code>, <code>[1]</code>, en waar een item met een sleutel begint, staat die er ook bij — <code>[0] name</code>. Het filterveld boven de lijst vindt een sleutel op naam in een bestand van elke grootte, en de statusbalk toont altijd het pad naar dat waarin de cursor staat.</p>
+<p>Ook een kapot bestand krijgt een overzicht tot het punt waar het misgaat, en juist dan heb je er het meest aan.</p>
+<p>Het menu <strong>Structuur</strong> — in de menubalk zolang de editor vooraan staat — beweegt je door die structuur:</p>
+<ul>
+<li><strong>Ga naar omliggende knoop</strong> (Ctrl+Cmd+Omhoog) gaat naar buiten, naar het blok waarin de cursor staat: van <code>image:</code> naar de dienst waartoe het hoort.</li>
+<li><strong>Ga naar eerste kind</strong> (Ctrl+Cmd+Omlaag) gaat naar binnen.</li>
+<li><strong>Ga naar vorige / volgende broer of zus</strong> (Ctrl+Cmd+Links / Rechts) gaat tussen items op hetzelfde niveau en stapt over het hele blok ertussen — van de ene server naar de volgende zonder langs veertig regels instellingen te scrollen.</li>
+<li><strong>Omliggende knoop selecteren</strong> (Ctrl+Cmd+A) selecteert het blok waarin de cursor staat. Nog een keer indrukken laat de selectie groeien naar het blok eromheen, zodat je precies één dienst of precies één element selecteert zonder te slepen.</li>
+<li><strong>Structuurpad kopiëren</strong> (Ctrl+Cmd+C) kopieert de positie van de cursor als een uitdrukking die de eigen gereedschappen van het formaat aannemen: <code>.services.web.ports[0]</code> voor JSON en YAML, wat <code>jq</code> en <code>yq</code> verwachten, en <code>//server[@id='web-1']/port</code> voor XML, dus een XPath. Sleutels die geen gewone woorden zijn, worden voor je tussen aanhalingstekens gezet — <code>."content-type"</code> en niet <code>.content-type</code>, wat in <code>jq</code> iets heel anders betekent.</li>
+<li><strong>Document valideren</strong> (Ctrl+Cmd+V) controleert het bestand en zet de cursor <strong>op het probleem</strong>, met de reden in de venstertitel. Het meldt wat niets anders in de gereedschapsketen meldt: een dubbele sleutel, die elke JSON-parser stilzwijgend accepteert terwijl een van de twee waarden verdwijnt, en een komma aan het eind, die Apple's eigen parser accepteert en Python, Go en <code>jq</code> weigeren.</li>
+</ul>
+<p>Lange bestanden lees je door in te klappen waar je niet aan werkt. <strong>Knoop inklappen</strong> (Option+Cmd+Links) klapt het blok in waar de cursor staat — het naastgelegen blok dat een body heeft, zodat één regel indrukken de omliggende mapping inklapt —, <strong>Knoop uitklappen</strong> (Option+Cmd+Rechts) opent het weer, <strong>Bovenste niveau inklappen</strong> (Option+Cmd+Omhoog) klapt alles op het buitenste niveau in voor een overzicht, en <strong>Alles uitklappen</strong> (Option+Cmd+Omlaag) herstelt het. De regel met de sleutel of de tag blijft zichtbaar en wordt gemarkeerd, zodat een ingeklapt blok zichtbaar ingeklapt is; de regelnummers slaan over wat verborgen is. Er wordt niets uit het document verwijderd — de tekst wordt alleen niet getekend, dus bewaren, ongedaan maken en zoeken blijven gelijk, en zoeken vindt nog steeds tekst binnen een ingeklapt blok. De cursor in een inklapping zetten opent die, en elke bewerking opent alles: een inklapping is een paar posities, en ingevoegde tekst verschuift ze.</p>
+<p>Hetzelfde menu bevat de transformaties, die het hele document herschrijven — of, als er tekst geselecteerd is, alleen die tekst — in één stap die je ongedaan kunt maken: <strong>Verkleinen (één regel)</strong> voor een JSON-body die in een <code>curl</code>-opdracht moet passen, <strong>Sleutels recursief sorteren</strong> zodat twee exports van dezelfde instellingen geen verschil meer laten zien, <strong>Als JSON-tekenreeks escapen</strong> en <strong>JSON-tekenreeks unescapen</strong> voor het dagelijkse werk om een certificaat, een script of een heel JSON-document <em>in</em> een JSON-veld te zetten, en <strong>JSON naar YAML omzetten</strong>. Verkleinen houdt de volgorde van de sleutels en de exacte schrijfwijze van elk getal aan, want <code>1.0</code> en <code>1</code> zijn niet dezelfde versie; sorteren doet dat opzettelijk niet, omdat sorteren een herordening is. Escapen geldt voor elk bestand, niet alleen voor JSON. Van YAML naar JSON is er niets, en dat is een besluit: het zou een YAML-parser vereisen die het systeem niet heeft, en een verkeerde aanname over een anchor of een aangehaalde <code>true</code> maakt van een configuratiebestand een ander bestand.</p>
+<p>Voor JSON en XML wordt het bestand door een echte parser gecontroleerd. Voor YAML is er geen parser op het systeem, dus dekt de controle de fouten die zonder parser te vinden zijn — een tab om te indenteren, wat YAML uitdrukkelijk verbiedt, een indentatie die bij niets past, een dubbele sleutel, een niet-afgesloten aanhalingsteken — en zegt dat ook, in plaats van het bestand geldig te verklaren.</p>
+<h2 id="filteren-via-een-shell-opdracht">Filteren via een shell-opdracht</h2>
+<p>Klik op <strong>Filteren…</strong> (of druk op Shift+Cmd+) om de geselecteerde tekst door een opdracht te sturen en te vervangen door wat de opdracht afdrukt. Is er niets geselecteerd, dan gaat het hele document erdoor. Zo worden de hulpmiddelen die u al kent opdrachten van de editor: <code>sort -u</code> verwijdert dubbele regels, <code>jq .</code> maakt een JSON-antwoord leesbaar, <code>column -t</code> lijnt een tabel uit, <code>base64 -d</code> decodeert een blok, <code>openssl x509 -noout -text</code> toont een certificaat leesbaar.</p>
+<p>De opdracht loopt in uw login-shell: uw <code>PATH</code>, uw aliassen en uw functies werken precies zoals in Terminal, en pipes en aanhalingstekens betekenen wat u verwacht. De werkmap is de map van het bestand dat u bewerkt, zodat relatieve paden worden opgelost waar u dat verwacht. Gebruikte opdrachten worden bewaard en de volgende keer in de keuzelijst aangeboden.</p>
+<p>Mislukt de opdracht, dan blijft uw tekst ongewijzigd en verschijnt de foutmelding van de opdracht in de statusregel — een <code>jq</code>-syntaxisfout komt nooit in uw bestand terecht. Een opdracht die niets afdrukt maakt de selectie leeg, en juist daarvoor filtert u met <code>grep</code>; Cmd+Z brengt die terug. Een opdracht die niet klaar komt, wordt na twintig seconden gestopt.</p>
+<h2 id="regels-sorteren-ontdubbelen-en-opschonen">Regels sorteren, ontdubbelen en opschonen</h2>
+<p>Het menu <strong>Regels</strong> — in de knoppenbalk en, zolang de editor vooraan staat, in de menubalk — voert de bewerkingen uit die steeds terugkomen, zonder getypte opdracht en zonder geïnstalleerd hulpmiddel:</p>
+<ul>
+<li>Sorteren A→Z of Z→A, waarbij getallen op waarde worden vergeleken, zodat <code>file9</code> vóór <code>file10</code> komt.</li>
+<li>De volgorde van de regels omkeren.</li>
+<li>Dubbele regels verwijderen, van elke de eerste bewaren en de rest in hun volgorde laten.</li>
+<li>Lege regels verwijderen, ook die alleen leeg lijken omdat ze spaties bevatten.</li>
+<li>Witruimte aan het regeleinde verwijderen — het onzichtbare verschil dat een diff onrustig maakt.</li>
+<li>Alleen de regels behouden die een door u getypte tekst bevatten, of juist die verwijderen.</li>
+</ul>
+<p>Met tekst geselecteerd werkt elk van deze bewerkingen op de geselecteerde regels; de selectie wordt eerst tot hele regels uitgebreid, want een halve regel sorteren betekent niets. Zonder selectie werken ze op het hele document. Elke bewerking is één stap in de ongedaan-maakgeschiedenis, dus Cmd+Z neemt de hele bewerking terug.</p>
+<p>De regeleinden staan naast het menu Codering: <strong>LF</strong> voor Unix en macOS, <strong>CRLF</strong> voor Windows, <strong>CR</strong> voor het klassieke Mac OS, en <em>(mixed)</em> wanneer één bestand meer dan één soort bevat — vaak de reden dat een script faalt met een onbegrijpelijke fout. Kies een andere om het hele bestand in één ongedaan te maken stap om te zetten. De regelbewerkingen wijzigen het regeleinde nooit op eigen initiatief: een gesorteerd CRLF-bestand blijft CRLF.</p>
+<h2 id="een-bestand-opmaken">Een bestand opmaken</h2>
+<p>Klik op <strong>Opmaken</strong> in de editor (dezelfde opdracht zit in de viewer) om het bestand opnieuw te laten inspringen. Peach Commander kiest een opmaker op basis van de extensie en laat in de statusbalk zien welke het was, bijvoorbeeld <em>formatted (jq)</em> — zo weet je altijd wat het resultaat heeft gevormd.</p>
+<p><strong>Zonder iets te installeren</strong>: JSON, XML, SVG, plists, HTML, INI-achtige configuratie en YAML. YAML is een geval apart: het wordt opgeruimd in plaats van opnieuw ingesprongen, want in YAML <em>is</em> de inspringing de structuur, en die herschrijven zonder echte YAML-parser kan de betekenis veranderen. Spaties aan het regeleinde verdwijnen, losse tabs in de inspringing worden spaties, reeksen lege regels krimpen — en alles binnen een blokscalair (<code>|</code> of <code>&gt;</code>) blijft precies zoals het is, want daar is witruimte inhoud.</p>
+<p><strong>Betere opmakers nemen automatisch over.</strong> Heb je er een geïnstalleerd, dan gebruikt Peach Commander die, omdat een specifiek gereedschap meestal past bij wat de rest van het ecosysteem verwacht — en bij configuratieformaten je commentaar bewaart:</p>
+<table>
+<thead>
+<tr>
+<th>Installeer</th>
+<th>en je krijgt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yq</code> of <code>prettier</code></td>
+<td>volledige YAML-opmaak, commentaar blijft</td>
+</tr>
+<tr>
+<td><code>taplo</code></td>
+<td>TOML</td>
+</tr>
+<tr>
+<td><code>sqlformat</code> of <code>sql-formatter</code></td>
+<td>SQL</td>
+</tr>
+<tr>
+<td><code>prettier</code></td>
+<td>Markdown</td>
+</tr>
+<tr>
+<td><code>jq</code></td>
+<td>JSON, in de gebruikelijke stijl</td>
+</tr>
+<tr>
+<td><code>xmllint</code></td>
+<td>XML en SVG</td>
+</tr>
+</tbody>
+</table>
+<p>Heeft een bestandstype geen opmaker, dan is de knop grijs en het menu-item uitgeschakeld. Toch proberen vertelt je waarom — <em>“taplo is niet geïnstalleerd”</em> leest anders dan <em>“Geen geldige JSON”</em>.</p>
+<h3 id="je-eigen-opmaker-gebruiken">Je eigen opmaker gebruiken</h3>
+<p>Wil je een type opmaken dat Peach Commander niet kent, of een ander gereedschap gebruiken, maak dan <code>formatters.ini</code> in de configuratiemap — één sectie per extensie:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[swift]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">swiftformat</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">--quiet stdin</span>
+
+<span class="k">[sql]</span>
+<span class="na">tool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/opt/homebrew/bin/sqlfluff</span>
+<span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">format -</span>
+</code></pre></div>
+
+<p><code>tool</code> is een naam van een programma (opgezocht zoals je shell dat doet) of een absoluut pad; <code>args</code> worden ongewijzigd doorgegeven. De tekst van het bestand gaat via standaardinvoer naar binnen en de opgemaakte tekst komt via standaarduitvoer terug, dus elke net werkende opdrachtregel-opmaker werkt. Jouw regels winnen van al het andere. Bij de eerste start wordt een becommentarieerd voorbeeld aangemaakt: open het bestand en vul het in.</p>
+<p>Plugins kunnen ook opmakers aanleveren — zie <a href="plugins.md">Plugins</a>.</p>
 <h2 id="een-bestand-byte-voor-byte-bewerken">Een bestand byte voor byte bewerken</h2>
 <ol>
 <li>Selecteer het bestand in een paneel.</li>
@@ -76,14 +163,51 @@
 <td>Cmd+\</td>
 </tr>
 <tr>
+<td>Ga naar omliggende knoop (JSON/YAML/XML)</td>
+<td>Ctrl+Cmd+Omhoog</td>
+</tr>
+<tr>
+<td>Ga naar eerste kind</td>
+<td>Ctrl+Cmd+Omlaag</td>
+</tr>
+<tr>
+<td>Ga naar vorige / volgende broer of zus</td>
+<td>Ctrl+Cmd+Links / Rechts</td>
+</tr>
+<tr>
+<td>Omliggende knoop selecteren</td>
+<td>Ctrl+Cmd+A</td>
+</tr>
+<tr>
+<td>Structuurpad kopiëren</td>
+<td>Ctrl+Cmd+C</td>
+</tr>
+<tr>
+<td>Document valideren</td>
+<td>Ctrl+Cmd+V</td>
+</tr>
+<tr>
+<td>Knoop inklappen / uitklappen</td>
+<td>Option+Cmd+Links / Rechts</td>
+</tr>
+<tr>
+<td>Bovenste niveau inklappen / alles uitklappen</td>
+<td>Option+Cmd+Omhoog / Omlaag</td>
+</tr>
+<tr>
 <td>Ongedaan maken / opnieuw (hex-editor)</td>
 <td>Cmd+Z / Cmd+Shift+Z</td>
+</tr>
+<tr>
+<td>Selectie via een opdracht filteren</td>
+<td>Shift+Cmd+\</td>
 </tr>
 </tbody>
 </table>
 <h2 id="opmerkingen">Opmerkingen</h2>
 <ul>
-<li>Syntaxkleuring dekt JSON, C, C#, Java, JavaScript, TypeScript, Python en Rust. Andere bestandstypen openen en bewerken nog steeds normaal met basiskleuring, maar gedetailleerde kleuring en het symbooloverzicht zijn alleen beschikbaar voor de ondersteunde talen.</li>
+<li>Syntaxkleuring dekt JSON, C, C#, Java, JavaScript, TypeScript, Python en Rust. Andere bestandstypen openen en bewerken nog steeds normaal met basiskleuring, maar gedetailleerde kleuring is alleen beschikbaar voor de ondersteunde talen.</li>
+<li>Het overzicht dekt de ondersteunde programmeertalen plus JSON, YAML en XML — inclusief de op XML gebaseerde formaten zoals <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> en <code>.storyboard</code>. De opdrachten voor structuurnavigatie, pad en validatie gelden voor JSON, YAML en XML.</li>
 <li>Het symbooloverzicht en de functie Ga naar regel gelden voor de teksteditor. De hex-editor is bedoeld voor binaire inspectie en bewerkingen op byteniveau, niet voor tekst.</li>
 <li>Beide editors bewaren de eerste keer dat je opslaat een back-up van het oorspronkelijke bestand, zodat een onbedoelde wijziging eenvoudig ongedaan te maken is door die back-up te herstellen.</li>
 </ul>

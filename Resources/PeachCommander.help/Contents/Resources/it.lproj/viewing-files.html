@@ -27,6 +27,13 @@
 <li>Se il testo appare confuso, fai clic su Codifica nella barra degli strumenti (o premi E) per scorrere le codifiche di testo finché non si legge correttamente; l'impostazione automatica di solito è corretta.</li>
 <li>Premi W per commutare l'a capo automatico per le righe lunghe.</li>
 </ul>
+<h2 id="note-su-una-riga">Note su una riga</h2>
+<p>Se il plugin Note è installato, una nota può riguardare una riga precisa di un file anziché il file nel suo insieme.</p>
+<ul>
+<li>Porta il cursore sulla riga e scegli <strong>Vista ▸ Nota per questa riga…</strong> (Cmd+Maiusc+N). L'editor delle note si apre con il nome del file e il numero di riga nel titolo.</li>
+<li>Le righe che hanno già una nota compaiono come gruppo <strong>Note</strong> nel pannello dei segni in fondo alla finestra, accanto ai risultati di ricerca. Cmd+Ctrl+M apre il pannello; un doppio clic su una voce salta a quella riga.</li>
+<li>Le note stanno insieme a tutte le altre, quindi il riepilogo delle note e Cerca file le trovano come qualsiasi altra. Si eliminano nell'editor delle note: il pulsante di chiusura del pannello si limita a nascondere il gruppo.</li>
+</ul>
 <h2 id="anteprima-rapida-e-quick-look">Anteprima rapida e Quick Look</h2>
 <p>L'Anteprima rapida mostra un'anteprima in tempo reale nel pannello che <em>non</em> stai usando, così puoi continuare a sfogliare da un lato mentre visualizzi l'anteprima dall'altro.</p>
 <ol>
@@ -55,6 +62,11 @@
 <p>Cambiate motore con il menu in cima al visualizzatore; quello scelto viene usato subito e il risultato viene conservato, così confrontare due motori sullo stesso file è immediato.</p>
 <p>Il sorgente è evidenziato sintatticamente, e due pulsanti fanno di più: <strong>Registra come…</strong> lo scrive in un file e <strong>Apri nell’editor</strong> lo consegna a ciò che apre i <code>.java</code> sul vostro Mac. Un risultato molto grande viene mostrato senza evidenziazione per comparire subito anziché dopo una pausa; la riga di stato lo segnala.</p>
 <p>I risultati sono messi in cache su disco, così riaprire un file già visto è immediato; la chiave comprende dimensione e data del file e gli argomenti del motore, quindi una classe ricompilata o un’opzione modificata viene decompilata di nuovo. Il motore scelto viene ricordato per tipo di file. Un profilo può ereditare da un motore integrato con <code>extends = cfr</code> e ridefinire solo le opzioni — comodo se tenete due preimpostazioni dello stesso motore.</p>
+<p>Attivate <strong>Confronta</strong> per aprire un secondo pannello con il proprio menu del motore. Due decompilatori sbagliano in punti diversi, quindi vederli affiancati è spesso più rapido che decidere di quale fidarsi; scegliendo <code>javap</code> da un lato, il bytecode sta accanto al sorgente. I due pannelli condividono la cache, così passare tra motori già eseguiti è immediato.</p>
+<p>F3 su un <code>.jar</code>, <code>.apk</code> o <code>.dex</code> intero lo decompila tutto in una volta e mostra un albero di package accanto al sorgente. Il campo di ricerca sopra l’albero cerca in ogni classe — proprio la domanda a cui una singola classe non può rispondere: dove una stringa, una chiamata o una costante compare davvero, quando non si sa ancora in quale classe. Le corrispondenze restringono l’albero e la prima si apre alla sua riga. Con Invio il JAR si apre ancora come archivio: i due verbi restano distinti.</p>
+<p>C’è una seconda via, più diretta: mettete il cursore su un file <code>.class</code> o su un intero archivio e scegliete <strong>Decompila in sorgenti</strong> (menu Comandi, menu contestuale o ⌘⇧J). Le classi vengono decompilate e il risultato si apre nell’altro pannello come normali file <code>.java</code>. Da lì vale tutto il file manager: F3 li mostra con l’evidenziazione Java di Peach Commander, Alt+F7 cerca fra di essi, F5 li copia fuori, e potete confrontarli o etichettarli come qualsiasi altra cosa. Per la maggior parte del lavoro questo batte una finestra a sé; per questo l’albero del plugin si può disattivare in Impostazioni ▸ Decompilatore.</p>
+<p>Un secondo plugin fa lo stesso per .NET: F3 su un <code>.dll</code>, <code>.exe</code> o <code>.winmd</code> gestito mostra i suoi tipi come C#, <strong>Decompila l’assembly in sorgenti</strong> (⌘⇧N) li mette in un pannello, e la ricerca può guardare dentro un assembly nello stesso modo. Guida <strong>ILSpy</strong> (MIT, <code>dotnet tool install -g ilspycmd</code>) per il sorgente, o <strong>monodis</strong> di Mono per l’IL — il corrispettivo .NET di <code>javap</code>. Un <code>.dll</code> nativo ha la stessa estensione e nessun sorgente da mostrare: il plugin lo verifica prima di aprire e lo lascia al visualizzatore integrato.</p>
+<p>La pagina delle impostazioni ha un pulsante <strong>Controlla motori</strong>, e vale la pena premerlo: «installato» altrove significa solo che il file c'è, e un motore Java su un Mac senza JDK è presente e non può funzionare. Il controllo chiede a ogni motore la sua versione e dice quali funzionano davvero.</p>
 <p>Anche Android è coperto: F3 su un file <code>.dex</code> usa <strong>jadx</strong> (Apache 2.0, <code>brew install jadx</code>), che riporta il bytecode Dalvik a Java. È bastata una descrizione di motore — stesso meccanismo, formato diverso.</p>
 <p>Il modulo è <strong>spento finché non lo accendete</strong>, in Impostazioni ▸ Moduli: quasi nessuno apre un file .class, e senza motore non serve.</p>
 <p>Per aggiungere un motore vostro, create <code>decompilers.ini</code> nella cartella dei motori:</p>
@@ -93,6 +105,14 @@
 <tr>
 <td>Trova nel visualizzatore</td>
 <td>Ctrl+F</td>
+</tr>
+<tr>
+<td>Nota per la riga sotto il cursore</td>
+<td>Cmd+Maiusc+N</td>
+</tr>
+<tr>
+<td>Mostrare o nascondere il pannello dei segni</td>
+<td>Cmd+Ctrl+M</td>
 </tr>
 <tr>
 <td>Corrispondenza successiva / precedente</td>
