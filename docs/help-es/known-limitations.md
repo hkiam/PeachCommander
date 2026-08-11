@@ -25,7 +25,7 @@ Peach Commander hace muchas cosas, pero unas cuantas funciones tienen límites r
 
 ## Otros límites actuales
 
-- **Rutas muy largas: navegar funciona, copiar todavía no.** macOS rechaza como argumento de llamada cualquier ruta de más de 1024 bytes, y las carpetas anidadas hasta ese punto existen. Listar, abrir, renombrar, crear y eliminar llegan hasta ellas; **F5 Copiar y F6 Mover aún no** y allí informan de un error. Trabajar más cerca de la parte alta del árbol de carpetas evita el caso restante.
+- **Las rutas muy largas funcionan, salvo la Papelera.** macOS rechaza como argumento de llamada cualquier ruta de más de 1024 bytes, y las carpetas anidadas hasta ese punto existen. Navegar, abrir, copiar, mover, renombrar, crear y eliminar de forma permanente llegan a todas ellas. La única excepción es **mover a la Papelera**: macOS no ofrece forma de tirar un archivo que no puede nombrar, así que Supr informa de un error allí — Mayús+Supr (eliminar permanentemente) sí funciona.
 - **Esta versión preliminar no está firmada.** Gatekeeper bloquea el primer arranque, y cómo permitirlo depende de su versión de macOS. En **macOS 15 Sequoia y posterior**: haga doble clic una vez, cierre el aviso y vaya a **Ajustes del Sistema ▸ Privacidad y seguridad** y pulse **Abrir de todos modos** — Apple quitó el atajo del clic derecho para software sin firmar en macOS 15, así que el clic derecho ya no sirve. En **macOS 13–14**: haga clic derecho en la app y elija Abrir, luego confirme. Las actualizaciones automáticas todavía no están disponibles en esta versión.
 
 ## Atajos

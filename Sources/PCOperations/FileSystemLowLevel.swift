@@ -5,6 +5,7 @@
 // silently followed (a safety requirement for recursive copy/delete).
 
 import Foundation
+import PCFoundation
 
 enum FSKind: Equatable {
     case file
@@ -60,14 +61,12 @@ enum FSLowLevel {
     }
 
     static func readSymlink(_ path: String) -> String? {
-        var buf = [CChar](repeating: 0, count: Int(PATH_MAX))
-        let n = path.withCString { readlink($0, &buf, buf.count - 1) }
-        guard n >= 0 else { return nil }
-        buf[n] = 0
-        return String(cString: buf)
+        DeepPath.readSymlink(path)
     }
 
+    /// Routed through `DeepPath` so a path past PATH_MAX answers instead of reporting "does not
+    /// exist" — which is what an lstat failure reads as to every caller above (F-383).
     private static func lstatPath(_ path: String, _ st: inout stat) -> Int32 {
-        path.withCString { lstat($0, &st) }
+        DeepPath.lstat(path, &st)
     }
 }

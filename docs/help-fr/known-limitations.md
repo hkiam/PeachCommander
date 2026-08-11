@@ -25,7 +25,7 @@ Peach Commander fait beaucoup, mais quelques fonctionnalités ont des limites ho
 
 ## Autres limites actuelles
 
-- **Chemins très longs : la navigation fonctionne, la copie pas encore.** macOS refuse comme argument d’appel tout chemin de plus de 1024 octets, et des dossiers imbriqués à ce point existent. Lister, ouvrir, renommer, créer et supprimer y parviennent ; **F5 Copier et F6 Déplacer pas encore** et y signalent une erreur. Travailler plus près du sommet de l’arborescence évite le cas restant.
+- **Les chemins très longs fonctionnent, sauf la Corbeille.** macOS refuse comme argument d’appel tout chemin de plus de 1024 octets, et des dossiers imbriqués à ce point existent. Parcourir, ouvrir, copier, déplacer, renommer, créer et supprimer définitivement y parviennent tous. La seule exception est la **mise à la Corbeille** : macOS n’offre aucun moyen de mettre au rebut un fichier qu’il ne peut pas nommer, donc Suppr y signale une erreur — Maj+Suppr (supprimer définitivement) fonctionne.
 - **Cette version préliminaire n'est pas signée.** Gatekeeper bloque le premier lancement, et la façon de l'autoriser dépend de votre version de macOS. Sous **macOS 15 Sequoia et ultérieur** : double-cliquez une fois, fermez l'avertissement, puis allez dans **Réglages Système ▸ Confidentialité et sécurité** et cliquez sur **Ouvrir quand même** — Apple a supprimé le raccourci par clic droit pour les logiciels non signés dans macOS 15, le clic droit n'aide donc plus. Sous **macOS 13–14** : cliquez droit sur l'application, choisissez Ouvrir, puis confirmez. Les mises à jour automatiques ne sont pas encore disponibles dans cette version.
 
 ## Raccourcis

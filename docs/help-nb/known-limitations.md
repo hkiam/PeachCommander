@@ -25,7 +25,7 @@ Peach Commander gjør mye, men noen få funksjoner har ærlige grenser i den gje
 
 ## Andre gjeldende grenser
 
-- **Svært lange baner: å bla fungerer, å kopiere ennå ikke.** macOS avviser enhver bane over 1024 byte som kallargument, og mapper som er nestet dypt nok til det, forekommer. Opplisting, åpning, omdøping, oppretting og sletting når dem; **F5 Kopier og F6 Flytt gjør det ennå ikke** og melder feil der. Å arbeide nærmere toppen av mappetreet unngår det gjenstående tilfellet.
+- **Svært lange baner fungerer, unntatt papirkurven.** macOS avviser enhver bane over 1024 byte som kallargument, og mapper som er nestet dypt nok til det, forekommer. Å bla, åpne, kopiere, flytte, gi nytt navn, opprette og slette permanent når dem alle. Det eneste unntaket er **å flytte til papirkurven**: macOS tilbyr ingen måte å kaste en fil den ikke kan navngi, så Delete melder feil der — Shift+Delete (slett permanent) fungerer.
 - **Denne forhåndsversjonen er ikke signert.** Gatekeeper blokkerer den første starten, og hvordan du tillater den avhenger av macOS-versjonen din. På **macOS 15 Sequoia og nyere**: dobbeltklikk én gang, lukk advarselen, og gå så til **Systeminnstillinger ▸ Personvern og sikkerhet** og klikk **Åpne likevel** — Apple fjernet snarveien med høyreklikk for usignert programvare i macOS 15, så høyreklikk hjelper ikke lenger. På **macOS 13–14**: høyreklikk appen og velg Åpne, bekreft deretter. Automatiske oppdateringer er ennå ikke tilgjengelige i denne versjonen.
 
 ## Snarveier

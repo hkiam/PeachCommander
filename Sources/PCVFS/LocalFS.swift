@@ -6,6 +6,7 @@
 // PCVFS remains the single place that touches the file system directly.
 
 import Foundation
+import PCFoundation
 
 /// Streams a local file's bytes in chunks (seekable via the backing fd).
 public final class LocalReadStream: VFSReadStream, @unchecked Sendable {
@@ -240,15 +241,9 @@ public final class LocalFS: VirtualFileSystem, @unchecked Sendable {
         LocalStat.entry(atPath: full, name: name)
     }
 
-    /// `open`, or `openat` through the parent's descriptor when the path is too long to pass (F-383).
-    /// Returns -1 with `errno` set, exactly like `open`.
+    /// Kept as a name here because both call sites read better for it; the walk itself is shared.
     private static func openFile(_ path: String, flags: Int32, mode: mode_t) -> Int32 {
-        guard DeepPath.isDeep(path) else {
-            return path.withCString { open($0, flags, mode) }
-        }
-        return DeepPath.withParent(of: path) { fd, name in
-            name.withCString { openat(fd, $0, flags, mode) }
-        } ?? -1
+        DeepPath.open(path, flags, mode)
     }
 
     /// Lists a directory whose path no syscall will accept, through one descriptor for it (F-383).

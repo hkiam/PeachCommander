@@ -25,7 +25,7 @@ Peach Commander face multe, dar câteva funcții au limite oneste în versiunea 
 
 ## Alte limite curente
 
-- **Căi foarte lungi: răsfoirea merge, copierea încă nu.** macOS respinge ca argument de apel orice cale mai lungă de 1024 de octeți, iar dosarele imbricate până acolo există. Listarea, deschiderea, redenumirea, crearea și ștergerea ajung la ele; **F5 Copiază și F6 Mută încă nu** și raportează acolo o eroare. Lucrul mai aproape de vârful arborelui de dosare evită cazul rămas.
+- **Căile foarte lungi funcționează, cu excepția Coșului.** macOS respinge ca argument de apel orice cale mai lungă de 1024 de octeți, iar dosarele imbricate până acolo există. Răsfoirea, deschiderea, copierea, mutarea, redenumirea, crearea și ștergerea definitivă ajung la toate. Singura excepție este **mutarea în Coș**: macOS nu oferă nicio cale de a arunca un fișier pe care nu îl poate numi, așa că Delete raportează acolo o eroare — Shift+Delete (șterge definitiv) funcționează.
 - **Această versiune de previzualizare nu este semnată.** Gatekeeper blochează prima lansare, iar modul de a o permite depinde de versiunea de macOS. Pe **macOS 15 Sequoia și mai nou**: faceți dublu clic o dată, închideți avertismentul, apoi mergeți la **Configurări sistem ▸ Confidențialitate și securitate** și apăsați **Deschide oricum** — Apple a eliminat în macOS 15 scurtătura prin clic dreapta pentru software nesemnat, așa că un clic dreapta nu mai ajută. Pe **macOS 13–14**: faceți clic dreapta pe aplicație, alegeți Deschide, apoi confirmați. Actualizările automate nu sunt încă disponibile în această versiune.
 
 ## Comenzi rapide

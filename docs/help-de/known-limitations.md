@@ -25,7 +25,7 @@ Peach Commander kann viel, aber ein paar Funktionen haben in der aktuellen Versi
 
 ## Weitere aktuelle Einschränkungen
 
-- **Sehr lange Pfade: Ansehen geht, Kopieren noch nicht.** macOS weist jeden Pfad über 1024 Byte als Aufrufargument zurück, und so tief verschachtelte Ordner kommen vor. Auflisten, Öffnen, Umbenennen, Anlegen und Löschen erreichen sie; **F5 Kopieren und F6 Verschieben noch nicht** — dort kommt eine Fehlermeldung. Arbeiten näher an der Spitze des Ordnerbaums umgeht den verbleibenden Fall.
+- **Sehr lange Pfade funktionieren, außer beim Papierkorb.** macOS weist jeden Pfad über 1024 Byte als Aufrufargument zurück, und so tief verschachtelte Ordner kommen vor. Ansehen, Öffnen, Kopieren, Verschieben, Umbenennen, Anlegen und endgültiges Löschen erreichen sie alle. Die einzige Ausnahme ist **In den Papierkorb legen**: macOS bietet keinen Weg, eine Datei wegzuwerfen, die es nicht benennen kann — dort meldet Entf einen Fehler, Umschalt+Entf (endgültig löschen) funktioniert.
 - **Dieser Vorschau-Build ist nicht signiert.** Gatekeeper blockiert den ersten Start, und wie Sie ihn erlauben, hängt von Ihrer macOS-Version ab. Unter **macOS 15 Sequoia und neuer**: einmal doppelklicken, die Warnung schließen, dann in **Systemeinstellungen ▸ Datenschutz & Sicherheit** auf **Dennoch öffnen** klicken — Apple hat die Abkürzung über die rechte Maustaste für nicht signierte Software in macOS 15 entfernt, ein Rechtsklick hilft dort also nicht mehr. Unter **macOS 13–14**: mit der rechten Maustaste auf die App klicken, Öffnen wählen und bestätigen. Automatische Updates sind in diesem Build noch nicht verfügbar.
 
 ## Kurzbefehle

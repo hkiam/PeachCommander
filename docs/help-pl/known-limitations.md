@@ -25,7 +25,7 @@ Peach Commander robi wiele, ale kilka funkcji ma w bieżącej wersji szczere ogr
 
 ## Inne bieżące ograniczenia
 
-- **Bardzo długie ścieżki: przeglądanie działa, kopiowanie jeszcze nie.** macOS odrzuca jako argument wywołania każdą ścieżkę dłuższą niż 1024 bajty, a foldery zagnieżdżone aż tak głęboko się zdarzają. Wyświetlanie, otwieranie, zmiana nazwy, tworzenie i usuwanie do nich docierają; **F5 Kopiuj i F6 Przenieś jeszcze nie** i zgłaszają tam błąd. Praca bliżej szczytu drzewa folderów omija pozostały przypadek.
+- **Bardzo długie ścieżki działają, z wyjątkiem Kosza.** macOS odrzuca jako argument wywołania każdą ścieżkę dłuższą niż 1024 bajty, a foldery zagnieżdżone aż tak głęboko się zdarzają. Przeglądanie, otwieranie, kopiowanie, przenoszenie, zmiana nazwy, tworzenie i trwałe usuwanie docierają do nich wszystkich. Jedynym wyjątkiem jest **przeniesienie do Kosza**: macOS nie daje sposobu, by wyrzucić plik, którego nie potrafi nazwać, więc Delete zgłasza tam błąd — Shift+Delete (usuń trwale) działa.
 - **Ta wersja zapoznawcza nie jest podpisana.** Gatekeeper blokuje pierwsze uruchomienie, a sposób na jego dopuszczenie zależy od wersji macOS. W **macOS 15 Sequoia i nowszym**: kliknij dwukrotnie raz, zamknij ostrzeżenie, a potem przejdź do **Ustawień systemowych ▸ Prywatność i ochrona** i kliknij **Otwórz mimo to** — Apple usunęło w macOS 15 skrót przez kliknięcie prawym przyciskiem dla niepodpisanego oprogramowania, więc kliknięcie prawym przyciskiem już nie pomaga. W **macOS 13–14**: kliknij aplikację prawym przyciskiem, wybierz Otwórz i potwierdź. Automatyczne aktualizacje nie są jeszcze dostępne w tej wersji.
 
 ## Skróty
