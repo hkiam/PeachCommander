@@ -28,7 +28,7 @@
 </ul>
 <h2 id="other-current-limits">Other current limits</h2>
 <ul>
-<li><strong>Some very long absolute paths</strong> (deeply nested folders whose full path is unusually long) may not be handled reliably. Working closer to the top of the folder tree avoids this.</li>
+<li><strong>Very long paths: browsing works, copying does not yet.</strong> macOS refuses any path longer than 1024 bytes as a call argument, and folders nested deep enough to exceed that do occur. Listing, opening, renaming, creating and deleting reach them; <strong>F5 Copy and F6 Move do not yet</strong> and report an error there. Working closer to the top of the folder tree avoids the remaining case.</li>
 <li><strong>This preview build is unsigned.</strong> Gatekeeper blocks the first launch, and how you allow it depends on your macOS version. On <strong>macOS 15 Sequoia and later</strong>: double-click once, dismiss the warning, then go to System Settings ▸ Privacy &amp; Security and click <strong>Open Anyway</strong> — Apple removed the right-click shortcut for unsigned software in macOS 15, so right-clicking no longer helps. On <strong>macOS 13–14</strong>: right-click the app and choose Open, then confirm. Automatic updates are not yet available in this build.</li>
 </ul>
 <h2 id="shortcuts">Shortcuts</h2>

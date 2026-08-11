@@ -25,7 +25,7 @@ Peach Commander naredi veliko, a nekaj funkcij ima v trenutni različici pošten
 
 ## Druge trenutne meje
 
-- **Nekatere zelo dolge absolutne poti** (globoko vgnezdene mape, katerih celotna pot je nenavadno dolga) morda niso obravnavane zanesljivo. Delo bliže vrhu drevesa map se temu izogne.
+- **Zelo dolge poti: brskanje deluje, kopiranje še ne.** macOS kot argument klica zavrne vsako pot, daljšo od 1024 bajtov, in tako globoko vgnezdene mape se pojavljajo. Izpis, odpiranje, preimenovanje, ustvarjanje in brisanje jih dosežejo; **F5 Kopiraj in F6 Premakni še ne** in tam javita napako. Delo bliže vrhu drevesa map se preostalemu primeru izogne.
 - **Ta predogledna različica ni podpisana.** Gatekeeper prepreči prvi zagon, način, kako ga dovolite, pa je odvisen od različice macOS. V **macOS 15 Sequoia in novejšem**: enkrat dvokliknite, zaprite opozorilo, nato pojdite v **Sistemske nastavitve ▸ Zasebnost in varnost** in kliknite **Vseeno odpri** — Apple je v macOS 15 odstranil bližnjico z desnim klikom za nepodpisano programsko opremo, zato desni klik tam ne pomaga več. V **macOS 13–14**: z desno tipko kliknite aplikacijo, izberite Odpri in potrdite. Samodejne posodobitve v tej različici še niso na voljo.
 
 ## Bližnjice

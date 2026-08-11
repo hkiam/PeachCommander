@@ -86,6 +86,14 @@ public final class LocalFS: VirtualFileSystem, @unchecked Sendable {
         AsyncThrowingStream { continuation in
             let dirPath = dir.path
             do {
+                // A directory too deep to name is listed through a descriptor for it, and each entry
+                // is stat'ed relative to that same descriptor (F-383). Worth noting that this is not
+                // only the way that works — it is also fewer syscalls, since the walk happens once
+                // instead of being redone inside every lstat.
+                if DeepPath.isDeep(dirPath) {
+                    try Self.listDeep(dirPath, into: continuation)
+                    return
+                }
                 let names = try FileManager.default.contentsOfDirectory(atPath: dirPath)
                 var batch: [VFSEntry] = []
                 batch.reserveCapacity(min(names.count, 4096))
@@ -106,14 +114,22 @@ public final class LocalFS: VirtualFileSystem, @unchecked Sendable {
     }
 
     public func stat(_ path: VFSPath) async throws -> VFSEntry {
-        guard let entry = Self.entry(atPath: path.path, name: (path.path as NSString).lastPathComponent) else {
+        let name = (path.path as NSString).lastPathComponent
+        if DeepPath.isDeep(path.path) {
+            let entry = DeepPath.withParent(of: path.path) { fd, leaf in
+                LocalStat.entry(leaf, relativeTo: fd)
+            }
+            guard let entry = entry ?? nil else { throw VFSError.notFound(path.path) }
+            return entry
+        }
+        guard let entry = Self.entry(atPath: path.path, name: name) else {
             throw VFSError.notFound(path.path)
         }
         return entry
     }
 
     public func openRead(_ path: VFSPath) async throws -> VFSReadStream {
-        let fd = path.path.withCString { open($0, O_RDONLY) }
+        let fd = Self.openFile(path.path, flags: O_RDONLY, mode: 0)
         guard fd >= 0 else { throw VFSError.fromErrno(errno, path: path.path) }
         return LocalReadStream(fd: fd)
     }
@@ -122,12 +138,21 @@ public final class LocalFS: VirtualFileSystem, @unchecked Sendable {
         var flags: Int32 = O_WRONLY
         if options.create { flags |= O_CREAT }
         if options.append { flags |= O_APPEND } else if options.truncate { flags |= O_TRUNC }
-        let fd = path.path.withCString { open($0, flags, 0o644) }
+        let fd = Self.openFile(path.path, flags: flags, mode: 0o644)
         guard fd >= 0 else { throw VFSError.fromErrno(errno, path: path.path) }
         return LocalWriteStream(fd: fd)
     }
 
     public func mkdir(_ path: VFSPath) async throws {
+        // Deep on purpose whenever the *result* would be deep, not only when the argument already is:
+        // creating the last few components of a 1200-byte path is exactly the case FileManager cannot
+        // do, and it is how such a tree comes into existence in the first place (F-383).
+        if DeepPath.isDeep(path.path) {
+            guard DeepPath.createDirectory(path.path) else {
+                throw VFSError.fromErrno(errno, path: path.path)
+            }
+            return
+        }
         do {
             try FileManager.default.createDirectory(atPath: path.path, withIntermediateDirectories: true)
         } catch {
@@ -136,11 +161,29 @@ public final class LocalFS: VirtualFileSystem, @unchecked Sendable {
     }
 
     public func delete(_ path: VFSPath) async throws {
+        if DeepPath.isDeep(path.path) {
+            let removed = DeepPath.withParent(of: path.path) { fd, leaf in
+                DeepPath.removeRecursively(leaf, in: fd)
+            }
+            guard removed == true else { throw VFSError.fromErrno(errno, path: path.path) }
+            return
+        }
         do { try FileManager.default.removeItem(atPath: path.path) }
         catch { throw VFSError.fromErrno(errno, path: path.path) }
     }
 
     public func rename(_ from: VFSPath, to: VFSPath) async throws {
+        // `renameat` takes a descriptor per side, so either end being too deep to name is fine — and
+        // either end *may* be, since a rename is how something usually arrives at that depth (F-383).
+        if DeepPath.isDeep(from.path) || DeepPath.isDeep(to.path) {
+            let ok = DeepPath.withParent(of: from.path) { fromFd, fromName in
+                DeepPath.withParent(of: to.path) { toFd, toName in
+                    renameat(fromFd, fromName, toFd, toName) == 0
+                }
+            }
+            guard ok == true else { throw VFSError.fromErrno(errno, path: from.path) }
+            return
+        }
         let rc = from.path.withCString { f in to.path.withCString { t in Darwin.rename(f, t) } }
         if rc != 0 { throw VFSError.fromErrno(errno, path: from.path) }
     }
@@ -196,21 +239,76 @@ public final class LocalFS: VirtualFileSystem, @unchecked Sendable {
     static func entry(atPath full: String, name: String) -> VFSEntry? {
         LocalStat.entry(atPath: full, name: name)
     }
+
+    /// `open`, or `openat` through the parent's descriptor when the path is too long to pass (F-383).
+    /// Returns -1 with `errno` set, exactly like `open`.
+    private static func openFile(_ path: String, flags: Int32, mode: mode_t) -> Int32 {
+        guard DeepPath.isDeep(path) else {
+            return path.withCString { open($0, flags, mode) }
+        }
+        return DeepPath.withParent(of: path) { fd, name in
+            name.withCString { openat(fd, $0, flags, mode) }
+        } ?? -1
+    }
+
+    /// Lists a directory whose path no syscall will accept, through one descriptor for it (F-383).
+    private static func listDeep(_ dirPath: String,
+                                 into continuation: AsyncThrowingStream<VFSEntryBatch, Error>.Continuation) throws {
+        let fd = DeepPath.openDirectory(dirPath)
+        guard fd >= 0 else { throw VFSError.fromErrno(errno, path: dirPath) }
+        guard let stream = fdopendir(fd) else {
+            let failure = errno
+            close(fd)
+            throw VFSError.fromErrno(failure, path: dirPath)
+        }
+        defer { closedir(stream) }   // owns fd
+
+        var batch: [VFSEntry] = []
+        while let dirent = readdir(stream) {
+            let name = withUnsafeBytes(of: dirent.pointee.d_name) { raw in
+                String(cString: raw.bindMemory(to: CChar.self).baseAddress!)
+            }
+            if name == "." || name == ".." { continue }
+            if let entry = LocalStat.entry(name, relativeTo: dirfd(stream)) { batch.append(entry) }
+            if batch.count >= 4096 {
+                continuation.yield(VFSEntryBatch(entries: batch, isLastBatch: false))
+                batch.removeAll(keepingCapacity: true)
+            }
+        }
+        continuation.yield(VFSEntryBatch(entries: batch, isLastBatch: true))
+        continuation.finish()
+    }
 }
 
 /// lstat-based entry construction, kept out of `LocalFS` so the C `stat` type is
 /// not shadowed by the protocol's `stat(_:)` method.
 private enum LocalStat {
     static func entry(atPath full: String, name: String) -> VFSEntry? {
+        build(base: AT_FDCWD, at: full, name: name, resolvable: full)
+    }
+
+    /// The same for a file whose directory is too deep to name (F-383): every call goes through the
+    /// directory's descriptor, so no syscall sees more than the entry's own name.
+    ///
+    /// `resolvable` is nil here — a Finder alias is resolved through a URL, which is a path API and
+    /// therefore the one thing that cannot follow. Such a file lists as a plain file, the way a broken
+    /// alias already did, rather than the listing failing over it.
+    static func entry(_ name: String, relativeTo base: Int32) -> VFSEntry? {
+        build(base: base, at: name, name: name, resolvable: nil)
+    }
+
+    /// `lstat(p)` is `fstatat(AT_FDCWD, p, …, AT_SYMLINK_NOFOLLOW)`, so the shallow path goes through
+    /// the same code with the same meaning — the base descriptor is the only difference.
+    private static func build(base: Int32, at path: String, name: String, resolvable: String?) -> VFSEntry? {
         var info = stat()
-        guard lstat(full, &info) == 0 else { return nil }
+        guard fstatat(base, path, &info, AT_SYMLINK_NOFOLLOW) == 0 else { return nil }
         let fmt = info.st_mode & S_IFMT
         let isSymlink = fmt == S_IFLNK
         var kind: VFSEntry.Kind
         var aliasTarget: String?
         if isSymlink {
             var target = stat()
-            let targetIsDir = stat(full, &target) == 0 && (target.st_mode & S_IFMT) == S_IFDIR
+            let targetIsDir = fstatat(base, path, &target, 0) == 0 && (target.st_mode & S_IFMT) == S_IFDIR
             kind = targetIsDir ? .symlinkDir : .symlinkFile
         } else if fmt == S_IFDIR {
             kind = name.hasSuffix(".app") ? .appBundle : .directory
@@ -220,7 +318,7 @@ private enum LocalStat {
             // Finder flag. Treat it like a symlink (arrow badge, follow on Enter).
             // The flag check is a cheap getattrlist; the (costly) target resolve
             // runs only for the rare files that are actually aliases.
-            if hasAliasFlag(full), let resolved = resolveAlias(full) {
+            if hasAliasFlag(at: path, relativeTo: base), let resolvable, let resolved = resolveAlias(resolvable) {
                 if resolved.isDir {
                     // An alias to an .app launches it; to a folder, navigates in.
                     kind = resolved.target.hasSuffix(".app") ? .appBundle : .symlinkDir
@@ -248,20 +346,20 @@ private enum LocalStat {
             // column shows it as "h") and simply never consulted here, so such a file stayed visible
             // with "show hidden files" switched off (F-028).
             isHidden: name.hasPrefix(".") || (info.st_flags & UInt32(UF_HIDDEN)) != 0,
-            linkTarget: isSymlink ? readlink(full) : aliasTarget
+            linkTarget: isSymlink ? readlink(at: path, relativeTo: base) : aliasTarget
         )
     }
 
     /// True if `path`'s Finder info has the kIsAlias bit set (i.e. it is a macOS
     /// alias file), via a single getattrlist. Cheap enough to run per regular file.
-    private static func hasAliasFlag(_ path: String) -> Bool {
+    private static func hasAliasFlag(at path: String, relativeTo base: Int32) -> Bool {
         var attrList = attrlist()
         attrList.bitmapcount = u_short(ATTR_BIT_MAP_COUNT)
         attrList.commonattr = attrgroup_t(ATTR_CMN_FNDRINFO)
         // Layout: 4-byte length prefix, then 32 bytes of Finder info; the file's
         // finderFlags are a big-endian UInt16 at offset 8 within the Finder info.
         var buffer = [UInt8](repeating: 0, count: 36)
-        let rc = path.withCString { getattrlist($0, &attrList, &buffer, buffer.count, 0) }
+        let rc = path.withCString { getattrlistat(base, $0, &attrList, &buffer, buffer.count, 0) }
         guard rc == 0 else { return false }
         let flags = (UInt16(buffer[4 + 8]) << 8) | UInt16(buffer[4 + 9])
         return (flags & 0x8000) != 0   // kIsAlias
@@ -278,9 +376,9 @@ private enum LocalStat {
         return (isDir.boolValue, resolved.path)
     }
 
-    private static func readlink(_ path: String) -> String? {
+    private static func readlink(at path: String, relativeTo base: Int32) -> String? {
         var buffer = [CChar](repeating: 0, count: Int(PATH_MAX))
-        let n = path.withCString { Foundation.readlink($0, &buffer, buffer.count - 1) }
+        let n = path.withCString { Foundation.readlinkat(base, $0, &buffer, buffer.count - 1) }
         guard n >= 0 else { return nil }
         buffer[n] = 0
         return String(cString: buffer)

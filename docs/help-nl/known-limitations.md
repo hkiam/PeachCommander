@@ -25,7 +25,7 @@ Peach Commander doet veel, maar een paar functies hebben in de huidige versie ee
 
 ## Overige huidige beperkingen
 
-- **Sommige zeer lange absolute paden** (diep geneste mappen met een ongewoon lang volledig pad) worden mogelijk niet betrouwbaar verwerkt. Dichter bij de top van de mapstructuur werken vermijdt dit.
+- **Zeer lange paden: bladeren werkt, kopiëren nog niet.** macOS weigert elk pad van meer dan 1024 bytes als aanroepargument, en zo diep geneste mappen komen voor. Weergeven, openen, hernoemen, aanmaken en verwijderen bereiken ze; **F5 Kopiëren en F6 Verplaatsen nog niet** en melden daar een fout. Dichter bij de top van de mappenboom werken vermijdt het resterende geval.
 - **Deze voorvertoningsbuild is niet ondertekend.** Gatekeeper blokkeert de eerste start, en hoe je die toestaat hangt af van je macOS-versie. Op **macOS 15 Sequoia en later**: dubbelklik één keer, sluit de waarschuwing en ga naar **Systeeminstellingen ▸ Privacy en beveiliging** en klik op **Toch openen** — Apple heeft de snelkoppeling via rechtsklikken voor niet-ondertekende software in macOS 15 verwijderd, dus rechtsklikken helpt daar niet meer. Op **macOS 13–14**: klik met de rechtermuisknop op de app en kies Open, bevestig daarna. Automatische updates zijn in deze build nog niet beschikbaar.
 
 ## Sneltoetsen
