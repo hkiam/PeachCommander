@@ -14,6 +14,17 @@ does not have.
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-08-11
+
+A repair release. Everything below came out of one user report — a folder tree that stayed
+white under the Midnight palette — because chasing it exposed that of 59 regression
+scenarios, not one had ever looked at a colour. The audit built to answer that found a
+crash on ordinary use, and the same sweep of the test harness found seven keyboard checks
+that had been measuring nothing at all.
+
+**Still unsigned and un-notarized.** macOS blocks the first launch; `README.md` explains
+how to allow it once.
+
 ### Fixed
 
 - **The local-network prompt on first launch now says what it is for.** macOS asks the moment
