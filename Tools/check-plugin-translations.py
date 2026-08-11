@@ -63,7 +63,26 @@ def main():
         if not os.path.exists(english):
             continue
         plugin_count += 1
-        expected = set(keys_of(english))
+        english_list = keys_of(english)
+        expected = set(english_list)
+
+        # A key written twice is one key: the loader keeps the last value and drops the first
+        # silently. Harmless while both say the same thing, which is why it survives — and a trap the
+        # moment somebody edits one of them. Reported always, failed only once they disagree, since
+        # failing on the harmless case would block on something that is not yet wrong.
+        if len(english_list) != len(expected):
+            values = dict(re.findall(r'^"((?:[^"\\]|\\.)*)"\s*=\s*"((?:[^"\\]|\\.)*)";',
+                                     open(english, encoding="utf-8").read(), re.M))
+            for key in sorted({k for k in english_list if english_list.count(k) > 1}):
+                same = len({m for m in re.findall(
+                    rf'^"{re.escape(key)}"\s*=\s*"((?:[^"\\]|\\.)*)";',
+                    open(english, encoding="utf-8").read(), re.M)}) == 1
+                print(f"  {'·' if same else '✗'} {plugin}/en: {key!r} appears "
+                      f"{english_list.count(key)} times"
+                      f"{' (same value, harmless for now)' if same else ' WITH DIFFERENT VALUES'}")
+                if not same:
+                    problems += 1
+            del values
         absent = []
         for lang in languages:
             if lang == "en":

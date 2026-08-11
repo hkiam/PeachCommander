@@ -14,6 +14,13 @@ English is never written from a dictionary: `en.lproj` is the source and stays h
 its keys ARE the English text. A key in a dictionary that no longer exists in `en.lproj` is reported
 as stale rather than written, because it would sit in the bundle answering a question nobody asks.
 
+Neither is any other language that has no dictionary — which is the point, and was learned the
+expensive way. The German files were written by hand and carry comments a generated file cannot
+reproduce: which terms stay in English, that the informal address is used, and section headings that
+group forty strings into the popovers they belong to. Regenerating German from a dictionary kept
+every translation and threw all of that away. A language is generated only if somebody put a
+dictionary there for it; anything else is left alone.
+
 Idempotent. Usage: Tools/apply-plugin-translations.py [plugin ...]   (default: all)
 """
 import json
