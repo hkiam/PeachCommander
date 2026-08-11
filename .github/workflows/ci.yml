@@ -93,6 +93,15 @@ jobs:
       - name: Check every test is registered and run
         run: python3 Tools/check-tests-registered.py
 
+      # The app's coverage gate reads the String Catalog and cannot see a plugin: a plugin ships its
+      # strings in its own bundle. That is how twelve plugins came to be localized into German and
+      # nothing else while the app is in nineteen languages, with every gate green — what a user sees
+      # is part app, part plugin, and only one half was counted. This fails on a *half filled*
+      # .lproj, which reads as translated from the outside; a language that is simply absent falls
+      # back to English and is reported as a number instead.
+      - name: Check plugin strings are translated, or honestly absent
+        run: python3 Tools/check-plugin-translations.py
+
       - name: Build project
         run: |
           ./Tools/build.sh
