@@ -17,6 +17,10 @@ _Generated from `docs/metadata/terminology.yml`. These are the canonical terms u
 **command**
 : A named action (shown in the command browser) that can be run from a menu, the button bar, a shortcut or the command line.
 
+**dock**
+: The strip across the bottom of the main window that hosts plugin views needing width — a terminal, a build log, a REPL. Not macOS's own Dock, and not a panel: "panel" is reserved for the two file views, so what the dock holds is a view.
+  <br>*(not: bottom panel, bottombar)*
+
 **drive bar**
 : The strip above each panel listing mounted volumes and their free space.
 
