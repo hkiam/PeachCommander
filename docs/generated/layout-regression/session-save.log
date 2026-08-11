@@ -1,308 +1,598 @@
 Timestamp               Ty Process[PID:TID]
-2026-08-10 22:35:10.308 A  PeachCommander[8752:ae22] (libsystem_info.dylib) Retrieve User by ID
-2026-08-10 22:35:10.309 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0x1049f5f60] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
-2026-08-10 22:35:10.309 Df PeachCommander[8752:ae29] [com.apple.xpc:connection] [0x1049f66a0] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.agent
-2026-08-10 22:35:10.310 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0x1049fc930] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.launchservicesd
-2026-08-10 22:35:10.310 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] Registering for notification <private> on default queue, to re-boostrap client connection.
-2026-08-10 22:35:10.310 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c90000] activating connection: mach=true listener=false peer=false name=com.apple.pasteboard.1
-2026-08-10 22:35:10.310 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c90140] activating connection: mach=true listener=false peer=false name=com.apple.distributed_notifications@Uv3
-2026-08-10 22:35:10.312 Df PeachCommander[8752:ae22] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) No windows open yet
-2026-08-10 22:35:10.312 A  PeachCommander[8752:ae22] (TCC) TCCAccessRequest() IPC
-2026-08-10 22:35:10.312 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c90280] activating connection: mach=true listener=false peer=false name=com.apple.tccd.system
-2026-08-10 22:35:10.312 I  PeachCommander[8752:ae22] [com.apple.TCC:access] SEND: 0/7 synchronous to com.apple.tccd.system: request: msgID=8752.1, function=TCCAccessRequest, service=kTCCServiceListenEvent,
-2026-08-10 22:35:10.313 I  PeachCommander[8752:ae22] [com.apple.TCC:access] RECV: synchronous reply <dictionary: 0xbe0c70000> { count = 5, transaction: 0, voucher = 0x0, contents =
-	"prompt_type" => <uint64: 0x897a842df843174f>: 1
-	"auth_value" => <uint64: 0x897a842df843174f>: 1
-	"preflight_unknown" => <bool: 0x1effd5190>: true
-	"auth_version" => <uint64: 0x897a842df843174f>: 1
-	"auth_reason" => <uint64: 0x897a842df843176f>: 5
+2026-08-11 01:42:19.903 A  PeachCommander[8919:b262] (libsystem_info.dylib) Retrieve User by ID
+2026-08-11 01:42:19.904 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0x105ad1e00] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
+2026-08-11 01:42:19.904 Df PeachCommander[8919:b268] [com.apple.xpc:connection] [0x105ad2e80] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.agent
+2026-08-11 01:42:19.905 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0x105ad8cd0] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.launchservicesd
+2026-08-11 01:42:19.905 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] Registering for notification <private> on default queue, to re-boostrap client connection.
+2026-08-11 01:42:19.905 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909c000] activating connection: mach=true listener=false peer=false name=com.apple.pasteboard.1
+2026-08-11 01:42:19.906 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909c140] activating connection: mach=true listener=false peer=false name=com.apple.distributed_notifications@Uv3
+2026-08-11 01:42:19.907 Df PeachCommander[8919:b262] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) No windows open yet
+2026-08-11 01:42:19.907 A  PeachCommander[8919:b262] (TCC) TCCAccessRequest() IPC
+2026-08-11 01:42:19.907 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909c280] activating connection: mach=true listener=false peer=false name=com.apple.tccd.system
+2026-08-11 01:42:19.907 I  PeachCommander[8919:b262] [com.apple.TCC:access] SEND: 0/7 synchronous to com.apple.tccd.system: request: msgID=8919.1, function=TCCAccessRequest, service=kTCCServiceListenEvent,
+2026-08-11 01:42:19.908 I  PeachCommander[8919:b262] [com.apple.TCC:access] RECV: synchronous reply <dictionary: 0xab8c54000> { count = 5, transaction: 0, voucher = 0x0, contents =
+	"prompt_type" => <uint64: 0x8b51236546844ec7>: 1
+	"auth_value" => <uint64: 0x8b51236546844ec7>: 1
+	"preflight_unknown" => <bool: 0x1f5625190>: true
+	"auth_version" => <uint64: 0x8b51236546844ec7>: 1
+	"auth_reason" => <uint64: 0x8b51236546844ee7>: 5
 }
-2026-08-10 22:35:10.313 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c90280] invalidated after the last release of the connection object
-2026-08-10 22:35:10.313 Df PeachCommander[8752:ae22] [com.apple.SkyLight:default] server port 0x0000380f, session port 0x0000380f
-2026-08-10 22:35:10.315 Df PeachCommander[8752:ae22] [com.apple.SkyLight:default] New connection 0xbc27 main
-2026-08-10 22:35:10.315 I  PeachCommander[8752:ae29] [com.apple.SkyLight:processes] 0[outside of RPC]: First connection id 48167 mapped to ctx = 0xbe0c74600
-2026-08-10 22:35:10.315 I  PeachCommander[8752:ae22] [com.apple.hiservices:processmgr] Checking in with CAS, pid=8752
-2026-08-10 22:35:10.315 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] LSApplicationCheckIn(), app being registered is:"/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander"
-2026-08-10 22:35:10.316 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas]  { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuild"="25F70", "DTPlatformName"="macosx", "DTPlatformVersion"="26.5", "DTSDKBuild"="25F70", "DTSDKName"="macosx26.5", "DTXcode"="2660", "DTXcodeBuild"="17F113", "Flavor"=3, "LSArchitecture"="arm64", "LSBundlePath"="/Users/admin/pc-test/PeachCom<…>
-2026-08-10 22:35:10.316 Df PeachCommander[8752:ae22] [com.apple.processmanager:front-35286506] CHECKIN: pid=8752
-2026-08-10 22:35:10.317 Df PeachCommander[8752:ae22] [com.apple.processmanager:front-35286506] CHECKEDIN: pid=8752 asn=0x0-0x97097 foreground=1
-2026-08-10 22:35:10.317 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] Setting processControlState to default PROC_SETPC_SUSPEND because application does not have LSProcessControlValue key
-2026-08-10 22:35:10.317 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c90280] activating connection: mach=false listener=true peer=false name=(anonymous)
-2026-08-10 22:35:10.317 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c90280] Connection returned listener port: 0x5303
-2026-08-10 22:35:10.317 Df PeachCommander[8752:ae2a] [com.apple.xpc:connection] [0xbe10a8300] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0xbe0c90280.peer[131].0xbe10a8300
-2026-08-10 22:35:10.317 Df PeachCommander[8752:ae22] [com.apple.processmanager:front-35286506] FRONTLOGGING: version 1
-2026-08-10 22:35:10.317 Df PeachCommander[8752:ae22] [com.apple.processmanager:front-35286506] Registered, pid=8752 ASN=0x0,0x97097
-2026-08-10 22:35:10.317 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c903c0] activating connection: mach=true listener=false peer=false name=com.apple.analyticsd
-2026-08-10 22:35:10.318 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Daemon status changed from 0 to 1
-2026-08-10 22:35:10.318 I  PeachCommander[8752:ae2a] [com.apple.CarbonCore:coreservicesdaemon] SCSession():SCSession( id=100, this=0x0x104a08220 option=65538) created, forUID=501 mach_port_t=0x5103.
-2026-08-10 22:35:10.318 I  PeachCommander[8752:ae2a] [com.apple.CarbonCore:coreservicesdaemon] SCSession():SCSession( id=101, this=0x0x104a08360 option=65538) created, forUID=501 mach_port_t=0x4503.
-2026-08-10 22:35:10.318 I  PeachCommander[8752:ae2a] [com.apple.CarbonCore:coreservicesdaemon] connectToCoreServicesD():Instantiating server (coreservicesd based) SCSession, port=0x5103 serverOptions=0x10002.
-2026-08-10 22:35:10.318 I  PeachCommander[8752:ae22] [com.apple.hiservices:processmgr] _RegisterApplication( pid 8752 => 0x0,0x97097) type=foreground
-2026-08-10 22:35:10.318 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c90280] Connection returned listener port: 0x5303
-2026-08-10 22:35:10.318 Df PeachCommander[8752:ae29] [com.apple.CoreAnalytics:client] Received configuration update from daemon (initial)
-2026-08-10 22:35:10.318 Df PeachCommander[8752:ae2a] [com.apple.xpc:connection] [0xbe0c90500] activating connection: mach=true listener=false peer=false name=com.apple.lsd.mapdb
-2026-08-10 22:35:10.318 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] CFArrayRef _LSCopyLaunchModifiers(LSSessionID, LSASNRef _Nonnull), result for psn [ kLSCurrentApp ASN, 0x0,0x2]  is 1 items.
-2026-08-10 22:35:10.318 Df PeachCommander[8752:ae22] [com.apple.processmanager:front-35286506] BringForward: pid=8752 asn=0x0-0x97097 bringForward=1 foreground=1 uiElement=0 launchedByLS=1 modifiersCount=1 allDisabled=1
-2026-08-10 22:35:10.318 Df PeachCommander[8752:ae22] [com.apple.processmanager:front-35286506] BringFrontModifier: pid=8752 asn=0x0-0x97097 Modifier 0 hideAfter=0 hideOthers=0 dontMakeFrontmost=0 mouseDown=0/0 seed=0/0
-2026-08-10 22:35:10.318 Df PeachCommander[8752:ae22] [com.apple.processmanager:front-35286506] BringForward: pid=8752 asn=0x0-0x97097
-2026-08-10 22:35:10.318 Df PeachCommander[8752:ae22] [com.apple.processmanager:front-35286506] SetFrontProcess: asn=0x0-0x97097 options=0
-2026-08-10 22:35:10.318 I  PeachCommander[8752:ae22] [com.apple.SkyLight:processes] 0[outside of RPC]: SLPSetFrontProcess(0x0-0x97097 window=0 options=0x0
-2026-08-10 22:35:10.320 Df PeachCommander[8752:ae22] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
-2026-08-10 22:35:10.321 Df PeachCommander[8752:ae22] (libMobileGestalt.dylib) No persisted cache on this platform.
-2026-08-10 22:35:10.321 I  PeachCommander[8752:ae29] [com.apple.launchservices:cas] information in shared memory for 0x0-0x97097 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490402, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
-2026-08-10 22:35:10.321 Df PeachCommander[8752:ae22] (libMobileGestalt.dylib) Could not get size of EAN data (IOConnectCallScalarMethod kAppleNVMeEANGetSize returned 0xE00002E2)
-2026-08-10 22:35:10.321 Df PeachCommander[8752:ae22] (libMobileGestalt.dylib) Failed to copy 'aptk' from EAN
-2026-08-10 22:35:10.321 Df PeachCommander[8752:ae22] (libMobileGestalt.dylib) Failed to copy APTicket properties. Falling back to default policy.
-2026-08-10 22:35:10.321 Df PeachCommander[8752:ae22] (libMobileGestalt.dylib) Creating default MGSysConfigPolicy
-2026-08-10 22:35:10.321 Df PeachCommander[8752:ae22] (libMobileGestalt.dylib) CFDictionaryRef copySyscfgDictionary(void) enumeration of <private> failed.
-2026-08-10 22:35:10.321 Df PeachCommander[8752:ae22] (libMobileGestalt.dylib) Failed to find key <private>
-2026-08-10 22:35:10.321 Df PeachCommander[8752:ae22] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
-2026-08-10 22:35:10.322 I  PeachCommander[8752:ae2a] [com.apple.launchservices:db] LaunchServices database schema version: 20971544
-2026-08-10 22:35:10.322 Df PeachCommander[8752:ae22] [com.apple.AppKit:Appearance] Post-registration system appearance: (HLTB: 1)
-2026-08-10 22:35:10.323 I  PeachCommander[8752:ae2a] [com.apple.launchservices:default] Unable to load Info.plist exceptions (eGPUOverrides)
-2026-08-10 22:35:10.323 I  PeachCommander[8752:ae2a] [com.apple.launchservices:default] Unable to load Info.plist exceptions (gameModeOverrides)
-2026-08-10 22:35:10.323 I  PeachCommander[8752:ae2a] [com.apple.launchservices:default] Unable to load Info.plist exceptions (identifiedGameOverrides)
-2026-08-10 22:35:10.323 I  PeachCommander[8752:ae2a] [com.apple.launchservices:default] Unable to load Info.plist exceptions (SystemHiddenPreferred)
-2026-08-10 22:35:10.324 Df PeachCommander[8752:ae22] [com.apple.FrontBoard:Common] FBSWorkspace: endpoint monitoring is disabled.
-2026-08-10 22:35:10.324 Df PeachCommander[8752:ae22] [com.apple.FrontBoard:Common] FBSWorkspace: default shell endpoint is disabled.
-2026-08-10 22:35:10.324 Df PeachCommander[8752:ae22] [com.apple.runningboard:connection] Initializing connection
-2026-08-10 22:35:10.324 Df PeachCommander[8752:ae22] [com.apple.runningboard:process] Removing all cached process handles
-2026-08-10 22:35:10.324 Df PeachCommander[8752:ae29] [com.apple.runningboard:connection] Sending handshake request attempt #1 to server
-2026-08-10 22:35:10.324 Df PeachCommander[8752:ae29] [com.apple.runningboard:connection] Creating connection to com.apple.runningboard
-2026-08-10 22:35:10.324 Df PeachCommander[8752:ae29] [com.apple.xpc:connection] [0xbe0c90640] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
-2026-08-10 22:35:10.324 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c90280] Connection returned listener port: 0x5303
-2026-08-10 22:35:10.324 A  PeachCommander[8752:ae2d] (RunningBoardServices) didChangeInheritances
-2026-08-10 22:35:10.324 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] information in shared memory for 0x0-0x97097 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490402, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
-2026-08-10 22:35:10.324 Df PeachCommander[8752:ae29] [com.apple.runningboard:connection] Handshake succeeded
-2026-08-10 22:35:10.324 Df PeachCommander[8752:ae29] [com.apple.runningboard:connection] Identity resolved as app<application.com.peachcommander.app.490178.490402(501)>
-2026-08-10 22:35:10.326 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c90280] Connection returned listener port: 0x5303
-2026-08-10 22:35:10.326 A  PeachCommander[8752:ae2e] (AppIntents) appintents:register process
-2026-08-10 22:35:10.327 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] information in shared memory for 0x0-0x97097 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490402, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
-2026-08-10 22:35:10.327 I  PeachCommander[8752:ae22] [com.apple.hiservices:processmgr] TransformProcessType(0x0,0x2 => 1 wasFront=1 pickNew=0)
-2026-08-10 22:35:10.327 Df PeachCommander[8752:ae2e] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-10 22:35:10.327 Df PeachCommander[8752:ae2e] [com.apple.xpc:connection] [0xbe0c90780] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
-2026-08-10 22:35:10.327 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.327 Df PeachCommander[8752:ae2e] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
-2026-08-10 22:35:10.327 Df PeachCommander[8752:ae2e] [com.apple.xpc:connection] [0xbe0c90a00] activating connection: mach=false listener=true peer=false name=(anonymous)
-2026-08-10 22:35:10.327 I  PeachCommander[8752:ae2e] [com.apple.appintents:Execution] LNAppConnectionListener instantiated
-2026-08-10 22:35:10.327 Df PeachCommander[8752:ae2e] [com.apple.xpc:connection] [0xbe0c90a00] Connection returned listener port: 0x6b03
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae22] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae29] [com.apple.xpc:connection] [0xbe0c90780] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae29] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae22] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
-2026-08-10 22:35:10.328 E  PeachCommander[8752:ae2e] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-10 22:35:10.328 E  PeachCommander[8752:ae2e] [com.apple.AppKit:Application] Error registering app with intents framework: Error Domain=NSCocoaErrorDomain Code=4097 UserInfo={NSDebugDescription=<private>}
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae29] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-10 22:35:10.328 A  PeachCommander[8752:ae29] (AppIntents) appintents:register process
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae22] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae29] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae29] [com.apple.xpc:connection] [0xbe0c90c80] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae22] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae29] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae29] [com.apple.xpc:connection] [0xbe0c90a00] Connection returned listener port: 0x6b03
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae2e] [com.apple.xpc:connection] [0xbe0c90c80] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae2e] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
-2026-08-10 22:35:10.328 E  PeachCommander[8752:ae29] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-10 22:35:10.328 E  PeachCommander[8752:ae29] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae2e] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-10 22:35:10.328 A  PeachCommander[8752:ae2e] (AppIntents) appintents:register process
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae2e] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae2e] [com.apple.xpc:connection] [0xbe0c912c0] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae2e] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae2e] [com.apple.xpc:connection] [0xbe0c90a00] Connection returned listener port: 0x6b03
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae29] [com.apple.xpc:connection] [0xbe0c912c0] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
-2026-08-10 22:35:10.328 Df PeachCommander[8752:ae29] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
-2026-08-10 22:35:10.330 Df PeachCommander[8752:ae29] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-10 22:35:10.330 A  PeachCommander[8752:ae29] (AppIntents) appintents:register process
-2026-08-10 22:35:10.330 Df PeachCommander[8752:ae29] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
-2026-08-10 22:35:10.330 Df PeachCommander[8752:ae29] [com.apple.xpc:connection] [0xbe0c91540] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
-2026-08-10 22:35:10.330 E  PeachCommander[8752:ae2e] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-10 22:35:10.330 E  PeachCommander[8752:ae2e] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-10 22:35:10.330 Df PeachCommander[8752:ae29] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
-2026-08-10 22:35:10.330 Df PeachCommander[8752:ae29] [com.apple.xpc:connection] [0xbe0c90a00] Connection returned listener port: 0x6b03
-2026-08-10 22:35:10.331 Df PeachCommander[8752:ae2e] [com.apple.xpc:connection] [0xbe0c91540] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
-2026-08-10 22:35:10.331 Df PeachCommander[8752:ae2e] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
-2026-08-10 22:35:10.331 E  PeachCommander[8752:ae2e] [com.apple.appintents:Connection] Will NOT re-try to establish the connection
-2026-08-10 22:35:10.331 E  PeachCommander[8752:ae29] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-10 22:35:10.331 E  PeachCommander[8752:ae29] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
-2026-08-10 22:35:10.331 A  PeachCommander[8752:ae22] (CoreFoundation) Loading Preferences From System CFPrefsD
-2026-08-10 22:35:10.332 Df PeachCommander[8752:ae22] (libMobileGestalt.dylib) couldn't load support library
-2026-08-10 22:35:10.332 Df PeachCommander[8752:ae22] (libMobileGestalt.dylib) called dummy function!
-2026-08-10 22:35:10.332 I  PeachCommander[8752:ae22] [com.apple.GenerativeModels:availability] Current availability state: unavailable, use cases: com.apple.WritingTools, language: <any>, api: <private>
-2026-08-10 22:35:10.332 Df PeachCommander[8752:ae22] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.gms.availability.notification
-2026-08-10 22:35:10.332 Df PeachCommander[8752:ae22] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.os-eligibility-domain.change.greymatter
-2026-08-10 22:35:10.332 Df PeachCommander[8752:ae22] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.language.changed
-2026-08-10 22:35:10.332 Df PeachCommander[8752:ae22] [com.apple.WritingTools:Default] isAvailable value changed: isMDMAllowed = true, gmAvailable (current) = false
-2026-08-10 22:35:10.334 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.337 Df PeachCommander[8752:ae22] [com.apple.AppKit:Appearance] NSApp cache appearance:
+2026-08-11 01:42:19.908 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909c280] invalidated after the last release of the connection object
+2026-08-11 01:42:19.908 Df PeachCommander[8919:b262] [com.apple.SkyLight:default] server port 0x00003a07, session port 0x00003a07
+2026-08-11 01:42:19.911 Df PeachCommander[8919:b262] [com.apple.SkyLight:default] New connection 0x29a5f main
+2026-08-11 01:42:19.911 I  PeachCommander[8919:b269] [com.apple.SkyLight:processes] 0[outside of RPC]: First connection id 170591 mapped to ctx = 0x105ac6690
+2026-08-11 01:42:19.911 I  PeachCommander[8919:b262] [com.apple.hiservices:processmgr] Checking in with CAS, pid=8919
+2026-08-11 01:42:19.911 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] LSApplicationCheckIn(), app being registered is:"/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander"
+2026-08-11 01:42:19.912 I  PeachCommander[8919:b262] [com.apple.launchservices:cas]  { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuild"="25F70", "DTPlatformName"="macosx", "DTPlatformVersion"="26.5", "DTSDKBuild"="25F70", "DTSDKName"="macosx26.5", "DTXcode"="2660", "DTXcodeBuild"="17F113", "Flavor"=3, "LSArchitecture"="arm64", "LSBundlePath"="/Users/admin/pc-test/PeachCo<…>
+2026-08-11 01:42:19.912 Df PeachCommander[8919:b262] [com.apple.processmanager:front-35286506] CHECKIN: pid=8919
+2026-08-11 01:42:19.913 Df PeachCommander[8919:b262] [com.apple.processmanager:front-35286506] CHECKEDIN: pid=8919 asn=0x0-0x9a09a foreground=1
+2026-08-11 01:42:19.913 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] Setting processControlState to default PROC_SETPC_SUSPEND because application does not have LSProcessControlValue key
+2026-08-11 01:42:19.913 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909c280] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-08-11 01:42:19.913 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909c280] Connection returned listener port: 0x5403
+2026-08-11 01:42:19.913 Df PeachCommander[8919:b268] [com.apple.xpc:connection] [0xab90d0300] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0xab909c280.peer[131].0xab90d0300
+2026-08-11 01:42:19.913 Df PeachCommander[8919:b262] [com.apple.processmanager:front-35286506] FRONTLOGGING: version 1
+2026-08-11 01:42:19.913 Df PeachCommander[8919:b262] [com.apple.processmanager:front-35286506] Registered, pid=8919 ASN=0x0,0x9a09a
+2026-08-11 01:42:19.913 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909c3c0] activating connection: mach=true listener=false peer=false name=com.apple.analyticsd
+2026-08-11 01:42:19.914 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Daemon status changed from 0 to 1
+2026-08-11 01:42:19.914 I  PeachCommander[8919:b269] [com.apple.CarbonCore:coreservicesdaemon] SCSession():SCSession( id=100, this=0x0x105ad7490 option=65538) created, forUID=501 mach_port_t=0x4f03.
+2026-08-11 01:42:19.914 I  PeachCommander[8919:b269] [com.apple.CarbonCore:coreservicesdaemon] SCSession():SCSession( id=101, this=0x0x105ad75d0 option=65538) created, forUID=501 mach_port_t=0x5003.
+2026-08-11 01:42:19.914 I  PeachCommander[8919:b269] [com.apple.CarbonCore:coreservicesdaemon] connectToCoreServicesD():Instantiating server (coreservicesd based) SCSession, port=0x4f03 serverOptions=0x10002.
+2026-08-11 01:42:19.914 I  PeachCommander[8919:b262] [com.apple.hiservices:processmgr] _RegisterApplication( pid 8919 => 0x0,0x9a09a) type=foreground
+2026-08-11 01:42:19.914 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909c280] Connection returned listener port: 0x5403
+2026-08-11 01:42:19.914 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] CFArrayRef _LSCopyLaunchModifiers(LSSessionID, LSASNRef _Nonnull), result for psn [ kLSCurrentApp ASN, 0x0,0x2]  is 1 items.
+2026-08-11 01:42:19.914 Df PeachCommander[8919:b262] [com.apple.processmanager:front-35286506] BringForward: pid=8919 asn=0x0-0x9a09a bringForward=1 foreground=1 uiElement=0 launchedByLS=1 modifiersCount=1 allDisabled=1
+2026-08-11 01:42:19.914 Df PeachCommander[8919:b262] [com.apple.processmanager:front-35286506] BringFrontModifier: pid=8919 asn=0x0-0x9a09a Modifier 0 hideAfter=0 hideOthers=0 dontMakeFrontmost=0 mouseDown=0/0 seed=0/0
+2026-08-11 01:42:19.914 Df PeachCommander[8919:b262] [com.apple.processmanager:front-35286506] BringForward: pid=8919 asn=0x0-0x9a09a
+2026-08-11 01:42:19.914 Df PeachCommander[8919:b262] [com.apple.processmanager:front-35286506] SetFrontProcess: asn=0x0-0x9a09a options=0
+2026-08-11 01:42:19.914 I  PeachCommander[8919:b262] [com.apple.SkyLight:processes] 0[outside of RPC]: SLPSetFrontProcess(0x0-0x9a09a window=0 options=0x0
+2026-08-11 01:42:19.914 Df PeachCommander[8919:b269] [com.apple.xpc:connection] [0xab909c640] activating connection: mach=true listener=false peer=false name=com.apple.lsd.mapdb
+2026-08-11 01:42:19.914 Df PeachCommander[8919:b26c] [com.apple.CoreAnalytics:client] Received configuration update from daemon (initial)
+2026-08-11 01:42:19.916 Df PeachCommander[8919:b262] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
+2026-08-11 01:42:19.917 Df PeachCommander[8919:b262] (libMobileGestalt.dylib) No persisted cache on this platform.
+2026-08-11 01:42:19.917 I  PeachCommander[8919:b26c] [com.apple.launchservices:cas] information in shared memory for 0x0-0x9a09a with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=490485, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-11 01:42:19.917 Df PeachCommander[8919:b262] (libMobileGestalt.dylib) Could not get size of EAN data (IOConnectCallScalarMethod kAppleNVMeEANGetSize returned 0xE00002E2)
+2026-08-11 01:42:19.917 Df PeachCommander[8919:b262] (libMobileGestalt.dylib) Failed to copy 'aptk' from EAN
+2026-08-11 01:42:19.917 Df PeachCommander[8919:b262] (libMobileGestalt.dylib) Failed to copy APTicket properties. Falling back to default policy.
+2026-08-11 01:42:19.917 Df PeachCommander[8919:b262] (libMobileGestalt.dylib) Creating default MGSysConfigPolicy
+2026-08-11 01:42:19.917 Df PeachCommander[8919:b262] (libMobileGestalt.dylib) CFDictionaryRef copySyscfgDictionary(void) enumeration of <private> failed.
+2026-08-11 01:42:19.917 Df PeachCommander[8919:b262] (libMobileGestalt.dylib) Failed to find key <private>
+2026-08-11 01:42:19.918 Df PeachCommander[8919:b262] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
+2026-08-11 01:42:19.918 Df PeachCommander[8919:b262] [com.apple.AppKit:Appearance] Post-registration system appearance: (HLTB: 1)
+2026-08-11 01:42:19.918 I  PeachCommander[8919:b269] [com.apple.launchservices:db] LaunchServices database schema version: 20971544
+2026-08-11 01:42:19.920 I  PeachCommander[8919:b269] [com.apple.launchservices:default] Unable to load Info.plist exceptions (eGPUOverrides)
+2026-08-11 01:42:19.920 I  PeachCommander[8919:b269] [com.apple.launchservices:default] Unable to load Info.plist exceptions (gameModeOverrides)
+2026-08-11 01:42:19.920 I  PeachCommander[8919:b269] [com.apple.launchservices:default] Unable to load Info.plist exceptions (identifiedGameOverrides)
+2026-08-11 01:42:19.920 I  PeachCommander[8919:b269] [com.apple.launchservices:default] Unable to load Info.plist exceptions (SystemHiddenPreferred)
+2026-08-11 01:42:19.920 Df PeachCommander[8919:b262] [com.apple.FrontBoard:Common] FBSWorkspace: endpoint monitoring is disabled.
+2026-08-11 01:42:19.920 Df PeachCommander[8919:b262] [com.apple.FrontBoard:Common] FBSWorkspace: default shell endpoint is disabled.
+2026-08-11 01:42:19.920 Df PeachCommander[8919:b262] [com.apple.runningboard:connection] Initializing connection
+2026-08-11 01:42:19.920 Df PeachCommander[8919:b262] [com.apple.runningboard:process] Removing all cached process handles
+2026-08-11 01:42:19.920 Df PeachCommander[8919:b269] [com.apple.runningboard:connection] Sending handshake request attempt #1 to server
+2026-08-11 01:42:19.920 Df PeachCommander[8919:b269] [com.apple.runningboard:connection] Creating connection to com.apple.runningboard
+2026-08-11 01:42:19.920 Df PeachCommander[8919:b269] [com.apple.xpc:connection] [0xab909c780] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+2026-08-11 01:42:19.921 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909c280] Connection returned listener port: 0x5403
+2026-08-11 01:42:19.921 A  PeachCommander[8919:b26c] (RunningBoardServices) didChangeInheritances
+2026-08-11 01:42:19.921 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] information in shared memory for 0x0-0x9a09a with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=490485, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-11 01:42:19.921 Df PeachCommander[8919:b269] [com.apple.runningboard:connection] Handshake succeeded
+2026-08-11 01:42:19.921 Df PeachCommander[8919:b269] [com.apple.runningboard:connection] Identity resolved as app<application.com.peachcommander.app.490261.490485(501)>
+2026-08-11 01:42:19.922 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909c280] Connection returned listener port: 0x5403
+2026-08-11 01:42:19.923 A  PeachCommander[8919:b26c] (AppIntents) appintents:register process
+2026-08-11 01:42:19.923 Df PeachCommander[8919:b26c] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-11 01:42:19.923 Df PeachCommander[8919:b26c] [com.apple.xpc:connection] [0xab909c500] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-11 01:42:19.924 Df PeachCommander[8919:b26c] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-11 01:42:19.924 Df PeachCommander[8919:b26c] [com.apple.xpc:connection] [0xab909ca00] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-08-11 01:42:19.924 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] information in shared memory for 0x0-0x9a09a with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=490485, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-11 01:42:19.924 I  PeachCommander[8919:b262] [com.apple.hiservices:processmgr] TransformProcessType(0x0,0x2 => 1 wasFront=1 pickNew=0)
+2026-08-11 01:42:19.924 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:19.924 I  PeachCommander[8919:b26c] [com.apple.appintents:Execution] LNAppConnectionListener instantiated
+2026-08-11 01:42:19.924 Df PeachCommander[8919:b26c] [com.apple.xpc:connection] [0xab909ca00] Connection returned listener port: 0x6203
+2026-08-11 01:42:19.924 Df PeachCommander[8919:b262] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
+2026-08-11 01:42:19.924 Df PeachCommander[8919:b262] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b262] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b262] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b268] [com.apple.xpc:connection] [0xab909c500] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b268] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-11 01:42:19.925 E  PeachCommander[8919:b26c] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-11 01:42:19.925 E  PeachCommander[8919:b26c] [com.apple.AppKit:Application] Error registering app with intents framework: Error Domain=NSCocoaErrorDomain Code=4097 UserInfo={NSDebugDescription=<private>}
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b268] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-11 01:42:19.925 A  PeachCommander[8919:b268] (AppIntents) appintents:register process
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b268] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b268] [com.apple.xpc:connection] [0xab909d040] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b268] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b268] [com.apple.xpc:connection] [0xab909ca00] Connection returned listener port: 0x6203
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b26c] [com.apple.xpc:connection] [0xab909d040] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b26c] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-11 01:42:19.925 E  PeachCommander[8919:b268] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-11 01:42:19.925 E  PeachCommander[8919:b268] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b26c] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-11 01:42:19.925 A  PeachCommander[8919:b26c] (AppIntents) appintents:register process
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b26c] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b26c] [com.apple.xpc:connection] [0xab909d2c0] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b26c] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-11 01:42:19.925 Df PeachCommander[8919:b26c] [com.apple.xpc:connection] [0xab909ca00] Connection returned listener port: 0x6203
+2026-08-11 01:42:19.926 Df PeachCommander[8919:b269] [com.apple.xpc:connection] [0xab909d2c0] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-11 01:42:19.926 Df PeachCommander[8919:b269] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-11 01:42:19.926 Df PeachCommander[8919:b269] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-11 01:42:19.926 A  PeachCommander[8919:b269] (AppIntents) appintents:register process
+2026-08-11 01:42:19.926 Df PeachCommander[8919:b269] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-11 01:42:19.926 Df PeachCommander[8919:b269] [com.apple.xpc:connection] [0xab909d540] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-11 01:42:19.926 E  PeachCommander[8919:b26c] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-11 01:42:19.926 E  PeachCommander[8919:b26c] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-11 01:42:19.926 Df PeachCommander[8919:b269] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-11 01:42:19.926 Df PeachCommander[8919:b269] [com.apple.xpc:connection] [0xab909ca00] Connection returned listener port: 0x6203
+2026-08-11 01:42:19.926 Df PeachCommander[8919:b26c] [com.apple.xpc:connection] [0xab909d540] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-11 01:42:19.926 Df PeachCommander[8919:b26c] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-11 01:42:19.926 E  PeachCommander[8919:b26c] [com.apple.appintents:Connection] Will NOT re-try to establish the connection
+2026-08-11 01:42:19.926 E  PeachCommander[8919:b269] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-11 01:42:19.926 E  PeachCommander[8919:b269] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-11 01:42:19.928 A  PeachCommander[8919:b262] (CoreFoundation) Loading Preferences From System CFPrefsD
+2026-08-11 01:42:19.929 Df PeachCommander[8919:b262] (libMobileGestalt.dylib) couldn't load support library
+2026-08-11 01:42:19.929 Df PeachCommander[8919:b262] (libMobileGestalt.dylib) called dummy function!
+2026-08-11 01:42:19.929 I  PeachCommander[8919:b262] [com.apple.GenerativeModels:availability] Current availability state: unavailable, use cases: com.apple.WritingTools, language: <any>, api: <private>
+2026-08-11 01:42:19.929 Df PeachCommander[8919:b262] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.gms.availability.notification
+2026-08-11 01:42:19.929 Df PeachCommander[8919:b262] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.os-eligibility-domain.change.greymatter
+2026-08-11 01:42:19.929 Df PeachCommander[8919:b262] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.language.changed
+2026-08-11 01:42:19.929 Df PeachCommander[8919:b262] [com.apple.WritingTools:Default] isAvailable value changed: isMDMAllowed = true, gmAvailable (current) = false
+2026-08-11 01:42:19.931 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:19.934 Df PeachCommander[8919:b262] [com.apple.AppKit:Appearance] NSApp cache appearance:
 -NSRequiresAquaSystemAppearance: 0
 -appearance: (null)
--effectiveAppearance: <NSCompositeAppearance: 0xbe10446e0
+-effectiveAppearance: <NSCompositeAppearance: 0xab8c588c0
  (
-    "<NSAquaAppearance: 0xbe1044500>",
-    "<NSSystemAppearance: 0xbe1044780>"
+    "<NSAquaAppearance: 0xab8c58820>",
+    "<NSSystemAppearance: 0xab8c58500>"
 )>
-2026-08-10 22:35:10.339 A  PeachCommander[8752:ae22] (CoreFoundation) Loading Preferences From User CFPrefsD
-2026-08-10 22:35:10.339 A  PeachCommander[8752:ae22] (CoreFoundation) Loading Preferences From User CFPrefsD
-2026-08-10 22:35:10.341 A  PeachCommander[8752:ae2e] (libsystem_info.dylib) Membership API: translate identifier
-2026-08-10 22:35:10.344 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.344 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.346 Df PeachCommander[8752:ae29] [com.apple.xpc:connection] [0xbe0c91a40] activating connection: mach=true listener=false peer=false name=com.apple.dock.fullscreen
-2026-08-10 22:35:10.346 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c91b80] activating connection: mach=true listener=false peer=false name=com.apple.fonts
-2026-08-10 22:35:10.349 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] information in shared memory for 0x0-0x97097 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490402, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
-2026-08-10 22:35:10.349 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.349 Df PeachCommander[8752:ae22] [com.apple.AppKit:AutomaticTermination] -[NSApplication(NSAppssassination) _checkForAutomaticTerminationSupportPossiblyEnablingIt]_block_invoke Enabling automatic termination support.
-2026-08-10 22:35:10.349 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c90dc0] activating connection: mach=true listener=false peer=false name=com.apple.appkit.restoration_storage
-2026-08-10 22:35:10.349 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] information in shared memory for 0x0-0x97097 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490402, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
-2026-08-10 22:35:10.349 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c90f00] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.appleevents
-2026-08-10 22:35:10.350 I  PeachCommander[8752:ae22] [com.apple.appleevents:main] _AEGetRegisteredMachPort() created default port (port:44547/0xae03 rcv:1 send:1 limit:5) and registered it with server
-2026-08-10 22:35:10.350 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c90280] Connection returned listener port: 0x5303
-2026-08-10 22:35:10.350 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] information in shared memory for 0x0-0x97097 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490402, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
-2026-08-10 22:35:10.350 Df PeachCommander[8752:ae22] [com.apple.processmanager:front-35286506] SignalReady: pid=8752 asn=0x0-0x97097
-2026-08-10 22:35:10.350 Df PeachCommander[8752:ae22] [com.apple.processmanager:front-35286506] SIGNAL: pid=8752 asn=0x0x-0x97097
-2026-08-10 22:35:10.350 I  PeachCommander[8752:ae22] [com.apple.appleevents:main] aeGenerateFakeFirstOAPPEventIfNecessary()
-2026-08-10 22:35:10.350 I  PeachCommander[8752:ae22] [com.apple.appleevents:main] aeGenerateFakeFirstOAPPEventIfNecessary(), needToCreateFakeOAPPEventIfFirstEvent == true
-2026-08-10 22:35:10.350 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] Removing cached information for app [ 0x0-0x97097]  "PeachCommander", as its seed is different from that in shared memory ( 533 vs 535)
-2026-08-10 22:35:10.351 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0xbe1340dc0> DF976043-5EDB-420C-AF0F-5C699DBFCF09) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
-2026-08-10 22:35:10.351 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:cache] Rebuilding cache for 'DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0xbe1340dc0> DF976043-5EDB-420C-AF0F-5C699DBFCF09)
-2026-08-10 22:35:10.351 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
-2026-08-10 22:35:10.351 A  PeachCommander[8752:ae22] (CoreFoundation) Loading Preferences From User CFPrefsD
-2026-08-10 22:35:10.351 A  PeachCommander[8752:ae22] (CoreFoundation) Loading Preferences From System CFPrefsD
-2026-08-10 22:35:10.351 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xbe1340ea0> B5379442-E1EE-4044-8F5A-200AA955B7F1) gen: -1 item: 1 flavor: '-32766 1768845414')
-2026-08-10 22:35:10.351 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:cache] Rebuilding cache for 'AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xbe1340ea0> B5379442-E1EE-4044-8F5A-200AA955B7F1)
-2026-08-10 22:35:10.351 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-10 22:35:10.351 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (310 bytes) flags: 0
-2026-08-10 22:35:10.351 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xbe1340ea0> B5379442-E1EE-4044-8F5A-200AA955B7F1) gen: -1 item: 1 flavor: '-32765 1802264953')
-2026-08-10 22:35:10.351 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (306 bytes) flags: 0
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xbe1340ea0> B5379442-E1EE-4044-8F5A-200AA955B7F1) gen: -1 item: 1 flavor: '-32764 1802264953')
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (281 bytes) flags: 0
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xbe1340ea0> B5379442-E1EE-4044-8F5A-200AA955B7F1) gen: -1 item: 1 flavor: '-32763 1802264953')
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (318 bytes) flags: 0
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xbe1340ea0> B5379442-E1EE-4044-8F5A-200AA955B7F1) gen: -1 item: 1 flavor: '-32765 1768845414')
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (303 bytes) flags: 0
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xbe1340ea0> B5379442-E1EE-4044-8F5A-200AA955B7F1) gen: -1 item: 1 flavor: '-32763 1768845414')
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:general] Will request data from daemon
-2026-08-10 22:35:10.352 I  PeachCommander[8752:ae22] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (315 bytes) flags: 0
-2026-08-10 22:35:10.353 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] information in shared memory for 0x0-0x97097 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490402, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
-2026-08-10 22:35:10.353 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c91e00] activating connection: mach=false listener=false peer=false name=com.apple.ViewBridgeAuxiliary
-2026-08-10 22:35:10.357 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c91cc0] activating connection: mach=false listener=false peer=false name=(anonymous)
-2026-08-10 22:35:10.358 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c91f40] activating connection: mach=false listener=true peer=false name=(anonymous)
-2026-08-10 22:35:10.358 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c91f40] Connection returned listener port: 0xf003
-2026-08-10 22:35:10.358 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c91e00] invalidated after the last release of the connection object
-2026-08-10 22:35:10.358 I  PeachCommander[8752:ae22] [com.apple.runningboard:assertion] Acquiring assertion: <RBSAssertionDescriptor| "AppNap adapter assertion" ID:(null) target:8752>
-2026-08-10 22:35:10.361 I  PeachCommander[8752:ae22] [com.apple.showhide:pr-59900543] SHOWHIDE: SHOW id=204 0x0-0x97097, err=0 eventTime=2074609865750 windowID=0
-2026-08-10 22:35:10.361 I  PeachCommander[8752:ae22] [com.apple.CarbonCore:coreservicesdaemon] findOrCreateCacheable():findOrCreateCacheable(), factoryName=3 cacheableName=<private> fCacheables.size()=0
-2026-08-10 22:35:10.361 I  PeachCommander[8752:ae22] [com.apple.CarbonCore:coreservicesdaemon] findOrCreateCacheable():findOrCreateCacheable(), result = 0xbe1075680 (should be non-NULL)
-2026-08-10 22:35:10.362 Df PeachCommander[8752:ae22] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) Restoring windows
-2026-08-10 22:35:10.362 Df PeachCommander[8752:ae22] [com.apple.AppKit:StateRestoration] -[NSApplication _reopenWindowsAsNecessaryIncludingRestorableState:withFullFidelity:completionHandler:] shouldRestoreState=1 hasPersistentStateToRestore=0 shouldStillRestoreStateAfterPrompting=0
-2026-08-10 22:35:10.362 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c91e00] activating connection: mach=true listener=false peer=false name=com.apple.window_proxies
-2026-08-10 22:35:10.362 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0c91e00] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
-2026-08-10 22:35:10.362 I  PeachCommander[8752:ae22] [com.apple.SkyLight:processes] 0[outside of RPC]: SLSSetFrontProcessWithInfo(0x0-0x2 window=0 options=0x1
-2026-08-10 22:35:10.362 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.362 Df PeachCommander[8752:ae22] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) Restoring windows
-2026-08-10 22:35:10.365 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.365 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.366 A  PeachCommander[8752:ae22] (CoreFoundation) Loading Preferences From User CFPrefsD
-2026-08-10 22:35:10.380 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] VolumeManager initialized
-2026-08-10 22:35:10.393 Df PeachCommander[8752:ae22] [com.apple.BoardServices:XPCErrors] [C:1] Alloc <private>
-2026-08-10 22:35:10.393 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe0fc0640] activating connection: mach=false listener=false peer=false name=(anonymous)
-2026-08-10 22:35:10.395 I  PeachCommander[8752:ae22] [com.apple.AppKit:Window] context (0 -> 498743eb) for window 1c7
-2026-08-10 22:35:10.396 Df PeachCommander[8752:ae2e] [com.apple.corespotlight:index] (<private>) deleteSearchableItemsWithDomainIdentifiers, protectionClass:(null), domainIdentifiers number:1
-2026-08-10 22:35:10.396 A  PeachCommander[8752:ae2e] (CoreSpotlight) delete-domains
-2026-08-10 22:35:10.396 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] MainWindowController initialized (config: <private>)
-2026-08-10 22:35:10.396 Df PeachCommander[8752:ae29] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
-2026-08-10 22:35:10.396 Df PeachCommander[8752:ae29] (CoreSpotlight) sConnectionName: com.apple.spotlight.IndexAgent
-2026-08-10 22:35:10.396 Df PeachCommander[8752:ae29] (CoreSpotlight) Start service name com.apple.spotlight.IndexAgent
-2026-08-10 22:35:10.396 Df PeachCommander[8752:ae29] [com.apple.xpc:connection] [0xbe0fc08c0] activating connection: mach=true listener=false peer=false name=com.apple.spotlight.IndexAgent
-2026-08-10 22:35:10.396 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] SelectionState initialized
-2026-08-10 22:35:10.396 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] DirectoryModel initialized
-2026-08-10 22:35:10.396 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] VolumeManager initialized
-2026-08-10 22:35:10.396 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] PanelController initialized for <private> panel
-2026-08-10 22:35:10.397 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] SelectionState initialized
-2026-08-10 22:35:10.397 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] DirectoryModel initialized
-2026-08-10 22:35:10.397 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] VolumeManager initialized
-2026-08-10 22:35:10.397 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] PanelController initialized for <private> panel
-2026-08-10 22:35:10.397 A  PeachCommander[8752:ae2e] (RunningBoardServices) didChangeInheritances
-2026-08-10 22:35:10.400 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.400 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.400 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.400 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.400 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.402 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.402 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.402 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.402 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.402 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.406 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.407 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.414 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe09e0640] activating connection: mach=true listener=false peer=false name=com.apple.iconservices
-2026-08-10 22:35:10.414 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe09e0780] activating connection: mach=true listener=false peer=false name=com.apple.iconservices.store
-2026-08-10 22:35:10.414 I  PeachCommander[8752:ae22] [com.peachcommander:Theme] no user themes in /Users/admin/pc-cfg/themes
-2026-08-10 22:35:10.414 Df PeachCommander[8752:ae22] [com.apple.AppKit:Appearance] Invalidate NSApp effectiveAppearance
-2026-08-10 22:35:10.415 Df PeachCommander[8752:ae22] [com.apple.AppKit:Appearance] NSApp cache appearance:
+2026-08-11 01:42:19.936 A  PeachCommander[8919:b262] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-11 01:42:19.936 A  PeachCommander[8919:b262] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-11 01:42:19.939 A  PeachCommander[8919:b268] (libsystem_info.dylib) Membership API: translate identifier
+2026-08-11 01:42:19.941 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:19.941 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:19.942 Df PeachCommander[8919:b26c] [com.apple.xpc:connection] [0xab909da40] activating connection: mach=true listener=false peer=false name=com.apple.dock.fullscreen
+2026-08-11 01:42:19.943 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909db80] activating connection: mach=true listener=false peer=false name=com.apple.fonts
+2026-08-11 01:42:19.945 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] information in shared memory for 0x0-0x9a09a with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=490485, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-11 01:42:19.946 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:19.946 Df PeachCommander[8919:b262] [com.apple.AppKit:AutomaticTermination] -[NSApplication(NSAppssassination) _checkForAutomaticTerminationSupportPossiblyEnablingIt]_block_invoke Enabling automatic termination support.
+2026-08-11 01:42:19.946 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909cb40] activating connection: mach=true listener=false peer=false name=com.apple.appkit.restoration_storage
+2026-08-11 01:42:19.946 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] information in shared memory for 0x0-0x9a09a with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=490485, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-11 01:42:19.946 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909cc80] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.appleevents
+2026-08-11 01:42:19.946 I  PeachCommander[8919:b262] [com.apple.appleevents:main] _AEGetRegisteredMachPort() created default port (port:64003/0xfa03 rcv:1 send:1 limit:5) and registered it with server
+2026-08-11 01:42:19.946 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909c280] Connection returned listener port: 0x5403
+2026-08-11 01:42:19.947 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] information in shared memory for 0x0-0x9a09a with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=490485, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-11 01:42:19.947 Df PeachCommander[8919:b262] [com.apple.processmanager:front-35286506] SignalReady: pid=8919 asn=0x0-0x9a09a
+2026-08-11 01:42:19.947 Df PeachCommander[8919:b262] [com.apple.processmanager:front-35286506] SIGNAL: pid=8919 asn=0x0x-0x9a09a
+2026-08-11 01:42:19.947 I  PeachCommander[8919:b262] [com.apple.appleevents:main] aeGenerateFakeFirstOAPPEventIfNecessary()
+2026-08-11 01:42:19.947 I  PeachCommander[8919:b262] [com.apple.appleevents:main] aeGenerateFakeFirstOAPPEventIfNecessary(), needToCreateFakeOAPPEventIfFirstEvent == true
+2026-08-11 01:42:19.947 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] Removing cached information for app [ 0x0-0x9a09a]  "PeachCommander", as its seed is different from that in shared memory ( 533 vs 535)
+2026-08-11 01:42:19.947 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0xab9033340> 2E2A0B78-50F6-446C-B7F4-8665D84C79C0) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
+2026-08-11 01:42:19.947 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:cache] Rebuilding cache for 'DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0xab9033340> 2E2A0B78-50F6-446C-B7F4-8665D84C79C0)
+2026-08-11 01:42:19.947 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
+2026-08-11 01:42:19.947 A  PeachCommander[8919:b262] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-11 01:42:19.948 A  PeachCommander[8919:b262] (CoreFoundation) Loading Preferences From System CFPrefsD
+2026-08-11 01:42:19.948 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xab9033380> 455BFC65-39C8-4A50-B5A4-985F014095D0) gen: -1 item: 1 flavor: '-32766 1768845414')
+2026-08-11 01:42:19.948 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:cache] Rebuilding cache for 'AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xab9033380> 455BFC65-39C8-4A50-B5A4-985F014095D0)
+2026-08-11 01:42:19.948 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-11 01:42:19.948 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 5 data (310 bytes) flags: 0
+2026-08-11 01:42:19.948 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xab9033380> 455BFC65-39C8-4A50-B5A4-985F014095D0) gen: -1 item: 1 flavor: '-32765 1802264953')
+2026-08-11 01:42:19.948 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-11 01:42:19.948 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 5 data (306 bytes) flags: 0
+2026-08-11 01:42:19.948 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xab9033380> 455BFC65-39C8-4A50-B5A4-985F014095D0) gen: -1 item: 1 flavor: '-32764 1802264953')
+2026-08-11 01:42:19.948 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-11 01:42:19.948 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 5 data (281 bytes) flags: 0
+2026-08-11 01:42:19.948 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xab9033380> 455BFC65-39C8-4A50-B5A4-985F014095D0) gen: -1 item: 1 flavor: '-32763 1802264953')
+2026-08-11 01:42:19.948 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-11 01:42:19.949 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 5 data (318 bytes) flags: 0
+2026-08-11 01:42:19.949 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xab9033380> 455BFC65-39C8-4A50-B5A4-985F014095D0) gen: -1 item: 1 flavor: '-32765 1768845414')
+2026-08-11 01:42:19.949 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-11 01:42:19.949 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 5 data (303 bytes) flags: 0
+2026-08-11 01:42:19.949 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xab9033380> 455BFC65-39C8-4A50-B5A4-985F014095D0) gen: -1 item: 1 flavor: '-32763 1768845414')
+2026-08-11 01:42:19.949 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-11 01:42:19.949 I  PeachCommander[8919:b262] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 5 data (315 bytes) flags: 0
+2026-08-11 01:42:19.950 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] information in shared memory for 0x0-0x9a09a with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=490485, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-11 01:42:19.950 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909de00] activating connection: mach=false listener=false peer=false name=com.apple.ViewBridgeAuxiliary
+2026-08-11 01:42:19.954 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909dcc0] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-11 01:42:19.955 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909df40] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-08-11 01:42:19.955 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909df40] Connection returned listener port: 0xf603
+2026-08-11 01:42:19.955 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909de00] invalidated after the last release of the connection object
+2026-08-11 01:42:19.955 I  PeachCommander[8919:b262] [com.apple.showhide:pr-59900543] SHOWHIDE: SHOW id=208 0x0-0x9A09A, err=0 eventTime=2113231034250 windowID=0
+2026-08-11 01:42:19.955 I  PeachCommander[8919:b262] [com.apple.CarbonCore:coreservicesdaemon] findOrCreateCacheable():findOrCreateCacheable(), factoryName=3 cacheableName=<private> fCacheables.size()=0
+2026-08-11 01:42:19.955 I  PeachCommander[8919:b262] [com.apple.CarbonCore:coreservicesdaemon] findOrCreateCacheable():findOrCreateCacheable(), result = 0xab8dbd2c0 (should be non-NULL)
+2026-08-11 01:42:19.955 Df PeachCommander[8919:b262] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) Restoring windows
+2026-08-11 01:42:19.955 Df PeachCommander[8919:b262] [com.apple.AppKit:StateRestoration] -[NSApplication _reopenWindowsAsNecessaryIncludingRestorableState:withFullFidelity:completionHandler:] shouldRestoreState=1 hasPersistentStateToRestore=0 shouldStillRestoreStateAfterPrompting=0
+2026-08-11 01:42:19.955 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909de00] activating connection: mach=true listener=false peer=false name=com.apple.window_proxies
+2026-08-11 01:42:19.955 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab909de00] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+2026-08-11 01:42:19.956 I  PeachCommander[8919:b262] [com.apple.SkyLight:processes] 0[outside of RPC]: SLSSetFrontProcessWithInfo(0x0-0x2 window=0 options=0x1
+2026-08-11 01:42:19.956 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:19.956 Df PeachCommander[8919:b262] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) Restoring windows
+2026-08-11 01:42:19.958 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:19.958 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:19.960 A  PeachCommander[8919:b262] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-11 01:42:19.972 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] VolumeManager initialized
+2026-08-11 01:42:19.988 Df PeachCommander[8919:b262] [com.apple.BoardServices:XPCErrors] [C:1] Alloc <private>
+2026-08-11 01:42:19.988 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab98dc640] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-11 01:42:19.989 I  PeachCommander[8919:b262] [com.apple.AppKit:Window] context (0 -> 2d69f45c) for window 1d1
+2026-08-11 01:42:19.990 Df PeachCommander[8919:b269] [com.apple.corespotlight:index] (<private>) deleteSearchableItemsWithDomainIdentifiers, protectionClass:(null), domainIdentifiers number:1
+2026-08-11 01:42:19.990 A  PeachCommander[8919:b269] (CoreSpotlight) delete-domains
+2026-08-11 01:42:19.990 Df PeachCommander[8919:b269] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-11 01:42:19.990 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] MainWindowController initialized (config: <private>)
+2026-08-11 01:42:19.990 Df PeachCommander[8919:b269] (CoreSpotlight) sConnectionName: com.apple.spotlight.IndexAgent
+2026-08-11 01:42:19.990 Df PeachCommander[8919:b269] (CoreSpotlight) Start service name com.apple.spotlight.IndexAgent
+2026-08-11 01:42:19.990 Df PeachCommander[8919:b269] [com.apple.xpc:connection] [0xab98dc8c0] activating connection: mach=true listener=false peer=false name=com.apple.spotlight.IndexAgent
+2026-08-11 01:42:19.990 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] SelectionState initialized
+2026-08-11 01:42:19.990 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] DirectoryModel initialized
+2026-08-11 01:42:19.990 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] VolumeManager initialized
+2026-08-11 01:42:19.990 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] PanelController initialized for <private> panel
+2026-08-11 01:42:19.991 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] SelectionState initialized
+2026-08-11 01:42:19.991 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] DirectoryModel initialized
+2026-08-11 01:42:19.991 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] VolumeManager initialized
+2026-08-11 01:42:19.991 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] PanelController initialized for <private> panel
+2026-08-11 01:42:19.993 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:19.993 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:19.993 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:19.994 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:19.994 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:19.994 A  PeachCommander[8919:b269] (RunningBoardServices) didChangeInheritances
+2026-08-11 01:42:19.995 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:19.995 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:19.995 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:19.995 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:19.995 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:19.999 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:20.001 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:20.008 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab9b04640] activating connection: mach=true listener=false peer=false name=com.apple.iconservices
+2026-08-11 01:42:20.008 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab9b04780] activating connection: mach=true listener=false peer=false name=com.apple.iconservices.store
+2026-08-11 01:42:20.009 I  PeachCommander[8919:b262] [com.peachcommander:Theme] no user themes in /Users/admin/pc-cfg/themes
+2026-08-11 01:42:20.009 Df PeachCommander[8919:b262] [com.apple.AppKit:Appearance] Invalidate NSApp effectiveAppearance
+2026-08-11 01:42:20.009 Df PeachCommander[8919:b262] [com.apple.AppKit:Appearance] NSApp cache appearance:
 -NSRequiresAquaSystemAppearance: 0
--appearance: <NSCompositeAppearance: 0xbe10459a0
+-appearance: <NSCompositeAppearance: 0xab8c599a0
  (
-    "<NSDarkAquaAppearance: 0xbe1045a40>",
-    "<NSSystemAppearance: 0xbe1044780>"
+    "<NSDarkAquaAppearance: 0xab8c59a40>",
+    "<NSSystemAppearance: 0xab8c58500>"
 )>
--effectiveAppearance: <NSCompositeAppearance: 0xbe10459a0
+-effectiveAppearance: <NSCompositeAppearance: 0xab8c599a0
  (
-    "<NSDarkAquaAppearance: 0xbe1045a40>",
-    "<NSSystemAppearance: 0xbe1044780>"
+    "<NSDarkAquaAppearance: 0xab8c59a40>",
+    "<NSSystemAppearance: 0xab8c58500>"
 )>
-2026-08-10 22:35:10.416 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] Theme applied: id=norton, appearance=dark, dark=true, background=#0000AA
-2026-08-10 22:35:10.417 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Retargeting existing animation: <private>
-2026-08-10 22:35:10.417 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Retargeting existing animation: <private>
-2026-08-10 22:35:10.417 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Retargeting existing animation: <private>
-2026-08-10 22:35:10.417 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Retargeting existing animation: <private>
-2026-08-10 22:35:10.417 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Retargeting existing animation: <private>
-2026-08-10 22:35:10.439 I  PeachCommander[8752:ae22] [com.apple.iconservices:foundation] layer data size zero
-2026-08-10 22:35:10.439 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.441 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] Keymap loaded: scheme=<private>, 81 effective bindings
-2026-08-10 22:35:10.442 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.442 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.442 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.442 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.442 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.442 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.442 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.442 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.442 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.442 I  PeachCommander[8752:ae22] [com.apple.AppKit:Animation] Running new animation: <private>
-2026-08-10 22:35:10.445 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.445 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.446 I  PeachCommander[8752:ae22] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
-2026-08-10 22:35:10.446 I  PeachCommander[8752:ae22] [com.peachcommander:PCFoundation] MainWindowController window loaded
-2026-08-10 22:35:10.446 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] information in shared memory for 0x0-0x97097 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490402, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
-2026-08-10 22:35:10.446 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] information in shared memory for 0x0-0x97097 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490402, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
-2026-08-10 22:35:10.452 I  PeachCommander[8752:ae22] [com.apple.AppKit:Window] order window front conditionally: 1c7 related: 0
-2026-08-10 22:35:10.452 Df PeachCommander[8752:ae22] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) No windows open yet
-2026-08-10 22:35:10.452 I  PeachCommander[8752:ae22] [com.apple.AppKit:Intelligence] starting collection observation
-2026-08-10 22:35:10.452 Df PeachCommander[8752:ae2d] [com.apple.UIIntelligenceSupport:xpc] establishing connection to agent
-2026-08-10 22:35:10.452 Df PeachCommander[8752:ae2d] [com.apple.xpc:session] [0xbe1c21f40] Session created.
-2026-08-10 22:35:10.452 Df PeachCommander[8752:ae2d] [com.apple.xpc:session] [0xbe1c21f40] Session created from connection [0xbe09e1180]
-2026-08-10 22:35:10.452 Df PeachCommander[8752:ae2d] [com.apple.xpc:connection] [0xbe09e1180] activating connection: mach=true listener=false peer=false name=com.apple.uiintelligencesupport.agent
-2026-08-10 22:35:10.452 Df PeachCommander[8752:ae2d] [com.apple.xpc:session] [0xbe1c21f40] Session activated
-2026-08-10 22:35:10.452 I  PeachCommander[8752:ae22] [com.apple.SkyLight:processes] 0[outside of RPC]: SLSSetFrontProcessWithInfo(0x0-0x2 window=0 options=0x1
-2026-08-10 22:35:10.453 Df PeachCommander[8752:ae2d] [com.apple.UIIntelligenceSupport:xpc] Connection established with agent PID: 1045
-2026-08-10 22:35:10.453 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] information in shared memory for 0x0-0x97097 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490402, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
-2026-08-10 22:35:10.454 Df PeachCommander[8752:ae22] [com.apple.xpc:connection] [0xbe09e12c0] activating connection: mach=true listener=false peer=false name=com.apple.FileCoordination
-2026-08-10 22:35:10.454 Df PeachCommander[8752:ae2d] [com.apple.foundation.filecoordination:presenter] Adding presenter 6C821B20-438B-44C2-9878-429EF54796B5 for URL: <private>
-2026-08-10 22:35:10.454 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] information in shared memory for 0x0-0x97097 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490402, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
-2026-08-10 22:35:10.455 I  PeachCommander[8752:ae22] [com.apple.AppKit:Window] order all windows front 2074609865750
-2026-08-10 22:35:10.456 I  PeachCommander[8752:ae22] [com.apple.launchservices:cas] information in shared memory for 0x0-0x97097 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490402, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=83918848, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.5.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="5", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuil<…>
-2026-08-10 22:35:10.456 I  PeachCommander[8752:ae22] [com.apple.showhide:pr-59900543] SHOWHIDE: CONFIRM, id=204, err=0
-2026-08-10 22:35:10.456 I  PeachCommander[8752:ae22] [com.apple.AppKit:Window] context (0 -> 6cca4fb6) for window 1c6
-2026-08-10 22:35:10.456 I  PeachCommander[8752:ae22] [com.apple.AppKit:Window] context (0 -> 8f2e7aba) for window 1c5
-2026-08-10 22:35:10.456 I  PeachCommander[8752:ae22] [com.apple.AppKit:Window] context (0 -> f471ae74) for window 1c4
-2026-08-10 22:35:10.456 I  PeachCommander[8752:ae22] [com.apple.AppKit:Window] context (0 -> 136af2ff) for window 1c3
-2026-08-10 22:35:10.470 I  PeachCommander[8752:ae22] [com.apple.iconservices:foundation] layer data size zero
-2026-08-10 22:35:10.471 I  PeachCommander[8752:ae22] [com.apple.iconservices:foundation] layer data size zero
-2026-08-10 22:35:10.476 Df PeachCommander[8752:ae22] [com.apple.AppKit:AutomaticTermination] void _updateToReflectAutomaticTerminationState(void) Setting _kLSApplicationWouldBeTerminatedByTALKey=0
-2026-08-10 22:35:10.512 A  PeachCommander[8752:ae2a] (RunningBoardServices) didChangeInheritances
-2026-08-10 22:35:10.524 Df PeachCommander[8752:ae22] [com.apple.libsystem.libdispatch:] DEPRECATED USE in libdispatch client: dispatch source activated with no event handler set; set a breakpoint on _dispatch_bug_deprecated to debug
+2026-08-11 01:42:20.010 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] Theme applied: id=norton, appearance=dark, dark=true, background=#0000AA
+2026-08-11 01:42:20.011 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Retargeting existing animation: <private>
+2026-08-11 01:42:20.011 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Retargeting existing animation: <private>
+2026-08-11 01:42:20.011 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Retargeting existing animation: <private>
+2026-08-11 01:42:20.011 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Retargeting existing animation: <private>
+2026-08-11 01:42:20.011 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Retargeting existing animation: <private>
+2026-08-11 01:42:20.033 I  PeachCommander[8919:b262] [com.apple.iconservices:foundation] layer data size zero
+2026-08-11 01:42:20.033 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:20.036 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] Keymap loaded: scheme=<private>, 81 effective bindings
+2026-08-11 01:42:20.037 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:20.037 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:20.037 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:20.037 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:20.037 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:20.037 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:20.037 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:20.037 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:20.037 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:20.037 I  PeachCommander[8919:b262] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-11 01:42:20.040 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:20.041 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:20.041 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:20.041 I  PeachCommander[8919:b262] [com.peachcommander:PCFoundation] MainWindowController window loaded
+2026-08-11 01:42:20.041 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] information in shared memory for 0x0-0x9a09a with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=490485, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-11 01:42:20.041 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] information in shared memory for 0x0-0x9a09a with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=490485, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-11 01:42:20.047 I  PeachCommander[8919:b262] [com.apple.AppKit:Window] order window front conditionally: 1d1 related: 0
+2026-08-11 01:42:20.047 Df PeachCommander[8919:b262] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) No windows open yet
+2026-08-11 01:42:20.047 I  PeachCommander[8919:b262] [com.apple.AppKit:Intelligence] starting collection observation
+2026-08-11 01:42:20.047 Df PeachCommander[8919:b268] [com.apple.UIIntelligenceSupport:xpc] establishing connection to agent
+2026-08-11 01:42:20.047 Df PeachCommander[8919:b268] [com.apple.xpc:session] [0xab8b7dea0] Session created.
+2026-08-11 01:42:20.047 Df PeachCommander[8919:b268] [com.apple.xpc:session] [0xab8b7dea0] Session created from connection [0xab9b05180]
+2026-08-11 01:42:20.047 Df PeachCommander[8919:b268] [com.apple.xpc:connection] [0xab9b05180] activating connection: mach=true listener=false peer=false name=com.apple.uiintelligencesupport.agent
+2026-08-11 01:42:20.047 Df PeachCommander[8919:b268] [com.apple.xpc:session] [0xab8b7dea0] Session activated
+2026-08-11 01:42:20.047 I  PeachCommander[8919:b262] [com.apple.SkyLight:processes] 0[outside of RPC]: SLSSetFrontProcessWithInfo(0x0-0x2 window=0 options=0x1
+2026-08-11 01:42:20.047 Df PeachCommander[8919:b269] [com.apple.UIIntelligenceSupport:xpc] Connection established with agent PID: 1046
+2026-08-11 01:42:20.048 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] information in shared memory for 0x0-0x9a09a with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=490485, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-11 01:42:20.049 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab9b052c0] activating connection: mach=true listener=false peer=false name=com.apple.FileCoordination
+2026-08-11 01:42:20.049 Df PeachCommander[8919:b269] [com.apple.foundation.filecoordination:presenter] Adding presenter 0BF0EC40-C26C-4F0A-AD49-30C13CEFA6F8 for URL: <private>
+2026-08-11 01:42:20.049 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] information in shared memory for 0x0-0x9a09a with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=490485, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-11 01:42:20.050 I  PeachCommander[8919:b262] [com.apple.AppKit:Window] order all windows front 2113231034250
+2026-08-11 01:42:20.050 I  PeachCommander[8919:b262] [com.apple.launchservices:cas] information in shared memory for 0x0-0x9a09a with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777228, "CFBundleExecutablePathINode"=490485, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=100696064, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.0", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="6", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-11 01:42:20.050 I  PeachCommander[8919:b262] [com.apple.showhide:pr-59900543] SHOWHIDE: CONFIRM, id=208, err=0
+2026-08-11 01:42:20.051 I  PeachCommander[8919:b262] [com.apple.AppKit:Window] context (0 -> 6f378685) for window 1d0
+2026-08-11 01:42:20.051 I  PeachCommander[8919:b262] [com.apple.AppKit:Window] context (0 -> 99a8e209) for window 1cf
+2026-08-11 01:42:20.051 I  PeachCommander[8919:b262] [com.apple.AppKit:Window] context (0 -> 8c480a6d) for window 1ce
+2026-08-11 01:42:20.051 I  PeachCommander[8919:b262] [com.apple.AppKit:Window] context (0 -> 9aa25a0e) for window 1cd
+2026-08-11 01:42:20.065 I  PeachCommander[8919:b262] [com.apple.iconservices:foundation] layer data size zero
+2026-08-11 01:42:20.066 I  PeachCommander[8919:b262] [com.apple.iconservices:foundation] layer data size zero
+2026-08-11 01:42:20.072 Df PeachCommander[8919:b262] [com.apple.AppKit:AutomaticTermination] void _updateToReflectAutomaticTerminationState(void) Setting _kLSApplicationWouldBeTerminatedByTALKey=0
+2026-08-11 01:42:20.072 I  PeachCommander[8919:b262] [com.apple.runningboard:assertion] Acquiring assertion: <RBSAssertionDescriptor| "AppNap adapter assertion" ID:(null) target:8919>
+2026-08-11 01:42:20.107 A  PeachCommander[8919:b269] (RunningBoardServices) didChangeInheritances
+2026-08-11 01:42:20.124 Df PeachCommander[8919:b262] [com.apple.libsystem.libdispatch:] DEPRECATED USE in libdispatch client: dispatch source activated with no event handler set; set a breakpoint on _dispatch_bug_deprecated to debug
+2026-08-11 01:42:20.214 Df PeachCommander[8919:b262] [com.apple.xpc:connection] [0xab9b06580] activating connection: mach=true listener=false peer=false name=com.apple.quicklook.ThumbnailsAgent
+2026-08-11 01:42:20.225 A  PeachCommander[8919:b262] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-11 01:42:20.225 I  PeachCommander[8919:b262] [com.apple.CoreAnalytics:client] Dropping "com.apple.ImageIO.readerSelection" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-11 01:42:20.245 I  PeachCommander[8919:b268] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> <private>
+2026-08-11 01:42:20.245 I  PeachCommander[8919:b268] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.031 for <private>. Most representative thumbnail generated: (null)
+2026-08-11 01:42:20.258 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.258 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.258 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.044 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.258 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.258 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.258 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.045 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.260 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.260 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.260 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.046 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.266 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.266 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.266 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.052 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.267 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.267 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.267 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.053 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.268 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.268 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.268 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.054 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.268 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.268 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.269 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.055 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.270 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.270 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.270 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.056 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.271 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.271 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.271 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.057 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.272 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.272 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.272 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.058 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.272 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.272 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.272 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.059 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.274 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.274 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.274 I  PeachCommander[8919:b269] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.060 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.275 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.275 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.275 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.062 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.277 I  PeachCommander[8919:b262] [com.apple.iconservices:foundation] layer data size zero
+2026-08-11 01:42:20.277 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.277 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.277 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.064 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.278 I  PeachCommander[8919:b262] [com.apple.coreanimation:Utilities] IOSurface Compression Enabled: NO
+2026-08-11 01:42:20.279 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.279 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.279 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.065 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.280 I  PeachCommander[8919:b268] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.280 I  PeachCommander[8919:b268] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.280 I  PeachCommander[8919:b268] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.066 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.281 Df PeachCommander[8919:b269] [com.apple.coreanimation:Metal] Precompiled pipelines disabled on unsupported hardware.
+2026-08-11 01:42:20.282 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.282 I  PeachCommander[8919:b268] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.282 I  PeachCommander[8919:b268] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.068 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.283 I  PeachCommander[8919:b268] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.283 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.283 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.069 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.285 I  PeachCommander[8919:b270] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.286 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.286 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.072 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.287 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.287 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.287 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.073 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.289 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.289 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.289 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.075 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.290 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.290 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.290 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.076 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.302 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.302 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.302 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.088 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.306 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.306 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.306 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.092 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.309 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.309 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.309 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.096 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.313 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.313 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.313 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.099 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.315 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.315 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.315 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.101 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.319 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.320 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.320 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.106 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.322 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.322 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.322 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.108 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.325 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.325 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.325 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.111 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.330 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.330 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.330 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.116 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.332 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.332 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.332 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.119 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.336 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.336 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.336 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.122 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.339 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.339 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.339 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.125 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.342 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.342 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.342 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.128 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.346 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.346 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.346 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.132 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.349 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.349 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.349 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.135 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.352 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.352 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.352 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.138 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.354 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.354 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.354 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.140 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.357 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.358 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.358 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.144 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.361 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.361 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.361 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.147 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.364 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.364 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.364 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.150 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.367 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.367 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.367 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.153 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.370 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.370 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.370 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.156 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.374 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.374 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.374 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.160 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.393 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.393 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.393 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.179 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.394 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.394 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.394 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.180 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.395 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.395 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.395 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.182 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.396 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.396 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.396 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.182 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.397 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.397 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.397 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.183 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.398 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.398 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.398 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.184 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.409 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.409 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.409 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.195 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.411 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.411 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.411 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.197 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.412 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.412 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.412 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.198 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.413 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.413 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.413 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.199 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.414 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.414 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.414 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.200 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.415 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.415 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.415 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.201 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.416 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.416 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.416 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.202 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.419 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.419 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.419 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.205 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.420 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.420 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.420 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.206 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.421 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.421 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.421 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.207 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.422 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.422 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.422 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.208 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.423 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.423 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.423 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.209 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.424 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.424 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.424 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.210 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.425 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.425 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.425 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.211 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.426 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.426 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.426 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.212 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.427 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.427 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.427 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.213 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.428 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.428 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.428 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.214 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.429 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.429 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.429 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.215 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.430 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.430 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.430 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.216 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.431 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.431 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.431 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.217 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.432 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.432 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.432 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.218 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.433 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.433 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.433 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.219 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.434 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.434 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.434 I  PeachCommander[8919:b319] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.220 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.435 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.435 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.435 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.221 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.437 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.437 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.437 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.223 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.438 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.438 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.438 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.224 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.439 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.439 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.439 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.225 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.440 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.440 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.440 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.226 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.441 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.441 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.441 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.227 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.442 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.442 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.442 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.228 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.443 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.443 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.443 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.229 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.444 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.444 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.444 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.230 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.446 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.446 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.446 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.232 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.447 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.447 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.447 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.233 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.448 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.448 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.448 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.233 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.449 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.449 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.449 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.235 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.450 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.450 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.450 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.235 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.451 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.451 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.451 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.237 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.452 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.452 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.452 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.237 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.454 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.454 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.454 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.240 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.456 I  PeachCommander[8919:b31a] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.456 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.456 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.242 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.459 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.459 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.459 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.244 for <private>. Most representative thumbnail generated: <private>
+2026-08-11 01:42:20.461 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Received thumbnail for <private>: data of length 65536, bitmap format <private>, error (null), image <private>
+2026-08-11 01:42:20.461 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Calling request completionBlock for <private> without error.
+2026-08-11 01:42:20.461 I  PeachCommander[8919:b31f] [com.apple.quicklook:cloudthumbnails] Thumbnail generation duration of 0.246 for <private>. Most representative thumbnail generated: <private>

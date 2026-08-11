@@ -10,7 +10,7 @@ Peach Commander kann viel, aber ein paar Funktionen haben in der aktuellen Versi
 
 ## Archive
 
-- **Geteilte (mehrteilige) Archive können nicht geöffnet werden.** Standard-ZIP — einschließlich ZIP64, also mehr als 65.535 Einträge oder über 4 GB — sowie TAR und gzip-komprimiertes TAR öffnen sich direkt als Ordner. Ein über mehrere Dateien geteiltes Archiv (`.z01`, `.zip.001`) wird nicht unterstützt: fügen Sie die Teile zuerst zusammen oder entpacken Sie es mit dem Programm, das es erzeugt hat.
+- **Geteilte (mehrteilige) ZIP-Archive lassen sich öffnen, aber alle Teile müssen vorhanden sein.** Standard-ZIP — einschließlich ZIP64, also mehr als 65.535 Einträge oder über 4 GB — sowie TAR und gzip-komprimiertes TAR öffnen sich direkt als Ordner. Ein über mehrere Dateien geteiltes Archiv öffnet sich ebenfalls: Drücken Sie Enter auf der `.zip`-Datei eines Satzes aus `.z01`, `.z02`, … oder auf der `.001`-Datei eines Satzes `name.zip.001`. Alle Teile müssen im selben Ordner liegen; fehlt einer, wird der Satz abgelehnt, statt halb gelesen geöffnet zu werden. Geteilte TAR-Archive sind nicht abgedeckt.
 - **Verschlüsselte ZIP-Archive** (sowohl das ältere ZipCrypto als auch WinZip AES) werden zum Durchsuchen unterstützt, Sie werden jedoch nach dem Passwort gefragt.
 - Andere Formate wie CPIO, ISO, CAB, LZH, XAR und PAX öffnen sich über ein Hilfswerkzeug statt über den nativen Leser.
 

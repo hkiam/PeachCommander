@@ -10,7 +10,7 @@ Peach Commander fa molto, ma alcune funzioni hanno limiti onesti nella versione 
 
 ## Archivi
 
-- **Gli archivi divisi (in più parti) non possono essere aperti.** Lo ZIP standard — compreso ZIP64, quindi più di 65.535 elementi o più di 4 GB — come TAR e TAR compresso con gzip si aprono direttamente come cartelle. Un archivio diviso su più file (`.z01`, `.zip.001`) non è supportato: unite prima le parti oppure scompattatelo con lo strumento che lo ha creato.
+- **Gli archivi ZIP divisi (in più parti) si aprono, ma devono esserci tutte le parti.** Lo ZIP standard — compreso ZIP64, quindi più di 65.535 elementi o più di 4 GB — come TAR e TAR compresso con gzip si aprono direttamente come cartelle. Anche un archivio diviso su più file si apre: premete Invio sul `.zip` di un insieme `.z01`, `.z02`, … oppure sul `.001` di un insieme `name.zip.001`. Tutte le parti devono trovarsi nella stessa cartella e un insieme a cui ne manca una viene rifiutato invece di essere aperto letto a metà. Gli archivi TAR divisi non sono coperti.
 - **Gli archivi ZIP crittografati** (sia il vecchio ZipCrypto sia WinZip AES) sono supportati per la navigazione, ma ti verrà chiesta la password.
 - Altri formati come CPIO, ISO, CAB, LZH, XAR e PAX si aprono tramite uno strumento ausiliario invece del lettore nativo.
 

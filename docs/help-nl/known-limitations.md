@@ -10,7 +10,7 @@ Peach Commander doet veel, maar een paar functies hebben in de huidige versie ee
 
 ## Archieven
 
-- **Gesplitste archieven (in meerdere delen) kunnen niet worden geopend.** Standaard-ZIP — inclusief ZIP64, dus meer dan 65.535 items of groter dan 4 GB — en ook TAR en met gzip gecomprimeerde TAR openen direct als map. Een archief dat over meerdere bestanden is verdeeld (`.z01`, `.zip.001`) wordt niet ondersteund: voeg de delen eerst samen of pak het uit met het programma dat het heeft gemaakt.
+- **Gesplitste ZIP-archieven (in meerdere delen) kunnen worden geopend, maar alle delen moeten aanwezig zijn.** Standaard-ZIP — inclusief ZIP64, dus meer dan 65.535 items of groter dan 4 GB — en ook TAR en met gzip gecomprimeerde TAR openen direct als map. Een archief dat over meerdere bestanden is verdeeld, opent ook: druk op Enter op het `.zip`-bestand van een set `.z01`, `.z02`, … of op het `.001`-bestand van een set `name.zip.001`. Alle delen moeten in dezelfde map staan, en een set waaraan er één ontbreekt wordt geweigerd in plaats van half gelezen geopend. Gesplitste TAR-archieven vallen hier niet onder.
 - **Versleutelde ZIP-archieven** (zowel ouder ZipCrypto als WinZip AES) worden ondersteund om te doorbladeren, maar er wordt om het wachtwoord gevraagd.
 - Andere formaten zoals CPIO, ISO, CAB, LZH, XAR en PAX openen via een hulpprogramma in plaats van de ingebouwde lezer.
 

@@ -13,7 +13,7 @@
 <p>Peach Commander hace muchas cosas, pero unas cuantas funciones tienen límites reconocidos en la versión actual. Conocerlos de antemano evita confusiones cuando algo se comporta de forma inesperada. Esta página enumera las restricciones actuales y, cuando es posible, una solución sencilla.</p>
 <h2 id="archivos-comprimidos">Archivos comprimidos</h2>
 <ul>
-<li><strong>Los archivos divididos (en varias partes) no se pueden abrir.</strong> El ZIP estándar —incluido ZIP64, es decir más de 65 535 elementos o más de 4 GB— así como TAR y TAR comprimido con gzip se abren directamente como carpetas. Un archivo repartido en varios ficheros (<code>.z01</code>, <code>.zip.001</code>) no se admite: una primero las partes o descomprímalo con la herramienta que lo creó.</li>
+<li><strong>Los archivos ZIP divididos (en varias partes) se abren, pero deben estar todas las partes.</strong> El ZIP estándar —incluido ZIP64, es decir más de 65 535 elementos o más de 4 GB— así como TAR y TAR comprimido con gzip se abren directamente como carpetas. Un archivo repartido en varios ficheros también se abre: pulse Intro en el <code>.zip</code> de un conjunto <code>.z01</code>, <code>.z02</code>, … o en el <code>.001</code> de un conjunto <code>name.zip.001</code>. Todas las partes deben estar en la misma carpeta, y un conjunto al que le falte una se rechaza en lugar de abrirse a medio leer. Los archivos TAR divididos no están cubiertos.</li>
 <li><strong>Los archivos ZIP cifrados</strong> (tanto el antiguo ZipCrypto como WinZip AES) son compatibles para su exploración, pero se le pedirá la contraseña.</li>
 <li>Otros formatos como CPIO, ISO, CAB, LZH, XAR y PAX se abren mediante una herramienta auxiliar en lugar del lector nativo.</li>
 </ul>

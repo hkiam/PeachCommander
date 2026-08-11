@@ -10,7 +10,7 @@ A Peach Commander sokat tud, de néhány funkciónak őszinte határai vannak a 
 
 ## Archívumok
 
-- **A felosztott (többrészes) archívumok nem nyithatók meg.** A szokásos ZIP — beleértve a ZIP64-et, tehát a 65 535 elemnél többet vagy a 4 GB-nál nagyobbat — valamint a TAR és a gzippel tömörített TAR közvetlenül mappaként nyílik. A több fájlra osztott archívum (`.z01`, `.zip.001`) nem támogatott: először fűzze össze a részeket, vagy csomagolja ki azzal az eszközzel, amely létrehozta.
+- **A felosztott (többrészes) ZIP-archívumok megnyithatók, de minden résznek meg kell lennie.** A szokásos ZIP — beleértve a ZIP64-et, tehát a 65 535 elemnél többet vagy a 4 GB-nál nagyobbat — valamint a TAR és a gzippel tömörített TAR közvetlenül mappaként nyílik. A több fájlra osztott archívum is megnyílik: nyomjon Entert a `.z01`, `.z02`, … készlet `.zip` fájlján, vagy a `name.zip.001` készlet `.001` fájlján. Minden résznek ugyanabban a mappában kell lennie, és az a készlet, amelyből egy hiányzik, elutasításra kerül ahelyett, hogy félig beolvasva nyílna meg. A felosztott TAR-archívumokra ez nem vonatkozik.
 - **A titkosított ZIP-archívumok** (a régebbi ZipCrypto és a WinZip AES egyaránt) böngészésre támogatottak, de a jelszót kérni fogja.
 - Más formátumok, mint a CPIO, ISO, CAB, LZH, XAR és PAX, egy segédeszközön keresztül nyílnak meg a natív olvasó helyett.
 

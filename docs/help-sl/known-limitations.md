@@ -10,7 +10,7 @@ Peach Commander naredi veliko, a nekaj funkcij ima v trenutni različici pošten
 
 ## Arhivi
 
-- **Razdeljenih (večdelnih) arhivov ni mogoče odpreti.** Običajni ZIP — vključno z ZIP64, torej več kot 65.535 elementov ali nad 4 GB — pa tudi TAR in z gzipom stisnjen TAR se odprejo neposredno kot mape. Arhiv, razdeljen na več datotek (`.z01`, `.zip.001`), ni podprt: najprej združite dele ali ga razpakirajte z orodjem, ki ga je ustvarilo.
+- **Razdeljeni (večdelni) arhivi ZIP se odprejo, vendar morajo biti vsi deli na voljo.** Običajni ZIP — vključno z ZIP64, torej več kot 65.535 elementov ali nad 4 GB — pa tudi TAR in z gzipom stisnjen TAR se odprejo neposredno kot mape. Odpre se tudi arhiv, razdeljen na več datotek: pritisnite Enter na datoteki `.zip` nabora `.z01`, `.z02`, … ali na datoteki `.001` nabora `name.zip.001`. Vsi deli morajo biti v isti mapi, nabor, ki mu eden manjka, pa je zavrnjen, namesto da bi se odprl na pol prebran. Razdeljeni arhivi TAR niso zajeti.
 - **Šifrirani arhivi ZIP** (starejši ZipCrypto in WinZip AES) so podprti za brskanje, a boste vprašani za geslo.
 - Druge oblike, kot so CPIO, ISO, CAB, LZH, XAR in PAX, se odprejo prek pomožnega orodja namesto domačega bralnika.
 

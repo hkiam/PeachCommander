@@ -13,7 +13,7 @@
 <p>Peach Commander toho zvládá hodně, ale několik funkcí má v aktuální verzi upřímné meze. Znát je předem ušetří zmatek, když se něco chová nečekaně. Tato stránka uvádí aktuální omezení a, kde je to možné, jednoduché obejití.</p>
 <h2 id="archivy">Archivy</h2>
 <ul>
-<li><strong>Rozdělené (vícedílné) archivy nelze otevřít.</strong> Standardní ZIP — včetně ZIP64, tedy více než 65 535 položek nebo nad 4 GB — a také TAR a TAR komprimovaný gzipem se otevírají přímo jako složky. Archiv rozdělený do několika souborů (<code>.z01</code>, <code>.zip.001</code>) podporován není: nejprve části spojte, nebo jej rozbalte nástrojem, který jej vytvořil.</li>
+<li><strong>Rozdělené (vícedílné) archivy ZIP se otevřou, ale musí být všechny části.</strong> Standardní ZIP — včetně ZIP64, tedy více než 65 535 položek nebo nad 4 GB — a také TAR a TAR komprimovaný gzipem se otevírají přímo jako složky. Archiv rozdělený do několika souborů se otevře také: stiskněte Enter na souboru <code>.zip</code> sady <code>.z01</code>, <code>.z02</code>, … nebo na souboru <code>.001</code> sady <code>name.zip.001</code>. Všechny části musí ležet ve stejné složce a sada, které jedna chybí, se odmítne, místo aby se otevřela z poloviny přečtená. Rozdělené archivy TAR podporovány nejsou.</li>
 <li><strong>Šifrované archivy ZIP</strong> (jak starší ZipCrypto, tak WinZip AES) jsou podporovány pro procházení, ale budete požádáni o heslo.</li>
 <li>Jiné formáty jako CPIO, ISO, CAB, LZH, XAR a PAX se otevírají přes pomocný nástroj místo nativní čtečky.</li>
 </ul>

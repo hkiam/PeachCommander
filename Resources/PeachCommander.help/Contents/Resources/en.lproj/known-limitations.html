@@ -13,7 +13,7 @@
 <p>Peach Commander does a lot, but a few features have honest limits in the current version. Knowing these ahead of time saves confusion when something behaves unexpectedly. This page lists the current constraints and, where possible, a simple workaround.</p>
 <h2 id="archives">Archives</h2>
 <ul>
-<li><strong>Split (multi-part) archives can't be opened.</strong> Standard ZIP — including ZIP64, so more than 65,535 items or more than 4 GB is fine — TAR, and gzip-compressed TAR open directly as folders. An archive split across several files (<code>.z01</code>, <code>.zip.001</code>) is not handled: join the parts first, or unpack it with the tool that made it.</li>
+<li><strong>Split (multi-part) ZIP archives open, but every part has to be there.</strong> Standard ZIP — including ZIP64, so more than 65,535 items or more than 4 GB is fine — TAR, and gzip-compressed TAR open directly as folders. An archive split across several files opens too: press Enter on the <code>.zip</code> of a <code>.z01</code>, <code>.z02</code>, … set, or on the <code>.001</code> of a <code>name.zip.001</code> set. All the parts must sit in the same folder, and a set with one missing is refused rather than opened half-read. Split TAR archives are not covered.</li>
 <li><strong>Encrypted ZIP archives</strong> (both older ZipCrypto and WinZip AES) are supported for browsing, but you'll be asked for the password.</li>
 <li>Other formats such as CPIO, ISO, CAB, LZH, XAR, and PAX open through a helper tool rather than the native reader.</li>
 </ul>
