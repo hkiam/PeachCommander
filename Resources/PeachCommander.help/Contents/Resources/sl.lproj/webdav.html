@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strežniki WebDAV</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Strežniki WebDAV</h1>
+<p>Strežnik WebDAV — Nextcloud, ownCloud, Synology, univerzitetna shramba — lahko prebrskate v plošči kot vsako mapo. Izberite <strong>Povezava WebDAV…</strong> v meniju Omrežje, navedite naslov URL in strežnik se pojavi v dejavni plošči.</p>
+<p>To je vtičnik: izklopite ali odstranite ga lahko v <strong>Konfiguracija ▸ Vtičniki…</strong>.</p>
+<h2 id="povezovanje">Povezovanje</h2>
+<p>URL je zbirka, v kateri želite pristati, z vašim uporabniškim imenom pred gostiteljem:</p>
+<div class="codehilite"><pre><span></span><code>https://anna@files.example.com/remote.php/dav/files/anna/
+</code></pre></div>
+
+<p>Za geslo vpraša posebej in gre prek aplikacije v <strong>verigo ključev</strong>, nikoli v nastavitveno datoteko. Pustite ga prazno ob poznejši povezavi in uporabljeno bo shranjeno.</p>
+<p>Vsak URL, s katerim se povežete, si zapomni — zadnjih trideset, najnovejši prvi — in ga naslednjič ponudi v spustnem meniju. Ta seznam je v <code>~/Library/Application Support/PeachCommander/webdav/sites.json</code> in vsebuje <strong>samo naslove URL</strong>; geslo se tja nikoli ne zapiše.</p>
+<h2 id="uporabljajte-https">Uporabljajte https</h2>
+<p>Overjanje poteka s HTTP Basic, kar pomeni, da vaše uporabniško ime in geslo potujeta kodirana z base64 — kodirana, ne šifrirana. Prek <code>https://</code> ju povezava zaščiti. Prek <code>http://</code> sta praktično nezaščitena in vse med vami in strežnikom ju lahko prebere. Golo <code>http://</code> je sprejeto, ker je strežnik na lastnem računalniku ali v zaprtem laboratorijskem omrežju upravičen primer — dobra privzeta izbira pa ni.</p>
+<h2 id="kaj-lahko-pocnete">Kaj lahko počnete</h2>
+<p>Izpis, branje, pisanje, ustvarjanje map, brisanje, preimenovanje in premikanje delujejo vsi — preslikajo se na glagole WebDAV <code>PROPFIND</code>, <code>GET</code>, <code>PUT</code>, <code>MKCOL</code>, <code>DELETE</code> in <code>MOVE</code>. Plošča na strežniku WebDAV se torej pri vsakdanjem delu vede kot plošča na disku.</p>
+<h2 id="kaj-pricakovati">Kaj pričakovati</h2>
+<p><strong>Prenosi zajamejo celotno datoteko.</strong> Datoteka se pridobi ali pošlje v enem kosu; prenosa po obsegih ni, zato se prekinjen prenos velike datoteke začne znova, namesto da bi se nadaljeval.</p>
+<p><strong>Kopiranje znotraj strežnika gre prek vašega Maca.</strong> Vtičnik ne uporablja glagola <code>COPY</code>, zato podvajanje datoteke na strežniku to datoteko prenese k vam in znova nazaj. Na počasni povezavi je premikanje — ki ga strežnik opravi sam — precej hitrejše od kopiranja.</p>
+<p><strong>Nič ni zaklenjeno.</strong> WebDAV-jev <code>LOCK</code> ni v uporabi, zato če dva hkrati pišeta isto datoteko, odloči tisti, ki shrani zadnji — natanko kot na omrežni mapi brez zaklepanja.</p>
+<p><strong>Samo overjanje Basic.</strong> Strežniki, ki zahtevajo Digest, žeton bearer ali enotno prijavo, povezavo zavrnejo. Mnogi od njih namesto tega ponujajo geslo za posamezno aplikacijo, in to tu deluje.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="ftp-and-sftp.html">Povezovanje s FTP in SFTP</a></li><li><a href="network-shares.html">Omrežne mape</a></li></ul></section>
+</main>
+</body>
+</html>

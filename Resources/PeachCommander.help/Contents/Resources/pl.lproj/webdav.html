@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Serwery WebDAV</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Serwery WebDAV</h1>
+<p>Serwer WebDAV — Nextcloud, ownCloud, Synology, uczelniany magazyn plików — można przeglądać w panelu jak każdy folder. Wybierz <strong>Połącz przez WebDAV…</strong> z menu Sieć, podaj URL, a serwer pojawi się w aktywnym panelu.</p>
+<p>To wtyczka: możesz ją wyłączyć lub usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>.</p>
+<h2 id="aczenie">Łączenie</h2>
+<p>URL to kolekcja, w której chcesz wylądować, z twoją nazwą użytkownika przed hostem:</p>
+<div class="codehilite"><pre><span></span><code>https://anna@files.example.com/remote.php/dav/files/anna/
+</code></pre></div>
+
+<p>O hasło pyta się osobno i trafia ono przez program do <strong>pęku kluczy</strong>, nigdy do pliku konfiguracyjnego. Zostaw je puste przy kolejnym połączeniu, a zostanie użyte zapisane.</p>
+<p>Każdy URL, z którym się łączysz, jest zapamiętywany — ostatnich trzydzieści, najnowszy pierwszy — i proponowany następnym razem w menu rozwijanym. Ta lista leży w <code>~/Library/Application Support/PeachCommander/webdav/sites.json</code> i zawiera <strong>wyłącznie adresy URL</strong>; hasło nigdy nie jest tam zapisywane.</p>
+<h2 id="uzywaj-https">Używaj https</h2>
+<p>Uwierzytelnianie to HTTP Basic, co oznacza, że twoja nazwa użytkownika i hasło podróżują zakodowane w base64 — zakodowane, nie zaszyfrowane. Przez <code>https://</code> chroni je połączenie. Przez <code>http://</code> są praktycznie jawne i wszystko między tobą a serwerem może je odczytać. Samo <code>http://</code> jest akceptowane, bo serwer na własnym komputerze albo w zamkniętej sieci laboratoryjnej to uzasadniony przypadek — dobrym ustawieniem domyślnym nie jest.</p>
+<h2 id="co-mozesz-robic">Co możesz robić</h2>
+<p>Wyświetlanie, odczyt, zapis, tworzenie folderów, usuwanie, zmiana nazwy i przenoszenie działają — odpowiadają czasownikom WebDAV <code>PROPFIND</code>, <code>GET</code>, <code>PUT</code>, <code>MKCOL</code>, <code>DELETE</code> i <code>MOVE</code>. Panel na serwerze WebDAV zachowuje się więc w codziennej pracy jak panel na dysku.</p>
+<h2 id="czego-sie-spodziewac">Czego się spodziewać</h2>
+<p><strong>Transfery obejmują cały plik.</strong> Plik jest pobierany lub wysyłany w jednym kawałku; nie ma transferu zakresowego, więc przerwany transfer dużego pliku zaczyna się od nowa, zamiast być wznowiony.</p>
+<p><strong>Kopiowanie w obrębie serwera idzie przez twojego Maca.</strong> Wtyczka nie używa czasownika <code>COPY</code>, więc powielenie pliku na serwerze pobiera go i wysyła z powrotem. Na wolnym łączu przeniesienie — które serwer wykonuje sam — jest znacznie szybsze niż kopiowanie.</p>
+<p><strong>Nic nie jest blokowane.</strong> <code>LOCK</code> z WebDAV nie jest używany, więc gdy dwie osoby piszą ten sam plik jednocześnie, rozstrzyga ta, która zapisze jako ostatnia — dokładnie jak na udziale sieciowym bez blokad.</p>
+<p><strong>Tylko uwierzytelnianie Basic.</strong> Serwery wymagające Digest, tokenu bearer albo logowania jednokrotnego odrzucą połączenie. Wiele z nich oferuje zamiast tego hasło dla konkretnej aplikacji, a takie tutaj działa.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="ftp-and-sftp.html">Łączenie z FTP i SFTP</a></li><li><a href="network-shares.html">Udziały sieciowe</a></li></ul></section>
+</main>
+</body>
+</html>

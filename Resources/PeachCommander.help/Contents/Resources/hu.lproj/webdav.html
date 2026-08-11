@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebDAV-kiszolgálók</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>WebDAV-kiszolgálók</h1>
+<p>Egy WebDAV-kiszolgáló — Nextcloud, ownCloud, egy Synology, egy egyetemi fájltár — ugyanúgy böngészhető egy panelben, mint bármelyik mappa. Válassza a <strong>WebDAV-csatlakozás…</strong> lehetőséget a Hálózat menüből, adjon meg egy URL-t, és a kiszolgáló megjelenik az aktív panelben.</p>
+<p>Bővítmény: kikapcsolhatja vagy eltávolíthatja a <strong>Konfiguráció ▸ Bővítmények…</strong> alatt.</p>
+<h2 id="csatlakozas">Csatlakozás</h2>
+<p>Az URL az a gyűjtemény, ahová érkezni szeretne, a felhasználónevével a gazdagép előtt:</p>
+<div class="codehilite"><pre><span></span><code>https://anna@files.example.com/remote.php/dav/files/anna/
+</code></pre></div>
+
+<p>A jelszót külön kéri a program, és az alkalmazáson keresztül a <strong>kulcskarikára</strong> kerül, soha nem konfigurációs fájlba. Hagyja üresen egy későbbi csatlakozáskor, és a mentett jelszó lesz használatban.</p>
+<p>Minden URL, amelyhez csatlakozik, megjegyzésre kerül — az utolsó harminc, a legfrissebb elöl —, és legközelebb a lenyíló menüben felkínálja. Ez a lista a <code>~/Library/Application Support/PeachCommander/webdav/sites.json</code> fájlban van, és <strong>kizárólag URL-eket</strong> tartalmaz; jelszó soha nem kerül oda.</p>
+<h2 id="hasznaljon-https-t">Használjon https-t</h2>
+<p>A hitelesítés HTTP Basic, ami azt jelenti, hogy a felhasználóneve és a jelszava base64-kódolva utazik — kódolva, nem titkosítva. <code>https://</code> felett a kapcsolat megvédi őket. <code>http://</code> felett gyakorlatilag nyíltan mennek, és bármi, ami ön és a kiszolgáló között van, elolvashatja őket. A puszta <code>http://</code> elfogadott, mert egy saját gépen vagy zárt laborhálózaton futó kiszolgáló jogos eset — jó alapértelmezés viszont nem.</p>
+<h2 id="mit-tehet">Mit tehet</h2>
+<p>A listázás, olvasás, írás, mappalétrehozás, törlés, átnevezés és áthelyezés mind működik — a WebDAV <code>PROPFIND</code>, <code>GET</code>, <code>PUT</code>, <code>MKCOL</code>, <code>DELETE</code> és <code>MOVE</code> igéinek felelnek meg. Egy WebDAV-kiszolgálón lévő panel tehát a mindennapi munkában úgy viselkedik, mint egy lemezen lévő panel.</p>
+<h2 id="mire-szamitson">Mire számítson</h2>
+<p><strong>Az átvitel teljes fájlra vonatkozik.</strong> A fájl egy darabban jön le vagy megy fel; tartományos átvitel nincs, így egy nagy fájl megszakadt átvitele elölről kezdődik, nem folytatódik.</p>
+<p><strong>A kiszolgálón belüli másolás az ön Macén keresztül megy.</strong> A bővítmény nem használja a <code>COPY</code> igét, így egy fájl kiszolgálón való megkettőzése letölti és újra feltölti azt. Lassú vonalon az áthelyezés — amit a kiszolgáló maga végez el — sokkal gyorsabb a másolásnál.</p>
+<p><strong>Semmi sincs zárolva.</strong> A WebDAV <code>LOCK</code> nincs használatban, így ha ketten egyszerre írják ugyanazt a fájlt, az dönt, aki utoljára ment — pontosan úgy, mint egy zárolás nélküli hálózati megosztáson.</p>
+<p><strong>Csak Basic hitelesítés.</strong> Azok a kiszolgálók, amelyek Digestet, bearer tokent vagy egyszeri bejelentkezési folyamatot kívánnak, elutasítják a kapcsolatot. Sokuk ehelyett alkalmazásspecifikus jelszót kínál, és az itt működik.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="ftp-and-sftp.html">Csatlakozás FTP-hez és SFTP-hez</a></li><li><a href="network-shares.html">Hálózati megosztások</a></li></ul></section>
+</main>
+</body>
+</html>

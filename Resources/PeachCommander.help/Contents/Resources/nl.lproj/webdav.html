@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebDAV-servers</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>WebDAV-servers</h1>
+<p>Een WebDAV-server — Nextcloud, ownCloud, een Synology, de opslag van een universiteit — kunt u in een paneel doorbladeren als elke map. Kies <strong>WebDAV verbinden…</strong> in het menu Netwerk, geef een URL op, en de server verschijnt in het actieve paneel.</p>
+<p>Het is een plug-in: u kunt hem uitschakelen of verwijderen via <strong>Configuratie ▸ Plug-ins…</strong>.</p>
+<h2 id="verbinding-maken">Verbinding maken</h2>
+<p>De URL is de verzameling waarin u wilt landen, met uw gebruikersnaam vóór de host:</p>
+<div class="codehilite"><pre><span></span><code>https://anna@files.example.com/remote.php/dav/files/anna/
+</code></pre></div>
+
+<p>Het wachtwoord wordt apart gevraagd en gaat via de app naar de <strong>sleutelhanger</strong>, nooit naar een configuratiebestand. Laat het bij een volgende verbinding leeg en het bewaarde wordt gebruikt.</p>
+<p>Elke URL waarmee u verbinding maakt, wordt onthouden — de laatste dertig, de nieuwste eerst — en de volgende keer in het uitklapmenu aangeboden. Die lijst staat in <code>~/Library/Application Support/PeachCommander/webdav/sites.json</code> en bevat <strong>alleen URL’s</strong>; er wordt daar nooit een wachtwoord in geschreven.</p>
+<h2 id="gebruik-https">Gebruik https</h2>
+<p>De authenticatie is HTTP Basic, wat betekent dat uw gebruikersnaam en wachtwoord base64-gecodeerd reizen — gecodeerd, niet versleuteld. Via <code>https://</code> beschermt de verbinding ze. Via <code>http://</code> gaan ze feitelijk onversleuteld, en alles tussen u en de server kan ze meelezen. Kaal <code>http://</code> wordt geaccepteerd, want een server op uw eigen machine of in een afgesloten labnetwerk is een legitiem geval — een goede standaard is het niet.</p>
+<h2 id="wat-u-kunt-doen">Wat u kunt doen</h2>
+<p>Weergeven, lezen, schrijven, mappen aanmaken, verwijderen, hernoemen en verplaatsen werken allemaal — ze komen overeen met de WebDAV-werkwoorden <code>PROPFIND</code>, <code>GET</code>, <code>PUT</code>, <code>MKCOL</code>, <code>DELETE</code> en <code>MOVE</code>. Een paneel op een WebDAV-server gedraagt zich voor het dagelijks werk dus als een paneel op een schijf.</p>
+<h2 id="wat-u-kunt-verwachten">Wat u kunt verwachten</h2>
+<p><strong>Overdrachten gaan per heel bestand.</strong> Een bestand wordt in één stuk opgehaald of verstuurd; er is geen overdracht per bereik, dus een onderbroken overdracht van een groot bestand begint opnieuw in plaats van te hervatten.</p>
+<p><strong>Kopiëren binnen de server gaat via uw Mac.</strong> De plug-in gebruikt het werkwoord <code>COPY</code> niet, dus een bestand op de server dupliceren downloadt het en uploadt het weer. Op een trage lijn is verplaatsen — wat de server zelf doet — veel sneller dan kopiëren.</p>
+<p><strong>Er wordt niets vergrendeld.</strong> De <code>LOCK</code> van WebDAV wordt niet gebruikt, dus als twee mensen tegelijk hetzelfde bestand schrijven, beslist wie het laatst bewaart — precies als op een netwerkschijf zonder vergrendeling.</p>
+<p><strong>Alleen Basic-authenticatie.</strong> Servers die Digest, een bearer-token of een single-sign-on-stroom eisen, weigeren de verbinding. Veel daarvan bieden in plaats daarvan een app-specifiek wachtwoord, en dat werkt hier wel.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="ftp-and-sftp.html">Verbinden met FTP en SFTP</a></li><li><a href="network-shares.html">Netwerkshares</a></li></ul></section>
+</main>
+</body>
+</html>

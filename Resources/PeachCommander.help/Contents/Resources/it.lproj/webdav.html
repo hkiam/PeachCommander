@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Server WebDAV</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Server WebDAV</h1>
+<p>Un server WebDAV — Nextcloud, ownCloud, un Synology, l’archivio di un’università — si può sfogliare in un pannello come qualsiasi cartella. Scegliete <strong>Connessione WebDAV…</strong> dal menu Rete, indicate un URL e il server compare nel pannello attivo.</p>
+<p>È un plugin: potete disattivarlo o rimuoverlo in <strong>Configurazione ▸ Plugin…</strong>.</p>
+<h2 id="connettersi">Connettersi</h2>
+<p>L’URL è la raccolta in cui volete arrivare, con il vostro nome utente davanti all’host:</p>
+<div class="codehilite"><pre><span></span><code>https://anna@files.example.com/remote.php/dav/files/anna/
+</code></pre></div>
+
+<p>La password viene chiesta a parte e finisce nel <strong>portachiavi</strong> tramite l’app, mai in un file di configurazione. Lasciatela vuota a una connessione successiva e verrà usata quella salvata.</p>
+<p>Ogni URL a cui vi connettete viene ricordato — gli ultimi trenta, il più recente per primo — e proposto la volta dopo nel menu a comparsa. Quell’elenco si trova in <code>~/Library/Application Support/PeachCommander/webdav/sites.json</code> e contiene <strong>solo URL</strong>; nessuna password vi viene mai scritta.</p>
+<h2 id="usate-https">Usate https</h2>
+<p>L’autenticazione è HTTP Basic, il che significa che nome utente e password viaggiano codificati in base64 — codificati, non cifrati. Con <code>https://</code> la connessione li protegge. Con <code>http://</code> sono di fatto in chiaro, e tutto ciò che sta fra voi e il server può leggerli. Il semplice <code>http://</code> è accettato, perché un server sulla vostra macchina o su una rete di laboratorio chiusa è un caso legittimo, ma non è una buona impostazione predefinita.</p>
+<h2 id="cosa-potete-fare">Cosa potete fare</h2>
+<p>Elencare, leggere, scrivere, creare cartelle, eliminare, rinominare e spostare funzionano tutti: corrispondono ai verbi WebDAV <code>PROPFIND</code>, <code>GET</code>, <code>PUT</code>, <code>MKCOL</code>, <code>DELETE</code> e <code>MOVE</code>. Un pannello su un server WebDAV si comporta quindi, per il lavoro di ogni giorno, come un pannello su un disco.</p>
+<h2 id="cosa-aspettarsi">Cosa aspettarsi</h2>
+<p><strong>I trasferimenti riguardano il file intero.</strong> Un file viene preso o inviato in un pezzo solo; non c’è trasferimento per intervalli, quindi un trasferimento interrotto di un file grande ricomincia invece di riprendere.</p>
+<p><strong>Copiare all’interno del server passa dal vostro Mac.</strong> Il plugin non usa il verbo <code>COPY</code>, perciò duplicare un file sul server lo scarica e lo ricarica. Su una linea lenta, spostare — cosa che fa il server stesso — è molto più veloce che copiare.</p>
+<p><strong>Niente viene bloccato.</strong> Il <code>LOCK</code> di WebDAV non è usato: se due persone scrivono lo stesso file nello stesso momento decide chi salva per ultimo, esattamente come su una condivisione di rete senza blocchi.</p>
+<p><strong>Solo autenticazione Basic.</strong> I server che richiedono Digest, un token bearer o un flusso di single sign-on rifiuteranno la connessione. Molti di essi offrono in alternativa una password specifica per l’app, che qui funziona.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="ftp-and-sftp.html">Connessione a FTP e SFTP</a></li><li><a href="network-shares.html">Condivisioni di rete</a></li></ul></section>
+</main>
+</body>
+</html>

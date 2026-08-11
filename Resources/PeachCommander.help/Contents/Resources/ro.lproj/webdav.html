@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Servere WebDAV</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Servere WebDAV</h1>
+<p>Un server WebDAV — Nextcloud, ownCloud, un Synology, depozitul de fișiere al unei universități — poate fi răsfoit într-un panou ca orice dosar. Alegeți <strong>Conectare WebDAV…</strong> din meniul Rețea, dați un URL, iar serverul apare în panoul activ.</p>
+<p>Este o extensie: o puteți dezactiva sau elimina din <strong>Configurare ▸ Extensii…</strong>.</p>
+<h2 id="conectarea">Conectarea</h2>
+<p>URL-ul este colecția în care vreți să ajungeți, cu numele dumneavoastră de utilizator în fața gazdei:</p>
+<div class="codehilite"><pre><span></span><code>https://anna@files.example.com/remote.php/dav/files/anna/
+</code></pre></div>
+
+<p>Parola este cerută separat și ajunge în <strong>inelul de chei</strong> prin aplicație, niciodată într-un fișier de configurare. Lăsați-o goală la o conectare ulterioară și se va folosi cea salvată.</p>
+<p>Fiecare URL la care vă conectați este reținut — ultimele treizeci, cel mai recent primul — și oferit data următoare în meniul derulant. Acea listă se află în <code>~/Library/Application Support/PeachCommander/webdav/sites.json</code> și conține <strong>doar URL-uri</strong>; nicio parolă nu este scrisă vreodată acolo.</p>
+<h2 id="folositi-https">Folosiți https</h2>
+<p>Autentificarea este HTTP Basic, ceea ce înseamnă că numele de utilizator și parola călătoresc codificate base64 — codificate, nu criptate. Pe <code>https://</code> conexiunea le protejează. Pe <code>http://</code> sunt practic în clar, iar tot ce se află între dumneavoastră și server le poate citi. Simplul <code>http://</code> este acceptat, fiindcă un server pe propria mașină sau într-o rețea de laborator închisă este un caz legitim — o valoare implicită bună însă nu este.</p>
+<h2 id="ce-puteti-face">Ce puteți face</h2>
+<p>Listarea, citirea, scrierea, crearea de dosare, ștergerea, redenumirea și mutarea funcționează toate — corespund verbelor WebDAV <code>PROPFIND</code>, <code>GET</code>, <code>PUT</code>, <code>MKCOL</code>, <code>DELETE</code> și <code>MOVE</code>. Un panou pe un server WebDAV se comportă deci, pentru munca de zi cu zi, ca un panou pe un disc.</p>
+<h2 id="la-ce-sa-va-asteptati">La ce să vă așteptați</h2>
+<p><strong>Transferurile se fac pe fișier întreg.</strong> Un fișier este adus sau trimis dintr-o bucată; nu există transfer pe intervale, așa că un transfer întrerupt al unui fișier mare o ia de la capăt în loc să fie reluat.</p>
+<p><strong>Copierea în interiorul serverului trece prin Macul dumneavoastră.</strong> Extensia nu folosește verbul <code>COPY</code>, așa că duplicarea unui fișier pe server îl descarcă și îl încarcă din nou. Pe o linie lentă, mutarea — pe care serverul o face singur — este mult mai rapidă decât copierea.</p>
+<p><strong>Nimic nu este blocat.</strong> <code>LOCK</code> din WebDAV nu este folosit, așa că, dacă două persoane scriu același fișier în același timp, decide cine salvează ultimul — exact ca pe o partajare de rețea fără blocare.</p>
+<p><strong>Doar autentificare Basic.</strong> Serverele care cer Digest, un token bearer sau un flux de autentificare unică vor refuza conexiunea. Multe dintre ele oferă în schimb o parolă specifică aplicației, iar aceea funcționează aici.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="ftp-and-sftp.html">Conectarea la FTP și SFTP</a></li><li><a href="network-shares.html">Partajări de rețea</a></li></ul></section>
+</main>
+</body>
+</html>

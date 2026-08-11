@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebDAV servers</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>WebDAV servers</h1>
+<p>A WebDAV server — Nextcloud, ownCloud, a Synology, a university file store — can be browsed in a panel like any folder. Choose <strong>WebDAV Connect…</strong> from the Network menu, give it a URL, and the server appears in the active panel.</p>
+<p>It is a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Plugins…</strong>.</p>
+<h2 id="connecting">Connecting</h2>
+<p>The URL is the collection you want to land in, with your user name in front of the host:</p>
+<div class="codehilite"><pre><span></span><code>https://anna@files.example.com/remote.php/dav/files/anna/
+</code></pre></div>
+
+<p>The password is asked for separately and goes into the <strong>Keychain</strong> through the host, never into a configuration file. Leave it empty on a later connection and the saved one is used.</p>
+<p>Every URL you connect to is remembered — the last thirty, most recent first — and offered in the dropdown next time. That list lives in <code>~/Library/Application Support/PeachCommander/webdav/sites.json</code> and contains <strong>URLs only</strong>; no password is ever written there.</p>
+<h2 id="use-https">Use https</h2>
+<p>Authentication is HTTP Basic, which means your user name and password travel base64-encoded — encoded, not encrypted. Over <code>https://</code> the connection protects them. Over <code>http://</code> they are effectively in the clear, and anything between you and the server can read them. Plain <code>http://</code> is accepted, because a server on your own machine or a closed lab network is a legitimate case, but it is not a good default.</p>
+<h2 id="what-you-can-do">What you can do</h2>
+<p>Listing, reading, writing, creating folders, deleting, renaming and moving all work — they map onto the WebDAV verbs <code>PROPFIND</code>, <code>GET</code>, <code>PUT</code>, <code>MKCOL</code>, <code>DELETE</code> and <code>MOVE</code>. So a panel on a WebDAV server behaves like a panel on a disk for everyday work.</p>
+<h2 id="what-to-expect-of-it">What to expect of it</h2>
+<p><strong>Transfers are whole-file.</strong> A file is fetched or sent in one piece; there is no ranged transfer, so an interrupted transfer of a large file starts again rather than resuming.</p>
+<p><strong>Copying inside the server goes through your Mac.</strong> The plugin does not use the <code>COPY</code> verb, so duplicating a file on the server downloads it and uploads it again. On a slow line, moving (which the server does itself) is much faster than copying.</p>
+<p><strong>Nothing is locked.</strong> WebDAV's <code>LOCK</code> is not used, so two people writing the same file at the same time is settled by whoever saves last, exactly as it would be on a network share without locking.</p>
+<p><strong>Only Basic authentication.</strong> Servers that require Digest, a bearer token or a single-sign-on flow will refuse the connection. Many of those offer an app-specific password instead, which works here.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="ftp-and-sftp.html">Connecting to FTP &amp; SFTP</a></li><li><a href="network-shares.html">Network shares</a></li></ul></section>
+</main>
+</body>
+</html>
