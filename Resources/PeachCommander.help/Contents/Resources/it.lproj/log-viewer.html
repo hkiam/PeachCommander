@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Il visualizzatore di log</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Il visualizzatore di log</h1>
+<p>Mettete il cursore su un file di log e scegliete <strong>Mostra come log…</strong> per aprirlo in una finestra pensata per i log e non per il testo: una riga per riga, il livello di ciascuna riconosciuto e colorato, un filtro, e un inseguimento che tiene il passo mentre il file è ancora in scrittura.</p>
+<p>È un plugin: potete disattivarlo o rimuoverlo in <strong>Configurazione ▸ Plugin…</strong>. Senza di esso, F3 mostra un log come qualsiasi altro file di testo.</p>
+<h2 id="perche-si-apre-allistante">Perché si apre all’istante</h2>
+<p>Il file viene mappato in memoria e si costruisce solo un indice di dove comincia ogni riga, in background. Nulla viene caricato come testo prima di essere sullo schermo, e solo le righe realmente visibili vengono decodificate. Un log di più gigabyte si apre veloce quanto uno piccolo, e andare alla fine non legge il mezzo.</p>
+<h2 id="livelli-e-colore">Livelli e colore</h2>
+<p>Ogni riga viene classificata — <strong>Errore</strong>, <strong>Avviso</strong>, <strong>Info</strong>, <strong>Debug</strong>, <strong>Traccia</strong>, oppure <strong>Sconosciuto</strong> quando il formato non dice nulla — e colorata di conseguenza. I colori predefiniti seguono l’aspetto chiaro o scuro; impostate i vostri nelle preferenze del plugin e verranno usati quelli.</p>
+<p>La colonna <strong>Livello</strong> mostra a colpo d’occhio dove stanno gli errori, e il campo del filtro restringe l’elenco a ciò che cercate. Attivate <strong>Regex</strong> per filtrare con un’espressione regolare anziché con testo semplice.</p>
+<h2 id="seguire-un-file-che-sta-ancora-crescendo">Seguire un file che sta ancora crescendo</h2>
+<p>Attivate <strong>Dal vivo (scorrimento automatico)</strong> e la finestra segue la fine del file mentre arrivano nuove righe: l’indice viene esteso sui byte aggiunti invece di essere ricostruito, quindi resta economico per quanto lungo diventi il file. Scorrete in su e state leggendo il passato; l’inseguimento continua sotto.</p>
+<h2 id="orientarsi">Orientarsi</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Trova…</strong></td>
+<td>Cerca nei messaggi; <strong>Trova (marca e vai)…</strong> marca ogni occorrenza così da poterle percorrere</td>
+</tr>
+<tr>
+<td><strong>Vai alla riga…</strong></td>
+<td>Salta a un numero di riga fisico</td>
+</tr>
+<tr>
+<td><strong>Vai a data/ora…</strong></td>
+<td>Salta alla prima riga a partire da un timestamp, ad es. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>La copia sa cos’è una riga di log: <strong>Copia riga</strong> prende la riga sotto il cursore, <strong>Copia voce (tutte le righe)</strong> prende l’intera voce quando ne occupa più d’una — una traccia dello stack, per esempio — e <strong>Copia righe selezionate</strong> prende esattamente ciò che avete selezionato.</p>
+<h2 id="formati">Formati</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> e <strong>CSV</strong> sono integrati, e il formato viene riconosciuto automaticamente; la finestra mostra su quale si è fermata. Se i vostri log non sono nessuno di questi, aggiungete il vostro sotto <strong>Formati di log</strong> nelle preferenze: un’espressione regolare con gruppi denominati per le parti che contano.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>Una riga che l’espressione non riconosce compare comunque: viene semplicemente classificata come Sconosciuto anziché scartata, perché un log che non si può leggere è peggio di un log senza colori.</p>
+<h2 id="visualizzazione">Visualizzazione</h2>
+<p><strong>Mostra i numeri di riga</strong> e <strong>Manda a capo le righe lunghe</strong> sono nelle preferenze. L’area di dettaglio sotto l’elenco mostra sempre il testo completo della voce selezionata, mandato a capo, qualunque cosa faccia l’elenco.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="viewing-files.html">Visualizzazione dei file</a></li><li><a href="searching.html">Trovare i file</a></li></ul></section>
+</main>
+</body>
+</html>

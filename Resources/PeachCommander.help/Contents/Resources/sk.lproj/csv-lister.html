@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Súbory CSV ako tabuľka</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Súbory CSV ako tabuľka</h1>
+<p>Stlačte <strong>F3</strong> na súbore <code>.csv</code> alebo <code>.tsv</code> a otvorí sa ako skutočná tabuľka — stĺpce, záhlavie, zoraďovanie a filter — namiesto ako textové riadky s čiarkami.</p>
+<p>Je to plugin: môžete ho vypnúť alebo odstrániť v <strong>Konfigurácia ▸ Pluginy…</strong>. Bez neho zobrazí F3 súbor ako obyčajný text, čo je pri malom súbore stále dobre čitateľné.</p>
+<h2 id="oddelovac-sa-zisti-nepredpoklada-sa">Oddeľovač sa zistí, nepredpokladá sa</h2>
+<p>Čiarka, bodkočiarka, tabulátor, zvislá čiara a dvojbodka prichádzajú do úvahy všetky. Plugin každý z nich spočíta cez prvých dvadsať riadkov a vezme ten, ktorý sa na najviac riadkoch vyskytuje rovnako často — súbor, kde má každý riadok štyri bodkočiarky, je súborom s bodkočiarkami, nech prípona hovorí čokoľvek. V praxi na tom záleží: <code>.csv</code> vyexportované tabuľkovým procesorom na slovenskom systéme býva oddelené bodkočiarkami a <code>.tsv</code> nie je vždy oddelené tabulátormi.</p>
+<p>Prvý riadok sa považuje za záhlavie a stanú sa z neho názvy stĺpcov.</p>
+<h2 id="zoradovanie-a-filtrovanie">Zoraďovanie a filtrovanie</h2>
+<p>Kliknutím na záhlavie stĺpca sa podľa neho zoradí, ďalším kliknutím sa poradie obráti. Zoraďuje sa <strong>číselne, keď sú obe hodnoty čísla</strong>, inak abecedne, takže stĺpec s veľkosťami zoradí 9 pred 10, a nie za.</p>
+<p>Vyhľadávacie pole filtruje počas písania, bez ohľadu na veľkosť písmen. V predvolenom stave hľadá vo všetkých stĺpcoch; výberom stĺpca v ponuke vedľa hľadá len v ňom.</p>
+<h2 id="co-nedokaze">Čo nedokáže</h2>
+<p>Parser je zámerne malý a jedno obmedzenie je dobré poznať skôr, než vás prekvapí: <strong>oddeľovač vnútri poľa v úvodzovkách sa stále považuje za oddeľovač.</strong> Riadok ako</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>sa stane tromi bunkami namiesto dvoch. Obklopujúce úvodzovky sa odstránia, ak obopínajú celé pole, ďalej sa však úvodzovky nevyhodnocujú. Pri súbore, kde na tom záleží, je lepším nástrojom vstavaný prehliadač alebo tabuľkový procesor.</p>
+<p>Prázdne riadky sa preskakujú a pole presahujúce niekoľko riadkov podporované nie je.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="viewing-files.html">Zobrazenie súborov</a></li><li><a href="log-viewer.html">Prehliadač logov</a></li></ul></section>
+</main>
+</body>
+</html>

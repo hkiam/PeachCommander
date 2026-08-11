@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Der Log-Betrachter</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Der Log-Betrachter</h1>
+<p>Setzen Sie den Cursor auf eine Logdatei und wählen Sie <strong>Als Log anzeigen…</strong>, um sie in einem Fenster zu öffnen, das für Logs gebaut ist statt für Text: eine Zeile pro Zeile, die Stufe jeder Zeile erkannt und eingefärbt, ein Filter, und ein Mitlesen, das Schritt hält, während die Datei noch geschrieben wird.</p>
+<p>Es ist ein Plugin, Sie können es also unter <strong>Konfiguration ▸ Plugins…</strong> abschalten oder entfernen. Ohne es zeigt F3 ein Log so wie jede andere Textdatei.</p>
+<h2 id="warum-es-sofort-offnet">Warum es sofort öffnet</h2>
+<p>Die Datei wird in den Speicher eingeblendet, und aufgebaut wird nur ein Index, wo jede Zeile beginnt — im Hintergrund. Nichts wird als Text geladen, bevor es auf dem Bildschirm ist, und nur die tatsächlich sichtbaren Zeilen werden dekodiert. Ein Log von mehreren Gigabyte öffnet so schnell wie ein kleines, und ans Ende zu springen liest nicht die Mitte.</p>
+<h2 id="stufen-und-farbe">Stufen und Farbe</h2>
+<p>Jede Zeile wird eingeordnet — <strong>Fehler</strong>, <strong>Warnung</strong>, <strong>Info</strong>, <strong>Debug</strong>, <strong>Trace</strong> oder <strong>Unbekannt</strong>, wenn das Format nichts hergibt — und entsprechend eingefärbt. Die Standardfarben folgen dem hellen oder dunklen Erscheinungsbild; hinterlegen Sie eigene in den Einstellungen des Plugins, werden Ihre verwendet.</p>
+<p>An der Spalte <strong>Stufe</strong> sehen Sie auf einen Blick, wo die Fehler sitzen, und das Filterfeld verengt die Liste auf das Gesuchte. Schalten Sie <strong>Regex</strong> ein, um statt mit Klartext mit einem regulären Ausdruck zu filtern.</p>
+<h2 id="einer-noch-wachsenden-datei-folgen">Einer noch wachsenden Datei folgen</h2>
+<p>Schalten Sie <strong>Live (automatisch scrollen)</strong> ein, und das Fenster folgt dem Ende der Datei, während neue Zeilen eintreffen: Der Index wird über die angehängten Bytes erweitert statt neu gebaut, das bleibt also billig, egal wie lang die Datei wird. Scrollen Sie nach oben, lesen Sie Vergangenes; das Mitlesen läuft darunter weiter.</p>
+<h2 id="sich-zurechtfinden">Sich zurechtfinden</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Suchen…</strong></td>
+<td>Durchsucht die Meldungen; <strong>Suchen (markieren und springen)…</strong> markiert jeden Treffer, sodass Sie zwischen ihnen weitergehen können</td>
+</tr>
+<tr>
+<td><strong>Gehe zu Zeile…</strong></td>
+<td>Springt zu einer physischen Zeilennummer</td>
+</tr>
+<tr>
+<td><strong>Gehe zu Datum/Zeit…</strong></td>
+<td>Springt zur ersten Zeile ab einem Zeitstempel, z. B. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>Das Kopieren weiß, was eine Logzeile ist: <strong>Zeile kopieren</strong> nimmt die Zeile unter dem Cursor, <strong>Eintrag kopieren (alle Zeilen)</strong> nimmt den ganzen Eintrag, wenn einer über mehrere Zeilen geht — etwa ein Stacktrace — und <strong>Ausgewählte Zeilen kopieren</strong> nimmt genau das, was Sie ausgewählt haben.</p>
+<h2 id="formate">Formate</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> und <strong>CSV</strong> sind eingebaut, und das Format wird automatisch erkannt; das Fenster zeigt, worauf es sich festgelegt hat. Sind Ihre Logs keines davon, ergänzen Sie unter <strong>Log-Formate</strong> in den Einstellungen ein eigenes: ein regulärer Ausdruck mit benannten Gruppen für die Teile, auf die es ankommt.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>Eine Zeile, auf die der Ausdruck nicht passt, erscheint trotzdem — sie wird lediglich als Unbekannt eingeordnet statt verworfen, denn ein Log, das man nicht lesen kann, ist schlimmer als ein Log ohne Farben.</p>
+<h2 id="darstellung">Darstellung</h2>
+<p><strong>Zeilennummern anzeigen</strong> und <strong>Lange Zeilen umbrechen</strong> stehen in den Einstellungen. Der Detailbereich unter der Liste zeigt immer den vollen Text des ausgewählten Eintrags, umbrochen, was auch immer die Liste gerade tut.</p>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Dateien ansehen</a></li><li><a href="searching.html">Dateien finden</a></li></ul></section>
+</main>
+</body>
+</html>

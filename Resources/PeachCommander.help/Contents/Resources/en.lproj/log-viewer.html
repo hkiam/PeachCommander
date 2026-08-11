@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The log viewer</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>The log viewer</h1>
+<p>Put the cursor on a log file and choose <strong>View as Log…</strong> to open it in a window built for logs rather than for text: one row per line, the level of each line recognised and coloured, a filter, and a tail that keeps up while the file is still being written.</p>
+<p>It is a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Plugins…</strong>. Without it, F3 shows a log the way it shows any other text file.</p>
+<h2 id="why-it-opens-instantly">Why it opens instantly</h2>
+<p>The file is memory-mapped and only an index of where each line begins is built, in the background. Nothing is loaded into memory as text until it is on screen, and only the lines actually visible are decoded. A multi-gigabyte log opens as fast as a small one, and scrolling to the end does not read the middle.</p>
+<h2 id="levels-and-colour">Levels and colour</h2>
+<p>Each line is classified — <strong>Error</strong>, <strong>Warning</strong>, <strong>Info</strong>, <strong>Debug</strong>, <strong>Trace</strong>, or <strong>Unknown</strong> when the format gives nothing away — and coloured accordingly. The default colours follow the light or dark appearance; set your own in the plugin's settings and yours are used instead.</p>
+<p>The <strong>Level</strong> column lets you see at a glance where the errors sit, and the filter field narrows the list to what you are looking for. Turn on <strong>Regex</strong> to filter with a regular expression instead of plain text.</p>
+<h2 id="following-a-file-that-is-still-growing">Following a file that is still growing</h2>
+<p>Switch on <strong>Live (auto-scroll)</strong> and the window follows the end of the file as new lines arrive: the index is extended over the appended bytes rather than rebuilt, so this stays cheap no matter how long the file gets. Scroll up and you are reading history; the tail keeps running underneath.</p>
+<h2 id="finding-your-way-around">Finding your way around</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Find…</strong></td>
+<td>Search the messages; <strong>Find (mark &amp; jump)…</strong> marks every hit so you can step between them</td>
+</tr>
+<tr>
+<td><strong>Go to Line…</strong></td>
+<td>Jump to a physical line number</td>
+</tr>
+<tr>
+<td><strong>Go to Date/Time…</strong></td>
+<td>Jump to the first line at or after a timestamp, e.g. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>Copying is aware of what a log line is: <strong>Copy Line</strong> takes the line under the cursor, <strong>Copy Entry (all lines)</strong> takes the whole entry when one entry spans several lines — a stack trace, for instance — and <strong>Copy Selected Lines</strong> takes exactly what you selected.</p>
+<h2 id="formats">Formats</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> and <strong>CSV</strong> are built in, and the format is detected automatically; the window shows which one it settled on. When your logs are none of those, add your own under <strong>Log Formats</strong> in the settings: a regular expression with named groups for the parts that matter.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>A line the expression does not match still appears — it is simply classified as Unknown rather than dropped, because a log you cannot read is worse than a log without colours.</p>
+<h2 id="display">Display</h2>
+<p><strong>Show line numbers</strong> and <strong>Word wrap long lines</strong> are in the settings. The detail area below the list always shows the full text of the selected entry, wrapped, whatever the list is doing.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Viewing files</a></li><li><a href="searching.html">Finding files</a></li></ul></section>
+</main>
+</body>
+</html>

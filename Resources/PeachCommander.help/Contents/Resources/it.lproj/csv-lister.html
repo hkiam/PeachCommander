@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>File CSV come tabella</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>File CSV come tabella</h1>
+<p>Premete <strong>F3</strong> su un file <code>.csv</code> o <code>.tsv</code> e si apre come una vera tabella — colonne, intestazioni, ordinamento e filtro — invece che come righe di testo con delle virgole.</p>
+<p>È un plugin: potete disattivarlo o rimuoverlo in <strong>Configurazione ▸ Plugin…</strong>. Senza di esso, F3 mostra il file come testo semplice, il che per uno piccolo resta perfettamente leggibile.</p>
+<h2 id="il-delimitatore-viene-dedotto-non-presunto">Il delimitatore viene dedotto, non presunto</h2>
+<p>Virgola, punto e virgola, tabulazione, barra verticale e due punti sono tutti candidati. Il plugin conta ciascuno di essi sulle prime venti righe e sceglie quello che compare lo stesso numero di volte sul maggior numero di righe: un file in cui ogni riga ha quattro punti e virgola è un file a punto e virgola, qualunque cosa dica l’estensione. Nella pratica conta: un <code>.csv</code> esportato da un foglio di calcolo su un sistema italiano è di solito separato da punti e virgola, e un <code>.tsv</code> non è sempre separato da tabulazioni.</p>
+<p>La prima riga è trattata come riga di intestazione e diventa i titoli delle colonne.</p>
+<h2 id="ordinare-e-filtrare">Ordinare e filtrare</h2>
+<p>Fate clic su un’intestazione di colonna per ordinare in base a essa, di nuovo per invertire. L’ordinamento è <strong>numerico quando entrambi i valori sono numeri</strong> e alfabetico altrimenti, così una colonna di dimensioni ordina 9 prima di 10 e non dopo.</p>
+<p>Il campo di ricerca filtra mentre scrivete, senza distinguere maiuscole e minuscole. Per impostazione predefinita guarda in tutte le colonne; scegliete una colonna dal menu accanto per guardare solo lì.</p>
+<h2 id="cio-che-non-fa">Ciò che non fa</h2>
+<p>L’analizzatore è volutamente minimo, e un limite vale la pena conoscerlo prima che vi sorprenda: <strong>un delimitatore dentro un campo tra virgolette viene comunque trattato come delimitatore.</strong> Una riga come</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>diventa tre celle invece di due. Le virgolette esterne vengono rimosse quando racchiudono un campo intero, ma oltre a questo il quoting non viene interpretato. Per un file in cui la cosa conta, il visualizzatore integrato o un foglio di calcolo è lo strumento migliore.</p>
+<p>Le righe vuote vengono saltate, e un campo che si estende su più righe non è supportato.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="viewing-files.html">Visualizzazione dei file</a></li><li><a href="log-viewer.html">Il visualizzatore di log</a></li></ul></section>
+</main>
+</body>
+</html>

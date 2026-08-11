@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El visor de registros</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>El visor de registros</h1>
+<p>Coloca el cursor sobre un archivo de registro y elige <strong>Ver como registro…</strong> para abrirlo en una ventana pensada para registros y no para texto: una fila por línea, el nivel de cada una reconocido y coloreado, un filtro, y un seguimiento que va al día mientras el archivo se sigue escribiendo.</p>
+<p>Es un plugin: puedes desactivarlo o eliminarlo en <strong>Configuración ▸ Plugins…</strong>. Sin él, F3 muestra un registro como cualquier otro archivo de texto.</p>
+<h2 id="por-que-se-abre-al-instante">Por qué se abre al instante</h2>
+<p>El archivo se mapea en memoria y solo se construye un índice de dónde empieza cada línea, en segundo plano. Nada se carga como texto antes de estar en pantalla, y solo se descodifican las líneas realmente visibles. Un registro de varios gigabytes se abre tan rápido como uno pequeño, e ir al final no lee el medio.</p>
+<h2 id="niveles-y-color">Niveles y color</h2>
+<p>Cada línea se clasifica —<strong>Error</strong>, <strong>Advertencia</strong>, <strong>Info</strong>, <strong>Depuración</strong>, <strong>Traza</strong>, o <strong>Desconocido</strong> cuando el formato no dice nada— y se colorea en consecuencia. Los colores por omisión siguen el aspecto claro u oscuro; define los tuyos en los ajustes del plugin y se usarán esos.</p>
+<p>La columna <strong>Nivel</strong> deja ver de un vistazo dónde están los errores, y el campo de filtro reduce la lista a lo que buscas. Activa <strong>Regex</strong> para filtrar con una expresión regular en lugar de texto simple.</p>
+<h2 id="seguir-un-archivo-que-aun-crece">Seguir un archivo que aún crece</h2>
+<p>Activa <strong>En vivo (desplazamiento automático)</strong> y la ventana sigue el final del archivo a medida que llegan líneas nuevas: el índice se amplía sobre los bytes añadidos en vez de reconstruirse, así que sigue siendo barato por larga que sea la lista. Desplázate hacia arriba y estarás leyendo historial; el seguimiento continúa por debajo.</p>
+<h2 id="orientarse">Orientarse</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Buscar…</strong></td>
+<td>Busca en los mensajes; <strong>Buscar (marcar e ir)…</strong> marca cada coincidencia para poder recorrerlas</td>
+</tr>
+<tr>
+<td><strong>Ir a la línea…</strong></td>
+<td>Salta a un número de línea físico</td>
+</tr>
+<tr>
+<td><strong>Ir a fecha/hora…</strong></td>
+<td>Salta a la primera línea a partir de una marca de tiempo, p. ej. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>La copia sabe qué es una línea de registro: <strong>Copiar línea</strong> toma la línea bajo el cursor, <strong>Copiar entrada (todas las líneas)</strong> toma la entrada completa cuando abarca varias líneas —una traza de pila, por ejemplo— y <strong>Copiar líneas seleccionadas</strong> toma exactamente lo que seleccionaste.</p>
+<h2 id="formatos">Formatos</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> y <strong>CSV</strong> vienen integrados, y el formato se detecta automáticamente; la ventana muestra por cuál se decidió. Si tus registros no son ninguno de esos, añade el tuyo en <strong>Formatos de registro</strong> dentro de los ajustes: una expresión regular con grupos con nombre para las partes que importan.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>Una línea que la expresión no reconoce aparece igualmente: simplemente se clasifica como Desconocido en lugar de descartarse, porque un registro que no se puede leer es peor que un registro sin colores.</p>
+<h2 id="presentacion">Presentación</h2>
+<p><strong>Mostrar números de línea</strong> y <strong>Ajustar líneas largas</strong> están en los ajustes. El área de detalle bajo la lista siempre muestra el texto completo de la entrada seleccionada, ajustado, haga lo que haga la lista.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="viewing-files.html">Ver archivos</a></li><li><a href="searching.html">Buscar archivos</a></li></ul></section>
+</main>
+</body>
+</html>

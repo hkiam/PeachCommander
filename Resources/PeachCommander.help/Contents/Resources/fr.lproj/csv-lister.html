@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Les fichiers CSV en tableau</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Les fichiers CSV en tableau</h1>
+<p>Appuyez sur <strong>F3</strong> sur un fichier <code>.csv</code> ou <code>.tsv</code> et il s’ouvre comme un vrai tableau — colonnes, en-têtes, tri et filtre — au lieu de lignes de texte contenant des virgules.</p>
+<p>C’est une extension : vous pouvez la désactiver ou la supprimer dans <strong>Configuration ▸ Extensions…</strong>. Sans elle, F3 affiche le fichier en texte brut, ce qui reste tout à fait lisible pour un petit fichier.</p>
+<h2 id="le-separateur-est-deduit-pas-suppose">Le séparateur est déduit, pas supposé</h2>
+<p>Virgule, point-virgule, tabulation, barre verticale et deux-points sont tous candidats. L’extension compte chacun d’eux sur les vingt premières lignes et retient celui qui apparaît le même nombre de fois sur le plus de lignes — un fichier dont chaque ligne compte quatre points-virgules est un fichier à points-virgules, quoi qu’en dise son extension. Cela compte en pratique : un <code>.csv</code> exporté par un tableur sur un système français est souvent séparé par des points-virgules, et un <code>.tsv</code> n’est pas toujours séparé par des tabulations.</p>
+<p>La première ligne est traitée comme ligne d’en-tête et devient les titres de colonnes.</p>
+<h2 id="trier-et-filtrer">Trier et filtrer</h2>
+<p>Cliquez sur un en-tête de colonne pour trier dessus, cliquez de nouveau pour inverser. Le tri est <strong>numérique quand les deux valeurs sont des nombres</strong> et alphabétique sinon : une colonne de tailles trie donc 9 avant 10 et non après.</p>
+<p>Le champ de recherche filtre à la frappe, sans distinguer majuscules et minuscules. Par défaut il regarde dans toutes les colonnes ; choisissez une colonne dans le menu à côté pour ne chercher que là.</p>
+<h2 id="ce-quelle-ne-fait-pas">Ce qu’elle ne fait pas</h2>
+<p>L’analyseur est volontairement minimal, et une limite mérite d’être connue avant de vous surprendre : <strong>un séparateur à l’intérieur d’un champ entre guillemets reste traité comme un séparateur.</strong> Une ligne comme</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>donne trois cellules au lieu de deux. Les guillemets encadrants sont retirés lorsqu’ils entourent un champ entier, mais le guillemetage n’est pas interprété au-delà. Pour un fichier où cela compte, la visionneuse intégrée ou un tableur est l’outil approprié.</p>
+<p>Les lignes vides sont ignorées, et un champ qui s’étend sur plusieurs lignes n’est pas pris en charge.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Extensions</a></li><li><a href="viewing-files.html">Afficher des fichiers</a></li><li><a href="log-viewer.html">La visionneuse de journaux</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSV-bestanden als tabel</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>CSV-bestanden als tabel</h1>
+<p>Druk op <strong>F3</strong> op een <code>.csv</code>- of <code>.tsv</code>-bestand en het opent als een echte tabel — kolommen, koppen, sortering en een filter — in plaats van als tekstregels met komma’s erin.</p>
+<p>Het is een plug-in: u kunt hem uitschakelen of verwijderen via <strong>Configuratie ▸ Plug-ins…</strong>. Zonder hem toont F3 het bestand als platte tekst, wat voor een klein bestand nog prima leesbaar is.</p>
+<h2 id="het-scheidingsteken-wordt-afgeleid-niet-aangenomen">Het scheidingsteken wordt afgeleid, niet aangenomen</h2>
+<p>Komma, puntkomma, tab, verticale streep en dubbele punt komen allemaal in aanmerking. De plug-in telt ze elk over de eerste twintig regels en kiest degene die op de meeste regels even vaak voorkomt — een bestand waarvan elke rij vier puntkomma’s heeft, is een puntkomma-bestand, wat de extensie ook zegt. Dat is in de praktijk van belang: een <code>.csv</code> die door een rekenblad op een Europees systeem is geëxporteerd, is meestal met puntkomma’s gescheiden, en een <code>.tsv</code> is niet altijd met tabs gescheiden.</p>
+<p>De eerste regel geldt als kopregel en wordt de kolomtitels.</p>
+<h2 id="sorteren-en-filteren">Sorteren en filteren</h2>
+<p>Klik op een kolomkop om erop te sorteren, klik nogmaals om om te keren. Sorteren gebeurt <strong>numeriek wanneer beide waarden getallen zijn</strong> en anders alfabetisch, zodat een kolom met groottes 9 vóór 10 zet in plaats van erna.</p>
+<p>Het zoekveld filtert terwijl u typt, zonder onderscheid tussen hoofd- en kleine letters. Standaard kijkt het in alle kolommen; kies een kolom in het menu ernaast om alleen daar te kijken.</p>
+<h2 id="wat-het-niet-doet">Wat het niet doet</h2>
+<p>De parser is bewust klein, en één beperking is het waard te kennen voordat ze u verrast: <strong>een scheidingsteken binnen een veld tussen aanhalingstekens wordt nog steeds als scheidingsteken behandeld.</strong> Een rij als</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>wordt drie cellen in plaats van twee. Omringende aanhalingstekens worden verwijderd wanneer ze een heel veld omsluiten, maar verder wordt het gebruik van aanhalingstekens niet geïnterpreteerd. Voor een bestand waar dat uitmaakt is de ingebouwde viewer of een rekenblad het betere gereedschap.</p>
+<p>Lege regels worden overgeslagen, en een veld dat over meerdere regels loopt wordt niet ondersteund.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="viewing-files.html">Bestanden bekijken</a></li><li><a href="log-viewer.html">De logviewer</a></li></ul></section>
+</main>
+</body>
+</html>

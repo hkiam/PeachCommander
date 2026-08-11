@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>日志查看器</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>日志查看器</h1>
+<p>把光标放在日志文件上并选择<strong>以日志方式查看…</strong>，它就会在一个为日志而不是为文本而建的窗口中打开：每行一条，每行的级别被识别并着色，有筛选，还有一个在文件仍在写入时也跟得上的追踪。</p>
+<p>它是一个插件：可以在<strong>配置 ▸ 插件…</strong>中关闭或移除。没有它时，F3 会像显示其他文本文件一样显示日志。</p>
+<h2 id="_1">为什么它能立刻打开</h2>
+<p>文件被映射进内存，后台只建立一个记录每行起点的索引。在内容出现在屏幕上之前，什么都不会作为文本载入，而且只有真正可见的行才会被解码。几个 GB 的日志和小日志打开得一样快，跳到末尾也不会读取中间部分。</p>
+<h2 id="_2">级别与颜色</h2>
+<p>每一行都会被归类——<strong>错误</strong>、<strong>警告</strong>、<strong>信息</strong>、<strong>调试</strong>、<strong>跟踪</strong>，或者在格式什么也看不出时归为<strong>未知</strong>——并相应着色。默认颜色跟随浅色或深色外观；在插件设置中设定你自己的颜色，就会使用你的。</p>
+<p><strong>级别</strong>列让你一眼看出错误在哪里，筛选框把列表收窄到你要找的内容。打开<strong>正则</strong>，就用正则表达式而不是纯文本来筛选。</p>
+<h2 id="_3">跟随一个仍在增长的文件</h2>
+<p>打开<strong>实时（自动滚动）</strong>，窗口就会随着新行到来跟随文件末尾：索引是在追加的字节上扩展，而不是重建，所以无论文件变得多长都保持低开销。向上滚动就是在看历史；追踪在下面继续运行。</p>
+<h2 id="_4">找到方向</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>查找…</strong></td>
+<td>在消息中搜索；<strong>查找（标记并跳转）…</strong>会标记每一处命中，便于在它们之间移动</td>
+</tr>
+<tr>
+<td><strong>转到行…</strong></td>
+<td>跳到某个物理行号</td>
+</tr>
+<tr>
+<td><strong>转到日期/时间…</strong></td>
+<td>跳到指定时间戳及其之后的第一行，例如 <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>拷贝知道什么是一条日志行：<strong>拷贝行</strong>取光标所在的那一行，<strong>拷贝条目（所有行）</strong>在一个条目跨越多行时取整个条目——例如一段堆栈跟踪——而<strong>拷贝所选行</strong>取的正是你选中的内容。</p>
+<h2 id="_5">格式</h2>
+<p><strong>log4j</strong>、<strong>log4net</strong> 和 <strong>CSV</strong> 是内置的，格式会被自动识别；窗口会显示它最终认定的那一种。如果你的日志都不是这些，可以在设置的<strong>日志格式</strong>中添加自己的：一个用命名组标出关键部分的正则表达式。</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>表达式匹配不上的行仍然会出现——它只是被归为未知，而不是被丢弃，因为一份读不了的日志比一份没有颜色的日志更糟。</p>
+<h2 id="_6">显示</h2>
+<p><strong>显示行号</strong>和<strong>长行自动换行</strong>在设置里。列表下方的详情区域始终显示所选条目的完整文本并自动换行，无论列表本身在做什么。</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="viewing-files.html">查看文件</a></li><li><a href="searching.html">查找文件</a></li></ul></section>
+</main>
+</body>
+</html>

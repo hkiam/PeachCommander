@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prohlížeč logů</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Prohlížeč logů</h1>
+<p>Umístěte kurzor na soubor s logem a zvolte <strong>Zobrazit jako log…</strong>, aby se otevřel v okně postaveném pro logy, ne pro text: jeden řádek na řádek, úroveň každého řádku rozpoznaná a obarvená, filtr a sledování, které stačí, i když se soubor stále zapisuje.</p>
+<p>Je to plugin: můžete jej vypnout nebo odstranit v <strong>Konfigurace ▸ Pluginy…</strong>. Bez něj zobrazí F3 log jako každý jiný textový soubor.</p>
+<h2 id="proc-se-otevre-okamzite">Proč se otevře okamžitě</h2>
+<p>Soubor se namapuje do paměti a na pozadí se vytvoří pouze index, kde který řádek začíná. Nic se nenačítá jako text, dokud to není na obrazovce, a dekódují se jen skutečně viditelné řádky. Log o několika gigabajtech se otevře stejně rychle jako malý a skok na konec nečte prostředek.</p>
+<h2 id="urovne-a-barva">Úrovně a barva</h2>
+<p>Každý řádek se zařadí — <strong>Chyba</strong>, <strong>Varování</strong>, <strong>Info</strong>, <strong>Ladění</strong>, <strong>Trasování</strong>, nebo <strong>Neznámé</strong>, když formát nic neprozradí — a podle toho obarví. Výchozí barvy sledují světlý či tmavý vzhled; nastavte si vlastní v předvolbách pluginu a použijí se vaše.</p>
+<p>Ve sloupci <strong>Úroveň</strong> je na první pohled vidět, kde jsou chyby, a filtrační pole zúží seznam na to, co hledáte. Zapněte <strong>Regex</strong> a filtrujte regulárním výrazem místo prostého textu.</p>
+<h2 id="sledovat-soubor-ktery-stale-roste">Sledovat soubor, který stále roste</h2>
+<p>Zapněte <strong>Živě (automatické posouvání)</strong> a okno bude sledovat konec souboru, jak přibývají nové řádky: index se rozšíří o připojené bajty místo aby se stavěl znovu, takže to zůstane levné, ať je soubor jakkoli dlouhý. Posuňte se nahoru a čtete historii; sledování běží dál pod tím.</p>
+<h2 id="jak-se-v-tom-vyznat">Jak se v tom vyznat</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Najít…</strong></td>
+<td>Prohledá zprávy; <strong>Najít (označit a přejít)…</strong> označí každý nález, takže mezi nimi můžete krokovat</td>
+</tr>
+<tr>
+<td><strong>Přejít na řádek…</strong></td>
+<td>Skočí na fyzické číslo řádku</td>
+</tr>
+<tr>
+<td><strong>Přejít na datum/čas…</strong></td>
+<td>Skočí na první řádek od zadaného časového razítka, např. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>Kopírování ví, co je řádek logu: <strong>Kopírovat řádek</strong> vezme řádek pod kurzorem, <strong>Kopírovat záznam (všechny řádky)</strong> vezme celý záznam, když se táhne přes několik řádků — třeba výpis zásobníku — a <strong>Kopírovat vybrané řádky</strong> vezme přesně to, co jste vybrali.</p>
+<h2 id="formaty">Formáty</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> a <strong>CSV</strong> jsou vestavěné a formát se rozpozná automaticky; okno ukáže, na kterém se ustálilo. Pokud vaše logy nejsou žádný z nich, přidejte si vlastní v předvolbách pod <strong>Formáty logů</strong>: regulární výraz s pojmenovanými skupinami pro části, na kterých záleží.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>Řádek, na který výraz nesedí, se přesto zobrazí — jen se zařadí jako Neznámé místo aby byl zahozen, protože log, který nelze číst, je horší než log bez barev.</p>
+<h2 id="zobrazeni">Zobrazení</h2>
+<p><strong>Zobrazit čísla řádků</strong> a <strong>Zalamovat dlouhé řádky</strong> jsou v předvolbách. Oblast s podrobnostmi pod seznamem vždy ukazuje celý text vybraného záznamu, zalomený, ať už seznam dělá cokoli.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="viewing-files.html">Prohlížení souborů</a></li><li><a href="searching.html">Hledání souborů</a></li></ul></section>
+</main>
+</body>
+</html>

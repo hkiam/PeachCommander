@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Przeglądarka logów</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Przeglądarka logów</h1>
+<p>Ustaw kursor na pliku logu i wybierz <strong>Pokaż jako log…</strong>, aby otworzyć go w oknie zbudowanym dla logów, a nie dla tekstu: jeden wiersz na wiersz, poziom każdego rozpoznany i pokolorowany, filtr oraz śledzenie, które nadąża, gdy plik wciąż jest zapisywany.</p>
+<p>To wtyczka: możesz ją wyłączyć lub usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>. Bez niej F3 pokazuje log tak jak każdy inny plik tekstowy.</p>
+<h2 id="dlaczego-otwiera-sie-natychmiast">Dlaczego otwiera się natychmiast</h2>
+<p>Plik jest mapowany w pamięci, a w tle budowany jest jedynie indeks tego, gdzie zaczyna się każdy wiersz. Nic nie jest wczytywane jako tekst, zanim nie znajdzie się na ekranie, i dekodowane są tylko wiersze rzeczywiście widoczne. Log o wielkości kilku gigabajtów otwiera się tak szybko jak mały, a przejście na koniec nie czyta środka.</p>
+<h2 id="poziomy-i-kolor">Poziomy i kolor</h2>
+<p>Każdy wiersz jest klasyfikowany — <strong>Błąd</strong>, <strong>Ostrzeżenie</strong>, <strong>Info</strong>, <strong>Debug</strong>, <strong>Trace</strong> albo <strong>Nieznany</strong>, gdy format nic nie zdradza — i odpowiednio kolorowany. Domyślne kolory podążają za jasnym lub ciemnym wyglądem; ustaw własne w ustawieniach wtyczki, a będą używane twoje.</p>
+<p>Kolumna <strong>Poziom</strong> pozwala jednym spojrzeniem zobaczyć, gdzie są błędy, a pole filtra zawęża listę do tego, czego szukasz. Włącz <strong>Regex</strong>, aby filtrować wyrażeniem regularnym zamiast zwykłym tekstem.</p>
+<h2 id="sledzenie-pliku-ktory-wciaz-rosnie">Śledzenie pliku, który wciąż rośnie</h2>
+<p>Włącz <strong>Na żywo (autoprzewijanie)</strong>, a okno będzie podążać za końcem pliku w miarę napływania wierszy: indeks jest rozszerzany o dopisane bajty, a nie budowany od nowa, więc pozostaje tani niezależnie od długości pliku. Przewiń w górę, a czytasz historię; śledzenie działa dalej pod spodem.</p>
+<h2 id="poruszanie-sie">Poruszanie się</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Znajdź…</strong></td>
+<td>Przeszukuje komunikaty; <strong>Znajdź (oznacz i przejdź)…</strong> zaznacza każde trafienie, byś mógł między nimi przechodzić</td>
+</tr>
+<tr>
+<td><strong>Idź do wiersza…</strong></td>
+<td>Przechodzi do fizycznego numeru wiersza</td>
+</tr>
+<tr>
+<td><strong>Idź do daty/godziny…</strong></td>
+<td>Przechodzi do pierwszego wiersza od podanego znacznika czasu, np. <code>2024-01-15 10:23:45</code></td>
+</tr>
+</tbody>
+</table>
+<p>Kopiowanie wie, czym jest wiersz logu: <strong>Kopiuj wiersz</strong> bierze wiersz pod kursorem, <strong>Kopiuj wpis (wszystkie wiersze)</strong> bierze cały wpis, gdy rozciąga się na kilka wierszy — na przykład ślad stosu — a <strong>Kopiuj zaznaczone wiersze</strong> bierze dokładnie to, co zaznaczono.</p>
+<h2 id="formaty">Formaty</h2>
+<p><strong>log4j</strong>, <strong>log4net</strong> i <strong>CSV</strong> są wbudowane, a format rozpoznawany automatycznie; okno pokazuje, na czym się zatrzymało. Jeśli twoje logi nie są żadnym z nich, dodaj własny w ustawieniach pod <strong>Formaty logów</strong>: wyrażenie regularne z grupami nazwanymi dla istotnych części.</p>
+<div class="codehilite"><pre><span></span><code>(?&lt;time&gt;…)   (?&lt;level&gt;…)   (?&lt;msg&gt;…)
+</code></pre></div>
+
+<p>Wiersz, do którego wyrażenie nie pasuje, i tak się pojawi — zostanie po prostu zaklasyfikowany jako Nieznany zamiast odrzucony, bo log, którego nie można przeczytać, jest gorszy niż log bez kolorów.</p>
+<h2 id="wyswietlanie">Wyświetlanie</h2>
+<p><strong>Pokaż numery wierszy</strong> i <strong>Zawijaj długie wiersze</strong> znajdziesz w ustawieniach. Obszar szczegółów pod listą zawsze pokazuje pełny tekst zaznaczonego wpisu, zawinięty, cokolwiek robi lista.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="viewing-files.html">Podgląd plików</a></li><li><a href="searching.html">Wyszukiwanie plików</a></li></ul></section>
+</main>
+</body>
+</html>

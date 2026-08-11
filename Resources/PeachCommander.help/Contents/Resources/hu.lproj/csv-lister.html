@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSV-fájlok táblázatként</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>CSV-fájlok táblázatként</h1>
+<p>Nyomja meg az <strong>F3</strong> billentyűt egy <code>.csv</code> vagy <code>.tsv</code> fájlon, és valódi táblázatként nyílik meg — oszlopok, fejlécek, rendezés és szűrő —, nem pedig vesszőkkel teli szövegsorokként.</p>
+<p>Bővítmény: kikapcsolhatja vagy eltávolíthatja a <strong>Konfiguráció ▸ Bővítmények…</strong> alatt. Nélküle az F3 sima szövegként mutatja a fájlt, ami egy kicsinél továbbra is jól olvasható.</p>
+<h2 id="az-elvalasztot-kiszamolja-nem-feltetelezi">Az elválasztót kiszámolja, nem feltételezi</h2>
+<p>A vessző, a pontosvessző, a tabulátor, a függőleges vonal és a kettőspont mind szóba jön. A bővítmény mindegyiket megszámolja az első húsz sorban, és azt választja, amelyik a legtöbb soron ugyanannyiszor fordul elő — az a fájl, amelynek minden sorában négy pontosvessző van, pontosvesszős fájl, bármit is mond a kiterjesztése. Ez a gyakorlatban számít: egy magyar rendszeren táblázatkezelőből exportált <code>.csv</code> általában pontosvesszővel elválasztott, egy <code>.tsv</code> pedig nem mindig tabulátorral.</p>
+<p>Az első sor fejlécsornak számít, és belőle lesznek az oszlopcímek.</p>
+<h2 id="rendezes-es-szures">Rendezés és szűrés</h2>
+<p>Kattintson egy oszlopfejlécre a szerinte való rendezéshez, még egyszer a megfordításához. A rendezés <strong>számszerű, ha mindkét érték szám</strong>, egyébként betűrendes, így egy méreteket tartalmazó oszlop a 9-et a 10 elé rendezi, nem mögé.</p>
+<p>A keresőmező gépelés közben szűr, a kis- és nagybetűket nem különböztetve meg. Alapértelmezés szerint minden oszlopban néz; a mellette lévő menüből válasszon oszlopot, hogy csak ott keressen.</p>
+<h2 id="amit-nem-tud">Amit nem tud</h2>
+<p>Az elemző szándékosan kicsi, és egy korlátot érdemes ismerni, mielőtt meglepi: <strong>az idézőjeles mezőn belüli elválasztó továbbra is elválasztónak számít.</strong> Egy ilyen sor:</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>két cella helyett hárommá válik. A körülvevő idézőjelek eltávolításra kerülnek, ha egy egész mezőt fognak közre, ezen túl azonban az idézőjelezés nem kerül értelmezésre. Olyan fájlhoz, ahol ez számít, a beépített megjelenítő vagy egy táblázatkezelő a jobb eszköz.</p>
+<p>Az üres sorokat átugorja, és a több sorra kiterjedő mezőt nem támogatja.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="viewing-files.html">Fájlok megtekintése</a></li><li><a href="log-viewer.html">A naplónéző</a></li></ul></section>
+</main>
+</body>
+</html>

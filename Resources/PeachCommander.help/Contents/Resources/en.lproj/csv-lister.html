@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSV files as a table</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>CSV files as a table</h1>
+<p>Press <strong>F3</strong> on a <code>.csv</code> or <code>.tsv</code> file and it opens as a real table — columns, headers, sorting and a filter — instead of as lines of text with commas in them.</p>
+<p>It is a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Plugins…</strong>. Without it, F3 shows the file as plain text, which is still perfectly readable for a small one.</p>
+<h2 id="the-delimiter-is-worked-out-not-assumed">The delimiter is worked out, not assumed</h2>
+<p>Comma, semicolon, tab, pipe and colon are all candidates. The plugin counts each of them across the first twenty lines and picks the one that appears the same number of times on the most lines — a file whose every row has four semicolons is a semicolon file, whatever its extension says. That matters in practice: a <code>.csv</code> exported by a spreadsheet on a German system is usually semicolon-separated, and a <code>.tsv</code> is not always tab-separated.</p>
+<p>The first line is treated as the header row and becomes the column titles.</p>
+<h2 id="sorting-and-filtering">Sorting and filtering</h2>
+<p>Click a column header to sort by it, click again to reverse. Sorting is <strong>numeric when both values are numbers</strong> and alphabetical otherwise, so a column of sizes sorts 9 before 10 rather than after it.</p>
+<p>The search field filters as you type, case-insensitively. By default it looks in every column; pick a column from the popup beside it to look only there.</p>
+<h2 id="what-it-does-not-do">What it does not do</h2>
+<p>The parser is deliberately small, and one limit is worth knowing before it surprises you: <strong>a delimiter inside a quoted field is still treated as a delimiter.</strong> A row like</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>becomes three cells rather than two. Surrounding quotes are removed when they wrap a whole field, but quoting is not otherwise interpreted. For a file where that matters, the built-in viewer or a spreadsheet is the better tool.</p>
+<p>Empty lines are skipped, and there is no support for a field that spans several lines.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Viewing files</a></li><li><a href="log-viewer.html">The log viewer</a></li></ul></section>
+</main>
+</body>
+</html>

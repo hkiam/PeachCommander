@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datoteke CSV kot razpredelnica</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Datoteke CSV kot razpredelnica</h1>
+<p>Pritisnite <strong>F3</strong> na datoteki <code>.csv</code> ali <code>.tsv</code> in odprla se bo kot prava razpredelnica — stolpci, glave, razvrščanje in filter — namesto kot besedilne vrstice z vejicami.</p>
+<p>To je vtičnik: izklopite ali odstranite ga lahko v <strong>Konfiguracija ▸ Vtičniki…</strong>. Brez njega F3 pokaže datoteko kot golo besedilo, kar je pri majhni še vedno povsem berljivo.</p>
+<h2 id="locilo-se-ugotovi-ne-predpostavi">Ločilo se ugotovi, ne predpostavi</h2>
+<p>Vejica, podpičje, tabulator, navpičnica in dvopičje so vsi kandidati. Vtičnik vsakega prešteje čez prvih dvajset vrstic in izbere tistega, ki se na največ vrsticah pojavi enako mnogokrat — datoteka, v kateri ima vsaka vrstica štiri podpičja, je datoteka s podpičji, karkoli pravi njena pripona. To v praksi šteje: <code>.csv</code>, ki ga izvozi preglednica na slovenskem sistemu, je običajno ločen s podpičji, <code>.tsv</code> pa ni vedno ločen s tabulatorji.</p>
+<p>Prva vrstica velja za glavo in postane naslovi stolpcev.</p>
+<h2 id="razvrscanje-in-filtriranje">Razvrščanje in filtriranje</h2>
+<p>Kliknite glavo stolpca, da razvrstite po njem, znova kliknite za obrat. Razvršča se <strong>številsko, kadar sta obe vrednosti števili</strong>, sicer po abecedi, tako da stolpec z velikostmi postavi 9 pred 10 in ne za.</p>
+<p>Iskalno polje filtrira med tipkanjem, brez razlikovanja med velikimi in malimi črkami. Privzeto gleda v vse stolpce; izberite stolpec v meniju poleg, da gleda le tam.</p>
+<h2 id="cesa-ne-zna">Česa ne zna</h2>
+<p>Razčlenjevalnik je namerno majhen in eno omejitev je vredno poznati, preden vas preseneti: <strong>ločilo znotraj polja v narekovajih se še vedno obravnava kot ločilo.</strong> Vrstica, kot je</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>postane tri celice namesto dveh. Obdajajoči narekovaji se odstranijo, kadar objemajo celotno polje, sicer pa se navajanje ne razlaga. Za datoteko, kjer to šteje, je vgrajeni pregledovalnik ali preglednica boljše orodje.</p>
+<p>Prazne vrstice se preskočijo, polje, ki se razteza čez več vrstic, pa ni podprto.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="viewing-files.html">Ogled datotek</a></li><li><a href="log-viewer.html">Pregledovalnik dnevnikov</a></li></ul></section>
+</main>
+</body>
+</html>

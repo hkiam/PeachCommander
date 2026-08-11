@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSV-filer som tabell</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>CSV-filer som tabell</h1>
+<p>Tryck <strong>F3</strong> på en <code>.csv</code>- eller <code>.tsv</code>-fil så öppnas den som en riktig tabell — kolumner, rubriker, sortering och ett filter — i stället för som textrader med kommatecken i.</p>
+<p>Det är ett tillägg: du kan stänga av det eller ta bort det under <strong>Konfiguration ▸ Tillägg…</strong>. Utan det visar F3 filen som ren text, vilket för en liten fil fortfarande är fullt läsbart.</p>
+<h2 id="avgransaren-raknas-ut-den-antas-inte">Avgränsaren räknas ut, den antas inte</h2>
+<p>Kommatecken, semikolon, tabb, lodstreck och kolon är alla kandidater. Tillägget räknar var och en över de första tjugo raderna och väljer den som förekommer lika många gånger på flest rader — en fil där varje rad har fyra semikolon är en semikolonfil, vad filändelsen än säger. Det spelar roll i praktiken: en <code>.csv</code> som exporterats av ett kalkylprogram på ett svenskt system är oftast semikolonseparerad, och en <code>.tsv</code> är inte alltid tabbseparerad.</p>
+<p>Första raden behandlas som rubrikrad och blir kolumntitlarna.</p>
+<h2 id="sortera-och-filtrera">Sortera och filtrera</h2>
+<p>Klicka på en kolumnrubrik för att sortera på den, klicka igen för att vända. Sorteringen är <strong>numerisk när båda värdena är tal</strong> och alfabetisk annars, så en kolumn med storlekar sorterar 9 före 10 i stället för efter.</p>
+<p>Sökfältet filtrerar medan du skriver, utan hänsyn till versaler. Som förval tittar det i alla kolumner; välj en kolumn i menyn bredvid för att bara titta där.</p>
+<h2 id="vad-den-inte-gor">Vad den inte gör</h2>
+<p>Tolken är medvetet liten, och en gräns är värd att känna till innan den överraskar dig: <strong>en avgränsare inuti ett citerat fält behandlas fortfarande som avgränsare.</strong> En rad som</p>
+<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+</code></pre></div>
+
+<p>blir tre celler i stället för två. Omgivande citattecken tas bort när de omsluter ett helt fält, men i övrigt tolkas inte citering. För en fil där det spelar roll är den inbyggda visaren eller ett kalkylprogram det bättre verktyget.</p>
+<p>Tomma rader hoppas över, och ett fält som sträcker sig över flera rader stöds inte.</p>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="viewing-files.html">Visa filer</a></li><li><a href="log-viewer.html">Loggvisaren</a></li></ul></section>
+</main>
+</body>
+</html>
