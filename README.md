@@ -6,7 +6,7 @@
 
 **A fast, native dual-pane file manager for macOS — for people who never stopped missing Total Commander.**
 
-Two panels. Every key on the keyboard. Archives you walk into like folders. A viewer, an editor, FTP/SFTP, sync, multi-rename, a real plugin system — and a removable AI assistant when you want one.
+Two panels. Every key on the keyboard. Archives you walk into like folders. A viewer, an editor, a real shell in the window, FTP/SFTP, sync, multi-rename, a real plugin system — and a removable AI assistant when you want one.
 
 ![Platform](https://img.shields.io/badge/platform-macOS%2013%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-AppKit-orange)
@@ -68,13 +68,21 @@ The goal for the text you're reading and the app you'll run is the same: no mark
 - Checksums, split/combine, encode/decode
 - Duplicate finder, attributes & ACL editor
 - Symlinks, hard links, aliases, comments
+- Eject a removable volume without leaving the panel
 
 </td><td width="50%" valign="top">
 
 **Archives & search**
-- Walk into ZIP/TAR/… archives like folders
+- Walk into ZIP/TAR/… archives like folders — including ZIP64 and split sets (`.z01…`, `.zip.001…`)
 - Pack / unpack, in-place ZIP edit, AES encryption
 - Full-text find: regex, hex, encoding-aware, in-archives, Spotlight, saved templates
+
+**Terminal**
+- A real shell in a dock across the bottom of the window, with tabs and splits
+- Send it to the panel's folder, or let the panel follow the shell (optional)
+- Cmd-click a path in its output and the panel goes there
+- Dropped files land at the prompt; the command line can run in it
+- Tabs come back after a restart, in the folders they were in
 
 **Viewers & editors**
 - Lister: text, code (syntax highlighting), hex, image, media, web
@@ -157,6 +165,7 @@ Peach Commander keeps the core small and pushes special-purpose features out int
 
 | Plugin | What it adds |
 |---|---|
+| **Terminal** | A real shell inside the window — tabs, splits, restored after a restart |
 | **Disk Map** | Treemap / sunburst space visualizer with a cleanup collector |
 | **AI Assistant** | Optional, removable natural-language assistant (see below) |
 | **Git** | Repository status shown right in the panel |
@@ -167,6 +176,8 @@ Peach Commander keeps the core small and pushes special-purpose features out int
 | **iCloud** · **Notes** · **Log Viewer** | Quick iCloud Drive access · notes beside your files · tail log files |
 | **CSV Lister** | F3 on a .csv/.tsv opens it as a sortable table, delimiter auto-detected |
 | **Archive formats** · **AIColumn** | Extra archive types · AI-derived file column |
+
+A plugin that brings a view of its own gets one of two places: the **side panel**, or the **dock** across the bottom for anything that needs width — a terminal, a build log. The manifest names the default and you can move it, per view; "move back to default" forgets your choice rather than pinning today's default, so a plugin update may move its own view again.
 
 Internally there are **five plugin kinds** (`pcx`, `pfx`, `plx`, `pdx`, `ptx`) plus an orthogonal contrib ABI, designed in the spirit of Total Commander's WCX/WFX/WLX/WDX families. The porting story and a public **SDK** live under [`PluginSDK/`](PluginSDK/) and [`docs/content/plugins/`](docs/content/plugins/).
 
