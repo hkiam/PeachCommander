@@ -7,9 +7,9 @@ name: Docs
 
 on:
   push:
-    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings, Resources/PeachCommander.help/**]
+    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings, Resources/PeachCommander.help/**, .github/workflows/docs.yml]
   pull_request:
-    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings, Resources/PeachCommander.help/**]
+    paths: [docs/**, Plugins/SDK/**, DOCUMENTATION.md, FEATURES.md, Sources/PCApp/Localizable.xcstrings, Resources/PeachCommander.help/**, .github/workflows/docs.yml]
 
 jobs:
   docs:
