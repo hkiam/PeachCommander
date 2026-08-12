@@ -175,7 +175,11 @@ final class BottomDockView: NSView {
     func setViewProviders(_ providers: [PreviewViewProvider]) {
         let keep = Set(providers.map(\.id))
         for (id, view) in mountedViews where !keep.contains(id) {
-            view.removeFromSuperview()
+            // Only if the view is still ours. The registry tells the containers in dictionary order, so
+            // the one that *gained* the view may already have re-parented it — and removing it from its
+            // new home would leave that container with a view in no hierarchy at all: a mounted panel
+            // that draws nothing (F-388). It looked intermittent because the order is not defined.
+            if view.superview === content { view.removeFromSuperview() }
             mountedViews[id] = nil
         }
 

@@ -25,6 +25,13 @@ does not have.
 
 ### Added
 
+- **Show Terminal, in the Terminal menu.** Folding the terminal away and bringing it back was
+  *View ▸ Bottom Area* — an item named after the strip it happens to sit in, in a different menu from
+  everything else the terminal can do, which is why it was not findable. The new item is the first one
+  in the **Terminal** menu, carries a checkmark for whether the terminal is on screen, and follows the
+  terminal if you have moved it to the side panel. Hiding it is not closing it: the shells keep
+  running and the tabs come back exactly as they were.
+
 - **The drive bar shows what each volume is.** It drew three icons in all — a screen for the startup
   disk, whatever a plugin supplied, and one floppy for everything else — so a network share, a USB
   stick and a mounted disk image were identical in the one place they are listed side by side, which
@@ -42,6 +49,29 @@ does not have.
   a disabled entry teaches the rule at a glance.
 
 ### Fixed
+
+- **The terminal's commands find it in the side panel.** *Split the Terminal*, *New Terminal Tab*,
+  *Close the Terminal Tab*, *Go to the Panel's Folder* and *Insert the Selected File Names* all opened
+  the strip across the bottom and looked for the terminal there. Move the terminal to the side panel —
+  which its own placement menu offers — and each of them opened that strip **empty** instead, while
+  appearing to do nothing at all. They now bring the terminal up wherever you have put it.
+
+- **Moving the terminal to the side panel switches to it.** It arrived behind whichever tab the panel
+  was showing, usually *Info*, so the move looked as if it had been ignored or had lost the view. And
+  moving it back sometimes left an empty area behind, because the container it was leaving could take
+  the view out again just after the new one had taken it in — that was down to timing, which is why it
+  only happened sometimes.
+
+- **Moving a plugin view to the place it already sits no longer pins it there.** The move was recorded
+  as a decision of yours even when it agreed with what the plugin asked for, so *Reset to Default*
+  appeared for views you had never moved, and a plugin update that relocated its own view would have
+  been quietly overruled. Where you actually moved something is still remembered, including while its
+  plugin is switched off.
+
+- **The terminal is open again after a restart if it was open when you quit.** The state was written
+  down all along; the plugins load after the window has been arranged, so the area was opened, found
+  nothing in it yet, and shut itself as an empty frame. It now waits for the terminal to arrive — and
+  still stays shut if you closed it yourself.
 
 - **A drive contributed by a plugin now behaves like a drive.** Picking *TaskManager* in the drive bar
   switched the panel and nothing else: the button stayed selected on the volume you were on before,

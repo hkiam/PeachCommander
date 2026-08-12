@@ -20,6 +20,7 @@ Alles Weitere steht im Menü **Terminal**:
 
 | Aktion | Was sie tut |
 | --- | --- |
+| Terminal anzeigen | Klappt es ein und wieder aus; die Tabs und was darin läuft, bleiben, wie sie sind |
 | Zwischen Panel und Terminal wechseln | Bewegt den Tastaturfokus, ohne sonst etwas zu ändern |
 | Neuer Terminal-Tab | Noch eine Shell, im selben Ordner |
 | Terminal-Tab schließen | Schließt ihn — und fragt vorher, wenn darin noch etwas läuft |
@@ -54,9 +55,9 @@ Ein Terminal behält standardmäßig **5.000 Zeilen** Verlauf — genug, um durc
 
 Das Terminal öffnet sich im Dock am unteren Rand, weil das die Form ist, die es braucht: Eine Shell braucht Breite, und das Seitenpanel fasst bei seinen voreingestellten 300 Punkten etwa 44 Spalten, während der untere Rand eines 1200-Punkte-Fensters 176 fasst.
 
-Verschieben können Sie es trotzdem. Ziehen Sie es ins Seitenpanel, wenn Ihnen das besser passt, oder nutzen Sie die Platzierungsfunktionen aus [Plugins](plugins.md); beim Verschieben wird **dieselbe Shell umgehängt** statt eine neue gestartet, was auch immer darin läuft, läuft weiter.
+Verschieben können Sie es trotzdem. Ziehen Sie es ins Seitenpanel, wenn Ihnen das besser passt, oder nutzen Sie die Platzierungsfunktionen aus [Plugins](plugins.md); beim Verschieben wird **dieselbe Shell umgehängt** statt eine neue gestartet, was auch immer darin läuft, läuft weiter. Die Befehle im Menü **Terminal** folgen ihm: Sie holen es dort hervor, wo es ist, statt das Dock zu öffnen.
 
-Tabs kommen beim nächsten Start der App zurück, in den Ordnern, in denen sie waren. Was darin *lief*, nicht — ein Neustart beendet diese Prozesse, wie in jedem Terminal.
+Tabs kommen beim nächsten Start der App zurück, in den Ordnern, in denen sie waren. Was darin *lief*, nicht — ein Neustart beendet diese Prozesse, wie in jedem Terminal. Ob es beim Beenden offen war, kommt ebenfalls zurück.
 
 ## Beim Beenden
 

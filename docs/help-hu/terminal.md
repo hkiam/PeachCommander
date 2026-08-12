@@ -20,6 +20,7 @@ Minden más a **Terminál** menüben van:
 
 | Művelet | Mit tesz |
 | --- | --- |
+| Terminál megjelenítése | Behajtja és újra kihajtja; a lapok és ami bennük fut, változatlan marad |
 | Váltás a panel és a terminál között | Áthelyezi a billentyűzetfókuszt, mást nem változtat |
 | Új terminállap | Még egy parancsértelmező, ugyanabban a mappában |
 | Terminállap bezárása | Bezárja — és előbb rákérdez, ha még fut benne valami |
@@ -54,9 +55,9 @@ Egy terminál alapértelmezés szerint **5000 sort** tart meg visszagörgetésre
 
 A terminál az alsó dokban nyílik meg, mert erre az alakra van szüksége: egy parancsértelmezőnek szélesség kell, és az oldalpanel az alapértelmezett 300 pontján körülbelül 44 oszlopot fogad be, míg egy 1200 pontos ablak alja 176-ot.
 
-Azért elmozdíthatja. Húzza az oldalpanelbe, ha az jobban megfelel, vagy használja az [Bővítmények](plugins.md) leírt elhelyezési vezérlőit; az áthelyezés **ugyanazt a parancsértelmezőt akasztja át**, nem indít újat, tehát ami fut, az fut tovább.
+Azért elmozdíthatja. Húzza az oldalpanelbe, ha az jobban megfelel, vagy használja az [Bővítmények](plugins.md) leírt elhelyezési vezérlőit; az áthelyezés **ugyanazt a parancsértelmezőt akasztja át**, nem indít újat, tehát ami fut, az fut tovább. A **Terminál** menü parancsai követik: ott hozzák elő, ahol van, ahelyett hogy a dokkot nyitnák meg.
 
-A lapok visszatérnek, amikor újraindítja az alkalmazást, abban a mappában, ahol voltak. Ami *futott* bennük, az nem — az újraindítás befejezi azokat a folyamatokat, mint bármelyik terminálban.
+A lapok visszatérnek, amikor újraindítja az alkalmazást, abban a mappában, ahol voltak. Ami *futott* bennük, az nem — az újraindítás befejezi azokat a folyamatokat, mint bármelyik terminálban. Az is visszatér, hogy nyitva volt-e kilépéskor.
 
 ## Kilépéskor
 

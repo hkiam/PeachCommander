@@ -381,6 +381,17 @@ extension MainWindowController {
                     let moved = ViewContainerRegistry.shared.place(viewId: a[0], in: target, host: self)
                     NSLog("[automation] placeview \(a[0]) -> \(a[1]): \(moved)")
                 }
+            case "moveview":                            // moveview <viewId>|<container|default> (F-388)
+                // The *menu item's* path, as opposed to `placeview`, which is the registry primitive
+                // underneath it. The difference is the whole of F-388: placing a view and showing it
+                // where it landed are two steps, and only the second one was missing.
+                let m = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if m.count == 2 {
+                    let item = NSMenuItem()
+                    item.representedObject = ViewPlacementRequest(viewId: m[0],
+                                                                  container: m[1] == "default" ? nil : m[1])
+                    movePluginViewFromMenu(item)
+                }
             case "mountdump":                           // mountdump <out> (F-381)
                 try? ViewContainerRegistry.shared.automationReport()
                     .write(toFile: arg, atomically: true, encoding: .utf8)
@@ -1356,6 +1367,13 @@ extension MainWindowController {
         out += "stacked=\(stacked ? "yes" : "no")\n"
         out += "panels=\(dock.providerIds.joined(separator: ","))\n"
         out += "selected=\(dock.selectedProviderId ?? "<none>")\n"
+        // Is the selected panel's view actually *in* the dock? A panel can be listed, selected and
+        // still draw nothing, because moving a view out of a container took it back out of whichever
+        // container had just adopted it (F-388) — a state the labels below cannot distinguish from a
+        // plugin that renders nothing, and the screenshot cannot distinguish from an empty dock.
+        let content = dock.visibleContentView
+        out += "attached=\(content == nil ? "none" : (content?.isDescendant(of: dock) == true ? "yes" : "no"))\n"
+        out += "terminalShowing=\(terminalIsShowing)\n"
         // What the dock is showing, the way `sidebardump` reads the sidebar: with no plugin mounted
         // here this is the empty-state sentence, which is itself the thing worth asserting — an empty
         // frame and an explained one look the same in a screenshot.

@@ -20,6 +20,7 @@ Cała reszta jest w menu **Terminal**:
 
 | Czynność | Co robi |
 | --- | --- |
+| Pokaż terminal | Zwija go i rozwija ponownie; karty i to, co w nich działa, zostają bez zmian |
 | Przełącz między panelem a terminalem | Przenosi fokus klawiatury, nie zmieniając niczego więcej |
 | Nowa karta terminala | Kolejna powłoka, w tym samym folderze |
 | Zamknij kartę terminala | Zamyka ją — i pyta wcześniej, jeśli coś jeszcze w niej działa |
@@ -54,9 +55,9 @@ Terminal domyślnie trzyma **5000 wierszy** historii — dość, by przewinąć 
 
 Terminal otwiera się w doku u dołu, bo takiego kształtu potrzebuje: powłoka potrzebuje szerokości, a panel boczny przy domyślnych 300 punktach mieści około 44 kolumn, podczas gdy dół okna o szerokości 1200 punktów mieści ich 176.
 
-Mimo to możesz go przenieść. Przeciągnij go do panelu bocznego, jeśli tak ci wygodniej, albo użyj ustawień rozmieszczenia opisanych w [Wtyczki](plugins.md); przeniesienie **przepina tę samą powłokę** zamiast uruchamiać nową, więc cokolwiek działa, działa dalej.
+Mimo to możesz go przenieść. Przeciągnij go do panelu bocznego, jeśli tak ci wygodniej, albo użyj ustawień rozmieszczenia opisanych w [Wtyczki](plugins.md); przeniesienie **przepina tę samą powłokę** zamiast uruchamiać nową, więc cokolwiek działa, działa dalej. Polecenia z menu **Terminal** idą za nim: przywołują go tam, gdzie jest, zamiast otwierać dok.
 
-Karty wracają po ponownym uruchomieniu aplikacji, w folderach, w których były. To, co w nich *działało*, nie — restart kończy te procesy, jak w każdym terminalu.
+Karty wracają po ponownym uruchomieniu aplikacji, w folderach, w których były. To, co w nich *działało*, nie — restart kończy te procesy, jak w każdym terminalu. Wraca też to, czy był otwarty przy zamykaniu programu.
 
 ## Przy zamykaniu
 

@@ -25,6 +25,10 @@
 </thead>
 <tbody>
 <tr>
+<td>Zobrazit terminál</td>
+<td>Sbalí jej a znovu rozbalí; karty a to, co v nich běží, zůstanou, jak jsou</td>
+</tr>
+<tr>
 <td>Přepnout mezi panelem a terminálem</td>
 <td>Přesune zaměření klávesnice, jinak nezmění nic</td>
 </tr>
@@ -67,8 +71,8 @@
 <p>Terminál si ve výchozím stavu drží <strong>5 000 řádků</strong> historie — dost na to, aby se dalo rolovat zpět skrz překlad. Změníte to na stránce nastavení. Velmi vysoké hodnoty se omezují, protože historie o padesáti milionech řádků je paměťový problém, jehož příčinu zvenčí nelze poznat.</p>
 <h2 id="kde-sedi">Kde sedí</h2>
 <p>Terminál se otevře v doku u dolního okraje, protože takový tvar potřebuje: shell potřebuje šířku, a boční panel se svými výchozími 300 body pojme asi 44 sloupců, zatímco dolní okraj okna o šířce 1200 bodů jich pojme 176.</p>
-<p>Přesto jej můžete přesunout. Přetáhněte jej do bočního panelu, pokud vám to vyhovuje víc, nebo použijte ovládání umístění popsané v <a href="plugins.md">Pluginy</a>; přesunutím se <strong>přepojí tentýž shell</strong> místo spuštění nového, takže cokoli v něm běží, běží dál.</p>
-<p>Karty se vrátí, když aplikaci spustíte znovu, ve složkách, ve kterých byly. To, co v nich <em>běželo</em>, ne — restart tyto procesy ukončí, jako v každém terminálu.</p>
+<p>Přesto jej můžete přesunout. Přetáhněte jej do bočního panelu, pokud vám to vyhovuje víc, nebo použijte ovládání umístění popsané v <a href="plugins.md">Pluginy</a>; přesunutím se <strong>přepojí tentýž shell</strong> místo spuštění nového, takže cokoli v něm běží, běží dál. Příkazy v nabídce <strong>Terminál</strong> jej následují: vyvolají jej tam, kde je, místo aby otevřely dok.</p>
+<p>Karty se vrátí, když aplikaci spustíte znovu, ve složkách, ve kterých byly. To, co v nich <em>běželo</em>, ne — restart tyto procesy ukončí, jako v každém terminálu. Vrátí se také to, zda byl při ukončení otevřený.</p>
 <h2 id="pri-ukonceni">Při ukončení</h2>
 <p>Zavření aplikace zavře shelly. To, co v nich ještě běží, se ukončí, stejně jako zavření okna Terminálu ukončí to, co je v něm. Proto se zavření karty, v níž něco běží, nejdřív zeptá.</p>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="opening-files.html">Otevírání souborů a složek</a></li><li><a href="macos-integration.html">Integrace s macOS</a></li><li><a href="keyboard-shortcuts.html">Klávesnice a zkratky</a></li></ul></section>
