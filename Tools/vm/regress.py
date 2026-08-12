@@ -602,6 +602,25 @@ SCENARIOS = [
     # missing for the user: that the command exists and is offered somewhere findable.
     ("eject-menu", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                     "menudump /Users/admin/menu-eject.txt", "wait 500"], 10),
+    # A plugin drive is a drive, not a view switch (F-385). Reported by a user: picking TaskManager in
+    # the drive bar changed the listing and nothing else — the chip stayed on the last real volume, the
+    # tab was titled "/" and the breadcrumb claimed the startup disk's root, because all three read the
+    # panel's path and inside such a mount that path is the mount's own "/".
+    #
+    # Three dumps, because each stage can pass for the wrong reason. Mounted: the drive names itself
+    # everywhere. A second tab: the chip and the breadcrumb must *leave* the drive while the first tab
+    # keeps its name — that tab is where a switch back has to find it — and the new tab must anchor to
+    # the directory the mount was entered from, not to the "/" it would inherit at face value. Back:
+    # the drive is re-entered, which is the part that lives in the tab rather than in the panel and is
+    # the reason a restart can restore it at all. The screenshot cannot tell these apart; only the
+    # names can.
+    ("drive-plugin", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                      "pfxmount TaskManager", "wait 2500",
+                      "drivebardump /Users/admin/drive-mounted.txt", "wait 400",
+                      "cmd cm_OpenNewTab", "wait 1500",
+                      "drivebardump /Users/admin/drive-second.txt", "wait 400",
+                      "cmd cm_NextTab", "wait 2500",
+                      "drivebardump /Users/admin/drive-back.txt", "wait 400"], 16),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -883,6 +902,11 @@ EXTERNAL_CHECKS = {
     # so this asks the question directly and answers it in one word.
     "session-save": ("grep -q pc-demo ~/pc-cfg/session.ini && grep -q sync-src ~/pc-cfg/session.ini "
                      "&& echo both || echo missing", "both"),
+    # The drive reached the file a restart reads (F-385), asked of the machine after the app is gone.
+    # A tab used to be remembered as its path alone, and inside a plugin drive that path is "/" — so
+    # the session restored the startup disk's root and called it the same tab. One line, in the left
+    # panel: the right one writes the key empty, which is what makes counting the answer here.
+    "drive-plugin": ("grep -c '^Tab0Drive=pfxmount:' ~/pc-cfg/session.ini 2>/dev/null || echo 0", "1"),
     "sftp-attributes": ("stat -f %Lp ~/sftp-demo/perm.txt", "600"),
     # Three distinct answers, so the interesting failure cannot hide: "viewer-fetched" means the block is
     # not working, "server-not-running" means the witness died and the run proves nothing, and only
@@ -1188,6 +1212,21 @@ REPORTS = {
     "plugin-theme-switch": ("/Users/admin/still-alive.txt", ["left="]),
     "keys-probe": ("/Users/admin/probe-after.txt", ["left="]),
     "eject-menu": ("/Users/admin/menu-eject.txt", ["Eject Volume"]),
+    # Coming back to the tab re-enters the drive: the chip, the tab and the breadcrumb all name it
+    # again, and the second tab is still there beside it under its own name.
+    "drive-plugin": ("/Users/admin/drive-back.txt",
+                     ["path=/\n", "current=TaskManager", "tabs=*TaskManager|pc-demo",
+                      "crumb=TaskManager"]),
+    "drive-plugin-mounted": ("/Users/admin/drive-mounted.txt",
+                             ["path=/\n", "current=TaskManager", "tabs=*TaskManager",
+                              "crumb=TaskManager"]),
+    # The negative is the point: on the second tab the panel is *not* on the drive, while the first tab
+    # goes on carrying its name. Without it, a build that simply left the chip lit forever would pass
+    # the other two dumps. The volume the chip falls back to is deliberately not named — that is the
+    # guest's boot disk, and its name is not this scenario's business.
+    "drive-plugin-second": ("/Users/admin/drive-second.txt",
+                            ["tabs=TaskManager|*pc-demo",
+                             "crumb=/ > Users > admin > pc-demo", "!current=TaskManager"]),
     "window-title": ("/Users/admin/title.txt", ["pc-demo"]),
     # The panel exists, is on screen, and is previewing the file the cursor was on. Window titles were
     # the wrong question: a system panel has none, so that check passed without showing anything.
