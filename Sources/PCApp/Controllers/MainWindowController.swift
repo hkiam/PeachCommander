@@ -81,6 +81,17 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     private let volumeManager = VolumeManager()
 
+    /// The drive-bar volume whose click is currently being carried out, set only for the duration
+    /// of a plugin's `connect`. It exists because the mount arrives through `fsMount`, which the
+    /// plugin calls and which is told nothing about the volume the user picked — while the panel
+    /// needs exactly that to keep the chip selected and to name the drive it is showing.
+    private var pendingDriveVolume: Volume?
+
+    /// The panel that mount is going into, when it is not simply the active one — a tab being
+    /// restored belongs to its own panel, and at startup both panels restore, so mounting into
+    /// whichever is active at the time would put one panel's drive into the other.
+    private weak var pendingMountPanel: PanelController?
+
     /// Configuration + session persistence (I05).
     let mainConfig: ConfigStore
 
@@ -3324,7 +3335,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             let sort = await session.string(prefix, "Tab\(i)Sort", default: "name")
             let asc = await session.bool(prefix, "Tab\(i)Asc", default: true)
             let locked = await session.bool(prefix, "Tab\(i)Locked", default: false)
-            states.append(PanelTabState(path: path, sortColumn: sort, sortAscending: asc, locked: locked))
+            // A tab that was on a plugin drive comes back as that drive, not as the local "/" its
+            // path happens to be. Empty for every ordinary tab, which is nearly all of them.
+            let drive = await session.string(prefix, "Tab\(i)Drive", default: "")
+            states.append(PanelTabState(path: path, sortColumn: sort, sortAscending: asc, locked: locked,
+                                        driveVolume: drive.isEmpty ? nil : drive))
         }
         let activeIndex = await session.int(prefix, "ActiveTab", default: 0)
         await panel.importTabs(states, activeIndex: activeIndex)
@@ -3384,6 +3399,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             await session.setString(tab.sortColumn, prefix, "Tab\(i)Sort")
             await session.setBool(tab.sortAscending, prefix, "Tab\(i)Asc")
             await session.setBool(tab.locked, prefix, "Tab\(i)Locked")
+            await session.setString(tab.driveVolume ?? "", prefix, "Tab\(i)Drive")
         }
         // Persist the back/forward stack (F-062).
         let h = panel.navigationHistory
@@ -5595,8 +5611,27 @@ final class PanelController: NSObject, PanelControllerProtocol {
     let position: PanelPosition
     private(set) lazy var view: PanelView = { PanelView(position: position, controller: self) }()
     private var fs: VirtualFileSystem = LocalFS()
-    /// Mounted archive stack: each frame remembers the host fs + local return path.
-    private var mountStack: [(fs: VirtualFileSystem, returnPath: String, archivePath: String)] = []
+    /// Mounted archive stack: each frame remembers the host fs + local return path — and the drive
+    /// chip that was lit before this mount, so popping restores the same three things it saved.
+    private var mountStack: [(fs: VirtualFileSystem, returnPath: String, archivePath: String,
+                              driveVolume: Volume?)] = []
+    /// The drive this panel is currently on when it is a mounted plugin volume, else nil. A plugin
+    /// drive like TaskManager lists at its own "/", which no real volume owns and which names no
+    /// disk the user could point at — so the bar, the tab and the path bar all take the drive from
+    /// the mount rather than from the path. Restored to the enclosing mount's value on the way out.
+    private var mountedDriveVolume: Volume?
+
+    /// Record the drive this panel is now on, in the panel and in the tab showing it.
+    ///
+    /// Always both: the panel's copy is what the drive bar, the breadcrumb and the columns read
+    /// right now, the tab's is what brings the drive back after a tab switch or a restart. A place
+    /// that sets one without the other is a tab that outlives its drive, or a drive no tab returns
+    /// to. The exception is `resetToLocalFS`, which unwinds *because* another tab is coming up and
+    /// must not write its answer into that tab.
+    private func setMountedDrive(_ volume: Volume?) {
+        mountedDriveVolume = volume
+        tabs.updateActive { $0.driveVolume = volume?.path }
+    }
     /// Backing zip paths that are temp extractions of a nested archive (F-134);
     /// these are browse-only — edits would be lost, so they are not rewritten.
     private var tempExtractedArchives: Set<String> = []
@@ -5721,8 +5756,13 @@ final class PanelController: NSObject, PanelControllerProtocol {
         if inNewTab { await openNewTab() }  // fresh tab (resets to LocalFS), current tab preserved
         let results = ResultsFS(paths: paths, fsID: "results")
         let hostPath = await model.getPath()
-        mountStack.append((fs: fs, returnPath: hostPath, archivePath: hostPath))
+        mountStack.append((fs: fs, returnPath: hostPath, archivePath: hostPath,
+                           driveVolume: mountedDriveVolume))
         fs = results
+        // A results listing is not the drive it was gathered from: leaving the chip lit and the tab
+        // named after the drive would say the panel is still showing it. The frame above holds the
+        // drive, so coming back out lights it again.
+        setMountedDrive(nil)
         await loadDirectory("/")
     }
 
@@ -5753,10 +5793,19 @@ final class PanelController: NSObject, PanelControllerProtocol {
 
     /// Mount a network (FTP) file system in this panel and open `startPath`.
     /// Navigating up past its root pops back to the previous (local) location.
-    func enterNetwork(_ networkFS: VirtualFileSystem, startPath: String) async {
+    ///
+    /// `driveVolume` is set when the mount came from a drive-bar volume (a plugin drive such as
+    /// TaskManager): that volume, not the path, is what the panel is showing while we are inside.
+    func enterNetwork(_ networkFS: VirtualFileSystem, startPath: String,
+                      driveVolume: Volume? = nil) async {
         let hostPath = await model.getPath()
-        mountStack.append((fs: fs, returnPath: hostPath, archivePath: hostPath))
+        mountStack.append((fs: fs, returnPath: hostPath, archivePath: hostPath,
+                           driveVolume: mountedDriveVolume))
         fs = networkFS
+        // Before the load: loading is what refreshes the bar, the tab and the path bar, and setting
+        // this afterwards would leave all three showing the old volume for as long as it takes.
+        // nil for a mount that came from a dialog rather than a drive — an FTP site is not a chip.
+        setMountedDrive(driveVolume)
         await loadDirectory(startPath.isEmpty ? "/" : startPath)
         // A content-providing PFX mount (e.g. TaskManager) publishes its own
         // columns and, when volatile, auto-refreshes cursor-stably.
@@ -5823,8 +5872,10 @@ final class PanelController: NSObject, PanelControllerProtocol {
         }
         if let pluginFS = await resolvePluginArchive?(localPath) {
             let hostPath = await model.getPath()
-            mountStack.append((fs: fs, returnPath: hostPath, archivePath: localPath))
+            mountStack.append((fs: fs, returnPath: hostPath, archivePath: localPath,
+                               driveVolume: mountedDriveVolume))
             fs = pluginFS
+            setMountedDrive(nil)   // an archive inside a drive is not that drive (see `enterResults`)
             await loadDirectory("/")
             return
         }
@@ -5840,8 +5891,10 @@ final class PanelController: NSObject, PanelControllerProtocol {
             _ = resolveArchivePassword(for: archive, localPath: localPath)
         }
         let hostPath = await model.getPath()
-        mountStack.append((fs: fs, returnPath: hostPath, archivePath: localPath))
+        mountStack.append((fs: fs, returnPath: hostPath, archivePath: localPath,
+                           driveVolume: mountedDriveVolume))
         fs = archive
+        setMountedDrive(nil)   // an archive inside a drive is not that drive (see `enterResults`)
         await loadDirectory("/")
     }
 
@@ -5950,6 +6003,9 @@ final class PanelController: NSObject, PanelControllerProtocol {
         // when leaving its mount so it doesn't leak.
         if let net = fs as? DisconnectableFileSystem { await net.disconnect() }
         fs = frame.fs
+        // Left the drive, so neither the panel nor the tab is on it any more — otherwise the next
+        // tab switch or restart would put the user back inside a drive they walked out of.
+        setMountedDrive(frame.driveVolume)
         await loadDirectory(frame.returnPath)
         tableView.focusEntry(named: (frame.archivePath as NSString).lastPathComponent)
         if wasContentMount {
@@ -5972,6 +6028,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
             let toClose = ([fs] + mountStack.map { $0.fs }).compactMap { $0 as? DisconnectableFileSystem }
             if !toClose.isEmpty { Task { for net in toClose { await net.disconnect() } } }
             fs = mountStack.first?.fs ?? LocalFS()
+            mountedDriveVolume = mountStack.first?.driveVolume
             mountStack.removeAll()
         }
     }
@@ -6012,7 +6069,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
         do {
             let snapshot = try await model.load(path, fs: fs)
             let volume = isInArchive ? nil : await volumeManager.getVolume(for: path)
-            view.update(with: snapshot, volume: volume)
+            view.update(with: snapshot, volume: volume, rootLabel: mountedDriveVolume?.name)
             if let focusName { tableView.focusEntry(named: focusName) } else { tableView.focusParent() }
             if recordHistory { history.push(path) }
             scheduleStatusRefresh()
@@ -6058,9 +6115,16 @@ final class PanelController: NSObject, PanelControllerProtocol {
 
     // MARK: - Tabs (I06-T01)
 
+    /// The local directory this panel is anchored to: its current path, or — inside a mount, whose
+    /// own root reads as "/" — the directory that mount was entered from. A new tab is local, so
+    /// taking "/" from a mounted drive at face value would open it at the startup disk's root.
+    private func localAnchorPath() async -> String {
+        isInArchive ? (mountStack.first?.returnPath ?? NSHomeDirectory()) : await getCurrentPath()
+    }
+
     func openNewTab() async {
         captureCursorIntoActiveTab()
-        let path = await getCurrentPath()
+        let path = await localAnchorPath()
         let cur = tabs.active
         tabs.open(PanelTabState(path: path, sortColumn: cur.sortColumn, sortAscending: cur.sortAscending),
                   activate: true)
@@ -6072,7 +6136,8 @@ final class PanelController: NSObject, PanelControllerProtocol {
     func openNewTabInBackground() async {
         captureCursorIntoActiveTab()
         let cur = tabs.active
-        tabs.open(PanelTabState(path: cur.path, sortColumn: cur.sortColumn, sortAscending: cur.sortAscending),
+        tabs.open(PanelTabState(path: await localAnchorPath(), sortColumn: cur.sortColumn,
+                                sortAscending: cur.sortAscending),
                   activate: false)
         refreshTabBar()
         onStateChanged?()
@@ -6111,7 +6176,10 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// the current directory when the cursor isn't on a folder.
     func openDirUnderCursorInNewTab() async {
         let path: String
-        if let dir = tableView.cursorDirectoryPath() { path = dir } else { path = await getCurrentPath() }
+        // Not inside a mount: an entry there is a process or a remote item, and its "directory
+        // path" is a path in the mount that a local tab cannot open.
+        if !isInArchive, let dir = tableView.cursorDirectoryPath() { path = dir }
+        else { path = await localAnchorPath() }
         captureCursorIntoActiveTab()
         let cur = tabs.active
         // "Open in background" (Options → Tabs) keeps focus on the current tab.
@@ -6145,7 +6213,11 @@ final class PanelController: NSObject, PanelControllerProtocol {
         guard tabs.tabs.indices.contains(index) else { return }
         captureCursorIntoActiveTab()
         let src = tabs.tabs[index]
-        tabs.open(PanelTabState(path: src.path, sortColumn: src.sortColumn, sortAscending: src.sortAscending),
+        // Including its drive: duplicating a tab that shows TaskManager and getting the startup
+        // disk's root is not a duplicate of anything. A new tab, which is a different intent, stays
+        // local — see `openNewTab`.
+        tabs.open(PanelTabState(path: src.path, sortColumn: src.sortColumn, sortAscending: src.sortAscending,
+                                driveVolume: src.driveVolume),
                   activate: true)
         await switchToActiveTab()
     }
@@ -6199,22 +6271,53 @@ final class PanelController: NSObject, PanelControllerProtocol {
         tabs.updateActive { $0.cursorName = tableView.cursorEntryName() }
     }
 
-    /// Load the active tab's path + sort + cursor.
+    /// Load the active tab's path + sort + cursor — and re-mount its drive when the tab is on one.
     private func switchToActiveTab() async {
         resetToLocalFS()
         let tab = tabs.active
         let descriptor = Self.descriptor(from: tab.sortColumn, ascending: tab.sortAscending)
         await model.sort(by: descriptor)
+        // The local path first, then the drive on top of it: the mount records where it was entered
+        // from, so going up out of the restored drive lands in this tab's own directory rather than
+        // wherever the panel happened to be standing.
         await loadPath(tab.path, recordHistory: true, focusName: tab.cursorName)
+        if let sentinel = tab.driveVolume { await remountDrive(sentinel) }
         tableView.updateSortArrows(descriptor)
         refreshTabBar()
         onStateChanged?()
     }
 
+    /// Re-enter the plugin drive a tab was left on (or restored with). A drive whose plugin is no
+    /// longer loaded cannot be restored, and the tab stops claiming to be on one rather than
+    /// carrying a name nothing can reach — otherwise it would keep the title of a drive that is not
+    /// there for as long as the session lives.
+    private func remountDrive(_ sentinel: String) async {
+        guard sentinel.hasPrefix("pfxmount:"),
+              let wc = view.window?.windowController as? MainWindowController else { return }
+        let pluginId = String(sentinel.dropFirst("pfxmount:".count))
+        // Not activating: restoring a tab must not decide which panel has the focus, and both
+        // panels restore their tabs at startup — the second would silently win.
+        if !wc.mountPluginVolume(pluginId: pluginId, into: self, activating: false) {
+            tabs.updateActive { $0.driveVolume = nil }
+        }
+    }
+
     private func refreshTabBar() {
-        let titles = tabs.tabs.map { Self.tabTitle(for: $0.path) }
+        // A tab on a plugin drive is titled with the drive, not with its path: that path is the
+        // mount's own "/", which would title the tab "/" and claim the panel is at the startup
+        // disk's root. Resolved through the registry rather than stored, so a renamed — or removed
+        // — drive is not remembered under a name it no longer has.
+        let titles = tabs.tabs.map { tab in
+            tab.driveVolume.flatMap { Self.driveName(for: $0) } ?? Self.tabTitle(for: tab.path)
+        }
         let locked = tabs.tabs.map { $0.locked }
         view.updateTabBar(titles: titles, activeIndex: tabs.activeIndex, locked: locked)
+    }
+
+    /// The display name of the drive-bar volume with this sentinel path, or nil if no loaded plugin
+    /// contributes it any more.
+    static func driveName(for sentinel: String) -> String? {
+        FileSystemPluginRegistry.shared.driveVolumes().first { $0.path == sentinel }?.name
     }
 
     /// Export tabs for session persistence (captures the live cursor first).
@@ -6557,7 +6660,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
         do {
             let snapshot = try await model.load(path, fs: fs)
             let volume = isInArchive ? nil : await volumeManager.getVolume(for: path)
-            view.update(with: snapshot, volume: volume)
+            view.update(with: snapshot, volume: volume, rootLabel: mountedDriveVolume?.name)
             tableView.updateSortArrows(descriptor)
             scheduleStatusRefresh()
             onStateChanged?()
@@ -6719,7 +6822,8 @@ final class PanelController: NSObject, PanelControllerProtocol {
             view.driveBar.setVolumes(cachedDriveVolumes)
             driveBarPopulated = true
         }
-        view.driveBar.setCurrentIndex(DriveBarModel.currentIndex(in: cachedDriveVolumes, for: path))
+        view.driveBar.setCurrentIndex(DriveBarModel.currentIndex(in: cachedDriveVolumes, for: path,
+                                                                 mountedVolumePath: mountedDriveVolume?.path))
     }
 
     // MARK: - Volume support
@@ -6744,6 +6848,8 @@ final class PanelController: NSObject, PanelControllerProtocol {
     private func leaveMountToLocal() {
         let wasContentMount = (fs as? PFXFileSystem)?.contentFields.isEmpty == false
         fs = mountStack.first?.fs ?? LocalFS()
+        // As in `exitArchive`: the tab followed the panel into the drive and follows it back out.
+        setMountedDrive(mountStack.first?.driveVolume)
         mountStack.removeAll()
         if wasContentMount, let wc = view.window?.windowController as? MainWindowController {
             wc.panelDidLeaveContentMount(panel: self)
@@ -6832,6 +6938,11 @@ final class PanelView: NSView {
     private let tabBar = TabBarView()
     private let pathBar: PathBarView
     let driveBar = DriveBarView()
+    /// What the chrome around the listing says the panel is showing — for the automation report,
+    /// which is the only way to read back bars that are drawn rather than built from controls.
+    var chromeForAutomation: (tabs: String, crumb: String) {
+        (tabBar.titlesForAutomation, pathBar.crumbForAutomation)
+    }
     let statusBar: StatusBarView
     private let filterLabel = NSTextField(labelWithString: "")
     weak var controller: PanelController?
@@ -7156,10 +7267,11 @@ final class PanelView: NSView {
         set { _backgroundColor = newValue; needsDisplay = true }
     }
 
-    /// Update with a new directory snapshot.
-    func update(with snapshot: DirectorySnapshot, volume: Volume? = nil) {
+    /// Update with a new directory snapshot. `rootLabel` is the mounted drive's name when the
+    /// listing is one (see `PathBarView.update`).
+    func update(with snapshot: DirectorySnapshot, volume: Volume? = nil, rootLabel: String? = nil) {
         tableView.update(with: snapshot)
-        pathBar.update(with: snapshot.path, volume: volume)
+        pathBar.update(with: snapshot.path, volume: volume, rootLabel: rootLabel)
         currentPath = snapshot.path
         if usesGrid { refreshGrid() }
         if isTreeVisible { treeView.reveal(path: snapshot.path) }
@@ -7312,9 +7424,25 @@ extension MainWindowController: ContributionHost {
     /// Connect + mount a non-local file-system plugin volume into `panel` (from a
     /// drive-bar click on its "pfxmount:" sentinel). The click is the intent, so
     /// there is no interactive dialog — connect() mounts the plugin at "/".
-    func mountPluginVolume(pluginId: String, into panel: PanelController?) {
-        if let panel { activePanel = panel }
-        FileSystemPluginRegistry.shared.plugin(id: pluginId)?.connect(host: self)
+    ///
+    /// `activating` is false when a panel is restoring a tab rather than following a click: a
+    /// restore must not decide which panel has the focus. Returns whether a plugin was there to
+    /// mount, so a tab restoring a drive whose plugin is gone can stop calling itself that drive.
+    @discardableResult
+    func mountPluginVolume(pluginId: String, into panel: PanelController?, activating: Bool = true) -> Bool {
+        if activating, let panel { activePanel = panel }
+        guard let plugin = FileSystemPluginRegistry.shared.plugin(id: pluginId) else { return false }
+        // The volume the user clicked, handed to the panel through `fsMount` so the bar can keep the
+        // chip selected and the tab and path bar can say which drive this is: a plugin drive lists at
+        // its own "/", which tells all three nothing. Looked up in the same list the bar drew its
+        // chips from, so what the panel calls the drive is what the user clicked, letter for letter.
+        // `connect` calls `fsMount` synchronously, so both are read before they clear.
+        let sentinel = "pfxmount:\(pluginId)"
+        pendingDriveVolume = FileSystemPluginRegistry.shared.driveVolumes().first { $0.path == sentinel }
+        pendingMountPanel = panel
+        defer { pendingDriveVolume = nil; pendingMountPanel = nil }
+        plugin.connect(host: self)
+        return true
     }
 
     func contribRegisterToolWindow(window: UnsafeMutableRawPointer,
@@ -7709,7 +7837,14 @@ extension MainWindowController: ToolHost {
 
 extension MainWindowController: FileSystemHost {
     func fsMount(_ fs: VirtualFileSystem, startPath: String) {
-        Task { @MainActor in await activePanel?.enterNetwork(fs, startPath: startPath) }
+        // Read here, not in the Task: `mountPluginVolume` clears it as soon as `connect` returns,
+        // which is long before the mount is actually loaded. nil for a connect that came from a
+        // dialog rather than a drive chip — then there is no chip to keep selected.
+        let driveVolume = pendingDriveVolume
+        let target = pendingMountPanel ?? activePanel
+        Task { @MainActor in
+            await target?.enterNetwork(fs, startPath: startPath, driveVolume: driveVolume)
+        }
     }
     var fsParentWindow: NSWindow? { window }
     func fsPresentInfo(_ title: String, _ message: String) { presentInfo(title, message) }

@@ -61,6 +61,26 @@ final class DriveBarModelTests: XCTestCase {
         XCTAssertNil(DriveBarModel.currentIndex(in: [], for: "/"))
     }
 
+    func testMountedPluginVolumeIsCurrentInsteadOfItsPath() {
+        // Inside a plugin drive (TaskManager) the panel's path is that mount's own "/", which by
+        // prefix belongs to the boot drive. The mounted volume decides instead, so the chip the
+        // user clicked is the one lit.
+        let taskman = Volume(id: "pfxvol:tm", name: "TaskManager", path: "pfxmount:tm",
+                             isRemovable: false, isEjectable: false, isHidden: false,
+                             capacity: 0, freeSpace: 0, fsType: "Plugin", icon: "📊", sortOrder: 1)
+        let volumes = [vol("HD", "/"), taskman, vol("USB", "/Volumes/USB")]
+        XCTAssertEqual(DriveBarModel.currentIndex(in: volumes, for: "/", mountedVolumePath: "pfxmount:tm"), 1)
+        // No mount: the path decides, as before.
+        XCTAssertEqual(DriveBarModel.currentIndex(in: volumes, for: "/"), 0)
+    }
+
+    func testMountedVolumeNoLongerInTheBarHighlightsNothing() {
+        // An unplugged/unregistered mount must not fall back to the path — that is how the boot
+        // drive ends up lit while the panel is somewhere else entirely.
+        let volumes = [vol("HD", "/"), vol("USB", "/Volumes/USB")]
+        XCTAssertNil(DriveBarModel.currentIndex(in: volumes, for: "/", mountedVolumePath: "pfxmount:tm"))
+    }
+
     func testPrefixDoesNotMatchSiblingWithSharedName() {
         // "/Volumes/USB2" must not be considered inside "/Volumes/USB".
         let volumes = [vol("USB", "/Volumes/USB")]

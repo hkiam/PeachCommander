@@ -64,6 +64,10 @@ final class DriveBarView: NSView {
         needsDisplay = true
     }
 
+    /// Which volume is drawn highlighted (nil = none) — read by the automation report, since the
+    /// highlight is drawn rather than a control's state and nothing else can observe it.
+    var highlightedIndex: Int? { currentIndex }
+
     /// Highlight the volume at `index` (others normal).
     func setCurrentIndex(_ index: Int?) {
         guard index != currentIndex else { return }

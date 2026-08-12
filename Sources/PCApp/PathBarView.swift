@@ -84,16 +84,25 @@ class PathBarView: NSView, NSTextFieldDelegate {
 
     /// Update with the current path. `volume` is ignored (free space is shown in
     /// the status bar); the parameter stays for call-site compatibility.
-    func update(with path: String, volume: Volume?) {
+    ///
+    /// `rootLabel` names the leading segment when the listing is a mounted drive rather than a
+    /// directory — "TaskManager" instead of a "/" that belongs to no disk the user can point at.
+    func update(with path: String, volume: Volume?, rootLabel: String? = nil) {
         currentPath = path
-        segments = Self.makeSegments(path)
+        segments = Self.makeSegments(path, rootLabel: rootLabel)
         if !isEditing { needsDisplay = true }
     }
 
+    /// The breadcrumb as drawn — for the automation report; the segments are painted, not controls.
+    ///
+    /// Joined with " > ", not "/": the segment names include the root, and a slash between them
+    /// reads as a path — which is exactly the thing the report has to be able to contradict.
+    var crumbForAutomation: String { segments.map(\.name).joined(separator: " > ") }
+
     /// Breadcrumb segments for `path` — see `PathSegments.make`, which is where the logic lives so it
     /// can be tested without a view.
-    static func makeSegments(_ path: String) -> [(name: String, path: String)] {
-        PathSegments.make(path)
+    static func makeSegments(_ path: String, rootLabel: String? = nil) -> [(name: String, path: String)] {
+        PathSegments.make(path, rootLabel: rootLabel)
     }
 
     // MARK: - Drawing
