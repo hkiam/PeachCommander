@@ -13,7 +13,7 @@ Når du har brug for at ændre en fil frem for blot at se på den, åbner Peach 
 1. Flyt markøren i et af panelerne til den fil, du vil ændre.
 2. Tryk på F4, eller vælg Fil ▸ Redigér. Filen åbner i editorvinduet.
 3. Foretag dine ændringer. Hvis filen er et genkendt programmerings- eller dataformat, farves nøgleord, strenge og kommentarer automatisk.
-4. Tryk på Cmd+S (eller klik på Gem) for at skrive dine ændringer. Den første lagring beholder en backup af originalen ved siden af filen, så du altid kan falde tilbage til den.
+4. Tryk på Cmd+S (eller klik på Gem) for at skrive dine ændringer. Lagring erstatter filen; hvis du vil have det tidligere indhold gemt ved siden af den, slå backup til i Indstillinger ▸ Rediger/Vis.
 
 For at starte en helt ny tekstfil på den aktuelle placering skal du trykke på Shift+F4.
 
@@ -124,7 +124,7 @@ Plugins kan også bidrage med formatterere — se [Plugins](plugins.md).
 1. Markér filen i et panel.
 2. Vælg Fil ▸ Redigér som hex (eller højreklik på filen og vælg Redigér som hex).
 3. Skriv hexcifre for at overskrive bytes, eller brug piletasterne til at bevæge dig gennem filen. Backspace og Delete fjerner bytes.
-4. Tryk på Cmd+S for at gemme. Som med teksteditoren beholdes en engangsbackup af originalen.
+4. Tryk på Cmd+S for at gemme. Som i teksteditoren beholdes det tidligere indhold kun, hvis du har slået backup til.
 
 ## Genveje
 
@@ -153,4 +153,4 @@ Plugins kan også bidrage med formatterere — se [Plugins](plugins.md).
 - Syntaksfremhævning dækker JSON, C, C#, Java, JavaScript, TypeScript, Python og Rust. Andre filtyper åbner og redigeres stadig normalt med grundlæggende farvning, men detaljeret fremhævning er kun tilgængelig for de understøttede sprog.
 - Overblikket dækker de understøttede programmeringssprog samt JSON, YAML og XML — inklusive de XML-baserede formater som `.plist`, `.svg`, `.csproj` og `.storyboard`. Kommandoerne til strukturnavigation, sti og validering gælder for JSON, YAML og XML.
 - Symboloverblikket og funktionerne Gå til linje gælder for teksteditoren. Hex-editoren er beregnet til binær inspektion og redigering på byteniveau, ikke til tekst.
-- Begge editorer beholder en backup af den oprindelige fil, første gang du gemmer, så en utilsigtet ændring er let at fortryde ved at gendanne den backup.
+- Ingen af editorerne beholder en backup, medmindre du beder om det. Slå ”Behold en sikkerhedskopi (.bak) af det tidligere indhold ved gemning” til i Indstillinger ▸ Rediger/Vis, så skriver den første lagring originalen ved siden af filen som `name.bak`, og en utilsigtet ændring er let at fortryde.

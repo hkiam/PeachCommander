@@ -16,7 +16,7 @@
 <li>Verplaats in een van beide panelen de cursor naar het bestand dat je wilt wijzigen.</li>
 <li>Druk op F4, of kies Bestand ▸ Bewerken. Het bestand opent in het editorvenster.</li>
 <li>Breng je wijzigingen aan. Als het bestand een herkend programmeer- of gegevensformaat is, worden sleutelwoorden, tekenreeksen en opmerkingen automatisch gekleurd.</li>
-<li>Druk op Cmd+S (of klik op Bewaar) om je wijzigingen weg te schrijven. De eerste opslag houdt een back-up van het origineel naast het bestand, zodat je er altijd op kunt terugvallen.</li>
+<li>Druk op Cmd+S (of klik op Bewaar) om je wijzigingen weg te schrijven. Bewaren vervangt het bestand; wil je de vorige inhoud ernaast houden, zet dan back-ups aan in Instellingen ▸ Bewerken/Bekijken.</li>
 </ol>
 <p>Om een gloednieuw tekstbestand op de huidige locatie te starten, druk je op Shift+F4.</p>
 <p><img alt="De ingebouwde teksteditor met syntaxkleuring, het symbooloverzicht en de minimap" src="images/editor.png" />
@@ -123,7 +123,7 @@
 <li>Selecteer het bestand in een paneel.</li>
 <li>Kies Bestand ▸ Bewerken als hex (of klik met de rechtermuisknop op het bestand en kies Bewerken als hex).</li>
 <li>Typ hex-cijfers om bytes te overschrijven, of gebruik de pijltoetsen om door het bestand te bewegen. Backspace en Delete verwijderen bytes.</li>
-<li>Druk op Cmd+S om te bewaren. Net als bij de teksteditor wordt er een eenmalige back-up van het origineel bewaard.</li>
+<li>Druk op Cmd+S om te bewaren. Net als in de teksteditor wordt de vorige inhoud alleen bewaard als je back-ups hebt aangezet.</li>
 </ol>
 <h2 id="sneltoetsen">Sneltoetsen</h2>
 <table>
@@ -209,7 +209,7 @@
 <li>Syntaxkleuring dekt JSON, C, C#, Java, JavaScript, TypeScript, Python en Rust. Andere bestandstypen openen en bewerken nog steeds normaal met basiskleuring, maar gedetailleerde kleuring is alleen beschikbaar voor de ondersteunde talen.</li>
 <li>Het overzicht dekt de ondersteunde programmeertalen plus JSON, YAML en XML — inclusief de op XML gebaseerde formaten zoals <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> en <code>.storyboard</code>. De opdrachten voor structuurnavigatie, pad en validatie gelden voor JSON, YAML en XML.</li>
 <li>Het symbooloverzicht en de functie Ga naar regel gelden voor de teksteditor. De hex-editor is bedoeld voor binaire inspectie en bewerkingen op byteniveau, niet voor tekst.</li>
-<li>Beide editors bewaren de eerste keer dat je opslaat een back-up van het oorspronkelijke bestand, zodat een onbedoelde wijziging eenvoudig ongedaan te maken is door die back-up te herstellen.</li>
+<li>Geen van beide editors bewaart een back-up tenzij je erom vraagt. Zet ‘Bij opslaan een back-upkopie (.bak) van de vorige inhoud bewaren’ aan in Instellingen ▸ Bewerken/Bekijken, dan schrijft de eerste keer bewaren het origineel naast het bestand als <code>name.bak</code>, zodat een onbedoelde wijziging eenvoudig ongedaan te maken is.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Bestanden bekijken</a></li></ul></section>
 </main>

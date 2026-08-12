@@ -105,6 +105,16 @@ SCENARIOS = [
     # (F-359) — the terminator surviving is the part that fails silently.
     ("editor-lines", ["editlines /Users/admin/pc-demo/messy.txt|/Users/admin/lines.txt",
                       "wait 2000"], 9),
+    # Saving must not leave a `.bak` behind unless the user asked for one, and must leave one when they
+    # did (F-387). Both ends in a single run, on two files created for it, because the question is what
+    # is in the folder afterwards — a setting read back from the config would only prove the checkbox.
+    # The "on" report is written last: the harness stops the app as soon as the primary report appears.
+    ("editor-backup", ["mkfile /Users/admin/bak-off.txt", "mkfile /Users/admin/bak-on.txt", "wait 500",
+                       "editsave /Users/admin/bak-off.txt|typed-|/Users/admin/bak-kept-off.txt",
+                       "wait 1500",
+                       "setbool Editor.CreateBackups|1",
+                       "editsave /Users/admin/bak-on.txt|typed-|/Users/admin/bak-kept-on.txt",
+                       "wait 2000"], 9),
     # Dropping something onto the button bar (F-010). The drag itself cannot be scripted, but the entry
     # point the bar view calls can — and what matters is the other end: the button has to reach
     # default.bar, or it is gone at the next launch. That file is read by the shell afterwards.
@@ -1369,6 +1379,11 @@ REPORTS = {
                     ["read16=Grüße aus Zürich", "readMulti=erste Zeile⏎zweite Zeile",
                      "bomAfterWrite=FFFE", "kept=erste Zeile⏎zweite Zeile",
                      "written=geändert durch die App"]),
+    # F-387: the file the editor typed into is written either way, so "bak=" is the whole finding. The
+    # default is checked *before* the setting is touched, since a default that only holds on a fresh
+    # config is not the default a user meets.
+    "editor-backup": ("/Users/admin/bak-kept-on.txt", ["bak=true", "dirty=false", "typed-auto"]),
+    "editor-backup-off": ("/Users/admin/bak-kept-off.txt", ["bak=false", "dirty=false", "typed-auto"]),
     "editor-lines": ("/Users/admin/lines.txt",
                      ["endings=CRLF", "undo=true", "keep me<CR>",
                       # Four lines in the fixture, and the status line must say four — not "1 line(s)",

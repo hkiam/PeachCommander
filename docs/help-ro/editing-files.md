@@ -13,7 +13,7 @@ Când trebuie să modificați un fișier, nu doar să-l priviți, Peach Commande
 1. În oricare panou, mutați cursorul pe fișierul pe care doriți să-l modificați.
 2. Apăsați F4, sau alegeți Fișier ▸ Editează. Fișierul se deschide în fereastra editorului.
 3. Faceți modificările. Dacă fișierul este un format de programare sau de date recunoscut, cuvintele cheie, șirurile și comentariile sunt colorate automat.
-4. Apăsați Cmd+S (sau faceți clic pe Salvează) pentru a scrie modificările. Prima salvare păstrează o copie de rezervă a originalului lângă fișier, astfel încât puteți reveni întotdeauna la ea.
+4. Apăsați Cmd+S (sau faceți clic pe Salvează) pentru a scrie modificările. Salvarea înlocuiește fișierul; dacă doriți să păstrați conținutul anterior lângă el, activați copiile de rezervă în Setări ▸ Editare/Vizualizare.
 
 Pentru a începe un fișier text nou-nouț la locația curentă, apăsați Shift+F4.
 
@@ -124,7 +124,7 @@ args = format -
 1. Selectați fișierul într-un panou.
 2. Alegeți Fișier ▸ Editează ca hexazecimal (sau faceți clic dreapta pe fișier și alegeți Editează ca hexazecimal).
 3. Tastați cifre hexazecimale pentru a suprascrie octeți, sau folosiți tastele săgeți pentru a vă deplasa prin fișier. Backspace și Delete elimină octeți.
-4. Apăsați Cmd+S pentru a salva. Ca la editorul de text, o copie de rezervă unică a originalului este păstrată.
+4. Apăsați Cmd+S pentru a salva. Ca în editorul de text, conținutul anterior este păstrat doar dacă ați activat copiile de rezervă.
 
 ## Comenzi rapide
 
@@ -153,4 +153,4 @@ args = format -
 - Evidențierea sintaxei acoperă JSON, C, C#, Java, JavaScript, TypeScript, Python și Rust. Alte tipuri de fișiere se deschid și se editează în continuare normal cu colorare de bază, dar evidențierea detaliată este disponibilă doar pentru limbajele acceptate.
 - Conturul acoperă limbajele de programare acceptate plus JSON, YAML și XML — inclusiv formatele bazate pe XML, precum `.plist`, `.svg`, `.csproj` și `.storyboard`. Comenzile de navigare structurală, cale și validare se aplică pentru JSON, YAML și XML.
 - Conturul simbolurilor și Salt la linie se aplică editorului de text. Editorul hexazecimal este destinat inspecției binare și editărilor la nivel de octet, nu textului.
-- Ambii editori păstrează o copie de rezervă a fișierului original la prima salvare, astfel încât o modificare accidentală este ușor de anulat restaurând acea copie de rezervă.
+- Niciunul dintre editori nu păstrează o copie de rezervă dacă nu o cereți. Activați „Păstrează o copie de rezervă (.bak) a conținutului anterior la salvare” în Setări ▸ Editare/Vizualizare, iar prima salvare scrie originalul lângă fișier ca `name.bak`, astfel încât o modificare accidentală este ușor de anulat.

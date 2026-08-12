@@ -8,9 +8,35 @@ import AppKit
 
 @MainActor
 enum DocumentFile {
-    /// Write `data` to `path`, making a one-time `.bak` copy of the original
-    /// before the first overwrite this session. Shows an error alert on failure.
-    /// Returns whether the write succeeded.
+    /// Whether saving keeps a `<name>.bak` copy of the file's previous contents
+    /// (`Editor.CreateBackups`, off by default — F-387).
+    ///
+    /// The editors used to drop a `.bak` beside every file they saved. That is litter in a folder the
+    /// user curates, it is not asked for — macOS has no such convention — and it is not a version
+    /// history either, so the file it leaves behind mostly gets deleted by hand. The setting owns the
+    /// rule rather than each window: three windows save through here and one answer has to cover all
+    /// of them. Set from the config at startup and whenever the setting changes.
+    static var keepBackups = false
+
+    /// Copy `path` aside to `<path>.bak` before it is overwritten, if backups are on.
+    ///
+    /// `alreadyBackedUp` is flipped once a backup has been considered, so a caller that keeps the flag
+    /// across saves preserves the file as it was when the window opened (the editors), while a caller
+    /// passing a fresh `false` refreshes the copy on every save (the compare window). It stays untouched
+    /// while backups are off, so switching the setting on mid-session takes effect at the next save
+    /// instead of never.
+    static func backUp(path: String, alreadyBackedUp: inout Bool) {
+        guard keepBackups, !alreadyBackedUp else { return }
+        alreadyBackedUp = true
+        let fm = FileManager.default
+        guard fm.fileExists(atPath: path) else { return }
+        let backup = path + ".bak"
+        try? fm.removeItem(atPath: backup)
+        try? fm.copyItem(atPath: path, toPath: backup)
+    }
+
+    /// Write `data` to `path`, keeping a one-time `.bak` copy of the original first when backups are
+    /// enabled. Shows an error alert on failure. Returns whether the write succeeded.
     ///
     /// `mayAskForAuthorization` is false when the caller already knows authorization cannot help — a
     /// read-only volume, a SIP-protected file (F-357). Prompting there costs the user a password and
@@ -18,13 +44,7 @@ enum DocumentFile {
     @MainActor @discardableResult
     static func writeWithBackup(_ data: Data, toPath path: String, didBackup: inout Bool,
                                 mayAskForAuthorization: Bool = true) -> Bool {
-        let fm = FileManager.default
-        if !didBackup, fm.fileExists(atPath: path) {
-            let backup = path + ".bak"
-            try? fm.removeItem(atPath: backup)
-            try? fm.copyItem(atPath: path, toPath: backup)
-        }
-        didBackup = true
+        backUp(path: path, alreadyBackedUp: &didBackup)
         do {
             try data.write(to: URL(fileURLWithPath: path))
             return true

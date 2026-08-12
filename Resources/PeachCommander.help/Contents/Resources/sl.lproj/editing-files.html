@@ -16,7 +16,7 @@
 <li>V katerem koli podoknu premaknite kazalko na datoteko, ki jo želite spremeniti.</li>
 <li>Pritisnite F4 ali izberite Datoteka ▸ Uredi. Datoteka se odpre v oknu urejevalnika.</li>
 <li>Naredite spremembe. Če je datoteka prepoznana programska ali podatkovna oblika, se ključne besede, nizi in komentarji samodejno obarvajo.</li>
-<li>Pritisnite Cmd+S (ali kliknite Shrani), da zapišete spremembe. Prvo shranjevanje ohrani varnostno kopijo izvirnika poleg datoteke, tako da se lahko vedno vrnete nanjo.</li>
+<li>Pritisnite Cmd+S (ali kliknite Shrani), da zapišete spremembe. Shranjevanje datoteko zamenja; če želite prejšnjo vsebino obdržati ob njej, vklopite varnostne kopije v Nastavitvah ▸ Uredi/Poglej.</li>
 </ol>
 <p>Za začetek povsem nove besedilne datoteke na trenutnem mestu pritisnite Shift+F4.</p>
 <p><img alt="Vgrajeni urejevalnik besedila, ki prikazuje poudarjanje skladnje, oris simbolov in mini zemljevid" src="images/editor.png" />
@@ -123,7 +123,7 @@
 <li>Izberite datoteko v podoknu.</li>
 <li>Izberite Datoteka ▸ Uredi kot šestnajstiško (ali kliknite datoteko z desno tipko in izberite Uredi kot šestnajstiško).</li>
 <li>Vnesite šestnajstiške števke za prepis bajtov, ali uporabite puščice za pomikanje po datoteki. Backspace in Delete odstranita bajte.</li>
-<li>Pritisnite Cmd+S za shranjevanje. Tako kot pri urejevalniku besedila se ohrani enkratna varnostna kopija izvirnika.</li>
+<li>Pritisnite Cmd+S za shranjevanje. Tako kot v urejevalniku besedila se prejšnja vsebina ohrani le, če ste vklopili varnostne kopije.</li>
 </ol>
 <h2 id="bliznjice">Bližnjice</h2>
 <table>
@@ -209,7 +209,7 @@
 <li>Barvanje skladnje zajema JSON, C, C#, Java, JavaScript, TypeScript, Python in Rust. Druge vrste datotek se še vedno normalno odprejo in urejajo z osnovnim barvanjem, podrobno barvanje pa je na voljo le za podprte jezike.</li>
 <li>Pregled zajema podprte programske jezike ter JSON, YAML in XML — vključno z oblikami, ki temeljijo na XML, kot so <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> in <code>.storyboard</code>. Ukazi za strukturno krmarjenje, pot in preverjanje veljajo za JSON, YAML in XML.</li>
 <li>Oris simbolov in Pojdi na vrstico veljata za urejevalnik besedila. Šestnajstiški urejevalnik je namenjen dvojiškemu pregledu in urejanju na ravni bajtov, ne besedilu.</li>
-<li>Oba urejevalnika ohranita varnostno kopijo izvirne datoteke ob prvem shranjevanju, tako da je nenamerno spremembo enostavno razveljaviti z obnovitvijo te varnostne kopije.</li>
+<li>Nobeden od urejevalnikov ne ohrani varnostne kopije, dokler zanjo ne zaprosite. V Nastavitvah ▸ Uredi/Poglej vklopite »Pri shranjevanju ohrani varnostno kopijo (.bak) prejšnje vsebine« in prvo shranjevanje zapiše izvirnik ob datoteko kot <code>name.bak</code>, tako da je nenamerno spremembo enostavno razveljaviti.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Ogled datotek</a></li></ul></section>
 </main>

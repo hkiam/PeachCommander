@@ -13,7 +13,7 @@ När du behöver ändra en fil snarare än bara titta på den öppnar Peach Comm
 1. Flytta markören till filen du vill ändra i endera panelen.
 2. Tryck på F4, eller välj Arkiv ▸ Redigera. Filen öppnas i redigeringsfönstret.
 3. Gör dina ändringar. Om filen är ett igenkänt programmerings- eller dataformat färgas nyckelord, strängar och kommentarer automatiskt.
-4. Tryck på Cmd+S (eller klicka på Spara) för att skriva dina ändringar. Den första sparningen behåller en säkerhetskopia av originalet bredvid filen, så att du alltid kan falla tillbaka på den.
+4. Tryck på Cmd+S (eller klicka på Spara) för att skriva dina ändringar. Sparandet ersätter filen; vill du behålla det tidigare innehållet intill den, slå på säkerhetskopior i Inställningar ▸ Redigera/Visa.
 
 För att starta en helt ny textfil på den aktuella platsen, tryck på Shift+F4.
 
@@ -124,7 +124,7 @@ Insticksmoduler kan också bidra med formaterare — se [Plugins](plugins.md).
 1. Markera filen i en panel.
 2. Välj Arkiv ▸ Redigera som hex (eller högerklicka på filen och välj Redigera som hex).
 3. Skriv hex-siffror för att skriva över byte, eller använd piltangenterna för att röra dig genom filen. Backspace och Delete tar bort byte.
-4. Tryck på Cmd+S för att spara. Precis som med textredigeraren behålls en engångssäkerhetskopia av originalet.
+4. Tryck på Cmd+S för att spara. Precis som i textredigeraren behålls det tidigare innehållet bara om du har slagit på säkerhetskopior.
 
 ## Kortkommandon
 
@@ -153,4 +153,4 @@ Insticksmoduler kan också bidra med formaterare — se [Plugins](plugins.md).
 - Syntaxfärgning täcker JSON, C, C#, Java, JavaScript, TypeScript, Python och Rust. Andra filtyper öppnas och redigeras fortfarande normalt med enkel färgning, men detaljerad färgning finns bara för de språk som stöds.
 - Översikten täcker de programmeringsspråk som stöds plus JSON, YAML och XML — inklusive de XML-baserade formaten som `.plist`, `.svg`, `.csproj` och `.storyboard`. Kommandona för strukturnavigering, sökväg och validering gäller JSON, YAML och XML.
 - Symbolöversikten och funktionen Gå till rad gäller textredigeraren. Hex-redigeraren är avsedd för binärgranskning och redigeringar på byte-nivå, inte för text.
-- Båda redigerarna behåller en säkerhetskopia av originalfilen första gången du sparar, så att en oavsiktlig ändring är lätt att ångra genom att återställa den säkerhetskopian.
+- Ingen av redigerarna behåller en säkerhetskopia om du inte ber om det. Slå på ”Behåll en säkerhetskopia (.bak) av det tidigare innehållet vid sparande” i Inställningar ▸ Redigera/Visa, då skriver den första sparningen originalet intill filen som `name.bak`, så att en oavsiktlig ändring är lätt att ångra.

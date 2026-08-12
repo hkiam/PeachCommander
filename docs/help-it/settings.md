@@ -28,7 +28,7 @@ La finestra ha queste pagine, in ordine:
 - **Funzionamento** — comportamento generale, come cosa succede quando digiti in un pannello (ricerca rapida contro riga di comando).
 - **Colori** — colori personalizzati dei pannelli, o lasciali seguire il tema corrente.
 - **Conferma** — quali azioni chiedono prima di confermare, come l'eliminazione.
-- **Modifica/Visualizza** — i programmi usati per modificare e visualizzare i file, e le associazioni per tipo.
+- **Modifica/Visualizza** — se il salvataggio nell'editor conserva una copia di backup `.bak`, i programmi usati per modificare e visualizzare i file, e le associazioni per tipo.
 - **Copia/Elimina** — preserva i metadati dei file, usa la clonazione rapida, copia solo i file più recenti, verifica dopo la copia, invia le eliminazioni al Cestino e imposta un limite di velocità opzionale.
 - **Zip/Compressore** — il formato di archivio e il livello di compressione predefiniti usati quando comprimi.
 - **Plugin** — attiva o disattiva i plugin installati.

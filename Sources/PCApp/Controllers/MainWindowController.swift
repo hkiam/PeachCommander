@@ -766,6 +766,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         tabLockedOpensNewTab = await mainConfig.bool("Tabs", "LockedOpensNewTab", default: true)
         applyTabDefaultsToPanels()
         ftpKeepAliveSeconds = Int(await mainConfig.string("FTP", "KeepAliveSeconds", default: "0")) ?? 0
+        // The editors save on the main actor and cannot await the config store there, so the answer is
+        // read once here and kept where all three save paths can see it (F-387).
+        DocumentFile.keepBackups = await mainConfig.bool("Editor", "CreateBackups", default: false)
         // Panel tabs (session).
         didRestore = true
         await restoreTabs(into: leftPanelController, prefix: "LeftPanel")
@@ -3522,6 +3525,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             packDefaultFormat: await mainConfig.string("Pack", "DefaultFormat", default: "zip"),
             packLevel: Int(await mainConfig.string("Pack", "Level", default: "5")) ?? 5,
             packArchiveExtensions: await mainConfig.string("Pack", "ArchiveExtensions", default: ""),
+            editorCreateBackups: await mainConfig.bool("Editor", "CreateBackups", default: false),
             tabOpenInForeground: await mainConfig.bool("Tabs", "OpenInForeground", default: true),
             tabLockedOpensNewTab: await mainConfig.bool("Tabs", "LockedOpensNewTab", default: true),
             ftpKeepAliveSeconds: Int(await mainConfig.string("FTP", "KeepAliveSeconds", default: "0")) ?? 0,
@@ -3566,7 +3570,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         alert.runModal()
     }
 
-    private func applyBoolOption(_ keyPath: String, _ value: Bool) {
+    /// Not private, for the same reason as `applyStringOption`: the DEBUG automation runner changes a
+    /// setting through exactly the path the Settings dialog uses rather than a second one of its own.
+    func applyBoolOption(_ keyPath: String, _ value: Bool) {
         let (section, key) = Self.splitKeyPath(keyPath)
         Task { await mainConfig.setBool(value, section, key) }
         switch keyPath {
@@ -3614,6 +3620,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             copyUseClone = value; applyCopyDefaultsToPanels()
         case "Copy.OnlyNewer":
             copyOnlyNewer = value; applyCopyDefaultsToPanels()
+        case "Editor.CreateBackups":
+            // Editors that are already open pick this up too: the flag is consulted at save time, and a
+            // setting the user just changed applying only to the next window would read as ignored.
+            DocumentFile.keepBackups = value
         case "Tabs.OpenInForeground":
             tabOpenInForeground = value; applyTabDefaultsToPanels()
         case "Tabs.LockedOpensNewTab":

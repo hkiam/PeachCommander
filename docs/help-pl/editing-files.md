@@ -13,7 +13,7 @@ Gdy potrzebujesz zmienić plik, a nie tylko go obejrzeć, Peach Commander otwier
 1. W dowolnym panelu przesuń kursor na plik, który chcesz zmienić.
 2. Naciśnij F4 lub wybierz Plik ▸ Edytuj. Plik otwiera się w oknie edytora.
 3. Wprowadź zmiany. Jeśli plik jest rozpoznanym formatem programowania lub danych, słowa kluczowe, ciągi i komentarze są automatycznie kolorowane.
-4. Naciśnij Cmd+S (lub kliknij Zapisz), aby zapisać zmiany. Pierwszy zapis zachowuje kopię zapasową oryginału obok pliku, więc zawsze możesz do niej wrócić.
+4. Naciśnij Cmd+S (lub kliknij Zapisz), aby zapisać zmiany. Zapis zastępuje plik; jeśli chcesz zachować poprzednią treść obok niego, włącz kopie zapasowe w Ustawieniach ▸ Edycja/Podgląd.
 
 Aby utworzyć zupełnie nowy plik tekstowy w bieżącej lokalizacji, naciśnij Shift+F4.
 
@@ -124,7 +124,7 @@ Wtyczki też mogą dostarczać formatery — zobacz [Plugins](plugins.md).
 1. Zaznacz plik w panelu.
 2. Wybierz Plik ▸ Edytuj jako szesnastkowy (lub kliknij plik prawym przyciskiem i wybierz Edytuj jako szesnastkowy).
 3. Wpisuj cyfry szesnastkowe, aby nadpisywać bajty, lub użyj strzałek, aby poruszać się po pliku. Backspace i Delete usuwają bajty.
-4. Naciśnij Cmd+S, aby zapisać. Podobnie jak w edytorze tekstu, zachowywana jest jednorazowa kopia zapasowa oryginału.
+4. Naciśnij Cmd+S, aby zapisać. Podobnie jak w edytorze tekstu poprzednia treść zostaje zachowana tylko wtedy, gdy włączyłeś kopie zapasowe.
 
 ## Skróty
 
@@ -153,4 +153,4 @@ Wtyczki też mogą dostarczać formatery — zobacz [Plugins](plugins.md).
 - Podświetlanie składni obejmuje JSON, C, C#, Java, JavaScript, TypeScript, Python i Rust. Inne typy plików nadal otwierają się i edytują normalnie z podstawowym kolorowaniem, ale szczegółowe podświetlanie jest dostępne tylko dla obsługiwanych języków.
 - Konspekt obejmuje obsługiwane języki programowania oraz JSON, YAML i XML — w tym formaty oparte na XML, takie jak `.plist`, `.svg`, `.csproj` i `.storyboard`. Polecenia nawigacji strukturalnej, ścieżki i sprawdzania dotyczą JSON, YAML i XML.
 - Konspekt symboli i Przejdź do wiersza dotyczą edytora tekstu. Edytor szesnastkowy jest przeznaczony do inspekcji binarnej i edycji na poziomie bajtów, a nie do tekstu.
-- Oba edytory zachowują kopię zapasową oryginalnego pliku przy pierwszym zapisie, więc przypadkową zmianę łatwo cofnąć, przywracając tę kopię.
+- Żaden z edytorów nie zachowuje kopii zapasowej, dopóki o nią nie poprosisz. Włącz „Podczas zapisywania zachowaj kopię zapasową (.bak) poprzedniej treści” w Ustawieniach ▸ Edycja/Podgląd, a pierwszy zapis zapisze oryginał obok pliku jako `name.bak`, więc przypadkową zmianę łatwo cofnąć.

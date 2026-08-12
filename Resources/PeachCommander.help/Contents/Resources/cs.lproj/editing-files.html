@@ -16,7 +16,7 @@
 <li>V kterémkoli panelu přesuňte kurzor na soubor, který chcete změnit.</li>
 <li>Stiskněte F4, nebo zvolte Soubor ▸ Upravit. Soubor se otevře v okně editoru.</li>
 <li>Proveďte změny. Pokud je soubor rozpoznaným programovacím nebo datovým formátem, klíčová slova, řetězce a komentáře se automaticky obarví.</li>
-<li>Stiskem Cmd+S (nebo klepnutím na Uložit) zapíšete své změny. První uložení uchová zálohu originálu vedle souboru, takže se k němu vždy můžete vrátit.</li>
+<li>Stiskem Cmd+S (nebo klepnutím na Uložit) zapíšete své změny. Uložení soubor přepíše; pokud chcete předchozí obsah zachovat vedle něj, zapněte zálohy v Nastavení ▸ Úpravy/Zobrazení.</li>
 </ol>
 <p>Chcete-li vytvořit zcela nový textový soubor v aktuálním umístění, stiskněte Shift+F4.</p>
 <p><img alt="Vestavěný textový editor zobrazující zvýraznění syntaxe, přehled symbolů a minimapu" src="images/editor.png" />
@@ -123,7 +123,7 @@
 <li>Vyberte soubor v panelu.</li>
 <li>Zvolte Soubor ▸ Upravit jako hex (nebo klepněte na soubor pravým tlačítkem a zvolte Upravit jako hex).</li>
 <li>Psaním hexadecimálních číslic přepisujete byty, nebo se šipkami pohybujte souborem. Backspace a Delete odstraňují byty.</li>
-<li>Stiskem Cmd+S uložíte. Stejně jako u textového editoru se uchová jednorázová záloha originálu.</li>
+<li>Stiskem Cmd+S uložíte. Stejně jako v textovém editoru se předchozí obsah zachová jen tehdy, když jste zálohy zapnuli.</li>
 </ol>
 <h2 id="zkratky">Zkratky</h2>
 <table>
@@ -209,7 +209,7 @@
 <li>Zvýraznění syntaxe pokrývá JSON, C, C#, Java, JavaScript, TypeScript, Python a Rust. Ostatní typy souborů se stále otevírají a upravují normálně se základním obarvením, ale podrobné zvýraznění je dostupné jen pro podporované jazyky.</li>
 <li>Přehled pokrývá podporované programovací jazyky a navíc JSON, YAML a XML — včetně formátů založených na XML, jako jsou <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> a <code>.storyboard</code>. Příkazy pro strukturní navigaci, cestu a kontrolu platí pro JSON, YAML a XML.</li>
 <li>Přehled symbolů a Přejít na řádek platí pro textový editor. Hexadecimální editor je určen pro binární kontrolu a úpravy na úrovni bytů, ne pro text.</li>
-<li>Oba editory uchovávají zálohu původního souboru při prvním uložení, takže náhodnou změnu lze snadno vrátit obnovením té zálohy.</li>
+<li>Ani jeden editor neuchovává zálohu, dokud si o ni neřeknete. V Nastavení ▸ Úpravy/Zobrazení zapněte „Při ukládání zachovat záložní kopii (.bak) předchozího obsahu“ a první uložení zapíše originál vedle souboru jako <code>name.bak</code>, takže náhodnou změnu lze snadno vrátit.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Prohlížení souborů</a></li></ul></section>
 </main>
