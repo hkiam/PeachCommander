@@ -25,6 +25,19 @@ Peach Commander má vstavaný prehliadač, ktorý vám umožňuje nazrieť do s�
 - Ak text vyzerá skreslene, kliknite na Kódovanie na paneli nástrojov (alebo stlačte E) na prechádzanie kódovaní textu, kým sa nečíta správne; automatické nastavenie to zvyčajne trafí.
 - Stlačte W na prepnutie zalamovania slov pri dlhých riadkoch.
 
+## Priblíženie obrázka
+
+V obrazovej reprezentácii prehliadač otvorí obrázok prispôsobený oknu a malý obrázok nechá v jeho vlastnej veľkosti, namiesto toho aby ho nafúkol.
+
+| Akcia | Ponuka | Klávesy |
+| --- | --- | --- |
+| Priblížiť | Zobraziť ▸ Priblížiť | Cmd++ / + |
+| Oddialiť | Zobraziť ▸ Oddialiť | Cmd+- / - |
+| Skutočná veľkosť (100 %) | Zobraziť ▸ Skutočná veľkosť | Cmd+0 / 0 |
+| Prispôsobiť oknu | Zobraziť ▸ Prispôsobiť oknu | Cmd+9 / F |
+
+Môžete použiť aj gesto na trackpade alebo držať Cmd a rolovať. Úroveň je v stavovom riadku a *skutočná veľkosť* znamená jeden obrazový bod na bod obrazovky — nie len „vráť moje približovanie“. Prispôsobenie sleduje okno: zmeňte jeho veľkosť a obrázok zostane prispôsobený.
+
 ## Poznámky k riadku
 
 Ak je modul Poznámky nainštalovaný, poznámka sa môže týkať konkrétneho riadku súboru, nie súboru ako celku.
@@ -41,6 +54,8 @@ Rýchle zobrazenie ukazuje živý náhľad v paneli, ktorý *nepoužívate*, tak
 2. Presúvajte kurzor na rôzne súbory v aktívnom paneli na náhľad každého.
 3. Stlačte Ctrl+Q znova, alebo Esc, na vrátenie panela na normálny zoznam súborov.
 
+Obrázok v rýchlom náhľade má rovnaké ovládanie priblíženia ako náhľad v bočnom paneli — v kúte panela, ktorý prevzal.
+
 Na rýchly celoobrazovkový náhľad spracovaný priamo macOS stlačte Cmd+Y (Quick Look). Stlačte Cmd+Y alebo medzerník znova na jeho zatvorenie.
 
 ## Stránka s informáciami v bočnom paneli
@@ -49,6 +64,7 @@ Bočný panel (**Zobraziť > Panel náhľadu** alebo Cmd+Shift+P) má stránku *
 
 - Náhľad vyplní celú šírku panela — keď panel rozšírite, náhľad rastie s ním. Potiahnutím ľavého okraja panela ho rozšírite alebo zúžite; šírka sa pamätá.
 - Ide o skutočný náhľad macOS, nie o malý náhľadový obrázok: funguje každý formát, ktorý vie zobraziť Rýchly náhľad, a viacstranovým dokumentom listujete priamo v náhľade stranu po strane.
+- Obrázok má vlastné ovládanie priblíženia v kúte náhľadu — oddialiť, priblížiť, skutočná veľkosť a prispôsobiť — a vedľa nich aktuálnu úroveň; gesto aj Cmd+rolovanie tam fungujú tiež. Všetko ostatné, čo náhľad zobrazuje, napríklad PDF alebo video, sa chová ako predtým.
 - Pod ním je názov, druh a veľkosť, ďalej kedy bola položka vytvorená a zmenená a v ktorom priečinku leží.
 
 Pri pohybe kurzora sa názov a údaje aktualizujú okamžite; náhľad nasleduje o okamih neskôr, aby podržaná šípka prechádzajúca dlhým priečinkom nespúšťala náhľad pre každý míňaný riadok.

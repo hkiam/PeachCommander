@@ -34,9 +34,13 @@ final class PreviewPanelView: NSView {
     // format macOS can show" and paging through a multi-page document in one move — QuickLook
     // embeds the same renderers Finder uses, so a PDF scrolls page by page inside the panel.
     // The icon view stays as the fallback for what QuickLook has no generator for.
-    private var previewView: QLPreviewView?
+    // The preview itself is `FilePreviewView`: an image is drawn by us so it can be zoomed, everything
+    // else QuickLook renders goes to QuickLook, and the file's icon is the fallback (F-343, F-389). The
+    // embedded Quick View in the inactive panel uses the same class, so the two quick previews cannot
+    // drift apart.
+    private let previewArea = FilePreviewView()
+    /// The area the preview grows into: the top of the info page, above the name and the details.
     private let previewHost = NSView()
-    private let imageView = NSImageView()
     private let titleLabel = NSTextField(labelWithString: "")
     private let subtitleLabel = NSTextField(labelWithString: "")
     private let detailStack = NSStackView()
@@ -77,9 +81,8 @@ final class PreviewPanelView: NSView {
 
         // Info: a large preview on top, then name/kind, then details (all scrollable).
         previewHost.translatesAutoresizingMaskIntoConstraints = false
-        imageView.imageScaling = .scaleProportionallyUpOrDown
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        previewHost.addSubview(imageView)
+        previewArea.translatesAutoresizingMaskIntoConstraints = false
+        previewHost.addSubview(previewArea)
         titleLabel.font = Fonts.bold13
         titleLabel.lineBreakMode = .byTruncatingMiddle
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -160,10 +163,10 @@ final class PreviewPanelView: NSView {
             previewHost.topAnchor.constraint(equalTo: infoContent.topAnchor),
             previewHost.heightAnchor.constraint(greaterThanOrEqualToConstant: 120),
 
-            imageView.centerXAnchor.constraint(equalTo: previewHost.centerXAnchor),
-            imageView.centerYAnchor.constraint(equalTo: previewHost.centerYAnchor),
-            imageView.widthAnchor.constraint(lessThanOrEqualTo: previewHost.widthAnchor),
-            imageView.heightAnchor.constraint(lessThanOrEqualTo: previewHost.heightAnchor),
+            previewArea.topAnchor.constraint(equalTo: previewHost.topAnchor),
+            previewArea.leadingAnchor.constraint(equalTo: previewHost.leadingAnchor),
+            previewArea.trailingAnchor.constraint(equalTo: previewHost.trailingAnchor),
+            previewArea.bottomAnchor.constraint(equalTo: previewHost.bottomAnchor),
 
             titleLabel.topAnchor.constraint(equalTo: previewHost.bottomAnchor, constant: 12),
 
@@ -222,6 +225,11 @@ final class PreviewPanelView: NSView {
         modeChanged()
         return "ok"
     }
+
+    /// Diagnostic: the zoom controls of the preview area (F-389).
+    @discardableResult
+    func automationPressZoom(_ which: String) -> String { previewArea.automationPressZoom(which) }
+    func automationZoomReport() -> String { previewArea.automationZoomReport() }
     #endif
 
     @objc private func modeChanged() {
@@ -412,71 +420,9 @@ final class PreviewPanelView: NSView {
         setPreview(path: path, fallbackIcon: fallbackIcon)
     }
 
-    /// Show `path` in a live QuickLook view, or the icon when it cannot be previewed.
-    ///
-    /// The `QLPreviewView` is created lazily and reused: rebuilding it per selection made the
-    /// panel flicker and threw away QuickLook's own state — including which page of a document
-    /// you had scrolled to.
+    /// Hand the item to the preview area, which decides how to draw it.
     private func setPreview(path: String?, fallbackIcon: NSImage?) {
-        guard previewedPath != path else { return }
-        previewedPath = path
-        previewWork?.cancel()
-
-        guard let path, Self.canQuickLook(path) else {
-            previewView?.previewItem = nil
-            previewView?.isHidden = true
-            imageView.isHidden = false
-            imageView.image = fallbackIcon
-            return
-        }
-        // Debounced: holding an arrow key walks a directory in a few milliseconds per row, and
-        // asking QuickLook to render each one in passing would spawn a preview per keystroke. The
-        // name and details above have already updated, so the panel still responds immediately.
-        let work = DispatchWorkItem { [weak self] in self?.loadPreview(path) }
-        previewWork = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.18, execute: work)
-    }
-
-    private func loadPreview(_ path: String) {
-        imageView.isHidden = true
-        let view = previewView ?? {
-            let v = QLPreviewView(frame: .zero, style: .normal) ?? QLPreviewView()
-            v.autostarts = false            // don't start playing media just because the cursor moved
-            v.shouldCloseWithWindow = false
-            v.translatesAutoresizingMaskIntoConstraints = false
-            previewHost.addSubview(v)
-            NSLayoutConstraint.activate([
-                v.topAnchor.constraint(equalTo: previewHost.topAnchor),
-                v.leadingAnchor.constraint(equalTo: previewHost.leadingAnchor),
-                v.trailingAnchor.constraint(equalTo: previewHost.trailingAnchor),
-                v.bottomAnchor.constraint(equalTo: previewHost.bottomAnchor),
-            ])
-            previewView = v
-            return v
-        }()
-        view.isHidden = false
-        // Lay out before handing QuickLook the item, so the view has its real size when asked to
-        // render rather than the zero frame it still has in the run-loop turn it was added in.
-        //
-        // Kept as correct practice, not as a proven fix: the preview is flaky *inside the test VM*
-        // (a spinner that never resolves) and this did not change that. Measured there instead:
-        // loadPreview does run, with a 280x350 frame, for both a text file and a PDF — so the
-        // integration hands QuickLook a properly sized view and what happens next is QuickLook's.
-        // The same VM renders both files via qlmanage, and rendered them in the panel too once it
-        // had been up for several minutes, which points at its preview-extension host.
-        previewHost.layoutSubtreeIfNeeded()
-        view.previewItem = URL(fileURLWithPath: path) as NSURL
-    }
-
-    /// Whether QuickLook should be asked at all.
-    ///
-    /// Directories and packages are deliberately excluded: QuickLook renders a folder as a generic
-    /// icon anyway, so the icon path gives the same picture without spinning up a preview agent.
-    private static func canQuickLook(_ path: String) -> Bool {
-        var isDir: ObjCBool = false
-        guard FileManager.default.fileExists(atPath: path, isDirectory: &isDir) else { return false }
-        guard isDir.boolValue else { return true }
-        return NSWorkspace.shared.isFilePackage(atPath: path)
+        previewArea.show(path: path, fallbackIcon: fallbackIcon)
     }
 
     /// One "Key    Value" row, laid out like Finder's: dimmed key on the left, value right-aligned.
@@ -509,6 +455,7 @@ final class PreviewPanelView: NSView {
 
     func applyTheme() {
         layer?.backgroundColor = Theme.current.windowBackground.cgColor
+        previewArea.applyTheme()
         infoLabel.textColor = Theme.current.listText
         titleLabel.textColor = Theme.current.listText
         activitiesText.textColor = Theme.current.listText

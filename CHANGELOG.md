@@ -25,6 +25,17 @@ does not have.
 
 ### Added
 
+- **Zoom a picture — in the quick preview and in the viewer.** The **Info** page of the side panel had
+  no zoom at all, so a photograph was however large the panel happened to be. A picture now carries four
+  controls in the corner of the preview — zoom out, zoom in, actual size, fit — with the level next to
+  them, and pinching or Cmd+scroll works there too. Quick View (Ctrl+Q), which takes over the panel you
+  are not using, gets exactly the same controls. The viewer gets the same four as menu items on
+  ⌘+, ⌘−, ⌘0 and ⌘9 (the bare +, − and 0 keys still work, and F fits), with the level in the status
+  line. A big picture opens fitted; a small one is left at its own size instead of being blown up; and
+  *Actual Size* now really means one image pixel per screen point — it used to show a fitted image and
+  call it that, which made 1:1 unreachable. Fit stays fit: resize the window or drag the panel wider and
+  the picture follows.
+
 - **Show Terminal, in the Terminal menu.** Folding the terminal away and bringing it back was
   *View ▸ Bottom Area* — an item named after the strip it happens to sit in, in a different menu from
   everything else the terminal can do, which is why it was not findable. The new item is the first one

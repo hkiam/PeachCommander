@@ -25,6 +25,19 @@ Peach Commander ha un visualizzatore integrato che ti permette di guardare dentr
 - Se il testo appare confuso, fai clic su Codifica nella barra degli strumenti (o premi E) per scorrere le codifiche di testo finché non si legge correttamente; l'impostazione automatica di solito è corretta.
 - Premi W per commutare l'a capo automatico per le righe lunghe.
 
+## Zoom di un’immagine
+
+Nella rappresentazione immagine il visualizzatore apre l’immagine adattata alla finestra e lascia un’immagine piccola alla sua dimensione invece di ingrandirla.
+
+| Azione | Menu | Tasti |
+| --- | --- | --- |
+| Ingrandisci | Vista ▸ Ingrandisci | Cmd++ / + |
+| Riduci | Vista ▸ Riduci | Cmd+- / - |
+| Dimensioni reali (100%) | Vista ▸ Dimensioni reali | Cmd+0 / 0 |
+| Adatta alla finestra | Vista ▸ Adatta alla finestra | Cmd+9 / F |
+
+Potete anche pizzicare sul trackpad o tenere premuto Cmd e scorrere. Il livello è nella barra di stato, e *dimensioni reali* significa un pixel dell’immagine per punto dello schermo, non semplicemente «annulla lo zoom». L’adattamento segue la finestra: ridimensionatela e l’immagine resta adattata.
+
 ## Note su una riga
 
 Se il plugin Note è installato, una nota può riguardare una riga precisa di un file anziché il file nel suo insieme.
@@ -41,6 +54,8 @@ L'Anteprima rapida mostra un'anteprima in tempo reale nel pannello che *non* sta
 2. Sposta il cursore su diversi file nel pannello attivo per visualizzare l'anteprima di ciascuno.
 3. Premi di nuovo Ctrl+Q, o Esc, per riportare il pannello a un normale elenco di file.
 
+Un’immagine nella vista rapida porta gli stessi controlli di zoom dell’anteprima nel pannello laterale, nell’angolo del pannello che ha occupato.
+
 Per un'anteprima veloce a schermo intero gestita da macOS stesso, premi Cmd+Y (Quick Look). Premi di nuovo Cmd+Y o Spazio per chiuderla.
 
 ## La pagina Informazioni del pannello laterale
@@ -49,6 +64,7 @@ Il pannello laterale (**Vista > Pannello anteprima**, oppure Cmd+Maiusc+P) ha un
 
 - L’anteprima occupa tutta la larghezza del pannello: allargando il pannello, l’anteprima cresce con esso. Trascinate il bordo sinistro del pannello per allargarlo o restringerlo; la larghezza viene ricordata.
 - È una vera anteprima di macOS, non una piccola miniatura: funziona ogni formato che Vista Rapida sa mostrare, e un documento di più pagine si sfoglia pagina per pagina dentro l’anteprima.
+- Un’immagine porta i propri controlli di zoom nell’angolo dell’anteprima — riduci, ingrandisci, dimensioni reali e adatta — con il livello attuale accanto; anche il pizzico e Cmd+scorrimento funzionano lì. Tutto il resto che l’anteprima mostra, un PDF o un video per esempio, si comporta come prima.
 - Sotto compaiono nome, tipo e dimensione, poi quando l’elemento è stato creato e modificato e in quale cartella si trova.
 
 Spostando il cursore, nome e dati si aggiornano subito; l’anteprima segue un istante dopo, così tenere premuta una freccia lungo una cartella lunga non avvia un’anteprima per ogni riga attraversata.

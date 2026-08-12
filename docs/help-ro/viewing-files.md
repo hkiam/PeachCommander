@@ -25,6 +25,19 @@ Peach Commander are un vizualizator integrat care vă permite să priviți în i
 - Dacă textul pare deteriorat, faceți clic pe Codificare în bara de instrumente (sau apăsați E) pentru a parcurge codificările de text până când se citește corect; setarea automată reușește de obicei.
 - Apăsați W pentru a comuta încadrarea cuvintelor pentru liniile lungi.
 
+## Mărirea unei imagini
+
+În reprezentarea imagine, vizualizatorul deschide imaginea încadrată în fereastră și lasă o imagine mică la dimensiunea ei, în loc să o umfle.
+
+| Acțiune | Meniu | Taste |
+| --- | --- | --- |
+| Mărește | Vizualizare ▸ Mărește | Cmd++ / + |
+| Micșorează | Vizualizare ▸ Micșorează | Cmd+- / - |
+| Dimensiune reală (100%) | Vizualizare ▸ Dimensiune reală | Cmd+0 / 0 |
+| Încadrează în fereastră | Vizualizare ▸ Încadrează în fereastră | Cmd+9 / F |
+
+Puteți folosi și gestul de ciupire pe trackpad ori derularea cu Cmd apăsat. Nivelul apare în bara de stare, iar *dimensiunea reală* înseamnă un pixel de imagine pe punct de ecran — nu doar „anulează mărirea mea”. Încadrarea urmează fereastra: redimensionați-o și imaginea rămâne încadrată.
+
 ## Notițe pentru o linie
 
 Dacă modulul Notițe este instalat, o notiță se poate referi la o anumită linie a unui fișier, nu la fișierul întreg.
@@ -41,6 +54,8 @@ Quick View afișează o previzualizare în timp real în panoul pe care *nu* îl
 2. Deplasați cursorul peste diferite fișiere din panoul activ pentru a previzualiza fiecare.
 3. Apăsați din nou Ctrl+Q sau Esc pentru a readuce panoul la o listă normală de fișiere.
 
+O imagine în vizualizarea rapidă are aceleași butoane de mărire ca previzualizarea din panoul lateral, în colțul panoului pe care l-a ocupat.
+
 Pentru o previzualizare rapidă pe tot ecranul gestionată de macOS însuși, apăsați Cmd+Y (Quick Look). Apăsați din nou Cmd+Y sau Space pentru a o închide.
 
 ## Pagina de informații din panoul lateral
@@ -49,6 +64,7 @@ Panoul lateral (**Vizualizare > Panoul de previzualizare**, sau Cmd+Shift+P) are
 
 - Previzualizarea ocupă toată lățimea panoului: dacă lărgiți panoul, previzualizarea crește odată cu el. Trageți de marginea stângă a panoului pentru a-l lărgi sau îngusta; lățimea este reținută.
 - Este o previzualizare macOS adevărată, nu o miniatură mică: funcționează orice format pe care Quick Look îl poate afișa, iar un document cu mai multe pagini se parcurge pagină cu pagină chiar în previzualizare.
+- O imagine își aduce propriile butoane de mărire în colțul previzualizării — micșorează, mărește, dimensiune reală și încadrează — cu nivelul actual lângă ele; ciupirea și Cmd+derulare funcționează și acolo. Tot restul pe care îl desenează previzualizarea, un PDF sau un video de pildă, se comportă ca înainte.
 - Dedesubt sunt numele, tipul și dimensiunea, apoi când a fost creat și modificat elementul și în ce dosar se află.
 
 La mutarea cursorului, numele și detaliile se actualizează imediat; previzualizarea urmează o clipă mai târziu, astfel încât o săgeată ținută apăsată printr-un dosar lung să nu pornească o previzualizare pentru fiecare rând parcurs.

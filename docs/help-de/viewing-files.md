@@ -25,6 +25,19 @@ Peach Commander verfügt über einen integrierten Betrachter, mit dem Sie in ein
 - Wenn Text verstümmelt aussieht, klicken Sie in der Symbolleiste auf Kodierung (oder drücken Sie E), um durch die Textkodierungen zu blättern, bis er korrekt lesbar ist; die automatische Einstellung trifft es meist richtig.
 - Drücken Sie W, um den Zeilenumbruch für lange Zeilen umzuschalten.
 
+## Ein Bild zoomen
+
+In der Bilddarstellung öffnet der Betrachter ein Bild eingepasst in das Fenster und lässt ein kleines Bild in seiner eigenen Größe, statt es aufzublasen.
+
+| Aktion | Menü | Tasten |
+| --- | --- | --- |
+| Vergrößern | Ansicht ▸ Vergrößern | Cmd++ / + |
+| Verkleinern | Ansicht ▸ Verkleinern | Cmd+- / - |
+| Originalgröße (100 %) | Ansicht ▸ Originalgröße | Cmd+0 / 0 |
+| Einpassen | Ansicht ▸ Einpassen | Cmd+9 / F |
+
+Sie können auch auf dem Trackpad aufziehen oder mit gedrückter Cmd-Taste scrollen. Die Stufe steht in der Statuszeile, und *Originalgröße* heißt ein Bildpunkt pro Bildschirmpunkt — nicht bloß „mein Zoomen zurücknehmen“. Einpassen folgt dem Fenster: Ändern Sie seine Größe, bleibt das Bild eingepasst.
+
 ## Notizen zu einer Zeile
 
 Ist das Notizen-Plugin installiert, kann sich eine Notiz auf eine bestimmte Zeile einer Datei beziehen statt auf die ganze Datei.
@@ -41,6 +54,8 @@ Quick View zeigt eine Live-Vorschau in dem Panel, das Sie *nicht* verwenden, sod
 2. Bewegen Sie den Cursor über verschiedene Dateien im aktiven Panel, um jede einzeln vorzuschauen.
 3. Drücken Sie erneut Ctrl+Q oder Esc, um das Panel wieder in eine normale Dateiliste zu verwandeln.
 
+Ein Bild in der Schnellansicht bringt dieselben Zoomknöpfe mit wie die Vorschau in der Seitenleiste — in der Ecke des Panels, das sie übernommen hat.
+
 Für eine schnelle Vollbild-Vorschau, die macOS selbst übernimmt, drücken Sie Cmd+Y (Quick Look). Drücken Sie erneut Cmd+Y oder die Leertaste, um sie zu schließen.
 
 ## Die Info-Seite im Seitenfenster
@@ -49,6 +64,7 @@ Das Seitenfenster (**Ansicht > Vorschau-Panel** oder Cmd+Shift+P) hat eine Seite
 
 - Die Vorschau nimmt die volle Breite des Fensters ein — verbreitern Sie das Fenster, wächst sie mit. Ziehen Sie an der linken Kante des Fensters, um es breiter oder schmaler zu machen; die Breite wird gemerkt.
 - Es ist eine echte macOS-Vorschau, kein kleines Miniaturbild: jedes Format, das Quick Look anzeigen kann, funktioniert hier, und ein mehrseitiges Dokument lässt sich in der Vorschau Seite für Seite durchblättern.
+- Ein Bild bringt eigene Zoomknöpfe in der Ecke der Vorschau mit — verkleinern, vergrößern, Originalgröße und einpassen — daneben die aktuelle Stufe; Aufziehen und Cmd+Scrollen funktionieren dort ebenfalls. Alles andere, was die Vorschau darstellt, etwa ein PDF oder ein Video, verhält sich wie bisher.
 - Darunter stehen Name, Art und Größe, dann wann der Eintrag erstellt und geändert wurde und in welchem Ordner er liegt.
 
 Beim Bewegen des Cursors werden Name und Angaben sofort aktualisiert; die Vorschau folgt einen Moment später, damit das Durchhalten einer Pfeiltaste durch einen langen Ordner nicht für jede Zeile eine Vorschau startet.

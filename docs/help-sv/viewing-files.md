@@ -25,6 +25,19 @@ Peach Commander har en inbyggd visare som låter dig titta inuti en fil utan att
 - Om texten ser förvrängd ut, klicka på Teckenkodning i verktygsfältet (eller tryck på E) för att bläddra genom teckenkodningar tills den läses korrekt; det automatiska läget brukar träffa rätt.
 - Tryck på W för att växla radbrytning för långa rader.
 
+## Zooma en bild
+
+I bildrepresentationen öppnar visaren en bild anpassad till fönstret och låter en liten bild vara i sin egen storlek i stället för att blåsa upp den.
+
+| Åtgärd | Meny | Tangenter |
+| --- | --- | --- |
+| Zooma in | Visa ▸ Zooma in | Cmd++ / + |
+| Zooma ut | Visa ▸ Zooma ut | Cmd+- / - |
+| Verklig storlek (100 %) | Visa ▸ Verklig storlek | Cmd+0 / 0 |
+| Anpassa till fönstret | Visa ▸ Anpassa till fönstret | Cmd+9 / F |
+
+Du kan också nypa på en styrplatta eller hålla ned Cmd och rulla. Nivån står i statusraden, och *verklig storlek* betyder en bildpunkt per skärmpunkt — inte bara ”ångra min zoomning”. Anpassningen följer fönstret: ändra storleken och bilden förblir anpassad.
+
 ## Anteckningar om en rad
 
 Om insticksmodulen Anteckningar är installerad kan en anteckning handla om en viss rad i en fil i stället för om hela filen.
@@ -41,6 +54,8 @@ Quick View visar en direkt förhandsvisning i den panel du *inte* använder, så
 2. Flytta markören över olika filer i den aktiva panelen för att förhandsvisa var och en.
 3. Tryck på Ctrl+Q igen, eller Esc, för att återställa panelen till en vanlig fillista.
 
+En bild i snabbvisningen har samma zoomknappar som förhandsvisningen i sidopanelen, i hörnet av den panel den tagit över.
+
 För en snabb helskärmsförhandsvisning som macOS själv hanterar, tryck på Cmd+Y (Quick Look). Tryck på Cmd+Y eller Space igen för att stänga den.
 
 ## Infosidan i sidopanelen
@@ -49,6 +64,7 @@ Sidopanelen (**Visa > Förhandsvisningspanel**, eller Cmd+Skift+P) har en sida *
 
 - Förhandsvisningen fyller panelens bredd: gör du panelen bredare växer förhandsvisningen med den. Dra i panelens vänsterkant för att göra den bredare eller smalare; bredden kommer ihåg.
 - Det är en riktig macOS-förhandsvisning, inte en liten miniatyr: alla format som Snabbtitt kan visa fungerar här, och ett dokument med flera sidor bläddrar du sida för sida inuti förhandsvisningen.
+- En bild har egna zoomknappar i hörnet av förhandsvisningen — zooma ut, zooma in, verklig storlek och anpassa — med den aktuella nivån intill; nypning och Cmd+rullning fungerar också där. Allt annat som förhandsvisningen ritar, till exempel en PDF eller en video, beter sig som förut.
 - Under den står namn, typ och storlek, och därefter när objektet skapades och ändrades samt vilken mapp det ligger i.
 
 När markören flyttas uppdateras namn och uppgifter direkt; förhandsvisningen följer ett ögonblick senare, så att en nedhållen piltangent genom en lång mapp inte startar en förhandsvisning för varje rad.

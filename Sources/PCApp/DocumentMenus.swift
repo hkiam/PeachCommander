@@ -29,6 +29,11 @@ struct DocumentMenuCaps {
     var marks = false
     var markNav = false           // Next/Previous Mark
     var multiFile = false         // Next/Previous File
+    /// Zoom In / Out / Actual Size / Zoom to Fit (F-389; the viewer's image representation).
+    ///
+    /// Not set for the text editor: zooming there is the font size, which is a different thing with
+    /// different keys, and putting both behind one name would make each of them mean less.
+    var zoom = false
     var note = false              // Note for This Line… (F-379; only when the Notes plugin is there)
 
     var hasRepresentations: Bool {
@@ -67,6 +72,10 @@ enum DocumentAction {
     static let prevMark = Selector(("docPrevMark"))
     static let toggleMarksPanel = Selector(("docToggleMarksPanel"))
     static let clearAllMarks = Selector(("docClearAllMarks"))
+    static let zoomIn = Selector(("docZoomIn"))
+    static let zoomOut = Selector(("docZoomOut"))
+    static let zoomActual = Selector(("docZoomActual"))
+    static let zoomFit = Selector(("docZoomFit"))
     static let copy = Selector(("docCopy"))
     static let selectAll = Selector(("docSelectAll"))
     static let note = Selector(("docNote"))
@@ -145,6 +154,16 @@ enum DocumentMenus {
     private static func appendViewActions(to menu: NSMenu, _ caps: DocumentMenuCaps, _ target: AnyObject, leadingSeparator: Bool) {
         var sepAdded = false
         func sep() { if leadingSeparator, !sepAdded { menu.addItem(.separator()); sepAdded = true } }
+        // The keys macOS users already have in their fingers from Preview: ⌘+ / ⌘− / ⌘0 / ⌘9. The viewer
+        // also keeps the bare +, − and 0 it always had, since those work with one hand on the keyboard
+        // and nothing else in an image representation claims them.
+        if caps.zoom {
+            sep()
+            add(menu, String(localized: "Zoom In"), DocumentAction.zoomIn, target, "+")
+            add(menu, String(localized: "Zoom Out"), DocumentAction.zoomOut, target, "-")
+            add(menu, String(localized: "Actual Size"), DocumentAction.zoomActual, target, "0")
+            add(menu, String(localized: "Zoom to Fit"), DocumentAction.zoomFit, target, "9")
+        }
         if caps.encoding { sep(); add(menu, String(localized: "Cycle Text Encoding"), DocumentAction.cycleEncoding, target, "e", [.command, .option]) }
         if caps.format { sep(); add(menu, String(localized: "Format"), DocumentAction.format, target) }
         if caps.xmlTree { sep(); add(menu, String(localized: "XML Tree"), DocumentAction.xmlTree, target) }

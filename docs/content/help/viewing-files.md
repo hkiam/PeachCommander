@@ -25,6 +25,19 @@ Peach Commander has a built-in viewer that lets you look inside a file without o
 - If text looks garbled, click Encoding in the toolbar (or press E) to cycle through text encodings until it reads correctly; the automatic setting usually gets it right.
 - Press W to toggle word wrap for long lines.
 
+## Zoom a picture
+
+In the image representation the viewer opens a picture fitted to the window, and leaves a small one at its own size instead of blowing it up.
+
+| Action | Menu | Keys |
+| --- | --- | --- |
+| Zoom In | View ▸ Zoom In | Cmd++ / + |
+| Zoom Out | View ▸ Zoom Out | Cmd+- / - |
+| Actual Size (100%) | View ▸ Actual Size | Cmd+0 / 0 |
+| Zoom to Fit | View ▸ Zoom to Fit | Cmd+9 / F |
+
+You can also pinch on a trackpad or hold Cmd and scroll. The level is shown in the status line, and *Actual Size* means one image pixel per screen point — not merely “undo my zooming”. Zoom to Fit keeps following the window: resize it and the picture stays fitted.
+
 ## Notes about a line
 
 If the Notes plugin is installed, a note can be about a particular line of a file rather than about the file as a whole.
@@ -41,6 +54,8 @@ Quick View shows a live preview in the panel you are *not* using, so you can kee
 2. Move the cursor over different files in the active panel to preview each one.
 3. Press Ctrl+Q again, or Esc, to return the panel to a normal file list.
 
+A picture in Quick View carries the same zoom controls as the preview in the side panel, in the corner of the panel it took over.
+
 For a fast full-screen preview handled by macOS itself, press Cmd+Y (Quick Look). Press Cmd+Y or Space again to close it.
 
 ## The Info side panel
@@ -49,6 +64,7 @@ The side panel (**View > Preview Panel**, or Cmd+Shift+P) has an **Info** page t
 
 - The preview fills the width of the panel, so widen the panel and the preview grows with it. Drag the panel's left edge to make it wider or narrower; the width is remembered.
 - It is a real macOS preview, not a small thumbnail: every format Quick Look can show works here, and a multi-page document scrolls page by page inside the preview.
+- A picture carries its own zoom controls in the corner of the preview — zoom out, zoom in, actual size and fit — with the current level beside them; pinching and Cmd+scroll work there too. Everything else the preview renders, such as a PDF or a video, behaves as it always did.
 - Below it are the name, the kind and the size, then when the item was created and changed and which folder it is in.
 
 Moving the cursor updates the name and details immediately; the preview itself follows a moment later, so holding an arrow key through a long folder does not start a preview for every row it passes.

@@ -57,6 +57,28 @@ for c in 1 2 3; do
   printf 'placeholder image %s\n' "$c" > "$ROOT/Images/photo_$c.txt"
 done
 
+# Two *real* images for the zoom scenarios (F-389). Solid colours, so a dump can compare the pixel the
+# app actually drew against the pixel in the file; known sizes, because the levels under test are about
+# size — a photo-sized one that has to open fitted, and a 16x16 icon that must be left at 100% rather
+# than blown up to fill the window. The comment above claimed PNGs for years while writing .txt files,
+# which is why nothing in the suite had ever looked at an image.
+mkppm() { # mkppm <path> <w> <h> <r> <g> <b>
+  /usr/bin/python3 - "$@" <<'PY'
+import sys
+path, w, h = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
+r, g, b = int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6])
+with open(path, "wb") as f:
+    f.write(b"P6\n%d %d\n255\n" % (w, h))
+    f.write(bytes((r, g, b)) * (w * h))
+PY
+}
+mkppm "$ROOT/Images/big.ppm" 3000 2000 200 60 60
+mkppm "$ROOT/Images/icon.ppm" 16 16 60 120 200
+for n in big icon; do
+  sips -s format png "$ROOT/Images/$n.ppm" --out "$ROOT/Images/$n.png" >/dev/null 2>&1
+  rm -f "$ROOT/Images/$n.ppm"
+done
+
 # A sample archive
 ( cd "$ROOT/Documents" && /usr/bin/zip -q -r "$ROOT/Archives/documents.zip" report.txt notes.md inventory.csv )
 

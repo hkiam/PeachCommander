@@ -25,6 +25,19 @@ Peach Commander dispose d'un lecteur intégré qui vous permet de regarder à l'
 - Si le texte semble déformé, cliquez sur Encodage dans la barre d'outils (ou appuyez sur E) pour faire défiler les encodages jusqu'à ce qu'il se lise correctement ; le réglage automatique est généralement juste.
 - Appuyez sur W pour basculer le retour à la ligne pour les lignes longues.
 
+## Zoomer une image
+
+Dans la représentation image, la visionneuse ouvre une image ajustée à la fenêtre et laisse une petite image à sa propre taille au lieu de l’agrandir.
+
+| Action | Menu | Touches |
+| --- | --- | --- |
+| Zoom avant | Affichage ▸ Zoom avant | Cmd++ / + |
+| Zoom arrière | Affichage ▸ Zoom arrière | Cmd+- / - |
+| Taille réelle (100 %) | Affichage ▸ Taille réelle | Cmd+0 / 0 |
+| Ajuster à la fenêtre | Affichage ▸ Ajuster à la fenêtre | Cmd+9 / F |
+
+Vous pouvez aussi pincer sur un trackpad ou faire défiler en maintenant Cmd. Le niveau figure dans la barre d’état, et *taille réelle* signifie un pixel d’image par point d’écran — pas seulement « annuler mon zoom ». L’ajustement suit la fenêtre : redimensionnez-la et l’image reste ajustée.
+
 ## Notes sur une ligne
 
 Si le module Notes est installé, une note peut porter sur une ligne précise d'un fichier plutôt que sur le fichier entier.
@@ -41,6 +54,8 @@ L'Aperçu rapide affiche un aperçu en direct dans le panneau que vous n'utilise
 2. Déplacez le curseur sur différents fichiers dans le panneau actif pour prévisualiser chacun.
 3. Appuyez de nouveau sur Ctrl+Q, ou sur Échap, pour rendre au panneau une liste de fichiers normale.
 
+Une image dans l’aperçu rapide dispose des mêmes commandes de zoom que l’aperçu du panneau latéral, dans le coin du panneau qu’il a pris.
+
 Pour un aperçu plein écran rapide géré par macOS lui-même, appuyez sur Cmd+Y (Coup d'œil). Appuyez de nouveau sur Cmd+Y ou Espace pour le fermer.
 
 ## La page Infos du panneau latéral
@@ -49,6 +64,7 @@ Le panneau latéral (**Présentation > Panneau d’aperçu**, ou Cmd+Maj+P) comp
 
 - L’aperçu occupe toute la largeur du panneau : élargissez le panneau et l’aperçu grandit avec lui. Faites glisser le bord gauche du panneau pour l’élargir ou le rétrécir ; la largeur est mémorisée.
 - C’est un véritable aperçu macOS, pas une petite vignette : tous les formats que Coup d’œil sait afficher fonctionnent ici, et un document de plusieurs pages se parcourt page par page dans l’aperçu.
+- Une image apporte ses propres commandes de zoom dans le coin de l’aperçu — zoom arrière, zoom avant, taille réelle et ajuster — avec le niveau actuel à côté ; le pincement et Cmd+défilement y fonctionnent aussi. Tout le reste que l’aperçu affiche, un PDF ou une vidéo par exemple, se comporte comme avant.
 - En dessous figurent le nom, le type et la taille, puis les dates de création et de modification et le dossier où se trouve l’élément.
 
 Lorsque le curseur se déplace, le nom et les informations se mettent à jour immédiatement ; l’aperçu suit un instant plus tard, afin qu’une flèche maintenue à travers un long dossier ne lance pas un aperçu pour chaque ligne traversée.

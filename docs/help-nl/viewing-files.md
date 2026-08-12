@@ -25,6 +25,19 @@ Peach Commander heeft een ingebouwde viewer waarmee je in een bestand kunt kijke
 - Als tekst er verminkt uitziet, klik je op Codering in de werkbalk (of druk je op E) om door tekstcoderingen te bladeren tot het correct leest; de automatische instelling krijgt het meestal goed.
 - Druk op W om regelterugloop voor lange regels te wisselen.
 
+## Een afbeelding zoomen
+
+In de afbeeldingsweergave opent de viewer een afbeelding passend in het venster en laat een kleine afbeelding op haar eigen grootte staan in plaats van haar op te blazen.
+
+| Actie | Menu | Toetsen |
+| --- | --- | --- |
+| Inzoomen | Weergave ▸ Inzoomen | Cmd++ / + |
+| Uitzoomen | Weergave ▸ Uitzoomen | Cmd+- / - |
+| Werkelijke grootte (100%) | Weergave ▸ Werkelijke grootte | Cmd+0 / 0 |
+| Passend maken | Weergave ▸ Passend maken | Cmd+9 / F |
+
+Je kunt ook knijpen op een trackpad of Cmd vasthouden en scrollen. Het niveau staat in de statusregel, en *werkelijke grootte* betekent één beeldpunt per schermpunt — niet alleen ‘mijn zoomen ongedaan maken’. Passend maken volgt het venster: verander de grootte en de afbeelding blijft passend.
+
 ## Notities bij een regel
 
 Als de Notities-plug-in is geïnstalleerd, kan een notitie over een bepaalde regel van een bestand gaan in plaats van over het hele bestand.
@@ -41,6 +54,8 @@ Quick View toont een live voorbeeld in het paneel dat je *niet* gebruikt, zodat 
 2. Verplaats de cursor over verschillende bestanden in het actieve paneel om er van elk een voorbeeld te zien.
 3. Druk nogmaals op Ctrl+Q, of op Esc, om het paneel terug te brengen naar een normale bestandslijst.
 
+Een afbeelding in de snelweergave heeft dezelfde zoomknoppen als de voorvertoning in het zijpaneel, in de hoek van het paneel dat is overgenomen.
+
 Voor een snel schermvullend voorbeeld dat door macOS zelf wordt verzorgd, druk je op Cmd+Y (Quick Look). Druk nogmaals op Cmd+Y of Space om het te sluiten.
 
 ## De infopagina in het zijpaneel
@@ -49,6 +64,7 @@ Het zijpaneel (**Weergave > Voorvertoningspaneel**, of Cmd+Shift+P) heeft een pa
 
 - De voorvertoning vult de breedte van het paneel: maakt u het paneel breder, dan groeit de voorvertoning mee. Sleep de linkerrand van het paneel om het breder of smaller te maken; de breedte wordt onthouden.
 - Het is een echte macOS-voorvertoning, geen kleine miniatuur: elk formaat dat Snelle weergave kan tonen werkt hier, en een document van meerdere pagina’s blader je binnen de voorvertoning pagina voor pagina door.
+- Een afbeelding heeft eigen zoomknoppen in de hoek van de voorvertoning — uitzoomen, inzoomen, werkelijke grootte en passend maken — met het huidige niveau ernaast; knijpen en Cmd+scrollen werken daar ook. Al het andere dat de voorvertoning toont, zoals een PDF of een video, gedraagt zich zoals altijd.
 - Daaronder staan de naam, de soort en de grootte, en vervolgens wanneer het item is aangemaakt en gewijzigd en in welke map het staat.
 
 Bij het verplaatsen van de cursor worden naam en gegevens meteen bijgewerkt; de voorvertoning volgt even later, zodat een ingedrukte pijltoets door een lange map niet voor elke regel een voorvertoning start.

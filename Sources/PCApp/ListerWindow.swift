@@ -189,6 +189,48 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Open the docked marks panel, so a dump reads what is on screen and not only what is in the model.
     func automationShowMarks() { marks.show() }
 
+    /// Diagnostic: run a zoom command through the same selector the menu item sends, and report the
+    /// result (F-389).
+    ///
+    /// `enabled` is the menu's own answer via `validateUserInterfaceItem`, so a scenario can assert that
+    /// the item is offered on a picture and withheld on text — the thing a screenshot of a menu shows and
+    /// no other dump does. `pixel` is the colour in the middle of the content, because every level and
+    /// every rect can be right while nothing is drawn at all; that is not hypothetical — it is what the
+    /// quick preview did until the clip view's document view was re-installed.
+    func automationZoom(_ which: String) -> String {
+        let action: Selector?
+        switch which {
+        case "in": action = DocumentAction.zoomIn
+        case "out": action = DocumentAction.zoomOut
+        case "actual": action = DocumentAction.zoomActual
+        case "fit": action = DocumentAction.zoomFit
+        case "state": action = nil
+        default: return "no such zoom command: \(which)\n"
+        }
+        if let action {
+            guard supportsAction(action) else { return "refused=\(which)\n" + automationZoomState() }
+            _ = perform(action)
+        }
+        return automationZoomState()
+    }
+
+    private func automationZoomState() -> String {
+        let visible = scrollView.documentVisibleRect
+        return """
+        mode=\(mode)
+        level=\(imageZoom.levelText)
+        scale=\(String(format: "%.4f", imageZoom.scale))
+        fitting=\(imageZoom.isFitting)
+        document=\(scrollView.documentView === zoomImageView ? "image" : String(describing: scrollView.documentView.map { type(of: $0) }))
+        docFrame=\(Int(zoomImageView.frame.width))x\(Int(zoomImageView.frame.height))
+        visible=\(Int(visible.width))x\(Int(visible.height))
+        \(ImageZoomController.drawnReport(scrollView: scrollView, image: zoomImageView.image))
+        status=\(statusLabel.stringValue)
+        menuZoomIn=\(validateUserInterfaceItem(NSMenuItem(title: "", action: DocumentAction.zoomIn, keyEquivalent: "")))
+        menuZoomFit=\(validateUserInterfaceItem(NSMenuItem(title: "", action: DocumentAction.zoomFit, keyEquivalent: "")))
+        """ + "\n"
+    }
+
     /// Switch the representation, as the 1..6 keys do, and report how long the switch took.
     ///
     /// The timing is the point: "open a binary and switch to text" is a thing a user does and the app
@@ -228,6 +270,18 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     #endif
     private let scrollView = NSScrollView()
     private var contentView: NSView?
+
+    // Zooming the image representation (F-389). The same controller the quick preview in the sidebar
+    // uses, on the viewer's own scroll view — so 100% means the same thing in both places, and the
+    // ladder of stops is one ladder rather than two that drift apart.
+    private let zoomImageView = NSImageView()
+    private lazy var imageZoom: ImageZoomController = {
+        let controller = ImageZoomController(scrollView: scrollView, imageView: zoomImageView)
+        // A pinch or ⌘-scroll changes the level without going through a command, and the status line has
+        // to follow it or it reports the level from before the gesture.
+        controller.onScaleChange = { [weak self] _ in self?.updateStatus() }
+        return controller
+    }()
 
     // Collapsible symbol outline sidebar (classes/functions/methods via tree-sitter).
     private let symbolSidebar = SymbolSidebar()
@@ -683,6 +737,11 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         webView?.isHidden = true
         scrollView.isHidden = false
         scrollView.allowsMagnification = false   // enabled only for image mode (F-115)
+        // Leaving the image behind: let go of the bitmap and stop centring the document, or a text file
+        // with two lines in it would come up centred in the middle of the window (F-389).
+        if mode != .image, zoomImageView.image != nil {
+            imageZoom.clear()
+        }
         if let container, window?.firstResponder === webView { window?.makeFirstResponder(container) }
         let view: NSView
         textMarks = nil   // reset; set below only for the NSTextView text/code path
@@ -715,18 +774,19 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             view = tv
             scrollView.documentView = view
         case .image:
-            let iv = NSImageView()
-            iv.imageScaling = .scaleProportionallyUpOrDown
-            iv.image = NSImage(contentsOfFile: path)
-            iv.frame = scrollView.bounds
-            iv.autoresizingMask = [.width, .height]
-            view = iv
-            scrollView.documentView = iv
-            // Interactive zoom (F-115): pinch / ⌘-scroll, plus +/-/0 keys.
-            scrollView.allowsMagnification = true
-            scrollView.minMagnification = 0.1
-            scrollView.maxMagnification = 16
-            scrollView.magnification = 1
+            // Interactive zoom (F-115) with the four commands and honest levels (F-389). The image view is
+            // sized to the image's **pixels** and does not resize with the window, so magnification 1 is
+            // one image pixel per point — actual size. It used to be stretched to the scroll view, which
+            // made magnification 1 a *fitted* image: "0 = actual size" showed something else, and a
+            // photograph could not be seen at 1:1 at all. Pinch and ⌘-scroll still come from AppKit.
+            view = zoomImageView
+            if let image = NSImage(contentsOfFile: path) {
+                imageZoom.present(image)
+            } else {
+                imageZoom.clear()
+                zoomImageView.image = nil
+                scrollView.documentView = zoomImageView
+            }
         case .media:
             let player = AVPlayer(url: URL(fileURLWithPath: path))
             avPlayer = player
@@ -1050,7 +1110,10 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             modeName = "\(String(localized: "Text")) · \(enc)\(fmt)"
         case .hex: modeName = "\(String(localized: "Hex")) · \(hexBytesPerRow)/line"   // F-111
         case .binary: modeName = "\(String(localized: "Binary")) · \(binaryColumns)/line"
-        case .image: modeName = String(localized: "Image")
+        case .image:
+            // The level belongs next to the representation: a picture at 9.3% and the same picture at
+            // 100% look like two different files, and nothing else on screen says which one you have.
+            modeName = "\(String(localized: "Image")) · \(imageZoom.levelText)"
         case .media: modeName = String(localized: "Media")
         case .web:
             let ext = (files[index] as NSString).pathExtension.lowercased()
@@ -1314,11 +1377,12 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     func automationForceHex(bytesPerRow: Int) { mode = .hex; hexBytesPerRow = bytesPerRow; rebuildContent(); updateStatus() }
     #endif
 
-    /// Multiply the image scroll view's magnification, clamped to its limits.
-    private func zoomImage(by factor: CGFloat) {
-        scrollView.magnification = min(scrollView.maxMagnification,
-                                       max(scrollView.minMagnification, scrollView.magnification * factor))
-    }
+    // MARK: - Zoom (F-115 interactive, F-389 the four commands)
+
+    @objc func docZoomIn() { imageZoom.zoomIn(); updateStatus() }
+    @objc func docZoomOut() { imageZoom.zoomOut(); updateStatus() }
+    @objc func docZoomActual() { imageZoom.actualSize(); updateStatus() }
+    @objc func docZoomFit() { imageZoom.zoomToFit(); updateStatus() }
 
     private func handleKey(_ event: NSEvent) -> Bool {
         // In directory-summary mode only Esc is meaningful (no file modes).
@@ -1369,9 +1433,10 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         case 121 where mode != .web: scrollContent(by: pageStep); return true        // PageDown
         case 115 where mode != .web: scrollToEdge(top: true); return true            // Home
         case 119 where mode != .web: scrollToEdge(top: false); return true           // End
-        case 24 where mode == .image: zoomImage(by: 1.25); return true   // + / =
-        case 27 where mode == .image: zoomImage(by: 0.8); return true    // -
-        case 29 where mode == .image: scrollView.magnification = 1; return true  // 0 (actual size)
+        case 24 where mode == .image: docZoomIn(); return true            // + / =
+        case 27 where mode == .image: docZoomOut(); return true           // -
+        case 29 where mode == .image: docZoomActual(); return true        // 0 (actual size, 100%)
+        case 3 where mode == .image: docZoomFit(); return true            // f (fit the whole picture)
         case 13 where mode == .text || mode == .code:                    // w = toggle word wrap
             wrapText.toggle(); rebuildContent(); return true
         case 24 where mode == .text || mode == .code:                    // + = larger font
@@ -1641,6 +1706,17 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     func windowDidBecomeKey(_ notification: Notification) {
         // The note editor is a separate window; coming back here is the moment a new note can be shown.
         refreshAnnotations()
+    }
+
+    /// A fitted image stays fitted while the window is resized (F-389).
+    ///
+    /// Without this, "Zoom to Fit" is a one-off that the next drag of the window's corner undoes — which
+    /// is the state the old code was permanently in, since it re-stretched the image on every resize and
+    /// had no notion of a level at all.
+    func windowDidResize(_ notification: Notification) {
+        guard mode == .image else { return }
+        imageZoom.viewportChanged()
+        updateStatus()
     }
 
     /// Bring a 1-based line into view in whichever representation is showing.
@@ -2374,6 +2450,7 @@ extension ListerWindowController: WindowContextMenuProviding {
         c.goto = true
         c.marks = true
         c.saveAs = true; c.printable = true   // F-121
+        c.zoom = true                          // F-389 (enabled per representation below)
         c.multiFile = files.count > 1
         // Only offered when the Notes plugin is installed: a menu item that can do nothing is worse
         // than no menu item.
@@ -2433,6 +2510,11 @@ extension ListerWindowController: WindowContextMenuProviding {
             return canTransformText && FormatterRegistry.shared.canFormat(extension: currentExtension)
         case DocumentAction.xmlTree, DocumentAction.xpath, DocumentAction.cycleEncoding:
             return canTransformText
+        case DocumentAction.zoomIn, DocumentAction.zoomOut,
+             DocumentAction.zoomActual, DocumentAction.zoomFit:
+            // Only where there is a picture. In a text representation ⌘+ would otherwise be a menu item
+            // that looks available and changes nothing — the font size is the bare +/- keys (F-389).
+            return mode == .image && imageZoom.hasImage
         case DocumentAction.markAll, DocumentAction.count,
              DocumentAction.clearAllMarks, DocumentAction.toggleMarksPanel:
             return canMark

@@ -190,6 +190,12 @@ extension MainWindowController {
             case "listerdump":                          // listerdump <outfile>: what the viewer window shows
                 let out = currentLister()?.automationSummary() ?? "ERROR: no lister window\n"
                 try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+            case "listerzoom":                          // listerzoom <in|out|actual|fit|state>|<out> (F-389)
+                let z = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if z.count == 2 {
+                    let out = currentLister()?.automationZoom(z[0]) ?? "ERROR: no lister window\n"
+                    try? out.write(toFile: z[1], atomically: true, encoding: .utf8)
+                }
             case "previewpanel":                        // previewpanel on|off: *set* it, do not toggle
                 // A toggle depends on what the previous scenario left behind — this scenario measured a
                 // closed panel in the full run and an open one when run alone, which is how a layout
@@ -449,6 +455,24 @@ extension MainWindowController {
                 }
             case "sidebardump":                         // sidebardump <outfile> (F-372)
                 dumpSidebar(arg)
+            case "quickviewzoom":                       // quickviewzoom <in|out|actual|fit|state>|<out> (F-389)
+                // The *other* quick preview: the one Ctrl+Q puts into the inactive panel, which is the
+                // left one whenever the right is active. Same class, so the same report.
+                let q = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if q.count == 2 {
+                    guard let area = quickViewForAutomation() else {
+                        try? "ERROR: no quick view\n".write(toFile: q[1], atomically: true, encoding: .utf8)
+                        break
+                    }
+                    if q[0] != "state" { NSLog("[automation] quickviewzoom \(q[0]): \(area.automationPressZoom(q[0]))") }
+                    try? area.automationZoomReport().write(toFile: q[1], atomically: true, encoding: .utf8)
+                }
+            case "previewzoom":                         // previewzoom <in|out|actual|fit|state>|<out> (F-389)
+                let z = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if z.count == 2, let panel = previewPanelForAutomation() {
+                    if z[0] != "state" { NSLog("[automation] previewzoom \(z[0]): \(panel.automationPressZoom(z[0]))") }
+                    try? panel.automationZoomReport().write(toFile: z[1], atomically: true, encoding: .utf8)
+                }
             case "column":                              // column <fieldID>: switch an opt-in column on
                 if let panel = activePanel, !panel.tableView.hasColumn(arg) { toggleColumn(arg, panel: panel) }
             case "commentcarry":                        // commentcarry <dir>|<name>|<newName>|<out> (F-372)
