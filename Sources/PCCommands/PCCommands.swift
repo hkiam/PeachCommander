@@ -282,6 +282,8 @@ public protocol WindowControllerProtocol: AnyObject {
     func focusTerminal()
     /// Open another terminal tab (cm_TerminalNewTab, F-381).
     func terminalNewTab()
+    /// Show or hide the terminal wherever it is mounted (cm_TerminalToggle, F-388).
+    func toggleTerminal()
     /// Split the terminal in two, or put it back together (cm_TerminalSplit, F-381).
     func terminalSplit()
     /// Close the terminal tab that is showing (cm_TerminalCloseTab, F-381).
@@ -790,6 +792,7 @@ public actor CommandRegistry {
         register(Self.cm_TerminalRunCommandLine)
         register(Self.cm_TerminalFocus)
         register(Self.cm_TerminalNewTab)
+        register(Self.cm_TerminalToggle)
         register(Self.cm_TerminalSplit)
         register(Self.cm_TerminalCloseTab)
         register(Self.cm_ConfigKeyClassic)
@@ -1002,6 +1005,11 @@ public actor CommandRegistry {
     static let cm_TerminalNewTab = PCCommand(id: 314, name: "cm_TerminalNewTab", category: "Terminal",
         help: "Open another terminal tab",
         handler: { ctx in ctx.windowController?.terminalNewTab() })
+    // Not the same as cm_BottomArea, which is the furniture: this one follows the terminal wherever the
+    // user has put it, and it is in the Terminal menu where they look for it (F-388).
+    static let cm_TerminalToggle = PCCommand(id: 317, name: "cm_TerminalToggle", category: "Terminal",
+        help: "Show or hide the terminal, keeping its tabs and whatever is running in them",
+        handler: { ctx in ctx.windowController?.toggleTerminal() })
     static let cm_TerminalCloseTab = PCCommand(id: 316, name: "cm_TerminalCloseTab", category: "Terminal",
         help: "Close the terminal tab that is showing, asking first if something is running in it",
         handler: { ctx in ctx.windowController?.terminalCloseTab() })

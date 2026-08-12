@@ -20,6 +20,7 @@ Tout le reste se trouve dans le menu **Terminal** :
 
 | Action | Ce qu’elle fait |
 | --- | --- |
+| Afficher le terminal | Le replie et le déplie ; les onglets et ce qui y tourne restent tels quels |
 | Basculer entre le panneau et le terminal | Déplace le focus clavier, sans rien changer d’autre |
 | Nouvel onglet de terminal | Un autre shell, dans le même dossier |
 | Fermer l'onglet de terminal | Le ferme — en demandant d’abord si quelque chose y tourne encore |
@@ -54,9 +55,9 @@ Un terminal conserve **5 000 lignes** d’historique par défaut — de quoi rem
 
 Le terminal s’ouvre dans le dock en bas, parce que c’est la forme qu’il lui faut : un shell a besoin de largeur, et le panneau latéral, à ses 300 points par défaut, tient environ 44 colonnes là où le bas d’une fenêtre de 1200 points en tient 176.
 
-Vous pouvez tout de même le déplacer. Faites-le glisser vers le panneau latéral si cela vous convient mieux, ou utilisez les commandes de placement décrites dans [Extensions](plugins.md) ; le déplacer **réattache le même shell** au lieu d’en démarrer un nouveau, donc ce qui tourne continue de tourner.
+Vous pouvez tout de même le déplacer. Faites-le glisser vers le panneau latéral si cela vous convient mieux, ou utilisez les commandes de placement décrites dans [Extensions](plugins.md) ; le déplacer **réattache le même shell** au lieu d’en démarrer un nouveau, donc ce qui tourne continue de tourner. Les commandes du menu **Terminal** le suivent : elles l’affichent là où il est, au lieu d’ouvrir le dock.
 
-Les onglets reviennent au redémarrage de l’app, dans les dossiers où ils étaient. Ce qui y *tournait*, non — un redémarrage met fin à ces processus, comme dans n’importe quel terminal.
+Les onglets reviennent au redémarrage de l’app, dans les dossiers où ils étaient. Ce qui y *tournait*, non — un redémarrage met fin à ces processus, comme dans n’importe quel terminal. Le fait qu’il était ouvert quand vous avez quitté revient aussi.
 
 ## En quittant
 

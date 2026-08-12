@@ -20,6 +20,7 @@ Vše ostatní je v nabídce **Terminál**:
 
 | Akce | Co dělá |
 | --- | --- |
+| Zobrazit terminál | Sbalí jej a znovu rozbalí; karty a to, co v nich běží, zůstanou, jak jsou |
 | Přepnout mezi panelem a terminálem | Přesune zaměření klávesnice, jinak nezmění nic |
 | Nový panel terminálu | Další shell, ve stejné složce |
 | Zavřít panel terminálu | Zavře jej — a předtím se zeptá, pokud v něm ještě něco běží |
@@ -54,9 +55,9 @@ Terminál si ve výchozím stavu drží **5 000 řádků** historie — dost na 
 
 Terminál se otevře v doku u dolního okraje, protože takový tvar potřebuje: shell potřebuje šířku, a boční panel se svými výchozími 300 body pojme asi 44 sloupců, zatímco dolní okraj okna o šířce 1200 bodů jich pojme 176.
 
-Přesto jej můžete přesunout. Přetáhněte jej do bočního panelu, pokud vám to vyhovuje víc, nebo použijte ovládání umístění popsané v [Pluginy](plugins.md); přesunutím se **přepojí tentýž shell** místo spuštění nového, takže cokoli v něm běží, běží dál.
+Přesto jej můžete přesunout. Přetáhněte jej do bočního panelu, pokud vám to vyhovuje víc, nebo použijte ovládání umístění popsané v [Pluginy](plugins.md); přesunutím se **přepojí tentýž shell** místo spuštění nového, takže cokoli v něm běží, běží dál. Příkazy v nabídce **Terminál** jej následují: vyvolají jej tam, kde je, místo aby otevřely dok.
 
-Karty se vrátí, když aplikaci spustíte znovu, ve složkách, ve kterých byly. To, co v nich *běželo*, ne — restart tyto procesy ukončí, jako v každém terminálu.
+Karty se vrátí, když aplikaci spustíte znovu, ve složkách, ve kterých byly. To, co v nich *běželo*, ne — restart tyto procesy ukončí, jako v každém terminálu. Vrátí se také to, zda byl při ukončení otevřený.
 
 ## Při ukončení
 

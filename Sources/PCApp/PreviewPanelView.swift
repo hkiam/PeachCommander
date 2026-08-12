@@ -256,7 +256,10 @@ final class PreviewPanelView: NSView {
         let previous = selectedPluginViewId
         let keep = Set(providers.map(\.id))
         for (id, view) in mountedViews where !keep.contains(id) {
-            view.removeFromSuperview()
+            // Only if the view is still ours — see BottomDockView.setViewProviders. The container that
+            // adopted it may have been told first, and taking the view out of its new home leaves that
+            // container showing nothing (F-388).
+            if view.superview === pluginContainer { view.removeFromSuperview() }
             mountedViews[id] = nil
         }
         self.providers = providers
@@ -357,7 +360,7 @@ final class PreviewPanelView: NSView {
     }
 
     /// The plugin view currently selected, or nil when a built-in mode is showing.
-    private var selectedPluginViewId: String? {
+    var selectedPluginViewId: String? {
         let index = segmented.selectedSegment - Self.builtinTitles.count
         return providers.indices.contains(index) ? providers[index].id : nil
     }

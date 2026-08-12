@@ -461,6 +461,13 @@ enum AppMenu {
         terminalItem.submenu = terminalMenu
         // No accelerator set here: it is bound by key *position* in the keymap (F-381), and
         // KeymapMenu draws it onto this item from there like every other remappable command.
+        // First, because it is the one people go looking for and the only one that works from a window
+        // with no terminal on screen at all. It carries a checkmark: "Show Terminal" as a plain verb
+        // would not say that pressing it again folds the terminal away again, which is the half that was
+        // missing (F-388). Deliberately not called "Bottom Area" — the terminal may be in the sidebar,
+        // and naming the room is what made the old item unfindable.
+        terminalMenu.addItem(command(String(localized: "Show Terminal"), cmd: "cm_TerminalToggle",
+                                     key: "", mask: [], target: target, action: commandAction))
         terminalMenu.addItem(command(String(localized: "Switch Between Panel and Terminal"),
                                      cmd: "cm_TerminalFocus",
                                      key: "", mask: [], target: target, action: commandAction))

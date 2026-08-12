@@ -20,6 +20,7 @@ Todo lo demás está en el menú **Terminal**:
 
 | Acción | Qué hace |
 | --- | --- |
+| Mostrar el terminal | Lo pliega y lo vuelve a desplegar; las pestañas y lo que se ejecuta en ellas siguen igual |
 | Cambiar entre el panel y la terminal | Mueve el foco del teclado, sin cambiar nada más |
 | Nueva pestaña de terminal | Otra shell, en la misma carpeta |
 | Cerrar la pestaña de terminal | La cierra —y pregunta antes si algo sigue ejecutándose en ella |
@@ -54,9 +55,9 @@ Una terminal guarda **5.000 líneas** de historial por omisión, suficiente para
 
 La terminal se abre en el dock inferior porque esa es la forma que necesita: una shell necesita ancho, y el panel lateral, con sus 300 puntos por omisión, cabe unas 44 columnas donde la parte inferior de una ventana de 1200 puntos cabe 176.
 
-Aun así puedes moverla. Arrástrala al panel lateral si te va mejor, o usa los controles de colocación descritos en [Plugins](plugins.md); moverla **reubica la misma shell** en vez de arrancar otra, así que lo que esté ejecutándose sigue ejecutándose.
+Aun así puedes moverla. Arrástrala al panel lateral si te va mejor, o usa los controles de colocación descritos en [Plugins](plugins.md); moverla **reubica la misma shell** en vez de arrancar otra, así que lo que esté ejecutándose sigue ejecutándose. Las órdenes del menú **Terminal** lo siguen: lo muestran donde está, en lugar de abrir el dock.
 
-Las pestañas vuelven al iniciar la app de nuevo, en las carpetas en las que estaban. Lo que *se ejecutaba* en ellas, no: un reinicio termina esos procesos, como en cualquier terminal.
+Las pestañas vuelven al iniciar la app de nuevo, en las carpetas en las que estaban. Lo que *se ejecutaba* en ellas, no: un reinicio termina esos procesos, como en cualquier terminal. También vuelve si estaba abierto al salir.
 
 ## Al salir
 

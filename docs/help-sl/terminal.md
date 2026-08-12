@@ -20,6 +20,7 @@ Vse drugo je v meniju **Terminal**:
 
 | Dejanje | Kaj naredi |
 | --- | --- |
+| Pokaži terminal | Zloži ga in znova razpre; zavihki in to, kar teče v njih, ostanejo takšni, kot so |
 | Preklopi med ploščo in terminalom | Premakne pozornost tipkovnice, drugega ne spremeni |
 | Nov zavihek terminala | Še ena lupina, v isti mapi |
 | Zapri zavihek terminala | Zapre jo — in prej vpraša, če v njej še kaj teče |
@@ -54,9 +55,9 @@ Terminal privzeto hrani **5.000 vrstic** za pomikanje nazaj — dovolj, da se po
 
 Terminal se odpre v doku ob spodnjem robu, ker takšno obliko potrebuje: lupina potrebuje širino, stranska plošča pa pri privzetih 300 točkah sprejme okoli 44 stolpcev, medtem ko jih dno okna širine 1200 točk sprejme 176.
 
-Kljub temu ga lahko premaknete. Povlecite ga v stransko ploščo, če vam tako bolj ustreza, ali uporabite nadzor postavitve, opisan v [Vtičniki](plugins.md); premik **prevesi isto lupino** namesto da bi zagnal novo, zato tisto, kar teče, teče naprej.
+Kljub temu ga lahko premaknete. Povlecite ga v stransko ploščo, če vam tako bolj ustreza, ali uporabite nadzor postavitve, opisan v [Vtičniki](plugins.md); premik **prevesi isto lupino** namesto da bi zagnal novo, zato tisto, kar teče, teče naprej. Ukazi v meniju **Terminal** mu sledijo: prikažejo ga tam, kjer je, namesto da bi odprli dok.
 
-Zavihki se vrnejo, ko aplikacijo znova zaženete, v mapah, v katerih so bili. Kar je v njih *teklo*, pa ne — ponovni zagon konča te procese, kot v vsakem terminalu.
+Zavihki se vrnejo, ko aplikacijo znova zaženete, v mapah, v katerih so bili. Kar je v njih *teklo*, pa ne — ponovni zagon konča te procese, kot v vsakem terminalu. Vrne se tudi to, ali je bil ob izhodu odprt.
 
 ## Ob izhodu
 

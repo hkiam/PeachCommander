@@ -20,6 +20,7 @@ Tot restul se află în meniul **Terminal**:
 
 | Acțiune | Ce face |
 | --- | --- |
+| Arată terminalul | Îl pliază și îl desface din nou; filele și ce rulează în ele rămân cum sunt |
 | Comută între panou și terminal | Mută focalizarea tastaturii, fără să schimbe altceva |
 | Filă nouă de terminal | Încă un shell, în același dosar |
 | Închide fila de terminal | Îl închide — și întreabă întâi dacă mai rulează ceva în el |
@@ -54,9 +55,9 @@ Un terminal păstrează implicit **5.000 de linii** de derulare înapoi — dest
 
 Terminalul se deschide în docul de jos, fiindcă aceasta este forma de care are nevoie: un shell are nevoie de lățime, iar panoul lateral, la cele 300 de puncte implicite, încape circa 44 de coloane acolo unde partea de jos a unei ferestre de 1200 de puncte încape 176.
 
-Îl puteți totuși muta. Trageți-l în panoul lateral dacă vă convine mai mult, sau folosiți comenzile de plasare descrise în [Extensii](plugins.md); mutarea **reatașează același shell** în loc să pornească unul nou, așa că ce rulează continuă să ruleze.
+Îl puteți totuși muta. Trageți-l în panoul lateral dacă vă convine mai mult, sau folosiți comenzile de plasare descrise în [Extensii](plugins.md); mutarea **reatașează același shell** în loc să pornească unul nou, așa că ce rulează continuă să ruleze. Comenzile din meniul **Terminal** îl urmează: îl aduc în față acolo unde este, în loc să deschidă docul.
 
-Filele revin când porniți aplicația din nou, în dosarele în care erau. Ce *rula* în ele, nu — o repornire încheie acele procese, ca în orice terminal.
+Filele revin când porniți aplicația din nou, în dosarele în care erau. Ce *rula* în ele, nu — o repornire încheie acele procese, ca în orice terminal. Revine și faptul că era deschis când ați ieșit.
 
 ## Când ieșiți
 

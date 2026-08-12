@@ -20,6 +20,7 @@ Everything else is in the **Terminal** menu:
 
 | Action | What it does |
 | --- | --- |
+| Show Terminal | Folds it away and brings it back; the tabs and whatever is running in them stay as they are |
 | Switch Between Panel and Terminal | Moves the keyboard focus, without changing anything |
 | New Terminal Tab | Another shell, in the same folder |
 | Close the Terminal Tab | Closes it — and asks first if something is still running in it |
@@ -54,9 +55,9 @@ A terminal keeps **5,000 lines** of scrollback by default — enough to scroll b
 
 The terminal opens in the dock across the bottom, because that is the shape it wants: a shell needs width, and the side panel at its default 300 points fits about 44 columns where the bottom of a 1200-point window fits 176.
 
-You can still move it. Drag it to the side panel if that suits you better, or use the placement controls described in [Plugins](plugins.md); moving it **re-parents the same shell** rather than starting a new one, so whatever is running keeps running.
+You can still move it. Drag it to the side panel if that suits you better, or use the placement controls described in [Plugins](plugins.md); moving it **re-parents the same shell** rather than starting a new one, so whatever is running keeps running. The commands in the **Terminal** menu follow it: they bring it up where it is, rather than opening the dock.
 
-Tabs come back when you start the app again, in the folders they were in. What was *running* in them does not — a restart ends those processes, as it would in any terminal.
+Tabs come back when you start the app again, in the folders they were in. What was *running* in them does not — a restart ends those processes, as it would in any terminal. Whether it was open when you quit comes back too.
 
 ## When you quit
 

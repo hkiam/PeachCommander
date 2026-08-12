@@ -329,13 +329,17 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         bottomDock.onClose = { [weak self] in self?.setBottomDockVisible(false) }
         bottomDock.onSelectionChange = { [weak self] id in
             Task { await self?.mainConfig.setString(id, "Layout", "DockPanel") }
+            self?.updateTerminalMenuState()   // switching panels can hide the terminal (F-388)
         }
         previewPanel.translatesAutoresizingMaskIntoConstraints = false
         previewWidthConstraint = previewPanel.widthAnchor.constraint(equalToConstant: 0)  // hidden by default
         // The resizer collapses with the panel: a drag handle for something that is not there
         // would be a dead strip down the middle of the window.
         previewResizerWidthConstraint = previewResizer.widthAnchor.constraint(equalToConstant: 0)
-        previewPanel.onModeChange = { [weak self] _ in self?.refreshPreview() }
+        previewPanel.onModeChange = { [weak self] _ in
+            self?.refreshPreview()
+            self?.updateTerminalMenuState()   // the terminal may be one of the sidebar's tabs (F-388)
+        }
         previewHandle.translatesAutoresizingMaskIntoConstraints = false
         previewHandle.onClick = { [weak self] in self?.togglePreviewPanel() }
         previewResizer.translatesAutoresizingMaskIntoConstraints = false
@@ -658,8 +662,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         rememberedDockPanel = panel.isEmpty ? nil : panel
         if let rememberedDockPanel { bottomDock.selectProvider(id: rememberedDockPanel) }
         // Shut by default: opening it needs a plugin to have something to show, and closing it again
-        // when nothing does is handled where the providers arrive.
-        if config.bool("Layout", "DockVisible", default: false) { setBottomDockVisible(true, persist: false) }
+        // when nothing does is handled where the providers arrive — which is also where it is opened
+        // *back* up once one does, since the plugins are still loading at this point. The wish is set
+        // here without persisting it: this is the config being read, not the user choosing again.
+        dockWantedVisible = config.bool("Layout", "DockVisible", default: false)
+        if dockWantedVisible { setBottomDockVisible(true, persist: false) }
         runCommandLineInTerminal = config.bool("Terminal", "RunCommandLine", default: false)
         setMenuCheck(cmd: "cm_TerminalRunCommandLine", on: runCommandLineInTerminal)
         if config.bool("Layout", "ButtonBarVertical", default: false) { setButtonBarVertical(true) }
@@ -3239,6 +3246,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         previewHandle.isPanelOpen = show
         previewPanel.applyTheme()
         Task { await mainConfig.setBool(show, "Layout", "PreviewPanel") }
+        updateTerminalMenuState()   // the sidebar may be where the terminal lives (F-388)
         previewTimer?.invalidate(); previewTimer = nil
         if show {
             refreshPreview()
@@ -4139,11 +4147,23 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Is the plugin dock across the bottom of the window open?
     var bottomDockVisible: Bool { (dockHeightConstraint?.constant ?? 0) > 0 }
 
+    /// Whether the dock is *meant* to be open — the user's answer, as opposed to whether it can be.
+    ///
+    /// The two are not the same at startup, and that was the whole of the "it never comes back" bug
+    /// (F-388): the configuration is applied before any plugin is loaded, so the dock opens, gets its
+    /// first — empty — provider list, and is closed again as an empty frame. Keeping the wish separately
+    /// lets that housekeeping undo itself when the plugin arrives, without ever overriding a user who
+    /// closed the dock on purpose.
+    private var dockWantedVisible = false
+
     /// Open or close the dock (cm_BottomArea, F-381).
     ///
     /// It starts shut. "Installed and active" is about the plugin, not about the furniture: taking a
     /// quarter of the window from someone who has never asked for a terminal is not a default anyone
     /// would choose, and one keystroke is a cheap way to ask. Once opened, the state is remembered.
+    /// `wanted` is false for the housekeeping changes — closing an empty dock, reopening it once its
+    /// plugin turns up — which must not rewrite what the user asked for. It follows `persist`, since
+    /// "worth remembering" and "the user meant it" are the same set of calls.
     func setBottomDockVisible(_ visible: Bool, persist: Bool = true) {
         // Reopening restores the height it had, not the factory one — a dock the user shrank to a
         // four-line strip should come back as a four-line strip.
@@ -4154,7 +4174,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         dockResizer.isHidden = !visible
         setMenuCheck(cmd: "cm_BottomArea", on: visible)
         if visible { focusBottomDock() }
-        if persist { Task { await mainConfig.setBool(visible, "Layout", "DockVisible") } }
+        if persist {
+            dockWantedVisible = visible
+            Task { await mainConfig.setBool(visible, "Layout", "DockVisible") }
+        }
+        updateTerminalMenuState()
     }
 
     /// Show or hide the bottom area (cm_BottomArea, F-381).
@@ -4172,21 +4196,91 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// panel. Coming back leaves the terminal on screen, because dismissing it mid-command is not what
     /// "let me look at the file list for a second" means.
     @objc func focusTerminal() {
-        if !bottomDockVisible {
-            setBottomDockVisible(true)      // which focuses it
-            selectTerminalInDock()
+        guard revealTerminal() != nil else {
+            presentInfo(String(localized: "Terminal"), String(localized: "No terminal is open."))
             return
         }
-        selectTerminalInDock()
-        focusBottomDock()
+        guard let window,
+              let view = ViewContainerRegistry.shared.existingView(ofViewId: Self.terminalViewId) else { return }
+        // Already inside the terminal? Then this is the way back to the file list.
+        if let first = window.firstResponder as? NSView, first === view || first.isDescendant(of: view) {
+            if let back = activePanel?.contentResponder { window.makeFirstResponder(back) }
+            return
+        }
+        window.makeFirstResponder(view)
     }
 
-    /// Bring the terminal to the front of the bottom area, if it is mounted there.
-    private func selectTerminalInDock() {
-        if let id = bottomDock.providerIds.first(where: { $0.contains("terminal") }) {
-            bottomDock.selectProvider(id: id)
+    /// The terminal plugin's view id. The host has commands of its own for this one view, so the id it
+    /// asks the registry about is named once rather than spelled out at each call — and matching on
+    /// "contains terminal" is gone with it: that also matched a plugin called *TerminalColours*.
+    static let terminalViewId = "plugin.terminal.view"
+
+    /// Is the terminal on screen right now — in whichever container it lives?
+    var terminalIsShowing: Bool {
+        switch ViewContainerRegistry.shared.container(ofViewId: Self.terminalViewId) {
+        case "bottom":  return bottomDockVisible && bottomDock.selectedProviderId == Self.terminalViewId
+        case "sidebar": return previewIsVisible && previewPanel.selectedPluginViewId == Self.terminalViewId
+        default:        return false
         }
     }
+
+    /// Bring the terminal on screen wherever it lives, and answer which container that was.
+    ///
+    /// Every terminal command used to open the *bottom dock* and select the terminal there, because that
+    /// is where a terminal starts. Move it to the sidebar — which the placement menu invites — and each
+    /// of them opened the empty dock instead and left the terminal where it was: the command appeared to
+    /// do nothing while a blank strip took up the window (F-388). The container is a question with an
+    /// answer, so it is asked.
+    @discardableResult
+    private func revealTerminal() -> String? { revealPluginView(id: Self.terminalViewId) }
+
+    /// Open the container `viewId` is mounted in and select it there. Nil when it is not mounted.
+    @discardableResult
+    func revealPluginView(id viewId: String) -> String? {
+        guard let container = ViewContainerRegistry.shared.container(ofViewId: viewId) else { return nil }
+        switch container {
+        case "bottom":
+            if !bottomDockVisible { setBottomDockVisible(true) }
+            bottomDock.selectProvider(id: viewId)
+        case "sidebar":
+            if !previewIsVisible { togglePreviewPanel() }
+            previewPanel.selectPluginView(id: viewId)
+        default:
+            break   // "titlebar" and "settings" are always where they are; there is nothing to open
+        }
+        updateTerminalMenuState()
+        return container
+    }
+
+    /// Show or hide the terminal (cm_TerminalToggle, F-388).
+    ///
+    /// The one thing the Terminal menu did not offer. Collapsing and expanding it was `View ▸ Bottom
+    /// Area` — furniture named after the room, not after the terminal, in a different menu from
+    /// everything else the terminal can do; reported as "I cannot find a way to fold the terminals in
+    /// and out". Hiding it is *not* closing it: the shells keep running and the tabs come back as they
+    /// were, which is the difference between a collapse and the close button on the dock.
+    ///
+    /// Showing also moves the keyboard there, since that is what asking for a terminal means. Hiding
+    /// closes the container it lives in — the same gesture the user would make on the dock itself, and
+    /// for the sidebar that is the panel: a terminal is what they put in it.
+    @objc func toggleTerminal() {
+        guard let container = ViewContainerRegistry.shared.container(ofViewId: Self.terminalViewId) else {
+            presentInfo(String(localized: "Terminal"), String(localized: "No terminal is open."))
+            return
+        }
+        guard terminalIsShowing else { focusTerminal(); return }
+        switch container {
+        case "bottom":  setBottomDockVisible(false)
+        case "sidebar": if previewIsVisible { togglePreviewPanel() }
+        default:        break
+        }
+        // The keyboard cannot stay in a view that is no longer on screen.
+        if let back = activePanel?.contentResponder { window?.makeFirstResponder(back) }
+        updateTerminalMenuState()
+    }
+
+    /// Keep the Terminal menu's checkmark telling the truth about what is on screen (F-388).
+    func updateTerminalMenuState() { setMenuCheck(cmd: "cm_TerminalToggle", on: terminalIsShowing) }
 
     /// Open another terminal tab (cm_TerminalNewTab, F-381).
     @objc func terminalNewTab() { notifyTerminal(key: "newTab", value: "") }
@@ -4225,9 +4319,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let wrapped = "\(command) 2>&1 | tee \(quoted); "
             + "printf '\\n\(Self.shellDoneMarker)%s\\n' \"${pipestatus[1]}\" >> \(quoted)"
 
-        if !bottomDockVisible { setBottomDockVisible(true) }
-        selectTerminalInDock()
-        guard ViewContainerRegistry.shared.notifyView(viewId: "plugin.terminal.view",
+        revealTerminal()
+        guard ViewContainerRegistry.shared.notifyView(viewId: Self.terminalViewId,
                                                       key: "runInNewTab", value: wrapped) else {
             throw AutomationError.notImplemented("the terminal view is not open")
         }
@@ -4259,14 +4352,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// The host does not know what a tab is — that is the plugin's word — so these commands are a
     /// message rather than a call. The same channel carries "cd here" and the dropped file names.
     private func notifyTerminal(key: String, value: String) {
-        guard let viewId = ViewContainerRegistry.shared.container(ofViewId: "plugin.terminal.view")
-                .map({ _ in "plugin.terminal.view" }) else {
+        guard revealTerminal() != nil else {
             presentInfo(String(localized: "Terminal"), String(localized: "No terminal is open."))
             return
         }
-        if !bottomDockVisible { setBottomDockVisible(true) }
-        selectTerminalInDock()
-        _ = ViewContainerRegistry.shared.notifyView(viewId: viewId, key: key, value: value)
+        _ = ViewContainerRegistry.shared.notifyView(viewId: Self.terminalViewId, key: key, value: value)
     }
 
     /// Put the keyboard into the docked view, or back into the panel if it is already there.
@@ -4340,11 +4430,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     @objc func movePluginViewFromMenu(_ sender: NSMenuItem) {
         guard let request = sender.representedObject as? ViewPlacementRequest else { return }
         ViewContainerRegistry.shared.place(viewId: request.viewId, in: request.container, host: self)
-        // A view sent to the dock is no use behind a closed dock.
-        if request.container == "bottom" || ViewContainerRegistry.shared.container(ofViewId: request.viewId) == "bottom" {
-            if !bottomDockVisible { setBottomDockVisible(true) }
-            bottomDock.selectProvider(id: request.viewId)
-        }
+        // Wherever it went, show it there. This used to name the dock and only the dock, so a view sent
+        // to the sidebar arrived behind whichever tab was already showing — the move looked like it had
+        // been ignored, or worse, like the view had been lost (F-388). `revealPluginView` is the same
+        // call the drop path makes, so dragging a view somewhere and asking the menu to move it there
+        // cannot mean two different things.
+        revealPluginView(id: request.viewId)
     }
 
     // MARK: - Panel ↔ terminal (F-381, plan §7)
@@ -4355,12 +4446,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// command can say so instead of appearing to work.
     @discardableResult
     private func sendToTerminal(_ text: String) -> Bool {
-        guard let viewId = bottomDock.providerIds.first(where: { $0.contains("terminal") })
-                ?? ViewContainerRegistry.shared.container(ofViewId: "plugin.terminal.view").map({ _ in "plugin.terminal.view" })
-        else { return false }
-        if !bottomDockVisible { setBottomDockVisible(true) }
-        bottomDock.selectProvider(id: viewId)
-        return ViewContainerRegistry.shared.notifyView(viewId: viewId, key: "sendText", value: text)
+        guard revealTerminal() != nil else { return false }
+        return ViewContainerRegistry.shared.notifyView(viewId: Self.terminalViewId,
+                                                       key: "sendText", value: text)
     }
 
     /// Should the command line run in the embedded terminal? Persisted; off by default, because it
@@ -4530,14 +4618,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         previewPanel.onViewDropped = { [weak self] viewId in
             guard let self else { return }
             ViewContainerRegistry.shared.place(viewId: viewId, in: "sidebar", host: self)
-            if !previewIsVisible { togglePreviewPanel() }
-            previewPanel.selectPluginView(id: viewId)
+            revealPluginView(id: viewId)
         }
         bottomDock.onViewDropped = { [weak self] viewId in
             guard let self else { return }
             ViewContainerRegistry.shared.place(viewId: viewId, in: "bottom", host: self)
-            if !bottomDockVisible { setBottomDockVisible(true) }
-            bottomDock.selectProvider(id: viewId)
+            revealPluginView(id: viewId)
         }
         // The dock across the bottom of the window is the "bottom" view container (F-381), for the
         // plugins that need width rather than height — a terminal, a build log, a REPL.
@@ -4546,8 +4632,18 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             self.bottomDock.setViewProviders(providers)
             if let remembered = self.rememberedDockPanel { self.bottomDock.selectProvider(id: remembered) }
             // A dock left open by a plugin that has since been removed would be an empty frame with
-            // an explanation nobody asked for; close it instead.
-            if providers.isEmpty, self.bottomDockVisible { self.setBottomDockVisible(false, persist: false) }
+            // an explanation nobody asked for; close it instead. And the other way round: the plugins
+            // load *after* the configuration is applied, so on every launch this ran once with nothing
+            // in it and shut a dock the user had left open — which is why "the terminal was open when I
+            // quit" never survived a restart (F-388). `dockWantedVisible` remembers what was asked for,
+            // as opposed to what is possible at this instant, so the dock comes back when its plugin
+            // finally arrives and stays shut if the user shut it.
+            if providers.isEmpty {
+                if self.bottomDockVisible { self.setBottomDockVisible(false, persist: false) }
+            } else if self.dockWantedVisible, !self.bottomDockVisible {
+                self.setBottomDockVisible(true, persist: false)
+            }
+            self.updateTerminalMenuState()
         }
         // The trailing titlebar accessory is the "titlebar" view container.
         ViewContainerRegistry.shared.register(container: "titlebar") { [weak self] providers in

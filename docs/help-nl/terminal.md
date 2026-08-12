@@ -20,6 +20,7 @@ De rest staat in het menu **Terminal**:
 
 | Actie | Wat het doet |
 | --- | --- |
+| Terminal tonen | Klapt hem in en weer uit; de tabbladen en wat erin draait blijven zoals ze zijn |
 | Wisselen tussen paneel en terminal | Verplaatst de toetsenbordfocus, zonder verder iets te veranderen |
 | Nieuw terminaltabblad | Nog een shell, in dezelfde map |
 | Sluit het terminaltabblad | Sluit hem — en vraagt eerst of er nog iets in draait |
@@ -54,9 +55,9 @@ Een terminal bewaart standaard **5.000 regels** om in terug te bladeren — geno
 
 De terminal opent in het dock onderaan, want dat is de vorm die hij nodig heeft: een shell heeft breedte nodig, en het zijpaneel past op zijn standaard 300 punten ongeveer 44 kolommen waar de onderkant van een venster van 1200 punten er 176 past.
 
-U kunt hem toch verplaatsen. Sleep hem naar het zijpaneel als dat u beter uitkomt, of gebruik de plaatsingsopties uit [Plug-ins](plugins.md); verplaatsen **hangt dezelfde shell om** in plaats van een nieuwe te starten, dus wat er draait blijft draaien.
+U kunt hem toch verplaatsen. Sleep hem naar het zijpaneel als dat u beter uitkomt, of gebruik de plaatsingsopties uit [Plug-ins](plugins.md); verplaatsen **hangt dezelfde shell om** in plaats van een nieuwe te starten, dus wat er draait blijft draaien. De opdrachten in het menu **Terminal** volgen hem: ze halen hem tevoorschijn waar hij is, in plaats van het dok te openen.
 
-Tabbladen komen terug als u de app opnieuw start, in de mappen waar ze waren. Wat erin *draaide* niet — een herstart beëindigt die processen, zoals in elke terminal.
+Tabbladen komen terug als u de app opnieuw start, in de mappen waar ze waren. Wat erin *draaide* niet — een herstart beëindigt die processen, zoals in elke terminal. Of hij open was toen u afsloot, komt ook terug.
 
 ## Bij afsluiten
 

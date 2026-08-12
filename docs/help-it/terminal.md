@@ -20,6 +20,7 @@ Tutto il resto è nel menu **Terminale**:
 
 | Azione | Che cosa fa |
 | --- | --- |
+| Mostra il terminale | Lo richiude e lo riapre; le schede e ciò che vi gira restano come sono |
 | Passa dal pannello al terminale | Sposta il fuoco della tastiera, senza cambiare altro |
 | Nuova scheda del terminale | Un’altra shell, nella stessa cartella |
 | Chiudi la scheda del terminale | La chiude — e chiede prima se qualcosa è ancora in esecuzione |
@@ -54,9 +55,9 @@ Un terminale conserva **5.000 righe** di scorrimento all’indietro per impostaz
 
 Il terminale si apre nel dock in basso, perché è la forma che gli serve: una shell ha bisogno di larghezza, e il pannello laterale, ai suoi 300 punti predefiniti, contiene circa 44 colonne là dove il fondo di una finestra da 1200 punti ne contiene 176.
 
-Potete comunque spostarlo. Trascinatelo nel pannello laterale se vi va meglio, o usate i controlli di posizionamento descritti in [Plugin](plugins.md); spostarlo **riaggancia la stessa shell** invece di avviarne una nuova, quindi quello che è in esecuzione continua.
+Potete comunque spostarlo. Trascinatelo nel pannello laterale se vi va meglio, o usate i controlli di posizionamento descritti in [Plugin](plugins.md); spostarlo **riaggancia la stessa shell** invece di avviarne una nuova, quindi quello che è in esecuzione continua. I comandi del menu **Terminale** lo seguono: lo mostrano dov’è, invece di aprire il dock.
 
-Le schede tornano al riavvio dell’app, nelle cartelle in cui erano. Quello che vi *girava* dentro no: un riavvio termina quei processi, come in qualsiasi terminale.
+Le schede tornano al riavvio dell’app, nelle cartelle in cui erano. Quello che vi *girava* dentro no: un riavvio termina quei processi, come in qualsiasi terminale. Torna anche il fatto che fosse aperto quando avete chiuso l’app.
 
 ## Quando uscite
 

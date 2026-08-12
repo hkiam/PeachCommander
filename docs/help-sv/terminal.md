@@ -20,6 +20,7 @@ Allt annat finns i menyn **Terminal**:
 
 | Åtgärd | Vad den gör |
 | --- | --- |
+| Visa terminalen | Fäller ihop den och fram igen; flikarna och det som körs i dem blir som de är |
 | Växla mellan panel och terminal | Flyttar tangentbordsfokus, utan att ändra något annat |
 | Ny terminalflik | Ytterligare ett skal, i samma mapp |
 | Stäng terminalfliken | Stänger den — och frågar först om något fortfarande körs i den |
@@ -54,9 +55,9 @@ En terminal behåller **5 000 rader** historik som standard — nog för att rul
 
 Terminalen öppnas i dockan längst ned, för det är formen den behöver: ett skal behöver bredd, och sidopanelen rymmer vid sina förvalda 300 punkter omkring 44 kolumner där nederkanten av ett 1200 punkter brett fönster rymmer 176.
 
-Du kan ändå flytta den. Dra den till sidopanelen om det passar dig bättre, eller använd placeringsreglagen som beskrivs i [Tillägg](plugins.md); att flytta den **hänger om samma skal** i stället för att starta ett nytt, så det som körs fortsätter köras.
+Du kan ändå flytta den. Dra den till sidopanelen om det passar dig bättre, eller använd placeringsreglagen som beskrivs i [Tillägg](plugins.md); att flytta den **hänger om samma skal** i stället för att starta ett nytt, så det som körs fortsätter köras. Kommandona i menyn **Terminal** följer den: de tar fram den där den är, i stället för att öppna dockan.
 
-Flikarna kommer tillbaka när du startar appen igen, i de mappar de var i. Det som *kördes* i dem gör det inte — en omstart avslutar de processerna, som i vilken terminal som helst.
+Flikarna kommer tillbaka när du startar appen igen, i de mappar de var i. Det som *kördes* i dem gör det inte — en omstart avslutar de processerna, som i vilken terminal som helst. Om den var öppen när du avslutade kommer också tillbaka.
 
 ## När du avslutar
 

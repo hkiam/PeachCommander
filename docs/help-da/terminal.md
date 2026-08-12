@@ -20,6 +20,7 @@ Alt andet står i menuen **Terminal**:
 
 | Handling | Hvad den gør |
 | --- | --- |
+| Vis terminal | Folder den sammen og ud igen; fanebladene og det, der kører i dem, bliver som de er |
 | Skift mellem panel og terminal | Flytter tastaturfokus uden at ændre andet |
 | Ny terminalfane | Endnu en skal, i den samme mappe |
 | Luk terminalfanen | Lukker den — og spørger først, hvis noget stadig kører i den |
@@ -54,9 +55,9 @@ En terminal beholder som standard **5.000 linjers** historik — nok til at rull
 
 Terminalen åbner i dokken nederst, fordi det er den form, den har brug for: en skal har brug for bredde, og sidepanelet rummer ved sine 300 punkter som standard omkring 44 kolonner, hvor bunden af et vindue på 1200 punkter rummer 176.
 
-Du kan alligevel flytte den. Træk den til sidepanelet, hvis det passer dig bedre, eller brug placeringsfunktionerne beskrevet i [Plugins](plugins.md); at flytte den **hænger den samme skal om** i stedet for at starte en ny, så det, der kører, kører videre.
+Du kan alligevel flytte den. Træk den til sidepanelet, hvis det passer dig bedre, eller brug placeringsfunktionerne beskrevet i [Plugins](plugins.md); at flytte den **hænger den samme skal om** i stedet for at starte en ny, så det, der kører, kører videre. Kommandoerne i menuen **Terminal** følger den: de henter den frem, hvor den er, i stedet for at åbne dokken.
 
-Fanebladene kommer tilbage, når du starter appen igen, i de mapper de var i. Det, der *kørte* i dem, gør ikke — en genstart afslutter de processer, som i enhver terminal.
+Fanebladene kommer tilbage, når du starter appen igen, i de mapper de var i. Det, der *kørte* i dem, gør ikke — en genstart afslutter de processer, som i enhver terminal. Om den var åben, da du sluttede, kommer også tilbage.
 
 ## Når du slutter
 

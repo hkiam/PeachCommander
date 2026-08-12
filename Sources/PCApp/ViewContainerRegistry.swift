@@ -185,6 +185,14 @@ final class ViewContainerRegistry {
         live.first { $0.key.viewId == viewId }?.value.container
     }
 
+    /// A view's NSView, if it has already been built — never building one to answer.
+    ///
+    /// For the host commands that move the keyboard into a plugin view (F-388): asking where the first
+    /// responder is must not create a terminal, and a view nobody has shown yet cannot hold it.
+    func existingView(ofViewId viewId: String) -> NSView? {
+        live.first { $0.key.viewId == viewId }?.value.existingView
+    }
+
     /// Move a view to another container, or back to its manifest's choice with `container: nil`.
     ///
     /// Returns false if nothing changed, so a caller does not persist and re-resolve for a drop the
@@ -246,6 +254,22 @@ final class ViewContainerRegistry {
             resolved[key] = item
             wanted.append((key: key, container: container))
             byContainer[container, default: []].append(key)
+        }
+
+        // Forget overrides that no longer say anything (F-388). `ViewPlacement.pruned` was written for
+        // this and nothing ever called it, so every move wrote a key and kept it — including one that
+        // merely repeats the manifest, which is how "move it to the dock" came to *pin* a view to the
+        // dock: a later plugin update relocating its own view would have been silently overruled, and
+        // the placement menu offered "Reset to Default" for a view nobody had moved. Safe here because
+        // `register` only stores a mount, so by the time a refresh runs the window has declared all of
+        // its containers; and an override whose contribution is not resolved right now is kept, since a
+        // plugin that is merely switched off must not lose where the user put it.
+        let declared = Dictionary(resolved.values.map { ($0.contribution.id, $0.contribution.container) },
+                                  uniquingKeysWith: { first, _ in first })
+        let tidied = ViewPlacement.pruned(placements, declared: declared, registered: registered)
+        if tidied != placements {
+            placements = tidied
+            onPlacementsChanged?(placements)
         }
 
         let plan = ViewMountPlan.plan(live: live.mapValues(\.container), wanted: wanted)

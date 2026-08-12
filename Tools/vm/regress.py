@@ -541,6 +541,29 @@ SCENARIOS = [
                            "refreshviews", "wait 1500",
                            "dock on", "wait 4000",
                            "dockdump /Users/admin/restored.txt", "wait 500"], 18),
+    # The terminal in the *sidebar*, with the host's commands still finding it there (F-388). Each of
+    # them opened the bottom dock and looked for the terminal in it, so once it had been moved away they
+    # opened an empty strip and otherwise appeared to do nothing. Three claims, in the order a user meets
+    # them: moving it shows it where it landed instead of leaving the sidebar on whichever tab it had;
+    # Split from the menu reaches it there and does *not* open the empty dock; and moving it back
+    # attaches it again. `attached=` is asked because a panel can be listed, selected and still draw
+    # nothing — the container that lost the view used to take it back out of the one that had adopted it.
+    #
+    # `moveview` is the menu item's path rather than the `placeview` primitive underneath it: showing the
+    # view where it landed is the half that was missing, and only the menu path has it.
+    ("terminal-elsewhere", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                            "dock on", "wait 3000",
+                            "previewpanel on", "wait 1200",
+                            "moveview plugin.terminal.view|sidebar", "wait 2000",
+                            "dockdump /Users/admin/te-sidebar.txt", "wait 300",
+                            "cmd cm_TerminalSplit", "wait 2000",
+                            "dockdump /Users/admin/te-split.txt", "wait 300",
+                            "moveview plugin.terminal.view|bottom", "wait 2000",
+                            "mountdump /Users/admin/te-mounts.txt", "wait 300",
+                            # Own the placement you touched: an override is persisted, and every
+                            # scenario after this one expects the terminal in the dock (terminal-move).
+                            "placeview plugin.terminal.view|default", "wait 1000",
+                            "dockdump /Users/admin/te-back.txt", "wait 500"], 20),
     # The shell survives being moved between containers. That is what the whole incremental-refresh
     # machinery exists for, and with a real process behind the view it is finally observable as
     # something a user would notice rather than as a counter.
@@ -1187,6 +1210,20 @@ REPORTS = {
     "terminal-move-side": ("/Users/admin/term-moved.txt", ["· sidebar", "!exited"]),
     "terminal-move": ("/Users/admin/term-mounts.txt",
                              ["plugin.terminal.view container=sidebar built=true made=1 closed=0"]),
+    # F-388. `terminalShowing` is read from wherever the terminal is, so one line carries both halves of
+    # the move: the sidebar came up on the terminal, and the dock stayed shut rather than opening empty.
+    # The last dump also exercises the reopening rule — the dock was asked for earlier in this run, so
+    # the terminal coming back to it brings the dock back with it.
+    "terminal-elsewhere": ("/Users/admin/te-back.txt",
+                           ["visible=true", "selected=plugin.terminal.view", "attached=yes",
+                            "terminalShowing=true"]),
+    "terminal-elsewhere-sidebar": ("/Users/admin/te-sidebar.txt",
+                                   ["visible=false", "attached=none", "terminalShowing=true"]),
+    # Split from the menu with the terminal in the sidebar: the dock must stay out of it.
+    "terminal-elsewhere-split": ("/Users/admin/te-split.txt",
+                                 ["visible=false", "attached=none", "terminalShowing=true"]),
+    "terminal-elsewhere-mounts": ("/Users/admin/te-mounts.txt",
+                                  ["plugin.terminal.view container=bottom built=true made=1 closed=0"]),
     "keys-main": ("/Users/admin/keys-main-done.txt", ["left=/Users/admin/pc-demo"]),
     # The same last-file-to-wait-for that keys-main has had all along. Without it the guest kills the
     # app after the settle time whether or not the script got that far, and these six never did: every
