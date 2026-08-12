@@ -14,6 +14,17 @@ does not have.
 
 ## [Unreleased]
 
+## [0.6.1] — 2026-08-12
+
+Three user reports, and each of them turned out to be about something the application was
+deciding on the user's behalf. It left `.bak` files in folders you curate, with nothing
+anywhere to turn that off. It knew the terminal as "the thing in the bottom strip", so
+moving it to the side panel left its own menu commands opening an empty strip instead. And
+its quick previews could show you a picture but never let you look closer at it.
+
+**Still unsigned and un-notarized.** macOS blocks the first launch; `README.md` explains
+how to allow it once.
+
 ### Changed
 
 - **The editor no longer leaves `.bak` files behind.** Every save from the built-in text editor, the
@@ -480,6 +491,9 @@ this is the release to take.
 First public beta: dual-pane browsing, the file operation engine, archives, the viewer and editor, FTP,
 plugins, and the settings.
 
+[0.6.1]: https://github.com/hkiam/PeachCommander/releases/tag/v0.6.1
+[0.6.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.6.0
+[0.5.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.5.0
 [0.4.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.4.0
 [0.3.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.3.0
 [0.2.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.2.0
