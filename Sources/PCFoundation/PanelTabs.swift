@@ -16,19 +16,28 @@ public struct PanelTabState: Sendable, Equatable {
     public var locked: Bool
     /// Entry filename to restore the cursor on when this tab becomes active.
     public var cursorName: String?
+    /// The drive-bar volume this tab is showing when that is a mounted plugin drive (its
+    /// "pfxmount:<id>" sentinel), else nil.
+    ///
+    /// Without it a tab on such a drive is remembered as its `path`, which is the mount's own "/" —
+    /// so leaving the tab or restarting the app brought back the startup disk's root and called it
+    /// the same tab. The volume is what the tab is on; the path only says where inside it.
+    public var driveVolume: String?
 
     public init(
         path: String,
         sortColumn: String = "name",
         sortAscending: Bool = true,
         locked: Bool = false,
-        cursorName: String? = nil
+        cursorName: String? = nil,
+        driveVolume: String? = nil
     ) {
         self.path = path
         self.sortColumn = sortColumn
         self.sortAscending = sortAscending
         self.locked = locked
         self.cursorName = cursorName
+        self.driveVolume = driveVolume
     }
 }
 

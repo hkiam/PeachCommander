@@ -34,9 +34,19 @@ public enum DriveBarModel {
         return sorted.filter { seenNames.insert($0.name.lowercased()).inserted }
     }
 
-    /// Index (into `volumes`) of the volume owning `path` — the longest mount prefix —
-    /// or nil if none match.
-    public static func currentIndex(in volumes: [Volume], for path: String) -> Int? {
+    /// Index (into `volumes`) of the chip to highlight.
+    ///
+    /// `mountedVolumePath` is the sentinel path of a mounted plugin volume (e.g.
+    /// "pfxmount:…/TaskManager.pfxplugin") when the panel is showing that mount rather than a
+    /// directory on a real volume. It wins over `path`, and no fallback follows it: inside such a
+    /// mount the panel's path is the mount's own "/", which by prefix belongs to the boot drive —
+    /// so falling back would highlight a drive the user is not on and make the plugin look like a
+    /// mere view switch instead of the drive it was selected as.
+    public static func currentIndex(in volumes: [Volume], for path: String,
+                                    mountedVolumePath: String? = nil) -> Int? {
+        if let mountedVolumePath {
+            return volumes.firstIndex { $0.path == mountedVolumePath }
+        }
         var best: Int?
         var bestLength = -1
         for (i, volume) in volumes.enumerated() {

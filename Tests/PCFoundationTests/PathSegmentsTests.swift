@@ -48,6 +48,25 @@ final class PathSegmentsTests: XCTestCase {
                        ["/", "/tmp", "/tmp/archiv.zip", "/tmp/archiv.zip/innen"])
     }
 
+    func testAMountedDriveNamesItsOwnRoot() {
+        // Inside a plugin drive the path is that mount's own "/", and a breadcrumb reading "/" claims
+        // the panel is at the startup disk's root. Only the label changes: the segment still goes to
+        // "/", which inside the mount is the drive's root and nowhere near the local one.
+        let segs = PathSegments.make("/", rootLabel: "TaskManager")
+        XCTAssertEqual(segs.map(\.name), ["TaskManager"])
+        XCTAssertEqual(segs.map(\.path), ["/"])
+        let deeper = PathSegments.make("/1234", rootLabel: "TaskManager")
+        XCTAssertEqual(deeper.map(\.name), ["TaskManager", "1234"])
+        XCTAssertEqual(deeper.map(\.path), ["/", "/1234"])
+    }
+
+    func testNoLabelLeavesTheBreadcrumbAsItWas() {
+        // The label is absent for every ordinary listing, which is nearly all of them.
+        XCTAssertEqual(names("/Users/me"), PathSegments.make("/Users/me", rootLabel: nil).map(\.name))
+        // An empty name is no name — a volume without one must not blank out the root segment.
+        XCTAssertEqual(PathSegments.make("/", rootLabel: "").map(\.name), ["/"])
+    }
+
     func testEverySegmentPathIsAPrefixOfTheOneAfterIt() {
         // The property that makes a breadcrumb a breadcrumb: clicking the nth segment must land inside
         // the path the (n+1)th describes, never beside it.

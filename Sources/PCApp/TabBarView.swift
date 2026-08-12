@@ -57,6 +57,12 @@ public final class TabBarView: NSView {
     /// Current tabs, left to right.
     private var tabs: [Tab] = []
 
+    /// The titles as drawn, active one marked with "*" — for the automation report, since the chips
+    /// are painted rather than built from controls and nothing else can read them back.
+    public var titlesForAutomation: String {
+        tabs.map { $0.active ? "*" + $0.title : $0.title }.joined(separator: "|")
+    }
+
     /// Layout produced by the last `draw(_:)`: the frame of each tab chip
     /// (index matches `tabs`) and the frame of the trailing "+" chip, used to
     /// hit test mouse clicks.

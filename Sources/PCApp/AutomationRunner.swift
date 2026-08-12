@@ -15,6 +15,7 @@
 //   wait  <ms>            sleep (let an async connect/list settle)
 //   dump  <file>          write the active panel's path + entry names to a file
 //   bardrop <path>        add a bar button for <path>, as a drop on free space would
+//   drivebardump <file>   write the active panel's path + the drive chip shown as current
 //   theme <id>            select a colour palette ("system", "norton", …)
 //   quit                  terminate the app
 //   # …                   comment / blank lines are ignored
@@ -298,6 +299,20 @@ extension MainWindowController {
                 let responder = window?.firstResponder.map { String(describing: type(of: $0)) } ?? "<none>"
                 try? "active=\(side)\nleft=\(l)\nright=\(r)\nresponder=\(responder)\n"
                     .write(toFile: arg, atomically: true, encoding: .utf8)
+            case "drivebardump":                        // drivebardump <out> (F-385)
+                // What the panel says it is showing — the current chip, the tab titles and the
+                // breadcrumb — next to the path. Only together do they say anything: inside a plugin
+                // drive the path is that mount's own "/", so a panel that names the drive and one
+                // that claims to be at the startup disk's root report the same path, and one of them
+                // is the bug this exists to catch.
+                if let panel = activePanel {
+                    let index = panel.view.driveBar.highlightedIndex
+                    let current = index.flatMap { panel.driveVolumes.indices.contains($0) ? panel.driveVolumes[$0].name : nil }
+                    let chrome = panel.view.chromeForAutomation
+                    let out = "path=\(await panel.getCurrentPath())\ncurrent=\(current ?? "<none>")\n"
+                        + "tabs=\(chrome.tabs)\ncrumb=\(chrome.crumb)\n"
+                    try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+                }
             case "termnotify":                          // termnotify <viewId>|<key>|<value> (F-381)
                 // The generic form of `termsend`: any host-context key, which is how the host's own
                 // terminal commands (new tab, switch tab) will reach the plugin once they exist.
