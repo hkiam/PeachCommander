@@ -219,9 +219,10 @@ Performance rules and the module map are documented in [`docs/architecture/`](do
 
 ## 🚀 Installation & build
 
-**Download** — [the latest release](https://github.com/hkiam/PeachCommander/releases/latest) carries
-`PeachCommander.dmg` as its only attachment: open it and drag the app to Applications. The badge above
-names the version, and the link always lands on the newest build.
+**[⬇️ Download the latest release](https://github.com/hkiam/PeachCommander/releases/latest/download/PeachCommander.dmg)**
+— a universal disk image; open it and drag the app to Applications. The link always serves the newest
+release, so it needs no updating here; the badge above names the version, and
+[the release page](https://github.com/hkiam/PeachCommander/releases/latest) has the notes.
 
 The download is **not signed or notarized** (no Developer ID yet), so macOS blocks the first launch —
 see [First run](#first-run-unsigned-build) for the one-time step that allows it. Building from source

@@ -112,13 +112,14 @@ Step 4 is deliberately manual: the workflow creates the release as
 `draft: true`, so nothing becomes public until a human looks at the notes and the
 attached DMG.
 
-**The README's download link needs no maintenance — and must stay the way it is.** It points at
-`/releases/latest`, which GitHub redirects to the newest release page, and a shields.io badge beside it
-names the version (`include_prereleases`, or it reports nothing here). The obvious "improvement" —
-`/releases/latest/download/PeachCommander.dmg`, a direct link to the asset — **404s for this
-repository**, measured: that route and the `releases/latest` API both skip pre-releases, and every
-release so far is one. It would start working the day a release is published without the pre-release
-flag, and break again at the next beta.
+**Publish without the pre-release flag, or the README's download link breaks.** The README links
+`/releases/latest/download/PeachCommander.dmg` — a direct, always-current download that needs no edit
+per release. That route, and the `releases/latest` API the website prefers, both **skip pre-releases**:
+while v0.6.0 was the newest and carried that flag, the direct link answered 404 and the API said "Not
+Found" (measured, which is how it was found). So the flag is the switch, and step 4 above deliberately
+does not set it. If a future build really is a pre-release, expect the README's button and the website's
+to fall back to the previous release, and say so in the release notes rather than leaving people to
+discover it.
 
 **Publishing matters for the website.** The download buttons on
 <https://hkiam.github.io/PeachCommander/> read the GitHub releases API
