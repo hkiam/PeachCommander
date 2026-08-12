@@ -22,14 +22,14 @@ Fönstret är delat i en vänster panel och en höger panel, som var och en visa
 ## Fält runt panelerna
 
 - **Knappfält** (överst): en rad platta knappar för vanliga kommandon. Klicka på en knapp för att köra dess kommando; högerklicka på en knapp för att redigera fältet.
-- **Enhetsfält**: en knapp per tillgänglig disk eller volym, var och en med en utmatningskontroll och sitt lediga utrymme. Klicka på en volym för att byta den panelen till den.
+- **Enhetsrad**: en knapp per tillgänglig disk eller volym, var och en med sitt lediga utrymme. Klicka på en volym för att växla den panelen dit; högerklicka för att mata ut den — erbjuds för flyttbara volymer och monterade skivavbilder, nedtonat för startskivan och nätverksresurser.
 - **Sökvägsfält**: visar den aktuella mappen som en klickbar brödsmula. Klicka på ett segment för att hoppa direkt till den mappen, eller klicka på sökvägen för att skriva en plats.
 - **Statusfält** (under varje lista): en löpande sammanfattning av panelen – hur många filer och mappar som är markerade och deras totala storlek.
 - **Kommandorad** (nederst): ett textfält där du kan skriva ett skalliknande kommando som körs i den aktuella mappen.
 - **Funktionstangentsfält** (allra nederst): sex knappar märkta F3 Visa, F4 Redigera, F5 Kopiera, F6 Flytta, F7 NyMapp och F8 Ta bort. Klicka på en knapp eller tryck på den matchande tangenten.
 
 ![Närbild av enhetsfältet som visar volymknappar och ledigt utrymme](screenshots/drive-bar-crop.png)
-*(Figur: Enhetsfältet – en knapp per volym, med en utmatningskontroll och återstående ledigt utrymme.)*
+*(Figur: enhetsraden — en knapp per volym, med återstående ledigt utrymme; högerklicka på en volym för att mata ut den.)*
 
 ## Kortkommandon
 

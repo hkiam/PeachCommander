@@ -22,14 +22,14 @@ Az ablak bal és jobb panelre oszlik, mindegyik egy mappa tartalmát mutatja. Eg
 ## A panelek körüli sávok
 
 - **Gombsáv** (fent): lapos gombok sora a gyakori parancsokhoz. Kattintson egy gombra a parancsa futtatásához; kattintson jobb gombbal a sáv szerkesztéséhez.
-- **Meghajtósáv**: egy gomb minden elérhető lemezhez vagy kötethez, mindegyik kiadás vezérlővel és szabad helyével. Kattintson egy kötetre, hogy arra váltsa a panelt.
+- **Meghajtósáv**: minden elérhető lemezhez vagy kötethez egy gomb, mindegyiken a szabad hellyel. Kattintson egy kötetre, hogy az a panel oda váltson; a jobb kattintás kiadja — cserélhető köteteknél és csatolt lemezképeknél elérhető, az indítólemeznél és a hálózati megosztásoknál szürke.
 - **Útvonalsáv**: az aktuális mappát kattintható morzsaútként mutatja. Kattintson egy szakaszra, hogy egyenesen arra a mappára ugorjon, vagy kattintson az útvonalra egy hely beírásához.
 - **Állapotsáv** (minden lista alatt): a panel folyamatos összefoglalója — hány fájl és mappa van kijelölve, és azok teljes mérete.
 - **Parancssor** (lent): egy szövegmező, ahová shell-stílusú parancsot írhat, ami az aktuális mappában fut.
 - **Funkcióbillentyű-sáv** (legalul): hat gomb F3 Megtekintés, F4 Szerkesztés, F5 Másolás, F6 Áthelyezés, F7 ÚjMappa és F8 Törlés felirattal. Kattintson egy gombra vagy nyomja meg a megfelelő billentyűt.
 
 ![A meghajtósáv közelképe a kötetgombokkal és a szabad hellyel](screenshots/drive-bar-crop.png)
-*(Ábra: a meghajtósáv — egy gomb kötetenként, kiadás vezérlővel és a megmaradt szabad hellyel.)*
+*(Ábra: a meghajtósáv — kötetenként egy gomb, a fennmaradó szabad hellyel; a köteten jobb kattintás kiadja azt.)*
 
 ## Billentyűparancsok
 

@@ -22,14 +22,14 @@ La ventana se divide en un panel izquierdo y un panel derecho, cada uno mostrand
 ## Barras alrededor de los paneles
 
 - **Barra de botones** (arriba): una fila de botones planos para los comandos frecuentes. Haga clic en un botón para ejecutar su comando; haga clic con el botón derecho en un botón para editar la barra.
-- **Barra de unidades**: un botón por cada disco o volumen disponible, cada uno con un control de expulsión y su espacio libre. Haga clic en un volumen para cambiar ese panel a él.
+- **Barra de unidades**: un botón por disco o volumen disponible, cada uno con su espacio libre. Haz clic en un volumen para llevar ese panel allí; haz clic derecho para expulsarlo, algo que se ofrece para volúmenes extraíbles e imágenes de disco montadas y aparece atenuado para el disco de arranque y los recursos de red.
 - **Barra de ruta**: muestra la carpeta actual como una ruta de navegación en la que se puede hacer clic. Haga clic en un segmento para saltar directamente a esa carpeta, o haga clic en la ruta para escribir una ubicación.
 - **Barra de estado** (debajo de cada lista): un resumen dinámico del panel: cuántos archivos y carpetas están seleccionados y su tamaño total.
 - **Línea de comandos** (abajo): un campo de texto donde puede escribir un comando estilo shell que se ejecuta en la carpeta actual.
 - **Barra de teclas de función** (en la parte inferior): seis botones etiquetados como F3 Ver, F4 Editar, F5 Copiar, F6 Mover, F7 Carpeta nueva y F8 Eliminar. Haga clic en un botón o pulse la tecla correspondiente.
 
 ![Primer plano de la barra de unidades mostrando los botones de volumen y el espacio libre](screenshots/drive-bar-crop.png)
-*(Figura: La barra de unidades: un botón por volumen, con un control de expulsión y el espacio libre restante.)*
+*(Figura: la barra de unidades: un botón por volumen, con el espacio libre restante; haz clic derecho en un volumen para expulsarlo.)*
 
 ## Atajos
 

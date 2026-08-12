@@ -22,14 +22,14 @@ Fereastra este împărțită într-un panou stâng și un panou drept, fiecare a
 ## Barele din jurul panourilor
 
 - **Bara de butoane** (sus): un rând de butoane plate pentru comenzi frecvente. Faceți clic pe un buton pentru a rula comanda sa; faceți clic dreapta pe un buton pentru a edita bara.
-- **Bara de discuri**: câte un buton pentru fiecare disc sau volum disponibil, fiecare cu un control de ejectare și spațiul liber. Faceți clic pe un volum pentru a comuta acel panou la el.
+- **Bara de unități**: un buton pentru fiecare disc sau volum disponibil, fiecare cu spațiul său liber. Faceți clic pe un volum pentru a comuta acel panou acolo; faceți clic dreapta pentru a-l scoate — oferit pentru volume amovibile și imagini de disc montate, estompat pentru discul de pornire și partajările de rețea.
 - **Bara de cale**: afișează folderul curent ca o cale de navigare pe care se poate face clic. Faceți clic pe un segment pentru a sări direct la acel folder sau faceți clic pe cale pentru a tasta o locație.
 - **Bara de stare** (sub fiecare listă): un rezumat curent al panoului — câte fișiere și foldere sunt selectate și dimensiunea lor totală.
 - **Linia de comandă** (jos): un câmp de text în care puteți tasta o comandă în stil shell, care rulează în folderul curent.
 - **Bara tastelor funcționale** (jos de tot): șase butoane etichetate F3 Vizualizare, F4 Editare, F5 Copiere, F6 Mutare, F7 Folder nou și F8 Ștergere. Faceți clic pe un buton sau apăsați tasta corespunzătoare.
 
 ![Prim-plan al barei de discuri cu butoanele de volum și spațiul liber](screenshots/drive-bar-crop.png)
-*(Figura: Bara de discuri — câte un buton pentru fiecare volum, cu un control de ejectare și spațiul liber rămas.)*
+*(Figură: bara de unități — un buton pe volum, cu spațiul liber rămas; clic dreapta pe un volum îl scoate.)*
 
 ## Scurtături
 

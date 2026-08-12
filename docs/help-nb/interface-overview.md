@@ -22,14 +22,14 @@ Vinduet er delt i et venstre panel og et høyre panel, hvert med innholdet i én
 ## Linjer rundt panelene
 
 - **Knapperad** (øverst): en rad med flate knapper for hyppige kommandoer. Klikk på en knapp for å kjøre kommandoen; høyreklikk på en knapp for å redigere raden.
-- **Disklinje**: én knapp per tilgjengelig disk eller volum, hver med en utløserkontroll og ledig plass. Klikk på et volum for å bytte panelet til det.
+- **Stasjonslinje**: én knapp per tilgjengelig disk eller volum, hver med sin ledige plass. Klikk på et volum for å bytte det panelet dit; høyreklikk for å løse det ut — tilbys for flyttbare volumer og monterte diskbilder, nedtonet for oppstartsdisken og nettverksressurser.
 - **Stilinje**: viser gjeldende mappe som et klikkbart smulesti. Klikk på et segment for å hoppe rett til den mappen, eller klikk på stien for å skrive inn en plassering.
 - **Statuslinje** (under hver liste): et løpende sammendrag av panelet — hvor mange filer og mapper som er merket, og deres samlede størrelse.
 - **Kommandolinje** (nederst): et tekstfelt der du kan skrive en kommando i skall-stil som kjøres i gjeldende mappe.
 - **Funksjonstastlinje** (helt nederst): seks knapper merket F3 Vis, F4 Rediger, F5 Kopier, F6 Flytt, F7 NyMappe og F8 Slett. Klikk på en knapp eller trykk den tilsvarende tasten.
 
 ![Nærbilde av disklinjen som viser volumknapper og ledig plass](screenshots/drive-bar-crop.png)
-*(Figur: Disklinjen — én knapp per volum, med en utløserkontroll og gjenværende ledig plass.)*
+*(Figur: stasjonslinjen — én knapp per volum, med gjenværende ledig plass; høyreklikk på et volum for å løse det ut.)*
 
 ## Snarveier
 

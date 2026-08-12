@@ -22,14 +22,14 @@ Het venster is opgesplitst in een linkerpaneel en een rechterpaneel, elk met de 
 ## Balken rond de panelen
 
 - **Knoppenbalk** (boven): een rij platte knoppen voor veelgebruikte opdrachten. Klik op een knop om de opdracht uit te voeren; klik met de rechtermuisknop op een knop om de balk te bewerken.
-- **Schijfbalk**: één knop per beschikbare schijf of volume, elk met een uitwerpknop en de vrije ruimte. Klik op een volume om dat paneel ernaartoe te schakelen.
+- **Schijvenbalk**: één knop per beschikbare schijf of volume, elk met de vrije ruimte. Klik op een volume om dat paneel ernaartoe te schakelen; klik er met rechts op om het uit te werpen — aangeboden voor verwisselbare volumes en gekoppelde schijfkopieën, grijs voor de opstartschijf en netwerkschijven.
 - **Padbalk**: toont de huidige map als een klikbaar broodkruimelpad. Klik op een segment om direct naar die map te springen, of klik op het pad om een locatie te typen.
 - **Statusbalk** (onder elke lijst): een doorlopende samenvatting van het paneel — hoeveel bestanden en mappen geselecteerd zijn en hun totale grootte.
 - **Opdrachtregel** (onderaan): een tekstveld waarin je een shell-achtige opdracht kunt typen die in de huidige map wordt uitgevoerd.
 - **Functietoetsenbalk** (helemaal onderaan): zes knoppen met de labels F3 Bekijken, F4 Bewerken, F5 Kopiëren, F6 Verplaatsen, F7 NieuweMap en F8 Verwijderen. Klik op een knop of druk op de bijbehorende toets.
 
 ![Uitsnede van de schijfbalk met volumeknoppen en vrije ruimte](screenshots/drive-bar-crop.png)
-*(Afbeelding: De schijfbalk — één knop per volume, met een uitwerpknop en resterende vrije ruimte.)*
+*(Afbeelding: de schijvenbalk — één knop per volume, met de resterende vrije ruimte; klik met rechts op een volume om het uit te werpen.)*
 
 ## Sneltoetsen
 

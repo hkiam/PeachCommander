@@ -24,6 +24,8 @@ final class DriveBarView: NSView {
     var onManageFavorites: (() -> Void)?
     /// Supplies the current favorites (hotlist) to list inline in the Go menu.
     var favoritesProvider: (() -> [(title: String, path: String)])?
+    /// Called with the volume whose chip was right-clicked and whose Eject was chosen (F-385).
+    var onEject: ((Volume) -> Void)?
 
     private var volumes: [Volume] = []
     private var currentIndex: Int?
@@ -147,6 +149,49 @@ final class DriveBarView: NSView {
                 }
             }
         }
+    }
+
+    /// Right-click (and Control-click, which AppKit routes here as well) on a volume chip.
+    ///
+    /// Until now the bar answered only to a left click, so the one place a user actually looks for
+    /// "eject this" — the drive it is sitting on — was the one place that offered nothing. The
+    /// command existed and acted on the *panel cursor* instead, which is a different question.
+    ///
+    /// Eject is shown for every volume and disabled for the ones that cannot go, rather than hidden:
+    /// a menu that appears empty over the startup disk reads as broken, while a greyed-out entry
+    /// teaches the rule at a glance. Which volumes those are is `VolumeEjection`'s to say, not this
+    /// view's — asking separately here is how an Eject that is offered and then refuses comes about.
+    override func menu(for event: NSEvent) -> NSMenu? {
+        let point = convert(event.locationInWindow, from: nil)
+        guard let hit = chipHits.first(where: { $0.rect.contains(point) }),
+              case .volume(let index) = hit.chip, volumes.indices.contains(index) else { return nil }
+        let volume = volumes[index]
+
+        let menu = NSMenu()
+        let item = NSMenuItem(title: String(localized: "Eject"), action: #selector(ejectMenuItem(_:)),
+                              keyEquivalent: "")
+        item.target = self
+        item.representedObject = index
+        switch VolumeEjection.refusal(for: volume) {
+        case .none:
+            item.isEnabled = true
+        case .some(.bootVolume):
+            item.isEnabled = false
+            item.toolTip = String(localized: "The startup disk cannot be ejected.")
+        case .some:
+            item.isEnabled = false
+            item.toolTip = String(localized: "Network shares and internal disks stay mounted.")
+        }
+        menu.addItem(item)
+        // Off, or the enabled state above is recomputed by the responder chain and every item goes
+        // grey — nothing here has a validating target.
+        menu.autoenablesItems = false
+        return menu
+    }
+
+    @objc private func ejectMenuItem(_ sender: NSMenuItem) {
+        guard let index = sender.representedObject as? Int, volumes.indices.contains(index) else { return }
+        onEject?(volumes[index])
     }
 
     override func mouseDown(with event: NSEvent) {

@@ -79,4 +79,39 @@ final class VolumeEjectionTests: XCTestCase {
                                              currentDirectory: "/Volumes/Gone", volumes: []),
                        .failure(.noVolume))
     }
+
+    // MARK: - The rule a menu greys an entry out with (F-385)
+
+    /// `refusal(for:)` exists so the drive bar's context menu and the command obey one rule. These
+    /// pin that it answers the same three ways the command does — an "Eject" that is offered and
+    /// then refuses is the failure this prevents.
+
+    func testAMountedDiskImageCanBeEjected() {
+        // The case this was built for: a .dmg the system reports as ejectable. Measured on APFS —
+        // a mounted disk image comes back isEjectable = true, the boot volume false.
+        XCTAssertNil(VolumeEjection.refusal(for: volume("Peach Commander", "/Volumes/Peach Commander")))
+    }
+
+    func testTheStartupDiskIsRefusedByName() {
+        XCTAssertEqual(VolumeEjection.refusal(for: volume("Macintosh HD", "/")), .bootVolume)
+    }
+
+    func testANetworkShareIsRefusedAsNotEjectable() {
+        XCTAssertEqual(VolumeEjection.refusal(for: volume("sambashare", "/Volumes/sambashare",
+                                                          ejectable: false)),
+                       .notEjectable(name: "sambashare"))
+    }
+
+    /// The rule the menu uses and the rule the command uses must be the same rule, not two that
+    /// happen to agree today.
+    func testTheMenuRuleAgreesWithTheCommand() {
+        let stick = volume("Stick", "/Volumes/Stick")
+        XCTAssertNil(VolumeEjection.refusal(for: stick))
+        guard case .success(let chosen) = VolumeEjection.target(focusedPath: "/Volumes/Stick",
+                                                               currentDirectory: "/",
+                                                               volumes: [stick]) else {
+            return XCTFail("the command refused a volume the menu would offer")
+        }
+        XCTAssertEqual(chosen.path, stick.path)
+    }
 }
