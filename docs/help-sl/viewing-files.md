@@ -25,6 +25,19 @@ Peach Commander ima vgrajen pregledovalnik, ki omogoča, da pogledate v datoteko
 - Če je besedilo videti popačeno, kliknite Kodiranje v orodni vrstici (ali pritisnite E), da se pomikate skozi kodiranja besedila, dokler se ne prebere pravilno; samodejna nastavitev to običajno zadene prav.
 - Pritisnite W za preklop preloma besed za dolge vrstice.
 
+## Povečava slike
+
+V slikovnem prikazu pregledovalnik odpre sliko prilagojeno oknu, majhno sliko pa pusti v njeni lastni velikosti, namesto da bi jo napihnil.
+
+| Dejanje | Meni | Tipke |
+| --- | --- | --- |
+| Povečaj | Pogled ▸ Povečaj | Cmd++ / + |
+| Pomanjšaj | Pogled ▸ Pomanjšaj | Cmd+- / - |
+| Dejanska velikost (100 %) | Pogled ▸ Dejanska velikost | Cmd+0 / 0 |
+| Prilagodi oknu | Pogled ▸ Prilagodi oknu | Cmd+9 / F |
+
+Uporabite lahko tudi ščipanje na sledilni ploščici ali drsenje s pritisnjeno tipko Cmd. Raven je v vrstici stanja, *dejanska velikost* pa pomeni eno slikovno piko na točko zaslona — ne le »razveljavi mojo povečavo«. Prilagoditev sledi oknu: spremenite njegovo velikost in slika ostane prilagojena.
+
 ## Zapiski k vrstici
 
 Če je vtičnik Zapiski nameščen, se zapisek lahko nanaša na določeno vrstico datoteke in ne na datoteko kot celoto.
@@ -41,6 +54,8 @@ Quick View prikaže sprotni predogled v podoknu, ki ga *ne* uporabljate, tako da
 2. Premikajte kazalec po različnih datotekah v aktivnem podoknu za predogled vsake.
 3. Znova pritisnite Ctrl+Q ali Esc, da podokno vrnete v običajen seznam datotek.
 
+Slika v hitrem ogledu ima enake gumbe za povečavo kot predogled v stranskem podoknu — v kotu podokna, ki ga je prevzel.
+
 Za hiter celozaslonski predogled, ki ga obravnava sam macOS, pritisnite Cmd+Y (Quick Look). Znova pritisnite Cmd+Y ali Space, da ga zaprete.
 
 ## Stran z informacijami v stranskem pladnju
@@ -49,6 +64,7 @@ Stranski pladenj (**Pogled > Panel predogleda** ali Cmd+Shift+P) ima stran **Inf
 
 - Predogled zapolni celotno širino pladnja — če pladenj razširite, raste predogled z njim. Povlecite levi rob pladnja, da ga razširite ali zožite; širina se zapomni.
 - To je pravi predogled macOS, ne majhna sličica: deluje vsak zapis, ki ga zna prikazati Hitri pogled, po večstranskem dokumentu pa listate kar v predogledu, stran za stranjo.
+- Slika ima svoje gumbe za povečavo v kotu predogleda — pomanjšaj, povečaj, dejanska velikost in prilagodi — ob njih pa trenutno raven; ščipanje in Cmd+drsenje delujeta tudi tam. Vse drugo, kar predogled nariše, na primer PDF ali video, se obnaša kot doslej.
 - Pod njim so ime, vrsta in velikost, nato kdaj je bil element ustvarjen in spremenjen ter v kateri mapi je.
 
 Ob premikanju kazalke se ime in podatki osvežijo takoj; predogled sledi trenutek pozneje, tako da zadržana puščična tipka skozi dolgo mapo ne zažene predogleda za vsako prehojeno vrstico.

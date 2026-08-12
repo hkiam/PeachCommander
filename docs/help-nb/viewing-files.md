@@ -25,6 +25,19 @@ Peach Commander har en innebygd visning som lar deg se inni en fil uten å åpne
 - Hvis teksten ser forvansket ut, klikk på Tegnkoding i verktøylinjen (eller trykk E) for å bla gjennom tegnkodinger til den leses riktig; den automatiske innstillingen treffer vanligvis riktig.
 - Trykk W for å veksle tekstbryting for lange linjer.
 
+## Zoom et bilde
+
+I bilderepresentasjonen åpner fremviseren et bilde tilpasset vinduet, og lar et lite bilde være i sin egen størrelse i stedet for å blåse det opp.
+
+| Handling | Meny | Taster |
+| --- | --- | --- |
+| Zoom inn | Vis ▸ Zoom inn | Cmd++ / + |
+| Zoom ut | Vis ▸ Zoom ut | Cmd+- / - |
+| Faktisk størrelse (100 %) | Vis ▸ Faktisk størrelse | Cmd+0 / 0 |
+| Tilpass til vinduet | Vis ▸ Tilpass til vinduet | Cmd+9 / F |
+
+Du kan også knipe på en styreflate eller holde Cmd nede og rulle. Nivået står i statuslinjen, og *faktisk størrelse* betyr én bildepiksel per skjermpunkt — ikke bare «angre zoomingen min». Tilpasningen følger vinduet: endre størrelsen, og bildet blir værende tilpasset.
+
 ## Notater til en linje
 
 Er Notater-tillegget installert, kan et notat handle om en bestemt linje i en fil i stedet for om hele filen.
@@ -41,6 +54,8 @@ Quick View viser en direkte forhåndsvisning i panelet du *ikke* bruker, slik at
 2. Flytt markøren over ulike filer i det aktive panelet for å forhåndsvise hver enkelt.
 3. Trykk Ctrl+Q igjen, eller Esc, for å få panelet tilbake til en vanlig filliste.
 
+Et bilde i hurtigvisningen har de samme zoomknappene som forhåndsvisningen i sidepanelet — i hjørnet av panelet det har tatt over.
+
 For en rask fullskjerm-forhåndsvisning håndtert av macOS selv, trykk Cmd+Y (Quick Look). Trykk Cmd+Y eller Space igjen for å lukke den.
 
 ## Infosiden i sidepanelet
@@ -49,6 +64,7 @@ Sidepanelet (**Vis > Forhåndsvisningspanel**, eller Cmd+Skift+P) har en side **
 
 - Forhåndsvisningen fyller bredden på panelet: gjør du panelet bredere, vokser forhåndsvisningen med. Dra i panelets venstre kant for å gjøre det bredere eller smalere; bredden huskes.
 - Det er en ekte macOS-forhåndsvisning, ikke en liten miniatyr: alle formater Kikk kan vise fungerer her, og et dokument på flere sider blar du side for side inne i forhåndsvisningen.
+- Et bilde har egne zoomknapper i hjørnet av forhåndsvisningen — zoom ut, zoom inn, faktisk størrelse og tilpass — med nivået ved siden av; kniping og Cmd+rulling virker også der. Alt annet forhåndsvisningen tegner, for eksempel en PDF eller en video, oppfører seg som før.
 - Under står navn, type og størrelse, og deretter når objektet ble opprettet og endret, og hvilken mappe det ligger i.
 
 Når markøren flyttes, oppdateres navn og opplysninger straks; forhåndsvisningen følger et øyeblikk etter, slik at en holdt piltast gjennom en lang mappe ikke starter en forhåndsvisning for hver rad.

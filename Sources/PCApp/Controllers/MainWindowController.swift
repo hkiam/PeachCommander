@@ -37,6 +37,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     #if DEBUG
     /// Diagnostic: the preview panel, i.e. the host's "sidebar" plugin view container (F-372).
     func previewPanelForAutomation() -> PreviewPanelView? { previewPanel }
+    /// The embedded Quick View's preview area, when it is up (F-118/F-389).
+    func quickViewForAutomation() -> FilePreviewView? { quickViewPreview }
     #endif
     private let previewHandle = PreviewToggleHandle()
     private let previewResizer = PreviewResizeHandle()
@@ -191,7 +193,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private var quickViewLister: ListerWindowController?
     private var quickViewScheduled = false
     // Quick View embedded in the inactive panel (F-118).
-    private var quickViewPreview: QLPreviewView?
+    /// The embedded Quick View's preview area (F-118). A `FilePreviewView` rather than a bare
+    /// `QLPreviewView`, so a picture in it can be zoomed exactly as in the side panel (F-389) — it is the
+    /// same "quick preview" to the user, and it lands in the *left* panel whenever the right one is
+    /// active, which is where this was reported from.
+    private var quickViewPreview: FilePreviewView?
     private weak var quickViewHostPanel: PanelController?
     /// Background transfer manager window (created on first use, TODOS #135).
     private var transferManagerWC: TransferManagerWindowController?
@@ -3180,8 +3186,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             return
         }
         guard let host = getInactivePanel() else { return }
-        let preview = QLPreviewView(frame: .zero, style: .normal) ?? QLPreviewView()
-        preview.autostarts = true
+        let preview = FilePreviewView()
+        // Media starts by itself here and not in the side panel: Quick View is the gesture for "show me
+        // this", and the panel's info page merely follows the cursor.
+        preview.autostartsMedia = true
         quickViewPreview = preview
         quickViewHostPanel = host
         host.view.setQuickViewOverlay(preview)
@@ -3190,11 +3198,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
     private func setQuickViewItem(_ path: String?) {
         guard let preview = quickViewPreview else { return }
-        if let path, FileManager.default.fileExists(atPath: path) {
-            preview.previewItem = URL(fileURLWithPath: path) as NSURL
-        } else {
-            preview.previewItem = nil
-        }
+        let exists = path.map { FileManager.default.fileExists(atPath: $0) } ?? false
+        preview.show(path: exists ? path : nil, fallbackIcon: nil)
     }
 
     private func updateQuickView() {

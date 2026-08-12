@@ -25,6 +25,19 @@ Peach Commander har en indbygget fremviser, der lader dig kigge inde i en fil ud
 - Hvis tekst ser forvansket ud, klik på Kodning i værktøjslinjen (eller tryk på E) for at cykle gennem tekstkodninger, indtil den læses korrekt; den automatiske indstilling rammer det som regel rigtigt.
 - Tryk på W for at skifte tekstombrydning for lange linjer.
 
+## Zoom et billede
+
+I billedrepræsentationen åbner fremviseren et billede tilpasset vinduet og lader et lille billede være i sin egen størrelse i stedet for at puste det op.
+
+| Handling | Menu | Taster |
+| --- | --- | --- |
+| Zoom ind | Vis ▸ Zoom ind | Cmd++ / + |
+| Zoom ud | Vis ▸ Zoom ud | Cmd+- / - |
+| Faktisk størrelse (100 %) | Vis ▸ Faktisk størrelse | Cmd+0 / 0 |
+| Tilpas til vinduet | Vis ▸ Tilpas til vinduet | Cmd+9 / F |
+
+Du kan også knibe på et pegefelt eller holde Cmd nede og rulle. Niveauet står i statuslinjen, og *faktisk størrelse* betyder én billedpixel pr. skærmpunkt — ikke blot „fortryd min zoom“. Tilpasning følger vinduet: ændr størrelsen, og billedet bliver tilpasset.
+
 ## Noter til en linje
 
 Hvis Noter-modulet er installeret, kan en note handle om en bestemt linje i en fil frem for om hele filen.
@@ -41,6 +54,8 @@ Hurtigvisning viser en live forhåndsvisning i det panel, du *ikke* bruger, så 
 2. Flyt markøren over forskellige filer i det aktive panel for at forhåndsvise hver enkelt.
 3. Tryk på Ctrl+Q igen, eller Esc, for at give panelet en normal filliste igen.
 
+Et billede i Quick View har de samme zoomknapper som forhåndsvisningen i sidepanelet — i hjørnet af det panel, det har overtaget.
+
 For en hurtig fuldskærms-forhåndsvisning håndteret af macOS selv, tryk på Cmd+Y (Quick Look). Tryk på Cmd+Y eller Mellemrum igen for at lukke den.
 
 ## Infosiden i sidepanelet
@@ -49,6 +64,7 @@ Sidepanelet (**Vis > Eksempelpanel**, eller Cmd+Skift+P) har en side **Info**, d
 
 - Eksemplet fylder panelets bredde: gør du panelet bredere, vokser eksemplet med. Træk i panelets venstre kant for at gøre det bredere eller smallere; bredden huskes.
 - Det er et rigtigt macOS-eksempel, ikke en lille miniature: alle formater, som Kig kan vise, virker her, og et dokument på flere sider blader du side for side inde i eksemplet.
+- Et billede har sine egne zoomknapper i hjørnet af forhåndsvisningen — zoom ud, zoom ind, faktisk størrelse og tilpas — med det aktuelle niveau ved siden af; kniben og Cmd+rul virker også der. Alt andet, som forhåndsvisningen viser, f.eks. en PDF eller en video, opfører sig som før.
 - Nedenunder står navn, type og størrelse, og derefter hvornår emnet blev oprettet og ændret, samt hvilken mappe det ligger i.
 
 Når markøren flyttes, opdateres navn og oplysninger straks; eksemplet følger et øjeblik efter, så en holdt piletast gennem en lang mappe ikke starter et eksempel for hver række.

@@ -101,6 +101,52 @@ SCENARIOS = [
     ("editor-filter", ["editfilter /Users/admin/pc-demo/hosts.txt|sort -u|/Users/admin/filter.txt",
                        "wait 2500"], 9),
     ("editor-filter-dialog", ["editfilterdlg /Users/admin/pc-demo/hosts.txt", "wait 2000"], 9),
+    # Zooming a picture in the viewer (F-389). Three things a screenshot cannot state: the level is a
+    # number and the commands move it, "actual size" is 100% of the image's own pixels rather than the
+    # fitted rendering the old code called by that name, and the picture is *drawn* — `drawn=yes` compares
+    # the pixel on screen against the pixel in the file, which is how the quick preview's missing document
+    # view was caught while every other number looked perfect. The text representation is the control: the
+    # same command has to be refused there, with the menu item withheld rather than dead.
+    #
+    # The fitted percentage is deliberately not asserted: it depends on the window, which depends on the
+    # screen. `docFrame` is the fixture's own 3000x2000 and does not.
+    ("viewer-zoom", ["active left", "left /Users/admin/pc-demo/Images", "wait 2000",
+                     "focus big.png", "wait 900",
+                     "cmd cm_List", "wait 2500",
+                     "listerzoom state|/Users/admin/zoom-open.txt", "wait 500",
+                     "listerzoom actual|/Users/admin/zoom-100.txt", "wait 500",
+                     "listerzoom in|/Users/admin/zoom-in.txt", "wait 500",
+                     "listermode text|/Users/admin/zoom-repr.txt", "wait 1500",
+                     "listerzoom in|/Users/admin/zoom-text.txt", "wait 500",
+                     "listermode image|/Users/admin/zoom-repr2.txt", "wait 1500",
+                     "listerzoom fit|/Users/admin/zoom-fit.txt", "wait 700"], 13),
+    # The same four commands in the quick preview (F-389), where they are buttons rather than menu items —
+    # pressed through the button itself, so a control that is hidden, disabled or wired to nothing cannot
+    # pass. Both sizes matter: a photograph has to arrive fitted and a 16x16 icon has to be left alone at
+    # 100%, which is the case that "scale proportionally up or down" gets wrong on its own. A plain text
+    # file is the control: it must stay on QuickLook's route with no zoom controls at all.
+    ("preview-zoom", ["active left", "left /Users/admin/pc-demo/Images", "wait 2000",
+                      "previewpanel on", "wait 1500",
+                      "focus icon.png", "wait 1800",
+                      "previewzoom state|/Users/admin/pz-icon.txt", "wait 500",
+                      "focus big.png", "wait 1800",
+                      "previewzoom state|/Users/admin/pz-big.txt", "wait 500",
+                      "previewzoom actual|/Users/admin/pz-100.txt", "wait 500",
+                      "previewzoom fit|/Users/admin/pz-fit.txt", "wait 500",
+                      "focus photo_1.txt", "wait 1800",
+                      "previewzoom state|/Users/admin/pz-text.txt", "wait 700"], 12),
+    # The *other* quick preview (F-118 + F-389): Ctrl+Q turns the inactive panel into a preview area, so
+    # with the right panel active it is the **left** one — which is where the zoom was asked for. Same
+    # class as the sidebar's preview, hence the same report; the point of the scenario is that the third
+    # place a preview appears got the feature too, rather than two out of three.
+    ("quickview-zoom", ["active right", "left /Users/admin/pc-demo/Images",
+                        "right /Users/admin/pc-demo/Images", "wait 2000",
+                        "cmd cm_SrcQuickview", "wait 1500",
+                        "focus big.png", "wait 2200",
+                        "quickviewzoom state|/Users/admin/qv-big.txt", "wait 500",
+                        "quickviewzoom actual|/Users/admin/qv-100.txt", "wait 500",
+                        "focus photo_1.txt", "wait 2000",
+                        "quickviewzoom state|/Users/admin/qv-text.txt", "wait 700"], 12),
     # The built-in line operations over a CRLF file with duplicates, blanks and trailing spaces
     # (F-359) — the terminator surviving is the part that fails silently.
     ("editor-lines", ["editlines /Users/admin/pc-demo/messy.txt|/Users/admin/lines.txt",
@@ -1421,6 +1467,35 @@ REPORTS = {
     # config is not the default a user meets.
     "editor-backup": ("/Users/admin/bak-kept-on.txt", ["bak=true", "dirty=false", "typed-auto"]),
     "editor-backup-off": ("/Users/admin/bak-kept-off.txt", ["bak=false", "dirty=false", "typed-auto"]),
+    # F-389, the viewer. The primary report is the fit at the end; the levels before it are the claims.
+    "viewer-zoom": ("/Users/admin/zoom-fit.txt",
+                    ["mode=image", "fitting=true", "drawn=yes", "docFrame=3000x2000"]),
+    "viewer-zoom-open": ("/Users/admin/zoom-open.txt",
+                         ["mode=image", "fitting=true", "drawn=yes", "!level=100%",
+                          "menuZoomIn=true", "menuZoomFit=true"]),
+    # "Actual size" is the whole point of the rework: 100%, and the picture still on screen.
+    "viewer-zoom-actual": ("/Users/admin/zoom-100.txt",
+                           ["level=100%", "fitting=false", "drawn=yes"]),
+    "viewer-zoom-in": ("/Users/admin/zoom-in.txt", ["level=150%", "fitting=false", "drawn=yes"]),
+    # The control: no zoom on text, and the menu says so rather than offering a dead item.
+    "viewer-zoom-text": ("/Users/admin/zoom-text.txt",
+                         ["refused=in", "mode=text", "menuZoomIn=false", "menuZoomFit=false"]),
+    # F-389, the quick preview. A 16x16 icon is left at its own size; a 3000x2000 photograph arrives
+    # fitted; a text file keeps QuickLook and gets no controls.
+    "preview-zoom": ("/Users/admin/pz-text.txt", ["route=quicklook", "bar=hidden"]),
+    "preview-zoom-icon": ("/Users/admin/pz-icon.txt",
+                          ["route=image", "bar=shown", "level=100%", "fitting=false",
+                           "pixels=16x16", "drawn=yes"]),
+    "preview-zoom-big": ("/Users/admin/pz-big.txt",
+                         ["route=image", "fitting=true", "pixels=3000x2000", "drawn=yes",
+                          "!level=100%"]),
+    "preview-zoom-actual": ("/Users/admin/pz-100.txt", ["level=100%", "fitting=false", "drawn=yes"]),
+    "preview-zoom-fit": ("/Users/admin/pz-fit.txt", ["fitting=true", "drawn=yes"]),
+    "quickview-zoom": ("/Users/admin/qv-text.txt", ["route=quicklook", "bar=hidden"]),
+    "quickview-zoom-big": ("/Users/admin/qv-big.txt",
+                           ["route=image", "bar=shown", "fitting=true", "pixels=3000x2000",
+                            "drawn=yes", "!level=100%"]),
+    "quickview-zoom-actual": ("/Users/admin/qv-100.txt", ["level=100%", "fitting=false", "drawn=yes"]),
     "editor-lines": ("/Users/admin/lines.txt",
                      ["endings=CRLF", "undo=true", "keep me<CR>",
                       # Four lines in the fixture, and the status line must say four — not "1 line(s)",

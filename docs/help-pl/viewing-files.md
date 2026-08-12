@@ -25,6 +25,19 @@ Peach Commander ma wbudowaną przeglądarkę, która pozwala zajrzeć do wnętrz
 - Jeśli tekst wygląda na zniekształcony, kliknij Kodowanie na pasku narzędzi (lub naciśnij E), aby przełączać kodowania tekstu, dopóki nie odczyta się poprawnie; ustawienie automatyczne zwykle trafia.
 - Naciśnij W, aby przełączyć zawijanie wierszy dla długich linii.
 
+## Powiększanie obrazu
+
+W reprezentacji obrazu przeglądarka otwiera obraz dopasowany do okna, a mały obraz zostawia w jego własnym rozmiarze, zamiast go rozdymać.
+
+| Czynność | Menu | Klawisze |
+| --- | --- | --- |
+| Powiększ | Widok ▸ Powiększ | Cmd++ / + |
+| Pomniejsz | Widok ▸ Pomniejsz | Cmd+- / - |
+| Rozmiar rzeczywisty (100%) | Widok ▸ Rozmiar rzeczywisty | Cmd+0 / 0 |
+| Dopasuj do okna | Widok ▸ Dopasuj do okna | Cmd+9 / F |
+
+Możesz też uszczypnąć na gładziku albo przewijać z wciśniętym Cmd. Poziom widać w wierszu stanu, a *rozmiar rzeczywisty* oznacza jeden piksel obrazu na punkt ekranu — nie tylko „cofnij moje powiększanie”. Dopasowanie idzie za oknem: zmień jego rozmiar, a obraz pozostanie dopasowany.
+
 ## Notatki do wiersza
 
 Jeśli wtyczka Notatki jest zainstalowana, notatka może dotyczyć konkretnego wiersza pliku, a nie całego pliku.
@@ -41,6 +54,8 @@ Szybki podgląd pokazuje podgląd na żywo w panelu, którego *nie* używasz, dz
 2. Przesuwaj kursor po różnych plikach w aktywnym panelu, aby podejrzeć każdy z nich.
 3. Naciśnij Ctrl+Q ponownie, lub Esc, aby przywrócić panelowi normalną listę plików.
 
+Obraz w szybkim podglądzie ma te same przyciski powiększania co podgląd w panelu bocznym — w narożniku panelu, który zajął.
+
 Aby uzyskać szybki podgląd pełnoekranowy obsługiwany przez sam macOS, naciśnij Cmd+Y (Quick Look). Naciśnij Cmd+Y lub Spację ponownie, aby go zamknąć.
 
 ## Strona informacji w panelu bocznym
@@ -49,6 +64,7 @@ Panel boczny (**Widok > Panel podglądu** lub Cmd+Shift+P) ma stronę **Informac
 
 - Podgląd wypełnia szerokość panelu — po poszerzeniu panelu podgląd rośnie razem z nim. Przeciągnij lewą krawędź panelu, aby go poszerzyć lub zwęzić; szerokość jest zapamiętywana.
 - To prawdziwy podgląd macOS, a nie mała miniatura: działa każdy format, który potrafi pokazać Szybki podgląd, a dokument wielostronicowy przewijasz w podglądzie strona po stronie.
+- Obraz ma własne przyciski powiększania w narożniku podglądu — pomniejsz, powiększ, rozmiar rzeczywisty i dopasuj — a obok nich aktualny poziom; uszczypnięcie i Cmd+przewijanie też tam działają. Wszystko inne, co rysuje podgląd, na przykład PDF albo film, zachowuje się jak dotąd.
 - Poniżej znajdują się nazwa, rodzaj i rozmiar, a dalej data utworzenia i zmiany oraz folder, w którym element się znajduje.
 
 Przy przesuwaniu kursora nazwa i dane odświeżają się natychmiast; podgląd pojawia się chwilę później, aby przytrzymanie strzałki przez długi folder nie uruchamiało podglądu dla każdego mijanego wiersza.

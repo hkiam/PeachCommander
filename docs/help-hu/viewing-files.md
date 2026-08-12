@@ -25,6 +25,19 @@ A Peach Commander beépített megjelenítővel rendelkezik, amely lehetővé tes
 - Ha a szöveg zavarosnak tűnik, kattintson a Kódolás gombra az eszköztárban (vagy nyomja meg az E-t) a szövegkódolások végigjárásához, amíg helyesen nem olvasható; az automatikus beállítás általában eltalálja.
 - Nyomja meg a W-t a hosszú sorok sortörésének átkapcsolásához.
 
+## Kép nagyítása
+
+A kép megjelenítésben a megjelenítő az ablakhoz igazítva nyitja meg a képet, egy kis képet pedig a saját méretében hagy, ahelyett hogy felfújná.
+
+| Művelet | Menü | Gombok |
+| --- | --- | --- |
+| Nagyítás | Nézet ▸ Nagyítás | Cmd++ / + |
+| Kicsinyítés | Nézet ▸ Kicsinyítés | Cmd+- / - |
+| Valódi méret (100%) | Nézet ▸ Valódi méret | Cmd+0 / 0 |
+| Igazítás az ablakhoz | Nézet ▸ Igazítás az ablakhoz | Cmd+9 / F |
+
+Csippenthet is az érintőlapon, vagy a Cmd lenyomva tartásával görgethet. A szint az állapotsorban látható, és a *valódi méret* egy képpontot jelent képernyőpontonként — nem csupán a nagyítás visszavonását. Az igazítás követi az ablakot: méretezze át, és a kép igazítva marad.
+
 ## Jegyzetek egy sorhoz
 
 Ha a Jegyzetek bővítmény telepítve van, egy jegyzet a fájl egy adott sorára vonatkozhat, nem csak az egész fájlra.
@@ -41,6 +54,8 @@ A Gyorsnézet élő előnézetet mutat abban a panelben, amelyet *nem* használ,
 2. Vigye a kurzort különböző fájlok fölé az aktív panelben mindegyik előnézetéhez.
 3. Nyomja meg a Ctrl+Q-t újra, vagy az Esc-et, hogy a panelt normál fájllistává állítsa vissza.
 
+A gyorsnézetben megjelenő kép ugyanazokat a nagyítási gombokat kapja, mint az oldalsáv előnézete — annak a panelnek a sarkában, amelyet átvett.
+
 Egy gyors, magától a macOS által kezelt teljes képernyős előnézethez nyomja meg a Cmd+Y-t (Quick Look). Nyomja meg a Cmd+Y-t vagy a szóközt újra a bezárásához.
 
 ## Az információs oldal az oldalsó panelen
@@ -49,6 +64,7 @@ Az oldalsó panelen (**Nézet > Előnézeti panel**, vagy Cmd+Shift+P) van egy *
 
 - Az előnézet kitölti a panel teljes szélességét: ha szélesíti a panelt, az előnézet vele nő. Húzza a panel bal szélét, hogy szélesebbé vagy keskenyebbé tegye; a szélesség megmarad.
 - Ez valódi macOS-előnézet, nem apró bélyegkép: minden formátum működik, amit a Gyorsnézet meg tud jeleníteni, a több oldalas dokumentumokat pedig az előnézeten belül lapozhatja végig.
+- Egy kép saját nagyítási gombokat kap az előnézet sarkában — kicsinyítés, nagyítás, valódi méret és igazítás — mellettük az aktuális szint; a csippentés és a Cmd+görgetés is működik ott. Minden más, amit az előnézet megjelenít, például egy PDF vagy egy videó, ugyanúgy viselkedik, mint eddig.
 - Alatta a név, a típus és a méret áll, majd hogy mikor jött létre és mikor módosult az elem, és melyik mappában van.
 
 A kurzor mozgatásakor a név és az adatok azonnal frissülnek; az előnézet egy pillanattal később követi, így egy lenyomva tartott nyílbillentyű egy hosszú mappán át nem indít előnézetet minden érintett sorhoz.

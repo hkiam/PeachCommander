@@ -25,6 +25,19 @@ Peach Commander má vestavěný prohlížeč, který umožňuje nahlédnout dovn
 - Pokud text vypadá zkomoleně, klepněte na Kódování na panelu nástrojů (nebo stiskněte E) pro procházení kódování textu, dokud se nečte správně; automatické nastavení to obvykle trefí.
 - Stiskem W přepnete zalamování slov u dlouhých řádků.
 
+## Přiblížení obrázku
+
+V obrazové reprezentaci prohlížeč otevře obrázek přizpůsobený oknu a malý obrázek nechá v jeho vlastní velikosti, místo aby jej nafoukl.
+
+| Akce | Nabídka | Klávesy |
+| --- | --- | --- |
+| Přiblížit | Zobrazení ▸ Přiblížit | Cmd++ / + |
+| Oddálit | Zobrazení ▸ Oddálit | Cmd+- / - |
+| Skutečná velikost (100 %) | Zobrazení ▸ Skutečná velikost | Cmd+0 / 0 |
+| Přizpůsobit | Zobrazení ▸ Přizpůsobit | Cmd+9 / F |
+
+Můžete také použít gesto na trackpadu nebo držet Cmd a rolovat. Úroveň je ve stavovém řádku a *skutečná velikost* znamená jeden obrazový bod na bod obrazovky — nejen „vrať mé přibližování“. Přizpůsobení sleduje okno: změňte jeho velikost a obrázek zůstane přizpůsobený.
+
 ## Poznámky k řádku
 
 Je-li nainstalován modul Poznámky, může se poznámka týkat konkrétního řádku souboru, nikoli souboru jako celku.
@@ -41,6 +54,8 @@ Rychlý náhled zobrazuje živý náhled v panelu, který *nepoužíváte*, tak�
 2. Přesouvejte kurzor na různé soubory v aktivním panelu, abyste zobrazili náhled každého.
 3. Stiskem Ctrl+Q znovu, nebo Esc, vrátíte panelu normální seznam souborů.
 
+Obrázek v rychlém náhledu má stejné ovládání přiblížení jako náhled v postranním panelu — v koutě panelu, který převzal.
+
 Pro rychlý celoobrazovkový náhled zpracovaný přímo macOS stiskněte Cmd+Y (Quick Look). Opětovným stiskem Cmd+Y nebo mezerníku jej zavřete.
 
 ## Stránka s informacemi v bočním panelu
@@ -49,6 +64,7 @@ Boční panel (**Zobrazení > Panel náhledu** nebo Cmd+Shift+P) má stránku **
 
 - Náhled vyplní celou šířku panelu — když panel rozšíříte, náhled roste s ním. Tažením za levý okraj panelu jej rozšíříte nebo zúžíte; šířka se pamatuje.
 - Jde o skutečný náhled macOS, ne o malý náhledový obrázek: funguje každý formát, který umí zobrazit Rychlý náhled, a vícestránkovým dokumentem listujete přímo v náhledu stránku po stránce.
+- Obrázek má vlastní ovládání přiblížení v koutě náhledu — oddálit, přiblížit, skutečná velikost a přizpůsobit — a vedle nich aktuální úroveň; gesto i Cmd+rolování zde fungují také. Vše ostatní, co náhled zobrazuje, například PDF nebo video, se chová jako dříve.
 - Pod ním je název, druh a velikost, dále kdy byla položka vytvořena a změněna a v které složce leží.
 
 Při pohybu kurzoru se název a údaje aktualizují okamžitě; náhled následuje o okamžik později, aby podržená šipka procházející dlouhou složkou nespouštěla náhled pro každý míjený řádek.

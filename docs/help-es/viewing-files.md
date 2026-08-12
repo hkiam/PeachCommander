@@ -25,6 +25,19 @@ Peach Commander tiene un visor integrado que te permite mirar dentro de un archi
 - Si el texto se ve corrupto, haz clic en Codificación en la barra de herramientas (o pulsa E) para recorrer las codificaciones de texto hasta que se lea correctamente; el ajuste automático suele acertar.
 - Pulsa W para alternar el ajuste de línea para las líneas largas.
 
+## Ampliar una imagen
+
+En la representación de imagen el visor abre la imagen ajustada a la ventana y deja una imagen pequeña a su propio tamaño en lugar de agrandarla.
+
+| Acción | Menú | Teclas |
+| --- | --- | --- |
+| Acercar | Ver ▸ Acercar | Cmd++ / + |
+| Alejar | Ver ▸ Alejar | Cmd+- / - |
+| Tamaño real (100 %) | Ver ▸ Tamaño real | Cmd+0 / 0 |
+| Ajustar a la ventana | Ver ▸ Ajustar a la ventana | Cmd+9 / F |
+
+También puede pellizcar en el trackpad o mantener Cmd y desplazarse. El nivel aparece en la línea de estado, y *tamaño real* significa un píxel de imagen por punto de pantalla, no solo «deshacer mi zoom». El ajuste sigue a la ventana: cambie su tamaño y la imagen permanece ajustada.
+
 ## Notas sobre una línea
 
 Si el complemento Notas está instalado, una nota puede referirse a una línea concreta de un archivo en lugar de al archivo entero.
@@ -41,6 +54,8 @@ Quick View muestra una vista previa en directo en el panel que *no* estás usand
 2. Mueve el cursor sobre distintos archivos del panel activo para previsualizar cada uno.
 3. Pulsa Ctrl+Q de nuevo, o Esc, para devolver el panel a una lista de archivos normal.
 
+Una imagen en la vista rápida trae los mismos controles de zoom que la previsualización del panel lateral, en la esquina del panel que ha ocupado.
+
 Para una vista previa rápida a pantalla completa gestionada por macOS mismo, pulsa Cmd+Y (Quick Look). Pulsa Cmd+Y o Space de nuevo para cerrarla.
 
 ## La página de información del panel lateral
@@ -49,6 +64,7 @@ El panel lateral (**Visualización > Panel de previsualización**, o Cmd+Mayús+
 
 - La previsualización ocupa todo el ancho del panel: al ensanchar el panel, la previsualización crece con él. Arrastre el borde izquierdo del panel para ensancharlo o estrecharlo; la anchura se recuerda.
 - Es una previsualización real de macOS, no una miniatura pequeña: funciona cualquier formato que Vista Rápida pueda mostrar, y un documento de varias páginas se recorre página a página dentro de la previsualización.
+- Una imagen trae sus propios controles de zoom en la esquina de la previsualización —alejar, acercar, tamaño real y ajustar— con el nivel actual al lado; el gesto de pellizcar y Cmd+desplazar también funcionan ahí. Todo lo demás que muestra la previsualización, como un PDF o un vídeo, se comporta como siempre.
 - Debajo están el nombre, el tipo y el tamaño, y después cuándo se creó y se modificó el elemento y en qué carpeta está.
 
 Al mover el cursor, el nombre y los datos se actualizan de inmediato; la previsualización llega un momento después, de modo que mantener pulsada una flecha a lo largo de una carpeta larga no inicia una previsualización por cada fila.
