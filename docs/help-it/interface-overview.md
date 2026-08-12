@@ -22,14 +22,14 @@ La finestra è divisa in un pannello sinistro e un pannello destro, ciascuno che
 ## Le barre attorno ai pannelli
 
 - **Barra dei pulsanti** (in alto): una fila di pulsanti piatti per i comandi frequenti. Fai clic su un pulsante per eseguire il suo comando; fai clic destro su un pulsante per modificare la barra.
-- **Barra dei dischi**: un pulsante per ogni disco o volume disponibile, ciascuno con un controllo di espulsione e il suo spazio libero. Fai clic su un volume per passarci quel pannello.
+- **Barra dei dischi**: un pulsante per ogni disco o volume disponibile, ciascuno con il suo spazio libero. Fate clic su un volume per portarci quel pannello; con un clic destro lo espellete — proposto per volumi rimovibili e immagini disco montate, in grigio per il disco di avvio e le condivisioni di rete.
 - **Barra del percorso**: mostra la cartella corrente come un percorso di navigazione cliccabile. Fai clic su un segmento per saltare direttamente a quella cartella, o fai clic sul percorso per digitare una posizione.
 - **Barra di stato** (sotto ogni elenco): un riepilogo aggiornato del pannello — quanti file e cartelle sono selezionati e la loro dimensione totale.
 - **Riga di comando** (in basso): un campo di testo dove puoi digitare un comando in stile shell che viene eseguito nella cartella corrente.
 - **Barra dei tasti funzione** (in fondo): sei pulsanti etichettati F3 Visualizza, F4 Modifica, F5 Copia, F6 Sposta, F7 NuovaCartella e F8 Elimina. Fai clic su un pulsante o premi il tasto corrispondente.
 
 ![Primo piano della barra dei dischi che mostra i pulsanti dei volumi e lo spazio libero](screenshots/drive-bar-crop.png)
-*(Figura: la barra dei dischi — un pulsante per volume, con un controllo di espulsione e lo spazio libero rimanente.)*
+*(Figura: la barra dei dischi — un pulsante per volume, con lo spazio libero rimanente; un clic destro su un volume lo espelle.)*
 
 ## Scorciatoie
 

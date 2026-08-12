@@ -22,14 +22,14 @@ Das Fenster ist in ein linkes und ein rechtes Panel aufgeteilt, die jeweils den 
 ## Leisten um die Panels
 
 - **Schaltflächenleiste** (oben): eine Reihe flacher Schaltflächen für häufige Befehle. Klicken Sie auf eine Schaltfläche, um ihren Befehl auszuführen; klicken Sie mit der rechten Maustaste auf eine Schaltfläche, um die Leiste zu bearbeiten.
-- **Laufwerksleiste**: eine Schaltfläche pro verfügbarer Festplatte oder verfügbarem Volume, jeweils mit einem Auswurf-Steuerelement und dem freien Speicher. Klicken Sie auf ein Volume, um dieses Panel dorthin zu wechseln.
+- **Laufwerksleiste**: eine Schaltfläche pro verfügbarer Festplatte oder verfügbarem Volume, jeweils mit dem freien Speicher. Klicken Sie auf ein Volume, um dieses Panel dorthin zu wechseln; ein Rechtsklick wirft es aus — angeboten für Wechselmedien und gemountete Images, ausgegraut für die Startdisk und Netzwerkfreigaben.
 - **Pfadleiste**: zeigt den aktuellen Ordner als anklickbare Brotkrümelnavigation. Klicken Sie auf ein Segment, um direkt zu diesem Ordner zu springen, oder klicken Sie auf den Pfad, um einen Ort einzutippen.
 - **Statusleiste** (unter jeder Liste): eine laufende Zusammenfassung des Panels — wie viele Dateien und Ordner ausgewählt sind und ihre Gesamtgröße.
 - **Befehlszeile** (unten): ein Textfeld, in das Sie einen Befehl im Shell-Stil eintippen können, der im aktuellen Ordner ausgeführt wird.
 - **Funktionstastenleiste** (ganz unten): sechs Schaltflächen mit den Beschriftungen F3 Ansehen, F4 Bearbeiten, F5 Kopieren, F6 Verschieben, F7 NeuerOrdner und F8 Löschen. Klicken Sie auf eine Schaltfläche oder drücken Sie die entsprechende Taste.
 
 ![Nahaufnahme der Laufwerksleiste mit Volume-Schaltflächen und freiem Speicher](screenshots/drive-bar-crop.png)
-*(Abbildung: Die Laufwerksleiste — eine Schaltfläche pro Volume, mit einem Auswurf-Steuerelement und dem verbleibenden freien Speicher.)*
+*(Abbildung: Die Laufwerksleiste — eine Schaltfläche pro Volume, mit dem verbleibenden freien Speicher; Rechtsklick auf ein Volume wirft es aus.)*
 
 ## Kurzbefehle
 

@@ -22,14 +22,14 @@ Okno je rozděleno na levý a pravý panel, každý zobrazuje obsah jedné slož
 ## Lišty kolem panelů
 
 - **Lišta tlačítek** (nahoře): řada plochých tlačítek pro časté příkazy. Klepnutím na tlačítko spustíte jeho příkaz; klepnutím pravým tlačítkem lištu upravíte.
-- **Lišta disků**: jedno tlačítko pro každý dostupný disk nebo svazek, každé s ovladačem vysunutí a svým volným místem. Klepnutím na svazek jej v panelu přepnete.
+- **Lišta jednotek**: jedno tlačítko na každý dostupný disk nebo svazek, u každého volné místo. Klepnutím na svazek do něj přepnete tento panel; klepnutím pravým tlačítkem jej vysunete — nabízí se u vyměnitelných svazků a připojených obrazů disků, zašedlé u spouštěcího disku a síťových sdílení.
 - **Lišta cesty**: zobrazuje aktuální složku jako klikatelnou drobečkovou navigaci. Klepnutím na segment přeskočíte přímo do té složky, nebo klepnutím na cestu zadáte umístění.
 - **Stavová lišta** (pod každým seznamem): průběžný souhrn panelu — kolik souborů a složek je vybráno a jejich celková velikost.
 - **Příkazový řádek** (dole): textové pole, do kterého lze zadat příkaz ve stylu shellu, jenž se spustí v aktuální složce.
 - **Lišta funkčních kláves** (úplně dole): šest tlačítek označených F3 Zobrazit, F4 Upravit, F5 Kopírovat, F6 Přesunout, F7 NováSložka a F8 Smazat. Klepněte na tlačítko nebo stiskněte odpovídající klávesu.
 
 ![Detail lišty disků zobrazující tlačítka svazků a volné místo](screenshots/drive-bar-crop.png)
-*(Obrázek: lišta disků — jedno tlačítko pro svazek, s ovladačem vysunutí a zbývajícím volným místem.)*
+*(Obrázek: lišta jednotek — jedno tlačítko na svazek, se zbývajícím volným místem; klepnutím pravým tlačítkem na svazek jej vysunete.)*
 
 ## Zkratky
 

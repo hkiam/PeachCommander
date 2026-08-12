@@ -51,6 +51,17 @@ public enum VolumeEjection {
         return verdict(for: containing)
     }
 
+    /// Why this volume cannot be ejected, or nil when it can (F-385).
+    ///
+    /// Exposed so a menu can grey an entry out using the *same* rule the command obeys. Asking twice
+    /// in two places is how an "Eject" that is offered and then refuses comes about.
+    public static func refusal(for volume: Volume) -> Refusal? {
+        switch verdict(for: volume) {
+        case .success: return nil
+        case .failure(let refusal): return refusal
+        }
+    }
+
     private static func verdict(for volume: Volume) -> Result<Volume, Refusal> {
         if same(volume.path, "/") { return .failure(.bootVolume) }
         guard volume.isEjectable else { return .failure(.notEjectable(name: volume.name)) }

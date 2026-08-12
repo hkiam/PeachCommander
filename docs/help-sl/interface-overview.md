@@ -22,14 +22,14 @@ Okno je razdeljeno na levo in desno podokno, vsako prikazuje vsebino ene mape. N
 ## Vrstice okoli podoken
 
 - **Vrstica gumbov** (na vrhu): vrsta ploščatih gumbov za pogoste ukaze. Kliknite gumb, da izvedete njegov ukaz; z desnim klikom na gumb uredite vrstico.
-- **Vrstica pogonov**: en gumb za vsak razpoložljiv disk ali nosilec, vsak s kontrolnikom za izmet in prikazom prostora. Kliknite nosilec, da nanj preklopite dano podokno.
+- **Vrstica pogonov**: en gumb za vsak razpoložljivi disk ali nosilec, pri vsakem prosti prostor. Kliknite nosilec, da nanj preklopite to ploščo; z desnim klikom ga izvržete — ponujeno pri izmenljivih nosilcih in priklopljenih diskovnih slikah, sivo pri zagonskem disku in omrežnih mapah.
 - **Vrstica poti**: prikazuje trenutno mapo kot drobtinično pot, po kateri lahko klikate. Kliknite segment, da skočite naravnost v tisto mapo, ali kliknite pot, da vnesete lokacijo.
 - **Vrstica stanja** (pod vsakim seznamom): sprotni povzetek podokna — koliko datotek in map je izbranih ter njihova skupna velikost.
 - **Ukazna vrstica** (na dnu): besedilno polje, kamor lahko vnesete ukaz v slogu lupine, ki se izvede v trenutni mapi.
 - **Vrstica funkcijskih tipk** (čisto na dnu): šest gumbov z oznakami F3 Ogled, F4 Urejanje, F5 Kopiraj, F6 Premakni, F7 NovaMapa in F8 Izbriši. Kliknite gumb ali pritisnite ustrezno tipko.
 
 ![Približani prikaz vrstice pogonov z gumbi nosilcev in prikazom prostora](screenshots/drive-bar-crop.png)
-*(Slika: Vrstica pogonov — en gumb za vsak nosilec, s kontrolnikom za izmet in prikazom preostalega prostora.)*
+*(Slika: vrstica pogonov — en gumb na nosilec, s preostalim prostim prostorom; z desnim klikom na nosilec ga izvržete.)*
 
 ## Bližnjice
 

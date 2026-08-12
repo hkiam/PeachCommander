@@ -22,14 +22,14 @@ Vinduet er delt op i et venstre panel og et højre panel, der hver viser indhold
 ## Bjælker omkring panelerne
 
 - **Knapbjælke** (øverst): en række flade knapper til hyppige kommandoer. Klik på en knap for at køre dens kommando; højreklik på en knap for at redigere bjælken.
-- **Drevbjælke**: én knap pr. tilgængelig disk eller diskenhed, hver med en udskubningskontrol og dens frie plads. Klik på en diskenhed for at skifte det panel til den.
+- **Disklinje**: en knap pr. tilgængelig disk eller diskenhed, hver med sin ledige plads. Klik på en diskenhed for at skifte det panel dertil; højreklik for at skubbe den ud — tilbydes for flytbare diske og monterede diskbilleder, nedtonet for startdisken og netværksdelinger.
 - **Stibjælke**: viser den aktuelle mappe som en brødkrumme, der kan klikkes på. Klik på et segment for at springe direkte til den mappe, eller klik på stien for at skrive en placering.
 - **Statusbjælke** (under hver liste): et løbende resumé af panelet — hvor mange filer og mapper der er markeret og deres samlede størrelse.
 - **Kommandolinje** (nederst): et tekstfelt, hvor du kan skrive en shell-lignende kommando, der kører i den aktuelle mappe.
 - **Funktionstastbjælke** (allernederst): seks knapper mærket F3 Vis, F4 Redigér, F5 Kopiér, F6 Flyt, F7 Ny mappe og F8 Slet. Klik på en knap eller tryk på den matchende tast.
 
 ![Nærbillede af drevbjælken, der viser diskenhedsknapper og fri plads](screenshots/drive-bar-crop.png)
-*(Figur: Drevbjælken — én knap pr. diskenhed, med en udskubningskontrol og resterende fri plads.)*
+*(Figur: disklinjen — en knap pr. diskenhed, med den resterende ledige plads; højreklik på en diskenhed for at skubbe den ud.)*
 
 ## Genveje
 

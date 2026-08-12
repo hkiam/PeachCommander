@@ -2652,6 +2652,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                                           volumes: panel?.driveVolumes ?? []).get()
     }
 
+    /// Eject a volume named directly — the drive bar's context menu (F-385), as opposed to
+    /// `ejectVolumeUnderCursor`, which has to work out which volume is meant first.
+    func ejectVolume(_ volume: Volume) {
+        eject(volume)
+    }
+
     private func eject(_ volume: Volume) {
         do {
             try NSWorkspace.shared.unmountAndEjectDevice(at: URL(fileURLWithPath: volume.path))
@@ -6949,6 +6955,9 @@ final class PanelView: NSView {
         }
         driveBar.favoritesProvider = { [weak self] in
             (self?.window?.windowController as? MainWindowController)?.favoriteEntries() ?? []
+        }
+        driveBar.onEject = { [weak self] volume in
+            (self?.window?.windowController as? MainWindowController)?.ejectVolume(volume)
         }
         // Add the tab bar + drive bar LAST so they are frontmost siblings. Added
         // first (backmost) they never receive a live draw pass in this layer-backed

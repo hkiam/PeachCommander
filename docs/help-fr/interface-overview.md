@@ -22,14 +22,14 @@ La fenêtre est divisée en un panneau gauche et un panneau droit, chacun affich
 ## Les barres autour des panneaux
 
 - **Barre de boutons** (en haut) : une rangée de boutons plats pour les commandes fréquentes. Cliquez sur un bouton pour exécuter sa commande ; cliquez avec le bouton droit sur un bouton pour modifier la barre.
-- **Barre de lecteurs** : un bouton par disque ou volume disponible, chacun avec une commande d'éjection et son espace libre. Cliquez sur un volume pour y basculer ce panneau.
+- **Barre de lecteurs** : un bouton par disque ou volume disponible, chacun avec son espace libre. Cliquez sur un volume pour y basculer ce panneau ; un clic droit l’éjecte — proposé pour les volumes amovibles et les images disque montées, grisé pour le disque de démarrage et les partages réseau.
 - **Barre de chemin** : affiche le dossier courant sous forme de fil d'Ariane cliquable. Cliquez sur un segment pour accéder directement à ce dossier, ou cliquez sur le chemin pour saisir un emplacement.
 - **Barre d'état** (sous chaque liste) : un récapitulatif en direct du panneau — combien de fichiers et de dossiers sont sélectionnés et leur taille totale.
 - **Ligne de commande** (en bas) : un champ de texte où vous pouvez saisir une commande de type shell qui s'exécute dans le dossier courant.
 - **Barre des touches de fonction** (tout en bas) : six boutons intitulés F3 Afficher, F4 Modifier, F5 Copier, F6 Déplacer, F7 NouveauDossier et F8 Supprimer. Cliquez sur un bouton ou appuyez sur la touche correspondante.
 
 ![Gros plan sur la barre de lecteurs montrant les boutons de volumes et l'espace libre](screenshots/drive-bar-crop.png)
-*(Figure : la barre de lecteurs — un bouton par volume, avec une commande d'éjection et l'espace libre restant.)*
+*(Figure : la barre de lecteurs — un bouton par volume, avec l’espace libre restant ; un clic droit sur un volume l’éjecte.)*
 
 ## Raccourcis
 

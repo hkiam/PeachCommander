@@ -22,14 +22,14 @@ Okno jest podzielone na panel lewy i panel prawy, z których każdy pokazuje zaw
 ## Paski wokół paneli
 
 - **Pasek przycisków** (na górze): rząd płaskich przycisków dla częstych poleceń. Kliknij przycisk, aby uruchomić jego polecenie; kliknij przycisk prawym przyciskiem myszy, aby edytować pasek.
-- **Pasek dysków**: jeden przycisk na każdy dostępny dysk lub wolumin, każdy z przyciskiem wysuwania i informacją o wolnym miejscu. Kliknij wolumin, aby przełączyć na niego dany panel.
+- **Pasek napędów**: jeden przycisk na każdy dostępny dysk lub wolumin, przy każdym wolne miejsce. Kliknij wolumin, aby przełączyć do niego ten panel; kliknij prawym przyciskiem, aby go wysunąć — dostępne dla woluminów wymiennych i zamontowanych obrazów dysków, wyszarzone dla dysku startowego i udziałów sieciowych.
 - **Pasek ścieżki**: pokazuje bieżący folder jako klikalną ścieżkę nawigacyjną. Kliknij segment, aby przejść bezpośrednio do tego folderu, lub kliknij ścieżkę, aby wpisać lokalizację.
 - **Pasek stanu** (pod każdą listą): bieżące podsumowanie panelu — ile plików i folderów jest zaznaczonych oraz ich łączny rozmiar.
 - **Wiersz poleceń** (na dole): pole tekstowe, w którym możesz wpisać polecenie w stylu powłoki, uruchamiane w bieżącym folderze.
 - **Pasek klawiszy funkcyjnych** (na samym dole): sześć przycisków oznaczonych F3 Podgląd, F4 Edytuj, F5 Kopiuj, F6 Przenieś, F7 NowyFolder i F8 Usuń. Kliknij przycisk lub naciśnij odpowiadający mu klawisz.
 
 ![Zbliżenie paska dysków pokazujące przyciski woluminów i wolne miejsce](screenshots/drive-bar-crop.png)
-*(Rysunek: Pasek dysków — jeden przycisk na każdy wolumin, z przyciskiem wysuwania i pozostałym wolnym miejscem.)*
+*(Rysunek: pasek napędów — jeden przycisk na wolumin, z pozostałym wolnym miejscem; kliknij wolumin prawym przyciskiem, aby go wysunąć.)*
 
 ## Skróty
 

@@ -22,14 +22,14 @@ Okno je rozdelené na ľavý a pravý panel, každý zobrazuje obsah jedného pr
 ## Lišty okolo panelov
 
 - **Lišta tlačidiel** (hore): rad plochých tlačidiel na časté príkazy. Kliknutím na tlačidlo spustíte jeho príkaz; kliknutím pravým tlačidlom lištu upravíte.
-- **Lišta jednotiek**: jedno tlačidlo pre každý dostupný disk alebo zväzok, každé s ovládačom na vysunutie a údajom o voľnom mieste. Kliknutím na zväzok naň prepnete daný panel.
+- **Lišta jednotiek**: jedno tlačidlo na každý dostupný disk alebo zväzok, pri každom voľné miesto. Kliknutím na zväzok doň prepnete tento panel; kliknutím pravým tlačidlom ho vysuniete — ponúka sa pri vymeniteľných zväzkoch a pripojených obrazoch diskov, zošedivené pri spúšťacom disku a sieťových zdieľaniach.
 - **Lišta cesty**: zobrazuje aktuálny priečinok ako klikateľnú navigačnú cestu. Kliknutím na segment prejdete priamo do daného priečinka alebo kliknutím na cestu môžete umiestnenie zadať.
 - **Stavová lišta** (pod každým zoznamom): priebežný súhrn panela — koľko súborov a priečinkov je vybraných a ich celková veľkosť.
 - **Príkazový riadok** (dole): textové pole, do ktorého môžete napísať príkaz v štýle shellu, ktorý sa spustí v aktuálnom priečinku.
 - **Lišta funkčných klávesov** (úplne dole): šesť tlačidiel s označením F3 Zobraziť, F4 Upraviť, F5 Kopírovať, F6 Presunúť, F7 Nový priečinok a F8 Odstrániť. Kliknite na tlačidlo alebo stlačte príslušný kláves.
 
 ![Detail lišty jednotiek zobrazujúci tlačidlá zväzkov a voľné miesto](screenshots/drive-bar-crop.png)
-*(Obrázok: Lišta jednotiek — jedno tlačidlo pre každý zväzok, s ovládačom na vysunutie a zostávajúcim voľným miestom.)*
+*(Obrázok: lišta jednotiek — jedno tlačidlo na zväzok, so zvyšným voľným miestom; kliknutím pravým tlačidlom na zväzok ho vysuniete.)*
 
 ## Klávesové skratky
 
