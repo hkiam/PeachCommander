@@ -30,6 +30,33 @@ does not have.
   a file on an FTP or WebDAV server do nothing. Deleting now goes through whatever the panel is actually
   showing. A second F8 on a process that ignores the polite request still escalates to a force quit.
 
+### Added
+
+- **Open a process and see the files it has open.** A process in the Task Manager drive is now a folder:
+  press Enter on it and the panel lists the files that process is holding, as ordinary file rows. From
+  there you can view a file (F3), send it to the other panel with *Go to File*, or reveal it in the
+  Finder — the question "what is this thing touching?" answered where you can act on the answer.
+- **The columns Activity Monitor has and this didn't.** Memory footprint (the number Activity Monitor
+  shows, which is not the same as resident size), bytes read and written to disk, and wakeups. Memory has
+  its own column now that a process row is a folder, and byte counts are rendered as KB/MB and sorted by
+  the number behind them.
+- **Who signed each program.** A *Signed* column names Apple, a Developer ID team, an ad-hoc signature or
+  no signature at all — readable for every process, including other users', because it comes from the
+  program file rather than the running process. The F3 report adds the hardened-runtime flag and the
+  program's entitlements. The column fills in over the first few seconds; a blank cell means "not read
+  yet", not "unsigned".
+- **Other users' processes show numbers too.** CPU and resident size are filled in for root's processes
+  as well, which used to be a quarter of the list with every metric blank — no administrator password
+  involved. Those two figures come from `ps` and are labelled as such in the process report, because its
+  CPU value is a lifetime average rather than a live sample.
+- **Find out which processes have a file open.** The Task Manager drive could tell you which process
+  was sitting on a TCP/UDP port, but not which one was holding the file you were trying to replace.
+  Right-click in the process list, choose *Find Processes by File…*, and every process with that file
+  open is coloured by how it holds it: one colour for reading, one for writing, one for both. The path
+  is prefilled from the cursor in the other panel, and the cursor jumps to the first process that can
+  change the file. *Clear File Highlight* removes the colours; leaving the process list removes them
+  too. As with the port search, other users' processes need elevated privileges to inspect.
+
 ## [0.6.1] — 2026-08-12
 
 Three user reports, and each of them turned out to be about something the application was

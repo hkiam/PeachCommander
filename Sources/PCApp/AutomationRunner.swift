@@ -16,6 +16,11 @@
 //   dump  <file>          write the active panel's path + entry names to a file
 //   bardrop <path>        add a bar button for <path>, as a drop on free space would
 //   drivebardump <file>   write the active panel's path + the drive chip shown as current
+//   procfile <path>       highlight the processes holding <path> open (TaskManager mount)
+//   prochldump <file>     write the highlighted process rows and their handle kind
+//   gotoopenfile          "Go to File" on the cursor row (inside a process)
+//   rowdump <file>        every visible column of the cursor row, as id + rendered text
+//   sortcol <fieldID>     sort the panel by a plugin content column
 //   viewdump <file>       cursor, first visible row and scroll offset of the active panel
 //   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
 //   theme <id>            select a colour palette ("system", "norton", …)
@@ -313,11 +318,44 @@ extension MainWindowController {
                 let responder = window?.firstResponder.map { String(describing: type(of: $0)) } ?? "<none>"
                 try? "active=\(side)\nleft=\(l)\nright=\(r)\nresponder=\(responder)\n"
                     .write(toFile: arg, atomically: true, encoding: .utf8)
+            case "sortcol":                            // sortcol <fieldID> (F-392): sort by a plugin column
+                activePanel?.tableView.automationSortByPluginColumn(arg)
             case "viewdump":                           // viewdump <out> (F-398): cursor + scroll position
                 try? (activePanel?.tableView.automationViewport() ?? "ERROR: no active panel\n")
                     .write(toFile: arg, atomically: true, encoding: .utf8)
             case "scrollto":                           // scrollto <row> (F-398): scroll, cursor unmoved
                 activePanel?.tableView.automationScrollTo(row: Int(arg) ?? 0)
+            case "rowdump":                             // rowdump <out> (F-392): the cursor row, column by column
+                let cells = activePanel?.tableView.automationCursorRowCells() ?? []
+                let out = cells.map { "\($0.field)\t\($0.text)" }.joined(separator: "\n")
+                try? (out + "\n").write(toFile: arg, atomically: true, encoding: .utf8)
+            case "gotoopenfile":                        // gotoopenfile (F-391): "Go to File" on the cursor row
+                if let real = activePanel?.tableView.cursorOpenFilePath() {
+                    goToOpenFile(real)
+                    NSLog("[automation] gotoopenfile → \(real)")
+                } else {
+                    NSLog("[automation] gotoopenfile: the cursor row is not an open file")
+                }
+            case "procfile":                            // procfile <path> (F-390)
+                // The modal-free half of "Find Processes by File…": `runModal` never returns to a
+                // script, so the dialog itself cannot be driven — this is the search it performs.
+                let hits = highlightProcesses(holdingFile: arg)
+                NSLog("[automation] procfile \(arg) → \(hits) process(es)")
+            case "prochldump":                          // prochldump <out> (F-390)
+                // Which rows carry the file-handle colour, and which of the three it is. A
+                // screenshot cannot answer that: the colours differ by hue at the same lightness,
+                // and `dump` reports names only.
+                if let table = activePanel?.tableView {
+                    let rows = table.fileHandleHighlightRows()
+                    let out = "count=\(rows.count)\n"
+                        + rows.map { "\($0.name)\t\($0.kind.rawValue)\t"
+                            + (table.automationRenderedNameColor(forName: $0.name) ?? "<no cell>") }
+                            .joined(separator: "\n")
+                        + (rows.isEmpty ? "" : "\n")
+                    try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+                } else {
+                    try? "ERROR: no active panel\n".write(toFile: arg, atomically: true, encoding: .utf8)
+                }
             case "drivebardump":                        // drivebardump <out> (F-385)
                 // What the panel says it is showing — the current chip, the tab titles and the
                 // breadcrumb — next to the path. Only together do they say anything: inside a plugin

@@ -20,7 +20,7 @@
 <p><img alt="Task Manager care listează procesele care rulează cu coloanele PID, CPU, memorie și comandă" src="images/task-manager.png" />
 <em>(Figura: procesele care rulează afișate ca o listă de fișiere pe care o puteți sorta și asupra căreia puteți acționa.)</em></p>
 <h2 id="ce-inseamna-fiecare-coloana">Ce înseamnă fiecare coloană</h2>
-<p>Pe lângă coloanele obișnuite Dimensiune (memorie) și Dată (ora de pornire), Task Manager adaugă coloane de proces:</p>
+<p>Pe lângă coloana Dată (ora pornirii), Task Manager adaugă coloane de proces. Dimensiunea unui rând de proces afișează <code>DIR</code>, pentru că un proces este un dosar pe care îl puteți deschide (vedeți mai jos) — memoria are coloane proprii:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Utilizarea recentă a procesorului (necesită o a doua reîmprospătare pentru a apărea)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Amprenta de memorie — de ce răspunde acest proces (cifra afișată de Monitorul de activitate)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Dimensiunea rezidentă, inclusiv paginile partajate; completată pentru fiecare proces</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>Numărul de fire de execuție</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R în execuție · S în repaus · T oprit · Z zombi · I inactiv</td>
+<td>R în execuție · S în repaus · T oprit · Z zombi · I inactiv, plus sufixele adăugate de <code>ps</code> (s = lider de sesiune, + = prim-plan, N = prioritate scăzută)</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>ID-ul procesului părinte</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>Octeți citiți de pe disc de la pornirea procesului</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>Octeți scriși pe disc de la pornirea procesului</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Treziri prin întrerupere de la pornirea procesului</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Cine a semnat programul: Apple, o echipă cu Developer ID, ad-hoc sau nesemnat</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>Vizualizează (F3)</strong> arată un raport <em>Informații despre proces</em>: nume, PID, părinte, utilizator, stare, fire de execuție, memorie, CPU, ora de pornire, calea executabilului și linia de comandă completă.</li>
 <li><strong>Șterge (F8)</strong> încheie procesul. Prima ștergere trimite o <strong>încheiere</strong> blândă (SIGTERM); ștergerea a doua oară a unui proces care încă rulează escaladează la o <strong>încheiere forțată</strong> (SIGKILL). Pluginul nu vizează niciodată PID 1.</li>
 </ul>
+<h2 id="gasirea-proceselor-care-folosesc-un-fisier">Găsirea proceselor care folosesc un fișier</h2>
+<p>Faceți clic dreapta pe orice rând și alegeți <strong>Găsește procesele după fișier…</strong>, apoi introduceți calea unui fișier. Fiecare proces care are acel fișier deschis în acel moment este evidențiat, iar cursorul sare la primul care îl poate modifica:</p>
+<ul>
+<li><strong>Albastru</strong> — procesul doar citește fișierul.</li>
+<li><strong>Portocaliu</strong> — procesul doar scrie în el.</li>
+<li><strong>Violet</strong> — procesul face ambele.</li>
+</ul>
+<p>Calea este precompletată din cursorul celuilalt panou, așa că puteți arăta acolo un fișier și puteți întreba fără să tastați. <strong>Găsește procesul după port…</strong>, din același meniu, răspunde la întrebarea înrudită: ce proces ascultă pe un port TCP/UDP. Alegeți <strong>Șterge evidențierea fișierului</strong> pentru a înlătura culorile; părăsirea listei de procese le înlătură de asemenea.</p>
+<h2 id="deschideti-un-proces-pentru-a-i-vedea-fisierele">Deschideți un proces pentru a-i vedea fișierele</h2>
+<p>Apăsați Enter pe un proces — sau faceți dublu clic — și panoul listează fișierele pe care acel proces le are deschise în acel moment, ca rânduri obișnuite de fișiere, cu dimensiunea și data lor reale. De acolo:</p>
+<ul>
+<li><strong>Vizualizare (F3)</strong> deschide fișierul însuși.</li>
+<li><strong>Mergi la fișier</strong> îl arată în celălalt panou, unde puteți lucra cu el.</li>
+<li><strong>Afișează în Finder</strong> îl predă Finderului.</li>
+</ul>
+<p>Contează doar fișierele deschise: o bibliotecă pe care procesul doar a mapat-o în memorie și directorul său de lucru nu sunt fișiere deschise. Procesul altui utilizator arată un dosar gol.</p>
 <h2 id="note">Note</h2>
 <ul>
-<li>Detaliile de bază (PID, părinte, utilizator, stare) sunt citibile pentru fiecare proces, la fel ca <code>ps</code>. Memoria, firele de execuție și CPU pot fi citite doar pentru <strong>propriile</strong> procese; celelalte procese arată acele coloane goale (necesită privilegii ridicate, o adăugire ulterioară).</li>
+<li>Datele de bază (PID, părinte, utilizator, stare, semnătură) sunt lizibile pentru fiecare proces. Amprenta de memorie, firele de execuție, I/O de disc și lista fișierelor deschise sunt lizibile pentru procesele <strong>dumneavoastră</strong>, care pe un Mac obișnuit sunt cea mai mare parte a listei. Pentru procesele altor utilizatori, CPU și Resident sunt completate din <code>ps</code> — o medie pe toată durata de viață în loc de diferența dintre două măsurători pe care o poartă celelalte rânduri — iar firele și amprenta rămân goale.</li>
 <li>CPU % este o modificare între două eșantioane, deci rămâne gol până când panoul se reîmprospătează a doua oară (panoul se reîmprospătează aproximativ la fiecare două secunde).</li>
 <li>Lista este doar-citire, în afară de încheierea unui proces — nu puteți copia fișiere în ea.</li>
+<li>Culorile de evidențiere urmează tema dvs. de culori: paleta Norton folosește în schimb verde, roșu și magenta.</li>
+<li>Sunt găsite doar descriptoarele pe care contul dvs. are voie să le inspecteze, ceea ce în practică înseamnă propriile procese. O bibliotecă pe care un proces doar a mapat-o în memorie sau directorul său de lucru nu este un descriptor deschis și nu este raportat.</li>
+<li>Coloana <strong>Signed</strong> se completează în primele secunde: citirea unei semnături durează circa o milisecundă și există sute de programe distincte, așa că sunt citite câteva la fiecare reîmprospătare și apoi reținute. O celulă goală înseamnă „încă necitită”, nu „nesemnat”.</li>
+<li><strong>Signed</strong> spune cine a semnat programul, nu dacă este notarizat: verificarea notarizării înseamnă calcularea hash-ului întregului program, ceea ce ar dura secunde pentru fiecare.</li>
+<li>Aici filtrul rapid (Ctrl+S) se potrivește și cu coloanele, nu doar cu numele, iar un termen poate numi coloana la care se aplică: <code>user:root state:R</code> întreabă ce rulează root chiar acum. Termenii sunt separați prin spații și toți trebuie să se potrivească; textul care nu numește nicio coloană rămâne un singur subșir simplu, inclusiv spațiile.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="viewing-files.html">Vizualizarea fișierelor</a></li><li><a href="deleting-files.html">Ștergerea fișierelor</a></li></ul></section>
 </main>

@@ -20,7 +20,7 @@
 <p><img alt="Task Manager che elenca i processi in esecuzione con le colonne PID, CPU, memoria e comando" src="images/task-manager.png" />
 <em>(Figura: i processi in esecuzione mostrati come un elenco di file che potete ordinare e su cui potete agire.)</em></p>
 <h2 id="cosa-significa-ogni-colonna">Cosa significa ogni colonna</h2>
-<p>Accanto alle solite colonne Dimensione (memoria) e Data (ora di avvio), Task Manager aggiunge colonne di processo:</p>
+<p>Accanto alla colonna Data (ora di avvio), Task Manager aggiunge colonne di processo. La Dimensione di una riga di processo mostra <code>DIR</code>, perché un processo è una cartella che puoi aprire (vedi sotto): la memoria ha colonne proprie:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Uso recente del processore (serve un secondo aggiornamento perché compaia)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Impronta di memoria — ciò di cui questo processo risponde (il numero mostrato da Monitoraggio Attività)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Dimensione residente, pagine condivise incluse; compilata per ogni processo</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>Numero di thread</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R in esecuzione · S in attesa · T fermato · Z zombie · I inattivo</td>
+<td>R in esecuzione · S in attesa · T fermato · Z zombie · I inattivo, più i suffissi aggiunti da <code>ps</code> (s = leader di sessione, + = primo piano, N = priorità bassa)</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>Id del processo padre</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>Byte letti dal disco da quando il processo è partito</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>Byte scritti sul disco da quando il processo è partito</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Risvegli da interrupt da quando il processo è partito</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Chi ha firmato il programma: Apple, un team con Developer ID, ad-hoc o non firmato</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>Visualizza (F3)</strong> mostra un rapporto <em>Process Information</em>: nome, PID, padre, utente, stato, thread, memoria, CPU, ora di avvio, percorso dell'eseguibile e la riga di comando completa.</li>
 <li><strong>Elimina (F8)</strong> termina il processo. La prima eliminazione invia una <strong>chiusura</strong> garbata (SIGTERM); eliminando una seconda volta un processo ancora in esecuzione si passa a una <strong>chiusura forzata</strong> (SIGKILL). Il plugin non prende mai di mira il PID 1.</li>
 </ul>
+<h2 id="trovare-i-processi-che-usano-un-file">Trovare i processi che usano un file</h2>
+<p>Fai clic con il tasto destro su una riga qualsiasi e scegli <strong>Trova processi per file…</strong>, poi inserisci il percorso di un file. Ogni processo che ha quel file aperto in quel momento viene evidenziato e il cursore salta al primo che può modificarlo:</p>
+<ul>
+<li><strong>Blu</strong> — il processo si limita a leggere il file.</li>
+<li><strong>Arancione</strong> — il processo si limita a scriverci.</li>
+<li><strong>Viola</strong> — il processo fa entrambe le cose.</li>
+</ul>
+<p>Il percorso è precompilato dal cursore dell’altro pannello, così puoi indicare lì un file e porre la domanda senza digitare. <strong>Trova processo per porta…</strong>, nello stesso menu, risponde alla domanda gemella: quale processo è in ascolto su una porta TCP/UDP. Scegli <strong>Rimuovi evidenziazione file</strong> per togliere i colori; anche uscire dall’elenco dei processi li toglie.</p>
+<h2 id="apri-un-processo-per-vedere-i-suoi-file">Apri un processo per vedere i suoi file</h2>
+<p>Premi Invio su un processo — o fai doppio clic — e il pannello elenca i file che quel processo ha aperti in quel momento, come normali righe di file con dimensione e data reali. Da lì:</p>
+<ul>
+<li><strong>Visualizza (F3)</strong> apre il file stesso.</li>
+<li><strong>Vai al file</strong> lo mostra nell'altro pannello, dove puoi lavorarci.</li>
+<li><strong>Mostra nel Finder</strong> lo consegna al Finder.</li>
+</ul>
+<p>Contano solo i file aperti: una libreria che il processo ha soltanto mappato in memoria, e la sua directory di lavoro, non sono file aperti. Il processo di un altro utente mostra una cartella vuota.</p>
 <h2 id="note">Note</h2>
 <ul>
-<li>I dettagli di base (PID, padre, utente, stato) sono leggibili per ogni processo, come <code>ps</code>. Memoria, thread e CPU possono essere letti solo per i <strong>vostri</strong> processi; gli altri processi mostrano quelle colonne vuote (richiedono privilegi elevati, un'aggiunta successiva).</li>
+<li>I dati di base (PID, padre, utente, stato, firma) sono leggibili per ogni processo. L'impronta di memoria, i thread, l'I/O su disco e l'elenco dei file aperti sono leggibili per i <strong>tuoi</strong> processi, che su un Mac normale sono la maggior parte dell'elenco. Per i processi di altri utenti, CPU e Resident vengono compilati da <code>ps</code> — una media sull'intera vita del processo invece della differenza fra due misure che portano le altre righe — mentre thread e impronta restano vuoti.</li>
 <li>CPU % è una variazione tra due campionamenti, quindi è vuota finché il pannello non si aggiorna una seconda volta (il pannello si aggiorna all'incirca ogni due secondi).</li>
 <li>L'elenco è di sola lettura a parte la terminazione di un processo — non potete copiarvi dentro dei file.</li>
+<li>I colori dell’evidenziazione seguono il tema colori: la palette Norton usa invece verde, rosso e magenta.</li>
+<li>Vengono trovati solo i descrittori che il tuo account può ispezionare, il che in pratica significa i tuoi processi. Una libreria che un processo ha soltanto mappato in memoria, o la sua directory di lavoro, non è un descrittore aperto e non viene segnalata.</li>
+<li>La colonna <strong>Signed</strong> si riempie nei primi secondi: leggere una firma richiede circa un millisecondo e i programmi distinti sono centinaia, quindi ne vengono letti alcuni per aggiornamento e poi ricordati. Una cella vuota significa «non ancora letta», non «non firmato».</li>
+<li><strong>Signed</strong> dice chi ha firmato il programma, non se è autenticato: verificare l'autenticazione significa calcolare l'hash dell'intero programma, e servirebbero secondi per ciascuno.</li>
+<li>Qui il filtro rapido (Ctrl+S) corrisponde anche alle colonne e non solo al nome, e un termine può nominare la colonna a cui si applica: <code>user:root state:R</code> chiede che cosa sta eseguendo root in questo momento. I termini sono separati da spazi e devono corrispondere tutti; il testo che non nomina alcuna colonna resta un'unica sottostringa, spazi inclusi.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="viewing-files.html">Visualizzazione dei file</a></li><li><a href="deleting-files.html">Eliminare i file</a></li></ul></section>
 </main>

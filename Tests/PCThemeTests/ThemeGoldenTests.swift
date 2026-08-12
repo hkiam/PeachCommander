@@ -65,6 +65,9 @@ final class ThemeGoldenTests: XCTestCase {
             "driveBarHighlightText": rgba(c.driveBarHighlightText),
             // Optional: "none" when the palette leaves the cursor row's text alone.
             "cursorRowText": c.cursorRowText.map(rgba) ?? "none",
+            "fileHandleReadText": rgba(c.fileHandleReadText),
+            "fileHandleWriteText": rgba(c.fileHandleWriteText),
+            "fileHandleReadWriteText": rgba(c.fileHandleReadWriteText),
             "tabBarBackground": rgba(c.tabBarBackground),
             "tabBarActiveChip": rgba(c.tabBarActiveChip),
             "tabBarInactiveChip": rgba(c.tabBarInactiveChip),
@@ -98,6 +101,11 @@ final class ThemeGoldenTests: XCTestCase {
         "statusBarText": "000000@1.000",
         // The four greys the tab bar used to hardcode, plus the active-chip text colour that was
         // the same as the inactive one. Pinned so extracting them stays a no-op for the default.
+        // The file-handle highlight (F-390). Pinned like everything else: these are read against
+        // the panel background, so a "nicer" blue is a legibility change, not a cosmetic one.
+        "fileHandleReadText": "1d6fd1@1.000",
+        "fileHandleWriteText": "c2410c@1.000",
+        "fileHandleReadWriteText": "8e44ad@1.000",
         "tabBarBackground": "d1d1d1@1.000",
         "tabBarActiveChip": "ffffff@1.000",
         "tabBarInactiveChip": "e6e6e6@1.000",
@@ -126,6 +134,9 @@ final class ThemeGoldenTests: XCTestCase {
         "functionButtonText": "e6e6e6@1.000",
         "statusBarBackground": "404040@1.000",
         "statusBarText": "e6e6e6@1.000",
+        "fileHandleReadText": "6fb2ff@1.000",
+        "fileHandleWriteText": "ff9a5a@1.000",
+        "fileHandleReadWriteText": "c89bff@1.000",
         "tabBarBackground": "292929@1.000",
         "tabBarActiveChip": "575757@1.000",
         "tabBarInactiveChip": "383838@1.000",

@@ -20,7 +20,7 @@
 <p><img alt="Task Manager wymieniający działające procesy z kolumnami PID, CPU, pamięci i polecenia" src="images/task-manager.png" />
 <em>(Rysunek: działające procesy pokazane jako lista plików, którą możesz sortować i na której możesz działać.)</em></p>
 <h2 id="co-oznacza-kazda-kolumna">Co oznacza każda kolumna</h2>
-<p>Obok zwykłych kolumn Rozmiar (pamięć) i Data (czas uruchomienia) Task Manager dodaje kolumny procesów:</p>
+<p>Obok kolumny Data (czas uruchomienia) Task Manager dodaje kolumny procesów. Rozmiar wiersza procesu pokazuje <code>DIR</code>, ponieważ proces jest folderem, który można otworzyć (patrz niżej) — pamięć ma własne kolumny:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Ostatnie użycie procesora (pojawia się dopiero po drugim odświeżeniu)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Ślad pamięciowy — za co odpowiada ten proces (liczba pokazywana przez Monitor aktywności)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Rozmiar rezydentny, ze stronami współdzielonymi; wypełniany dla każdego procesu</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>Liczba wątków</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R działający · S śpiący · T zatrzymany · Z zombie · I bezczynny</td>
+<td>R działający · S śpiący · T zatrzymany · Z zombie · I bezczynny, plus przyrostki dodawane przez <code>ps</code> (s = lider sesji, + = pierwszy plan, N = niski priorytet)</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>Identyfikator procesu nadrzędnego</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>Bajty odczytane z dysku od uruchomienia procesu</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>Bajty zapisane na dysku od uruchomienia procesu</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Wybudzenia przerwaniami od uruchomienia procesu</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Kto podpisał program: Apple, zespół z Developer ID, ad-hoc lub bez podpisu</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>Podgląd (F3)</strong> pokazuje raport <em>Informacje o procesie</em>: nazwę, PID, proces nadrzędny, użytkownika, stan, wątki, pamięć, procesor, czas uruchomienia, ścieżkę pliku wykonywalnego i pełny wiersz poleceń.</li>
 <li><strong>Usuń (F8)</strong> kończy proces. Pierwsze usunięcie wysyła łagodne <strong>zakończenie</strong> (SIGTERM); usunięcie po raz drugi procesu, który wciąż działa, eskaluje do <strong>wymuszonego zakończenia</strong> (SIGKILL). Wtyczka nigdy nie celuje w PID 1.</li>
 </ul>
+<h2 id="znajdowanie-procesow-uzywajacych-pliku">Znajdowanie procesów używających pliku</h2>
+<p>Kliknij prawym przyciskiem myszy dowolny wiersz i wybierz <strong>Znajdź procesy według pliku…</strong>, a następnie wprowadź ścieżkę pliku. Każdy proces, który ma ten plik aktualnie otwarty, zostanie wyróżniony, a kursor przeskoczy do pierwszego, który może go zmienić:</p>
+<ul>
+<li><strong>Niebieski</strong> — proces tylko czyta plik.</li>
+<li><strong>Pomarańczowy</strong> — proces tylko do niego zapisuje.</li>
+<li><strong>Fioletowy</strong> — proces robi jedno i drugie.</li>
+</ul>
+<p>Ścieżka jest wstępnie wypełniana z kursora w drugim panelu, więc możesz wskazać plik tam i zapytać bez pisania. <strong>Znajdź proces według portu…</strong> w tym samym menu odpowiada na bliźniacze pytanie: który proces nasłuchuje na porcie TCP/UDP. Wybierz <strong>Wyczyść wyróżnienie pliku</strong>, aby usunąć kolory; opuszczenie listy procesów również je usuwa.</p>
+<h2 id="otworz-proces-aby-zobaczyc-jego-pliki">Otwórz proces, aby zobaczyć jego pliki</h2>
+<p>Naciśnij Enter na procesie — albo kliknij go dwukrotnie — a panel wypisze pliki, które ten proces ma w tej chwili otwarte, jako zwykłe wiersze plików z prawdziwym rozmiarem i datą. Stamtąd:</p>
+<ul>
+<li><strong>Podgląd (F3)</strong> otwiera sam plik.</li>
+<li><strong>Przejdź do pliku</strong> pokazuje go w drugim panelu, gdzie możesz z nim pracować.</li>
+<li><strong>Pokaż w Finderze</strong> przekazuje go Finderowi.</li>
+</ul>
+<p>Liczą się tylko otwarte pliki: biblioteka, którą proces jedynie odwzorował w pamięci, ani jego katalog roboczy nie są otwartymi plikami. Proces innego użytkownika pokazuje pusty folder.</p>
 <h2 id="uwagi">Uwagi</h2>
 <ul>
-<li>Podstawowe szczegóły (PID, proces nadrzędny, użytkownik, stan) są odczytywalne dla każdego procesu, jak w <code>ps</code>. Pamięć, wątki i procesor można odczytać tylko dla <strong>Twoich własnych</strong> procesów; inne procesy pokazują te kolumny puste (wymagają podwyższonych uprawnień, co zostanie dodane później).</li>
+<li>Podstawowe dane (PID, rodzic, użytkownik, stan, podpis) są czytelne dla każdego procesu. Ślad pamięciowy, wątki, we/wy dysku i lista otwartych plików są czytelne dla <strong>Twoich własnych</strong> procesów, co na zwykłym Macu stanowi większość listy. Dla procesów innych użytkowników CPU i Resident są wypełniane z <code>ps</code> — średnia z całego życia procesu zamiast różnicy dwóch pomiarów, którą niosą pozostałe wiersze — a wątki i ślad pozostają puste.</li>
 <li>CPU % to zmiana między dwiema próbkami, więc jest puste, dopóki panel nie odświeży się po raz drugi (panel odświeża się mniej więcej co dwie sekundy).</li>
 <li>Lista jest tylko do odczytu, poza kończeniem procesu — nie możesz kopiować do niej plików.</li>
+<li>Kolory wyróżnienia zależą od motywu kolorów: paleta Norton używa zamiast tego zieleni, czerwieni i magenty.</li>
+<li>Znajdowane są tylko uchwyty, w które Twoje konto może zajrzeć, co w praktyce oznacza Twoje własne procesy. Biblioteka, którą proces jedynie odwzorował w pamięci, ani jego katalog roboczy nie są otwartym uchwytem i nie są zgłaszane.</li>
+<li>Kolumna <strong>Signed</strong> wypełnia się przez pierwsze sekundy: odczyt podpisu trwa około milisekundy, a różnych programów są setki, więc przy każdym odświeżeniu odczytywanych jest kilka i potem zapamiętywanych. Pusta komórka znaczy „jeszcze nieodczytany”, a nie „bez podpisu”.</li>
+<li><strong>Signed</strong> mówi, kto podpisał program, a nie czy jest notaryzowany: sprawdzenie notaryzacji oznacza policzenie skrótu całego programu, co dla każdego zajęłoby sekundy.</li>
+<li>Szybki filtr (Ctrl+S) trafia tu również w kolumny, nie tylko w nazwę, a wyrażenie może wskazać kolumnę, której dotyczy: <code>user:root state:R</code> pyta, co właśnie uruchamia root. Wyrażenia rozdziela się spacjami i wszystkie muszą pasować; tekst, który nie wskazuje kolumny, pozostaje jednym zwykłym podciągiem, ze spacjami włącznie.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="viewing-files.html">Podgląd plików</a></li><li><a href="deleting-files.html">Usuwanie plików</a></li></ul></section>
 </main>

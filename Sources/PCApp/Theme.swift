@@ -30,6 +30,9 @@ public struct Theme {
         functionButtonText: NSColor.black,
         statusBarBackground: NSColor(white: 0.95, alpha: 1.0),
         statusBarText: NSColor.black,
+        fileHandleReadText: cga("1D6FD1"),
+        fileHandleWriteText: cga("C2410C"),
+        fileHandleReadWriteText: cga("8E44AD"),
         tabBarBackground: NSColor(white: 0.82, alpha: 1.0),
         tabBarActiveChip: NSColor.white,
         tabBarInactiveChip: NSColor(white: 0.90, alpha: 1.0),
@@ -59,6 +62,9 @@ public struct Theme {
         functionButtonText: NSColor(white: 0.9, alpha: 1.0),
         statusBarBackground: NSColor(white: 0.25, alpha: 1.0),
         statusBarText: NSColor(white: 0.9, alpha: 1.0),
+        fileHandleReadText: cga("6FB2FF"),
+        fileHandleWriteText: cga("FF9A5A"),
+        fileHandleReadWriteText: cga("C89BFF"),
         tabBarBackground: NSColor(white: 0.16, alpha: 1.0),
         tabBarActiveChip: NSColor(white: 0.34, alpha: 1.0),
         tabBarInactiveChip: NSColor(white: 0.22, alpha: 1.0),
@@ -111,6 +117,11 @@ public struct Theme {
         // The active panel's cursor bar is cyan, and the panel keeps the row's normal text
         // colour — which here is the same cyan. Without this the cursor row is invisible.
         cursorRowText: cga("000000"),
+        // The file-handle highlight, in CGA: light green reads, light red writes, light
+        // magenta both. Yellow is taken — it is what a marked file is.
+        fileHandleReadText: cga("55FF55"),
+        fileHandleWriteText: cga("FF5555"),
+        fileHandleReadWriteText: cga("FF55FF"),
         // NC had no tabs; cyan-on-blue with the active tab inverted is the natural extension.
         tabBarBackground: cga("0000AA"),
         tabBarActiveChip: cga("00AAAA"),
@@ -295,6 +306,16 @@ public struct Theme {
         /// shipped that way. Marked files keep `selectedText`, so marking stays visible on the bar.
         public var cursorRowText: NSColor?
 
+        // File-handle highlight (F-390): the TaskManager mount colours the processes holding a
+        // given file open. Three colours because a handle is not one thing — a process only
+        // reading the file is a different problem from one writing it, and one doing both is the
+        // one you were looking for. Text colours rather than a row fill: that is how this panel
+        // has always marked a row's kind (file-type colours), so it composes with the cursor bar
+        // and the zebra shading instead of fighting them.
+        public var fileHandleReadText: NSColor
+        public var fileHandleWriteText: NSColor
+        public var fileHandleReadWriteText: NSColor
+
         // Tab bar (F-340). These were four hardcoded greys picked from the dark/light appearance,
         // so the bar stayed macOS-grey under a palette. The light/dark defaults below are exactly
         // those greys, which is why extracting them changes nothing.
@@ -352,6 +373,9 @@ public struct Theme {
             case "tabbarchiptext": tabBarChipText = color
             case "tabbaractivechiptext": tabBarActiveChipText = color
             case "cursorrowtext": cursorRowText = color
+            case "filehandlereadtext": fileHandleReadText = color
+            case "filehandlewritetext": fileHandleWriteText = color
+            case "filehandlereadwritetext": fileHandleReadWriteText = color
             default: return false
             }
             return true
@@ -390,6 +414,11 @@ public struct Theme {
             driveBarText: NSColor = NSColor.labelColor,
             driveBarHighlightText: NSColor = NSColor.white,
             cursorRowText: NSColor? = nil,
+            // Defaults = the light palette's, so a palette that predates the file-handle
+            // highlight still has three usable colours instead of three invisible ones.
+            fileHandleReadText: NSColor = NSColor(hexString: "1D6FD1")!,
+            fileHandleWriteText: NSColor = NSColor(hexString: "C2410C")!,
+            fileHandleReadWriteText: NSColor = NSColor(hexString: "8E44AD")!,
             tabBarBackground: NSColor,
             tabBarActiveChip: NSColor,
             tabBarInactiveChip: NSColor,
@@ -426,6 +455,9 @@ public struct Theme {
             self.driveBarText = driveBarText
             self.driveBarHighlightText = driveBarHighlightText
             self.cursorRowText = cursorRowText
+            self.fileHandleReadText = fileHandleReadText
+            self.fileHandleWriteText = fileHandleWriteText
+            self.fileHandleReadWriteText = fileHandleReadWriteText
             self.tabBarBackground = tabBarBackground
             self.tabBarActiveChip = tabBarActiveChip
             self.tabBarInactiveChip = tabBarInactiveChip
@@ -470,6 +502,9 @@ public struct Theme {
                 driveBarText: driveBarText,
                 driveBarHighlightText: driveBarHighlightText,
                 cursorRowText: cursorRowText,
+                fileHandleReadText: fileHandleReadText,
+                fileHandleWriteText: fileHandleWriteText,
+                fileHandleReadWriteText: fileHandleReadWriteText,
                 tabBarBackground: tabBarBackground,
                 tabBarActiveChip: tabBarActiveChip,
                 tabBarInactiveChip: tabBarInactiveChip,

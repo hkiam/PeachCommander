@@ -8,6 +8,7 @@
 
 import XCTest
 import PCVFS
+import PCFoundation
 @testable import PCPluginHost
 
 final class TaskManagerPluginTests: XCTestCase {
@@ -29,7 +30,11 @@ final class TaskManagerPluginTests: XCTestCase {
         let sdk = repoRoot.appendingPathComponent("Plugins/SDK")
         let out = dir.appendingPathComponent("libtaskman.dylib")
         let p = Process(); p.executableURL = URL(fileURLWithPath: clang)
-        p.arguments = ["-dynamiclib", "-std=c11", "-I", sdk.path, "-o", out.path, src.path]
+        // Security/CoreFoundation for the signature column (F-393) — the same frameworks
+        // Tools/build-taskmanager-plugin.sh links, or this compiles a plugin the app does not have.
+        p.arguments = ["-dynamiclib", "-std=c11", "-I", sdk.path,
+                       "-framework", "CoreFoundation", "-framework", "Security",
+                       "-o", out.path, src.path]
         let pipe = Pipe(); p.standardError = pipe
         try p.run(); p.waitUntilExit()
         guard p.terminationStatus == 0 else {
@@ -73,7 +78,17 @@ final class TaskManagerPluginTests: XCTestCase {
         let fs = makeFS()
         XCTAssertTrue(fs.isVolatile)        // PC_PFX_CAP_VOLATILE -> host auto-refreshes
         XCTAssertEqual(fs.contentFields.map(\.name),
-                       ["pid", "cpu", "threads", "state", "user", "ppid", "command"])
+                       ["pid", "cpu", "mem", "rss", "threads", "state", "user", "ppid",
+                        "read", "written", "wakeups", "signed", "command"])
+        // PFX_FT_SIZE == 2: the host renders those in KB/MB and sorts by the number behind it.
+        // "mem" carries what the Size column used to, which now reads "<DIR>" (F-391).
+        // Two memory columns on purpose (F-394): the footprint is what a process is accountable
+        // for and is readable only for our own; the resident size is filled for every process,
+        // from `ps` where proc_pidinfo will not answer.
+        XCTAssertEqual(fs.contentFields.filter { $0.type == 2 }.map(\.name),
+                       ["mem", "rss", "read", "written"])
+        // PFX_FT_STRING == 0 is the only type that sorts lexically.
+        XCTAssertTrue(fs.contentFields.allSatisfy { $0.isNumericSort == ($0.type != 0) })
         XCTAssertEqual(fs.qualifiedContentFields.map(\.qualifiedID).first, "taskman.pid")
     }
 
@@ -107,7 +122,8 @@ final class TaskManagerPluginTests: XCTestCase {
         let ours = try XCTUnwrap(entries.first { $0.name.hasSuffix("(\(mine))") })
         let st = try await fs.stat(VFSPath(filesystemId: "taskman", path: "/\(ours.name)"))
         XCTAssertTrue(st.name.hasSuffix("(\(mine))"))
-        XCTAssertEqual(st.kind, .file)
+        // A process is a folder since F-391: entering it lists the files it has open.
+        XCTAssertEqual(st.kind, .directory)
     }
 
     func test_lookup_findsProcessOwningPort() async throws {
@@ -138,6 +154,206 @@ final class TaskManagerPluginTests: XCTestCase {
         let hit = fs.lookup(query: "port:\(port)")
         XCTAssertEqual(hit?.hasSuffix("(\(mine))"), true, "port \(port) → \(hit ?? "nil"), want pid \(mine)")
         XCTAssertNil(fs.lookup(query: "port:1"), "no process should own port 1 here")
+    }
+
+    // MARK: - A process is a folder of the files it has open (F-391)
+
+    /// Our own row, after a listing (which is what builds the snapshot).
+    private func ownRowPath(_ fs: PFXFileSystem) async throws -> String {
+        let entries = try await collect(fs, "/")
+        let ours = try XCTUnwrap(entries.first { $0.name.hasSuffix("(\(getpid()))") })
+        return "/\(ours.name)"
+    }
+
+    func test_processFolder_listsTheFilesItHasOpen() async throws {
+        let file = dir.appendingPathComponent("open-me.txt")
+        try Data("abc".utf8).write(to: file)
+        let fd = open(file.path, O_RDONLY)
+        try XCTSkipUnless(fd >= 0, "open failed")
+        defer { close(fd) }
+
+        let fs = makeFS()
+        let path = try await ownRowPath(fs)
+        let files = try await collect(fs, path)
+        // Entry names carry the file's path with ":" for "/" — the host's own convention for a
+        // name containing a slash, which is what lets a row be a path and still be one leaf.
+        // The kernel answers with the resolved path ("/private/var/…" for a "/var/…" temp dir), so
+        // the row is asserted to BE an absolute path ending in the file — not to be one spelling.
+        let names = files.map { PathUtils.displayName(fromPOSIX: $0.name) }
+        XCTAssertTrue(names.contains { $0.hasPrefix("/") && $0.hasSuffix("/open-me.txt") },
+                      "the open file should be listed as its path; got \(names.prefix(5))")
+        let row = try XCTUnwrap(files.first { PathUtils.displayName(fromPOSIX: $0.name).hasSuffix("open-me.txt") })
+        XCTAssertEqual(row.size, 3)
+        XCTAssertEqual(row.kind, .file, "an open file is a file, not a folder to descend into")
+    }
+
+    func test_processFolder_rowResolvesToTheRealFileForViewing() async throws {
+        let file = dir.appendingPathComponent("view-me.txt")
+        try Data("content-to-view".utf8).write(to: file)
+        let fd = open(file.path, O_RDONLY)
+        try XCTSkipUnless(fd >= 0, "open failed")
+        defer { close(fd) }
+
+        let fs = makeFS()
+        let path = try await ownRowPath(fs)
+        let files = try await collect(fs, path)
+        let row = try XCTUnwrap(files.first { PathUtils.displayName(fromPOSIX: $0.name).hasSuffix("view-me.txt") })
+        let vpath = VFSPath(filesystemId: "taskman", path: "\(path)/\(row.name)")
+        // F3 asks the mount for a local copy; for these rows that copy is the file itself.
+        let local = try await fs.localFileIfAvailable(vpath)
+        let url = try XCTUnwrap(local)
+        XCTAssertEqual(try String(contentsOf: url, encoding: .utf8), "content-to-view")
+    }
+
+    /// Deleting a process is a signal; deleting a row *inside* one would be a file. The plugin
+    /// refuses rather than parsing the parent's "(pid)" out of the path and signalling it.
+    func test_processFolder_deletingAnOpenFileRowIsRefused() async throws {
+        let file = dir.appendingPathComponent("keep-me.txt")
+        try Data("x".utf8).write(to: file)
+        let fd = open(file.path, O_RDONLY)
+        try XCTSkipUnless(fd >= 0, "open failed")
+        defer { close(fd) }
+
+        let fs = makeFS()
+        let path = try await ownRowPath(fs)
+        let files = try await collect(fs, path)
+        let row = try XCTUnwrap(files.first { PathUtils.displayName(fromPOSIX: $0.name).hasSuffix("keep-me.txt") })
+        do {
+            try await fs.delete(VFSPath(filesystemId: "taskman", path: "\(path)/\(row.name)"))
+            XCTFail("deleting an open-file row must not be accepted")
+        } catch {
+            // …and this process is still running, which is the part that matters.
+            XCTAssertEqual(kill(getpid(), 0), 0)
+        }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: file.path))
+    }
+
+    // MARK: - Memory, I/O and signer columns (F-392, F-393)
+
+    func test_metricColumns_areFilledForOurOwnProcess() async throws {
+        let fs = makeFS()
+        let path = try await ownRowPath(fs)
+        // Raw bytes from the plugin; the host is what turns them into "1.0 MB".
+        let mem = try XCTUnwrap(fs.contentSortValue(fieldID: "taskman.mem", path: path))
+        XCTAssertGreaterThan(Int64(mem) ?? 0, 0, "footprint should be a real byte count")
+        XCTAssertEqual(fs.contentDisplay(fieldID: "taskman.mem", path: path)?.hasSuffix("B"), true,
+                       "a size column is rendered by the host, not by the plugin")
+        for field in ["taskman.read", "taskman.written", "taskman.wakeups"] {
+            let raw = try XCTUnwrap(fs.contentSortValue(fieldID: field, path: path))
+            XCTAssertNotNil(Int64(raw), "\(field) must be a number, blank only when unreadable")
+        }
+    }
+
+    func test_signedColumn_namesWhoSignedTheBinary() async throws {
+        let fs = makeFS()
+        _ = try await collect(fs, "/")
+        _ = try await collect(fs, "/")   // the cache fills a few per refresh, under a time budget
+        let path = try await ownRowPath(fs)
+        // The test runner is an Apple binary; whatever it is, the column must name a signer for
+        // *someone* — the point of the column is that it works where the metrics do not.
+        let entries = try await collect(fs, "/")
+        let signed = entries.compactMap { fs.contentDisplay(fieldID: "taskman.signed", path: "/\($0.name)") }
+            .filter { !$0.isEmpty }
+        XCTAssertFalse(signed.isEmpty, "no signature was read at all")
+        XCTAssertTrue(signed.contains("Apple"), "Apple's own binaries should be named as such")
+        XCTAssertNotNil(fs.contentDisplay(fieldID: "taskman.signed", path: path))
+    }
+
+    /// The info report (F3) reads the signature on demand, so it never depends on the cache.
+    func test_processInfo_reportsSignatureAndEntitlements() async throws {
+        let fs = makeFS()
+        let path = try await ownRowPath(fs)
+        let copy = try await fs.localFileIfAvailable(VFSPath(filesystemId: "taskman", path: path))
+        let local = try XCTUnwrap(copy)
+        let text = try String(contentsOf: local, encoding: .utf8)
+        XCTAssertTrue(text.contains("Signature:"), "the report should name who signed the binary")
+        XCTAssertTrue(text.contains("Signed by:"))
+        XCTAssertTrue(text.contains("Hardened runtime:"))
+    }
+
+    // MARK: - "file:<path>" lookup (F-390)
+
+    /// The tagged line for THIS process, or nil if it is not among the hits.
+    private func handleKind(_ fs: PFXFileSystem, _ path: String) -> String? {
+        guard let answer = fs.lookup(query: "file:\(path)") else { return nil }
+        let mine = "/\(ProcessInfo.processInfo.processName) (\(getpid()))"
+        for line in answer.split(separator: "\n") {
+            let parts = line.split(separator: "\t", maxSplits: 1)
+            // Only the "(pid)" identifies us — the name is the kernel's, not processName's.
+            guard parts.count == 2, parts[0].hasSuffix("(\(getpid()))") else { continue }
+            return String(parts[1])
+        }
+        XCTFail("no line for this process in:\n\(answer)\n(looked for \(mine))")
+        return nil
+    }
+
+    func test_lookupFile_reportsReadWriteAndBothForOurOwnHandles() async throws {
+        let file = dir.appendingPathComponent("handles.txt")
+        try Data("x".utf8).write(to: file)
+        let fs = makeFS()
+        _ = try await collect(fs, "/")   // build the snapshot the lookup scans
+
+        let ro = open(file.path, O_RDONLY)
+        try XCTSkipUnless(ro >= 0, "open O_RDONLY failed")
+        defer { close(ro) }
+        XCTAssertEqual(handleKind(fs, file.path), "r", "a read-only handle must not read as a write")
+
+        let wo = open(file.path, O_WRONLY)
+        try XCTSkipUnless(wo >= 0, "open O_WRONLY failed")
+        defer { close(wo) }
+        XCTAssertEqual(handleKind(fs, file.path), "b", "one handle of each is both")
+    }
+
+    func test_lookupFile_singleReadWriteHandleIsBoth() async throws {
+        let file = dir.appendingPathComponent("rw.txt")
+        try Data("x".utf8).write(to: file)
+        let fs = makeFS()
+        _ = try await collect(fs, "/")
+        let fd = open(file.path, O_RDWR)
+        try XCTSkipUnless(fd >= 0, "open O_RDWR failed")
+        defer { close(fd) }
+        XCTAssertEqual(handleKind(fs, file.path), "b")
+    }
+
+    func test_lookupFile_writeOnlyHandleIsWrite() async throws {
+        let file = dir.appendingPathComponent("wo.txt")
+        try Data("x".utf8).write(to: file)
+        let fs = makeFS()
+        _ = try await collect(fs, "/")
+        let fd = open(file.path, O_WRONLY)
+        try XCTSkipUnless(fd >= 0, "open O_WRONLY failed")
+        defer { close(fd) }
+        XCTAssertEqual(handleKind(fs, file.path), "w")
+    }
+
+    /// The same file under another spelling must be the same file. Identity is (device, inode),
+    /// not the path string — a `/tmp` vs `/private/tmp` mismatch would report "nobody has it open"
+    /// for a file that is very much open.
+    func test_lookupFile_matchesByInodeNotByPathSpelling() async throws {
+        let file = dir.appendingPathComponent("alias.txt")
+        try Data("x".utf8).write(to: file)
+        let link = dir.appendingPathComponent("alias-hardlink.txt")
+        try FileManager.default.linkItem(at: file, to: link)
+        let fs = makeFS()
+        _ = try await collect(fs, "/")
+        let fd = open(file.path, O_RDONLY)
+        try XCTSkipUnless(fd >= 0, "open failed")
+        defer { close(fd) }
+        XCTAssertEqual(handleKind(fs, link.path), "r", "a hard link is the same inode")
+        // The temp dir lives under /var, which is a symlink to /private/var: the resolved and the
+        // unresolved spelling must agree.
+        let resolved = URL(fileURLWithPath: file.path).resolvingSymlinksInPath().path
+        if resolved != file.path { XCTAssertEqual(handleKind(fs, resolved), "r") }
+    }
+
+    func test_lookupFile_missesAreNilAndNeverThePortAnswer() async throws {
+        let fs = makeFS()
+        _ = try await collect(fs, "/")
+        XCTAssertNil(fs.lookup(query: "file:/no/such/file/at/all"), "a path that does not exist")
+        let untouched = dir.appendingPathComponent("nobody-has-me.txt")
+        try Data("x".utf8).write(to: untouched)
+        XCTAssertNil(fs.lookup(query: "file:\(untouched.path)"), "a file nobody holds open")
+        XCTAssertNil(fs.lookup(query: "file:"), "an empty path is not a query")
     }
 
     func test_delete_escalatesSigtermThenSigkill() async throws {

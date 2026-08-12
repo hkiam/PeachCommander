@@ -20,7 +20,7 @@
 <p><img alt="Task Manager uvádzajúci bežiace procesy so stĺpcami PID, CPU, pamäť a príkaz" src="images/task-manager.png" />
 <em>(Obrázok: bežiace procesy zobrazené ako zoznam súborov, ktorý môžete triediť a nad ktorým môžete konať.)</em></p>
 <h2 id="co-znamena-kazdy-stlpec">Čo znamená každý stĺpec</h2>
-<p>Popri obvyklých stĺpcoch Veľkosť (pamäť) a Dátum (čas spustenia) pridáva Task Manager stĺpce procesov:</p>
+<p>Vedľa stĺpca Dátum (čas spustenia) pridáva Task Manager stĺpce procesov. Veľkosť v riadku procesu zobrazuje <code>DIR</code>, pretože proces je priečinok, ktorý môžete otvoriť (pozri nižšie) — pamäť má vlastné stĺpce:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Nedávne využitie procesora (objaví sa až po druhom obnovení)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Pamäťová stopa — za čo je tento proces zodpovedný (číslo, ktoré ukazuje Monitor aktivity)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Rezidentná veľkosť vrátane zdieľaných stránok; vyplnená pre každý proces</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>Počet vlákien</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R beží · S spí · T zastavený · Z zombie · I nečinný</td>
+<td>R beží · S spí · T zastavený · Z zombie · I nečinný, plus prípony, ktoré pridáva <code>ps</code> (s = vedúci relácie, + = popredie, N = nízka priorita)</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>ID nadradeného procesu</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>Bajty prečítané z disku od spustenia procesu</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>Bajty zapísané na disk od spustenia procesu</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Prebudenia prerušením od spustenia procesu</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Kto program podpísal: Apple, tím s Developer ID, ad-hoc alebo nepodpísané</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>Zobraziť (F3)</strong> zobrazí správu <em>Informácie o procese</em>: názov, PID, nadradený proces, používateľ, stav, vlákna, pamäť, CPU, čas spustenia, cesta k spustiteľnému súboru a úplný príkazový riadok.</li>
 <li><strong>Odstrániť (F8)</strong> ukončí proces. Prvé odstránenie odošle jemné <strong>ukončenie</strong> (SIGTERM); odstránenie procesu, ktorý stále beží, druhýkrát eskaluje na <strong>vynútené ukončenie</strong> (SIGKILL). Zásuvný modul nikdy nemieri na PID 1.</li>
 </ul>
+<h2 id="najst-procesy-ktore-pouzivaju-subor">Nájsť procesy, ktoré používajú súbor</h2>
+<p>Kliknite pravým tlačidlom na ľubovoľný riadok a zvoľte <strong>Nájsť procesy podľa súboru…</strong>, potom zadajte cestu k súboru. Každý proces, ktorý má daný súbor práve otvorený, sa zvýrazní a kurzor skočí na prvý z tých, ktoré ho môžu zmeniť:</p>
+<ul>
+<li><strong>Modrá</strong> — proces súbor iba číta.</li>
+<li><strong>Oranžová</strong> — proces doň iba zapisuje.</li>
+<li><strong>Fialová</strong> — proces robí oboje.</li>
+</ul>
+<p>Cesta sa predvyplní z kurzora v druhom paneli, takže môžete na súbor ukázať tam a spýtať sa bez písania. <strong>Nájsť proces podľa portu…</strong> v tej istej ponuke odpovedá na príbuznú otázku: ktorý proces počúva na porte TCP/UDP. Voľbou <strong>Zrušiť zvýraznenie súboru</strong> farby odstránite; opustenie zoznamu procesov ich odstráni tiež.</p>
+<h2 id="otvorte-proces-a-uvidite-jeho-subory">Otvorte proces a uvidíte jeho súbory</h2>
+<p>Stlačte na procese Enter — alebo naň dvakrát kliknite — a panel vypíše súbory, ktoré má tento proces práve otvorené, ako bežné riadky súborov so skutočnou veľkosťou a dátumom. Odtiaľ:</p>
+<ul>
+<li><strong>Zobraziť (F3)</strong> otvorí samotný súbor.</li>
+<li><strong>Prejsť na súbor</strong> ho ukáže v druhom paneli, kde s ním môžete pracovať.</li>
+<li><strong>Zobraziť vo Finderi</strong> ho odovzdá Finderu.</li>
+</ul>
+<p>Počítajú sa len otvorené súbory: knižnica, ktorú proces iba namapoval do pamäte, ani jeho pracovný adresár otvorenými súbormi nie sú. Proces iného používateľa zobrazí prázdny priečinok.</p>
 <h2 id="poznamky">Poznámky</h2>
 <ul>
-<li>Základné údaje (PID, nadradený proces, používateľ, stav) sú čitateľné pre každý proces, ako pri <code>ps</code>. Pamäť, vlákna a CPU sa dajú načítať iba pre <strong>vaše vlastné</strong> procesy; ostatné procesy zobrazia tieto stĺpce prázdne (vyžadujú zvýšené oprávnenia, neskorší doplnok).</li>
+<li>Základné údaje (PID, rodič, používateľ, stav, podpis) sú čitateľné pri každom procese. Pamäťová stopa, vlákna, diskové I/O a zoznam otvorených súborov sú čitateľné pri <strong>vašich vlastných</strong> procesoch, čo je na bežnom Macu väčšina zoznamu. Pri procesoch iných používateľov sa CPU a Resident plnia z <code>ps</code> — priemer za celý život procesu namiesto rozdielu dvoch meraní, ktorý nesú ostatné riadky — a vlákna a stopa zostávajú prázdne.</li>
 <li>CPU % je zmena medzi dvoma vzorkami, takže zostáva prázdne, kým sa panel neobnoví druhýkrát (panel sa obnovuje zhruba každé dve sekundy).</li>
 <li>Zoznam je len na čítanie okrem ukončenia procesu — nemôžete doň kopírovať súbory.</li>
+<li>Farby zvýraznenia sa riadia vaším farebným motívom: paleta Norton používa namiesto toho zelenú, červenú a purpurovú.</li>
+<li>Nájdu sa len popisovače, do ktorých smie váš účet nahliadnuť, čo v praxi znamená vaše vlastné procesy. Knižnica, ktorú proces iba namapoval do pamäte, ani jeho pracovný adresár nie sú otvorené popisovače a nehlásia sa.</li>
+<li>Stĺpec <strong>Signed</strong> sa dopĺňa počas prvých sekúnd: prečítanie podpisu trvá približne milisekundu a rôznych programov sú stovky, takže sa ich pri každom obnovení prečíta niekoľko a potom sa zapamätajú. Prázdna bunka znamená „zatiaľ neprečítané“, nie „nepodpísané“.</li>
+<li><strong>Signed</strong> hovorí, kto program podpísal, nie či je notarizovaný: overenie notarizácie znamená vypočítať hash celého programu, čo by pri každom trvalo sekundy.</li>
+<li>Rýchly filter (Ctrl+S) tu zodpovedá aj stĺpcom, nielen názvu, a výraz môže pomenovať stĺpec, ktorého sa týka: <code>user:root state:R</code> sa pýta, čo práve beží pod rootom. Výrazy sa oddeľujú medzerami a musia platiť všetky; text, ktorý nepomenuje žiadny stĺpec, zostáva jedným jednoduchým podreťazcom vrátane medzier.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="viewing-files.html">Zobrazenie súborov</a></li><li><a href="deleting-files.html">Odstraňovanie súborov</a></li></ul></section>
 </main>
