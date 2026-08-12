@@ -12,6 +12,7 @@ De Task Manager-plug-in verandert de actieve processen op je Mac in een map die 
 
 1. Klik op de **📊 TaskManager**-vermelding in de schijvenbalk (die staat direct na je startschijf).
 2. Het paneel vult zich met één rij per actief proces. De naam van elke rij is de procesnaam gevolgd door de PID, bijvoorbeeld `Finder (462)`.
+3. De knop **TaskManager** blijft geselecteerd zolang je erin zit en het tabblad krijgt de naam van de schijf. Ga naar een ander tabblad en terug — of sluit de app en open hem opnieuw — en het tabblad toont weer de proceslijst. Om het te verlaten ga je één niveau omhoog of klik je op een ander volume in de schijvenbalk.
 
 ![Task Manager toont actieve processen met de kolommen PID, CPU, geheugen en command](screenshots/task-manager.png)
 *(Afbeelding: actieve processen getoond als een bestandslijst die je kunt sorteren en waarop je kunt handelen.)*

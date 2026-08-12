@@ -12,6 +12,7 @@ A Task Manager bővítmény a Macen futó folyamatokat egy böngészhető mappá
 
 1. Kattintson a **📊 TaskManager** bejegyzésre a meghajtósávban (közvetlenül az indítómeghajtó után ül).
 2. A panel megtelik, soronként egy futó folyamattal. Minden sor neve a folyamat neve, majd a PID-je, például `Finder (462)`.
+3. A **TaskManager** gomb kijelölve marad, amíg benne van, a lap pedig a meghajtó nevét viseli. Váltson egy másik lapra, majd vissza — vagy lépjen ki és nyissa meg újra az alkalmazást —, és a lap ismét a folyamatlistát mutatja. Kilépni egy szinttel feljebb lépve vagy a meghajtósávon egy másik kötetre kattintva lehet.
 
 ![A Task Manager felsorolja a futó folyamatokat a PID, CPU, memória és parancs oszlopokkal](screenshots/task-manager.png)
 *(Ábra: a futó folyamatok fájllistaként megjelenítve, amelyet rendezhet és amelyen műveleteket végezhet.)*

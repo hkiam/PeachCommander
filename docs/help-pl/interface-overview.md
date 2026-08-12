@@ -22,7 +22,7 @@ Okno jest podzielone na panel lewy i panel prawy, z których każdy pokazuje zaw
 ## Paski wokół paneli
 
 - **Pasek przycisków** (na górze): rząd płaskich przycisków dla częstych poleceń. Kliknij przycisk, aby uruchomić jego polecenie; kliknij przycisk prawym przyciskiem myszy, aby edytować pasek.
-- **Pasek napędów**: jeden przycisk na każdy dostępny dysk lub wolumin, przy każdym wolne miejsce. Kliknij wolumin, aby przełączyć do niego ten panel; kliknij prawym przyciskiem, aby go wysunąć — dostępne dla woluminów wymiennych i zamontowanych obrazów dysków, wyszarzone dla dysku startowego i udziałów sieciowych.
+- **Pasek napędów**: jeden przycisk na każdy dostępny dysk lub wolumin, przy każdym wolne miejsce. Kliknij wolumin, aby przełączyć do niego ten panel; kliknij prawym przyciskiem, aby go wysunąć — dostępne dla woluminów wymiennych i zamontowanych obrazów dysków, wyszarzone dla dysku startowego i udziałów sieciowych. Wtyczki mogą dodawać własne napędy — Task Manager jest jednym z nich — i zachowują się jak każdy inny wolumin: panel przełącza się na niego, przycisk pozostaje wybrany, a karta nosi nazwę napędu.
 - **Pasek ścieżki**: pokazuje bieżący folder jako klikalną ścieżkę nawigacyjną. Kliknij segment, aby przejść bezpośrednio do tego folderu, lub kliknij ścieżkę, aby wpisać lokalizację.
 - **Pasek stanu** (pod każdą listą): bieżące podsumowanie panelu — ile plików i folderów jest zaznaczonych oraz ich łączny rozmiar.
 - **Wiersz poleceń** (na dole): pole tekstowe, w którym możesz wpisać polecenie w stylu powłoki, uruchamiane w bieżącym folderze.

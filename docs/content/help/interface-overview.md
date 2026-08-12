@@ -22,7 +22,7 @@ The window is split into a left panel and a right panel, each showing the conten
 ## Bars around the panels
 
 - **Button bar** (top): a row of flat buttons for frequent commands. Click a button to run its command; right-click a button to edit the bar.
-- **Drive bar**: one button per available disk or volume, each with its free space. Click a volume to switch that panel to it; right-click one to eject it, which is offered for removable volumes and mounted disk images and greyed out for the startup disk and network shares.
+- **Drive bar**: one button per available disk or volume, each with its free space. Click a volume to switch that panel to it; right-click one to eject it, which is offered for removable volumes and mounted disk images and greyed out for the startup disk and network shares. Plugins can contribute drives of their own — the Task Manager is one — and they behave like any other volume: the panel switches to it, its button stays selected, and the tab is named after the drive.
 - **Path bar**: shows the current folder as a clickable breadcrumb. Click a segment to jump straight to that folder, or click the path to type a location.
 - **Status bar** (below each list): a running summary of the panel — how many files and folders are selected and their total size.
 - **Command line** (bottom): a text field where you can type a shell-style command that runs in the current folder.

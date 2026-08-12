@@ -12,6 +12,7 @@ Il plugin Task Manager trasforma i processi in esecuzione sul vostro Mac in una 
 
 1. Fate clic sulla voce **📊 TaskManager** nella barra dei dischi (si trova subito dopo il vostro disco di avvio).
 2. Il pannello si riempie con una riga per ogni processo in esecuzione. Il nome di ciascuna riga è il nome del processo seguito dal suo PID, per esempio `Finder (462)`.
+3. Il pulsante **TaskManager** resta selezionato finché siete dentro e la scheda prende il nome del disco. Passate a un'altra scheda e tornate indietro — oppure chiudete e riaprite l'app — e la scheda torna all'elenco dei processi. Per uscirne, salite di un livello o fate clic su un altro volume nella barra dei dischi.
 
 ![Task Manager che elenca i processi in esecuzione con le colonne PID, CPU, memoria e comando](screenshots/task-manager.png)
 *(Figura: i processi in esecuzione mostrati come un elenco di file che potete ordinare e su cui potete agire.)*

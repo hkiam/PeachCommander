@@ -12,6 +12,7 @@ Pluginul Task Manager transformă procesele care rulează pe Mac-ul dvs. într-u
 
 1. Faceți clic pe elementul **📊 TaskManager** din bara de unități (se află imediat după unitatea de pornire).
 2. Panoul se umple cu un rând pentru fiecare proces care rulează. Numele fiecărui rând este numele procesului urmat de PID-ul său, de exemplu `Finder (462)`.
+3. Butonul **TaskManager** rămâne selectat cât timp sunteți în ea, iar fila poartă numele unității. Comutați la altă filă și înapoi — sau închideți și redeschideți aplicația — și fila revine la lista de procese. Pentru a ieși, urcați un nivel sau faceți clic pe alt volum din bara de unități.
 
 ![Task Manager care listează procesele care rulează cu coloanele PID, CPU, memorie și comandă](screenshots/task-manager.png)
 *(Figura: procesele care rulează afișate ca o listă de fișiere pe care o puteți sorta și asupra căreia puteți acționa.)*

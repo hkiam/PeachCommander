@@ -22,7 +22,7 @@ La ventana se divide en un panel izquierdo y un panel derecho, cada uno mostrand
 ## Barras alrededor de los paneles
 
 - **Barra de botones** (arriba): una fila de botones planos para los comandos frecuentes. Haga clic en un botón para ejecutar su comando; haga clic con el botón derecho en un botón para editar la barra.
-- **Barra de unidades**: un botón por disco o volumen disponible, cada uno con su espacio libre. Haz clic en un volumen para llevar ese panel allí; haz clic derecho para expulsarlo, algo que se ofrece para volúmenes extraíbles e imágenes de disco montadas y aparece atenuado para el disco de arranque y los recursos de red.
+- **Barra de unidades**: un botón por disco o volumen disponible, cada uno con su espacio libre. Haz clic en un volumen para llevar ese panel allí; haz clic derecho para expulsarlo, algo que se ofrece para volúmenes extraíbles e imágenes de disco montadas y aparece atenuado para el disco de arranque y los recursos de red. Los plugins pueden aportar sus propias unidades — el Task Manager es una — y se comportan como cualquier otro volumen: el panel cambia a ella, su botón sigue seleccionado y la pestaña toma el nombre de la unidad.
 - **Barra de ruta**: muestra la carpeta actual como una ruta de navegación en la que se puede hacer clic. Haga clic en un segmento para saltar directamente a esa carpeta, o haga clic en la ruta para escribir una ubicación.
 - **Barra de estado** (debajo de cada lista): un resumen dinámico del panel: cuántos archivos y carpetas están seleccionados y su tamaño total.
 - **Línea de comandos** (abajo): un campo de texto donde puede escribir un comando estilo shell que se ejecuta en la carpeta actual.

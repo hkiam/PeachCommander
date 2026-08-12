@@ -12,6 +12,7 @@ Task Manager-pluginet gør de kørende processer på din Mac til en mappe, du ka
 
 1. Klik på **📊 TaskManager**-emnet i drevlinjen (det sidder lige efter dit startdrev).
 2. Panelet fyldes med én række pr. kørende proces. Hver rækkes navn er procesnavnet efterfulgt af dens PID, for eksempel `Finder (462)`.
+3. Knappen **TaskManager** forbliver valgt, mens du er i den, og fanen får drevets navn. Skift til en anden fane og tilbage — eller afslut og åbn appen igen — og fanen viser igen proceslisten. Du forlader den ved at gå et niveau op eller klikke på en anden diskenhed i drevlinjen.
 
 ![Task Manager der viser kørende processer med kolonnerne PID, CPU, hukommelse og kommando](screenshots/task-manager.png)
 *(Figur: kørende processer vist som en filliste, du kan sortere og handle på.)*

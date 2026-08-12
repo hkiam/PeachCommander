@@ -12,6 +12,7 @@ Zásuvný modul Task Manager premení bežiace procesy na vašom Macu na prieči
 
 1. Kliknite na položku **📊 TaskManager** v lište diskov (sedí hneď za vaším spúšťacím diskom).
 2. Panel sa zaplní jedným riadkom na bežiaci proces. Názov každého riadka je názov procesu nasledovaný jeho PID, napríklad `Finder (462)`.
+3. Tlačidlo **TaskManager** zostáva vybrané, kým ste vnútri, a karta nesie názov jednotky. Prepnite na inú kartu a späť — alebo aplikáciu ukončite a znova otvorte — a karta sa vráti k zoznamu procesov. Opustíte ju prechodom o úroveň vyššie alebo kliknutím na iný zväzok v lište jednotiek.
 
 ![Task Manager uvádzajúci bežiace procesy so stĺpcami PID, CPU, pamäť a príkaz](screenshots/task-manager.png)
 *(Obrázok: bežiace procesy zobrazené ako zoznam súborov, ktorý môžete triediť a nad ktorým môžete konať.)*

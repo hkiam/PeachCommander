@@ -22,7 +22,7 @@ Vinduet er delt op i et venstre panel og et højre panel, der hver viser indhold
 ## Bjælker omkring panelerne
 
 - **Knapbjælke** (øverst): en række flade knapper til hyppige kommandoer. Klik på en knap for at køre dens kommando; højreklik på en knap for at redigere bjælken.
-- **Disklinje**: en knap pr. tilgængelig disk eller diskenhed, hver med sin ledige plads. Klik på en diskenhed for at skifte det panel dertil; højreklik for at skubbe den ud — tilbydes for flytbare diske og monterede diskbilleder, nedtonet for startdisken og netværksdelinger.
+- **Disklinje**: en knap pr. tilgængelig disk eller diskenhed, hver med sin ledige plads. Klik på en diskenhed for at skifte det panel dertil; højreklik for at skubbe den ud — tilbydes for flytbare diske og monterede diskbilleder, nedtonet for startdisken og netværksdelinger. Plugins kan bidrage med deres egne drev — Task Manager er et af dem — og de opfører sig som enhver anden diskenhed: panelet skifter dertil, knappen forbliver valgt, og fanen får drevets navn.
 - **Stibjælke**: viser den aktuelle mappe som en brødkrumme, der kan klikkes på. Klik på et segment for at springe direkte til den mappe, eller klik på stien for at skrive en placering.
 - **Statusbjælke** (under hver liste): et løbende resumé af panelet — hvor mange filer og mapper der er markeret og deres samlede størrelse.
 - **Kommandolinje** (nederst): et tekstfelt, hvor du kan skrive en shell-lignende kommando, der kører i den aktuelle mappe.

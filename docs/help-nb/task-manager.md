@@ -12,6 +12,7 @@ Task Manager-programtillegget gjør prosessene som kjører på Mac-en din, til e
 
 1. Klikk på **📊 TaskManager**-oppføringen i stasjonslinjen (den sitter rett etter startstasjonen din).
 2. Panelet fylles med én rad per prosess som kjører. Hver rads navn er prosessnavnet etterfulgt av PID-en, for eksempel `Finder (462)`.
+3. Knappen **TaskManager** forblir valgt mens du er inne i den, og fanen får stasjonens navn. Bytt til en annen fane og tilbake — eller avslutt og åpne appen på nytt — og fanen viser prosesslisten igjen. Du forlater den ved å gå ett nivå opp eller klikke på et annet volum i stasjonslinjen.
 
 ![Task Manager som lister prosesser som kjører, med kolonnene PID, CPU, minne og kommando](screenshots/task-manager.png)
 *(Figur: prosesser som kjører vist som en filliste du kan sortere og handle på.)*
