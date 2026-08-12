@@ -31,14 +31,20 @@ final class DriveBarView: NSView {
     private var currentIndex: Int?
     private let font = NSFont.systemFont(ofSize: 11)
 
-    private enum Chip { case go; case drives; case volume(Int) }
-    /// Hit rectangles computed during draw(), consulted by mouseDown.
-    private var chipHits: [(rect: NSRect, chip: Chip)] = []
+    private enum Chip: Sendable { case go; case drives; case volume(Int); case eject(Int) }
+    /// Hit rectangles computed during draw(), consulted by mouseDown — in the order they must be
+    /// consulted, which `DriveBarHit` resolves and `DriveBarHitTests` pins.
+    private var chipHits: [DriveBarHit.Region<Chip>] = []
 
     private let edgeInset: CGFloat = 4
     private let spacing: CGFloat = 3
     private let chipHeight: CGFloat = 18
     private let textPad: CGFloat = 7
+    /// The eject glyph drawn inside an ejectable volume's chip (F-385). U+23CF, drawn as text like
+    /// everything else here — the bar builds no controls, so a button would be the odd one out.
+    private let ejectGlyph = "⏏"
+    /// Room the glyph takes at the chip's trailing edge, plus the gap before it.
+    private let ejectPad: CGFloat = 6
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -81,30 +87,57 @@ final class DriveBarView: NSView {
 
         chipHits.removeAll()
         var x = edgeInset
-        chipHits.append((drawChip("★", at: &x, highlighted: false), .go))
+        chipHits.append(.init(rect: drawChip("★", at: &x, highlighted: false).chip, payload: .go))
         // Drive dropdown (F-006): lists ALL volumes, so drives whose chips overflow
         // the bar's width are still reachable.
-        chipHits.append((drawChip("▾", at: &x, highlighted: false), .drives))
+        chipHits.append(.init(rect: drawChip("▾", at: &x, highlighted: false).chip, payload: .drives))
         for (i, volume) in volumes.enumerated() {
             guard x < bounds.width else { break }
-            chipHits.append((drawChip(label(for: volume), at: &x, highlighted: i == currentIndex), .volume(i)))
+            // The glyph is only drawn where it would work. Which volumes those are is
+            // VolumeEjection's to say — the same call the context menu and the command make, so a
+            // chip never offers an eject that would then be refused.
+            let ejectable = VolumeEjection.refusal(for: volume) == nil
+            let (chip, eject) = drawChip(label(for: volume), at: &x,
+                                         highlighted: i == currentIndex, ejectable: ejectable)
+            // Before the chip, not after: `mouseDown` takes the first hit whose rect contains the
+            // point, and the glyph's rect lies inside the chip's. Appended the other way round the
+            // chip always wins and the glyph is decoration.
+            if let eject { chipHits.append(.init(rect: eject, payload: .eject(i))) }
+            chipHits.append(.init(rect: chip, payload: .volume(i)))
         }
     }
 
-    /// Draw one chip starting at `x`, advance `x` past it, and return its rect.
-    private func drawChip(_ text: String, at x: inout CGFloat, highlighted: Bool) -> NSRect {
+    /// Draw one chip starting at `x`, advance `x` past it, and return its rect — plus the eject
+    /// glyph's own rect when one was drawn.
+    @discardableResult
+    private func drawChip(_ text: String, at x: inout CGFloat, highlighted: Bool,
+                          ejectable: Bool = false) -> (chip: NSRect, eject: NSRect?) {
         let textSize = (text as NSString).size(withAttributes: [.font: font])
+        let glyphSize = ejectable ? (ejectGlyph as NSString).size(withAttributes: [.font: font])
+                                  : .zero
+        let extra = ejectable ? glyphSize.width + ejectPad : 0
         let rect = NSRect(x: x, y: (bounds.height - chipHeight) / 2,
-                          width: textSize.width + textPad * 2, height: chipHeight)
+                          width: textSize.width + textPad * 2 + extra, height: chipHeight)
+        let foreground = highlighted ? Theme.current.driveBarHighlightText : Theme.current.driveBarText
         (highlighted ? Theme.current.driveBarHighlight : Theme.current.driveBarBackground).setFill()
         NSBezierPath(roundedRect: rect, xRadius: 4, yRadius: 4).fill()
         (text as NSString).draw(
             at: NSPoint(x: rect.minX + textPad, y: rect.midY - textSize.height / 2),
-            withAttributes: [.font: font,
-                             .foregroundColor: highlighted ? Theme.current.driveBarHighlightText
-                                                          : Theme.current.driveBarText])
+            withAttributes: [.font: font, .foregroundColor: foreground])
+
+        var ejectRect: NSRect?
+        if ejectable {
+            let origin = NSPoint(x: rect.maxX - textPad - glyphSize.width,
+                                 y: rect.midY - glyphSize.height / 2)
+            (ejectGlyph as NSString).draw(at: origin,
+                                          withAttributes: [.font: font, .foregroundColor: foreground])
+            // Taller and wider than the glyph itself: a 7pt symbol is not a click target, and the
+            // whole chip height is available anyway.
+            ejectRect = NSRect(x: origin.x - ejectPad / 2, y: rect.minY,
+                               width: glyphSize.width + ejectPad, height: rect.height)
+        }
         x = rect.maxX + spacing
-        return rect
+        return (rect, ejectRect)
     }
 
     // MARK: - Interaction
@@ -122,7 +155,7 @@ final class DriveBarView: NSView {
 
     override func accessibilityChildren() -> [Any]? {
         chipHits.map { hit in
-            switch hit.chip {
+            switch hit.payload {
             case .go:
                 return AccessibleHotspot(label: String(localized: "Favorites"), role: .button,
                                          frameInView: hit.rect, parent: self) { [weak self] in
@@ -147,6 +180,14 @@ final class DriveBarView: NSView {
                     guard let self, self.volumes.indices.contains(i) else { return }
                     self.onSelect?(self.volumes[i].path)
                 }
+            case .eject(let i):
+                let name = volumes.indices.contains(i) ? volumes[i].name : ""
+                return AccessibleHotspot(label: String(format: String(localized: "Eject %@"), name),
+                                         role: .button,
+                                         frameInView: hit.rect, parent: self) { [weak self] in
+                    guard let self, self.volumes.indices.contains(i) else { return }
+                    self.onEject?(self.volumes[i])
+                }
             }
         }
     }
@@ -163,8 +204,13 @@ final class DriveBarView: NSView {
     /// view's — asking separately here is how an Eject that is offered and then refuses comes about.
     override func menu(for event: NSEvent) -> NSMenu? {
         let point = convert(event.locationInWindow, from: nil)
-        guard let hit = chipHits.first(where: { $0.rect.contains(point) }),
-              case .volume(let index) = hit.chip, volumes.indices.contains(index) else { return nil }
+        guard let hit = DriveBarHit.region(at: point, in: chipHits) else { return nil }
+        let index: Int
+        switch hit.payload {
+        case .volume(let i), .eject(let i): index = i
+        default: return nil
+        }
+        guard volumes.indices.contains(index) else { return nil }
         let volume = volumes[index]
 
         let menu = NSMenu()
@@ -196,11 +242,12 @@ final class DriveBarView: NSView {
 
     override func mouseDown(with event: NSEvent) {
         let point = convert(event.locationInWindow, from: nil)
-        guard let hit = chipHits.first(where: { $0.rect.contains(point) }) else { return }
-        switch hit.chip {
+        guard let hit = DriveBarHit.region(at: point, in: chipHits) else { return }
+        switch hit.payload {
         case .go: showGoMenu(at: hit.rect)
         case .drives: showDrivesMenu(at: hit.rect)
         case .volume(let i): if volumes.indices.contains(i) { onSelect?(volumes[i].path) }
+        case .eject(let i): if volumes.indices.contains(i) { onEject?(volumes[i]) }
         }
     }
 

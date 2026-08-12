@@ -49,3 +49,28 @@ public enum DriveBarModel {
         return best
     }
 }
+
+/// Which of a drive bar's clickable rectangles a point lands on (F-385).
+///
+/// Split out of the view because the ordering *is* the correctness: a volume's eject glyph is drawn
+/// inside that volume's own chip, so its rectangle lies entirely within the chip's. Whichever is
+/// consulted first wins, and getting that backwards leaves a glyph that is drawn, looks clickable,
+/// and does nothing but navigate — a defect no compiler and no screenshot would catch.
+public enum DriveBarHit {
+    /// One clickable region, in the order they should be consulted.
+    public struct Region<Payload>: Sendable where Payload: Sendable {
+        public let rect: CGRect
+        public let payload: Payload
+        public init(rect: CGRect, payload: Payload) {
+            self.rect = rect
+            self.payload = payload
+        }
+    }
+
+    /// The first region containing `point`, or nil. First, not smallest: the caller decides
+    /// precedence by the order it builds the list in, which keeps this honest about what it does.
+    public static func region<Payload>(at point: CGPoint,
+                                       in regions: [Region<Payload>]) -> Region<Payload>? {
+        regions.first { $0.rect.contains(point) }
+    }
+}
