@@ -21,6 +21,7 @@ xcodebuild \
     -project PeachCommander.xcodeproj \
     -scheme PeachCommander \
     -configuration Debug \
+    -derivedDataPath build \
     build
 
-echo "Build complete: build/Debug/PeachCommander.app"
+echo "Build complete: build/Build/Products/Debug/PeachCommander.app"
