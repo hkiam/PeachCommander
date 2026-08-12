@@ -26,6 +26,34 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-13 (VM regression) — The new work is measured in the guest, and the guest was measuring nothing
+
+Everything from F-390 to F-398 had been verified by driving the app on this machine, and none of it was
+in the VM suite. Two scenarios close that — and getting them to run turned up two things about the
+harness that matter more than the scenarios do.
+
+**The suite had not been running an app at all.** `resolve_app` asked `xcodebuild -showBuildSettings`,
+which answers with the *default* DerivedData path, while everything in this project builds into
+`build/` (Tools/build.sh passes -derivedDataPath). On a machine that has never built through Xcode's
+UI that path is an empty directory — and an empty directory is not an error: `build-all-plugins.sh`
+created `Contents/PlugIns` inside it, rsync copied that skeleton, and the guest received a bundle with
+no binary. Every scenario reported "EMPTY" and every screenshot showed the desktop, which reads exactly
+like a broken app. Proved by running `main-window` and `panel-autorefresh` — untouched, long-standing
+scenarios — and getting the same desktop. `resolve_app` now takes the repo's own build tree first and
+REFUSES anything without an executable in it, with the paths it looked at.
+
+**The guest has no demo tree.** `demo-content.sh` is called by `capture.py` and never by `regress.py`,
+so the scenarios that navigate to `/Users/admin/pc-demo` have been looking at an empty panel. The first
+version of `process-files` held a file from that tree open and correctly found nobody. It now creates
+its own file with `mkfile` and says `holder-running` or `holder-missing`, so a future failure cannot be
+read as "the search found nothing" when the truth is "there was nothing to find". The other scenarios
+are left alone — that is somebody's decision, not a repair to make in passing.
+
+With that, both are green in a clean guest: `process-files` finds exactly one holder
+(`tail (1088)  r  #6FB2FF` — the dark palette's read colour, so the theme is proved too), reports the
+row's columns (881 KB footprint, 1.3 MB resident, Apple-signed) and lists what the process holds after
+entering it; `panel-place` still sits at `firstVisible=98` after three refresh cycles in a 533-row list.
+
 ## 2026-08-13 (F-396, F-398) — Two things the panel was doing to itself
 
 Six pieces of work, and the first one was a defect the review turned up rather than a feature: **F8 "Quit
