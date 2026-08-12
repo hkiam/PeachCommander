@@ -52,7 +52,13 @@ extension PanelController {
 
     func currentDirectory() async -> String { await getCurrentPath() }
 
-    func reload() async { await loadDirectory(await getCurrentPath()) }
+    /// Re-list this panel's directory after an operation, without moving what the user is looking at.
+    ///
+    /// It used to reload as if navigating: cursor to "..", view to the top. After deleting one file
+    /// out of a long folder that means finding your place again, every time — and the callers that
+    /// DO want a specific row (rename focuses the new name) still get it, because an explicit focus
+    /// scrolls and this does not.
+    func reload() async { await reloadPreservingCursor() }
 
     /// Upload the selection into a directory on `targetFS` (F-367).
     ///
@@ -538,8 +544,21 @@ extension PanelController {
     func deleteSelection(permanent explicitPermanent: Bool) async {
         let items = await selectedOrCursorPaths()
         guard !items.isEmpty else { return }
-        if isInArchive {
+        // A *real* archive, not merely "not the local disk". `isInArchive` is defined as
+        // `!(fs is LocalFS)`, so every server and every plugin mount arrived in the archive branch
+        // and was told it was a read-only archive — which is what TaskManager's "Quit Process"
+        // actually did: F8 on a process produced "Files inside this archive cannot be deleted",
+        // and `PfxDelete`, the plugin's one write operation, documented in nineteen languages and
+        // covered by its own tests, had no route from the panel at all.
+        if currentFileSystem is ArchiveFS {
             await deleteInArchive(items)
+            return
+        }
+        // Everything else that is not the local disk deletes through its own filesystem. The engine
+        // below is `FileManager`, which for a remote or virtual path acts on a path that exists
+        // nowhere on this Mac.
+        if !(currentFileSystem is LocalFS) {
+            await deleteThroughFileSystem(items)
             return
         }
         let toTrashDefault = await config.bool("Operation", "DeleteToTrash", default: true)
@@ -555,6 +574,28 @@ extension PanelController {
             let remaining = items.filter { FileManager.default.fileExists(atPath: $0) }
             if !remaining.isEmpty { await offerPrivilegedDelete(remaining) }
         }
+    }
+
+    /// Delete `items` through the panel's own filesystem (server, plugin mount).
+    ///
+    /// No Trash and no recursion: neither exists out there. A mount decides for itself what
+    /// deleting means — for TaskManager it is a signal to a process — and a failure is reported
+    /// with the names it happened to, rather than swallowed.
+    private func deleteThroughFileSystem(_ items: [String]) async {
+        let fs = currentFileSystem
+        let mustConfirm = await config.bool("Operation", "ConfirmDelete", default: true)
+        if mustConfirm, !confirmDelete(count: items.count, permanent: true) { return }
+        var failed: [String] = []
+        for item in items {
+            do { try await fs.delete(VFSPath(filesystemId: fs.scheme, path: item)) }
+            catch { failed.append((item as NSString).lastPathComponent) }
+        }
+        if !failed.isEmpty {
+            presentError(String(localized: "Delete"),
+                         detail: String(format: String(localized: "%@ could not be deleted."),
+                                        failed.joined(separator: ", ")))
+        }
+        await reload()
     }
 
     /// The destination each item was meant to reach, honouring a copy mask (F-080).

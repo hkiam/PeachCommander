@@ -14,6 +14,22 @@ does not have.
 
 ## [Unreleased]
 
+### Fixed
+
+- **A refreshing list no longer takes your place in it.** Scrolling somewhere in the Task Manager
+  drive to read something lasted about two seconds: the automatic refresh dragged the view back to
+  the cursor row — or to the very top, if you had not moved the cursor at all. The same happened in
+  an ordinary folder whenever something in it changed (a download finishing, a build writing files),
+  and after every copy or delete. A refresh now leaves the view and the cursor exactly where they
+  are; jumping to a row still happens when *you* move the cursor, search, or come back from another
+  folder. If the row under the cursor disappears — a process ends — the cursor keeps its place in
+  the list instead of going back to the top.
+- **"Quit Process" now actually ends the process.** F8 in the Task Manager drive answered "Files inside
+  this archive cannot be deleted" and left the process running: the panel treated everything that is not
+  the local disk as an archive, so the plugin's own delete was never called. The same hole made deleting
+  a file on an FTP or WebDAV server do nothing. Deleting now goes through whatever the panel is actually
+  showing. A second F8 on a process that ignores the polite request still escalates to a force quit.
+
 ## [0.6.1] — 2026-08-12
 
 Three user reports, and each of them turned out to be about something the application was

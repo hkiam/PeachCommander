@@ -5931,7 +5931,8 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// jump as the process list churns.
     func reloadPreservingCursor() async {
         let name = tableView.cursorEntryName()
-        await loadPath(await model.getPath(), recordHistory: false, focusName: name)
+        await loadPath(await model.getPath(), recordHistory: false, focusName: name,
+                       preserveViewport: true)
     }
 
     /// Start a ~2s repeating reload for a volatile mount, cursor-stable. No-op if
@@ -6176,12 +6177,25 @@ final class PanelController: NSObject, PanelControllerProtocol {
     }
 
     /// Core loader — updates the view and history but does NOT touch the tab model.
-    private func loadPath(_ path: String, recordHistory: Bool, focusName: String?) async {
+    /// Load `path` into this panel.
+    ///
+    /// `preserveViewport` is what a *refresh* wants and a navigation does not: the listing is
+    /// replaced under the user without moving what they are looking at. Without it a volatile mount
+    /// dragged the view back to the cursor row every two seconds — scroll somewhere to read
+    /// something and it was gone before you had — and back to the very top when the cursor sat on
+    /// "..", which is where it sits until you move it.
+    private func loadPath(_ path: String, recordHistory: Bool, focusName: String?,
+                          preserveViewport: Bool = false) async {
         do {
             let snapshot = try await model.load(path, fs: fs)
             let volume = isInArchive ? nil : await volumeManager.getVolume(for: path)
-            view.update(with: snapshot, volume: volume, rootLabel: mountedDriveVolume?.name)
-            if let focusName { tableView.focusEntry(named: focusName) } else { tableView.focusParent() }
+            view.update(with: snapshot, volume: volume, rootLabel: mountedDriveVolume?.name,
+                        preserveViewport: preserveViewport)
+            if let focusName {
+                tableView.focusEntry(named: focusName, scroll: !preserveViewport)
+            } else if !preserveViewport {
+                tableView.focusParent()
+            }
             if recordHistory { history.push(path) }
             scheduleStatusRefresh()
             onStateChanged?()
@@ -7380,8 +7394,9 @@ final class PanelView: NSView {
 
     /// Update with a new directory snapshot. `rootLabel` is the mounted drive's name when the
     /// listing is one (see `PathBarView.update`).
-    func update(with snapshot: DirectorySnapshot, volume: Volume? = nil, rootLabel: String? = nil) {
-        tableView.update(with: snapshot)
+    func update(with snapshot: DirectorySnapshot, volume: Volume? = nil, rootLabel: String? = nil,
+                preserveViewport: Bool = false) {
+        tableView.update(with: snapshot, preserveViewport: preserveViewport)
         pathBar.update(with: snapshot.path, volume: volume, rootLabel: rootLabel)
         currentPath = snapshot.path
         if usesGrid { refreshGrid() }

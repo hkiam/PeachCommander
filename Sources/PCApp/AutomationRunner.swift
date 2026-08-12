@@ -16,6 +16,8 @@
 //   dump  <file>          write the active panel's path + entry names to a file
 //   bardrop <path>        add a bar button for <path>, as a drop on free space would
 //   drivebardump <file>   write the active panel's path + the drive chip shown as current
+//   viewdump <file>       cursor, first visible row and scroll offset of the active panel
+//   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
 //   theme <id>            select a colour palette ("system", "norton", …)
 //   quit                  terminate the app
 //   # …                   comment / blank lines are ignored
@@ -311,6 +313,11 @@ extension MainWindowController {
                 let responder = window?.firstResponder.map { String(describing: type(of: $0)) } ?? "<none>"
                 try? "active=\(side)\nleft=\(l)\nright=\(r)\nresponder=\(responder)\n"
                     .write(toFile: arg, atomically: true, encoding: .utf8)
+            case "viewdump":                           // viewdump <out> (F-398): cursor + scroll position
+                try? (activePanel?.tableView.automationViewport() ?? "ERROR: no active panel\n")
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
+            case "scrollto":                           // scrollto <row> (F-398): scroll, cursor unmoved
+                activePanel?.tableView.automationScrollTo(row: Int(arg) ?? 0)
             case "drivebardump":                        // drivebardump <out> (F-385)
                 // What the panel says it is showing — the current chip, the tab titles and the
                 // breadcrumb — next to the path. Only together do they say anything: inside a plugin
