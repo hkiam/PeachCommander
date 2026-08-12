@@ -13,7 +13,7 @@ When you need to change a file rather than just look at it, Peach Commander open
 1. In either panel, move the cursor to the file you want to change.
 2. Press F4, or choose File ▸ Edit. The file opens in the editor window.
 3. Make your changes. If the file is a recognized programming or data format, keywords, strings, and comments are colored automatically.
-4. Press Cmd+S (or click Save) to write your changes. The first save keeps a backup of the original alongside the file, so you can always fall back to it.
+4. Press Cmd+S (or click Save) to write your changes. Saving replaces the file; if you want the previous contents kept beside it, switch backups on in Settings ▸ Edit/View.
 
 To start a brand-new text file at the current location, press Shift+F4.
 
@@ -124,7 +124,7 @@ Plugins can contribute formatters too — see [Plugins](plugins.md).
 1. Select the file in a panel.
 2. Choose File ▸ Edit as Hex (or right-click the file and choose Edit as Hex).
 3. Type hex digits to overwrite bytes, or use the arrow keys to move through the file. Backspace and Delete remove bytes.
-4. Press Cmd+S to save. As with the text editor, a one-time backup of the original is kept.
+4. Press Cmd+S to save. As in the text editor, the previous contents are only kept if you switched backups on.
 
 ## Shortcuts
 
@@ -153,4 +153,4 @@ Plugins can contribute formatters too — see [Plugins](plugins.md).
 - Syntax highlighting covers JSON, C, C#, Java, JavaScript, TypeScript, Python, and Rust. Other file types still open and edit normally with basic coloring, but detailed highlighting is only available for the supported languages.
 - The outline covers the supported programming languages plus JSON, YAML and XML — including the XML-based formats such as `.plist`, `.svg`, `.csproj` and `.storyboard`. The structural navigation, path and validation commands apply to JSON, YAML and XML.
 - The symbol outline and Go to Line features apply to the text editor. The hex editor is meant for binary inspection and byte-level edits, not for text.
-- Both editors keep a backup of the original file the first time you save, so an accidental change is easy to undo by restoring that backup.
+- Neither editor keeps a backup unless you ask for one. Switch on “Keep a backup copy (.bak) of the previous contents when saving” in Settings ▸ Edit/View, and the first save writes the original beside the file as `name.bak`, so an accidental change is easy to undo.

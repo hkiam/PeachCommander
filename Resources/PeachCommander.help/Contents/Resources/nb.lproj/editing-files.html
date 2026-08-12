@@ -16,7 +16,7 @@
 <li>I begge paneler flytter du markøren til filen du vil endre.</li>
 <li>Trykk F4, eller velg Fil ▸ Rediger. Filen åpnes i redigeringsvinduet.</li>
 <li>Gjør endringene dine. Hvis filen er et gjenkjent programmerings- eller dataformat, farges nøkkelord, strenger og kommentarer automatisk.</li>
-<li>Trykk Cmd+S (eller klikk Lagre) for å skrive endringene dine. Den første lagringen beholder en sikkerhetskopi av originalen ved siden av filen, slik at du alltid kan falle tilbake til den.</li>
+<li>Trykk Cmd+S (eller klikk Lagre) for å skrive endringene dine. Lagring erstatter filen; vil du beholde det forrige innholdet ved siden av den, slå på sikkerhetskopier i Innstillinger ▸ Rediger/Vis.</li>
 </ol>
 <p>For å starte en helt ny tekstfil på gjeldende plassering, trykk Shift+F4.</p>
 <p><img alt="Det innebygde tekstredigeringsprogrammet som viser syntaksutheving, symboloversikten og minikartet" src="images/editor.png" />
@@ -123,7 +123,7 @@
 <li>Merk filen i et panel.</li>
 <li>Velg Fil ▸ Rediger som heks (eller høyreklikk på filen og velg Rediger som heks).</li>
 <li>Skriv heksadesimale sifre for å overskrive bytes, eller bruk piltastene for å bevege deg gjennom filen. Backspace og Delete fjerner bytes.</li>
-<li>Trykk Cmd+S for å lagre. Som med tekstredigeringsprogrammet beholdes en engangs sikkerhetskopi av originalen.</li>
+<li>Trykk Cmd+S for å lagre. Som i tekstredigeringsprogrammet beholdes det forrige innholdet bare hvis du har slått på sikkerhetskopier.</li>
 </ol>
 <h2 id="snarveier">Snarveier</h2>
 <table>
@@ -209,7 +209,7 @@
 <li>Syntaksutheving dekker JSON, C, C#, Java, JavaScript, TypeScript, Python og Rust. Andre filtyper åpnes og redigeres fortsatt normalt med grunnleggende farging, men detaljert utheving er bare tilgjengelig for de støttede språkene.</li>
 <li>Oversikten dekker de støttede programmeringsspråkene i tillegg til JSON, YAML og XML — inkludert de XML-baserte formatene som <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> og <code>.storyboard</code>. Kommandoene for strukturnavigasjon, bane og validering gjelder JSON, YAML og XML.</li>
 <li>Symboloversikten og Gå til linje-funksjonene gjelder tekstredigeringsprogrammet. Det heksadesimale redigeringsprogrammet er ment for binærinspeksjon og redigering på byte-nivå, ikke for tekst.</li>
-<li>Begge redigeringsprogrammene beholder en sikkerhetskopi av originalfilen første gang du lagrer, slik at en utilsiktet endring er lett å angre ved å gjenopprette den sikkerhetskopien.</li>
+<li>Ingen av redigeringsprogrammene beholder en sikkerhetskopi med mindre du ber om det. Slå på «Behold en sikkerhetskopi (.bak) av det forrige innholdet ved lagring» i Innstillinger ▸ Rediger/Vis, og den første lagringen skriver originalen ved siden av filen som <code>name.bak</code>, slik at en utilsiktet endring er lett å angre.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Vise filer</a></li></ul></section>
 </main>

@@ -1812,7 +1812,8 @@ tests green.
 to the text storage via `SyntaxHighlighter` (debounced re-highlight on edit, capped at
 2 M chars; char→UTF-16 prefix-sum map for O(1) range mapping), JSON/XML formatting via
 `StructuredTextFormatter`, an encoding picker (`TextEncodingChoice`), and Save with a
-one-time `.bak` backup + dirty tracking + save-on-close prompt. F4 (`cm_Edit`) and
+an optional one-time `.bak` backup (`Editor.CreateBackups`, off by default — F-387) + dirty
+tracking + save-on-close prompt. F4 (`cm_Edit`) and
 Shift+F4 (`cm_EditNewFile`) now open this editor instead of the external app. Highlight
 verified offscreen. 955 tests green.
 
@@ -1821,7 +1822,7 @@ with old name preselected + `RenameValidator` (#40); POSIX-permission checkbox d
 `AttributesDialog` (#39); panel type-ahead cursor navigation `TypeAheadSearch` (#64);
 panel-header "★" Go button → `SpecialDirectories` + hotlist manager (#65); **hex editor**
 `HexEditorWindowController` over a tested `HexDocument` (overwrite/insert/delete, undo/redo,
-.bak save; File ▸ "Edit as Hex…", #26). All engines unit-tested; UIs verified offscreen.
+save (through `DocumentFile`, so the `.bak` setting covers it too); File ▸ "Edit as Hex…", #26). All engines unit-tested; UIs verified offscreen.
 976 tests green.
 
 **Finder context menu (#11), Shift/Cmd multi-select (#28), SMB/AFP mount (#36,

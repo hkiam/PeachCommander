@@ -44,6 +44,9 @@ public struct SettingsSnapshot: Sendable {
     public var packDefaultFormat: String   // PackFormat raw value, e.g. "zip"
     public var packLevel: Int              // 0…9
     public var packArchiveExtensions: String = ""  // F-274: extra extensions treated as archives
+    // Edit/View page
+    /// Editor.CreateBackups — keep a `<name>.bak` copy when saving (F-387, off by default).
+    public var editorCreateBackups: Bool = false
     // Tabs page
     public var tabOpenInForeground: Bool
     public var tabLockedOpensNewTab: Bool
@@ -85,6 +88,7 @@ public struct SettingsSnapshot: Sendable {
                 copyOnlyNewer: Bool = false, copySpeedLimitKBps: Int = 0,
                 packDefaultFormat: String = "zip", packLevel: Int = 5,
                 packArchiveExtensions: String = "",
+                editorCreateBackups: Bool = false,
                 tabOpenInForeground: Bool = true, tabLockedOpensNewTab: Bool = true,
                 ftpKeepAliveSeconds: Int = 0,
                 aiMCPEnabled: Bool = false, aiMCPPort: Int = 8790, aiMCPToken: String = "",
@@ -139,6 +143,7 @@ public struct SettingsSnapshot: Sendable {
         self.packDefaultFormat = packDefaultFormat
         self.packLevel = packLevel
         self.packArchiveExtensions = packArchiveExtensions
+        self.editorCreateBackups = editorCreateBackups
         self.tabOpenInForeground = tabOpenInForeground
         self.tabLockedOpensNewTab = tabLockedOpensNewTab
         self.ftpKeepAliveSeconds = ftpKeepAliveSeconds
@@ -279,6 +284,9 @@ public final class SettingsWindowController: NSWindowController {
     private let preserveMetadataCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let cloneCopyCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let onlyNewerCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+
+    // Edit/View page controls
+    private let editorBackupsCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-387
 
     // Tabs page controls
     private let openInForegroundCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
@@ -610,12 +618,44 @@ public final class SettingsWindowController: NSWindowController {
         return view
     }
 
-    // MARK: - Edit/View page (per-extension associations, F-273)
+    // MARK: - Edit/View page (backups + per-extension associations, F-273, F-387)
 
+    /// The editor options that are not per file type, above the associations grid.
+    ///
+    /// A plain container rather than `makePageStack`: the associations view carries its own constraints
+    /// to all four of its edges and has no intrinsic width, so a stack view would let it collapse.
     private func buildEditViewPage() -> NSView {
-        AssociationsPageView(associations: associations) { [weak self] updated in
+        makeCheckbox(editorBackupsCheckbox,
+                     title: String(localized: "Keep a backup copy (.bak) of the previous contents when saving"),
+                     isOn: snapshot.editorCreateBackups, action: #selector(editorBackupsChanged))
+        let note = NSTextField(wrappingLabelWithString: String(localized:
+            "Applies to the built-in text editor, the hex editor and the compare window. The copy is written next to the file as “name.bak”."))
+        note.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        note.textColor = .secondaryLabelColor
+        let table = AssociationsPageView(associations: associations) { [weak self] updated in
             self?.onSaveAssociations(updated)
         }
+        let page = NSView()
+        for view in [editorBackupsCheckbox, note, table] as [NSView] {
+            view.translatesAutoresizingMaskIntoConstraints = false
+            page.addSubview(view)
+        }
+        NSLayoutConstraint.activate([
+            editorBackupsCheckbox.topAnchor.constraint(equalTo: page.topAnchor, constant: 16),
+            editorBackupsCheckbox.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
+            note.topAnchor.constraint(equalTo: editorBackupsCheckbox.bottomAnchor, constant: 6),
+            note.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
+            note.trailingAnchor.constraint(equalTo: page.trailingAnchor, constant: -16),
+            table.topAnchor.constraint(equalTo: note.bottomAnchor, constant: 18),
+            table.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
+            table.trailingAnchor.constraint(equalTo: page.trailingAnchor, constant: -16),
+            table.bottomAnchor.constraint(equalTo: page.bottomAnchor, constant: -16)
+        ])
+        return page
+    }
+
+    @objc private func editorBackupsChanged() {
+        onSetBool("Editor.CreateBackups", editorBackupsCheckbox.state == .on)
     }
 
     // MARK: - Copy/Delete page (F-271)

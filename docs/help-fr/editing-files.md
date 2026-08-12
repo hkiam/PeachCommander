@@ -13,7 +13,7 @@ Quand vous avez besoin de modifier un fichier plutôt que de simplement le consu
 1. Dans l'un ou l'autre panneau, placez le curseur sur le fichier à modifier.
 2. Appuyez sur F4, ou choisissez Fichier ▸ Modifier. Le fichier s'ouvre dans la fenêtre de l'éditeur.
 3. Effectuez vos modifications. Si le fichier est un format de programmation ou de données reconnu, les mots-clés, chaînes et commentaires sont colorés automatiquement.
-4. Appuyez sur Cmd+S (ou cliquez sur Enregistrer) pour écrire vos modifications. Le premier enregistrement conserve une sauvegarde de l'original à côté du fichier, afin que vous puissiez toujours y revenir.
+4. Appuyez sur Cmd+S (ou cliquez sur Enregistrer) pour écrire vos modifications. L'enregistrement remplace le fichier ; si vous voulez conserver le contenu précédent à côté de lui, activez les sauvegardes dans Réglages ▸ Modifier/Afficher.
 
 Pour créer un tout nouveau fichier texte à l'emplacement courant, appuyez sur Maj+F4.
 
@@ -124,7 +124,7 @@ Les plugins peuvent aussi fournir des formateurs — voir [Plugins](plugins.md).
 1. Sélectionnez le fichier dans un panneau.
 2. Choisissez Fichier ▸ Modifier en hexadécimal (ou cliquez droit sur le fichier et choisissez Modifier en hexadécimal).
 3. Saisissez des chiffres hexadécimaux pour écraser des octets, ou utilisez les flèches pour parcourir le fichier. Retour arrière et Suppr retirent des octets.
-4. Appuyez sur Cmd+S pour enregistrer. Comme pour l'éditeur de texte, une sauvegarde unique de l'original est conservée.
+4. Appuyez sur Cmd+S pour enregistrer. Comme dans l'éditeur de texte, le contenu précédent n'est conservé que si vous avez activé les sauvegardes.
 
 ## Raccourcis
 
@@ -153,4 +153,4 @@ Les plugins peuvent aussi fournir des formateurs — voir [Plugins](plugins.md).
 - La coloration syntaxique couvre JSON, C, C#, Java, JavaScript, TypeScript, Python et Rust. Les autres types de fichiers s'ouvrent et se modifient normalement avec une coloration basique, mais la coloration détaillée n'est disponible que pour les langages pris en charge.
 - Le plan couvre les langages de programmation pris en charge ainsi que JSON, YAML et XML — y compris les formats fondés sur XML comme `.plist`, `.svg`, `.csproj` et `.storyboard`. Les commandes de navigation structurelle, de chemin et de validation s'appliquent à JSON, YAML et XML.
 - Le plan des symboles et Aller à la ligne s'appliquent à l'éditeur de texte. L'éditeur hexadécimal est destiné à l'inspection binaire et aux modifications au niveau de l'octet, pas au texte.
-- Les deux éditeurs conservent une sauvegarde du fichier original au premier enregistrement, de sorte qu'une modification accidentelle est facile à annuler en restaurant cette sauvegarde.
+- Aucun des deux éditeurs ne conserve de sauvegarde sans que vous la demandiez. Activez « Conserver une copie de sauvegarde (.bak) du contenu précédent lors de l’enregistrement » dans Réglages ▸ Modifier/Afficher : le premier enregistrement écrit alors l'original à côté du fichier sous le nom `name.bak`, et une modification accidentelle est facile à annuler.

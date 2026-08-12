@@ -16,7 +16,7 @@
 <li>W dowolnym panelu przesuń kursor na plik, który chcesz zmienić.</li>
 <li>Naciśnij F4 lub wybierz Plik ▸ Edytuj. Plik otwiera się w oknie edytora.</li>
 <li>Wprowadź zmiany. Jeśli plik jest rozpoznanym formatem programowania lub danych, słowa kluczowe, ciągi i komentarze są automatycznie kolorowane.</li>
-<li>Naciśnij Cmd+S (lub kliknij Zapisz), aby zapisać zmiany. Pierwszy zapis zachowuje kopię zapasową oryginału obok pliku, więc zawsze możesz do niej wrócić.</li>
+<li>Naciśnij Cmd+S (lub kliknij Zapisz), aby zapisać zmiany. Zapis zastępuje plik; jeśli chcesz zachować poprzednią treść obok niego, włącz kopie zapasowe w Ustawieniach ▸ Edycja/Podgląd.</li>
 </ol>
 <p>Aby utworzyć zupełnie nowy plik tekstowy w bieżącej lokalizacji, naciśnij Shift+F4.</p>
 <p><img alt="Wbudowany edytor tekstu pokazujący podświetlanie składni, konspekt symboli i minimapę" src="images/editor.png" />
@@ -123,7 +123,7 @@
 <li>Zaznacz plik w panelu.</li>
 <li>Wybierz Plik ▸ Edytuj jako szesnastkowy (lub kliknij plik prawym przyciskiem i wybierz Edytuj jako szesnastkowy).</li>
 <li>Wpisuj cyfry szesnastkowe, aby nadpisywać bajty, lub użyj strzałek, aby poruszać się po pliku. Backspace i Delete usuwają bajty.</li>
-<li>Naciśnij Cmd+S, aby zapisać. Podobnie jak w edytorze tekstu, zachowywana jest jednorazowa kopia zapasowa oryginału.</li>
+<li>Naciśnij Cmd+S, aby zapisać. Podobnie jak w edytorze tekstu poprzednia treść zostaje zachowana tylko wtedy, gdy włączyłeś kopie zapasowe.</li>
 </ol>
 <h2 id="skroty">Skróty</h2>
 <table>
@@ -209,7 +209,7 @@
 <li>Podświetlanie składni obejmuje JSON, C, C#, Java, JavaScript, TypeScript, Python i Rust. Inne typy plików nadal otwierają się i edytują normalnie z podstawowym kolorowaniem, ale szczegółowe podświetlanie jest dostępne tylko dla obsługiwanych języków.</li>
 <li>Konspekt obejmuje obsługiwane języki programowania oraz JSON, YAML i XML — w tym formaty oparte na XML, takie jak <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> i <code>.storyboard</code>. Polecenia nawigacji strukturalnej, ścieżki i sprawdzania dotyczą JSON, YAML i XML.</li>
 <li>Konspekt symboli i Przejdź do wiersza dotyczą edytora tekstu. Edytor szesnastkowy jest przeznaczony do inspekcji binarnej i edycji na poziomie bajtów, a nie do tekstu.</li>
-<li>Oba edytory zachowują kopię zapasową oryginalnego pliku przy pierwszym zapisie, więc przypadkową zmianę łatwo cofnąć, przywracając tę kopię.</li>
+<li>Żaden z edytorów nie zachowuje kopii zapasowej, dopóki o nią nie poprosisz. Włącz „Podczas zapisywania zachowaj kopię zapasową (.bak) poprzedniej treści” w Ustawieniach ▸ Edycja/Podgląd, a pierwszy zapis zapisze oryginał obok pliku jako <code>name.bak</code>, więc przypadkową zmianę łatwo cofnąć.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Podgląd plików</a></li></ul></section>
 </main>

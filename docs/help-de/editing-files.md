@@ -13,7 +13,7 @@ Wenn Sie eine Datei ändern möchten, statt sie nur anzusehen, öffnet Peach Com
 1. Bewegen Sie in einem der beiden Panels den Cursor auf die Datei, die Sie ändern möchten.
 2. Drücken Sie F4 oder wählen Sie Datei ▸ Bearbeiten. Die Datei öffnet sich im Editorfenster.
 3. Nehmen Sie Ihre Änderungen vor. Wenn die Datei ein erkanntes Programmier- oder Datenformat ist, werden Schlüsselwörter, Zeichenketten und Kommentare automatisch eingefärbt.
-4. Drücken Sie Cmd+S (oder klicken Sie auf Sichern), um Ihre Änderungen zu schreiben. Beim ersten Sichern wird eine Sicherungskopie des Originals neben der Datei aufbewahrt, sodass Sie jederzeit darauf zurückgreifen können.
+4. Drücken Sie Cmd+S (oder klicken Sie auf Sichern), um Ihre Änderungen zu schreiben. Beim Sichern wird die Datei ersetzt; wenn der vorherige Inhalt daneben aufbewahrt werden soll, schalten Sie die Sicherungskopien unter Einstellungen ▸ Bearbeiten/Ansehen ein.
 
 Um eine ganz neue Textdatei am aktuellen Ort zu beginnen, drücken Sie Shift+F4.
 
@@ -124,7 +124,7 @@ Auch Plugins können Formatierer beitragen — siehe [Plugins](plugins.md).
 1. Wählen Sie die Datei in einem Panel aus.
 2. Wählen Sie Datei ▸ Als Hex bearbeiten (oder klicken Sie mit der rechten Maustaste auf die Datei und wählen Sie Als Hex bearbeiten).
 3. Tippen Sie Hexziffern, um Bytes zu überschreiben, oder verwenden Sie die Pfeiltasten, um sich durch die Datei zu bewegen. Rücktaste und Entf entfernen Bytes.
-4. Drücken Sie Cmd+S, um zu sichern. Wie beim Texteditor wird eine einmalige Sicherungskopie des Originals aufbewahrt.
+4. Drücken Sie Cmd+S, um zu sichern. Wie im Texteditor wird der vorherige Inhalt nur aufbewahrt, wenn Sie die Sicherungskopien eingeschaltet haben.
 
 ## Kurzbefehle
 
@@ -153,4 +153,4 @@ Auch Plugins können Formatierer beitragen — siehe [Plugins](plugins.md).
 - Die Syntaxhervorhebung deckt JSON, C, C#, Java, JavaScript, TypeScript, Python und Rust ab. Andere Dateitypen öffnen und bearbeiten sich weiterhin normal mit einfacher Einfärbung, aber detaillierte Hervorhebung ist nur für die unterstützten Sprachen verfügbar.
 - Die Gliederung deckt die unterstützten Programmiersprachen sowie JSON, YAML und XML ab — einschließlich der XML-basierten Formate wie `.plist`, `.svg`, `.csproj` und `.storyboard`. Die Befehle für Strukturnavigation, Pfad und Prüfung gelten für JSON, YAML und XML.
 - Die Funktionen Symbolgliederung und Zu Zeile springen gelten für den Texteditor. Der Hex-Editor ist für die Binäruntersuchung und Bearbeitungen auf Byte-Ebene gedacht, nicht für Text.
-- Beide Editoren bewahren beim ersten Sichern eine Sicherungskopie der Originaldatei auf, sodass eine versehentliche Änderung durch Wiederherstellen dieser Sicherungskopie leicht rückgängig gemacht werden kann.
+- Keiner der beiden Editoren bewahrt eine Sicherungskopie auf, sofern Sie es nicht verlangen. Schalten Sie unter Einstellungen ▸ Bearbeiten/Ansehen „Beim Speichern eine Sicherungskopie (.bak) des vorherigen Inhalts behalten“ ein, dann schreibt das erste Sichern das Original als `name.bak` neben die Datei, sodass eine versehentliche Änderung leicht rückgängig zu machen ist.

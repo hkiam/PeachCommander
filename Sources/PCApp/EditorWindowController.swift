@@ -352,6 +352,20 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
             + "--- text ---\n" + textView.string.replacingOccurrences(of: "\r", with: "<CR>")
     }
 
+    /// Diagnostic: type `text` at the start of the document and save it the way Cmd+S does (F-387).
+    ///
+    /// Reports what ended up on disk *and* whether a `.bak` was left beside it. The backup is a file the
+    /// editor creates behind the user's back, so the only honest check is looking in the folder afterwards
+    /// — the flag that governs it says nothing about what a save actually did.
+    func automationSaveAfterTyping(_ text: String) -> String {
+        textView.setSelectedRange(NSRange(location: 0, length: 0))
+        textView.insertText(text, replacementRange: NSRange(location: 0, length: 0))
+        save()
+        let onDisk = (try? String(contentsOfFile: path, encoding: .utf8)) ?? "<unreadable>"
+        return "dirty=\(isDirty)\nbak=\(FileManager.default.fileExists(atPath: path + ".bak"))\n"
+            + "--- text ---\n" + onDisk
+    }
+
     /// Diagnostic: run `command` over the whole document, then report what the editor now shows.
     ///
     /// Reads the text view back *and* leaves the window on screen: the text view is the thing that

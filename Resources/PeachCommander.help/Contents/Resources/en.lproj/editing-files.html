@@ -16,7 +16,7 @@
 <li>In either panel, move the cursor to the file you want to change.</li>
 <li>Press F4, or choose File ▸ Edit. The file opens in the editor window.</li>
 <li>Make your changes. If the file is a recognized programming or data format, keywords, strings, and comments are colored automatically.</li>
-<li>Press Cmd+S (or click Save) to write your changes. The first save keeps a backup of the original alongside the file, so you can always fall back to it.</li>
+<li>Press Cmd+S (or click Save) to write your changes. Saving replaces the file; if you want the previous contents kept beside it, switch backups on in Settings ▸ Edit/View.</li>
 </ol>
 <p>To start a brand-new text file at the current location, press Shift+F4.</p>
 <p><img alt="The built-in text editor showing syntax highlighting, the symbol outline, and the minimap" src="images/editor.png" />
@@ -123,7 +123,7 @@
 <li>Select the file in a panel.</li>
 <li>Choose File ▸ Edit as Hex (or right-click the file and choose Edit as Hex).</li>
 <li>Type hex digits to overwrite bytes, or use the arrow keys to move through the file. Backspace and Delete remove bytes.</li>
-<li>Press Cmd+S to save. As with the text editor, a one-time backup of the original is kept.</li>
+<li>Press Cmd+S to save. As in the text editor, the previous contents are only kept if you switched backups on.</li>
 </ol>
 <h2 id="shortcuts">Shortcuts</h2>
 <table>
@@ -209,7 +209,7 @@
 <li>Syntax highlighting covers JSON, C, C#, Java, JavaScript, TypeScript, Python, and Rust. Other file types still open and edit normally with basic coloring, but detailed highlighting is only available for the supported languages.</li>
 <li>The outline covers the supported programming languages plus JSON, YAML and XML — including the XML-based formats such as <code>.plist</code>, <code>.svg</code>, <code>.csproj</code> and <code>.storyboard</code>. The structural navigation, path and validation commands apply to JSON, YAML and XML.</li>
 <li>The symbol outline and Go to Line features apply to the text editor. The hex editor is meant for binary inspection and byte-level edits, not for text.</li>
-<li>Both editors keep a backup of the original file the first time you save, so an accidental change is easy to undo by restoring that backup.</li>
+<li>Neither editor keeps a backup unless you ask for one. Switch on “Keep a backup copy (.bak) of the previous contents when saving” in Settings ▸ Edit/View, and the first save writes the original beside the file as <code>name.bak</code>, so an accidental change is easy to undo.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="viewing-files.html">Viewing files</a></li></ul></section>
 </main>

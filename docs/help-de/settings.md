@@ -28,7 +28,7 @@ Das Fenster enthält diese Seiten, in dieser Reihenfolge:
 - **Bedienung** — allgemeines Verhalten, etwa was geschieht, wenn Sie in einem Panel tippen (Schnellsuche versus Befehlszeile).
 - **Farben** — benutzerdefinierte Panel-Farben, oder dem aktuellen Thema folgen lassen.
 - **Bestätigung** — welche Aktionen zuerst eine Bestätigung verlangen, etwa das Löschen.
-- **Bearbeiten/Ansehen** — die Programme zum Bearbeiten und Ansehen von Dateien sowie die Zuordnungen pro Dateityp.
+- **Bearbeiten/Ansehen** — ob beim Sichern im Editor eine `.bak`-Sicherungskopie aufbewahrt wird, die Programme zum Bearbeiten und Ansehen von Dateien sowie die Zuordnungen pro Dateityp.
 - **Kopieren/Löschen** — Dateimetadaten bewahren, schnelles Klonen verwenden, nur neuere Dateien kopieren, nach dem Kopieren überprüfen, Löschungen in den Papierkorb legen und ein optionales Geschwindigkeitslimit festlegen.
 - **Zip/Packer** — das Standard-Archivformat und die Kompressionsstufe, die beim Packen verwendet werden.
 - **Plugins** — installierte Plugins ein- oder ausschalten.

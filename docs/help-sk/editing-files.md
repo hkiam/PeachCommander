@@ -13,7 +13,7 @@ Keď potrebujete súbor zmeniť, nielen si ho pozrieť, Peach Commander ho otvor
 1. V ktoromkoľvek paneli presuňte kurzor na súbor, ktorý chcete zmeniť.
 2. Stlačte F4, alebo vyberte Súbor ▸ Upraviť. Súbor sa otvorí v okne editora.
 3. Vykonajte zmeny. Ak je súbor rozpoznaný programovací alebo dátový formát, kľúčové slová, reťazce a komentáre sa automaticky zafarbia.
-4. Stlačte Cmd+S (alebo kliknite na Uložiť) na zapísanie zmien. Prvé uloženie uchová zálohu originálu vedľa súboru, takže sa k nej vždy môžete vrátiť.
+4. Stlačte Cmd+S (alebo kliknite na Uložiť) na zapísanie zmien. Uloženie súbor prepíše; ak chcete predchádzajúci obsah zachovať vedľa neho, zapnite zálohy v Nastaveniach ▸ Upraviť/Zobraziť.
 
 Na začatie úplne nového textového súboru na aktuálnom mieste stlačte Shift+F4.
 
@@ -124,7 +124,7 @@ Formátovače môžu dodávať aj zásuvné moduly — pozri [Plugins](plugins.m
 1. Vyberte súbor v paneli.
 2. Vyberte Súbor ▸ Upraviť ako šestnástkové (alebo kliknite pravým tlačidlom na súbor a vyberte Upraviť ako šestnástkové).
 3. Zadajte šestnástkové číslice na prepísanie bajtov, alebo použite šípky na pohyb súborom. Backspace a Delete odstraňujú bajty.
-4. Stlačte Cmd+S na uloženie. Ako pri textovom editore sa uchová jednorazová záloha originálu.
+4. Stlačte Cmd+S na uloženie. Ako v textovom editore sa predchádzajúci obsah zachová len vtedy, keď ste zálohy zapli.
 
 ## Skratky
 
@@ -153,4 +153,4 @@ Formátovače môžu dodávať aj zásuvné moduly — pozri [Plugins](plugins.m
 - Zvýraznenie syntaxe pokrýva JSON, C, C#, Java, JavaScript, TypeScript, Python a Rust. Ostatné typy súborov sa stále otvárajú a upravujú normálne so základným obarvením, ale podrobné zvýraznenie je dostupné len pre podporované jazyky.
 - Prehľad pokrýva podporované programovacie jazyky a navyše JSON, YAML a XML — vrátane formátov založených na XML, ako sú `.plist`, `.svg`, `.csproj` a `.storyboard`. Príkazy pre štruktúrnu navigáciu, cestu a kontrolu platia pre JSON, YAML a XML.
 - Prehľad symbolov a Prejsť na riadok platia pre textový editor. Šestnástkový editor je určený na binárnu kontrolu a úpravy na úrovni bajtov, nie na text.
-- Oba editory uchovávajú zálohu pôvodného súboru pri prvom uložení, takže náhodnú zmenu je ľahké vrátiť obnovením tej zálohy.
+- Ani jeden editor neuchováva zálohu, kým si o ňu nepožiadate. V Nastaveniach ▸ Upraviť/Zobraziť zapnite „Pri ukládaní zachovať záložnú kópiu (.bak) predchádzajúceho obsahu“ a prvé uloženie zapíše originál vedľa súboru ako `name.bak`, takže náhodnú zmenu je ľahké vrátiť.

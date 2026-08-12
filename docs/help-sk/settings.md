@@ -28,7 +28,7 @@ Okno má tieto stránky, v poradí:
 - **Ovládanie** — všeobecné správanie, ako to, čo sa stane, keď píšete v paneli (rýchle hľadanie oproti príkazovému riadku).
 - **Farby** — vlastné farby panelov, alebo ich nechajte sledovať aktuálnu tému.
 - **Potvrdenie** — ktoré akcie najprv žiadajú potvrdenie, ako mazanie.
-- **Upraviť/Zobraziť** — programy použité na úpravu a zobrazenie súborov a asociácie podľa typu.
+- **Upraviť/Zobraziť** — či sa pri ukladaní v editore uchová záložná kópia `.bak`, programy použité na úpravu a zobrazenie súborov a asociácie podľa typu.
 - **Kopírovanie/Mazanie** — zachovať metaúdaje súborov, použiť rýchle klonovanie, kopírovať len novšie súbory, overiť po kopírovaní, posielať mazania do Koša a nastaviť voliteľné obmedzenie rýchlosti.
 - **Zip/Balič** — predvolený formát archívu a úroveň kompresie použité pri balení.
 - **Zásuvné moduly** — zapnúť alebo vypnúť nainštalované zásuvné moduly.

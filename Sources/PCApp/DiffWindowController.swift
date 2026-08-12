@@ -304,10 +304,12 @@ final class DiffWindowController: NSWindowController, NSTableViewDataSource, NST
     private func save(left: Bool) {
         let path = left ? leftPath : rightPath
         let lines = left ? leftLines : rightLines
-        // Back up the current on-disk file to "<name>.bak" once per save, then write.
-        let bak = path + ".bak"
-        try? FileManager.default.removeItem(atPath: bak)
-        try? FileManager.default.copyItem(atPath: path, toPath: bak)
+        // Back up the current on-disk file to "<name>.bak" once per save, then write. Off unless the
+        // user asked for backups (F-387); the flag starts fresh here rather than being kept per side,
+        // which is what makes it once per *save* — a merge is applied in steps and the copy worth having
+        // is the one from just before this write.
+        var refreshedBackup = false
+        DocumentFile.backUp(path: path, alreadyBackedUp: &refreshedBackup)
         do {
             try lines.joined(separator: "\n").write(toFile: path, atomically: true, encoding: .utf8)
             if left { leftDirty = false } else { rightDirty = false }

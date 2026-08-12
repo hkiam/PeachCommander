@@ -13,7 +13,7 @@ Amikor egy fájlt meg kell változtatnia, nem csak megnéznie, a Peach Commander
 1. Bármelyik panelben vigye a kurzort a megváltoztatni kívánt fájlra.
 2. Nyomja meg az F4-et, vagy válassza a Fájl ▸ Szerkesztés lehetőséget. A fájl a szerkesztőablakban nyílik meg.
 3. Végezze el a változtatásokat. Ha a fájl felismert programozási vagy adatformátum, a kulcsszavak, karakterláncok és megjegyzések automatikusan színeződnek.
-4. Nyomja meg a Cmd+S-t (vagy kattintson a Mentés-re) a változtatások írásához. Az első mentés biztonsági mentést tart az eredetiről a fájl mellett, így mindig visszatérhet hozzá.
+4. Nyomja meg a Cmd+S-t (vagy kattintson a Mentés-re) a változtatások írásához. A mentés felülírja a fájlt; ha az előző tartalmat meg szeretné tartani mellette, kapcsolja be a biztonsági mentéseket a Beállítások ▸ Szerkesztés/Megtekintés alatt.
 
 Egy vadonatúj szövegfájl kezdéséhez az aktuális helyen nyomja meg a Shift+F4-et.
 
@@ -124,7 +124,7 @@ Bővítmények is adhatnak formázót — lásd [Plugins](plugins.md).
 1. Jelölje ki a fájlt egy panelben.
 2. Válassza a Fájl ▸ Szerkesztés hexadecimálisként lehetőséget (vagy kattintson jobb gombbal a fájlra és válassza a Szerkesztés hexadecimálisként lehetőséget).
 3. Gépeljen hexadecimális számjegyeket a bájtok felülírásához, vagy használja a nyílbillentyűket a fájlon való mozgáshoz. A Backspace és a Delete eltávolít bájtokat.
-4. Nyomja meg a Cmd+S-t a mentéshez. A szövegszerkesztőhöz hasonlóan egyszeri biztonsági mentés készül az eredetiről.
+4. Nyomja meg a Cmd+S-t a mentéshez. Ahogy a szövegszerkesztőben, az előző tartalom csak akkor marad meg, ha bekapcsolta a biztonsági mentéseket.
 
 ## Billentyűparancsok
 
@@ -153,4 +153,4 @@ Bővítmények is adhatnak formázót — lásd [Plugins](plugins.md).
 - A szintaxiskiemelés lefedi a JSON, C, C#, Java, JavaScript, TypeScript, Python és Rust nyelveket. Más fájltípusok továbbra is normálisan nyílnak meg és szerkeszthetők alapszínezéssel, de a részletes kiemelés csak a támogatott nyelvekhez elérhető.
 - A vázlat a támogatott programozási nyelveket, valamint a JSON, YAML és XML formátumot fedi le — az XML-alapú formátumokkal együtt, mint a `.plist`, `.svg`, `.csproj` és `.storyboard`. A szerkezeti navigáció, az útvonal és az ellenőrzés parancsai JSON-, YAML- és XML-fájlokra érvényesek.
 - A szimbólumvázlat és az Ugrás sorra a szövegszerkesztőre vonatkozik. A hex szerkesztő a bináris vizsgálatra és bájtszintű szerkesztésre való, nem a szövegre.
-- Mindkét szerkesztő biztonsági mentést tart az eredeti fájlról az első mentéskor, így egy véletlen változtatás könnyen visszavonható a biztonsági mentés visszaállításával.
+- Egyik szerkesztő sem tart biztonsági mentést, amíg nem kéri. Kapcsolja be a „Mentéskor tartsa meg az előző tartalom biztonsági másolatát (.bak)” beállítást a Beállítások ▸ Szerkesztés/Megtekintés alatt, és az első mentés az eredetit `name.bak` néven a fájl mellé írja, így egy véletlen változtatás könnyen visszavonható.

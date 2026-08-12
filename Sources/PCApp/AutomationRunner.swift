@@ -95,6 +95,12 @@ extension MainWindowController {
             case "editfilterdlg": await editFilterDialog(arg)   // editfilterdlg <src> (F-356)
             case "editlines":  await editLines(arg)     // editlines <src>|<out> (F-359)
             case "editstruct": await editStructure(arg) // editstruct <src>|<needle>|<out> (F-369)
+            case "editsave":   await editSave(arg)      // editsave <src>|<text>|<out> (F-387)
+            case "setbool":                             // setbool <Section.Key>|<0|1> (F-387)
+                // Through the settings dialog's own callback, so a script changes an option exactly the
+                // way a click does — including whatever the host does besides writing the config.
+                let b = arg.split(separator: "|", maxSplits: 1).map { String($0).trimmingCharacters(in: .whitespaces) }
+                if b.count == 2 { applyBoolOption(b[0], b[1] == "1" || b[1].lowercased() == "true") }
             case "sftpget":                             // sftpget <remote>|<local>|<out>|<partial> (F-366)
                 await sftpGet(arg)
             case "sftpput":                             // sftpput <local>|<remote>|<out>|<partial> (F-212)
@@ -1265,6 +1271,20 @@ extension MainWindowController {
         let report = win.automationLineOperations()
         try? report.write(toFile: a[1], atomically: true, encoding: .utf8)
         NSLog("[automation] editlines → \(a[1])")
+    }
+
+    /// Open `src` in the editor, type `text` into it and save, then report the folder's answer (F-387).
+    private func editSave(_ arg: String) async {
+        let a = arg.split(separator: "|").map(String.init)
+        guard a.count == 3 else { NSLog("[automation] editsave needs <src>|<text>|<out>"); return }
+        let win = EditorWindowController(path: a[0])
+        automationEditors.append(win)
+        win.showWindow(nil)
+        win.window?.makeKeyAndOrderFront(nil)
+        try? await Task.sleep(nanoseconds: 800_000_000)   // let the load and the first highlight settle
+        let report = win.automationSaveAfterTyping(a[1])
+        try? report.write(toFile: a[2], atomically: true, encoding: .utf8)
+        NSLog("[automation] editsave → \(a[2])")
     }
 
     /// Open `src`, put the caret on `needle`, and drive the Structure menu (F-369).

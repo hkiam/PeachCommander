@@ -13,7 +13,7 @@ Når du trenger å endre en fil i stedet for bare å se på den, åpner Peach Co
 1. I begge paneler flytter du markøren til filen du vil endre.
 2. Trykk F4, eller velg Fil ▸ Rediger. Filen åpnes i redigeringsvinduet.
 3. Gjør endringene dine. Hvis filen er et gjenkjent programmerings- eller dataformat, farges nøkkelord, strenger og kommentarer automatisk.
-4. Trykk Cmd+S (eller klikk Lagre) for å skrive endringene dine. Den første lagringen beholder en sikkerhetskopi av originalen ved siden av filen, slik at du alltid kan falle tilbake til den.
+4. Trykk Cmd+S (eller klikk Lagre) for å skrive endringene dine. Lagring erstatter filen; vil du beholde det forrige innholdet ved siden av den, slå på sikkerhetskopier i Innstillinger ▸ Rediger/Vis.
 
 For å starte en helt ny tekstfil på gjeldende plassering, trykk Shift+F4.
 
@@ -124,7 +124,7 @@ Programtillegg kan også bidra med formaterere — se [Plugins](plugins.md).
 1. Merk filen i et panel.
 2. Velg Fil ▸ Rediger som heks (eller høyreklikk på filen og velg Rediger som heks).
 3. Skriv heksadesimale sifre for å overskrive bytes, eller bruk piltastene for å bevege deg gjennom filen. Backspace og Delete fjerner bytes.
-4. Trykk Cmd+S for å lagre. Som med tekstredigeringsprogrammet beholdes en engangs sikkerhetskopi av originalen.
+4. Trykk Cmd+S for å lagre. Som i tekstredigeringsprogrammet beholdes det forrige innholdet bare hvis du har slått på sikkerhetskopier.
 
 ## Snarveier
 
@@ -153,4 +153,4 @@ Programtillegg kan også bidra med formaterere — se [Plugins](plugins.md).
 - Syntaksutheving dekker JSON, C, C#, Java, JavaScript, TypeScript, Python og Rust. Andre filtyper åpnes og redigeres fortsatt normalt med grunnleggende farging, men detaljert utheving er bare tilgjengelig for de støttede språkene.
 - Oversikten dekker de støttede programmeringsspråkene i tillegg til JSON, YAML og XML — inkludert de XML-baserte formatene som `.plist`, `.svg`, `.csproj` og `.storyboard`. Kommandoene for strukturnavigasjon, bane og validering gjelder JSON, YAML og XML.
 - Symboloversikten og Gå til linje-funksjonene gjelder tekstredigeringsprogrammet. Det heksadesimale redigeringsprogrammet er ment for binærinspeksjon og redigering på byte-nivå, ikke for tekst.
-- Begge redigeringsprogrammene beholder en sikkerhetskopi av originalfilen første gang du lagrer, slik at en utilsiktet endring er lett å angre ved å gjenopprette den sikkerhetskopien.
+- Ingen av redigeringsprogrammene beholder en sikkerhetskopi med mindre du ber om det. Slå på «Behold en sikkerhetskopi (.bak) av det forrige innholdet ved lagring» i Innstillinger ▸ Rediger/Vis, og den første lagringen skriver originalen ved siden av filen som `name.bak`, slik at en utilsiktet endring er lett å angre.

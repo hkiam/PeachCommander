@@ -28,7 +28,7 @@ La ventana tiene estas páginas, en orden:
 - **Operación** — comportamiento general, como qué ocurre al escribir en un panel (búsqueda rápida frente a la línea de comandos).
 - **Colores** — colores de panel personalizados, o déjalos seguir el tema actual.
 - **Confirmación** — qué acciones piden confirmación primero, como eliminar.
-- **Editar/Ver** — los programas usados para editar y ver archivos, y las asociaciones por tipo.
+- **Editar/Ver** — si al guardar en el editor se conserva una copia de seguridad `.bak`, los programas usados para editar y ver archivos, y las asociaciones por tipo.
 - **Copiar/Eliminar** — conservar los metadatos de los archivos, usar clonado rápido, copiar solo archivos más nuevos, verificar tras copiar, enviar las eliminaciones a la Papelera y fijar un límite de velocidad opcional.
 - **Zip/Compresor** — el formato de archivo comprimido y el nivel de compresión por omisión al comprimir.
 - **Complementos** — activa o desactiva los complementos instalados.

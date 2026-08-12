@@ -28,7 +28,7 @@ La fenêtre comporte ces pages, dans l'ordre :
 - **Fonctionnement** — comportement général, comme ce qui se passe quand vous saisissez dans un panneau (recherche rapide ou ligne de commande).
 - **Couleurs** — couleurs personnalisées des panneaux, ou les laisser suivre le thème actuel.
 - **Confirmation** — quelles actions vous demandent d'abord de confirmer, comme la suppression.
-- **Modifier/Afficher** — les programmes utilisés pour modifier et afficher les fichiers, et les associations par type.
+- **Modifier/Afficher** — si l'enregistrement dans l'éditeur conserve une copie de sauvegarde `.bak`, les programmes utilisés pour modifier et afficher les fichiers, et les associations par type.
 - **Copier/Supprimer** — préserver les métadonnées des fichiers, utiliser le clonage rapide, ne copier que les fichiers plus récents, vérifier après copie, envoyer les suppressions à la corbeille et définir une limite de vitesse facultative.
 - **Zip/Compresseur** — le format d'archive et le niveau de compression par défaut utilisés quand vous compressez.
 - **Extensions** — activer ou désactiver les extensions installées.

@@ -14,6 +14,15 @@ does not have.
 
 ## [Unreleased]
 
+### Changed
+
+- **The editor no longer leaves `.bak` files behind.** Every save from the built-in text editor, the
+  hex editor and the compare window dropped a copy of the previous contents next to the file, and
+  there was nothing anywhere to turn it off — so the folders you work in filled up with files you
+  then deleted by hand. Saving now simply saves. If you want the copy, switch on *Keep a backup copy
+  (.bak) of the previous contents when saving* in Settings ▸ Edit/View; it applies to all three
+  windows at once, including the ones already open.
+
 ### Added
 
 - **The drive bar shows what each volume is.** It drew three icons in all — a screen for the startup

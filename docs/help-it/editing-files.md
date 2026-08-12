@@ -13,7 +13,7 @@ Quando avete bisogno di modificare un file invece di limitarvi a guardarlo, Peac
 1. In uno dei pannelli, spostate il cursore sul file da modificare.
 2. Premete F4, oppure scegliete File ▸ Modifica. Il file si apre nella finestra dell'editor.
 3. Apportate le vostre modifiche. Se il file è in un formato di programmazione o di dati riconosciuto, parole chiave, stringhe e commenti vengono colorati automaticamente.
-4. Premete Cmd+S (o fate clic su Salva) per scrivere le modifiche. Il primo salvataggio conserva un backup dell'originale accanto al file, così potete sempre tornare a esso.
+4. Premete Cmd+S (o fate clic su Salva) per scrivere le modifiche. Il salvataggio sostituisce il file; se volete conservare il contenuto precedente accanto a esso, attivate i backup in Impostazioni ▸ Modifica/Visualizza.
 
 Per iniziare un file di testo nuovo di zecca nella posizione corrente, premete Shift+F4.
 
@@ -124,7 +124,7 @@ Anche i plugin possono fornire formattatori — vedi [Plugins](plugins.md).
 1. Selezionate il file in un pannello.
 2. Scegliete File ▸ Modifica come esadecimale (oppure fate clic destro sul file e scegliete Modifica come esadecimale).
 3. Digitate cifre esadecimali per sovrascrivere i byte, oppure usate i tasti freccia per muovervi nel file. Backspace e Delete rimuovono i byte.
-4. Premete Cmd+S per salvare. Come per l'editor di testo, viene conservato un backup una tantum dell'originale.
+4. Premete Cmd+S per salvare. Come nell'editor di testo, il contenuto precedente viene conservato solo se avete attivato i backup.
 
 ## Scorciatoie
 
@@ -153,4 +153,4 @@ Anche i plugin possono fornire formattatori — vedi [Plugins](plugins.md).
 - L'evidenziazione della sintassi copre JSON, C, C#, Java, JavaScript, TypeScript, Python e Rust. Gli altri tipi di file si aprono e si modificano comunque normalmente con una colorazione di base, ma l'evidenziazione dettagliata è disponibile solo per i linguaggi supportati.
 - La struttura copre i linguaggi di programmazione supportati più JSON, YAML e XML — compresi i formati basati su XML come `.plist`, `.svg`, `.csproj` e `.storyboard`. I comandi di navigazione strutturale, percorso e convalida si applicano a JSON, YAML e XML.
 - La struttura dei simboli e la funzione Vai alla riga si applicano all'editor di testo. L'editor esadecimale è pensato per l'ispezione binaria e le modifiche a livello di byte, non per il testo.
-- Entrambi gli editor conservano un backup del file originale la prima volta che salvate, così una modifica accidentale è facile da annullare ripristinando quel backup.
+- Nessuno dei due editor conserva un backup se non lo chiedete. Attivate «Conserva una copia di backup (.bak) del contenuto precedente al salvataggio» in Impostazioni ▸ Modifica/Visualizza e il primo salvataggio scriverà l'originale accanto al file come `name.bak`, così una modifica accidentale è facile da annullare.

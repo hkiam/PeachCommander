@@ -28,7 +28,7 @@ Fereastra are aceste pagini, în ordine:
 - **Operare** — comportament general, cum ar fi ce se întâmplă când tastați într-un panou (căutare rapidă vs. linia de comandă).
 - **Culori** — culori personalizate ale panourilor, sau lăsați-le să urmeze tema curentă.
 - **Confirmare** — ce acțiuni vă cer mai întâi să confirmați, precum ștergerea.
-- **Editare/Vizualizare** — programele folosite pentru editarea și vizualizarea fișierelor și asocierile pe tip.
+- **Editare/Vizualizare** — dacă salvarea în editor păstrează o copie de rezervă `.bak`, programele folosite pentru editarea și vizualizarea fișierelor și asocierile pe tip.
 - **Copiere/Ștergere** — păstrează metadatele fișierelor, folosește clonarea rapidă, copiază doar fișierele mai noi, verifică după copiere, trimite ștergerile în Coș și setează o limită de viteză opțională.
 - **Zip/Arhivator** — formatul de arhivă implicit și nivelul de compresie folosite când împachetați.
 - **Pluginuri** — activează sau dezactivează pluginurile instalate.
