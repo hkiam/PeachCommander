@@ -308,6 +308,50 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         return "<no text field>"
     }
 
+    /// Where the panel is looking: the cursor, the rows on screen, and the scroll offset.
+    ///
+    /// A refresh that keeps the cursor can still throw the view somewhere else, and no dump of names
+    /// shows that — "the list is correct" and "I lost my place" are the same report otherwise.
+    func automationViewport() -> String {
+        let rows = self.rows(in: visibleRect)
+        let offset = enclosingScrollView?.documentVisibleRect.origin.y ?? 0
+        let cursor = cursorEntryName() ?? (cursorRow < 0 ? ".." : "<none>")
+        return "cursor=\(cursor)\ncursorRow=\(cursorRow)\nfirstVisible=\(rows.location)"
+            + "\nvisibleCount=\(rows.length)\noffsetY=\(Int(offset.rounded()))\nrows=\(numberOfRows)\n"
+    }
+
+    /// Scroll the view without moving the cursor — what a user does with the wheel while the cursor
+    /// stays where they left it. The case a refresh must not undo.
+    func automationScrollTo(row: Int) {
+        guard row >= 0, row < numberOfRows else { return }
+        scrollRowToVisible(numberOfRows - 1)
+        scrollRowToVisible(row)
+    }
+
+    /// Every visible column's id and the text it shows for the cursor row — what the panel is
+    /// actually rendering, column by column, for a check that cares about formatting (a byte count
+    /// that should read "4.1 MB", a metric that must stay blank rather than claim zero).
+    func automationCursorRowCells() -> [(field: String, text: String)] {
+        guard cursorRow >= 0, let entry = entry(atCursor: cursorRow) else { return [] }
+        return visibleColumns.map { ($0.fieldID, cellText(forColumn: $0.fieldID, entry: entry)) }
+    }
+
+    /// The colour the name cell of `name` is actually drawing its label in, as "#RRGGBB".
+    ///
+    /// A colour that was *decided* is not a colour that is *drawn*: the row colour travels through
+    /// `configure` into the label and can be overruled there (a marked file keeps `selectedText`).
+    /// Reading the label back is the only way a check can tell the two apart — a screenshot cannot,
+    /// since the three file-handle colours differ by hue at one lightness.
+    func automationRenderedNameColor(forName name: String) -> String? {
+        guard let column = tableColumns.firstIndex(where: { $0.identifier.rawValue == PanelColumn.name.rawValue }),
+              let index = visibleEntries.firstIndex(where: { $0.name == name }),
+              let cell = view(atColumn: column, row: index + 1, makeIfNecessary: true)
+        else { return nil }
+        let field = (cell as? NSTableCellView)?.textField ?? cell as? NSTextField
+        guard let color = field?.textColor else { return nil }
+        return "#" + color.hexString.uppercased()
+    }
+
     /// Diagnostic: scroll the panel fully to the right, so a wide opt-in column is inside the screenshot.
     func automationScrollToLastColumn() {
         guard let clip = enclosingScrollView?.contentView else { return }
@@ -491,7 +535,8 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     // MARK: - Public API
 
     /// Update the view with a new directory snapshot.
-    func update(with snapshot: DirectorySnapshot, sortDescriptor: DirectoryModel.SortDescriptor? = nil) {
+    func update(with snapshot: DirectorySnapshot, sortDescriptor: DirectoryModel.SortDescriptor? = nil,
+                preserveViewport: Bool = false) {
         // Don't rebuild the table while an in-cell rename is open — the field
         // editor would be destroyed. The post-commit reload picks up the change.
         if isInlineEditing { return }
@@ -501,10 +546,20 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         commentMap.removeAll()   // descript.ion comments are per-listing (controller refills)
         contentValues.removeAll(); contentPending.removeAll()   // plugin-column values are per-listing
         rebuildVisibleEntries()
-        cursorRow = visibleEntries.isEmpty ? -1 : 0
+        // A refresh must not move the cursor OR the view. Resetting to the first row was right for a
+        // navigation and wrong for the reload a volatile mount does every two seconds: it threw away
+        // the place the user was reading, and it did it while they were reading it.
+        if preserveViewport {
+            cursorRow = visibleEntries.isEmpty ? -1 : min(cursorRow, visibleEntries.count - 1)
+        } else {
+            cursorRow = visibleEntries.isEmpty ? -1 : 0
+        }
         updateSortArrows(self.sortDescriptor)
         reapplyPluginSortSync()   // keep a content-column sort across auto-refresh
         prefetchContentValuesSync()   // fill content cells before drawing → no flicker
+        // The scroll offset survives `reloadData` only if it is put back: the row count changes with
+        // every process that starts or exits, and AppKit answers that by scrolling to the top.
+        let offset = preserveViewport ? enclosingScrollView?.documentVisibleRect.origin : nil
         reloadData()
         Task { await self.syncEntriesToSelectionState(); self.notifyChanged() }
     }
@@ -599,7 +654,13 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         Task { _ = await selectionState?.setCursorIndex(-1); notifyChanged() }
     }
 
-    func focusEntry(named name: String?) {
+    /// Put the cursor on `name`.
+    ///
+    /// `scroll` is false for a refresh: bringing the cursor row into view is what a *move* means, and
+    /// doing it on a reload drags the view back every two seconds while the user is reading elsewhere.
+    /// A name that is no longer there (a process exited) then keeps the cursor's place in the list
+    /// rather than sending it to the top — the rows around it are still the ones being looked at.
+    func focusEntry(named name: String?, scroll: Bool = true) {
         // NFC-tolerant match: the filesystem may return a decomposed (NFD) name
         // while the caller holds a precomposed (NFC) one, or vice versa (F-100).
         guard let name, let idx = visibleEntries.firstIndex(where: { PathUtils.nameEquivalent($0.name, name) }) else {
@@ -610,7 +671,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         }
         cursorRow = idx
         reloadData()
-        scrollRowToVisible(idx + 1)
+        if scroll { scrollRowToVisible(idx + 1) }
         Task { _ = await selectionState?.setCursorIndex(idx); notifyChanged() }
     }
 

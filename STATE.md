@@ -13,7 +13,7 @@
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **69 scenarios with reports** (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
-| Last updated | 2026-08-10 |
+| Last updated | 2026-08-13 |
 | Released | **0.4.0 (build 4), 2026-08-08** — a repair release: 33 defects from the evidence sweep, three of them security-relevant (a file name could run a shell command, a crafted archive wrote outside the chosen folder, the archive password stood in the process list). Unsigned, as every build so far. |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
@@ -25,6 +25,38 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-13 (F-396, F-398) — Two things the panel was doing to itself
+
+Six pieces of work, and the first one was a defect the review turned up rather than a feature: **F8 "Quit
+Process" ended nothing**. `isInArchive` is spelled `!(fs is LocalFS)`, so the process mount — and every FTP
+and WebDAV mount — reached the archive branch of the delete path and was told it was a read-only archive.
+The plugin's kill, with its SIGTERM→SIGKILL escalation, its own tests and its documentation in nineteen
+languages, had no route from the panel at all. Found by asking the running app: the process was still there
+afterwards, and `modaldump` read out a dialog about archives. Nothing else in the review would have been
+worth much on a mount whose one action was dead.
+
+Reported from an older version — "the view loses my position on every cyclic refresh and I have to
+scroll and search again" — and still true. Measured rather than reasoned about, through a new `viewdump`
+verb that reports cursor, first visible row and scroll offset: a dump of names cannot tell "the list is
+correct" from "I lost my place".
+
+Two causes, both real:
+
+* With the cursor on a row, `focusEntry` called `scrollRowToVisible` on EVERY reload. Scrolled to row
+  900 with the cursor at 417, the next refresh pulled the view back: offset 17083 → 7925.
+* With the cursor on ".." — where it sits until you move it — `update` reset it to the first row and
+  `reloadData` put the offset back to the top: 11383 → -22.
+
+Bringing the cursor into view is what a cursor *move* means, so it became a parameter of `focusEntry`,
+false for a refresh; and the scroll offset is captured and restored around `reloadData` when the path
+has not changed. A cursor whose row is gone keeps its index rather than jumping to the top — the rows
+being looked at are still there.
+
+Not just the volatile mount: the directory watcher reloads through the same call, so a local folder went
+to the top whenever anything in it changed, and so did every panel reload after a copy or a delete.
+Verified in all three, plus the cases that must NOT change: navigation still lands at the top with the
+cursor on "..", and an explicit focus still scrolls to its row.
 
 ## 2026-08-09 — Sweep: what this app writes, read by something that is not this app
 
