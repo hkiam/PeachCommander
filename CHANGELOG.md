@@ -16,6 +16,15 @@ does not have.
 
 ### Added
 
+- **The drive bar shows what each volume is.** It drew three icons in all — a screen for the startup
+  disk, whatever a plugin supplied, and one floppy for everything else — so a network share, a USB
+  stick and a mounted disk image were identical in the one place they are listed side by side, which
+  is the place you go to choose between them. Every volume now carries its own icon, the same one
+  Finder shows, including the custom icon a branded drive ships with. A plugin drive keeps the icon
+  its plugin chose, and where there is nothing to ask — a cloud folder is a folder, and the system
+  has only the generic folder icon for it — a symbol for the kind stands in. Screen readers are told
+  the kind in words, since an icon is nothing to hear.
+
 - **Eject from the drive bar itself.** 0.6.0 added ejecting and gave it one route — a command that
   works out which volume you mean from where the cursor is standing. The place you actually look, the
   button for the volume, did nothing at all on a right-click. It now offers *Eject*, and the button

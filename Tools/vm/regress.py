@@ -1219,7 +1219,12 @@ REPORTS = {
                       "crumb=TaskManager"]),
     "drive-plugin-mounted": ("/Users/admin/drive-mounted.txt",
                              ["path=/\n", "current=TaskManager", "tabs=*TaskManager",
-                              "crumb=TaskManager"]),
+                              "crumb=TaskManager",
+                              # F-386: what each chip is showing. The plugin drive draws the emoji
+                              # the plugin supplied and the guest's boot disk draws the system's own
+                              # icon — the two ends of the rule, and neither names a volume, so this
+                              # does not depend on what the guest's disk is called.
+                              "TaskManager:pluginDrive:plugin", ":startupDisk:system"]),
     # The negative is the point: on the second tab the panel is *not* on the drive, while the first tab
     # goes on carrying its name. Without it, a build that simply left the chip lit forever would pass
     # the other two dumps. The volume the chip falls back to is deliberately not named — that is the
