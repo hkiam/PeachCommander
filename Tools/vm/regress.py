@@ -700,6 +700,31 @@ SCENARIOS = [
                       "drivebardump /Users/admin/drive-second.txt", "wait 400",
                       "cmd cm_NextTab", "wait 2500",
                       "drivebardump /Users/admin/drive-back.txt", "wait 400"], 16),
+    # The Task Manager as a *file* manager (F-390, F-391, F-392, F-393, F-394). One scenario, because
+    # each step needs the one before it: a process must be holding a file open before "which processes
+    # have this open" can answer, and the answer is what puts the cursor on that process so entering it
+    # can list what it holds. The holder is started through `probe` rather than baked into the fixture
+    # tree — it has to be alive DURING the scenario, and a background `tail` started here is. The file
+    # it holds is made by the scenario too: the first version held a file from the demo tree, and when
+    # the guest turned out not to have that tree the search correctly found nobody — a scenario that
+    # depends on fixtures it does not create fails for a reason that is not the feature.
+    ("process-files", ["mkfile /Users/admin/tm-target.txt",
+                       "probe /Users/admin/tm-holder.txt|nohup tail -f /Users/admin/tm-target.txt >/dev/null 2>&1 & sleep 1; pgrep -x tail >/dev/null && echo holder-running || echo holder-missing",
+                       "active left", "pfxmount TaskManager", "wait 3000",
+                       "procfile /Users/admin/tm-target.txt", "wait 900",
+                       "prochldump /Users/admin/tm-handles.txt", "wait 400",
+                       "rowdump /Users/admin/tm-row.txt", "wait 400",
+                       # The search left the cursor on the holder, so this enters THAT process.
+                       "enter", "wait 1500",
+                       "dump /Users/admin/tm-openfiles.txt"], 16),
+    # A refresh must not take the user's place in the list (F-398). Scrolled a hundred rows down with
+    # the cursor untouched — the case that used to snap back to the top within two seconds — and asked
+    # again after three refresh cycles. `scrollto` puts the target row at the TOP of the viewport, so
+    # the expected first row does not depend on the guest's window height.
+    ("panel-place", ["active left", "pfxmount TaskManager", "wait 3000",
+                     "scrollto 100", "wait 800",
+                     "viewdump /Users/admin/place-before.txt", "wait 6000",
+                     "viewdump /Users/admin/place-after.txt"], 16),
     # The window title carries the active path (F-012).
     ("window-title", ["active left", "left /Users/admin/pc-demo", "wait 1500",
                       "windowdump /Users/admin/title.txt", "wait 400"], 8),
@@ -1307,6 +1332,31 @@ REPORTS = {
     "eject-menu": ("/Users/admin/menu-eject.txt", ["Eject Volume"]),
     # Coming back to the tab re-enters the drive: the chip, the tab and the breadcrumb all name it
     # again, and the second tab is still there beside it under its own name.
+    # What the process is holding open, listed as real file rows: the entry name is the file's path
+    # with ":" for "/" (the host's own convention for a name containing a slash), and the panel path
+    # names the process we entered — which is the process the file search found, not a row picked by
+    # position.
+    "process-files": ("/Users/admin/tm-openfiles.txt",
+                      ["path=/tail (", ":Users:admin:tm-target.txt"]),
+    # Asked first, because everything below it is about a process holding a file: if the holder never
+    # started, "nobody has this open" is the right answer to the wrong question, and this line is what
+    # tells the two apart.
+    "process-files-holder": ("/Users/admin/tm-holder.txt", ["holder-running"]),
+    # The other direction (F-390): exactly one process holds that file, it is the `tail`, and it holds
+    # it for reading — "r" and not "w", which is the distinction the three colours are made of.
+    "process-files-handles": ("/Users/admin/tm-handles.txt", ["count=1", "tail (", "\tr\t"]),
+    # The columns, on the row the search landed on (F-392, F-393, F-394). `Apple` is asserted because
+    # /usr/bin/tail is Apple-signed on every macOS, and the signature is read from the file, so it is
+    # the one column that must be filled for any process at all. The memory column is asserted as a
+    # rendered size ("MB"/"KB"), which is the host formatting bytes the plugin sent raw.
+    "process-files-row": ("/Users/admin/tm-row.txt",
+                          ["taskman.signed\tApple", "taskman.user\tadmin", "taskman.command\t/usr/bin/tail",
+                           "B\n"]),
+    # Before: the view sits where it was scrolled, a hundred rows down. After three refreshes: still
+    # there. `!firstVisible=0` is the regression itself — the list jumping back to the top — and the
+    # positive claim keeps the check from passing on an empty or truncated report.
+    "panel-place": ("/Users/admin/place-after.txt", ["firstVisible=98", "!firstVisible=0"]),
+    "panel-place-before": ("/Users/admin/place-before.txt", ["firstVisible=98"]),
     "drive-plugin": ("/Users/admin/drive-back.txt",
                      ["path=/\n", "current=TaskManager", "tabs=*TaskManager|pc-demo",
                       "crumb=TaskManager"]),
@@ -1517,14 +1567,34 @@ def ssh_guest(ip, script):
 
 
 def resolve_app(explicit):
+    """The built app to send to the guest — and it must actually be one.
+
+    This used to ask `xcodebuild -showBuildSettings`, which answers with the *default* DerivedData
+    path. Everything else in this project builds into `build/` (Tools/build.sh passes
+    -derivedDataPath), so on a machine that has never built through Xcode's UI that path is an empty
+    directory. An empty directory is not an error: `build-all-plugins.sh` created `Contents/PlugIns`
+    inside it, rsync copied that skeleton happily, and the guest received an app bundle with no
+    binary in it. Every scenario then came back "report EMPTY" and every screenshot showed the
+    desktop — which reads exactly like a broken app, and cost an hour of looking for one.
+
+    So: the repo's own build tree first, and whatever is chosen has to contain the executable.
+    """
+    candidates = []
     if explicit:
-        return explicit
-    r = sh(["xcodebuild", "-project", str(REPO / "PeachCommander.xcodeproj"),
-            "-scheme", "PeachCommander", "-configuration", "Debug", "-showBuildSettings"])
-    for line in r.stdout.splitlines():
-        if "BUILT_PRODUCTS_DIR" in line:
-            return str(Path(line.split("=", 1)[1].strip()) / APPNAME)
-    sys.exit("could not resolve built .app; pass --app")
+        candidates.append(Path(explicit))
+    else:
+        candidates.append(REPO / "build/Build/Products/Debug" / APPNAME)
+        r = sh(["xcodebuild", "-project", str(REPO / "PeachCommander.xcodeproj"),
+                "-scheme", "PeachCommander", "-configuration", "Debug", "-showBuildSettings"])
+        for line in r.stdout.splitlines():
+            if "BUILT_PRODUCTS_DIR" in line:
+                candidates.append(Path(line.split("=", 1)[1].strip()) / APPNAME)
+    for cand in candidates:
+        if (cand / "Contents/MacOS" / cand.stem).exists():
+            return str(cand)
+    sys.exit("no built app with a binary in it — looked at:\n  "
+             + "\n  ".join(str(c) for c in candidates)
+             + "\nbuild one with Tools/build.sh, or pass --app")
 
 
 def parse_vnc(logfile: Path):
