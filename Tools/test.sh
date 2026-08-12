@@ -22,6 +22,7 @@ xcodebuild \
     -project PeachCommander.xcodeproj \
     -scheme PeachCommander \
     -configuration Debug \
+    -derivedDataPath build \
     test
 
 echo "All tests passed."
