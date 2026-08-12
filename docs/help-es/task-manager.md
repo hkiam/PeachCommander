@@ -12,6 +12,7 @@ El complemento Task Manager convierte los procesos en ejecución de su Mac en un
 
 1. Haga clic en la entrada **📊 TaskManager** de la barra de unidades (está justo después de su unidad de arranque).
 2. El panel se llena con una fila por cada proceso en ejecución. El nombre de cada fila es el nombre del proceso seguido de su PID, por ejemplo `Finder (462)`.
+3. El botón **TaskManager** sigue seleccionado mientras estás dentro y la pestaña toma el nombre de la unidad. Cambia a otra pestaña y vuelve — o cierra y vuelve a abrir la app — y la pestaña recupera la lista de procesos. Para salir, sube un nivel o haz clic en otro volumen de la barra de unidades.
 
 ![El Task Manager listando procesos en ejecución con las columnas PID, CPU, memoria y comando](screenshots/task-manager.png)
 *(Figura: procesos en ejecución mostrados como una lista de archivos que puede ordenar y sobre la que puede actuar.)*

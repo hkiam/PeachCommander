@@ -12,6 +12,7 @@ The Task Manager plugin turns the running processes on your Mac into a folder yo
 
 1. Click the **📊 TaskManager** entry in the drive bar (it sits right after your boot drive).
 2. The panel fills with one row per running process. Each row's name is the process name followed by its PID, for example `Finder (462)`.
+3. The **TaskManager** button stays selected while you are in it, and the tab is named after the drive. Switch to another tab and back — or quit and reopen the app — and the tab returns to the process list. To leave it, go up one level or click another volume in the drive bar.
 
 ![The Task Manager listing running processes with PID, CPU, memory, and command columns](screenshots/task-manager.png)
 *(Figure: running processes shown as a file list you can sort and act on.)*

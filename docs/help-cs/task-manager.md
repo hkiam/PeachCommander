@@ -12,6 +12,7 @@ Zásuvný modul Task Manager promění běžící procesy vašeho Macu ve složk
 
 1. Klepněte na položku **📊 TaskManager** v liště disků (sedí hned za vaším spouštěcím diskem).
 2. Panel se naplní jedním řádkem na každý běžící proces. Název každého řádku tvoří název procesu následovaný jeho PID, například `Finder (462)`.
+3. Tlačítko **TaskManager** zůstává vybrané, dokud jste uvnitř, a karta nese název jednotky. Přepněte na jinou kartu a zpět — nebo aplikaci ukončete a znovu otevřete — a karta se vrátí k seznamu procesů. Odejdete z ní přechodem o úroveň výš nebo klepnutím na jiný svazek v liště jednotek.
 
 ![Task Manager uvádějící běžící procesy se sloupci PID, CPU, paměť a příkaz](screenshots/task-manager.png)
 *(Obrázek: běžící procesy zobrazené jako seznam souborů, který můžete řadit a nad nímž můžete provádět akce.)*

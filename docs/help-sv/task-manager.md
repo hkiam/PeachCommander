@@ -12,6 +12,7 @@ Task Manager-insticksprogrammet förvandlar de processer som körs på din Mac t
 
 1. Klicka på posten **📊 TaskManager** i enhetsraden (den sitter direkt efter din startenhet).
 2. Panelen fylls med en rad per process som körs. Varje rads namn är processnamnet följt av dess PID, till exempel `Finder (462)`.
+3. Knappen **TaskManager** förblir vald medan du är i den, och fliken får enhetens namn. Växla till en annan flik och tillbaka — eller avsluta och öppna appen igen — och fliken visar processlistan igen. Du lämnar den genom att gå upp en nivå eller klicka på en annan volym i enhetsraden.
 
 ![Task Manager som listar processer som körs med kolumnerna PID, CPU, minne och kommando](screenshots/task-manager.png)
 *(Figur: processer som körs visas som en fillista du kan sortera och agera på.)*

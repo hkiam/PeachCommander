@@ -12,6 +12,7 @@ Das Task-Manager-Plugin verwandelt die laufenden Prozesse auf Ihrem Mac in einen
 
 1. Klicken Sie auf den Eintrag **📊 TaskManager** in der Laufwerksleiste (er sitzt direkt hinter Ihrem Startlaufwerk).
 2. Das Panel füllt sich mit einer Zeile pro laufendem Prozess. Der Name jeder Zeile ist der Prozessname gefolgt von seiner PID, zum Beispiel `Finder (462)`.
+3. Die Schaltfläche **TaskManager** bleibt ausgewählt, solange Sie darin sind, und der Tab trägt den Namen des Laufwerks. Wechseln Sie zu einem anderen Tab und zurück — oder beenden und öffnen Sie die App erneut — und der Tab zeigt wieder die Prozessliste. Zum Verlassen gehen Sie eine Ebene nach oben oder klicken in der Laufwerksleiste auf ein anderes Volume.
 
 ![Der Task Manager listet laufende Prozesse mit den Spalten PID, CPU, Speicher und Befehl auf](screenshots/task-manager.png)
 *(Abbildung: Laufende Prozesse, dargestellt als Dateiliste, die Sie sortieren und bearbeiten können.)*

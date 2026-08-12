@@ -12,6 +12,7 @@ L'extension Task Manager transforme les processus en cours sur votre Mac en un d
 
 1. Cliquez sur l'entrée **📊 TaskManager** dans la barre de lecteurs (elle se trouve juste après votre lecteur de démarrage).
 2. Le panneau se remplit d'une ligne par processus en cours. Le nom de chaque ligne est le nom du processus suivi de son PID, par exemple `Finder (462)`.
+3. Le bouton **TaskManager** reste sélectionné tant que vous y êtes, et l’onglet porte le nom du lecteur. Passez à un autre onglet puis revenez — ou quittez et rouvrez l’application — et l’onglet retrouve la liste des processus. Pour en sortir, remontez d’un niveau ou cliquez sur un autre volume dans la barre de lecteurs.
 
 ![Le Task Manager listant les processus en cours avec les colonnes PID, CPU, mémoire et commande](screenshots/task-manager.png)
 *(Figure : les processus en cours affichés comme une liste de fichiers que vous pouvez trier et sur laquelle vous pouvez agir.)*

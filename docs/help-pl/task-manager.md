@@ -12,6 +12,7 @@ Wtyczka Task Manager zamienia procesy działające na Twoim Macu w folder, któr
 
 1. Kliknij pozycję **📊 TaskManager** na pasku dysków (znajduje się tuż za Twoim dyskiem startowym).
 2. Panel wypełnia się jednym wierszem na każdy działający proces. Nazwą każdego wiersza jest nazwa procesu, po której następuje jego PID, na przykład `Finder (462)`.
+3. Przycisk **TaskManager** pozostaje wybrany, dopóki w nim jesteś, a karta nosi nazwę napędu. Przełącz się na inną kartę i wróć — albo zamknij i ponownie otwórz aplikację — a karta znów pokaże listę procesów. Aby ją opuścić, przejdź o poziom wyżej lub kliknij inny wolumin na pasku napędów.
 
 ![Task Manager wymieniający działające procesy z kolumnami PID, CPU, pamięci i polecenia](screenshots/task-manager.png)
 *(Rysunek: działające procesy pokazane jako lista plików, którą możesz sortować i na której możesz działać.)*

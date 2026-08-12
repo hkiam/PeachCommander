@@ -22,7 +22,7 @@ Het venster is opgesplitst in een linkerpaneel en een rechterpaneel, elk met de 
 ## Balken rond de panelen
 
 - **Knoppenbalk** (boven): een rij platte knoppen voor veelgebruikte opdrachten. Klik op een knop om de opdracht uit te voeren; klik met de rechtermuisknop op een knop om de balk te bewerken.
-- **Schijvenbalk**: één knop per beschikbare schijf of volume, elk met de vrije ruimte. Klik op een volume om dat paneel ernaartoe te schakelen; klik er met rechts op om het uit te werpen — aangeboden voor verwisselbare volumes en gekoppelde schijfkopieën, grijs voor de opstartschijf en netwerkschijven.
+- **Schijvenbalk**: één knop per beschikbare schijf of volume, elk met de vrije ruimte. Klik op een volume om dat paneel ernaartoe te schakelen; klik er met rechts op om het uit te werpen — aangeboden voor verwisselbare volumes en gekoppelde schijfkopieën, grijs voor de opstartschijf en netwerkschijven. Plug-ins kunnen eigen schijven toevoegen — de Task Manager is er een — en die gedragen zich als elk ander volume: het paneel schakelt ernaartoe, de knop blijft geselecteerd en het tabblad krijgt de naam van de schijf.
 - **Padbalk**: toont de huidige map als een klikbaar broodkruimelpad. Klik op een segment om direct naar die map te springen, of klik op het pad om een locatie te typen.
 - **Statusbalk** (onder elke lijst): een doorlopende samenvatting van het paneel — hoeveel bestanden en mappen geselecteerd zijn en hun totale grootte.
 - **Opdrachtregel** (onderaan): een tekstveld waarin je een shell-achtige opdracht kunt typen die in de huidige map wordt uitgevoerd.

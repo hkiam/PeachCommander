@@ -12,6 +12,7 @@ Vtičnik Task Manager spremeni izvajajoče se procese na vašem Macu v mapo, po 
 
 1. Kliknite vnos **📊 TaskManager** v vrstici diskov (nahaja se takoj za vašim zagonskim diskom).
 2. Podokno se napolni z eno vrstico na izvajajoči se proces. Ime vsake vrstice je ime procesa, ki mu sledi njegov PID, na primer `Finder (462)`.
+3. Gumb **TaskManager** ostane izbran, dokler ste v njem, zavihek pa nosi ime pogona. Preklopite na drug zavihek in nazaj — ali zaprite in znova odprite program — in zavihek se vrne na seznam procesov. Zapustite ga tako, da greste raven višje ali kliknete drug nosilec v vrstici pogonov.
 
 ![Task Manager, ki našteva izvajajoče se procese s stolpci PID, CPU, pomnilnik in ukaz](screenshots/task-manager.png)
 *(Slika: izvajajoči se procesi, prikazani kot seznam datotek, ki ga lahko razvrstite in nad njim izvajate dejanja.)*

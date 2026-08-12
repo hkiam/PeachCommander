@@ -22,7 +22,7 @@ Az ablak bal és jobb panelre oszlik, mindegyik egy mappa tartalmát mutatja. Eg
 ## A panelek körüli sávok
 
 - **Gombsáv** (fent): lapos gombok sora a gyakori parancsokhoz. Kattintson egy gombra a parancsa futtatásához; kattintson jobb gombbal a sáv szerkesztéséhez.
-- **Meghajtósáv**: minden elérhető lemezhez vagy kötethez egy gomb, mindegyiken a szabad hellyel. Kattintson egy kötetre, hogy az a panel oda váltson; a jobb kattintás kiadja — cserélhető köteteknél és csatolt lemezképeknél elérhető, az indítólemeznél és a hálózati megosztásoknál szürke.
+- **Meghajtósáv**: minden elérhető lemezhez vagy kötethez egy gomb, mindegyiken a szabad hellyel. Kattintson egy kötetre, hogy az a panel oda váltson; a jobb kattintás kiadja — cserélhető köteteknél és csatolt lemezképeknél elérhető, az indítólemeznél és a hálózati megosztásoknál szürke. A bővítmények saját meghajtókat is adhatnak — a Task Manager ilyen —, és ezek úgy viselkednek, mint bármely más kötet: a panel odavált, a gomb kijelölve marad, a lap pedig a meghajtó nevét viseli.
 - **Útvonalsáv**: az aktuális mappát kattintható morzsaútként mutatja. Kattintson egy szakaszra, hogy egyenesen arra a mappára ugorjon, vagy kattintson az útvonalra egy hely beírásához.
 - **Állapotsáv** (minden lista alatt): a panel folyamatos összefoglalója — hány fájl és mappa van kijelölve, és azok teljes mérete.
 - **Parancssor** (lent): egy szövegmező, ahová shell-stílusú parancsot írhat, ami az aktuális mappában fut.
