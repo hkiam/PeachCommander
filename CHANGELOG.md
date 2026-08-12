@@ -14,6 +14,28 @@ does not have.
 
 ## [Unreleased]
 
+### Added
+
+- **Eject from the drive bar itself.** 0.6.0 added ejecting and gave it one route — a command that
+  works out which volume you mean from where the cursor is standing. The place you actually look, the
+  button for the volume, did nothing at all on a right-click. It now offers *Eject*, and the button
+  carries a small ⏏ you can click directly. Volumes that cannot go are shown greyed out rather than
+  hidden, with the reason in the tooltip: an empty menu over the startup disk reads as broken, while
+  a disabled entry teaches the rule at a glance.
+
+### Fixed
+
+- **A drive contributed by a plugin now behaves like a drive.** Picking *TaskManager* in the drive bar
+  switched the panel and nothing else: the button stayed selected on the volume you were on before,
+  the tab was still called “/” and the path bar claimed you were at the top of the startup disk. All
+  three read the folder path, and inside such a drive that path is the drive's own top, which belongs
+  to no disk you could point at. The drive itself now decides what they show, so the button stays
+  selected while you are in it, the tab carries the drive's name, and the path bar starts at the drive
+  instead of at a slash. The tab remembers it, too: switch to another tab and back, or quit and reopen
+  the app, and the tab returns to the drive rather than to the startup disk's root — and duplicating
+  such a tab duplicates the drive, while a new tab opens where the panel was before you entered it.
+  Reported as being impossible to follow, which it was: the bar said one thing and the listing another.
+
 ## [0.6.0] — 2026-08-11
 
 A repair release. Everything below came out of one user report — a folder tree that stayed
