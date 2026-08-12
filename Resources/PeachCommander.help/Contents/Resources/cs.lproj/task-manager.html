@@ -20,7 +20,7 @@
 <p><img alt="Task Manager uvádějící běžící procesy se sloupci PID, CPU, paměť a příkaz" src="images/task-manager.png" />
 <em>(Obrázek: běžící procesy zobrazené jako seznam souborů, který můžete řadit a nad nímž můžete provádět akce.)</em></p>
 <h2 id="co-znamena-kazdy-sloupec">Co znamená každý sloupec</h2>
-<p>Vedle obvyklých sloupců Velikost (paměť) a Datum (čas spuštění) přidává Task Manager sloupce procesů:</p>
+<p>Vedle sloupce Datum (čas spuštění) přidává Task Manager sloupce procesů. Velikost u řádku procesu zobrazuje <code>DIR</code>, protože proces je složka, kterou lze otevřít (viz níže) — paměť má vlastní sloupce:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Nedávné využití procesoru (objeví se až po druhém obnovení)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Stopa v paměti — za co je tento proces zodpovědný (číslo, které ukazuje Monitor aktivity)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Rezidentní velikost včetně sdílených stránek; vyplněno pro každý proces</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>Počet vláken</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R běžící · S spící · T zastavený · Z zombie · I nečinný</td>
+<td>R běžící · S spící · T zastavený · Z zombie · I nečinný, plus přípony, které přidává <code>ps</code> (s = vedoucí relace, + = popředí, N = nízká priorita)</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>ID rodičovského procesu</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>Bajty přečtené z disku od spuštění procesu</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>Bajty zapsané na disk od spuštění procesu</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Probuzení přerušením od spuštění procesu</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Kdo program podepsal: Apple, tým s Developer ID, ad-hoc, nebo nepodepsáno</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>Zobrazit (F3)</strong> zobrazí report <em>Process Information</em>: název, PID, rodiče, uživatele, stav, vlákna, paměť, CPU, čas spuštění, cestu ke spustitelnému souboru a úplný příkazový řádek.</li>
 <li><strong>Smazat (F8)</strong> ukončí proces. První smazání pošle šetrné <strong>ukončení</strong> (SIGTERM); smazání procesu, který stále běží, podruhé eskaluje na <strong>vynucené ukončení</strong> (SIGKILL). Zásuvný modul nikdy necílí na PID 1.</li>
 </ul>
+<h2 id="najit-procesy-ktere-pouzivaji-soubor">Najít procesy, které používají soubor</h2>
+<p>Klikněte pravým tlačítkem na libovolný řádek a zvolte <strong>Najít procesy podle souboru…</strong>, poté zadejte cestu k souboru. Každý proces, který má daný soubor právě otevřený, se zvýrazní a kurzor skočí na první z těch, které jej mohou změnit:</p>
+<ul>
+<li><strong>Modrá</strong> — proces soubor pouze čte.</li>
+<li><strong>Oranžová</strong> — proces do něj pouze zapisuje.</li>
+<li><strong>Fialová</strong> — proces dělá obojí.</li>
+</ul>
+<p>Cesta se předvyplní z kurzoru v druhém panelu, takže můžete na soubor ukázat tam a zeptat se bez psaní. <strong>Najít proces podle portu…</strong> ve stejné nabídce odpovídá na příbuznou otázku: který proces naslouchá na portu TCP/UDP. Volbou <strong>Zrušit zvýraznění souboru</strong> barvy odstraníte; opuštění seznamu procesů je odstraní také.</p>
+<h2 id="otevrete-proces-a-uvidite-jeho-soubory">Otevřete proces a uvidíte jeho soubory</h2>
+<p>Stiskněte na procesu Enter — nebo na něj poklepejte — a panel vypíše soubory, které má tento proces právě otevřené, jako běžné řádky souborů se skutečnou velikostí a datem. Odtud:</p>
+<ul>
+<li><strong>Zobrazit (F3)</strong> otevře samotný soubor.</li>
+<li><strong>Přejít na soubor</strong> jej ukáže v druhém panelu, kde s ním můžete pracovat.</li>
+<li><strong>Zobrazit ve Finderu</strong> jej předá Finderu.</li>
+</ul>
+<p>Počítají se jen otevřené soubory: knihovna, kterou proces pouze namapoval do paměti, ani jeho pracovní adresář otevřenými soubory nejsou. Proces jiného uživatele zobrazí prázdnou složku.</p>
 <h2 id="poznamky">Poznámky</h2>
 <ul>
-<li>Základní údaje (PID, rodič, uživatel, stav) jsou čitelné u každého procesu, jako u <code>ps</code>. Paměť, vlákna a CPU lze číst pouze u <strong>vašich vlastních</strong> procesů; ostatní procesy zobrazují tyto sloupce prázdné (vyžadují zvýšená oprávnění, což bude přidáno později).</li>
+<li>Základní údaje (PID, rodič, uživatel, stav, podpis) jsou čitelné u každého procesu. Stopa v paměti, vlákna, diskové I/O a seznam otevřených souborů jsou čitelné u <strong>vašich vlastních</strong> procesů, což je na běžném Macu většina seznamu. U procesů jiných uživatelů se CPU a Resident plní z <code>ps</code> — celoživotní průměr namísto rozdílu dvou měření, který nesou ostatní řádky — a vlákna se stopou zůstávají prázdná.</li>
 <li>CPU % je změna mezi dvěma vzorky, takže je prázdné, dokud se panel neobnoví podruhé (panel se obnovuje zhruba každé dvě sekundy).</li>
 <li>Seznam je pouze pro čtení kromě ukončení procesu — nelze do něj kopírovat soubory.</li>
+<li>Barvy zvýraznění se řídí vaším barevným motivem: paleta Norton používá místo toho zelenou, červenou a purpurovou.</li>
+<li>Nalezeny jsou pouze popisovače, do kterých smí váš účet nahlédnout, což v praxi znamená vaše vlastní procesy. Knihovna, kterou proces pouze namapoval do paměti, ani jeho pracovní adresář nejsou otevřené popisovače a nehlásí se.</li>
+<li>Sloupec <strong>Signed</strong> se doplní během prvních sekund: přečtení podpisu trvá asi milisekundu a programů jsou stovky, takže se jich při každé aktualizaci přečte několik a pak se pamatují. Prázdná buňka znamená „zatím nepřečteno“, nikoli „nepodepsáno“.</li>
+<li><strong>Signed</strong> říká, kdo program podepsal, ne zda je notarizovaný: ověření notarizace znamená vypočítat hash celého programu, což by u každého trvalo sekundy.</li>
+<li>Rychlý filtr (Ctrl+S) zde odpovídá i sloupcům, nejen názvu, a výraz může pojmenovat sloupec, na který se vztahuje: <code>user:root state:R</code> se ptá, co právě běží pod rootem. Výrazy se oddělují mezerami a musí platit všechny; text, který nepojmenuje žádný sloupec, zůstává jedním prostým podřetězcem včetně mezer.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="viewing-files.html">Prohlížení souborů</a></li><li><a href="deleting-files.html">Mazání souborů</a></li></ul></section>
 </main>

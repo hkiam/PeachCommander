@@ -20,7 +20,7 @@
 <p><img alt="Task Manager som lister prosesser som kjører, med kolonnene PID, CPU, minne og kommando" src="images/task-manager.png" />
 <em>(Figur: prosesser som kjører vist som en filliste du kan sortere og handle på.)</em></p>
 <h2 id="hva-hver-kolonne-betyr">Hva hver kolonne betyr</h2>
-<p>Ved siden av de vanlige kolonnene Størrelse (minne) og Dato (starttid) legger Task Manager til prosesskolonner:</p>
+<p>Ved siden av kolonnen Dato (starttidspunkt) legger Task Manager til prosesskolonner. Størrelsen på en prosessrad viser <code>DIR</code>, fordi en prosess er en mappe du kan åpne (se nedenfor) — minnet har sine egne kolonner:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Nylig prosessorbruk (trenger en ny oppdatering for å vises)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Minneavtrykk — det denne prosessen står til ansvar for (tallet Aktivitetsmonitor viser)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Resident størrelse, delte sider medregnet; fylt ut for hver prosess</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>Antall tråder</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R kjører · S sover · T stoppet · Z zombie · I inaktiv</td>
+<td>R kjører · S sover · T stoppet · Z zombie · I inaktiv, pluss endelsene <code>ps</code> legger til (s = øktleder, + = forgrunn, N = lav prioritet)</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>Overordnet prosess-id</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>Byte lest fra disken siden prosessen startet</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>Byte skrevet til disken siden prosessen startet</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Avbruddsoppvåkninger siden prosessen startet</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Hvem som signerte programmet: Apple, et Developer ID-team, ad-hoc eller usignert</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>Vis (F3)</strong> viser en <em>Prosessinformasjon</em>-rapport: navn, PID, overordnet, bruker, tilstand, tråder, minne, CPU, starttid, kjørbar sti og den fulle kommandolinjen.</li>
 <li><strong>Slett (F8)</strong> avslutter prosessen. Den første slettingen sender et vennlig <strong>avslutt</strong> (SIGTERM); å slette en prosess som fortsatt kjører en gang til, eskalerer til et <strong>tvangsavslutt</strong> (SIGKILL). Programtillegget retter seg aldri mot PID 1.</li>
 </ul>
+<h2 id="finn-prosessene-som-bruker-en-fil">Finn prosessene som bruker en fil</h2>
+<p>Høyreklikk på en hvilken som helst rad og velg <strong>Finn prosesser etter fil…</strong>, og skriv så inn banen til en fil. Hver prosess som har den filen åpen akkurat nå, blir uthevet, og markøren hopper til den første som kan endre den:</p>
+<ul>
+<li><strong>Blå</strong> — prosessen bare leser filen.</li>
+<li><strong>Oransje</strong> — prosessen bare skriver til den.</li>
+<li><strong>Lilla</strong> — prosessen gjør begge deler.</li>
+</ul>
+<p>Banen fylles ut på forhånd fra markøren i det andre panelet, så du kan peke på en fil der og spørre uten å skrive. <strong>Finn prosess etter port…</strong> i den samme menyen svarer på søskenspørsmålet: hvilken prosess som lytter på en TCP/UDP-port. Velg <strong>Fjern filutheving</strong> for å fjerne fargene; å forlate prosesslisten fjerner dem også.</p>
+<h2 id="apne-en-prosess-for-a-se-filene-dens">Åpne en prosess for å se filene dens</h2>
+<p>Trykk Enter på en prosess — eller dobbeltklikk den — og panelet viser filene prosessen har åpne akkurat nå, som vanlige filrader med reell størrelse og dato. Derfra:</p>
+<ul>
+<li><strong>Vis (F3)</strong> åpner selve filen.</li>
+<li><strong>Gå til filen</strong> viser den i det andre panelet, der du kan arbeide med den.</li>
+<li><strong>Vis i Finder</strong> overlater den til Finder.</li>
+</ul>
+<p>Bare åpne filer teller: et bibliotek prosessen bare har lagt i minnet, og arbeidskatalogen dens, er ikke åpne filer. En annen brukers prosess viser en tom mappe.</p>
 <h2 id="merknader">Merknader</h2>
 <ul>
-<li>Grunnleggende detaljer (PID, overordnet, bruker, tilstand) er lesbare for hver prosess, som <code>ps</code>. Minne, tråder og CPU kan bare leses for <strong>dine egne</strong> prosesser; andre prosesser viser de kolonnene tomme (de trenger hevede rettigheter, en senere tilføyelse).</li>
+<li>Grunnleggende opplysninger (PID, forelder, bruker, tilstand, signatur) kan leses for hver prosess. Minneavtrykk, tråder, disk-I/O og listen over åpne filer kan leses for <strong>dine egne</strong> prosesser, som på en vanlig Mac er størstedelen av listen. For andre brukeres prosesser fylles CPU og Resident fra <code>ps</code> i stedet — et gjennomsnitt over hele levetiden i stedet for differansen mellom to målinger som de andre radene bærer — og tråder og avtrykk forblir tomme.</li>
 <li>CPU % er en endring mellom to prøver, så den er tom til panelet oppdateres en gang til (panelet oppdateres omtrent hvert annet sekund).</li>
 <li>Listen er skrivebeskyttet bortsett fra å avslutte en prosess – du kan ikke kopiere filer inn i den.</li>
+<li>Uthevingsfargene følger fargetemaet ditt: Norton-paletten bruker grønt, rødt og magenta i stedet.</li>
+<li>Bare håndtak kontoen din har lov til å se på, blir funnet, noe som i praksis betyr dine egne prosesser. Et bibliotek en prosess bare har lagt i minnet, eller arbeidskatalogen dens, er ikke et åpent håndtak og rapporteres ikke.</li>
+<li>Kolonnen <strong>Signed</strong> fylles ut i løpet av de første sekundene: å lese en signatur tar omtrent ett millisekund, og det finnes hundrevis av ulike programmer, så noen få leses per oppdatering og huskes deretter. En tom celle betyr «ikke lest ennå», ikke «usignert».</li>
+<li><strong>Signed</strong> sier hvem som signerte programmet, ikke om det er notarisert: å sjekke notarisering betyr å hashe hele programmet, noe som ville tatt sekunder for hvert enkelt.</li>
+<li>Hurtigfilteret (Ctrl+S) treffer her også kolonnene og ikke bare navnet, og et uttrykk kan navngi kolonnen det gjelder: <code>user:root state:R</code> spør hva root kjører akkurat nå. Uttrykk skilles med mellomrom og alle må passe; tekst som ikke navngir noen kolonne, forblir én vanlig delstreng, mellomrom inkludert.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="viewing-files.html">Vise filer</a></li><li><a href="deleting-files.html">Slette filer</a></li></ul></section>
 </main>

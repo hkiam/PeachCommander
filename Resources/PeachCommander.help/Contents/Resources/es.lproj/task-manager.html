@@ -20,7 +20,7 @@
 <p><img alt="El Task Manager listando procesos en ejecución con las columnas PID, CPU, memoria y comando" src="images/task-manager.png" />
 <em>(Figura: procesos en ejecución mostrados como una lista de archivos que puede ordenar y sobre la que puede actuar.)</em></p>
 <h2 id="que-significa-cada-columna">Qué significa cada columna</h2>
-<p>Junto a las columnas habituales de Tamaño (memoria) y Fecha (hora de inicio), Task Manager añade columnas de proceso:</p>
+<p>Junto a la columna Fecha (hora de inicio), Task Manager añade columnas de proceso. El Tamaño de una fila de proceso muestra <code>DIR</code>, porque un proceso es una carpeta que puedes abrir (ver más abajo): la memoria tiene columnas propias:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Uso reciente del procesador (necesita una segunda actualización para aparecer)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Huella de memoria: de lo que responde este proceso (la cifra que muestra el Monitor de Actividad)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Tamaño residente, páginas compartidas incluidas; se rellena para todos los procesos</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>Número de hilos</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R en ejecución · S durmiendo · T detenido · Z zombi · I inactivo</td>
+<td>R en ejecución · S durmiendo · T detenido · Z zombi · I inactivo, más los sufijos que añade <code>ps</code> (s = líder de sesión, + = primer plano, N = prioridad baja)</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>Identificador del proceso padre</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>Bytes leídos del disco desde que arrancó el proceso</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>Bytes escritos en el disco desde que arrancó el proceso</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Reactivaciones por interrupción desde que arrancó el proceso</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Quién firmó el programa: Apple, un equipo con Developer ID, ad-hoc o sin firmar</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>Ver (F3)</strong> muestra un informe de <em>Información del proceso</em>: nombre, PID, padre, usuario, estado, hilos, memoria, CPU, hora de inicio, ruta del ejecutable y la línea de comandos completa.</li>
 <li><strong>Eliminar (F8)</strong> finaliza el proceso. La primera eliminación envía una <strong>salida</strong> ordenada (SIGTERM); eliminar por segunda vez un proceso que sigue en ejecución escala a una <strong>salida forzada</strong> (SIGKILL). El complemento nunca actúa sobre el PID 1.</li>
 </ul>
+<h2 id="encontrar-los-procesos-que-usan-un-archivo">Encontrar los procesos que usan un archivo</h2>
+<p>Haz clic derecho en cualquier fila y elige <strong>Buscar procesos por archivo…</strong>, luego introduce la ruta de un archivo. Se resalta cada proceso que tiene ese archivo abierto en ese momento, y el cursor salta al primero que puede modificarlo:</p>
+<ul>
+<li><strong>Azul</strong> — el proceso solo lee el archivo.</li>
+<li><strong>Naranja</strong> — el proceso solo escribe en él.</li>
+<li><strong>Morado</strong> — el proceso hace ambas cosas.</li>
+</ul>
+<p>La ruta se rellena a partir del cursor del otro panel, así que puedes señalar un archivo allí y preguntar sin escribir. <strong>Buscar proceso por puerto…</strong>, en el mismo menú, responde a la pregunta hermana: qué proceso está escuchando en un puerto TCP/UDP. Elige <strong>Quitar resaltado de archivo</strong> para eliminar los colores; salir de la lista de procesos también los elimina.</p>
+<h2 id="abre-un-proceso-para-ver-sus-archivos">Abre un proceso para ver sus archivos</h2>
+<p>Pulsa Intro sobre un proceso — o haz doble clic — y el panel lista los archivos que ese proceso tiene abiertos en ese momento, como filas de archivo normales con su tamaño y su fecha reales. Desde ahí:</p>
+<ul>
+<li><strong>Ver (F3)</strong> abre el archivo en sí.</li>
+<li><strong>Ir al archivo</strong> lo muestra en el otro panel, donde puedes trabajar con él.</li>
+<li><strong>Mostrar en el Finder</strong> se lo entrega al Finder.</li>
+</ul>
+<p>Solo cuentan los archivos abiertos: una biblioteca que el proceso solo ha mapeado en memoria, y su directorio de trabajo, no son archivos abiertos. El proceso de otro usuario muestra una carpeta vacía.</p>
 <h2 id="notas">Notas</h2>
 <ul>
-<li>Los detalles básicos (PID, padre, usuario, estado) se pueden leer para cualquier proceso, como con <code>ps</code>. La memoria, los hilos y la CPU solo se pueden leer para <strong>sus propios</strong> procesos; los demás procesos muestran esas columnas en blanco (requieren privilegios elevados, una ampliación posterior).</li>
+<li>Los datos básicos (PID, padre, usuario, estado, firma) se pueden leer para todos los procesos. La huella de memoria, los hilos, la E/S de disco y la lista de archivos abiertos se pueden leer para <strong>tus propios</strong> procesos, que en un Mac normal son la mayor parte de la lista. Para los procesos de otros usuarios, CPU y Resident se rellenan desde <code>ps</code> — una media de toda la vida del proceso en lugar de la diferencia entre dos medidas que llevan las demás filas — y los hilos y la huella quedan en blanco.</li>
 <li>CPU % es un cambio entre dos muestras, por lo que aparece en blanco hasta que el panel se actualiza por segunda vez (el panel se actualiza aproximadamente cada dos segundos).</li>
 <li>La lista es de solo lectura salvo por la finalización de un proceso: no puede copiar archivos dentro de ella.</li>
+<li>Los colores del resaltado siguen tu tema de color: la paleta Norton usa verde, rojo y magenta en su lugar.</li>
+<li>Solo se encuentran los descriptores que tu cuenta puede inspeccionar, lo que en la práctica significa tus propios procesos. Una biblioteca que un proceso solo ha mapeado en memoria, o su directorio de trabajo, no es un descriptor abierto y no se informa.</li>
+<li>La columna <strong>Signed</strong> se va rellenando durante los primeros segundos: leer una firma lleva alrededor de un milisegundo y hay cientos de programas distintos, así que se leen unos pocos por actualización y luego se recuerdan. Una celda vacía significa «aún no leída», no «sin firmar».</li>
+<li><strong>Signed</strong> dice quién firmó el programa, no si está notarizado: comprobar la notarización implica calcular el hash del programa entero, lo que tardaría segundos en cada uno.</li>
+<li>Aquí el filtro rápido (Ctrl+S) también coincide con las columnas y no solo con el nombre, y un término puede nombrar la columna a la que se aplica: <code>user:root state:R</code> pregunta qué está ejecutando root en este momento. Los términos se separan con espacios y todos deben coincidir; el texto que no nombra ninguna columna sigue siendo una única subcadena, espacios incluidos.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="viewing-files.html">Ver archivos</a></li><li><a href="deleting-files.html">Eliminar archivos</a></li></ul></section>
 </main>

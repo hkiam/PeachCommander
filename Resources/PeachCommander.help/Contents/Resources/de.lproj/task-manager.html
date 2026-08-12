@@ -20,7 +20,7 @@
 <p><img alt="Der Task Manager listet laufende Prozesse mit den Spalten PID, CPU, Speicher und Befehl auf" src="images/task-manager.png" />
 <em>(Abbildung: Laufende Prozesse, dargestellt als Dateiliste, die Sie sortieren und bearbeiten können.)</em></p>
 <h2 id="was-jede-spalte-bedeutet">Was jede Spalte bedeutet</h2>
-<p>Neben den üblichen Spalten Größe (Speicher) und Datum (Startzeit) fügt der Task Manager Prozessspalten hinzu:</p>
+<p>Neben der Spalte Datum (Startzeit) fügt der Task Manager Prozessspalten hinzu. Die Größe einer Prozesszeile zeigt <code>DIR</code>, denn ein Prozess ist ein Ordner, den Sie öffnen können (siehe unten) — der Speicher hat eigene Spalten:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Kürzliche Prozessornutzung (erscheint erst nach einer zweiten Aktualisierung)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Speicher-Footprint — wofür dieser Prozess verantwortlich ist (die Zahl, die die Aktivitätsanzeige zeigt)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Resident belegter Speicher, gemeinsame Seiten eingerechnet; für jeden Prozess gefüllt</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>Anzahl der Threads</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R laufend · S schlafend · T gestoppt · Z Zombie · I untätig</td>
+<td>R laufend · S schlafend · T gestoppt · Z Zombie · I untätig, dazu die Zusätze von <code>ps</code> (s = Sitzungsführer, + = Vordergrund, N = niedrige Priorität)</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>Prozess-ID des übergeordneten Prozesses</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>Von der Festplatte gelesene Bytes seit dem Start des Prozesses</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>Auf die Festplatte geschriebene Bytes seit dem Start des Prozesses</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Interrupt-Wakeups seit dem Start des Prozesses</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Wer das Programm signiert hat: Apple, ein Developer-ID-Team, ad-hoc oder unsigniert</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>Ansehen (F3)</strong> zeigt einen <em>Prozessinformationen</em>-Bericht: Name, PID, übergeordneter Prozess, Benutzer, Status, Threads, Speicher, CPU, Startzeit, Pfad der ausführbaren Datei und die vollständige Befehlszeile.</li>
 <li><strong>Löschen (F8)</strong> beendet den Prozess. Das erste Löschen sendet ein sanftes <strong>Beenden</strong> (SIGTERM); das erneute Löschen eines noch laufenden Prozesses eskaliert zu einem <strong>erzwungenen Beenden</strong> (SIGKILL). Das Plugin zielt niemals auf PID 1.</li>
 </ul>
+<h2 id="die-prozesse-finden-die-eine-datei-verwenden">Die Prozesse finden, die eine Datei verwenden</h2>
+<p>Klicken Sie mit der rechten Maustaste auf eine beliebige Zeile, wählen Sie <strong>Prozesse nach Datei suchen…</strong> und geben Sie den Pfad einer Datei ein. Jeder Prozess, der diese Datei gerade geöffnet hat, wird hervorgehoben, und der Cursor springt zum ersten, der sie verändern kann:</p>
+<ul>
+<li><strong>Blau</strong> — der Prozess liest die Datei nur.</li>
+<li><strong>Orange</strong> — der Prozess schreibt nur in sie.</li>
+<li><strong>Violett</strong> — der Prozess tut beides.</li>
+</ul>
+<p>Der Pfad wird aus dem Cursor im anderen Panel vorbelegt, Sie können also dort auf eine Datei zeigen und ohne Tippen fragen. <strong>Prozess nach Port suchen…</strong> im selben Menü beantwortet die verwandte Frage: welcher Prozess an einem TCP/UDP-Port lauscht. Mit <strong>Datei-Hervorhebung aufheben</strong> entfernen Sie die Farben; das Verlassen der Prozessliste entfernt sie ebenfalls.</p>
+<h2 id="einen-prozess-offnen-und-seine-dateien-sehen">Einen Prozess öffnen und seine Dateien sehen</h2>
+<p>Drücken Sie Enter auf einem Prozess — oder doppelklicken Sie ihn — und das Panel listet die Dateien auf, die dieser Prozess gerade geöffnet hat, als gewöhnliche Dateizeilen mit echter Größe und echtem Datum. Von dort aus:</p>
+<ul>
+<li><strong>Ansehen (F3)</strong> öffnet die Datei selbst.</li>
+<li><strong>Zur Datei springen</strong> zeigt sie im anderen Panel, wo Sie mit ihr arbeiten können.</li>
+<li><strong>Im Finder anzeigen</strong> übergibt sie an den Finder.</li>
+</ul>
+<p>Es zählen nur geöffnete Dateien: eine Bibliothek, die der Prozess lediglich in den Speicher eingeblendet hat, und sein Arbeitsverzeichnis sind keine geöffneten Dateien. Der Prozess eines anderen Benutzers zeigt einen leeren Ordner.</p>
 <h2 id="hinweise">Hinweise</h2>
 <ul>
-<li>Grundlegende Details (PID, übergeordneter Prozess, Benutzer, Status) sind für jeden Prozess lesbar, wie bei <code>ps</code>. Speicher, Threads und CPU können nur für <strong>Ihre eigenen</strong> Prozesse gelesen werden; andere Prozesse zeigen diese Spalten leer (sie erfordern erhöhte Rechte, eine spätere Ergänzung).</li>
+<li>Grundlegende Angaben (PID, übergeordneter Prozess, Benutzer, Status, Signatur) sind für jeden Prozess lesbar. Speicher-Footprint, Threads, Festplatten-I/O und die Liste der geöffneten Dateien sind für <strong>Ihre eigenen</strong> Prozesse lesbar, was auf einem normalen Mac der größte Teil der Liste ist. Für Prozesse anderer Benutzer werden CPU und Resident stattdessen aus <code>ps</code> gefüllt — ein Lebenszeit-Durchschnitt statt der Differenz zweier Messungen, die die übrigen Zeilen tragen — und Threads und Footprint bleiben leer.</li>
 <li>CPU % ist eine Änderung zwischen zwei Messungen, daher bleibt es leer, bis das Panel ein zweites Mal aktualisiert (das Panel aktualisiert sich etwa alle zwei Sekunden).</li>
 <li>Die Liste ist bis auf das Beenden eines Prozesses schreibgeschützt — Sie können keine Dateien hineinkopieren.</li>
+<li>Die Hervorhebungsfarben richten sich nach Ihrem Farbschema: die Norton-Palette verwendet stattdessen Grün, Rot und Magenta.</li>
+<li>Gefunden werden nur Handles, in die Ihr Benutzerkonto schauen darf, was in der Praxis Ihre eigenen Prozesse bedeutet. Eine Bibliothek, die ein Prozess lediglich in den Speicher eingeblendet hat, oder sein Arbeitsverzeichnis sind keine offenen Handles und werden nicht gemeldet.</li>
+<li>Die Spalte <strong>Signed</strong> füllt sich in den ersten Sekunden: eine Signatur zu lesen dauert etwa eine Millisekunde und es gibt Hunderte verschiedener Programme, also werden pro Aktualisierung einige gelesen und danach gemerkt. Eine leere Zelle bedeutet „noch nicht gelesen“, nicht „unsigniert“.</li>
+<li><strong>Signed</strong> sagt, wer das Programm signiert hat, nicht ob es notarisiert ist: die Notarisierung zu prüfen heißt, das ganze Programm zu hashen, was pro Programm Sekunden dauern würde.</li>
+<li>Der Schnellfilter (Ctrl+S) trifft hier auch die Spalten und nicht nur den Namen, und ein Ausdruck kann die Spalte benennen, für die er gilt: <code>user:root state:R</code> fragt, was root gerade laufen lässt. Ausdrücke werden durch Leerzeichen getrennt und müssen alle zutreffen; Text, der keine Spalte benennt, bleibt eine einzige Zeichenkette, Leerzeichen eingeschlossen.</li>
 </ul>
 <section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Dateien ansehen</a></li><li><a href="deleting-files.html">Dateien löschen</a></li></ul></section>
 </main>

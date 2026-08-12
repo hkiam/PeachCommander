@@ -20,7 +20,7 @@
 <p><img alt="The Task Manager listing running processes with PID, CPU, memory, and command columns" src="images/task-manager.png" />
 <em>(Figure: running processes shown as a file list you can sort and act on.)</em></p>
 <h2 id="what-each-column-means">What each column means</h2>
-<p>Alongside the usual Size (memory) and Date (start time) columns, Task Manager adds process columns:</p>
+<p>Alongside the Date (start time) column, Task Manager adds process columns. A process row's Size reads <code>DIR</code>, because a process is a folder you can open (see below) — memory has columns of its own:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Recent processor use (needs a second refresh to appear)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Memory footprint — what this process is accountable for (the number Activity Monitor shows)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Resident size, shared pages included; filled for every process</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>Thread count</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R running · S sleeping · T stopped · Z zombie · I idle</td>
+<td>R running · S sleeping · T stopped · Z zombie · I idle, plus the suffixes <code>ps</code> adds (s = session leader, + = foreground, N = low priority)</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>Parent process id</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>Bytes read from disk since the process started</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>Bytes written to disk since the process started</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Interrupt wakeups since the process started</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Who signed the program: Apple, a Developer ID team, ad-hoc, or unsigned</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>View (F3)</strong> shows a <em>Process Information</em> report: name, PID, parent, user, state, threads, memory, CPU, start time, executable path, and the full command line.</li>
 <li><strong>Delete (F8)</strong> ends the process. The first delete sends a graceful <strong>quit</strong> (SIGTERM); deleting a process that's still running a second time escalates to a <strong>force quit</strong> (SIGKILL). The plugin never targets PID 1.</li>
 </ul>
+<h2 id="find-the-processes-using-a-file">Find the processes using a file</h2>
+<p>Right-click any row and choose <strong>Find Processes by File…</strong>, then enter the path of a file. Every process that currently has that file open is highlighted, and the cursor jumps to the first one that can change it:</p>
+<ul>
+<li><strong>Blue</strong> — the process only reads the file.</li>
+<li><strong>Orange</strong> — the process only writes to it.</li>
+<li><strong>Purple</strong> — the process does both.</li>
+</ul>
+<p>The path is prefilled from the cursor in the other panel, so you can point at a file there and ask without typing. <strong>Find Process by Port…</strong> in the same menu answers the sibling question: which process is listening on a TCP/UDP port. Choose <strong>Clear File Highlight</strong> to remove the colours; leaving the process list removes them too.</p>
+<h2 id="open-a-process-to-see-its-files">Open a process to see its files</h2>
+<p>Press Enter on a process — or double-click it — and the panel lists the files that process currently has open, as ordinary file rows with their real size and date. From there:</p>
+<ul>
+<li><strong>View (F3)</strong> opens the file itself.</li>
+<li><strong>Go to File</strong> shows it in the other panel, where you can work with it.</li>
+<li><strong>Reveal in Finder</strong> hands it to the Finder.</li>
+</ul>
+<p>Only open files count: a library the process merely mapped into memory, and its working directory, are not open files. Another user's process shows an empty folder.</p>
 <h2 id="notes">Notes</h2>
 <ul>
-<li>Basic details (PID, parent, user, state) are readable for every process, like <code>ps</code>. Memory, threads, and CPU can only be read for <strong>your own</strong> processes; other processes show those columns blank (they need elevated privileges, a later addition).</li>
+<li>Basic details (PID, parent, user, state, signer) are readable for every process. Memory footprint, threads, disk I/O and the list of open files are readable for <strong>your own</strong> processes, which on a normal Mac is most of the list. For other users' processes, CPU and Resident are filled from <code>ps</code> instead — a lifetime average rather than the two-sample delta the other rows carry — and threads and footprint stay blank.</li>
 <li>CPU % is a change between two samples, so it's blank until the panel refreshes a second time (the panel refreshes roughly every two seconds).</li>
 <li>The list is read-only apart from ending a process — you can't copy files into it.</li>
+<li>The highlight colours follow your colour theme: the Norton palette uses green, red, and magenta instead.</li>
+<li>Only handles your account may inspect are found, which in practice means your own processes. A library a process merely mapped into memory, or its working directory, is not an open handle and is not reported.</li>
+<li>The <strong>Signed</strong> column fills in over the first few seconds: reading a signature takes about a millisecond and there are hundreds of distinct programs, so they are read a few per refresh and then remembered. A blank cell means "not read yet", not "unsigned".</li>
+<li><strong>Signed</strong> says who signed the program, not whether it is notarized: checking a notarization ticket means hashing the whole program, which would take seconds for each one.</li>
+<li>The quick filter (Ctrl+S) matches the columns as well as the name here, and a term can name the column it applies to: <code>user:root state:R</code> asks what root is running right now. Terms are separated by spaces and all must match; text that names no column stays one plain substring, spaces included.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="viewing-files.html">Viewing files</a></li><li><a href="deleting-files.html">Deleting files</a></li></ul></section>
 </main>

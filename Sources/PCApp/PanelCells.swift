@@ -70,10 +70,11 @@ final class DirectoryCellView: NSTableCellView, NSTextFieldDelegate {
 
     /// Configure the cell. `request` nil means no icon (icon mode off or `..`
     /// handled separately). Invalidates any in-flight icon resolution.
-    func configure(name: String, request: IconRequest?, isSelected: Bool, badge: String? = nil, color: NSColor? = nil) {
+    func configure(name: String, request: IconRequest?, isSelected: Bool, badge: String? = nil,
+                   color: NSColor? = nil, keepColorOnCursorRow: Bool = false) {
         iconGeneration &+= 1
         label.stringValue = name
-        isMarked = isSelected
+        isMarked = isSelected || keepColorOnCursorRow
         baseTextColor = isSelected ? Theme.current.selectedText : (color ?? Theme.current.listText)
         label.textColor = baseTextColor
         badgeLabel.stringValue = badge ?? ""
@@ -98,6 +99,8 @@ final class DirectoryCellView: NSTableCellView, NSTextFieldDelegate {
     /// `applyCursorRowText` must not fight it — it is only ever called for non-editing rows,
     /// since the cursor row cannot move while its own cell is being edited.
     private var baseTextColor: NSColor = Theme.current.listText
+    /// "This row's colour means something" — a marked file, or a row the file-handle search
+    /// coloured (F-390). Such a row keeps its colour on the cursor bar; see `PlainCellView`.
     private var isMarked = false
 
     func applyCursorRowText(_ onCursorRow: Bool) {
@@ -214,9 +217,10 @@ final class PlainCellView: NSTableCellView {
     }
 
     func configure(text: String, isSelected: Bool, monospaced: Bool = false,
-                   alignment: NSTextAlignment = .left, color: NSColor? = nil) {
+                   alignment: NSTextAlignment = .left, color: NSColor? = nil,
+                   keepColorOnCursorRow: Bool = false) {
         label.stringValue = text
-        isMarked = isSelected
+        isMarked = isSelected || keepColorOnCursorRow
         baseTextColor = isSelected ? Theme.current.selectedText : (color ?? Theme.current.listText)
         label.textColor = baseTextColor
         label.font = monospaced ? Fonts.panelMono : Fonts.panelText
@@ -227,7 +231,10 @@ final class PlainCellView: NSTableCellView {
     /// re-running configure (the cursor moves far more often than cells are reconfigured).
     private var baseTextColor: NSColor = Theme.current.listText
     /// Marked files keep `selectedText` even on the cursor bar — that is how NC shows them too,
-    /// and losing the marking would be worse than a slightly odd colour pairing.
+    /// and losing the marking would be worse than a slightly odd colour pairing. A row coloured by
+    /// the file-handle search (F-390) is pinned for the same reason, and it is the sharper case:
+    /// the search puts the cursor *on* the first hit, so under a palette with `cursorRowText` the
+    /// one row the user is looking at was the one row that did not say what it had found.
     private var isMarked = false
 
     func applyCursorRowText(_ onCursorRow: Bool) {

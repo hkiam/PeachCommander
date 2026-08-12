@@ -122,9 +122,14 @@ public final class PFXPlugin: @unchecked Sendable {
 
     /// Resolve a plugin-defined `query` to an existing entry path, or nil on no
     /// match (e.g. TaskManager "port:8080" → "/nginx (1234)").
+    ///
+    /// A query may answer with many entries, one per line — "file:<path>" names every
+    /// process holding that file open. 64 KiB rather than the 2 KiB a single answer
+    /// needs, because a list is what silently loses rows: the plugin fills what it is
+    /// given and a small buffer would drop the tail without anyone noticing.
     public func lookup(_ conn: UnsafeMutableRawPointer, query: String) -> String? {
         guard let f = fn("PfxLookup", as: LookupFn.self) else { return nil }
-        var buf = [CChar](repeating: 0, count: 2048)
+        var buf = [CChar](repeating: 0, count: 64 * 1024)
         let rc = query.withCString { q in f(conn, q, &buf, Int32(buf.count)) }
         guard rc != 0 else { return nil }
         let s = String(cString: buf)
@@ -232,6 +237,43 @@ public final class PFXFileSystem: VirtualFileSystem, @unchecked Sendable {
     /// Resolve a qualified content field for the entry at `path` (cached per
     /// listing). Returns nil for a field this mount doesn't own.
     public func contentDisplay(fieldID: String, path: String) -> String? {
+        let parts = fieldID.split(separator: ".", maxSplits: 1).map(String.init)
+        guard parts.count == 2, parts[0] == contentQualifier,
+              let index = contentFields.firstIndex(where: { $0.name == parts[1] }) else { return nil }
+        cacheLock.lock()
+        var row = rowCache[path]
+        cacheLock.unlock()
+        if row == nil {
+            row = plugin.contentRow(conn, path: path)
+            cacheLock.lock(); rowCache[path] = row ?? []; cacheLock.unlock()
+        }
+        guard let row, index < row.count else { return nil }
+        let value = row[index]
+        // PFX_FT_SIZE has meant "bytes — the host renders KB/MB and sorts numerically" since the
+        // header was written, and the host only ever did the sorting half: a plugin that followed
+        // the documentation showed a raw byte count. Formatting here rather than in the panel
+        // because the column, the copy-value menu and the process tree all read through this one
+        // call, and a size formatted in only one of them is a column that disagrees with itself.
+        guard contentFields[index].type == PFX_FT_SIZE, let bytes = Int64(value) else { return value }
+        return Self.formatBytes(bytes)
+    }
+
+    /// Bytes as KB/MB/GB, one decimal from MB up — the panel's own size style for a plugin column.
+    static func formatBytes(_ bytes: Int64) -> String {
+        if bytes < 0 { return "" }
+        if bytes < 1024 { return "\(bytes) B" }
+        let units = ["KB", "MB", "GB", "TB"]
+        var value = Double(bytes) / 1024, unit = 0
+        while value >= 1024, unit + 1 < units.count { value /= 1024; unit += 1 }
+        return unit == 0 ? String(format: "%.0f %@", value, units[unit])
+                         : String(format: "%.1f %@", value, units[unit])
+    }
+
+    /// The value a column SORTS by — what the plugin wrote, before any formatting.
+    ///
+    /// Separate from `contentDisplay` because formatting destroys order: "9.9 MB" and "1.2 GB"
+    /// compare as 9.9 and 1.2, so a size column that reads correctly would sort backwards.
+    public func contentSortValue(fieldID: String, path: String) -> String? {
         let parts = fieldID.split(separator: ".", maxSplits: 1).map(String.init)
         guard parts.count == 2, parts[0] == contentQualifier,
               let index = contentFields.firstIndex(where: { $0.name == parts[1] }) else { return nil }

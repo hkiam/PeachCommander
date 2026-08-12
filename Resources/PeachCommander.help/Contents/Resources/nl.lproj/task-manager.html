@@ -20,7 +20,7 @@
 <p><img alt="Task Manager toont actieve processen met de kolommen PID, CPU, geheugen en command" src="images/task-manager.png" />
 <em>(Afbeelding: actieve processen getoond als een bestandslijst die je kunt sorteren en waarop je kunt handelen.)</em></p>
 <h2 id="wat-elke-kolom-betekent">Wat elke kolom betekent</h2>
-<p>Naast de gebruikelijke kolommen Grootte (geheugen) en Datum (starttijd) voegt Task Manager proceskolommen toe:</p>
+<p>Naast de kolom Datum (starttijd) voegt Task Manager proceskolommen toe. De Grootte van een procesrij toont <code>DIR</code>, omdat een proces een map is die u kunt openen (zie hieronder) — het geheugen heeft eigen kolommen:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Recent processorgebruik (verschijnt pas na een tweede vernieuwing)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Geheugenvoetafdruk — waarvoor dit proces verantwoordelijk is (het getal dat Activiteitenweergave toont)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Residente grootte, gedeelde pagina's inbegrepen; voor elk proces ingevuld</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>Aantal threads</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R actief · S slapend · T gestopt · Z zombie · I inactief</td>
+<td>R actief · S slapend · T gestopt · Z zombie · I inactief, plus de achtervoegsels die <code>ps</code> toevoegt (s = sessieleider, + = voorgrond, N = lage prioriteit)</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>Proces-id van de ouder</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>Bytes van de schijf gelezen sinds het proces startte</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>Bytes naar de schijf geschreven sinds het proces startte</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Interrupt-wekmomenten sinds het proces startte</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Wie het programma ondertekende: Apple, een Developer ID-team, ad-hoc of niet ondertekend</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>Bekijken (F3)</strong> toont een rapport <em>Process Information</em>: naam, PID, ouder, gebruiker, status, threads, geheugen, CPU, starttijd, pad naar het uitvoerbare bestand en de volledige opdrachtregel.</li>
 <li><strong>Verwijderen (F8)</strong> beëindigt het proces. De eerste verwijdering stuurt een nette <strong>quit</strong> (SIGTERM); een proces dat nog draait een tweede keer verwijderen escaleert naar een <strong>force quit</strong> (SIGKILL). De plug-in richt zich nooit op PID 1.</li>
 </ul>
+<h2 id="de-processen-vinden-die-een-bestand-gebruiken">De processen vinden die een bestand gebruiken</h2>
+<p>Klik met de rechtermuisknop op een willekeurige rij en kies <strong>Processen zoeken op bestand…</strong>, voer daarna het pad van een bestand in. Elk proces dat dat bestand op dat moment geopend heeft, wordt gemarkeerd en de cursor springt naar het eerste proces dat het kan wijzigen:</p>
+<ul>
+<li><strong>Blauw</strong> — het proces leest het bestand alleen.</li>
+<li><strong>Oranje</strong> — het proces schrijft er alleen naar.</li>
+<li><strong>Paars</strong> — het proces doet beide.</li>
+</ul>
+<p>Het pad wordt vooringevuld vanaf de cursor in het andere paneel, zodat u daar een bestand kunt aanwijzen en zonder typen kunt vragen. <strong>Proces zoeken op poort…</strong> in hetzelfde menu beantwoordt de verwante vraag: welk proces op een TCP/UDP-poort luistert. Kies <strong>Bestandsmarkering wissen</strong> om de kleuren te verwijderen; het verlaten van de proceslijst verwijdert ze eveneens.</p>
+<h2 id="open-een-proces-om-zijn-bestanden-te-zien">Open een proces om zijn bestanden te zien</h2>
+<p>Druk op Enter op een proces — of dubbelklik erop — en het paneel toont de bestanden die dat proces op dat moment geopend heeft, als gewone bestandsrijen met hun echte grootte en datum. Vandaar:</p>
+<ul>
+<li><strong>Bekijken (F3)</strong> opent het bestand zelf.</li>
+<li><strong>Ga naar bestand</strong> toont het in het andere paneel, waar u ermee kunt werken.</li>
+<li><strong>Toon in Finder</strong> geeft het door aan de Finder.</li>
+</ul>
+<p>Alleen geopende bestanden tellen: een bibliotheek die het proces alleen in het geheugen heeft geladen, en zijn werkmap, zijn geen geopende bestanden. Het proces van een andere gebruiker toont een lege map.</p>
 <h2 id="opmerkingen">Opmerkingen</h2>
 <ul>
-<li>Basisgegevens (PID, ouder, gebruiker, status) zijn voor elk proces leesbaar, net als bij <code>ps</code>. Geheugen, threads en CPU kunnen alleen worden gelezen voor <strong>je eigen</strong> processen; bij andere processen blijven die kolommen leeg (ze vereisen verhoogde rechten, een latere toevoeging).</li>
+<li>Basisgegevens (PID, ouder, gebruiker, status, ondertekening) zijn voor elk proces leesbaar. Geheugenvoetafdruk, threads, schijf-I/O en de lijst met geopende bestanden zijn leesbaar voor <strong>uw eigen</strong> processen, wat op een gewone Mac het grootste deel van de lijst is. Voor processen van andere gebruikers worden CPU en Resident in plaats daarvan uit <code>ps</code> gevuld — een gemiddelde over de hele levensduur in plaats van het verschil tussen twee metingen dat de andere rijen dragen — en threads en voetafdruk blijven leeg.</li>
 <li>CPU % is een verschil tussen twee metingen, dus het blijft leeg tot het paneel een tweede keer wordt vernieuwd (het paneel vernieuwt ongeveer elke twee seconden).</li>
 <li>De lijst is alleen-lezen, afgezien van het beëindigen van een proces — je kunt er geen bestanden naartoe kopiëren.</li>
+<li>De markeringskleuren volgen uw kleurthema: het Norton-palet gebruikt in plaats daarvan groen, rood en magenta.</li>
+<li>Alleen handles die uw account mag inzien worden gevonden, wat in de praktijk uw eigen processen betekent. Een bibliotheek die een proces alleen in het geheugen heeft geladen, of zijn werkmap, is geen open handle en wordt niet gemeld.</li>
+<li>De kolom <strong>Signed</strong> vult zich in de eerste seconden: een handtekening lezen duurt ongeveer een milliseconde en er zijn honderden verschillende programma's, dus er worden er per verversing een paar gelezen en daarna onthouden. Een lege cel betekent “nog niet gelezen”, niet “niet ondertekend”.</li>
+<li><strong>Signed</strong> zegt wie het programma ondertekende, niet of het genotariseerd is: notarisatie controleren betekent het hele programma hashen, wat per programma seconden zou kosten.</li>
+<li>Het snelfilter (Ctrl+S) treft hier ook de kolommen en niet alleen de naam, en een term kan de kolom noemen waarvoor hij geldt: <code>user:root state:R</code> vraagt wat root op dit moment draait. Termen worden gescheiden door spaties en moeten allemaal kloppen; tekst die geen kolom noemt, blijft één gewone deeltekst, spaties inbegrepen.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plug-ins</a></li><li><a href="viewing-files.html">Bestanden bekijken</a></li><li><a href="deleting-files.html">Bestanden verwijderen</a></li></ul></section>
 </main>

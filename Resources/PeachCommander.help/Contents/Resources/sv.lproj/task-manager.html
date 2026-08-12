@@ -20,7 +20,7 @@
 <p><img alt="Task Manager som listar processer som körs med kolumnerna PID, CPU, minne och kommando" src="images/task-manager.png" />
 <em>(Figur: processer som körs visas som en fillista du kan sortera och agera på.)</em></p>
 <h2 id="vad-varje-kolumn-betyder">Vad varje kolumn betyder</h2>
-<p>Vid sidan av de vanliga kolumnerna Storlek (minne) och Datum (starttid) lägger Task Manager till processkolumner:</p>
+<p>Bredvid kolumnen Datum (starttid) lägger Task Manager till processkolumner. Storleken på en processrad visar <code>DIR</code>, eftersom en process är en mapp du kan öppna (se nedan) — minnet har egna kolumner:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Nyligen processoranvändning (behöver en andra uppdatering för att visas)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Minnesavtryck — vad den här processen svarar för (siffran som Aktivitetskontroll visar)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Resident storlek, delade sidor inräknade; ifylld för varje process</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>Antal trådar</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R körs · S sover · T stoppad · Z zombie · I inaktiv</td>
+<td>R körs · S sover · T stoppad · Z zombie · I inaktiv, plus ändelserna som <code>ps</code> lägger till (s = sessionsledare, + = förgrund, N = låg prioritet)</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>Överordnad process-id</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>Byte lästa från disken sedan processen startade</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>Byte skrivna till disken sedan processen startade</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Avbrottsuppvakningar sedan processen startade</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Vem som signerade programmet: Apple, ett Developer ID-team, ad-hoc eller osignerat</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>Visa (F3)</strong> visar en rapport med <em>Processinformation</em>: namn, PID, överordnad, användare, tillstånd, trådar, minne, CPU, starttid, sökväg till körbar fil och den fullständiga kommandoraden.</li>
 <li><strong>Ta bort (F8)</strong> avslutar processen. Den första borttagningen skickar en artig <strong>quit</strong> (SIGTERM); att ta bort en process som fortfarande körs en andra gång trappar upp till en <strong>force quit</strong> (SIGKILL). Insticksprogrammet riktar sig aldrig mot PID 1.</li>
 </ul>
+<h2 id="hitta-processerna-som-anvander-en-fil">Hitta processerna som använder en fil</h2>
+<p>Högerklicka på valfri rad och välj <strong>Sök processer efter fil…</strong>, ange sedan sökvägen till en fil. Varje process som har den filen öppen just nu markeras, och markören hoppar till den första som kan ändra den:</p>
+<ul>
+<li><strong>Blå</strong> — processen läser bara filen.</li>
+<li><strong>Orange</strong> — processen skriver bara till den.</li>
+<li><strong>Lila</strong> — processen gör bådadera.</li>
+</ul>
+<p>Sökvägen fylls i från markören i den andra panelen, så du kan peka på en fil där och fråga utan att skriva. <strong>Sök process efter port…</strong> i samma meny svarar på systerfrågan: vilken process som lyssnar på en TCP/UDP-port. Välj <strong>Rensa filmarkering</strong> för att ta bort färgerna; att lämna processlistan tar också bort dem.</p>
+<h2 id="oppna-en-process-for-att-se-dess-filer">Öppna en process för att se dess filer</h2>
+<p>Tryck Retur på en process — eller dubbelklicka på den — så listar panelen de filer processen har öppna just nu, som vanliga filrader med sin verkliga storlek och sitt datum. Därifrån:</p>
+<ul>
+<li><strong>Visa (F3)</strong> öppnar själva filen.</li>
+<li><strong>Gå till filen</strong> visar den i den andra panelen, där du kan arbeta med den.</li>
+<li><strong>Visa i Finder</strong> lämnar över den till Finder.</li>
+</ul>
+<p>Bara öppna filer räknas: ett bibliotek som processen bara lagt i minnet, och dess arbetskatalog, är inte öppna filer. En annan användares process visar en tom mapp.</p>
 <h2 id="anmarkningar">Anmärkningar</h2>
 <ul>
-<li>Grundläggande uppgifter (PID, överordnad, användare, tillstånd) är läsbara för varje process, som <code>ps</code>. Minne, trådar och CPU kan bara läsas för <strong>dina egna</strong> processer; andra processer visar dessa kolumner tomma (de kräver förhöjda behörigheter, ett senare tillägg).</li>
+<li>Grundläggande uppgifter (PID, förälder, användare, tillstånd, signatur) går att läsa för varje process. Minnesavtryck, trådar, disk-I/O och listan över öppna filer går att läsa för <strong>dina egna</strong> processer, vilket på en vanlig Mac är merparten av listan. För andra användares processer fylls CPU och Resident i från <code>ps</code> i stället — ett genomsnitt över hela livstiden i stället för skillnaden mellan två mätningar som de andra raderna bär — och trådar och avtryck förblir tomma.</li>
 <li>CPU % är en förändring mellan två sampel, så den är tom tills panelen uppdateras en andra gång (panelen uppdateras ungefär varannan sekund).</li>
 <li>Listan är skrivskyddad förutom att avsluta en process — du kan inte kopiera filer till den.</li>
+<li>Markeringsfärgerna följer ditt färgtema: Norton-paletten använder grönt, rött och magenta i stället.</li>
+<li>Endast handtag som ditt konto får titta på hittas, vilket i praktiken betyder dina egna processer. Ett bibliotek som en process bara har lagt i minnet, eller dess arbetskatalog, är inte ett öppet handtag och rapporteras inte.</li>
+<li>Kolumnen <strong>Signed</strong> fylls i under de första sekunderna: att läsa en signatur tar ungefär en millisekund och det finns hundratals olika program, så några läses per uppdatering och kommer sedan ihåg. En tom cell betyder ”inte läst än”, inte ”osignerat”.</li>
+<li><strong>Signed</strong> säger vem som signerade programmet, inte om det är notariserat: att kontrollera notarisering innebär att hasha hela programmet, vilket skulle ta sekunder för vart och ett.</li>
+<li>Snabbfiltret (Ctrl+S) träffar här även kolumnerna och inte bara namnet, och en term kan namnge kolumnen den gäller: <code>user:root state:R</code> frågar vad root kör just nu. Termer skiljs åt med mellanslag och alla måste stämma; text som inte namnger någon kolumn förblir en enda vanlig delsträng, mellanslag inkluderade.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="viewing-files.html">Visa filer</a></li><li><a href="deleting-files.html">Ta bort filer</a></li></ul></section>
 </main>

@@ -272,7 +272,13 @@ int  PfxContentGetRow(void *conn, const char *path, char *out, int maxlen);
  * "jump to the matching entry" features. The host writes `query`, the plugin
  * writes the entry path (e.g. "/nginx (1234)") into `out` (NUL-terminated,
  * <= maxlen). Return 1 on a hit, 0 on no match. Query syntax is per-plugin;
- * TaskManager understands "port:<n>" — the process owning local TCP/UDP port n. */
+ * TaskManager understands "port:<n>" — the process owning local TCP/UDP port n.
+ *
+ * A query may answer with MORE than one entry: one path per line, and a line may
+ * carry a tab-separated tag the host understands for that query. TaskManager's
+ * "file:<path>" lists every process holding that file open, tagged "r" (read-only
+ * handles), "w" (write-only) or "b" (both), which the host colours accordingly.
+ * Write whole lines only — never a truncated one — when `out` runs out. */
 int  PfxLookup(void *conn, const char *query, char *out, int maxlen);
 
 #ifdef __cplusplus

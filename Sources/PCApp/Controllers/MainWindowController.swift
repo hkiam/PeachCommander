@@ -1368,6 +1368,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         panel.tableView.syncContentValue = { [weak panel] fieldID, path in
             (panel?.currentFileSystem as? PFXFileSystem)?.contentDisplay(fieldID: fieldID, path: path)
         }
+        panel.tableView.sortContentValue = { [weak panel] fieldID, path in
+            (panel?.currentFileSystem as? PFXFileSystem)?.contentSortValue(fieldID: fieldID, path: path)
+        }
         let specs = loadColumnSet(name: "mount:\(fs.contentQualifier)") ?? contentMountColumns(fs)
         panel.tableView.setColumns(specs)
         panel.startVolatileAutoRefresh()
@@ -1379,6 +1382,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         panel.stopVolatileAutoRefresh()
         panel.tableView.numericContentFields = []
         panel.tableView.syncContentValue = nil
+        panel.tableView.sortContentValue = nil
         let side = (panel === rightPanelController) ? "right" : "left"
         panel.tableView.setColumns(columnSpecs(forSide: side))
     }
@@ -1518,6 +1522,89 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let name = hit.hasPrefix("/") ? String(hit.dropFirst()) : hit
         panel.tableView.focusEntry(named: name)
         window?.makeKeyAndOrderFront(nil)
+    }
+
+    // MARK: - Find processes by open file (F-390)
+
+    /// Prompt for a file path and colour every process holding it open.
+    ///
+    /// The path is prefilled from the *other* panel's cursor: the active one is the TaskManager
+    /// mount, so the file the question is about is by definition over there — and typing a path by
+    /// hand into a modal is the part of "which process has my file open" nobody enjoys.
+    func findProcessesByFile() {
+        guard activePanelProcessMount != nil, let panel = activePanel else { NSSound.beep(); return }
+        let alert = NSAlert()
+        alert.messageText = String(localized: "Find Processes by File")
+        alert.informativeText = String(localized: "Enter a file path. Processes holding it open are highlighted: reading, writing, and both in their own colour.")
+        let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 360, height: 24))
+        field.placeholderString = "/path/to/file"
+        field.stringValue = getInactivePanel()?.tableView.cursorItemFullPath() ?? ""
+        alert.accessoryView = field
+        alert.addButton(withTitle: String(localized: "Search"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
+        alert.window.initialFirstResponder = field
+
+        // Same as the port search: the scan walks the mount's snapshot, so a refresh in the middle
+        // of it would be rebuilding the very list being scanned.
+        panel.stopVolatileAutoRefresh()
+        defer { panel.startVolatileAutoRefresh() }
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        let path = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !path.isEmpty else { return }
+        if highlightProcesses(holdingFile: path) == 0 {
+            presentInfo(String(localized: "No Process Found"),
+                        String(format: String(localized: "No accessible process has %@ open. Other users' processes may need elevated privileges."), path))
+        }
+    }
+
+    /// Ask the mount which processes hold `path` open, colour them, and put the cursor on the
+    /// first one. Returns how many were found.
+    ///
+    /// Split out of the dialog on purpose: `runModal` never returns to a script, so without a
+    /// modal-free entry point the whole feature would be unreachable for the automation harness.
+    @discardableResult
+    func highlightProcesses(holdingFile path: String) -> Int {
+        guard let fs = activePanelProcessMount, let panel = activePanel else { return 0 }
+        let table = panel.tableView
+        guard let answer = fs.lookup(query: "file:\(path)"), !answer.isEmpty else {
+            table.setFileHandleHighlights([:])
+            return 0
+        }
+        var map: [String: PanelListView.FileHandleKind] = [:]
+        for line in answer.split(separator: "\n") {
+            let parts = line.split(separator: "\t", maxSplits: 1)
+            guard let entry = parts.first else { continue }
+            let name = entry.hasPrefix("/") ? String(entry.dropFirst()) : String(entry)
+            // An untagged line is an older plugin answering a query it does not know in detail;
+            // treating it as a reader is the harmless reading.
+            let kind = parts.count > 1 ? PanelListView.FileHandleKind(rawValue: String(parts[1])) : .read
+            map[name] = kind ?? .read
+        }
+        table.setFileHandleHighlights(map)
+        guard !map.isEmpty else { return 0 }
+        // Onto the writer if there is one: a process that only reads the file is rarely the one
+        // holding it hostage.
+        let rows = table.fileHandleHighlightRows()
+        let first = rows.first { $0.kind == .readWrite } ?? rows.first { $0.kind == .write } ?? rows.first
+        if let first { table.focusEntry(named: first.name) }
+        window?.makeKeyAndOrderFront(nil)
+        return map.count
+    }
+
+    /// Show `path` — a file some process has open (F-391) — in the *other* panel, cursor on it.
+    ///
+    /// The other panel, because the active one is the process list: navigating it away would answer
+    /// the question by losing the place the question was asked from. This is the move a file manager
+    /// can make and a task manager cannot.
+    func goToOpenFile(_ path: String) {
+        let dir = (path as NSString).deletingLastPathComponent
+        let name = (path as NSString).lastPathComponent
+        guard let other = getInactivePanel() else { NSSound.beep(); return }
+        Task { @MainActor in
+            await other.loadDirectory(dir, selecting: name)
+            self.activePanel = other
+            self.window?.makeKeyAndOrderFront(nil)
+        }
     }
 
     /// Persisted column set named `name`, or nil if none saved.

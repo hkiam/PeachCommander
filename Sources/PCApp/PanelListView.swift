@@ -216,6 +216,50 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     private var typeColors = TypeColorRules()
     /// Apply by-file-type row colors from the compact config string (F-032).
     func setTypeColors(_ config: String) { typeColors = TypeColorRules(config); reloadData() }
+
+    /// How a process holds the searched file open (F-390) — the plugin's per-row tag.
+    enum FileHandleKind: String {
+        case read = "r", write = "w", readWrite = "b"
+        var color: NSColor {
+            switch self {
+            case .read: return Theme.current.fileHandleReadText
+            case .write: return Theme.current.fileHandleWriteText
+            case .readWrite: return Theme.current.fileHandleReadWriteText
+            }
+        }
+    }
+
+    /// Processes holding the searched file open, keyed by entry name ("Safari (1234)").
+    ///
+    /// Keyed by name and not by row, because the TaskManager mount is volatile: it re-lists itself
+    /// roughly every two seconds and every row is a new `VFSEntry`. The name carries the PID, so a
+    /// process keeps its colour across refreshes and a died-and-restarted one does not inherit it.
+    private var fileHandleHighlights: [String: FileHandleKind] = [:]
+    /// The panel path the highlights were resolved in, so leaving the mount drops them.
+    private var fileHandleHighlightPath: String?
+
+    /// Colour the given processes (F-390). Empty map = clear. The listing they belong to is taken
+    /// from the view's own snapshot rather than passed in — two sources for one path is how they
+    /// come to disagree, and a mismatch here would clear the highlight on the very next refresh.
+    func setFileHandleHighlights(_ map: [String: FileHandleKind]) {
+        fileHandleHighlights = map
+        fileHandleHighlightPath = map.isEmpty ? nil : snapshot?.path
+        reloadData()
+    }
+
+    func clearFileHandleHighlights() {
+        guard !fileHandleHighlights.isEmpty else { return }
+        fileHandleHighlights = [:]
+        fileHandleHighlightPath = nil
+        reloadData()
+    }
+
+    var hasFileHandleHighlights: Bool { !fileHandleHighlights.isEmpty }
+
+    /// The highlighted rows in listing order, for the status line and the automation dump.
+    func fileHandleHighlightRows() -> [(name: String, kind: FileHandleKind)] {
+        visibleEntries.compactMap { e in fileHandleHighlights[e.name].map { (e.name, $0) } }
+    }
     /// Anchor row (visible index) for Shift+click range selection.
     private var selectionAnchor = 0
     /// Fired when the quick filter changes (nil = off) so the panel can show an indicator.
@@ -540,6 +584,13 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         // Don't rebuild the table while an in-cell rename is open — the field
         // editor would be destroyed. The post-commit reload picks up the change.
         if isInlineEditing { return }
+        // A file-handle highlight belongs to the listing it was searched in. The volatile
+        // auto-refresh re-enters this with the same path and keeps it; navigating away drops it,
+        // so colours cannot survive into a directory where they mean nothing.
+        if let hl = fileHandleHighlightPath, hl != snapshot.path {
+            fileHandleHighlights = [:]
+            fileHandleHighlightPath = nil
+        }
         self.snapshot = snapshot
         if let sortDescriptor { self.sortDescriptor = sortDescriptor }
         dirSizes.removeAll()
@@ -561,6 +612,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         // every process that starts or exits, and AppKit answers that by scrolling to the top.
         let offset = preserveViewport ? enclosingScrollView?.documentVisibleRect.origin : nil
         reloadData()
+        if let offset { enclosingScrollView?.contentView.scroll(to: offset) }
         Task { await self.syncEntriesToSelectionState(); self.notifyChanged() }
     }
 
@@ -664,7 +716,9 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         // NFC-tolerant match: the filesystem may return a decomposed (NFD) name
         // while the caller holds a precomposed (NFC) one, or vice versa (F-100).
         guard let name, let idx = visibleEntries.firstIndex(where: { PathUtils.nameEquivalent($0.name, name) }) else {
-            cursorRow = visibleEntries.isEmpty ? -1 : 0
+            if visibleEntries.isEmpty { cursorRow = -1 }
+            else if !scroll { cursorRow = max(0, min(cursorRow, visibleEntries.count - 1)) }
+            else { cursorRow = 0 }
             reloadData()
             Task { _ = await selectionState?.setCursorIndex(cursorRow); notifyChanged() }
             return
@@ -768,9 +822,6 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
                     if let wanted = FinderTagColor.colorIndex(forName: spec) { return indices.contains(wanted) }
                     return false
                 }
-            } else if filterText.contains("*") || filterText.contains("?") {
-                let mask = WildcardMask(filterText.hasSuffix("*") ? filterText : filterText + "*")
-                result = result.filter { mask.matches($0.name) }
             } else {
                 let needle = filterText.lowercased()
                 result = result.filter { $0.name.lowercased().contains(needle) }
@@ -919,7 +970,12 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             if row == 0 { cell.configure(text: "", isSelected: false); return cell }
             guard let entry = entry(atCursor: row - 1) else { return nil }
             let path = fullPath(of: entry)
-            cell.configure(text: contentValue(columnID, path: path), isSelected: selectedPaths.contains(path))
+            // The file-handle highlight (F-390) reaches these too, or the row would be coloured in
+            // its name and plain in PID / CPU / Command — which in a TaskManager listing is most of
+            // what the eye is on.
+            let handleColor = fileHandleHighlights[entry.name]?.color
+            cell.configure(text: contentValue(columnID, path: path), isSelected: selectedPaths.contains(path),
+                           color: handleColor, keepColorOnCursorRow: handleColor != nil)
             return cell
         }
 
@@ -942,7 +998,12 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         let path = fullPath(of: entry)
         let isSelected = selectedPaths.contains(path)
         let isDir = PanelEntryHelpers.isDirectoryLike(entry.kind)
-        let rowColor = typeColors.isEmpty ? nil : typeColors.color(for: entry.name)   // F-032
+        // The file-handle highlight (F-390) outranks the by-type colour: it answers a question the
+        // user asked a moment ago, while the type colour is standing decoration. It is also pinned
+        // through the cursor bar, which the type colour is not — see `PlainCellView.isMarked`.
+        let handleColor = fileHandleHighlights[entry.name]?.color
+        let keepColor = handleColor != nil
+        let rowColor = handleColor ?? (typeColors.isEmpty ? nil : typeColors.color(for: entry.name))   // F-032
 
         switch column {
         case .name:
@@ -954,24 +1015,29 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             if PanelEntryHelpers.isSymlink(entry.kind) { display += "  ↳" }
             let badge = badgeFieldID.map { contentValue($0, path: path) }
             cell.configure(name: display, request: req, isSelected: isSelected,
-                           badge: (badge?.isEmpty ?? true) ? nil : badge, color: rowColor)
+                           badge: (badge?.isEmpty ?? true) ? nil : badge, color: rowColor,
+                           keepColorOnCursorRow: keepColor)
             return cell
         case .ext:
             let cell = makePlainCell()
-            cell.configure(text: entry.ext, isSelected: isSelected, color: rowColor)
+            cell.configure(text: entry.ext, isSelected: isSelected, color: rowColor,
+                           keepColorOnCursorRow: keepColor)
             return cell
         case .size:
             let cell = makePlainCell()
             cell.configure(text: sizeText(for: entry, isDir: isDir), isSelected: isSelected,
-                           monospaced: true, alignment: .right, color: rowColor)
+                           monospaced: true, alignment: .right, color: rowColor,
+                           keepColorOnCursorRow: keepColor)
             return cell
         case .date:
             let cell = makePlainCell()
-            cell.configure(text: dateText(entry.modified), isSelected: isSelected, monospaced: true, color: rowColor)
+            cell.configure(text: dateText(entry.modified), isSelected: isSelected, monospaced: true,
+                           color: rowColor, keepColorOnCursorRow: keepColor)
             return cell
         case .attr:
             let cell = makePlainCell()
-            cell.configure(text: attrText(entry, path: path), isSelected: isSelected, monospaced: true, color: rowColor)
+            cell.configure(text: attrText(entry, path: path), isSelected: isSelected, monospaced: true,
+                           color: rowColor, keepColorOnCursorRow: keepColor)
             return cell
         case .tag:
             let cell = makeTagCell()
@@ -979,7 +1045,8 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             return cell
         case .comment:
             let cell = makePlainCell()
-            cell.configure(text: commentMap[entry.name] ?? "", isSelected: isSelected, color: rowColor)
+            cell.configure(text: commentMap[entry.name] ?? "", isSelected: isSelected, color: rowColor,
+                           keepColorOnCursorRow: keepColor)
             return cell
         }
     }
@@ -1077,7 +1144,12 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     }
 
     private func dateText(_ date: Date) -> String {
-        dateFormatter.string(from: date)
+        // A mount says "0" for a timestamp it does not have (the SDK spells that out), and the
+        // formatter turns that into 1970-01-01 — a date the row does not have, printed as though it
+        // did. Blank instead: TaskManager cannot read another user's process start time, and an
+        // empty cell says so where "1970" claims something false.
+        guard date.timeIntervalSince1970 != 0 else { return "" }
+        return dateFormatter.string(from: date)
     }
 
     private func attrText(_ entry: VFSEntry, path: String? = nil) -> String {
@@ -1443,6 +1515,11 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// mounts; lets a plugin-column sort be re-applied instantly on auto-refresh.
     var syncContentValue: ((_ fieldID: String, _ path: String) -> String?)?
 
+    /// The value a plugin column SORTS by, when that differs from what it shows — a size column
+    /// displays "9.9 MB" and must order by the byte count behind it. Falls back to the displayed
+    /// string when the mount does not distinguish the two.
+    var sortContentValue: ((_ fieldID: String, _ path: String) -> String?)?
+
     /// Order two entries by a plugin column's value (dirs first, numeric-aware,
     /// name tiebreak). `value` resolves an entry's display string for the column.
     private func pluginRowLess(_ a: VFSEntry, _ b: VFSEntry, numeric: Bool,
@@ -1470,17 +1547,23 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     private func reapplyPluginSortSync() {
         guard let ps = pluginSort, let resolve = syncContentValue else { return }
         let numeric = numericContentFields.contains(ps.fieldID)
+        let order = sortContentValue ?? resolve
         visibleEntries.sort { a, b in
             pluginRowLess(a, b, numeric: numeric, ascending: ps.ascending) { e in
                 let p = fullPath(of: e)
-                if let v = contentValues[p]?[ps.fieldID] { return v }
-                let v = resolve(ps.fieldID, p) ?? ""
-                contentValues[p, default: [:]][ps.fieldID] = v
-                return v
+                // The displayed value is still cached for drawing; ordering asks for the raw one.
+                if contentValues[p]?[ps.fieldID] == nil {
+                    contentValues[p, default: [:]][ps.fieldID] = resolve(ps.fieldID, p) ?? ""
+                }
+                return order(ps.fieldID, p) ?? ""
             }
         }
         sortableHeaderView?.setSortDirection(ps.ascending ? .ascending : .descending, for: ps.fieldID)
     }
+
+    /// Sort by a plugin column, as clicking its header does — so a check can ask whether a
+    /// formatted column still orders by the value behind it (F-392).
+    func automationSortByPluginColumn(_ fieldID: String) { sortByPluginColumn(fieldID) }
 
     private func sortByPluginColumn(_ fieldID: String) {
         guard let provider = contentValueProvider else { return }
@@ -1491,8 +1574,12 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             var values: [String: String] = [:]
             for e in visibleEntries {
                 let p = fullPath(of: e)
-                if let v = contentValues[p]?[fieldID] { values[p] = v }
-                else { let v = await provider(fieldID, p) ?? ""; contentValues[p, default: [:]][fieldID] = v; values[p] = v }
+                if contentValues[p]?[fieldID] == nil {
+                    contentValues[p, default: [:]][fieldID] = await provider(fieldID, p) ?? ""
+                }
+                // Order by the raw value where the mount offers one (a formatted size does not
+                // compare), else by what is on screen.
+                values[p] = sortContentValue?(fieldID, p) ?? contentValues[p]?[fieldID] ?? ""
             }
             let numeric = numericContentFields.contains(fieldID)
             visibleEntries.sort { a, b in
@@ -1961,6 +2048,20 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             menu.addItem(item)
         }
 
+        // Inside a process, the rows are the files it has open (F-391) — real files, so the menu
+        // is about the file: look at it, and go to where it actually lives. The process actions
+        // below would act on the *parent* row and are deliberately absent here.
+        if (window?.windowController as? MainWindowController)?.activePanelProcessMount != nil,
+           cursorOpenFilePath() != nil {
+            cmd(String(localized: "View (F3)"), "cm_List")
+            action(String(localized: "Go to File"), #selector(ctxGoToOpenFile))
+            action(String(localized: "Reveal in Finder"), #selector(ctxRevealOpenFile))
+            menu.addItem(.separator())
+            addCopyValueSubmenu(to: menu)
+            action(String(localized: "Select/Deselect"), #selector(ctxToggleMark))
+            return menu
+        }
+
         // A process mount (TaskManager) gets a small, process-appropriate menu —
         // the file actions (Open, Quick Look, Reveal, Share, Compress, Tags, …)
         // make no sense for a process.
@@ -1970,6 +2071,12 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             menu.addItem(.separator())
             action(String(localized: "Show Process Tree"), #selector(ctxShowProcessTree))
             action(String(localized: "Find Process by Port…"), #selector(ctxFindProcessByPort))
+            action(String(localized: "Find Processes by File…"), #selector(ctxFindProcessesByFile))
+            // Only once there is something to clear — an always-present item that does nothing is
+            // how the eject entry used to read.
+            if hasFileHandleHighlights {
+                action(String(localized: "Clear File Highlight"), #selector(ctxClearFileHandleHighlight))
+            }
             menu.addItem(.separator())
             addCopyValueSubmenu(to: menu)
             action(String(localized: "Select/Deselect"), #selector(ctxToggleMark))
@@ -2034,6 +2141,33 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     @objc private func ctxFindProcessByPort() {
         (window?.windowController as? MainWindowController)?.findProcessByPort()
     }
+
+    /// The real file behind the cursor row when the panel is inside a process (F-391), else nil.
+    ///
+    /// Such a row's *name* is the file's path with ":" for "/" — the host's own convention for a
+    /// name containing a slash, which is why the row already reads as a path on screen. Decoding it
+    /// back is what makes "go to it" possible at all: a plugin path leads nowhere on disk.
+    func cursorOpenFilePath() -> String? {
+        guard let name = cursorEntryName(), name.hasPrefix(":") else { return nil }
+        let real = PathUtils.displayName(fromPOSIX: name)
+        return FileManager.default.fileExists(atPath: real) ? real : nil
+    }
+
+    @objc private func ctxFindProcessesByFile() {
+        (window?.windowController as? MainWindowController)?.findProcessesByFile()
+    }
+
+    @objc private func ctxGoToOpenFile() {
+        guard let real = cursorOpenFilePath() else { NSSound.beep(); return }
+        (window?.windowController as? MainWindowController)?.goToOpenFile(real)
+    }
+
+    @objc private func ctxRevealOpenFile() {
+        guard let real = cursorOpenFilePath() else { NSSound.beep(); return }
+        NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: real)])
+    }
+
+    @objc private func ctxClearFileHandleHighlight() { clearFileHandleHighlights() }
 
     /// Append enabled plugins' context-menu contributions for `surface`, filtered
     /// by each item's `when` against the clicked item's context. Items route

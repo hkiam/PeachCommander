@@ -18,9 +18,12 @@ BUNDLE="$OUT_DIR/TaskManager.pfxplugin"
 rm -rf "$BUNDLE"
 mkdir -p "$BUNDLE/Contents/MacOS"
 cp "$ROOT/Plugins/TaskManager/Info.plist" "$BUNDLE/Contents/Info.plist"
+# Security + CoreFoundation: the "Signed" column reads each binary's code
+# signature (F-393). Nothing else here links a framework.
 pc_clang -dynamiclib -std=c11 -O2 -Wall \
   -target "$TARGET" \
   -I "$ROOT/Plugins/SDK" \
+  -framework CoreFoundation -framework Security \
   -o "$BUNDLE/Contents/MacOS/TaskManager" \
   "$ROOT/Plugins/TaskManager/taskmanager.c"
 echo "Built $BUNDLE"

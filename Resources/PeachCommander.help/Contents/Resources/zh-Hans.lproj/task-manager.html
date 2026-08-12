@@ -20,7 +20,7 @@
 <p><img alt="Task Manager 列出正在运行的进程，带有 PID、CPU、内存和命令列" src="images/task-manager.png" />
 <em>（图：以文件列表形式显示的正在运行的进程，你可以对其排序和操作。）</em></p>
 <h2 id="_2">每列的含义</h2>
-<p>除了通常的大小（内存）和日期（启动时间）列之外，Task Manager 还添加了进程列：</p>
+<p>除了日期（启动时间）列，Task Manager 还添加了进程列。进程行的大小显示为 <code>DIR</code>，因为进程是可以打开的文件夹（见下文）——内存有自己的列：</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>近期处理器使用率（需要第二次刷新后才会出现）</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>内存占用（footprint）——该进程需要负责的部分（活动监视器显示的数字）</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>常驻大小，含共享页；对每个进程都会填写</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>线程数</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R 运行 · S 睡眠 · T 已停止 · Z 僵尸 · I 空闲</td>
+<td>R 运行 · S 睡眠 · T 已停止 · Z 僵尸 · I 空闲，外加 <code>ps</code> 附加的后缀（s = 会话首进程，+ = 前台，N = 低优先级）</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>父进程 id</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>自进程启动以来从磁盘读取的字节数</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>自进程启动以来写入磁盘的字节数</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>自进程启动以来的中断唤醒次数</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>谁签署了该程序：Apple、拥有 Developer ID 的团队、临时签名或未签名</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>查看（F3）</strong> 会显示一份 <em>Process Information</em> 报告：名称、PID、父进程、用户、状态、线程、内存、CPU、启动时间、可执行文件路径以及完整命令行。</li>
 <li><strong>删除（F8）</strong> 会结束进程。第一次删除会发送一个温和的 <strong>退出</strong>（SIGTERM）；对仍在运行的进程再次删除会升级为 <strong>强制退出</strong>（SIGKILL）。插件绝不会针对 PID 1。</li>
 </ul>
-<h2 id="_4">说明</h2>
+<h2 id="_4">查找正在使用某个文件的进程</h2>
+<p>右键点按任意行并选择 <strong>按文件查找进程…</strong>，然后输入文件路径。当前打开该文件的每个进程都会高亮显示，光标会跳到第一个能够修改它的进程：</p>
 <ul>
-<li>基本详情（PID、父进程、用户、状态）对每个进程都可读，就像 <code>ps</code> 一样。内存、线程和 CPU 只能读取<strong>你自己的</strong>进程；其他进程的这些列会显示为空白（它们需要提升的权限，这是后续会添加的功能）。</li>
+<li><strong>蓝色</strong> — 进程只读取该文件。</li>
+<li><strong>橙色</strong> — 进程只写入该文件。</li>
+<li><strong>紫色</strong> — 进程两者都做。</li>
+</ul>
+<p>路径会从另一个面板的光标位置预先填入，因此你可以在那边指向一个文件，无需输入即可提问。同一菜单中的 <strong>按端口查找进程…</strong> 回答的是姊妹问题：哪个进程正在 TCP/UDP 端口上监听。选择 <strong>清除文件高亮</strong> 可移除这些颜色；离开进程列表同样会移除它们。</p>
+<h2 id="_5">打开进程即可看到它的文件</h2>
+<p>在进程上按回车键——或双击它——面板就会列出该进程当前打开的文件，作为带有真实大小和日期的普通文件行。在那里：</p>
+<ul>
+<li><strong>查看 (F3)</strong> 打开文件本身。</li>
+<li><strong>转到文件</strong> 在另一个面板中显示它，你可以在那里处理它。</li>
+<li><strong>在访达中显示</strong> 把它交给访达。</li>
+</ul>
+<p>只有打开的文件才算：进程仅映射到内存中的库，以及它的工作目录，都不是打开的文件。其他用户的进程会显示为空文件夹。</p>
+<h2 id="_6">说明</h2>
+<ul>
+<li>基本信息（PID、父进程、用户、状态、签名）对每个进程都可读。内存占用、线程、磁盘 I/O 和打开文件列表可读的是<strong>你自己的</strong>进程，在一台普通的 Mac 上这已是列表的大部分。对于其他用户的进程，CPU 和 Resident 改为从 <code>ps</code> 填充——那是整个生命周期的平均值，而不是其他行所带的两次采样之差——线程和内存占用则保持为空。</li>
 <li>CPU % 是两次采样之间的变化量，因此在面板第二次刷新之前它是空白的（面板大约每两秒刷新一次）。</li>
 <li>除结束进程外，该列表是只读的 —— 你无法将文件复制到其中。</li>
+<li>高亮颜色随你的配色主题变化：Norton 调色板改用绿色、红色和洋红色。</li>
+<li>只能找到你的账户有权查看的句柄，实际上就是你自己的进程。进程仅映射到内存中的库，或其工作目录，都不是打开的句柄，因此不会报告。</li>
+<li><strong>Signed</strong> 列会在最初几秒内逐渐填满：读取一个签名约需一毫秒，而不同的程序有数百个，因此每次刷新读取几个并记住结果。空白单元格表示“尚未读取”，而不是“未签名”。</li>
+<li><strong>Signed</strong> 说明谁签署了程序，而不是它是否已公证：检查公证需要对整个程序做哈希，每个都要花上几秒。</li>
+<li>这里的快速筛选（Ctrl+S）也会匹配列而不仅仅是名称，并且每一项都可以指明它作用的列：<code>user:root state:R</code> 就是在问 root 现在正在运行什么。各项以空格分隔并且必须全部匹配；没有指明列的文字仍然是一个整体的子串，包括其中的空格。</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">插件</a></li><li><a href="viewing-files.html">查看文件</a></li><li><a href="deleting-files.html">删除文件</a></li></ul></section>
 </main>

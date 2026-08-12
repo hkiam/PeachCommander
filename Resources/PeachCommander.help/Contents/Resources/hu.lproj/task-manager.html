@@ -20,7 +20,7 @@
 <p><img alt="A Task Manager felsorolja a futó folyamatokat a PID, CPU, memória és parancs oszlopokkal" src="images/task-manager.png" />
 <em>(Ábra: a futó folyamatok fájllistaként megjelenítve, amelyet rendezhet és amelyen műveleteket végezhet.)</em></p>
 <h2 id="mit-jelent-az-egyes-oszlopok">Mit jelent az egyes oszlopok</h2>
-<p>A szokásos Méret (memória) és Dátum (indítási idő) oszlopok mellett a Task Manager folyamatoszlopokat ad hozzá:</p>
+<p>A Dátum (indítási idő) oszlop mellé a Task Manager folyamatoszlopokat is tesz. Egy folyamatsor Mérete <code>DIR</code>, mert a folyamat egy mappa, amelyet megnyithat (lásd lentebb) — a memóriának saját oszlopai vannak:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Legutóbbi processzorhasználat (egy második frissítés kell a megjelenéséhez)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Memórialábnyom — amiért ez a folyamat felelős (az a szám, amelyet az Activity Monitor mutat)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Rezidens méret, a megosztott lapokkal együtt; minden folyamatnál kitöltve</td>
+</tr>
+<tr>
 <td><strong>Threads</strong></td>
 <td>Szálak száma</td>
 </tr>
 <tr>
 <td><strong>State</strong></td>
-<td>R fut · S alszik · T leállítva · Z zombi · I tétlen</td>
+<td>R fut · S alszik · T leállítva · Z zombi · I tétlen, valamint a <code>ps</code> által hozzáadott utótagok (s = munkamenet-vezető, + = előtér, N = alacsony prioritás)</td>
 </tr>
 <tr>
 <td><strong>User</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>Szülőfolyamat azonosítója</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>A folyamat indulása óta a lemezről olvasott bájtok</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>A folyamat indulása óta a lemezre írt bájtok</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Megszakításos ébresztések a folyamat indulása óta</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Ki írta alá a programot: az Apple, egy Developer ID-csapat, ad-hoc, vagy aláíratlan</td>
 </tr>
 <tr>
 <td><strong>Command</strong></td>
@@ -65,11 +89,32 @@
 <li>A <strong>Megtekintés (F3)</strong> egy <em>Folyamatinformáció</em> jelentést mutat: név, PID, szülő, felhasználó, állapot, szálak, memória, CPU, indítási idő, a futtatható fájl útvonala és a teljes parancssor.</li>
 <li>A <strong>Törlés (F8)</strong> bezárja a folyamatot. Az első törlés egy kíméletes <strong>kilépést</strong> küld (SIGTERM); egy még futó folyamat második törlése egy <strong>kényszerített kilépésre</strong> (SIGKILL) fokozódik. A bővítmény soha nem célozza az 1-es PID-et.</li>
 </ul>
+<h2 id="a-fajlt-hasznalo-folyamatok-megkeresese">A fájlt használó folyamatok megkeresése</h2>
+<p>Kattintson a jobb gombbal bármelyik sorra, válassza a <strong>Folyamatok keresése fájl alapján…</strong> parancsot, majd adja meg egy fájl útvonalát. Minden folyamat kiemelve jelenik meg, amely az adott fájlt éppen nyitva tartja, a kurzor pedig az elsőre ugrik, amely módosítani tudja:</p>
+<ul>
+<li><strong>Kék</strong> — a folyamat csak olvassa a fájlt.</li>
+<li><strong>Narancssárga</strong> — a folyamat csak ír bele.</li>
+<li><strong>Lila</strong> — a folyamat mindkettőt teszi.</li>
+</ul>
+<p>Az útvonal a másik panel kurzorából van előre kitöltve, így ott rámutathat egy fájlra, és gépelés nélkül kérdezhet. Ugyanebben a menüben a <strong>Folyamat keresése port alapján…</strong> a testvérkérdésre válaszol: melyik folyamat figyel egy TCP/UDP-porton. A <strong>Fájlkiemelés törlése</strong> eltávolítja a színeket; a folyamatlista elhagyása szintén eltávolítja őket.</p>
+<h2 id="nyisson-meg-egy-folyamatot-es-lassa-a-fajljait">Nyisson meg egy folyamatot, és lássa a fájljait</h2>
+<p>Nyomjon Entert egy folyamaton — vagy kattintson rá duplán — és a panel felsorolja azokat a fájlokat, amelyeket a folyamat éppen nyitva tart, közönséges fájlsorokként, valódi mérettel és dátummal. Innen:</p>
+<ul>
+<li>A <strong>Megtekintés (F3)</strong> magát a fájlt nyitja meg.</li>
+<li>Az <strong>Ugrás a fájlhoz</strong> a másik panelen mutatja meg, ahol dolgozhat vele.</li>
+<li>A <strong>Megjelenítés a Finderben</strong> átadja a Findernek.</li>
+</ul>
+<p>Csak a nyitott fájlok számítanak: egy könyvtár, amelyet a folyamat csupán a memóriába képezett le, és a munkakönyvtára nem nyitott fájlok. Más felhasználó folyamata üres mappát mutat.</p>
 <h2 id="megjegyzesek">Megjegyzések</h2>
 <ul>
-<li>Az alapvető adatok (PID, szülő, felhasználó, állapot) minden folyamatra olvashatók, mint a <code>ps</code> esetében. A memória, a szálak és a CPU csak a <strong>saját</strong> folyamataira olvasható; más folyamatok ezeket az oszlopokat üresen mutatják (emelt szintű jogosultságokat igényelnek, egy későbbi kiegészítés).</li>
+<li>Az alapadatok (PID, szülő, felhasználó, állapot, aláírás) minden folyamatnál olvashatók. A memórialábnyom, a szálak, a lemez-I/O és a nyitott fájlok listája a <strong>saját</strong> folyamatainál olvasható, ami egy szokásos Mac-en a lista nagy része. Más felhasználók folyamatainál a CPU és a Resident helyette a <code>ps</code> alapján töltődik ki — élettartam-átlag a két mérés különbsége helyett, amelyet a többi sor hordoz — a szálak és a lábnyom pedig üresen maradnak.</li>
 <li>A CPU % két mintavétel közötti változás, ezért üres marad, amíg a panel másodszor is nem frissül (a panel körülbelül kétmásodpercenként frissül).</li>
 <li>A lista a folyamatok bezárásán kívül csak olvasható — nem másolhat bele fájlokat.</li>
+<li>A kiemelés színei a színtémát követik: a Norton paletta helyettük zöldet, pirosat és bíbort használ.</li>
+<li>Csak azok a leírók találhatók meg, amelyekbe a fiókja belenézhet, ami a gyakorlatban a saját folyamatait jelenti. Egy könyvtár, amelyet a folyamat csupán a memóriába képezett le, vagy a munkakönyvtára nem nyitott leíró, és nem jelenik meg.</li>
+<li>A <strong>Signed</strong> oszlop az első másodpercekben töltődik fel: egy aláírás elolvasása körülbelül egy ezredmásodperc, és több száz különböző program van, ezért frissítésenként néhányat olvas be, majd megjegyzi őket. Az üres cella azt jelenti, hogy „még nincs beolvasva”, nem azt, hogy „aláíratlan”.</li>
+<li>A <strong>Signed</strong> azt mondja meg, ki írta alá a programot, nem azt, hogy hitelesítve van-e: a hitelesítés ellenőrzése az egész program hash-elését jelenti, ami programonként másodpercekbe telne.</li>
+<li>A gyorsszűrő (Ctrl+S) itt az oszlopokra is illeszkedik, nem csak a névre, és egy kifejezés megnevezheti azt az oszlopot, amelyre vonatkozik: a <code>user:root state:R</code> azt kérdezi, mit futtat éppen a root. A kifejezéseket szóköz választja el, és mindnek illeszkednie kell; az oszlopot meg nem nevező szöveg egyetlen egyszerű részszöveg marad, a szóközökkel együtt.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="viewing-files.html">Fájlok megtekintése</a></li><li><a href="deleting-files.html">Fájlok törlése</a></li></ul></section>
 </main>

@@ -20,7 +20,7 @@
 <p><img alt="Task Manager, ki našteva izvajajoče se procese s stolpci PID, CPU, pomnilnik in ukaz" src="images/task-manager.png" />
 <em>(Slika: izvajajoči se procesi, prikazani kot seznam datotek, ki ga lahko razvrstite in nad njim izvajate dejanja.)</em></p>
 <h2 id="kaj-pomeni-vsak-stolpec">Kaj pomeni vsak stolpec</h2>
-<p>Poleg običajnih stolpcev Velikost (pomnilnik) in Datum (čas zagona) Task Manager doda procesne stolpce:</p>
+<p>Poleg stolpca Datum (čas zagona) Task Manager doda stolpce procesov. Velikost v vrstici procesa kaže <code>DIR</code>, saj je proces mapa, ki jo lahko odprete (glejte spodaj) — pomnilnik ima svoje stolpce:</p>
 <table>
 <thead>
 <tr>
@@ -38,12 +38,20 @@
 <td>Nedavna uporaba procesorja (za prikaz potrebuje drugo osvežitev)</td>
 </tr>
 <tr>
+<td><strong>Memory</strong></td>
+<td>Pomnilniški odtis — za kar je ta proces odgovoren (številka, ki jo kaže Nadzornik aktivnosti)</td>
+</tr>
+<tr>
+<td><strong>Resident</strong></td>
+<td>Rezidentna velikost, vključno s skupnimi stranmi; izpolnjena za vsak proces</td>
+</tr>
+<tr>
 <td><strong>Niti</strong></td>
 <td>Število niti</td>
 </tr>
 <tr>
 <td><strong>Stanje</strong></td>
-<td>R teče · S spi · T ustavljen · Z zombi · I nedejaven</td>
+<td>R teče · S spi · T ustavljen · Z zombi · I nedejaven, poleg tega pripone, ki jih doda <code>ps</code> (s = vodja seje, + = ospredje, N = nizka prednost)</td>
 </tr>
 <tr>
 <td><strong>Uporabnik</strong></td>
@@ -52,6 +60,22 @@
 <tr>
 <td><strong>PPID</strong></td>
 <td>ID nadrejenega procesa</td>
+</tr>
+<tr>
+<td><strong>Read</strong></td>
+<td>Bajti, prebrani z diska od zagona procesa</td>
+</tr>
+<tr>
+<td><strong>Written</strong></td>
+<td>Bajti, zapisani na disk od zagona procesa</td>
+</tr>
+<tr>
+<td><strong>Wakeups</strong></td>
+<td>Prebujanja prek prekinitev od zagona procesa</td>
+</tr>
+<tr>
+<td><strong>Signed</strong></td>
+<td>Kdo je podpisal program: Apple, ekipa z Developer ID, ad-hoc ali nepodpisano</td>
 </tr>
 <tr>
 <td><strong>Ukaz</strong></td>
@@ -65,11 +89,32 @@
 <li><strong>Poglej (F3)</strong> prikaže poročilo <em>Informacije o procesu</em>: ime, PID, nadrejeni proces, uporabnik, stanje, niti, pomnilnik, CPU, čas zagona, pot do izvedljive datoteke in celotno ukazno vrstico.</li>
 <li><strong>Izbriši (F8)</strong> konča proces. Prvo brisanje pošlje nežen <strong>izhod</strong> (SIGTERM); ponovno brisanje procesa, ki še vedno teče, stopnjuje na <strong>prisilni izhod</strong> (SIGKILL). Vtičnik nikoli ne cilja na PID 1.</li>
 </ul>
+<h2 id="poiscite-procese-ki-uporabljajo-datoteko">Poiščite procese, ki uporabljajo datoteko</h2>
+<p>Z desno tipko kliknite katero koli vrstico in izberite <strong>Najdi procese po datoteki…</strong>, nato vnesite pot do datoteke. Vsak proces, ki ima to datoteko trenutno odprto, je označen, kazalec pa skoči na prvega, ki jo lahko spremeni:</p>
+<ul>
+<li><strong>Modra</strong> — proces datoteko samo bere.</li>
+<li><strong>Oranžna</strong> — proces vanjo samo piše.</li>
+<li><strong>Vijolična</strong> — proces počne oboje.</li>
+</ul>
+<p>Pot je vnaprej izpolnjena iz kazalca v drugem pultu, tako da lahko tam pokažete na datoteko in vprašate brez tipkanja. <strong>Najdi proces po vratih…</strong> v istem meniju odgovarja na sorodno vprašanje: kateri proces posluša na vratih TCP/UDP. Izberite <strong>Počisti označitev datoteke</strong>, da odstranite barve; tudi odhod s seznama procesov jih odstrani.</p>
+<h2 id="odprite-proces-in-poglejte-njegove-datoteke">Odprite proces in poglejte njegove datoteke</h2>
+<p>Pritisnite Enter na procesu — ali ga dvakrat kliknite — in pult našteje datoteke, ki jih ima ta proces trenutno odprte, kot običajne vrstice datotek z resnično velikostjo in datumom. Od tam:</p>
+<ul>
+<li><strong>Poglej (F3)</strong> odpre datoteko samo.</li>
+<li><strong>Pojdi na datoteko</strong> jo pokaže v drugem pultu, kjer lahko delate z njo.</li>
+<li><strong>Prikaži v Finderju</strong> jo preda Finderju.</li>
+</ul>
+<p>Štejejo samo odprte datoteke: knjižnica, ki jo je proces le preslikal v pomnilnik, in njegov delovni imenik nista odprti datoteki. Proces drugega uporabnika pokaže prazno mapo.</p>
 <h2 id="opombe">Opombe</h2>
 <ul>
-<li>Osnovne podrobnosti (PID, nadrejeni proces, uporabnik, stanje) je mogoče prebrati za vsak proces, tako kot <code>ps</code>. Pomnilnik, niti in CPU je mogoče prebrati le za <strong>vaše lastne</strong> procese; drugi procesi prikazujejo te stolpce prazne (potrebujejo povišane pravice, ki bodo dodane kasneje).</li>
+<li>Osnovni podatki (PID, starš, uporabnik, stanje, podpis) so berljivi za vsak proces. Pomnilniški odtis, niti, diskovni V/I in seznam odprtih datotek so berljivi za <strong>vaše lastne</strong> procese, kar je na običajnem Macu večina seznama. Pri procesih drugih uporabnikov se CPU in Resident napolnita iz <code>ps</code> — povprečje čez celotno življenje namesto razlike dveh meritev, ki jo nosijo druge vrstice — niti in odtis pa ostanejo prazni.</li>
 <li>CPU % je sprememba med dvema vzorcema, zato je prazen, dokler se podokno drugič ne osveži (podokno se osveži približno vsaki dve sekundi).</li>
 <li>Seznam je samo za branje, razen za končanje procesa — vanj ne morete kopirati datotek.</li>
+<li>Barve označitve sledijo vaši barvni temi: paleta Norton namesto tega uporablja zeleno, rdečo in škrlatno.</li>
+<li>Najdejo se samo ročice, v katere sme vaš račun pogledati, kar v praksi pomeni vaše lastne procese. Knjižnica, ki jo je proces le preslikal v pomnilnik, ali njegov delovni imenik nista odprti ročici in nista sporočena.</li>
+<li>Stolpec <strong>Signed</strong> se napolni v prvih sekundah: branje podpisa traja približno milisekundo, različnih programov pa je na stotine, zato jih je ob vsaki osvežitvi prebranih nekaj in si jih nato zapomni. Prazna celica pomeni »še ni prebrano«, ne »nepodpisano«.</li>
+<li><strong>Signed</strong> pove, kdo je program podpisal, ne pa ali je notariziran: preverjanje notarizacije pomeni izračun zgoščene vrednosti celotnega programa, kar bi pri vsakem trajalo sekunde.</li>
+<li>Hitri filter (Ctrl+S) se tu ujema tudi s stolpci in ne le z imenom, izraz pa lahko poimenuje stolpec, na katerega se nanaša: <code>user:root state:R</code> vpraša, kaj root prav zdaj izvaja. Izraze ločujejo presledki in ujemati se morajo vsi; besedilo, ki ne poimenuje nobenega stolpca, ostane en sam preprost podniz skupaj s presledki.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="viewing-files.html">Ogled datotek</a></li><li><a href="deleting-files.html">Brisanje datotek</a></li></ul></section>
 </main>

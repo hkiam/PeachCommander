@@ -58,6 +58,67 @@ to the top whenever anything in it changed, and so did every panel reload after 
 Verified in all three, plus the cases that must NOT change: navigation still lands at the top with the
 cursor on "..", and an explicit focus still scrolls to its row.
 
+## 2026-08-13 (F-391…F-395) — The Task Manager, reviewed against Process Explorer
+
+The plan's five pieces, on top of the delete fix recorded above — without which the mount's one
+action was dead, and none of this would have been worth much:
+
+Then, in the order the plan proposed:
+
+* **A process is a folder** (F-391). Entering it lists the files it holds open, as real file rows — F3
+  opens the file, "Go to File" puts it in the other panel. That is the thing a file manager can say about a
+  process and Activity Monitor cannot, and it is F-390 read backwards. Row names are the file's path with
+  ":" for "/", which is the host's own convention for a name containing a slash (F-100), so a row reads as
+  a path and still decodes to somewhere the panel can navigate.
+* **The missing columns** (F-392): footprint, disk I/O, wakeups — one `proc_pid_rusage` call, same reach as
+  the task info, each field measured for real coverage before it became a column. `PFX_FT_SIZE` finally
+  renders as KB/MB, which the SDK header had promised since it was written; splitting display from sort
+  value was the price, because "1.2 GB" and "9.9 MB" compare as 1.2 and 9.9.
+* **Who signed it** (F-393) — the macOS answer to Process Explorer's Verified Signer, and the only
+  attribute readable for *every* process, because it is a property of the file. Cached and read a few per
+  refresh: 1.5 ms × 700 binaries is a second of frozen panel otherwise.
+* **Other users' numbers without a helper** (F-394). `/bin/ps` is setuid root and costs 52 ms for the whole
+  table, so a privileged helper — which would need the Developer ID this project does not have — buys
+  nothing. CPU and Resident went from 72% to 100% coverage. The two sources are not the same measurement,
+  so Resident is its own column and the report says `[via ps]`.
+* **The filter reaches the columns** (F-395): `root` narrows 1217 rows to 205.
+
+Measured, not assumed, and two of the measurements changed the design: `proc_pidinfo` reaches every process
+of your own uid (72% of this table), not just this one process as the plugin's own header claimed for a
+year; and reading signatures is ~1.5 ms each, which is what made the cache-and-budget design necessary.
+Deliberately not built: notarization checking (hashes the whole binary), closing another process's handles
+(no macOS equivalent), CPU affinity (no public API), and colouring rows by process state — the row-colour
+channel already carries F-390's answer, and two colour systems on one channel is how they come to fight.
+
+## 2026-08-12 (F-390) — Which processes have this file open, and how
+
+The Task Manager mount could say which process was on port 8080 and could not say who was holding
+the file you were trying to replace — the question that actually stops work. `PfxLookup` grew a second
+query, `file:<path>`, and with it the facet's first *list* answer: one line per process, tagged `r`,
+`w` or `b`, coloured in three (a reader, a writer and one doing both are three different problems).
+
+Three things had to be got right and one of them was got wrong first. Identity is the (device, inode)
+pair rather than the path text — `/tmp` is `/private/tmp`, a hard link is the same file, and `vip_path`
+carries only the tail of a long one, so a string compare answers "nobody has it open" about a file that
+is very much open. The access mode is FREAD/FWRITE, not O_ACCMODE: `fi_openflags` is the kernel's f_flag,
+which is the O_* flags **plus one**, so the first version reported every reader as a writer and a
+read-only handle came back `w`. And the host's lookup buffer went from 2 KiB to 64 KiB, because a list
+is what silently loses its tail.
+
+The colour is a text colour, like the by-file-type ones, so it composes with the cursor bar and the
+zebra shading — and it is pinned *through* the cursor bar the way a marked file is. That had to be
+added: the search puts the cursor on the first writer, and under Norton (which re-colours the cursor
+row) that one row was the one row not saying what had been found. Found by reading the drawn colour
+back, not by looking: `prochldump` reports the label colour each highlighted cell is actually using,
+which a screenshot cannot, since the three colours differ by hue at one lightness.
+
+Verified in the running app against `lsof`: a `tail -f`, a shell holding an append-only fd and one
+holding a read-write fd come back `r`, `w` and `b`, the same five processes `lsof` lists, in
+`#1D6FD1`/`#C2410C`/`#8E44AD` under the default palette and `#55FF55`/`#FF5555`/`#FF55FF` under Norton.
+Not in the VM regression: the scenario would need a process inside the guest holding a file open, which
+the fixtures do not provide. Unprivileged this sees the caller's own processes, like the port lookup;
+a merely mapped library and the working directory are not fds and are not reported.
+
 ## 2026-08-09 — Sweep: what this app writes, read by something that is not this app
 
 The AppleDouble litter in every tar we packed was invisible for one reason: the tool that wrote it and
