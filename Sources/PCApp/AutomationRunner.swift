@@ -311,6 +311,10 @@ extension MainWindowController {
                     let chrome = panel.view.chromeForAutomation
                     let out = "path=\(await panel.getCurrentPath())\ncurrent=\(current ?? "<none>")\n"
                         + "tabs=\(chrome.tabs)\ncrumb=\(chrome.crumb)\n"
+                        // Each chip's kind and where its picture came from (F-386): a bar that draws
+                        // one icon for every volume and a bar that tells them apart look the same to
+                        // every check that only reads names.
+                        + "chips=\(panel.view.driveBar.chipsForAutomation)\n"
                     try? out.write(toFile: arg, atomically: true, encoding: .utf8)
                 }
             case "termnotify":                          // termnotify <viewId>|<key>|<value> (F-381)

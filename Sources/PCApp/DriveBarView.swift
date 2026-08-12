@@ -30,6 +30,13 @@ final class DriveBarView: NSView {
     private var volumes: [Volume] = []
     private var currentIndex: Int?
     private let font = NSFont.systemFont(ofSize: 11)
+    /// Each volume's own icon, keyed by mount path — the system's, so a share, a stick and a mounted
+    /// image look here the way they look in Finder. Filled off the main thread by `loadIcons`.
+    private var icons: [String: NSImage] = [:]
+    private let iconQueue = DispatchQueue(label: "com.peachcommander.drivebar.icons", qos: .userInitiated)
+    /// Square, and a little smaller than the chip so it does not touch its rounded edge.
+    private static let iconSize: CGFloat = 13
+    private let iconGap: CGFloat = 4
 
     private enum Chip: Sendable { case go; case drives; case volume(Int); case eject(Int) }
     /// Hit rectangles computed during draw(), consulted by mouseDown — in the order they must be
@@ -61,12 +68,57 @@ final class DriveBarView: NSView {
     func setVolumes(_ vols: [Volume]) {
         guard vols.map(\.id) != volumes.map(\.id) else { return }   // avoid churn
         volumes = vols
+        loadIcons(for: vols)
         needsDisplay = true
+    }
+
+    /// Fetch each volume's own icon — the one Finder shows, which is what tells a share from a stick
+    /// from a mounted disk image. Off the main thread and never from `draw`: reading an icon touches
+    /// the disk, and for a network share that can mean waiting on the server.
+    private func loadIcons(for vols: [Volume]) {
+        let paths = vols.filter { $0.icon.isEmpty && VolumeKind.of($0).hasSystemIcon }.map(\.path)
+        let wanted = paths.filter { icons[$0] == nil }
+        guard !wanted.isEmpty else { return }
+        iconQueue.async { [weak self] in
+            let loaded = Self.readIcons(wanted)
+            DispatchQueue.main.async {
+                guard let self else { return }
+                for (path, image) in loaded { self.icons[path] = image }
+                self.needsDisplay = true
+            }
+        }
+    }
+
+    private nonisolated static func readIcons(_ paths: [String]) -> [(String, NSImage)] {
+        paths.map { path in
+            let image = NSWorkspace.shared.icon(forFile: path)
+            image.size = NSSize(width: iconSize, height: iconSize)
+            return (path, image)
+        }
+    }
+
+    /// The chip's text. A real volume's kind is carried by its icon, so the name stands alone; a
+    /// plugin's own emoji is text, and so is the kind glyph that stands in until an icon arrives (or
+    /// for good, if the system has none to give).
+    private func chipText(for volume: Volume) -> String {
+        if !volume.icon.isEmpty { return volume.icon + " " + volume.name }
+        if icons[volume.path] != nil { return volume.name }
+        return VolumeKind.of(volume).glyph + " " + volume.name
     }
 
     /// Which volume is drawn highlighted (nil = none) — read by the automation report, since the
     /// highlight is drawn rather than a control's state and nothing else can observe it.
     var highlightedIndex: Int? { currentIndex }
+
+    /// What each chip is showing: its name, the kind it was classified as, and where its picture
+    /// came from. For the automation report — the chips are painted, and "the icons tell the kinds
+    /// apart" is otherwise a claim only a human looking at the screen can check.
+    var chipsForAutomation: String {
+        volumes.map { v in
+            let art = !v.icon.isEmpty ? "plugin" : (icons[v.path] != nil ? "system" : "glyph")
+            return "\(v.name):\(VolumeKind.of(v).rawValue):\(art)"
+        }.joined(separator: "|")
+    }
 
     /// Highlight the volume at `index` (others normal).
     func setCurrentIndex(_ index: Int?) {
@@ -75,12 +127,18 @@ final class DriveBarView: NSView {
         needsDisplay = true
     }
 
-    private func label(for volume: Volume) -> String {
-        let icon: String
-        if !volume.icon.isEmpty { icon = volume.icon + " " }  // plugin-defined chip icon
-        else if volume.path == "/" { icon = "🖥 " }           // boot drive
-        else { icon = "💾 " }                                 // other local/removable volume
-        return icon + volume.name
+    /// What a screen reader is told the volume is. The icon says it to everyone else, and an icon
+    /// says nothing at all here — the chips are painted, so without this the kind would be
+    /// information only sighted users get.
+    private func kindName(for volume: Volume) -> String {
+        switch VolumeKind.of(volume) {
+        case .startupDisk: return String(localized: "Startup disk", comment: "Drive bar: volume kind")
+        case .internalDisk: return String(localized: "Internal volume", comment: "Drive bar: volume kind")
+        case .externalDisk: return String(localized: "External volume", comment: "Drive bar: volume kind")
+        case .networkShare: return String(localized: "Network share", comment: "Drive bar: volume kind")
+        case .cloudFolder: return String(localized: "Cloud folder", comment: "Drive bar: volume kind")
+        case .pluginDrive: return String(localized: "Plugin drive", comment: "Drive bar: volume kind")
+        }
     }
 
     // MARK: - Drawing
@@ -101,8 +159,9 @@ final class DriveBarView: NSView {
             // VolumeEjection's to say — the same call the context menu and the command make, so a
             // chip never offers an eject that would then be refused.
             let ejectable = VolumeEjection.refusal(for: volume) == nil
-            let (chip, eject) = drawChip(label(for: volume), at: &x,
-                                         highlighted: i == currentIndex, ejectable: ejectable)
+            let (chip, eject) = drawChip(chipText(for: volume), at: &x,
+                                         highlighted: i == currentIndex, ejectable: ejectable,
+                                         icon: icons[volume.path])
             // Before the chip, not after: `mouseDown` takes the first hit whose rect contains the
             // point, and the glyph's rect lies inside the chip's. Appended the other way round the
             // chip always wins and the glyph is decoration.
@@ -112,21 +171,28 @@ final class DriveBarView: NSView {
     }
 
     /// Draw one chip starting at `x`, advance `x` past it, and return its rect — plus the eject
-    /// glyph's own rect when one was drawn.
+    /// glyph's own rect when one was drawn. `icon` is the volume's own image, drawn ahead of the
+    /// text; without one the text carries its kind glyph instead and nothing is reserved.
     @discardableResult
     private func drawChip(_ text: String, at x: inout CGFloat, highlighted: Bool,
-                          ejectable: Bool = false) -> (chip: NSRect, eject: NSRect?) {
+                          ejectable: Bool = false,
+                          icon: NSImage? = nil) -> (chip: NSRect, eject: NSRect?) {
         let textSize = (text as NSString).size(withAttributes: [.font: font])
         let glyphSize = ejectable ? (ejectGlyph as NSString).size(withAttributes: [.font: font])
                                   : .zero
         let extra = ejectable ? glyphSize.width + ejectPad : 0
+        let iconRoom = icon == nil ? 0 : Self.iconSize + iconGap
         let rect = NSRect(x: x, y: (bounds.height - chipHeight) / 2,
-                          width: textSize.width + textPad * 2 + extra, height: chipHeight)
+                          width: iconRoom + textSize.width + textPad * 2 + extra, height: chipHeight)
         let foreground = highlighted ? Theme.current.driveBarHighlightText : Theme.current.driveBarText
         (highlighted ? Theme.current.driveBarHighlight : Theme.current.driveBarBackground).setFill()
         NSBezierPath(roundedRect: rect, xRadius: 4, yRadius: 4).fill()
+        if let icon {
+            icon.draw(in: NSRect(x: rect.minX + textPad, y: rect.midY - Self.iconSize / 2,
+                                 width: Self.iconSize, height: Self.iconSize))
+        }
         (text as NSString).draw(
-            at: NSPoint(x: rect.minX + textPad, y: rect.midY - textSize.height / 2),
+            at: NSPoint(x: rect.minX + textPad + iconRoom, y: rect.midY - textSize.height / 2),
             withAttributes: [.font: font, .foregroundColor: foreground])
 
         var ejectRect: NSRect?
@@ -171,11 +237,12 @@ final class DriveBarView: NSView {
                     self?.showDrivesMenu(at: hit.rect)
                 }
             case .volume(let i):
-                // Name *and* free space: the chip shows both, so announcing only the name would tell a
-                // screen-reader user less than the screen tells everyone else.
+                // Name, kind *and* free space: the chip shows all three — the kind as its icon — so
+                // announcing only the name would tell a screen-reader user less than the screen
+                // tells everyone else, and the kind is precisely what the icon was added to say.
                 let volume = volumes.indices.contains(i) ? volumes[i] : nil
                 let label = volume.map { v in
-                    "\(v.name), " + String(
+                    "\(v.name), \(kindName(for: v)), " + String(
                         format: String(localized: "%@ free"),
                         ByteCountFormatter.string(fromByteCount: v.freeSpace, countStyle: .file))
                 } ?? String(localized: "Volume")
@@ -264,10 +331,13 @@ final class DriveBarView: NSView {
             menu.addItem(item)
         }
         for (i, volume) in volumes.enumerated() {
-            let item = NSMenuItem(title: label(for: volume), action: #selector(driveMenuItem(_:)), keyEquivalent: "")
+            let item = NSMenuItem(title: chipText(for: volume), action: #selector(driveMenuItem(_:)), keyEquivalent: "")
             item.target = self
             item.representedObject = volume.path
             item.state = (i == currentIndex) ? .on : .off
+            // The same icon the chip draws: this menu exists for the volumes whose chips do not fit,
+            // and they should not become unrecognisable by being listed instead of drawn.
+            item.image = icons[volume.path]
             menu.addItem(item)
         }
         menu.popUp(positioning: nil, at: NSPoint(x: rect.minX, y: rect.minY), in: self)

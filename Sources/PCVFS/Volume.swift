@@ -17,6 +17,12 @@ public struct Volume: Sendable, Equatable, Identifiable {
     public let capacity: Int64
     public let freeSpace: Int64
     public let fsType: String
+    /// Whether the volume is on this machine — false for a mounted network share.
+    ///
+    /// From `.volumeIsLocalKey`, because the question cannot be answered from `fsType`: that is a
+    /// *localized* description ("SMB", "Netzwerkdateisystem"), so matching it for "network" works in
+    /// English and silently stops working in the other eighteen languages.
+    public let isLocal: Bool
     /// Optional drive-chip emoji supplied by a plugin ("" = host default icon).
     public let icon: String
     /// Drive-bar sort priority: >0 pins the chip right after the boot drive
@@ -34,7 +40,8 @@ public struct Volume: Sendable, Equatable, Identifiable {
         freeSpace: Int64,
         fsType: String,
         icon: String = "",
-        sortOrder: Int = 0
+        sortOrder: Int = 0,
+        isLocal: Bool = true
     ) {
         self.id = id
         self.name = name
@@ -47,6 +54,7 @@ public struct Volume: Sendable, Equatable, Identifiable {
         self.fsType = fsType
         self.icon = icon
         self.sortOrder = sortOrder
+        self.isLocal = isLocal
     }
 
     /// Get the used space
@@ -213,6 +221,7 @@ public actor VolumeManager {
             .volumeNameKey,
             .volumeIsRemovableKey,
             .volumeIsEjectableKey,
+            .volumeIsLocalKey,
             .volumeTotalCapacityKey,
             .volumeAvailableCapacityKey,
             .volumeLocalizedFormatDescriptionKey
@@ -223,6 +232,9 @@ public actor VolumeManager {
         let name = resourceValues.volumeName ?? url.lastPathComponent
         let isRemovable = resourceValues.volumeIsRemovable ?? false
         let isEjectable = resourceValues.volumeIsEjectable ?? false
+        // Absent means local: every volume this enumerates is mounted, and a mount the system will
+        // not describe is far more likely to be an ordinary disk than a share.
+        let isLocal = resourceValues.volumeIsLocal ?? true
         let capacity = Int64(resourceValues.volumeTotalCapacity ?? 0)
         let freeSpace = Int64(resourceValues.volumeAvailableCapacity ?? 0)
         // Filesystem description from the (free) URL resource value — previously this
@@ -239,7 +251,8 @@ public actor VolumeManager {
             isHidden: false, // We don't check hidden volumes for now
             capacity: capacity,
             freeSpace: freeSpace,
-            fsType: fsType
+            fsType: fsType,
+            isLocal: isLocal
         )
     }
 }
