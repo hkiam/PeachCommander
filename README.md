@@ -8,6 +8,7 @@
 
 Two panels. Every key on the keyboard. Archives you walk into like folders. A viewer, an editor, a real shell in the window, FTP/SFTP, sync, multi-rename, a real plugin system — and a removable AI assistant when you want one.
 
+[![Latest release](https://img.shields.io/github/v/release/hkiam/PeachCommander?include_prereleases&label=download&color=ff7f50)](https://github.com/hkiam/PeachCommander/releases/latest)
 ![Platform](https://img.shields.io/badge/platform-macOS%2013%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-AppKit-orange)
 ![Status](https://img.shields.io/badge/status-beta-yellow)
@@ -218,7 +219,13 @@ Performance rules and the module map are documented in [`docs/architecture/`](do
 
 ## 🚀 Installation & build
 
-There is no signed download yet (see the beta note) — you build it from source.
+**Download** — [the latest release](https://github.com/hkiam/PeachCommander/releases/latest) carries
+`PeachCommander.dmg` as its only attachment: open it and drag the app to Applications. The badge above
+names the version, and the link always lands on the newest build.
+
+The download is **not signed or notarized** (no Developer ID yet), so macOS blocks the first launch —
+see [First run](#first-run-unsigned-build) for the one-time step that allows it. Building from source
+is described below and needs no such step.
 
 **Requirements**
 - macOS 13 (Ventura) or newer
@@ -244,7 +251,7 @@ xcodebuild -scheme PeachCommander build
 ./Tools/make-dmg.sh        # optional: package a .dmg
 ```
 
-**First run (unsigned build)**
+### First run (unsigned build)
 
 Because the beta builds are not signed or notarized, Gatekeeper blocks the first launch. You only need to allow it once, but the way to do that depends on your macOS version:
 
