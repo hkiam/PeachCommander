@@ -229,6 +229,10 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         }
     }
 
+    /// Every content field the current mount publishes (qualified ids), so a filter can name a
+    /// column that is not currently on screen. Set by the controller on entering a content mount.
+    var mountContentFieldIDs: [String] = []
+
     /// Processes holding the searched file open, keyed by entry name ("Safari (1234)").
     ///
     /// Keyed by name and not by row, because the TaskManager mount is volatile: it re-lists itself
@@ -262,8 +266,10 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     }
     /// Anchor row (visible index) for Shift+click range selection.
     private var selectionAnchor = 0
-    /// Fired when the quick filter changes (nil = off) so the panel can show an indicator.
-    var onFilterChanged: ((String?) -> Void)?
+    /// Fired when the quick filter changes (nil = off) so the panel can show an indicator. The
+    /// counts are what the filter kept and what it looked at — in a 1200-row process list, a filter
+    /// that shows three rows and one that shows none look identical without them.
+    var onFilterChanged: ((_ text: String?, _ shown: Int, _ total: Int) -> Void)?
     /// Route a printable keystroke to the command line (TC default focus behavior).
     var onTypeToCommandLine: ((String) -> Void)?
     /// Append the cursor name (Ctrl+Enter) or full path (Ctrl+Shift+Enter) to the command line.
@@ -807,6 +813,12 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
 
     // MARK: - Model helpers
 
+    /// Rows in the listing before the filter — the denominator of "3 of 1217".
+    private var allEntryCount: Int {
+        guard let snapshot else { return 0 }
+        return showHiddenFiles ? snapshot.entries.count : snapshot.entries.filter { !$0.isHidden }.count
+    }
+
     private func rebuildVisibleEntries() {
         guard let snapshot else { visibleEntries = []; return }
         var result = showHiddenFiles ? snapshot.entries : snapshot.entries.filter { !$0.isHidden }
@@ -823,11 +835,52 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
                     return false
                 }
             } else {
-                let needle = filterText.lowercased()
-                result = result.filter { $0.name.lowercased().contains(needle) }
+                // "user:root state:R" — see PanelFilterQuery. Plain text keeps its old meaning: one
+                // substring over the name and (on a mount) the columns.
+                let query = PanelFilterQuery.parse(filterText, fieldIDs: filterableFieldIDs())
+                result = result.filter { entry in
+                    query.matches(value: { fieldValue($0, entry: entry) },
+                                  anywhere: { rowValues(of: entry) })
+                }
             }
         }
         visibleEntries = result
+    }
+
+    /// Field ids a filter term may name (F-397): the mount's own columns, whether or not they are
+    /// currently shown. Aiming at a column you have hidden is still a fair question — and it is the
+    /// difference between "the filter forgot how to do that" and "add the column back first".
+    private func filterableFieldIDs() -> [String] {
+        guard syncContentValue != nil else { return [] }
+        var ids = mountContentFieldIDs
+        // A mount may publish more fields than the panel shows; the shown ones are a superset only
+        // when the controller has not been told about the rest, so both lists contribute.
+        for spec in visibleColumns where PanelColumn(rawValue: spec.fieldID) == nil {
+            if !ids.contains(spec.fieldID) { ids.append(spec.fieldID) }
+        }
+        return ids
+    }
+
+    /// One column's value for an entry, from the prefetch cache or the mount.
+    private func fieldValue(_ fieldID: String, entry: VFSEntry) -> String {
+        let path = fullPath(of: entry)
+        if let v = contentValues[path]?[fieldID] { return v }
+        return syncContentValue?(fieldID, path) ?? ""
+    }
+
+    /// Everything an unaimed term may match: the name, and on a mount the columns it shows.
+    ///
+    /// The *shown* columns, deliberately: an unaimed word searches what is on screen, which is what
+    /// makes the result explainable ("it matched that cell"). A hidden column is reachable by naming
+    /// it instead.
+    private func rowValues(of entry: VFSEntry) -> [String] {
+        var values = [entry.name]
+        guard syncContentValue != nil else { return values }
+        for spec in visibleColumns where PanelColumn(rawValue: spec.fieldID) == nil {
+            let v = fieldValue(spec.fieldID, entry: entry)
+            if !v.isEmpty { values.append(v) }
+        }
+        return values
     }
 
     // MARK: - Quick filter (I06-T04)
@@ -835,11 +888,18 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// Public entry for cm_QuickFilter (mirrors the Ctrl+S in-view shortcut).
     func toggleQuickFilter() { toggleFilterMode() }
 
+    /// Apply a quick filter without typing it, so a check can ask what the filter actually keeps.
+    func automationSetFilter(_ text: String) {
+        filterMode = true
+        filterText = text
+        applyFilterLive()
+    }
+
     private func toggleFilterMode() {
         filterMode.toggle()
         if filterMode {
             filterText = ""
-            onFilterChanged?("")
+            onFilterChanged?("", visibleEntries.count, allEntryCount)
         } else {
             clearFilter()
         }
@@ -848,7 +908,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     private func clearFilter() {
         filterMode = false
         filterText = ""
-        onFilterChanged?(nil)
+        onFilterChanged?(nil, visibleEntries.count, allEntryCount)
         rebuildVisibleEntries()
         cursorRow = visibleEntries.isEmpty ? -1 : 0
         reloadData()
@@ -857,7 +917,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
 
     private func exitFilterKeepingResults() {
         filterMode = false
-        onFilterChanged?(filterText.isEmpty ? nil : filterText)
+        onFilterChanged?(filterText.isEmpty ? nil : filterText, visibleEntries.count, allEntryCount)
     }
 
     private func appendFilter(_ s: String) {
@@ -872,7 +932,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     }
 
     private func applyFilterLive() {
-        onFilterChanged?(filterText)
+        onFilterChanged?(filterText, visibleEntries.count, allEntryCount)
         rebuildVisibleEntries()
         cursorRow = visibleEntries.isEmpty ? -1 : 0
         reloadData()

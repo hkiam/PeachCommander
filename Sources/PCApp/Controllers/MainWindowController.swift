@@ -1371,6 +1371,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         panel.tableView.sortContentValue = { [weak panel] fieldID, path in
             (panel?.currentFileSystem as? PFXFileSystem)?.contentSortValue(fieldID: fieldID, path: path)
         }
+        // Every field the mount publishes, so "user:root" works whether or not the User column is on
+        // screen (F-397).
+        panel.tableView.mountContentFieldIDs = fs.qualifiedContentFields.map(\.qualifiedID)
         let specs = loadColumnSet(name: "mount:\(fs.contentQualifier)") ?? contentMountColumns(fs)
         panel.tableView.setColumns(specs)
         panel.startVolatileAutoRefresh()
@@ -1383,6 +1386,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         panel.tableView.numericContentFields = []
         panel.tableView.syncContentValue = nil
         panel.tableView.sortContentValue = nil
+        panel.tableView.mountContentFieldIDs = []
         let side = (panel === rightPanelController) ? "right" : "left"
         panel.tableView.setColumns(columnSpecs(forSide: side))
     }
@@ -7369,10 +7373,14 @@ final class PanelView: NSView {
         tableView.onSwitchPanel = { [weak self] in
             (self?.window?.windowController as? MainWindowController)?.toggleActivePanel()
         }
-        tableView.onFilterChanged = { [weak self] text in
+        tableView.onFilterChanged = { [weak self] text, shown, total in
             guard let self else { return }
             if let text {
-                self.filterLabel.stringValue = "🔍 \(text)"
+                // The count once the filter narrows something: "3 of 1217" is the difference between
+                // a filter that found little and one that found nothing, which the list alone cannot
+                // show when the answer is off-screen or empty.
+                let counted = text.isEmpty || total == 0 ? "" : "  \(shown)/\(total)"
+                self.filterLabel.stringValue = "🔍 \(text)\(counted)"
                 self.filterLabel.isHidden = false
             } else {
                 self.filterLabel.isHidden = true

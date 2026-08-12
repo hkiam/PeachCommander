@@ -49,6 +49,15 @@ does not have.
   as well, which used to be a quarter of the list with every metric blank — no administrator password
   involved. Those two figures come from `ps` and are labelled as such in the process report, because its
   CPU value is a lifetime average rather than a live sample.
+- **A filter you can aim.** In the process list the quick filter searches the columns as well as the
+  name, and a term can say which column it means: `user:root state:R` asks what root is running right
+  now. Terms are separated by spaces and all of them have to match. Text that names no column behaves
+  exactly as before — one plain search, spaces and all — and the filter indicator now shows how many
+  rows survived out of how many.
+- **The State column says something again.** It reported "R" for practically every process, because
+  that is all modern macOS puts in the field this plugin was reading. It now shows what `ps` shows —
+  sleeping, running, stopped, zombie, with the usual suffixes for session leaders and foreground
+  processes.
 - **Find out which processes have a file open.** The Task Manager drive could tell you which process
   was sitting on a TCP/UDP port, but not which one was holding the file you were trying to replace.
   Right-click in the process list, choose *Find Processes by File…*, and every process with that file

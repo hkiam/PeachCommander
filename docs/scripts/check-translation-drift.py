@@ -45,7 +45,7 @@ LIST_ITEM = re.compile(r"^\s*([-*+]|\d+\.)\s")
 
 def shape(text: str) -> dict:
     """The language-independent skeleton of a help page."""
-    headings, fences, lists, paragraphs = [], [], 0, 0
+    headings, fences, lists, paragraphs, rows = [], [], 0, 0, 0
     in_fence, fence_body, blank = False, [], True
     for line in text.split("\n"):
         if FENCE.match(line.strip()):
@@ -71,6 +71,17 @@ def shape(text: str) -> dict:
             lists += 1
             blank = True
             continue
+        # A table row. Counted because it was the one structural thing this check could not see:
+        # four rows were added to a column table in seventeen languages and missed in two, and the
+        # gate stayed green — a table row is neither a paragraph nor a list item, so it fell between
+        # every measure here. The separator row (| --- |) is skipped; it says nothing.
+        if stripped.startswith("|") and set(stripped) <= set("|-: "):
+            blank = True
+            continue
+        if stripped.startswith("|"):
+            rows += 1
+            blank = True
+            continue
         # A paragraph is a run of non-blank, non-structural lines.
         if blank:
             paragraphs += 1
@@ -79,6 +90,7 @@ def shape(text: str) -> dict:
         "headings": headings,
         "paragraphs": paragraphs,
         "lists": lists,
+        "rows": rows,
         "images": IMAGE.findall(text),
         "fences": fences,
         # A multiset of the *syntax* spans only — see `is_syntax`.
@@ -124,6 +136,8 @@ def differences(en: dict, other: dict) -> list:
         out.append(f"{en['paragraphs']} paragraphs in English, {other['paragraphs']} here")
     if en["lists"] != other["lists"]:
         out.append(f"{en['lists']} list items in English, {other['lists']} here")
+    if en["rows"] != other["rows"]:
+        out.append(f"{en['rows']} table rows in English, {other['rows']} here")
     if en["images"] != other["images"]:
         missing = [i for i in en["images"] if i not in other["images"]]
         extra = [i for i in other["images"] if i not in en["images"]]

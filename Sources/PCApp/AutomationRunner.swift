@@ -21,6 +21,7 @@
 //   gotoopenfile          "Go to File" on the cursor row (inside a process)
 //   rowdump <file>        every visible column of the cursor row, as id + rendered text
 //   sortcol <fieldID>     sort the panel by a plugin content column
+//   filter <text>         apply the quick filter to the active panel
 //   viewdump <file>       cursor, first visible row and scroll offset of the active panel
 //   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
 //   theme <id>            select a colour palette ("system", "norton", …)
@@ -320,6 +321,8 @@ extension MainWindowController {
                     .write(toFile: arg, atomically: true, encoding: .utf8)
             case "sortcol":                            // sortcol <fieldID> (F-392): sort by a plugin column
                 activePanel?.tableView.automationSortByPluginColumn(arg)
+            case "filter":                             // filter <text> (F-395): apply the quick filter
+                activePanel?.tableView.automationSetFilter(arg)
             case "viewdump":                           // viewdump <out> (F-398): cursor + scroll position
                 try? (activePanel?.tableView.automationViewport() ?? "ERROR: no active panel\n")
                     .write(toFile: arg, atomically: true, encoding: .utf8)

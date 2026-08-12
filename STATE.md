@@ -58,6 +58,34 @@ to the top whenever anything in it changed, and so did every panel reload after 
 Verified in all three, plus the cases that must NOT change: navigation still lands at the top with the
 cursor on "..", and an explicit focus still scrolls to its row.
 
+## 2026-08-13 (F-397) — Aiming the filter, and a column that had been saying nothing
+
+Making the filter match every column (F-395) answered the questions the name could not and created a
+new one: "1" matches half the PIDs, "root" matches any command line with /root/ in it. A term can now
+name its column — `user:root state:R`, space-separated, all required — while text that names no column
+keeps its old meaning EXACTLY: one substring with its spaces, so "Google Chrome" stays one search and
+matched 104 rows in the running app. An unknown word before a colon is not a field, which is what keeps
+"12:30" and "Notes: draft" ordinary text. The grammar lives in `PanelFilterQuery` with eleven tests,
+because it is the part with rules; the panel only resolves values. Aimed terms reach columns that are
+not on screen — hiding a column should not remove a question — and the indicator now carries "204/1204",
+since three matches and none look identical in a list whose hits are off-screen.
+
+Testing it surfaced two things worth more than the feature:
+
+* **The State column was reporting "R" for 1196 of 1197 processes.** Modern macOS leaves `p_stat` at
+  SRUN, so the column had been answering the same thing to every question since the plugin was written.
+  It now comes from the `ps` snapshot F-394 already fetches — 594 Ss, 546 S, 19 SN, 5 R and so on — which
+  is why `ps` runs on its own interval instead of only when metrics are missing.
+* **Half the per-row cost was `getpwuid`**, called once per row for the four users that own anything.
+  With a per-connection uid→name cache and each row's signer resolved alongside the snapshot, a full
+  column prefetch over 1191 rows went from 8.5 ms to 4.4 ms of main-thread time, every two seconds.
+
+The drift gate learned to count table rows, and immediately earned it twice: four columns had been added
+to seventeen translated tables and missed in French and Slovenian — the gate was green, because a table
+row is neither a paragraph nor a list item and fell between every measure it had. It also found a
+pre-existing split in `keyboard-shortcuts` (English has one row for choosing a scheme, every translation
+has two), recorded in the allow-list rather than papered over.
+
 ## 2026-08-13 (F-391…F-395) — The Task Manager, reviewed against Process Explorer
 
 The plan's five pieces, on top of the delete fix recorded above — without which the mount's one
