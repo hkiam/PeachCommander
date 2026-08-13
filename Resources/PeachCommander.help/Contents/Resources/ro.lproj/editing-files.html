@@ -27,6 +27,8 @@
 <h2 id="cautare-inlocuire-si-navigare">Căutare, înlocuire și navigare</h2>
 <ul>
 <li>Apăsați Cmd+F pentru a deschide bara de căutare. Pentru a înlocui text, deschideți bara de căutare și comutați-o la vizualizarea de înlocuire, sau faceți clic pe Găsește/Înlocuiește în bara de instrumente.</li>
+<li>Pentru o <strong>expresie regulată</strong> folosiți Căutare ▸ <em>Caută cu expresie regulată…</em> (Ctrl+Cmd+F) sau <em>Înlocuiește cu expresie regulată…</em> (Ctrl+Opt+Cmd+F). <code>^</code> și <code>$</code> se potrivesc cu începutul și sfârșitul rândului, iar în înlocuire <code>$1</code> reprezintă primul grup — <code>(\w+) (\d+)</code> înlocuit cu <code>$2=$1</code> transformă deci <code>alpha 11</code> în <code>11=alpha</code>. <strong>Doar în selecție</strong> păstrează modificarea în textul selectat; <strong>Înlocuiește tot</strong> rescrie fiecare potrivire într-un singur pas pe care Cmd+Z îl anulează.</li>
+<li>Caută următorul (Cmd+G) urmează ultima căutare folosită, simplă sau cu tipar. Un tipar care nu se compilează este raportat în dialog, în loc să nu găsească nimic în tăcere.</li>
 <li>Faceți clic pe Formatează JSON/XML pentru a re-indenta un document JSON sau XML într-o dispunere curată, lizibilă.</li>
 <li>Faceți clic pe Simboluri (sau apăsați Cmd+Shift+O) pentru a afișa o bară laterală care listează clasele, funcțiile și metodele din codul dvs. — sau, pentru un fișier JSON, YAML ori XML, cheile și elementele sale. Faceți clic pe o intrare pentru a sări direct la ea. Pentru la ce mai este bună această structură, vedeți <a href="#lucrul-cu-json-yaml-și-xml">Lucrul cu JSON, YAML și XML</a>.</li>
 <li>Apăsați Cmd+L pentru a sări la o linie anume.</li>

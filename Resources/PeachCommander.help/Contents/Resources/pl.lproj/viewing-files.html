@@ -24,6 +24,8 @@
 <h2 id="znajdz-tekst-i-zmien-kodowanie">Znajdź tekst i zmień kodowanie</h2>
 <ul>
 <li>Naciśnij Ctrl+F, aby wyszukać wewnątrz pliku. Naciśnij F3, aby przeskoczyć do następnego dopasowania, i Shift+F3 do poprzedniego.</li>
+<li>Zaznacz <strong>Wyrażenie regularne</strong> w oknie wyszukiwania, aby szukać wzorcem zamiast zwykłego tekstu — <code>ERROR \d+</code> albo <code>^Warning</code> dla wierszy zaczynających się tym słowem. <code>^</code> i <code>$</code> oznaczają początek i koniec wiersza. Wzorzec, którego nie da się skompilować, jest zgłaszany jako taki, zamiast po cichu niczego nie znajdować.</li>
+<li>Bardzo duże pliki są przeszukiwane w nakładających się oknach, więc pojedyncze trafienie dłuższe niż około 64 KB może zostać pominięte, jeśli akurat przypadnie na granicę okna. Zwykłe wyszukiwanie tekstu nie ma takiego ograniczenia — nie ma go też wzorzec pasujący do czegoś krótszego.</li>
 <li>Jeśli tekst wygląda na zniekształcony, kliknij Kodowanie na pasku narzędzi (lub naciśnij E), aby przełączać kodowania tekstu, dopóki nie odczyta się poprawnie; ustawienie automatyczne zwykle trafia.</li>
 <li>Naciśnij W, aby przełączyć zawijanie wierszy dla długich linii.</li>
 </ul>

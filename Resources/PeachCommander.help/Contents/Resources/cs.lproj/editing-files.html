@@ -27,6 +27,8 @@
 <h2 id="hledani-nahrazovani-a-navigace">Hledání, nahrazování a navigace</h2>
 <ul>
 <li>Stiskem Cmd+F otevřete lištu hledání. Chcete-li nahradit text, otevřete lištu hledání a přepněte ji na zobrazení nahrazování, nebo klepněte na Hledat/Nahradit na panelu nástrojů.</li>
+<li>Pro <strong>regulární výraz</strong> použijte Hledat ▸ <em>Najít regulárním výrazem…</em> (Ctrl+Cmd+F) nebo <em>Nahradit regulárním výrazem…</em> (Ctrl+Opt+Cmd+F). <code>^</code> a <code>$</code> odpovídají začátku a konci řádku a v náhradě <code>$1</code> zastupuje první skupinu — <code>(\w+) (\d+)</code> nahrazeno <code>$2=$1</code> udělá z <code>alpha 11</code> tedy <code>11=alpha</code>. <strong>Jen ve výběru</strong> udrží změnu ve vybraném textu; <strong>Nahradit vše</strong> přepíše všechny výskyty jedním krokem, který Cmd+Z vrátí zpět.</li>
+<li>Najít další (Cmd+G) navazuje na naposledy použité hledání, ať prosté, nebo vzorem. Vzor, který nelze přeložit, se ohlásí v dialogu, místo aby tiše nic nenašel.</li>
 <li>Klepnutím na Formátovat JSON/XML znovu odsadíte dokument JSON nebo XML do čistého, čitelného rozvržení.</li>
 <li>Klepnutím na Symboly (nebo stiskem Cmd+Shift+O) zobrazíte postranní panel, který uvádí třídy, funkce a metody ve vašem kódu — nebo, u souboru JSON, YAML či XML, jeho klíče a prvky. Klepnutím na položku na ni přeskočíte přímo. K čemu ještě ta struktura je, viz <a href="#práce-s-json-yaml-a-xml">Práce s JSON, YAML a XML</a>.</li>
 <li>Stiskem Cmd+L přeskočíte na konkrétní řádek.</li>

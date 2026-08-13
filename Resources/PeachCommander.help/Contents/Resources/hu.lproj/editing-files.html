@@ -27,6 +27,8 @@
 <h2 id="kereses-csere-es-navigacio">Keresés, csere és navigáció</h2>
 <ul>
 <li>Nyomja meg a Cmd+F-et a keresősáv megnyitásához. Szöveg cseréjéhez nyissa meg a keresősávot és váltsa a csere nézetre, vagy kattintson a Keresés/Csere gombra az eszköztárban.</li>
+<li><strong>Reguláris kifejezéshez</strong> használja a Keresés ▸ <em>Keresés reguláris kifejezéssel…</em> (Ctrl+Cmd+F) vagy <em>Csere reguláris kifejezéssel…</em> (Ctrl+Opt+Cmd+F) parancsot. A <code>^</code> és a <code>$</code> a sor elejére és végére illeszkedik, a cserében pedig a <code>$1</code> az első csoportot jelöli — a <code>(\w+) (\d+)</code> <code>$2=$1</code>-re cserélve az <code>alpha 11</code>-ből <code>11=alpha</code> lesz. A <strong>Csak a kijelölésben</strong> a kijelölt szövegen belül tartja a változtatást; az <strong>Összes cseréje</strong> egyetlen, Cmd+Z-vel visszavonható lépésben írja át az összes találatot.</li>
+<li>A Következő keresése (Cmd+G) a legutóbb használt keresést követi, akár egyszerű, akár mintás. A le nem fordítható mintát a párbeszédablak jelzi, ahelyett hogy csendben semmit sem találna.</li>
 <li>Kattintson a JSON/XML formázása gombra egy JSON- vagy XML-dokumentum tiszta, olvasható elrendezésbe való újratagolásához.</li>
 <li>Kattintson a Szimbólumok gombra (vagy nyomja meg a Cmd+Shift+O-t) egy oldalsáv megjelenítéséhez, amely felsorolja a kódjában lévő osztályokat, függvényeket és metódusokat — vagy JSON-, YAML- és XML-fájl esetén annak kulcsait és elemeit. Kattintson egy bejegyzésre, hogy egyenesen odaugorjon. Hogy mire jó még ez a szerkezet, lásd: <a href="#munka-json--yaml--és-xml-fájlokkal">Munka JSON-, YAML- és XML-fájlokkal</a>.</li>
 <li>Nyomja meg a Cmd+L-t egy adott sorra ugráshoz.</li>

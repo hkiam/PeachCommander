@@ -27,6 +27,8 @@
 <h2 id="sok-ersatt-och-navigera">Sök, ersätt och navigera</h2>
 <ul>
 <li>Tryck på Cmd+F för att öppna sökfältet. För att ersätta text, öppna sökfältet och växla det till ersättningsvyn, eller klicka på Sök/Ersätt i verktygsfältet.</li>
+<li>För ett <strong>reguljärt uttryck</strong> använder du Sök ▸ <em>Sök med reguljärt uttryck…</em> (Ctrl+Cmd+F) eller <em>Ersätt med reguljärt uttryck…</em> (Ctrl+Opt+Cmd+F). <code>^</code> och <code>$</code> matchar radens början och slut, och i ersättningen står <code>$1</code> för den första gruppen — <code>(\w+) (\d+)</code> ersatt med <code>$2=$1</code> gör alltså <code>alpha 11</code> till <code>11=alpha</code>. <strong>Endast i markeringen</strong> håller ändringen inom den markerade texten; <strong>Ersätt alla</strong> skriver om varje träff i ett enda steg som Cmd+Z ångrar.</li>
+<li>Sök nästa (Cmd+G) följer den sökning du använde senast, enkel eller mönster. Ett mönster som inte går att kompilera rapporteras i dialogrutan i stället för att tyst inte hitta något.</li>
 <li>Klicka på Formatera JSON/XML för att indentera om ett JSON- eller XML-dokument till en ren, läsbar layout.</li>
 <li>Klicka på Symboler (eller tryck Cmd+Shift+O) för att visa ett sidofält som listar klasserna, funktionerna och metoderna i din kod — eller, för en JSON-, YAML- eller XML-fil, dess nycklar och element. Klicka på en post för att hoppa direkt till den. Se <a href="#arbeta-med-json-yaml-och-xml">Arbeta med JSON, YAML och XML</a> för vad strukturen är bra för i övrigt.</li>
 <li>Tryck på Cmd+L för att hoppa till en specifik rad.</li>

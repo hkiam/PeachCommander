@@ -27,6 +27,8 @@
 <h2 id="sg-erstat-og-naviger">Søg, erstat og naviger</h2>
 <ul>
 <li>Tryk på Cmd+F for at åbne søgebjælken. For at erstatte tekst skal du åbne søgebjælken og skifte den til erstat-visningen eller klikke på Søg/Erstat i værktøjslinjen.</li>
+<li>Til et <strong>regulært udtryk</strong> bruges Søg ▸ <em>Find med regulært udtryk…</em> (Ctrl+Cmd+F) eller <em>Erstat med regulært udtryk…</em> (Ctrl+Opt+Cmd+F). <code>^</code> og <code>$</code> rammer linjens start og slutning, og i erstatningen står <code>$1</code> for den første gruppe — <code>(\w+) (\d+)</code> erstattet med <code>$2=$1</code> gør altså <code>alpha 11</code> til <code>11=alpha</code>. <strong>Kun i markeringen</strong> holder ændringen inden for den markerede tekst; <strong>Erstat alle</strong> omskriver alle træf i ét skridt, som Cmd+Z fortryder.</li>
+<li>Find næste (Cmd+G) følger den søgning, du sidst brugte, almindelig eller mønster. Et mønster, der ikke kan oversættes, meldes i dialogen i stedet for stille ikke at finde noget.</li>
 <li>Klik på Formatér JSON/XML for at genindrykke et JSON- eller XML-dokument til et rent, læsbart layout.</li>
 <li>Klik på Symboler (eller tryk på Cmd+Shift+O) for at vise en sidebjælke, der viser klasserne, funktionerne og metoderne i din kode — eller, for en JSON-, YAML- eller XML-fil, dens nøgler og elementer. Klik på en post for at springe direkte til den. Se <a href="#arbejd-med-json-yaml-og-xml">Arbejd med JSON, YAML og XML</a> for hvad den struktur ellers er god til.</li>
 <li>Tryk på Cmd+L for at springe til en bestemt linje.</li>

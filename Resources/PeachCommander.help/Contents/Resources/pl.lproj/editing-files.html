@@ -27,6 +27,8 @@
 <h2 id="wyszukiwanie-zamiana-i-nawigacja">Wyszukiwanie, zamiana i nawigacja</h2>
 <ul>
 <li>Naciśnij Cmd+F, aby otworzyć pasek wyszukiwania. Aby zamienić tekst, otwórz pasek wyszukiwania i przełącz go na widok zamiany, lub kliknij Znajdź/Zamień na pasku narzędzi.</li>
+<li>Do <strong>wyrażenia regularnego</strong> użyj Szukaj ▸ <em>Znajdź wyrażeniem regularnym…</em> (Ctrl+Cmd+F) lub <em>Zamień wyrażeniem regularnym…</em> (Ctrl+Opt+Cmd+F). <code>^</code> i <code>$</code> pasują do początku i końca wiersza, a w zamienniku <code>$1</code> oznacza pierwszą grupę — <code>(\w+) (\d+)</code> zamienione na <code>$2=$1</code> zmienia więc <code>alpha 11</code> w <code>11=alpha</code>. <strong>Tylko w zaznaczeniu</strong> utrzymuje zmianę w zaznaczonym tekście; <strong>Zamień wszystko</strong> przepisuje wszystkie trafienia w jednym kroku, który cofa Cmd+Z.</li>
+<li>Znajdź następne (Cmd+G) podąża za ostatnio użytym wyszukiwaniem, zwykłym lub wzorcem. Wzorzec, którego nie da się skompilować, jest zgłaszany w oknie zamiast po cichu niczego nie znajdować.</li>
 <li>Kliknij Formatuj JSON/XML, aby ponownie wciąć dokument JSON lub XML do czystego, czytelnego układu.</li>
 <li>Kliknij Symbole (lub naciśnij Cmd+Shift+O), aby wyświetlić pasek boczny wymieniający klasy, funkcje i metody w kodzie — albo, w pliku JSON, YAML czy XML, jego klucze i elementy. Kliknij wpis, aby przeskoczyć do niego bezpośrednio. Do czego jeszcze służy ta struktura, zobacz <a href="#praca-z-json-yaml-i-xml">Praca z JSON, YAML i XML</a>.</li>
 <li>Naciśnij Cmd+L, aby przeskoczyć do konkretnego wiersza.</li>

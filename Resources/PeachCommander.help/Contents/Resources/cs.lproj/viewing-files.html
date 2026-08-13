@@ -24,6 +24,8 @@
 <h2 id="hledani-textu-a-zmena-kodovani">Hledání textu a změna kódování</h2>
 <ul>
 <li>Stiskem Ctrl+F hledáte uvnitř souboru. Stiskem F3 přeskočíte na další shodu a Shift+F3 na předchozí.</li>
+<li>Zaškrtnutím <strong>Regulární výraz</strong> v okně hledání budete hledat vzorem místo prostého textu — <code>ERROR \d+</code> nebo <code>^Warning</code> pro řádky, které tím začínají. <code>^</code> a <code>$</code> znamenají začátek a konec řádku. Vzor, který nelze přeložit, je ohlášen jako takový, místo aby tiše nic nenašel.</li>
+<li>Velmi velké soubory se prohledávají v překrývajících se oknech, takže jediný výskyt delší než zhruba 64 KB může uniknout, pokud padne přesně na hranici okna. Prosté hledání textu takové omezení nemá — a nemá je ani vzor, který odpovídá něčemu kratšímu.</li>
 <li>Pokud text vypadá zkomoleně, klepněte na Kódování na panelu nástrojů (nebo stiskněte E) pro procházení kódování textu, dokud se nečte správně; automatické nastavení to obvykle trefí.</li>
 <li>Stiskem W přepnete zalamování slov u dlouhých řádků.</li>
 </ul>

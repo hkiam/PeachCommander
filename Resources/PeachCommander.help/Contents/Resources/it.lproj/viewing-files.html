@@ -24,6 +24,8 @@
 <h2 id="trova-testo-e-cambia-la-codifica">Trova testo e cambia la codifica</h2>
 <ul>
 <li>Premi Ctrl+F per cercare dentro il file. Premi F3 per saltare alla corrispondenza successiva e Maiusc+F3 per quella precedente.</li>
+<li>Spunta <strong>Espressione regolare</strong> nella finestra di ricerca per cercare con un motivo invece che con testo semplice — <code>ERROR \d+</code>, oppure <code>^Warning</code> per le righe che iniziano così. <code>^</code> e <code>$</code> indicano inizio e fine riga. Un motivo che non compila viene segnalato come tale, invece di non trovare nulla in silenzio.</li>
+<li>I file molto grandi vengono percorsi a finestre sovrapposte, quindi una singola corrispondenza più lunga di circa 64 KB può sfuggire se cade proprio sul bordo di una finestra. La ricerca di testo semplice non ha questo limite, e non ce l’ha nemmeno un motivo che corrisponde a qualcosa di più corto.</li>
 <li>Se il testo appare confuso, fai clic su Codifica nella barra degli strumenti (o premi E) per scorrere le codifiche di testo finché non si legge correttamente; l'impostazione automatica di solito è corretta.</li>
 <li>Premi W per commutare l'a capo automatico per le righe lunghe.</li>
 </ul>
