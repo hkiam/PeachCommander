@@ -136,6 +136,7 @@ final class DriveBarView: NSView {
         case .internalDisk: return String(localized: "Internal volume", comment: "Drive bar: volume kind")
         case .externalDisk: return String(localized: "External volume", comment: "Drive bar: volume kind")
         case .networkShare: return String(localized: "Network share", comment: "Drive bar: volume kind")
+        case .networkConnection: return String(localized: "Open connection", comment: "Drive bar: volume kind")
         case .cloudFolder: return String(localized: "Cloud folder", comment: "Drive bar: volume kind")
         case .pluginDrive: return String(localized: "Plugin drive", comment: "Drive bar: volume kind")
         }
@@ -242,7 +243,12 @@ final class DriveBarView: NSView {
                 // tells everyone else, and the kind is precisely what the icon was added to say.
                 let volume = volumes.indices.contains(i) ? volumes[i] : nil
                 let label = volume.map { v in
-                    "\(v.name), \(kindName(for: v)), " + String(
+                    // Free space only where there is such a thing. A plugin drive and an open
+                    // connection both report a capacity of zero because the question does not
+                    // apply to them, and announcing "zero bytes free" turns that into a claim
+                    // that the drive is full.
+                    guard v.capacity > 0 else { return "\(v.name), \(kindName(for: v))" }
+                    return "\(v.name), \(kindName(for: v)), " + String(
                         format: String(localized: "%@ free"),
                         ByteCountFormatter.string(fromByteCount: v.freeSpace, countStyle: .file))
                 } ?? String(localized: "Volume")
@@ -252,8 +258,8 @@ final class DriveBarView: NSView {
                     self.onSelect?(self.volumes[i].path)
                 }
             case .eject(let i):
-                let name = volumes.indices.contains(i) ? volumes[i].name : ""
-                return AccessibleHotspot(label: String(format: String(localized: "Eject %@"), name),
+                let volume = volumes.indices.contains(i) ? volumes[i] : nil
+                return AccessibleHotspot(label: volume.map(Self.ejectTitle) ?? String(localized: "Eject"),
                                          role: .button,
                                          frameInView: hit.rect, parent: self) { [weak self] in
                     guard let self, self.volumes.indices.contains(i) else { return }
@@ -285,7 +291,7 @@ final class DriveBarView: NSView {
         let volume = volumes[index]
 
         let menu = NSMenu()
-        let item = NSMenuItem(title: String(localized: "Eject"), action: #selector(ejectMenuItem(_:)),
+        let item = NSMenuItem(title: Self.ejectVerb(for: volume), action: #selector(ejectMenuItem(_:)),
                               keyEquivalent: "")
         item.target = self
         item.representedObject = index
@@ -304,6 +310,20 @@ final class DriveBarView: NSView {
         // grey — nothing here has a validating target.
         menu.autoenablesItems = false
         return menu
+    }
+
+    /// What the ⏏ does to this volume, in the user's words. An open FTP session is not
+    /// "ejected" — it is hung up, and calling both by the same verb reads as the app not
+    /// knowing which of the two the chip is.
+    private static func ejectVerb(for volume: Volume) -> String {
+        VolumeKind.of(volume) == .networkConnection
+            ? String(localized: "Disconnect") : String(localized: "Eject")
+    }
+
+    private static func ejectTitle(for volume: Volume) -> String {
+        VolumeKind.of(volume) == .networkConnection
+            ? String(format: String(localized: "Disconnect %@"), volume.name)
+            : String(format: String(localized: "Eject %@"), volume.name)
     }
 
     @objc private func ejectMenuItem(_ sender: NSMenuItem) {

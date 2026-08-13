@@ -37,6 +37,10 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
     private let proxyPasswordField = NSSecureTextField()
     private let scpCheck = NSButton(checkboxWithTitle: "Transfer via SCP (SFTP only)", target: nil, action: nil)
     private let insecureTLSCheck = NSButton(checkboxWithTitle: "Accept self-signed certificate (FTPS)", target: nil, action: nil)
+    /// What is wrong with the site as it currently stands, in the same words `connectToSite`
+    /// would refuse it with. Shown while typing rather than on Connect: the point is to stop a
+    /// combination being saved, not to complain about it after the fact.
+    private let warningLabel = NSTextField(wrappingLabelWithString: "")
     private var updatingForm = false
 
     private static let protoOrder: [FtpProtocol] = [.ftp, .ftpsImplicit, .ftps, .sftp]
@@ -47,7 +51,9 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         self.store = store
         let text = (try? String(contentsOf: sitesURL, encoding: .utf8)) ?? ""
         self.sites = FtpSitesFile.parse(text)
-        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 660, height: 420),
+        // Taller than the 420 it was: thirteen form rows already did not fit in it, and the warning
+        // line under them has to be readable without resizing the window to find out what is wrong.
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 700, height: 560),
                               styleMask: [.titled, .closable, .resizable, .miniaturizable],
                               backing: .buffered, defer: false)
         window.title = String(localized: "FTP Connection Manager")
@@ -87,7 +93,7 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         for f in [nameField, hostField, portField, userField, remoteDirField] { f.delegate = self }
         passwordField.delegate = self
         for p in Self.protoNames { protoPopup.addItem(withTitle: p) }
-        protoPopup.target = self; protoPopup.action = #selector(formControlChanged)
+        protoPopup.target = self; protoPopup.action = #selector(protocolChanged)
         anonymousCheck.title = String(localized: "Anonymous")
         anonymousCheck.target = self; anonymousCheck.action = #selector(formControlChanged)
         passiveCheck.target = self; passiveCheck.action = #selector(formControlChanged)
@@ -130,6 +136,11 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         form.column(at: 1).xPlacement = .fill
         form.column(at: 1).width = 300
 
+        warningLabel.translatesAutoresizingMaskIntoConstraints = false
+        warningLabel.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        warningLabel.textColor = .systemOrange
+        warningLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
         let connect = NSButton(title: String(localized: "Connect"), target: self, action: #selector(connect))
         connect.bezelStyle = .rounded; connect.keyEquivalent = "\r"
         let save = NSButton(title: String(localized: "Save"), target: self, action: #selector(saveSites))
@@ -139,8 +150,12 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         let bottom = NSStackView(views: [close, NSView(), save, connect])
         bottom.orientation = .horizontal; bottom.translatesAutoresizingMaskIntoConstraints = false
 
-        for v in [listScroll, listButtons, form, bottom] { content.addSubview(v) }
+        for v in [listScroll, listButtons, form, warningLabel, bottom] { content.addSubview(v) }
         NSLayoutConstraint.activate([
+            warningLabel.topAnchor.constraint(greaterThanOrEqualTo: form.bottomAnchor, constant: 8),
+            warningLabel.leadingAnchor.constraint(equalTo: form.leadingAnchor),
+            warningLabel.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -12),
+            warningLabel.bottomAnchor.constraint(lessThanOrEqualTo: bottom.topAnchor, constant: -8),
             listScroll.topAnchor.constraint(equalTo: content.topAnchor, constant: 12),
             listScroll.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 12),
             listScroll.widthAnchor.constraint(equalToConstant: 200),
@@ -171,15 +186,12 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         updateForm()
     }
 
+    /// Fill the whole form from the selected site. Only on a *selection* change: it rewrites the
+    /// password field from the Keychain, so calling it while the user is filling the form in
+    /// would throw away a password they had typed but not yet saved.
     private func updateForm() {
         updatingForm = true; defer { updatingForm = false }
         let on = sites.indices.contains(selected)
-        for c in [nameField, hostField, portField, userField, passwordField, remoteDirField] { c.isEnabled = on }
-        protoPopup.isEnabled = on; anonymousCheck.isEnabled = on; passiveCheck.isEnabled = on
-        for c in [proxyHostField, proxyPortField] { c.isEnabled = on }; proxyTypePopup.isEnabled = on
-        scpCheck.isEnabled = on && sites.indices.contains(selected) && sites[selected].proto == .sftp
-        insecureTLSCheck.isEnabled = on && sites.indices.contains(selected)
-            && (sites[selected].proto == .ftpsImplicit || sites[selected].proto == .ftps)
         let s = on ? sites[selected] : FtpSite(name: "", host: "")
         nameField.stringValue = s.name
         hostField.stringValue = s.host
@@ -199,6 +211,41 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         insecureTLSCheck.state = s.allowInsecureTLS ? .on : .off
         let storedPassword = on ? ((try? FtpCredentials.password(for: s, in: store)) ?? nil) : nil
         passwordField.stringValue = storedPassword ?? ""
+        updateEnabledState()
+    }
+
+    /// Grey out every setting the selected protocol does not read, and say what is left that
+    /// cannot work. Cheap and re-run on every keystroke and click, so the form answers "does this
+    /// combination mean anything" while it is being built rather than when Connect is pressed.
+    private func updateEnabledState() {
+        let on = sites.indices.contains(selected)
+        let s = on ? sites[selected] : FtpSite(name: "", host: "")
+        func gate(_ setting: FtpSiteSetting) -> Bool {
+            on && FtpConnectionRules.applies(setting, to: s)
+        }
+        for c in [nameField, hostField, portField, remoteDirField] { c.isEnabled = on }
+        protoPopup.isEnabled = on
+        userField.isEnabled = gate(.user)
+        passwordField.isEnabled = gate(.password)
+        anonymousCheck.isEnabled = gate(.anonymous)
+        passiveCheck.isEnabled = gate(.passive)
+        for c in [proxyHostField, proxyPortField] { c.isEnabled = gate(.proxy) }
+        proxyTypePopup.isEnabled = gate(.proxy)
+        proxyUserField.isEnabled = gate(.proxyLogin)
+        proxyPasswordField.isEnabled = gate(.proxyLogin)
+        scpCheck.isEnabled = gate(.scp)
+        insecureTLSCheck.isEnabled = gate(.insecureTLS)
+        // An anonymous login is "anonymous" — showing the previous user name in a field the user
+        // can no longer edit says the connection will use it, and it will not.
+        if on, s.auth == .anonymous { userField.stringValue = s.user }
+        // Passive is not optional behind a proxy; the box is ticked and locked rather than left
+        // showing a choice that the connection would override anyway.
+        if on, !FtpConnectionRules.applies(.passive, to: s), s.proto != .sftp {
+            passiveCheck.state = .on
+        }
+        let problems = on ? FtpConnectionRules.problems(with: s) : []
+        warningLabel.stringValue = problems.map(MainWindowController.describe).joined(separator: "\n")
+        warningLabel.textColor = problems.contains(where: \.isBlocking) ? .systemRed : .systemOrange
     }
 
     private func commitForm() {
@@ -206,18 +253,29 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         var s = sites[selected]
         s.name = nameField.stringValue.trimmingCharacters(in: .whitespaces)
         s.host = hostField.stringValue.trimmingCharacters(in: .whitespaces)
-        s.port = Int(portField.stringValue) ?? s.proto.defaultPort
+        // Protocol before port: the port's fallback is "this protocol's default", and reading it
+        // from the protocol being replaced gave an ftp 21 to a site the user had just made SFTP.
         s.proto = Self.protoOrder[max(0, protoPopup.indexOfSelectedItem)]
-        s.user = userField.stringValue.trimmingCharacters(in: .whitespaces)
-        s.remoteDir = remoteDirField.stringValue
+        s.port = Int(portField.stringValue.trimmingCharacters(in: .whitespaces)) ?? s.proto.defaultPort
         s.auth = anonymousCheck.state == .on ? .anonymous : .password
-        s.passive = passiveCheck.state == .on
+        // The anonymous login has one user name, and the field holding it is disabled — taking
+        // whatever it still showed would save a name the connection never uses.
+        s.user = s.auth == .anonymous ? "anonymous"
+                                      : userField.stringValue.trimmingCharacters(in: .whitespaces)
+        s.remoteDir = remoteDirField.stringValue
         let ph = proxyHostField.stringValue.trimmingCharacters(in: .whitespaces)
         s.proxyHost = ph.isEmpty ? nil : ph
         s.proxyPort = Int(proxyPortField.stringValue) ?? s.proxyPort
         s.proxyType = ProxyKind.allCases[max(0, proxyTypePopup.indexOfSelectedItem)]
         let pu = proxyUserField.stringValue.trimmingCharacters(in: .whitespaces)
         s.proxyUser = pu.isEmpty ? nil : pu
+        // After the proxy, because whether the choice exists at all depends on it: behind a proxy
+        // the data connection must be passive, and the box the user cannot untick is not a choice
+        // that should be recorded as "off".
+        // SFTP is excluded: passive means nothing there either, but the site's stored value is
+        // none of this dialog's business — forcing it would rewrite every SFTP site on selection.
+        s.passive = passiveCheck.state == .on
+            || (s.proto != .sftp && !FtpConnectionRules.applies(.passive, to: s))
         // Saved against the *committed* site, so the account key matches the host/user just typed.
         let pp = proxyPasswordField.stringValue
         if !pp.isEmpty { try? FtpCredentials.saveProxyPassword(pp, for: s, in: store) }
@@ -228,8 +286,26 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         tableView.reloadData(forRowIndexes: IndexSet(integer: selected), columnIndexes: IndexSet(integer: 0))
     }
 
-    @objc private func formControlChanged() { commitForm() }
-    func controlTextDidChange(_ obj: Notification) { commitForm() }
+    /// The protocol popup, which is the one control that moves another: picking SFTP after FTP
+    /// leaves port 21 in the field, and a site that cannot connect is the only sign of it.
+    ///
+    /// Read before `commitForm`, because the model still holds the protocol being replaced —
+    /// which is exactly what decides whether the port in the field was a default or a choice.
+    @objc private func protocolChanged() {
+        guard sites.indices.contains(selected) else { return }
+        let old = sites[selected].proto
+        let new = Self.protoOrder[max(0, protoPopup.indexOfSelectedItem)]
+        if new != old {
+            let typed = Int(portField.stringValue.trimmingCharacters(in: .whitespaces))
+            portField.stringValue = String(
+                FtpConnectionRules.port(changingTo: new, from: old, current: typed))
+        }
+        commitForm()
+        updateEnabledState()
+    }
+
+    @objc private func formControlChanged() { commitForm(); updateEnabledState() }
+    func controlTextDidChange(_ obj: Notification) { commitForm(); updateEnabledState() }
     func tableViewSelectionDidChange(_ notification: Notification) { updateForm() }
 
     // MARK: - Actions
@@ -271,7 +347,18 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         commitForm()
         guard sites.indices.contains(selected) else { NSSound.beep(); return }
         let site = sites[selected]
-        guard !site.host.isEmpty else { NSSound.beep(); return }
+        // A beep for "no host" was the whole of the feedback here, and said nothing about which
+        // of the settings above it meant. The rules name the problem; the label has been showing
+        // it while the form was filled in, and this repeats it where the click happened.
+        let blocking = FtpConnectionRules.blockingProblems(with: site)
+        guard blocking.isEmpty else {
+            let alert = NSAlert()
+            alert.messageText = String(localized: "This site cannot be connected yet")
+            alert.informativeText = blocking.map(MainWindowController.describe).joined(separator: "\n\n")
+            alert.alertStyle = .warning
+            alert.beginSheetModal(for: window ?? NSApp.mainWindow ?? NSWindow()) { _ in }
+            return
+        }
         persist()   // save before connecting so the site/password stick
         onConnect?(site, passwordField.stringValue)
         close()

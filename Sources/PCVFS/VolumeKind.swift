@@ -18,6 +18,8 @@ public enum VolumeKind: String, Sendable, Equatable, CaseIterable {
     case internalDisk
     case externalDisk
     case networkShare
+    /// A live FTP/SFTP session the app itself opened, as opposed to a share the system mounted.
+    case networkConnection
     case cloudFolder
     case pluginDrive
 
@@ -38,6 +40,10 @@ public enum VolumeKind: String, Sendable, Equatable, CaseIterable {
     /// system's own icon, which knows the difference; this enum only claims what it can defend.
     public static func of(_ volume: Volume) -> VolumeKind {
         if volume.path.hasPrefix("pfxmount:") { return .pluginDrive }
+        // Same reason as the plugin drive above, and asked before `isLocal`: a connection is not
+        // local either, and calling it a network *share* would promise a mount the system knows
+        // about — one Finder can see and the user can unmount from anywhere but here.
+        if volume.path.hasPrefix("netmount:") { return .networkConnection }
         if volume.fsType == "Cloud" { return .cloudFolder }
         if !volume.isLocal { return .networkShare }
         if volume.path == "/" { return .startupDisk }
@@ -55,7 +61,8 @@ public enum VolumeKind: String, Sendable, Equatable, CaseIterable {
     public var hasSystemIcon: Bool {
         switch self {
         case .startupDisk, .internalDisk, .externalDisk, .networkShare: return true
-        case .cloudFolder, .pluginDrive: return false
+        // A connection's "path" is the `netmount:` sentinel — there is nothing to ask about.
+        case .cloudFolder, .pluginDrive, .networkConnection: return false
         }
     }
 
@@ -69,6 +76,9 @@ public enum VolumeKind: String, Sendable, Equatable, CaseIterable {
         case .internalDisk: return "💽"
         case .externalDisk: return "💾"
         case .networkShare: return "🌐"
+        // Distinct from the share's globe on purpose: this one can be hung up from its chip and
+        // is gone when the app quits, which is not true of anything else in the bar.
+        case .networkConnection: return "🔌"
         case .cloudFolder: return "☁️"
         case .pluginDrive: return "🧩"
         }
