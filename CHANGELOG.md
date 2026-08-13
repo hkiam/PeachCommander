@@ -12,6 +12,56 @@ were reconstructed from the git history and the notes in `STATE.md` when it was 
 `README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
 does not have.
 
+## [0.6.3] — 2026-08-14
+
+### Added
+
+- **Find empty folders.** Search ▸ "Only empty folders" lists the directories that hold nothing —
+  and only those. A folder containing just a hidden `.DS_Store` counts as empty, because that is
+  what you meant. Settings the search cannot use in this mode are greyed out rather than accepted
+  and ignored.
+- **The quick search in the file list is visible now.** Typing to jump to a file always worked and
+  showed nothing, so a mistyped letter looked like the cursor had simply stopped moving. The prefix
+  now appears with a match count — `⌕ re  1/3` — Backspace shortens it instead of leaving the
+  folder, and Esc ends it. Red means nothing matches.
+- **Order and speed per transfer.** Waiting jobs can be moved up and down the queue, and each job
+  has its own speed limit: hold a large copy to 1 MB/s while a small one goes at full speed, and
+  change it while it runs. A running or paused job stays where it is — the queue reorders around it.
+- **Regular expressions in the viewer and the editor.** The viewer searches patterns over a file of
+  any size without loading it. The editor gets pattern search *and* replace, with capture groups in
+  the replacement (`(\w+) (\d+)` → `$2=$1`), optionally within the selection only, and the whole
+  replacement undoes in one step. `^` and `$` match line boundaries, as everywhere else.
+
+### Fixed
+
+- **A busy SFTP server no longer leaves the app unquittable.** An SFTP session had no timeout
+  anywhere: a server that accepted the connection and then stopped answering left the session
+  waiting for ever, so the connection could not even be hung up — and because quitting waits for
+  open connections to close, the whole application then refused to quit and had to be force-quit.
+  Operations are bounded now, ⏏ works on a dead connection, and quitting gives up after three
+  seconds. (Browsing the other panel always kept working, and still does.)
+- **A lost connection says so, instead of looking like a hang.** A failed listing was written to
+  the log and nowhere else, so the panel simply sat there. Worse, a connection dying mid-listing was
+  reported as "not found" — the directory is right where you left it. The panel now leaves a dead
+  mount, its drive button disappears, and a message says which server went away.
+- **New SSH servers ask before they are trusted.** Connecting to an SFTP server for the first time
+  used to append its key to `~/.ssh/known_hosts` silently. It now shows the key's fingerprint, in
+  the same `SHA256:…` form `ssh-keygen` prints, and records it only if you agree. A key that has
+  *changed* is still refused outright.
+- **The quick search indicator was always red**, whatever matched, because it used the colour meant
+  for marked files.
+- **Saved searches would have been lost** the next time a search option was added: the whole file
+  was discarded if a single field was missing, and the failure was silent.
+
+### Plugins
+
+- **Plugins are told where the configuration is.** `PfxInit` — documented in the SDK since the
+  beginning and never actually called by the host — is now called, and host services gained
+  `getContext`, which answers `"configRoot"`. A plugin that keeps settings can follow the host when
+  it is pointed at a different configuration directory, instead of writing into the real one during
+  a test run. Existing plugins keep working: the field is appended, and an older plugin never looks
+  at it.
+
 ## [0.6.2] — 2026-08-13
 
 ### Fixed
