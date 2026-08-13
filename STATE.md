@@ -9,11 +9,11 @@
 |---|---|
 | Phase | **A & B done. C: I14 done; I15 plain FTP LIVE (quick-connect + connection manager, verified vs test.rebex.net; SFTP + explicit-FTPS still pending); I16 lister/content plugins mostly done. D: I17 utilities mostly done; I18 macOS integration MOSTLY DONE (Quick Look Cmd+Y, Share sheet, Open With, Finder Tags: color column + tag-filter (tag:red/#blau), Spotlight metadata in Get Info, Services menu integration, "Open Terminal Here", Full Disk Access onboarding, Go▸Trash, xattr inspector/remove in Change Attributes, privileged "retry as administrator" for chmod+delete done; ACL editing/copy-move-elevation/undo pending). Also F-063 Ctrl+Left/Right open cursor folder in other panel done.; I19 partial (perf targets validated); I20 shipping GROUNDWORK done (DMG script + release CI workflow + hardened-runtime entitlements + RELEASE.md + CHANGELOG + local crash reporting; only Developer-ID signing/notarization and Sparkle auto-update remain — both need Apple creds / update-feed hosting).** |
 | Evidence sweep | **Batches 1–24 (2026-08-07/08): 73 rows checked, 33 defects fixed, 87 → 21 rows without evidence; the last 21 were then worked through on 2026-08-09 and the count is now **0** — five of them turned out not to be implemented at all (the window title, the splitter's double-click, sequential transfers, the icon-off mode and the DMG layout).** A follow-up *interpreter sweep* (2026-08-08, after 0.4.0) then went at one defect class on purpose — a string from somewhere else reaching something that interprets it — and found four more: the panel's extract walk wrote above the destination (F-131), an XML file could read your other files through external entities (F-368), previewing a document fetched a remote image and so reported that you opened it (F-116), and the assistant's approval gate was bypassable through `run_command`. See the entry below. Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive wrote outside the chosen folder (F-131); the archive password stood in the process list (F-136); a CRLF code file rendered as one line six million characters wide (F-110); undoing a batch rename did nothing (F-175); Num/ did nothing (F-056); a wildcard selected the *wrong* file (F-055); a Windows-written .sfv verified nothing (F-097). Six defects were one Swift trap — `"\r\n"` is a single Character. New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, `check-tests-registered.py`, `check-vm-flags.sh`, plus `check-descript-format.sh` extended. Of the 21 rows left, 8 are blocked externally (Apple credentials, SMB mounts, the Services menu). |
-| Current iteration | **0.6.2 released** (draft on GitHub). Since then, from the idea list: empty-folder search (F-152), a visible quick search (F-060), transfer queue reordering + a live per-job speed limit (F-085), and regular expressions in the viewer *and* the editor, find and replace (F-151) — all four verified on screen. Two of the five ideas were already built (folder history, pause). Earlier: FTP/SFTP/WebDAV each get their own drive-bar entry and disconnect there; `PfxDisconnect` is now actually called. Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update — the workflow exists, four repo secrets are missing; **the docs still say it is "not wired up", which is wrong**. |
+| Current iteration | **0.6.3** — from the idea list: empty-folder search (F-152), a visible quick search (F-060), transfer queue order + a live per-job speed limit (F-085), regular expressions in the viewer and the editor (F-151). Then the reported SFTP freeze (F-214): operations are bounded, a dead connection is announced and the panel leaves it, and a new host key is confirmed with its fingerprint instead of recorded silently. Plugins are told the config root (`PfxInit` + `getContext`). Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update — the workflow exists, four repo secrets are missing. |
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **69 scenarios with reports** (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
-| Last updated | 2026-08-13 |
+| Last updated | 2026-08-14 |
 | Released | **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
@@ -25,6 +25,38 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-14 (SFTP, part two) — Failing is not the same as saying so
+
+Bounding the SFTP session stopped the hang; it did not make anything visible. A failed directory
+load was `logger.error` and nothing else, so the user waited, the panel stayed as it was, and there
+was still nothing to read — arguably worse than before, because now the session *does* give up.
+
+Underneath were two more things. `libssh2_sftp_open_ex` answers NULL for "no such file" and for
+"the socket is gone" alike, and all five call sites assumed the first: a connection dying mid-listing
+reported that the directory did not exist. `lastFailure` asks libssh2 instead. And `connectionLost`
+was in `VFSError` with **no reader anywhere in the app** — now the panel leaves the dead mount
+(`exitArchive` already did the whole retreat), the chip goes, and a sheet names the server.
+
+A sheet, not `runModal`: an app-modal alert stops the other panel too — the one part that kept
+working while the connection was dying — and freezes any script driving the app, which is why this
+path had no test.
+
+**And the known_hosts finding turned into work.** Connecting appended the server's key to
+`~/.ssh/known_hosts` silently: a file outside the app's own configuration, and a trust decision the
+user was never shown. It is ssh's question now — fingerprint shown in ssh's own `SHA256:…` spelling,
+recorded only on agreement, mismatch still refused outright. The fingerprint test checks against
+OpenSSH's own output for the same key rather than against our idea of it.
+
+Also: `Tools/build.sh` built no plugins, so the bundle kept whatever `make-dmg.sh` last left there —
+measured at eight hours stale, without the entry point that had just been added. Anyone verifying a
+plugin change in the debug app was testing the previous version of it. It builds them now;
+`PC_SKIP_PLUGINS=1` opts out.
+
+**One method note.** The first check of the known_hosts change passed for the wrong reason: earlier
+runs had already recorded the key, so the connection succeeded and proved nothing. Removing the line
+first turned it into a real check. Same shape as the harness traps the day before — a green result
+that was never testing what it claimed.
 
 ## 2026-08-13 (SFTP, reported) — "the whole app freezes", and what actually froze
 
