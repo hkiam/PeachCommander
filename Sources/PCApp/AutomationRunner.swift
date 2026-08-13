@@ -1204,8 +1204,11 @@ extension MainWindowController {
         let destination = URL(fileURLWithPath: a[1])
         var report = ""
         do {
+            // The harness answers the first-connect question itself: there is no one at the
+            // keyboard, and the host is this machine.
             try await session.connect(host: "127.0.0.1", port: 22, user: NSUserName(),
-                                      password: nil, keyFile: nil, keyPassphrase: nil)
+                                      password: nil, keyFile: nil, keyPassphrase: nil,
+                                      trustingNewHostKey: true)
             let fs = SFTPFileSystem(session: session)
             let path = VFSPath(filesystemId: "sftp", path: a[0])
             let whole = try await fs.downloadFile(path, to: destination, resume: false)
@@ -1237,8 +1240,11 @@ extension MainWindowController {
         let session = SFTPSession()
         var report = ""
         do {
+            // The harness answers the first-connect question itself: there is no one at the
+            // keyboard, and the host is this machine.
             try await session.connect(host: "127.0.0.1", port: 22, user: NSUserName(),
-                                      password: nil, keyFile: nil, keyPassphrase: nil)
+                                      password: nil, keyFile: nil, keyPassphrase: nil,
+                                      trustingNewHostKey: true)
             let fs = SFTPFileSystem(session: session)
             let source = URL(fileURLWithPath: a[0])
             let remote = VFSPath(filesystemId: "sftp", path: a[1])
@@ -1274,8 +1280,11 @@ extension MainWindowController {
         let session = SFTPSession()
         var report = "requested=\(String(mode, radix: 8))\n"
         do {
+            // The harness answers the first-connect question itself: there is no one at the
+            // keyboard, and the host is this machine.
             try await session.connect(host: "127.0.0.1", port: 22, user: NSUserName(),
-                                      password: nil, keyFile: nil, keyPassphrase: nil)
+                                      password: nil, keyFile: nil, keyPassphrase: nil,
+                                      trustingNewHostKey: true)
             // Only the change is done here. What the mode *is* afterwards is read by the harness with
             // `stat` over ssh — an independent witness, because a wrapper reporting on its own write is
             // exactly the kind of evidence that let the empty implementation pass for so long.
@@ -1306,8 +1315,11 @@ extension MainWindowController {
         var report = ""
         let session = SFTPSession()
         do {
+            // The harness answers the first-connect question itself: there is no one at the
+            // keyboard, and the host is this machine.
             try await session.connect(host: "127.0.0.1", port: 22, user: NSUserName(),
-                                      password: nil, keyFile: nil, keyPassphrase: nil)
+                                      password: nil, keyFile: nil, keyPassphrase: nil,
+                                      trustingNewHostKey: true)
             let fs = SFTPFileSystem(session: session)
             let right = SyncSide.remote(RemoteSyncSource(fs: fs, path: remoteDir))
             let items = await SyncScanner.scan(left: .localDir(localDir), right: right,

@@ -3,19 +3,23 @@
 // queue and exposed as async methods (F-214). Backs SFTPFileSystem.
 //
 // Auth order: SSH agent → explicit password → explicit key file → default
-// ~/.ssh keys. Host keys are checked against ~/.ssh/known_hosts: a MISMATCH
-// aborts (possible MITM); an unknown host is accepted and **appended to
-// ~/.ssh/known_hosts**, matching ssh's StrictHostKeyChecking=accept-new.
+// ~/.ssh keys.
 //
-// That last part is worth saying plainly, because this comment used to claim the
-// opposite ("a later refinement") long after `appendKnownHost` was written — and a
-// reader who believes it will not expect connecting to a server to modify a file
-// outside the app's own configuration. It does. Anything testing against a throwaway
-// SSH server should give that server a stable host key, or every restart looks like a
-// different machine at the same address, which is reported as a possible attack.
+// Host keys are checked against ~/.ssh/known_hosts — a file **outside this app's own
+// configuration**, shared with ssh and everything else that reads it. A MISMATCH
+// aborts (possible MITM). A host not on file throws `hostKeyUnknown` carrying the
+// fingerprint, so the caller can show it and ask; only a connect told
+// `trustingNewHostKey` appends the line. It used to accept and record silently, which
+// committed the user to a key they were never shown, and the comment here claimed the
+// opposite ("a later refinement") long after the writing had been implemented.
+//
+// Anything testing against a throwaway SSH server should give that server a stable host
+// key, or every restart looks like a different machine at the same address — correctly
+// reported as a possible attack.
 
 import Foundation
 import Darwin
+import CommonCrypto
 import CSSH2
 
 public enum SFTPError: Error, Equatable {
@@ -28,6 +32,12 @@ public enum SFTPError: Error, Equatable {
     case notConnected
     case opFailed(String, Int32)
     case notFound(String)
+    /// First contact with this host: nothing is on file, and the user has not been asked yet.
+    ///
+    /// Carries the fingerprint so the caller can show what it is about to trust. Not an error in the
+    /// sense of something going wrong — it is the question ssh asks, arriving as a throw because
+    /// that is the only way out of a synchronous handshake.
+    case hostKeyUnknown(host: String, fingerprint: String)
     /// The connection died under an operation — timed out, or the socket went away.
     ///
     /// Distinct from `notConnected`, which means "there was never a session here". This one means
@@ -197,14 +207,21 @@ public final class SFTPSession: @unchecked Sendable {
 
     // MARK: - Connect
 
+    /// - Parameter trustingNewHostKey: accept and record a host key that is not on file yet.
+    ///   Defaults to false, so a first visit throws `hostKeyUnknown` with the fingerprint instead of
+    ///   committing the user to a key they have not seen.
     public func connect(host: String, port: UInt16, user: String,
-                        password: String?, keyFile: String?, keyPassphrase: String?) async throws {
+                        password: String?, keyFile: String?, keyPassphrase: String?,
+                        trustingNewHostKey: Bool = false) async throws {
         try await run { try self.doConnect(host: host, port: port, user: user,
-                                            password: password, keyFile: keyFile, keyPassphrase: keyPassphrase) }
+                                            password: password, keyFile: keyFile,
+                                            keyPassphrase: keyPassphrase,
+                                            trustNewHostKey: trustingNewHostKey) }
     }
 
     private func doConnect(host: String, port: UInt16, user: String,
-                           password: String?, keyFile: String?, keyPassphrase: String?) throws {
+                           password: String?, keyFile: String?, keyPassphrase: String?,
+                           trustNewHostKey: Bool) throws {
         Self.initLock.lock()
         if !Self.didInit { _ = libssh2_init(0); Self.didInit = true }
         Self.initLock.unlock()
@@ -225,7 +242,7 @@ public final class SFTPSession: @unchecked Sendable {
         let hs = libssh2_session_handshake(s, sock)
         guard hs == 0 else { throw SFTPError.handshakeFailed(hs) }
 
-        try verifyHostKey(session: s, host: host, port: port)
+        try verifyHostKey(session: s, host: host, port: port, trustNewHostKey: trustNewHostKey)
         try authenticate(session: s, user: user, password: password, keyFile: keyFile, keyPassphrase: keyPassphrase)
 
         guard let ftp = libssh2_sftp_init(s) else {
@@ -289,7 +306,8 @@ public final class SFTPSession: @unchecked Sendable {
     /// same host+type with a different key → abort (possible MITM); same host+type+key
     /// → accept; no entry for this host+type → trust-on-first-use (accept + record),
     /// mirroring ssh's StrictHostKeyChecking=accept-new.
-    private func verifyHostKey(session s: OpaquePointer, host: String, port: UInt16) throws {
+    private func verifyHostKey(session s: OpaquePointer, host: String, port: UInt16,
+                               trustNewHostKey: Bool) throws {
         var keyLen = 0
         var keyType: Int32 = 0
         guard let key = libssh2_session_hostkey(s, &keyLen, &keyType),
@@ -310,8 +328,31 @@ public final class SFTPSession: @unchecked Sendable {
             if fields[2] == presented { return }             // known + matches → OK
             throw SFTPError.hostKeyMismatch                  // known host+type, different key
         }
-        // Not seen before → TOFU: accept and record.
+        // Never seen before. Accepting it silently — which is what this did — means connecting to a
+        // server quietly writes a line into a file outside the app's own configuration, and commits
+        // the user to trusting a key they were never shown. ssh asks; so does this now.
+        //
+        // The decision is not made here. This throws with the fingerprint, the caller shows it, and
+        // a connect that is told `trustingNewHostKey` records it. Two connects for a first visit, in
+        // exchange for the user having actually seen what they are trusting.
+        guard trustNewHostKey else {
+            throw SFTPError.hostKeyUnknown(host: hostSpec,
+                                           fingerprint: Self.fingerprint(of: Data(bytes: key, count: keyLen)))
+        }
         appendKnownHost(hostSpec: hostSpec, typeName: typeName, blob: presented, path: path)
+    }
+
+    /// The key's SHA-256 fingerprint, in the `SHA256:base64` form ssh prints.
+    ///
+    /// Same spelling on purpose: someone checking a server's key will have run `ssh-keygen -lf` or
+    /// read it off a provisioning page, and a fingerprint they cannot compare character for
+    /// character with what they have is one they will approve without reading.
+    static func fingerprint(of key: Data) -> String {
+        var digest = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+        key.withUnsafeBytes { _ = CC_SHA256($0.baseAddress, CC_LONG(key.count), &digest) }
+        // ssh strips the base64 padding.
+        let b64 = Data(digest).base64EncodedString().replacingOccurrences(of: "=", with: "")
+        return "SHA256:" + b64
     }
 
     /// Append a standard OpenSSH known_hosts line `<hostspec> <keytype> <base64key>`.
