@@ -27,6 +27,8 @@
 <h2 id="find-replace-and-navigate">Find, replace, and navigate</h2>
 <ul>
 <li>Press Cmd+F to open the find bar. To replace text, open the find bar and switch it to the replace view, or click Find/Replace in the toolbar.</li>
+<li>For a <strong>regular expression</strong>, use Search ▸ <em>Find with Regular Expression…</em> (Ctrl+Cmd+F) or <em>Replace with Regular Expression…</em> (Ctrl+Opt+Cmd+F). <code>^</code> and <code>$</code> match the start and end of a line, and in the replacement <code>$1</code> stands for the first capture group — so <code>(\w+) (\d+)</code> replaced with <code>$2=$1</code> turns <code>alpha 11</code> into <code>11=alpha</code>. Tick <strong>In selection only</strong> to keep the change inside the text you selected; <strong>Replace All</strong> rewrites every match as a single step you can undo with Cmd+Z.</li>
+<li>Find Next (Cmd+G) follows whichever search you used last, plain or pattern. A pattern that will not compile is reported in the dialog rather than quietly finding nothing.</li>
 <li>Click Format to re-indent the file into a clean, readable layout. See <a href="#formatting-a-file">Formatting a file</a> below for which file types this covers. The button is greyed out when nothing can format the file you have open.</li>
 <li>Click Symbols (or press Cmd+Shift+O) to show a sidebar that lists the classes, functions, and methods in your code — or, for a JSON, YAML or XML file, its keys and elements. Click an entry to jump straight to it. See <a href="#work-with-json-yaml-and-xml">Work with JSON, YAML and XML</a> for what else that structure is good for.</li>
 <li>Press Cmd+L to jump to a specific line.</li>

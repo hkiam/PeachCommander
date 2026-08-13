@@ -24,6 +24,8 @@
 <h2 id="text-finden-und-die-kodierung-andern">Text finden und die Kodierung ändern</h2>
 <ul>
 <li>Drücken Sie Ctrl+F, um innerhalb der Datei zu suchen. Drücken Sie F3, um zum nächsten Treffer zu springen, und Shift+F3 für den vorherigen.</li>
+<li>Kreuzen Sie im Suchfeld <strong>Regulärer Ausdruck</strong> an, um mit einem Muster statt mit einfachem Text zu suchen — <code>ERROR \d+</code>, oder <code>^Warning</code> für Zeilen, die damit beginnen. <code>^</code> und <code>$</code> bedeuten Zeilenanfang und Zeilenende. Ein Muster, das sich nicht übersetzen lässt, wird als solches gemeldet und findet nicht stillschweigend nichts.</li>
+<li>Sehr große Dateien werden in überlappenden Fenstern durchsucht. Ein einzelner Treffer, der länger als etwa 64 KB ist, kann daher übersehen werden, wenn er genau auf eine Fenstergrenze fällt. Für die einfache Textsuche gilt das nicht, und für ein Muster, das etwas Kürzeres trifft, ebenso wenig.</li>
 <li>Wenn Text verstümmelt aussieht, klicken Sie in der Symbolleiste auf Kodierung (oder drücken Sie E), um durch die Textkodierungen zu blättern, bis er korrekt lesbar ist; die automatische Einstellung trifft es meist richtig.</li>
 <li>Drücken Sie W, um den Zeilenumbruch für lange Zeilen umzuschalten.</li>
 </ul>

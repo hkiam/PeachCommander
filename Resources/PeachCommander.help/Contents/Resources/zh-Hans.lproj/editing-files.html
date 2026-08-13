@@ -27,6 +27,8 @@
 <h2 id="_2">查找、替换和导航</h2>
 <ul>
 <li>按 Cmd+F 打开查找栏。若要替换文本，打开查找栏并将其切换到替换视图，或单击工具栏中的“查找/替换”。</li>
+<li>若要使用<strong>正则表达式</strong>，请选择 搜索 ▸ <em>以正则表达式查找…</em>（Ctrl+Cmd+F）或 <em>以正则表达式替换…</em>（Ctrl+Opt+Cmd+F）。<code>^</code> 和 <code>$</code> 匹配行首和行尾，替换文本中的 <code>$1</code> 表示第一个捕获组——因此把 <code>(\w+) (\d+)</code> 替换为 <code>$2=$1</code>，<code>alpha 11</code> 就变成 <code>11=alpha</code>。<strong>仅在所选内容中</strong>可将更改限制在选中的文本内；<strong>全部替换</strong>将所有匹配一次改写完，可用 Cmd+Z 一步撤销。</li>
+<li>查找下一个（Cmd+G）沿用你最后使用的那种搜索，无论是普通搜索还是模式。无法编译的模式会在对话框中报告，而不是悄悄地什么也找不到。</li>
 <li>单击“格式化 JSON/XML”，可将 JSON 或 XML 文档重新缩进为整洁易读的布局。</li>
 <li>点按“符号”（或按 Cmd+Shift+O）可显示一个边栏，列出代码中的类、函数和方法 — 若是 JSON、YAML 或 XML 文件，则列出其键和元素。点按条目即可直接跳转。关于这个结构还能做什么，参见<a href="#处理-json-yaml-和-xml">处理 JSON、YAML 和 XML</a>。</li>
 <li>按 Cmd+L 跳转到指定行。</li>

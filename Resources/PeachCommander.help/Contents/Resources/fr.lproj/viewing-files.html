@@ -24,6 +24,8 @@
 <h2 id="rechercher-du-texte-et-changer-lencodage">Rechercher du texte et changer l'encodage</h2>
 <ul>
 <li>Appuyez sur Ctrl+F pour rechercher dans le fichier. Appuyez sur F3 pour sauter à la correspondance suivante et Maj+F3 pour la précédente.</li>
+<li>Cochez <strong>Expression régulière</strong> dans la boîte de recherche pour chercher un motif plutôt qu’un texte simple — <code>ERROR \d+</code>, ou <code>^Warning</code> pour les lignes qui commencent ainsi. <code>^</code> et <code>$</code> désignent le début et la fin de ligne. Un motif qui ne compile pas est signalé comme tel, au lieu de ne rien trouver en silence.</li>
+<li>Les fichiers très volumineux sont parcourus par fenêtres qui se chevauchent : une correspondance unique de plus de 64 Ko environ peut donc être manquée si elle tombe précisément sur une limite de fenêtre. La recherche de texte simple n’a pas cette limite, ni un motif qui correspond à quelque chose de plus court.</li>
 <li>Si le texte semble déformé, cliquez sur Encodage dans la barre d'outils (ou appuyez sur E) pour faire défiler les encodages jusqu'à ce qu'il se lise correctement ; le réglage automatique est généralement juste.</li>
 <li>Appuyez sur W pour basculer le retour à la ligne pour les lignes longues.</li>
 </ul>

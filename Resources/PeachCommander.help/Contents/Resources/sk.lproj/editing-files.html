@@ -27,6 +27,8 @@
 <h2 id="hladanie-nahradzanie-a-navigacia">Hľadanie, nahrádzanie a navigácia</h2>
 <ul>
 <li>Stlačte Cmd+F na otvorenie lišty hľadania. Na nahradenie textu otvorte lištu hľadania a prepnite ju na zobrazenie nahrádzania, alebo kliknite na Hľadať/Nahradiť na paneli nástrojov.</li>
+<li>Pre <strong>regulárny výraz</strong> použite Hľadať ▸ <em>Nájsť regulárnym výrazom…</em> (Ctrl+Cmd+F) alebo <em>Nahradiť regulárnym výrazom…</em> (Ctrl+Opt+Cmd+F). <code>^</code> a <code>$</code> zodpovedajú začiatku a koncu riadku a v náhrade <code>$1</code> zastupuje prvú skupinu — <code>(\w+) (\d+)</code> nahradené <code>$2=$1</code> teda z <code>alpha 11</code> urobí <code>11=alpha</code>. <strong>Len vo výbere</strong> udrží zmenu vo vybranom texte; <strong>Nahradiť všetko</strong> prepíše všetky výskyty jedným krokom, ktorý Cmd+Z vráti späť.</li>
+<li>Nájsť ďalší (Cmd+G) nadväzuje na naposledy použité hľadanie, jednoduché aj vzorom. Vzor, ktorý sa nedá preložiť, sa ohlási v dialógu namiesto toho, aby ticho nič nenašiel.</li>
 <li>Kliknite na Formátovať JSON/XML na opätovné odsadenie dokumentu JSON alebo XML do čistého, čitateľného rozloženia.</li>
 <li>Kliknite na Symboly (alebo stlačte Cmd+Shift+O) na zobrazenie bočného panela, ktorý uvádza triedy, funkcie a metódy vo vašom kóde — alebo, pri súbore JSON, YAML či XML, jeho kľúče a prvky. Kliknite na položku na priamy skok na ňu. Na čo ešte tá štruktúra je, pozri <a href="#práca-s-json-yaml-a-xml">Práca s JSON, YAML a XML</a>.</li>
 <li>Stlačte Cmd+L na skok na konkrétny riadok.</li>

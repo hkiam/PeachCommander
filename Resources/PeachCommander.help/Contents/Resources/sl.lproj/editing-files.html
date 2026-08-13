@@ -27,6 +27,8 @@
 <h2 id="iskanje-zamenjava-in-krmarjenje">Iskanje, zamenjava in krmarjenje</h2>
 <ul>
 <li>Pritisnite Cmd+F, da odprete iskalno vrstico. Za zamenjavo besedila odprite iskalno vrstico in jo preklopite na pogled zamenjave, ali kliknite Poišči/Zamenjaj v orodni vrstici.</li>
+<li>Za <strong>regularni izraz</strong> uporabite Iskanje ▸ <em>Poišči z regularnim izrazom…</em> (Ctrl+Cmd+F) ali <em>Zamenjaj z regularnim izrazom…</em> (Ctrl+Opt+Cmd+F). <code>^</code> in <code>$</code> se ujemata z začetkom in koncem vrstice, v zamenjavi pa <code>$1</code> pomeni prvo skupino — <code>(\w+) (\d+)</code>, zamenjano z <code>$2=$1</code>, torej iz <code>alpha 11</code> naredi <code>11=alpha</code>. <strong>Samo v izboru</strong> zadrži spremembo znotraj izbranega besedila; <strong>Zamenjaj vse</strong> prepiše vsa ujemanja v enem koraku, ki ga Cmd+Z razveljavi.</li>
+<li>Poišči naslednje (Cmd+G) sledi nazadnje uporabljenemu iskanju, preprostemu ali z vzorcem. Vzorec, ki se ne prevede, je sporočen v pogovornem oknu, namesto da tiho ne bi našel ničesar.</li>
 <li>Kliknite Oblikuj JSON/XML, da ponovno zamaknete dokument JSON ali XML v čisto, berljivo postavitev.</li>
 <li>Kliknite Simboli (ali pritisnite Cmd+Shift+O) za prikaz stranske vrstice, ki navaja razrede, funkcije in metode v vaši kodi — ali, pri datoteki JSON, YAML ali XML, njene ključe in elemente. Kliknite vnos, da skočite neposredno nanj. Za kaj še je ta struktura dobra, glejte <a href="#delo-z-json-yaml-in-xml">Delo z JSON, YAML in XML</a>.</li>
 <li>Pritisnite Cmd+L, da skočite na določeno vrstico.</li>

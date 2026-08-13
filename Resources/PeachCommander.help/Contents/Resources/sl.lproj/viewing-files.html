@@ -24,6 +24,8 @@
 <h2 id="iskanje-besedila-in-sprememba-kodiranja">Iskanje besedila in sprememba kodiranja</h2>
 <ul>
 <li>Pritisnite Ctrl+F za iskanje znotraj datoteke. Pritisnite F3 za skok na naslednje ujemanje in Shift+F3 za prejšnje.</li>
+<li>V iskalnem polju označite <strong>Regularni izraz</strong>, da iščete z vzorcem namesto z navadnim besedilom — <code>ERROR \d+</code> ali <code>^Warning</code> za vrstice, ki se s tem začnejo. <code>^</code> in <code>$</code> pomenita začetek in konec vrstice. Vzorec, ki se ne prevede, je sporočen kot tak, namesto da tiho ne bi našel ničesar.</li>
+<li>Zelo velike datoteke se preiskujejo v prekrivajočih se oknih, zato lahko posamezno ujemanje, daljše od približno 64 KB, uide, če pade prav na rob okna. Navadno iskanje besedila te omejitve nima, prav tako ne vzorec, ki se ujema s čim krajšim.</li>
 <li>Če je besedilo videti popačeno, kliknite Kodiranje v orodni vrstici (ali pritisnite E), da se pomikate skozi kodiranja besedila, dokler se ne prebere pravilno; samodejna nastavitev to običajno zadene prav.</li>
 <li>Pritisnite W za preklop preloma besed za dolge vrstice.</li>
 </ul>
