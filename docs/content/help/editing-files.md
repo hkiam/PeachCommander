@@ -29,6 +29,8 @@ The gutter shows line numbers, with the line you are on brighter than the rest; 
 ## Find, replace, and navigate
 
 - Press Cmd+F to open the find bar. To replace text, open the find bar and switch it to the replace view, or click Find/Replace in the toolbar.
+- For a **regular expression**, use Search ▸ *Find with Regular Expression…* (Ctrl+Cmd+F) or *Replace with Regular Expression…* (Ctrl+Opt+Cmd+F). `^` and `$` match the start and end of a line, and in the replacement `$1` stands for the first capture group — so `(\w+) (\d+)` replaced with `$2=$1` turns `alpha 11` into `11=alpha`. Tick **In selection only** to keep the change inside the text you selected; **Replace All** rewrites every match as a single step you can undo with Cmd+Z.
+- Find Next (Cmd+G) follows whichever search you used last, plain or pattern. A pattern that will not compile is reported in the dialog rather than quietly finding nothing.
 - Click Format to re-indent the file into a clean, readable layout. See [Formatting a file](#formatting-a-file) below for which file types this covers. The button is greyed out when nothing can format the file you have open.
 - Click Symbols (or press Cmd+Shift+O) to show a sidebar that lists the classes, functions, and methods in your code — or, for a JSON, YAML or XML file, its keys and elements. Click an entry to jump straight to it. See [Work with JSON, YAML and XML](#work-with-json-yaml-and-xml) for what else that structure is good for.
 - Press Cmd+L to jump to a specific line.

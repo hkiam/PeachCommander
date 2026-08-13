@@ -22,6 +22,17 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     private lazy var marks = DocumentMarksPanel(content: scrollView, host: self)
     private var markDialog: MarkColorDialog?
     private var gotoDialog: InputDialog?
+    /// The pattern search in force, so Find Next can step through its matches. Nil until one is
+    /// used, which is what hands ⌘G back to the native find bar.
+    private var regexSearch: NSRegularExpression?
+    private var regexPattern = ""
+    private var regexReplacement = ""
+    private var regexCaseInsensitive = false
+    /// The selection the search was scoped to, or nil for the whole document. Captured when the
+    /// search starts: stepping through matches moves the selection, so reading it later would
+    /// shrink the scope to the last match found.
+    private var regexScope: NSRange?
+    private var regexDialog: EditorRegexFindDialog?
     /// Held while the filter prompt is up (a modal window controller must outlive `runModal`).
     private var filterDialog: EditorFilterDialog?
     /// Neon incremental tree-sitter highlighter (nil for non-tree-sitter files,
@@ -942,6 +953,7 @@ extension EditorWindowController: WindowContextMenuProviding {
         c.format = true
         c.findPrev = true
         c.replace = true
+        c.regexFind = true
         c.goto = true
         c.marks = true
         c.markNav = true
@@ -979,9 +991,14 @@ extension EditorWindowController {
     }
     @objc func docFormat() { format() }
     @objc func docFind() { finder(.showFindInterface) }
-    @objc func docFindNext() { finder(.nextMatch) }
-    @objc func docFindPrev() { finder(.previousMatch) }
+    /// Find Next steps through the *pattern's* matches once one has been used, and otherwise hands
+    /// the key back to the native bar. So ⌘G keeps meaning "the next one" whichever kind of search
+    /// was started, which is the only way the two can live side by side without surprising anyone.
+    @objc func docFindNext() { regexSearch == nil ? finder(.nextMatch) : stepRegex(forwards: true) }
+    @objc func docFindPrev() { regexSearch == nil ? finder(.previousMatch) : stepRegex(forwards: false) }
     @objc func docReplace() { finder(.showReplaceInterface) }
+    @objc func docFindRegex() { promptRegexFind(replacing: false) }
+    @objc func docReplaceRegex() { promptRegexFind(replacing: true) }
     @objc func docGoto() { promptGotoLine() }
     @objc func docMarkAll() { menuMarkAll() }
     @objc func docCount() { menuCount() }
@@ -1005,6 +1022,131 @@ extension EditorWindowController {
             guard alert.runModal() == .alertFirstButtonReturn else { return }
         }
         loadFile()
+    }
+
+    #if DEBUG
+    /// Drive the pattern search from the automation runner: find, step, or replace all.
+    ///
+    /// Here because the result of a search is a selection and the result of a replace is the
+    /// document's text — neither of which anything outside the window can read, and the parts most
+    /// easily got subtly wrong (a scope that leaks past the selection, a `$1` that refers to the
+    /// wrong match) are exactly the parts a human would not notice at a glance.
+    func automationRegex(pattern: String, replacement: String?, caseInsensitive: Bool,
+                         inSelection: Bool, replaceAll: Bool) -> String {
+        let made = RegexTextSearch.compile(pattern, caseInsensitive: caseInsensitive)
+        guard let regex = made.regex else { return "error=\(made.error ?? "unknown")\n" }
+        regexPattern = pattern
+        regexCaseInsensitive = caseInsensitive
+        regexSearch = regex
+        regexScope = inSelection ? textView.selectedRange() : nil
+        if replaceAll, let template = replacement {
+            replaceAllRegex(regex, template: template)
+            return "replaced=true\ntext=\(textView.string)\n"
+        }
+        stepRegex(forwards: true, startingAt: regexScope?.location ?? textView.selectedRange().location)
+        let sel = textView.selectedRange()
+        return "match=\(sel.location)\nlength=\(sel.length)\n"
+            + "selected=\((textView.string as NSString).substring(with: sel))\n"
+    }
+
+    /// Step the pattern search on, as ⌘G does.
+    func automationRegexStep(forwards: Bool) -> String {
+        stepRegex(forwards: forwards)
+        let sel = textView.selectedRange()
+        return "match=\(sel.location)\nselected=\((textView.string as NSString).substring(with: sel))\n"
+    }
+    #endif
+
+    // MARK: - Regular-expression find & replace (F-151)
+
+    /// Ask for a pattern, then either jump to the first match or rewrite every one of them.
+    private func promptRegexFind(replacing: Bool) {
+        let selection = textView.selectedRange()
+        let dialog = EditorRegexFindDialog(
+            pattern: regexPattern, replacement: regexReplacement,
+            caseInsensitive: regexCaseInsensitive,
+            // A read-only document is offered the search half only, rather than a Replace All that
+            // fails when pressed.
+            showsReplace: replacing && textView.isEditable,
+            hasSelection: selection.length > 0)
+        dialog.onConfirm = { [weak self] request in
+            guard let self else { return }
+            self.regexPattern = request.pattern
+            self.regexReplacement = request.replacement ?? self.regexReplacement
+            self.regexCaseInsensitive = request.caseInsensitive
+            let made = RegexTextSearch.compile(request.pattern, caseInsensitive: request.caseInsensitive)
+            guard let regex = made.regex else { return }   // the dialog already refused it
+            self.regexSearch = regex
+            self.regexScope = request.inSelection ? selection : nil
+            if request.replaceAll, let template = request.replacement {
+                self.replaceAllRegex(regex, template: template)
+            } else {
+                // From the caret, not one past it: `advance` exists to step off a match you are
+                // already sitting on, and using it to *start* skips a match that begins exactly
+                // where the cursor is — which is the first one in the file when nothing is selected.
+                self.stepRegex(forwards: true,
+                               startingAt: self.regexScope?.location ?? selection.location)
+            }
+        }
+        regexDialog = dialog          // held: a sheet does not retain its window controller
+        dialog.present(over: window)
+    }
+
+    /// Move the selection to the next (or previous) match of the pattern in force.
+    private func stepRegex(forwards: Bool, startingAt: Int? = nil) {
+        guard let regex = regexSearch else { return }
+        let text = textView.string
+        let selection = textView.selectedRange()
+        let scope = clampedRegexScope(in: text)
+        let hit = forwards
+            ? RegexTextSearch.next(regex, in: text,
+                                   from: startingAt ?? RegexTextSearch.advance(past: selection),
+                                   scope: scope)
+            : RegexTextSearch.previous(regex, in: text, before: selection.location, scope: scope)
+        guard let hit else {
+            window?.subtitle = String(localized: "No match for that pattern")
+            NSSound.beep()
+            return
+        }
+        textView.setSelectedRange(hit)
+        textView.scrollRangeToVisible(hit)
+        textView.showFindIndicator(for: hit)
+        let total = RegexTextSearch.all(regex, in: text, scope: scope).count
+        window?.subtitle = String(localized: "\(total) match(es) for “\(regexPattern)”")
+    }
+
+    /// Rewrite every match in one undoable step, and say how many.
+    private func replaceAllRegex(_ regex: NSRegularExpression, template: String) {
+        let text = textView.string
+        let scope = clampedRegexScope(in: text) ?? NSRange(location: 0, length: (text as NSString).length)
+        let out = RegexTextSearch.replaceAll(regex, in: text, template: template, scope: scope)
+        guard out.count > 0 else {
+            window?.subtitle = String(localized: "No match for that pattern")
+            NSSound.beep()
+            return
+        }
+        // Through the same primitive the line operations use, so it is a single undo step with a
+        // name in the Edit menu rather than an unattributed change.
+        guard EditorTextFilter.replace(scope, with: out.text, in: textView,
+                                       actionName: String(localized: "Replace All")) else {
+            window?.subtitle = String(localized: "This document is not editable")
+            return
+        }
+        let replaced = NSRange(location: scope.location, length: (out.text as NSString).length)
+        textView.setSelectedRange(replaced)
+        textView.scrollRangeToVisible(replaced)
+        // The scope moved with the replacement; keeping the old one would scope the next Replace All
+        // to a range that no longer describes the same text.
+        regexScope = regexScope == nil ? nil : replaced
+        window?.subtitle = String(localized: "Replaced \(out.count) match(es)")
+    }
+
+    /// The search scope, clipped to the document as it is now — it may have shrunk under an edit.
+    private func clampedRegexScope(in text: String) -> NSRange? {
+        guard let scope = regexScope else { return nil }
+        let length = (text as NSString).length
+        let location = min(max(0, scope.location), length)
+        return NSRange(location: location, length: min(scope.length, length - location))
     }
 
     private func promptGotoLine() {
