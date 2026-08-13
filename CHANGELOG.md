@@ -12,7 +12,7 @@ were reconstructed from the git history and the notes in `STATE.md` when it was 
 `README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
 does not have.
 
-## [Unreleased]
+## [0.6.2] — 2026-08-13
 
 ### Fixed
 
@@ -29,6 +29,28 @@ does not have.
   the local disk as an archive, so the plugin's own delete was never called. The same hole made deleting
   a file on an FTP or WebDAV server do nothing. Deleting now goes through whatever the panel is actually
   showing. A second F8 on a process that ignores the polite request still escalates to a force quit.
+
+- **An open connection is a drive of its own now.** Connecting to an FTP, SFTP or WebDAV server used
+  to leave the drive bar showing your startup disk as the current one, with the tab titled "/" — the
+  panel was on a remote server and nothing on screen said so. A connection now gets its own button in
+  the drive bar for as long as it lasts: click it from either panel to go back to that server, and
+  right-click it to disconnect. Walking up out of the mount, the Disconnect command and quitting the
+  app all hang the connection up properly as well.
+- **The keyboard-shortcut recorder took no keys at all.** Configuration ▸ Edit Shortcuts ▸ Record put
+  up a sheet asking for a key and then ignored every one of them, Esc included, so the only way out
+  was to quit. It records again, ⌘ combinations included — those used to run the menu command instead
+  of being captured — and the "reassigned" note no longer appears on top of a sheet that is still
+  asking for a key.
+- **The connection dialog no longer offers settings that cannot work.** Switching a site from FTP to
+  SFTP left port 21 in the field, so it could not connect. "Anonymous" and passive mode stayed
+  available for SFTP, which has neither; a proxy could be set on an FTPS site that cannot use one; and
+  an HTTP proxy was offered for FTP and then spoken to as if it were SOCKS5. Settings that do not
+  apply to the chosen protocol are greyed out, the port follows the protocol unless you typed one
+  yourself, and whatever is left that cannot work is named in the dialog instead of surfacing later as
+  a connection error.
+- **A plugin drive can be disconnected like any other connection.** "FTP Disconnect" did nothing at
+  all on a WebDAV or Task Manager mount, and a plugin was never told to close its connection when the
+  app quit — it was simply killed with the connection still open.
 
 ### Added
 
@@ -65,6 +87,18 @@ does not have.
   is prefilled from the cursor in the other panel, and the cursor jumps to the first process that can
   change the file. *Clear File Highlight* removes the colours; leaving the process list removes them
   too. As with the port search, other users' processes need elevated privileges to inspect.
+
+- **SFTP with a key of your own.** The connection dialog has a key-file field (with a chooser that
+  starts in ~/.ssh), and the password field becomes a passphrase field when a key is named — so an
+  encrypted key, or a key kept somewhere other than ~/.ssh, can be used at all. An ssh-agent and the
+  usual ~/.ssh/id_* keys worked before and still do without any setting. A key file that is not there
+  is refused with a clear message rather than silently falling back to a different key.
+- **Servers that do not speak UTF-8.** A site can be set to latin-1, and that setting is finally read:
+  names in listings are decoded that way *and* sent back that way. Before, it round-tripped through
+  the configuration file and reached nothing, so names on such a server came out as mojibake — and a
+  name the panel cannot spell is one it cannot open, rename or delete either.
+- **A site can open a local folder beside it.** The "Local dir" of a connection opens in the other
+  panel when you connect — the pairing a transfer wants. This too had been stored and ignored.
 
 ## [0.6.1] — 2026-08-12
 
@@ -543,6 +577,7 @@ this is the release to take.
 First public beta: dual-pane browsing, the file operation engine, archives, the viewer and editor, FTP,
 plugins, and the settings.
 
+[0.6.2]: https://github.com/hkiam/PeachCommander/releases/tag/v0.6.2
 [0.6.1]: https://github.com/hkiam/PeachCommander/releases/tag/v0.6.1
 [0.6.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.6.0
 [0.5.0]: https://github.com/hkiam/PeachCommander/releases/tag/v0.5.0
