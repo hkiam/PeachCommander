@@ -218,6 +218,14 @@ extension MainWindowController {
             case "listerdump":                          // listerdump <outfile>: what the viewer window shows
                 let out = currentLister()?.automationSummary() ?? "ERROR: no lister window\n"
                 try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+            case "listerfind":                          // listerfind <pattern>|<regex 0|1>|<out>
+                let f = arg.split(separator: "|", maxSplits: 2).map(String.init)
+                if f.count == 3 {
+                    let out = currentLister()?.automationFind(f[0], regex: f[1] == "1",
+                                                              caseInsensitive: false)
+                        ?? "ERROR: no lister window\n"
+                    try? out.write(toFile: f[2], atomically: true, encoding: .utf8)
+                }
             case "listerzoom":                          // listerzoom <in|out|actual|fit|state>|<out> (F-389)
                 let z = arg.split(separator: "|", maxSplits: 1).map(String.init)
                 if z.count == 2 {

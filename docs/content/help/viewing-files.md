@@ -22,6 +22,8 @@ Peach Commander has a built-in viewer that lets you look inside a file without o
 ## Find text and change the encoding
 
 - Press Ctrl+F to search within the file. Press F3 to jump to the next match and Shift+F3 for the previous one.
+- Tick **Regular expression** in the Find box to search with a pattern instead of plain text — `ERROR \d+`, or `^Warning` for lines that begin with it. `^` and `$` mean the start and end of a line. A pattern that will not compile is reported as such, rather than quietly finding nothing.
+- Very large files are searched in overlapping windows, so a single match longer than about 64 KB may be missed if it happens to straddle a window edge. Plain text search has no such limit, and neither does a pattern that matches something shorter.
 - If text looks garbled, click Encoding in the toolbar (or press E) to cycle through text encodings until it reads correctly; the automatic setting usually gets it right.
 - Press W to toggle word wrap for long lines.
 
