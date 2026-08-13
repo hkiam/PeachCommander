@@ -99,7 +99,19 @@ Two more found while verifying it in the running app:
 
 Verified in the app through the real UI (AX: select a row, click Aufnehmen…, press a key): Esc closes
 the sheet and writes nothing; Ctrl+Shift+F9 writes `C+S+F9=cm_BottomArea` to keymap-user.ini, and the
-sheet is already gone while the alert is up.
+sheet is already gone while the alert is up. The cause was then confirmed by instrumenting the broken
+build rather than argued: `makeFirstResponder=true`, `KeyCaptureController deinit`, `view keyDown
+hasHandler=true` — and no `handle` line, because the closure's `[weak self]` had gone nil. The first
+responder was never the problem.
+
+**And a harness finding worth more than the fix.** The XCUITest written to guard this passes against
+the *broken* build. Two versions of it did: one asserting the sheet disappears (it disappears anyway,
+once its controller is gone) and one asserting the binding lands in keymap-user.ini — which under
+`XCUIElement.typeKey` it does, even with a dead handler, measured against the same binary that fails
+when driven by System Events `key code`. Why XCUITest's typing survives a handler that real keystrokes
+do not reach was not established. The test is kept, relabelled as the happy-path smoke test it is, with
+that written in its header: **an XCUITest can type into a dialog that is, to a user, completely dead.**
+Anything of this class needs the AX route or an outcome check, not a UI-moved check.
 
 ## 2026-08-13 (FTP settings) — Three that round-tripped and did nothing, and the SFTP key
 
