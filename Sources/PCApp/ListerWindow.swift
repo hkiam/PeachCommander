@@ -31,6 +31,11 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     private var mode: Mode = .text
     private var slice: FileSlice?
     private var lastNeedle: [UInt8] = []
+    /// The compiled pattern when the last search was a regular expression, else nil.
+    ///
+    /// Kept beside `lastNeedle` rather than replacing it: F3 repeats whichever kind of search was
+    /// started, and the byte needle is still what the plain path and the hex mode use.
+    private var lastRegex: NSRegularExpression?
     private var searchOffset: Int64 = 0
     /// Offset of the last match found (for backward search from before it).
     private var lastMatchOffset: Int64 = 0
@@ -1369,6 +1374,30 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     }
 
     #if DEBUG
+    /// Run a search from the automation runner and report where it landed.
+    ///
+    /// Here because the viewer's find is a modal dialog and its result is a scroll position — "did
+    /// the pattern match, and at which byte" is otherwise a question only somebody watching the
+    /// window can answer, and the regex path is precisely the one whose offsets are easy to get
+    /// subtly wrong.
+    func automationFind(_ pattern: String, regex: Bool, caseInsensitive: Bool) -> String {
+        searchCaseInsensitive = caseInsensitive
+        lastRegex = nil
+        if regex {
+            let made = ChunkRegexSearcher.compile(pattern, caseInsensitive: caseInsensitive)
+            guard let compiled = made.regex else { return "error=\(made.error ?? "unknown")\n" }
+            lastRegex = compiled
+        }
+        lastNeedle = Array(pattern.utf8)
+        searchOffset = 0
+        // Cleared first: `findNext` leaves the previous hit in place when it finds nothing, so a
+        // stale value would read as a match and make this check unable to fail.
+        lastMatchOffset = -1
+        findNext()
+        let found = lastMatchOffset >= 0
+        return "regex=\(regex)\nfound=\(found)\nmatch=\(found ? String(lastMatchOffset) : "-")\n"
+    }
+
     /// Diagnostic: force word-wrap on (for automation screenshots).
     func automationEnableWrap() { wrapText = true; rebuildContent() }
     /// Diagnostic: force binary mode (for automation screenshots).
@@ -1490,13 +1519,28 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         let dialog = InputDialog(title: String(localized: "Find"), prompt: prompt,
                                  initialValue: String(bytes: lastNeedle, encoding: .utf8) ?? "",
                                  checkboxTitle: String(localized: "Ignore case"),
-                                 checkboxOn: searchCaseInsensitive)
+                                 checkboxOn: searchCaseInsensitive,
+                                 // Not offered in hex mode: there the text is a byte sequence, and a
+                                 // pattern over bytes is a different feature that nobody asked for.
+                                 secondCheckboxTitle: hexMode ? nil : String(localized: "Regular expression"),
+                                 secondCheckboxOn: lastRegex != nil)
         dialog.onConfirm = { [weak self, weak dialog] text in
             guard let self, !text.isEmpty else { return }
             self.searchCaseInsensitive = dialog?.isChecked ?? true
-            // In hex mode, a valid hex sequence (e.g. "48 65") searches those bytes;
-            // otherwise the text is searched as UTF-8.
-            if hexMode, let bytes = ByteSearch.parseHex(text), !bytes.isEmpty {
+            let wantsRegex = !hexMode && (dialog?.isSecondChecked ?? false)
+            self.lastRegex = nil
+            if wantsRegex {
+                let made = ChunkRegexSearcher.compile(text, caseInsensitive: self.searchCaseInsensitive)
+                guard let regex = made.regex else {
+                    // A pattern that will not compile finds nothing, which reads exactly like "the
+                    // text is not in this file" — so say which it was.
+                    self.presentSearchProblem(made.error ?? "")
+                    return
+                }
+                self.lastRegex = regex
+                self.lastNeedle = Array(text.utf8)   // so the dialog reopens showing the pattern
+            } else if hexMode, let bytes = ByteSearch.parseHex(text), !bytes.isEmpty {
+                // In hex mode, a valid hex sequence (e.g. "48 65") searches those bytes.
                 self.lastNeedle = bytes
             } else {
                 self.lastNeedle = Array(text.utf8)
@@ -1765,8 +1809,11 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         }
         if mode == .web { findInWeb(backwards: false); return }
         guard let slice else { return }
-        if let match = ChunkSearcher.search(lastNeedle, in: slice, from: searchOffset,
-                                            caseInsensitive: searchCaseInsensitive) {
+        let match = lastRegex.map {
+            ChunkRegexSearcher.search($0, in: slice, from: searchOffset, encoding: searchEncoding)
+        } ?? ChunkSearcher.search(lastNeedle, in: slice, from: searchOffset,
+                                  caseInsensitive: searchCaseInsensitive)
+        if let match {
             searchOffset = match + 1
             lastMatchOffset = match
             (contentView as? ListerScrollable)?.scroll(toByteOffset: match)
@@ -1774,6 +1821,19 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             NSSound.beep()
             searchOffset = 0
         }
+    }
+
+    /// The encoding a pattern is matched against — the one the viewer is displaying, so what the
+    /// expression sees is what the reader sees.
+    private var searchEncoding: String.Encoding { textEncoding?.encoding ?? .utf8 }
+
+    /// Report a pattern that will not compile, rather than letting it look like "not found".
+    private func presentSearchProblem(_ reason: String) {
+        let alert = NSAlert()
+        alert.messageText = String(localized: "That is not a valid regular expression")
+        alert.informativeText = reason
+        alert.alertStyle = .warning
+        if let window { alert.beginSheetModal(for: window) { _ in } } else { alert.runModal() }
     }
 
     /// Shift+F3: jump to the previous match (before the last one found).
@@ -1786,8 +1846,12 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         }
         if mode == .web { findInWeb(backwards: true); return }
         guard let slice else { return }
-        if let match = ChunkSearcher.searchBackward(lastNeedle, in: slice, before: lastMatchOffset,
-                                                    caseInsensitive: searchCaseInsensitive) {
+        let backMatch = lastRegex.map {
+            ChunkRegexSearcher.searchBackwards($0, in: slice, before: lastMatchOffset,
+                                               encoding: searchEncoding)
+        } ?? ChunkSearcher.searchBackward(lastNeedle, in: slice, before: lastMatchOffset,
+                                          caseInsensitive: searchCaseInsensitive)
+        if let match = backMatch {
             lastMatchOffset = match
             searchOffset = match + 1
             (contentView as? ListerScrollable)?.scroll(toByteOffset: match)
