@@ -28,13 +28,16 @@ public struct SearchTemplate: Codable, Equatable, Sendable {
     /// Attribute filters (F-152): nil = don't care, true/false = must be / must not be.
     public var requireHidden: Bool?
     public var requireReadOnly: Bool?
+    /// Report empty folders instead of files. See `SearchQuery.emptyDirectoriesOnly`.
+    public var emptyDirectoriesOnly: Bool = false
 
     public init(name: String, nameMask: String = "*.*", contentText: String? = nil,
                 caseSensitive: Bool = false, useRegex: Bool = false, wholeWord: Bool = false,
                 hexContent: String? = nil, minSize: Int64? = nil, maxSize: Int64? = nil,
                 modifiedAfter: Date? = nil, modifiedBefore: Date? = nil,
                 includeDirectories: Bool = false, contentEncodingAware: Bool = false, maxDepth: Int = 0,
-                requireHidden: Bool? = nil, requireReadOnly: Bool? = nil) {
+                requireHidden: Bool? = nil, requireReadOnly: Bool? = nil,
+                emptyDirectoriesOnly: Bool = false) {
         self.name = name
         self.nameMask = nameMask
         self.contentText = contentText
@@ -51,17 +54,49 @@ public struct SearchTemplate: Codable, Equatable, Sendable {
         self.maxDepth = maxDepth
         self.requireHidden = requireHidden
         self.requireReadOnly = requireReadOnly
+        self.emptyDirectoriesOnly = emptyDirectoriesOnly
+    }
+
+    /// Decode field by field, treating every one as optional.
+    ///
+    /// Written out rather than synthesized because the synthesized version does *not* fall back to
+    /// a property's default value — it throws on a missing key. Templates are saved to disk and
+    /// outlive the version that wrote them, so adding a single option to this struct would have
+    /// made every previously saved search fail to load, silently: `SearchTemplateStore.load`
+    /// answers `[]` for anything it cannot decode. Now a template written by an older build keeps
+    /// working, and so will one written by this build when the next option arrives.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        name = try c.decodeIfPresent(String.self, forKey: .name) ?? ""
+        nameMask = try c.decodeIfPresent(String.self, forKey: .nameMask) ?? "*.*"
+        contentText = try c.decodeIfPresent(String.self, forKey: .contentText)
+        caseSensitive = try c.decodeIfPresent(Bool.self, forKey: .caseSensitive) ?? false
+        useRegex = try c.decodeIfPresent(Bool.self, forKey: .useRegex) ?? false
+        wholeWord = try c.decodeIfPresent(Bool.self, forKey: .wholeWord) ?? false
+        hexContent = try c.decodeIfPresent(String.self, forKey: .hexContent)
+        minSize = try c.decodeIfPresent(Int64.self, forKey: .minSize)
+        maxSize = try c.decodeIfPresent(Int64.self, forKey: .maxSize)
+        modifiedAfter = try c.decodeIfPresent(Date.self, forKey: .modifiedAfter)
+        modifiedBefore = try c.decodeIfPresent(Date.self, forKey: .modifiedBefore)
+        includeDirectories = try c.decodeIfPresent(Bool.self, forKey: .includeDirectories) ?? false
+        contentEncodingAware = try c.decodeIfPresent(Bool.self, forKey: .contentEncodingAware) ?? false
+        maxDepth = try c.decodeIfPresent(Int.self, forKey: .maxDepth) ?? 0
+        requireHidden = try c.decodeIfPresent(Bool.self, forKey: .requireHidden)
+        requireReadOnly = try c.decodeIfPresent(Bool.self, forKey: .requireReadOnly)
+        emptyDirectoriesOnly = try c.decodeIfPresent(Bool.self, forKey: .emptyDirectoriesOnly) ?? false
     }
 
     /// Build a runnable query, supplying the per-search directory/scope.
     public func makeQuery(startDirectory: String, scopePaths: [String]? = nil) -> SearchQuery {
-        SearchQuery(nameMask: nameMask, startDirectory: startDirectory, maxDepth: maxDepth,
+        var query = SearchQuery(nameMask: nameMask, startDirectory: startDirectory, maxDepth: maxDepth,
                     contentText: contentText, caseSensitive: caseSensitive, minSize: minSize, maxSize: maxSize,
                     useRegex: useRegex, scopePaths: scopePaths, wholeWord: wholeWord,
                     hexContent: hexContent.flatMap { ByteSearch.parseHex($0) },
                     modifiedAfter: modifiedAfter, modifiedBefore: modifiedBefore,
                     includeDirectories: includeDirectories, contentEncodingAware: contentEncodingAware,
                     requireHidden: requireHidden, requireReadOnly: requireReadOnly)
+        query.emptyDirectoriesOnly = emptyDirectoriesOnly
+        return query
     }
 }
 

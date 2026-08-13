@@ -57,6 +57,7 @@ public final class FindFilesWindowController: NSWindowController {
     private let encodingCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let notContainingCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let includeDirsCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+    private let emptyDirsCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let searchArchivesCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     /// Search what a plugin makes of a file instead of the file's own bytes (F-351).
     ///
@@ -223,6 +224,11 @@ public final class FindFilesWindowController: NSWindowController {
         includeDirsCheckbox.title = String(localized: "Include folders in results")
         includeDirsCheckbox.font = Fonts.system13
         includeDirsCheckbox.toolTip = String(localized: "Also list folders whose name matches, not only files")
+        emptyDirsCheckbox.title = String(localized: "Empty folders only")
+        emptyDirsCheckbox.font = Fonts.system13
+        emptyDirsCheckbox.toolTip = String(localized: "List folders that contain nothing at all — including invisible entries, so a folder holding only a .DS_Store or a .git does not count as empty. Files are not listed.")
+        emptyDirsCheckbox.target = self
+        emptyDirsCheckbox.action = #selector(optionsChanged)
         searchArchivesCheckbox.title = String(localized: "Search inside archives (zip, jar, war, …)")
         searchArchivesCheckbox.font = Fonts.system13
         searchArchivesCheckbox.toolTip = String(localized: "Open zip-family archives (zip/jar/war/apk/…) and search their contents too")
@@ -321,6 +327,7 @@ public final class FindFilesWindowController: NSWindowController {
             inSelectionCheckbox,
             spotlightCheckbox,
             hStack([includeDirsCheckbox, searchArchivesCheckbox], spacing: 20),
+            emptyDirsCheckbox,
             pluginTextCheckbox,
             commentsCheckbox,
         ]))
@@ -542,15 +549,19 @@ public final class FindFilesWindowController: NSWindowController {
         caseSensitiveCheckbox.isEnabled = !hex && !spotlight
         maxDepthPopup.isEnabled = !spotlight
         inSelectionCheckbox.isEnabled = !spotlight
-        includeDirsCheckbox.isEnabled = !spotlight
-        searchArchivesCheckbox.isEnabled = !spotlight
+        // Looking for empty folders is a different question: there are no files to filter, no
+        // content to match, and no sizes to bound. Greyed out rather than accepted and ignored.
+        let emptyDirs = emptyDirsCheckbox.state == .on
+        emptyDirsCheckbox.isEnabled = !spotlight
+        includeDirsCheckbox.isEnabled = !spotlight && !emptyDirs
+        searchArchivesCheckbox.isEnabled = !spotlight && !emptyDirs
         // Spotlight answers from its own index and never opens the file, so no plugin can contribute
         // to it; and with no content term there is no text to search for.
         pluginTextCheckbox.isEnabled = !spotlight && findText
         // A comment search needs text to look for, and Spotlight answers a different question entirely.
         commentsCheckbox.isEnabled = !spotlight && findText && hexCheckbox.state != .on
-        sizeMinField.isEnabled = !spotlight
-        sizeMaxField.isEnabled = !spotlight
+        sizeMinField.isEnabled = !spotlight && !emptyDirs
+        sizeMaxField.isEnabled = !spotlight && !emptyDirs
         dateAfterCheckbox.isEnabled = !spotlight
         dateBeforeCheckbox.isEnabled = !spotlight
         dateAfterPicker.isEnabled = !spotlight && dateAfterCheckbox.state == .on
@@ -649,7 +660,8 @@ public final class FindFilesWindowController: NSWindowController {
             contentEncodingAware: encodingCheckbox.state == .on,
             maxDepth: depthValue(),
             requireHidden: Self.triState(hiddenAttrPopup),
-            requireReadOnly: Self.triState(readOnlyAttrPopup))
+            requireReadOnly: Self.triState(readOnlyAttrPopup),
+            emptyDirectoriesOnly: emptyDirsCheckbox.state == .on)
     }
 
     /// Map an Any/Yes/No popup to nil / true / false (F-152).
@@ -681,6 +693,7 @@ public final class FindFilesWindowController: NSWindowController {
         wholeWordCheckbox.state = t.wholeWord ? .on : .off
         encodingCheckbox.state = t.contentEncodingAware ? .on : .off
         includeDirsCheckbox.state = t.includeDirectories ? .on : .off
+        emptyDirsCheckbox.state = t.emptyDirectoriesOnly ? .on : .off
         sizeMinField.stringValue = t.minSize.map { ByteSize($0).formatted(style: .kb) } ?? ""
         sizeMaxField.stringValue = t.maxSize.map { ByteSize($0).formatted(style: .kb) } ?? ""
         dateAfterCheckbox.state = t.modifiedAfter != nil ? .on : .off

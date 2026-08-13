@@ -97,6 +97,19 @@ public struct SearchQuery: Sendable {
     /// decompiler, which is seconds per file, and nobody should pay that for a search they did not
     /// ask to work that way. Requires a `textProvider` on the search call.
     public var searchPluginText: Bool = false
+    /// Report empty directories instead of files — the folders left behind after a move or a
+    /// cleanup, which nothing else in the app can list.
+    ///
+    /// "Empty" means *no entries at all*, deliberately including the invisible ones. A folder
+    /// holding only a `.DS_Store` is therefore not empty, and neither is one holding only a `.git`.
+    /// That is the cautious reading on purpose: this search exists to find things to delete, and a
+    /// definition that hides a `.git` inside a folder it calls empty is a definition that loses
+    /// somebody's repository.
+    ///
+    /// A directory still has to pass the name mask and the date filter, so "empty folders called
+    /// build*" works. Content filters and size bounds are meaningless here and are ignored; files
+    /// are never reported. Directories below `maxDepth` are not listed and so cannot be judged.
+    public var emptyDirectoriesOnly: Bool = false
     /// Also look for the search text in a file's *comment* (F-373).
     ///
     /// A comment is where somebody wrote down why a file matters — "the customer's original", "superseded
@@ -256,7 +269,7 @@ public actor FileSearchEngine {
                         if Task.isCancelled { break }
                         guard let entry = try? await fs.stat(VFSPath(filesystemId: fs.scheme, path: path)) else { continue }
                         if Self.isDirectoryKind(entry.kind) {
-                            if query.includeDirectories,
+                            if query.includeDirectories, !query.emptyDirectoriesOnly,
                                Self.nameMatches(entry.name, compiled: compiled),
                                Self.datePasses(entry.modified, query: query) {
                                 continuation.yield(SearchHit(path: path))
@@ -328,6 +341,24 @@ public actor FileSearchEngine {
             return
         }
 
+        // Emptiness is judged here, where the listing already exists, rather than at the two places
+        // that emit a *child* directory: those run before the child has been listed, so they cannot
+        // know. A start directory that is itself empty is reported too — it is as much an answer to
+        // the question as any folder below it.
+        if query.emptyDirectoriesOnly, entries.isEmpty,
+           Self.nameMatches((path as NSString).lastPathComponent, compiled: compiled) {
+            // A date filter needs the folder's own timestamp, which the listing above does not
+            // carry. Asked for only when a filter is set, so the ordinary case costs no extra stat —
+            // and computed here rather than in the condition, because `||` takes its right side as a
+            // non-async autoclosure and cannot hold an `await`.
+            var passes = true
+            if query.modifiedAfter != nil || query.modifiedBefore != nil {
+                let modified = (try? await fs.stat(dirPath))?.modified
+                passes = modified.map { Self.datePasses($0, query: query) } ?? false
+            }
+            if passes { continuation.yield(SearchHit(path: Self.display(prefix, path))) }
+        }
+
         var files: [(entry: VFSEntry, childPath: String)] = []
         for entry in entries {
             if Task.isCancelled { return }
@@ -341,7 +372,7 @@ public actor FileSearchEngine {
                 continue
 
             case .directory, .appBundle, .package:
-                if query.includeDirectories,
+                if query.includeDirectories, !query.emptyDirectoriesOnly,
                    Self.nameMatches(entry.name, compiled: compiled),
                    Self.datePasses(entry.modified, query: query) {
                     continuation.yield(SearchHit(path: Self.display(prefix, childPath)))
@@ -513,6 +544,9 @@ public actor FileSearchEngine {
         continuation: AsyncStream<SearchHit>.Continuation,
         prefix: String
     ) async {
+        // A search for empty folders is not a search for files. The walk still descends — a folder
+        // is only known to be empty by listing it — but nothing it passes on the way is a hit.
+        guard !query.emptyDirectoriesOnly else { return }
         guard Self.passesMetaFilters(entry, query: query, compiled: compiled) else { return }
 
         let hasContentFilter = (query.contentText?.isEmpty == false) || (query.hexContent?.isEmpty == false)
