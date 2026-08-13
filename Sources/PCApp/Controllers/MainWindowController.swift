@@ -3230,6 +3230,29 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         return p
     }
 
+    /// Tell the user a mount went away, after the panel has already retreated out of it (F-214).
+    ///
+    /// This one *is* an alert, unlike an ordinary failed navigation. The panel has just moved on its
+    /// own and a drive has disappeared from the bar — changes the user did not ask for and would
+    /// otherwise have to reverse-engineer. Naming the connection matters for the same reason: with
+    /// two mounts open, "the connection was lost" leaves them to guess which.
+    func presentConnectionLost(_ name: String) {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = String(format: String(localized: "Connection to %@ was lost"), name)
+        alert.informativeText = String(localized: "The server stopped responding. The panel has returned to where you connected from; connect again to continue.")
+        alert.addButton(withTitle: String(localized: "OK"))
+        // A sheet, not `runModal`. The news is worth showing but it is not a question, and an
+        // app-modal alert stops everything — including the other panel, which is the one part of
+        // this that kept working while the connection was dying. It also freezes any script driving
+        // the app, which is how this path came to have no test at all.
+        if let window, window.isVisible {
+            alert.beginSheetModal(for: window) { _ in }
+        } else {
+            alert.runModal()
+        }
+    }
+
     private func presentInfo(_ message: String, _ detail: String) {
         // Defensive: NSAlert must be created and run on the main thread. Command
         // handlers are @MainActor, but this keeps any other caller safe too.
@@ -6505,7 +6528,33 @@ final class PanelController: NSObject, PanelControllerProtocol {
             startWatching(path)
         } catch {
             logger.error("Failed to load directory \(path): \(error)")
+            await reportLoadFailure(path, error)
         }
+    }
+
+    /// Say what went wrong, and for a connection that has died, hand the mount back.
+    ///
+    /// Until now this was a log line and nothing else, which meant a lost connection looked exactly
+    /// like the freeze it replaced: the panel simply stayed as it was and never said why. Worse
+    /// afterwards than before, because the session now *does* give up — so the user waits, nothing
+    /// changes, and there is still nothing to read.
+    ///
+    /// A dead mount is not left standing. Its listing is stale, every key in it will fail the same
+    /// way, and its drive chip invites a second attempt at a socket that is gone; `exitArchive`
+    /// already does the whole retreat — chip removed, session closed, panel back where it came in.
+    private func reportLoadFailure(_ path: String, _ error: Error) async {
+        guard case VFSError.connectionLost = error else {
+            // Everything else is about the directory, not the connection: a local folder that was
+            // deleted or refused. Said once, in the panel's own status line, rather than as a modal
+            // interruption to a navigation the user may already have moved on from.
+            view.showTransientMessage(String(format: String(localized: "Could not open %@"),
+                                             (path as NSString).lastPathComponent))
+            return
+        }
+        guard isInArchive else { return }
+        let name = mountedDriveVolume?.name ?? fs.scheme
+        await exitArchive()
+        (view.window?.windowController as? MainWindowController)?.presentConnectionLost(name)
     }
 
     func goBack() async {
@@ -7396,6 +7445,10 @@ final class PanelView: NSView {
     /// the same time — you can filter a folder and then type to jump within what is left — so one
     /// label would have to choose which of them to lie about.
     private let typeAheadLabel = NSTextField(labelWithString: "")
+    /// A short-lived failure message, over the path bar (F-214).
+    private let messageLabel = NSTextField(labelWithString: "")
+    /// Counts message postings so a later one cannot be cleared by an earlier one's timer.
+    private var messageGeneration = 0
     weak var controller: PanelController?
     // Toggleable bar heights (F-270): collapsed to 0 + hidden when off.
     private var driveBarHeightConstraint: NSLayoutConstraint!
@@ -7666,6 +7719,14 @@ final class PanelView: NSView {
         typeAheadLabel.isHidden = true
         addSubview(typeAheadLabel)
 
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+        messageLabel.font = Fonts.system13
+        messageLabel.textColor = .systemRed
+        messageLabel.backgroundColor = Theme.current.listBackground
+        messageLabel.drawsBackground = true
+        messageLabel.isHidden = true
+        addSubview(messageLabel)
+
         driveBarHeightConstraint = driveBar.heightAnchor.constraint(equalToConstant: 24)
         statusBarHeightConstraint = statusBar.heightAnchor.constraint(equalToConstant: Metrics.statusBarHeight)
         tabBarHeightConstraint = tabBar.heightAnchor.constraint(equalToConstant: 26)
@@ -7716,7 +7777,13 @@ final class PanelView: NSView {
             filterLabel.centerYAnchor.constraint(equalTo: pathBar.centerYAnchor),
             // Left of the filter's indicator, so both are readable when both are up.
             typeAheadLabel.trailingAnchor.constraint(equalTo: filterLabel.leadingAnchor, constant: -10),
-            typeAheadLabel.centerYAnchor.constraint(equalTo: pathBar.centerYAnchor)
+            typeAheadLabel.centerYAnchor.constraint(equalTo: pathBar.centerYAnchor),
+
+            // In the path bar with the other two indicators, and leading rather than trailing: a
+            // failure message is longer than "⌕ abc" and would otherwise be pushed off the edge by
+            // whatever else is up.
+            messageLabel.leadingAnchor.constraint(equalTo: pathBar.leadingAnchor, constant: 8),
+            messageLabel.centerYAnchor.constraint(equalTo: pathBar.centerYAnchor)
         ])
         treeWidthConstraint = treeView.widthAnchor.constraint(equalToConstant: 0)
         // How wide the tree column *should* be, not a rule about the world: the column and the file
@@ -7764,6 +7831,30 @@ final class PanelView: NSView {
         if usesGrid { refreshGrid() }
         if isTreeVisible { treeView.reveal(path: snapshot.path) }
         controller?.refreshComments()   // fills the opt-in descript.ion Comment column
+    }
+
+    /// Show `text` over the path bar for a few seconds (F-214).
+    ///
+    /// For the things that used to be a log line and nothing else — a folder that would not open, a
+    /// connection that went away. Deliberately not an alert: navigation failures are common enough
+    /// and unimportant enough that a modal for each would be worse than the silence it replaces, and
+    /// the user has usually moved on by the time it lands.
+    func showTransientMessage(_ text: String) {
+        messageGeneration += 1
+        let mine = messageGeneration
+        messageLabel.stringValue = text
+        messageLabel.isHidden = false
+        // The generation check is the whole reason this is not a stored timer: two failures in quick
+        // succession would otherwise leave the first one's timer to clear the second one's message.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+            guard let self, self.messageGeneration == mine else { return }
+            self.messageLabel.isHidden = true
+        }
+    }
+
+    /// The message currently shown, for tests and the automation harness.
+    var transientMessageForAutomation: String? {
+        messageLabel.isHidden ? nil : messageLabel.stringValue
     }
 
     // MARK: - View modes (TODOS #58)

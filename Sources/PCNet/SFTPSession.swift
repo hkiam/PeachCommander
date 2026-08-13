@@ -28,6 +28,12 @@ public enum SFTPError: Error, Equatable {
     case notConnected
     case opFailed(String, Int32)
     case notFound(String)
+    /// The connection died under an operation — timed out, or the socket went away.
+    ///
+    /// Distinct from `notConnected`, which means "there was never a session here". This one means
+    /// there was, and it is gone, so the caller can say so and hand the mount back instead of
+    /// reporting whatever the operation happened to be doing as a failure of its own.
+    case transportLost(String)
 }
 
 /// A one-way flag: starts open, closes once, and can be read from any thread.
@@ -61,6 +67,18 @@ public final class SFTPSession: @unchecked Sendable {
         /// returned 0, the code reported success, and the file was unchanged. Read from the header after
         /// an independent `stat` over ssh contradicted the app's own "applied=ok".
         static let setstat: Int32 = 2
+
+        // libssh2 error codes (libssh2.h). Only the ones that mean "the transport is gone" are
+        // listed: everything else is a protocol-level answer from a server that is still there.
+        static let errSocketSend: Int32 = -7
+        static let errTimeout: Int32 = -9
+        static let errSocketDisconnect: Int32 = -13
+        static let errSocketTimeout: Int32 = -30
+        static let errSFTPProtocol: Int32 = -31
+        static let errSocketRecv: Int32 = -43
+        /// LIBSSH2_FX_NO_SUCH_FILE — the SFTP status code, not a libssh2 error code.
+        static let fxNoSuchFile: UInt = 2
+        static let fxPermissionDenied: UInt = 3
     }
 
     private let queue = DispatchQueue(label: "com.peachcommander.sftp")
@@ -135,6 +153,32 @@ public final class SFTPSession: @unchecked Sendable {
                 try? await Task.sleep(nanoseconds: 1_500_000_000)
                 if !settled.isClosed { self?.interrupt() }
             }
+        }
+    }
+
+    /// Why the last call failed — asked of libssh2 rather than guessed from the return value.
+    ///
+    /// `libssh2_sftp_open_ex` answers NULL for "no such file" and for "the socket is gone" alike,
+    /// and every one of those call sites used to assume the first. So a connection dying mid-listing
+    /// told the user the directory did not exist — a wrong answer that reads as a confident one, and
+    /// invites them to go looking for a folder that is right where they left it.
+    ///
+    /// Only called on the session's queue, where `session`/`sftp` are safe to read.
+    private func lastFailure(_ op: String, path: String) -> SFTPError {
+        guard let s = session else { return .notConnected }
+        let code = libssh2_session_last_errno(s)
+        switch code {
+        case C.errTimeout, C.errSocketTimeout, C.errSocketSend, C.errSocketRecv, C.errSocketDisconnect:
+            return .transportLost(op)
+        case C.errSFTPProtocol:
+            // The server is there and answered with a status code, so this is about the file.
+            guard let ftp = sftp else { return .transportLost(op) }
+            let status = libssh2_sftp_last_error(ftp)
+            if status == C.fxNoSuchFile { return .notFound(path) }
+            if status == C.fxPermissionDenied { return .opFailed(op, Int32(bitPattern: UInt32(status))) }
+            return .opFailed(op, Int32(bitPattern: UInt32(status)))
+        default:
+            return .opFailed(op, code)
         }
     }
 
@@ -341,7 +385,9 @@ public final class SFTPSession: @unchecked Sendable {
     public func listDirectory(_ path: String) async throws -> [Entry] {
         try await run {
             guard let sftp = self.sftp else { throw SFTPError.notConnected }
-            guard let handle = libssh2_sftp_open_ex(sftp, path, UInt32(path.utf8.count), 0, 0, 1) else { throw SFTPError.notFound(path) }
+            guard let handle = libssh2_sftp_open_ex(sftp, path, UInt32(path.utf8.count), 0, 0, 1) else {
+                throw self.lastFailure("open dir", path: path)
+            }
             defer { _ = libssh2_sftp_close_handle(handle) }
             var out: [Entry] = []
             var buf = [CChar](repeating: 0, count: 1024)
@@ -363,7 +409,9 @@ public final class SFTPSession: @unchecked Sendable {
         try await run {
             guard let sftp = self.sftp else { throw SFTPError.notConnected }
             var attrs = LIBSSH2_SFTP_ATTRIBUTES()
-            guard libssh2_sftp_stat_ex(sftp, path, UInt32(path.utf8.count), 1, &attrs) == 0 else { throw SFTPError.notFound(path) }
+            guard libssh2_sftp_stat_ex(sftp, path, UInt32(path.utf8.count), 1, &attrs) == 0 else {
+                throw self.lastFailure("stat", path: path)
+            }
             let name = (path as NSString).lastPathComponent
             return Self.entry(name: name.isEmpty ? path : name, attrs: attrs)
         }
@@ -434,7 +482,7 @@ public final class SFTPSession: @unchecked Sendable {
             guard let sftp = self.sftp else { throw SFTPError.notConnected }
             guard let handle = libssh2_sftp_open_ex(sftp, path, UInt32(path.utf8.count),
                                                    C.fxfRead, 0, 0) else {
-                throw SFTPError.notFound(path)
+                throw self.lastFailure("download", path: path)
             }
             defer { _ = libssh2_sftp_close_handle(handle) }
             if offset > 0 { libssh2_sftp_seek64(handle, offset) }
@@ -497,7 +545,9 @@ public final class SFTPSession: @unchecked Sendable {
     public func read(_ path: String) async throws -> Data {
         try await run {
             guard let sftp = self.sftp else { throw SFTPError.notConnected }
-            guard let handle = libssh2_sftp_open_ex(sftp, path, UInt32(path.utf8.count), C.fxfRead, 0, 0) else { throw SFTPError.notFound(path) }
+            guard let handle = libssh2_sftp_open_ex(sftp, path, UInt32(path.utf8.count), C.fxfRead, 0, 0) else {
+                throw self.lastFailure("open", path: path)
+            }
             defer { _ = libssh2_sftp_close_handle(handle) }
             var data = Data()
             var buf = [UInt8](repeating: 0, count: 64 * 1024)
@@ -539,7 +589,7 @@ public final class SFTPSession: @unchecked Sendable {
         try await run {
             guard let sftp = self.sftp else { throw SFTPError.notConnected }
             guard let h = libssh2_sftp_open_ex(sftp, path, UInt32(path.utf8.count), C.fxfRead, 0, 0) else {
-                throw SFTPError.notFound(path)
+                throw self.lastFailure("open", path: path)
             }
             return h
         }

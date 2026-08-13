@@ -1612,7 +1612,12 @@ extension MainWindowController {
         }
         let path = await panel.getCurrentPath()
         let names = panel.tableView.currentVisibleEntries().map { $0.name }
-        let out = "path=\(path)\ncount=\(names.count)\n" + names.joined(separator: "\n") + "\n"
+        // A failure message is part of what the panel is *showing*, and without it a dump of a panel
+        // that could not open a directory is indistinguishable from one that did — which is how the
+        // silent-failure path stayed invisible to the harness for as long as it did.
+        let message = panel.view.transientMessageForAutomation.map { "message=\($0)\n" } ?? ""
+        let out = "path=\(path)\ncount=\(names.count)\n" + message
+            + names.joined(separator: "\n") + "\n"
         try? out.write(toFile: file, atomically: true, encoding: .utf8)
         NSLog("[automation] dumped \(names.count) entries of \(path) → \(file)")
     }
