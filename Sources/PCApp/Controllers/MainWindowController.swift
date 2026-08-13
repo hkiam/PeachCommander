@@ -7628,7 +7628,10 @@ final class PanelView: NSView {
             // why the cursor had stopped moving.
             let counted = total > 0 ? "  \(position.map(String.init) ?? "–")/\(total)" : ""
             self.typeAheadLabel.stringValue = "⌕ \(prefix)\(counted)"
-            self.typeAheadLabel.textColor = total > 0 ? Theme.current.selectedText : .systemRed
+            // `listText`, not `selectedText`: the latter is the colour of *marked files* — red in the
+            // default palette — so using it painted the indicator red whether or not anything
+            // matched, and the red that is supposed to mean "no match" said nothing at all.
+            self.typeAheadLabel.textColor = total > 0 ? Theme.current.listText : .systemRed
             self.typeAheadLabel.isHidden = false
         }
         tableView.onTypeToCommandLine = { [weak self] s in
@@ -7649,7 +7652,7 @@ final class PanelView: NSView {
 
         typeAheadLabel.translatesAutoresizingMaskIntoConstraints = false
         typeAheadLabel.font = Fonts.system13
-        typeAheadLabel.textColor = Theme.current.selectedText
+        typeAheadLabel.textColor = Theme.current.listText
         typeAheadLabel.backgroundColor = Theme.current.listBackground
         typeAheadLabel.drawsBackground = true
         typeAheadLabel.isHidden = true

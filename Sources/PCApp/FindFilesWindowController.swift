@@ -535,10 +535,16 @@ public final class FindFilesWindowController: NSWindowController {
     ///   ignores (regex, depth, selection, size/date/archives, and the content
     ///   refinements).
     private func updateOptionAvailability() {
-        let findText = findTextCheckbox.state == .on
         let spotlight = spotlightCheckbox.state == .on
+        // Looking for empty folders is a different question: there are no files, so nothing about
+        // their *content* applies. Everything below reads `findText`, so disabling the content
+        // search at the source disables all of it — the checkbox can stay ticked from a previous
+        // search without any of it quietly taking effect.
+        let emptyDirs = emptyDirsCheckbox.state == .on
+        let findText = findTextCheckbox.state == .on && !emptyDirs
         let hex = hexCheckbox.state == .on && findText && !spotlight
 
+        findTextCheckbox.isEnabled = !emptyDirs
         findTextField.isEnabled = findText
         hexCheckbox.isEnabled = findText && !spotlight
         wholeWordCheckbox.isEnabled = findText && !hex && !spotlight
@@ -549,9 +555,6 @@ public final class FindFilesWindowController: NSWindowController {
         caseSensitiveCheckbox.isEnabled = !hex && !spotlight
         maxDepthPopup.isEnabled = !spotlight
         inSelectionCheckbox.isEnabled = !spotlight
-        // Looking for empty folders is a different question: there are no files to filter, no
-        // content to match, and no sizes to bound. Greyed out rather than accepted and ignored.
-        let emptyDirs = emptyDirsCheckbox.state == .on
         emptyDirsCheckbox.isEnabled = !spotlight
         includeDirsCheckbox.isEnabled = !spotlight && !emptyDirs
         searchArchivesCheckbox.isEnabled = !spotlight && !emptyDirs
@@ -641,7 +644,9 @@ public final class FindFilesWindowController: NSWindowController {
     private func currentTemplate(name: String) -> SearchTemplate {
         let mask = nameMaskField.stringValue.isEmpty ? "*.*" : nameMaskField.stringValue
         let text = findTextField.stringValue
-        let hasText = findTextCheckbox.state == .on && !text.isEmpty
+        // The dialog greys the content search out for an empty-folder search; the template must
+        // agree, or a saved search would carry a term the engine ignores.
+        let hasText = findTextCheckbox.state == .on && !text.isEmpty && emptyDirsCheckbox.state != .on
         let isHex = hexCheckbox.state == .on
         return SearchTemplate(
             name: name,
