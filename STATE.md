@@ -73,6 +73,34 @@ id the plugin gives its connection (`webdav:host` → chip "host", kind WebDAV; 
 `NetworkConnectionID`, tested for the ids that are not that shape). A drive-chip mount still does *not*
 register — TaskManager keeps its one chip, checked.
 
+## 2026-08-13 (F-254, reported) — The shortcut recorder took no keys at all
+
+Reported: the Record sheet opens and then answers nothing, Esc included. It was a lifetime bug, and
+the shape is worth remembering. `NSWindowController` retains its window; a window does **not** retain
+its controller, and `beginSheet` retains only the panel. `KeyCaptureController` was held in a local in
+`recordShortcut`, so it deallocated the moment that method returned — while the sheet stayed on
+screen, because AppKit was holding the panel. Its key handler was `[weak self]`, so every keystroke
+resolved to nil and did nothing. A dialog that is visibly there and completely dead.
+
+Proved rather than reasoned: a 30-line AppKit probe presenting a sheet from a local controller reports
+`sheet still on screen: true` / `controller deallocated: true`, and the same probe in the fixed shape
+delivers all three test keys — a letter, a Ctrl chord and Esc. `KeysWindowController` now holds the
+capture controller and releases it in the sheet's completion.
+
+Two more found while verifying it in the running app:
+
+* A ⌘ chord could never be recorded. Key equivalents are offered to the key window's views before the
+  main menu, and this app's menu is full of them — so ⌘C ran Copy instead of being captured, and the
+  sheet went on waiting for a key it would never be given. `KeyCaptureView.performKeyEquivalent` now
+  claims the event, but only while it is the first responder.
+* The "reassigned" alert ran app-modally from *inside* the key handler, so the capture sheet stood
+  behind it still asking for a key that had already been pressed. The sheet is ended before the key is
+  reported now.
+
+Verified in the app through the real UI (AX: select a row, click Aufnehmen…, press a key): Esc closes
+the sheet and writes nothing; Ctrl+Shift+F9 writes `C+S+F9=cm_BottomArea` to keymap-user.ini, and the
+sheet is already gone while the alert is up.
+
 ## 2026-08-13 (FTP settings) — Three that round-tripped and did nothing, and the SFTP key
 
 **`encoding` is now read.** It went through ftp-sites.ini since the file was defined and reached
