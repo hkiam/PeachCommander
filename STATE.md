@@ -73,6 +73,57 @@ id the plugin gives its connection (`webdav:host` → chip "host", kind WebDAV; 
 `NetworkConnectionID`, tested for the ids that are not that shape). A drive-chip mount still does *not*
 register — TaskManager keeps its one chip, checked.
 
+## 2026-08-13 (PFX) — Disconnect was in the ABI all along; the host never called it
+
+Asked to make plugins support disconnect, and to extend the ABI if it did not allow it. It does:
+`PfxDisconnect(void *conn)` has been in `pfx.h` since it was written, and all three plugins with a
+connection implement it properly (TaskManager frees its `Conn`, WebDAV releases its retained object,
+SampleFS is a no-op). **No new ABI symbol was added**, and adding a `PfxDisconnectEx` for a reason
+code or a failure result would have been surface with no caller — the host offers no way to refuse a
+disconnect, and should not: that is how you get a mount you cannot get rid of.
+
+The gap was entirely on the host side, and it was three things:
+
+* `PFXFileSystem` did not conform to `DisconnectableFileSystem`, so `leaveNetworkMount`'s
+  `guard fs is DisconnectableFileSystem` made `cm_FtpDisconnect` a **silent no-op on every plugin
+  mount** — indistinguishable from a command that does not work.
+* The only call was `deinit`, fire-and-forget on the mount's queue. Nothing could await it, and
+  `deinit` does not run at process exit — so a plugin holding a socket or a lock file was killed
+  with it still open. `applicationShouldTerminate` now closes open mounts, next to the plugin-view
+  teardown that was already there.
+* Making it explicit is what made it *hard*: `PfxDisconnect` frees the plugin's own state, so a
+  disconnect arriving while the object is alive turns every later call into a use-after-free, and
+  simply adding the conformance would have made `deinit` free everything a second time.
+
+So the handle is now lock-guarded and **taken** rather than read — exactly-once by construction —
+and every call reaches the plugin through `withConnection`, which refuses to run after the handle is
+gone (`connectionLost(retryable: false)`) and holds the lock across the C call. That last part also
+closes an older hole: content-column reads call the plugin **synchronously from the main thread**
+while a listing may be running on the queue, which the ABI's "calls on one connection are
+serialised" has always forbidden and nothing enforced. The enumeration runs inside a single
+`withConnection`, so a find handle can never outlive its connection; a separate `closing` flag is
+what lets a disconnect interrupt a slow remote directory instead of queueing behind it.
+
+The contract is now written into `pfx.h` (all three synced copies) as a promise to plugin authors —
+exactly once, never concurrent, find handles closed first, and reached on quit — because a plugin
+freeing its state in `PfxDisconnect` is relying on every one of those, and none of them were stated.
+`SampleFsDisconnects` in the sample plugin makes them testable; `PFXFileSystemTests` pins
+once-only, still-called-when-simply-dropped, and refused-after-disconnect.
+
+Verified in the app: `pfxmount TaskManager` then `cm_FtpDisconnect` now leaves the mount (before:
+nothing happened), and the WebDAV chip's Disconnect still does.
+
+**Still unused in `FtpSite` and worth a decision:** `encoding`, `localDir` and `folder` round-trip
+through ftp-sites.ini and are read by nothing.
+
+**And a narrower gap than it first looks.** `FtpAuth.agent`/`.keyFile` cannot be chosen anywhere in the
+UI, and `connectToSite` reads `keyFile` only when `auth == .keyFile`, which no dialog can set. But
+`SFTPSession.authenticate` does not depend on the site saying so: it tries the ssh-agent first, then the
+password, then the named key file, then `~/.ssh/id_ed25519`, `id_rsa`, `id_ecdsa`. So the ordinary cases
+— an agent, or a default key — work today without any setting. What cannot be reached is a key at a
+*custom* path, and any passphrase-protected key when the agent does not hold it: `connectToSite` passes
+`keyPassphrase: nil`, which reaches libssh2 as `""`.
+
 ## 2026-08-13 (VM suite, cause) — One script looking in the wrong place, four "defects"
 
 Four of the five failures the suite reported were not defects. `build-ai-plugin.sh` looks for

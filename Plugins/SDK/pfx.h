@@ -125,7 +125,25 @@ void *PfxConnect(const PfxHostServices *services);
    e.g. "webdav:host"). Return 1 on success. */
 int  PfxConnectionId(void *conn, char *out, int maxlen);
 
-/* Close a connection previously returned by PfxConnect. */
+/* Close a connection previously returned by PfxConnect and release everything it
+   owns. `conn` is invalid on return.
+
+   What the host guarantees, so that a plugin can free its state here without
+   defending against the host:
+
+     * Called EXACTLY ONCE per handle returned by PfxConnect. A plugin never has
+       to guard against a second call, and must not be written to survive one.
+     * No call with that handle is in flight when this starts, and none is made
+       after it returns — not a listing, not a stat, not a content row. Calls on
+       one connection are serialised, so this waits for a running one rather than
+       racing it. A find handle from PfxFindFirst is always closed first, so it is
+       safe to allocate finds out of the connection's own state.
+
+   When it happens: the user closes the mount (its drive button's Disconnect, the
+   Disconnect command, or walking up out of it), or the app quits with the mount
+   still open. It is a deliberate act of the host, not a side effect of the host
+   releasing its last reference — so this is a place a plugin can flush to and
+   know it will be reached. */
 void PfxDisconnect(void *conn);
 
 /* ---- File operations on a connection ---------------------------------- */

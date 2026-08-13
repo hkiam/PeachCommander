@@ -33,7 +33,8 @@ final class PFXFileSystemTests: XCTestCase {
             let e = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
             throw XCTSkip("clang failed: \(e)")
         }
-        let hooks = ["SampleFsOpenFinds", "SampleFsFindNextCalls", "SampleFsResetCounters"]
+        let hooks = ["SampleFsOpenFinds", "SampleFsFindNextCalls", "SampleFsResetCounters",
+                     "SampleFsDisconnects"]
         guard case .success(let lib) = PluginLibrary.open(
             path: out.path, required: PFXSymbols.required, optional: PFXSymbols.optional + hooks) else {
             throw XCTSkip("open failed")
@@ -147,6 +148,84 @@ final class PFXFileSystemTests: XCTestCase {
         } catch let e as VFSError {
             if case .notFound = e {} else { XCTFail("expected notFound, got \(e)") }
         }
+    }
+
+    // MARK: - The disconnect contract (pfx.h)
+    //
+    // Disconnect used to happen in `deinit`, fire-and-forget, so `cm_FtpDisconnect` skipped plugin
+    // mounts entirely and a plugin had no reliable moment to let go. Now the host asks for it — and
+    // asking is what makes these three things worth pinning: `PfxDisconnect` frees the plugin's own
+    // state, so a second call is a double free, and any later call would be reading memory the
+    // plugin has already handed back.
+
+    private func resetCounters() {
+        typealias Reset = @convention(c) () -> Void
+        unsafeBitCast(lib.symbol("SampleFsResetCounters")!, to: Reset.self)()
+    }
+
+    func test_disconnect_reachesThePluginExactlyOnce() async throws {
+        resetCounters()
+        do {
+            let fs = makeFS()
+            await fs.disconnect()
+            XCTAssertEqual(hook("SampleFsDisconnects"), 1, "the plugin was not told to disconnect")
+            // Asking twice is what a second panel leaving the same mount looks like.
+            await fs.disconnect()
+            XCTAssertEqual(hook("SampleFsDisconnects"), 1, "disconnected twice")
+        }
+        // …and the object going away afterwards must not free the connection a second time. This is
+        // the double free the old `deinit`-only design would have caused the moment anything else
+        // called disconnect.
+        try await settle()
+        XCTAssertEqual(hook("SampleFsDisconnects"), 1, "deinit disconnected an already-closed mount")
+    }
+
+    func test_deallocWithoutAnExplicitDisconnect_stillTellsThePlugin() async throws {
+        // The other half: nothing that used to work may have stopped. A mount simply dropped —
+        // no command, no quit — is still handed back.
+        resetCounters()
+        do { _ = makeFS() }
+        try await settle()
+        XCTAssertEqual(hook("SampleFsDisconnects"), 1, "a dropped mount never reached PfxDisconnect")
+    }
+
+    func test_afterDisconnect_callsFailInsteadOfReachingTheFreedConnection() async throws {
+        resetCounters()
+        let fs = makeFS()
+        await fs.disconnect()
+
+        // Every entry point that would otherwise pass the handle back into the plugin. Each of
+        // these is a use-after-free if it is not refused — the connection has been freed.
+        do {
+            _ = try await fs.stat(vpath("/readme.txt"))
+            XCTFail("stat reached a disconnected mount")
+        } catch let e as VFSError {
+            XCTAssertEqual(e, .connectionLost(retryable: false))
+        }
+        do {
+            _ = try await collect(fs, "/")
+            XCTFail("list reached a disconnected mount")
+        } catch let e as VFSError {
+            XCTAssertEqual(e, .connectionLost(retryable: false))
+        }
+        // The column read has nowhere to report an error to, so it answers with an empty cell
+        // rather than a stale value — and, above all, without calling the plugin.
+        XCTAssertNil(fs.contentDisplay(fieldID: "sfs.kind", path: "/readme.txt"))
+        XCTAssertNil(fs.lookup(query: "anything"))
+        XCTAssertEqual(hook("SampleFsDisconnects"), 1, "a call after disconnect re-entered the plugin")
+    }
+
+    /// Give the deallocation and its queued `PfxDisconnect` a moment to land.
+    ///
+    /// Polling rather than a fixed sleep, for the same reason `waitForNoOpenHandles` does: the
+    /// disconnect is queued on the mount's serial queue, so asserting immediately is a race that
+    /// fails now and then and reads as a leak.
+    private func settle(timeout ticks: Int = 200) async throws {
+        var waited = 0
+        while hook("SampleFsDisconnects") == 0, waited < ticks {
+            try await Task.sleep(nanoseconds: 5_000_000); waited += 1
+        }
+        try await Task.sleep(nanoseconds: 20_000_000)   // and a beat for a *second*, wrong, call
     }
 
     func test_cancellingMidStream_stopsEnumeration_andClosesHandle() async throws {
