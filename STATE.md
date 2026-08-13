@@ -26,6 +26,35 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-13 (VM suite, cause) — One script looking in the wrong place, four "defects"
+
+Four of the five failures the suite reported were not defects. `build-ai-plugin.sh` looks for
+`PCAutomation.framework` via `xcodebuild -showBuildSettings`, which answers with the *default*
+DerivedData — empty on a machine that builds through `Tools/build.sh` (`-derivedDataPath build`). The
+script exited 1, `set -euo pipefail` in `build-all-plugins.sh` stopped the loop there, and everything
+after it in the list — AIColumn, iCloud, WebDAV — was never built either. `regress.py` then copied the
+incomplete bundle to the guest without looking at the exit code.
+
+So the guest ran an app with four plugins missing, and the suite reported the consequences:
+
+* `plugin-context-menu` — no AI submenu, because there was no AI plugin.
+* `surface-colours` — `windows=28` against a pinned 32, and `findings=0` all along: never a colour
+  defect, just four windows that no plugin was there to open.
+* `toolbar-drop` and `session-save` — both pass once the bundle is complete.
+
+Fixed at both ends: the script takes the repo's own build tree first (the same fix `resolve_app`
+needed), and `regress.py` grew `must()` — the plugin build, the app copy and the demo tree now stop the
+run instead of continuing with half a guest. All sixteen plugins build again, and all four scenarios
+pass in the VM.
+
+That is the third instance of one shape in this session: a tool that looks where this project does not
+put things, under a layer that does not check whether it worked. It is worth grepping the rest of
+`Tools/` for the same assumption.
+
+**Still open after this:** `keys-main` — the terminal's six controls (container, view, the zsh tab
+button, close, +, split) are outside the key-view loop, in both builds; a real accessibility defect.
+`preview-zoom` is timing-marginal on a cold guest, and `tree-colours` flaked once in five runs.
+
 ## 2026-08-13 (VM suite) — What the regression found once it was running again
 
 With `resolve_app` fixed and the demo tree provisioned from `regress.py` (it was only ever created by

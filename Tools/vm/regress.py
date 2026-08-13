@@ -1562,6 +1562,20 @@ def sh(cmd, **kw):
     return subprocess.run(cmd, capture_output=True, text=True, **kw)
 
 
+def must(cmd, what, **kw):
+    """Run a setup step and STOP if it failed.
+
+    `sh` returns its result and nobody looked at it, which is how a run reached the scenarios with an
+    app bundle that had no binary in it and no AI plugin: both steps failed, said so on a stderr
+    nobody read, and the suite then reported the consequences as product defects. A setup step that
+    failed has no honest continuation."""
+    r = sh(cmd, **kw)
+    if r.returncode != 0:
+        sys.exit(f"{what} failed ({' '.join(str(c) for c in cmd)}):\n"
+                 + (r.stderr or r.stdout or "").strip()[-2000:])
+    return r
+
+
 def ssh_guest(ip, script):
     return sh(["ssh", *SSH, f"{GUEST}@{ip}", script])
 
@@ -1649,14 +1663,15 @@ def boot(app: str, run: str):
     # plugin surface in this app was unverified on screen, and a scenario touching one would have passed
     # by doing nothing. About a minute for all fifteen.
     say("building plugins into the bundle…")
-    sh([str(REPO / "Tools/build-all-plugins.sh"), str(Path(app) / "Contents/PlugIns")])
+    must([str(REPO / "Tools/build-all-plugins.sh"), str(Path(app) / "Contents/PlugIns")],
+         "building the plugins into the bundle")
     # The bundle must not be rebuilt while it is being copied. Building in another terminal during a run
     # produced an app that launched and then did nothing — no automation at all — and every scenario that
     # writes a report came back empty. That looked exactly like a product defect for half an hour.
     binary = Path(app) / "Contents/MacOS" / Path(app).stem
     before = binary.stat() if binary.exists() else None
-    sh(["rsync", "-a", "--delete", "-e", "ssh " + " ".join(SSH),
-        app.rstrip("/") + "/", f"{GUEST}@{ip}:pc-test/{APPNAME}/"])
+    must(["rsync", "-a", "--delete", "-e", "ssh " + " ".join(SSH),
+          app.rstrip("/") + "/", f"{GUEST}@{ip}:pc-test/{APPNAME}/"], "copying the app to the guest")
     after = binary.stat() if binary.exists() else None
     if before and after and (before.st_mtime, before.st_size) != (after.st_mtime, after.st_size):
         sys.exit("the app binary changed while it was being copied — something rebuilt it mid-run; "
@@ -1667,7 +1682,7 @@ def boot(app: str, run: str):
     # feature failing. Found while writing `process-files`: it held a file from that tree open, and the
     # search correctly answered that nobody had it open, because neither the file nor the tree existed.
     say("creating the demo tree in the guest…")
-    sh([str(Path(__file__).with_name("demo-content.sh")), ip])
+    must([str(Path(__file__).with_name("demo-content.sh")), ip], "creating the demo tree")
     sh(["scp", *SSH, str(Path(__file__).with_name("regress-guest.sh")), f"{GUEST}@{ip}:regress-guest.sh"])
     ssh_guest(ip, "chmod +x regress-guest.sh")
     # Structured fixtures for the outline scenarios (F-368) are files, not printf: YAML and XML are
