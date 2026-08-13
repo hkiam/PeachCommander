@@ -4,10 +4,12 @@ How a build gets from a tag to a downloadable disk image, what is automated toda
 and what still has to be done by hand. Referenced from
 `.github/workflows/release.yml` and `Tools/make-dmg.sh`.
 
-> **Status:** the packaging path is automated end to end; **signing and
-> notarization are not yet wired up**. Until they are, every DMG is unsigned and
-> Gatekeeper will refuse it on a normal double-click (right-click → **Open**
-> works). See [Signing & notarization](#signing--notarization).
+> **Status:** the packaging path is automated end to end, and so are signing and
+> notarization — but they are **dormant for want of credentials**. The workflow
+> looks for the secrets, finds none, warns, and produces an unsigned DMG, which
+> Gatekeeper refuses on a normal double-click (right-click → **Open** works).
+> Adding the secrets is the whole remaining step; no code changes. See
+> [Signing & notarization](#signing--notarization).
 
 ## The pipeline
 
