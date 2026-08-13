@@ -161,4 +161,28 @@ final class SFTPTimeoutTests: XCTestCase {
             XCTAssertLessThan(Date().timeIntervalSince(start), 20)
         }
     }
+    // MARK: - Host-key fingerprints
+
+    func test_theFingerprintMatchesWhatSshItselfPrints() throws {
+        // A fingerprint the user cannot compare character for character with the one the server's
+        // operator published is one they will approve without reading. So the format is not "some
+        // hash of the key" — it is exactly ssh's, and this checks it against ssh's own answer
+        // rather than against our own idea of it.
+        //
+        // Both constants came out of OpenSSH, not out of this code: the blob is the RSA host key
+        // `ssh-keyscan` reported for a test server, and the fingerprint is what `ssh-keygen -lf`
+        // printed for that very line.
+        let key = try XCTUnwrap(Data(base64Encoded: Self.sampleHostKey))
+        XCTAssertEqual(SFTPSession.fingerprint(of: key), "SHA256:ekoXCyU8CQ4iieFFwOKSEKr4VtPavRv6dvCxjuMIlZw")
+    }
+
+    func test_theFingerprintCarriesNoBase64Padding() throws {
+        // ssh strips it. A padded one differs from the published fingerprint in its last two
+        // characters — visible, confusing, and exactly where attention has run out.
+        let key = try XCTUnwrap(Data(base64Encoded: Self.sampleHostKey))
+        XCTAssertFalse(SFTPSession.fingerprint(of: key).hasSuffix("="))
+    }
+
+    /// An RSA host key blob, as `ssh-keyscan` prints it. Public by nature; nothing secret here.
+    private static let sampleHostKey = "AAAAB3NzaC1yc2EAAAADAQABAAABAQC6OBveUHLKnkNxhjTGKTnyPElZYhR7ee6IcWsAnbFsnrwot9fKZvqXivLdp8SEvPgCGxQXBxC0cwI+IYEdgpgknZeEBvZb/9XlBrPXGHJhhm/dPOluKd8u3xjuA47oDzB3np4d4g4t0ke/MrchhYtaVaktd/PoV0GHK62o49HiIyO3++RsrzD0Fllubvf2yF3ehHyc5rz8fFLSKswt2ihQwJJmm04DSOwI30qS9yPP+gWYhDZU45wrhN3CsvSLrYH+/XxMfZkzmkiwmawOMRI7bqgGhnUI95t0Tw7UEjOii4BPo0GLmxC1fnABEHpmDhoFZugzY2KaTMF3OEfcSKKJ"
 }

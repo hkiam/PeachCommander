@@ -1693,18 +1693,36 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             let keyFile = usingKey ? site.keyFile.map { ($0 as NSString).expandingTildeInPath } : nil
             let secret = password.isEmpty ? nil : password
             Task { @MainActor in
-                do {
-                    let sftp = SFTPSession()
-                    try await sftp.connect(host: site.host, port: UInt16(site.port), user: sftpUser,
-                                           password: usingKey ? nil : secret,
-                                           keyFile: keyFile,
-                                           keyPassphrase: usingKey ? secret : nil)
-                    let fs = SFTPFileSystem(session: sftp, fsID: "sftp:\(site.host)",
-                                            transferViaSCP: site.useSCP)
-                    self.mountConnection(fs, site: site, fsType: "SFTP")
-                } catch {
-                    self.presentInfo(String(localized: "Connection failed"),
-                                     String(localized: "Could not connect to \(site.host): \(String(describing: error))"))
+                // Twice at most: a host nobody has met before comes back asking to be trusted, and
+                // the second attempt carries the answer. Looping rather than recursing so "at most
+                // once more" is a property of the code and not of the reader's attention.
+                var trustNew = false
+                for attempt in 0..<2 {
+                    do {
+                        let sftp = SFTPSession()
+                        try await sftp.connect(host: site.host, port: UInt16(site.port), user: sftpUser,
+                                               password: usingKey ? nil : secret,
+                                               keyFile: keyFile,
+                                               keyPassphrase: usingKey ? secret : nil,
+                                               trustingNewHostKey: trustNew)
+                        let fs = SFTPFileSystem(session: sftp, fsID: "sftp:\(site.host)",
+                                                transferViaSCP: site.useSCP)
+                        self.mountConnection(fs, site: site, fsType: "SFTP")
+                        return
+                    } catch SFTPError.hostKeyUnknown(let shownHost, let fingerprint) where attempt == 0 {
+                        guard self.confirmNewHostKey(host: shownHost, fingerprint: fingerprint) else { return }
+                        trustNew = true
+                    } catch SFTPError.hostKeyMismatch {
+                        // Deliberately not offered as something to accept: the whole value of having
+                        // recorded a key is that the answer here is no.
+                        self.presentInfo(String(localized: "Host key changed"),
+                                         String(format: String(localized: "The host key for %@ does not match the one on file. This can mean the server was rebuilt — or that something is impersonating it. Connection refused."), site.host))
+                        return
+                    } catch {
+                        self.presentInfo(String(localized: "Connection failed"),
+                                         String(localized: "Could not connect to \(site.host): \(String(describing: error))"))
+                        return
+                    }
                 }
             }
             return
@@ -3236,6 +3254,25 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// own and a drive has disappeared from the bar — changes the user did not ask for and would
     /// otherwise have to reverse-engineer. Naming the connection matters for the same reason: with
     /// two mounts open, "the connection was lost" leaves them to guess which.
+    /// Ask before trusting a host key that is not on file yet — ssh's first-connect question.
+    ///
+    /// Modal, and one of the few things in this app that should be: it is a decision, connecting
+    /// cannot proceed without it, and answering it appends a line to `~/.ssh/known_hosts` — a file
+    /// outside this app's own configuration, shared with ssh and everything else that reads it. That
+    /// used to happen silently, which committed the user to trusting a key they had never seen.
+    ///
+    /// The fingerprint is shown in ssh's own `SHA256:…` spelling so it can be compared character for
+    /// character with `ssh-keygen -lf` or whatever the server's operator published.
+    func confirmNewHostKey(host: String, fingerprint: String) -> Bool {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = String(format: String(localized: "The authenticity of %@ can’t be established"), host)
+        alert.informativeText = String(format: String(localized: "Key fingerprint: %@\n\nIf this matches the fingerprint the server’s operator gave you, it is safe to continue. Continuing records the key in ~/.ssh/known_hosts, and a later change to it will be refused."), fingerprint)
+        alert.addButton(withTitle: String(localized: "Connect"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
+        return alert.runModal() == .alertFirstButtonReturn
+    }
+
     func presentConnectionLost(_ name: String) {
         let alert = NSAlert()
         alert.alertStyle = .warning
