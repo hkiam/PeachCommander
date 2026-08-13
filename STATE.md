@@ -73,6 +73,40 @@ id the plugin gives its connection (`webdav:host` → chip "host", kind WebDAV; 
 `NetworkConnectionID`, tested for the ids that are not that shape). A drive-chip mount still does *not*
 register — TaskManager keeps its one chip, checked.
 
+## 2026-08-13 (FTP settings) — Three that round-tripped and did nothing, and the SFTP key
+
+**`encoding` is now read.** It went through ftp-sites.ini since the file was defined and reached
+neither the listing nor the wire, so a latin-1 server listed "Größe.txt" as mojibake — and a name the
+panel cannot spell is one it cannot open, rename or delete either. Both directions are set together
+(`FTPControlConnection.setEncoding` → listing decode + `setCommandEncoding` on the transport, an
+optional protocol method with a no-op default so mocks are untouched): decoding a listing correctly
+and then sending the name back as UTF-8 trades unreadable names for a file the server says is not
+there. The decode falls back UTF-8 → latin-1 rather than to replacement characters, because U+FFFD
+destroys the byte it stands for and the name can then never be sent back.
+
+**`localDir` is now read.** The site's local folder opens in the *other* panel on connect — the
+pairing a transfer wants, and what the key has meant since it was defined. Only when it still exists;
+a folder that has been moved should not send the other panel somewhere arbitrary.
+
+**`folder` is kept and still unused,** deliberately: the connection manager is a flat list, so there
+is nothing to group by yet, and dropping the key would lose the grouping of anyone who has one.
+Recorded here rather than left looking like an oversight.
+
+**SFTP keys.** `auth` could only become `.password` or `.anonymous` from the dialog, so `site.keyFile`
+was unreachable however it got into the ini, and `connectToSite` passed `keyPassphrase: nil`. The
+ordinary cases were never broken — `SFTPSession.authenticate` tries the ssh-agent first and then
+`~/.ssh/id_*` regardless of what the site says — but a key at a path of one's own could not be chosen,
+and an encrypted key could not be opened unless the agent held it. There is now a key-file row (SFTP
+only, with a chooser that starts in ~/.ssh and shows hidden files), naming a key *is* the choice of
+key auth, the one secret field relabels itself "Passphrase:" and is passed to libssh2 as one, and a
+key file that is not there is refused rather than silently fallen back from — libssh2 skips a key it
+cannot open and tries the default, which surfaces as "authentication failed" against a server the
+default key may not even be enrolled at.
+
+Not verified end to end: this machine has no sshd, and setting one up means touching the user's
+~/.ssh. The rules and the ini round-trip are unit-tested; the libssh2 call itself is unchanged apart
+from which argument the secret goes into.
+
 ## 2026-08-13 (PFX) — Disconnect was in the ABI all along; the host never called it
 
 Asked to make plugins support disconnect, and to extend the ABI if it did not allow it. It does:

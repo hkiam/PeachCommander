@@ -59,9 +59,17 @@ public protocol FTPControlTransport: Sendable {
     func makeActiveData() async throws -> (data: FTPDataTransport, host: String, port: Int, isIPv6: Bool)
     /// Close the control connection.
     func close() async
+    /// Encode command lines with `encoding` rather than UTF-8 (a site's `encoding=latin-1`).
+    ///
+    /// A separate call rather than a parameter on `send`, because it is set once per connection
+    /// and every call site would otherwise have to carry it. Optional: a transport that has no
+    /// bytes of its own to encode (a scripted mock) ignores it.
+    func setCommandEncoding(_ encoding: String.Encoding) async
 }
 
 public extension FTPControlTransport {
+    func setCommandEncoding(_ encoding: String.Encoding) async {}
+
     /// Default: transports that don't support active mode (e.g. scripted mocks).
     func makeActiveData() async throws -> (data: FTPDataTransport, host: String, port: Int, isIPv6: Bool) {
         throw FTPError.notConnected

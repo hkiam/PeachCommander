@@ -35,6 +35,20 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
     // ini, and no way to set either — so an authenticated proxy could not be used at all (F-210).
     private let proxyUserField = NSTextField()
     private let proxyPasswordField = NSSecureTextField()
+    // SFTP key authentication. `SFTPSession` tries the ssh-agent first and then `~/.ssh/id_*`, so
+    // the common cases already worked without any setting — what had no way in was a key at a path
+    // of one's own, and a passphrase for an encrypted key when the agent is not holding it.
+    private let keyFileField = NSTextField()
+    private let keyFileButton = NSButton(title: "Choose…", target: nil, action: nil)
+    /// Relabelled with the authentication: the same field holds the account's password or the
+    /// key's passphrase, and libssh2 wants the passphrase *instead of* a password, not as well.
+    private let passwordLabel = NSTextField(labelWithString: "")
+    /// Name encoding on the wire, and the local folder the other panel opens on connect. Both
+    /// round-tripped through ftp-sites.ini since it was written and were read by nothing.
+    private let encodingPopup = NSPopUpButton()
+    private let localDirField = NSTextField()
+    private let localDirButton = NSButton(title: "Choose…", target: nil, action: nil)
+    private static let encodings = ["utf-8", "latin-1"]
     private let scpCheck = NSButton(checkboxWithTitle: "Transfer via SCP (SFTP only)", target: nil, action: nil)
     private let insecureTLSCheck = NSButton(checkboxWithTitle: "Accept self-signed certificate (FTPS)", target: nil, action: nil)
     /// What is wrong with the site as it currently stands, in the same words `connectToSite`
@@ -116,6 +130,29 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         let proxyLoginRow = NSStackView(views: [proxyUserField, proxyPasswordField])
         proxyLoginRow.orientation = .horizontal; proxyLoginRow.spacing = 6
 
+        keyFileField.delegate = self
+        keyFileField.placeholderString = String(localized: "blank = ssh-agent, then ~/.ssh/id_*")
+        keyFileButton.title = String(localized: "Choose…")
+        keyFileButton.bezelStyle = .rounded
+        keyFileButton.target = self; keyFileButton.action = #selector(chooseKeyFile)
+        keyFileButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        let keyFileRow = NSStackView(views: [keyFileField, keyFileButton])
+        keyFileRow.orientation = .horizontal; keyFileRow.spacing = 6
+
+        passwordLabel.stringValue = String(localized: "Password:")
+        passwordLabel.alignment = .right
+
+        for e in Self.encodings { encodingPopup.addItem(withTitle: e == "utf-8" ? "UTF-8" : "Latin-1") }
+        encodingPopup.target = self; encodingPopup.action = #selector(formControlChanged)
+        localDirField.delegate = self
+        localDirField.placeholderString = String(localized: "blank = leave the other panel alone")
+        localDirButton.title = String(localized: "Choose…")
+        localDirButton.bezelStyle = .rounded
+        localDirButton.target = self; localDirButton.action = #selector(chooseLocalDir)
+        localDirButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        let localDirRow = NSStackView(views: [localDirField, localDirButton])
+        localDirRow.orientation = .horizontal; localDirRow.spacing = 6
+
         let form = NSGridView(views: [
             [label(String(localized: "Name:")), nameField],
             [label(String(localized: "Host:")), hostField],
@@ -123,8 +160,11 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
             [label(String(localized: "Protocol:")), protoPopup],
             [label(String(localized: "User:")), userField],
             [NSGridCell.emptyContentView, anonymousCheck],
-            [label(String(localized: "Password:")), passwordField],
+            [label(String(localized: "Key file:")), keyFileRow],
+            [passwordLabel, passwordField],
             [label(String(localized: "Remote dir:")), remoteDirField],
+            [label(String(localized: "Local dir:")), localDirRow],
+            [label(String(localized: "Encoding:")), encodingPopup],
             [NSGridCell.emptyContentView, passiveCheck],
             [label(String(localized: "Proxy:")), proxyRow],
             [label(String(localized: "Proxy login:")), proxyLoginRow],
@@ -197,7 +237,10 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         hostField.stringValue = s.host
         portField.stringValue = String(s.port)
         userField.stringValue = s.user
+        keyFileField.stringValue = s.keyFile ?? ""
         remoteDirField.stringValue = s.remoteDir
+        localDirField.stringValue = s.localDir
+        encodingPopup.selectItem(at: Self.encodings.firstIndex(of: s.encoding.lowercased()) ?? 0)
         protoPopup.selectItem(at: Self.protoOrder.firstIndex(of: s.proto) ?? 0)
         anonymousCheck.state = s.auth == .anonymous ? .on : .off
         passiveCheck.state = s.passive ? .on : .off
@@ -235,6 +278,16 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         proxyPasswordField.isEnabled = gate(.proxyLogin)
         scpCheck.isEnabled = gate(.scp)
         insecureTLSCheck.isEnabled = gate(.insecureTLS)
+        keyFileField.isEnabled = gate(.keyFile)
+        keyFileButton.isEnabled = gate(.keyFile)
+        encodingPopup.isEnabled = gate(.encoding)
+        localDirField.isEnabled = gate(.localDir)
+        localDirButton.isEnabled = gate(.localDir)
+        // The one secret field says what it is being used for. libssh2 takes a passphrase *instead
+        // of* a password, not as well, so a field still labelled "Password" beside a key file would
+        // be describing something the connection never does.
+        passwordLabel.stringValue = s.auth == .keyFile
+            ? String(localized: "Passphrase:") : String(localized: "Password:")
         // An anonymous login is "anonymous" — showing the previous user name in a field the user
         // can no longer edit says the connection will use it, and it will not.
         if on, s.auth == .anonymous { userField.stringValue = s.user }
@@ -257,12 +310,23 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
         // from the protocol being replaced gave an ftp 21 to a site the user had just made SFTP.
         s.proto = Self.protoOrder[max(0, protoPopup.indexOfSelectedItem)]
         s.port = Int(portField.stringValue.trimmingCharacters(in: .whitespaces)) ?? s.proto.defaultPort
-        s.auth = anonymousCheck.state == .on ? .anonymous : .password
+        // A named key file *is* the choice of key authentication — there is no third checkbox to
+        // forget to tick, and `auth` was previously unable to become `.keyFile` from anywhere at
+        // all, which is what made `site.keyFile` unreachable however it got into the ini.
+        let key = keyFileField.stringValue.trimmingCharacters(in: .whitespaces)
+        s.keyFile = key.isEmpty ? nil : key
+        if anonymousCheck.state == .on {
+            s.auth = .anonymous
+        } else {
+            s.auth = (s.proto == .sftp && !key.isEmpty) ? .keyFile : .password
+        }
         // The anonymous login has one user name, and the field holding it is disabled — taking
         // whatever it still showed would save a name the connection never uses.
         s.user = s.auth == .anonymous ? "anonymous"
                                       : userField.stringValue.trimmingCharacters(in: .whitespaces)
         s.remoteDir = remoteDirField.stringValue
+        s.localDir = localDirField.stringValue.trimmingCharacters(in: .whitespaces)
+        s.encoding = Self.encodings[max(0, encodingPopup.indexOfSelectedItem)]
         let ph = proxyHostField.stringValue.trimmingCharacters(in: .whitespaces)
         s.proxyHost = ph.isEmpty ? nil : ph
         s.proxyPort = Int(proxyPortField.stringValue) ?? s.proxyPort
@@ -300,6 +364,36 @@ final class FtpConnectionManagerWindowController: NSWindowController, NSTableVie
             portField.stringValue = String(
                 FtpConnectionRules.port(changingTo: new, from: old, current: typed))
         }
+        commitForm()
+        updateEnabledState()
+    }
+
+    /// Pick a private key with the open panel. Starts in ~/.ssh and shows hidden files, because
+    /// that is where keys live and the directory itself is hidden — an open panel that cannot see
+    /// it would make the button useless for the one case it exists to serve.
+    @objc private func chooseKeyFile() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        panel.showsHiddenFiles = true
+        panel.directoryURL = URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent(".ssh")
+        panel.prompt = String(localized: "Choose")
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        keyFileField.stringValue = url.path
+        commitForm()
+        updateEnabledState()
+    }
+
+    /// Pick the local folder the other panel opens when this site connects.
+    @objc private func chooseLocalDir() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.prompt = String(localized: "Choose")
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        localDirField.stringValue = url.path
         commitForm()
         updateEnabledState()
     }

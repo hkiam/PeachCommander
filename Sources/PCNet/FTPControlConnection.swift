@@ -22,10 +22,36 @@ public actor FTPControlConnection {
     /// Background NOOP loop that keeps an idle control connection from being
     /// dropped by the server (Options → FTP / per-site keep-alive).
     private var keepAliveTask: Task<Void, Never>?
+    /// Encoding of file names in directory listings — UTF-8 unless the site says otherwise.
+    private var listingEncoding: String.Encoding = .utf8
 
     public init(transport: FTPControlTransport, controlHost: String) {
         self.transport = transport
         self.controlHost = controlHost
+    }
+
+    /// Read and write names in `encoding` rather than UTF-8 (a site's `encoding=latin-1`).
+    ///
+    /// The site setting round-tripped through ftp-sites.ini since it was written and was read by
+    /// nothing, so a server that speaks latin-1 listed "Gr\u{00F6}\u{00DF}e.txt" as mojibake — and a name
+    /// the panel cannot spell is a name it cannot open, rename or delete either. Both directions
+    /// are set together on purpose: decoding a listing correctly and then sending the name back in
+    /// another encoding trades unreadable names for a file the server says is not there.
+    public func setEncoding(_ encoding: String.Encoding) async {
+        listingEncoding = encoding
+        await transport.setCommandEncoding(encoding)
+    }
+
+    /// Bytes as text in `encoding`, falling back to UTF-8 and then to latin-1 — which cannot fail,
+    /// since every byte is a character in it. A listing is never worth dropping entirely: a name
+    /// that comes out wrong can still be looked at, and one that never arrives cannot.
+    static func decode(_ bytes: Data, as encoding: String.Encoding) -> String {
+        if let text = String(data: bytes, encoding: encoding) { return text }
+        if let text = String(data: bytes, encoding: .utf8) { return text }
+        // Latin-1 last because it cannot fail — and because it beats UTF-8's replacement
+        // character, which destroys the byte it stands for: a name shown with U+FFFD can no longer
+        // be sent back to the server, while a mojibake one still round-trips and still opens.
+        return String(data: bytes, encoding: .isoLatin1) ?? String(decoding: bytes, as: UTF8.self)
     }
 
     // MARK: - Low-level helpers
@@ -168,7 +194,7 @@ public actor FTPControlConnection {
         let bytes = try await data.readAll()
         await data.close()
         try require(try await transport.readReply(), verb, accept: 200..<300)
-        return FTPListParser.parse(String(decoding: bytes, as: UTF8.self), referenceDate: referenceDate)
+        return FTPListParser.parse(Self.decode(bytes, as: listingEncoding), referenceDate: referenceDate)
     }
 
     /// Download a file's bytes (RETR). With `restartAt > 0` the transfer resumes at

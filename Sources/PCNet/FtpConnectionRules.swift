@@ -16,6 +16,8 @@ import Foundation
 /// the selected protocol" is concerned.
 public enum FtpSiteSetting: String, Sendable, CaseIterable {
     case user
+    /// The one secret field. It is the account's password, or — when a key file is named — that
+    /// key's passphrase, which is what libssh2 wants in its place rather than as well as it.
     case password
     case anonymous
     case passive
@@ -24,6 +26,10 @@ public enum FtpSiteSetting: String, Sendable, CaseIterable {
     case scp
     case insecureTLS
     case keyFile
+    /// Name encoding on the wire. SFTP mandates UTF-8, so the choice exists only for FTP/FTPS.
+    case encoding
+    /// The local folder the other panel opens on connect.
+    case localDir
 }
 
 /// Something about a site that cannot work, or works differently than the form suggests.
@@ -43,6 +49,10 @@ public enum FtpSiteProblem: Equatable, Sendable {
     case activeModeThroughProxy
     /// A proxy login was typed but no proxy host — the credentials go nowhere.
     case proxyLoginWithoutProxy
+    /// A key file is named that is not there. Blocking, because the fallback is silent: libssh2
+    /// skips a key it cannot open and tries `~/.ssh/id_*` instead, so a typo in the path shows up
+    /// as "authentication failed" against a server the default key may not even be enrolled at.
+    case keyFileMissing(String)
 
     /// Whether this stops the connection from being attempted at all. The rest are
     /// warnings: the connection is made, but a setting on the form is not doing what it
@@ -50,7 +60,7 @@ public enum FtpSiteProblem: Equatable, Sendable {
     public var isBlocking: Bool {
         switch self {
         case .missingHost, .portOutOfRange, .missingUser, .explicitFTPSUnsupported,
-             .proxyWithTLS, .proxyKindUnsupported, .activeModeThroughProxy:
+             .proxyWithTLS, .proxyKindUnsupported, .activeModeThroughProxy, .keyFileMissing:
             return true
         case .proxyWithSFTP, .proxyLoginWithoutProxy:
             return false
@@ -81,7 +91,9 @@ public enum FtpConnectionRules {
         let hasProxy = !(site.proxyHost ?? "").isEmpty
         switch setting {
         case .user:        return !anonymous
-        case .password:    return !anonymous && site.auth != .keyFile && site.auth != .agent
+        // Enabled for a key file too: an encrypted key needs its passphrase typed somewhere, and
+        // this is that somewhere. Only the ssh-agent needs no secret from us at all.
+        case .password:    return !anonymous && site.auth != .agent
         case .anonymous:   return !isSFTP             // there is no anonymous SSH login
         case .passive:     return !isSFTP && !hasProxy // SFTP has no data channel to turn round;
                                                        // a tunnelled client cannot be dialled back
@@ -90,6 +102,8 @@ public enum FtpConnectionRules {
         case .scp:         return isSFTP
         case .insecureTLS: return isTLS
         case .keyFile:     return isSFTP
+        case .encoding:    return !isSFTP   // SFTP names are UTF-8 by specification
+        case .localDir:    return true
         }
     }
 
@@ -102,6 +116,10 @@ public enum FtpConnectionRules {
             found.append(.missingUser)
         }
         if site.proto == .ftps { found.append(.explicitFTPSUnsupported) }
+        if site.auth == .keyFile, let key = site.keyFile, !key.isEmpty,
+           !FileManager.default.fileExists(atPath: (key as NSString).expandingTildeInPath) {
+            found.append(.keyFileMissing(key))
+        }
 
         let hasProxy = !(site.proxyHost ?? "").isEmpty
         if hasProxy {

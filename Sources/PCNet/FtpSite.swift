@@ -56,6 +56,12 @@ public struct FtpSite: Equatable, Sendable {
     public var localDir: String
     public var passive: Bool
     public var encoding: String            // "utf-8" (default) or "latin-1"
+
+    /// The site's `encoding` as a `String.Encoding`; unknown values mean UTF-8, which is both the
+    /// default and the only safe guess. SFTP ignores it — the protocol mandates UTF-8.
+    public var textEncoding: String.Encoding {
+        encoding.lowercased() == "latin-1" ? .isoLatin1 : .utf8
+    }
     public var keepAliveSeconds: Int       // 0 = disabled
     public var keepAliveCommand: String?
     public var folder: String?             // grouping folder in the manager tree
