@@ -108,8 +108,13 @@ responder was never the problem.
 the *broken* build. Two versions of it did: one asserting the sheet disappears (it disappears anyway,
 once its controller is gone) and one asserting the binding lands in keymap-user.ini — which under
 `XCUIElement.typeKey` it does, even with a dead handler, measured against the same binary that fails
-when driven by System Events `key code`. Why XCUITest's typing survives a handler that real keystrokes
-do not reach was not established. The test is kept, relabelled as the happy-path smoke test it is, with
+when driven by System Events `key code`. The app's own log settles the mechanism: through AX the order
+is `beginSheet / controller deinit / keyDown` — no handler left — and under XCUITest it is
+`beginSheet / keyDown / handle / controller deinit`, the leaked controller outliving the keystroke by
+exactly enough to serve it. Neither `hover()`, nor `click()`, nor seconds of waiting moved the `deinit`
+ahead of the key; what decides it is how the button is activated (AXPress vs. injected mouse events)
+and AppKit's autorelease nesting for each, which is where the investigation was stopped rather than
+guessed at. The test is kept, relabelled as the happy-path smoke test it is, with
 that written in its header: **an XCUITest can type into a dialog that is, to a user, completely dead.**
 Anything of this class needs the AX route or an outcome check, not a UI-moved check.
 
