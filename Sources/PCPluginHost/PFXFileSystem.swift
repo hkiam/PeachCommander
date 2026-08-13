@@ -74,8 +74,37 @@ public final class PFXPlugin: @unchecked Sendable {
 
     public init(library: PluginLibrary) { self.lib = library }
 
+    /// The services table handed to `PfxInit`. Allocated once and deliberately never freed.
+    ///
+    /// The ABI lets the plugin keep this pointer for as long as it is loaded, and the host has no
+    /// way to learn when it has stopped using it — there is no "forget your services" call, and
+    /// adding one would make every plugin author responsible for a rule they cannot get wrong
+    /// safely. Freeing it when *this object* goes away would be tying the lifetime to the wrong
+    /// thing anyway: two `PFXPlugin` instances can wrap one library, so the last reference here
+    /// dying says nothing about whether the plugin is still loaded. One struct per loaded
+    /// file-system plugin, for the life of the process, is the cheap side of that trade.
+    private var servicesBox: UnsafeMutablePointer<PfxHostServices>?
+
     func fn<T>(_ name: String, as type: T.Type) -> T? {
         lib.symbol(name).map { unsafeBitCast($0, to: T.self) }
+    }
+
+    /// Hand the plugin its host services once, right after loading (`PfxInit`).
+    ///
+    /// The ABI says the plugin may retain the pointer for as long as it is loaded, so the table
+    /// cannot live on the caller's stack — it is copied to the heap and freed only when this
+    /// object goes away, which is when the library does. A stack copy would dangle the instant
+    /// this returned, and the symptom would be a callback into freed memory much later, from the
+    /// plugin, with nothing in the backtrace pointing here.
+    ///
+    /// Does nothing when the plugin exports no `PfxInit` — the entry point is optional, and a
+    /// plugin that persists nothing has no reason to want it.
+    public func initialize(services: PfxHostServices) {
+        guard servicesBox == nil, let f = fn("PfxInit", as: InitFn.self) else { return }
+        let box = UnsafeMutablePointer<PfxHostServices>.allocate(capacity: 1)
+        box.initialize(to: services)
+        servicesBox = box
+        f(box)
     }
 
     /// Capabilities the served file system supports (read is always implied).

@@ -1253,6 +1253,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 // "connect" command can correlate to this plugin's connect facet.
                 if plugin.manifest.type == .pfx, case .success(let lib) = PluginHost.openLibrary(plugin) {
                     let pfx = PFXPlugin(library: lib)
+                    // PfxInit, which the header has promised since the ABI was written and the host
+                    // never actually called. It has to happen here, before anything asks the plugin
+                    // for its drives or its connect title: a plugin that keeps settings can only
+                    // read them once it has been told where they are, and this is the only call
+                    // that tells it. `loadBridge` is retained by LoadedPFXPlugin below, because the
+                    // services table it backs stays live for as long as the plugin does.
+                    let loadBridge = PFXHostBridge(self)
+                    pfx.initialize(services: loadBridge.makeLoadTimeServices())
                     // Loads and works either way — and then leaks whatever PfxConnect allocated,
                     // once per connection, with nothing for the host to call. Said out loud
                     // because the author is the only one who can fix it.
@@ -1263,7 +1271,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                             """)
                     }
                     FileSystemPluginRegistry.shared.register(
-                        LoadedPFXPlugin(id: plugin.bundlePath, plugin: pfx))
+                        LoadedPFXPlugin(id: plugin.bundlePath, plugin: pfx, retaining: loadBridge))
                 }
             }
             // PDX content-field plugins → extra panel columns (lazy per-file values).

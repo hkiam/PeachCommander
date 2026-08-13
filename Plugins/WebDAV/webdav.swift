@@ -179,9 +179,19 @@ private final class DavParser: NSObject, XMLParserDelegate {
 
 /// Saved WebDAV site URLs (no passwords — those live in the Keychain).
 enum WebDAVSites {
+    /// Where the host keeps its configuration, learned from `PfxInit`.
+    ///
+    /// Not a guess built from Application Support: the host's root moves — `-ConfigRoot` and
+    /// `PEACHCMD_CONFIG_ROOT` both point it elsewhere, which is how the test suite runs against a
+    /// throwaway directory. A plugin that builds its own path ignores all of that and writes into
+    /// the user's real settings during a test run. This one did, and it did.
+    static var configRoot: String?
+
     private static var fileURL: URL {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-            .appendingPathComponent("PeachCommander/webdav", isDirectory: true)
+        let root = configRoot.map { URL(fileURLWithPath: $0, isDirectory: true) }
+            ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+                .appendingPathComponent("PeachCommander", isDirectory: true)
+        let base = root.appendingPathComponent("webdav", isDirectory: true)
         try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
         return base.appendingPathComponent("sites.json")
     }
@@ -268,6 +278,22 @@ final class ConnectDialog: NSObject {
 @_cdecl("PcGetApiVersion")
 public func PcGetApiVersion() -> Int32 { 1 }
 
+/// Learn where the host keeps its configuration, before anything else is asked of us.
+///
+/// `getContext` is NULL on a host older than this call, and answers 0 for a key it does not know —
+/// in both cases the site list falls back to the standard location, which is what this plugin did
+/// unconditionally until now.
+@_cdecl("PfxInit")
+public func PfxInit(_ services: UnsafePointer<PfxHostServices>?) {
+    guard let svc = services?.pointee, let get = svc.getContext else { return }
+    var buf = [CChar](repeating: 0, count: 4096)
+    let ok = "configRoot".withCString { k in get(svc.host, k, &buf, 4096) }
+    if ok == 1 {
+        let root = String(cString: buf)
+        if !root.isEmpty { WebDAVSites.configRoot = root }
+    }
+}
+
 @_cdecl("PfxGetCapabilities")
 public func PfxGetCapabilities() -> Int32 { PC_PFX_CAP_READ | PC_PFX_CAP_WRITE | PC_PFX_CAP_RENAME }
 
@@ -284,13 +310,10 @@ public func PfxConnect(_ services: UnsafePointer<PfxHostServices>?) -> UnsafeMut
     // Test hook: PC_WEBDAV_URL lets connect run without the modal dialog (for
     // automated end-to-end tests). Ignored in normal use.
     let entered: (String, String)?
-    let fromEnvironment: Bool
     if let env = ProcessInfo.processInfo.environment["PC_WEBDAV_URL"], !env.isEmpty {
         entered = (env, ProcessInfo.processInfo.environment["PC_WEBDAV_PASSWORD"] ?? "")
-        fromEnvironment = true
     } else {
         entered = ConnectDialog(sites: WebDAVSites.load()).run()
-        fromEnvironment = false
     }
     guard let (urlString, typedPassword) = entered,
           !urlString.isEmpty, let comps = URLComponents(string: urlString),
@@ -316,12 +339,13 @@ public func PfxConnect(_ services: UnsafePointer<PfxHostServices>?) -> UnsafeMut
         }
     }
 
-    // Remember the site (with user, without password) for next time — but not when the connect
-    // came from the test hook. `WebDAVSites` writes to the real Application Support directory and
-    // does not know about the host's `-ConfigRoot`, so an automated run would otherwise leave a
-    // throwaway localhost URL in the user's own history, once per run.
+    // Remember the site (with user, without password) for next time. This used to skip the
+    // test-hook path, because the site list ignored `-ConfigRoot` and an automated run would leave
+    // a throwaway localhost URL in the user's own history. `PfxInit` now tells the plugin where
+    // the host's configuration actually is, so a test run writes into the test's directory — and
+    // the automated path can save like any other, which is also the only way saving gets tested.
     var siteComps = comps; siteComps.password = nil
-    if fromEnvironment == false, let site = siteComps.url?.absoluteString { WebDAVSites.add(site) }
+    if let site = siteComps.url?.absoluteString { WebDAVSites.add(site) }
 
     var baseComps = comps
     baseComps.user = nil; baseComps.password = nil

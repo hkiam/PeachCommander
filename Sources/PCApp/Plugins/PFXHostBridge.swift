@@ -11,6 +11,7 @@
 
 import AppKit
 import PCVFS
+import PCFoundation
 import PCPluginHost
 import CPFX
 import Security
@@ -47,7 +48,42 @@ final class PFXHostBridge {
                                password: password, maxlen: Int(maxlen))
             }
         }
+
+        s.getContext = { host, key, out, maxlen in
+            guard let host, let key, let out, maxlen > 0 else { return 0 }
+            return MainActor.assumeIsolated {
+                let b = Unmanaged<PFXHostBridge>.fromOpaque(host).takeUnretainedValue()
+                guard let value = b.context(String(cString: key)) else { return 0 }
+                _ = value.withCString { strlcpy(out, $0, Int(maxlen)) }
+                return 1
+            }
+        }
         return s
+    }
+
+    /// The table for `PfxInit`, which is the same one minus the parent window.
+    ///
+    /// At load time there is nothing to be modal to — the plugin has not asked for a dialog and
+    /// the window it would attach to may not exist yet. Handing over a window pointer that is only
+    /// valid by accident invites a plugin to keep it; the ABI documents NULL here and points at
+    /// PfxConnect's services for the real one.
+    func makeLoadTimeServices() -> PfxHostServices {
+        var s = makeServices()
+        s.parentWindow = nil
+        return s
+    }
+
+    /// Answer a host context key, or nil for one we do not know.
+    ///
+    /// `configRoot` is the whole reason this exists. Plugins used to build their own path under
+    /// Application Support, which meant `-ConfigRoot` isolated the host and nothing else: an
+    /// automated run wrote its throwaway sites into the user's real configuration. Handing out the
+    /// host's resolved root is what makes a plugin follow the host wherever it has been pointed.
+    private func context(_ key: String) -> String? {
+        switch key {
+        case "configRoot": return ConfigPaths.resolve().root.path
+        default: return nil
+        }
     }
 
     // MARK: - Keychain-backed credential store
@@ -92,10 +128,16 @@ final class PFXHostBridge {
 final class LoadedPFXPlugin: FileSystemPlugin {
     let id: String
     private let plugin: PFXPlugin
+    /// The bridge behind the services table given to `PfxInit`. Held, not used: the plugin may
+    /// call back through it at any time while it is loaded, and the trampolines recover the bridge
+    /// from an unretained opaque pointer — so if nothing here kept it alive it would be freed the
+    /// moment loading finished, and the first callback would land in released memory.
+    private let loadBridge: PFXHostBridge?
 
-    init(id: String, plugin: PFXPlugin) {
+    init(id: String, plugin: PFXPlugin, retaining loadBridge: PFXHostBridge? = nil) {
         self.id = id
         self.plugin = plugin
+        self.loadBridge = loadBridge
     }
 
     var connectTitle: String? { plugin.connectTitle() }
