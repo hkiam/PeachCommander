@@ -95,11 +95,46 @@ typedef struct PfxHostServices {
     int  (*crypt)(void *host, int mode, const char *store, char *password, int maxlen);
 
     void *parentWindow;   /* NSWindow* to present connect/config sheets over (may be NULL) */
+
+    /* Ask the host for a named string. Writes UTF-8 into `out` (at most `maxlen`
+       bytes, always NUL-terminated) and returns 1; returns 0 for a key the host
+       does not know, leaving `out` untouched. May be NULL on an older host — so
+       check before calling, and have a fallback for 0.
+
+       Keys the host answers:
+         "configRoot"  the directory this instance keeps its configuration in.
+                       A plugin that persists anything MUST put it under here,
+                       in a subdirectory of its own — NOT in a path it builds
+                       itself from Application Support. The host's own root moves
+                       (`-ConfigRoot`, PEACHCMD_CONFIG_ROOT), and a plugin that
+                       does not follow it writes into the user's real settings
+                       during a test run. That has happened.
+
+       Deliberately a callback rather than another struct field: a new key costs
+       nothing here, whereas every field is an ABI change. Same shape and same
+       key names as `PcHostServices.getContext` in pcplugin.h, so a plugin author
+       writing for both ABIs learns it once. */
+    int  (*getContext)(void *host, const char *key, char *out, int maxlen);
 } PfxHostServices;
+
+/* Fields are only ever APPENDED to PfxHostServices, never reordered or removed.
+   The host allocates the struct and the plugin only reads it, so a plugin built
+   against an older header keeps working: it reads the prefix it knows and never
+   looks at the offsets it does not. A plugin must therefore not assume a field
+   it knows is the last one, and must accept NULL for any callback. */
 
 /* ---- Lifecycle (optional) --------------------------------------------- */
 
-/* Called once after load; the plugin may retain `services` for later callbacks. */
+/* Called once, after the plugin is loaded and before anything else — including
+   PfxGetVolumeCount, so a plugin can decide its drives from configuration.
+
+   `services` stays valid for as long as the plugin is loaded, so the plugin may
+   retain the pointer. That is the point of this entry: PfxConnect also receives
+   services, but only once a connection is being made, which is too late for a
+   plugin that must read its settings in order to offer the connect dialog at all.
+
+   `parentWindow` is NULL here — at load time there is no window to be modal to.
+   Take it from the services passed to PfxConnect instead. */
 void PfxInit(const PfxHostServices *services);
 
 /* Capabilities of the file system this plugin serves. Absent ⇒ read-only. */

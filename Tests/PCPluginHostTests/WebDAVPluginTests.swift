@@ -13,7 +13,12 @@
 
 import XCTest
 import PCVFS
+import CPFX
 @testable import PCPluginHost
+
+/// The config root the stub host hands the plugin. A file-scope variable because a `@convention(c)`
+/// callback cannot capture, and this has to be readable from inside one.
+private nonisolated(unsafe) var stubConfigRoot = ""
 
 final class WebDAVPluginTests: XCTestCase {
     private var dir: URL!
@@ -21,6 +26,7 @@ final class WebDAVPluginTests: XCTestCase {
     private var server: Process!
     private var port: Int = 0
     private var lib: PluginLibrary!
+    private var inited: PFXPlugin!
 
     private var repoRoot: URL {
         URL(fileURLWithPath: #filePath)
@@ -37,6 +43,10 @@ final class WebDAVPluginTests: XCTestCase {
         // The plugin's connect facet reads this instead of showing its modal dialog. Set on the
         // test process, which is the process whose environment `PfxConnect` inspects.
         setenv("PC_WEBDAV_URL", "http://127.0.0.1:\(port)/", 1)
+        // Tell the plugin where "configuration" is before anything connects. Not optional politeness:
+        // connecting appends to the site list, so without this every run of these tests would write a
+        // throwaway localhost URL into the developer's own WebDAV history.
+        initPlugin(configRoot: dir.appendingPathComponent("config"))
     }
 
     override func tearDownWithError() throws {
@@ -139,6 +149,27 @@ final class WebDAVPluginTests: XCTestCase {
         throw XCTSkip("the DAV origin never came up")
     }
 
+    /// Drive `PfxInit` with a stub host that answers `configRoot` and nothing else.
+    ///
+    /// `inited` keeps the `PFXPlugin` alive for the whole test: it owns the services table the
+    /// plugin has been handed, and the ABI lets the plugin keep reading it.
+    private func initPlugin(configRoot: URL) {
+        stubConfigRoot = configRoot.path
+        var s = PfxHostServices()
+        s.getContext = { _, key, out, maxlen in
+            guard let key, let out, maxlen > 0, String(cString: key) == "configRoot" else { return 0 }
+            _ = stubConfigRoot.withCString { strlcpy(out, $0, Int(maxlen)) }
+            return 1
+        }
+        let plugin = PFXPlugin(library: lib)
+        plugin.initialize(services: s)
+        inited = plugin
+    }
+
+    private var sitesFile: URL {
+        dir.appendingPathComponent("config/webdav/sites.json")
+    }
+
     private func makeFS() throws -> PFXFileSystem {
         typealias ConnectFn = @convention(c) (UnsafeMutableRawPointer?) -> UnsafeMutableRawPointer?
         let connect = try XCTUnwrap(lib.symbol("PfxConnect"))
@@ -214,5 +245,45 @@ final class WebDAVPluginTests: XCTestCase {
             XCTAssertEqual(e, .connectionLost(retryable: false))
         }
         await fs.disconnect()   // must not free the connection a second time
+    }
+
+    // MARK: - PfxInit and the config root
+
+    func test_connect_savesTheSiteUnderTheHostsConfigRoot() throws {
+        // The point of the whole `PfxInit`/`getContext` addition. The plugin used to build its own
+        // path under Application Support, so a run with the host pointed elsewhere still wrote into
+        // the user's real settings — which is not a hypothetical: it happened, to a real history.
+        XCTAssertFalse(FileManager.default.fileExists(atPath: sitesFile.path))
+        _ = try makeFS()
+        XCTAssertTrue(FileManager.default.fileExists(atPath: sitesFile.path),
+                      "the site list did not follow the host's config root")
+        let saved = try JSONDecoder().decode([String].self, from: Data(contentsOf: sitesFile))
+        XCTAssertEqual(saved, ["http://127.0.0.1:\(port)/"])
+    }
+
+    func test_theSiteListIsNotWrittenAnywhereElse() throws {
+        // The other half, and the one that actually protects the user: proving the file appears in
+        // the test's directory says nothing about whether it *also* appeared in the real one.
+        let real = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+            .appendingPathComponent("PeachCommander/webdav/sites.json")
+        let before = try? Data(contentsOf: real)
+        _ = try makeFS()
+        let after = try? Data(contentsOf: real)
+        XCTAssertEqual(before, after, "connecting touched the real site list")
+    }
+
+    func test_aHostThatAnswersNothingLeavesThePluginWorking() throws {
+        // `getContext` is NULL on an older host and answers 0 for keys it does not know. Neither may
+        // be fatal — an unanswered key means "use your default", not "give up".
+        var s = PfxHostServices()
+        s.getContext = { _, _, _, _ in 0 }
+        let plugin = PFXPlugin(library: lib)
+        plugin.initialize(services: s)     // must not crash, and must not clear what we already have
+        var bare = PfxHostServices()
+        bare.getContext = nil
+        PFXPlugin(library: lib).initialize(services: bare)
+        _ = try makeFS()
+        XCTAssertTrue(FileManager.default.fileExists(atPath: sitesFile.path),
+                      "a second, emptier init overwrote a root the plugin had already been given")
     }
 }
