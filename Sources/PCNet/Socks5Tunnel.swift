@@ -16,6 +16,10 @@ public enum Socks5Error: Error, Equatable, Sendable {
     case authFailed
     case connectFailed(UInt8)
     case tlsThroughProxyUnsupported
+    /// The site names a proxy this transport does not speak. Only SOCKS5 is implemented for
+    /// FTP; an HTTP proxy used to be accepted by the dialog and then handshaken as SOCKS5,
+    /// which fails as an unreadable protocol error rather than as the misconfiguration it is.
+    case unsupportedProxyKind(ProxyKind)
 }
 
 public enum Socks5Tunnel {
@@ -23,6 +27,10 @@ public enum Socks5Tunnel {
     /// the ready NWConnection (its stateUpdateHandler is cleared for the caller).
     public static func connect(proxy: ProxyConfig, targetHost: String, targetPort: Int,
                                queue: DispatchQueue) async throws -> NWConnection {
+        // Refused rather than attempted: the caller passes whatever kind the site names, and
+        // speaking SOCKS5 at an HTTP proxy produces a handshake failure that says nothing about
+        // the setting that caused it.
+        guard proxy.kind == .socks5 else { throw Socks5Error.unsupportedProxyKind(proxy.kind) }
         let conn = NWConnection(host: NWEndpoint.Host(proxy.host),
                                 port: NWEndpoint.Port(rawValue: UInt16(proxy.port))!, using: .tcp)
         try await waitReady(conn, queue: queue)

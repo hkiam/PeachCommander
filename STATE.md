@@ -73,15 +73,6 @@ id the plugin gives its connection (`webdav:host` → chip "host", kind WebDAV; 
 `NetworkConnectionID`, tested for the ids that are not that shape). A drive-chip mount still does *not*
 register — TaskManager keeps its one chip, checked.
 
-Worth knowing about the PFX side: `PFXFileSystem` does not conform to `DisconnectableFileSystem`; it
-calls `PfxDisconnect` from `deinit`. So the chip's Disconnect works by dropping the last reference
-rather than by an explicit call, and `cm_FtpDisconnect` does not apply to a plugin mount.
-
-**Still unused in `FtpSite` and worth a decision:** `encoding`, `localDir` and `folder` round-trip
-through ftp-sites.ini and are read by nothing, and `FtpAuth.agent`/`.keyFile` cannot be chosen anywhere
-in the UI — `connectToSite` reads `keyFile` only when `auth == .keyFile`, which no dialog can set, so
-SFTP key authentication is unreachable in practice.
-
 ## 2026-08-13 (VM suite, cause) — One script looking in the wrong place, four "defects"
 
 Four of the five failures the suite reported were not defects. `build-ai-plugin.sh` looks for

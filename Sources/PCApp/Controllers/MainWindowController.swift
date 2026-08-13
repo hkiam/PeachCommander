@@ -295,6 +295,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         Self.shared = self
         leftPanelController = PanelController(position: .left, config: mainConfig)
         rightPanelController = PanelController(position: .right, config: mainConfig)
+        // Both bars, because a connection opened in one panel is reachable from either — the
+        // chip is the connection, not the panel that happened to dial it.
+        NetworkMountRegistry.shared.onChange = { [weak self] in
+            self?.leftPanelController?.reloadDriveBar()
+            self?.rightPanelController?.reloadDriveBar()
+        }
         setupSplitView()
 
         // Use the container as the window's contentView (NOT contentViewController):
@@ -1223,8 +1229,6 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         connectToSite(url.toSite(), password: password)
     }
 
-    /// Connect the active panel to a WebDAV server, mounted as a drive (Option 2
-
     /// Re-aggregate every enabled external plugin's contributions (menus, context,
     /// views — declared in its Info.plist, no plugin code run to decide presence)
     /// and its file-system adapters. Called at startup and whenever a plugin is
@@ -1644,6 +1648,16 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Connect the active panel to an FTP site (shared by quick-connect and the
     /// connection manager). Explicit FTPS and SFTP are not live yet.
     func connectToSite(_ site: FtpSite, password: String) {
+        // One gate for every way in (quick-connect URL, the manager, a restored site), asking the
+        // same rules the dialog greys its controls with. Before this, a combination that cannot
+        // work was attempted anyway and failed as a socket error somewhere far from the setting
+        // that caused it.
+        let blocking = FtpConnectionRules.blockingProblems(with: site)
+        if !blocking.isEmpty {
+            presentInfo(String(localized: "Connect"),
+                        blocking.map(Self.describe).joined(separator: "\n\n"))
+            return
+        }
         switch site.proto {
         case .ftp, .ftpsImplicit:
             break
@@ -1662,7 +1676,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                                            keyFile: keyFile, keyPassphrase: nil)
                     let fs = SFTPFileSystem(session: sftp, fsID: "sftp:\(site.host)",
                                             transferViaSCP: site.useSCP)
-                    await self.activePanel?.enterNetwork(fs, startPath: site.remoteDir)
+                    self.mountConnection(fs, site: site, fsType: "SFTP")
                 } catch {
                     self.presentInfo(String(localized: "Connection failed"),
                                      String(localized: "Could not connect to \(site.host): \(String(describing: error))"))
@@ -1694,11 +1708,51 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                                                     command: site.keepAliveCommand ?? "NOOP")
                 }
                 let ftpFS = FTPFileSystem(connection: connection, fsID: "ftp:\(site.host)", protocolLog: protocolLog)
-                await self.activePanel?.enterNetwork(ftpFS, startPath: site.remoteDir)
+                self.mountConnection(ftpFS, site: site, fsType: useTLS ? "FTPS" : "FTP")
             } catch {
                 self.presentInfo(String(localized: "Connection failed"),
                                  String(localized: "Could not connect to \(site.host): \(String(describing: error))"))
             }
+        }
+    }
+
+    /// Give a freshly-opened session a drive of its own and show it in the active panel.
+    ///
+    /// Registering *before* entering, because `enterNetwork` is what refreshes the bar, the tab
+    /// and the path bar: a chip that appeared afterwards would leave all three naming the drive
+    /// the panel was standing on a moment ago.
+    private func mountConnection(_ fs: VirtualFileSystem, site: FtpSite, fsType: String) {
+        let label = site.name.trimmingCharacters(in: .whitespaces).isEmpty ? site.host : site.name
+        let volume = NetworkMountRegistry.shared.register(
+            fs, name: label, fsType: fsType,
+            startPath: site.remoteDir.isEmpty ? "/" : site.remoteDir)
+        Task { @MainActor in
+            await self.activePanel?.enterNetwork(fs, startPath: site.remoteDir, driveVolume: volume)
+        }
+    }
+
+    /// A connection problem in the user's words. Shared by the dialog's inline warning and the
+    /// refusal above, so a setting is described the same way wherever it is complained about.
+    static func describe(_ problem: FtpSiteProblem) -> String {
+        switch problem {
+        case .missingHost:
+            return String(localized: "Enter a host name.")
+        case .portOutOfRange(let port):
+            return String(localized: "Port \(port) is not a valid port number (1–65535).")
+        case .missingUser:
+            return String(localized: "Enter a user name, or tick Anonymous.")
+        case .explicitFTPSUnsupported:
+            return String(localized: "Explicit FTPS (AUTH TLS) is not supported yet. Use implicit FTPS or plain FTP.")
+        case .proxyWithTLS:
+            return String(localized: "FTPS cannot go through a proxy: the tunnel cannot be upgraded to TLS. Remove the proxy or use plain FTP.")
+        case .proxyWithSFTP:
+            return String(localized: "SFTP connects directly — the proxy settings are ignored for this site.")
+        case .proxyKindUnsupported(let kind):
+            return String(localized: "Only a SOCKS5 proxy can carry FTP; \(kind.rawValue.uppercased()) is not supported here.")
+        case .activeModeThroughProxy:
+            return String(localized: "Active mode cannot work through a proxy — the server has no way to open the data connection back. Switch passive mode on.")
+        case .proxyLoginWithoutProxy:
+            return String(localized: "A proxy login is set but no proxy host, so it is not used.")
         }
     }
 
@@ -2773,7 +2827,44 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Eject a volume named directly — the drive bar's context menu (F-385), as opposed to
     /// `ejectVolumeUnderCursor`, which has to work out which volume is meant first.
     func ejectVolume(_ volume: Volume) {
+        // An open connection's chip is ejected by hanging it up. Routed here rather than in the
+        // bar because the bar draws one ⏏ and should not have to know what is behind it.
+        if volume.path.hasPrefix(NetworkMountRegistry.sentinelPrefix) {
+            disconnectNetworkVolume(volume)
+            return
+        }
         eject(volume)
+    }
+
+    /// Show the open connection behind a "netmount:" chip in `panel` — the same session, not a
+    /// second one: reconnecting on a click would leave the first socket open and unreachable,
+    /// with two chips claiming to be the same server.
+    func showNetworkConnection(sentinel: String, in panel: PanelController?) {
+        guard let panel, let entry = NetworkMountRegistry.shared.entry(sentinel: sentinel) else { return }
+        activePanel = panel
+        let start = entry.startPath.isEmpty ? "/" : entry.startPath
+        Task { @MainActor in
+            // Already on it: the click means "take me back to where this connection opened",
+            // which is what the chip of a drive one is already inside does everywhere else.
+            if panel.currentFileSystem === entry.fs {
+                await panel.loadDirectory(start)
+                return
+            }
+            await panel.enterNetwork(entry.fs, startPath: start, driveVolume: entry.volume)
+        }
+    }
+
+    /// Hang up the connection behind a "netmount:" chip: take both panels out of it first — a
+    /// panel left standing in a mount whose socket has been closed shows a listing that cannot
+    /// be refreshed and errors on every keystroke — then tear the session down.
+    private func disconnectNetworkVolume(_ volume: Volume) {
+        guard let entry = NetworkMountRegistry.shared.remove(sentinel: volume.path) else { return }
+        Task { @MainActor in
+            for panel in [leftPanelController, rightPanelController].compactMap({ $0 }) {
+                await panel.leaveMountedFileSystem(entry.fs)
+            }
+            if let net = entry.fs as? DisconnectableFileSystem { await net.disconnect() }
+        }
     }
 
     private func eject(_ volume: Volume) {
@@ -5993,11 +6084,13 @@ final class PanelController: NSObject, PanelControllerProtocol {
         return files.count
     }
 
-    /// Mount a network (FTP) file system in this panel and open `startPath`.
-    /// Navigating up past its root pops back to the previous (local) location.
+    /// Mount a network file system (FTP, SFTP, a plugin's WebDAV connection) in this panel and open
+    /// `startPath`. Navigating up past its root pops back to the previous (local) location.
     ///
-    /// `driveVolume` is set when the mount came from a drive-bar volume (a plugin drive such as
-    /// TaskManager): that volume, not the path, is what the panel is showing while we are inside.
+    /// `driveVolume` is the drive the panel is showing while we are inside — a plugin drive such as
+    /// TaskManager, or the chip a live connection was registered under. That volume, not the path,
+    /// is what the bar, the tab and the path bar name: inside a mount the path is the server's own
+    /// "/", which names no drive anyone could point at.
     func enterNetwork(_ networkFS: VirtualFileSystem, startPath: String,
                       driveVolume: Volume? = nil) async {
         let hostPath = await model.getPath()
@@ -6006,7 +6099,8 @@ final class PanelController: NSObject, PanelControllerProtocol {
         fs = networkFS
         // Before the load: loading is what refreshes the bar, the tab and the path bar, and setting
         // this afterwards would leave all three showing the old volume for as long as it takes.
-        // nil for a mount that came from a dialog rather than a drive — an FTP site is not a chip.
+        // nil only for a mount that is not a drive at all (a results listing, an archive); an FTP
+        // site and a plugin's connect both arrive here with a chip of their own.
         setMountedDrive(driveVolume)
         await loadDirectory(startPath.isEmpty ? "/" : startPath)
         // A content-providing PFX mount (e.g. TaskManager) publishes its own
@@ -6204,7 +6298,14 @@ final class PanelController: NSObject, PanelControllerProtocol {
         let wasContentMount = (fs as? PFXFileSystem)?.contentFields.isEmpty == false
         // Tear down a live network connection (FTP keep-alive/control, SSH session)
         // when leaving its mount so it doesn't leak.
-        if let net = fs as? DisconnectableFileSystem { await net.disconnect() }
+        // The chip goes with the session: a connection the panel has walked out of is closed, and
+        // a drive offering to return to a closed socket is worse than no drive at all. Unless the
+        // other panel is still standing in it — a connection now has a chip either panel can enter
+        // from, so "I am leaving" stopped meaning "nobody is using this".
+        if !isHeldByAnotherPanel(fs) {
+            NetworkMountRegistry.shared.remove(fs: fs)
+            if let net = fs as? DisconnectableFileSystem { await net.disconnect() }
+        }
         fs = frame.fs
         // Left the drive, so neither the panel nor the tab is on it any more — otherwise the next
         // tab switch or restart would put the user back inside a drive they walked out of.
@@ -6223,12 +6324,56 @@ final class PanelController: NSObject, PanelControllerProtocol {
         await exitArchive()
     }
 
+    /// Whether this panel is showing `target`, or is inside something mounted on top of it.
+    func holds(_ target: AnyObject) -> Bool {
+        fs === target || mountStack.contains { $0.fs === target }
+    }
+
+    /// Whether the *other* panel is still in this filesystem. Asked before a connection is torn
+    /// down: its chip can be entered from either panel, so leaving is no longer the same as
+    /// nobody using it, and closing it under the other panel leaves a listing that errors on
+    /// every keystroke and cannot be refreshed.
+    private func isHeldByAnotherPanel(_ target: AnyObject) -> Bool {
+        guard let wc = view.window?.windowController as? MainWindowController else { return false }
+        return [wc.leftPanelController, wc.rightPanelController]
+            .compactMap { $0 }
+            .contains { $0 !== self && $0.holds(target) }
+    }
+
+    /// Take this panel out of `target` without tearing it down — the drive bar's Disconnect
+    /// hangs the session up once, after every panel has stepped off it.
+    ///
+    /// Unwinds *past* it rather than popping one frame: the panel may have opened an archive
+    /// inside the mount, and those inner frames are read through the connection that is about
+    /// to close. Frames are dropped until one is reached that is not the target itself.
+    func leaveMountedFileSystem(_ target: AnyObject) async {
+        guard fs === target || mountStack.contains(where: { $0.fs === target }) else { return }
+        stopVolatileAutoRefresh()
+        // As in `exitArchive`: a mount that published its own columns takes them with it, or the
+        // panel keeps showing headers for a filesystem it is no longer on.
+        let wasContentMount = (fs as? PFXFileSystem)?.contentFields.isEmpty == false
+        var frame = mountStack.popLast()
+        while let f = frame, f.fs === target { frame = mountStack.popLast() }
+        fs = frame?.fs ?? LocalFS()
+        setMountedDrive(frame?.driveVolume)
+        await loadDirectory(frame?.returnPath ?? NSHomeDirectory())
+        if wasContentMount {
+            (view.window?.windowController as? MainWindowController)?.panelDidLeaveContentMount(panel: self)
+        }
+    }
+
     /// Reset to the local filesystem (used when switching tabs — tabs are local).
     private func resetToLocalFS() {
         stopVolatileAutoRefresh()
         if !mountStack.isEmpty || !(fs is LocalFS) {
             // Disconnect any live network filesystems on the way out (current + stacked).
-            let toClose = ([fs] + mountStack.map { $0.fs }).compactMap { $0 as? DisconnectableFileSystem }
+            // Same rule as `exitArchive`: a session the other panel is still inside is left alone,
+            // chip and all. Switching tabs here must not close the connection over there.
+            let leaving = ([fs] + mountStack.map { $0.fs }).filter { !isHeldByAnotherPanel($0) }
+            for closing in leaving {
+                NetworkMountRegistry.shared.remove(fs: closing)   // its chip closes with it
+            }
+            let toClose = leaving.compactMap { $0 as? DisconnectableFileSystem }
             if !toClose.isEmpty { Task { for net in toClose { await net.disconnect() } } }
             fs = mountStack.first?.fs ?? LocalFS()
             mountedDriveVolume = mountStack.first?.driveVolume
@@ -6508,6 +6653,16 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// carrying a name nothing can reach — otherwise it would keep the title of a drive that is not
     /// there for as long as the session lives.
     private func remountDrive(_ sentinel: String) async {
+        // A connection does not survive a restart, and the tab must stop calling itself one:
+        // held on to, it would title the tab after a server this session never dialled. When the
+        // session *is* still open (a tab switch within the session), its chip resolves and the
+        // tab keeps it.
+        if sentinel.hasPrefix(NetworkMountRegistry.sentinelPrefix) {
+            if NetworkMountRegistry.shared.entry(sentinel: sentinel) == nil {
+                tabs.updateActive { $0.driveVolume = nil }
+            }
+            return
+        }
         guard sentinel.hasPrefix("pfxmount:"),
               let wc = view.window?.windowController as? MainWindowController else { return }
         let pluginId = String(sentinel.dropFirst("pfxmount:".count))
@@ -6533,7 +6688,10 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// The display name of the drive-bar volume with this sentinel path, or nil if no loaded plugin
     /// contributes it any more.
     static func driveName(for sentinel: String) -> String? {
-        FileSystemPluginRegistry.shared.driveVolumes().first { $0.path == sentinel }?.name
+        if sentinel.hasPrefix(NetworkMountRegistry.sentinelPrefix) {
+            return NetworkMountRegistry.shared.name(forSentinel: sentinel)
+        }
+        return FileSystemPluginRegistry.shared.driveVolumes().first { $0.path == sentinel }?.name
     }
 
     /// Export tabs for session persistence (captures the live cursor first).
@@ -7032,9 +7190,13 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// Populate the drive bar once, then highlight the volume owning `path`.
     private func refreshDriveBar(path: String) async {
         if !driveBarPopulated {
-            // Mounted volumes + drives contributed by file-system plugins (iCloud, …).
+            // Mounted volumes + drives contributed by file-system plugins (iCloud, …) + one chip
+            // per open FTP/SFTP session, so a connection is a drive of its own rather than
+            // something the boot drive's chip is left claiming.
             let pluginVolumes = FileSystemPluginRegistry.shared.driveVolumes()
-            cachedDriveVolumes = DriveBarModel.display(await volumeManager.getVolumes() + pluginVolumes)
+            let connections = NetworkMountRegistry.shared.volumes()
+            cachedDriveVolumes = DriveBarModel.display(
+                await volumeManager.getVolumes() + pluginVolumes + connections)
             view.driveBar.setVolumes(cachedDriveVolumes)
             driveBarPopulated = true
         }
@@ -7270,6 +7432,13 @@ final class PanelView: NSView {
                 let pluginId = String(volumePath.dropFirst("pfxmount:".count))
                 (self?.window?.windowController as? MainWindowController)?
                     .mountPluginVolume(pluginId: pluginId, into: controller)
+                return
+            }
+            // An open FTP/SFTP session carries a "netmount:" sentinel: show that connection in
+            // this panel rather than navigate to a path that does not exist locally.
+            if volumePath.hasPrefix(NetworkMountRegistry.sentinelPrefix) {
+                (self?.window?.windowController as? MainWindowController)?
+                    .showNetworkConnection(sentinel: volumePath, in: controller)
                 return
             }
             Task { @MainActor in await controller?.loadDirectoryFromVolume(volumePath) }
@@ -8059,12 +8228,22 @@ extension MainWindowController: ToolHost {
 extension MainWindowController: FileSystemHost {
     func fsMount(_ fs: VirtualFileSystem, startPath: String) {
         // Read here, not in the Task: `mountPluginVolume` clears it as soon as `connect` returns,
-        // which is long before the mount is actually loaded. nil for a connect that came from a
-        // dialog rather than a drive chip — then there is no chip to keep selected.
-        let driveVolume = pendingDriveVolume
+        // which is long before the mount is actually loaded. Set only for a click on a drive that
+        // already has a chip; nil for a plugin's interactive connect, which gets one below.
+        var driveVolume = pendingDriveVolume
         let target = pendingMountPanel ?? activePanel
+        // No pending volume means this came from a plugin's interactive connect (WebDAV's "Connect…"
+        // rather than a click on a drive that already has a chip), and until now that mount was
+        // shown with no volume at all — the bar lit the startup disk while the panel was on a
+        // server, and the tab was titled "/". The same treatment an FTP session gets: its own chip,
+        // enterable from either panel and disconnectable from the ⏏ on it.
+        if driveVolume == nil {
+            driveVolume = NetworkMountRegistry.shared.register(
+                fs, connectionID: fs.scheme, startPath: startPath.isEmpty ? "/" : startPath)
+        }
+        let volume = driveVolume
         Task { @MainActor in
-            await target?.enterNetwork(fs, startPath: startPath, driveVolume: driveVolume)
+            await target?.enterNetwork(fs, startPath: startPath, driveVolume: volume)
         }
     }
     var fsParentWindow: NSWindow? { window }

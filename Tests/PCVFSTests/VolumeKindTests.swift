@@ -59,12 +59,22 @@ final class VolumeKindTests: XCTestCase {
         XCTAssertEqual(VolumeKind.of(taskman), .pluginDrive)
     }
 
+    func testAnOpenConnectionIsAskedAboutBeforeItLooksLikeAShare() {
+        // "netmount:<n>" is a sentinel like the plugin one, and the question order matters for a
+        // second reason here: a connection is not local, so the share question one line down would
+        // have claimed it — promising a mount the system knows about, which Finder can see and
+        // which can be unmounted from somewhere other than its own chip. None of that is true.
+        let session = vol("prod-ftp", "netmount:1", fsType: "FTP", isLocal: false)
+        XCTAssertEqual(VolumeKind.of(session), .networkConnection)
+    }
+
     func testOnlyRealVolumesAreWorthAskingTheSystemAbout() {
         // The two that are not volumes: a cloud folder is a directory and comes back as the generic
         // blue folder — the same icon as everything else on screen — and a plugin drive has no path
         // to ask about. Both keep their glyph instead, which is the more informative answer.
         XCTAssertFalse(VolumeKind.cloudFolder.hasSystemIcon)
         XCTAssertFalse(VolumeKind.pluginDrive.hasSystemIcon)
+        XCTAssertFalse(VolumeKind.networkConnection.hasSystemIcon)
         for kind in [VolumeKind.startupDisk, .internalDisk, .externalDisk, .networkShare] {
             XCTAssertTrue(kind.hasSystemIcon, "\(kind) is a real volume and has an icon of its own")
         }

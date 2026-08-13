@@ -12,6 +12,7 @@
 //   cmd   <cm_Name>       run a registered command by name
 //   connect <url>         quick-connect (ftp://user:pass@host/… , sftp://… )
 //   disconnect            leave the active panel's network mount
+//   drivedisconnect <name>  hang up an open connection from its drive chip, as its ⏏ does
 //   wait  <ms>            sleep (let an async connect/list settle)
 //   dump  <file>          write the active panel's path + entry names to a file
 //   bardrop <path>        add a bar button for <path>, as a drop on free space would
@@ -93,6 +94,15 @@ extension MainWindowController {
                     NSLog("[automation] bad url: \(arg)")
                 }
             case "disconnect": disconnectActivePanelNetwork()
+            case "drivedisconnect":     // drivedisconnect <chip-name>
+                // The chip's own ⏏, reached the way the chip reaches it. `disconnect` above is the
+                // menu command and aims at the active panel — a different question, and not the one
+                // "can I hang this connection up from the drive bar" is asking.
+                if let volume = NetworkMountRegistry.shared.volumes().first(where: { $0.name == arg }) {
+                    ejectVolume(volume)
+                } else {
+                    NSLog("[automation] drivedisconnect: no open connection named \(arg)")
+                }
             case "wait":
                 let ms = UInt64(arg) ?? 500
                 try? await Task.sleep(nanoseconds: ms * 1_000_000)
