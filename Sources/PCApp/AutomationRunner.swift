@@ -702,9 +702,12 @@ extension MainWindowController {
             case "httpget":                                // httpget <url>|<dir>|<name>[|<sha256>] (F-330)
                 let a = arg.split(separator: "|").map { String($0).trimmingCharacters(in: .whitespaces) }
                 if a.count >= 3 {
-                    let sha = a.count >= 4 ? a[3] : nil
+                    let sha = a.count >= 4 && a[3] != "hold" ? a[3] : nil
+                    // A trailing "hold" queues the job instead of starting it, which is the only way
+                    // to get a *waiting* list — and the ▲▼ ordering only exists for waiting jobs.
                     enqueueURLDownload(url: a[0], name: a[2], into: a[1],
-                                       options: HTTPDownloadOptions(), expectedSHA256: sha, held: false)
+                                       options: HTTPDownloadOptions(), expectedSHA256: sha,
+                                       held: a.contains("hold"))
                 }
             case "dlstart":  TransferManager.shared.startAllQueued()   // F-215: start the whole download list
             case "ctxdump":                                // ctxdump <name>|<outfile> (F-068): dump the context menu tree
