@@ -13,6 +13,7 @@
 //   connect <url>         quick-connect (ftp://user:pass@host/… , sftp://… )
 //   disconnect            leave the active panel's network mount
 //   drivedisconnect <name>  hang up an open connection from its drive chip, as its ⏏ does
+//   typeahead <seq>|<out>   type into the active panel's quick search (\\b = Backspace, \\e = Esc)
 //   wait  <ms>            sleep (let an async connect/list settle)
 //   dump  <file>          write the active panel's path + entry names to a file
 //   bardrop <path>        add a bar button for <path>, as a drop on free space would
@@ -94,6 +95,15 @@ extension MainWindowController {
                     NSLog("[automation] bad url: \(arg)")
                 }
             case "disconnect": disconnectActivePanelNetwork()
+            case "typeahead":           // typeahead <sequence>|<out>
+                let a = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if let panel = activePanel, a.count == 2 {
+                    panel.tableView.automationTypeAhead(a[0])
+                    try? panel.tableView.typeAheadForAutomation
+                        .write(toFile: a[1], atomically: true, encoding: .utf8)
+                } else {
+                    NSLog("[automation] typeahead needs <sequence>|<out> and an active panel")
+                }
             case "drivedisconnect":     // drivedisconnect <chip-name>
                 // The chip's own ⏏, reached the way the chip reaches it. `disconnect` above is the
                 // menu command and aims at the active panel — a different question, and not the one

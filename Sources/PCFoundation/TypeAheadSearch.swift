@@ -23,4 +23,21 @@ public enum TypeAheadSearch {
         }
         return nil
     }
+
+    /// Every index whose name starts with `query`, in list order.
+    ///
+    /// The jump only ever needed "the next one"; showing the typed prefix needs "the second of five"
+    /// as well, and a user who can see that count knows whether to keep typing or to step on. Same
+    /// prefix rule as `match`, so the two can never disagree about what counts as a hit.
+    public static func matches(names: [String], query: String) -> [Int] {
+        guard !query.isEmpty else { return [] }
+        return names.indices.filter {
+            names[$0].range(of: query, options: [.caseInsensitive, .diacriticInsensitive, .anchored]) != nil
+        }
+    }
+
+    /// Where `index` sits among the matches for `query`, 1-based, or nil when it is not one of them.
+    public static func position(of index: Int, names: [String], query: String) -> Int? {
+        matches(names: names, query: query).firstIndex(of: index).map { $0 + 1 }
+    }
 }

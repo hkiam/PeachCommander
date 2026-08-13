@@ -210,6 +210,18 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// Type-ahead cursor search: accumulated typed prefix + last keystroke time.
     private var typeAheadBuffer = ""
     private var typeAheadLast: Date?
+    /// Ends the search after a pause, so the indicator never shows a prefix that is no longer live.
+    private var typeAheadTimer: Timer?
+    /// The typed prefix, which match the cursor is on, and how many there are — or nil once the
+    /// search has ended. Drawn by the panel as a small indicator; until it existed you typed blind.
+    var onTypeAheadChanged: ((_ prefix: String?, _ position: Int?, _ total: Int) -> Void)?
+    /// How long a search survives without a keystroke.
+    ///
+    /// Was 0.8 s and invisible, which is the shortest a *guess* can be: nothing on screen said a
+    /// search was in progress, so the only safe window was one short enough that a later keystroke
+    /// could not surprise you. Now that the prefix is shown and can be corrected with Backspace, a
+    /// window that expires before you can read it defeats the point.
+    private static let typeAheadWindow: TimeInterval = 2.0
     /// Quick-search mode (F-060): "direct" = plain letters jump (default),
     /// "ctrlalt" = only Ctrl+Alt+letter jumps, "off" = disabled.
     var quickSearchMode = "direct"
@@ -597,6 +609,11 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             fileHandleHighlights = [:]
             fileHandleHighlightPath = nil
         }
+        // A search belongs to the listing it was typed into. Navigating away and keeping the prefix
+        // would leave an indicator counting matches in names that are no longer on screen. A
+        // *refresh* of the same directory leaves it alone — that is the volatile mount ticking, not
+        // the user going anywhere.
+        if self.snapshot?.path != snapshot.path { endTypeAhead() }
         self.snapshot = snapshot
         if let sortDescriptor { self.sortDescriptor = sortDescriptor }
         dirSizes.removeAll()
@@ -906,6 +923,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     }
 
     private func clearFilter() {
+        endTypeAhead()
         filterMode = false
         filterText = ""
         onFilterChanged?(nil, visibleEntries.count, allEntryCount)
@@ -1749,6 +1767,17 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             }
         }
 
+        // A type-ahead search in progress owns Backspace and Esc — and only those two, and only
+        // while it is running. Outside a search both keep doing exactly what they did: Backspace
+        // goes to the parent folder, which is precisely the wrong answer to a mistyped letter.
+        if typeAheadActive, mods.isSubset(of: .shift) {
+            switch code {
+            case 51: typeAheadBackspace(); return   // correct the prefix
+            case 53: endTypeAhead(); return         // give up on the search
+            default: break
+            }
+        }
+
         // Numpad selection keys (correct virtual keycodes).
         switch code {
         case 69: // Keypad +
@@ -1846,7 +1875,9 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// after a short pause.
     private func typeAheadJump(_ chars: String) {
         let now = Date()
-        if let last = typeAheadLast, now.timeIntervalSince(last) > 0.8 { typeAheadBuffer = "" }
+        if let last = typeAheadLast, now.timeIntervalSince(last) > Self.typeAheadWindow {
+            typeAheadBuffer = ""
+        }
         typeAheadLast = now
 
         let start: Int
@@ -1860,7 +1891,84 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         if let idx = TypeAheadSearch.match(names: names, query: typeAheadBuffer, from: start) {
             moveCursor(to: idx)
         } else {
+            // The prefix stays, so Backspace can take back the character that went too far. Dropping
+            // it here — which is what happens when there is nothing to see — left you with a buffer
+            // you could neither read nor undo.
             NSSound.beep()
+        }
+        publishTypeAhead()
+    }
+
+    /// Drive the type-ahead from the automation runner: `chars` is typed one character at a time,
+    /// with `\\b` for Backspace and `\\e` for Esc.
+    ///
+    /// Here because the indicator is a label and the cursor is a drawn row — "what is the search
+    /// showing" is otherwise a question only somebody looking at the screen can answer, and this
+    /// feature is almost entirely about what is on screen.
+    func automationTypeAhead(_ sequence: String) {
+        var rest = Substring(sequence)
+        while let ch = rest.first {
+            rest = rest.dropFirst()
+            if ch == "\\", let next = rest.first {
+                rest = rest.dropFirst()
+                if next == "b" { if typeAheadActive { typeAheadBackspace() }; continue }
+                if next == "e" { endTypeAhead(); continue }
+            }
+            typeAheadJump(String(ch))
+        }
+    }
+
+    /// The search as text: the prefix, which match the cursor is on, how many there are, and the
+    /// name under the cursor — everything the indicator claims, checkable from a file.
+    var typeAheadForAutomation: String {
+        let names = visibleEntries.map { $0.name }
+        let all = TypeAheadSearch.matches(names: names, query: typeAheadBuffer)
+        let pos = cursorRow >= 0 ? all.firstIndex(of: cursorRow).map { $0 + 1 } : nil
+        let cursor = cursorRow >= 0 && cursorRow < names.count ? names[cursorRow] : ""
+        return "prefix=\(typeAheadBuffer)\npos=\(pos.map(String.init) ?? "-")\n"
+            + "total=\(all.count)\ncursor=\(cursor)\n"
+    }
+
+    /// Shorten the prefix by one and jump again; ends the search when nothing is left.
+    ///
+    /// Backspace otherwise leaves the folder, which is the worst possible answer to a typo: you
+    /// mistype one letter of a name and find yourself one directory up.
+    private func typeAheadBackspace() {
+        typeAheadBuffer.removeLast()
+        typeAheadLast = Date()
+        guard !typeAheadBuffer.isEmpty else { endTypeAhead(); return }
+        let names = visibleEntries.map { $0.name }
+        if let idx = TypeAheadSearch.match(names: names, query: typeAheadBuffer,
+                                           from: max(0, cursorRow), wrap: true) {
+            moveCursor(to: idx)
+        }
+        publishTypeAhead()
+    }
+
+    /// True while a prefix is being typed — the state Backspace and Esc belong to.
+    private var typeAheadActive: Bool { !typeAheadBuffer.isEmpty }
+
+    private func endTypeAhead() {
+        typeAheadBuffer = ""
+        typeAheadLast = nil
+        typeAheadTimer?.invalidate()
+        typeAheadTimer = nil
+        onTypeAheadChanged?(nil, nil, 0)
+    }
+
+    /// Tell the panel what to show, and arm the timer that ends the search.
+    private func publishTypeAhead() {
+        let names = visibleEntries.map { $0.name }
+        let all = TypeAheadSearch.matches(names: names, query: typeAheadBuffer)
+        let position = cursorRow >= 0 ? all.firstIndex(of: cursorRow).map { $0 + 1 } : nil
+        onTypeAheadChanged?(typeAheadBuffer, position, all.count)
+
+        typeAheadTimer?.invalidate()
+        typeAheadTimer = Timer.scheduledTimer(withTimeInterval: Self.typeAheadWindow,
+                                              repeats: false) { [weak self] _ in
+            // Only the *display* ends here. The buffer is cleared by the next keystroke's own
+            // window check, which is what has always decided whether typing continues a prefix.
+            self?.onTypeAheadChanged?(nil, nil, 0)
         }
     }
 

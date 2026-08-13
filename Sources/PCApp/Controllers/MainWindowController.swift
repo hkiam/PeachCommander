@@ -7382,6 +7382,12 @@ final class PanelView: NSView {
     }
     let statusBar: StatusBarView
     private let filterLabel = NSTextField(labelWithString: "")
+    /// What is currently being typed to jump the cursor, and which match it landed on.
+    ///
+    /// Its own label rather than the filter's: the two are different searches and can be running at
+    /// the same time — you can filter a folder and then type to jump within what is left — so one
+    /// label would have to choose which of them to lie about.
+    private let typeAheadLabel = NSTextField(labelWithString: "")
     weak var controller: PanelController?
     // Toggleable bar heights (F-270): collapsed to 0 + hidden when off.
     private var driveBarHeightConstraint: NSLayoutConstraint!
@@ -7614,6 +7620,17 @@ final class PanelView: NSView {
                 self.filterLabel.isHidden = true
             }
         }
+        tableView.onTypeAheadChanged = { [weak self] prefix, position, total in
+            guard let self else { return }
+            guard let prefix, !prefix.isEmpty else { self.typeAheadLabel.isHidden = true; return }
+            // "2/5" while something matches; the prefix alone in red when nothing does, which is the
+            // moment Backspace is wanted and the moment the old invisible version left you guessing
+            // why the cursor had stopped moving.
+            let counted = total > 0 ? "  \(position.map(String.init) ?? "–")/\(total)" : ""
+            self.typeAheadLabel.stringValue = "⌕ \(prefix)\(counted)"
+            self.typeAheadLabel.textColor = total > 0 ? Theme.current.selectedText : .systemRed
+            self.typeAheadLabel.isHidden = false
+        }
         tableView.onTypeToCommandLine = { [weak self] s in
             (self?.window?.windowController as? MainWindowController)?.routeTypingToCommandLine(s)
         }
@@ -7629,6 +7646,14 @@ final class PanelView: NSView {
         filterLabel.drawsBackground = true
         filterLabel.isHidden = true
         addSubview(filterLabel)
+
+        typeAheadLabel.translatesAutoresizingMaskIntoConstraints = false
+        typeAheadLabel.font = Fonts.system13
+        typeAheadLabel.textColor = Theme.current.selectedText
+        typeAheadLabel.backgroundColor = Theme.current.listBackground
+        typeAheadLabel.drawsBackground = true
+        typeAheadLabel.isHidden = true
+        addSubview(typeAheadLabel)
 
         driveBarHeightConstraint = driveBar.heightAnchor.constraint(equalToConstant: 24)
         statusBarHeightConstraint = statusBar.heightAnchor.constraint(equalToConstant: Metrics.statusBarHeight)
@@ -7677,7 +7702,10 @@ final class PanelView: NSView {
             statusBarHeightConstraint,
 
             filterLabel.trailingAnchor.constraint(equalTo: pathBar.trailingAnchor, constant: -8),
-            filterLabel.centerYAnchor.constraint(equalTo: pathBar.centerYAnchor)
+            filterLabel.centerYAnchor.constraint(equalTo: pathBar.centerYAnchor),
+            // Left of the filter's indicator, so both are readable when both are up.
+            typeAheadLabel.trailingAnchor.constraint(equalTo: filterLabel.leadingAnchor, constant: -10),
+            typeAheadLabel.centerYAnchor.constraint(equalTo: pathBar.centerYAnchor)
         ])
         treeWidthConstraint = treeView.widthAnchor.constraint(equalToConstant: 0)
         // How wide the tree column *should* be, not a rule about the world: the column and the file
