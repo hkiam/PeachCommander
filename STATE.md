@@ -26,6 +26,62 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-13 (FTP, reported) — A dialog that offered nonsense, and a connection with no drive
+
+Three reports about the FTP side, and each turned out to have a second defect behind it.
+
+**The port did not follow the protocol.** Switch a site from FTP to SFTP and 21 stayed in the field.
+Behind it, `commitForm` assigned the port *before* the protocol, so the port's own fallback ("this
+protocol's default") was read from the protocol being replaced — a site with a cleared port field came
+out on 21 no matter what it had just been set to.
+
+**The dialog offered every setting for every protocol.** "Anonymous" and passive mode stayed live on
+SFTP, which has neither; a proxy could be set on an FTPS site whose transport throws
+`tlsThroughProxyUnsupported` on connect; active mode plus a proxy is a data connection nobody can open.
+Worst of the set: `ProxyKind.http` was offered for FTP sites and `NWFTPControlTransport` then handshook
+it as SOCKS5 — the failure mode worse than refusing, because the error names a protocol nobody chose.
+The rules are now one testable place (`FtpConnectionRules`) that the dialog greys controls with, writes
+its warning line from, and `connectToSite` refuses with, so the same combination is described the same
+way wherever it comes up. The tunnel refuses a kind it does not speak. F-212's inventory row claimed
+HTTP proxy support and has been corrected.
+
+**An open connection had no drive of its own.** `enterNetwork` was called with `driveVolume: nil` for
+FTP and SFTP, so the bar fell back to matching the panel's path by prefix — and inside a mount the path
+is the server's own "/", which by prefix belongs to the startup disk. The bar therefore lit *Macintosh
+HD* while the panel was showing a remote server, the tab was titled "/", and the only way to hang up was
+a menu command aimed at whichever panel happened to be active. A connection now registers in
+`NetworkMountRegistry` and gets a chip like a plugin drive: either panel can enter it, and its ⏏ says
+Disconnect and does. Verified against test.rebex.net in the real app — `current=test.rebex.net`,
+`chips=…|test.rebex.net:networkConnection:glyph|…`, and after `drivedisconnect` the chip is gone and the
+panel is back where it started.
+
+That third fix opened a hole it had to close as well: with a chip, *both* panels can be inside one
+session, so "I am leaving" stopped meaning "nobody is using this". `exitArchive` and `resetToLocalFS`
+now ask the other panel first — otherwise a tab switch on the left would close the socket the right
+panel was listing through.
+
+Also removed: a dangling doc comment for a WebDAV connect function that no longer exists (it read as the
+next function's documentation), and "0 bytes free" announced by VoiceOver for every chip whose capacity
+is zero — plugin drives have always had that, and a connection would have joined them.
+
+**WebDAV, asked about next, was never broken — it was invisible.** The plugin builds, loads and lists
+(verified against a local DAV server: connect, `PROPFIND`, three entries). What it did not do was appear
+in the drive bar, for exactly the reason FTP did not: `fsMount` passes `pendingDriveVolume`, which is set
+only by a drive-chip click, so *every interactive plugin connect* mounted with no volume — startup disk
+lit, tab titled "/", nothing to disconnect from. It now registers in the same registry, named from the
+id the plugin gives its connection (`webdav:host` → chip "host", kind WebDAV; the split is
+`NetworkConnectionID`, tested for the ids that are not that shape). A drive-chip mount still does *not*
+register — TaskManager keeps its one chip, checked.
+
+Worth knowing about the PFX side: `PFXFileSystem` does not conform to `DisconnectableFileSystem`; it
+calls `PfxDisconnect` from `deinit`. So the chip's Disconnect works by dropping the last reference
+rather than by an explicit call, and `cm_FtpDisconnect` does not apply to a plugin mount.
+
+**Still unused in `FtpSite` and worth a decision:** `encoding`, `localDir` and `folder` round-trip
+through ftp-sites.ini and are read by nothing, and `FtpAuth.agent`/`.keyFile` cannot be chosen anywhere
+in the UI — `connectToSite` reads `keyFile` only when `auth == .keyFile`, which no dialog can set, so
+SFTP key authentication is unreachable in practice.
+
 ## 2026-08-13 (VM suite, cause) — One script looking in the wrong place, four "defects"
 
 Four of the five failures the suite reported were not defects. `build-ai-plugin.sh` looks for
@@ -44,8 +100,17 @@ So the guest ran an app with four plugins missing, and the suite reported the co
 
 Fixed at both ends: the script takes the repo's own build tree first (the same fix `resolve_app`
 needed), and `regress.py` grew `must()` — the plugin build, the app copy and the demo tree now stop the
-run instead of continuing with half a guest. All sixteen plugins build again, and all four scenarios
-pass in the VM.
+run instead of continuing with half a guest. All sixteen plugins build again, and the full suite went
+from **11 failures to 4**: `plugin-context-menu`, `surface-colours` and — against my own reading of it
+— all five `preview-zoom` reports are green. I had written that one off as "timing on a cold guest";
+it was the incomplete bundle as well, and the suite corrected me.
+
+Correction to what this commit first claimed: `toolbar-drop` and `session-save` pass when run alone or
+in a small set and fail in the FULL suite, so they are order-dependent rather than fixed. Two
+hypotheses worth checking, both about state the per-scenario reset does not clear: `default.bar` is
+never reset, so an earlier scenario that fills the button bar leaves no free space for the drop; and
+`peachcmd.ini` survives, so a scenario that changes a setting could switch session saving off for
+everything after it.
 
 That is the third instance of one shape in this session: a tool that looks where this project does not
 put things, under a layer that does not check whether it worked. It is worth grepping the rest of
