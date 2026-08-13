@@ -14,8 +14,9 @@ Les copies, déplacements, suppressions et téléchargements volumineux n'ont pa
 2. Ouvrez le gestionnaire à tout moment depuis **Commandes ▸ Gestionnaire de transferts en arrière-plan…** (ou appuyez sur Cmd+Shift+B).
 3. Chaque tâche affiche un titre, une barre de progression et une ligne en direct indiquant les fichiers terminés, les octets transférés et la vitesse actuelle.
 4. Utilisez les boutons de chaque tâche pour **Mettre en pause**, **Reprendre** ou **Annuler** pendant qu'une tâche est en cours.
-5. Pour les tâches que vous avez ajoutées mais pas encore démarrées (tâches en attente), cliquez sur **Démarrer** sur la tâche, ou sur **Tout démarrer** pour lancer d'un coup toute la liste d'attente.
-6. Lorsque tout ce qui vous intéresse est terminé, cliquez sur **Effacer les tâches terminées** pour ranger la liste.
+5. Une tâche en cours dispose aussi d’un menu de vitesse. Choisissez une limite — 1, 5 ou 20 Mo/s, ou pleine vitesse — pour écarter un transfert du chemin d’un autre sans ralentir les autres. L’effet est immédiat ; **Par défaut** rend la tâche à la limite définie dans la Configuration.
+6. Pour les tâches ajoutées mais pas encore démarrées (tâches en attente), cliquez sur **Démarrer** sur la tâche, ou sur **Tout démarrer** pour toute la liste d’attente. Les boutons **▲** et **▼** déplacent une tâche en attente plus tôt ou plus tard dans la file ; ils n’apparaissent que là où le déplacement est possible, de sorte qu’une tâche en attente ne double jamais le transfert déjà en cours.
+7. Lorsque tout ce qui vous intéresse est terminé, cliquez sur **Effacer les tâches terminées** pour ranger la liste.
 
 ![Le gestionnaire de transferts en arrière-plan répertoriant les tâches actives et en attente avec des barres de progression et des boutons Mettre en pause, Reprendre et Annuler.](screenshots/transfer-manager.png)
 

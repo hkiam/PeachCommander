@@ -13,7 +13,9 @@ Når en mappe inneholder hundrevis av elementer, trenger du sjelden å rulle. Pe
 1. Klikk på et filpanel slik at det blir aktivt.
 2. Begynn å skrive begynnelsen av et navn. Markøren hopper til det første samsvarende elementet.
 3. Fortsett å skrive for å forfine treffet, eller trykk samme bokstav igjen for å bla gjennom elementer som begynner med den bokstaven.
-4. Den innskrevne teksten fjernes etter en kort pause, slik at du kan starte et nytt søk når som helst.
+4. Det du har skrevet vises over panelet, sammen med hvilket treff du er på og hvor mange det er — for eksempel `⌕ re  2/3`. Det blir rødt når ingenting treffer.
+5. Trykk Backspace for å ta tilbake siste bokstav, eller Esc for å avslutte søket. Backspace redigerer bare et søk som pågår; ellers går det fortsatt til mappen over.
+6. Den innskrevne teksten fjernes etter en kort pause, slik at du kan starte et nytt søk når som helst.
 
 Som standard går rene bokstaver til kommandolinjen, og hurtigsøk utløses med Ctrl+Option+bokstav (den klassiske oppførselen). Du kan bytte hurtigsøk til å svare på ren skriving i stedet, eller slå det av, i Konfigurasjon-innstillingene.
 

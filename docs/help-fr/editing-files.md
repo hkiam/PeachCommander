@@ -29,6 +29,8 @@ La gouttière affiche les numéros de ligne, celle du curseur plus claire que le
 ## Rechercher, remplacer et naviguer
 
 - Appuyez sur Cmd+F pour ouvrir la barre de recherche. Pour remplacer du texte, ouvrez la barre de recherche et basculez-la vers la vue de remplacement, ou cliquez sur Rechercher/Remplacer dans la barre d'outils.
+- Pour une **expression régulière**, utilisez Rechercher ▸ *Rechercher avec une expression régulière…* (Ctrl+Cmd+F) ou *Remplacer avec une expression régulière…* (Ctrl+Opt+Cmd+F). `^` et `$` correspondent au début et à la fin de ligne, et dans le remplacement `$1` désigne le premier groupe — `(\w+) (\d+)` remplacé par `$2=$1` transforme donc `alpha 11` en `11=alpha`. **Dans la sélection uniquement** garde la modification dans le texte sélectionné ; **Tout remplacer** réécrit toutes les occurrences en une seule étape annulable par Cmd+Z.
+- Rechercher le suivant (Cmd+G) suit la dernière recherche utilisée, simple ou motif. Un motif qui ne compile pas est signalé dans la boîte de dialogue au lieu de ne rien trouver en silence.
 - Cliquez sur Formater JSON/XML pour réindenter un document JSON ou XML en une mise en page propre et lisible.
 - Cliquez sur Symboles (ou appuyez sur Cmd+Maj+O) pour afficher une barre latérale listant les classes, fonctions et méthodes de votre code — ou, pour un fichier JSON, YAML ou XML, ses clés et ses éléments. Cliquez sur une entrée pour y sauter directement. Voir [Travailler avec JSON, YAML et XML](#travailler-avec-json-yaml-et-xml) pour ce que cette structure permet d'autre.
 - Appuyez sur Cmd+L pour sauter à une ligne précise.

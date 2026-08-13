@@ -29,6 +29,8 @@ El margen muestra los números de línea, con la línea del cursor más clara qu
 ## Buscar, reemplazar y navegar
 
 - Pulse Cmd+F para abrir la barra de búsqueda. Para reemplazar texto, abra la barra de búsqueda y cámbiela a la vista de reemplazo, o haga clic en Buscar/Reemplazar en la barra de herramientas.
+- Para una **expresión regular**, use Buscar ▸ *Buscar con expresión regular…* (Ctrl+Cmd+F) o *Reemplazar con expresión regular…* (Ctrl+Opt+Cmd+F). `^` y `$` coinciden con el principio y el final de línea, y en el reemplazo `$1` representa el primer grupo — así `(\w+) (\d+)` reemplazado por `$2=$1` convierte `alpha 11` en `11=alpha`. **Solo en la selección** mantiene el cambio dentro del texto seleccionado; **Reemplazar todo** reescribe todas las coincidencias en un único paso que Cmd+Z deshace.
+- Buscar siguiente (Cmd+G) sigue la última búsqueda usada, simple o con patrón. Un patrón que no compila se indica en el diálogo en lugar de no encontrar nada en silencio.
 - Haga clic en Formatear JSON/XML para volver a sangrar un documento JSON o XML con una disposición limpia y legible.
 - Haga clic en Símbolos (o pulse Cmd+Shift+O) para mostrar una barra lateral que enumera las clases, funciones y métodos de su código — o, en un archivo JSON, YAML o XML, sus claves y elementos. Haga clic en una entrada para saltar directamente a ella. Consulte [Trabajar con JSON, YAML y XML](#trabajar-con-json-yaml-y-xml) para ver para qué más sirve esa estructura.
 - Pulse Cmd+L para saltar a una línea concreta.

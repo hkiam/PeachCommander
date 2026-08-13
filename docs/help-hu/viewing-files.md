@@ -22,6 +22,8 @@ A Peach Commander beépített megjelenítővel rendelkezik, amely lehetővé tes
 ## Szöveg keresése és a kódolás megváltoztatása
 
 - Nyomja meg a Ctrl+F-et a fájlon belüli kereséshez. Nyomja meg az F3-at a következő találatra ugráshoz, a Shift+F3-at az előzőhöz.
+- Jelölje be a **Reguláris kifejezés** négyzetet a keresőmezőben, hogy egyszerű szöveg helyett mintával keressen — `ERROR \d+`, vagy `^Warning` az ezzel kezdődő sorokra. A `^` és a `$` a sor elejét és végét jelenti. A le nem fordítható mintát a program jelzi, ahelyett hogy csendben semmit sem találna.
+- A nagyon nagy fájlokat egymást átfedő ablakokban keresi, ezért egyetlen, körülbelül 64 KB-nál hosszabb találat elkerülheti a figyelmet, ha épp egy ablakhatárra esik. Az egyszerű szöveges keresésnek nincs ilyen korlátja, és a rövidebbre illeszkedő mintának sincs.
 - Ha a szöveg zavarosnak tűnik, kattintson a Kódolás gombra az eszköztárban (vagy nyomja meg az E-t) a szövegkódolások végigjárásához, amíg helyesen nem olvasható; az automatikus beállítás általában eltalálja.
 - Nyomja meg a W-t a hosszú sorok sortörésének átkapcsolásához.
 

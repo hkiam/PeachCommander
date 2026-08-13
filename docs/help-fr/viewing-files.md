@@ -22,6 +22,8 @@ Peach Commander dispose d'un lecteur intégré qui vous permet de regarder à l'
 ## Rechercher du texte et changer l'encodage
 
 - Appuyez sur Ctrl+F pour rechercher dans le fichier. Appuyez sur F3 pour sauter à la correspondance suivante et Maj+F3 pour la précédente.
+- Cochez **Expression régulière** dans la boîte de recherche pour chercher un motif plutôt qu’un texte simple — `ERROR \d+`, ou `^Warning` pour les lignes qui commencent ainsi. `^` et `$` désignent le début et la fin de ligne. Un motif qui ne compile pas est signalé comme tel, au lieu de ne rien trouver en silence.
+- Les fichiers très volumineux sont parcourus par fenêtres qui se chevauchent : une correspondance unique de plus de 64 Ko environ peut donc être manquée si elle tombe précisément sur une limite de fenêtre. La recherche de texte simple n’a pas cette limite, ni un motif qui correspond à quelque chose de plus court.
 - Si le texte semble déformé, cliquez sur Encodage dans la barre d'outils (ou appuyez sur E) pour faire défiler les encodages jusqu'à ce qu'il se lise correctement ; le réglage automatique est généralement juste.
 - Appuyez sur W pour basculer le retour à la ligne pour les lignes longues.
 

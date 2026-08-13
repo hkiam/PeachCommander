@@ -29,6 +29,8 @@ Rob prikazuje številke vrstic, vrstica s kazalcem je svetlejša od drugih; gumb
 ## Iskanje, zamenjava in krmarjenje
 
 - Pritisnite Cmd+F, da odprete iskalno vrstico. Za zamenjavo besedila odprite iskalno vrstico in jo preklopite na pogled zamenjave, ali kliknite Poišči/Zamenjaj v orodni vrstici.
+- Za **regularni izraz** uporabite Iskanje ▸ *Poišči z regularnim izrazom…* (Ctrl+Cmd+F) ali *Zamenjaj z regularnim izrazom…* (Ctrl+Opt+Cmd+F). `^` in `$` se ujemata z začetkom in koncem vrstice, v zamenjavi pa `$1` pomeni prvo skupino — `(\w+) (\d+)`, zamenjano z `$2=$1`, torej iz `alpha 11` naredi `11=alpha`. **Samo v izboru** zadrži spremembo znotraj izbranega besedila; **Zamenjaj vse** prepiše vsa ujemanja v enem koraku, ki ga Cmd+Z razveljavi.
+- Poišči naslednje (Cmd+G) sledi nazadnje uporabljenemu iskanju, preprostemu ali z vzorcem. Vzorec, ki se ne prevede, je sporočen v pogovornem oknu, namesto da tiho ne bi našel ničesar.
 - Kliknite Oblikuj JSON/XML, da ponovno zamaknete dokument JSON ali XML v čisto, berljivo postavitev.
 - Kliknite Simboli (ali pritisnite Cmd+Shift+O) za prikaz stranske vrstice, ki navaja razrede, funkcije in metode v vaši kodi — ali, pri datoteki JSON, YAML ali XML, njene ključe in elemente. Kliknite vnos, da skočite neposredno nanj. Za kaj še je ta struktura dobra, glejte [Delo z JSON, YAML in XML](#delo-z-json-yaml-in-xml).
 - Pritisnite Cmd+L, da skočite na določeno vrstico.

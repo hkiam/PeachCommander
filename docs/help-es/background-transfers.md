@@ -14,8 +14,9 @@ Las copias, los movimientos, las eliminaciones y las descargas grandes no tienen
 2. Abra el gestor en cualquier momento desde **Comandos ▸ Gestor de transferencias en segundo plano…** (o pulse Cmd+Shift+B).
 3. Cada tarea muestra un título, una barra de progreso y una línea en directo con los archivos completados, los bytes transferidos y la velocidad actual.
 4. Use los botones de cada tarea para **Pausar**, **Reanudar** o **Cancelar** mientras una tarea se está ejecutando.
-5. Para las tareas que ha añadido pero aún no ha iniciado (tareas retenidas), haga clic en **Iniciar** en la tarea, o en **Iniciar todo** para lanzar de una vez toda la lista de espera.
-6. Cuando haya terminado todo lo que le interesa, haga clic en **Borrar finalizadas** para ordenar la lista.
+5. Una tarea en curso también tiene un menú de velocidad. Elija un límite — 1, 5 o 20 MB/s, o velocidad completa — para quitar una transferencia de en medio de otra sin frenar las demás. Surte efecto de inmediato; **Predeterminado** devuelve la tarea al límite definido en Configuración.
+6. Para las tareas añadidas pero aún no iniciadas (tareas retenidas), pulse **Iniciar** en la tarea, o **Iniciar todo** para toda la lista de espera. Con **▲** y **▼** mueve una tarea en espera antes o después en la cola; los botones solo aparecen donde el movimiento es posible, de modo que una tarea en espera nunca adelanta a la transferencia que ya se está ejecutando.
+7. Cuando haya terminado todo lo que le interesa, haga clic en **Borrar finalizadas** para ordenar la lista.
 
 ![El Gestor de transferencias en segundo plano con una lista de tareas activas y en espera con barras de progreso y botones de Pausar, Reanudar y Cancelar.](screenshots/transfer-manager.png)
 

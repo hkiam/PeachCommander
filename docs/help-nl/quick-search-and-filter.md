@@ -13,7 +13,9 @@ Wanneer een map honderden items bevat, hoef je zelden te scrollen. Met Peach Com
 1. Klik op een bestandspaneel zodat het actief is.
 2. Begin het begin van een naam te typen. De cursor springt naar het eerste overeenkomende item.
 3. Blijf typen om de overeenkomst te verfijnen, of druk nogmaals op dezelfde letter om door items te bladeren die met die letter beginnen.
-4. De getypte tekst wordt na een korte pauze gewist, zodat je op elk moment een nieuwe zoekopdracht kunt starten.
+4. Wat u hebt getypt verschijnt boven het paneel, samen met de hoeveelste treffer u bent en hoeveel er zijn — bijvoorbeeld `⌕ re  2/3`. Het wordt rood als er niets overeenkomt.
+5. Druk op Backspace om de laatste letter terug te nemen, of op Esc om de zoekopdracht te beëindigen. Backspace bewerkt alleen een lopende zoekopdracht; anders gaat het nog steeds naar de bovenliggende map.
+6. De getypte tekst wordt na een korte pauze gewist, zodat je op elk moment een nieuwe zoekopdracht kunt starten.
 
 Standaard gaan gewone letters naar de opdrachtregel en wordt snelzoeken geactiveerd met Ctrl+Option+letter (het klassieke gedrag). Je kunt snelzoeken zo instellen dat het in plaats daarvan op gewoon typen reageert, of het uitzetten, in de Configuratie-instellingen.
 

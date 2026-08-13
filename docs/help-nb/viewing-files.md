@@ -22,6 +22,8 @@ Peach Commander har en innebygd visning som lar deg se inni en fil uten å åpne
 ## Finn tekst og endre tegnkodingen
 
 - Trykk Ctrl+F for å søke i filen. Trykk F3 for å hoppe til neste treff og Shift+F3 for det forrige.
+- Kryss av for **Regulært uttrykk** i søkefeltet for å søke med et mønster i stedet for ren tekst — `ERROR \d+`, eller `^Warning` for linjer som begynner slik. `^` og `$` betyr linjestart og linjeslutt. Et mønster som ikke lar seg kompilere, meldes som det, i stedet for stille å ikke finne noe.
+- Svært store filer gjennomsøkes i overlappende vinduer, så ett enkelt treff på mer enn rundt 64 KB kan bli oversett hvis det ligger akkurat over en vindusgrense. Vanlig tekstsøk har ingen slik grense, og det har heller ikke et mønster som treffer noe kortere.
 - Hvis teksten ser forvansket ut, klikk på Tegnkoding i verktøylinjen (eller trykk E) for å bla gjennom tegnkodinger til den leses riktig; den automatiske innstillingen treffer vanligvis riktig.
 - Trykk W for å veksle tekstbryting for lange linjer.
 

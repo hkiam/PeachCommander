@@ -29,6 +29,8 @@ Marginalen visar radnummer, med raden du står på ljusare än de övriga; knapp
 ## Sök, ersätt och navigera
 
 - Tryck på Cmd+F för att öppna sökfältet. För att ersätta text, öppna sökfältet och växla det till ersättningsvyn, eller klicka på Sök/Ersätt i verktygsfältet.
+- För ett **reguljärt uttryck** använder du Sök ▸ *Sök med reguljärt uttryck…* (Ctrl+Cmd+F) eller *Ersätt med reguljärt uttryck…* (Ctrl+Opt+Cmd+F). `^` och `$` matchar radens början och slut, och i ersättningen står `$1` för den första gruppen — `(\w+) (\d+)` ersatt med `$2=$1` gör alltså `alpha 11` till `11=alpha`. **Endast i markeringen** håller ändringen inom den markerade texten; **Ersätt alla** skriver om varje träff i ett enda steg som Cmd+Z ångrar.
+- Sök nästa (Cmd+G) följer den sökning du använde senast, enkel eller mönster. Ett mönster som inte går att kompilera rapporteras i dialogrutan i stället för att tyst inte hitta något.
 - Klicka på Formatera JSON/XML för att indentera om ett JSON- eller XML-dokument till en ren, läsbar layout.
 - Klicka på Symboler (eller tryck Cmd+Shift+O) för att visa ett sidofält som listar klasserna, funktionerna och metoderna i din kod — eller, för en JSON-, YAML- eller XML-fil, dess nycklar och element. Klicka på en post för att hoppa direkt till den. Se [Arbeta med JSON, YAML och XML](#arbeta-med-json-yaml-och-xml) för vad strukturen är bra för i övrigt.
 - Tryck på Cmd+L för att hoppa till en specifik rad.

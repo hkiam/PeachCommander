@@ -29,6 +29,8 @@ Il margine mostra i numeri di riga, con la riga del cursore più chiara delle al
 ## Trovare, sostituire e navigare
 
 - Premete Cmd+F per aprire la barra di ricerca. Per sostituire il testo, aprite la barra di ricerca e passate alla vista di sostituzione, oppure fate clic su Trova/Sostituisci nella barra degli strumenti.
+- Per un’**espressione regolare** usa Cerca ▸ *Trova con espressione regolare…* (Ctrl+Cmd+F) o *Sostituisci con espressione regolare…* (Ctrl+Opt+Cmd+F). `^` e `$` corrispondono a inizio e fine riga, e nella sostituzione `$1` sta per il primo gruppo — `(\w+) (\d+)` sostituito con `$2=$1` trasforma quindi `alpha 11` in `11=alpha`. **Solo nella selezione** mantiene la modifica nel testo selezionato; **Sostituisci tutto** riscrive ogni occorrenza in un unico passo annullabile con Cmd+Z.
+- Trova successivo (Cmd+G) segue l’ultima ricerca usata, semplice o con motivo. Un motivo che non compila viene segnalato nella finestra invece di non trovare nulla in silenzio.
 - Fate clic su Formatta JSON/XML per reindentare un documento JSON o XML in una disposizione pulita e leggibile.
 - Fate clic su Simboli (o premete Cmd+Shift+O) per mostrare una barra laterale che elenca le classi, le funzioni e i metodi del vostro codice — oppure, per un file JSON, YAML o XML, le sue chiavi ed elementi. Fate clic su una voce per saltare direttamente a essa. Vedete [Lavorare con JSON, YAML e XML](#lavorare-con-json-yaml-e-xml) per cos'altro serve quella struttura.
 - Premete Cmd+L per saltare a una riga specifica.

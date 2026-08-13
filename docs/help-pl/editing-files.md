@@ -29,6 +29,8 @@ Marginesw pokazuje numery wierszy, wiersz z kursorem jaśniej niż pozostałe; p
 ## Wyszukiwanie, zamiana i nawigacja
 
 - Naciśnij Cmd+F, aby otworzyć pasek wyszukiwania. Aby zamienić tekst, otwórz pasek wyszukiwania i przełącz go na widok zamiany, lub kliknij Znajdź/Zamień na pasku narzędzi.
+- Do **wyrażenia regularnego** użyj Szukaj ▸ *Znajdź wyrażeniem regularnym…* (Ctrl+Cmd+F) lub *Zamień wyrażeniem regularnym…* (Ctrl+Opt+Cmd+F). `^` i `$` pasują do początku i końca wiersza, a w zamienniku `$1` oznacza pierwszą grupę — `(\w+) (\d+)` zamienione na `$2=$1` zmienia więc `alpha 11` w `11=alpha`. **Tylko w zaznaczeniu** utrzymuje zmianę w zaznaczonym tekście; **Zamień wszystko** przepisuje wszystkie trafienia w jednym kroku, który cofa Cmd+Z.
+- Znajdź następne (Cmd+G) podąża za ostatnio użytym wyszukiwaniem, zwykłym lub wzorcem. Wzorzec, którego nie da się skompilować, jest zgłaszany w oknie zamiast po cichu niczego nie znajdować.
 - Kliknij Formatuj JSON/XML, aby ponownie wciąć dokument JSON lub XML do czystego, czytelnego układu.
 - Kliknij Symbole (lub naciśnij Cmd+Shift+O), aby wyświetlić pasek boczny wymieniający klasy, funkcje i metody w kodzie — albo, w pliku JSON, YAML czy XML, jego klucze i elementy. Kliknij wpis, aby przeskoczyć do niego bezpośrednio. Do czego jeszcze służy ta struktura, zobacz [Praca z JSON, YAML i XML](#praca-z-json-yaml-i-xml).
 - Naciśnij Cmd+L, aby przeskoczyć do konkretnego wiersza.

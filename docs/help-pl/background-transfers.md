@@ -14,8 +14,9 @@ Duże kopiowania, przenoszenia, usuwania i pobierania nie muszą wstrzymywać Tw
 2. Otwórz menedżera w dowolnej chwili z menu **Polecenia ▸ Menedżer transferów w tle…** (lub naciśnij Cmd+Shift+B).
 3. Każde zadanie pokazuje tytuł, pasek postępu oraz wiersz na żywo z liczbą wykonanych plików, przesłanych bajtów i bieżącą prędkością.
 4. Użyj przycisków przy zadaniu, aby **Wstrzymać**, **Wznowić** lub **Anulować** w trakcie działania zadania.
-5. Dla zadań, które dodałeś, ale jeszcze nie uruchomiłeś (zadania wstrzymane), kliknij **Rozpocznij** przy zadaniu lub **Rozpocznij wszystkie**, aby uruchomić całą listę oczekujących naraz.
-6. Gdy wszystko, na czym Ci zależy, zostanie ukończone, kliknij **Wyczyść ukończone**, aby uporządkować listę.
+5. Trwające zadanie ma też menu prędkości. Wybierz limit — 1, 5 lub 20 MB/s albo pełną prędkość — aby usunąć jeden transfer z drogi innemu, nie spowalniając pozostałych. Działa od razu; **Domyślne** zwraca zadanie do limitu ustawionego w Konfiguracji.
+6. W przypadku zadań dodanych, ale jeszcze nieuruchomionych (wstrzymanych), kliknij **Uruchom** przy zadaniu lub **Uruchom wszystkie**, aby ruszyć całą listę oczekujących. Przyciskami **▲** i **▼** przesuniesz oczekujące zadanie wcześniej lub później w kolejce; pojawiają się tylko tam, gdzie przesunięcie jest możliwe, więc oczekujące zadanie nigdy nie wyprzedzi transferu już trwającego.
+7. Gdy wszystko, na czym Ci zależy, zostanie ukończone, kliknij **Wyczyść ukończone**, aby uporządkować listę.
 
 ![Menedżer transferów w tle z listą aktywnych i oczekujących zadań, paskami postępu oraz przyciskami Wstrzymaj, Wznów i Anuluj.](screenshots/transfer-manager.png)
 

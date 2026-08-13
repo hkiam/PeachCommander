@@ -22,6 +22,8 @@ Peach Commander ma wbudowaną przeglądarkę, która pozwala zajrzeć do wnętrz
 ## Znajdź tekst i zmień kodowanie
 
 - Naciśnij Ctrl+F, aby wyszukać wewnątrz pliku. Naciśnij F3, aby przeskoczyć do następnego dopasowania, i Shift+F3 do poprzedniego.
+- Zaznacz **Wyrażenie regularne** w oknie wyszukiwania, aby szukać wzorcem zamiast zwykłego tekstu — `ERROR \d+` albo `^Warning` dla wierszy zaczynających się tym słowem. `^` i `$` oznaczają początek i koniec wiersza. Wzorzec, którego nie da się skompilować, jest zgłaszany jako taki, zamiast po cichu niczego nie znajdować.
+- Bardzo duże pliki są przeszukiwane w nakładających się oknach, więc pojedyncze trafienie dłuższe niż około 64 KB może zostać pominięte, jeśli akurat przypadnie na granicę okna. Zwykłe wyszukiwanie tekstu nie ma takiego ograniczenia — nie ma go też wzorzec pasujący do czegoś krótszego.
 - Jeśli tekst wygląda na zniekształcony, kliknij Kodowanie na pasku narzędzi (lub naciśnij E), aby przełączać kodowania tekstu, dopóki nie odczyta się poprawnie; ustawienie automatyczne zwykle trafia.
 - Naciśnij W, aby przełączyć zawijanie wierszy dla długich linii.
 

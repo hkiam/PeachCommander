@@ -22,6 +22,8 @@ Peach Commander are un vizualizator integrat care vă permite să priviți în i
 ## Găsirea textului și schimbarea codificării
 
 - Apăsați Ctrl+F pentru a căuta în interiorul fișierului. Apăsați F3 pentru a sări la următoarea potrivire și Shift+F3 pentru cea anterioară.
+- Bifați **Expresie regulată** în caseta de căutare pentru a căuta cu un tipar în loc de text simplu — `ERROR \d+`, sau `^Warning` pentru rândurile care încep așa. `^` și `$` înseamnă începutul și sfârșitul rândului. Un tipar care nu se compilează este raportat ca atare, în loc să nu găsească nimic în tăcere.
+- Fișierele foarte mari sunt parcurse în ferestre suprapuse, așa că o singură potrivire mai lungă de circa 64 KB poate scăpa dacă nimerește exact pe marginea unei ferestre. Căutarea de text simplu nu are o astfel de limită, și nici un tipar care se potrivește cu ceva mai scurt.
 - Dacă textul pare deteriorat, faceți clic pe Codificare în bara de instrumente (sau apăsați E) pentru a parcurge codificările de text până când se citește corect; setarea automată reușește de obicei.
 - Apăsați W pentru a comuta încadrarea cuvintelor pentru liniile lungi.
 

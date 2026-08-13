@@ -29,6 +29,8 @@ Margen viser linjenumre, med linja du står på lysere enn de andre; knappen ved
 ## Finn, erstatt og naviger
 
 - Trykk Cmd+F for å åpne finn-linjen. For å erstatte tekst, åpne finn-linjen og bytt til erstatt-visningen, eller klikk Finn/Erstatt i verktøylinjen.
+- For et **regulært uttrykk** bruker du Søk ▸ *Finn med regulært uttrykk…* (Ctrl+Cmd+F) eller *Erstatt med regulært uttrykk…* (Ctrl+Opt+Cmd+F). `^` og `$` treffer linjestart og linjeslutt, og i erstatningen står `$1` for den første gruppen — `(\w+) (\d+)` erstattet med `$2=$1` gjør altså `alpha 11` til `11=alpha`. **Bare i utvalget** holder endringen innenfor den markerte teksten; **Erstatt alle** skriver om alle treff i ett steg som Cmd+Z angrer.
+- Finn neste (Cmd+G) følger søket du brukte sist, enkelt eller mønster. Et mønster som ikke lar seg kompilere, meldes i dialogen i stedet for stille å ikke finne noe.
 - Klikk Formater JSON/XML for å innrykke et JSON- eller XML-dokument på nytt til et rent, lesbart oppsett.
 - Klikk Symboler (eller trykk Cmd+Shift+O) for å vise et sidefelt som lister opp klassene, funksjonene og metodene i koden din — eller, for en JSON-, YAML- eller XML-fil, nøklene og elementene i den. Klikk på en oppføring for å hoppe rett til den. Se [Arbeid med JSON, YAML og XML](#arbeid-med-json-yaml-og-xml) for hva strukturen ellers er god for.
 - Trykk Cmd+L for å hoppe til en bestemt linje.

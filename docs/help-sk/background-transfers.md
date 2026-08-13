@@ -14,8 +14,9 @@ Veľké kopírovania, presúvania, mazania a sťahovania nemusia zdržiavať va�
 2. Otvorte správcu kedykoľvek z **Príkazy ▸ Správca prenosov na pozadí…** (alebo stlačte Cmd+Shift+B).
 3. Každá úloha zobrazuje názov, ukazovateľ priebehu a živý riadok s hotovými súbormi, prenesenými bajtmi a aktuálnou rýchlosťou.
 4. Použite tlačidlá na úlohu **Pozastaviť**, **Obnoviť** alebo **Zrušiť**, kým úloha beží.
-5. Pri úlohách, ktoré ste pridali, ale ešte nezačali (zadržané úlohy), kliknite na **Spustiť** na úlohe, alebo **Spustiť všetko** na spustenie celého čakacieho zoznamu naraz.
-6. Keď všetko, čo vás zaujíma, skončilo, kliknite na **Vyčistiť dokončené** na usporiadanie zoznamu.
+5. Bežiaca úloha má aj ponuku rýchlosti. Zvoľte limit — 1, 5 alebo 20 MB/s, prípadne plnú rýchlosť —, aby ste jeden prenos uhli z cesty inému bez spomalenia ostatných. Platí okamžite; **Predvolené** vráti úlohu k limitu nastavenému v Konfigurácii.
+6. Pri úlohách, ktoré ste pridali, ale ešte nespustili (podržané úlohy), kliknite na **Spustiť** pri úlohe alebo na **Spustiť všetko** pre celý zoznam čakajúcich. Tlačidlami **▲** a **▼** posuniete čakajúcu úlohu vpred alebo vzad v poradí; objavia sa len tam, kde je posun možný, takže čakajúca úloha nikdy nepredbehne už bežiaci prenos.
+7. Keď všetko, čo vás zaujíma, skončilo, kliknite na **Vyčistiť dokončené** na usporiadanie zoznamu.
 
 ![Správca prenosov na pozadí uvádzajúci aktívne a čakajúce úlohy s ukazovateľmi priebehu a tlačidlami Pozastaviť, Obnoviť a Zrušiť.](screenshots/transfer-manager.png)
 
