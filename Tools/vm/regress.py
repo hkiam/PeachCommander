@@ -1661,6 +1661,13 @@ def boot(app: str, run: str):
     if before and after and (before.st_mtime, before.st_size) != (after.st_mtime, after.st_size):
         sys.exit("the app binary changed while it was being copied — something rebuilt it mid-run; "
                  "start the suite again with nothing else touching the build")
+    # The sample tree every "left /Users/admin/pc-demo" scenario navigates to. `capture.py` has always
+    # created it and this script never did, so those scenarios have been looking at an empty panel —
+    # which for a layout scenario still reports zero conflicts, and for a report scenario reads as the
+    # feature failing. Found while writing `process-files`: it held a file from that tree open, and the
+    # search correctly answered that nobody had it open, because neither the file nor the tree existed.
+    say("creating the demo tree in the guest…")
+    sh([str(Path(__file__).with_name("demo-content.sh")), ip])
     sh(["scp", *SSH, str(Path(__file__).with_name("regress-guest.sh")), f"{GUEST}@{ip}:regress-guest.sh"])
     ssh_guest(ip, "chmod +x regress-guest.sh")
     # Structured fixtures for the outline scenarios (F-368) are files, not printf: YAML and XML are
