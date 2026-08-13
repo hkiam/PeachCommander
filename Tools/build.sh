@@ -24,4 +24,22 @@ xcodebuild \
     -derivedDataPath build \
     build
 
-echo "Build complete: build/Build/Products/Debug/PeachCommander.app"
+APP="build/Build/Products/Debug/PeachCommander.app"
+
+# Plugins, into the app that was just built.
+#
+# Without this the bundle keeps whatever `make-dmg.sh` left there last — which can be days old, and
+# looks exactly like a fresh build. Anyone verifying a plugin change by running the debug app was
+# then testing the *previous* version of it, silently and with no way to notice. Measured on
+# 2026-08-13: the WebDAV binary inside the bundle was eight hours older than its source.
+#
+# Skippable, because it is the slowest part of a build and most changes are not to plugins:
+#   PC_SKIP_PLUGINS=1 Tools/build.sh
+if [ "${PC_SKIP_PLUGINS:-0}" = "1" ]; then
+    echo "Skipping plugins (PC_SKIP_PLUGINS=1) — the bundle keeps whatever it already had."
+else
+    echo "Building plugins into the app bundle..."
+    Tools/build-all-plugins.sh "$APP/Contents/PlugIns"
+fi
+
+echo "Build complete: $APP"
