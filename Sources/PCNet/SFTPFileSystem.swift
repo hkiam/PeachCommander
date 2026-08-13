@@ -172,6 +172,9 @@ public final class SFTPFileSystem: VirtualFileSystem, DisconnectableFileSystem, 
         switch error {
         case SFTPError.notFound(let p): return VFSError.notFound(p)
         case SFTPError.notConnected: return VFSError.connectionLost(retryable: true)
+        // Retryable in the sense that reconnecting works — not that this session can be used again.
+        // It cannot: libssh2 state after a transport failure is not something to keep browsing with.
+        case SFTPError.transportLost: return VFSError.connectionLost(retryable: true)
         case SFTPError.hostKeyMismatch, SFTPError.authFailed:
             return VFSError.permissionDenied(needsElevation: false)
         default: return error

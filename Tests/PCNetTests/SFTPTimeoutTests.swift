@@ -13,6 +13,7 @@
 // exactly the failure being defended against — the client is waiting for a banner that never comes.
 
 import XCTest
+import PCVFS
 @testable import PCNet
 
 final class SFTPTimeoutTests: XCTestCase {
@@ -119,6 +120,30 @@ final class SFTPTimeoutTests: XCTestCase {
         await session.close()
         XCTAssertLessThan(Date().timeIntervalSince(start), 10, "close() waited on a dead session")
         _ = await connecting.result
+    }
+
+    // MARK: - Telling a dead connection from a missing file
+
+    func test_aLostTransportIsReportedAsALostConnection() {
+        // Not as "not found", which is what every one of these call sites used to say.
+        // `libssh2_sftp_open_ex` answers NULL for both, so a connection dying during a listing told
+        // the user the directory did not exist — and sent them looking for a folder that is exactly
+        // where they left it. The app keys its whole recovery off this distinction: `connectionLost`
+        // is what makes the panel leave the dead mount and the drive chip disappear.
+        let mapped = SFTPFileSystem.mapError(SFTPError.transportLost("open dir"))
+        guard case VFSError.connectionLost = mapped else {
+            return XCTFail("a lost transport was reported as \(mapped)")
+        }
+    }
+
+    func test_aMissingFileIsStillAMissingFile() {
+        // The other side of the same distinction: widening "connection lost" until it swallows an
+        // ordinary missing file would throw away a working mount every time someone opened a stale
+        // bookmark.
+        let mapped = SFTPFileSystem.mapError(SFTPError.notFound("/gone.txt"))
+        guard case VFSError.notFound(let p) = mapped, p == "/gone.txt" else {
+            return XCTFail("a missing file was reported as \(mapped)")
+        }
     }
 
     func test_aRefusedPortFailsPromptly() async throws {
