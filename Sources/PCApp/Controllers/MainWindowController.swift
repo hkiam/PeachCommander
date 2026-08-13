@@ -1252,8 +1252,18 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 // File-system adapters (PFX). Keyed by bundlePath so a contributed
                 // "connect" command can correlate to this plugin's connect facet.
                 if plugin.manifest.type == .pfx, case .success(let lib) = PluginHost.openLibrary(plugin) {
+                    let pfx = PFXPlugin(library: lib)
+                    // Loads and works either way — and then leaks whatever PfxConnect allocated,
+                    // once per connection, with nothing for the host to call. Said out loud
+                    // because the author is the only one who can fix it.
+                    if pfx.connectsWithoutDisconnect {
+                        self.logger.error("""
+                            plugin \(plugin.manifest.name, privacy: .public) offers a connect facet \
+                            but exports no PfxDisconnect: its connections cannot be closed and will leak
+                            """)
+                    }
                     FileSystemPluginRegistry.shared.register(
-                        LoadedPFXPlugin(id: plugin.bundlePath, plugin: PFXPlugin(library: lib)))
+                        LoadedPFXPlugin(id: plugin.bundlePath, plugin: pfx))
                 }
             }
             // PDX content-field plugins → extra panel columns (lazy per-file values).

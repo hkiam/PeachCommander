@@ -284,10 +284,13 @@ public func PfxConnect(_ services: UnsafePointer<PfxHostServices>?) -> UnsafeMut
     // Test hook: PC_WEBDAV_URL lets connect run without the modal dialog (for
     // automated end-to-end tests). Ignored in normal use.
     let entered: (String, String)?
+    let fromEnvironment: Bool
     if let env = ProcessInfo.processInfo.environment["PC_WEBDAV_URL"], !env.isEmpty {
         entered = (env, ProcessInfo.processInfo.environment["PC_WEBDAV_PASSWORD"] ?? "")
+        fromEnvironment = true
     } else {
         entered = ConnectDialog(sites: WebDAVSites.load()).run()
+        fromEnvironment = false
     }
     guard let (urlString, typedPassword) = entered,
           !urlString.isEmpty, let comps = URLComponents(string: urlString),
@@ -313,9 +316,12 @@ public func PfxConnect(_ services: UnsafePointer<PfxHostServices>?) -> UnsafeMut
         }
     }
 
-    // Remember the site (with user, without password) for next time.
+    // Remember the site (with user, without password) for next time — but not when the connect
+    // came from the test hook. `WebDAVSites` writes to the real Application Support directory and
+    // does not know about the host's `-ConfigRoot`, so an automated run would otherwise leave a
+    // throwaway localhost URL in the user's own history, once per run.
     var siteComps = comps; siteComps.password = nil
-    if let site = siteComps.url?.absoluteString { WebDAVSites.add(site) }
+    if fromEnvironment == false, let site = siteComps.url?.absoluteString { WebDAVSites.add(site) }
 
     var baseComps = comps
     baseComps.user = nil; baseComps.password = nil
