@@ -9,7 +9,7 @@
 |---|---|
 | Phase | **A & B done. C: I14 done; I15 plain FTP LIVE (quick-connect + connection manager, verified vs test.rebex.net; SFTP + explicit-FTPS still pending); I16 lister/content plugins mostly done. D: I17 utilities mostly done; I18 macOS integration MOSTLY DONE (Quick Look Cmd+Y, Share sheet, Open With, Finder Tags: color column + tag-filter (tag:red/#blau), Spotlight metadata in Get Info, Services menu integration, "Open Terminal Here", Full Disk Access onboarding, Go▸Trash, xattr inspector/remove in Change Attributes, privileged "retry as administrator" for chmod+delete done; ACL editing/copy-move-elevation/undo pending). Also F-063 Ctrl+Left/Right open cursor folder in other panel done.; I19 partial (perf targets validated); I20 shipping GROUNDWORK done (DMG script + release CI workflow + hardened-runtime entitlements + RELEASE.md + CHANGELOG + local crash reporting; only Developer-ID signing/notarization and Sparkle auto-update remain — both need Apple creds / update-feed hosting).** |
 | Evidence sweep | **Batches 1–24 (2026-08-07/08): 73 rows checked, 33 defects fixed, 87 → 21 rows without evidence; the last 21 were then worked through on 2026-08-09 and the count is now **0** — five of them turned out not to be implemented at all (the window title, the splitter's double-click, sequential transfers, the icon-off mode and the DMG layout).** A follow-up *interpreter sweep* (2026-08-08, after 0.4.0) then went at one defect class on purpose — a string from somewhere else reaching something that interprets it — and found four more: the panel's extract walk wrote above the destination (F-131), an XML file could read your other files through external entities (F-368), previewing a document fetched a remote image and so reported that you opened it (F-116), and the assistant's approval gate was bypassable through `run_command`. See the entry below. Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive wrote outside the chosen folder (F-131); the archive password stood in the process list (F-136); a CRLF code file rendered as one line six million characters wide (F-110); undoing a batch rename did nothing (F-175); Num/ did nothing (F-056); a wildcard selected the *wrong* file (F-055); a Windows-written .sfv verified nothing (F-097). Six defects were one Swift trap — `"\r\n"` is a single Character. New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, `check-tests-registered.py`, `check-vm-flags.sh`, plus `check-descript-format.sh` extended. Of the 21 rows left, 8 are blocked externally (Apple credentials, SMB mounts, the Services menu). |
-| Current iteration | **Editor: JSON/YAML/XML outline, structural navigation, paths, validation and transformations DONE (F-368/369/370)**; I19 T06 accessibility + keyboard operation DONE (see the log below). Docs/i18n complete. **I19 localization + help DONE (19 languages)**; **documentation system live** (SSOT → Apple Help Book + MkDocs site + generated FEATURES/README). Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update (both need Apple creds / feed hosting); accessibility (I19 T06) **done**. |
+| Current iteration | **0.6.2 released** (draft on GitHub). Since then, from the idea list: empty-folder search (F-152), a visible quick search (F-060), transfer queue reordering + a live per-job speed limit (F-085), and regular expressions in the viewer *and* the editor, find and replace (F-151) — all four verified on screen. Two of the five ideas were already built (folder history, pause). Earlier: FTP/SFTP/WebDAV each get their own drive-bar entry and disconnect there; `PfxDisconnect` is now actually called. Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update — the workflow exists, four repo secrets are missing; **the docs still say it is "not wired up", which is wrong**. |
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **69 scenarios with reports** (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
@@ -25,6 +25,52 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-13 (ideas → five features) — What research did to the list, and what looking did to the result
+
+Five ideas came in as a list; the useful part happened before any code. **Two of the five were already
+built**: the folder history (`NavigationHistory`, 50 entries, Alt+←/→, Alt+↓ for the list, persisted
+across sessions) and pausing a transfer (`OperationControl.pause/resume/checkpoint`, with per-job
+buttons). Two more were half-built — regex existed in the *file* search but not the viewer or editor,
+and type-ahead worked but invisibly. And "priority" turned out to be the wrong word for what was
+missing: OS priority does nothing for a disk-bound copy, while *queue order* and *a per-job cap* are
+the two things a transfer manager is actually asked for. Reading the code first turned a list of five
+into a different, smaller, truer list.
+
+What was built: empty-folder search (F-152), a visible quick search with Backspace and Esc (F-060),
+queue reordering plus a live per-job speed limit (F-085), and regular expressions in the viewer and
+in the editor for both find and replace (F-151).
+
+**Three findings were bigger than the features that uncovered them.**
+
+* `SearchTemplate` is `Codable` with synthesized decoding, which ignores property defaults and throws
+  on a missing key — so adding *any* field would have made every saved search fail to load, silently,
+  because `SearchTemplateStore.load` answers `[]` for whatever it cannot decode. Decoding is written
+  out field by field now.
+* The transfer speed limit lived in `CopyOptions`, a value copied into the engine at start. That can
+  only answer "slow all copies down". It moved onto `OperationControl`, which the engine already asks
+  per chunk, so "slow *this* one down" became expressible at all.
+* The editor's native find bar (`NSTextFinder`) cannot do patterns and cannot be taught to — it
+  searches on its own behalf and its client protocol supplies text, not a matcher. So the pattern
+  search sits beside it and Find Next follows whichever was used last, rather than the bar being
+  rebuilt.
+
+**And the method lesson, which is the one worth keeping.** Three separate checks in this session
+passed against code that was known to be broken: two versions of the shortcut-recorder UI test, and
+the first viewer-regex check, which read a stale offset left behind by the previous search. Each time
+the counter was the same and it is cheap: **run the check against the broken build before believing
+it**. Twice more, a check that reproduced correctly was still wrong about *why* — a doubled backslash
+from a shell heredoc, and `^` not matching line starts.
+
+Then the screen was locked for most of the work, which forced everything through automation and left
+four verbs behind that outlive the day: `typeahead` (drives the quick search, `\b`/`\e` for Backspace
+and Esc), `listerfind`, `editregex`, and `httpget … hold` for producing a *waiting* transfer list.
+When the screen came back, one pass over the five features found **two defects that no test could
+see**: the quick-search indicator used `Theme.current.selectedText` for its normal state — the colour
+of *marked files*, red in the default palette — so it was red whether or not anything matched and the
+red that meant "no match" said nothing; and "Empty folders only" left the content search enabled,
+because the edit meant to grey it out matched nothing and did nothing. Headless checks verify state;
+they do not see a colour or an enabled flag.
 
 ## 2026-08-13 (FTP, reported) — A dialog that offered nonsense, and a connection with no drive
 
