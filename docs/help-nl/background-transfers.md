@@ -14,8 +14,9 @@ Grote kopieer-, verplaats-, verwijder- en downloadtaken hoeven je werk niet op t
 2. Open de beheerder op elk moment via **Opdrachten ▸ Achtergrondoverdrachtbeheerder…** (of druk op Cmd+Shift+B).
 3. Elke taak toont een titel, een voortgangsbalk en een live regel met voltooide bestanden, overgedragen bytes en huidige snelheid.
 4. Gebruik de knoppen per taak om te **Pauzeren**, te **Hervatten** of te **Annuleren** terwijl een taak loopt.
-5. Voor taken die je hebt toegevoegd maar nog niet gestart (taken in de wacht), klik je op **Start** bij de taak, of op **Start alle** om de hele wachtlijst in één keer te starten.
-6. Als alles wat je belangrijk vindt klaar is, klik je op **Voltooide wissen** om de lijst op te ruimen.
+5. Een lopende taak heeft ook een snelheidsmenu. Kies een limiet — 1, 5 of 20 MB/s, of volle snelheid — om één overdracht uit de weg van een andere te halen zonder de rest te vertragen. Het werkt meteen; **Standaard** geeft de taak terug aan de limiet uit Configuratie.
+6. Voor taken die u hebt toegevoegd maar nog niet gestart (vastgehouden taken) klikt u op **Start** bij de taak, of op **Alles starten** voor de hele wachtlijst. Met **▲** en **▼** verplaatst u een wachtende taak naar voren of naar achteren in de wachtrij; de knoppen verschijnen alleen waar de verplaatsing mogelijk is, zodat een wachtende taak nooit de al lopende overdracht inhaalt.
+7. Als alles wat je belangrijk vindt klaar is, klik je op **Voltooide wissen** om de lijst op te ruimen.
 
 ![De Achtergrondoverdrachtbeheerder met actieve en wachtende taken, voortgangsbalken en knoppen Pauzeer, Hervat en Annuleer.](screenshots/transfer-manager.png)
 

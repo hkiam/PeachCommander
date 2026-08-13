@@ -14,8 +14,9 @@ Le copie, gli spostamenti, le eliminazioni e i download di grandi dimensioni non
 2. Aprite il gestore in qualsiasi momento da **Comandi ▸ Gestore trasferimenti in background…** (oppure premete Cmd+Shift+B).
 3. Ogni operazione mostra un titolo, una barra di avanzamento e una riga in tempo reale con i file completati, i byte trasferiti e la velocità corrente.
 4. Usate i pulsanti per singola operazione per **Metti in pausa**, **Riprendi** o **Annulla** mentre un'operazione è in corso.
-5. Per le operazioni che avete aggiunto ma non ancora avviato (operazioni in attesa), fate clic su **Avvia** sull'operazione, oppure su **Avvia tutto** per lanciare in una volta l'intera lista d'attesa.
-6. Quando tutto ciò che vi interessa è terminato, fate clic su **Cancella completati** per riordinare l'elenco.
+5. Un lavoro in corso ha anche un menu della velocità. Scegli un limite — 1, 5 o 20 MB/s, oppure piena velocità — per togliere un trasferimento di mezzo a un altro senza rallentare gli altri. Ha effetto subito; **Predefinito** restituisce il lavoro al limite impostato in Configurazione.
+6. Per i lavori aggiunti ma non ancora avviati (lavori in attesa), fai clic su **Avvia** sul lavoro, o su **Avvia tutti** per l’intera lista d’attesa. Con **▲** e **▼** sposti un lavoro in attesa più avanti o più indietro nella coda; i pulsanti compaiono solo dove lo spostamento è possibile, così un lavoro in attesa non supera mai il trasferimento già in corso.
+7. Quando tutto ciò che vi interessa è terminato, fate clic su **Cancella completati** per riordinare l'elenco.
 
 ![Il Gestore trasferimenti in background che elenca le operazioni attive e in attesa con barre di avanzamento e i pulsanti Metti in pausa, Riprendi e Annulla.](screenshots/transfer-manager.png)
 

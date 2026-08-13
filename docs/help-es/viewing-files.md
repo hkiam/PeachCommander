@@ -22,6 +22,8 @@ Peach Commander tiene un visor integrado que te permite mirar dentro de un archi
 ## Buscar texto y cambiar la codificación
 
 - Pulsa Ctrl+F para buscar dentro del archivo. Pulsa F3 para saltar a la siguiente coincidencia y Shift+F3 para la anterior.
+- Marque **Expresión regular** en el cuadro de búsqueda para buscar con un patrón en lugar de texto simple — `ERROR \d+`, o `^Warning` para las líneas que empiezan así. `^` y `$` indican principio y final de línea. Un patrón que no compila se indica como tal, en lugar de no encontrar nada en silencio.
+- Los archivos muy grandes se recorren en ventanas solapadas, así que una única coincidencia de más de unos 64 KB puede pasarse por alto si cae justo sobre el borde de una ventana. La búsqueda de texto simple no tiene ese límite, ni lo tiene un patrón que coincida con algo más corto.
 - Si el texto se ve corrupto, haz clic en Codificación en la barra de herramientas (o pulsa E) para recorrer las codificaciones de texto hasta que se lea correctamente; el ajuste automático suele acertar.
 - Pulsa W para alternar el ajuste de línea para las líneas largas.
 

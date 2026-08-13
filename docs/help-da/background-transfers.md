@@ -14,8 +14,9 @@ Store kopieringer, flytninger, sletninger og overførsler behøver ikke at holde
 2. Åbn håndteringen når som helst fra **Kommandoer ▸ Baggrundsoverførsels-håndtering…** (eller tryk på Cmd+Shift+B).
 3. Hvert job viser en titel, en fremdriftsbjælke og en løbende linje med udførte filer, overførte bytes og aktuel hastighed.
 4. Brug knapperne pr. job til at **Sætte på pause**, **Genoptage** eller **Annullere**, mens et job kører.
-5. For job, du har tilføjet, men endnu ikke har startet (tilbageholdte job), skal du klikke på **Start** på jobbet eller **Start alle** for at starte hele ventelisten på én gang.
-6. Når alt, du bekymrer dig om, er færdigt, skal du klikke på **Ryd færdige** for at rydde op i listen.
+5. En kørende opgave har også en hastighedsmenu. Vælg en grænse — 1, 5 eller 20 MB/s, eller fuld hastighed — for at få én overførsel af vejen for en anden uden at bremse de øvrige. Det virker med det samme; **Standard** giver opgaven tilbage til grænsen i Konfiguration.
+6. For opgaver, du har tilføjet, men endnu ikke startet (tilbageholdte opgaver), klik **Start** på opgaven, eller **Start alle** for hele ventelisten. Med **▲** og **▼** flytter du en ventende opgave frem eller tilbage i køen; knapperne vises kun, hvor flytningen er mulig, så en ventende opgave overhaler aldrig den overførsel, der allerede kører.
+7. Når alt, du bekymrer dig om, er færdigt, skal du klikke på **Ryd færdige** for at rydde op i listen.
 
 ![Baggrundsoverførsels-håndteringen viser aktive og ventende job med fremdriftsbjælker og knapperne Pause, Genoptag og Annullér.](screenshots/transfer-manager.png)
 

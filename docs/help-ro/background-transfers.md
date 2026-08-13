@@ -14,8 +14,9 @@ Copierile, mutările, ștergerile și descărcările mari nu trebuie să vă ți
 2. Deschideți managerul oricând din **Comenzi ▸ Manager de transferuri în fundal…** (sau apăsați Cmd+Shift+B).
 3. Fiecare sarcină arată un titlu, o bară de progres și o linie live cu fișierele terminate, octeții transferați și viteza curentă.
 4. Folosiți butoanele per sarcină **Suspendă**, **Reia** sau **Anulează** în timp ce o sarcină rulează.
-5. Pentru sarcinile pe care le-ați adăugat, dar nu le-ați început încă (sarcini reținute), faceți clic pe **Începe** pe sarcină, sau **Începe toate** pentru a lansa întreaga listă de așteptare deodată.
-6. Când tot ce vă interesează s-a terminat, faceți clic pe **Curăță terminatele** pentru a ordona lista.
+5. O sarcină în curs are și un meniu de viteză. Alegeți o limită — 1, 5 sau 20 MB/s, ori viteză maximă — pentru a da un transfer la o parte din calea altuia fără a le încetini pe celelalte. Are efect imediat; **Implicit** redă sarcina limitei stabilite în Configurare.
+6. Pentru sarcinile adăugate, dar încă nepornite (sarcini reținute), faceți clic pe **Pornire** la sarcină sau pe **Pornește tot** pentru întreaga listă de așteptare. Cu **▲** și **▼** mutați o sarcină în așteptare mai devreme sau mai târziu în coadă; butoanele apar doar acolo unde mutarea este posibilă, așa că o sarcină în așteptare nu depășește niciodată transferul deja în curs.
+7. Când tot ce vă interesează s-a terminat, faceți clic pe **Curăță terminatele** pentru a ordona lista.
 
 ![Managerul de transferuri în fundal listând sarcinile active și în așteptare cu bare de progres și butoanele Suspendă, Reia și Anulează.](screenshots/transfer-manager.png)
 

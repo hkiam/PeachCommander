@@ -22,6 +22,8 @@ Peach Commander ima vgrajen pregledovalnik, ki omogoča, da pogledate v datoteko
 ## Iskanje besedila in sprememba kodiranja
 
 - Pritisnite Ctrl+F za iskanje znotraj datoteke. Pritisnite F3 za skok na naslednje ujemanje in Shift+F3 za prejšnje.
+- V iskalnem polju označite **Regularni izraz**, da iščete z vzorcem namesto z navadnim besedilom — `ERROR \d+` ali `^Warning` za vrstice, ki se s tem začnejo. `^` in `$` pomenita začetek in konec vrstice. Vzorec, ki se ne prevede, je sporočen kot tak, namesto da tiho ne bi našel ničesar.
+- Zelo velike datoteke se preiskujejo v prekrivajočih se oknih, zato lahko posamezno ujemanje, daljše od približno 64 KB, uide, če pade prav na rob okna. Navadno iskanje besedila te omejitve nima, prav tako ne vzorec, ki se ujema s čim krajšim.
 - Če je besedilo videti popačeno, kliknite Kodiranje v orodni vrstici (ali pritisnite E), da se pomikate skozi kodiranja besedila, dokler se ne prebere pravilno; samodejna nastavitev to običajno zadene prav.
 - Pritisnite W za preklop preloma besed za dolge vrstice.
 

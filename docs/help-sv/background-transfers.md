@@ -14,8 +14,9 @@ Stora kopieringar, flyttar, borttagningar och nedladdningar behöver inte hålla
 2. Öppna hanteraren när som helst från **Kommandon ▸ Hanterare för bakgrundsöverföringar…** (eller tryck på Cmd+Shift+B).
 3. Varje jobb visar en titel, en förloppsstapel och en liverad med klara filer, överförda byte och aktuell hastighet.
 4. Använd knapparna per jobb för att **Pausa**, **Återuppta** eller **Avbryta** medan ett jobb körs.
-5. För jobb du har lagt till men inte startat ännu (vilande jobb), klicka på **Starta** på jobbet, eller **Starta alla** för att sätta igång hela väntelistan på en gång.
-6. När allt du bryr dig om har slutförts, klicka på **Rensa slutförda** för att städa upp listan.
+5. Ett pågående jobb har också en hastighetsmeny. Välj en gräns — 1, 5 eller 20 MB/s, eller full hastighet — för att få en överföring ur vägen för en annan utan att bromsa de övriga. Det gäller direkt; **Standard** lämnar tillbaka jobbet till gränsen i Konfiguration.
+6. För jobb du lagt till men ännu inte startat (hållna jobb) klickar du på **Starta** vid jobbet, eller på **Starta alla** för hela väntelistan. Med **▲** och **▼** flyttar du ett väntande jobb tidigare eller senare i kön; knapparna visas bara där flytten är möjlig, så ett väntande jobb kör aldrig om överföringen som redan pågår.
+7. När allt du bryr dig om har slutförts, klicka på **Rensa slutförda** för att städa upp listan.
 
 ![Hanteraren för bakgrundsöverföringar som listar aktiva och väntande jobb med förloppsstaplar och knapparna Pausa, Återuppta och Avbryt.](screenshots/transfer-manager.png)
 

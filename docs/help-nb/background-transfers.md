@@ -14,8 +14,9 @@ Store kopieringer, flyttinger, slettinger og nedlastinger trenger ikke å holde 
 2. Åpne behandleren når som helst fra **Kommandoer ▸ Bakgrunnsoverføringsbehandler…** (eller trykk Cmd+Shift+B).
 3. Hver jobb viser en tittel, en fremdriftslinje og en direkte linje med filer ferdige, bytes overført og gjeldende hastighet.
 4. Bruk knappene per jobb for å **Sette på pause**, **Gjenoppta** eller **Avbryte** mens en jobb kjører.
-5. For jobber du har lagt til, men ikke startet ennå (jobber på vent), klikk **Start** på jobben, eller **Start alle** for å sette i gang hele ventelisten på én gang.
-6. Når alt du bryr deg om er fullført, klikk **Fjern fullførte** for å rydde opp i listen.
+5. En jobb som kjører har også en hastighetsmeny. Velg en grense — 1, 5 eller 20 MB/s, eller full hastighet — for å få én overføring ut av veien for en annen uten å bremse de øvrige. Det virker straks; **Standard** gir jobben tilbake til grensen satt i Konfigurasjon.
+6. For jobber du har lagt til, men ikke startet ennå (holdte jobber), klikk **Start** på jobben, eller **Start alle** for hele ventelisten. Med **▲** og **▼** flytter du en ventende jobb fram eller tilbake i køen; knappene vises bare der flyttingen er mulig, så en ventende jobb går aldri forbi overføringen som allerede kjører.
+7. Når alt du bryr deg om er fullført, klikk **Fjern fullførte** for å rydde opp i listen.
 
 ![Bakgrunnsoverføringsbehandleren som lister opp aktive og ventende jobber med fremdriftslinjer og Pause-, Gjenoppta- og Avbryt-knapper.](screenshots/transfer-manager.png)
 

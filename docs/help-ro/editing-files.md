@@ -29,6 +29,8 @@ Marginea arată numerele de linie, cu linia cursorului mai deschisă decât rest
 ## Căutare, înlocuire și navigare
 
 - Apăsați Cmd+F pentru a deschide bara de căutare. Pentru a înlocui text, deschideți bara de căutare și comutați-o la vizualizarea de înlocuire, sau faceți clic pe Găsește/Înlocuiește în bara de instrumente.
+- Pentru o **expresie regulată** folosiți Căutare ▸ *Caută cu expresie regulată…* (Ctrl+Cmd+F) sau *Înlocuiește cu expresie regulată…* (Ctrl+Opt+Cmd+F). `^` și `$` se potrivesc cu începutul și sfârșitul rândului, iar în înlocuire `$1` reprezintă primul grup — `(\w+) (\d+)` înlocuit cu `$2=$1` transformă deci `alpha 11` în `11=alpha`. **Doar în selecție** păstrează modificarea în textul selectat; **Înlocuiește tot** rescrie fiecare potrivire într-un singur pas pe care Cmd+Z îl anulează.
+- Caută următorul (Cmd+G) urmează ultima căutare folosită, simplă sau cu tipar. Un tipar care nu se compilează este raportat în dialog, în loc să nu găsească nimic în tăcere.
 - Faceți clic pe Formatează JSON/XML pentru a re-indenta un document JSON sau XML într-o dispunere curată, lizibilă.
 - Faceți clic pe Simboluri (sau apăsați Cmd+Shift+O) pentru a afișa o bară laterală care listează clasele, funcțiile și metodele din codul dvs. — sau, pentru un fișier JSON, YAML ori XML, cheile și elementele sale. Faceți clic pe o intrare pentru a sări direct la ea. Pentru la ce mai este bună această structură, vedeți [Lucrul cu JSON, YAML și XML](#lucrul-cu-json-yaml-și-xml).
 - Apăsați Cmd+L pentru a sări la o linie anume.

@@ -22,6 +22,8 @@ Peach Commander heeft een ingebouwde viewer waarmee je in een bestand kunt kijke
 ## Tekst vinden en de codering wijzigen
 
 - Druk op Ctrl+F om binnen het bestand te zoeken. Druk op F3 om naar de volgende overeenkomst te springen en Shift+F3 voor de vorige.
+- Vink **Reguliere expressie** aan in het zoekvak om met een patroon te zoeken in plaats van met platte tekst — `ERROR \d+`, of `^Warning` voor regels die daarmee beginnen. `^` en `$` betekenen begin en einde van een regel. Een patroon dat niet compileert wordt als zodanig gemeld, in plaats van stilletjes niets te vinden.
+- Zeer grote bestanden worden in overlappende vensters doorzocht, dus één enkele treffer van meer dan ongeveer 64 KB kan gemist worden als die net op een venstergrens valt. Gewoon zoeken naar tekst kent die grens niet, en een patroon dat iets korters matcht evenmin.
 - Als tekst er verminkt uitziet, klik je op Codering in de werkbalk (of druk je op E) om door tekstcoderingen te bladeren tot het correct leest; de automatische instelling krijgt het meestal goed.
 - Druk op W om regelterugloop voor lange regels te wisselen.
 

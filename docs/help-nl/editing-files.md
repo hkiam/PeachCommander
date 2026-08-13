@@ -29,6 +29,8 @@ De kantlijn toont regelnummers, met de regel van de cursor lichter dan de rest; 
 ## Zoeken, vervangen en navigeren
 
 - Druk op Cmd+F om de zoekbalk te openen. Om tekst te vervangen, open je de zoekbalk en schakel je over naar de vervangweergave, of klik je op Zoeken/Vervangen in de werkbalk.
+- Voor een **reguliere expressie** gebruikt u Zoeken ▸ *Zoeken met reguliere expressie…* (Ctrl+Cmd+F) of *Vervangen met reguliere expressie…* (Ctrl+Opt+Cmd+F). `^` en `$` komen overeen met begin en einde van een regel, en in de vervanging staat `$1` voor de eerste groep — `(\w+) (\d+)` vervangen door `$2=$1` maakt van `alpha 11` dus `11=alpha`. **Alleen in selectie** houdt de wijziging binnen de geselecteerde tekst; **Alles vervangen** herschrijft elke treffer in één stap die u met Cmd+Z ongedaan maakt.
+- Zoek volgende (Cmd+G) volgt de laatst gebruikte zoekopdracht, gewoon of patroon. Een patroon dat niet compileert wordt in het dialoogvenster gemeld in plaats van stilletjes niets te vinden.
 - Klik op JSON/XML opmaken om een JSON- of XML-document opnieuw in te springen tot een nette, leesbare indeling.
 - Klik op Symbolen (of druk op Cmd+Shift+O) om een zijbalk te tonen die de klassen, functies en methoden in je code opsomt — of, bij een JSON-, YAML- of XML-bestand, de sleutels en elementen ervan. Klik op een item om er direct naartoe te springen. Zie [Werken met JSON, YAML en XML](#werken-met-json-yaml-en-xml) voor waar die structuur verder goed voor is.
 - Druk op Cmd+L om naar een specifieke regel te springen.

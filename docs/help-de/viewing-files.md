@@ -22,7 +22,7 @@ Peach Commander verfügt über einen integrierten Betrachter, mit dem Sie in ein
 ## Text finden und die Kodierung ändern
 
 - Drücken Sie Ctrl+F, um innerhalb der Datei zu suchen. Drücken Sie F3, um zum nächsten Treffer zu springen, und Shift+F3 für den vorherigen.
-- Kreuzen Sie im Suchfeld **Regulärer Ausdruck** an, um mit einem Muster statt mit einfachem Text zu suchen — `ERROR \d+`, oder `^Warnung` für Zeilen, die damit beginnen. `^` und `$` bedeuten Zeilenanfang und Zeilenende. Ein Muster, das sich nicht übersetzen lässt, wird als solches gemeldet und findet nicht stillschweigend nichts.
+- Kreuzen Sie im Suchfeld **Regulärer Ausdruck** an, um mit einem Muster statt mit einfachem Text zu suchen — `ERROR \d+`, oder `^Warning` für Zeilen, die damit beginnen. `^` und `$` bedeuten Zeilenanfang und Zeilenende. Ein Muster, das sich nicht übersetzen lässt, wird als solches gemeldet und findet nicht stillschweigend nichts.
 - Sehr große Dateien werden in überlappenden Fenstern durchsucht. Ein einzelner Treffer, der länger als etwa 64 KB ist, kann daher übersehen werden, wenn er genau auf eine Fenstergrenze fällt. Für die einfache Textsuche gilt das nicht, und für ein Muster, das etwas Kürzeres trifft, ebenso wenig.
 - Wenn Text verstümmelt aussieht, klicken Sie in der Symbolleiste auf Kodierung (oder drücken Sie E), um durch die Textkodierungen zu blättern, bis er korrekt lesbar ist; die automatische Einstellung trifft es meist richtig.
 - Drücken Sie W, um den Zeilenumbruch für lange Zeilen umzuschalten.

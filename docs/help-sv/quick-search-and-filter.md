@@ -13,7 +13,9 @@ När en mapp innehåller hundratals objekt behöver du sällan rulla. Peach Comm
 1. Klicka på en filpanel så att den är aktiv.
 2. Börja skriva början på ett namn. Markören hoppar till det första matchande objektet.
 3. Fortsätt skriva för att förfina matchningen, eller tryck på samma bokstav igen för att bläddra bland objekt som börjar på den bokstaven.
-4. Den inskrivna texten rensas efter en kort paus, så du kan börja en ny sökning när som helst.
+4. Det du skrivit visas ovanför panelen, tillsammans med vilken träff du är på och hur många det finns — till exempel `⌕ re  2/3`. Det blir rött när inget matchar.
+5. Tryck Backsteg för att ta tillbaka sista bokstaven, eller Esc för att avsluta sökningen. Backsteg redigerar bara en pågående sökning; annars går det fortfarande till överordnad mapp.
+6. Den inskrivna texten rensas efter en kort paus, så du kan börja en ny sökning när som helst.
 
 Som standard går vanliga bokstäver till kommandoraden och snabbsökning utlöses med Ctrl+Option+bokstav (det klassiska beteendet). Du kan ändra så att snabbsökning svarar på vanlig inskrivning i stället, eller stänga av den, i Konfigurationsinställningarna.
 

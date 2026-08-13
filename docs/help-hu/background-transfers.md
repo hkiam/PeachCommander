@@ -14,8 +14,9 @@ A nagy másolásoknak, áthelyezéseknek, törléseknek és letöltéseknek nem 
 2. A kezelőt bármikor megnyithatja a **Parancsok ▸ Háttérben futó átvitelek kezelője…** menüpontból (vagy nyomja meg a Cmd+Shift+B billentyűt).
 3. Minden feladat egy címet, egy folyamatjelző sávot és egy élő sort mutat a kész fájlokkal, az átvitt bájtokkal és az aktuális sebességgel.
 4. A feladatonkénti gombokkal **Szüneteltesse**, **Folytassa** vagy **Szakítsa meg** a feladatot, miközben fut.
-5. Az olyan feladatoknál, amelyeket hozzáadott, de még nem indított el (visszatartott feladatok), kattintson a feladat **Indítás** gombjára, vagy az **Összes indítása** gombra, hogy a teljes várakozási listát egyszerre elindítsa.
-6. Amikor minden befejeződött, ami fontos volt, kattintson a **Befejezettek törlése** gombra a lista rendbetételéhez.
+5. A futó feladatnak sebességmenüje is van. Válasszon korlátot — 1, 5 vagy 20 MB/s, illetve teljes sebesség —, hogy az egyik átvitelt félreállítsa egy másik elől anélkül, hogy a többit lassítaná. Azonnal érvényes; az **Alapértelmezett** visszaadja a feladatot a Beállításokban megadott korlátnak.
+6. A hozzáadott, de még el nem indított (visszatartott) feladatoknál kattintson a **Start** gombra, vagy az **Összes indítása** gombra a teljes várólistához. A **▲** és **▼** gombokkal a várakozó feladatot előbbre vagy hátrébb helyezi a sorban; a gombok csak ott jelennek meg, ahol a mozgatás lehetséges, így várakozó feladat sosem előzi meg a már futó átvitelt.
+7. Amikor minden befejeződött, ami fontos volt, kattintson a **Befejezettek törlése** gombra a lista rendbetételéhez.
 
 ![A háttérben futó átvitelek kezelője az aktív és a várakozó feladatokat sorolja fel folyamatjelző sávokkal, valamint Szüneteltetés, Folytatás és Megszakítás gombokkal.](screenshots/transfer-manager.png)
 

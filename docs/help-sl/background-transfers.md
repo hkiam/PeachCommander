@@ -14,8 +14,9 @@ Velika kopiranja, premikanja, brisanja in prenosi ne smejo zadrževati vašega d
 2. Upravitelja odprite kadar koli iz **Ukazi ▸ Upravitelj prenosov v ozadju…** (ali pritisnite Cmd+Shift+B).
 3. Vsako opravilo prikazuje naslov, vrstico napredka in vrstico v živo z opravljenimi datotekami, prenesenimi bajti in trenutno hitrostjo.
 4. Uporabite gumbe na opravilo **Začasno ustavi**, **Nadaljuj** ali **Prekliči**, medtem ko opravilo teče.
-5. Za opravila, ki ste jih dodali, a še niste začeli (zadržana opravila), kliknite **Začni** na opravilu, ali **Začni vse**, da zaženete celoten čakalni seznam naenkrat.
-6. Ko je vse, kar vas zanima, končano, kliknite **Počisti končane**, da uredite seznam.
+5. Tekoče opravilo ima tudi meni hitrosti. Izberite omejitev — 1, 5 ali 20 MB/s ali polno hitrost — in tako umaknite en prenos s poti drugemu, ne da bi upočasnili ostale. Učinkuje takoj; **Privzeto** vrne opravilo k omejitvi, nastavljeni v Nastavitvah.
+6. Pri opravilih, ki ste jih dodali, a še niste zagnali (zadržana opravila), kliknite **Zaženi** pri opravilu ali **Zaženi vse** za celoten čakalni seznam. Z **▲** in **▼** premaknete čakajoče opravilo naprej ali nazaj v vrsti; gumba se pokažeta le tam, kjer je premik mogoč, tako da čakajoče opravilo nikoli ne prehiti prenosa, ki že teče.
+7. Ko je vse, kar vas zanima, končano, kliknite **Počisti končane**, da uredite seznam.
 
 ![Upravitelj prenosov v ozadju, ki našteva dejavna in čakajoča opravila z vrsticami napredka ter gumbi Začasno ustavi, Nadaljuj in Prekliči.](screenshots/transfer-manager.png)
 

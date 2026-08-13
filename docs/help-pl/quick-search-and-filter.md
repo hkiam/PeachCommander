@@ -13,7 +13,9 @@ Gdy folder zawiera setki elementów, rzadko musisz przewijać. Peach Commander p
 1. Kliknij panel plików, aby był aktywny.
 2. Zacznij wpisywać początek nazwy. Kursor przeskakuje do pierwszego pasującego elementu.
 3. Pisz dalej, aby zawęzić dopasowanie, lub naciśnij tę samą literę ponownie, aby przechodzić między elementami zaczynającymi się na tę literę.
-4. Wpisany tekst czyści się po krótkiej pauzie, więc możesz w dowolnej chwili rozpocząć nowe wyszukiwanie.
+4. To, co wpisano, pojawia się nad panelem wraz z numerem trafienia i ich liczbą — na przykład `⌕ re  2/3`. Gdy nic nie pasuje, staje się czerwone.
+5. Backspace cofa ostatnią literę, a Esc kończy wyszukiwanie. Backspace edytuje tylko trwające wyszukiwanie; poza nim nadal przechodzi do folderu nadrzędnego.
+6. Wpisany tekst czyści się po krótkiej pauzie, więc możesz w dowolnej chwili rozpocząć nowe wyszukiwanie.
 
 Domyślnie zwykłe litery trafiają do wiersza poleceń, a szybkie wyszukiwanie jest uruchamiane skrótem Ctrl+Option+litera (klasyczne zachowanie). Możesz przełączyć szybkie wyszukiwanie tak, aby zamiast tego reagowało na zwykłe pisanie, lub wyłączyć je w ustawieniach Konfiguracji.
 

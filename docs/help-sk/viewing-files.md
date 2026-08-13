@@ -22,6 +22,8 @@ Peach Commander má vstavaný prehliadač, ktorý vám umožňuje nazrieť do s�
 ## Hľadanie textu a zmena kódovania
 
 - Stlačte Ctrl+F na hľadanie vnútri súboru. Stlačte F3 na skok na ďalšiu zhodu a Shift+F3 na predchádzajúcu.
+- Zaškrtnutím **Regulárny výraz** v okne hľadania budete hľadať vzorom namiesto obyčajného textu — `ERROR \d+` alebo `^Warning` pre riadky, ktoré tým začínajú. `^` a `$` znamenajú začiatok a koniec riadku. Vzor, ktorý sa nedá preložiť, je ohlásený ako taký, namiesto toho, aby ticho nič nenašiel.
+- Veľmi veľké súbory sa prehľadávajú v prekrývajúcich sa oknách, takže jediný výskyt dlhší než približne 64 KB môže uniknúť, ak padne presne na hranicu okna. Obyčajné hľadanie textu takéto obmedzenie nemá — a nemá ho ani vzor, ktorý zodpovedá niečomu kratšiemu.
 - Ak text vyzerá skreslene, kliknite na Kódovanie na paneli nástrojov (alebo stlačte E) na prechádzanie kódovaní textu, kým sa nečíta správne; automatické nastavenie to zvyčajne trafí.
 - Stlačte W na prepnutie zalamovania slov pri dlhých riadkoch.
 

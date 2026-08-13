@@ -29,6 +29,8 @@ A margó sorszámokat jelenít meg, a kurzor sorát a többinél világosabban; 
 ## Keresés, csere és navigáció
 
 - Nyomja meg a Cmd+F-et a keresősáv megnyitásához. Szöveg cseréjéhez nyissa meg a keresősávot és váltsa a csere nézetre, vagy kattintson a Keresés/Csere gombra az eszköztárban.
+- **Reguláris kifejezéshez** használja a Keresés ▸ *Keresés reguláris kifejezéssel…* (Ctrl+Cmd+F) vagy *Csere reguláris kifejezéssel…* (Ctrl+Opt+Cmd+F) parancsot. A `^` és a `$` a sor elejére és végére illeszkedik, a cserében pedig a `$1` az első csoportot jelöli — a `(\w+) (\d+)` `$2=$1`-re cserélve az `alpha 11`-ből `11=alpha` lesz. A **Csak a kijelölésben** a kijelölt szövegen belül tartja a változtatást; az **Összes cseréje** egyetlen, Cmd+Z-vel visszavonható lépésben írja át az összes találatot.
+- A Következő keresése (Cmd+G) a legutóbb használt keresést követi, akár egyszerű, akár mintás. A le nem fordítható mintát a párbeszédablak jelzi, ahelyett hogy csendben semmit sem találna.
 - Kattintson a JSON/XML formázása gombra egy JSON- vagy XML-dokumentum tiszta, olvasható elrendezésbe való újratagolásához.
 - Kattintson a Szimbólumok gombra (vagy nyomja meg a Cmd+Shift+O-t) egy oldalsáv megjelenítéséhez, amely felsorolja a kódjában lévő osztályokat, függvényeket és metódusokat — vagy JSON-, YAML- és XML-fájl esetén annak kulcsait és elemeit. Kattintson egy bejegyzésre, hogy egyenesen odaugorjon. Hogy mire jó még ez a szerkezet, lásd: [Munka JSON-, YAML- és XML-fájlokkal](#munka-json--yaml--és-xml-fájlokkal).
 - Nyomja meg a Cmd+L-t egy adott sorra ugráshoz.
