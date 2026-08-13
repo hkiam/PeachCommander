@@ -130,11 +130,24 @@ public actor OperationControl {
 
     public init() {}
 
+    /// Bytes per second this operation may use, or nil to keep whatever it was started with.
+    ///
+    /// Lives on the control rather than in the operation's options because it has to be changeable
+    /// *while the transfer runs* — the whole point is to throttle the copy that is saturating the
+    /// disk right now, and options are a value copied into the engine when it starts. The engine
+    /// asks per chunk, so a change takes effect within one chunk instead of at the next operation.
+    private var speedLimitOverride: Int64?
+
     public func cancel() { cancelled = true }
     public func pause() { paused = true }
     public func resume() { paused = false }
     public var isCancelled: Bool { cancelled }
     public var isPaused: Bool { paused }
+
+    /// Set (or with nil, drop) the live limit. 0 means "no limit", which is not the same as nil:
+    /// nil defers to the operation's own option, 0 overrides a configured global limit with none.
+    public func setSpeedLimit(_ bytesPerSecond: Int64?) { speedLimitOverride = bytesPerSecond }
+    public var speedLimit: Int64? { speedLimitOverride }
 
     /// Throws `.cancelled` if cancelled; otherwise blocks while paused.
     public func checkpoint() async throws {

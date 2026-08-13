@@ -59,4 +59,55 @@ final class TransferScheduleTests: XCTestCase {
         }
         XCTAssertEqual(startedInOrder, [0, 1, 2])
     }
+
+    // MARK: - Reordering the queue (F-085)
+
+    func test_onlyAQueuedJobCanBeMoved() {
+        let s: [TransferJobStatus] = [.running, .queued, .done]
+        XCTAssertTrue(TransferSchedule.canReorder(s, at: 1))
+        XCTAssertFalse(TransferSchedule.canReorder(s, at: 0), "a running job cannot be reordered")
+        XCTAssertFalse(TransferSchedule.canReorder(s, at: 2), "a finished job is history")
+        XCTAssertFalse(TransferSchedule.canReorder(s, at: 9), "out of range")
+    }
+
+    func test_movingStepsToTheNeighbouringQueuedPosition() {
+        let s: [TransferJobStatus] = [.queued, .queued, .queued]
+        XCTAssertEqual(TransferSchedule.moveTarget(s, from: 2, delta: -1), 1)
+        XCTAssertEqual(TransferSchedule.moveTarget(s, from: 0, delta: 1), 1)
+    }
+
+    func test_movingStepsOverFinishedJobsRatherThanLandingOnThem() {
+        // A completed transfer between two queued ones is history: nudging the lower one up should
+        // move it past the finished row, not swap places with something that already happened.
+        let s: [TransferJobStatus] = [.queued, .done, .failed, .queued]
+        XCTAssertEqual(TransferSchedule.moveTarget(s, from: 3, delta: -1), 0)
+    }
+
+    func test_aQueuedJobNeverCrossesTheRunningOne() {
+        // The barrier. Promoting a job above the transfer in flight changes nothing — that one still
+        // has to finish first — while looking like it did something, which is how a control teaches
+        // people it is broken.
+        let s: [TransferJobStatus] = [.queued, .running, .queued]
+        XCTAssertNil(TransferSchedule.moveTarget(s, from: 2, delta: -1))
+        // …and the same for a paused job, which still holds the slot.
+        let paused: [TransferJobStatus] = [.queued, .paused, .queued]
+        XCTAssertNil(TransferSchedule.moveTarget(paused, from: 2, delta: -1))
+    }
+
+    func test_theEndsOfTheListDoNotWrap() {
+        let s: [TransferJobStatus] = [.queued, .queued]
+        XCTAssertNil(TransferSchedule.moveTarget(s, from: 0, delta: -1))
+        XCTAssertNil(TransferSchedule.moveTarget(s, from: 1, delta: 1))
+    }
+
+    func test_movingTheFirstQueuedJobUpIsWhatStartsItNext() {
+        // The point of the whole feature, stated as the rule it changes: after the move, the job
+        // that was second is the one `nextToStart` picks.
+        var s: [TransferJobStatus] = [.queued, .queued]
+        XCTAssertEqual(TransferSchedule.nextToStart(s), 0)
+        let target = TransferSchedule.moveTarget(s, from: 1, delta: -1)
+        XCTAssertEqual(target, 0)
+        s.swapAt(1, target!)
+        XCTAssertEqual(TransferSchedule.nextToStart(s), 0)
+    }
 }

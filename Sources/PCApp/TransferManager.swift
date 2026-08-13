@@ -33,6 +33,9 @@ final class TransferManager {
         var controlChain: Task<Void, Never>?
         /// For a `.queued` (download-list) job: the prepared queue, run on start (F-215).
         var pendingQueue: TransferQueue?
+        /// Bytes per second this job may use, or nil for the configured default. Kept here as well
+        /// as on the control so the row can show what it is set to without asking an actor.
+        var speedLimit: Int64?
 
         init(title: String, kind: OperationKind, control: OperationControl,
              onComplete: (@MainActor ([String]) -> Void)?) {
@@ -168,6 +171,41 @@ final class TransferManager {
         guard !job.status.isFinished else { return }
         // The event stream will report .cancelled once the engine unwinds.
         runControl(job) { await $0.cancel() }
+    }
+
+    /// Cap this job's throughput, or with nil hand it back to the configured default.
+    ///
+    /// Goes through the same chain as pause/resume, so a quick change followed by a pause cannot
+    /// reach the control actor out of order. Takes effect within one chunk — the engine asks the
+    /// control per chunk rather than reading a value copied in when it started.
+    func setSpeedLimit(_ job: Job, bytesPerSecond: Int64?) {
+        guard !job.status.isFinished else { return }
+        job.speedLimit = bytesPerSecond
+        onChange?()
+        runControl(job) { await $0.setSpeedLimit(bytesPerSecond) }
+    }
+
+    /// Move a waiting job one place earlier or later in the queue.
+    ///
+    /// Which moves are possible is `TransferSchedule`'s to say, not this window's: a queued job may
+    /// step over finished ones but never past the transfer in flight, because promoting it there
+    /// would change nothing and look like it had.
+    @discardableResult
+    func move(_ job: Job, by delta: Int) -> Bool {
+        guard let from = jobs.firstIndex(where: { $0 === job }) else { return false }
+        let statuses = jobs.map { TransferJobStatus(rawValue: $0.status.rawValue) ?? .queued }
+        guard let to = TransferSchedule.moveTarget(statuses, from: from, delta: delta) else { return false }
+        let moved = jobs.remove(at: from)
+        jobs.insert(moved, at: to)
+        onChange?()
+        return true
+    }
+
+    /// Whether this job can be moved at all — the gate the ▲▼ buttons are drawn from.
+    func canMove(_ job: Job, by delta: Int) -> Bool {
+        guard let from = jobs.firstIndex(where: { $0 === job }) else { return false }
+        let statuses = jobs.map { TransferJobStatus(rawValue: $0.status.rawValue) ?? .queued }
+        return TransferSchedule.moveTarget(statuses, from: from, delta: delta) != nil
     }
 
     /// Run a control operation for `job`, chained after any previous one so their

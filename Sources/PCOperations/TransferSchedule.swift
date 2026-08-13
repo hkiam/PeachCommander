@@ -36,4 +36,35 @@ public enum TransferSchedule {
         if statuses.contains(where: { $0 == .running || $0 == .paused }) { return nil }
         return statuses.firstIndex(of: .queued)
     }
+
+    /// Whether the job at `index` can be moved in the queue at all.
+    ///
+    /// Only one that has not started. A running or paused job has a partially written destination
+    /// and a live control; moving it would reorder nothing that matters — `nextToStart` never looks
+    /// past it — while suggesting it did. A finished one is history.
+    public static func canReorder(_ statuses: [TransferJobStatus], at index: Int) -> Bool {
+        statuses.indices.contains(index) && statuses[index] == .queued
+    }
+
+    /// Where a queued job lands when nudged by `delta` (-1 = earlier, +1 = later), or nil when the
+    /// move is impossible.
+    ///
+    /// The move is over *queued* jobs only: it steps to the neighbouring queued position, skipping
+    /// anything finished, and never crosses a running or paused job. Crossing one would look like a
+    /// promotion and change nothing — the transfer in flight still has to end first — which is the
+    /// kind of control that teaches people the buttons do not work.
+    public static func moveTarget(_ statuses: [TransferJobStatus], from index: Int,
+                                  delta: Int) -> Int? {
+        guard canReorder(statuses, at: index), delta != 0 else { return nil }
+        let step = delta < 0 ? -1 : 1
+        var i = index + step
+        while statuses.indices.contains(i) {
+            switch statuses[i] {
+            case .queued: return i
+            case .running, .paused: return nil      // the barrier: nothing useful lies beyond it
+            case .done, .failed, .cancelled: i += step   // history, step over it
+            }
+        }
+        return nil
+    }
 }
