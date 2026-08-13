@@ -14,8 +14,9 @@ Large copies, moves, deletes, and downloads don't have to hold up your work. Pea
 2. Open the manager any time from **Commands ▸ Background Transfer Manager…** (or press Cmd+Shift+B).
 3. Each job shows a title, a progress bar, and a live line with files done, bytes transferred, and current speed.
 4. Use the per-job buttons to **Pause**, **Resume**, or **Cancel** while a job is running.
-5. For jobs you added but haven't started yet (held jobs), click **Start** on the job, or **Start All** to launch the whole waiting list at once.
-6. When everything you care about has finished, click **Clear Finished** to tidy the list.
+5. A running job also carries a speed menu. Pick a limit — 1, 5 or 20 MB/s, or full speed — to get one transfer out of the way of something else without slowing the others down. It takes effect straight away, and **Default** hands the job back to the limit set in Configuration.
+6. For jobs you added but haven't started yet (held jobs), click **Start** on the job, or **Start All** to launch the whole waiting list at once. Use **▲** and **▼** to move a waiting job earlier or later in the queue; the buttons only appear where the move is possible, so a waiting job never jumps ahead of the transfer already running.
+7. When everything you care about has finished, click **Clear Finished** to tidy the list.
 
 ![The Background Transfer Manager listing active and waiting jobs with progress bars and Pause, Resume, and Cancel buttons.](screenshots/transfer-manager.png)
 

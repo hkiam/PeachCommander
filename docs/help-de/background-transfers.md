@@ -14,8 +14,9 @@ Große Kopier-, Verschiebe-, Lösch- und Download-Vorgänge müssen Ihre Arbeit 
 2. Öffnen Sie den Manager jederzeit über **Befehle ▸ Manager für Hintergrundübertragungen…** (oder drücken Sie Cmd+Shift+B).
 3. Jeder Auftrag zeigt einen Titel, einen Fortschrittsbalken und eine Live-Zeile mit erledigten Dateien, übertragenen Bytes und der aktuellen Geschwindigkeit.
 4. Verwenden Sie die Schaltflächen pro Auftrag für **Pause**, **Fortsetzen** oder **Abbrechen**, während ein Auftrag läuft.
-5. Für Aufträge, die Sie hinzugefügt, aber noch nicht gestartet haben (gehaltene Aufträge), klicken Sie beim Auftrag auf **Start** oder auf **Alle starten**, um die gesamte Warteliste auf einmal zu starten.
-6. Wenn alles Wichtige abgeschlossen ist, klicken Sie auf **Abgeschlossene löschen**, um die Liste aufzuräumen.
+5. Ein laufender Auftrag trägt außerdem ein Tempo-Menü. Wählen Sie eine Grenze — 1, 5 oder 20 MB/s oder volle Geschwindigkeit —, um eine Übertragung einer anderen aus dem Weg zu nehmen, ohne die übrigen zu bremsen. Das wirkt sofort; **Standard** gibt den Auftrag an die in der Konfiguration eingestellte Grenze zurück.
+6. Für Aufträge, die Sie hinzugefügt, aber noch nicht gestartet haben (gehaltene Aufträge), klicken Sie beim Auftrag auf **Start** oder auf **Alle starten**, um die gesamte Warteliste auf einmal zu starten. Mit **▲** und **▼** verschieben Sie einen wartenden Auftrag in der Warteschlange nach vorn oder hinten; die Schaltflächen erscheinen nur dort, wo der Zug möglich ist — ein wartender Auftrag überholt also nie die bereits laufende Übertragung.
+7. Wenn alles Wichtige abgeschlossen ist, klicken Sie auf **Abgeschlossene löschen**, um die Liste aufzuräumen.
 
 ![Der Manager für Hintergrundübertragungen listet aktive und wartende Aufträge mit Fortschrittsbalken und den Schaltflächen Pause, Fortsetzen und Abbrechen auf.](screenshots/transfer-manager.png)
 

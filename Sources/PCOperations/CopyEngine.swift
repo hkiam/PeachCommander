@@ -282,12 +282,15 @@ public final class CopyEngine {
     }
 
     private func throttleIfNeeded() async {
-        guard options.maxBytesPerSecond > 0 else {
+        // The control's limit wins when one is set: it can be changed while this transfer runs,
+        // which is what "slow this one down" means. Without one, the operation's own option stands.
+        let limit = await control.speedLimit ?? options.maxBytesPerSecond
+        guard limit > 0 else {
             state.bytesPerSecond = throughput()
             return
         }
         let elapsed = Date().timeIntervalSince(startTime)
-        let expected = Double(state.bytesDone) / Double(options.maxBytesPerSecond)
+        let expected = Double(state.bytesDone) / Double(limit)
         if expected > elapsed {
             let sleepNs = UInt64((expected - elapsed) * 1_000_000_000)
             try? await Task.sleep(nanoseconds: sleepNs)

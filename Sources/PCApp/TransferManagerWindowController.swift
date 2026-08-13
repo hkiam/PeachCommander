@@ -132,12 +132,23 @@ final class TransferManagerWindowController: NSWindowController {
         controls.spacing = 6
         switch job.status {
         case .queued:
+            // ▲▼ only where a move is actually possible. A button that is always there and usually
+            // refuses teaches people to stop pressing it; `TransferManager.canMove` asks the same
+            // rule the move itself obeys, so one is never offered and then declined.
+            if manager.canMove(job, by: -1) {
+                controls.addArrangedSubview(button("▲", #selector(moveJobUp(_:)), job.id))
+            }
+            if manager.canMove(job, by: 1) {
+                controls.addArrangedSubview(button("▼", #selector(moveJobDown(_:)), job.id))
+            }
             controls.addArrangedSubview(button("Start", #selector(startJob(_:)), job.id))
             controls.addArrangedSubview(button("Cancel", #selector(cancelJob(_:)), job.id))
         case .running:
+            controls.addArrangedSubview(speedControl(job))
             controls.addArrangedSubview(button("Pause", #selector(pauseJob(_:)), job.id))
             controls.addArrangedSubview(button("Cancel", #selector(cancelJob(_:)), job.id))
         case .paused:
+            controls.addArrangedSubview(speedControl(job))
             controls.addArrangedSubview(button("Resume", #selector(resumeJob(_:)), job.id))
             controls.addArrangedSubview(button("Cancel", #selector(cancelJob(_:)), job.id))
         case .done, .failed, .cancelled:
@@ -197,6 +208,42 @@ final class TransferManagerWindowController: NSWindowController {
         guard let idString = sender.identifier?.rawValue, let id = UUID(uuidString: idString) else { return nil }
         return manager.jobs.first { $0.id == id }
     }
+
+    /// Throughput choices for one running job. A popup rather than a field: this is a nudge — "get
+    /// out of the way of something else" — not a number anybody wants to type while watching a
+    /// progress bar.
+    private static let speedChoices: [(title: String, bytesPerSecond: Int64?)] = [
+        (String(localized: "Full speed"), 0),
+        ("1 MB/s", 1024 * 1024),
+        ("5 MB/s", 5 * 1024 * 1024),
+        ("20 MB/s", 20 * 1024 * 1024),
+        (String(localized: "Default"), nil),
+    ]
+
+    private func speedControl(_ job: TransferManager.Job) -> NSView {
+        let popup = NSPopUpButton()
+        popup.controlSize = .small
+        popup.font = Fonts.system13
+        for choice in Self.speedChoices { popup.addItem(withTitle: choice.title) }
+        let index = Self.speedChoices.firstIndex { $0.bytesPerSecond == job.speedLimit }
+            ?? Self.speedChoices.count - 1
+        popup.selectItem(at: index)
+        popup.target = self
+        popup.action = #selector(speedChanged(_:))
+        popup.identifier = NSUserInterfaceItemIdentifier(job.id.uuidString)
+        popup.toolTip = String(localized: "Limit this transfer's speed. Takes effect immediately and leaves the other transfers alone.")
+        return popup
+    }
+
+    @objc private func speedChanged(_ sender: NSPopUpButton) {
+        guard let id = sender.identifier.flatMap({ UUID(uuidString: $0.rawValue) }),
+              let job = manager.jobs.first(where: { $0.id == id }) else { return }
+        let choice = Self.speedChoices[max(0, sender.indexOfSelectedItem)]
+        manager.setSpeedLimit(job, bytesPerSecond: choice.bytesPerSecond)
+    }
+
+    @objc private func moveJobUp(_ sender: NSButton) { if let j = job(for: sender) { manager.move(j, by: -1) } }
+    @objc private func moveJobDown(_ sender: NSButton) { if let j = job(for: sender) { manager.move(j, by: 1) } }
 
     @objc private func pauseJob(_ sender: NSButton) { if let j = job(for: sender) { manager.pause(j) } }
     @objc private func resumeJob(_ sender: NSButton) { if let j = job(for: sender) { manager.resume(j) } }
