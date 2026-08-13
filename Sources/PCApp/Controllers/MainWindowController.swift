@@ -1667,13 +1667,20 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             return
         case .sftp:
             let sftpUser = site.user.isEmpty ? NSUserName() : site.user
-            let keyFile = site.auth == .keyFile ? site.keyFile : nil
+            // With a key file the typed secret is that key's *passphrase*, and libssh2 wants it
+            // there instead of as a password — passed as one it would only be tried against
+            // password auth and the key would then be opened with nothing, which is how an
+            // encrypted key failed with "authentication failed" and no way to supply the phrase.
+            let usingKey = site.auth == .keyFile
+            let keyFile = usingKey ? site.keyFile.map { ($0 as NSString).expandingTildeInPath } : nil
+            let secret = password.isEmpty ? nil : password
             Task { @MainActor in
                 do {
                     let sftp = SFTPSession()
                     try await sftp.connect(host: site.host, port: UInt16(site.port), user: sftpUser,
-                                           password: password.isEmpty ? nil : password,
-                                           keyFile: keyFile, keyPassphrase: nil)
+                                           password: usingKey ? nil : secret,
+                                           keyFile: keyFile,
+                                           keyPassphrase: usingKey ? secret : nil)
                     let fs = SFTPFileSystem(session: sftp, fsID: "sftp:\(site.host)",
                                             transferViaSCP: site.useSCP)
                     self.mountConnection(fs, site: site, fsType: "SFTP")
@@ -1698,6 +1705,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 let protocolLog = FTPProtocolLog()
                 let transport = LoggingFTPControlTransport(nwTransport, log: protocolLog)
                 let connection = FTPControlConnection(transport: transport, controlHost: site.host)
+                // Before login, so even the user name goes out in the server's encoding.
+                await connection.setEncoding(site.textEncoding)
                 if !site.passive { await connection.setActiveMode(true) }   // F-212 (site's passive/active toggle)
                 try await connection.connectAndLogin(user: user, password: pass, protectData: useTLS)
                 // Keep an idle control connection alive (Options → FTP default,
@@ -1727,7 +1736,22 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             fs, name: label, fsType: fsType,
             startPath: site.remoteDir.isEmpty ? "/" : site.remoteDir)
         Task { @MainActor in
-            await self.activePanel?.enterNetwork(fs, startPath: site.remoteDir, driveVolume: volume)
+            let panel = self.activePanel
+            await panel?.enterNetwork(fs, startPath: site.remoteDir, driveVolume: volume)
+            // The site's local dir opens in the *other* panel — the pairing a transfer needs, and
+            // what `localdir` in ftp-sites.ini has meant since the file was defined. It round-tripped
+            // and was read by nothing, so a site that named one connected next to whatever happened
+            // to be open. Only when it still exists: a folder that has since been moved should not
+            // send the other panel somewhere arbitrary.
+            let local = site.localDir.trimmingCharacters(in: .whitespaces)
+            guard !local.isEmpty else { return }
+            let path = (local as NSString).expandingTildeInPath
+            var isDir: ObjCBool = false
+            guard FileManager.default.fileExists(atPath: path, isDirectory: &isDir), isDir.boolValue,
+                  let other = [self.leftPanelController, self.rightPanelController]
+                      .compactMap({ $0 }).first(where: { $0 !== panel })
+            else { return }
+            await other.loadDirectory(path)
         }
     }
 
@@ -1753,6 +1777,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             return String(localized: "Active mode cannot work through a proxy — the server has no way to open the data connection back. Switch passive mode on.")
         case .proxyLoginWithoutProxy:
             return String(localized: "A proxy login is set but no proxy host, so it is not used.")
+        case .keyFileMissing(let path):
+            return String(localized: "There is no key file at \(path). Leave it blank to use the ssh-agent or a key in ~/.ssh.")
         }
     }
 

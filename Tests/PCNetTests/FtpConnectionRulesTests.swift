@@ -14,9 +14,11 @@ final class FtpConnectionRulesTests: XCTestCase {
     private func site(_ proto: FtpProtocol, port: Int? = nil, user: String = "u",
                       auth: FtpAuth = .password, passive: Bool = true,
                       proxyHost: String? = nil, proxyKind: ProxyKind = .socks5,
-                      proxyUser: String? = nil, host: String = "example.org") -> FtpSite {
+                      proxyUser: String? = nil, host: String = "example.org",
+                      keyFile: String? = nil) -> FtpSite {
         FtpSite(name: "s", host: host, port: port, proto: proto, user: user, auth: auth,
-                passive: passive, proxyHost: proxyHost, proxyType: proxyKind, proxyUser: proxyUser)
+                keyFile: keyFile, passive: passive, proxyHost: proxyHost,
+                proxyType: proxyKind, proxyUser: proxyUser)
     }
 
     // MARK: - Port follows the protocol
@@ -86,6 +88,95 @@ final class FtpConnectionRulesTests: XCTestCase {
         XCTAssertFalse(FtpConnectionRules.applies(.user, to: anon))
         XCTAssertFalse(FtpConnectionRules.applies(.password, to: anon))
         XCTAssertTrue(FtpConnectionRules.applies(.user, to: site(.ftp)))
+    }
+
+    // MARK: - Settings that used to round-trip and do nothing
+
+    func testTheEncodingChoiceExistsOnlyWhereItIsAChoice() {
+        // SFTP mandates UTF-8, so offering latin-1 there would be a setting the connection ignores.
+        XCTAssertTrue(FtpConnectionRules.applies(.encoding, to: site(.ftp)))
+        XCTAssertTrue(FtpConnectionRules.applies(.encoding, to: site(.ftpsImplicit)))
+        XCTAssertFalse(FtpConnectionRules.applies(.encoding, to: site(.sftp)))
+    }
+
+    func testTheSiteSaysWhichEncodingItsNamesAreIn() {
+        // Unknown values mean UTF-8: it is the default, the modern answer, and the only safe guess
+        // for an ini somebody edited by hand.
+        XCTAssertEqual(FtpSite(name: "s", host: "h", encoding: "latin-1").textEncoding, .isoLatin1)
+        XCTAssertEqual(FtpSite(name: "s", host: "h", encoding: "LATIN-1").textEncoding, .isoLatin1)
+        XCTAssertEqual(FtpSite(name: "s", host: "h", encoding: "utf-8").textEncoding, .utf8)
+        XCTAssertEqual(FtpSite(name: "s", host: "h", encoding: "klingon").textEncoding, .utf8)
+    }
+
+    func testALatin1ListingIsReadableAndStillRoundTrips() {
+        // The defect this setting exists for: a latin-1 server's "Größe.txt" decoded as UTF-8 is
+        // mojibake or replacement characters, and a name the panel cannot spell is one it cannot
+        // open, rename or delete either.
+        let bytes = "Größe.txt".data(using: .isoLatin1)!
+        XCTAssertEqual(FTPControlConnection.decode(bytes, as: .isoLatin1), "Größe.txt")
+        // Asked for UTF-8, those same bytes are not valid UTF-8. Latin-1 is the fallback rather
+        // than U+FFFD, because a replacement character destroys the byte it stands for and the
+        // name can then never be sent back to the server.
+        let viaUTF8 = FTPControlConnection.decode(bytes, as: .utf8)
+        XCTAssertFalse(viaUTF8.contains("\u{FFFD}"), "lossy decode: \(viaUTF8)")
+        XCTAssertEqual(viaUTF8.data(using: .isoLatin1), bytes, "the name no longer round-trips")
+        // And a genuine UTF-8 listing is unaffected.
+        XCTAssertEqual(FTPControlConnection.decode(Data("Größe.txt".utf8), as: .utf8), "Größe.txt")
+    }
+
+    func testALocalDirIsOfferedForEveryProtocol() {
+        // It is a local folder; nothing about the wire protocol makes it more or less meaningful.
+        for proto in FtpProtocol.allCases {
+            XCTAssertTrue(FtpConnectionRules.applies(.localDir, to: site(proto)))
+        }
+    }
+
+    // MARK: - SFTP key authentication
+
+    func testAKeyFileIsOfferedOnlyWhereItMeansSomething() {
+        XCTAssertTrue(FtpConnectionRules.applies(.keyFile, to: site(.sftp)))
+        XCTAssertFalse(FtpConnectionRules.applies(.keyFile, to: site(.ftp)))
+        XCTAssertFalse(FtpConnectionRules.applies(.keyFile, to: site(.ftpsImplicit)))
+    }
+
+    func testTheSecretFieldStaysUsableForAnEncryptedKey() {
+        // It is the key's passphrase there rather than a password, and an encrypted key needs it
+        // typed somewhere. Disabling the field — which the rules used to do for `.keyFile` — left
+        // an encrypted key unusable unless the ssh-agent happened to be holding it.
+        XCTAssertTrue(FtpConnectionRules.applies(.password, to: site(.sftp, auth: .keyFile,
+                                                                    keyFile: "/tmp/k")))
+        // The agent is the one case that needs no secret from us at all.
+        XCTAssertFalse(FtpConnectionRules.applies(.password, to: site(.sftp, auth: .agent)))
+    }
+
+    func testAKeyFileThatIsNotThereIsRefusedRatherThanFallenBackFrom() throws {
+        // libssh2 skips a key it cannot open and tries ~/.ssh/id_* instead, so a typo surfaces as
+        // "authentication failed" against a server the default key may not even be enrolled at.
+        let missing = site(.sftp, auth: .keyFile, keyFile: "/nope/id_ed25519")
+        XCTAssertEqual(FtpConnectionRules.blockingProblems(with: missing),
+                       [.keyFileMissing("/nope/id_ed25519")])
+
+        // A key that is there is not complained about…
+        let real = FileManager.default.temporaryDirectory
+            .appendingPathComponent("key-\(UUID().uuidString)")
+        try Data("key".utf8).write(to: real)
+        defer { try? FileManager.default.removeItem(at: real) }
+        XCTAssertTrue(FtpConnectionRules.problems(with:
+            site(.sftp, auth: .keyFile, keyFile: real.path)).isEmpty)
+        // …and neither is a site that names no key at all, which is the agent/default-key path.
+        XCTAssertTrue(FtpConnectionRules.problems(with: site(.sftp)).isEmpty)
+    }
+
+    func testATildeInTheKeyPathIsExpandedBeforeItIsLookedFor() {
+        // "~/.ssh/id_rsa" is what a user types and what the ini carries; checked literally it is
+        // always missing, so the dialog would refuse every key written the normal way.
+        let home = NSHomeDirectory()
+        let name = "pc-key-\(UUID().uuidString)"
+        let path = (home as NSString).appendingPathComponent(name)
+        FileManager.default.createFile(atPath: path, contents: Data("k".utf8))
+        defer { try? FileManager.default.removeItem(atPath: path) }
+        XCTAssertTrue(FtpConnectionRules.problems(with:
+            site(.sftp, auth: .keyFile, keyFile: "~/\(name)")).isEmpty)
     }
 
     func testPassiveModeIsNotAChoiceBehindAProxy() {

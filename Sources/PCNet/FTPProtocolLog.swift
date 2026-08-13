@@ -85,6 +85,10 @@ public final class LoggingFTPControlTransport: FTPControlTransport, @unchecked S
         return reply
     }
 
+    public func setCommandEncoding(_ encoding: String.Encoding) async {
+        await inner.setCommandEncoding(encoding)
+    }
+
     public func makeData(host: String, port: Int) async throws -> FTPDataTransport {
         try await inner.makeData(host: host, port: port)
     }

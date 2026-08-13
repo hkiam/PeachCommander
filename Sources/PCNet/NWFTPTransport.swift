@@ -17,6 +17,8 @@ public actor NWFTPControlTransport: FTPControlTransport {
     private let useTLS: Bool
     private let allowInsecureTLS: Bool
     private let proxy: ProxyConfig?
+    /// Encoding for outgoing command lines — UTF-8 unless the site says `encoding=latin-1`.
+    private var commandEncoding: String.Encoding = .utf8
     private let queue = DispatchQueue(label: "pcnet.ftp.control")
     private var connection: NWConnection?
     private var buffer = Data()
@@ -77,9 +79,17 @@ public actor NWFTPControlTransport: FTPControlTransport {
         return try await readReply()
     }
 
+    public func setCommandEncoding(_ encoding: String.Encoding) { commandEncoding = encoding }
+
     public func send(_ line: String) async throws {
         guard let conn = connection else { throw FTPError.notConnected }
-        let data = Data((line + "\r\n").utf8)
+        // A name with a non-ASCII character has to leave in the encoding the *server* reads. Sent
+        // as UTF-8 to a latin-1 server, a file the listing showed correctly cannot then be opened,
+        // renamed or deleted — the command names a path the server does not have. Falls back to
+        // UTF-8 when the text has no representation in the chosen encoding, which is still the
+        // best-effort thing to send and better than sending nothing.
+        let text = line + "\r\n"
+        let data = text.data(using: commandEncoding) ?? Data(text.utf8)
         try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
             conn.send(content: data, completion: .contentProcessed { error in
                 if let error { cont.resume(throwing: error) } else { cont.resume() }
