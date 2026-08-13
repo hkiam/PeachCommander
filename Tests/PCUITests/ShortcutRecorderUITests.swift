@@ -6,15 +6,24 @@
 //
 // What it is NOT: a guard against the defect that prompted it. That bug — the capture sheet's window
 // controller was a local, so it deallocated while AppKit kept the sheet on screen and every
-// keystroke hit a `[weak self]` that had become nil — reproduces reliably when the app is driven by
-// real synthetic key events (System Events, `key code …`) and does NOT reproduce under
-// `XCUIElement.typeKey`, which records the binding even against the broken build. Measured both
-// ways, against the same binary; the reason XCUITest's typing survives a dead handler was not
-// established.
+// keystroke hit a `[weak self]` that had become nil — does not reproduce here, and the app's own
+// log says why. Driven through Accessibility (`osascript`, `click button`, `key code`) the order is
 //
-// Recorded here because the difference matters for anything written next: an XCUITest that types
-// into a dialog can pass while that dialog is, to a user, completely dead. Defects of this class
-// need the AX/`key code` route, or a check that the *outcome* changed rather than that the UI moved.
+//     beginSheet fr=true / controller deinit / keyDown        → no handler, nothing recorded
+//
+// and driven by XCUITest against the *same binary* it is
+//
+//     beginSheet fr=true / keyDown / handle / controller deinit
+//
+// — the leaked controller outlives the keystroke by exactly enough to serve it. Neither an
+// interposed `hover()`, nor a `click()`, nor seconds of waiting moved the `deinit` ahead of the
+// key; what decides it is how the Record button is activated (AXPress vs. injected mouse events)
+// and the autorelease nesting AppKit uses for each. That last step is AppKit-internal and is not
+// claimed here beyond what the log shows.
+//
+// The practical part is the point: an XCUITest that types into a dialog can pass while that dialog
+// is, to a user, completely dead. Defects of this class need the AX/`key code` route, or a check
+// that the *outcome* changed rather than that the UI moved.
 
 import XCTest
 
