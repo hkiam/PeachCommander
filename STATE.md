@@ -107,6 +107,28 @@ Not verified end to end: this machine has no sshd, and setting one up means touc
 ~/.ssh. The rules and the ini round-trip are unit-tested; the libssh2 call itself is unchanged apart
 from which argument the secret goes into.
 
+## 2026-08-13 (PFX, follow-ups) — The WebDAV plugin had no tests at all
+
+It was built, installed and exercised only by someone connecting by hand, so the PROPFIND body, the
+XML parse, the href-to-name mapping and the host adapter over them were all trusted rather than
+checked. `WebDAVPluginTests` now builds the real plugin the way `build-pfx-plugins.sh` does, points
+it at a minimal DAV origin (`Fixtures/davserver.py`, stdlib only) and drives it through
+`PFXFileSystem` — connect, enumerate, descend, read bytes, miss a directory, and go inert after a
+disconnect. Deliberately a host test rather than a VM scenario: a scenario cannot be run from here,
+and this repo has already been bitten by scenarios that silently did nothing.
+
+Writing it surfaced two things. The plugin recorded every connect in its site history including the
+test's throwaway localhost URL, once per run, in the *user's* real Application Support directory —
+now skipped when the connect came from the `PC_WEBDAV_URL` test hook. And the reason it could: **a PFX
+plugin is never told the host's config root.** `PfxHostServices` carries `crypt` for the Keychain and
+`parentWindow`, and nothing else, so `-ConfigRoot` does not isolate plugin state at all. That is a
+real ABI gap and the next candidate for a considered extension.
+
+Also: a PFX plugin that offers a connect facet but exports no `PfxDisconnect` loads and works and
+then leaks whatever `PfxConnect` allocated, once per connection — `PFXSymbols.required` is empty and
+every facet is probed. The host has nothing to call and cannot fix it, so it now says so at load
+time, which is the most it can honestly do.
+
 ## 2026-08-13 (PFX) — Disconnect was in the ABI all along; the host never called it
 
 Asked to make plugins support disconnect, and to extend the ABI if it did not allow it. It does:

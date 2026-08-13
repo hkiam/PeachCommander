@@ -182,6 +182,16 @@ public final class PFXPlugin: @unchecked Sendable {
         fn("PfxDisconnect", as: DisconnectFn.self)?(conn)
     }
 
+    /// True when this plugin offers a connect facet but exports no `PfxDisconnect`.
+    ///
+    /// `PFXSymbols.required` is empty and every facet is capability-probed, so such a plugin loads
+    /// and works — and then leaks whatever `PfxConnect` allocated, once per connection, silently.
+    /// The host has nothing to call and cannot fix it; naming it at load time is the most it can
+    /// honestly do, and it is the plugin author who has to see it.
+    public var connectsWithoutDisconnect: Bool {
+        connectTitle() != nil && fn("PfxDisconnect", as: DisconnectFn.self) == nil
+    }
+
     static func string(_ ptr: UnsafePointer<CChar>) -> String { String(cString: ptr) }
 }
 
