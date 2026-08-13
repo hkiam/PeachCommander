@@ -29,6 +29,8 @@ Die Randspalte zeigt Zeilennummern, die Zeile mit dem Cursor heller als die übr
 ## Suchen, Ersetzen und Navigieren
 
 - Drücken Sie Cmd+F, um die Suchleiste zu öffnen. Um Text zu ersetzen, öffnen Sie die Suchleiste und schalten Sie sie in die Ersetzen-Ansicht um oder klicken Sie in der Symbolleiste auf Suchen/Ersetzen.
+- Für einen **regulären Ausdruck** nehmen Sie Suchen ▸ *Mit regulärem Ausdruck suchen…* (Ctrl+Cmd+F) oder *Mit regulärem Ausdruck ersetzen…* (Ctrl+Opt+Cmd+F). `^` und `$` treffen Zeilenanfang und -ende, und in der Ersetzung steht `$1` für die erste Gruppe — `(\w+) (\d+)` ersetzt durch `$2=$1` macht aus `alpha 11` also `11=alpha`. **Nur in der Auswahl** hält die Änderung im markierten Text; **Alle ersetzen** schreibt alle Treffer in einem Schritt um, den Cmd+Z zurücknimmt.
+- Weitersuchen (Cmd+G) folgt der zuletzt benutzten Suche, egal ob einfach oder Muster. Ein Muster, das sich nicht übersetzen lässt, wird im Dialog gemeldet und findet nicht stillschweigend nichts.
 - Klicken Sie auf JSON/XML formatieren, um ein JSON- oder XML-Dokument in ein sauberes, lesbares Layout neu einzurücken.
 - Klicken Sie auf Symbole (oder drücken Sie Cmd+Shift+O), um eine Seitenleiste anzuzeigen, die die Klassen, Funktionen und Methoden in Ihrem Code auflistet — oder, bei einer JSON-, YAML- oder XML-Datei, deren Schlüssel und Elemente. Klicken Sie auf einen Eintrag, um direkt dorthin zu springen. Was diese Struktur außerdem leistet, steht unter [Mit JSON, YAML und XML arbeiten](#mit-json-yaml-und-xml-arbeiten).
 - Drücken Sie Cmd+L, um zu einer bestimmten Zeile zu springen.

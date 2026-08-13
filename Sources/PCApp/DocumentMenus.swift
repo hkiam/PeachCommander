@@ -26,6 +26,9 @@ struct DocumentMenuCaps {
     var goto = false
     var findPrev = false          // reverse search available
     var replace = false
+    /// Find (and, with `replace`, replace) using a regular expression. The editor holds its text in
+    /// memory and can offer it; the viewer has its own chunked pattern search over a mapped file.
+    var regexFind = false
     var marks = false
     var markNav = false           // Next/Previous Mark
     var multiFile = false         // Next/Previous File
@@ -65,6 +68,8 @@ enum DocumentAction {
     static let findNext = Selector(("docFindNext"))
     static let findPrev = Selector(("docFindPrev"))
     static let replace = Selector(("docReplace"))
+    static let findRegex = Selector(("docFindRegex"))
+    static let replaceRegex = Selector(("docReplaceRegex"))
     static let goToLocation = Selector(("docGoto"))
     static let markAll = Selector(("docMarkAll"))
     static let count = Selector(("docCount"))
@@ -177,6 +182,20 @@ enum DocumentMenus {
         add(menu, String(localized: "Find Next"), DocumentAction.findNext, target, "g")
         if caps.findPrev { add(menu, String(localized: "Find Previous"), DocumentAction.findPrev, target, "g", [.command, .shift]) }
         if caps.replace { add(menu, String(localized: "Replace…"), DocumentAction.replace, target, "f", [.command, .option]) }
+        // Beside the native find bar, not instead of it: ⌘F stays plain-text and keeps everything
+        // AppKit gives it, while a pattern gets its own entry. Find Next then follows whichever of
+        // the two was used last.
+        if caps.regexFind {
+            menu.addItem(.separator())
+            // Not ⌘⌥E — that is Cycle Text Encoding. Control marks the pattern-aware pair, so the
+            // two searches stay one modifier apart instead of colliding.
+            add(menu, String(localized: "Find with Regular Expression…"),
+                DocumentAction.findRegex, target, "f", [.command, .control])
+            if caps.replace {
+                add(menu, String(localized: "Replace with Regular Expression…"),
+                    DocumentAction.replaceRegex, target, "f", [.command, .control, .option])
+            }
+        }
         if caps.goto {
             menu.addItem(.separator())
             add(menu, String(localized: "Go to Line/Offset…"), DocumentAction.goToLocation, target, "l")

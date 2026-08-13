@@ -120,6 +120,7 @@ extension MainWindowController {
             case "symbols":    dumpSymbols(arg)
             case "editdump":   await editDump(arg)
             case "editfilter": await editFilter(arg)   // editfilter <src>|<command>|<out> (F-356)
+            case "editregex":  await editRegex(arg)    // editregex <src>|<pat>|<repl>|<all 0|1>|<out>
             case "editfilterdlg": await editFilterDialog(arg)   // editfilterdlg <src> (F-356)
             case "editlines":  await editLines(arg)     // editlines <src>|<out> (F-359)
             case "editstruct": await editStructure(arg) // editstruct <src>|<needle>|<out> (F-369)
@@ -1371,6 +1372,21 @@ extension MainWindowController {
     }
 
     /// Open `src` in the editor, run every built-in line operation, and report the result (F-359).
+    /// Open `src` in the editor and run a pattern search or a Replace All over it (F-151).
+    private func editRegex(_ arg: String) async {
+        let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+        guard a.count == 5 else { NSLog("[automation] editregex needs <src>|<pat>|<repl>|<all>|<out>"); return }
+        let win = EditorWindowController(path: a[0])
+        automationEditors.append(win)
+        win.showWindow(nil)
+        win.window?.makeKeyAndOrderFront(nil)
+        try? await Task.sleep(nanoseconds: 800_000_000)
+        let report = win.automationRegex(pattern: a[1], replacement: a[2], caseInsensitive: false,
+                                         inSelection: false, replaceAll: a[3] == "1")
+        try? report.write(toFile: a[4], atomically: true, encoding: .utf8)
+        NSLog("[automation] editregex \(a[1]) → \(a[4])")
+    }
+
     private func editLines(_ arg: String) async {
         let a = arg.split(separator: "|").map(String.init)
         guard a.count == 2 else { NSLog("[automation] editlines needs <src>|<out>"); return }
