@@ -114,8 +114,17 @@ final class KeysWindowController: NSWindowController, NSTableViewDataSource, NST
         return (r >= 0 && r < shown.count) ? shown[r].command : nil
     }
 
+    /// The capture sheet while it is up.
+    ///
+    /// Held, because nothing else does. `NSWindowController` retains its window, but a window does
+    /// *not* retain its controller, and `beginSheet` retains only the panel — so a controller kept
+    /// in a local deallocated the moment `recordShortcut` returned, leaving the sheet on screen with
+    /// its key handler gone. The panel looked fine and answered nothing, Esc included.
+    private var capture: KeyCaptureController?
+
     @objc private func recordShortcut() {
         guard let command = selectedCommand else { NSSound.beep(); return }
+        guard let window else { return }
         let capture = KeyCaptureController(command: command)
         capture.onCaptured = { [weak self] chord in
             guard let self else { return }
@@ -128,8 +137,8 @@ final class KeysWindowController: NSWindowController, NSTableViewDataSource, NST
             }
             self.reloadRows()
         }
-        guard let window else { return }
-        capture.beginSheet(over: window)
+        self.capture = capture     // before presenting: the sheet must never be the only owner
+        capture.beginSheet(over: window) { [weak self] in self?.capture = nil }
     }
 
     @objc private func clearShortcut() {
@@ -209,18 +218,29 @@ private final class KeyCaptureController: NSWindowController {
     private weak var captureView: KeyCaptureView?
     private weak var hostWindow: NSWindow?
 
-    func beginSheet(over window: NSWindow) {
+    /// Present the sheet and start listening. `onFinish` runs when it closes, whichever way — the
+    /// owner releases this controller there.
+    func beginSheet(over window: NSWindow, onFinish: @escaping () -> Void) {
         guard let panel = self.window else { return }
         hostWindow = window
-        window.beginSheet(panel) { _ in }
+        // Both: `initialFirstResponder` is what AppKit consults when the sheet becomes key, and the
+        // explicit call covers the case where it is key already. A capture view that is not the
+        // first responder receives no keyDown, which looks exactly like the defect above.
+        panel.initialFirstResponder = captureView
+        window.beginSheet(panel) { _ in onFinish() }
         panel.makeFirstResponder(captureView)
     }
 
     private func handle(_ event: NSEvent) {
-        defer { end() }
+        // The sheet goes away *before* the key is reported, not after. What follows can be
+        // app-modal — reassigning a chord that was taken puts up an alert — and running that from
+        // inside the handler left this sheet standing behind it, still asking for a key that had
+        // already been pressed.
+        let captured = onCaptured
+        end()
         // Esc cancels.
         if event.keyCode == 53 { return }
-        if let chord = KeymapMenu.chord(from: event) { onCaptured?(chord) }
+        if let chord = KeymapMenu.chord(from: event) { captured?(chord) }
     }
 
     private func end() {
@@ -233,4 +253,17 @@ private final class KeyCaptureView: NSView {
     var onKey: ((NSEvent) -> Void)?
     override var acceptsFirstResponder: Bool { true }
     override func keyDown(with event: NSEvent) { onKey?(event) }
+
+    /// Claim key equivalents too, so a ⌘ chord can be recorded at all.
+    ///
+    /// A key equivalent is offered to the key window's view hierarchy before the main menu, and
+    /// this app's menu is full of ⌘ shortcuts — so without this, pressing ⌘C while recording runs
+    /// Copy instead of being recorded, and the sheet sits there waiting for a key it will never be
+    /// given. Only while this view is the one listening; a sheet that has lost focus must not be
+    /// swallowing the menu's keys.
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        guard window?.firstResponder === self else { return false }
+        onKey?(event)
+        return true
+    }
 }
