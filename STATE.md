@@ -26,6 +26,40 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-13 (VM suite) — What the regression found once it was running again
+
+With `resolve_app` fixed and the demo tree provisioned from `regress.py` (it was only ever created by
+`capture.py`, so every scenario navigating to `pc-demo` had been looking at an empty panel), the full
+suite ran for the first time in a long while: **92 scenarios, 11 failures**. Each failure was then run
+again against the app as it was BEFORE this session's work, which splits them cleanly.
+
+**Pre-existing — the same five fail on the old build. Nobody had seen them because the suite was
+shipping an app bundle with no binary in it:**
+
+* `toolbar-drop` — dropping an application on the button bar does not reach `default.bar`.
+* `session-save` — the panel paths do not arrive in `session.ini`.
+* `plugin-context-menu` — the AI plugin's items are missing from the panel context menu.
+* `surface-colours` — the pinned window count no longer matches.
+* `keys-main` — six elements are unreachable by keyboard.
+
+**Intermittent:** `tree-colours` failed in the full run and passed on repeat. Its symptom is the tree
+reading the colour of row 0 and finding no row, so it reports `.labelColor`. Same family as the
+navigation race below.
+
+**Timing, not behaviour:** `preview-zoom` (five reports) failed on a cold guest with this build and
+passed with the old one — but the identical steps replayed by hand in the same guest pass, and both
+builds behave correctly on this machine. Measured locally, this build reaches the first automation verb
+in 0.52 s against 0.45 s before (the TaskManager plugin now links Security), and the scenario's fixed
+waits are evidently marginal on a cold VM. So: not a defect in the preview, a scenario that measures
+the machine as much as the feature.
+
+**The race that keeps showing up.** A reload that captures its path before awaiting can land after a
+newer navigation and overwrite it — the signature is a tab that already names the target while the panel
+still shows the previous directory. Seen once in five runs of `panel-autorefresh`, and it is the likely
+cause of the `tree-colours` flake. Both builds are equally affected; it is not new. The fix is to
+serialise a panel's loads so the last one REQUESTED wins rather than the last one to finish, which is a
+change to a central path and belongs in its own piece of work, not between two VM runs.
+
 ## 2026-08-13 (VM regression) — The new work is measured in the guest, and the guest was measuring nothing
 
 Everything from F-390 to F-398 had been verified by driving the app on this machine, and none of it was
