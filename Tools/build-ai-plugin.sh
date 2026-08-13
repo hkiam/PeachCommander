@@ -15,9 +15,18 @@ source "$ROOT/Tools/lib/pc-universal.sh"
 # Locate the built PCAutomation.framework (+ sibling frameworks) to compile/link against.
 FWDIR="${PC_FRAMEWORKS_DIR:-}"
 if [ -z "$FWDIR" ]; then
-  FWDIR=$(xcodebuild -project "$ROOT/PeachCommander.xcodeproj" -scheme PeachCommander \
-          -configuration Debug -showBuildSettings 2>/dev/null \
-          | awk -F' = ' '/ BUILT_PRODUCTS_DIR /{print $2; exit}')
+  # The tree this repo actually builds into first (Tools/build.sh passes -derivedDataPath build).
+  # Asking xcodebuild answers with the *default* DerivedData, which on a machine that has never
+  # built through Xcode's UI is an empty directory — this script then aborted, and with it every
+  # plugin after it in build-all-plugins.sh, so the app bundle shipped without the AI plugin, the
+  # AI column and the PFX plugins. In the VM that showed up as "the AI context items are missing"
+  # and "four windows fewer than the pinned count": two defect reports for a build that never ran.
+  for cand in "$ROOT/build/Build/Products/Debug" \
+              "$(xcodebuild -project "$ROOT/PeachCommander.xcodeproj" -scheme PeachCommander \
+                 -configuration Debug -showBuildSettings 2>/dev/null \
+                 | awk -F' = ' '/ BUILT_PRODUCTS_DIR /{print $2; exit}')"; do
+    if [ -n "$cand" ] && [ -d "$cand/PCAutomation.framework" ]; then FWDIR="$cand"; break; fi
+  done
 fi
 [ -d "$FWDIR/PCAutomation.framework" ] || { echo "PCAutomation.framework not found in '$FWDIR' — build the app first"; exit 1; }
 
