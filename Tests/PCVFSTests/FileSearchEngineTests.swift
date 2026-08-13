@@ -65,6 +65,76 @@ final class FileSearchEngineTests: XCTestCase {
         try FileManager.default.setAttributes([.modificationDate: date], ofItemAtPath: path)
     }
 
+    // MARK: - Empty directories (the folders left behind after a cleanup)
+
+    /// The engine's own name for the search, so each test reads as one question.
+    private func emptyFolderQuery(mask: String = "*", depth: Int = 0) -> SearchQuery {
+        var q = SearchQuery(nameMask: mask, startDirectory: tempDir.path, maxDepth: depth)
+        q.emptyDirectoriesOnly = true
+        return q
+    }
+
+    private func emptyFolders(_ query: SearchQuery) async -> [String] {
+        await collect(FileSearchEngine().search(query, fs: fs))
+            .map { ($0.path as NSString).lastPathComponent }.sorted()
+    }
+
+    func test_emptyDirectories_findsTheEmptyOnesAndNotTheRest() async throws {
+        try makeDirectory("hollow")
+        try makeDirectory("full")
+        _ = try write("full/note.txt")
+        // A folder whose only content is another folder is NOT empty — it has an entry.
+        try makeDirectory("nest/inner")
+
+        let found = await emptyFolders(emptyFolderQuery())
+        XCTAssertEqual(found, ["hollow", "inner"])
+    }
+
+    func test_emptyDirectories_reportNoFilesAtAll() async throws {
+        // The walk still descends — that is the only way to know a folder is empty — but nothing it
+        // passes on the way is a hit. A "*" mask would otherwise match every file in the tree.
+        _ = try write("full/note.txt")
+        try makeDirectory("hollow")
+        let hits = await collect(FileSearchEngine().search(emptyFolderQuery(), fs: fs))
+        XCTAssertEqual(hits.map { ($0.path as NSString).lastPathComponent }, ["hollow"])
+    }
+
+    func test_aFolderHoldingOnlyAHiddenEntryIsNotEmpty() async throws {
+        // The decision this feature turns on. People use it to delete what it finds, so a folder
+        // holding a .git — or a .DS_Store — must not be called empty. Cautious on purpose.
+        try makeDirectory("looksEmpty")
+        _ = try write("looksEmpty/.DS_Store")
+        try makeDirectory("hasRepo")
+        try makeDirectory("hasRepo/.git")
+
+        let found = await emptyFolders(emptyFolderQuery())
+        XCTAssertFalse(found.contains("looksEmpty"), "a folder with a .DS_Store was called empty")
+        XCTAssertFalse(found.contains("hasRepo"), "a folder with a .git was called empty")
+        // …and the .git directory itself is empty, so it is a legitimate hit.
+        XCTAssertEqual(found, [".git"])
+    }
+
+    func test_emptyDirectories_stillObeyTheNameMask() async throws {
+        try makeDirectory("build")
+        try makeDirectory("keep")
+        let found = await emptyFolders(emptyFolderQuery(mask: "build*"))
+        XCTAssertEqual(found, ["build"])
+    }
+
+    func test_theStartDirectoryItselfCanBeTheAnswer() async throws {
+        // Nothing below it, so the only honest answer is the folder the search started in.
+        let found = await emptyFolders(emptyFolderQuery())
+        XCTAssertEqual(found, [(tempDir.path as NSString).lastPathComponent])
+    }
+
+    func test_aFolderTooDeepToBeListedIsNotClaimedEmpty() async throws {
+        // maxDepth 1 lists only the start directory, so `deep` is never listed and cannot be judged.
+        // Silence is the correct answer; claiming it empty would be a guess.
+        try makeDirectory("deep")
+        let found = await emptyFolders(emptyFolderQuery(depth: 1))
+        XCTAssertFalse(found.contains("deep"))
+    }
+
     // MARK: - Whole-word / hex / date / directory filters
 
     // F-150: multiple start directories are all walked.
