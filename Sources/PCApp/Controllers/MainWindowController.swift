@@ -1883,10 +1883,19 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         editor.present()
     }
 
-    /// cm_FtpDisconnect: leave the active panel's FTP/SFTP mount and tear the
-    /// connection down.
+    /// cm_FtpDisconnect: leave the active panel's network or plugin mount and tear the connection
+    /// down. Plugin mounts are included since `PFXFileSystem` became disconnectable — the command
+    /// used to skip them silently, which is indistinguishable from a command that does not work.
     func disconnectActivePanelNetwork() {
         Task { @MainActor in await activePanel?.leaveNetworkMount() }
+    }
+
+    /// Close every open mount before the app quits, so each plugin and transport is told rather
+    /// than killed with its connection still open. Awaited by `applicationShouldTerminate`.
+    func closeAllMountsForTermination() async {
+        for panel in [leftPanelController, rightPanelController].compactMap({ $0 }) {
+            await panel.closeMountsForTermination()
+        }
     }
 
     // MARK: - Import wincmd.ini (F-276)
@@ -6322,6 +6331,20 @@ final class PanelController: NSObject, PanelControllerProtocol {
     func leaveNetworkMount() async {
         guard fs is DisconnectableFileSystem else { return }
         await exitArchive()
+    }
+
+    /// Hand every live connection this panel holds back to its plugin or transport, for quitting.
+    ///
+    /// Does not navigate: the panel is going away, and there is nothing to show it afterwards. What
+    /// this is for is the promise `pfx.h` makes plugins — that `PfxDisconnect` is reached when the
+    /// app quits with a mount open. Nothing kept that promise before: the only disconnect was in
+    /// `deinit`, and at process exit `deinit` is not run at all, so a plugin holding a socket or a
+    /// lock file was simply killed with it still open.
+    func closeMountsForTermination() async {
+        for candidate in [fs] + mountStack.map({ $0.fs }) {
+            NetworkMountRegistry.shared.remove(fs: candidate)
+            if let net = candidate as? DisconnectableFileSystem { await net.disconnect() }
+        }
     }
 
     /// Whether this panel is showing `target`, or is inside something mounted on top of it.

@@ -4,8 +4,9 @@
  *
  * Exists mainly as a test fixture for the PFXFileSystem host adapter: it exercises
  * PfxFindFirst/Next/Close/Stat without any network. A few test-only hooks
- * (SampleFsOpenFinds / SampleFsFindNextCalls) let host tests observe streaming,
- * cancellation and handle cleanup. Read-only.
+ * (SampleFsOpenFinds / SampleFsFindNextCalls / SampleFsDisconnects) let host tests
+ * observe streaming, cancellation, handle cleanup and the disconnect contract.
+ * Read-only.
  */
 #include "pfx.h"
 #include <stdlib.h>
@@ -37,9 +38,15 @@ int PfxContentGetRow(void *conn, const char *path, char *out, int maxlen) {
 
 /* One static connection token (a non-NULL handle is all the host needs). */
 static int g_conn = 1;
+/* Test hook: how many times the host has handed the connection back. `pfx.h` promises
+ * exactly once per handle, and the host now calls this explicitly rather than from a
+ * deallocator — so "once, and not again when the object is released" is a claim that
+ * needs checking rather than assuming. */
+static int g_disconnects = 0;
+int SampleFsDisconnects(void) { return g_disconnects; }
 void  PfxConnect_unused(void) {}
 void *PfxConnect(const PfxHostServices *services) { (void)services; return &g_conn; }
-void  PfxDisconnect(void *conn) { (void)conn; }
+void  PfxDisconnect(void *conn) { (void)conn; g_disconnects++; }
 int   PfxConnectionId(void *conn, char *out, int maxlen) {
     (void)conn; if (out && maxlen > 0) { strncpy(out, "samplefs", (size_t)maxlen - 1); out[maxlen - 1] = 0; }
     return 1;
@@ -73,7 +80,7 @@ static int g_open_finds = 0;      /* live PfxFindFirst handles (test hook) */
 static int g_findnext_calls = 0;  /* total PfxFindNext calls (test hook) */
 int SampleFsOpenFinds(void)     { return g_open_finds; }
 int SampleFsFindNextCalls(void) { return g_findnext_calls; }
-void SampleFsResetCounters(void){ g_findnext_calls = 0; }
+void SampleFsResetCounters(void){ g_findnext_calls = 0; g_disconnects = 0; }
 
 static int dir_id(const char *dir) {
     if (!dir) return DIR_NONE;

@@ -186,12 +186,33 @@ public final class PFXPlugin: @unchecked Sendable {
 }
 
 /// VirtualFileSystem over a PFX connection handle. Not for volumes-only plugins.
-public final class PFXFileSystem: VirtualFileSystem, @unchecked Sendable {
+///
+/// Disconnecting used to be something ARC did whenever it got round to releasing this object:
+/// `PfxDisconnect` was called from `deinit`, fire-and-forget. That made the host unable to honour
+/// its own commands — `cm_FtpDisconnect` skips anything that is not a `DisconnectableFileSystem`,
+/// so it silently did nothing on a plugin mount — and it meant a plugin with anything to flush had
+/// no reliable moment to do it, least of all at quit, where `deinit` may never run at all.
+///
+/// It is now explicit, which is the whole difficulty: a disconnect can arrive while this object is
+/// alive and being called, and `PfxDisconnect` frees the plugin's own state. So the handle is
+/// *taken* rather than read (exactly-once by construction, no second free from `deinit`), and every
+/// call that reaches the plugin goes through `withConnection`, which both refuses to run after the
+/// handle is gone and holds it for the duration — which is also the "never two calls on one
+/// connection at once" that `pfx.h` has always promised plugins and that content-column reads,
+/// coming straight off the main thread, did not honour.
+public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem, @unchecked Sendable {
     public let scheme: String
     public let capabilities: VFSCapabilities
 
     private let plugin: PFXPlugin
-    private let conn: UnsafeMutableRawPointer
+    /// The plugin's connection handle, or nil once it has been handed back to `PfxDisconnect`.
+    private var conn: UnsafeMutableRawPointer?
+    private let connLock = NSLock()
+    /// Raised the moment a disconnect is asked for, so an enumeration in flight stops asking for
+    /// entries instead of holding the disconnect up until a slow remote directory has been read to
+    /// the end. Deliberately *not* guarded by `connLock`: the enumeration holds that lock, so a
+    /// flag written under it could never reach the loop that has to see it.
+    private let closing = CancelFlag()
     private let fsID: String
     private let retaining: AnyObject?   // keeps the host-services table/bridge alive
     private let queue: DispatchQueue
@@ -244,7 +265,9 @@ public final class PFXFileSystem: VirtualFileSystem, @unchecked Sendable {
         var row = rowCache[path]
         cacheLock.unlock()
         if row == nil {
-            row = plugin.contentRow(conn, path: path)
+            // `try?` because a column has nowhere to report an error to: a disconnected mount
+            // shows an empty cell, which is what it is.
+            row = try? withConnection { plugin.contentRow($0, path: path) }
             cacheLock.lock(); rowCache[path] = row ?? []; cacheLock.unlock()
         }
         guard let row, index < row.count else { return nil }
@@ -281,7 +304,7 @@ public final class PFXFileSystem: VirtualFileSystem, @unchecked Sendable {
         var row = rowCache[path]
         cacheLock.unlock()
         if row == nil {
-            row = plugin.contentRow(conn, path: path)
+            row = try? withConnection { plugin.contentRow($0, path: path) }
             cacheLock.lock(); rowCache[path] = row ?? []; cacheLock.unlock()
         }
         guard let row, index < row.count else { return nil }
@@ -296,10 +319,58 @@ public final class PFXFileSystem: VirtualFileSystem, @unchecked Sendable {
     /// Resolve a plugin query (e.g. "port:8080") to an existing entry path, or
     /// nil on no match. Used by host "jump to matching entry" features.
     public func lookup(query: String) -> String? {
-        plugin.lookup(conn, query: query)
+        (try? withConnection { plugin.lookup($0, query: query) }) ?? nil
     }
 
-    deinit { let c = conn, p = plugin; queue.async { p.disconnect(c) } }
+    // MARK: - Connection lifetime
+
+    /// Run `body` with the live connection handle.
+    ///
+    /// Throws `connectionLost` once the handle has been handed back — the mount really is gone and
+    /// retrying will not bring it back, which is what tells a caller to stop rather than to wait.
+    /// The lock is held across `body`, so an explicit disconnect cannot land between the check and
+    /// the call it is guarding: that gap is a use-after-free, and it is the price of making
+    /// disconnect something a user can ask for.
+    private func withConnection<T>(_ body: (UnsafeMutableRawPointer) throws -> T) throws -> T {
+        connLock.lock()
+        defer { connLock.unlock() }
+        guard !closing.isSet, let conn else { throw VFSError.connectionLost(retryable: false) }
+        return try body(conn)
+    }
+
+    /// Take the handle, leaving nothing behind. The exactly-once guarantee `pfx.h` gives plugins is
+    /// this line: whoever takes it calls `PfxDisconnect`, and everyone after them gets nil.
+    private func takeConnection() -> UnsafeMutableRawPointer? {
+        connLock.lock()
+        defer { connLock.unlock() }
+        let handle = conn
+        conn = nil
+        return handle
+    }
+
+    /// Hand the connection back to the plugin and make this mount inert (F-…).
+    ///
+    /// Awaited, unlike the old `deinit` version: the host asks for this when the user closes the
+    /// mount or when the app is quitting, and both want to know it has actually happened before
+    /// carrying on. Queued behind any call already running, so a plugin is never freed underneath
+    /// one of its own.
+    public func disconnect() async {
+        closing.set()          // first: an enumeration in flight has to stop before we queue behind it
+        await withCheckedContinuation { (cont: CheckedContinuation<Void, Never>) in
+            queue.async { [self] in
+                if let handle = takeConnection() { plugin.disconnect(handle) }
+                cont.resume()
+            }
+        }
+    }
+
+    deinit {
+        // Only if nothing asked for it first. `PfxDisconnect` frees the plugin's own state, so a
+        // second call is a double free — which is why the handle is taken above rather than read.
+        guard let handle = takeConnection() else { return }
+        let p = plugin
+        queue.async { p.disconnect(handle) }
+    }
 
     // MARK: - Serial off-main execution of blocking C calls
 
@@ -364,26 +435,42 @@ public final class PFXFileSystem: VirtualFileSystem, @unchecked Sendable {
                     continuation.finish(throwing: VFSError.unsupported); return
                 }
                 let findClose = plugin.fn("PfxFindClose", as: FindCloseFn.self)
-                guard let handle = dir.path.withCString({ findFirst(conn, $0) }) else {
-                    continuation.finish(throwing: VFSError.notFound(dir.path)); return
-                }
-                defer { findClose?(handle) }
-                var batch: [VFSEntry] = []
-                batch.reserveCapacity(Self.listBatchSize)
-                var d = PfxFindData()
-                while findNext(handle, &d) != 0 {
-                    if cancelled.isSet { continuation.finish(); return }
-                    let e = Self.entry(from: d)
-                    if !e.name.isEmpty, e.name != ".", e.name != ".." { batch.append(e) }
-                    if batch.count >= Self.listBatchSize {
-                        continuation.yield(VFSEntryBatch(entries: batch, isLastBatch: false))
-                        batch.removeAll(keepingCapacity: true)
+                // The whole enumeration runs inside `withConnection`, not one call at a time: a
+                // find handle belongs to its connection, and a plugin is entitled to allocate it
+                // out of the connection's own state. Releasing the connection between two
+                // `PfxFindNext` calls would leave this loop reading freed memory — so the handle is
+                // opened, drained and closed without the connection being takeable in between.
+                // What keeps that from holding a disconnect for the length of a slow remote
+                // directory is `closing`, checked per entry below.
+                do {
+                    try withConnection { conn in
+                        guard let handle = dir.path.withCString({ findFirst(conn, $0) }) else {
+                            throw VFSError.notFound(dir.path)
+                        }
+                        defer { findClose?(handle) }
+                        var batch: [VFSEntry] = []
+                        batch.reserveCapacity(Self.listBatchSize)
+                        var d = PfxFindData()
+                        while findNext(handle, &d) != 0 {
+                            // The consumer stopped reading, or the mount is being closed. Either
+                            // way stop asking for entries — and let `defer` close the handle before
+                            // the connection can go.
+                            if cancelled.isSet || closing.isSet { continuation.finish(); return }
+                            let e = Self.entry(from: d)
+                            if !e.name.isEmpty, e.name != ".", e.name != ".." { batch.append(e) }
+                            if batch.count >= Self.listBatchSize {
+                                continuation.yield(VFSEntryBatch(entries: batch, isLastBatch: false))
+                                batch.removeAll(keepingCapacity: true)
+                            }
+                            d = PfxFindData()
+                        }
+                        // Final batch (empty for an empty directory) closes the listing.
+                        continuation.yield(VFSEntryBatch(entries: batch, isLastBatch: true))
+                        continuation.finish()
                     }
-                    d = PfxFindData()
+                } catch {
+                    continuation.finish(throwing: error)
                 }
-                // Final batch (empty for an empty directory) closes the listing.
-                continuation.yield(VFSEntryBatch(entries: batch, isLastBatch: true))
-                continuation.finish()
             }
         }
     }
@@ -391,10 +478,12 @@ public final class PFXFileSystem: VirtualFileSystem, @unchecked Sendable {
     public func stat(_ path: VFSPath) async throws -> VFSEntry {
         try await run { [self] in
             guard let statFn = plugin.fn("PfxStat", as: StatFn.self) else { throw VFSError.unsupported }
-            var d = PfxFindData()
-            let rc = path.path.withCString { statFn(conn, $0, &d) }
-            guard rc == PC_OK else { throw Self.vfsError(rc, path.path) }
-            return Self.entry(from: d)
+            return try withConnection { conn in
+                var d = PfxFindData()
+                let rc = path.path.withCString { statFn(conn, $0, &d) }
+                guard rc == PC_OK else { throw Self.vfsError(rc, path.path) }
+                return Self.entry(from: d)
+            }
         }
     }
 
@@ -410,8 +499,10 @@ public final class PFXFileSystem: VirtualFileSystem, @unchecked Sendable {
         return PFXWriteStream(path: path) { [self] localURL in
             try await run { [self] in
                 guard let put = plugin.fn("PfxPutFile", as: XferFn.self) else { throw VFSError.unsupported }
-                let rc = localURL.path.withCString { l in path.path.withCString { r in put(conn, l, r) } }
-                guard rc == PC_OK else { throw Self.vfsError(rc, path.path) }
+                try withConnection { conn in
+                    let rc = localURL.path.withCString { l in path.path.withCString { r in put(conn, l, r) } }
+                    guard rc == PC_OK else { throw Self.vfsError(rc, path.path) }
+                }
             }
         }
     }
@@ -419,24 +510,30 @@ public final class PFXFileSystem: VirtualFileSystem, @unchecked Sendable {
     public func mkdir(_ path: VFSPath) async throws {
         try await run { [self] in
             guard let f = plugin.fn("PfxMkDir", as: PathFn.self) else { throw VFSError.unsupported }
-            let rc = path.path.withCString { f(conn, $0) }
-            guard rc == PC_OK else { throw Self.vfsError(rc, path.path) }
+            try withConnection { conn in
+                let rc = path.path.withCString { f(conn, $0) }
+                guard rc == PC_OK else { throw Self.vfsError(rc, path.path) }
+            }
         }
     }
 
     public func delete(_ path: VFSPath) async throws {
         try await run { [self] in
             guard let f = plugin.fn("PfxDelete", as: PathFn.self) else { throw VFSError.unsupported }
-            let rc = path.path.withCString { f(conn, $0) }
-            guard rc == PC_OK else { throw Self.vfsError(rc, path.path) }
+            try withConnection { conn in
+                let rc = path.path.withCString { f(conn, $0) }
+                guard rc == PC_OK else { throw Self.vfsError(rc, path.path) }
+            }
         }
     }
 
     public func rename(_ from: VFSPath, to: VFSPath) async throws {
         try await run { [self] in
             guard let f = plugin.fn("PfxRenMov", as: RenMovFn.self) else { throw VFSError.unsupported }
-            let rc = from.path.withCString { s in to.path.withCString { d in f(conn, s, d, 1) } }
-            guard rc == PC_OK else { throw Self.vfsError(rc, from.path) }
+            try withConnection { conn in
+                let rc = from.path.withCString { s in to.path.withCString { d in f(conn, s, d, 1) } }
+                guard rc == PC_OK else { throw Self.vfsError(rc, from.path) }
+            }
         }
     }
 
@@ -457,12 +554,14 @@ public final class PFXFileSystem: VirtualFileSystem, @unchecked Sendable {
                 .appendingPathComponent("PFX-\(fsID)-\(UUID().uuidString)", isDirectory: true)
             try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
             let out = dir.appendingPathComponent(name)
-            let rc = path.path.withCString { r in out.path.withCString { l in get(conn, r, l) } }
-            guard rc == PC_OK else {
-                try? FileManager.default.removeItem(at: dir)
-                throw Self.vfsError(rc, path.path)
+            return try withConnection { conn in
+                let rc = path.path.withCString { r in out.path.withCString { l in get(conn, r, l) } }
+                guard rc == PC_OK else {
+                    try? FileManager.default.removeItem(at: dir)
+                    throw Self.vfsError(rc, path.path)
+                }
+                return out
             }
-            return out
         }
     }
 }

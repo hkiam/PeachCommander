@@ -53,6 +53,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // After the session is safely on disk and before the reply, because teardown can block for
             // as long as a child takes to die and must not cost the user their layout if it goes wrong.
             ViewContainerRegistry.shared.closeAll()
+            // Open mounts get the same treatment as plugin views, and for the same reason: an FTP
+            // control connection, an SSH session and a plugin's connection handle were all simply
+            // killed with the process, because the only teardown they had was `deinit` — which does
+            // not run at exit. `pfx.h` promises plugins this moment; this is where it is kept.
+            await controller.closeAllMountsForTermination()
             NSApp.reply(toApplicationShouldTerminate: true)
         }
         return .terminateLater
