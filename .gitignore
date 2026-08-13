@@ -57,3 +57,11 @@ PluginSDK/.build/
 # The probe report and one settled frame are committed as the evidence; the strip is not.
 docs/generated/startup/frame-*.png
 docs/generated/startup/log.txt
+
+# Local developer tooling: assistant instructions and settings, and the code-index
+# caches (CodeGraph, Serena). Per-machine and per-person, and the caches are
+# regenerated from the source — nothing here is part of the project.
+.claude/
+.codegraph/
+.mcp.json
+.serena/
