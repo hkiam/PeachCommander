@@ -2,6 +2,7 @@
 // main.swift - Entry point for PeachCommander
 
 import AppKit
+import PCFoundation
 
 /// Application delegate: owns the main window controller and persists state on quit.
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -57,7 +58,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // control connection, an SSH session and a plugin's connection handle were all simply
             // killed with the process, because the only teardown they had was `deinit` — which does
             // not run at exit. `pfx.h` promises plugins this moment; this is where it is kept.
-            await controller.closeAllMountsForTermination()
+            // With a deadline, because `.terminateLater` means the reply below is the only thing
+            // that ends the app — and AppKit spends the wait inside `-[NSApplication terminate:]`
+            // running a restricted event loop, which is the user watching a frozen window. Measured
+            // against a server that accepted the connection and then stopped answering: the app was
+            // asked to quit and was still there 46 seconds later, with no way out but Force Quit.
+            //
+            // Three seconds is the whole budget for saying goodbye to every mount. A connection that
+            // has not managed it by then is not going to, and the process is about to die anyway:
+            // the sockets go with it, which is what used to happen before any of this existed.
+            await withDeadline(seconds: 3) { @MainActor in
+                await controller.closeAllMountsForTermination()
+            }
             NSApp.reply(toApplicationShouldTerminate: true)
         }
         return .terminateLater

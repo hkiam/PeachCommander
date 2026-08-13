@@ -326,7 +326,21 @@ extension MainWindowController {
                 // A real quit, not a kill: applicationShouldTerminate is where plugin views are torn
                 // down, and the harness's `pkill` never reaches it. Anything testing what happens on
                 // exit has to go through this door or it is testing nothing.
-                NSApp.terminate(nil)
+                //
+                // Scheduled as a run-loop timer, and that detail is the whole of it.
+                //
+                // `terminate:` answers `.terminateLater` by spinning a nested event loop until the
+                // delegate replies, and the delegate replies from a `Task { @MainActor }` — which
+                // is a main-queue job. libdispatch will not re-enter the main queue while it is
+                // already draining it, so calling `terminate:` from anywhere on that queue (here,
+                // or from `DispatchQueue.main.async`) means the reply can never run: the app hangs
+                // on *every* build, and the harness reports "quitting is broken" no matter what the
+                // code under test does. Both wrong answers were measured before this comment.
+                //
+                // A timer fires from the run loop itself rather than from a main-queue block, which
+                // is where ⌘Q and the Quit menu item come from too. This is the only scheduling that
+                // reproduces what a user actually does.
+                NSApp.perform(#selector(NSApplication.terminate(_:)), with: nil, afterDelay: 0)
             case "treecolors":                          // treecolors <out> (F-015)
                 dumpTreeColours(arg)
             case "surfacecolors":                       // surfacecolors <out> (F-015)

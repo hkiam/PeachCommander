@@ -26,6 +26,55 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-13 (SFTP, reported) — "the whole app freezes", and what actually froze
+
+Reported as: a busy SFTP server freezes the entire application; presumably the same for other server
+volumes; can the other panel at least stay usable. The interesting part is that the premise turned
+out to be **half wrong**, and finding out which half took a reproduction rather than an opinion.
+
+**Measured first.** A deliberately slow FTP server (accepts, then stalls on LIST) and later a slow
+SFTP server (paramiko, first listing fast so the mount completes, every later one stalling for ever).
+With a listing hung and a mount entered:
+
+* the other panel answered in **1.0 s** (FTP) and **6.1 s** (SFTP — the 5 s the script itself waits),
+* `sample` showed the main thread **1722 of 1726 samples idle** in the event loop.
+
+So the panel architecture does not freeze, and working in the other panel already works. What does
+not work is anything else about that connection, and that is where the real defect is.
+
+**SFTP had no timeout and no cancellation anywhere.** `SFTPSession` runs blocking libssh2 on one
+serial queue, and nothing ever called `libssh2_session_set_timeout` — `_libssh2_wait_socket` calls
+`select` with no deadline. Sampled during the stall: **1739 of 1739 samples in `__select`**. FTP is
+the opposite (Network.framework, bounded, cancellable), which is why the two behave nothing alike.
+The consequence is not slowness but permanence: every later call on that session queues behind the
+stuck one for ever, `close()` included, so the connection cannot even be hung up.
+
+**And that is what froze the whole app — at quit.** `applicationShouldTerminate` answers
+`.terminateLater` and waits for every mount to close before replying, and AppKit spends that wait
+inside `-[NSApplication terminate:]` running a restricted event loop. Measured: quit requested,
+**still running 41 seconds later**, killable only with `kill -9`. Fixed to ~4 s.
+
+Three changes: `libssh2_session_set_timeout` plus a bounded TCP connect (the kernel's own default is
+~75 s per address); `interrupt()`, which shuts the socket down so a blocked `select` returns, used by
+`close()` after a grace period so ⏏ works on a dead connection; and `withDeadline` on the quit path.
+
+**Two traps met on the way, both worth remembering.**
+
+* `NSApp.terminate()` called from anywhere on the main *queue* — including `DispatchQueue.main.async`
+  and any `Task { @MainActor }` — can never complete when the delegate replies from a MainActor task,
+  because libdispatch will not re-enter the main queue while draining it. The harness's `quit` verb
+  did exactly that, so it reported "quitting hangs" on **every** build, fixed or not. It now schedules
+  a run-loop timer, which is what ⌘Q actually is. Two wrong conclusions were drawn before this was
+  understood.
+* Connecting to an SSH server **appends to `~/.ssh/known_hosts`** (accept-new). The file comment said
+  this was "a later refinement" long after it had been implemented, and a test server with a fresh
+  host key per start therefore looks like an attacker at the same address. Test servers need a stable
+  key; the comment is corrected.
+
+Cancellation is deliberately not instant: `TransferQueue` cancels tasks when a copy is cancelled, and
+a healthy chunk read returns in milliseconds, so cutting the socket on cancellation would have turned
+"cancel this download" into "drop the connection". It waits 1.5 s and only then interrupts.
+
 ## 2026-08-13 (ideas → five features) — What research did to the list, and what looking did to the result
 
 Five ideas came in as a list; the useful part happened before any code. **Two of the five were already

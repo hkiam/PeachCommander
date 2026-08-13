@@ -4,8 +4,15 @@
 //
 // Auth order: SSH agent → explicit password → explicit key file → default
 // ~/.ssh keys. Host keys are checked against ~/.ssh/known_hosts: a MISMATCH
-// aborts (possible MITM); an unknown host is accepted (TOFU) — recording new
-// hosts back to known_hosts is a later refinement.
+// aborts (possible MITM); an unknown host is accepted and **appended to
+// ~/.ssh/known_hosts**, matching ssh's StrictHostKeyChecking=accept-new.
+//
+// That last part is worth saying plainly, because this comment used to claim the
+// opposite ("a later refinement") long after `appendKnownHost` was written — and a
+// reader who believes it will not expect connecting to a server to modify a file
+// outside the app's own configuration. It does. Anything testing against a throwaway
+// SSH server should give that server a stable host key, or every restart looks like a
+// different machine at the same address, which is reported as a possible attack.
 
 import Foundation
 import Darwin
@@ -21,6 +28,18 @@ public enum SFTPError: Error, Equatable {
     case notConnected
     case opFailed(String, Int32)
     case notFound(String)
+}
+
+/// A one-way flag: starts open, closes once, and can be read from any thread.
+///
+/// Small enough to be tempting to do with a plain `var` and no lock — which would be a data race
+/// between the queue that closes it and the cancellation handler that reads it, and the kind that
+/// tests never catch because it is a torn read of one word.
+private final class Latch: @unchecked Sendable {
+    private let lock = NSLock()
+    private var closed = false
+    func close() { lock.lock(); closed = true; lock.unlock() }
+    var isClosed: Bool { lock.lock(); defer { lock.unlock() }; return closed }
 }
 
 public final class SFTPSession: @unchecked Sendable {
@@ -51,15 +70,85 @@ public final class SFTPSession: @unchecked Sendable {
     private static var didInit = false
     private static let initLock = NSLock()
 
+    /// Guards `sock` across threads. Every other field here is only ever touched on `queue`, but
+    /// the socket has to be reachable from outside it — that is the whole point of `interrupt()`,
+    /// which exists precisely for the moments when `queue` is the thing that is stuck.
+    private let sockLock = NSLock()
+
+    /// How long libssh2 may wait on the socket for one operation.
+    ///
+    /// Without this it waits forever: `_libssh2_wait_socket` calls `select` with no deadline, so a
+    /// server that accepts the connection and then stops answering leaves the queue thread in that
+    /// `select` for the life of the process — and every later call on this session, including
+    /// `close()`, queues behind it and never runs. Measured, with a deliberately stalled server:
+    /// 1739 of 1739 samples inside `__select`, and an app that could not be quit.
+    ///
+    /// Generous on purpose. This is a backstop against a session that is never coming back, not a
+    /// judgement about how quick a server ought to be: a big listing on a loaded server may
+    /// legitimately take a while, and cutting that short would break honest work to punish a
+    /// hypothetical. Anyone who does not want to wait can navigate away, which now cancels.
+    ///
+    /// Settable so a test can use a second instead of a minute. A test that had to wait out the real
+    /// value would be skipped by whoever ran it next, and a skipped test guards nothing.
+    static var operationTimeoutMs: Int = 60_000
+
+    /// How long to wait for the TCP connection itself.
+    ///
+    /// Separate and much shorter: the operation timeout is about a server that is thinking, this is
+    /// about one that is not there. The kernel's own default is around 75 seconds of nothing.
+    static var connectTimeoutSeconds: Double = 20
+
     public init() {}
 
+    /// Run `body` on the session's serial queue.
+    ///
+    /// Cancellable, which for a blocking C library has to be indirect: nothing can interrupt libssh2
+    /// mid-call, so the only lever is the socket underneath it — shut that down and the blocked
+    /// `select` returns at once, the call fails, and the queue drains. Draining is the point: the
+    /// next thing waiting on that queue is very often `close()`, because the user is trying to hang
+    /// up on exactly the connection that is not answering.
+    ///
+    /// **But not immediately on cancellation**, and that grace period is the whole care in this
+    /// function. Cancelling is ordinary here — `TransferQueue` cancels the task when a copy is
+    /// cancelled — and a healthy transfer stopped mid-chunk returns within milliseconds all by
+    /// itself, because a chunk is 128 KB. Cutting the socket the instant a task is cancelled would
+    /// therefore turn "cancel this download" into "drop the connection", which nobody asked for.
+    /// So cancellation waits a moment first: a call that comes back on its own keeps the session,
+    /// and only one that is genuinely stuck gets the socket pulled out from under it.
     private func run<T>(_ body: @escaping () throws -> T) async throws -> T {
-        try await withCheckedThrowingContinuation { cont in
-            queue.async {
-                do { cont.resume(returning: try body()) }
-                catch { cont.resume(throwing: error) }
+        let settled = Latch()
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { cont in
+                queue.async {
+                    do {
+                        let value = try body()
+                        settled.close()
+                        cont.resume(returning: value)
+                    } catch {
+                        settled.close()
+                        cont.resume(throwing: error)
+                    }
+                }
+            }
+        } onCancel: {
+            Task { [weak self] in
+                try? await Task.sleep(nanoseconds: 1_500_000_000)
+                if !settled.isClosed { self?.interrupt() }
             }
         }
+    }
+
+    /// Force whatever is blocked on this session to fail, from outside the queue.
+    ///
+    /// `shutdown`, never `close`: closing frees the descriptor number, and another thread opening a
+    /// file at that moment would inherit it — so the next libssh2 read would be talking to whatever
+    /// took the number. `shutdown` leaves the descriptor owned and merely refuses further traffic,
+    /// which is exactly enough to make the blocked `select` return.
+    public func interrupt() {
+        sockLock.lock()
+        let fd = sock
+        sockLock.unlock()
+        if fd >= 0 { _ = Darwin.shutdown(fd, SHUT_RDWR) }
     }
 
     // MARK: - Connect
@@ -76,10 +165,14 @@ public final class SFTPSession: @unchecked Sendable {
         if !Self.didInit { _ = libssh2_init(0); Self.didInit = true }
         Self.initLock.unlock()
 
-        sock = try Self.openSocket(host: host, port: port)
+        let fd = try Self.openSocket(host: host, port: port)
+        sockLock.lock(); sock = fd; sockLock.unlock()
         guard let s = libssh2_session_init_ex(nil, nil, nil, nil) else { throw SFTPError.handshakeFailed(-1) }
         session = s
         libssh2_session_set_blocking(s, 1)
+        // Before the handshake, so even that is bounded — a server can stall there just as well as
+        // in a listing, and this is the one call every connection makes.
+        libssh2_session_set_timeout(s, Self.operationTimeoutMs)
         // Pin a stable host-key algorithm preference so the negotiated key TYPE is
         // deterministic across connections. Otherwise a TOFU-recorded key (e.g.
         // ed25519) can mismatch a later connection that negotiates a different type
@@ -109,12 +202,42 @@ public final class SFTPSession: @unchecked Sendable {
         while let p = ptr {
             let fd = socket(p.pointee.ai_family, p.pointee.ai_socktype, p.pointee.ai_protocol)
             if fd >= 0 {
-                if Darwin.connect(fd, p.pointee.ai_addr, p.pointee.ai_addrlen) == 0 { return fd }
+                if connectWithTimeout(fd, p.pointee.ai_addr, p.pointee.ai_addrlen) { return fd }
                 Darwin.close(fd)
             }
             ptr = p.pointee.ai_next
         }
         throw SFTPError.connectFailed(host)
+    }
+
+    /// A TCP connect that gives up after `connectTimeoutSeconds`, leaving `fd` blocking on success.
+    ///
+    /// A plain blocking `connect` to a host that is simply not answering sits there for something
+    /// like 75 seconds — the kernel's default, not ours — and with several resolved addresses that
+    /// is paid once per address. The non-blocking dance is the standard way to put a number on it:
+    /// start the connect, wait for the socket to become writable, then ask the socket whether it
+    /// actually succeeded, because writable alone also means "refused".
+    private static func connectWithTimeout(_ fd: Int32, _ addr: UnsafeMutablePointer<sockaddr>,
+                                           _ len: socklen_t) -> Bool {
+        let flags = fcntl(fd, F_GETFL, 0)
+        guard flags >= 0, fcntl(fd, F_SETFL, flags | O_NONBLOCK) >= 0 else {
+            return Darwin.connect(fd, addr, len) == 0     // cannot go non-blocking: no worse than before
+        }
+        defer { _ = fcntl(fd, F_SETFL, flags) }           // libssh2 wants it blocking afterwards
+
+        if Darwin.connect(fd, addr, len) == 0 { return true }
+        guard errno == EINPROGRESS else { return false }
+
+        var pfd = pollfd(fd: fd, events: Int16(POLLOUT), revents: 0)
+        let ready = poll(&pfd, 1, Int32(connectTimeoutSeconds * 1000))
+        guard ready == 1 else { return false }            // 0 = timed out, -1 = failed outright
+
+        // Writable is not the same as connected: a refused connection reports writable too, and the
+        // pending error is the only thing that tells them apart.
+        var soError: Int32 = 0
+        var size = socklen_t(MemoryLayout<Int32>.size)
+        guard getsockopt(fd, SOL_SOCKET, SO_ERROR, &soError, &size) == 0, soError == 0 else { return false }
+        return true
     }
 
     /// Verify the server key against ~/.ssh/known_hosts using our own OpenSSH-format
@@ -533,13 +656,38 @@ public final class SFTPSession: @unchecked Sendable {
         }
     }
 
+    /// Hang up.
+    ///
+    /// The teardown goes on the same serial queue as everything else, so if the session is stuck it
+    /// queues behind the stuck call — which is exactly the case where the user is pressing ⏏, and
+    /// exactly the case where waiting is useless. So the goodbye gets a grace period and no more:
+    /// long enough for a healthy session to close politely, short enough that a dead one does not
+    /// hold the disconnect hostage. After that the socket is cut and the teardown proceeds on the
+    /// wreckage, which still frees libssh2's memory and the descriptor.
     public func close() async {
+        let teardown = Task { await self.tearDown() }
+        let impatience = Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            self.interrupt()
+        }
+        await teardown.value
+        impatience.cancel()
+    }
+
+    private func tearDown() async {
         try? await run {
             if let sftp = self.sftp { libssh2_sftp_shutdown(sftp); self.sftp = nil }
             if let s = self.session {
                 _ = libssh2_session_disconnect_ex(s, 11, "bye", ""); libssh2_session_free(s); self.session = nil
             }
-            if self.sock >= 0 { Darwin.close(self.sock); self.sock = -1 }
+            // Under the lock, and cleared before the descriptor is released: `interrupt()` may run on
+            // any thread, and a `shutdown` on a number that has already been handed back would be
+            // aimed at whatever opened next.
+            self.sockLock.lock()
+            let fd = self.sock
+            self.sock = -1
+            self.sockLock.unlock()
+            if fd >= 0 { Darwin.close(fd) }
         }
     }
 
