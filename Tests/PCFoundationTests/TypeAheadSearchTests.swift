@@ -35,4 +35,29 @@ final class TypeAheadSearchTests: XCTestCase {
         XCTAssertNil(TypeAheadSearch.match(names: names, query: "", from: 0))
         XCTAssertNil(TypeAheadSearch.match(names: [], query: "a", from: 0))
     }
+
+    // MARK: - Counting the matches, for the visible prefix indicator
+
+    func test_matches_listsEveryPrefixHitInOrder() {
+        let names = ["readme.md", "Report.pdf", "notes.txt", "rest.swift"]
+        XCTAssertEqual(TypeAheadSearch.matches(names: names, query: "re"), [0, 1, 3])
+        // Same case- and diacritic-insensitivity as the jump: the indicator must never claim a count
+        // the jump would not agree with.
+        XCTAssertEqual(TypeAheadSearch.matches(names: names, query: "RE"), [0, 1, 3])
+    }
+
+    func test_matches_isEmptyForAnEmptyQuery() {
+        // An empty prefix is "no search in progress", not "everything matches" — otherwise ending a
+        // search would flash a count of every entry in the folder.
+        XCTAssertEqual(TypeAheadSearch.matches(names: ["a", "b"], query: ""), [])
+    }
+
+    func test_position_saysWhichMatchTheCursorIsOn() {
+        let names = ["readme.md", "Report.pdf", "notes.txt", "rest.swift"]
+        XCTAssertEqual(TypeAheadSearch.position(of: 0, names: names, query: "re"), 1)
+        XCTAssertEqual(TypeAheadSearch.position(of: 1, names: names, query: "re"), 2)
+        XCTAssertEqual(TypeAheadSearch.position(of: 3, names: names, query: "re"), 3)
+        // A cursor sitting on something that does not match has no position among the matches.
+        XCTAssertNil(TypeAheadSearch.position(of: 2, names: names, query: "re"))
+    }
 }

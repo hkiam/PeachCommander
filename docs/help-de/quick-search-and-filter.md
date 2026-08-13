@@ -13,7 +13,9 @@ Wenn ein Ordner Hunderte von Objekten enthält, müssen Sie selten scrollen. Pea
 1. Klicken Sie auf ein Dateipanel, damit es aktiv ist.
 2. Beginnen Sie, den Anfang eines Namens zu tippen. Der Cursor springt zum ersten passenden Objekt.
 3. Tippen Sie weiter, um die Übereinstimmung zu verfeinern, oder drücken Sie denselben Buchstaben erneut, um durch Objekte zu blättern, die mit diesem Buchstaben beginnen.
-4. Der getippte Text wird nach einer kurzen Pause gelöscht, sodass Sie jederzeit eine neue Suche starten können.
+4. Das Getippte erscheint über dem Panel, zusammen mit der Nummer des aktuellen Treffers und deren Gesamtzahl — zum Beispiel `⌕ re  2/3`. Findet sich nichts, wird es rot.
+5. Mit Backspace nehmen Sie den letzten Buchstaben zurück, mit Esc beenden Sie die Suche. Backspace bearbeitet nur die laufende Suche; sonst führt es weiterhin in den übergeordneten Ordner.
+6. Die Suche endet von selbst nach ein paar Sekunden ohne Eingabe, sodass Sie jederzeit eine neue starten können.
 
 Standardmäßig gelangen einfache Buchstaben in die Befehlszeile, und die Schnellsuche wird mit Ctrl+Option+Buchstabe ausgelöst (das klassische Verhalten). Sie können die Schnellsuche so umstellen, dass sie stattdessen auf einfaches Tippen reagiert, oder sie ausschalten, in den Konfigurationseinstellungen.
 
