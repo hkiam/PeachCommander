@@ -22,6 +22,7 @@ public enum PFXSymbols {
         "PfxFindFirst", "PfxFindNext", "PfxFindClose", "PfxStat",
         "PfxGetFile", "PfxPutFile", "PfxMkDir", "PfxDelete", "PfxRenMov",
         "PfxContentFieldCount", "PfxContentField", "PfxContentGetRow", "PfxLookup",
+        "PfxLastError",
         "PcGetApiVersion", "PcSafeToUnload",
     ]
 }
@@ -71,6 +72,7 @@ public final class PFXPlugin: @unchecked Sendable {
     typealias FieldFn = @convention(c) (Int32, UnsafeMutablePointer<PfxFieldInfo>?) -> Void
     typealias ContentRowFn = @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?, UnsafeMutablePointer<CChar>?, Int32) -> Int32
     typealias LookupFn = @convention(c) (UnsafeMutableRawPointer?, UnsafePointer<CChar>?, UnsafeMutablePointer<CChar>?, Int32) -> Int32
+    typealias LastErrorFn = @convention(c) (UnsafeMutableRawPointer?) -> Int32
 
     public init(library: PluginLibrary) { self.lib = library }
 
@@ -138,6 +140,18 @@ public final class PFXPlugin: @unchecked Sendable {
                                        type: raw.type, defaultWidth: Int(raw.defaultWidth)))
         }
         return out
+    }
+
+    /// Why the plugin's last call on `conn` failed, or nil when it does not say.
+    ///
+    /// Only worth asking after a call that answers with a handle has answered NULL — those have no
+    /// other channel. `PC_OK` counts as "not tracked" rather than "succeeded": a plugin that does
+    /// not implement this returns the same thing as one that has nothing to report, and neither
+    /// should be read as a claim about what happened.
+    func lastError(_ conn: UnsafeMutableRawPointer) -> Int32? {
+        guard let f = fn("PfxLastError", as: LastErrorFn.self) else { return nil }
+        let code = f(conn)
+        return code == PC_OK ? nil : code
     }
 
     /// All field values for `path`, tab-split in field order, or nil if absent.
@@ -424,6 +438,10 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem, @
 
     private static func vfsError(_ code: Int32, _ path: String) -> VFSError {
         switch code {
+        // Before the others, because it is about the mount rather than the file: the host leaves
+        // the drive on this one. Retryable in the sense that connecting again works — not that this
+        // connection can be used for anything further.
+        case PC_E_CONNECTION_LOST: return .connectionLost(retryable: true)
         case PC_E_EOPEN, PC_E_BAD_ARCHIVE: return .notFound(path)
         case PC_E_ECREATE, PC_E_EWRITE: return .permissionDenied(needsElevation: false)
         case PC_E_NOT_SUPPORTED: return .unsupported
@@ -484,7 +502,12 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem, @
                 do {
                     try withConnection { conn in
                         guard let handle = dir.path.withCString({ findFirst(conn, $0) }) else {
-                            throw VFSError.notFound(dir.path)
+                            // NULL is all `PfxFindFirst` can say, and it says it for a missing
+                            // directory and for a connection that has died alike. Assuming the
+                            // first told the user their directory was gone whenever a server
+                            // dropped mid-listing; `PfxLastError` is the plugin's chance to say
+                            // which it was. A plugin that does not export it keeps the old answer.
+                            throw Self.vfsError(plugin.lastError(conn) ?? PC_E_EOPEN, dir.path)
                         }
                         defer { findClose?(handle) }
                         var batch: [VFSEntry] = []

@@ -88,6 +88,17 @@ extension MainWindowController {
                 if let vol = FileSystemPluginRegistry.shared.driveVolumes().first(where: { $0.name == arg && $0.path.hasPrefix("pfxmount:") }) {
                     mountPluginVolume(pluginId: String(vol.path.dropFirst("pfxmount:".count)), into: activePanel)
                 } else { NSLog("[automation] pfxmount: no pfx volume named \(arg)") }
+            case "fsconnect":                                             // fsconnect <plugin-id fragment>: run a file-system plugin's interactive connect
+                // `pfxmount` only reaches plugins that contribute a *static* drive. A plugin whose
+                // whole point is connecting somewhere — WebDAV — has none, so its mount had no way
+                // in from a script at all, and everything downstream of it (what a panel does when
+                // that connection dies, whether its chip goes) was unreachable too.
+                if let plugin = FileSystemPluginRegistry.shared.connectPlugins
+                    .first(where: { $0.id.localizedCaseInsensitiveContains(arg) }) {
+                    plugin.connect(host: self)
+                } else {
+                    NSLog("[automation] fsconnect: no connect plugin matching \(arg); have \(FileSystemPluginRegistry.shared.connectPlugins.map(\.id))")
+                }
             case "connect":
                 if let url = FtpURL.parse(arg) {
                     connectToSite(url.toSite(), password: url.password ?? "")
