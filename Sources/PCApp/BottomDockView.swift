@@ -274,6 +274,13 @@ final class BottomDockView: NSView {
             return
         }
         view.isHidden = false
+        // A plugin's view arrives long after the window became key, and AppKit does not notice views
+        // added later even with `autorecalculatesKeyViewLoop` set — the same blind spot the Settings
+        // page swap and the panel view-mode swap already work around. Without this the terminal's six
+        // controls (its container and view, the shell tab, close, +, split) sat outside the loop and
+        // could not be reached with Tab at all: an accessibility defect the VM suite reported as
+        // `keys-main` and nothing on screen would ever show.
+        KeyboardLoop.rebuild(for: window)
     }
 
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {

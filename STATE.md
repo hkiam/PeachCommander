@@ -26,6 +26,25 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-14 (keys-main) — Six controls nobody could Tab to, and the reason
+
+The oldest open item from the VM suite, and it turned out to be one line in two places. `KeyboardLoop`
+sets `autorecalculatesKeyViewLoop` and recalculates when a window becomes key — but AppKit does not
+notice views mounted *afterwards*, which is why the Settings page swap and the panel view-mode swap
+already call `KeyboardLoop.rebuild(for:)` by hand. A plugin view arrives the same way and nobody
+called it: `BottomDockView` and `PreviewPanelView` add the plugin's view with `addSubview` and stop
+there. So the terminal's controls were outside the loop, and Tab could not reach them at all.
+
+Measured locally instead of in the guest, with the `keyloop` verb and the terminal dropped into the
+dock: **without** the fix the loop is five entries and contains neither `TerminalContainerView` nor
+`PCTerminalView`; **with** it, seven, and both are in it. The four button controls (shell tab, close,
++, split) only join the loop when Full Keyboard Access is on — it is off on this machine, which is
+also why the local `focusRefused` count is large and says nothing. That half is what the VM guest
+measures.
+
+Worth noting how it was found: not by reading the accessibility code, but by asking where a view gets
+mounted after the window is already up. Three places do it; one of them already knew.
+
 ## 2026-08-14 (mounts, checked) — The assumption held for FTP and not for plugins
 
 Claimed at the end of the SFTP work that the new "a lost connection is announced and the panel
