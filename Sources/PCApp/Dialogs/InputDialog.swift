@@ -87,8 +87,44 @@ final class InputDialog: ModalWindowController {
     /// Present the dialog. Preferred: a window-modal SHEET attached to `parent` (appears
     /// on the parent's Space, incl. full-screen viewers, and never freezes the app);
     /// falls back to an app-modal run loop only when there is no usable parent.
+    #if DEBUG
+    /// Answers queued by the automation harness, oldest first.
+    ///
+    /// Deliberately a queue and not a single value: a scenario that copies, then confirms an
+    /// overwrite, then names something else asks three questions, and one slot would silently give
+    /// the same answer to all of them.
+    private static var scriptedAnswers: [String] = []
+
+    /// Queue one answer for the next dialog that asks (automation only).
+    static func queueScriptedAnswer(_ text: String) { scriptedAnswers.append(text) }
+
+    /// Whether anything is still waiting to be consumed — a script can then assert that the dialog
+    /// it expected actually appeared, instead of passing because nothing asked.
+    static var hasScriptedAnswers: Bool { !scriptedAnswers.isEmpty }
+
+    private static func takeScriptedAnswer() -> String? {
+        scriptedAnswers.isEmpty ? nil : scriptedAnswers.removeFirst()
+    }
+    #endif
+
     func runModalDialog(over parent: NSWindow? = nil) {
         guard let window else { return }
+        #if DEBUG
+        // Answered from a script, without ever showing the dialog.
+        //
+        // Every command that asks for something goes through here, and until now that made all of
+        // them unreachable from the harness: a modal session does not return, so a script that runs
+        // one stops at that line and the rest of the scenario never happens. Whole features have
+        // therefore had no end-to-end coverage at all — not because they were hard to check, but
+        // because nothing could get past the first question.
+        //
+        // DEBUG-only and consumed one at a time, so a script has to say what it expects for each
+        // prompt in turn and a stray dialog cannot quietly eat an answer meant for the next one.
+        if let canned = Self.takeScriptedAnswer() {
+            onConfirm?(canned)
+            return
+        }
+        #endif
         if let parent, parent.isVisible {
             parent.beginSheet(window) { _ in }
         } else {

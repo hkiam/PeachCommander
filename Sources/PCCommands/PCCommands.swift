@@ -79,6 +79,11 @@ public protocol PanelControllerProtocol: AnyObject {
     func reload() async
     /// Copy the selection (or cursor item) into `targetDir` (F5).
     func copySelection(to targetDir: String) async
+    /// Copy the selection within this panel's own directory, under a name the user gives (Shift+F5).
+    ///
+    /// No target directory argument, and that is the point: the other panel is not consulted, so the
+    /// command works with one panel maximised and cannot be aimed anywhere by accident.
+    func copySelectionSamePanel() async
     /// The backing .zip path when this panel is inside a rewritable archive, else
     /// nil — lets the copy command route "copy INTO an archive" (F-133/F-139).
     var currentArchiveZipPath: String? { get }
@@ -727,6 +732,7 @@ public actor CommandRegistry {
         register(Self.cm_CompareFilesBinary)
         register(Self.cm_GotoPath)
         register(Self.cm_OpenTerminal)
+        register(Self.cm_CopySamepanel)
         register(Self.cm_RenameOnly)
         register(Self.cm_EditHex)
         register(Self.cm_MountShare)
@@ -844,6 +850,8 @@ public actor CommandRegistry {
         help: "Go to folder by typing a path", handler: { ctx in ctx.windowController?.showGotoPath() })
     static let cm_OpenTerminal = PCCommand(id: 30082, name: "cm_OpenTerminal", category: "Commands",
         help: "Open a terminal in the current directory", handler: { ctx in ctx.windowController?.openTerminalHere() })
+    static let cm_CopySamepanel = PCCommand(id: 40011, name: "cm_CopySamepanel", category: "Files",
+        help: "Copy under a new name in the same folder (Shift+F5)", handler: cm_CopySamepanel_handler)
     static let cm_RenameOnly = PCCommand(id: 30084, name: "cm_RenameOnly", category: "Files",
         help: "Rename the file under the cursor (Shift+F6)", handler: { ctx in ctx.windowController?.showRenameFile() })
     static let cm_EditHex = PCCommand(id: 30085, name: "cm_EditHex", category: "Files",
@@ -1316,6 +1324,15 @@ private func cm_Copy_handler(_ context: CommandContext) async throws {
         await active.copySelection(to: target)
         await inactive.reload()
     }
+}
+
+/// Shift+F5 — the copy stays in this panel and gets a new name.
+///
+/// Only the active panel is involved, which is the whole difference from `cm_Copy`: there is no
+/// "other side" to read, so it works with one panel maximised as well.
+private func cm_CopySamepanel_handler(_ context: CommandContext) async throws {
+    guard let active = context.activePanel else { return }
+    await active.copySelectionSamePanel()
 }
 
 private func cm_RenMov_handler(_ context: CommandContext) async throws {

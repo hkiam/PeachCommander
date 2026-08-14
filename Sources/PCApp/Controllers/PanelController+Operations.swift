@@ -139,6 +139,61 @@ extension PanelController {
         }
     }
 
+    /// Shift+F5 — copy within this panel's own directory, under a name you give (F-399).
+    ///
+    /// The difference from F5 is only the target that is offered: F5 proposes the *other* panel's
+    /// directory, this proposes the source's own path with its name on the end. Editing that name is
+    /// then a duplicate, and editing the path in front of it is an ordinary copy that renames on the
+    /// way — which is what makes one keystroke cover both.
+    ///
+    /// With several items selected there is no single name to offer, so the identity mask `*.*` is,
+    /// and editing it to `*.bak` renames the whole set (F-080).
+    func copySelectionSamePanel() async {
+        let items = await selectedOrCursorPaths()
+        guard !items.isEmpty else { return }
+        let dir = await getCurrentPath()
+
+        // A mount that cannot be written to at a path — an archive, a plugin drive, a server — has no
+        // "copy it beside itself" that means anything here. Said plainly rather than half-attempted:
+        // the local engine would otherwise be handed a path inside something it cannot reach.
+        guard !isInArchive else {
+            // The panel's own message strip rather than an alert: neither of these is a question,
+            // both mean "nothing happened, and here is why", and that is what the strip is for.
+            view.showTransientMessage(String(localized: "Copying under a new name needs a local folder."))
+            return
+        }
+
+        let single = items.count == 1
+        let offered = single
+            ? (dir as NSString).appendingPathComponent((items[0] as NSString).lastPathComponent)
+            : (dir as NSString).appendingPathComponent("*.*")
+        guard let (raw, background, onlyNewer, queueForLater) = promptTarget(
+                title: String(localized: "Copy as"), count: items.count,
+                initial: offered, allowBackground: true),
+              let target = CopyAsTarget.resolve(raw, baseDir: dir, singleItem: single) else { return }
+
+        // Confirmed unchanged. The engine refuses this now, but it refuses it as an error dialog in
+        // the middle of a transfer — and here the answer is known before anything starts, so it is
+        // worth one clear sentence at the point the decision was made.
+        if single, let mask = target.mask,
+           CopyAsTarget.wouldLandOnSource(items[0], directory: target.directory, mask: mask) {
+            view.showTransientMessage(String(localized: "That is the name it already has."))
+            return
+        }
+
+        if background {
+            startBackgroundCopy(items: items, dest: target.directory, mask: target.mask,
+                                onlyNewer: onlyNewer, queueForLater: queueForLater)
+        } else {
+            await runTransfer(.copy(items: items, toDirectory: target.directory,
+                                    options: copyOptions(mask: target.mask, onlyNewer: onlyNewer)),
+                              title: String(localized: "Copying"))
+            registerUndo(label: String(localized: "Copy"), undoCopy: items,
+                         at: target.directory, mask: target.mask)
+            await reload()
+        }
+    }
+
     /// Copy the selection INTO the archive at `archiveZip`, placed under `subPath`
     /// (the target panel's location inside that archive). When the source panel is
     /// itself inside an archive, the selection is first extracted to a temp folder,

@@ -29,7 +29,6 @@ extension CommandRegistry {
         ("cm_AddPathToCmdline", "Copy path into the command line (Ctrl+P)"),
         ("cm_ChangeTransferMode", "FTP transfer mode"),
         ("cm_ContextMenu", "Show the context menu (Shift+F10)"),
-        ("cm_CopySamepanel", "Copy in the same directory (Shift+F5)"),
         ("cm_DirectoryTreeDlg", "Directory tree dialog (Alt+F10)"),
         ("cm_Exit", "Quit the application"),
         ("cm_FocusCmdLine", "Run command line / focus it"),
