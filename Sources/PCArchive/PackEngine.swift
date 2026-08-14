@@ -87,6 +87,15 @@ public enum PackEngine {
         try? FileManager.default.removeItem(atPath: archivePath)
         for vol in existingVolumes(of: archivePath) { try? FileManager.default.removeItem(atPath: vol) }
 
+        // Zip without 7z installed, which is every stock Mac (F-402 found it: the VM has no Homebrew, so
+        // "Pack" simply failed there for the format people reach for first). Only when nothing needs the
+        // tool: a password or split volumes still do, and say so below.
+        if options.format == .zip, toolPath("7z") == nil, toolPath("7za") == nil,
+           !hasPassword, options.splitSize == nil {
+            try packZipWithBuiltInWriter(items: items, to: archivePath, parent: parent)
+            return
+        }
+
         let (tool, args, stdin) = try command(for: options, archivePath: archivePath, names: names)
         let process = Process()
         process.executableURL = URL(fileURLWithPath: tool)
@@ -109,6 +118,62 @@ public enum PackEngine {
         guard process.terminationStatus == 0 else {
             let msg = String(decoding: err.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
             throw PackError.failed(msg.isEmpty ? "exit \(process.terminationStatus)" : msg, process.terminationStatus)
+        }
+    }
+
+    /// The largest total the in-memory writer is allowed to take on.
+    ///
+    /// `ZipWriter` assembles the whole archive in memory, which is fine for what people pack by hand and
+    /// wrong for a folder of virtual machines. Above this the answer is "install 7z", said plainly,
+    /// rather than an allocation failure.
+    static let builtInZipLimit: Int64 = 512 * 1024 * 1024
+
+    /// Pack a plain zip using this module's own writer, with no external tool at all.
+    ///
+    /// Entry names are relative to `parent`, which is what the 7z path produces (it runs *in* the parent
+    /// and passes basenames), so an archive has the same shape whichever route wrote it. Symbolic links
+    /// are followed and their target's bytes stored — the default `/usr/bin/zip` behaviour, and the only
+    /// one available to a writer that has no way to record a link.
+    static func packZipWithBuiltInWriter(items: [String], to archivePath: String, parent: String) throws {
+        let fm = FileManager.default
+        var files: [(path: String, data: Data)] = []
+        var total: Int64 = 0
+
+        func relative(_ path: String) -> String {
+            guard !parent.isEmpty, path.hasPrefix(parent + "/") else {
+                return (path as NSString).lastPathComponent
+            }
+            return String(path.dropFirst(parent.count + 1))
+        }
+
+        func add(_ path: String) throws {
+            var isDir: ObjCBool = false
+            guard fm.fileExists(atPath: path, isDirectory: &isDir) else { return }
+            if isDir.boolValue {
+                files.append((relative(path) + "/", Data()))
+                for child in (try? fm.contentsOfDirectory(atPath: path))?.sorted() ?? [] {
+                    try add((path as NSString).appendingPathComponent(child))
+                }
+                return
+            }
+            let size = ((try? fm.attributesOfItem(atPath: path))?[.size] as? Int64) ?? 0
+            total += size
+            guard total <= builtInZipLimit else {
+                throw PackError.unsupportedOption(
+                    "packing more than \(builtInZipLimit / (1024 * 1024)) MB into a zip needs 7z installed")
+            }
+            guard let data = fm.contents(atPath: path) else {
+                throw PackError.failed("could not read \((path as NSString).lastPathComponent)", -1)
+            }
+            files.append((relative(path), data))
+        }
+
+        for item in items { try add(item) }
+        guard !files.isEmpty else { throw PackError.noItems }
+        do {
+            try ZipWriter.create(at: URL(fileURLWithPath: archivePath), files: files)
+        } catch {
+            throw PackError.failed("\(error)", -1)
         }
     }
 

@@ -1029,10 +1029,13 @@ SCENARIOS = [
       # Packing comes AFTER the repeat, and the order is the point: while it stood before it, the newest
       # operation row was the pack, so "repeat the top operation" repeated something that cannot be
       # repeated and the copy was never re-run. Through the pack dialog's own scripted answer
-      # (`packanswer`) — the dialog is modal, so nothing could reach this path before that existed. A
-      # *tar*, because zip and 7z shell out to a `7z` binary a stock macOS does not have. F5-style, so
-      # the archive lands in the OTHER panel.
-      "packanswer bundle|tar", "cmd cm_PackFiles", "wait 3000",
+      # (`packanswer`) — the dialog is modal, so nothing could reach this path before that existed.
+      #
+      # A **zip**, on purpose. Zip used to shell out to a `7z` binary that a stock macOS does not carry,
+      # so packing one failed here — which is how the missing fallback (F-132) was found at all. The
+      # guest has never had Homebrew on it, so this is the one place that proves a zip can be packed on
+      # an untouched Mac. F5-style, so the archive lands in the OTHER panel.
+      "packanswer bundle|zip", "cmd cm_PackFiles", "wait 3000",
       "probe /Users/admin/history-packed.txt|ls /Users/admin/hist-dst",
       # Last, because the guest waits for this scenario's own report.
       "historyflush", "historyfilter 0|/Users/admin/history-palette.txt", "wait 400"], 14),
@@ -1156,7 +1159,7 @@ REPORTS = {
     # the same file, or "data.txt is there" would pass for a build that repeats nothing.
     "history-palette-copied": ("/Users/admin/history-copied.txt", ["data.txt", "removed=0"]),
     # The pack really produced an archive, in the panel the history names.
-    "history-palette-packed": ("/Users/admin/history-packed.txt", ["bundle.tar", "data.txt"]),
+    "history-palette-packed": ("/Users/admin/history-packed.txt", ["bundle.zip", "data.txt"]),
     "history-palette-repeat": ("/Users/admin/history-palette-repeat.txt", ["data.txt"]),
     # The palette's actions are real menu items, which is what keeps them off the panel's shortcuts and
     # findable by a screen reader (the F-401 lesson).
