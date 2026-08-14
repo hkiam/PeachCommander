@@ -60,6 +60,23 @@ enum FSLowLevel {
         return sa.st_dev == sb.st_dev
     }
 
+    /// Whether two paths name the same file on disk — asked of the filesystem, not of the strings.
+    ///
+    /// String comparison is not enough and being nearly right here costs the file: macOS is normally
+    /// case-insensitive, `/a//b` and `/a/b` are the same place, `.` and `..` resolve, and a hard link
+    /// is genuinely the same bytes under a second name. The device and inode pair is what the
+    /// filesystem itself considers identity, so that is what is compared.
+    ///
+    /// `lstat`, not `stat`: a symlink pointing at the source is a *different* file that happens to
+    /// lead there, and copying onto it should replace the link, not be refused.
+    ///
+    /// False when either path does not exist — the ordinary case of copying somewhere new.
+    static func isSameFile(_ a: String, _ b: String) -> Bool {
+        var sa = stat(), sb = stat()
+        guard lstatPath(a, &sa) == 0, lstatPath(b, &sb) == 0 else { return false }
+        return sa.st_dev == sb.st_dev && sa.st_ino == sb.st_ino
+    }
+
     static func readSymlink(_ path: String) -> String? {
         DeepPath.readSymlink(path)
     }

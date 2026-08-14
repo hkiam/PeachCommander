@@ -100,6 +100,17 @@ public final class CopyEngine {
     private func copyNode(from src: String, to dst: String) async throws -> String? {
         try await control.checkpoint()
         guard let kind = FSLowLevel.kind(of: src) else { throw OperationError.sourceNotFound(src) }
+        // A directory cannot be merged into itself: it would walk its own children and copy each one
+        // onto itself, destroying every file inside. Nor into something below itself, which recurses
+        // into what it is creating. Both are refused here because no later decision can rescue them.
+        //
+        // A *file* is checked further down instead, after the overwrite conflict has been resolved —
+        // the resolver may answer "rename", and a copy into the source's own directory under a new
+        // name is exactly what Shift+F5 does. Checking it here refused that too, which the comment
+        // tests caught.
+        if kind == .directory, FSLowLevel.isSameFile(src, dst) || Self.isInside(dst, src) {
+            throw OperationError.sameFile(src)
+        }
         switch kind {
         case .symlink:
             return try await copySymlink(from: src, to: dst)
@@ -178,8 +189,15 @@ public final class CopyEngine {
             case .rename(let newLeaf):
                 dst = ((dst as NSString).deletingLastPathComponent as NSString).appendingPathComponent(newLeaf)
             case .overwrite:
+                // Here, and not earlier: `.rename` above may just have moved the target somewhere
+                // else, and copying into the source's own directory under a new name is legitimate —
+                // it is what Shift+F5 does. What is never legitimate is arriving at the *same file*
+                // and then removing it, which deletes the only copy and leaves the read with nothing.
+                if FSLowLevel.isSameFile(src, dst) { throw OperationError.sameFile(src) }
                 try removeItem(dst)
             case .append:
+                // Appending a file to itself reads what it is writing: it does not converge.
+                if FSLowLevel.isSameFile(src, dst) { throw OperationError.sameFile(src) }
                 append = true   // F-086: keep the target, stream the source onto its end
             }
         }
@@ -267,6 +285,18 @@ public final class CopyEngine {
 
     private func mkdirPath(_ path: String, _ mode: mode_t) -> Int32 {
         DeepPath.mkdir(path, mode)
+    }
+
+    /// Whether `path` lies inside `directory` — the recursion check for copying a folder into itself.
+    ///
+    /// Compared on standardised paths with a trailing separator, so `/a/bc` is not read as being
+    /// inside `/a/b`. Case-insensitively, because that is how the volume this runs on normally
+    /// behaves; being too eager here refuses a copy, being too lax destroys the folder.
+    static func isInside(_ path: String, _ directory: String) -> Bool {
+        let p = (path as NSString).standardizingPath
+        var d = (directory as NSString).standardizingPath
+        if !d.hasSuffix("/") { d += "/" }
+        return p.lowercased().hasPrefix(d.lowercased())
     }
 
     private func isSourceNewer(src: String, dst: String) -> Bool {
