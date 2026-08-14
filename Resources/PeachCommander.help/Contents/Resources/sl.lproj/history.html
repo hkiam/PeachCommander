@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Globalna zgodovina</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Globalna zgodovina</h1>
+<p>Globalna zgodovina je eno okno, ki si zapomni vaše delo: obiskane mape, odprte datoteke, izvedene operacije in izvedene ukaze. Od koder koli pritisnite Ctrl+Cmd+H, začnite tipkati in v sekundi ste nazaj v včerajšnji mapi — brez miške.</p>
+<h2 id="odpiranje-zgodovine">Odpiranje zgodovine</h2>
+<ol>
+<li>Pritisnite Ctrl+Cmd+H ali izberite <strong>Pojdi &gt; Zgodovina…</strong>. Ni pomembno, kateri panel je aktiven.</li>
+<li>Vnesite nekaj črk. Ujemanje ni nujno natančno ali strnjeno: <code>proj rep</code> najde <code>~/Projects/annual-report.txt</code>.</li>
+<li>Med rezultati se premikajte s tipkama gor in dol, medtem ko tipkate naprej.</li>
+<li>Return izvede označeni vnos, Esc zapre okno.</li>
+</ol>
+<p>Vnosi so razvrščeni po tem, kako nedavno <em>in</em> kako pogosto ste jih uporabili, zato so mesta, kjer največ delate, že na vrhu. Pripeti vnosi so vedno prvi.</p>
+<h2 id="filtriranje-po-vrsti">Filtriranje po vrsti</h2>
+<p>Gumbi pod iskalnim poljem omejijo seznam na vse vnose, mape, datoteke, operacije ali priljubljene. Option+1 do Option+5 preklapljajo med njimi s tipkovnico.</p>
+<h2 id="delo-z-vnosom">Delo z vnosom</h2>
+<table>
+<thead>
+<tr>
+<th>Dejanje</th>
+<th>Bližnjica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Odpri označeni vnos</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Pokaži v panelu, s kazalcem na njem</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>Odpri enega od devetih najustreznejših vnosov</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>Preklopi panel, v katerem se odpira</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Pripni ali odpni vnos</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>Odstrani vnos iz zgodovine</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>Kopiraj pot vnosa</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>Pokaži vnos v Finderju</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>Zapri zgodovino</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Return naredi tisto, kar vnosu pripada: mapa se odpre v ciljnem panelu, datoteka se odpre kot bi se iz panela, ukazna vrstica pa se postavi v ukazno vrstico, da jo pregledate in zaženete. Ciljni panel je naveden na dnu okna, Tab pa ga preklopi.</p>
+<h2 id="ponovitev-operacije">Ponovitev operacije</h2>
+<p>Kopiranje ali premik se pojavi pod <strong>Operacije</strong>, Return pa ga zažene znova — isti elementi v isto mapo, prek običajne prenosne vrste in njenih vprašanj o prepisu. Elementi, ki jih ni več, se preskočijo, in če ne ostane nobeden, vam to povemo.</p>
+<p>Brisanja in preimenovanja so na seznamu, a se nikoli ne ponovijo: Return namesto tega pokaže, kje so se zgodila. Ponovitev brisanja ne sme biti en pritisk stran na seznamu, ki ga le prebirate.</p>
+<h2 id="nadzor-nad-zgodovino">Nadzor nad zgodovino</h2>
+<p>Nastavitve ▸ Razno določajo, ali se zgodovina vodi, koliko vnosov obdrži in po koliko dneh jih pozabi. Pripeti vnosi so izvzeti, 0 dni pa ohrani vse; seznam je v <code>history.ini</code> v vaši konfiguracijski mapi in preživi ponovne zagone.</p>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Odprtje česa iz zgodovine šteje kot uporaba — zato se tisto, k čemur se vračate, vedno bolj dviga.</li>
+<li>Zapomnijo se tudi mape na strežnikih in v pogonih vstavkov; tista, ki ni več dosegljiva, to povede ob poskusu.</li>
+<li>To ni panelova lastna zgodovina map na Alt+dol, ki našteje le, kje je bil ta en panel, po vrsti.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="favorites.html">Priljubljene in seznam za hitri dostop</a></li><li><a href="navigating.html">Premikanje po mapah</a></li></ul></section>
+</main>
+</body>
+</html>

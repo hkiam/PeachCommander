@@ -420,6 +420,13 @@ extension PanelController {
         let items = undoCopy ?? undoMove ?? []
         guard !items.isEmpty else { return }
         let isMove = undoMove != nil
+        // The global history gets the same event (F-402). Here rather than at each caller: this is where
+        // a *completed* foreground copy or move already passes, and an operation that did not finish is
+        // not something to offer again.
+        recordInHistory(label: label, directory: dest,
+                        payload: HistoryOperation.encode(
+                            kind: isMove ? HistoryOperation.kindMove : HistoryOperation.kindCopy,
+                            items: items, mask: mask))
         (view.window?.windowController as? MainWindowController)?.pushUndo(label) {
             let fm = FileManager.default
             for item in items {
@@ -549,6 +556,8 @@ extension PanelController {
         if !log.isEmpty {
             (view.window?.windowController as? MainWindowController)?
                 .pushUndo(String(localized: "Rename")) { [weak self] in self?.performUndo(log) }
+            // No payload: a rename cannot be repeated once the name has changed (F-402).
+            recordInHistory(label: String(localized: "Rename \(log.count) item(s)"), directory: dir)
         }
         if !outcome.failed.isEmpty {
             let list = outcome.failed.prefix(10).map { "\($0.name): \($0.reason)" }.joined(separator: "\n")
@@ -589,6 +598,9 @@ extension PanelController {
                             try? FileManager.default.trashItem(at: URL(fileURLWithPath: p), resultingItemURL: nil)
                         }
                     }
+                // The operation, not the folders: a folder that was created but never opened has not
+                // been visited, and a history of places the user has not been is noise.
+                recordInHistory(label: String(localized: "New Folder"), directory: parent)
             }
         } catch {
             presentError(String(localized: "Could not create directory."), detail: "\(error)")
@@ -623,6 +635,7 @@ extension PanelController {
         let kind: OperationKind = permanent ? .delete(items: items) : .trash(items: items)
         await runTransfer(kind, title: permanent ? String(localized: "Deleting")
                                                  : String(localized: "Moving to Trash"))
+        recordInHistory(finished: kind)
         // If a permanent delete left items behind, it was almost certainly a
         // permission error — offer an administrator retry (F-099).
         if permanent {
@@ -856,10 +869,74 @@ extension PanelController {
             Task { @MainActor in
                 await self.getSelectionState().unmarkCompleted(done)
                 await self.reload()
+                // A background copy belongs in the history as much as a foreground one, and only now
+                // has it happened — recording it at enqueue time would put an operation that may still
+                // fail into a list offering to repeat it (F-402).
+                self.recordInHistory(finished: kind)
                 await onFinished?()
             }
         }
         (view.window?.windowController as? MainWindowController)?.showTransferManager()
+    }
+
+    /// Run a copy or move from the history again (F-402).
+    ///
+    /// Through the ordinary background queue, which means the ordinary overwrite dialog, the ordinary
+    /// progress and the ordinary undo — repeating an operation must not be a second, quieter code path
+    /// for the same thing. Sources that have since gone are dropped rather than reported one by one; a
+    /// history entry is by definition about the past, and "3 of 5 are still there" is the normal case.
+    /// If none of them exist any more, the user is told, because then nothing at all would happen.
+    func repeatRecordedOperation(kind: String, items: [String], mask: String?, to dest: String) async {
+        let present = items.filter { FileManager.default.fileExists(atPath: $0) }
+        guard !present.isEmpty else {
+            presentError(String(localized: "Repeat Operation"),
+                         detail: String(localized: "None of the original items still exist."))
+            return
+        }
+        guard FileManager.default.fileExists(atPath: dest) else {
+            presentError(String(localized: "Repeat Operation"),
+                         detail: String(localized: "The destination \(dest) no longer exists."))
+            return
+        }
+        let options = copyOptions(mask: mask, onlyNewer: false)
+        let move = kind == HistoryOperation.kindMove
+        let verb = move ? String(localized: "Move") : String(localized: "Copy")
+        enqueueBackground(move ? .move(items: present, toDirectory: dest, options: options)
+                               : .copy(items: present, toDirectory: dest, options: options),
+                          title: "\(verb) \(present.count) → \((dest as NSString).lastPathComponent)")
+    }
+
+    // MARK: - Global history (F-402)
+
+    /// Record a completed operation, with the panel it was carried out from.
+    func recordInHistory(label: String, directory: String, payload: String = "") {
+        HistoryService.shared.recordOperation(label: label, directory: directory, payload: payload,
+                                             panel: position.isLeft ? .left : .right)
+    }
+
+    /// The same, for a queued operation described by its `OperationKind`.
+    ///
+    /// A delete carries no payload: repeating it from a list the user is browsing would be a destructive
+    /// action one keystroke away from a search result, which is not what "Enter opens" should ever mean.
+    private func recordInHistory(finished kind: OperationKind) {
+        switch kind {
+        case .copy(let items, let dest, _):
+            recordInHistory(label: String(localized: "Copy \(items.count) item(s)"), directory: dest,
+                            payload: HistoryOperation.encode(kind: HistoryOperation.kindCopy,
+                                                             items: items, mask: nil))
+        case .move(let items, let dest, _):
+            recordInHistory(label: String(localized: "Move \(items.count) item(s)"), directory: dest,
+                            payload: HistoryOperation.encode(kind: HistoryOperation.kindMove,
+                                                             items: items, mask: nil))
+        case .trash(let items):
+            recordInHistory(label: String(localized: "Move \(items.count) item(s) to Trash"),
+                            directory: (items.first as NSString?)?.deletingLastPathComponent ?? "")
+        case .delete(let items):
+            recordInHistory(label: String(localized: "Delete \(items.count) item(s)"),
+                            directory: (items.first as NSString?)?.deletingLastPathComponent ?? "")
+        case .custom:
+            break   // pack/unpack and friends: no shape the history could describe or repeat
+        }
     }
 
     private func confirmDelete(count: Int, permanent: Bool) -> Bool {

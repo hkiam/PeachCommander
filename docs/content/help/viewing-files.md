@@ -26,6 +26,7 @@ Peach Commander has a built-in viewer that lets you look inside a file without o
 - Very large files are searched in overlapping windows, so a single match longer than about 64 KB may be missed if it happens to straddle a window edge. Plain text search has no such limit, and neither does a pattern that matches something shorter.
 - If text looks garbled, click Encoding in the toolbar (or press E) to cycle through text encodings until it reads correctly; the automatic setting usually gets it right.
 - Press W to toggle word wrap for long lines.
+- Press Ctrl+G to jump to a line, or to a byte offset in hex mode. It takes arithmetic across number bases, so `0x1000 + 15 + 1` goes to 4112 — hexadecimal with `0x`, `$` or a trailing `h`, binary with `0b`, octal with `0o`, and `+ - * /` with parentheses.
 
 ## Zoom a picture
 

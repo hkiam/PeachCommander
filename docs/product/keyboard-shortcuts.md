@@ -59,6 +59,7 @@ as standard function keys" hint in onboarding, or users press Fn.
 | Ctrl+Shift+B | cm_DirBranchSel | Branch view of selected |
 | Ctrl+C / X / V | cm_CopyToClipboard / cm_CutToClipboard / cm_PasteFromClipboard | Clipboard file ops |
 | Ctrl+D | cm_DirectoryHotlist | Hotlist popup |
+| Ctrl+Cmd+H | cm_History | Global history palette (folders, files, operations, commands) |
 | Ctrl+F | cm_FtpConnect | FTP connection manager |
 | Ctrl+Shift+F | cm_FtpDisconnect | Disconnect |
 | Ctrl+N | cm_FtpNew | New FTP/URL connection |
@@ -103,6 +104,7 @@ as standard function keys" hint in onboarding, or users press Fn.
 | Shift+Arrows/PgUp/PgDn/Home/End | Range select (Windows-style option) |
 | Alt+Left / Alt+Right | History back / forward |
 | Alt+Down | History list dropdown |
+| Ctrl+Cmd+H | Global history (any panel; not the panel's own list above) |
 | Alt+Enter | Info/properties dialog (macOS: Get Info-like own dialog) |
 | Alt+Shift+Enter | Calculate all dir sizes in view |
 | Letter keys | Command line (default) / quick search per config; Ctrl+Alt+Letter = quick search (TC default) |

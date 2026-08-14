@@ -60,6 +60,7 @@ Az **Ugrás** menü az aktív panelt a leggyakrabban használt mappákhoz viszi:
 | Asztal | Cmd+Shift+D |
 | Letöltések | Option+Cmd+L |
 | Aktív panel váltása | Tab |
+| Globális előzmények (bármely panel) | Ctrl+Cmd+H |
 
 ## Tippek
 

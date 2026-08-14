@@ -55,6 +55,7 @@ Das Menü **Gehe zu** bringt das aktive Panel zu den Ordnern, die Sie am häufig
 | Zum übergeordneten Ordner gehen | Ctrl+PageUp (oder Backspace) |
 | Im Verlauf zurück / vorwärts | Alt+Left / Alt+Right |
 | Verlaufs-Aufklappliste | Alt+Down |
+| Globaler Verlauf (jedes Panel) | Ctrl+Cmd+H |
 | Gehe zu Ordner… (einen Pfad eingeben) | Cmd+Shift+G |
 | Benutzerordner | Cmd+Shift+H |
 | Schreibtisch | Cmd+Shift+D |

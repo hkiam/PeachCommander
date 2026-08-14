@@ -60,6 +60,7 @@ Nabídka **Přejít** přenese aktivní panel do složek, které používáte ne
 | Plocha | Cmd+Shift+D |
 | Stažené | Option+Cmd+L |
 | Přepnout aktivní panel | Tab |
+| Globální historie (kterýkoli panel) | Ctrl+Cmd+H |
 
 ## Tipy
 

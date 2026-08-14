@@ -55,6 +55,7 @@ Le menu **Aller** amène le panneau actif vers les dossiers que vous utilisez le
 | Aller au dossier parent | Ctrl+PageUp (ou Backspace) |
 | Reculer / avancer dans l'historique | Alt+Left / Alt+Right |
 | Liste déroulante de l'historique | Alt+Down |
+| Historique global (n'importe quel panneau) | Ctrl+Cmd+H |
 | Aller au dossier… (saisir un chemin) | Cmd+Shift+G |
 | Départ | Cmd+Shift+H |
 | Bureau | Cmd+Shift+D |

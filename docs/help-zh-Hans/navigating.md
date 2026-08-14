@@ -60,6 +60,7 @@ Peach Commander 会记住你在每个面板中访问过的文件夹，就像网�
 | 桌面 | Cmd+Shift+D |
 | 下载 | Option+Cmd+L |
 | 切换活动面板 | Tab |
+| 全局历史记录（任意面板） | Ctrl+Cmd+H |
 
 ## 提示
 

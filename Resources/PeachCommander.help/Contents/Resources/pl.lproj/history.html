@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Historia globalna</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Historia globalna</h1>
+<p>Historia globalna to jedno okno, które pamięta twoją własną pracę: odwiedzone foldery, otwarte pliki, wykonane operacje i uruchomione polecenia. Naciśnij Ctrl+Cmd+H z dowolnego miejsca, zacznij pisać i w sekundę wracasz do wczorajszego folderu — bez myszy.</p>
+<h2 id="otwieranie-historii">Otwieranie historii</h2>
+<ol>
+<li>Naciśnij Ctrl+Cmd+H lub wybierz <strong>Przejdź &gt; Historia…</strong>. Nie ma znaczenia, który panel jest aktywny.</li>
+<li>Wpisz kilka liter. Dopasowanie nie musi być dokładne ani ciągłe: <code>proj rep</code> znajduje <code>~/Projects/annual-report.txt</code>.</li>
+<li>Przechodź po wynikach strzałkami w górę i w dół, pisząc dalej.</li>
+<li>Enter działa na podświetlonym wpisie, Esc zamyka okno.</li>
+</ol>
+<p>Wpisy są uszeregowane według tego, jak niedawno <em>i</em> jak często ich używałeś, więc miejsca, w których pracujesz najwięcej, są już na górze. Przypięte wpisy zawsze prowadzą.</p>
+<h2 id="filtrowanie-wedug-rodzaju">Filtrowanie według rodzaju</h2>
+<p>Przyciski pod polem wyszukiwania ograniczają listę do wszystkich wpisów, folderów, plików, operacji lub ulubionych. Option+1 do Option+5 przełączają je z klawiatury.</p>
+<h2 id="dziaanie-na-wpisie">Działanie na wpisie</h2>
+<table>
+<thead>
+<tr>
+<th>Działanie</th>
+<th>Skrót</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Otwórz podświetlony wpis</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Pokaż w panelu, z kursorem na nim</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>Otwórz jeden z dziewięciu najtrafniejszych wpisów</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>Przełącz panel, w którym się otwiera</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Przypnij lub odepnij wpis</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>Usuń wpis z historii</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>Skopiuj ścieżkę wpisu</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>Pokaż wpis w Finderze</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>Zamknij historię</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Enter robi to, co pasuje do wpisu: folder otwiera się w panelu docelowym, plik otwiera się tak jak z panelu, a wiersz poleceń trafia do linii poleceń, żebyś mógł go przejrzeć i uruchomić. Panel docelowy jest podany na dole okna, a Tab go przełącza.</p>
+<h2 id="powtorzenie-operacji">Powtórzenie operacji</h2>
+<p>Kopiowanie lub przenoszenie pojawia się pod <strong>Operacje</strong>, a Enter uruchamia je ponownie — te same elementy do tego samego folderu, przez zwykłą kolejkę przesyłania i jej pytania o nadpisanie. Elementy, których już nie ma, są pomijane, a jeśli nie zostanie żaden, dowiesz się o tym.</p>
+<p>Usunięcia i zmiany nazw są na liście, ale nigdy nie są powtarzane: Enter pokazuje zamiast tego, gdzie się zdarzyły. Powtórzenie usunięcia nie powinno być jedno naciśnięcie od listy, którą tylko przeglądasz.</p>
+<h2 id="trzymanie-tego-w-ryzach">Trzymanie tego w ryzach</h2>
+<p>Ustawienia ▸ Inne decydują, czy historia jest prowadzona, ile wpisów przechowuje i po ilu dniach je zapomina. Przypięte wpisy są z tego wyłączone, a 0 dni zachowuje wszystko; lista leży w <code>history.ini</code> w twoim folderze konfiguracyjnym i przetrwa ponowne uruchomienie.</p>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Otwarcie czegoś z historii liczy się jako użycie — dlatego to, do czego wracasz, stale się wybija.</li>
+<li>Pamiętane są też foldery na serwerach i w dyskach wtyczek; ten, który nie jest już osiągalny, mówi o tym przy próbie.</li>
+<li>To nie jest własna historia folderów panelu na Alt+Dół, która wymienia tylko to, gdzie był ten jeden panel, w kolejności.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="favorites.html">Ulubione i lista podręczna</a></li><li><a href="navigating.html">Poruszanie się</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Global historik</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Global historik</h1>
+<p>Den globala historiken är ett fönster som minns ditt eget arbete: mappar du besökt, filer du öppnat, åtgärder du utfört och kommandon du kört. Tryck Ctrl+Cmd+H var du än är, börja skriva, och du är tillbaka i gårdagens mapp på en sekund — utan mus.</p>
+<h2 id="oppna-historiken">Öppna historiken</h2>
+<ol>
+<li>Tryck Ctrl+Cmd+H eller välj <strong>Gå &gt; Historik…</strong>. Vilken panel som är aktiv spelar ingen roll.</li>
+<li>Skriv några bokstäver. Träffen behöver varken vara exakt eller sammanhängande: <code>proj rep</code> hittar <code>~/Projects/annual-report.txt</code>.</li>
+<li>Gå genom resultaten med Upp- och Ner-tangenterna medan du fortsätter skriva.</li>
+<li>Retur agerar på den markerade posten, Esc stänger fönstret.</li>
+</ol>
+<p>Posterna rangordnas efter hur nyligen <em>och</em> hur ofta du använt dem, så platserna där du arbetar mest ligger redan högst upp. Fästa poster går alltid först.</p>
+<h2 id="filtrera-efter-typ">Filtrera efter typ</h2>
+<p>Knapparna under sökfältet begränsar listan till alla poster, mappar, filer, åtgärder eller favoriter. Option+1 till Option+5 växlar mellan dem från tangentbordet.</p>
+<h2 id="gora-nagot-med-en-post">Göra något med en post</h2>
+<table>
+<thead>
+<tr>
+<th>Åtgärd</th>
+<th>Kortkommando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Öppna den markerade posten</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Visa den i panelen, med markören på den</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>Öppna en av de nio mest relevanta posterna</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>Byta panel som poster öppnas i</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Fästa eller lossa posten</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>Ta bort posten från historiken</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>Kopiera postens sökväg</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>Visa posten i Finder</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>Stänga historiken</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Retur gör det posten förtjänar: en mapp öppnas i målpanelen, en fil öppnas som den skulle från panelen, och en kommandorad läggs i kommandoraden så att du kan läsa igenom den och köra den. Målpanelen står längst ner i fönstret och Tab byter den.</p>
+<h2 id="upprepa-en-atgard">Upprepa en åtgärd</h2>
+<p>En kopiering eller flytt visas under <strong>Åtgärder</strong>, och Retur kör den igen — samma objekt till samma mapp, genom den vanliga överföringskön och dess frågor om överskrivning. Objekt som inte längre finns hoppas över, och finns inget kvar får du veta det.</p>
+<p>Raderingar och namnbyten listas men upprepas aldrig: Retur visar i stället var de skedde. Att upprepa en radering ska inte ligga en tangent bort i en lista man bara skummar.</p>
+<h2 id="halla-den-i-schack">Hålla den i schack</h2>
+<p>Inställningar ▸ Övrigt avgör om en historik förs, hur många poster den behåller och efter hur många dagar de glöms. Fästa poster är undantagna och 0 dagar behåller allt; listan finns i <code>history.ini</code> i din konfigurationsmapp och överlever omstarter.</p>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>Att öppna något ur historiken räknas som användning — därför fortsätter det du återvänder till att stiga.</li>
+<li>Mappar på servrar och i pluginenheter minns också; en som inte längre går att nå säger det när du provar.</li>
+<li>Detta är inte panelens egen mapphistorik på Alt+Ner, som bara listar var just den panelen har varit, i ordning.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="favorites.html">Favoriter och snabblista</a></li><li><a href="navigating.html">Navigera</a></li></ul></section>
+</main>
+</body>
+</html>

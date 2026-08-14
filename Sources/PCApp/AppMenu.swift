@@ -290,6 +290,11 @@ enum AppMenu {
                                key: "[", mask: .command, target: target, action: commandAction))
         goMenu.addItem(command(String(localized: "Forward"), cmd: "cm_HistoryForward",
                                key: "]", mask: .command, target: target, action: commandAction))
+        // The global history (F-402). Ctrl+Cmd+H rather than the ⌘⇧H that was asked for: that is Go ▸
+        // Home two lines below, ⌘H is macOS "Hide" and Ctrl+H is Show Hidden Files — all three of the
+        // obvious candidates were already spoken for, which `check-hotkeys.py` is there to say.
+        goMenu.addItem(command(String(localized: "History…"), cmd: "cm_History",
+                               key: "h", mask: [.control, .command], target: target, action: commandAction))
         goMenu.addItem(.separator())
         goMenu.addItem(command(String(localized: "Root"), cmd: "cm_GoToRoot",
                                key: "", mask: [], target: target, action: commandAction))

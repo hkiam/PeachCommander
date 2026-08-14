@@ -26,6 +26,7 @@ Peach Commander heeft een ingebouwde viewer waarmee je in een bestand kunt kijke
 - Zeer grote bestanden worden in overlappende vensters doorzocht, dus één enkele treffer van meer dan ongeveer 64 KB kan gemist worden als die net op een venstergrens valt. Gewoon zoeken naar tekst kent die grens niet, en een patroon dat iets korters matcht evenmin.
 - Als tekst er verminkt uitziet, klik je op Codering in de werkbalk (of druk je op E) om door tekstcoderingen te bladeren tot het correct leest; de automatische instelling krijgt het meestal goed.
 - Druk op W om regelterugloop voor lange regels te wisselen.
+- Druk op Ctrl+G om naar een regel te gaan, of naar een byte-positie in hexmodus. Rekenen over talstelsels heen mag: `0x1000 + 15 + 1` leidt naar 4112 — hexadecimaal met `0x`, `$` of een `h` erachter, binair met `0b`, octaal met `0o`, en `+ - * /` met haakjes.
 
 ## Een afbeelding zoomen
 

@@ -26,6 +26,7 @@ Peach Commander verfügt über einen integrierten Betrachter, mit dem Sie in ein
 - Sehr große Dateien werden in überlappenden Fenstern durchsucht. Ein einzelner Treffer, der länger als etwa 64 KB ist, kann daher übersehen werden, wenn er genau auf eine Fenstergrenze fällt. Für die einfache Textsuche gilt das nicht, und für ein Muster, das etwas Kürzeres trifft, ebenso wenig.
 - Wenn Text verstümmelt aussieht, klicken Sie in der Symbolleiste auf Kodierung (oder drücken Sie E), um durch die Textkodierungen zu blättern, bis er korrekt lesbar ist; die automatische Einstellung trifft es meist richtig.
 - Drücken Sie W, um den Zeilenumbruch für lange Zeilen umzuschalten.
+- Drücken Sie Ctrl+G, um zu einer Zeile zu springen — im Hex-Modus zu einem Byte-Offset. Dabei ist Rechnen über Zahlensysteme hinweg erlaubt: `0x1000 + 15 + 1` führt zu 4112 — hexadezimal mit `0x`, `$` oder angehängtem `h`, binär mit `0b`, oktal mit `0o`, und `+ - * /` mit Klammern.
 
 ## Ein Bild zoomen
 

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Istoric global</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Istoric global</h1>
+<p>Istoricul global este o fereastră care își amintește propria ta muncă: dosare vizitate, fișiere deschise, operațiuni efectuate și comenzi rulate. Apasă Ctrl+Cmd+H de oriunde, începe să scrii și te întorci la dosarul de ieri într-o secundă — fără mouse.</p>
+<h2 id="deschiderea-istoricului">Deschiderea istoricului</h2>
+<ol>
+<li>Apasă Ctrl+Cmd+H sau alege <strong>Mergi &gt; Istoric…</strong>. Nu contează care panou este activ.</li>
+<li>Scrie câteva litere. Potrivirea nu trebuie să fie exactă sau continuă: <code>proj rep</code> găsește <code>~/Projects/annual-report.txt</code>.</li>
+<li>Parcurge rezultatele cu tastele sus și jos în timp ce continui să scrii.</li>
+<li>Enter acționează asupra intrării evidențiate, Esc închide fereastra.</li>
+</ol>
+<p>Intrările sunt ordonate după cât de recent <em>și</em> cât de des le-ai folosit, așa că locurile în care lucrezi cel mai mult sunt deja sus. Intrările fixate conduc mereu lista.</p>
+<h2 id="filtrarea-dupa-tip">Filtrarea după tip</h2>
+<p>Butoanele de sub câmpul de căutare limitează lista la toate intrările, la dosare, la fișiere, la operațiuni sau la favorite. Option+1 până la Option+5 comută între ele de la tastatură.</p>
+<h2 id="actiuni-pe-o-intrare">Acțiuni pe o intrare</h2>
+<table>
+<thead>
+<tr>
+<th>Acțiune</th>
+<th>Scurtătură</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deschide intrarea evidențiată</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Arată-o în panou, cu cursorul pe ea</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>Deschide una dintre cele nouă intrări cele mai relevante</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>Schimbă panoul în care se deschid</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Fixează sau eliberează intrarea</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>Elimină intrarea din istoric</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>Copiază calea intrării</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>Arată intrarea în Finder</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>Închide istoricul</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Enter face ceea ce se cuvine intrării: un dosar se deschide în panoul țintă, un fișier se deschide așa cum s-ar deschide din panou, iar o linie de comandă este pusă în linia de comandă ca să o verifici și să o rulezi. Panoul țintă este numit în josul ferestrei, iar Tab îl schimbă.</p>
+<h2 id="repetarea-unei-operatiuni">Repetarea unei operațiuni</h2>
+<p>O copiere sau o mutare apare la <strong>Operațiuni</strong>, iar Enter o rulează din nou — aceleași elemente în același dosar, prin coada de transfer obișnuită și întrebările ei despre suprascriere. Elementele care nu mai există sunt sărite, iar dacă nu mai rămâne niciunul ți se spune.</p>
+<p>Ștergerile și redenumirile sunt listate, dar nu se repetă niciodată: Enter arată în schimb unde s-au petrecut. Repetarea unei ștergeri nu ar trebui să fie la o tastă distanță într-o listă pe care doar o parcurgi.</p>
+<h2 id="tinerea-sub-control">Ținerea sub control</h2>
+<p>Setări ▸ Diverse decide dacă se ține un istoric, câte intrări păstrează și după câte zile le uită. Intrările fixate sunt scutite, iar 0 zile păstrează totul; lista se află în <code>history.ini</code> din dosarul tău de configurare și supraviețuiește repornirilor.</p>
+<h2 id="note">Note</h2>
+<ul>
+<li>Deschiderea a ceva din istoric contează ca utilizare — de aceea ceea ce reiei urcă tot mai sus.</li>
+<li>Sunt ținute minte și dosarele de pe servere și din unitățile modulelor; unul care nu mai poate fi atins o spune când îl încerci.</li>
+<li>Acesta nu este istoricul de dosare al panoului de pe Alt+jos, care enumeră doar unde a fost acel panou, în ordine.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="favorites.html">Favorite și listă rapidă</a></li><li><a href="navigating.html">Deplasarea prin foldere</a></li></ul></section>
+</main>
+</body>
+</html>

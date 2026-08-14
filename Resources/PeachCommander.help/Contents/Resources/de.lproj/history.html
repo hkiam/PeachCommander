@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Globaler Verlauf</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Globaler Verlauf</h1>
+<p>Der globale Verlauf ist ein Fenster, das Ihre eigene Arbeitsgeschichte kennt: besuchte Ordner, geöffnete Dateien, ausgeführte Operationen und ausgeführte Befehle. Drücken Sie von überall Ctrl+Cmd+H, beginnen Sie zu tippen, und Sie sind in einer Sekunde wieder im Ordner von gestern — ohne Maus.</p>
+<h2 id="den-verlauf-offnen">Den Verlauf öffnen</h2>
+<ol>
+<li>Drücken Sie Ctrl+Cmd+H oder wählen Sie <strong>Gehe zu &gt; Verlauf…</strong>. Welches Panel aktiv ist, spielt keine Rolle.</li>
+<li>Tippen Sie ein paar Buchstaben. Die Treffer müssen weder genau noch zusammenhängend sein: <code>proj rep</code> findet <code>~/Projects/annual-report.txt</code>.</li>
+<li>Bewegen Sie sich mit den Pfeiltasten Auf und Ab durch die Ergebnisse, während Sie weitertippen.</li>
+<li>Return führt den markierten Eintrag aus, Esc schließt das Fenster.</li>
+</ol>
+<p>Die Einträge sind danach geordnet, wie kürzlich <em>und</em> wie häufig Sie sie benutzt haben — die Orte, an denen Sie am meisten arbeiten, stehen also schon oben. Angeheftete Einträge stehen immer voran.</p>
+<h2 id="nach-art-filtern">Nach Art filtern</h2>
+<p>Die Knöpfe unter dem Suchfeld beschränken die Liste auf alle Einträge, Ordner, Dateien, Operationen oder Favoriten. Option+1 bis Option+5 wechseln über die Tastatur.</p>
+<h2 id="einen-eintrag-benutzen">Einen Eintrag benutzen</h2>
+<table>
+<thead>
+<tr>
+<th>Aktion</th>
+<th>Tastenkürzel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markierten Eintrag öffnen</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Im Panel zeigen, mit dem Cursor darauf</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>Einen der neun relevantesten Einträge öffnen</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>Zielpanel wechseln</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Eintrag anheften oder lösen</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>Eintrag aus dem Verlauf entfernen</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>Pfad des Eintrags kopieren</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>Eintrag im Finder zeigen</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>Verlauf schließen</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Return tut, was zum Eintrag passt: ein Ordner öffnet sich im Zielpanel, eine Datei öffnet wie im Panel, und eine Befehlszeile landet in der Kommandozeile, damit Sie sie prüfen und ausführen können. Das Zielpanel steht unten im Fenster, Tab wechselt es.</p>
+<h2 id="eine-operation-wiederholen">Eine Operation wiederholen</h2>
+<p>Ein Kopieren oder Verschieben erscheint unter <strong>Operationen</strong>, und Return führt es erneut aus — dieselben Objekte in denselben Ordner, über die normale Transferwarteschlange samt ihren Überschreiben-Fragen. Objekte, die es nicht mehr gibt, werden übersprungen; ist keines mehr übrig, wird es gesagt.</p>
+<p>Löschen und Umbenennen stehen in der Liste, werden aber nie wiederholt: Return zeigt stattdessen, wo es passiert ist. Ein Löschen sollte in einer Liste, die man nur durchsieht, nicht einen Tastendruck entfernt sein.</p>
+<h2 id="den-verlauf-begrenzen">Den Verlauf begrenzen</h2>
+<p>Einstellungen ▸ Sonstiges entscheidet, ob überhaupt ein Verlauf geführt wird, wie viele Einträge er behält und nach wie vielen Tagen er sie vergisst. Angeheftete Einträge sind davon ausgenommen, und 0 Tage behalten alles; die Liste liegt in <code>history.ini</code> in Ihrem Konfigurationsordner und übersteht Neustarts.</p>
+<h2 id="hinweise">Hinweise</h2>
+<ul>
+<li>Etwas aus dem Verlauf zu öffnen zählt als Benutzung — deshalb steigt, was Sie immer wieder brauchen, immer weiter nach oben.</li>
+<li>Ordner auf Servern und in Plugin-Laufwerken werden ebenfalls gemerkt; einer, der nicht mehr erreichbar ist, sagt das beim Versuch.</li>
+<li>Das ist nicht die panel-eigene Ordner-Chronik auf Alt+Ab, die nur auflistet, wo dieses eine Panel war, in ihrer Reihenfolge.</li>
+</ul>
+<section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="favorites.html">Favoriten &amp; Hotlist</a></li><li><a href="navigating.html">Sich bewegen</a></li></ul></section>
+</main>
+</body>
+</html>

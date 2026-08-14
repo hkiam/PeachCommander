@@ -33,6 +33,13 @@ public struct ConfigPaths: Sendable {
         root.appendingPathComponent("hotlist.ini")
     }
 
+    /// Global history: folders, files, operations and commands (F-402), one record per entry in a
+    /// single `[History] Entries` value. Its own file rather than a section of `session.ini`, because a
+    /// session is what a restart restores and this outlives any number of them.
+    public var history: URL {
+        root.appendingPathComponent("history.ini")
+    }
+
     /// Saved workspaces: named panel layouts (tabs + locations).
     public var workspaces: URL {
         root.appendingPathComponent("workspaces.ini")

@@ -55,6 +55,7 @@ El menú **Ir** lleva el panel activo a las carpetas que más usas:
 | Ir a la carpeta principal | Ctrl+PageUp (o Backspace) |
 | Atrás/adelante en el historial | Alt+Left / Alt+Right |
 | Lista desplegable del historial | Alt+Down |
+| Historial global (cualquier panel) | Ctrl+Cmd+H |
 | Ir a la carpeta… (escribir una ruta) | Cmd+Shift+G |
 | Inicio | Cmd+Shift+H |
 | Escritorio | Cmd+Shift+D |

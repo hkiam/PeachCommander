@@ -26,6 +26,7 @@ A Peach Commander beépített megjelenítővel rendelkezik, amely lehetővé tes
 - A nagyon nagy fájlokat egymást átfedő ablakokban keresi, ezért egyetlen, körülbelül 64 KB-nál hosszabb találat elkerülheti a figyelmet, ha épp egy ablakhatárra esik. Az egyszerű szöveges keresésnek nincs ilyen korlátja, és a rövidebbre illeszkedő mintának sincs.
 - Ha a szöveg zavarosnak tűnik, kattintson a Kódolás gombra az eszköztárban (vagy nyomja meg az E-t) a szövegkódolások végigjárásához, amíg helyesen nem olvasható; az automatikus beállítás általában eltalálja.
 - Nyomja meg a W-t a hosszú sorok sortörésének átkapcsolásához.
+- Nyomja meg a Ctrl+G-t egy sorra ugráshoz, hexadecimális módban egy bájteltolásra. A számrendszerek közötti számolás megengedett: a `0x1000 + 15 + 1` a 4112-re visz — hexadecimális `0x`, `$` vagy záró `h` jelöléssel, bináris `0b`, oktális `0o`, valamint `+ - * /` zárójelekkel.
 
 ## Kép nagyítása
 

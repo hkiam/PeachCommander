@@ -26,6 +26,7 @@ Peach Commander dispose d'un lecteur intégré qui vous permet de regarder à l'
 - Les fichiers très volumineux sont parcourus par fenêtres qui se chevauchent : une correspondance unique de plus de 64 Ko environ peut donc être manquée si elle tombe précisément sur une limite de fenêtre. La recherche de texte simple n’a pas cette limite, ni un motif qui correspond à quelque chose de plus court.
 - Si le texte semble déformé, cliquez sur Encodage dans la barre d'outils (ou appuyez sur E) pour faire défiler les encodages jusqu'à ce qu'il se lise correctement ; le réglage automatique est généralement juste.
 - Appuyez sur W pour basculer le retour à la ligne pour les lignes longues.
+- Appuyez sur Ctrl+G pour aller à une ligne, ou à un décalage d'octet en mode hexadécimal. Le calcul entre bases est accepté : `0x1000 + 15 + 1` mène à 4112 — hexadécimal avec `0x`, `$` ou un `h` final, binaire avec `0b`, octal avec `0o`, et `+ - * /` avec des parenthèses.
 
 ## Zoomer une image
 

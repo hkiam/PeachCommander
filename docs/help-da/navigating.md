@@ -60,6 +60,7 @@ Menuen **Gå** fører det aktive panel til de mapper, du bruger mest:
 | Skrivebord | Cmd+Shift+D |
 | Overførsler | Option+Cmd+L |
 | Skift aktivt panel | Tab |
+| Global historik (uanset panel) | Ctrl+Cmd+H |
 
 ## Tips
 

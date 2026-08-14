@@ -55,6 +55,7 @@ The **Go** menu takes the active panel to the folders you use most:
 | Go to parent folder | Ctrl+PageUp (or Backspace) |
 | Back / Forward in history | Alt+Left / Alt+Right |
 | History drop-down | Alt+Down |
+| Global history (any panel) | Ctrl+Cmd+H |
 | Go to Folder… (type a path) | Cmd+Shift+G |
 | Home | Cmd+Shift+H |
 | Desktop | Cmd+Shift+D |

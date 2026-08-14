@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cronologia globale</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Cronologia globale</h1>
+<p>La cronologia globale è una finestra che ricorda il tuo lavoro: cartelle visitate, file aperti, operazioni eseguite e comandi lanciati. Premi Ctrl+Cmd+H da qualsiasi punto, inizia a digitare e torni alla cartella di ieri in un secondo — senza mouse.</p>
+<h2 id="aprire-la-cronologia">Aprire la cronologia</h2>
+<ol>
+<li>Premi Ctrl+Cmd+H oppure scegli <strong>Vai &gt; Cronologia…</strong>. Non importa quale pannello sia attivo.</li>
+<li>Digita qualche lettera. La corrispondenza non deve essere esatta né contigua: <code>proj rep</code> trova <code>~/Projects/annual-report.txt</code>.</li>
+<li>Scorri i risultati con le frecce Su e Giù mentre continui a digitare.</li>
+<li>Invio agisce sulla voce evidenziata, Esc chiude la finestra.</li>
+</ol>
+<p>Le voci sono ordinate per quanto di recente <em>e</em> quanto spesso le hai usate, così i luoghi in cui lavori più spesso sono già in alto. Le voci fissate guidano sempre l’elenco.</p>
+<h2 id="filtrare-per-tipo">Filtrare per tipo</h2>
+<p>I pulsanti sotto il campo di ricerca limitano l’elenco a tutte le voci, alle cartelle, ai file, alle operazioni o ai preferiti. Option+1 fino a Option+5 li alternano da tastiera.</p>
+<h2 id="agire-su-una-voce">Agire su una voce</h2>
+<table>
+<thead>
+<tr>
+<th>Azione</th>
+<th>Scorciatoia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aprire la voce evidenziata</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Mostrarla nel pannello, con il cursore sopra</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>Aprire una delle nove voci più rilevanti</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>Cambiare il pannello in cui si apre</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Fissare o rilasciare la voce</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>Rimuovere la voce dalla cronologia</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>Copiare il percorso della voce</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>Mostrare la voce nel Finder</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>Chiudere la cronologia</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Invio fa ciò che la voce merita: una cartella si apre nel pannello di destinazione, un file si apre come farebbe dal pannello e una riga di comando finisce nella riga di comando perché tu la controlli ed esegua. Il pannello di destinazione è indicato in fondo alla finestra e Tab lo cambia.</p>
+<h2 id="ripetere-unoperazione">Ripetere un’operazione</h2>
+<p>Una copia o uno spostamento compare sotto <strong>Operazioni</strong>, e Invio la esegue di nuovo: gli stessi elementi nella stessa cartella, attraverso la normale coda di trasferimento e le sue domande di sovrascrittura. Gli elementi che non esistono più vengono saltati e, se non ne resta nessuno, te lo si dice.</p>
+<p>Eliminazioni e rinomine sono elencate ma non vengono mai ripetute: Invio mostra invece dove sono avvenute. Ripetere un’eliminazione non deve stare a un tasto di distanza in un elenco che stai solo scorrendo.</p>
+<h2 id="tenerla-sotto-controllo">Tenerla sotto controllo</h2>
+<p>Impostazioni ▸ Varie decide se tenere una cronologia, quante voci conservare e dopo quanti giorni dimenticarle. Le voci fissate sono escluse e 0 giorni conserva tutto; l’elenco vive in <code>history.ini</code> nella tua cartella di configurazione e sopravvive ai riavvii.</p>
+<h2 id="note">Note</h2>
+<ul>
+<li>Aprire qualcosa dalla cronologia conta come usarlo: per questo ciò a cui torni continua a salire.</li>
+<li>Sono ricordate anche le cartelle sui server e nei volumi dei plugin; una non più raggiungibile lo dice quando la provi.</li>
+<li>Non è la cronologia delle cartelle del singolo pannello su Alt+Giù, che elenca soltanto dove è stato quel pannello, in ordine.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="favorites.html">Preferiti ed elenco rapido</a></li><li><a href="navigating.html">Muoversi</a></li></ul></section>
+</main>
+</body>
+</html>

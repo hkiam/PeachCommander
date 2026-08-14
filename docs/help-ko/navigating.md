@@ -60,6 +60,7 @@ Peach Commander는 웹 브라우저처럼 각 패널에서 방문한 폴더를 �
 | 데스크탑 | Cmd+Shift+D |
 | 다운로드 | Option+Cmd+L |
 | 활성 패널 전환 | Tab |
+| 전체 기록(모든 패널) | Ctrl+Cmd+H |
 
 ## 팁
 
