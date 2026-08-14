@@ -43,6 +43,8 @@ import PCVFS
 private var automationEditors: [EditorWindowController] = []
 /// Retains lister windows opened by the `view` automation verb.
 private var automationListers: [ListerWindowController] = []
+/// Retains hex editors opened by the `hexgoto` / `hexclip` verbs (F-400, F-401).
+private var automationHexEditors: [HexEditorWindowController] = []
 
 /// The viewer window a viewer command should act on: the one automation opened, else whichever is up.
 ///
@@ -238,6 +240,20 @@ extension MainWindowController {
             case "listerdump":                          // listerdump <outfile>: what the viewer window shows
                 let out = currentLister()?.automationSummary() ?? "ERROR: no lister window\n"
                 try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+            case "hexgoto":                             // hexgoto <path>|<expr>|<out> (F-400)
+                let h = arg.split(separator: "|", maxSplits: 2).map(String.init)
+                if h.count == 3 {
+                    let out = openHexEditorForAutomation(path: h[0]).automationGoto(h[1])
+                    try? out.write(toFile: h[2], atomically: true, encoding: .utf8)
+                }
+            case "hexclip":                             // hexclip <path>|<typed>|<out> (F-401)
+                // The clipboard in a *dialog field*, which `answer` cannot reach: a scripted answer
+                // means the dialog never appears, and the field is the whole point here.
+                let h = arg.split(separator: "|", maxSplits: 2).map(String.init)
+                if h.count == 3 {
+                    let out = openHexEditorForAutomation(path: h[0]).automationDialogClipboard(h[1])
+                    try? out.write(toFile: h[2], atomically: true, encoding: .utf8)
+                }
             case "listerfind":                          // listerfind <pattern>|<regex 0|1>|<out>
                 let f = arg.split(separator: "|", maxSplits: 2).map(String.init)
                 if f.count == 3 {
@@ -906,6 +922,15 @@ extension MainWindowController {
     /// Open the built-in viewer (Lister) directly on a file, for visual checks.
     /// `view <file>` opens normally; `view <file> wrap` forces word-wrap on;
     /// `view <file> binary` forces the binary/fixed-width mode.
+    /// Open (or reuse) a hex editor on `path`, key and on screen so its own menu bar is installed.
+    private func openHexEditorForAutomation(path: String) -> HexEditorWindowController {
+        if let existing = automationHexEditors.last(where: { $0.window?.isVisible == true }) { return existing }
+        let wc = HexEditorWindowController(path: path)
+        automationHexEditors.append(wc)
+        wc.showWindow()
+        return wc
+    }
+
     private func openViewer(_ arg: String) {
         // Usage: view <file> [wrap|binary] [search:<term>]
         let tokens = arg.split(separator: " ").map(String.init)

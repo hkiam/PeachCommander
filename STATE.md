@@ -26,6 +26,45 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-14 (F-400, F-401) — A sum you should not have to do in your head, and two keys bound to nothing
+
+Two requests from the same place, a hex dump. **Go To took one number**, so `0x1000 + 15 + 1` — a
+structure's start, the field's offset, its length prefix — had to be added up by the reader before it
+could be typed, and 4112 is exactly the kind of arithmetic that goes wrong silently.
+`OffsetExpression` is a small recursive-descent evaluator whose *numbers carry their own base*, so
+bases mix in one line and nothing has to be converted first. It went in behind `HexAddress.parse`,
+which all four Go To dialogs already called, so the viewer, the hex editor, the binary compare and the
+editor's Go to Line gained it in one delegation — and a line number is arithmetic too now, rather than
+meaning something different from an offset one mode away.
+
+Two things are refused rather than clamped: a negative result and an overflowing one. A clamp to 0
+looks precisely like a deliberate jump to the start of the file, and Int64 arithmetic traps, which is
+why every operator is checked. Intermediate values may go negative — `0x10 - 5 - 20 + 10` is a
+legitimate way to arrive at 1.
+
+**And the clipboard did not work in that dialog's field**, which turned out to be the more interesting
+half. A tool window installs its own menu bar, and four of them build a *tailored* Edit menu: the hex
+editor binds ⌘C to "Copy (Hex)", the text compare to "Copy Left Side" — and none of the four listed
+Cut, Paste or Select All at all. A menu key equivalent is matched before the responder chain, so ⌘C in
+the Go To field copied the **file's bytes** over what the user was trying to copy, and ⌘V was bound to
+nothing. Every dialog these windows open is an `InputDialog`, so Go To, Find, Fill Byte and Replace
+were all affected — in four windows.
+
+The main window's Edit menu had already been fixed this way once, by routing the standard selectors
+through the responder chain; a tailored menu cannot, because the key is spoken for. So the window's own
+action asks first (`AppMenu.forwardToEditedText`), and only an *editable* text object wins — a field
+editor is, the Lister's read-only content view is not, so ⌘C in the viewer still means "copy what this
+viewer is showing" and not "copy the text view's selection".
+
+**A harness gap of the same shape as the last one.** `answer` cannot reach a dialog's field: a scripted
+answer means the dialog never appears. The five dialogs of the hex editor and the binary compare were
+also app-modal panels with no parent, which `InputDialog` itself documents as the fallback — a modal
+session never returns, so a script stopped at one. They are sheets now, and two verbs measure the rest:
+`hexgoto` answers `caret=4112` for the expression above, and `hexclip` types into the real field and
+uses the window's own actions on it. Both directions, on purpose: with the field focused `copied=COPY-ME`,
+with nothing focused `copiedWithoutField=00 01 02 03` — otherwise the fix would have traded one wrong
+answer for another. Scenario `hex-clipboard`.
+
 ## 2026-08-14 (F-399) — Shift+F5, and the copy that deleted the file
 
 Asked for as a feature: Shift+F5 copies the cursor item with the target field pre-filled, so a name

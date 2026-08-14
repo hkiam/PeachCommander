@@ -1276,6 +1276,11 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     }
 
     private func copyAll() {
+        // A text field being edited comes first: the viewer's ⌘C is also the ⌘C of every dialog it
+        // opens (Find, Go To), and a menu key equivalent beats the responder chain — so without this,
+        // ⌘C in the Go To field copied the *file* instead of the field's selection. Only an *editable*
+        // text object wins, so the read-only content view below keeps its own meaning of "copy".
+        if AppMenu.forwardToEditedText(#selector(NSText.copy(_:))) { return }
         // Rendered pages: hand the standard editing action to WebKit, which copies the
         // selection exactly as its own context menu does.
         //
@@ -1664,8 +1669,8 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Ctrl+G: jump to a line (text mode) or a byte offset (hex mode).
     private func promptGoto() {
         let isHex = (mode == .hex)
-        let prompt = isHex ? String(localized: "Go to offset (0x… or decimal):")
-                           : String(localized: "Go to line:")
+        let prompt = isHex ? String(localized: "Go to offset (0x…, decimal, or an expression like 0x1000+16):")
+                           : String(localized: "Go to line (arithmetic allowed, e.g. 120+10):")
         let dialog = InputDialog(title: String(localized: "Go To"), prompt: prompt, initialValue: "")
         dialog.onConfirm = { [weak self] text in
             guard let self else { return }
@@ -1673,7 +1678,9 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
                 if let offset = HexAddress.parse(text) {
                     (self.contentView as? HexListerView)?.scroll(toByteOffset: offset)
                 }
-            } else if let line = Int(text.trimmingCharacters(in: .whitespaces)), line > 0 {
+            // Through the same evaluator as the offset, so a line number can be arithmetic too — and
+            // so "120 + 10" does not mean one thing in hex mode and nothing in text mode.
+            } else if let value = HexAddress.parse(text), value > 0, let line = Int(exactly: value) {
                 (self.contentView as? TextListerView)?.scroll(toLine: line)
                 (self.contentView as? CodeListerView)?.scroll(toLine: line)
                 self.scrollTextViewToLine(line)
@@ -2626,6 +2633,9 @@ extension ListerWindowController: WindowContextMenuProviding {
         // is a menu key equivalent rather than something the key handler has to know.
         AppMenu.editItem(menu, String(localized: "Select All"), action: Selector(("selectAll:")),
                          target: nil, key: "a")
+        // Cut and Paste exist for the *dialogs* this window opens — a viewer has nothing to paste into,
+        // and both items grey themselves out accordingly when no field is being edited.
+        AppMenu.appendTextClipboardItems(to: menu)
         return menu
     }
 
