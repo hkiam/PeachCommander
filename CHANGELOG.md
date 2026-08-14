@@ -12,6 +12,24 @@ were reconstructed from the git history and the notes in `STATE.md` when it was 
 `README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
 does not have.
 
+## [Unreleased]
+
+### Added
+
+- **Arithmetic in "Go to".** The viewer's Ctrl+G, the hex editor, the binary compare and the editor's
+  Go to Line now take an expression instead of a single number: `0x1000 + 15 + 1` goes to 4112. Bases
+  mix freely in one line — `0x…`, `$…`, `…h`, `0b…`, `0o…` and decimal — with `+ - * /`, parentheses
+  and `_` to group digits. A result that would be negative, overflow or divide by zero is refused
+  rather than quietly turned into 0.
+
+### Fixed
+
+- **Copy and paste in the viewer's and hex editor's dialogs.** In the hex editor's "Go to Address"
+  field, Cmd+C copied the file's bytes and Cmd+V did nothing at all: those windows install their own
+  menu bar, took Cmd+C for a document action and listed no Cut or Paste whatsoever. A field being
+  edited now gets the key, the missing items are there, and the dialogs of both windows are sheets —
+  so they appear over the window they belong to instead of freezing the app.
+
 ## [0.6.3] — 2026-08-14
 
 ### Added

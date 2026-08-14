@@ -966,6 +966,22 @@ SCENARIOS = [
     ("accessibility", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                        "cmd cm_OpenNewTab", "wait 600",
                        "a11ydump /Users/admin/a11y.txt", "wait 800"], 10),
+    # Go To takes arithmetic (F-400) and a dialog's field owns the clipboard (F-401). Both live in the
+    # hex editor, so one scenario: the same window has to be up for either question, and the second one
+    # needs the window's own menu bar installed, which only happens once it is key.
+    #
+    # The fixture is made here rather than baked into the demo tree — a scenario that depends on
+    # fixtures it does not create fails for a reason that is not the feature. 8 KB, so 0x1000+15+1 is
+    # inside it.
+    #
+    # `hexclip` runs LAST because the guest waits for this scenario's own report, and the clipboard is
+    # the half that cannot be reached any other way: `answer` never shows the dialog, so there is no
+    # field to type in, which is why this class of defect had no coverage at all.
+    ("hex-clipboard",
+     ["probe /Users/admin/hex-made.txt|/usr/bin/python3 -c \"open('/Users/admin/hexfix.bin','wb').write(bytes(range(256))*32)\" && echo made",
+      "hexgoto /Users/admin/hexfix.bin|0x1000 + 15 + 1|/Users/admin/hex-clipboard-goto.txt", "wait 800",
+      "menudump /Users/admin/hex-clipboard-menu.txt", "wait 400",
+      "hexclip /Users/admin/hexfix.bin|COPY-ME|/Users/admin/hex-clipboard.txt", "wait 600"], 12),
 ]
 
 # Labels that must appear in the accessibility dump. Each one is a control that draws itself and would
@@ -1065,6 +1081,19 @@ KEYBOARD_REPORTS = {
 # report is checked before it has run: name new scenarios so they are not a prefix-extension of an
 # existing one. (Cost a run: "notes-sidebar-tc" passed alone and failed in company.)
 REPORTS = {
+    # F-401, both directions in one file: with the Go To field being edited ⌘C copies the FIELD, and
+    # with nothing focused the same action still copies the document's bytes. Either half alone would
+    # pass for a build that had simply swapped one wrong answer for the other.
+    "hex-clipboard": ("/Users/admin/hex-clipboard.txt",
+                      ["responder=NSTextView", "copied=COPY-ME",
+                       "fieldAfterPaste=PASTED-FROM-CLIPBOARD", "copiedWithoutField=00 01 02 03"]),
+    # F-400: 0x1000 + 15 + 1 = 4112, through the dialog's own parsing. `answersleft=0` says the dialog
+    # really asked — otherwise this would pass because nothing consumed the answer.
+    "hex-clipboard-goto": ("/Users/admin/hex-clipboard-goto.txt", ["caret=4112", "answersleft=0"]),
+    # F-401's other half: the items were not there at all before, which no screenshot of a menu would
+    # have said either.
+    "hex-clipboard-menu": ("/Users/admin/hex-clipboard-menu.txt",
+                           ["Cut  key=W+X", "Paste  key=W+V"]),
     "editor-filter": ("/Users/admin/filter.txt",
                       ["outcome=replaced", "undo=true", "alpha.example\nbeta.example\n"]),
     # The file must be in the listing afterwards — and, so the check cannot pass for the wrong reason,

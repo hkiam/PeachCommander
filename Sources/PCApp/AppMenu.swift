@@ -647,6 +647,44 @@ enum AppMenu {
         return menu
     }
 
+    /// Hand a clipboard/undo action to the text object being edited, if there is one.
+    ///
+    /// A menu key equivalent is matched *before* the responder chain, so a tool window that binds ⌘C
+    /// to a document action of its own takes that key away from every text field in every dialog it
+    /// opens — and all of those dialogs are `InputDialog`. In the hex editor, ⌘C in "Go to Address"
+    /// copied the *file's bytes* to the clipboard and ⌘V was bound to nothing at all, because the
+    /// tailored Edit menus had no Paste item; the same held for the Lister, the text compare and the
+    /// binary compare. The main window's Edit menu already gets this right by routing the standard
+    /// selectors through the responder chain (see the Edit menu above); a tailored menu cannot,
+    /// because the key is spoken for. So the window's own action asks this first.
+    ///
+    /// Only a text object that is *editable* wins: the Lister's read-only content text view must keep
+    /// letting ⌘C mean "copy what this viewer is showing", which is more than the text view's own
+    /// selection (a rendered page, a plugin view). A field editor is editable, which is exactly the
+    /// case this is for.
+    ///
+    /// Forwarded with `to: nil` rather than to the responder itself, so undo/redo reach the field
+    /// editor's undo manager — AppKit supplies that through the responder chain, and NSTextView does
+    /// not implement `undo:` itself.
+    @MainActor
+    @discardableResult
+    static func forwardToEditedText(_ selector: Selector) -> Bool {
+        guard let text = NSApp.keyWindow?.firstResponder as? NSText, text.isEditable else { return false }
+        return NSApp.sendAction(selector, to: nil, from: text)
+    }
+
+    /// Append Cut and Paste (responder chain) to a tailored Edit menu.
+    ///
+    /// ⌘C is left alone: the window's own copy owns it and forwards to a focused field itself. ⌘X and
+    /// ⌘V are free in every tool window, and without them a dialog field cannot cut or paste at all.
+    /// Both items disable themselves when nothing focused can perform them, so a read-only viewer
+    /// shows them greyed rather than lying.
+    static func appendTextClipboardItems(to menu: NSMenu) {
+        menu.addItem(.separator())
+        editItem(menu, String(localized: "Cut"), action: #selector(NSText.cut(_:)), target: nil, key: "x")
+        editItem(menu, String(localized: "Paste"), action: #selector(NSText.paste(_:)), target: nil, key: "v")
+    }
+
     /// Convenience for tool windows building a tailored Edit menu: appends an item
     /// with an explicit target (nil = responder chain).
     static func editItem(_ menu: NSMenu, _ title: String, action: Selector, target: AnyObject?,

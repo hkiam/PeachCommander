@@ -286,6 +286,9 @@ final class BinaryCompareWindowController: NSWindowController, NSTableViewDataSo
     }
 
     @objc private func copySelectionAs(_ sender: NSMenuItem) {
+        // On ⌘C from the Edit menu this is also what a dialog's text field would need, and the menu key
+        // equivalent gets there first — so a focused field wins (AppMenu.forwardToEditedText).
+        if AppMenu.forwardToEditedText(#selector(NSText.copy(_:))) { return }
         guard let token = sender.representedObject as? String else { return }
         let parts = token.split(separator: ":")
         guard parts.count == 2, let fmt = ByteFormat(rawValue: String(parts[1])) else { return }
@@ -299,13 +302,14 @@ final class BinaryCompareWindowController: NSWindowController, NSTableViewDataSo
 
     @objc private func gotoAddress() {
         let dialog = InputDialog(title: String(localized: "Go to Address"),
-                                 prompt: String(localized: "Address (0x…, $…, …h, or decimal):"), initialValue: "")
+                                 prompt: String(localized: "Address (0x…, $…, …h, decimal, or an expression like 0x1000+16):"),
+                                 initialValue: "")
         dialog.onConfirm = { [weak self] input in
             guard let self, let addr = HexAddress.parse(input) else { NSSound.beep(); return }
             self.select(Int(addr / 16))
         }
         findDialog = dialog
-        dialog.runModalDialog()
+        dialog.runModalDialog(over: window)
     }
 
     @objc private func find() {
@@ -324,7 +328,7 @@ final class BinaryCompareWindowController: NSWindowController, NSTableViewDataSo
             self.performFind(pattern)
         }
         findDialog = dialog
-        dialog.runModalDialog()
+        dialog.runModalDialog(over: window)
     }
 
     private func performFind(_ pattern: [UInt8]) {
@@ -414,6 +418,7 @@ extension BinaryCompareWindowController: WindowContextMenuProviding {
                          target: self, key: "c", representedObject: "left:hex")
         AppMenu.editItem(menu, String(localized: "Select All"), action: #selector(NSText.selectAll(_:)),
                          target: nil, key: "a")
+        AppMenu.appendTextClipboardItems(to: menu)
         menu.addItem(.separator())
         AppMenu.editItem(menu, String(localized: "Find…"), action: #selector(find), target: self, key: "f")
         AppMenu.editItem(menu, String(localized: "Go to…"), action: #selector(gotoAddress), target: self, key: "g")

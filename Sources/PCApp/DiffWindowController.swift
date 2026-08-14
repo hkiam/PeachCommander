@@ -522,7 +522,12 @@ extension DiffWindowController: WindowContextMenuProviding {
         NSPasteboard.general.setString(out.joined(separator: "\n"), forType: .string)
     }
 
-    @objc func copyLeftSide() { copySide(true) }
+    // ⌘C belongs to this window, and therefore also to the text fields of every dialog it opens — so a
+    // focused field is asked first (AppMenu.forwardToEditedText).
+    @objc func copyLeftSide() {
+        if AppMenu.forwardToEditedText(#selector(NSText.copy(_:))) { return }
+        copySide(true)
+    }
     @objc func copyRightSide() { copySide(false) }
 
     func makeEditMenu() -> NSMenu {
@@ -533,6 +538,7 @@ extension DiffWindowController: WindowContextMenuProviding {
                          target: self, key: "c", mask: [.command, .shift])
         AppMenu.editItem(menu, String(localized: "Select All"), action: #selector(NSText.selectAll(_:)),
                          target: nil, key: "a")
+        AppMenu.appendTextClipboardItems(to: menu)
         return menu
     }
 

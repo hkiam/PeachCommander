@@ -1151,9 +1151,12 @@ extension EditorWindowController {
 
     private func promptGotoLine() {
         let dialog = InputDialog(title: String(localized: "Go To"),
-                                 prompt: String(localized: "Go to line:"), initialValue: "")
+                                 prompt: String(localized: "Go to line (arithmetic allowed, e.g. 120+10):"),
+                                 initialValue: "")
         dialog.onConfirm = { [weak self] text in
-            guard let self, let line = Int(text.trimmingCharacters(in: .whitespaces)), line > 0 else { return }
+            // Through the offset evaluator (F-400), so "120 + 10" means the same here as in the viewer.
+            guard let self, let value = HexAddress.parse(text), value > 0,
+                  let line = Int(exactly: value) else { return }
             let ns = self.textView.string as NSString
             var loc = 0, current = 1
             while current < line, loc < ns.length {

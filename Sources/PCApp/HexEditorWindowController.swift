@@ -435,18 +435,19 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
             if let idx { self.editor.selectRange(idx..<(idx + pattern.count)) } else { NSSound.beep() }
         }
         findDialog = dialog
-        dialog.runModalDialog()
+        dialog.runModalDialog(over: window)
     }
 
     @objc private func gotoAddress() {
         let dialog = InputDialog(title: String(localized: "Go to Address"),
-                                 prompt: String(localized: "Address (0x…, $…, …h, or decimal):"), initialValue: "")
+                                 prompt: String(localized: "Address (0x…, $…, …h, decimal, or an expression like 0x1000+16):"),
+                                 initialValue: "")
         dialog.onConfirm = { [weak self] input in
             guard let self, let addr = HexAddress.parse(input) else { NSSound.beep(); return }
             self.editor.setCaret(Int(addr))
         }
         findDialog = dialog
-        dialog.runModalDialog()
+        dialog.runModalDialog(over: window)
     }
 
     /// Ask whether to remove the selected bytes or fill them with a chosen byte.
@@ -478,7 +479,7 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
             self.editor.reloadAfterExternalEdit()
         }
         findDialog = dialog
-        dialog.runModalDialog()
+        dialog.runModalDialog(over: window)
     }
 
     @objc private func replaceAllBytes() {
@@ -491,7 +492,7 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
             DispatchQueue.main.async { [weak self] in self?.promptReplacement(for: pattern) }
         }
         findDialog = findDlg
-        findDlg.runModalDialog()
+        findDlg.runModalDialog(over: window)
     }
 
     private func promptReplacement(for pattern: [UInt8]) {
@@ -509,7 +510,7 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
                 NSLocalizedString("Replaced %d occurrence(s)", comment: ""), indices.count)
         }
         findDialog = dlg
-        dlg.runModalDialog()
+        dlg.runModalDialog(over: window)
     }
 
     @objc private func save() {
@@ -546,16 +547,92 @@ final class HexEditorWindowController: NSWindowController, NSWindowDelegate {
     func windowWillClose(_ notification: Notification) { onClose?() }
 }
 
+#if DEBUG
+// MARK: - Automation probes (F-400, F-401)
+
+extension HexEditorWindowController {
+
+    /// Run the real "Go to Address" command with `expression` answered from the script queue, and report
+    /// where the caret ended up. Goes through `gotoAddress`, so the dialog's own parsing is what is
+    /// measured — not a second copy of it in the harness.
+    func automationGoto(_ expression: String) -> String {
+        InputDialog.queueScriptedAnswer(expression)
+        gotoAddress()
+        return """
+        expr=\(expression)
+        caret=\(editor.caretOffset)
+        answersleft=\(InputDialog.hasScriptedAnswers ? 1 : 0)
+        """ + "\n"
+    }
+
+    /// Type into a real dialog field and use the window's own clipboard actions on it.
+    ///
+    /// The defect this exists for: this window binds ⌘C to "Copy (Hex)" and had no Paste item at all, so
+    /// in the Go To field ⌘C copied the *file's bytes* and ⌘V did nothing. `answer` cannot cover it — a
+    /// scripted answer means the dialog never appears — so the sheet is opened for real and driven
+    /// through the same actions the menu items invoke.
+    func automationDialogClipboard(_ typed: String) -> String {
+        editor.selectAll()                       // so "Copy (Hex)" has something to put on the pasteboard
+        NSPasteboard.general.clearContents()
+        // Both halves, on purpose: with no field being edited the same action must still copy the
+        // document's bytes, or the fix would have traded one wrong answer for another.
+        editCopy()
+        let withoutField = (NSPasteboard.general.string(forType: .string) ?? "").prefix(11)
+        NSPasteboard.general.clearContents()
+        gotoAddress()                            // a sheet, so this returns
+        guard let field = window?.attachedSheet?.firstResponder as? NSTextView else {
+            return "ERROR: no field editor in the sheet (attachedSheet=\(window?.attachedSheet != nil))\n"
+        }
+        field.insertText(typed, replacementRange: NSRange(location: 0, length: 0))
+        field.selectAll(nil)
+
+        editCopy()                               // exactly what ⌘C is bound to in this window
+        let copied = NSPasteboard.general.string(forType: .string) ?? ""
+
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString("PASTED-FROM-CLIPBOARD", forType: .string)
+        field.selectAll(nil)
+        let pasteDelivered = NSApp.sendAction(#selector(NSText.paste(_:)), to: nil, from: nil)
+        let after = field.string
+
+        if let sheet = window?.attachedSheet { window?.endSheet(sheet) }
+        return """
+        responder=\(String(describing: type(of: field)))
+        copiedWithoutField=\(withoutField)
+        typed=\(typed)
+        copied=\(copied)
+        pasteDelivered=\(pasteDelivered)
+        fieldAfterPaste=\(after)
+        """ + "\n"
+    }
+}
+#endif
+
 // MARK: - Contextual menu-bar menu (TODOS #189)
 
 @MainActor
 extension HexEditorWindowController: WindowContextMenuProviding {
     // Edit-menu wrappers forwarding to the hex view (its own copy/select-all are
     // view-level context-menu actions).
-    @objc func editUndo() { editor.performUndo() }
-    @objc func editRedo() { editor.performRedo() }
-    @objc func editCopy() { editor.copySelectionHex() }
-    @objc func editSelectAll() { editor.selectAll() }
+    // Each of these owns a ⌘-key the whole window shares with its dialogs, so each asks a focused text
+    // field first — see AppMenu.forwardToEditedText. Without it, ⌘C in "Go to Address" copied the
+    // file's bytes over what the user was trying to copy out of the field.
+    @objc func editUndo() {
+        if AppMenu.forwardToEditedText(Selector(("undo:"))) { return }
+        editor.performUndo()
+    }
+    @objc func editRedo() {
+        if AppMenu.forwardToEditedText(Selector(("redo:"))) { return }
+        editor.performRedo()
+    }
+    @objc func editCopy() {
+        if AppMenu.forwardToEditedText(#selector(NSText.copy(_:))) { return }
+        editor.copySelectionHex()
+    }
+    @objc func editSelectAll() {
+        if AppMenu.forwardToEditedText(#selector(NSText.selectAll(_:))) { return }
+        editor.selectAll()
+    }
 
     func makeEditMenu() -> NSMenu {
         let menu = NSMenu(title: String(localized: "Edit"))
@@ -565,6 +642,7 @@ extension HexEditorWindowController: WindowContextMenuProviding {
         menu.addItem(.separator())
         AppMenu.editItem(menu, String(localized: "Copy (Hex)"), action: #selector(editCopy), target: self, key: "c")
         AppMenu.editItem(menu, String(localized: "Select All"), action: #selector(editSelectAll), target: self, key: "a")
+        AppMenu.appendTextClipboardItems(to: menu)
         menu.addItem(.separator())
         AppMenu.editItem(menu, String(localized: "Find…"), action: #selector(findBytes), target: self, key: "f")
         AppMenu.editItem(menu, String(localized: "Go to…"), action: #selector(gotoAddress), target: self, key: "g")
