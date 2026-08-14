@@ -83,6 +83,14 @@ extension MainWindowController {
             case "reordertab":                                            // reorder tabs: reordertab <from> <to> (F-008)
                 let p = arg.split(separator: " ").compactMap { Int($0) }
                 if p.count == 2 { activePanel?.reorderTab(from: p[0], to: p[1]) }
+            case "answer":                              // answer <text>: queue a reply for the next input dialog
+                // Queued before the command that asks, so a modal prompt never stops the script.
+                // Without this every command that asks a question was unreachable from a scenario.
+                InputDialog.queueScriptedAnswer(arg)
+            case "answersleft":                         // answersleft <out>: how many queued answers were NOT used
+                // The other half of `answer`: a scenario that expected a prompt and got none would
+                // otherwise pass quietly, having tested nothing at all.
+                try? "\(InputDialog.hasScriptedAnswers)\n".write(toFile: arg, atomically: true, encoding: .utf8)
             case "cmd":        runCommandNamed(arg)
             case "pfxmount":                                              // pfxmount <volume-name> (e.g. TaskManager): mount a pfx drive volume by name into the active panel
                 if let vol = FileSystemPluginRegistry.shared.driveVolumes().first(where: { $0.name == arg && $0.path.hasPrefix("pfxmount:") }) {

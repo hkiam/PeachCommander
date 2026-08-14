@@ -26,6 +26,38 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-14 (F-399) — Shift+F5, and the copy that deleted the file
+
+Asked for as a feature: Shift+F5 copies the cursor item with the target field pre-filled, so a name
+can be edited into a duplicate. `cm_CopySamepanel` was already bound in both keymaps and registered as
+a *stub* that answered "not yet implemented".
+
+**Building it turned up data loss in the existing F5.** Copying a file into the directory it is
+already in has target == source, and `copyRegularFile` removes the target before reading the source:
+the file is deleted, the read then finds nothing, and the user is told an error about a file that no
+longer exists. A directory copied into itself does the same once per file inside it. Reachable
+without trying — F5 offers the *other* panel's directory, and both panels showing one folder is an
+ordinary place to be. Written as a failing test first, then fixed in `CopyEngine.copyNode`, which is
+where every caller passes: F5, F6, background copies and the new command alike. Identity is asked of
+the filesystem (device + inode) rather than compared as strings, because case-insensitivity, `//`,
+`..` and hard links all make the string answer wrong in the direction that destroys the file.
+
+The feature itself is small once that is in place. The one real decision is what the last component
+of the target means, and it differs from F5: there, `/photos/holiday.jpg` is a folder to copy into;
+here it is the new name. `CopyAsTarget` holds the rules — trailing slash means a folder, a `*`/`?`
+component is a mask, otherwise one item means a name and several mean a folder — and a literal name is
+handed on as a wildcard-free `CopyRenameMask`, which expands to exactly itself. No second mechanism.
+
+**And a harness gap that had been hiding features.** Every command that asks a question goes through
+`InputDialog`, and a modal session does not return — so a script that ran one stopped there and the
+rest of the scenario never happened. That is why this whole class of command had no end-to-end
+coverage. `answer <text>` now queues a reply (DEBUG only, consumed one at a time) and `answersleft`
+reports whether a queued answer went unused, so a scenario cannot pass because nothing asked.
+
+Verified end to end: a file duplicated under a new name with the original intact, a folder
+duplicated with its contents, and the offered value confirmed unchanged refused in the panel's
+message strip with the file still there.
+
 ## 2026-08-14 (keys-main) — Six controls nobody could Tab to, and the reason
 
 The oldest open item from the VM suite, and it turned out to be one line in two places. `KeyboardLoop`

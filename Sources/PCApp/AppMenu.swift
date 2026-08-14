@@ -76,6 +76,11 @@ enum AppMenu {
         fileMenu.addItem(.separator())
         fileMenu.addItem(command(String(localized: "Copy…"), cmd: "cm_Copy",
                                  key: f5, mask: [], target: target, action: commandAction))
+        // Beside Copy rather than beside Rename, because that is what it is: the same operation with
+        // the target offered as the source's own name. A user looking for "duplicate this" reads
+        // down from Copy, not up from Rename.
+        fileMenu.addItem(command(String(localized: "Copy As…"), cmd: "cm_CopySamepanel",
+                                 key: f5, mask: .shift, target: target, action: commandAction))
         fileMenu.addItem(command(String(localized: "Move…"), cmd: "cm_RenMov",
                                  key: f6, mask: [], target: target, action: commandAction))
         fileMenu.addItem(command(String(localized: "Rename…"), cmd: "cm_RenameOnly",
