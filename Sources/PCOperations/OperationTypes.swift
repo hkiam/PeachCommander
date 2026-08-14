@@ -49,6 +49,12 @@ public enum OperationError: Error, Sendable, Equatable {
     case deleteFailed(String)
     case aborted(String)
     case invalidName(String)
+    /// Source and target are the same file, or the target lies inside the source directory.
+    ///
+    /// Its own case because the two ways this used to end were both destructive and neither was
+    /// reported: overwriting a file with itself deleted it — the engine removes the target before
+    /// reading the source — and copying a directory into itself did that to every file in it.
+    case sameFile(String)
 }
 
 /// How to resolve a target-exists conflict (SPEC-004 §5).
