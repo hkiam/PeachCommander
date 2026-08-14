@@ -400,6 +400,11 @@ final class PreviewPanelView: NSView {
             view = made
         } else { return }
         view.isHidden = false
+        // Same reason as the bottom dock: a view mounted after the window became key is invisible to
+        // AppKit's own loop calculation, so everything the plugin puts here would be unreachable by
+        // Tab. Cheap, and it has to happen on every switch — a second plugin's controls are as new to
+        // the loop as the first one's were.
+        KeyboardLoop.rebuild(for: window)
     }
 
     // MARK: - Content setters
