@@ -16,16 +16,33 @@ final class GlobalHistoryTests: XCTestCase {
 
     func testASecondVisitCountsInsteadOfPilingUp() {
         var h = GlobalHistory()
-        h.record(folder("/Users/mel/src"))
-        h.record(folder("/Users/mel/src"))
+        h.record(folder("/Users/mel/src", ago: 600))
+        h.record(folder("/Users/mel/src"))          // a separate visit, ten minutes later
         h.record(folder("/Users/mel/docs"))
         XCTAssertEqual(h.entries.count, 2)
         XCTAssertEqual(h.entries.first { $0.path == "/Users/mel/src" }?.useCount, 2)
     }
 
+    /// One user action can reach `record` twice — the palette counts the entry it opened, and the
+    /// navigation that follows reports the same folder again a moment later (asynchronously, so no flag
+    /// around the call can cover it). A refresh of the same directory is the same shape. Counting those
+    /// twice would inflate exactly the number the ranking is built on.
+    func testTwoRecordsOfOneActionCountOnce() {
+        var h = GlobalHistory()
+        h.record(folder("/Users/mel/src"))
+        h.record(folder("/Users/mel/src"))          // same moment
+        XCTAssertEqual(h.entries.count, 1)
+        XCTAssertEqual(h.entries[0].useCount, 1)
+        // Far enough apart is two uses again, or the history would stop counting altogether.
+        h.record(HistoryEntry(kind: .folder, path: "/Users/mel/src",
+                              lastUsed: Date().addingTimeInterval(GlobalHistory.coalesceWindow + 1)))
+        XCTAssertEqual(h.entries[0].useCount, 2)
+    }
+
     func testTheNewestUseRefreshesThePanelButKeepsTheCount() {
         var h = GlobalHistory()
-        h.record(HistoryEntry(kind: .folder, path: "/a", panel: .left))
+        h.record(HistoryEntry(kind: .folder, path: "/a",
+                              lastUsed: Date().addingTimeInterval(-600), panel: .left))
         h.record(HistoryEntry(kind: .folder, path: "/a", panel: .right))
         XCTAssertEqual(h.entries.count, 1)
         XCTAssertEqual(h.entries[0].panel, .right)
@@ -43,7 +60,8 @@ final class GlobalHistoryTests: XCTestCase {
     /// A shell command is "the same command" wherever it was run, like a shell history.
     func testACommandIsIdentifiedByItsLineNotItsDirectory() {
         var h = GlobalHistory()
-        h.record(HistoryEntry(kind: .command, path: "/one", detail: "git status"))
+        h.record(HistoryEntry(kind: .command, path: "/one", detail: "git status",
+                              lastUsed: Date().addingTimeInterval(-600)))
         h.record(HistoryEntry(kind: .command, path: "/two", detail: "git status"))
         XCTAssertEqual(h.entries.count, 1)
         XCTAssertEqual(h.entries[0].useCount, 2)

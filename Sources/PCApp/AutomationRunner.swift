@@ -244,7 +244,11 @@ extension MainWindowController {
                 let out = historyPaletteForAutomation().automationSummary()
                 try? out.write(toFile: arg, atomically: true, encoding: .utf8)
             case "historytype":                         // historytype <text>|<out> (F-402)
-                let h = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                // Empty subsequences kept: `historytype |<out>` *clears* the search, and a dropped empty
+                // component would silently make that line do nothing at all — which is how three
+                // expectations in the VM came to be measured against a query that was still set.
+                let h = arg.split(separator: "|", maxSplits: 1, omittingEmptySubsequences: false)
+                    .map(String.init)
                 if h.count == 2 {
                     let palette = historyPaletteForAutomation()
                     palette.automationType(h[0])

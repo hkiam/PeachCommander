@@ -959,20 +959,18 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private func performHistoryAction(_ action: HistoryPaletteWindowController.Action, side: Int) {
         switch action {
         case .openFolder(let path), .showInPanel(let path):
-            // Recorded once, by the palette, as a use of that entry — so the navigation it causes does
-            // not add a second, identical event a millisecond later.
-            HistoryService.shared.withoutRecording {
-                contribOpenPathInPanel(side: side, path: path)
-            }
+            // The palette has already counted this as a use of that entry, and the navigation it causes
+            // reports the same folder again from `loadPath`. That second event is coalesced away by
+            // `GlobalHistory.record` rather than suppressed here: the navigation is asynchronous, so a
+            // flag held around this call would be long reset by the time it arrives.
+            contribOpenPathInPanel(side: side, path: path)
         case .openFile(let path):
             guard FileManager.default.fileExists(atPath: path) else {
                 presentInfo(String(localized: "History"),
                             String(localized: "\((path as NSString).lastPathComponent) is no longer there."))
                 return
             }
-            HistoryService.shared.withoutRecording {
-                NSWorkspace.shared.open(URL(fileURLWithPath: path))
-            }
+            NSWorkspace.shared.open(URL(fileURLWithPath: path))
         case .revealInFinder(let path):
             NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: path)])
         case .fillCommandLine(let line):

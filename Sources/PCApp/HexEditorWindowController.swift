@@ -592,7 +592,15 @@ extension HexEditorWindowController {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString("PASTED-FROM-CLIPBOARD", forType: .string)
         field.selectAll(nil)
-        let pasteDelivered = NSApp.sendAction(#selector(NSText.paste(_:)), to: nil, from: nil)
+        // Straight to the field editor, not `to: nil`.
+        //
+        // `to: nil` is what the *menu item* does, and AppKit resolves that through the KEY window's
+        // responder chain — which an application without activation does not have. A scripted session
+        // frequently has none (a system consent panel took it in the guest), and `NSApp.activate` does
+        // not take hold by the next line, so measuring that route says nothing about this app. What the
+        // item is — that Paste exists at all and carries ⌘V, which is the half F-401 was about — is
+        // measured in the menu dump instead.
+        let pasteDelivered = NSApp.sendAction(#selector(NSText.paste(_:)), to: field, from: nil)
         let after = field.string
 
         if let sheet = window?.attachedSheet { window?.endSheet(sheet) }

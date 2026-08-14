@@ -956,6 +956,15 @@ SCENARIOS = [
                       "keyloop /Users/admin/keyloop-hotlist.txt",
                       "a11ydump /Users/admin/a11y-hotlist.txt", "wait 500",
                    "panelsdump /Users/admin/keys-hotlist-done.txt", "wait 300"], 14),
+    # The history palette (F-402). It is a window built in code with a search field that keeps focus and
+    # a table it drives from there, so both halves of the keyboard question apply: the loop has to be
+    # closed *and* the controls have to announce themselves. `history` both opens it and dumps it, so the
+    # window is certainly up before the keyloop is read.
+    ("keys-history", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                      "history /Users/admin/history-open.txt", "wait 1200",
+                      "keyloop /Users/admin/keyloop-history.txt",
+                      "a11ydump /Users/admin/a11y-history.txt", "wait 500",
+                   "panelsdump /Users/admin/keys-history-done.txt", "wait 300"], 14),
     # A modal dialog: the dump is scheduled first, because `runModal` never returns to the script.
     ("keys-overwrite", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                         "keyloopmodal /Users/admin/keyloop-overwrite.txt",
@@ -997,14 +1006,25 @@ SCENARIOS = [
       "left /Users/admin/hist-src", "wait 900",
       "right /Users/admin/hist-dst", "wait 900",
       "active left", "focus data.txt", "wait 400",
+      # The guest seeds `VerifyAfterCopy=1` for bg-copy-verify, and that ends every FOREGROUND copy with
+      # an NSAlert — an app-modal session no script can dismiss, which is what made every report of this
+      # scenario empty for three runs. Off for the copy, back on afterwards so a later scenario in the
+      # same run still finds what it seeded.
+      "setbool Operation.VerifyAfterCopy|0", "wait 300",
       # F5 with the target answered from the script: the dialog is modal, so `answer` is the only way
       # past it (see the F-399 entry in STATE.md).
       "answer /Users/admin/hist-dst", "cmd cm_Copy", "wait 2500",
+      "setbool Operation.VerifyAfterCopy|1", "wait 200",
       "probe /Users/admin/history-copied.txt|ls /Users/admin/hist-dst && rm -f /Users/admin/hist-dst/data.txt && echo removed=$(ls /Users/admin/hist-dst | wc -l | tr -d ' ')",
+      # A file has to be *opened* for the history to hold one — copying it is an operation, not an open.
+      "cmd cm_List", "wait 1800", "closeviews", "wait 600",
       "historymenu /Users/admin/history-palette-menu.txt", "wait 400",
       "historytype data|/Users/admin/history-palette-search.txt", "wait 400",
+      # Clear the search before anything else is measured: a filter does not reset it, and every
+      # expectation after this would otherwise be about "data" rather than about the filter.
+      "historytype |/Users/admin/history-palette-cleared.txt", "wait 300",
       "historyfilter 3|/Users/admin/history-palette-ops.txt", "wait 400",
-      "historykey open|/Users/admin/history-palette-open.txt", "wait 3000",
+      "historykey open|/Users/admin/history-palette-open.txt", "wait 3500",
       "probe /Users/admin/history-palette-repeat.txt|ls /Users/admin/hist-dst",
       # Last, because the guest waits for this scenario's own report.
       "historyflush", "historyfilter 0|/Users/admin/history-palette.txt", "wait 400"], 14),
@@ -1087,6 +1107,9 @@ KEYBOARD_GATES = {
     "keyloop-viewer.txt": [],
     "keyloop-editorwin.txt": [],
     "keyloop-hotlist.txt": [],
+    # Named on purpose, unlike the ordinary AppKit windows above: both labels are set in code
+    # (`setAccessibilityLabel`), so a refactor that drops them is exactly what this catches.
+    "keyloop-history.txt": ["Search the history", "History entries"],
     "keyloop-overwrite.txt": [],
 }
 
@@ -1098,6 +1121,7 @@ KEYBOARD_REPORTS = {
     "keys-viewer": ["keyloop-viewer.txt", "a11y-viewer.txt"],
     "keys-editorwin": ["keyloop-editorwin.txt", "a11y-editorwin.txt", "menu-editor.txt"],
     "keys-hotlist": ["keyloop-hotlist.txt", "a11y-hotlist.txt"],
+    "keys-history": ["keyloop-history.txt", "a11y-history.txt"],
     "keys-overwrite": ["keyloop-overwrite.txt"],
 }
 
@@ -1116,6 +1140,8 @@ REPORTS = {
                          "row=operation|"]),
     "history-palette-search": ("/Users/admin/history-palette-search.txt",
                                ["query=data", "row=file|data.txt"]),
+    # The search really was cleared, so the reports after it are about their filter and nothing else.
+    "history-palette-cleared": ("/Users/admin/history-palette-cleared.txt", ["query=\n"]),
     "history-palette-ops": ("/Users/admin/history-palette-ops.txt",
                             ["filter=Operations", "row=operation|"]),
     # Repeating the recorded copy puts the file back after it was removed. The removal is asserted in
@@ -1381,6 +1407,7 @@ REPORTS = {
     "keys-viewer": ("/Users/admin/keys-viewer-done.txt", ["left="]),
     "keys-editorwin": ("/Users/admin/keys-editorwin-done.txt", ["left="]),
     "keys-hotlist": ("/Users/admin/keys-hotlist-done.txt", ["left="]),
+    "keys-history": ("/Users/admin/keys-history-done.txt", ["left="]),
     # This one cannot have a trailing dump: `overwritedlg` runs a modal session that never returns to
     # the script, which is why its keyloop is *scheduled* beforehand. So the thing to wait for is the
     # keyloop dump itself, which the timer writes while the dialog is up.
@@ -1867,6 +1894,30 @@ def boot(app: str, run: str):
                   "printf '{\"notes\":[{\"key\":\"/Users/admin/pc-demo/annotated.txt#L3\",\"file\":\"f379.md\","
                   "\"title\":\"a note about the third line\",\"updated\":1}]}' "
                   "> ~/\"Library/Application Support/PeachCommander/notes/index.json\" && "
+                  # The System Monitor plugin's *network* module, switched off before anything runs.
+                  # Under ~/pc-cfg, because that is the -ConfigRoot regress-guest.sh launches with and
+                  # the plugin honours it; seeding the standard Application Support path instead did
+                  # nothing at all, and the run looked exactly as it had before.
+                  #
+                  # It samples interface counters through getifaddrs, and macOS answers that with the
+                  # local-network consent panel — a SYSTEM modal, in our process, that nothing in a
+                  # script can dismiss. It appears about forty seconds after the first launch, so the
+                  # first scenario of a run passed and the second one wrote *nothing at all*: every
+                  # report empty, with the app apparently alive. Cost one full run to find, and only
+                  # the screenshot said why (`history-palette.png`, the alert standing over the panels).
+                  #
+                  # The rest of the medium profile stays on, so the drive bar still shows CPU/RAM/GPU
+                  # the way the documentation screenshots expect.
+                  "mkdir -p ~/pc-cfg/systemmonitor && "
+                  "printf '%s' '{\"enabled\":true,\"scale\":1,\"profile\":\"medium\",\"modules\":["
+                  "{\"id\":\"cpu\",\"enabled\":true,\"showValue\":true,\"showGraph\":false,\"showLabel\":true,\"colorHex\":\"#FF9F0A\"},"
+                  "{\"id\":\"gpu\",\"enabled\":true,\"showValue\":true,\"showGraph\":false,\"showLabel\":true,\"colorHex\":\"#BF5AF2\"},"
+                  "{\"id\":\"memory\",\"enabled\":true,\"showValue\":true,\"showGraph\":false,\"showLabel\":true,\"colorHex\":\"#30D158\"},"
+                  "{\"id\":\"network\",\"enabled\":false,\"showValue\":true,\"showGraph\":false,\"showLabel\":true,\"colorHex\":\"#5E5CE6\"},"
+                  "{\"id\":\"battery\",\"enabled\":true,\"showValue\":true,\"showGraph\":false,\"showLabel\":true,\"colorHex\":\"#0A84FF\"},"
+                  "{\"id\":\"disk\",\"enabled\":false,\"showValue\":true,\"showGraph\":false,\"showLabel\":true,\"colorHex\":\"#64D2FF\"},"
+                  "{\"id\":\"sensors\",\"enabled\":false,\"showValue\":true,\"showGraph\":false,\"showLabel\":true,\"colorHex\":\"#FF453A\"}]}' "
+                  "> ~/pc-cfg/systemmonitor/config.json && "
                   "printf '[Colors]\\nAppearance=dark\\n[Operation]\\nVerifyAfterCopy=1\\n' > pc-cfg/peachcmd.ini && "
                   "defaults write com.apple.dock autohide -bool true; killall Dock 2>/dev/null; "
                   "defaults write -g AppleLanguages '(\"en-US\", \"en\")'; "

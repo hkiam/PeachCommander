@@ -423,7 +423,12 @@ extension PanelController {
         // The global history gets the same event (F-402). Here rather than at each caller: this is where
         // a *completed* foreground copy or move already passes, and an operation that did not finish is
         // not something to offer again.
-        recordInHistory(label: label, directory: dest,
+        // Not `label`: that one names an *undo* action ("Copy"), and the history lists what happened.
+        // The guest's dump showed both shapes next to each other — "Copy" from here and
+        // "Copy 1 item(s)" from the background queue — which is one operation described two ways.
+        recordInHistory(label: isMove ? String(localized: "Move \(items.count) item(s)")
+                                      : String(localized: "Copy \(items.count) item(s)"),
+                        directory: dest,
                         payload: HistoryOperation.encode(
                             kind: isMove ? HistoryOperation.kindMove : HistoryOperation.kindCopy,
                             items: items, mask: mask))

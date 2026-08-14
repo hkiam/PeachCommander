@@ -7,6 +7,7 @@
 # focus <name>, enter, wait <ms>, cmd <cm_Name>, view <path>, settingspage <Page>,
 # theme <id> (select a colour palette — "system", "norton", …),
 # findtab <0..3>, overwritedlg, hotlistmanage, syncdemo <l>|<r>.
+# history <out> (open the global history palette and dump it), closeviews.
 #
 # Reliable, fully-scriptable states are listed here. A few states that need
 # multi-step UI interaction (hex/image viewer sub-modes, the diff window, the ACL
@@ -341,6 +342,26 @@ screenshots:
     caption: "Organizing favorite folders."
     pages: [favorites]
     script: [*main, hotlistmanage, wait 800]
+
+  - id: history-palette
+    feature: history
+    alt: "The global history window listing recently visited folders and opened files"
+    caption: "The global history: everything recent, searchable from the keyboard."
+    pages: [history]
+    # The palette shows what the session did, so the session has to do something first: visit two
+    # folders, open a file in the viewer, close it again, then move somewhere else. A shot of an empty
+    # history would be a picture of the window rather than of the feature.
+    #
+    # NOT YET CAPTURED, and the reason is recorded rather than retried blindly: the first run of this spec
+    # produced an empty main window (the script had not reached its verbs by the time the framebuffer was
+    # read), and the same state captured by `regress.py` has the macOS local-network consent panel lying
+    # across the columns. Both would be a misleading picture, so `docs/content/help/history.md` ships
+    # without one until the panel's trigger is understood — see the harness entry in STATE.md. `settle`
+    # is raised for the retry, because this script is longer than most.
+    settle: 20
+    script: [*main, cmd cm_List, wait 1500, closeviews, wait 600,
+             left /Users/admin/pc-demo/Projects, wait 900,
+             history /Users/admin/shot-history.txt, wait 1200]
 
   - id: help-viewer
     feature: help
