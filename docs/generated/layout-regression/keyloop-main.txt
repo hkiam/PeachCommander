@@ -3,56 +3,9 @@ fullKeyboardAccess: true
 focused: PanelListView | File list, left panel
 autorecalculatesKeyViewLoop: true
 initialFirstResponder: NSView
-focusRefused: 113
+focusRefused: 65
   REFUSES: NSButton | » / » accepts=true hidden=true enabled=true refuses=false
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSOutlineView | Folder tree accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
@@ -98,7 +51,6 @@ focusRefused: 113
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
-  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: PlacementSegmentedControl | Preview mode accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
@@ -118,35 +70,29 @@ focusRefused: 113
   REFUSES: NSButton | + / + accepts=true hidden=false enabled=true refuses=false
   REFUSES: NSButton | Split the terminal accepts=true hidden=false enabled=true refuses=false
   tab[1]: NSView
-  tab[2]: DroppableButton | Calculator
-  tab[3]: DroppableButton | Copy (F5)
-  tab[4]: DroppableButton | Move (F6)
-  tab[5]: DroppableButton | New Folder (F7)
-  tab[6]: DroppableButton | Pack
-  tab[7]: DroppableButton | Find Files
-  tab[8]: DroppableButton | Multi-Rename
-  tab[9]: DroppableButton | Synchronize
-  tab[10]: NSScrollView
-  tab[11]: NSClipView
-  tab[12]: NSOutlineView | Folder tree
-  tab[13]: NSScroller
-  tab[14]: NSButton | Edit path / Button
-  tab[15]: NSScrollView
-  tab[16]: NSClipView
-  tab[17]: NSOutlineView | Folder tree
-  tab[18]: NSScroller
-  tab[19]: NSScrollView
-  tab[20]: NSClipView
-  tab[21]: PanelListView | File list, left panel
+  tab[2]: DroppableButton | Copy (F5)
+  tab[3]: DroppableButton | Move (F6)
+  tab[4]: DroppableButton | New Folder (F7)
+  tab[5]: DroppableButton | Pack
+  tab[6]: DroppableButton | Find Files
+  tab[7]: DroppableButton | Multi-Rename
+  tab[8]: DroppableButton | Synchronize
+  tab[9]: NSScrollView
+  tab[10]: NSClipView
+  tab[11]: NSOutlineView | Folder tree
+  tab[12]: NSButton | Edit path / Button
+  tab[13]: NSScrollView
+  tab[14]: NSClipView
+  tab[15]: PanelListView | File list, left panel
+  tab[16]: NSScroller
+  tab[17]: NSButton | Edit path / Button
+  tab[18]: NSScrollView
+  tab[19]: NSClipView
+  tab[20]: PanelListView | File list, right panel
+  tab[21]: NSScroller
   tab[22]: NSScroller
 loopClosed: false
-unreachable: 13
-  MISSED: NSButton | Edit path / Button
-  MISSED: NSScrollView
-  MISSED: NSClipView
-  MISSED: PanelListView | File list, right panel
-  MISSED: NSScroller
-  MISSED: NSScroller
+unreachable: 7
   MISSED: NSTextField | command…
   MISSED: NSButton | F3 View / F3 View
   MISSED: NSButton | F4 Edit / F4 Edit
