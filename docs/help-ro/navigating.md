@@ -60,6 +60,7 @@ Meniul **Salt** duce panoul activ la folderele pe care le folosiți cel mai des:
 | Birou | Cmd+Shift+D |
 | Descărcări | Option+Cmd+L |
 | Comutați panoul activ | Tab |
+| Istoric global (orice panou) | Ctrl+Cmd+H |
 
 ## Sfaturi
 

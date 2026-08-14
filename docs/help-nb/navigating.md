@@ -60,6 +60,7 @@ Stilinjen øverst i hvert panel viser hvor du er og fungerer også som en måte 
 | Skrivebord | Cmd+Shift+D |
 | Nedlastinger | Option+Cmd+L |
 | Bytt aktivt panel | Tab |
+| Global historikk (uansett panel) | Ctrl+Cmd+H |
 
 ## Tips
 

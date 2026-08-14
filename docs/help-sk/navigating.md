@@ -60,6 +60,7 @@ Ponuka **Prejsť** presunie aktívny panel do priečinkov, ktoré používate na
 | Plocha | Cmd+Shift+D |
 | Stiahnuté súbory | Option+Cmd+L |
 | Prepnúť aktívny panel | Tab |
+| Globálna história (ktorýkoľvek panel) | Ctrl+Cmd+H |
 
 ## Tipy
 

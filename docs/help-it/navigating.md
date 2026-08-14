@@ -60,6 +60,7 @@ Il menu **Vai** porta il pannello attivo alle cartelle che usi di più:
 | Scrivania | Cmd+Maiusc+D |
 | Download | Opzione+Cmd+L |
 | Cambia pannello attivo | Tab |
+| Cronologia globale (qualsiasi pannello) | Ctrl+Cmd+H |
 
 ## Suggerimenti
 

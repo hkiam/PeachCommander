@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Global historikk</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Global historikk</h1>
+<p>Den globale historikken er ett vindu som husker ditt eget arbeid: mapper du har vært i, filer du har åpnet, handlinger du har utført og kommandoer du har kjørt. Trykk Ctrl+Cmd+H hvor som helst, begynn å skrive, og du er tilbake i gårsdagens mappe på ett sekund — uten mus.</p>
+<h2 id="apne-historikken">Åpne historikken</h2>
+<ol>
+<li>Trykk Ctrl+Cmd+H, eller velg <strong>Gå &gt; Historikk…</strong>. Det spiller ingen rolle hvilket panel som er aktivt.</li>
+<li>Skriv et par bokstaver. Treffet behøver verken være nøyaktig eller sammenhengende: <code>proj rep</code> finner <code>~/Projects/annual-report.txt</code>.</li>
+<li>Beveg deg gjennom resultatene med Opp- og Ned-tastene mens du skriver videre.</li>
+<li>Retur handler på den markerte oppføringen, Esc lukker vinduet.</li>
+</ol>
+<p>Oppføringene er rangert etter hvor nylig <em>og</em> hvor ofte du brukte dem, så stedene du jobber mest, står allerede øverst. Festede oppføringer går alltid først.</p>
+<h2 id="filtrer-etter-type">Filtrer etter type</h2>
+<p>Knappene under søkefeltet begrenser listen til alle oppføringer, mapper, filer, handlinger eller favoritter. Option+1 til Option+5 bytter mellom dem fra tastaturet.</p>
+<h2 id="gjr-noe-med-en-oppfring">Gjør noe med en oppføring</h2>
+<table>
+<thead>
+<tr>
+<th>Handling</th>
+<th>Snarvei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Åpne den markerte oppføringen</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Vis den i panelet, med markøren på den</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>Åpne en av de ni mest relevante oppføringene</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>Bytt panelet oppføringer åpnes i</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Fest eller løsne oppføringen</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>Fjern oppføringen fra historikken</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>Kopier banen til oppføringen</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>Vis oppføringen i Finder</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>Lukk historikken</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Retur gjør det oppføringen fortjener: en mappe åpnes i målpanelet, en fil åpnes som den ville fra panelet, og en kommandolinje legges i kommandolinjen slik at du kan se over den og kjøre den. Målpanelet står nederst i vinduet, og Tab bytter det.</p>
+<h2 id="gjenta-en-handling">Gjenta en handling</h2>
+<p>En kopiering eller flytting står under <strong>Handlinger</strong>, og Retur kjører den på nytt — de samme elementene til den samme mappen, gjennom den vanlige overføringskøen og spørsmålene den stiller om overskriving. Elementer som ikke finnes lenger, hoppes over, og er ingen igjen, får du beskjed.</p>
+<p>Slettinger og navnebytter står i listen, men gjentas aldri: Retur viser i stedet hvor de skjedde. Å gjenta en sletting bør ikke ligge én tast unna i en liste man bare skummer.</p>
+<h2 id="holde-den-i-tmme">Holde den i tømme</h2>
+<p>Innstillinger ▸ Annet avgjør om det føres en historikk, hvor mange oppføringer den beholder, og etter hvor mange dager den glemmer dem. Festede oppføringer er unntatt, og 0 dager beholder alt; listen ligger i <code>history.ini</code> i konfigurasjonsmappen din og overlever omstarter.</p>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>Å åpne noe fra historikken teller som bruk — derfor fortsetter det du vender tilbake til å stige.</li>
+<li>Mapper på servere og i pluginenheter huskes også; en som ikke lenger er tilgjengelig, sier det når du prøver.</li>
+<li>Dette er ikke panelets egen mappehistorikk på Alt+Ned, som bare lister hvor det ene panelet har vært, i rekkefølge.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="favorites.html">Favoritter og hurtigliste</a></li><li><a href="navigating.html">Bevege seg rundt</a></li></ul></section>
+</main>
+</body>
+</html>

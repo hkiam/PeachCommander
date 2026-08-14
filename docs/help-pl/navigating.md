@@ -60,6 +60,7 @@ Menu **Przejdź** przenosi aktywny panel do folderów, których używasz najczę
 | Biurko | Cmd+Shift+D |
 | Pobrane | Option+Cmd+L |
 | Przełącz aktywny panel | Tab |
+| Historia globalna (dowolny panel) | Ctrl+Cmd+H |
 
 ## Wskazówki
 

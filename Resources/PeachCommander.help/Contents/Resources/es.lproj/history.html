@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Historial global</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Historial global</h1>
+<p>El historial global es una ventana que recuerda tu propio trabajo: carpetas visitadas, archivos abiertos, operaciones realizadas y comandos ejecutados. Pulsa Ctrl+Cmd+H desde cualquier sitio, empieza a escribir y vuelves a la carpeta de ayer en un segundo, sin ratón.</p>
+<h2 id="abrir-el-historial">Abrir el historial</h2>
+<ol>
+<li>Pulsa Ctrl+Cmd+H o elige <strong>Ir &gt; Historial…</strong>. No importa qué panel esté activo.</li>
+<li>Escribe unas letras. La coincidencia no tiene que ser exacta ni contigua: <code>proj rep</code> encuentra <code>~/Projects/annual-report.txt</code>.</li>
+<li>Recorre los resultados con las flechas Arriba y Abajo mientras sigues escribiendo.</li>
+<li>Retorno actúa sobre la entrada resaltada; Esc cierra la ventana.</li>
+</ol>
+<p>Las entradas se ordenan por lo reciente <em>y</em> lo frecuente de su uso, así que los sitios donde más trabajas ya están arriba. Las entradas fijadas siempre encabezan la lista.</p>
+<h2 id="filtrar-por-tipo">Filtrar por tipo</h2>
+<p>Los botones bajo el campo de búsqueda limitan la lista a todas las entradas, carpetas, archivos, operaciones o favoritos. Option+1 a Option+5 cambian entre ellos con el teclado.</p>
+<h2 id="actuar-sobre-una-entrada">Actuar sobre una entrada</h2>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir la entrada resaltada</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Mostrarla en el panel, con el cursor encima</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>Abrir una de las nueve entradas más relevantes</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>Cambiar el panel donde se abren</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Fijar o soltar la entrada</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>Quitar la entrada del historial</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>Copiar la ruta de la entrada</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>Mostrar la entrada en el Finder</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>Cerrar el historial</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Retorno hace lo que corresponde a la entrada: una carpeta se abre en el panel de destino, un archivo se abre como lo haría desde el panel y una línea de comandos se coloca en la línea de comandos para que la revises y la ejecutes. El panel de destino se indica al pie de la ventana y Tab lo cambia.</p>
+<h2 id="repetir-una-operacion">Repetir una operación</h2>
+<p>Una copia o un movimiento aparece en <strong>Operaciones</strong>, y Retorno lo ejecuta de nuevo: los mismos elementos a la misma carpeta, por la cola de transferencia normal y sus preguntas de sobrescritura. Los elementos que ya no existen se omiten, y si no queda ninguno se te avisa.</p>
+<p>Las eliminaciones y los cambios de nombre aparecen listados pero nunca se repiten: Retorno muestra dónde ocurrieron. Repetir una eliminación no debería estar a una tecla de distancia en una lista que solo estás ojeando.</p>
+<h2 id="mantenerlo-bajo-control">Mantenerlo bajo control</h2>
+<p>Ajustes ▸ Varios decide si se guarda un historial, cuántas entradas conserva y tras cuántos días las olvida. Las entradas fijadas están exentas y 0 días lo conserva todo; la lista vive en <code>history.ini</code> dentro de tu carpeta de configuración y sobrevive a los reinicios.</p>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>Abrir algo desde el historial cuenta como usarlo: por eso lo que retomas sigue subiendo.</li>
+<li>También se recuerdan carpetas en servidores y en unidades de complementos; una que ya no esté accesible lo dice al intentarlo.</li>
+<li>No es el historial de carpetas propio del panel en Alt+Abajo, que solo enumera por dónde ha pasado ese panel, en orden.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="favorites.html">Favoritos y lista rápida</a></li><li><a href="navigating.html">Desplazarse</a></li></ul></section>
+</main>
+</body>
+</html>

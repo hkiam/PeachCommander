@@ -26,6 +26,7 @@ Peach Commander ha un visualizzatore integrato che ti permette di guardare dentr
 - I file molto grandi vengono percorsi a finestre sovrapposte, quindi una singola corrispondenza più lunga di circa 64 KB può sfuggire se cade proprio sul bordo di una finestra. La ricerca di testo semplice non ha questo limite, e non ce l’ha nemmeno un motivo che corrisponde a qualcosa di più corto.
 - Se il testo appare confuso, fai clic su Codifica nella barra degli strumenti (o premi E) per scorrere le codifiche di testo finché non si legge correttamente; l'impostazione automatica di solito è corretta.
 - Premi W per commutare l'a capo automatico per le righe lunghe.
+- Premi Ctrl+G per andare a una riga, o a un offset di byte in modalità esadecimale. Sono ammessi calcoli tra basi diverse: `0x1000 + 15 + 1` porta a 4112 — esadecimale con `0x`, `$` o una `h` finale, binario con `0b`, ottale con `0o`, e `+ - * /` con parentesi.
 
 ## Zoom di un’immagine
 

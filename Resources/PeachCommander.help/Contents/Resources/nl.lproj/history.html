@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Globale geschiedenis</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Globale geschiedenis</h1>
+<p>De globale geschiedenis is één venster dat je eigen werk onthoudt: bezochte mappen, geopende bestanden, uitgevoerde bewerkingen en uitgevoerde opdrachten. Druk overal op Ctrl+Cmd+H, begin te typen en je bent in een seconde terug bij de map van gisteren — zonder muis.</p>
+<h2 id="de-geschiedenis-openen">De geschiedenis openen</h2>
+<ol>
+<li>Druk op Ctrl+Cmd+H of kies <strong>Ga &gt; Geschiedenis…</strong>. Welk paneel actief is, doet niet ter zake.</li>
+<li>Typ een paar letters. De overeenkomst hoeft niet exact of aaneengesloten te zijn: <code>proj rep</code> vindt <code>~/Projects/annual-report.txt</code>.</li>
+<li>Loop met de pijltjes Omhoog en Omlaag door de resultaten terwijl je doortypt.</li>
+<li>Return voert de gemarkeerde regel uit, Esc sluit het venster.</li>
+</ol>
+<p>Regels staan gesorteerd op hoe recent <em>en</em> hoe vaak je ze gebruikte, dus de plekken waar je het meest werkt staan al bovenaan. Vastgezette regels gaan altijd voorop.</p>
+<h2 id="filteren-op-soort">Filteren op soort</h2>
+<p>De knoppen onder het zoekveld beperken de lijst tot alle regels, mappen, bestanden, bewerkingen of favorieten. Option+1 tot Option+5 wisselen ertussen met het toetsenbord.</p>
+<h2 id="iets-met-een-regel-doen">Iets met een regel doen</h2>
+<table>
+<thead>
+<tr>
+<th>Actie</th>
+<th>Sneltoets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>De gemarkeerde regel openen</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>In het paneel tonen, met de cursor erop</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>Een van de negen meest relevante regels openen</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>Het paneel wisselen waarin geopend wordt</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>De regel vastzetten of losmaken</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>De regel uit de geschiedenis verwijderen</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>Het pad van de regel kopiëren</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>De regel in de Finder tonen</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>De geschiedenis sluiten</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Return doet wat bij de regel past: een map opent in het doelpaneel, een bestand opent zoals het vanuit het paneel zou doen, en een opdrachtregel komt in de opdrachtregel te staan zodat je hem kunt nakijken en uitvoeren. Het doelpaneel staat onderaan het venster en Tab wisselt het.</p>
+<h2 id="een-bewerking-herhalen">Een bewerking herhalen</h2>
+<p>Een kopie of verplaatsing verschijnt onder <strong>Bewerkingen</strong>, en Return voert die opnieuw uit — dezelfde items naar dezelfde map, via de gewone overdrachtswachtrij en haar vragen over overschrijven. Items die er niet meer zijn worden overgeslagen, en als er geen over is wordt dat gezegd.</p>
+<p>Verwijderingen en naamswijzigingen staan er wel, maar worden nooit herhaald: Return toont in plaats daarvan waar ze gebeurden. Een verwijdering herhalen mag geen toets ver liggen in een lijst die je alleen doorneemt.</p>
+<h2 id="het-in-de-hand-houden">Het in de hand houden</h2>
+<p>Instellingen ▸ Overig bepaalt of er een geschiedenis wordt bijgehouden, hoeveel regels die bewaart en na hoeveel dagen ze worden vergeten. Vastgezette regels zijn uitgezonderd en 0 dagen bewaart alles; de lijst staat in <code>history.ini</code> in je configuratiemap en overleeft herstarts.</p>
+<h2 id="opmerkingen">Opmerkingen</h2>
+<ul>
+<li>Iets uit de geschiedenis openen geldt als gebruik: daarom blijft stijgen waar je naar terugkeert.</li>
+<li>Mappen op servers en in plug-inschijven worden ook onthouden; een die niet meer bereikbaar is zegt dat zodra je het probeert.</li>
+<li>Dit is niet de eigen mappengeschiedenis van het paneel op Alt+Omlaag, die alleen op volgorde toont waar dat ene paneel is geweest.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="favorites.html">Favorieten &amp; hotlist</a></li><li><a href="navigating.html">Rondbewegen</a></li></ul></section>
+</main>
+</body>
+</html>

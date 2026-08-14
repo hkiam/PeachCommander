@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Globális előzmények</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Globális előzmények</h1>
+<p>A globális előzmények egyetlen ablak, amely emlékszik a saját munkájára: meglátogatott mappák, megnyitott fájlok, elvégzett műveletek és lefuttatott parancsok. Nyomja meg bárhonnan a Ctrl+Cmd+H-t, kezdjen írni, és egy másodperc alatt visszatér a tegnapi mappához — egér nélkül.</p>
+<h2 id="az-elozmenyek-megnyitasa">Az előzmények megnyitása</h2>
+<ol>
+<li>Nyomja meg a Ctrl+Cmd+H-t, vagy válassza az <strong>Ugrás &gt; Előzmények…</strong> menüpontot. Mindegy, melyik panel aktív.</li>
+<li>Írjon be néhány betűt. A találatnak nem kell pontosnak vagy folytonosnak lennie: a <code>proj rep</code> megtalálja a <code>~/Projects/annual-report.txt</code> fájlt.</li>
+<li>A fel és le nyíllal lépkedjen a találatok között, miközben tovább ír.</li>
+<li>Az Enter végrehajtja a kijelölt bejegyzést, az Esc bezárja az ablakot.</li>
+</ol>
+<p>A bejegyzések rangsora attól függ, milyen nemrég <em>és</em> milyen gyakran használta őket, így a legtöbbet használt helyek már fent vannak. A kitűzött bejegyzések mindig elöl állnak.</p>
+<h2 id="szures-fajta-szerint">Szűrés fajta szerint</h2>
+<p>A keresőmező alatti gombok a listát az összes bejegyzésre, a mappákra, a fájlokra, a műveletekre vagy a kedvencekre szűkítik. Az Option+1 – Option+5 billentyűkkel váltogathat közöttük.</p>
+<h2 id="muvelet-egy-bejegyzesen">Művelet egy bejegyzésen</h2>
+<table>
+<thead>
+<tr>
+<th>Művelet</th>
+<th>Gyorsbillentyű</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A kijelölt bejegyzés megnyitása</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Megjelenítés a panelen, a kurzorral rajta</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>A kilenc legrelevánsabb bejegyzés egyikének megnyitása</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>A megnyitás paneljének váltása</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>A bejegyzés kitűzése vagy feloldása</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>A bejegyzés eltávolítása az előzményekből</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>A bejegyzés útvonalának másolása</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>A bejegyzés megjelenítése a Finderben</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>Az előzmények bezárása</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Az Enter azt teszi, ami a bejegyzéshez illik: egy mappa a célpanelen nyílik meg, egy fájl úgy nyílik meg, ahogy a panelről nyílna, egy parancssor pedig a parancssorba kerül, hogy átnézhesse és lefuttathassa. A célpanel az ablak alján olvasható, a Tab pedig váltja.</p>
+<h2 id="muvelet-megismetlese">Művelet megismétlése</h2>
+<p>Egy másolás vagy áthelyezés a <strong>Műveletek</strong> alatt jelenik meg, és az Enter újra lefuttatja: ugyanazokat az elemeket ugyanabba a mappába, a szokásos átviteli sorral és annak felülírási kérdéseivel. A már nem létező elemek kimaradnak, és ha egy sem marad, azt megmondjuk.</p>
+<p>A törlések és átnevezések szerepelnek a listában, de soha nem ismétlődnek meg: az Enter inkább megmutatja, hol történtek. Egy törlés megismétlése ne legyen egyetlen billentyűnyire egy listában, amelyet csak átfut.</p>
+<h2 id="kordaban-tartas">Kordában tartás</h2>
+<p>A Beállítások ▸ Egyéb dönti el, vezet-e a program előzményeket, hány bejegyzést tart meg, és hány nap után felejti el őket. A kitűzött bejegyzésekre ez nem érvényes, a 0 nap pedig mindent megtart; a lista a konfigurációs mappában található <code>history.ini</code> fájlban él, és túléli az újraindítást.</p>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>Ha az előzményekből nyit meg valamit, az használatnak számít — ezért emelkedik folyton az, amihez visszatér.</li>
+<li>A kiszolgálókon és a bővítménykötetekben lévő mappákat is megjegyzi; amelyik már nem elérhető, azt jelzi, amikor megnyitná.</li>
+<li>Ez nem a panel saját mappaelőzménye az Alt+le billentyűn, amely csak azt sorolja fel, hol járt az az egy panel, sorrendben.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="favorites.html">Kedvencek és gyorslista</a></li><li><a href="navigating.html">Mozgás</a></li></ul></section>
+</main>
+</body>
+</html>

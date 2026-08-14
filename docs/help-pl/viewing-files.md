@@ -26,6 +26,7 @@ Peach Commander ma wbudowaną przeglądarkę, która pozwala zajrzeć do wnętrz
 - Bardzo duże pliki są przeszukiwane w nakładających się oknach, więc pojedyncze trafienie dłuższe niż około 64 KB może zostać pominięte, jeśli akurat przypadnie na granicę okna. Zwykłe wyszukiwanie tekstu nie ma takiego ograniczenia — nie ma go też wzorzec pasujący do czegoś krótszego.
 - Jeśli tekst wygląda na zniekształcony, kliknij Kodowanie na pasku narzędzi (lub naciśnij E), aby przełączać kodowania tekstu, dopóki nie odczyta się poprawnie; ustawienie automatyczne zwykle trafia.
 - Naciśnij W, aby przełączyć zawijanie wierszy dla długich linii.
+- Naciśnij Ctrl+G, aby przejść do wiersza, a w trybie szesnastkowym do przesunięcia w bajtach. Można liczyć między systemami liczbowymi: `0x1000 + 15 + 1` prowadzi do 4112 — szesnastkowo z `0x`, `$` lub końcowym `h`, dwójkowo z `0b`, ósemkowo z `0o`, i `+ - * /` z nawiasami.
 
 ## Powiększanie obrazu
 

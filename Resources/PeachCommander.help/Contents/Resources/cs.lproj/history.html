@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Globální historie</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Globální historie</h1>
+<p>Globální historie je jedno okno, které si pamatuje vaši vlastní práci: navštívené složky, otevřené soubory, provedené operace a spuštěné příkazy. Odkudkoli stiskněte Ctrl+Cmd+H, začněte psát a za sekundu jste zpět ve včerejší složce — bez myši.</p>
+<h2 id="otevreni-historie">Otevření historie</h2>
+<ol>
+<li>Stiskněte Ctrl+Cmd+H nebo zvolte <strong>Přejít &gt; Historie…</strong>. Nezáleží na tom, který panel je aktivní.</li>
+<li>Napište několik znaků. Shoda nemusí být přesná ani souvislá: <code>proj rep</code> najde <code>~/Projects/annual-report.txt</code>.</li>
+<li>Mezi výsledky se pohybujte klávesami Nahoru a Dolů, zatímco dál píšete.</li>
+<li>Enter provede označenou položku, Esc okno zavře.</li>
+</ol>
+<p>Položky jsou seřazené podle toho, jak nedávno <em>a</em> jak často jste je použili, takže místa, kde pracujete nejvíc, jsou už nahoře. Připnuté položky vedou vždy.</p>
+<h2 id="filtrovani-podle-druhu">Filtrování podle druhu</h2>
+<p>Tlačítka pod vyhledávacím polem omezí seznam na všechny položky, složky, soubory, operace nebo oblíbené. Option+1 až Option+5 mezi nimi přepínají z klávesnice.</p>
+<h2 id="prace-s-polozkou">Práce s položkou</h2>
+<table>
+<thead>
+<tr>
+<th>Akce</th>
+<th>Zkratka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Otevřít označenou položku</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Zobrazit v panelu, s kurzorem na ní</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>Otevřít jednu z devíti nejrelevantnějších položek</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>Přepnout panel, ve kterém se otevírá</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Připnout nebo odepnout položku</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>Odebrat položku z historie</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>Kopírovat cestu položky</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>Zobrazit položku ve Finderu</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>Zavřít historii</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Enter udělá to, co položce odpovídá: složka se otevře v cílovém panelu, soubor se otevře stejně jako z panelu a příkazová řádka se vloží do příkazového řádku, abyste si ji mohli prohlédnout a spustit. Cílový panel je uveden dole v okně a Tab jej přepíná.</p>
+<h2 id="zopakovani-operace">Zopakování operace</h2>
+<p>Kopírování nebo přesun se objeví pod <strong>Operace</strong> a Enter je spustí znovu — tytéž položky do téže složky, běžnou přenosovou frontou i s jejími dotazy na přepsání. Položky, které už neexistují, se přeskočí, a nezůstane-li žádná, dozvíte se to.</p>
+<p>Mazání a přejmenování jsou v seznamu, ale nikdy se neopakují: Enter místo toho ukáže, kde se staly. Zopakovat mazání nemá být na jedno stisknutí v seznamu, který jen prohlížíte.</p>
+<h2 id="udrzeni-pod-kontrolou">Udržení pod kontrolou</h2>
+<p>Nastavení ▸ Ostatní rozhoduje, zda se historie vede, kolik položek si drží a po kolika dnech je zapomene. Připnuté položky jsou z obojího vyňaté a 0 dní znamená uchovat vše; seznam leží v <code>history.ini</code> ve vaší konfigurační složce a přežije restart.</p>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Otevřít něco z historie se počítá jako použití — proto to, k čemu se vracíte, stále stoupá.</li>
+<li>Pamatují se i složky na serverech a v discích zásuvných modulů; ta, která už není dosažitelná, to při pokusu řekne.</li>
+<li>Není to vlastní historie složek panelu na Alt+Dolů, která vypisuje jen to, kde byl ten jeden panel, v pořadí.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="favorites.html">Oblíbené a seznam rychlého přístupu</a></li><li><a href="navigating.html">Pohyb v aplikaci</a></li></ul></section>
+</main>
+</body>
+</html>

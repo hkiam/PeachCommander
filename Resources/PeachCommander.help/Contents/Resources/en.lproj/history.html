@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Global history</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Global history</h1>
+<p>The global history is one window that remembers your own working history: folders you visited, files you opened, operations you carried out and commands you ran. Press Ctrl+Cmd+H from anywhere, start typing, and you are back at yesterday's folder in a second — without the mouse.</p>
+<h2 id="open-the-history">Open the history</h2>
+<ol>
+<li>Press Ctrl+Cmd+H, or choose <strong>Go &gt; History…</strong>. It does not matter which panel is active.</li>
+<li>Type a few letters. The match need not be exact or contiguous: <code>proj rep</code> finds <code>~/Projects/annual-report.txt</code>.</li>
+<li>Move through the results with the Up and Down arrow keys while you keep typing.</li>
+<li>Press Return to act on the highlighted entry, or Esc to close the window.</li>
+</ol>
+<p>Entries are ranked by how recently <em>and</em> how often you used them, so the places you work in most are already near the top. Pinned entries always lead the list.</p>
+<h2 id="filter-by-kind">Filter by kind</h2>
+<p>The buttons under the search field limit the list to all entries, folders, files, operations or favorites. Option+1 to Option+5 switch between them from the keyboard.</p>
+<h2 id="act-on-an-entry">Act on an entry</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open the highlighted entry</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>Show it in the panel, with the cursor on it</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>Open one of the nine most relevant entries</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>Switch the panel entries open in</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>Pin or unpin the entry</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>Remove the entry from the history</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>Copy the entry's path</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>Show the entry in the Finder</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>Close the history</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Return does what the entry deserves: a folder opens in the target panel, a file opens as it would in the panel, and a command line is placed in the command line for you to check and run. The target panel is named at the bottom of the window and Tab switches it.</p>
+<h2 id="repeat-an-operation">Repeat an operation</h2>
+<p>A copy or a move appears under <strong>Operations</strong>, and Return runs it again — the same items to the same folder, through the normal transfer queue and its overwrite questions. Items that no longer exist are skipped, and if none are left you are told.</p>
+<p>Deletes and renames are listed but never repeated: Return shows you where they happened instead. Repeating a delete should not be one keystroke away in a list you are skimming.</p>
+<h2 id="keep-it-under-control">Keep it under control</h2>
+<p>Settings ▸ Misc decides whether a history is kept at all, how many entries to hold and after how many days to forget them. Pinned entries are exempt and 0 days keeps everything; the list lives in <code>history.ini</code> in your configuration folder and survives restarts.</p>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Opening something from the history counts as using it, which is why what you return to keeps rising.</li>
+<li>Folders on servers and in plugin drives are remembered too; one that is no longer reachable says so when you try it.</li>
+<li>This is not the panel's own folder history on Alt+Down, which lists where that one panel has been, in order.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="favorites.html">Favorites &amp; hotlist</a></li><li><a href="navigating.html">Moving around</a></li></ul></section>
+</main>
+</body>
+</html>

@@ -26,6 +26,7 @@ Peach Commander har en innebygd visning som lar deg se inni en fil uten å åpne
 - Svært store filer gjennomsøkes i overlappende vinduer, så ett enkelt treff på mer enn rundt 64 KB kan bli oversett hvis det ligger akkurat over en vindusgrense. Vanlig tekstsøk har ingen slik grense, og det har heller ikke et mønster som treffer noe kortere.
 - Hvis teksten ser forvansket ut, klikk på Tegnkoding i verktøylinjen (eller trykk E) for å bla gjennom tegnkodinger til den leses riktig; den automatiske innstillingen treffer vanligvis riktig.
 - Trykk W for å veksle tekstbryting for lange linjer.
+- Trykk Ctrl+G for å gå til en linje, eller til en byteforskyvning i heksmodus. Regning på tvers av tallsystemer er tillatt: `0x1000 + 15 + 1` fører til 4112 — heksadesimalt med `0x`, `$` eller en `h` til slutt, binært med `0b`, oktalt med `0o`, og `+ - * /` med parenteser.
 
 ## Zoom et bilde
 

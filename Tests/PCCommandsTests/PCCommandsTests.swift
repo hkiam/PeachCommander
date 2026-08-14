@@ -101,9 +101,10 @@ final class PCCommandsTests: XCTestCase {
         let registry = CommandRegistry()
         await registry.registerDefaultCommands()
         let commands = await registry.getAllCommands()
-        // 147 real commands plus 26 not-yet-implemented placeholders; the split, and that the two
-        // blocks of ids do not overlap, is checked by the gate.
-        XCTAssertEqual(commands.count, 173,
+        // 149 real commands plus 25 not-yet-implemented placeholders (Tools/check-command-ids.py counts
+        // both and pins every name to its id); the split, and that the two blocks of ids do not
+        // overlap, is checked by that gate. Last raised by cm_History (F-402).
+        XCTAssertEqual(commands.count, 174,
                        "a command defined in the source did not reach the registry — most likely two "
                        + "of them share an id, and the dictionary kept one")
     }

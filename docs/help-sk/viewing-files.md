@@ -26,6 +26,7 @@ Peach Commander má vstavaný prehliadač, ktorý vám umožňuje nazrieť do s�
 - Veľmi veľké súbory sa prehľadávajú v prekrývajúcich sa oknách, takže jediný výskyt dlhší než približne 64 KB môže uniknúť, ak padne presne na hranicu okna. Obyčajné hľadanie textu takéto obmedzenie nemá — a nemá ho ani vzor, ktorý zodpovedá niečomu kratšiemu.
 - Ak text vyzerá skreslene, kliknite na Kódovanie na paneli nástrojov (alebo stlačte E) na prechádzanie kódovaní textu, kým sa nečíta správne; automatické nastavenie to zvyčajne trafí.
 - Stlačte W na prepnutie zalamovania slov pri dlhých riadkoch.
+- Stlačte Ctrl+G pre prechod na riadok, v hex režime na bajtovú pozíciu. Počítať sa dá aj medzi číselnými sústavami: `0x1000 + 15 + 1` vedie na 4112 — šestnástkovo s `0x`, `$` alebo koncovým `h`, dvojkovo s `0b`, osmičkovo s `0o`, a `+ - * /` so zátvorkami.
 
 ## Priblíženie obrázka
 

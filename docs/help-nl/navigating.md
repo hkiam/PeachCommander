@@ -60,6 +60,7 @@ Het menu **Ga** brengt het actieve paneel naar de mappen die je het meest gebrui
 | Bureaublad | Cmd+Shift+D |
 | Downloads | Option+Cmd+L |
 | Wissel van actief paneel | Tab |
+| Globale geschiedenis (elk paneel) | Ctrl+Cmd+H |
 
 ## Tips
 

@@ -29,6 +29,17 @@ final class CommandLineView: NSView, NSTextFieldDelegate {
     }
     #endif
 
+    /// Put `line` into the field and take the keyboard, ready for Return.
+    ///
+    /// Used by the history palette (F-402): a shell line picked from a list is *offered*, not run. The
+    /// caret goes to the end rather than selecting everything, so the next keystroke edits the line
+    /// instead of replacing it.
+    func prefill(_ line: String, in window: NSWindow?) {
+        field.stringValue = line
+        window?.makeFirstResponder(field)
+        field.currentEditor()?.selectedRange = NSRange(location: line.count, length: 0)
+    }
+
     /// Returns the active panel's current directory (for the prompt + completion).
     var cwdProvider: (() -> String)?
     /// Called when the user presses Return with a non-empty line.
@@ -126,6 +137,10 @@ final class CommandLineView: NSView, NSTextFieldDelegate {
         guard !line.isEmpty else { return }
         history.append(line)
         historyIndex = history.count
+        // Also into the global history (F-402), which outlives this window's own Up/Down list — that one
+        // is per session and per command line, and a command worth running again is usually one from
+        // yesterday.
+        HistoryService.shared.recordCommand(line, directory: cwdProvider?() ?? NSHomeDirectory())
         field.stringValue = ""
         onExecute?(line)
     }

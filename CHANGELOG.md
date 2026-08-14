@@ -22,6 +22,17 @@ does not have.
   and `_` to group digits. A result that would be negative, overflow or divide by zero is refused
   rather than quietly turned into 0.
 
+- **A global history, on Ctrl+Cmd+H.** One window that remembers where you have been and what you
+  did: folders visited, files opened, copies and moves carried out, commands run. It opens with the
+  search field focused, matches loosely as you type (`proj rep` finds `~/Projects/annual-report.txt`),
+  and ranks by how recently *and* how often you used something. Arrow keys move, Return opens,
+  Option+Return shows the entry in the panel, Tab switches which panel that is, Cmd+1…Cmd+9 open the
+  most relevant entries directly, Cmd+P pins, Cmd+Delete removes. A copy or move can be run again
+  from the list; a delete or a rename never is — Return shows you where it happened instead. Filters
+  for folders, files, operations and favorites are on Option+1…Option+5. The list survives restarts,
+  and Settings ▸ Misc sets its size and after how many days entries are forgotten. Not Cmd+Shift+H,
+  which is already Go ▸ Home.
+
 ### Fixed
 
 - **Copy and paste in the viewer's and hex editor's dialogs.** In the hex editor's "Go to Address"

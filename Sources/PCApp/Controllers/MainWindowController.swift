@@ -223,6 +223,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private var pathDialog: InputDialog?
     private var attributesDialog: AttributesDialog?
     private var hotlistManager: HotlistManagerWindowController?
+    /// The global history palette (F-402); one at a time.
+    private var historyPalette: HistoryPaletteWindowController?
     private var typeColorsEditor: TypeColorsWindowController?
     private var syncWindow: SyncWindowController?
     private var userCommands = UserCommands()
@@ -293,6 +295,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// window is shown; `windowDidLoad` is unreliable for programmatic windows).
     func start() {
         Self.shared = self
+        // Before the panels: they record their first directory the moment they load one, and a history
+        // that starts recording after the first navigation is missing the one place the user was when
+        // they opened the app (F-402). Read from the synchronous snapshot for the same reason.
+        HistoryService.shared.configure(
+            paths: configPaths,
+            capacity: startupConfig.int("History", "MaxEntries", default: HistoryService.defaultCapacity),
+            keepDays: startupConfig.int("History", "KeepDays", default: HistoryService.defaultKeepDays),
+            enabled: startupConfig.bool("History", "Enabled", default: true))
         leftPanelController = PanelController(position: .left, config: mainConfig)
         rightPanelController = PanelController(position: .right, config: mainConfig)
         // Both bars, because a connection opened in one panel is reachable from either — the
@@ -926,6 +936,65 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         manager.showWindow(nil)
         manager.window?.makeKeyAndOrderFront(nil)
     }
+
+    // MARK: - Global history palette (F-402)
+
+    /// cm_History (⌘⇧H): the one window that answers "where was I / what did I do".
+    ///
+    /// Reachable from anywhere, so it does not care which panel is active beyond deciding which side an
+    /// entry opens in by default — Tab in the palette switches that. Re-invoking it brings the existing
+    /// window forward rather than opening a second one: two histories on screen is two lists to search.
+    func showHistoryPalette() {
+        if let existing = historyPalette, existing.window?.isVisible == true {
+            existing.present()
+            return
+        }
+        let palette = HistoryPaletteWindowController(targetSide: activePanel?.position.isLeft == false ? 1 : 0)
+        palette.onAction = { [weak self] action, side in self?.performHistoryAction(action, side: side) }
+        palette.onClose = { [weak self] in self?.historyPalette = nil }
+        historyPalette = palette
+        palette.present()
+    }
+
+    private func performHistoryAction(_ action: HistoryPaletteWindowController.Action, side: Int) {
+        switch action {
+        case .openFolder(let path), .showInPanel(let path):
+            // Recorded once, by the palette, as a use of that entry — so the navigation it causes does
+            // not add a second, identical event a millisecond later.
+            HistoryService.shared.withoutRecording {
+                contribOpenPathInPanel(side: side, path: path)
+            }
+        case .openFile(let path):
+            guard FileManager.default.fileExists(atPath: path) else {
+                presentInfo(String(localized: "History"),
+                            String(localized: "\((path as NSString).lastPathComponent) is no longer there."))
+                return
+            }
+            HistoryService.shared.withoutRecording {
+                NSWorkspace.shared.open(URL(fileURLWithPath: path))
+            }
+        case .revealInFinder(let path):
+            NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: path)])
+        case .fillCommandLine(let line):
+            commandLine.prefill(line, in: window)
+        case .repeatOperation(let payload, let directory):
+            guard let op = HistoryOperation.decode(payload),
+                  let panel = (side == 1 ? rightPanelController : leftPanelController) else { return }
+            Task { @MainActor in
+                await panel.repeatRecordedOperation(kind: op.kind, items: op.items, mask: op.mask,
+                                                    to: directory)
+            }
+        }
+    }
+
+    #if DEBUG
+    /// The palette, opened if it is not up yet (automation only, F-402).
+    func historyPaletteForAutomation() -> HistoryPaletteWindowController {
+        showHistoryPalette()
+        // showHistoryPalette always leaves one; the fallback keeps this non-optional for the verbs.
+        return historyPalette ?? HistoryPaletteWindowController(targetSide: 0)
+    }
+    #endif
 
     @objc private func hotlistNavigate(_ sender: NSMenuItem) {
         guard let path = sender.representedObject as? String else { return }
@@ -2807,6 +2876,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     }
 
     private func openEditor(path: String, onSaved: (() -> Void)? = nil) {
+        HistoryService.shared.recordFile(path)
         // Per-extension editor association (F-273): hand off to the configured
         // external editor instead of the built-in one. (Only for local files —
         // a remote temp copy has no meaningful write-back to an external app.)
@@ -3454,6 +3524,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     }
 
     private func openLister(files: [String], index: Int, plugins: [PLXLister] = []) {
+        if index >= 0, index < files.count { HistoryService.shared.recordFile(files[index]) }
         listerWindows.removeAll { $0.window == nil || !($0.window?.isVisible ?? false) }
         let lister = ListerWindowController(files: files, startIndex: index, plugins: plugins)
         listerWindows.append(lister)
@@ -3847,6 +3918,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             aiHasCloudKey: Self.cloudKeyExists(),
             aiModelPreference: aiPluginCfg["modelPreference"] as? String ?? "auto",
             aiSystemPrompt: aiPluginCfg["systemPrompt"] as? String ?? "",
+            historyEnabled: await mainConfig.bool("History", "Enabled", default: true),
+            historyMaxEntries: await mainConfig.int("History", "MaxEntries",
+                                                    default: HistoryService.defaultCapacity),
+            historyKeepDays: await mainConfig.int("History", "KeepDays",
+                                                 default: HistoryService.defaultKeepDays),
             customForeground: await mainConfig.string("Colors", "Foreground", default: ""),
             customBackground: await mainConfig.string("Colors", "Background", default: ""),
             customSelection: await mainConfig.string("Colors", "Selection", default: ""),
@@ -3884,6 +3960,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let (section, key) = Self.splitKeyPath(keyPath)
         Task { await mainConfig.setBool(value, section, key) }
         switch keyPath {
+        case "History.Enabled":
+            HistoryService.shared.setEnabled(value)
         case "Configuration.ShowHiddenSystem":
             hiddenFilesShown = value
             leftPanelController?.setHiddenFiles(value)
@@ -3966,6 +4044,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let (section, key) = Self.splitKeyPath(keyPath)
         Task { await mainConfig.setString(value, section, key) }
         switch keyPath {
+        case "History.MaxEntries":
+            HistoryService.shared.setCapacity(Int(value) ?? HistoryService.defaultCapacity)
+        case "History.KeepDays":
+            HistoryService.shared.setKeepDays(Int(value) ?? HistoryService.defaultKeepDays)
         case "Configuration.IconMode":
             IconLoader.shared.mode = Self.iconMode(from: value)
             leftPanelController?.applyAppearance()
@@ -6559,7 +6641,13 @@ final class PanelController: NSObject, PanelControllerProtocol {
             } else if !preserveViewport {
                 tableView.focusParent()
             }
-            if recordHistory { history.push(path) }
+            if recordHistory {
+                history.push(path)
+                // The same condition as the per-panel back/forward stack, and for the same reason: a
+                // refresh is not a visit (F-402). One choke point — every navigation in the app ends
+                // here, whatever started it.
+                HistoryService.shared.recordFolder(path, panel: position.isLeft ? .left : .right)
+            }
             scheduleStatusRefresh()
             onStateChanged?()
             startWatching(path)

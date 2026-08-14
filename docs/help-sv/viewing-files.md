@@ -26,6 +26,7 @@ Peach Commander har en inbyggd visare som låter dig titta inuti en fil utan att
 - Mycket stora filer genomsöks i överlappande fönster, så en enskild träff längre än omkring 64 KB kan missas om den råkar ligga över en fönstergräns. Vanlig textsökning har ingen sådan gräns, och det har inte heller ett mönster som matchar något kortare.
 - Om texten ser förvrängd ut, klicka på Teckenkodning i verktygsfältet (eller tryck på E) för att bläddra genom teckenkodningar tills den läses korrekt; det automatiska läget brukar träffa rätt.
 - Tryck på W för att växla radbrytning för långa rader.
+- Tryck Ctrl+G för att gå till en rad, eller till en byteposition i hexläge. Räkning över talsystem är tillåten: `0x1000 + 15 + 1` leder till 4112 — hexadecimalt med `0x`, `$` eller ett avslutande `h`, binärt med `0b`, oktalt med `0o`, och `+ - * /` med parenteser.
 
 ## Zooma en bild
 

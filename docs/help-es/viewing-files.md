@@ -26,6 +26,7 @@ Peach Commander tiene un visor integrado que te permite mirar dentro de un archi
 - Los archivos muy grandes se recorren en ventanas solapadas, así que una única coincidencia de más de unos 64 KB puede pasarse por alto si cae justo sobre el borde de una ventana. La búsqueda de texto simple no tiene ese límite, ni lo tiene un patrón que coincida con algo más corto.
 - Si el texto se ve corrupto, haz clic en Codificación en la barra de herramientas (o pulsa E) para recorrer las codificaciones de texto hasta que se lea correctamente; el ajuste automático suele acertar.
 - Pulsa W para alternar el ajuste de línea para las líneas largas.
+- Pulsa Ctrl+G para ir a una línea, o a un desplazamiento de bytes en modo hexadecimal. Admite operaciones entre bases: `0x1000 + 15 + 1` lleva a 4112 — hexadecimal con `0x`, `$` o una `h` final, binario con `0b`, octal con `0o`, y `+ - * /` con paréntesis.
 
 ## Ampliar una imagen
 

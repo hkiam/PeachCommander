@@ -26,6 +26,7 @@ Peach Commander are un vizualizator integrat care vă permite să priviți în i
 - Fișierele foarte mari sunt parcurse în ferestre suprapuse, așa că o singură potrivire mai lungă de circa 64 KB poate scăpa dacă nimerește exact pe marginea unei ferestre. Căutarea de text simplu nu are o astfel de limită, și nici un tipar care se potrivește cu ceva mai scurt.
 - Dacă textul pare deteriorat, faceți clic pe Codificare în bara de instrumente (sau apăsați E) pentru a parcurge codificările de text până când se citește corect; setarea automată reușește de obicei.
 - Apăsați W pentru a comuta încadrarea cuvintelor pentru liniile lungi.
+- Apasă Ctrl+G pentru a sări la o linie, sau la un decalaj de octeți în modul hexazecimal. Calculul între baze este permis: `0x1000 + 15 + 1` duce la 4112 — hexazecimal cu `0x`, `$` sau un `h` final, binar cu `0b`, octal cu `0o`, și `+ - * /` cu paranteze.
 
 ## Mărirea unei imagini
 

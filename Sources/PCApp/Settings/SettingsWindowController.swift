@@ -66,6 +66,10 @@ public struct SettingsSnapshot: Sendable {
     // so all AI settings live on one page. Routed via the "AIPlugin.*" keyPaths.
     public var aiModelPreference: String = "auto"  // "auto" | "local" | "cloud"
     public var aiSystemPrompt: String = ""         // "" = built-in default
+    // Global history (F-402), on the Misc page beside the configuration folder.
+    public var historyEnabled: Bool = true          // History.Enabled
+    public var historyMaxEntries: Int = 500         // History.MaxEntries
+    public var historyKeepDays: Int = 90            // History.KeepDays (0 = keep forever)
     // Colors page (F-272): custom panel colours as "RRGGBB" hex, "" = theme default.
     public var customForeground: String = ""
     public var customBackground: String = ""
@@ -96,8 +100,12 @@ public struct SettingsSnapshot: Sendable {
                 aiAllowShell: Bool = false,
                 aiCloudBase: String = "", aiCloudModel: String = "local", aiHasCloudKey: Bool = false,
                 aiModelPreference: String = "auto", aiSystemPrompt: String = "",
+                historyEnabled: Bool = true, historyMaxEntries: Int = 500, historyKeepDays: Int = 90,
                 customForeground: String = "", customBackground: String = "",
                 customSelection: String = "", customCursor: String = "") {
+        self.historyEnabled = historyEnabled
+        self.historyMaxEntries = historyMaxEntries
+        self.historyKeepDays = historyKeepDays
         self.aiMCPEnabled = aiMCPEnabled
         self.aiMCPPort = aiMCPPort
         self.aiMCPToken = aiMCPToken
@@ -301,6 +309,10 @@ public final class SettingsWindowController: NSWindowController {
 
     // FTP page controls
     private let ftpKeepAliveField = NSTextField()
+    // Global history (F-402), on the Misc page.
+    private let historyEnabledCheckbox = NSButton()
+    private let historyMaxField = NSTextField()
+    private let historyKeepDaysField = NSTextField()
     private let speedLimitField = NSTextField()
 
     // AI page controls
@@ -938,6 +950,24 @@ public final class SettingsWindowController: NSWindowController {
     // MARK: - Misc page (config folder access)
 
     private func buildMiscPage() -> NSView {
+        makeCheckbox(historyEnabledCheckbox, title: String(localized: "Record a global history"),
+                     isOn: snapshot.historyEnabled, action: #selector(historyEnabledChanged))
+        for (field, value, selector) in [(historyMaxField, snapshot.historyMaxEntries,
+                                          #selector(historyMaxChanged)),
+                                         (historyKeepDaysField, snapshot.historyKeepDays,
+                                          #selector(historyKeepDaysChanged))] {
+            field.stringValue = String(value)
+            field.alignment = .right
+            field.target = self
+            field.action = selector
+            field.translatesAutoresizingMaskIntoConstraints = false
+            field.widthAnchor.constraint(equalToConstant: 70).isActive = true
+        }
+        let historyNote = NSTextField(wrappingLabelWithString: String(localized:
+            "The history behind Ctrl+Cmd+H: folders visited, files opened, operations carried out and commands run. Pinned entries are never removed automatically. 0 days keeps them forever."))
+        historyNote.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        historyNote.textColor = .secondaryLabelColor
+
         let caption = NSTextField(labelWithString: String(localized: "Configuration folder:"))
         let pathField = NSTextField(labelWithString: configRootPath)
         pathField.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
@@ -949,7 +979,32 @@ public final class SettingsWindowController: NSWindowController {
                                   target: self, action: #selector(openConfigFolder))
         openButton.bezelStyle = .rounded
         openButton.setContentHuggingPriority(.required, for: .horizontal)
-        return makePageStack(rows: [caption, pathField, openButton])
+        return makePageStack(rows: [historyEnabledCheckbox,
+                                    labeledRow(title: String(localized: "Keep at most (entries):"),
+                                               control: historyMaxField),
+                                    labeledRow(title: String(localized: "Forget after (days):"),
+                                               control: historyKeepDaysField),
+                                    historyNote,
+                                    caption, pathField, openButton])
+    }
+
+    @objc private func historyEnabledChanged() {
+        onSetBool("History.Enabled", historyEnabledCheckbox.state == .on)
+    }
+
+    /// Both fields clamp and write back what they accepted, so a typed "abc" cannot look like it was
+    /// taken. A capacity of zero would mean "a history that forgets everything at once", so the floor
+    /// is one entry.
+    @objc private func historyMaxChanged() {
+        let n = max(1, Int(historyMaxField.stringValue.trimmingCharacters(in: .whitespaces)) ?? 500)
+        historyMaxField.stringValue = String(n)
+        onSetString("History.MaxEntries", String(n))
+    }
+
+    @objc private func historyKeepDaysChanged() {
+        let n = max(0, Int(historyKeepDaysField.stringValue.trimmingCharacters(in: .whitespaces)) ?? 90)
+        historyKeepDaysField.stringValue = String(n)
+        onSetString("History.KeepDays", String(n))
     }
 
     @objc private func openConfigFolder() { onOpenConfigFolder() }

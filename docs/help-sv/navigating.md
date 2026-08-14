@@ -60,6 +60,7 @@ Menyn **Gå** tar den aktiva panelen till de mappar du använder mest:
 | Skrivbord | Cmd+Shift+D |
 | Hämtade filer | Option+Cmd+L |
 | Växla aktiv panel | Tab |
+| Global historik (oavsett panel) | Ctrl+Cmd+H |
 
 ## Tips
 

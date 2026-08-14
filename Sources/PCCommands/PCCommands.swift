@@ -298,6 +298,8 @@ public protocol WindowControllerProtocol: AnyObject {
     func showOpenSourceNotices()
     func toggleQuickFilter()
     func showHistoryMenu()
+    /// Open the global history palette (cm_History, F-402).
+    func showHistoryPalette()
     /// Open the FTP connection manager (saved sites) — cm_FtpConnect.
     func showFtpConnect()
     /// Open the FTP console (protocol log + custom raw command) — cm_FtpRawCommand.
@@ -710,6 +712,7 @@ public actor CommandRegistry {
         register(Self.cm_GoToRoot)
         register(Self.cm_QuickFilter)
         register(Self.cm_HistoryList)
+        register(Self.cm_History)
         register(Self.cm_GoToDesktop)
         register(Self.cm_GoToDownloads)
         register(Self.cm_GoToTrash)
@@ -1093,6 +1096,12 @@ public actor CommandRegistry {
     static let cm_QuickFilter = PCCommand(id: 30112, name: "cm_QuickFilter", category: "View",
         help: "Quick filter of visible files (Ctrl+S)",
         handler: { ctx in ctx.windowController?.toggleQuickFilter() })
+    /// The global history palette (F-402): folders, files, operations and commands in one searchable
+    /// window. Distinct from `cm_HistoryList`, which is the *active panel's* folder dropdown — one is
+    /// "where was I in this panel", the other is "where have I been at all, and what did I do".
+    static let cm_History = PCCommand(id: 30115, name: "cm_History", category: "Navigation",
+        help: "Show the global history (folders, files, operations, commands) — Cmd+Shift+H",
+        handler: { ctx in ctx.windowController?.showHistoryPalette() })
     static let cm_HistoryList = PCCommand(id: 30113, name: "cm_HistoryList", category: "Navigation",
         help: "Show the folder history list (Alt+Down)",
         handler: { ctx in ctx.windowController?.showHistoryMenu() })

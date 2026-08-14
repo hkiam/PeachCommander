@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>全局历史记录</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>全局历史记录</h1>
+<p>全局历史记录是一个窗口，记住你自己的工作轨迹：访问过的文件夹、打开过的文件、执行过的操作和运行过的命令。在任何地方按 Ctrl+Cmd+H，开始输入，一秒钟就回到昨天的文件夹——完全不用鼠标。</p>
+<h2 id="_1">打开历史记录</h2>
+<ol>
+<li>按 Ctrl+Cmd+H，或选择<strong>转到 &gt; 历史记录…</strong>。哪个面板处于活动状态并不重要。</li>
+<li>输入几个字母。匹配不必精确也不必连续：<code>proj rep</code> 就能找到 <code>~/Projects/annual-report.txt</code>。</li>
+<li>一边继续输入，一边用上下方向键在结果之间移动。</li>
+<li>Return 对高亮的条目执行操作，Esc 关闭窗口。</li>
+</ol>
+<p>条目按使用的时间<em>和</em>频率排序，因此你最常工作的位置本来就在靠前的位置。已固定的条目始终排在最前。</p>
+<h2 id="_2">按类型筛选</h2>
+<p>搜索栏下方的按钮把列表限定为全部条目、文件夹、文件、操作或个人收藏。Option+1 到 Option+5 可用键盘在它们之间切换。</p>
+<h2 id="_3">对条目执行操作</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>打开高亮的条目</td>
+<td>Return</td>
+</tr>
+<tr>
+<td>在面板中显示，光标停在它上面</td>
+<td>Option+Return</td>
+</tr>
+<tr>
+<td>打开九个最相关条目之一</td>
+<td>Cmd+1 … Cmd+9</td>
+</tr>
+<tr>
+<td>切换条目打开的面板</td>
+<td>Tab</td>
+</tr>
+<tr>
+<td>固定或取消固定条目</td>
+<td>Cmd+P</td>
+</tr>
+<tr>
+<td>从历史记录中移除条目</td>
+<td>Cmd+Delete</td>
+</tr>
+<tr>
+<td>拷贝条目的路径</td>
+<td>Option+Cmd+C</td>
+</tr>
+<tr>
+<td>在 Finder 中显示条目</td>
+<td>Cmd+Shift+R</td>
+</tr>
+<tr>
+<td>关闭历史记录</td>
+<td>Esc</td>
+</tr>
+</tbody>
+</table>
+<p>Return 会做与条目相称的事：文件夹在目标面板中打开，文件按在面板中按 Return 的方式打开，命令行则被放进命令行里，供你检查后运行。目标面板显示在窗口底部，Tab 可以切换。</p>
+<h2 id="_4">重复一次操作</h2>
+<p>拷贝或移动会出现在<strong>操作</strong>下，Return 会再执行一次——相同的项目到相同的文件夹，走正常的传输队列以及它关于覆盖的询问。已不存在的项目会被跳过；若一个都不剩，程序会明确告知。</p>
+<p>删除和重命名也在列表里，但永不重复执行：Return 只会显示它们发生的位置。在一份只是浏览的列表里，重复一次删除不该只差一个按键。</p>
+<h2 id="_5">把它控制住</h2>
+<p>设置 ▸ 其他决定是否记录历史、最多保留多少条以及多少天后忘记它们。已固定的条目不受这两项限制，0 天表示永久保留；列表保存在配置文件夹中的 <code>history.ini</code> 里，重启后依然存在。</p>
+<h2 id="_6">备注</h2>
+<ul>
+<li>从历史记录中打开某项也算作一次使用——所以你反复回到的东西会不断上升。</li>
+<li>服务器上以及插件驱动器中的文件夹同样会被记住；已无法到达的条目会在你尝试时说明这一点。</li>
+<li>这与 Alt+下箭头 的面板文件夹历史不同，后者只按顺序列出那一个面板去过的位置。</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="favorites.html">收藏夹与热门列表</a></li><li><a href="navigating.html">四处移动</a></li></ul></section>
+</main>
+</body>
+</html>

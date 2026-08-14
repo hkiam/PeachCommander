@@ -26,6 +26,46 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-14 (F-402) — A history that is worth opening, and a matcher that was wrong on real paths
+
+Asked for as "a command palette for your own working history": everything recent — folders, files,
+operations, commands — findable in one or two seconds by keyboard alone. The model (`GlobalHistory`,
+`FuzzyMatch`) is in PCFoundation and fully unit-tested; the recording is a handful of one-line calls at
+choke points rather than at each of the places that reach them, which is the same reasoning that keeps
+`loadPath` the only place a navigation is recorded.
+
+**Weighting matters more than the list.** Frecency — how recently *and* how often — is what makes the
+first row usually the right one; pure recency would make this a log, which is the thing the palette
+replaces. Eviction drops the *worst* entry rather than the oldest, or a folder used forty times would
+disappear behind a hundred one-off visits.
+
+**The hotkey could not be what was asked for.** ⌘⇧H is Go ▸ Home, ⌘H is macOS "Hide", Ctrl+H is Show
+Hidden Files. All three obvious candidates were taken, which `check-hotkeys.py` exists to say — so it is
+⌃⌘H, in both schemes and as a Go-menu item, and the deviation is written down rather than quietly made.
+
+**And the fuzzy matcher was wrong in a way only the real app showed.** Unit tests passed; the first run
+in the app searched "report" and put `report.txt` *third*, behind two folders. A single greedy pass over
+`/private/tmp/…/PeachCommander/…/scratchpad/demo` spends the pattern's "r" and "e" on "p**r**ivat**e**"
+and never reaches the file's own name. Fixed by scoring the last path component as a second pass and
+taking the better of the two — and deliberately *without* a flat "matched the name" bonus, because that
+was tried first and made "adr" in `/xxaxxdxxrxx` beat `/Application Support/dev-report`. Both cases are
+now tests, with the actual paths from the run.
+
+**The palette's actions are menu items, not private key handling** — F-401 applied on purpose. Its own
+menu bar owns ⌘P, ⌘⌫, ⌥⌘C and the filter keys while it is key, so the panel's commands cannot shadow
+them and a screen reader can find them; the Edit menu stays standard, so ⌘C in a search field that
+always has focus copies the search text. Copy Path is ⌥⌘C, as in the Finder.
+
+Only copy and move can be repeated. Return on a delete or a rename shows where it happened instead:
+repeating a delete should not be one keystroke away in a list somebody is skimming. Repeats go through
+the ordinary background queue, so the overwrite dialog, the progress and the undo are the ordinary ones
+rather than a second, quieter path.
+
+Verified in the running app, not only in the tests: the recorded copy, the destination emptied by hand,
+and the repeat putting the file back (`removed=0` then `data.txt`). Ctrl+Cmd+H claimed by the menu. Key
+loop closed with nothing unreachable and nothing unlabelled. Scenario `history-palette`; verbs
+`history`, `historytype`, `historyfilter`, `historykey`, `historymenu`, `historyreset`, `historyflush`.
+
 ## 2026-08-14 (F-400, F-401) — A sum you should not have to do in your head, and two keys bound to nothing
 
 Two requests from the same place, a hex dump. **Go To took one number**, so `0x1000 + 15 + 1` — a

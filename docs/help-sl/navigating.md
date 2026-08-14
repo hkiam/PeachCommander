@@ -60,6 +60,7 @@ Meni **Pojdi** aktivno podokno popelje v mape, ki jih uporabljate najpogosteje:
 | Namizje | Cmd+Shift+D |
 | Prenosi | Option+Cmd+L |
 | Preklop aktivnega podokna | Tab |
+| Globalna zgodovina (kateri koli panel) | Ctrl+Cmd+H |
 
 ## Namigi
 

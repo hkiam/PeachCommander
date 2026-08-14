@@ -982,6 +982,33 @@ SCENARIOS = [
       "hexgoto /Users/admin/hexfix.bin|0x1000 + 15 + 1|/Users/admin/hex-clipboard-goto.txt", "wait 800",
       "menudump /Users/admin/hex-clipboard-menu.txt", "wait 400",
       "hexclip /Users/admin/hexfix.bin|COPY-ME|/Users/admin/hex-clipboard.txt", "wait 600"], 12),
+    # The global history palette (F-402). One scenario, because every question depends on the one before
+    # it: something has to have been visited before there is a history, the history has to hold an
+    # operation before repeating one means anything, and the palette has to be open for either.
+    #
+    # `historyreset` first, so the list is this scenario's own work and not whatever the launch happened
+    # to visit — the same lesson as the per-scenario session reset.
+    #
+    # The repeat is proved by *removing* the copy first: "the file is in the destination" would pass for
+    # a build whose repeat does nothing at all, since the original copy already put it there.
+    ("history-palette",
+     ["historyreset",
+      "probe /Users/admin/hist-made.txt|mkdir -p /Users/admin/hist-src /Users/admin/hist-dst && echo payload > /Users/admin/hist-src/data.txt && echo made",
+      "left /Users/admin/hist-src", "wait 900",
+      "right /Users/admin/hist-dst", "wait 900",
+      "active left", "focus data.txt", "wait 400",
+      # F5 with the target answered from the script: the dialog is modal, so `answer` is the only way
+      # past it (see the F-399 entry in STATE.md).
+      "answer /Users/admin/hist-dst", "cmd cm_Copy", "wait 2500",
+      "probe /Users/admin/history-copied.txt|ls /Users/admin/hist-dst && rm -f /Users/admin/hist-dst/data.txt && echo removed=$(ls /Users/admin/hist-dst | wc -l | tr -d ' ')",
+      "historymenu /Users/admin/history-palette-menu.txt", "wait 400",
+      "historytype data|/Users/admin/history-palette-search.txt", "wait 400",
+      "historyfilter 3|/Users/admin/history-palette-ops.txt", "wait 400",
+      "historykey open|/Users/admin/history-palette-open.txt", "wait 3000",
+      "probe /Users/admin/history-palette-repeat.txt|ls /Users/admin/hist-dst",
+      # Last, because the guest waits for this scenario's own report.
+      "historyflush", "historyfilter 0|/Users/admin/history-palette.txt", "wait 400"], 14),
+
 ]
 
 # Labels that must appear in the accessibility dump. Each one is a control that draws itself and would
@@ -1081,6 +1108,25 @@ KEYBOARD_REPORTS = {
 # report is checked before it has run: name new scenarios so they are not a prefix-extension of an
 # existing one. (Cost a run: "notes-sidebar-tc" passed alone and failed in company.)
 REPORTS = {
+    # F-402: the palette lists what the session actually did — a file that was copied, the folders both
+    # panels visited, and the copy itself as an operation. The search half is a separate report because
+    # the ordering is the thing that was wrong first: a long path matched "data" everywhere.
+    "history-palette": ("/Users/admin/history-palette.txt",
+                        ["responder=NSTextView", "row=folder|hist-src", "row=folder|hist-dst",
+                         "row=operation|"]),
+    "history-palette-search": ("/Users/admin/history-palette-search.txt",
+                               ["query=data", "row=file|data.txt"]),
+    "history-palette-ops": ("/Users/admin/history-palette-ops.txt",
+                            ["filter=Operations", "row=operation|"]),
+    # Repeating the recorded copy puts the file back after it was removed. The removal is asserted in
+    # the same file, or "data.txt is there" would pass for a build that repeats nothing.
+    "history-palette-copied": ("/Users/admin/history-copied.txt", ["data.txt", "removed=0"]),
+    "history-palette-repeat": ("/Users/admin/history-palette-repeat.txt", ["data.txt"]),
+    # The palette's actions are real menu items, which is what keeps them off the panel's shortcuts and
+    # findable by a screen reader (the F-401 lesson).
+    "history-palette-menu": ("/Users/admin/history-palette-menu.txt",
+                             ["Copy Path  key=A+W+C", "Pin or Unpin  key=W+P",
+                              "Remove from History  key=W+BACKSPACE"]),
     # F-401, both directions in one file: with the Go To field being edited ⌘C copies the FIELD, and
     # with nothing focused the same action still copies the document's bytes. Either half alone would
     # pass for a build that had simply swapped one wrong answer for the other.

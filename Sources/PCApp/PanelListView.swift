@@ -1717,11 +1717,15 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         case .directory, .symlinkDir, .package:
             navigate(to: path)
         case .appBundle:
+            HistoryService.shared.recordFile(path)
             NSWorkspace.shared.open(URL(fileURLWithPath: path))
         case .file, .symlinkFile:
             if archiveExtensions.contains(entry.ext.lowercased()) || Self.isFirstPartOfSplitZip(path) {
                 onEnterArchive?(path)
             } else {
+                // Opening with the system is a file open like any other, and this is where Enter and a
+                // double-click both arrive (F-402).
+                HistoryService.shared.recordFile(path)
                 NSWorkspace.shared.open(URL(fileURLWithPath: path))
             }
         }

@@ -240,6 +240,62 @@ extension MainWindowController {
             case "listerdump":                          // listerdump <outfile>: what the viewer window shows
                 let out = currentLister()?.automationSummary() ?? "ERROR: no lister window\n"
                 try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+            case "history":                              // history <out> (F-402): open the palette, dump it
+                let out = historyPaletteForAutomation().automationSummary()
+                try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+            case "historytype":                         // historytype <text>|<out> (F-402)
+                let h = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if h.count == 2 {
+                    let palette = historyPaletteForAutomation()
+                    palette.automationType(h[0])
+                    try? palette.automationSummary().write(toFile: h[1], atomically: true, encoding: .utf8)
+                }
+            case "historyfilter":                       // historyfilter <0…4>|<out> (F-402)
+                let h = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if h.count == 2, let index = Int(h[0]) {
+                    let palette = historyPaletteForAutomation()
+                    palette.automationSetFilter(index)
+                    try? palette.automationSummary().write(toFile: h[1], atomically: true, encoding: .utf8)
+                }
+            case "historykey":                          // historykey <action>|<out> (F-402)
+                // One verb for the palette's keyboard, because the interesting failures are about which
+                // *row* an action lands on — and that is the same question for all of them.
+                let h = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if h.count == 2 {
+                    let palette = historyPaletteForAutomation()
+                    switch h[0] {
+                    case "down":     palette.automationMove(1)
+                    case "up":       palette.automationMove(-1)
+                    case "tab":      palette.automationToggleTarget()
+                    case "open":     palette.automationOpenSelected()
+                    case "show":     palette.automationOpenSelected(showInPanel: true)
+                    case "pin":      palette.automationTogglePin()
+                    case "remove":   palette.automationRemoveSelected()
+                    case "copypath": palette.automationCopyPath()
+                    default: break
+                    }
+                    // After open/show the palette has closed itself, so report the pasteboard and what
+                    // the panels are doing instead of a window that is gone.
+                    let summary = (h[0] == "open" || h[0] == "show")
+                        ? "action=\(h[0])\nclipboard=\(NSPasteboard.general.string(forType: .string) ?? "")\n"
+                        : palette.automationSummary()
+                        + "clipboard=\(NSPasteboard.general.string(forType: .string) ?? "")\n"
+                    try? summary.write(toFile: h[1], atomically: true, encoding: .utf8)
+                }
+            case "historymenu":                         // historymenu <out> (F-402): the palette's own menu
+                let menu = historyPaletteForAutomation().automationMenu()
+                var lines: [String] = []
+                for item in menu.items {
+                    if item.isSeparatorItem { lines.append("----"); continue }
+                    let key = item.keyEquivalent.isEmpty ? ""
+                        : "  key=" + Self.describe(key: item.keyEquivalent, mask: item.keyEquivalentModifierMask)
+                    lines.append("\(item.title)\(key)")
+                }
+                try? (lines.joined(separator: "\n") + "\n").write(toFile: arg, atomically: true, encoding: .utf8)
+            case "historyreset":                        // historyreset (F-402): start from an empty list
+                HistoryService.shared.resetForAutomation()
+            case "historyflush":                        // historyflush (F-402): let the debounced write land
+                await HistoryService.shared.flushForAutomation()
             case "hexgoto":                             // hexgoto <path>|<expr>|<out> (F-400)
                 let h = arg.split(separator: "|", maxSplits: 2).map(String.init)
                 if h.count == 3 {
