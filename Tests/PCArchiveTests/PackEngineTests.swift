@@ -179,4 +179,54 @@ final class PackEngineTests: XCTestCase {
             XCTAssertLessThan(separator, dash, "\(format.rawValue): the separator must come first")
         }
     }
+
+    // MARK: - Zip without 7z (F-402 → the fallback)
+
+    /// A stock macOS has no `7z`, and zip is the format people pick first, so packing one failed on a
+    /// clean machine — found in the VM, which has never had Homebrew on it. The built-in writer is
+    /// exercised directly here, because "7z is missing" cannot be arranged in a test.
+    func testTheBuiltInWriterPacksATreeWithNamesRelativeToTheParent() throws {
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appendingPathComponent("pc-pack-\(UUID().uuidString)")
+        let src = root.appendingPathComponent("src", isDirectory: true)
+        let sub = src.appendingPathComponent("sub", isDirectory: true)
+        try fm.createDirectory(at: sub, withIntermediateDirectories: true)
+        defer { try? fm.removeItem(at: root) }
+        try Data("one\n".utf8).write(to: src.appendingPathComponent("a.txt"))
+        try Data("two\n".utf8).write(to: sub.appendingPathComponent("b.txt"))
+        let archive = root.appendingPathComponent("out.zip")
+
+        try PackEngine.packZipWithBuiltInWriter(items: [src.path], to: archive.path, parent: root.path)
+
+        // Read it back with this module's own reader: the names are relative to the parent, exactly as
+        // the 7z route stores them, and the bytes survive the round trip.
+        let reader = try XCTUnwrap(ZipReader(fileURL: archive))
+        let names = reader.entries.map { $0.path }.sorted()
+        XCTAssertEqual(names, ["src/", "src/a.txt", "src/sub/", "src/sub/b.txt"])
+        let a = try XCTUnwrap(reader.entries.first { $0.path == "src/a.txt" })
+        XCTAssertEqual(try reader.data(for: a), Data("one\n".utf8))
+    }
+
+    /// The in-memory writer must not be handed something enormous: above the limit the answer names the
+    /// tool to install instead of failing to allocate.
+    func testTheBuiltInWriterRefusesMoreThanItsLimit() throws {
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appendingPathComponent("pc-pack-big-\(UUID().uuidString)")
+        try fm.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? fm.removeItem(at: root) }
+        // A sparse file over the limit: it costs no disk and reads as the full size.
+        let big = root.appendingPathComponent("big.bin")
+        fm.createFile(atPath: big.path, contents: nil)
+        let handle = try FileHandle(forWritingTo: big)
+        try handle.truncate(atOffset: UInt64(PackEngine.builtInZipLimit + 1))
+        try handle.close()
+
+        XCTAssertThrowsError(try PackEngine.packZipWithBuiltInWriter(
+            items: [big.path], to: root.appendingPathComponent("out.zip").path, parent: root.path)) { error in
+            guard case PackError.unsupportedOption(let message) = error else {
+                return XCTFail("expected unsupportedOption, got \(error)")
+            }
+            XCTAssertTrue(message.contains("7z"), "the message has to name what to install: \(message)")
+        }
+    }
 }

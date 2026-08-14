@@ -56,7 +56,10 @@ pack("sevenzip", .sevenZip)
 pack("zip-store", .zip, level: 0)
 pack("zip-max", .zip, level: 9)
 SWIFT
-swiftc -O -o "$WORK/probe" "$WORK/main.swift" Sources/PCArchive/PackEngine.swift
+# ZipWriter comes along because PackEngine now falls back to it for a plain zip when no 7z is
+# installed (F-132). Compiling the engine alone stopped working the moment it had a neighbour.
+swiftc -O -o "$WORK/probe" "$WORK/main.swift" \
+    Sources/PCArchive/PackEngine.swift Sources/PCArchive/ZipWriter.swift
 "$WORK/probe" "$WORK/src" "$WORK/out" > "$WORK/packed.txt"
 cat "$WORK/packed.txt"
 

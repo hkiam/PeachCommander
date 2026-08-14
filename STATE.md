@@ -26,6 +26,27 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-14 (F-132) — Packing a zip needed Homebrew, and now it does not
+
+Found by covering the pack path for the history: in the VM the pack produced nothing, because zip *and*
+7z both shell out to a `7z` binary and a stock macOS does not carry one. This machine has it through
+Homebrew, which is exactly why it had never shown up here. So the most ordinary choice in the Pack dialog
+— zip — failed on a clean Mac, visibly (the queued job carries its error text in the transfer manager) but
+with no way forward.
+
+There is a pure-Swift `ZipWriter` in PCArchive already, used by the archive *editor*: DEFLATE through the
+system Compression framework, no external tool at all. `PackEngine.pack` now uses it for a plain zip when
+no `7z`/`7za` is installed, and only then — a password or split volumes still need the tool, and still say
+so. Entry names are relative to the items' parent, which is what the 7z route produces (it runs *in* the
+parent and passes basenames), so an archive has the same shape whichever wrote it; symbolic links are
+followed and their target's bytes stored, which is what `/usr/bin/zip` does by default and the only thing
+a writer with no way to record a link can do.
+
+Its one real limit decides the rest: it assembles in memory, so above 512 MB the answer names the tool to
+install rather than failing to allocate. Both halves are tested directly — the writer cannot be reached
+through `pack` on a machine that *has* 7z, so the tests call it by name — and the **VM scenario now packs a
+zip on purpose**: the guest has no 7z, which makes it the one place that proves this works on a stock Mac.
+
 ## 2026-08-14 (F-402, harness) — The pack dialog can be answered from a script now
 
 The one claim left standing without a measurement: packing is recorded in the history, and nothing could

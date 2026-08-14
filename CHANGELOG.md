@@ -35,6 +35,10 @@ does not have.
 
 ### Fixed
 
+- **Packing a zip no longer needs 7-Zip installed.** Zip and 7z both handed the work to a `7z` binary,
+  which macOS does not ship — so the most ordinary choice in the Pack dialog failed on a clean Mac. A
+  plain zip is now written by Peach Commander itself. A password or split volumes still need 7z, and say
+  so, and so does anything over 512 MB.
 - **Extracting into a temporary folder did nothing.** The rule that keeps a crafted archive member from
   writing outside the folder you picked was refusing *every* write under `/private` — which includes
   `/var/folders/…`, the temporary directory macOS hands every app. The extraction reported success and
