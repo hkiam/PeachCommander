@@ -56,7 +56,44 @@ final class PackOptionsDialog: ModalWindowController {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func runModal() { if let window { NSApp.runModal(for: window); window.orderOut(nil) } }
+    #if DEBUG
+    /// Archive names queued by the automation harness, oldest first.
+    ///
+    /// The same idea as `InputDialog.queueScriptedAnswer`, and for the same reason: a modal session does
+    /// not return, so a script that opens this dialog stops there and everything after it never happens.
+    /// That is why packing had no end-to-end coverage — not because it is hard to check, but because
+    /// nothing could get past the question. One answer per call, so a scenario has to say what it expects
+    /// for each pack rather than have one value serve them all.
+    private static var scriptedNames: [(name: String, format: PackFormat?)] = []
+
+    /// Queue one archive name — and optionally a format — for the next pack dialog (automation only).
+    ///
+    /// The format is worth passing: zip and 7z both shell out to `7z`, which a stock macOS does not have,
+    /// so a guest that has never had Homebrew on it cannot pack either of them. `tar` uses /usr/bin/tar
+    /// and is there on every machine, which is what makes this path checkable in the VM at all.
+    static func queueScriptedName(_ name: String, format: PackFormat? = nil) {
+        scriptedNames.append((name, format))
+    }
+
+    /// Whether anything is still waiting — a script can then assert that the dialog really asked.
+    static var hasScriptedNames: Bool { !scriptedNames.isEmpty }
+    #endif
+
+    func runModal() {
+        #if DEBUG
+        // Answered from a script, without ever showing the dialog. The *real* `onPack` runs, with the
+        // format and level the Options page supplies, which is where everything worth checking lives.
+        if !Self.scriptedNames.isEmpty {
+            let queued = Self.scriptedNames.removeFirst()
+            let format = queued.format ?? defaultFormat
+            let withExtension = queued.name.hasSuffix(".\(format.fileExtension)")
+                ? queued.name : "\(queued.name).\(format.fileExtension)"
+            onPack?(withExtension, PackOptions(format: format, level: defaultLevel))
+            return
+        }
+        #endif
+        if let window { NSApp.runModal(for: window); window.orderOut(nil) }
+    }
 
     private func build(defaultBaseName: String) {
         guard let content = window?.contentView else { return }

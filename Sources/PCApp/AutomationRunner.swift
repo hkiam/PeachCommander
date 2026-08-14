@@ -38,6 +38,7 @@ import PCNet
 import PCOperations
 import PCAutomation
 import PCVFS
+import PCArchive   // PackFormat, for the `packanswer` verb
 
 /// Retains editor windows opened by the `editdump` automation verb.
 private var automationEditors: [EditorWindowController] = []
@@ -89,6 +90,15 @@ extension MainWindowController {
                 // Queued before the command that asks, so a modal prompt never stops the script.
                 // Without this every command that asks a question was unreachable from a scenario.
                 InputDialog.queueScriptedAnswer(arg)
+            case "packanswer":                          // packanswer <archiveName>[|<format>] (F-402)
+                // Queues the answer the pack dialog would get. Its own verb rather than `answer`:
+                // that one feeds InputDialog, and the two dialogs ask different questions. The format is
+                // named by its extension ("tar", "zip", "7z", …) — and in the guest it has to be `tar`,
+                // because zip and 7z shell out to a `7z` binary a stock macOS does not carry.
+                let pa = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                let format = pa.count == 2
+                    ? PackFormat.allCases.first(where: { $0.fileExtension == pa[1] }) : nil
+                PackOptionsDialog.queueScriptedName(pa[0], format: format)
             case "answersleft":                         // answersleft <out>: how many queued answers were NOT used
                 // The other half of `answer`: a scenario that expected a prompt and got none would
                 // otherwise pass quietly, having tested nothing at all.
