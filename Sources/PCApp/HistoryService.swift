@@ -28,6 +28,17 @@ final class HistoryService {
     private var history = GlobalHistory(capacity: HistoryService.defaultCapacity)
     private var store: ConfigStore?
     private var enabled = true
+    /// True while the app is putting the panels back where they were at the last quit.
+    ///
+    /// A session restore is not a visit. Without this, every launch counted the startup folders again —
+    /// measured: two folders at `uses=1` came back as `uses=2` after one relaunch — so after a hundred
+    /// launches the folders you happened to leave open would outrank everything you actually chose,
+    /// on a count nobody produced. Pinning already exists for "always near the top".
+    ///
+    /// A flag rather than a scoped closure, because the restore is awaited across two panels; unlike the
+    /// palette's case, the recording it must not see happens *inside* that sequence, so the flag is still
+    /// set when it arrives.
+    private var restoringSession = false
 
     private init() {}
 
@@ -104,7 +115,11 @@ final class HistoryService {
         record(HistoryEntry(kind: .command, path: directory, detail: trimmed))
     }
 
-    private var shouldRecord: Bool { enabled }
+    /// The app is restoring the session; nothing recorded until `endSessionRestore()`.
+    func beginSessionRestore() { restoringSession = true }
+    func endSessionRestore() { restoringSession = false }
+
+    private var shouldRecord: Bool { enabled && !restoringSession }
 
     private func record(_ entry: HistoryEntry) {
         history.record(entry)
