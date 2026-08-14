@@ -26,6 +26,41 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-15 (VM suite) — Four failures, none of them from this work, and how that was established
+
+The first full suite run since this round of work: **155 reports ok, one wrong, no crashes**, and all
+three new scenarios green (`keys-history`, `hex-clipboard` with its three reports, `history-palette` with
+its seven, including `bundle.zip` packed in a guest that has no 7z). It takes about six hours — 81
+scenarios, each a full app launch with settle time and a VNC capture — which is worth knowing before
+starting one.
+
+Four scenarios failed, and the question that mattered was whether they were mine. They were not, and the
+sequence that shows it is worth keeping, because "it passes alone" proves nothing on its own:
+
+| run | session-save | keys-main | toolbar-drop | tree-colours |
+| --- | --- | --- | --- | --- |
+| full suite, this binary | FAIL | FAIL (22 unreachable) | FAIL | FAIL |
+| four scenarios, this binary | FAIL | FAIL (13) | ok | ok |
+| session-save alone, this binary | **ok** | — | — | — |
+| session-save + keys-main, **pre-change** binary (b6b3998) | ok | FAIL (7) | — | — |
+| same three predecessors, **pre-change** binary | **FAIL** | — | ok | ok |
+
+So `keys-main` fails with the binary from before this work as well, and `session-save` fails as soon as
+anything runs before it — with the old binary too. Both are **state-dependent suite failures that predate
+this round**: settings survive in `peachcmd.ini` between scenarios, which STATE has warned about since the
+`keys-*` scenarios were fixed, and the unreachable count moving 22 → 13 → 7 with the predecessor list is
+the signature of exactly that. `toolbar-drop` and `tree-colours` pass whenever they are not run late in a
+long suite.
+
+The committed dumps still show `loopClosed: true` for keys-main, so something between that run and this
+one made the main window's loop depend on what came before. That is a real thing to chase — with a
+bisect over the scenario *order*, not over the code, since the code from before this work fails the same
+way.
+
+Method note: the useful experiment was not "run it alone" but "run it with the same predecessors against
+the older binary". The first only says the failure is order-dependent; the second says whose fault it is.
+A worktree at the old commit plus `regress.py --app` does that without touching the working tree.
+
 ## 2026-08-14 (F-402, follow-up) — A launch is not a visit
 
 Checked the half of persistence that is easy to forget: does a *second* launch read the history back? It
