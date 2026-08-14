@@ -247,6 +247,30 @@ final class WebDAVPluginTests: XCTestCase {
         await fs.disconnect()   // must not free the connection a second time
     }
 
+    // MARK: - A server that goes away
+
+    func test_aDeadServerIsReportedAsALostConnection_notAsAMissingDirectory() async throws {
+        // `PfxFindFirst` can only answer NULL, and the host used to read that as "no such
+        // directory" — so a server dying mid-listing told the user their folder was gone, and left
+        // the panel sitting in a mount that could no longer answer anything. `PfxLastError` is how
+        // the plugin says which of the two it was; the host keys the whole retreat off the answer.
+        let fs = try makeFS()
+        let before = try await collect(fs, "/")
+        XCTAssertFalse(before.isEmpty, "the fixture should list before the kill")
+
+        server.terminate()
+        server.waitUntilExit()
+
+        do {
+            _ = try await collect(fs, "/")
+            XCTFail("listed a server that is no longer running")
+        } catch let error as VFSError {
+            guard case .connectionLost = error else {
+                return XCTFail("a dead server was reported as \(error)")
+            }
+        }
+    }
+
     // MARK: - PfxInit and the config root
 
     func test_connect_savesTheSiteUnderTheHostsConfigRoot() throws {

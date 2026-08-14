@@ -28,6 +28,13 @@ final class WebDAVConnection {
     let hostName: String
     let session: URLSession
 
+    /// The last PC_E_* worth reporting, for `PfxLastError`.
+    ///
+    /// `PfxFindFirst` can only answer NULL, so without somewhere to leave the reason the host
+    /// cannot tell "no such directory" from "this server is gone" — and it guessed the first,
+    /// which told users a folder had vanished whenever a connection died mid-listing.
+    var lastError: Int32 = Int32(PC_OK)
+
     init(baseURL: URL, authHeader: String?, hostName: String) {
         self.baseURL = baseURL
         self.authHeader = authHeader
@@ -64,6 +71,10 @@ final class WebDAVConnection {
             sem.signal()
         }.resume()
         sem.wait()
+        // Recorded here rather than at each call site: every request goes through this one place,
+        // and a reason that has to be remembered by hand is a reason that will be forgotten.
+        lastError = (status == 0 || status == 502 || status == 503 || status == 504)
+            ? Int32(PC_E_CONNECTION_LOST) : Int32(PC_OK)
         return (data, status)
     }
 }
@@ -89,8 +100,17 @@ private func ok(_ status: Int) -> Bool { (200...299).contains(status) || status 
 
 private func pcError(_ status: Int) -> Int32 {
     switch status {
+    // `send` reports 0 when there was no HTTP response at all — the host is unreachable, the
+    // connection was refused or it died mid-request. That is the end of this mount, not a fact
+    // about the file, and saying so lets the host leave the drive and name the server instead of
+    // reporting whatever was being fetched as damaged.
+    case 0: return Int32(PC_E_CONNECTION_LOST)
     case 401, 403: return Int32(PC_E_ECREATE)     // permission → host maps to denied
     case 404: return Int32(PC_E_EOPEN)             // not found
+    // 502/503/504 come *from* a gateway, so the server answered — but not with the resource, and
+    // not in a way a retry of this request improves. Treated as the connection being over for the
+    // same reason: continuing to browse a mount behind a dead upstream shows nothing true.
+    case 502, 503, 504: return Int32(PC_E_CONNECTION_LOST)
     default: return Int32(PC_E_BAD_DATA)
     }
 }
@@ -353,6 +373,12 @@ public func PfxConnect(_ services: UnsafePointer<PfxHostServices>?) -> UnsafeMut
     let authHeader = user.isEmpty ? nil : "Basic " + Data("\(user):\(password)".utf8).base64EncodedString()
     let conn = WebDAVConnection(baseURL: baseURL, authHeader: authHeader, hostName: hostName)
     return Unmanaged.passRetained(conn).toOpaque()
+}
+
+@_cdecl("PfxLastError")
+public func PfxLastError(_ conn: UnsafeMutableRawPointer?) -> Int32 {
+    guard let conn else { return Int32(PC_OK) }
+    return Unmanaged<WebDAVConnection>.fromOpaque(conn).takeUnretainedValue().lastError
 }
 
 @_cdecl("PfxConnectionId")

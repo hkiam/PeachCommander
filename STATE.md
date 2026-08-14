@@ -26,6 +26,39 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-14 (mounts, checked) — The assumption held for FTP and not for plugins
+
+Claimed at the end of the SFTP work that the new "a lost connection is announced and the panel
+leaves it" behaviour covered FTP and plugin mounts for free, because both already map to
+`VFSError.connectionLost`. Checked it. **FTP: true** — server dropped mid-listing, panel back on the
+local directory, chip gone. **Plugins: false**, and for a reason worth writing down.
+
+`PfxFindFirst` answers NULL and nothing else. A missing directory and a dead connection arrive
+identically, so the host guessed — and guessed "not found", which is how a WebDAV server dying
+mid-listing left the panel sitting in the mount with the previous directory's rows under the new
+path. Neither `PC_E_*` nor the entry point could express it: the error list is Total Commander's
+archive-derived set, with no code for a transport that is gone.
+
+Two additions, both purely additive. `PC_E_CONNECTION_LOST` (25), and `PfxLastError(conn)` — "why did
+the last call fail", which the host asks only after a handle-returning call answered NULL. Same shape
+as `libssh2_session_last_errno`, which the SFTP fix had just used for exactly this. WebDAV records the
+reason in `send`, where every request already passes, rather than at each call site.
+
+Also `fsconnect <plugin>` for the harness: `pfxmount` only reaches plugins with a *static* drive, so
+a connect-only plugin like WebDAV had no way in from a script — which is why this whole path had no
+coverage.
+
+**And a colour audit, from the same root as the quick-search indicator.** `Theme.current.selectedText`
+is the *marked-file* colour (red by accident of the default palette, Norton yellow in the NC theme).
+Multi-rename used it for a rename that cannot be carried out — an error drawn in the colour that means
+"I picked this one" — now `.systemRed`. The filter badge keeps it deliberately, as the palette's only
+"pay attention" colour, and now says so, because the next reader would otherwise either copy it or
+"fix" it.
+
+**Method note, again.** The first WebDAV check ran against the plugin copy in Application Support,
+which was ten hours old — the very trap fixed in `build.sh` that morning, walked into from the other
+side. The fresh build lives in the app bundle now.
+
 ## 2026-08-14 (SFTP, part two) — Failing is not the same as saying so
 
 Bounding the SFTP session stopped the hang; it did not make anything visible. A failed directory

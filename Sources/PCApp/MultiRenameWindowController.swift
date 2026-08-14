@@ -413,7 +413,12 @@ extension MultiRenameWindowController: NSTableViewDataSource, NSTableViewDelegat
 
         let rowData = previewRows[row]
         textField.stringValue = identifier == Self.oldColumnID ? rowData.old : rowData.new
-        textField.textColor = rowData.ok ? Theme.current.listText : Theme.current.selectedText
+        // `.systemRed` and not `Theme.current.selectedText`: that one is the colour of *marked
+        // files* — red only by accident of the default palette, and Norton Commander's yellow in
+        // the NC theme, where a rename that cannot be carried out would have been drawn in exactly
+        // the colour that means "I picked this one". Same mistake as the quick-search indicator,
+        // found the same way: by asking what the name actually refers to.
+        textField.textColor = rowData.ok ? Theme.current.listText : .systemRed
         return cellView
     }
 

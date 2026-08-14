@@ -7742,6 +7742,12 @@ final class PanelView: NSView {
 
         filterLabel.translatesAutoresizingMaskIntoConstraints = false
         filterLabel.font = Fonts.system13
+        // `selectedText` here is deliberate and *not* the mistake it looks like — it is the marked-
+        // file colour, borrowed as the palette's one "pay attention to this" colour, because a
+        // filter being on is a state the user has to be able to notice. There is no accent colour
+        // in the theme to use instead. Two neighbours use it differently on purpose: this badge
+        // means "something is filtering the list", while the quick-search indicator beside it uses
+        // `listText` and turns red only when nothing matches, where red carries information.
         filterLabel.textColor = Theme.current.selectedText
         filterLabel.backgroundColor = Theme.current.listBackground
         filterLabel.drawsBackground = true
