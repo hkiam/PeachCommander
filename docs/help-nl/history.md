@@ -50,5 +50,5 @@ Instellingen ▸ Overig bepaalt of er een geschiedenis wordt bijgehouden, hoevee
 ## Opmerkingen
 
 - Iets uit de geschiedenis openen geldt als gebruik: daarom blijft stijgen waar je naar terugkeert.
-- Mappen op servers en in plug-inschijven worden ook onthouden; een die niet meer bereikbaar is zegt dat zodra je het probeert.
+- Mappen binnen een archief, op een server of in een plug-inschijf worden niet onthouden: zo'n pad betekent niets zonder de koppeling die het opleverde, en de eigen geschiedenis van het paneel bewaart ze zolang die open is.
 - Dit is niet de eigen mappengeschiedenis van het paneel op Alt+Omlaag, die alleen op volgorde toont waar dat ene paneel is geweest.

@@ -50,5 +50,5 @@ Setări ▸ Diverse decide dacă se ține un istoric, câte intrări păstrează
 ## Note
 
 - Deschiderea a ceva din istoric contează ca utilizare — de aceea ceea ce reiei urcă tot mai sus.
-- Sunt ținute minte și dosarele de pe servere și din unitățile modulelor; unul care nu mai poate fi atins o spune când îl încerci.
+- Dosarele din interiorul unei arhive, de pe un server sau dintr-o unitate de modul nu sunt ținute minte: o astfel de cale nu înseamnă nimic fără montarea care a produs-o, iar istoricul propriu al panoului le păstrează cât timp este deschisă.
 - Acesta nu este istoricul de dosare al panoului de pe Alt+jos, care enumeră doar unde a fost acel panou, în ordine.

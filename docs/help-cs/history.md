@@ -50,5 +50,5 @@ Nastavení ▸ Ostatní rozhoduje, zda se historie vede, kolik položek si drž�
 ## Poznámky
 
 - Otevřít něco z historie se počítá jako použití — proto to, k čemu se vracíte, stále stoupá.
-- Pamatují se i složky na serverech a v discích zásuvných modulů; ta, která už není dosažitelná, to při pokusu řekne.
+- Složky uvnitř archivu, na serveru nebo v disku zásuvného modulu se nepamatují: taková cesta bez připojení, které ji vytvořilo, nic neznamená — vlastní historie panelu je drží, dokud je připojení otevřené.
 - Není to vlastní historie složek panelu na Alt+Dolů, která vypisuje jen to, kde byl ten jeden panel, v pořadí.

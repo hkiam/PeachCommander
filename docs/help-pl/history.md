@@ -50,5 +50,5 @@ Ustawienia ▸ Inne decydują, czy historia jest prowadzona, ile wpisów przecho
 ## Uwagi
 
 - Otwarcie czegoś z historii liczy się jako użycie — dlatego to, do czego wracasz, stale się wybija.
-- Pamiętane są też foldery na serwerach i w dyskach wtyczek; ten, który nie jest już osiągalny, mówi o tym przy próbie.
+- Foldery wewnątrz archiwum, na serwerze lub w dysku wtyczki nie są pamiętane: taka ścieżka nic nie znaczy bez montowania, które ją utworzyło, a własna historia panelu trzyma je, dopóki jest otwarte.
 - To nie jest własna historia folderów panelu na Alt+Dół, która wymienia tylko to, gdzie był ten jeden panel, w kolejności.

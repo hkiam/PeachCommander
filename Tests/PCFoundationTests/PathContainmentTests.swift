@@ -93,6 +93,30 @@ final class PathContainmentTests: XCTestCase {
         XCTAssertFalse(PathContainment.isInside(sibling.appendingPathComponent("f.txt"), root: root))
     }
 
+    /// The defect this rule had for every destination under `/private`: the folder exists, so Foundation
+    /// resolves it to `/tmp/…`; the file about to be written does not, so it keeps `/private/tmp/…`. The
+    /// prefix test then answered "outside" and the caller skipped the write — silently, for every member
+    /// of every archive extracted into such a folder. `/var/folders/…`, the system temp directory, is one
+    /// of these paths, which is why this was worth a rule of its own rather than a note.
+    func testANotYetExistingChildUnderPrivateIsInside() throws {
+        let fm = FileManager.default
+        for base in ["/private/tmp", "/private" + fm.temporaryDirectory.path] {
+            // The second one is /private/var/folders/…, spelled the way Foundation does *not* shorten.
+            let dir = URL(fileURLWithPath: base, isDirectory: true)
+                .appendingPathComponent("pc-containment-\(UUID().uuidString)", isDirectory: true)
+            try fm.createDirectory(at: dir, withIntermediateDirectories: true)
+            defer { try? fm.removeItem(at: dir) }
+            let child = dir.appendingPathComponent("not-created-yet.txt")
+            XCTAssertTrue(PathContainment.isInside(child, root: dir),
+                          "a file about to be written under \(base) must count as inside its own folder")
+            XCTAssertEqual(PathContainment.childPath("not-created-yet.txt", under: dir.path, root: dir.path),
+                           child.path)
+            // And the guard still holds where it must: a sibling of the destination is outside.
+            let escape = dir.deletingLastPathComponent().appendingPathComponent("elsewhere.txt")
+            XCTAssertFalse(PathContainment.isInside(escape, root: dir))
+        }
+    }
+
     func testTheStringFormAgreesWithTheURLForm() {
         XCTAssertNil(PathContainment.childPath("..", under: root.path, root: root.path))
         XCTAssertEqual(PathContainment.childPath("a.txt", under: root.path, root: root.path),

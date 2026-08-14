@@ -50,5 +50,5 @@ Réglages ▸ Divers décide si un historique est tenu, combien d’entrées il 
 ## Remarques
 
 - Ouvrir quelque chose depuis l’historique compte comme un usage : c’est pourquoi ce que vous reprenez ne cesse de remonter.
-- Les dossiers sur les serveurs et dans les volumes de modules sont mémorisés aussi ; celui qui n’est plus joignable le dit quand vous l’essayez.
+- Les dossiers dans une archive, sur un serveur ou dans un volume de module ne sont pas mémorisés : un tel chemin ne veut rien dire sans le montage qui l’a produit, et l’historique propre au panneau les garde tant qu’il est ouvert.
 - Ce n’est pas l’historique de dossiers propre au panneau, sur Option+Bas, qui liste seulement où ce panneau est passé, dans l’ordre.

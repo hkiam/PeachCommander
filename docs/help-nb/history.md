@@ -50,5 +50,5 @@ Innstillinger ▸ Annet avgjør om det føres en historikk, hvor mange oppførin
 ## Merknader
 
 - Å åpne noe fra historikken teller som bruk — derfor fortsetter det du vender tilbake til å stige.
-- Mapper på servere og i pluginenheter huskes også; en som ikke lenger er tilgjengelig, sier det når du prøver.
+- Mapper inne i et arkiv, på en server eller i en pluginenhet huskes ikke: en slik bane betyr ingenting uten monteringen som laget den, og panelets egen historikk beholder dem så lenge den er åpen.
 - Dette er ikke panelets egen mappehistorikk på Alt+Ned, som bare lister hvor det ene panelet har vært, i rekkefølge.

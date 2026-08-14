@@ -50,5 +50,5 @@ Nastavenia ▸ Ostatné rozhodujú, či sa história vedie, koľko položiek si 
 ## Poznámky
 
 - Otvoriť niečo z histórie sa počíta ako použitie — preto to, k čomu sa vraciate, stále stúpa.
-- Pamätajú sa aj priečinky na serveroch a v diskoch zásuvných modulov; ten, ktorý už nie je dosiahnuteľný, to pri pokuse povie.
+- Priečinky vnútri archívu, na serveri alebo v disku zásuvného modulu sa nepamätajú: taká cesta bez pripojenia, ktoré ju vytvorilo, nič neznamená — vlastná história panela ich drží, kým je pripojenie otvorené.
 - Nie je to vlastná história priečinkov panela na Alt+Nadol, ktorá vypisuje len to, kde bol ten jeden panel, v poradí.

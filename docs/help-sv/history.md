@@ -50,5 +50,5 @@ Inställningar ▸ Övrigt avgör om en historik förs, hur många poster den be
 ## Anmärkningar
 
 - Att öppna något ur historiken räknas som användning — därför fortsätter det du återvänder till att stiga.
-- Mappar på servrar och i pluginenheter minns också; en som inte längre går att nå säger det när du provar.
+- Mappar inne i ett arkiv, på en server eller i en pluginenhet minns inte: en sådan sökväg betyder ingenting utan den montering som gav den, och panelens egen historik behåller dem så länge den är öppen.
 - Detta är inte panelens egen mapphistorik på Alt+Ner, som bara listar var just den panelen har varit, i ordning.
