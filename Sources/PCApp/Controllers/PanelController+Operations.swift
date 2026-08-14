@@ -474,9 +474,10 @@ extension PanelController {
                 onComplete: { [weak self] _ in
                     Task { @MainActor in
                         await self?.reload()
-                        // The archive that now exists, recorded where it landed (F-402).
-                        self?.recordInHistory(label: String(localized: "Pack \(archiveName)"),
-                                              directory: targetDir)
+                        // Only if the archive is really there: `onComplete` fires whether the job
+                        // succeeded or not, and a history that lists a pack which failed is a history
+                        // that lies (F-402).
+                        self?.recordPackIfArchiveExists(archiveName, in: targetDir)
                     }
                 })
         }
@@ -498,8 +499,7 @@ extension PanelController {
                 onComplete: { [weak self] _ in
                     Task { @MainActor in
                         await self?.reload()
-                        self?.recordInHistory(label: String(localized: "Pack \(archiveName)"),
-                                              directory: targetDir)
+                        self?.recordPackIfArchiveExists(archiveName, in: targetDir)
                     }
                 })
         }
@@ -922,6 +922,13 @@ extension PanelController {
         enqueueBackground(move ? .move(items: present, toDirectory: dest, options: options)
                                : .copy(items: present, toDirectory: dest, options: options),
                           title: "\(verb) \(present.count) → \((dest as NSString).lastPathComponent)")
+    }
+
+    /// Record a completed pack, if it produced an archive (F-402).
+    private func recordPackIfArchiveExists(_ archiveName: String, in directory: String) {
+        let archivePath = (directory as NSString).appendingPathComponent(archiveName)
+        guard FileManager.default.fileExists(atPath: archivePath) else { return }
+        recordInHistory(label: String(localized: "Pack \(archiveName)"), directory: directory)
     }
 
     // MARK: - Global history (F-402)

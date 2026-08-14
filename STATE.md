@@ -26,6 +26,31 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-14 (F-402, harness) — The pack dialog can be answered from a script now
+
+The one claim left standing without a measurement: packing is recorded in the history, and nothing could
+prove it. `PackOptionsDialog` runs its own modal session, and `answer` only feeds `InputDialog` — so this
+whole path had no end-to-end coverage, for the same reason the F-399 entry gives for every command that
+asks a question.
+
+`packanswer <name>` queues the archive name; `runModal` then invokes the *real* `onPack` with the format
+and level the Options page supplies and returns. Measured locally: the archive lands in the OTHER panel's
+directory (F5-style, which is what Total Commander does), and the history records exactly that —
+`operation|bundle.zip packen|/Users/maik1`. Where the archive went was worth checking on its own: had the
+history claimed the source folder, the entry would have pointed at a file that is not there.
+
+**And the recording is conditional now**, like extraction: `onComplete` fires whether the queued job
+succeeded or not, so a failed pack would have been listed as something that happened. A history that lies
+about the past is worse than one that is short.
+
+**Which the guest promptly demonstrated.** In the VM the pack produced nothing and — correctly — nothing
+was recorded: zip and 7z both shell out to a `7z` binary, and a stock macOS does not have one (this
+machine does, through Homebrew, which is why the local run passed). The failure is not silent, a queued
+job that throws carries its `errorText` in the transfer manager, but it does mean **packing a zip on a Mac
+without 7z installed cannot work** — worth knowing, and not something this feature can fix.
+`packanswer <name>|<format>` therefore names a format, and the scenario packs a **tar**: /usr/bin/tar is on
+every machine, which is what makes this path checkable in the guest at all.
+
 ## 2026-08-14 (F-131, found through F-402) — The zip-slip guard refused everything under /private
 
 Recording pack and extract in the new history needed a check that something had actually been extracted —
