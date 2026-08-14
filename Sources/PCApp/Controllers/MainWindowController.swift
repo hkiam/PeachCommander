@@ -6446,6 +6446,18 @@ final class PanelController: NSObject, PanelControllerProtocol {
             }
             await extractNode(item, to: dest, root: destDir)
         }
+        // Into the history like any other completed operation (F-402), and only what actually arrived:
+        // the first version recorded the attempt, so a zip member that silently extracted nothing (see
+        // the note in STATE.md) still appeared in the list as a thing that had happened. No payload:
+        // unpacking again is not what somebody browsing a list means to do, and Enter shows where it
+        // happened instead.
+        let landed = items.filter { item in
+            let name = (item as NSString).lastPathComponent
+            return FileManager.default.fileExists(
+                atPath: (destDir as NSString).appendingPathComponent(name))
+        }
+        guard !landed.isEmpty else { return }
+        recordInHistory(label: String(localized: "Extract \(landed.count) item(s)"), directory: destDir)
     }
 
     private func extractNode(_ archivePath: String, to destPath: String, root: String) async {
@@ -6644,7 +6656,15 @@ final class PanelController: NSObject, PanelControllerProtocol {
                 // The same condition as the per-panel back/forward stack, and for the same reason: a
                 // refresh is not a visit (F-402). One choke point — every navigation in the app ends
                 // here, whatever started it.
-                HistoryService.shared.recordFolder(path, panel: position.isLeft ? .left : .right)
+                //
+                // Local paths only, and the real app is what said so: entering a zip recorded
+                // `folder|/|/` — inside a mount the panel's path is that mount's own root, which the
+                // palette would then offer as a folder and open at the *filesystem* root. The same holds
+                // for a server or a plugin drive: the path means nothing without the mount that gave it.
+                // The per-panel history keeps them, because there the mount is still there.
+                if fs is LocalFS {
+                    HistoryService.shared.recordFolder(path, panel: position.isLeft ? .left : .right)
+                }
             }
             scheduleStatusRefresh()
             onStateChanged?()

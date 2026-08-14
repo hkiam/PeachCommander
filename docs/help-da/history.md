@@ -50,5 +50,5 @@ Indstillinger ▸ Andet afgør, om der føres en historik, hvor mange poster den
 ## Bemærkninger
 
 - At åbne noget fra historikken tæller som brug — derfor bliver det, du vender tilbage til, ved med at stige.
-- Mapper på servere og i plugindrev huskes også; en, der ikke længere kan nås, siger det, når du prøver.
+- Mapper inde i et arkiv, på en server eller i et plugindrev huskes ikke: en sådan sti betyder intet uden den montering, der frembragte den, og panelets egen historik beholder dem, så længe den er åben.
 - Det er ikke panelets egen mappehistorik på Alt+Ned, som kun viser, hvor netop det panel har været, i rækkefølge.

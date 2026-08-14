@@ -50,5 +50,5 @@ A Beállítások ▸ Egyéb dönti el, vezet-e a program előzményeket, hány b
 ## Megjegyzések
 
 - Ha az előzményekből nyit meg valamit, az használatnak számít — ezért emelkedik folyton az, amihez visszatér.
-- A kiszolgálókon és a bővítménykötetekben lévő mappákat is megjegyzi; amelyik már nem elérhető, azt jelzi, amikor megnyitná.
+- Az archívumon belüli, a kiszolgálón vagy a bővítménykötetben lévő mappákat nem jegyzi meg: egy ilyen útvonal semmit sem jelent az azt előállító csatolás nélkül — a panel saját előzménye megtartja őket, amíg az nyitva van.
 - Ez nem a panel saját mappaelőzménye az Alt+le billentyűn, amely csak azt sorolja fel, hol járt az az egy panel, sorrendben.

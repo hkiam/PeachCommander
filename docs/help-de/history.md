@@ -50,5 +50,5 @@ Einstellungen ▸ Sonstiges entscheidet, ob überhaupt ein Verlauf geführt wird
 ## Hinweise
 
 - Etwas aus dem Verlauf zu öffnen zählt als Benutzung — deshalb steigt, was Sie immer wieder brauchen, immer weiter nach oben.
-- Ordner auf Servern und in Plugin-Laufwerken werden ebenfalls gemerkt; einer, der nicht mehr erreichbar ist, sagt das beim Versuch.
+- Ordner innerhalb eines Archivs, auf einem Server oder in einem Plugin-Laufwerk werden nicht gemerkt: so ein Pfad bedeutet ohne die Einbindung, die ihn erzeugt hat, nichts — die panel-eigene Chronik behält sie, solange sie offen ist.
 - Das ist nicht die panel-eigene Ordner-Chronik auf Alt+Ab, die nur auflistet, wo dieses eine Panel war, in ihrer Reihenfolge.

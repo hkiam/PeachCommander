@@ -50,5 +50,5 @@ Impostazioni ▸ Varie decide se tenere una cronologia, quante voci conservare e
 ## Note
 
 - Aprire qualcosa dalla cronologia conta come usarlo: per questo ciò a cui torni continua a salire.
-- Sono ricordate anche le cartelle sui server e nei volumi dei plugin; una non più raggiungibile lo dice quando la provi.
+- Le cartelle dentro un archivio, su un server o in un volume di un plugin non vengono ricordate: un percorso così non significa nulla senza il montaggio che l’ha prodotto, e la cronologia propria del pannello le conserva finché è aperto.
 - Non è la cronologia delle cartelle del singolo pannello su Alt+Giù, che elenca soltanto dove è stato quel pannello, in ordine.

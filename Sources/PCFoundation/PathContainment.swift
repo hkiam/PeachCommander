@@ -31,10 +31,40 @@ public enum PathContainment {
     /// Resolved first, because the destination is usually reached through a symlink (`/var` →
     /// `/private/var`) and a textual prefix test would wrongly say no. `root` itself counts as inside.
     public static func isInside(_ candidate: URL, root: URL) -> Bool {
-        let resolved = candidate.standardizedFileURL.resolvingSymlinksInPath().standardizedFileURL
-        let base = root.standardizedFileURL.resolvingSymlinksInPath().standardizedFileURL
+        let resolved = normalized(candidate)
+        let base = normalized(root)
         guard resolved != base else { return true }
         return resolved.path.hasPrefix(base.path.hasSuffix("/") ? base.path : base.path + "/")
+    }
+
+    /// Resolve symlinks for the part of `url` that exists, then re-append the rest.
+    ///
+    /// `resolvingSymlinksInPath()` only resolves components that are there — and on macOS it *also*
+    /// shortens a leading `/private`, which is where the two sides of the comparison came apart: the
+    /// destination folder exists and becomes `/tmp/…`, while the file about to be written does not and
+    /// keeps `/private/tmp/…`. The prefix test then says "outside", and since callers skip a refusal
+    /// rather than failing loudly, **every** extraction into a folder under `/private/tmp` or
+    /// `/private/var` quietly produced nothing. Measured with Foundation alone:
+    ///
+    ///     root  -> /tmp/pc-contain-demo/out
+    ///     cand  -> /private/tmp/pc-contain-demo/out/nope.txt
+    ///
+    /// `/var/folders/…` — the system temp directory every app is handed — is exactly such a path, so
+    /// this was not an exotic case. Normalising both sides the same way is the whole fix; it takes
+    /// nothing away from the guard, because a symlink *inside* the destination is still resolved (it
+    /// exists, so it is part of the resolved prefix) and a traversal is still refused by
+    /// `isSafeComponent`.
+    private static func normalized(_ url: URL) -> URL {
+        let fm = FileManager.default
+        var missing: [String] = []
+        var probe = url.standardizedFileURL
+        while !fm.fileExists(atPath: probe.path), probe.pathComponents.count > 1 {
+            missing.append(probe.lastPathComponent)
+            probe = probe.deletingLastPathComponent()
+        }
+        var resolved = probe.resolvingSymlinksInPath().standardizedFileURL
+        for component in missing.reversed() { resolved.appendPathComponent(component) }
+        return resolved.standardizedFileURL
     }
 
     /// Where `name` may be written under `parent`, or nil if it must not be written at all.

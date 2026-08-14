@@ -50,5 +50,5 @@ Nastavitve ▸ Razno določajo, ali se zgodovina vodi, koliko vnosov obdrži in 
 ## Opombe
 
 - Odprtje česa iz zgodovine šteje kot uporaba — zato se tisto, k čemur se vračate, vedno bolj dviga.
-- Zapomnijo se tudi mape na strežnikih in v pogonih vstavkov; tista, ki ni več dosegljiva, to povede ob poskusu.
+- Mape znotraj arhiva, na strežniku ali v pogonu vstavka se ne zapomnijo: taka pot brez priklopa, ki jo je ustvaril, ne pomeni nič, panelova lastna zgodovina pa jih ohrani, dokler je odprt.
 - To ni panelova lastna zgodovina map na Alt+dol, ki našteje le, kje je bil ta en panel, po vrsti.

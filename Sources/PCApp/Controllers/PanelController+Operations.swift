@@ -471,7 +471,14 @@ extension PanelController {
                                     currentItem: archiveName, bytesPerSecond: 0))
                 return []
             }), title: String(localized: "Pack \(archiveName)"),
-                onComplete: { [weak self] _ in Task { @MainActor in await self?.reload() } })
+                onComplete: { [weak self] _ in
+                    Task { @MainActor in
+                        await self?.reload()
+                        // The archive that now exists, recorded where it landed (F-402).
+                        self?.recordInHistory(label: String(localized: "Pack \(archiveName)"),
+                                              directory: targetDir)
+                    }
+                })
         }
         // Pack via a PCX packer plugin (F-137): files are packed relative to their
         // common parent directory.
@@ -488,7 +495,13 @@ extension PanelController {
                                     currentItem: archiveName, bytesPerSecond: 0))
                 return []
             }), title: String(localized: "Pack \(archiveName)"),
-                onComplete: { [weak self] _ in Task { @MainActor in await self?.reload() } })
+                onComplete: { [weak self] _ in
+                    Task { @MainActor in
+                        await self?.reload()
+                        self?.recordInHistory(label: String(localized: "Pack \(archiveName)"),
+                                              directory: targetDir)
+                    }
+                })
         }
         dialog.runModal()
     }

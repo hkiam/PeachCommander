@@ -50,5 +50,5 @@ Settings ▸ Misc decides whether a history is kept at all, how many entries to 
 ## Notes
 
 - Opening something from the history counts as using it, which is why what you return to keeps rising.
-- Folders on servers and in plugin drives are remembered too; one that is no longer reachable says so when you try it.
+- Folders inside an archive, on a server or in a plugin drive are not remembered: such a path means nothing without the mount that produced it, and the panel's own history keeps them while it is open.
 - This is not the panel's own folder history on Alt+Down, which lists where that one panel has been, in order.

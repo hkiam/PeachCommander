@@ -26,6 +26,35 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-14 (F-131, found through F-402) — The zip-slip guard refused everything under /private
+
+Recording pack and extract in the new history needed a check that something had actually been extracted —
+and under `/private/tmp` nothing ever was. Not my code: `PathContainment.isInside`, the rule both the
+archive extractor and the panel's extract walk ask, had been refusing every write into a folder under
+`/private`, silently, since it was written.
+
+`resolvingSymlinksInPath()` resolves only components that *exist*, and on macOS it also shortens a leading
+`/private`. So the two sides of the comparison came apart:
+
+    root  -> /tmp/pc-contain-demo/out          (exists, shortened)
+    cand  -> /private/tmp/pc-contain-demo/out/nope.txt   (does not exist yet, keeps /private)
+
+The prefix test then said "outside", `childPath` returned nil, and callers skip a refusal rather than
+failing loudly — by design, so that one crafted member does not abandon the honest ones beside it. The
+result was an extraction that reported success and wrote nothing. **`/var/folders/…` is such a path**: the
+system temp directory every app is handed, which is why the new test fails against the old code on that
+one and not on a home-directory path. The VM never saw it, because everything there happens under
+`/Users/admin`.
+
+Both sides are now normalised the same way — resolve the deepest existing ancestor, then re-append what is
+not there yet. The guard loses nothing: a symlink *inside* the destination exists, so it is still resolved
+and still caught, and a traversal is still refused by `isSafeComponent`. Measured with Foundation alone
+(above), against the old implementation (the test fails), and end to end in the app: the same archive into
+the same folder went from `inside=` to `inside=a.txt,b.txt`.
+
+Worth noting how it surfaced: not by testing extraction, but by making a *history entry* honest. "Only
+record what actually happened" turned a silent failure into a visible one.
+
 ## 2026-08-14 (harness) — Two modal panels, and only one of them was the blocker
 
 The two new scenarios went into the guest, and the result was the failure shape this project has learned

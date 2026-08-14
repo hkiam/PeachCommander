@@ -50,5 +50,5 @@ Ajustes ▸ Varios decide si se guarda un historial, cuántas entradas conserva 
 ## Notas
 
 - Abrir algo desde el historial cuenta como usarlo: por eso lo que retomas sigue subiendo.
-- También se recuerdan carpetas en servidores y en unidades de complementos; una que ya no esté accesible lo dice al intentarlo.
+- Las carpetas dentro de un archivo comprimido, en un servidor o en una unidad de complemento no se recuerdan: esa ruta no significa nada sin el montaje que la produjo, y el historial propio del panel las conserva mientras está abierto.
 - No es el historial de carpetas propio del panel en Alt+Abajo, que solo enumera por dónde ha pasado ese panel, en orden.

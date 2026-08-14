@@ -35,6 +35,10 @@ does not have.
 
 ### Fixed
 
+- **Extracting into a temporary folder did nothing.** The rule that keeps a crafted archive member from
+  writing outside the folder you picked was refusing *every* write under `/private` — which includes
+  `/var/folders/…`, the temporary directory macOS hands every app. The extraction reported success and
+  produced no files. Both sides of that comparison are now resolved the same way.
 - **Copy and paste in the viewer's and hex editor's dialogs.** In the hex editor's "Go to Address"
   field, Cmd+C copied the file's bytes and Cmd+V did nothing at all: those windows install their own
   menu bar, took Cmd+C for a document action and listed no Cut or Paste whatsoever. A field being
