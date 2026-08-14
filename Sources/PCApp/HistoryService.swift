@@ -28,10 +28,6 @@ final class HistoryService {
     private var history = GlobalHistory(capacity: HistoryService.defaultCapacity)
     private var store: ConfigStore?
     private var enabled = true
-    /// Set while the palette is acting on an entry, so opening something from the history does not
-    /// immediately rewrite the entry that was just used (it does count as a use — but through
-    /// `record`, once, rather than again through the navigation it causes).
-    private var suspended = false
 
     private init() {}
 
@@ -108,19 +104,11 @@ final class HistoryService {
         record(HistoryEntry(kind: .command, path: directory, detail: trimmed))
     }
 
-    private var shouldRecord: Bool { enabled && !suspended }
+    private var shouldRecord: Bool { enabled }
 
     private func record(_ entry: HistoryEntry) {
         history.record(entry)
         persist()
-    }
-
-    /// Run `body` without recording what it causes. Opening a folder *from* the history is one use of
-    /// that entry, not a use plus a fresh visit of the same path a millisecond later.
-    func withoutRecording(_ body: () -> Void) {
-        suspended = true
-        body()
-        suspended = false
     }
 
     // MARK: - Editing

@@ -9,10 +9,10 @@
 |---|---|
 | Phase | **A & B done. C: I14 done; I15 plain FTP LIVE (quick-connect + connection manager, verified vs test.rebex.net; SFTP + explicit-FTPS still pending); I16 lister/content plugins mostly done. D: I17 utilities mostly done; I18 macOS integration MOSTLY DONE (Quick Look Cmd+Y, Share sheet, Open With, Finder Tags: color column + tag-filter (tag:red/#blau), Spotlight metadata in Get Info, Services menu integration, "Open Terminal Here", Full Disk Access onboarding, Go▸Trash, xattr inspector/remove in Change Attributes, privileged "retry as administrator" for chmod+delete done; ACL editing/copy-move-elevation/undo pending). Also F-063 Ctrl+Left/Right open cursor folder in other panel done.; I19 partial (perf targets validated); I20 shipping GROUNDWORK done (DMG script + release CI workflow + hardened-runtime entitlements + RELEASE.md + CHANGELOG + local crash reporting; only Developer-ID signing/notarization and Sparkle auto-update remain — both need Apple creds / update-feed hosting).** |
 | Evidence sweep | **Batches 1–24 (2026-08-07/08): 73 rows checked, 33 defects fixed, 87 → 21 rows without evidence; the last 21 were then worked through on 2026-08-09 and the count is now **0** — five of them turned out not to be implemented at all (the window title, the splitter's double-click, sequential transfers, the icon-off mode and the DMG layout).** A follow-up *interpreter sweep* (2026-08-08, after 0.4.0) then went at one defect class on purpose — a string from somewhere else reaching something that interprets it — and found four more: the panel's extract walk wrote above the destination (F-131), an XML file could read your other files through external entities (F-368), previewing a document fetched a remote image and so reported that you opened it (F-116), and the assistant's approval gate was bypassable through `run_command`. See the entry below. Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive wrote outside the chosen folder (F-131); the archive password stood in the process list (F-136); a CRLF code file rendered as one line six million characters wide (F-110); undoing a batch rename did nothing (F-175); Num/ did nothing (F-056); a wildcard selected the *wrong* file (F-055); a Windows-written .sfv verified nothing (F-097). Six defects were one Swift trap — `"\r\n"` is a single Character. New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, `check-tests-registered.py`, `check-vm-flags.sh`, plus `check-descript-format.sh` extended. Of the 21 rows left, 8 are blocked externally (Apple credentials, SMB mounts, the Services menu). |
-| Current iteration | **0.6.3** — from the idea list: empty-folder search (F-152), a visible quick search (F-060), transfer queue order + a live per-job speed limit (F-085), regular expressions in the viewer and the editor (F-151). Then the reported SFTP freeze (F-214): operations are bounded, a dead connection is announced and the panel leaves it, and a new host key is confirmed with its fingerprint instead of recorded silently. Plugins are told the config root (`PfxInit` + `getContext`). Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update — the workflow exists, four repo secrets are missing. |
+| Current iteration | **0.6.4 (unreleased)** — from three user requests: arithmetic in Go To across number bases (F-400), a clipboard that reaches the field in a tool window's dialogs (F-401), and the global history palette on Ctrl+Cmd+H (F-402). Before that, 0.6.3 shipped from the idea list: empty-folder search (F-152), a visible quick search (F-060), transfer queue order + a live per-job speed limit (F-085), regular expressions in the viewer and the editor (F-151). Then the reported SFTP freeze (F-214): operations are bounded, a dead connection is announced and the panel leaves it, and a new host key is confirmed with its fingerprint instead of recorded silently. Plugins are told the config root (`PfxInit` + `getContext`). Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update — the workflow exists, four repo secrets are missing. |
 | Build status | ✅ builds; app launches |
-| Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **69 scenarios with reports** (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. |
-| Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
+| Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **81 scenarios with reports** (`hex-clipboard`, `history-palette` and `keys-history` are new with F-400…F-402) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. |
+| Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **203 rows** today, F-400/F-401/F-402 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
 | Last updated | 2026-08-14 |
 | Released | **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
@@ -25,6 +25,83 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-14 (harness) — Two modal panels, and only one of them was the blocker
+
+The two new scenarios went into the guest, and the result was the failure shape this project has learned
+to distrust: `hex-clipboard` reported everything, `history-palette` wrote **not one file** — six empty
+reports, no crash, the app apparently alive. It took four runs to get both green, and the first diagnosis
+was wrong, so both are written down.
+
+**What the screenshot showed** (looked at before the log, which was forty thousand lines of espresso and
+CoreSpotlight noise): macOS' own consent panel, *"Allow PeachCommander to find devices on local
+networks?"*, standing over the panels. It comes from the System Monitor plugin's network module, which
+samples interface counters through `getifaddrs`.
+
+**That panel was not the blocker.** It is a *system* panel: it takes the application's activation and
+lets the run loop carry on. What it broke was something else entirely — with activation gone,
+`NSApp.keyWindow` is nil, `AppMenu.forwardToEditedText` returned false, and ⌘C in the hex editor's Go To
+field copied the file's bytes again. The scenario reported that as a wrong expectation rather than as a
+blocked run, and it is a real hole in F-401's fix, not a guest artefact: a Spotlight window or a click in
+another app does the same to a user. Fixed by falling back the way the keyboard dump does
+(`keyWindow ?? mainWindow ?? first visible`), preferring the *attached sheet* — the field being typed in
+belongs to the sheet, not to the window under it — and sending the action straight to the text object,
+because `to: nil` resolves through the key window's chain and had nowhere to go either. Only undo/redo
+still go the indirect way, since the undo manager is what answers those.
+
+**The blocker was our own alert.** `VerifyAfterCopy=1` is seeded in the guest for `bg-copy-verify`, and it
+ends every *foreground* copy with an NSAlert — an app-modal session, which is precisely what a script
+cannot get past. Every report after the copy step was therefore never written. The scenario now turns the
+setting off around its own copy and back on afterwards, through the existing `setbool` verb.
+
+**And one wasted run of my own making:** the first seed that switches the network module off went to
+`~/Library/Application Support/PeachCommander`, where the Notes fixture lives, while `regress-guest.sh`
+launches with `-ConfigRoot ~/pc-cfg` — which that plugin honours. The run looked exactly like the one
+before it. Seeding a plugin's configuration means seeding it where *that* plugin looks, and two plugins
+side by side in this app answer that differently.
+
+**Then the expectations turned out to be wrong rather than the app.** Three of them were measured against
+a search that was still set to "data", and the scenario never *opened* a file at all — copying one is an
+operation, not an open. Fixing that exposed a real defect in the harness: `historytype |<out>` clears the
+search, and Swift's `split` drops empty subsequences, so that line had been doing nothing. With the
+scenario corrected the guest lists exactly what the session did — `folder|hist-src`, `folder|hist-dst`,
+`file|data.txt`, the foreground copy, the repeat that put the file back — and `keys-history` reports a
+closed loop with nothing unlabelled and zero conflicts.
+
+**One thing the dump made visible that no test would have.** Two operation rows side by side read
+"Copy" and "Copy 1 item(s)": the foreground path had borrowed the *undo* action's label. One operation,
+described two ways, in a list a user reads. Both now say what happened.
+
+**Paste is measured at the field editor, not through the menu item.** `to: nil` is what the item does, and
+AppKit resolves it against the key window's responder chain — which an application without activation does
+not have, and `NSApp.activate` does not take hold by the next line. That the item exists and carries ⌘V is
+what the menu dump is for; that the field can paste is what the probe now asks.
+
+**Open, and deliberately not guessed at:** the consent panel still appears in the guest after the System
+Monitor's network module is off, so something else in the process asks for local networking — the
+TaskManager plugin's `port:<n>` facet enumerates socket fds through `PROC_PIDFDSOCKETINFO`, which is the
+obvious candidate but only runs when a lookup asks for it, so that is a suspicion and not a finding. It
+blocks nothing; it takes activation, and both places that used to depend on activation no longer do.
+
+**Rules worth keeping.** When a scenario writes nothing at all, look at its picture before its log. When
+it writes the *wrong* thing, do not assume the same cause: here one panel blocked, another only stole
+focus, and a third failure was my own expectations. An app-modal alert of our own is a scenario blocker by
+construction — `answer` covers `InputDialog`, nothing covers `NSAlert`. And a verb that silently does
+nothing is worse than one that fails: three expectations were quietly measured against the wrong state.
+
+## 2026-08-14 (F-402, follow-up) — One action, counted twice
+
+Found by re-reading my own code rather than by a test: opening a folder from the palette counted as
+*two* uses. The palette counts the entry it opened, and the navigation it causes reports the same folder
+again through `loadPath` — and the "do not record while I do this" flag around that call is useless,
+because the navigation is asynchronous and the flag is long reset by the time it arrives. A refresh of
+the same directory has the same shape.
+
+The flag is gone. `GlobalHistory.record` now coalesces: two records of the same identity within two
+seconds are one use — the timestamp moves, the count does not. That belongs in the model, where it is
+testable, rather than in the app, where it would be a guess about timing. Three existing tests recorded
+twice in the same instant and had to say what they meant (a *second* visit is ten minutes later); the new
+rule has its own test, including that far-enough-apart still counts twice.
 
 ## 2026-08-14 (F-402) — A history that is worth opening, and a matcher that was wrong on real paths
 

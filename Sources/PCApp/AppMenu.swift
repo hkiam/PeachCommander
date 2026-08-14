@@ -668,13 +668,27 @@ enum AppMenu {
     /// selection (a rendered page, a plugin view). A field editor is editable, which is exactly the
     /// case this is for.
     ///
-    /// Forwarded with `to: nil` rather than to the responder itself, so undo/redo reach the field
-    /// editor's undo manager — AppKit supplies that through the responder chain, and NSTextView does
-    /// not implement `undo:` itself.
+    /// Two things here are deliberate, and the VM found both by failing:
+    ///
+    /// **The window is not `keyWindow` alone.** An application that is not frontmost has *no* key
+    /// window, which is an ordinary state in a scripted session and happens to a real user the moment
+    /// anything steals activation — a system consent panel did exactly that in the guest. `keyWindow`
+    /// was nil, this returned false, and ⌘C in the hex editor's Go To field copied the file's bytes
+    /// again. So the same fallback ladder the keyboard dump uses, and the *attached sheet* first: the
+    /// field the user is typing in belongs to the sheet, not to the window under it.
+    ///
+    /// **The action goes to the text object when it can take it.** `to: nil` resolves through the *key*
+    /// window's responder chain — nil again in that state, which is why paste arrived nowhere. Only
+    /// undo/redo have to go the indirect way: they live on the undo manager, which AppKit supplies
+    /// through the chain, and NSTextView does not implement `undo:` itself.
     @MainActor
     @discardableResult
     static func forwardToEditedText(_ selector: Selector) -> Bool {
-        guard let text = NSApp.keyWindow?.firstResponder as? NSText, text.isEditable else { return false }
+        let window = NSApp.keyWindow ?? NSApp.mainWindow
+            ?? NSApp.orderedWindows.first(where: { $0.isVisible })
+        let target = window?.attachedSheet ?? window
+        guard let text = target?.firstResponder as? NSText, text.isEditable else { return false }
+        if text.responds(to: selector) { return NSApp.sendAction(selector, to: text, from: nil) }
         return NSApp.sendAction(selector, to: nil, from: text)
     }
 

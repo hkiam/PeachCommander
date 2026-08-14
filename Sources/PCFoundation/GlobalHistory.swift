@@ -116,14 +116,25 @@ public struct GlobalHistory: Sendable, Equatable {
         evict()
     }
 
+    /// How close together two records of the same thing count as one use.
+    ///
+    /// Not a nicety: one *user* action can legitimately arrive here twice. Opening a folder from the
+    /// palette is a use of that entry, and the navigation it causes then reports the same folder again a
+    /// moment later — through `loadPath`, which is asynchronous, so no "do not record while I do this"
+    /// flag around the call can cover it. A refresh that reloads the same directory is the same shape.
+    /// Counting those twice would quietly inflate exactly the number the ranking is built on.
+    public static let coalesceWindow: TimeInterval = 2
+
     /// Record a use. An entry that is already known keeps its count and gains one, so the weighting
     /// survives; everything else about it (the panel it happened in, its payload) is refreshed, because
-    /// the newest use is the truthful one.
+    /// the newest use is the truthful one. Two records of the same thing within ``coalesceWindow`` are
+    /// one use — the timestamp moves, the count does not.
     public mutating func record(_ entry: HistoryEntry) {
         if let i = entries.firstIndex(where: { $0.identity == entry.identity }) {
             var existing = entries[i]
-            existing.lastUsed = entry.lastUsed
-            existing.useCount += 1
+            let sameMoment = entry.lastUsed.timeIntervalSince(existing.lastUsed) < Self.coalesceWindow
+            existing.lastUsed = max(existing.lastUsed, entry.lastUsed)
+            if !sameMoment { existing.useCount += 1 }
             existing.panel = entry.panel ?? existing.panel
             entries[i] = existing
         } else {
