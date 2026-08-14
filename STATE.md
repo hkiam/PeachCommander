@@ -26,6 +26,23 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-14 (F-402, follow-up) — A launch is not a visit
+
+Checked the half of persistence that is easy to forget: does a *second* launch read the history back? It
+does — both entries returned, the pin with them. And the check found the next thing wrong: they came back
+at `uses=2`. Restoring the session re-loads both panels' directories, and every launch was counting that
+as a visit.
+
+Left alone it compounds: after a hundred launches the folders you happened to leave open outrank
+everything you actually chose, on a count nobody produced. Pinning already exists for "always near the
+top". So the restore is bracketed — `beginSessionRestore()` / `endSessionRestore()` around the two
+`restoreTabs` calls — and the per-panel history still gets the paths, because there the startup directory
+*is* where that panel has been. A flag rather than a scoped closure, and this time that is sound: the
+recording it must not see happens inside the awaited sequence, unlike the palette's case where the
+navigation arrived long after any flag would have been cleared.
+
+Measured over three launches: `uses=1` before, `uses=1` after, `uses=1` after that.
+
 ## 2026-08-14 (F-132) — Packing a zip needed Homebrew, and now it does not
 
 Found by covering the pack path for the history: in the VM the pack produced nothing, because zip *and*

@@ -1,0 +1,998 @@
+Timestamp               Ty Process[PID:TID]
+2026-08-14 16:23:19.498 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:19.498 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0x105c497d0] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
+2026-08-14 16:23:19.498 Df PeachCommander[9639:bf0a] [com.apple.xpc:connection] [0x105c49ed0] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.agent
+2026-08-14 16:23:19.499 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0x105c4f490] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.launchservicesd
+2026-08-14 16:23:19.499 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] Registering for notification <private> on default queue, to re-boostrap client connection.
+2026-08-14 16:23:19.499 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5c000] activating connection: mach=true listener=false peer=false name=com.apple.pasteboard.1
+2026-08-14 16:23:19.500 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5c140] activating connection: mach=true listener=false peer=false name=com.apple.distributed_notifications@Uv3
+2026-08-14 16:23:19.501 Df PeachCommander[9639:bf05] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) No windows open yet
+2026-08-14 16:23:19.501 A  PeachCommander[9639:bf05] (TCC) TCCAccessRequest() IPC
+2026-08-14 16:23:19.501 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5c280] activating connection: mach=true listener=false peer=false name=com.apple.tccd.system
+2026-08-14 16:23:19.501 I  PeachCommander[9639:bf05] [com.apple.TCC:access] SEND: 0/7 synchronous to com.apple.tccd.system: request: msgID=9639.1, function=TCCAccessRequest, service=kTCCServiceListenEvent,
+2026-08-14 16:23:19.503 I  PeachCommander[9639:bf05] [com.apple.TCC:access] RECV: synchronous reply <dictionary: 0xc53060000> { count = 5, transaction: 0, voucher = 0x0, contents =
+	"prompt_type" => <uint64: 0xa16247ad26b8bf17>: 1
+	"auth_value" => <uint64: 0xa16247ad26b8bf17>: 1
+	"preflight_unknown" => <bool: 0x1f217d190>: true
+	"auth_version" => <uint64: 0xa16247ad26b8bf17>: 1
+	"auth_reason" => <uint64: 0xa16247ad26b8bf37>: 5
+}
+2026-08-14 16:23:19.503 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5c280] invalidated after the last release of the connection object
+2026-08-14 16:23:19.503 Df PeachCommander[9639:bf05] [com.apple.SkyLight:default] server port 0x00003a07, session port 0x00003a07
+2026-08-14 16:23:19.505 Df PeachCommander[9639:bf05] [com.apple.SkyLight:default] New connection 0x18323 main
+2026-08-14 16:23:19.505 I  PeachCommander[9639:bf0a] [com.apple.SkyLight:processes] 0[outside of RPC]: First connection id 99107 mapped to ctx = 0x105c56ed0
+2026-08-14 16:23:19.505 I  PeachCommander[9639:bf05] [com.apple.hiservices:processmgr] Checking in with CAS, pid=9639
+2026-08-14 16:23:19.506 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] LSApplicationCheckIn(), app being registered is:"/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander"
+2026-08-14 16:23:19.506 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas]  { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBuild"="25F70", "DTPlatformName"="macosx", "DTPlatformVersion"="26.5", "DTSDKBuild"="25F70", "DTSDKName"="macosx26.5", "DTXcode"="2660", "DTXcodeBuild"="17F113", "Flavor"=3, "LSArchitecture"="arm64", "LSBundlePath"="/Users/admin/pc-test/PeachCo<…>
+2026-08-14 16:23:19.506 Df PeachCommander[9639:bf05] [com.apple.processmanager:front-35286506] CHECKIN: pid=9639
+2026-08-14 16:23:19.507 Df PeachCommander[9639:bf05] [com.apple.processmanager:front-35286506] CHECKEDIN: pid=9639 asn=0x0-0x98098 foreground=1
+2026-08-14 16:23:19.507 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] Setting processControlState to default PROC_SETPC_SUSPEND because application does not have LSProcessControlValue key
+2026-08-14 16:23:19.507 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5c280] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-08-14 16:23:19.507 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5c280] Connection returned listener port: 0x4203
+2026-08-14 16:23:19.508 Df PeachCommander[9639:bf0b] [com.apple.xpc:connection] [0xc530e4300] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0xc52c5c280.peer[131].0xc530e4300
+2026-08-14 16:23:19.508 Df PeachCommander[9639:bf05] [com.apple.processmanager:front-35286506] FRONTLOGGING: version 1
+2026-08-14 16:23:19.508 Df PeachCommander[9639:bf05] [com.apple.processmanager:front-35286506] Registered, pid=9639 ASN=0x0,0x98098
+2026-08-14 16:23:19.508 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5c3c0] activating connection: mach=true listener=false peer=false name=com.apple.analyticsd
+2026-08-14 16:23:19.508 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Daemon status changed from 0 to 1
+2026-08-14 16:23:19.508 I  PeachCommander[9639:bf0b] [com.apple.CarbonCore:coreservicesdaemon] SCSession():SCSession( id=100, this=0x0x105c4e3d0 option=65538) created, forUID=501 mach_port_t=0x4603.
+2026-08-14 16:23:19.508 I  PeachCommander[9639:bf0b] [com.apple.CarbonCore:coreservicesdaemon] SCSession():SCSession( id=101, this=0x0x105c4e510 option=65538) created, forUID=501 mach_port_t=0x5203.
+2026-08-14 16:23:19.508 I  PeachCommander[9639:bf0b] [com.apple.CarbonCore:coreservicesdaemon] connectToCoreServicesD():Instantiating server (coreservicesd based) SCSession, port=0x4603 serverOptions=0x10002.
+2026-08-14 16:23:19.508 I  PeachCommander[9639:bf05] [com.apple.hiservices:processmgr] _RegisterApplication( pid 9639 => 0x0,0x98098) type=foreground
+2026-08-14 16:23:19.508 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5c280] Connection returned listener port: 0x4203
+2026-08-14 16:23:19.509 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] CFArrayRef _LSCopyLaunchModifiers(LSSessionID, LSASNRef _Nonnull), result for psn [ kLSCurrentApp ASN, 0x0,0x2]  is 1 items.
+2026-08-14 16:23:19.509 Df PeachCommander[9639:bf05] [com.apple.processmanager:front-35286506] BringForward: pid=9639 asn=0x0-0x98098 bringForward=1 foreground=1 uiElement=0 launchedByLS=1 modifiersCount=1 allDisabled=1
+2026-08-14 16:23:19.509 Df PeachCommander[9639:bf05] [com.apple.processmanager:front-35286506] BringFrontModifier: pid=9639 asn=0x0-0x98098 Modifier 0 hideAfter=0 hideOthers=0 dontMakeFrontmost=0 mouseDown=0/0 seed=0/0
+2026-08-14 16:23:19.509 Df PeachCommander[9639:bf05] [com.apple.processmanager:front-35286506] BringForward: pid=9639 asn=0x0-0x98098
+2026-08-14 16:23:19.509 Df PeachCommander[9639:bf05] [com.apple.processmanager:front-35286506] SetFrontProcess: asn=0x0-0x98098 options=0
+2026-08-14 16:23:19.509 I  PeachCommander[9639:bf05] [com.apple.SkyLight:processes] 0[outside of RPC]: SLPSetFrontProcess(0x0-0x98098 window=0 options=0x0
+2026-08-14 16:23:19.509 Df PeachCommander[9639:bf0b] [com.apple.xpc:connection] [0xc52c5c500] activating connection: mach=true listener=false peer=false name=com.apple.lsd.mapdb
+2026-08-14 16:23:19.509 Df PeachCommander[9639:bf0c] [com.apple.CoreAnalytics:client] Received configuration update from daemon (initial)
+2026-08-14 16:23:19.510 Df PeachCommander[9639:bf05] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
+2026-08-14 16:23:19.511 I  PeachCommander[9639:bf0a] [com.apple.launchservices:cas] information in shared memory for 0x0-0x98098 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490486, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-14 16:23:19.511 Df PeachCommander[9639:bf05] (libMobileGestalt.dylib) No persisted cache on this platform.
+2026-08-14 16:23:19.511 Df PeachCommander[9639:bf05] (libMobileGestalt.dylib) Could not get size of EAN data (IOConnectCallScalarMethod kAppleNVMeEANGetSize returned 0xE00002E2)
+2026-08-14 16:23:19.512 Df PeachCommander[9639:bf05] (libMobileGestalt.dylib) Failed to copy 'aptk' from EAN
+2026-08-14 16:23:19.512 Df PeachCommander[9639:bf05] (libMobileGestalt.dylib) Failed to copy APTicket properties. Falling back to default policy.
+2026-08-14 16:23:19.512 Df PeachCommander[9639:bf05] (libMobileGestalt.dylib) Creating default MGSysConfigPolicy
+2026-08-14 16:23:19.512 Df PeachCommander[9639:bf05] (libMobileGestalt.dylib) CFDictionaryRef copySyscfgDictionary(void) enumeration of <private> failed.
+2026-08-14 16:23:19.512 Df PeachCommander[9639:bf05] (libMobileGestalt.dylib) Failed to find key <private>
+2026-08-14 16:23:19.512 Df PeachCommander[9639:bf05] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
+2026-08-14 16:23:19.512 Df PeachCommander[9639:bf05] [com.apple.AppKit:Appearance] Post-registration system appearance: (HLTB: 1)
+2026-08-14 16:23:19.513 I  PeachCommander[9639:bf0b] [com.apple.launchservices:db] LaunchServices database schema version: 20971544
+2026-08-14 16:23:19.514 I  PeachCommander[9639:bf0b] [com.apple.launchservices:default] Unable to load Info.plist exceptions (eGPUOverrides)
+2026-08-14 16:23:19.514 I  PeachCommander[9639:bf0b] [com.apple.launchservices:default] Unable to load Info.plist exceptions (gameModeOverrides)
+2026-08-14 16:23:19.514 I  PeachCommander[9639:bf0b] [com.apple.launchservices:default] Unable to load Info.plist exceptions (identifiedGameOverrides)
+2026-08-14 16:23:19.514 I  PeachCommander[9639:bf0b] [com.apple.launchservices:default] Unable to load Info.plist exceptions (SystemHiddenPreferred)
+2026-08-14 16:23:19.515 Df PeachCommander[9639:bf05] [com.apple.FrontBoard:Common] FBSWorkspace: endpoint monitoring is disabled.
+2026-08-14 16:23:19.515 Df PeachCommander[9639:bf05] [com.apple.FrontBoard:Common] FBSWorkspace: default shell endpoint is disabled.
+2026-08-14 16:23:19.515 Df PeachCommander[9639:bf05] [com.apple.runningboard:connection] Initializing connection
+2026-08-14 16:23:19.515 Df PeachCommander[9639:bf05] [com.apple.runningboard:process] Removing all cached process handles
+2026-08-14 16:23:19.515 Df PeachCommander[9639:bf0c] [com.apple.runningboard:connection] Sending handshake request attempt #1 to server
+2026-08-14 16:23:19.515 Df PeachCommander[9639:bf0c] [com.apple.runningboard:connection] Creating connection to com.apple.runningboard
+2026-08-14 16:23:19.515 Df PeachCommander[9639:bf0c] [com.apple.xpc:connection] [0xc52c5c640] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+2026-08-14 16:23:19.515 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5c280] Connection returned listener port: 0x4203
+2026-08-14 16:23:19.515 A  PeachCommander[9639:bf0a] (RunningBoardServices) didChangeInheritances
+2026-08-14 16:23:19.516 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] information in shared memory for 0x0-0x98098 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490486, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-14 16:23:19.516 Df PeachCommander[9639:bf0c] [com.apple.runningboard:connection] Handshake succeeded
+2026-08-14 16:23:19.516 Df PeachCommander[9639:bf0c] [com.apple.runningboard:connection] Identity resolved as app<application.com.peachcommander.app.490067.490486(501)>
+2026-08-14 16:23:19.517 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5c280] Connection returned listener port: 0x4203
+2026-08-14 16:23:19.517 A  PeachCommander[9639:bf0a] (AppIntents) appintents:register process
+2026-08-14 16:23:19.518 Df PeachCommander[9639:bf0a] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-14 16:23:19.518 Df PeachCommander[9639:bf0a] [com.apple.xpc:connection] [0xc52c5c780] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-14 16:23:19.518 Df PeachCommander[9639:bf0a] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-14 16:23:19.518 Df PeachCommander[9639:bf0a] [com.apple.xpc:connection] [0xc52c5ca00] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-08-14 16:23:19.518 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] information in shared memory for 0x0-0x98098 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490486, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-14 16:23:19.518 I  PeachCommander[9639:bf05] [com.apple.hiservices:processmgr] TransformProcessType(0x0,0x2 => 1 wasFront=1 pickNew=0)
+2026-08-14 16:23:19.518 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.518 I  PeachCommander[9639:bf0a] [com.apple.appintents:Execution] LNAppConnectionListener instantiated
+2026-08-14 16:23:19.518 Df PeachCommander[9639:bf0a] [com.apple.xpc:connection] [0xc52c5ca00] Connection returned listener port: 0x6a03
+2026-08-14 16:23:19.519 Df PeachCommander[9639:bf05] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
+2026-08-14 16:23:19.519 Df PeachCommander[9639:bf0d] [com.apple.xpc:connection] [0xc52c5c780] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-14 16:23:19.519 Df PeachCommander[9639:bf0d] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-14 16:23:19.519 Df PeachCommander[9639:bf05] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-08-14 16:23:19.519 Df PeachCommander[9639:bf05] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-08-14 16:23:19.519 Df PeachCommander[9639:bf0d] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-14 16:23:19.519 A  PeachCommander[9639:bf0d] (AppIntents) appintents:register process
+2026-08-14 16:23:19.519 Df PeachCommander[9639:bf05] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-08-14 16:23:19.519 Df PeachCommander[9639:bf0d] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-14 16:23:19.519 Df PeachCommander[9639:bf0d] [com.apple.xpc:connection] [0xc52c5cc80] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-14 16:23:19.520 E  PeachCommander[9639:bf0a] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-14 16:23:19.520 E  PeachCommander[9639:bf0a] [com.apple.AppKit:Application] Error registering app with intents framework: Error Domain=NSCocoaErrorDomain Code=4097 UserInfo={NSDebugDescription=<private>}
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0d] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0d] [com.apple.xpc:connection] [0xc52c5ca00] Connection returned listener port: 0x6a03
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0c] [com.apple.xpc:connection] [0xc52c5cc80] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0c] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-14 16:23:19.520 E  PeachCommander[9639:bf0d] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-14 16:23:19.520 E  PeachCommander[9639:bf0d] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0c] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-14 16:23:19.520 A  PeachCommander[9639:bf0c] (AppIntents) appintents:register process
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0c] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0c] [com.apple.xpc:connection] [0xc52c5d2c0] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0c] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0c] [com.apple.xpc:connection] [0xc52c5ca00] Connection returned listener port: 0x6a03
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0d] [com.apple.xpc:connection] [0xc52c5d2c0] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0d] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-14 16:23:19.520 E  PeachCommander[9639:bf0c] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-14 16:23:19.520 E  PeachCommander[9639:bf0c] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0d] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-14 16:23:19.520 A  PeachCommander[9639:bf0d] (AppIntents) appintents:register process
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0d] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0d] [com.apple.xpc:connection] [0xc52c5d540] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0d] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-08-14 16:23:19.520 Df PeachCommander[9639:bf0d] [com.apple.xpc:connection] [0xc52c5ca00] Connection returned listener port: 0x6a03
+2026-08-14 16:23:19.521 Df PeachCommander[9639:bf0c] [com.apple.xpc:connection] [0xc52c5d540] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-08-14 16:23:19.521 Df PeachCommander[9639:bf0c] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-08-14 16:23:19.521 E  PeachCommander[9639:bf0c] [com.apple.appintents:Connection] Will NOT re-try to establish the connection
+2026-08-14 16:23:19.521 E  PeachCommander[9639:bf0d] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-14 16:23:19.521 E  PeachCommander[9639:bf0d] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-08-14 16:23:19.522 A  PeachCommander[9639:bf05] (CoreFoundation) Loading Preferences From System CFPrefsD
+2026-08-14 16:23:19.523 Df PeachCommander[9639:bf05] (libMobileGestalt.dylib) couldn't load support library
+2026-08-14 16:23:19.523 Df PeachCommander[9639:bf05] (libMobileGestalt.dylib) called dummy function!
+2026-08-14 16:23:19.523 I  PeachCommander[9639:bf05] [com.apple.GenerativeModels:availability] Current availability state: unavailable, use cases: com.apple.WritingTools, language: <any>, api: <private>
+2026-08-14 16:23:19.523 Df PeachCommander[9639:bf05] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.gms.availability.notification
+2026-08-14 16:23:19.523 Df PeachCommander[9639:bf05] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.os-eligibility-domain.change.greymatter
+2026-08-14 16:23:19.523 Df PeachCommander[9639:bf05] [com.apple.GenerativeModels:availability] registering darwin observer for name: com.apple.language.changed
+2026-08-14 16:23:19.523 Df PeachCommander[9639:bf05] [com.apple.WritingTools:Default] isAvailable value changed: isMDMAllowed = true, gmAvailable (current) = false
+2026-08-14 16:23:19.525 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.527 Df PeachCommander[9639:bf05] [com.apple.AppKit:Appearance] NSApp cache appearance:
+-NSRequiresAquaSystemAppearance: 0
+-appearance: (null)
+-effectiveAppearance: <NSCompositeAppearance: 0xc53064780
+ (
+    "<NSAquaAppearance: 0xc530645a0>",
+    "<NSSystemAppearance: 0xc530646e0>"
+)>
+2026-08-14 16:23:19.530 A  PeachCommander[9639:bf05] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-14 16:23:19.530 A  PeachCommander[9639:bf05] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-14 16:23:19.533 A  PeachCommander[9639:bf0c] (libsystem_info.dylib) Membership API: translate identifier
+2026-08-14 16:23:19.535 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.535 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.536 Df PeachCommander[9639:bf0d] [com.apple.xpc:connection] [0xc52c5da40] activating connection: mach=true listener=false peer=false name=com.apple.dock.fullscreen
+2026-08-14 16:23:19.537 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5db80] activating connection: mach=true listener=false peer=false name=com.apple.fonts
+2026-08-14 16:23:19.539 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] information in shared memory for 0x0-0x98098 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490486, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-14 16:23:19.540 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.540 Df PeachCommander[9639:bf05] [com.apple.AppKit:AutomaticTermination] -[NSApplication(NSAppssassination) _checkForAutomaticTerminationSupportPossiblyEnablingIt]_block_invoke Enabling automatic termination support.
+2026-08-14 16:23:19.540 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5cdc0] activating connection: mach=true listener=false peer=false name=com.apple.appkit.restoration_storage
+2026-08-14 16:23:19.540 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] information in shared memory for 0x0-0x98098 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490486, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-14 16:23:19.540 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5cf00] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.appleevents
+2026-08-14 16:23:19.540 I  PeachCommander[9639:bf05] [com.apple.appleevents:main] _AEGetRegisteredMachPort() created default port (port:64003/0xfa03 rcv:1 send:1 limit:5) and registered it with server
+2026-08-14 16:23:19.540 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5c280] Connection returned listener port: 0x4203
+2026-08-14 16:23:19.541 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] information in shared memory for 0x0-0x98098 with seed 533 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490486, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "CanBecomeFrontmost"=true, "ChangeCount"=533, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-14 16:23:19.541 Df PeachCommander[9639:bf05] [com.apple.processmanager:front-35286506] SignalReady: pid=9639 asn=0x0-0x98098
+2026-08-14 16:23:19.541 Df PeachCommander[9639:bf05] [com.apple.processmanager:front-35286506] SIGNAL: pid=9639 asn=0x0x-0x98098
+2026-08-14 16:23:19.541 I  PeachCommander[9639:bf05] [com.apple.appleevents:main] aeGenerateFakeFirstOAPPEventIfNecessary()
+2026-08-14 16:23:19.541 I  PeachCommander[9639:bf05] [com.apple.appleevents:main] aeGenerateFakeFirstOAPPEventIfNecessary(), needToCreateFakeOAPPEventIfFirstEvent == true
+2026-08-14 16:23:19.541 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] Removing cached information for app [ 0x0-0x98098]  "PeachCommander", as its seed is different from that in shared memory ( 533 vs 535)
+2026-08-14 16:23:19.542 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0xc5329dae0> 792B6A70-49AF-402D-967A-D74FC6766D32) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
+2026-08-14 16:23:19.542 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:cache] Rebuilding cache for 'DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0xc5329dae0> 792B6A70-49AF-402D-967A-D74FC6766D32)
+2026-08-14 16:23:19.542 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
+2026-08-14 16:23:19.542 A  PeachCommander[9639:bf05] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-14 16:23:19.542 A  PeachCommander[9639:bf05] (CoreFoundation) Loading Preferences From System CFPrefsD
+2026-08-14 16:23:19.542 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xc5329db00> CA3939E7-24E4-481E-AA02-5D416D11A0FA) gen: -1 item: 1 flavor: '-32766 1768845414')
+2026-08-14 16:23:19.542 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:cache] Rebuilding cache for 'AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xc5329db00> CA3939E7-24E4-481E-AA02-5D416D11A0FA)
+2026-08-14 16:23:19.542 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-14 16:23:19.542 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 4 data (310 bytes) flags: 0
+2026-08-14 16:23:19.542 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xc5329db00> CA3939E7-24E4-481E-AA02-5D416D11A0FA) gen: -1 item: 1 flavor: '-32765 1802264953')
+2026-08-14 16:23:19.542 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 4 data (306 bytes) flags: 0
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xc5329db00> CA3939E7-24E4-481E-AA02-5D416D11A0FA) gen: -1 item: 1 flavor: '-32764 1802264953')
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 4 data (281 bytes) flags: 0
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xc5329db00> CA3939E7-24E4-481E-AA02-5D416D11A0FA) gen: -1 item: 1 flavor: '-32763 1802264953')
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 4 data (318 bytes) flags: 0
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xc5329db00> CA3939E7-24E4-481E-AA02-5D416D11A0FA) gen: -1 item: 1 flavor: '-32765 1768845414')
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 4 data (303 bytes) flags: 0
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:entry] CopyData('AppleIntlFileCacheModificationDatePasteboard' (<CFUUID 0xc5329db00> CA3939E7-24E4-481E-AA02-5D416D11A0FA) gen: -1 item: 1 flavor: '-32763 1768845414')
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-14 16:23:19.543 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 4 data (315 bytes) flags: 0
+2026-08-14 16:23:19.544 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] information in shared memory for 0x0-0x98098 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490486, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-14 16:23:19.544 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5de00] activating connection: mach=false listener=false peer=false name=com.apple.ViewBridgeAuxiliary
+2026-08-14 16:23:19.549 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5dcc0] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-14 16:23:19.549 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5df40] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-08-14 16:23:19.549 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5df40] Connection returned listener port: 0xf203
+2026-08-14 16:23:19.549 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5de00] invalidated after the last release of the connection object
+2026-08-14 16:23:19.550 I  PeachCommander[9639:bf05] [com.apple.showhide:pr-59900543] SHOWHIDE: SHOW id=220 0x0-0x98098, err=0 eventTime=2291583375541 windowID=0
+2026-08-14 16:23:19.550 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:coreservicesdaemon] findOrCreateCacheable():findOrCreateCacheable(), factoryName=3 cacheableName=<private> fCacheables.size()=0
+2026-08-14 16:23:19.550 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:coreservicesdaemon] findOrCreateCacheable():findOrCreateCacheable(), result = 0xc52c8ca40 (should be non-NULL)
+2026-08-14 16:23:19.550 Df PeachCommander[9639:bf05] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) Restoring windows
+2026-08-14 16:23:19.550 Df PeachCommander[9639:bf05] [com.apple.AppKit:StateRestoration] -[NSApplication _reopenWindowsAsNecessaryIncludingRestorableState:withFullFidelity:completionHandler:] shouldRestoreState=1 hasPersistentStateToRestore=0 shouldStillRestoreStateAfterPrompting=0
+2026-08-14 16:23:19.550 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5de00] activating connection: mach=true listener=false peer=false name=com.apple.window_proxies
+2026-08-14 16:23:19.550 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52c5de00] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+2026-08-14 16:23:19.550 I  PeachCommander[9639:bf05] [com.apple.SkyLight:processes] 0[outside of RPC]: SLSSetFrontProcessWithInfo(0x0-0x2 window=0 options=0x1
+2026-08-14 16:23:19.551 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.551 Df PeachCommander[9639:bf05] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) Restoring windows
+2026-08-14 16:23:19.553 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.553 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.554 A  PeachCommander[9639:bf05] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-14 16:23:19.570 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] VolumeManager initialized
+2026-08-14 16:23:19.585 Df PeachCommander[9639:bf05] [com.apple.BoardServices:XPCErrors] [C:1] Alloc <private>
+2026-08-14 16:23:19.585 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52fc5180] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-14 16:23:19.587 I  PeachCommander[9639:bf05] [com.apple.AppKit:Window] context (0 -> eaf4a870) for window 20e
+2026-08-14 16:23:19.588 Df PeachCommander[9639:bf0d] [com.apple.corespotlight:index] (<private>) deleteSearchableItemsWithDomainIdentifiers, protectionClass:(null), domainIdentifiers number:1
+2026-08-14 16:23:19.588 A  PeachCommander[9639:bf0d] (CoreSpotlight) delete-domains
+2026-08-14 16:23:19.588 Df PeachCommander[9639:bf0d] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-14 16:23:19.588 Df PeachCommander[9639:bf0d] (CoreSpotlight) sConnectionName: com.apple.spotlight.IndexAgent
+2026-08-14 16:23:19.588 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] MainWindowController initialized (config: <private>)
+2026-08-14 16:23:19.588 Df PeachCommander[9639:bf0d] (CoreSpotlight) Start service name com.apple.spotlight.IndexAgent
+2026-08-14 16:23:19.588 Df PeachCommander[9639:bf0d] [com.apple.xpc:connection] [0xc52fc5400] activating connection: mach=true listener=false peer=false name=com.apple.spotlight.IndexAgent
+2026-08-14 16:23:19.588 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] SelectionState initialized
+2026-08-14 16:23:19.588 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] DirectoryModel initialized
+2026-08-14 16:23:19.588 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] VolumeManager initialized
+2026-08-14 16:23:19.588 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] PanelController initialized for <private> panel
+2026-08-14 16:23:19.588 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] SelectionState initialized
+2026-08-14 16:23:19.588 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] DirectoryModel initialized
+2026-08-14 16:23:19.588 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] VolumeManager initialized
+2026-08-14 16:23:19.588 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] PanelController initialized for <private> panel
+2026-08-14 16:23:19.591 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.591 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.591 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.591 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.591 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.592 A  PeachCommander[9639:bf0d] (RunningBoardServices) didChangeInheritances
+2026-08-14 16:23:19.593 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.593 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.593 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.593 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.593 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.599 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.601 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.606 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52649180] activating connection: mach=true listener=false peer=false name=com.apple.iconservices
+2026-08-14 16:23:19.607 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc526492c0] activating connection: mach=true listener=false peer=false name=com.apple.iconservices.store
+2026-08-14 16:23:19.607 I  PeachCommander[9639:bf05] [com.peachcommander:Theme] no user themes in /Users/admin/pc-cfg/themes
+2026-08-14 16:23:19.607 Df PeachCommander[9639:bf05] [com.apple.AppKit:Appearance] Invalidate NSApp effectiveAppearance
+2026-08-14 16:23:19.607 Df PeachCommander[9639:bf05] [com.apple.AppKit:Appearance] NSApp cache appearance:
+-NSRequiresAquaSystemAppearance: 0
+-appearance: <NSCompositeAppearance: 0xc530659a0
+ (
+    "<NSDarkAquaAppearance: 0xc53065a40>",
+    "<NSSystemAppearance: 0xc530646e0>"
+)>
+-effectiveAppearance: <NSCompositeAppearance: 0xc530659a0
+ (
+    "<NSDarkAquaAppearance: 0xc53065a40>",
+    "<NSSystemAppearance: 0xc530646e0>"
+)>
+2026-08-14 16:23:19.609 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] Theme applied: id=norton, appearance=dark, dark=true, background=#0000AA
+2026-08-14 16:23:19.610 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] Keymap loaded: scheme=<private>, 82 effective bindings
+2026-08-14 16:23:19.636 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.636 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.636 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "<private>" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.639 I  PeachCommander[9639:bf05] [com.apple.iconservices:foundation] layer data size zero
+2026-08-14 16:23:19.639 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:19.641 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] MainWindowController window loaded
+2026-08-14 16:23:19.641 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] information in shared memory for 0x0-0x98098 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490486, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-14 16:23:19.641 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] information in shared memory for 0x0-0x98098 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490486, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-14 16:23:19.642 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.642 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.642 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.642 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.642 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.643 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.643 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.643 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.643 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.643 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:19.651 I  PeachCommander[9639:bf05] [com.apple.AppKit:Window] order window front conditionally: 20e related: 0
+2026-08-14 16:23:19.651 Df PeachCommander[9639:bf05] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) No windows open yet
+2026-08-14 16:23:19.651 I  PeachCommander[9639:bf05] [com.apple.AppKit:Intelligence] starting collection observation
+2026-08-14 16:23:19.652 Df PeachCommander[9639:bf0d] [com.apple.UIIntelligenceSupport:xpc] establishing connection to agent
+2026-08-14 16:23:19.652 Df PeachCommander[9639:bf0d] [com.apple.xpc:session] [0xc520b0730] Session created.
+2026-08-14 16:23:19.652 Df PeachCommander[9639:bf0d] [com.apple.xpc:session] [0xc520b0730] Session created from connection [0xc52649cc0]
+2026-08-14 16:23:19.652 Df PeachCommander[9639:bf0d] [com.apple.xpc:connection] [0xc52649cc0] activating connection: mach=true listener=false peer=false name=com.apple.uiintelligencesupport.agent
+2026-08-14 16:23:19.652 Df PeachCommander[9639:bf0d] [com.apple.xpc:session] [0xc520b0730] Session activated
+2026-08-14 16:23:19.652 I  PeachCommander[9639:bf05] [com.apple.SkyLight:processes] 0[outside of RPC]: SLSSetFrontProcessWithInfo(0x0-0x2 window=0 options=0x1
+2026-08-14 16:23:19.652 Df PeachCommander[9639:bf0c] [com.apple.UIIntelligenceSupport:xpc] Connection established with agent PID: 1092
+2026-08-14 16:23:19.653 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] information in shared memory for 0x0-0x98098 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490486, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-14 16:23:19.653 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52649e00] activating connection: mach=true listener=false peer=false name=com.apple.FileCoordination
+2026-08-14 16:23:19.653 Df PeachCommander[9639:bf0c] [com.apple.foundation.filecoordination:presenter] Adding presenter 8BB086EF-E1FC-48A2-A474-F90F34708D8E for URL: <private>
+2026-08-14 16:23:19.653 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] information in shared memory for 0x0-0x98098 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490486, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-14 16:23:19.655 I  PeachCommander[9639:bf05] [com.apple.AppKit:Window] order all windows front 2291583375541
+2026-08-14 16:23:19.655 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] information in shared memory for 0x0-0x98098 with seed 535 was still valid, so using cached info { "ApplicationType"="Foreground", "BuildMachineOSBuild"="25E246", "BundleIdentifierLowerCase"="com.peachcommander.app", "CFBundleDevelopmentRegion"="en", "CFBundleExecutable"="PeachCommander", "CFBundleExecutablePath"="/Users/admin/pc-test/PeachCommander.app/Contents/MacOS/PeachCommander", "CFBundleExecutablePathDeviceID"=16777230, "CFBundleExecutablePathINode"=490486, "CFBundleHelpBookFolder"="PeachCommander.help", "CFBundleHelpBookName"="Peach Commander Help", "CFBundleIconFile"="AppIcon", "CFBundleIconName"="AppIcon", "CFBundleIdentifier"="com.peachcommander.app", "CFBundleInfoDictionaryVersion"="6.0", "CFBundleName"="PeachCommander", "CFBundleNameLowerCase"="peachcommander", "CFBundleNumericVersion"=151027712, "CFBundlePackageType"="APPL", "CFBundleShortVersionString"="0.6.3", "CFBundleSignature"="?????", "CFBundleSupportedPlatforms"=( "MacOSX"), "CFBundleVersion"="9", "CanBecomeFrontmost"=true, "ChangeCount"=535, "DTCompiler"="com.apple.compilers.llvm.clang.1_0", "DTPlatformBui<…>
+2026-08-14 16:23:19.655 I  PeachCommander[9639:bf05] [com.apple.showhide:pr-59900543] SHOWHIDE: CONFIRM, id=220, err=0
+2026-08-14 16:23:19.655 I  PeachCommander[9639:bf05] [com.apple.AppKit:Window] context (0 -> 80ba776) for window 20d
+2026-08-14 16:23:19.655 I  PeachCommander[9639:bf05] [com.apple.AppKit:Window] context (0 -> 486dbc55) for window 20c
+2026-08-14 16:23:19.655 I  PeachCommander[9639:bf05] [com.apple.AppKit:Window] context (0 -> 6e808388) for window 20b
+2026-08-14 16:23:19.655 I  PeachCommander[9639:bf05] [com.apple.AppKit:Window] context (0 -> 4bdaf323) for window 20a
+2026-08-14 16:23:19.673 I  PeachCommander[9639:bf05] [com.apple.iconservices:foundation] layer data size zero
+2026-08-14 16:23:19.681 Df PeachCommander[9639:bf05] [com.apple.AppKit:AutomaticTermination] void _updateToReflectAutomaticTerminationState(void) Setting _kLSApplicationWouldBeTerminatedByTALKey=0
+2026-08-14 16:23:19.682 I  PeachCommander[9639:bf05] [com.apple.runningboard:assertion] Acquiring assertion: <RBSAssertionDescriptor| "AppNap adapter assertion" ID:(null) target:9639>
+2026-08-14 16:23:19.715 A  PeachCommander[9639:bf0b] (RunningBoardServices) didChangeInheritances
+2026-08-14 16:23:19.727 Df PeachCommander[9639:bf05] [com.apple.libsystem.libdispatch:] DEPRECATED USE in libdispatch client: dispatch source activated with no event handler set; set a breakpoint on _dispatch_bug_deprecated to debug
+2026-08-14 16:23:19.812 I  PeachCommander[9639:bf05] [com.apple.coreanimation:Utilities] IOSurface Compression Enabled: NO
+2026-08-14 16:23:19.812 Df PeachCommander[9639:bf0c] [com.apple.coreanimation:Metal] Precompiled pipelines disabled on unsupported hardware.
+2026-08-14 16:23:30.205 Df PeachCommander[9639:bfb1] [com.apple.launchservices:default] LSExceptions shared instance invalidated for timeout.
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.HIToolbox:MBDisplays] <private>
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.HIToolbox:MBDisplays] <private>
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValuesBulk SetGestaltValuesBulk( count=22 tuples=0x188a6e650
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(alis 1C9) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(os   FE) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(addr 7) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(fs   3D332) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(fold 11) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(lram 7FFFF000) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(mmap 1) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cfrg 1) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(thds 7) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(tmgr E) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(vers 7) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cbon 160) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cltn 1108000) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(cpnt 8) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(rsrc 3) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(rmbg 11F) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(vm   11) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(srad 4170706C) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(sysa 14) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(copl 9) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(xlat 0) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(stdf 0) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(ram  0x1889e7644) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(ramm 0x1889e7644) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cput 0x1889e7734) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cpuf 0x1889e7764) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(bclk 0x1889e7794) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(bclm 0x1889e7794) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(pclk 0x1889e7834) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(mclk 0x1889e7834) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(a/ux 0x1889e794c) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(pgsz 0x1889e7954) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(csiz 0x1889e7994) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sysv 0x188992dfc) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sys1 0x188992dfc) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sys2 0x188992dfc) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(sys3 0x188992dfc) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cdfl 0x1889e79d4) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cdrm 0x1889e7c30) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] _NewGestalt _NewGestalt(cpus 0x1889e7c78) => 0
+2026-08-14 16:23:54.849 I  PeachCommander[9639:bf05] [com.apple.CarbonCore:gestalt] SetGestaltValue SetGestaltValue(swex 1) => 0
+2026-08-14 16:23:54.849 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc5264b0c0] activating connection: mach=false listener=false peer=false name=com.apple.hiservices-xpcservice
+2026-08-14 16:23:54.851 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:entry] CopyData('ApplePerContextInputPasteboard' (<CFUUID 0xc53a8b5e0> 7F55FBA4-CA96-429A-9E27-81FCE830BDA6) gen: -1 item: 1264739405 flavor: 'ApplePerContextInputFlavor')
+2026-08-14 16:23:54.851 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:cache] Rebuilding cache for 'ApplePerContextInputPasteboard' (<CFUUID 0xc53a8b5e0> 7F55FBA4-CA96-429A-9E27-81FCE830BDA6)
+2026-08-14 16:23:54.851 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:general] Will request data from daemon
+2026-08-14 16:23:54.852 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:exit] (not-in-cache) - result: 0 generation: 1 data (182 bytes) flags: 0
+2026-08-14 16:23:54.852 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0xc5329dae0> 792B6A70-49AF-402D-967A-D74FC6766D32) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
+2026-08-14 16:23:54.852 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
+2026-08-14 16:23:54.855 I  PeachCommander[9639:bf05] [com.apple.AppKit:Window] context (0 -> c86d9be2) for window 20f
+2026-08-14 16:23:54.856 Df PeachCommander[9639:bf05] [com.apple.inputmethodkitClient:Client] +[IMKClient subclass]: chose IMKClient_Modern
+2026-08-14 16:23:54.856 Df PeachCommander[9639:bf05] [com.apple.BoardServices:XPCErrors] [C:2] Alloc com.apple.backboard.hid-services.xpc
+2026-08-14 16:23:54.856 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc5264b200] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-14 16:23:54.857 E  PeachCommander[9639:bfab] [com.apple.BaseBoard:Common] Unable to obtain a task name port right for pid 166: (os/kern) failure (0x5)
+2026-08-14 16:23:54.857 Df PeachCommander[9639:bfab] [com.apple.xpc:connection] [0xc52649f40] activating connection: mach=false listener=false peer=false name=com.apple.TextInputUI.xpc.CursorUIViewService
+2026-08-14 16:23:54.857 Df PeachCommander[9639:bfa9] [com.apple.xpc:connection] [0xc52649f40] invalidated after the last release of the connection object
+2026-08-14 16:23:54.858 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:entry] CopyData('DefaultAsciiKeyboardLayoutPasteboard' (<CFUUID 0xc5329dae0> 792B6A70-49AF-402D-967A-D74FC6766D32) gen: -1 item: 1264739405 flavor: 'DefaultAsciiKeyboardLayoutFlavor')
+2026-08-14 16:23:54.858 I  PeachCommander[9639:bf05] [com.apple.CFPasteboard:exit] (not-in-cache) - result: -8 generation: 0 null data flags: 0
+2026-08-14 16:23:54.859 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52649a40] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-14 16:23:54.859 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52649f40] activating connection: mach=false listener=false peer=false name=com.apple.ViewBridgeAuxiliary
+2026-08-14 16:23:54.859 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc5264a080] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-14 16:23:54.859 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52649f40] invalidated after the last release of the connection object
+2026-08-14 16:23:54.859 I  PeachCommander[9639:bf0b] [com.apple.AppKit:WindowTab] Indexing 1 items
+2026-08-14 16:23:54.860 A  PeachCommander[9639:bf0b] (CoreSpotlight) end-index-batch
+2026-08-14 16:23:54.860 Df PeachCommander[9639:bf0b] [com.apple.corespotlight:index] *warn* MailCS ======%%% _setMailMessageAttributes skip:1
+2026-08-14 16:23:54.860 A  PeachCommander[9639:bf0b] (CoreSpotlight) index-items
+2026-08-14 16:23:54.860 Df PeachCommander[9639:bf0b] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-14 16:23:54.861 Df PeachCommander[9639:bf0b] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-14 16:23:54.878 Df PeachCommander[9639:bf05] [com.apple.TextInputUI:CursorUI] -[TUINSCursorUIController activate:]_block_invoke: Create CursorUIViewService: TUINSRemoteViewController
+2026-08-14 16:23:54.878 I  PeachCommander[9639:bf05] [com.apple.AppKit:Window] window <TUINSWindow: 0xc52368280> windowNumber=20f finishing close
+2026-08-14 16:23:54.878 I  PeachCommander[9639:bf05] [com.apple.AppKit:Window] order window: 20f op: 0 relative: 0 related: 0
+2026-08-14 16:23:54.879 A  PeachCommander[9639:bfc4] (CoreFoundation) Loading Preferences From System CFPrefsD
+2026-08-14 16:23:54.892 Df PeachCommander[9639:bf05] [com.apple.BoardServices:XPCErrors] [C:3] Alloc com.apple.backboard.hid-services.xpc
+2026-08-14 16:23:54.892 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52649f40] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-14 16:23:54.892 Df PeachCommander[9639:bf0b] [com.apple.BackBoard:EventDelivery] BKSHIDEventDeliveryManager - connection activation
+2026-08-14 16:23:54.892 I  PeachCommander[9639:bf05] [com.peachcommander:PCFoundation] Session restored
+2026-08-14 16:23:54.892 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:23:54.892 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:23:54.893 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:23:55.994 I  PeachCommander[9639:bf05] [com.apple.iconservices:foundation] layer data size zero
+2026-08-14 16:23:55.995 A  PeachCommander[9639:bf05] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-08-14 16:23:55.995 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.ImageIO.readerSelection" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:56.008 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:23:56.008 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:23:56.008 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:23:56.009 I  PeachCommander[9639:bf05] [com.apple.CoreAnalytics:client] Dropping "com.apple.appkit.app_config" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:56.009 Df PeachCommander[9639:bfc4] [com.apple.xpc:connection] [0xc52649540] activating connection: mach=false listener=false peer=false name=com.apple.SafariPlatformSupport.Helper
+2026-08-14 16:23:56.010 I  PeachCommander[9639:bf05] [com.apple.launchservices:datasep] application record search init. Node: <FSNode 0xc540e07e0> { isDir = y, path = <private> } bundleID: (null) itemID: 0
+2026-08-14 16:23:56.010 I  PeachCommander[9639:bf05] [com.apple.launchservices:datasep] application record search init. Node: <FSNode 0xc540e07e0> { isDir = y, path = <private> } bundleID: (null) itemID: 0
+2026-08-14 16:23:56.010 I  PeachCommander[9639:bf05] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SFSafariPlatformSupport credentialSelected:] with nil credential
+2026-08-14 16:23:56.010 I  PeachCommander[9639:bf05] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SFSafariPlatformSupport oneTimeCodeSelected:] with nil code
+2026-08-14 16:23:56.010 I  PeachCommander[9639:bfa9] [com.apple.AppKit:WindowTab] Indexing 1 items
+2026-08-14 16:23:56.010 A  PeachCommander[9639:bfa9] (CoreSpotlight) end-index-batch
+2026-08-14 16:23:56.011 A  PeachCommander[9639:bfa9] (CoreSpotlight) index-items
+2026-08-14 16:23:56.011 Df PeachCommander[9639:bfa9] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-14 16:23:56.011 Df PeachCommander[9639:bfc4] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-14 16:23:56.022 A  PeachCommander[9639:bfa9] (libsystem_info.dylib) Retrieve Group by ID
+2026-08-14 16:23:56.064 Df PeachCommander[9639:bfa6] [com.apple.xpc:connection] [0xc52649540] invalidated after the last release of the connection object
+2026-08-14 16:23:56.064 I  PeachCommander[9639:bf05] [com.apple.launchservices:cas] Removing cached information for app [ 0x0-0x98098]  "PeachCommander", as its seed is different from that in shared memory ( 535 vs 538)
+2026-08-14 16:23:56.065 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52649400] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-14 16:23:56.065 Df PeachCommander[9639:bf05] [com.apple.xpc:connection] [0xc52649540] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-08-14 16:23:56.105 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.105 I  PeachCommander[9639:bfa6] [com.apple.CoreAnalytics:client] Dropping "com.apple.security.LegacyAPICounts" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:56.105 I  PeachCommander[9639:bfa6] [com.apple.CoreAnalytics:client] Dropping "com.apple.security.LegacyAPICounts" as it isn't used in any transform (not in the config or budgeted?)
+2026-08-14 16:23:56.105 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.105 Df PeachCommander[9639:bfa6] [com.apple.securityd:keychain] Enabling System Keychain Always due to platform
+2026-08-14 16:23:56.105 Df PeachCommander[9639:bfa6] [com.apple.xpc:connection] [0xc5264a940] activating connection: mach=true listener=false peer=false name=com.apple.trustd.agent
+2026-08-14 16:23:56.106 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.106 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.107 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.107 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.108 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.108 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.108 Df PeachCommander[9639:bfa6] [com.apple.securityd:security_exception] MacOS error: -67062
+2026-08-14 16:23:56.108 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.109 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.109 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.109 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.110 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.110 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.111 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.111 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.111 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.111 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.112 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.112 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.113 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.113 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.113 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.113 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.114 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.114 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.115 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.115 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.116 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.116 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.117 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.117 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.117 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.117 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.118 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.118 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.119 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.119 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.119 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.119 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.120 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.120 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.121 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.121 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.121 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.122 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.122 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.122 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.123 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.123 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.124 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.124 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.125 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.125 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.126 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.126 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.127 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.127 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.127 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.127 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.128 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.128 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.129 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.129 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.130 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.130 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.131 A  PeachCommander[9639:bfa6] (Security) SecTrustCopyAppleTrustAnchors
+2026-08-14 16:23:56.132 A  PeachCommander[9639:bfa6] (Security) SecTrustCopyAppleTrustAnchors
+2026-08-14 16:23:56.132 A  PeachCommander[9639:bfa6] (Security) SecTrustCopyAppleTrustAnchors
+2026-08-14 16:23:56.132 A  PeachCommander[9639:bfa6] (Security) SecTrustCopyAppleTrustAnchors
+2026-08-14 16:23:56.132 A  PeachCommander[9639:bfa6] (Security) SecTrustCopyAppleTrustAnchors
+2026-08-14 16:23:56.132 A  PeachCommander[9639:bfa6] (Security) SecTrustCopyAppleTrustAnchors
+2026-08-14 16:23:56.133 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.133 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.133 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.133 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.134 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.134 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.135 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.135 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.135 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.135 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.136 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.136 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.137 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.137 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.137 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.137 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.138 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.138 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.139 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.139 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.139 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.140 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.140 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.140 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.141 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.141 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.142 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.142 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.142 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.142 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.143 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.143 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.144 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.144 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.145 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.145 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.146 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.146 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.147 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.147 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.148 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.148 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.149 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.149 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.149 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.149 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.150 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.150 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.151 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.151 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.152 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.152 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.153 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.153 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.153 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.154 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.154 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.154 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.155 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.155 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.156 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.156 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.157 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.157 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.158 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.158 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.159 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.159 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.160 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.160 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.161 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.161 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.161 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.161 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.162 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.162 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.163 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.163 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.163 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.164 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.164 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.164 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.165 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.165 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.165 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.166 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.166 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.166 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.167 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.167 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.167 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.167 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.168 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.168 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.169 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.169 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.169 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.169 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.170 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.170 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.171 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.171 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.171 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.171 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.172 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.172 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.173 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.173 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.173 A  PeachCommander[9639:bfa6] (Security) SecTrustCopyAppleTrustAnchors
+2026-08-14 16:23:56.173 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.173 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.174 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.174 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.175 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.175 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.175 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.175 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.176 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.176 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.176 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.176 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.177 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.177 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.178 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.178 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.178 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.178 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.179 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.179 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.179 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.180 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.180 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.180 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.181 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.181 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.181 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.181 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.182 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.182 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.183 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.183 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.183 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.183 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.184 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.184 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.184 A  PeachCommander[9639:bfa6] (Security) SecKeyVerifySignature
+2026-08-14 16:23:56.184 A  PeachCommander[9639:bfa6] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:56.262 I  PeachCommander[9639:bf05] [com.apple.SafariPlatformSupport:SafariPlatformSupport] -[SPSafariPlatformSupport completionListPreferredContentSizeDidUpdate] with size {0, 0}, in window that is visible
+2026-08-14 16:23:56.283 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:56.287 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:56.294 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:56.469 I  PeachCommander[9639:bfa6] [com.apple.AppKit:WindowTab] Indexing 1 items
+2026-08-14 16:23:56.469 A  PeachCommander[9639:bfa6] (CoreSpotlight) end-index-batch
+2026-08-14 16:23:56.469 A  PeachCommander[9639:bfa6] (CoreSpotlight) index-items
+2026-08-14 16:23:56.469 Df PeachCommander[9639:bfa6] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-14 16:23:56.469 Df PeachCommander[9639:bfa6] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-14 16:23:58.391 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.391 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.393 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.393 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.395 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.395 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.396 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.396 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.398 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.398 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.398 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.399 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.400 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.400 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.401 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.401 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.402 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.402 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.403 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.403 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.404 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.404 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.405 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.405 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.406 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.406 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.407 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.407 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.408 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.408 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.409 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.409 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.410 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.410 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.411 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.411 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.412 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.412 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.412 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.412 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.413 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.413 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.414 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.414 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.415 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.415 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.416 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.416 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.417 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.417 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.418 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.418 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.419 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.419 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.419 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.419 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.420 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.420 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.421 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.421 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.422 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.422 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.422 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.422 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.423 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.423 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.424 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.424 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.425 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.425 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.426 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.426 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.427 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.427 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.427 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.428 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.428 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.428 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.429 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.429 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.430 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.430 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.430 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.430 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.431 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.431 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.432 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.432 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.432 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.432 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.433 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.433 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.434 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.434 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.435 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.435 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.435 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.435 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.436 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.436 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.437 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.437 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.437 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.437 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.438 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.438 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.439 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.439 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.440 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.440 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.440 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.440 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.441 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.441 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.441 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.442 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.442 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.442 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.443 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.443 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.444 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.444 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.444 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.444 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.445 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.445 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.446 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.446 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.447 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.447 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.447 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.447 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.448 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.448 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.449 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.449 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.449 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.449 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.450 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.450 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.455 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.455 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.456 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.456 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.458 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.458 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.459 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.459 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.461 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.461 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.462 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.462 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.463 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.463 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.465 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.465 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.466 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.466 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.468 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.468 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.469 Df PeachCommander[9639:bf0b] [com.apple.securityd:security_exception] MacOS error: -67062
+2026-08-14 16:23:58.469 A  PeachCommander[9639:bf0b] (Security) SecKeyVerifySignature
+2026-08-14 16:23:58.469 A  PeachCommander[9639:bf0b] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:23:58.473 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.474 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.474 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.474 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.475 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.475 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.476 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.476 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.477 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.477 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.477 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.478 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.479 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.480 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.480 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.480 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.481 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.481 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.481 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.481 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.481 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.481 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.483 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.483 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.485 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.486 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.486 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.486 A  PeachCommander[9639:bf05] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.545 A  PeachCommander[9639:bfa9] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.545 A  PeachCommander[9639:bf0b] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.545 A  PeachCommander[9639:bfc4] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:58.545 A  PeachCommander[9639:bfa6] (libsystem_info.dylib) Retrieve User by ID
+2026-08-14 16:23:59.218 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:23:59.245 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:59.245 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:59.245 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:59.245 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:23:59.269 I  PeachCommander[9639:bf05] [com.apple.AppKit:Window] order window front conditionally: 20e related: 0
+2026-08-14 16:23:59.269 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:23:59.269 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:23:59.322 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:23:59.322 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:23:59.375 I  PeachCommander[9639:bfa0] [com.apple.iconservices:foundation] layer data size zero
+2026-08-14 16:23:59.417 I  PeachCommander[9639:bfa9] [com.apple.iconservices:foundation] layer data size zero
+2026-08-14 16:24:00.195 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:24:00.197 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:24:00.569 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.569 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.572 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.572 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.573 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.573 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.575 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.575 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.577 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.577 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.579 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.579 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.580 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.580 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.582 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.582 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.584 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.584 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.585 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.585 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.587 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.587 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.588 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.588 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.589 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.589 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.591 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.591 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.592 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.592 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.594 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.594 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.595 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.595 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.597 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.597 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.598 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.598 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.600 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.600 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.601 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.601 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.602 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.602 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.603 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.603 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.604 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.604 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.605 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.605 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.607 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.607 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.608 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.608 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.610 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.610 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.611 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.611 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.612 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.612 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.613 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.614 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.615 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.615 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.617 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.617 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.618 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.618 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.618 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:24:00.619 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:24:00.619 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.619 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.620 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.621 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.622 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.622 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.623 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.623 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.625 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.625 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.626 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.626 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.627 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.627 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.628 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.628 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.629 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.629 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.630 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.630 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.631 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.631 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.632 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.632 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.633 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.633 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.634 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.634 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.635 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.635 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.636 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.636 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.638 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.638 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.639 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.639 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.641 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.641 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.642 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.642 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:00.644 A  PeachCommander[9639:bfa4] (Security) SecKeyVerifySignature
+2026-08-14 16:24:00.644 A  PeachCommander[9639:bfa4] (Security) SecTrustEvaluateIfNecessary
+2026-08-14 16:24:01.029 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:24:01.032 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:24:01.040 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:24:01.040 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:24:01.040 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:24:01.040 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:24:01.040 I  PeachCommander[9639:bf05] [com.apple.AppKit:Animation] Running new animation: <private>
+2026-08-14 16:24:01.043 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:01.043 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:01.043 I  PeachCommander[9639:bfab] [com.apple.iconservices:foundation] layer data size zero
+2026-08-14 16:24:01.045 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:01.045 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:01.059 I  PeachCommander[9639:bfab] [com.apple.iconservices:foundation] layer data size zero
+2026-08-14 16:24:01.071 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:01.071 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:01.071 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:01.071 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:01.071 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:01.071 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:01.073 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:01.106 I  PeachCommander[9639:bfab] [com.apple.iconservices:foundation] layer data size zero
+2026-08-14 16:24:01.106 I  PeachCommander[9639:bfa5] [com.apple.iconservices:foundation] layer data size zero
+2026-08-14 16:24:01.167 I  PeachCommander[9639:bfa5] [com.apple.AppKit:WindowTab] Indexing 1 items
+2026-08-14 16:24:01.167 A  PeachCommander[9639:bfa5] (CoreSpotlight) end-index-batch
+2026-08-14 16:24:01.167 A  PeachCommander[9639:bfa5] (CoreSpotlight) index-items
+2026-08-14 16:24:01.167 Df PeachCommander[9639:bfa5] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-14 16:24:01.167 Df PeachCommander[9639:bfa5] [com.apple.corespotlight:index] CSInlineDonation:<private>: Skipping donation (feature flag disabled)
+2026-08-14 16:24:02.613 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:24:02.615 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:24:02.616 Df PeachCommander[9639:bf05] (Foundation) <private>
+2026-08-14 16:24:02.731 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:02.732 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:02.737 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:02.737 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:02.739 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>
+2026-08-14 16:24:02.739 I  PeachCommander[9639:bf05] [com.apple.AppKit:Image] ISImage reported a placeholder, image rep is providing a placeholder image for <private>

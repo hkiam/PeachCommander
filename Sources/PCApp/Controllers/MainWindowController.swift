@@ -800,8 +800,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         DocumentFile.keepBackups = await mainConfig.bool("Editor", "CreateBackups", default: false)
         // Panel tabs (session).
         didRestore = true
+        // Putting the panels back is not visiting them (F-402): the per-panel history still gets the
+        // paths, the global one does not.
+        HistoryService.shared.beginSessionRestore()
         await restoreTabs(into: leftPanelController, prefix: "LeftPanel")
         await restoreTabs(into: rightPanelController, prefix: "RightPanel")
+        HistoryService.shared.endSessionRestore()
 
         let active = await session.string("Window", "Active", default: "left")
         if active == "right" { activateRightPanel() } else { activateLeftPanel() }
