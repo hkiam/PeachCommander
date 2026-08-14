@@ -52,6 +52,7 @@ pfx.h — Peach Commander file-system plugins (PFX ↔ Total Commander WFX).
 - `PfxGetVolumeCount`
 - `PfxGetVolumeInfo`
 - `PfxInit`
+- `PfxLastError`
 - `PfxLookup`
 - `PfxMkDir`
 - `PfxPutFile`
@@ -238,6 +239,21 @@ int  PfxGetConnectTitle(char *outTitle, int maxlen);
    return an opaque connection handle (non-NULL) on success, or NULL on
    cancel/failure. `services` stays valid for the connection's lifetime. */
 void *PfxConnect(const PfxHostServices *services);
+
+/* Why the last call on `conn` failed — a PC_E_* code, or PC_OK if the plugin does not
+   track it (which is also what an absent entry point means).
+
+   The host asks this only after a call that answers with a *handle* has answered NULL:
+   PfxFindFirst and friends have no other channel, so without this "the server is gone"
+   and "that directory does not exist" arrive identically, and the host has to guess.
+   It guessed wrong for years — a connection dying mid-listing was reported to the user
+   as a missing directory, which sends them looking for a folder that is exactly where
+   they left it.
+
+   Return PC_E_CONNECTION_LOST for a transport that is finished: the host then leaves the
+   mount, drops its drive-bar entry and names the server, rather than leaving the panel
+   inside something that can no longer answer. */
+int PfxLastError(void *conn);
 
 /* Fill `out` with a short, stable id for `conn` (used as the mount scheme/title,
    e.g. "webdav:host"). Return 1 on success. */

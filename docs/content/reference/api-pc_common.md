@@ -64,6 +64,7 @@ pc_common.h — Peach Commander plugin SDK, common definitions (SPEC-012 §1, §
 | `PC_E_NO_FILES` | `22` |  |
 | `PC_E_TOO_MANY` | `23` |  |
 | `PC_E_NOT_SUPPORTED` | `24` | optional operation not implemented |
+| `PC_E_CONNECTION_LOST` | `25` |  |
 | `PC_CAP_NEW` | `0x0001` | can create new archives |
 | `PC_CAP_MODIFY` | `0x0002` | can add/move files to an existing archive |
 | `PC_CAP_MULTIPLE` | `0x0004` | archive can hold multiple files |
@@ -148,6 +149,14 @@ extern "C" {
 #define PC_E_NO_FILES      22
 #define PC_E_TOO_MANY      23
 #define PC_E_NOT_SUPPORTED 24  /* optional operation not implemented          */
+/* The connection this plugin was serving is gone — the server stopped answering, the
+   socket died, the session timed out. Distinct from PC_E_EOPEN on purpose: that says
+   "no such file", and a file-system plugin that reports a dead connection as a missing
+   file sends the user looking for something that is exactly where they left it. The
+   host treats this one as the end of the mount: it leaves the drive, drops its entry
+   from the drive bar, and says which server went away. Return it from any entry point
+   once the connection cannot serve another request.                            */
+#define PC_E_CONNECTION_LOST 25
 
 /* ---- Capability flags (advertised by GetPackerCaps etc.) --------------- */
 
