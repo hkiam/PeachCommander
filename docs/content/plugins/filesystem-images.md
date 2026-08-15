@@ -24,6 +24,7 @@ It is **read-only**. Nothing in it can write to an image.
 | cramfs | little- and big-endian |
 | initramfs / initrd | cpio `newc`, plain or gzip/xz-wrapped, including concatenated archives |
 | FAT12 / FAT16 / FAT32 | long file names, all three table widths |
+| exFAT | UTF-16 names, contiguous and chained files |
 | Btrfs | single-device, zlib, zstd and LZO, subvolumes and snapshots |
 | UBIFS | bare `.ubifs` and `.ubi` containers; LZO, zlib, zstd |
 

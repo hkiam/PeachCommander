@@ -7,16 +7,17 @@
 
 cramfs-le.img  319e7457caeec2afd0bda7c887dac68797c2524bf74853656ad4b47906ee536c  util-linux  mkfs.cramfs $TREE cramfs-le.img
 cramfs-be.img  ec139b9116b9113fd4ba1ae4385f009bde1f2c24b41b3d5c8c85a9d98c1bbda3  util-linux  mkfs.cramfs -N big $TREE cramfs-be.img
-jffs2-le.img  01ee3b71210a61599242766e0a42e0759fa4f0a2dbbb4a45598f659af1c380c8  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-le.img -e 128KiB -l -p
-jffs2-be.img  2e059111a5c0022229643ff150ba782c8461f52253ef93a01c5eb4ef566cfc8f  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-be.img -e 128KiB -b -p
-jffs2-rtime.img  62f62e38c01cceb1fc729995fbfa0eba5e126a2acbbf8966edb516f77f1f37c0  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-rtime.img -e 128KiB -l -p -x zlib -x lzo
-rootfs.ubifs  5f7a2eab1a273d06c495408b12fd1c80d5108efaa41a079840abeab5e2930a1c  mkfs.ubifs (mtd-utils) 2.2.0  mkfs.ubifs -r $TREE -m 2048 -e 126976 -c 200 -o rootfs.ubifs
-rootfs.ubi  f71d80d85ba8b800147bd3f36425f507b0038dbb7dd066193cc41293866a1623  mkfs.ubifs (mtd-utils) 2.2.0  ubinize -o rootfs.ubi -m 2048 -p 128KiB (wrapping rootfs.ubifs as volume 0)
-btrfs.img  7df1d5e6d8dabcbd734da213fec93eba310e889426b58cbbb66dfaf04921d809  mkfs.btrfs, part of btrfs-progs v6.6.3  truncate -s 16m btrfs.img && mkfs.btrfs -f -M -n 4096 -s 4096 -r $TREE btrfs.img
-btrfs-rich.img  af8f47bfc0161151a05b72d36542849abaac45dac095d866dfd0c003a3d6e02e  mkfs.btrfs, part of btrfs-progs v6.6.3  mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-rich.img, then mounted with compress-force=zlib and populated (subvolume + snapshot + 500 files)
-btrfs-lzo.img  0bbb864f743d1e92f42034c777d180e184be4b554bd74261f2df0fc2bdf123b7  mkfs.btrfs, part of btrfs-progs v6.6.3  mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-lzo.img, then mounted with compress-force=lzo and populated
-fat12.img  c8b5b227ae8a5193e555b898286cf76e6cd113d1b5ce655152fd82f23e8a9f0d  Usage: mkfs.vfat [OPTIONS] TARGET [BLOCKS]  mkfs.vfat -F 12 -n SAMPLE fat12.img (8 MB), populated with mtools
-fat16.img  95412f4ce7cc985f8bdf459dc4c97576299c6384012f82cab9db4adc7cc04164  Usage: mkfs.vfat [OPTIONS] TARGET [BLOCKS]  mkfs.vfat -F 16 -n SAMPLE fat16.img (32 MB), populated with mtools
-fat32.img  e9539066e093c32ade9d3ccbd094b4fab0e05ba41d9c264e9acdebc3e6dd1ca4  Usage: mkfs.vfat [OPTIONS] TARGET [BLOCKS]  mkfs.vfat -F 32 -n SAMPLE fat32.img (64 MB), populated with mtools
-disk-mbr.img  79985d67ee60519e48b085633e9e7fe5152b4c0b90ee2a10b94d710277dbe05b  sfdisk from util-linux 2.39.3  sfdisk 'label: dos' with two type-83 partitions, squashfs at LBA 2048 and ext4 at 18432
-disk-gpt.img  ecfe5e08c22a5b81e9bcfd689e3703ded8125807ab0bb7c4c72725202b0f067a  sfdisk from util-linux 2.39.3  sfdisk 'label: gpt' with a Linux and an EFI partition, named rootfs and esp
+jffs2-le.img  4f885ca35d5eeb3805137cde1c15d08029c9fc67196d8657dcefc82bedac9253  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-le.img -e 128KiB -l -p
+jffs2-be.img  81ececc47ea17a4e1962a57667d161a8816fe035353e12b3a37af60e81f217ba  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-be.img -e 128KiB -b -p
+jffs2-rtime.img  ca86b65d13766dec38df8dbeb5bcba5fdb8859c7c0b5dbf8fce5d80d1c28ec9a  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-rtime.img -e 128KiB -l -p -x zlib -x lzo
+rootfs.ubifs  4f54ff4dec767046e9666e20307ee714f46638eef58a95aebbd5c8d812bb6e00  mkfs.ubifs (mtd-utils) 2.2.0  mkfs.ubifs -r $TREE -m 2048 -e 126976 -c 200 -o rootfs.ubifs
+rootfs.ubi  74e375c673c7d3d59113b92e8f2113617dd8f82ee0e25cab59722901a02a3c64  mkfs.ubifs (mtd-utils) 2.2.0  ubinize -o rootfs.ubi -m 2048 -p 128KiB (wrapping rootfs.ubifs as volume 0)
+btrfs.img  0be092df287e4582547bbb637c72f871f1e4b92379f28ed17e163eab7af90234  mkfs.btrfs, part of btrfs-progs v6.6.3  truncate -s 16m btrfs.img && mkfs.btrfs -f -M -n 4096 -s 4096 -r $TREE btrfs.img
+btrfs-rich.img  b82ca2f291f2e726a7b418e451fadb46227a6a1d45827d23d7cc51b6574743b9  mkfs.btrfs, part of btrfs-progs v6.6.3  mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-rich.img, then mounted with compress-force=zlib and populated (subvolume + snapshot + 500 files)
+btrfs-lzo.img  f75ba531a7fdd647bef54db5013b18f5412a2fdf6998f191b7a39c97a0683997  mkfs.btrfs, part of btrfs-progs v6.6.3  mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-lzo.img, then mounted with compress-force=lzo and populated
+fat12.img  560b23f634fc88855c7e32d920593979ef64c36240ee0fb75f9d744125da7f88  Usage: mkfs.vfat [OPTIONS] TARGET [BLOCKS]  mkfs.vfat -F 12 -n SAMPLE fat12.img (8 MB), populated with mtools
+fat16.img  7abe6a43b542f2a9f825771f21d2bc5ba17cbf0bb06f32839dc3b86da8dd3cf8  Usage: mkfs.vfat [OPTIONS] TARGET [BLOCKS]  mkfs.vfat -F 16 -n SAMPLE fat16.img (32 MB), populated with mtools
+fat32.img  8ffb58b498b7b7689af62e5cc72fa8212c98b4f88f1e4bdaa150694deee589b7  Usage: mkfs.vfat [OPTIONS] TARGET [BLOCKS]  mkfs.vfat -F 32 -n SAMPLE fat32.img (64 MB), populated with mtools
+exfat.img  40cb220ca85f2fa91df24ec01e2deba19566ab764e8b392d53e5f36c0f6d4ec1  exfatprogs version : 1.2.2  mkfs.exfat -L SAMPLE exfat.img (64 MB), populated over a loop device with exfat-fuse
+disk-mbr.img  2e08f69297425f3d2152d45c2e67d0bd427bf8fd697322f1c393b5a7ae58e1e4  sfdisk from util-linux 2.39.3  sfdisk 'label: dos' with two type-83 partitions, squashfs at LBA 2048 and ext4 at 18432
+disk-gpt.img  8fdd0e6bdf0a6324514cab97fa051502ca96e6fbfc1e7e5d71359e9ddb46e533  sfdisk from util-linux 2.39.3  sfdisk 'label: gpt' with a Linux and an EFI partition, named rootfs and esp
