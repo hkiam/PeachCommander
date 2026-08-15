@@ -73,6 +73,7 @@ enum DriverRegistry {
         ExtDriver.self,
         CramFSDriver.self,
         JFFS2Driver.self,
+        UBIFSDriver.self,
         BtrfsDriver.self,
         CpioDriver.self,
     ]

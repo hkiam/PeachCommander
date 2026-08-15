@@ -32,6 +32,8 @@ SOURCES=(
   "Plugins/FSImage/Drivers/CramFSDriver.swift"
   "Plugins/FSImage/Drivers/JFFS2Compression.swift"
   "Plugins/FSImage/Drivers/JFFS2Driver.swift"
+  "Plugins/FSImage/Drivers/UBIVolume.swift"
+  "Plugins/FSImage/Drivers/UBIFSDriver.swift"
   "Plugins/FSImage/Drivers/BtrfsChunkMap.swift"
   "Plugins/FSImage/Drivers/BtrfsDriver.swift"
 )

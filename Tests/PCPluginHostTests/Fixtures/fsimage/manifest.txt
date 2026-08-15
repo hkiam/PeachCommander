@@ -7,9 +7,11 @@
 
 cramfs-le.img  319e7457caeec2afd0bda7c887dac68797c2524bf74853656ad4b47906ee536c  util-linux  mkfs.cramfs $TREE cramfs-le.img
 cramfs-be.img  ec139b9116b9113fd4ba1ae4385f009bde1f2c24b41b3d5c8c85a9d98c1bbda3  util-linux  mkfs.cramfs -N big $TREE cramfs-be.img
-jffs2-le.img  6c858f0278aa93bf174f79f87e702591fefdd5c0b92505e6d8a84c293653be76  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-le.img -e 128KiB -l -p
-jffs2-be.img  4342a76a24329815b28aa4833a626ddcacd376eb1463e90726a6be9c3ae0ab41  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-be.img -e 128KiB -b -p
-jffs2-rtime.img  0426b6c9b15d1c0e4531f518ebf155f948dfe6c93ea903a865979da38c952945  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-rtime.img -e 128KiB -l -p -x zlib -x lzo
-btrfs.img  5285011a8c96296d18bdd1ec6b7349ea718a39f75b24a11d52d7aa890e746d57  mkfs.btrfs, part of btrfs-progs v6.6.3  truncate -s 16m btrfs.img && mkfs.btrfs -f -M -n 4096 -s 4096 -r $TREE btrfs.img
-btrfs-rich.img  fc07f36137bec5e68a2d0fa59a6a8635334baf79fbe3c5045854b718f29c92ef  mkfs.btrfs, part of btrfs-progs v6.6.3  mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-rich.img, then mounted with compress-force=zlib and populated (subvolume + snapshot + 500 files)
-btrfs-lzo.img  d95b33dbc415ffa805bd96fa246249ed00cffbbf0cd00aa717c20a65125b12aa  mkfs.btrfs, part of btrfs-progs v6.6.3  mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-lzo.img, then mounted with compress-force=lzo and populated
+jffs2-le.img  769eec69626210f54ccbf3bf39292ebf6512f531e9747b3c281e9e555c51139d  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-le.img -e 128KiB -l -p
+jffs2-be.img  69a734ae866e9622a5606415f0e3055bde045208c8435cf35884e3b42d69b0b2  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-be.img -e 128KiB -b -p
+jffs2-rtime.img  542e9e0f6ab6619a4b6dddf80b79c228cf9749107214915153c7df065cbbc220  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-rtime.img -e 128KiB -l -p -x zlib -x lzo
+rootfs.ubifs  15a01e4ed45c3f3d8c9da1f3c5018af46a57f1f2d9a5b2778a3d7ee2b78c20c9  mkfs.ubifs (mtd-utils) 2.2.0  mkfs.ubifs -r $TREE -m 2048 -e 126976 -c 200 -o rootfs.ubifs
+rootfs.ubi  58cdfc5c76a9d2d503e622c6942a5bdb430b0fd0f348a5146e6d2e1b4bdaf7b9  mkfs.ubifs (mtd-utils) 2.2.0  ubinize -o rootfs.ubi -m 2048 -p 128KiB (wrapping rootfs.ubifs as volume 0)
+btrfs.img  7b2795ce121aaf7d7e75a87567ba9c54f57a24dbe362554ede2ca076c818bccc  mkfs.btrfs, part of btrfs-progs v6.6.3  truncate -s 16m btrfs.img && mkfs.btrfs -f -M -n 4096 -s 4096 -r $TREE btrfs.img
+btrfs-rich.img  00ece6d7966a213dcdd31c915a20697c5b9edb13e282106937cad9e4f0fabb62  mkfs.btrfs, part of btrfs-progs v6.6.3  mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-rich.img, then mounted with compress-force=zlib and populated (subvolume + snapshot + 500 files)
+btrfs-lzo.img  1ccd039d35e5daa2ece814e8bcef44d8dcaf084740603a5277975c590115e809  mkfs.btrfs, part of btrfs-progs v6.6.3  mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-lzo.img, then mounted with compress-force=lzo and populated
