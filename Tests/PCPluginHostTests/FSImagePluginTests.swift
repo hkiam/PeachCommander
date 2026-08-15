@@ -234,7 +234,8 @@ final class FSImagePluginTests: XCTestCase {
     /// no root privileges — which is what makes ext fixtures reproducible on macOS
     /// and on a CI runner at all.
     private func makeExtImage(type: String = "ext4", blockSize: Int = 4096,
-                              sizeMB: Int = 32, from source: URL? = nil) throws -> String {
+                              sizeMB: Int = 32, from source: URL? = nil,
+                              features: String? = nil, inodeSize: Int? = nil) throws -> String {
         let mke2fs = try requireTool("mke2fs", hint: "brew install e2fsprogs")
         let root: URL
         if let source {
@@ -247,8 +248,10 @@ final class FSImagePluginTests: XCTestCase {
         let image = dir.appendingPathComponent("fs-\(UUID().uuidString).img").path
         let process = Process()
         process.executableURL = URL(fileURLWithPath: mke2fs)
-        process.arguments = ["-q", "-t", type, "-d", root.path, "-b", String(blockSize),
-                             image, "\(sizeMB)M"]
+        var arguments = ["-q", "-t", type, "-d", root.path, "-b", String(blockSize)]
+        if let features { arguments += ["-O", features] }
+        if let inodeSize { arguments += ["-I", String(inodeSize)] }
+        process.arguments = arguments + [image, "\(sizeMB)M"]
         process.standardOutput = FileHandle.nullDevice
         process.standardError = FileHandle.nullDevice
         try process.run(); process.waitUntilExit()
@@ -766,6 +769,29 @@ final class FSImagePluginTests: XCTestCase {
         let entries = try PCXArchive(library: lib).list(archivePath: image)
         XCTAssertTrue(entries.contains { $0.path.contains("UNCLEAN") && $0.path.contains("e2fsck") },
                       "an unclean filesystem must be visible in the listing, not only in a log")
+    }
+
+    /// `-O inline_data` puts small files' contents where their block pointers would go —
+    /// and *directories* too, which is the part that decides whether the image can be
+    /// read at all. An inline directory has no blocks, so a driver without this walks
+    /// into nothing and reports an empty or broken tree rather than a file it cannot open.
+    ///
+    /// An inline directory also has no `.` or `..` records: the first four bytes are the
+    /// parent inode number standing in for both.
+    func testExt4WithInlineDataReadsSmallFilesAndInlineDirectories() async throws {
+        let image = try makeExtImage(type: "ext4", blockSize: 1024, sizeMB: 64,
+                                     features: "inline_data", inodeSize: 256)
+        try await assertConformance(image: image, label: "ext4-inline")
+
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:inline") else {
+            return XCTFail("the host could not mount the inline_data image")
+        }
+        // The sample tree's small files land inline while big.dat keeps its extents, so
+        // this image exercises both paths in one walk.
+        let motd = try await read(fs, "/etc/motd")
+        XCTAssertEqual(motd, Data(ExpectedTree.files["etc/motd"]!.utf8), "an inline file's contents")
+        let big = try await read(fs, "/bin/big.dat")
+        XCTAssertEqual(big, Data(Self.bigFileContents), "a non-inline file in the same image")
     }
 
     func testATruncatedExtImageFailsRatherThanListingWhatSurvived() throws {

@@ -276,7 +276,18 @@ final class ExtDriver: ImageFilesystemDriver {
             throw ImageError.damaged(reason: "inode \(number) at \(path) is not a directory")
         }
 
-        let contents = try self.contents(of: inode)
+        // An inline directory keeps its entries in `i_block`, behind a 4-byte parent
+        // inode number that stands in for the `.` and `..` records a normal directory
+        // block starts with. Those two are absent here, which costs nothing: the entry
+        // loop skips them by name anyway.
+        let contents: Data
+        if inode.usesInlineData {
+            let inline = try inlineContents(of: inode)
+            guard inline.count > 4 else { return }   // parent field only: an empty directory
+            contents = Data(inline.dropFirst(4))
+        } else {
+            contents = try self.contents(of: inode)
+        }
         var subdirectories: [(inode: UInt32, path: String)] = []
         var offset = 0
         while offset + 8 <= contents.count {
@@ -348,14 +359,33 @@ final class ExtDriver: ImageFilesystemDriver {
     }
 
     private func runs(for inode: Inode) throws -> [ExtRun] {
-        if inode.usesInlineData {
-            throw ImageError.unsupported(reason: "inline_data inodes are not supported yet")
-        }
         let blockCount = (inode.size + sb.blockSize - 1) / sb.blockSize
         if inode.usesExtents {
             return try layout.extentRuns(inlineRoot: inode.blockBytes)
         }
         return try layout.blockMapRuns(pointers: inode.blockPointers, blockCount: blockCount)
+    }
+
+    /// The 60 bytes of `i_block`, which hold the data itself when `inline_data` is set.
+    ///
+    /// Small files and small directories get no blocks at all — their contents sit in
+    /// the space the block pointers would have used. That is not a rare corner: with
+    /// `-O inline_data`, `mke2fs` stores *directories* this way too, so a driver
+    /// without it cannot walk the tree at all, never mind read a file.
+    ///
+    /// Anything longer than 60 bytes continues in the inode's `system.data` extended
+    /// attribute. That part is refused by name rather than truncated — returning the
+    /// first 60 bytes of a longer file, silently, is the failure mode worth avoiding
+    /// most: it looks like a file that read correctly.
+    private static let inlineCapacity: Int64 = 60
+
+    private func inlineContents(of inode: Inode) throws -> [UInt8] {
+        guard inode.size <= Self.inlineCapacity else {
+            throw ImageError.unsupported(
+                reason: "this file's inline data continues in the system.data attribute "
+                      + "(\(inode.size) bytes, \(Self.inlineCapacity) fit in the inode)")
+        }
+        return Array(inode.blockBytes.prefix(Int(inode.size)))
     }
 
     // MARK: - Extraction
@@ -380,6 +410,10 @@ final class ExtDriver: ImageFilesystemDriver {
     /// Nothing about the result looked wrong, which is what made it worth a helper
     /// that every reader here goes through rather than three loops repeating it.
     private func writeContents(of inode: Inode, to sink: (Data) throws -> Void) throws {
+        if inode.usesInlineData {
+            try sink(Data(try inlineContents(of: inode)))
+            return
+        }
         var position: Int64 = 0
 
         func writeZeros(_ count: Int64) throws {
