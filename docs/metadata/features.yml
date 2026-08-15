@@ -690,6 +690,34 @@ features:
       first. The bar can also be hidden: cm_ButtonBar, View menu, and Settings > Layout,
       persisted as [Layout] ButtonBar (default true).
 
+  - id: filesystem-images
+    name: Linux-Dateisystem-Images (SquashFS, ext, JFFS2, UBIFS, cramfs, initramfs, Btrfs)
+    name_en: Linux filesystem images (SquashFS, ext, JFFS2, UBIFS, cramfs, initramfs, Btrfs)
+    category: plugins
+    audiences: [user, expert]
+    status: stable
+    source: { modules: [PCPluginHost], types: [PCXArchiveFS, PCXArchive] }
+    documentation: { integrated_help: true, website: false }
+    notes: >-
+      A read-only PCX packer plugin that opens a filesystem image the way an archive opens: Enter on
+      rootfs.squashfs and the panel is inside the filesystem, with the lister, search and every file
+      operation working on it unchanged. Seven formats, each read by a driver written here from its
+      published layout rather than vendored — libext2fs is LGPL-2, libsquashfs LGPL-3 and
+      btrfs-progs GPL-2, none of which an Apache-2.0 product can take. The same reasoning produced
+      an LZO1X decoder: liblzo2 is GPL, the format is not, and LZO is what mkfs.ubifs uses by
+      default, so without it UBIFS would list a tree and fail on nearly every file in it. Only
+      zstd is vendored, as its own single-file decoder (BSD-3), because macOS ships no zstd at all.
+      Detection is by content as well as extension: the host now asks CanYouHandleThisFile when no
+      extension matches, so firmware called firmware.bin or dump is recognised by its magic. The
+      plugin ships disabled — that look reads a header off every unmatched file, and only somebody
+      who wants a firmware browser should pay for it. Refusals name their reason instead of
+      reporting damage (RAID0 stripes across devices; a NAND dump still carrying its out-of-band
+      area needs re-dumping), and an ext image with a dirty journal opens with a marker entry
+      rather than quietly showing pre-journal contents. Every format is checked against images
+      built by its own upstream tool and compared byte for byte, so a misreading cannot cancel out
+      against a matching miswriting; a mutation corpus asserts no image can crash it, hang it, or
+      hand the host a path escaping the archive root.
+
   - id: java-decompiler
     name: Java-Decompiler-Plugin (F3 auf .class)
     name_en: Java decompiler plugin (F3 on a .class file)
