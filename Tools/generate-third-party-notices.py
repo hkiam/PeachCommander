@@ -114,6 +114,16 @@ def repo_license(rel_dir):
     return open(p, encoding="utf-8", errors="replace").read() if os.path.isfile(p) else None
 
 
+def path_license(rel_path):
+    """Read an upstream LICENSE checked in beside vendored source, anywhere in the repo.
+
+    `repo_license` only looks under Sources/. Vendored code also lives beside the plugin that needs
+    it — the zstd decoder sits in Plugins/FSImage/Vendor — and its licence has to travel with it.
+    """
+    p = os.path.join(REPO, rel_path)
+    return open(p, encoding="utf-8", errors="replace").read() if os.path.isfile(p) else None
+
+
 def homebrew_version(formula):
     d = first_glob("/opt/homebrew/Cellar/%s/*" % formula, "/usr/local/Cellar/%s/*" % formula)
     return os.path.basename(d).split("_")[0] if d else None
@@ -227,6 +237,19 @@ COMPONENTS = [
          description="Python grammar for tree-sitter (vendored).",
          vendor_dir="CTreeSitterPython",
          text=lambda vd="CTreeSitterPython": repo_license(vd)),
+    # Vendored as zstd's own single-file *decoder* amalgamation: one translation unit, no build
+    # system, decompression only. macOS ships no zstd at all — not in the SDK, not as a system
+    # dylib — and current mksquashfs and btrfs both reach for it by default, so the alternative
+    # was refusing a growing share of real images.
+    dict(key="zstd", name="Zstandard", spdx="BSD-3-Clause", version="1.5.6 (single-file decoder)",
+         website="https://facebook.github.io/zstd/",
+         repository="https://github.com/facebook/zstd",
+         copyright="Copyright (c) Meta Platforms, Inc. and affiliates.",
+         description="Zstandard decompression, used by the Linux filesystem-image plugin to read "
+                     "zstd-compressed SquashFS and Btrfs images. Dual-licensed BSD-3-Clause OR "
+                     "GPL-2.0; this product takes the BSD option. Decompression only.",
+         vendor_dir="Plugins/FSImage/Vendor",
+         text=lambda: path_license("Plugins/FSImage/Vendor/LICENSE")),
     dict(key="tree-sitter-rust", name="tree-sitter-rust", spdx="MIT", version="vendored",
          website="https://github.com/tree-sitter/tree-sitter-rust",
          repository="https://github.com/tree-sitter/tree-sitter-rust",

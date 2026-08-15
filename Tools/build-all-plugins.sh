@@ -18,6 +18,7 @@ OUT_DIR="$(cd "$OUT_DIR" && pwd)"   # absolute: the per-plugin scripts cd into t
 echo "==> Building all shipping plugins into: $OUT_DIR"
 SCRIPTS=(
   build-archive-plugin
+  build-fsimage-plugin
   build-csvlister-plugin
   build-javadecompiler-plugin
   build-netdecompiler-plugin

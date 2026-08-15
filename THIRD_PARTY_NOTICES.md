@@ -100,6 +100,14 @@ This product includes the following open-source software. The full license text 
 - Repository: https://github.com/tree-sitter/tree-sitter-python
 - License text: `Resources/Licenses/tree-sitter-python.txt`
 
+## Zstandard 1.5.6 (single-file decoder)
+
+- **License:** BSD-3-Clause
+- **Copyright (c) Meta Platforms, Inc. and affiliates.**
+- Zstandard decompression, used by the Linux filesystem-image plugin to read zstd-compressed SquashFS and Btrfs images. Dual-licensed BSD-3-Clause OR GPL-2.0; this product takes the BSD option. Decompression only.
+- Repository: https://github.com/facebook/zstd
+- License text: `Resources/Licenses/zstd.txt`
+
 ## tree-sitter-rust vendored
 
 - **License:** MIT

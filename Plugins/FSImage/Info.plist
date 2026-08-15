@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key><string>FSImage</string>
+	<key>CFBundleExecutable</key><string>FSImage</string>
+	<key>CFBundlePackageType</key><string>BNDL</string>
+	<key>CFBundleShortVersionString</key><string>1.0</string>
+	<key>CFBundleVersion</key><string>1</string>
+	<key>PCPluginType</key><string>pcx</string>
+	<key>PCPluginAPIVersion</key><integer>1</integer>
+	<key>PCPluginName</key><string>Linux Filesystem Images</string>
+	<key>PCPluginMinHostVersion</key><integer>1</integer>
+	<!-- The host picks a packer by extension only, so this list has to cover how
+	     firmware is actually named, not just the tidy names. `img`, `bin` and
+	     `rootfs` are the broad ones; OpenArchive rejects a non-image in one header
+	     read and the host falls back to its own readers. -->
+	<key>PCPluginExtensions</key><string>squashfs;sqsh;sfs;jffs2;jffs;cramfs;ext2;ext3;ext4;btrfs;initramfs;initrd;cpio;img;bin;rootfs</string>
+	<!-- Off until the user asks for it. Claiming `img`/`bin` is the right trade for
+	     someone analysing firmware and the wrong one for everybody else, and F-345
+	     exists so a plugin can be shipped without imposing itself. -->
+	<key>PCPluginEnabledByDefault</key><false/>
+</dict>
+</plist>
