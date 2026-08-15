@@ -6,6 +6,5 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| toolbar-drop | 0 | — | — | `toolbar-drop.png` |
-| tree-colours | 0 | — | — | `tree-colours.png` |
-| session-save | 0 | — | — | `session-save.png` |
+| keys-main | 0 | 0 | — | `keys-main.png` |
+| keys-history | 0 | 0 | — | `keys-history.png` |

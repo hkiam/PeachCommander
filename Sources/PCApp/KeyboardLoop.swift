@@ -56,11 +56,22 @@ enum KeyboardLoop {
 
     /// Turn on automatic key-loop maintenance for `window` and build the loop now.
     ///
-    /// Idempotent, and cheap after the first time: with the flag set, AppKit keeps the loop up to date as
-    /// views come and go, so this does its work once per window.
+    /// It used to skip the work when the flag was already set — "cheap after the first time: with the
+    /// flag set, AppKit keeps the loop up to date as views come and go". That assumption is wrong twice
+    /// over, and both halves were measured:
+    ///
+    ///   * AppKit **skips hidden views** when it builds the loop, and un-hiding one does not make it
+    ///     build a new one. Switching the preview panel or the shared tree on left fourteen controls
+    ///     unreachable — the whole right panel, the command line, every function-key button.
+    ///   * Worse, the skip turned the *order* of startup into a trap. The window's layout is applied
+    ///     before the first paint, one element at a time; the first element that asked for a rebuild set
+    ///     the flag, and the recalculation that runs when the window becomes key — after every element
+    ///     is configured — then did nothing at all. The loop stayed as it was in the middle of startup.
+    ///
+    /// So it always recalculates now. `recalculateKeyViewLoop()` on a window that is already correct is
+    /// a walk over its views; measured against a suite run, not noticeable.
     @MainActor
     static func enable(for window: NSWindow) {
-        guard !window.autorecalculatesKeyViewLoop else { return }
         window.autorecalculatesKeyViewLoop = true
         window.recalculateKeyViewLoop()
     }

@@ -915,6 +915,19 @@ SCENARIOS = [
     # without it this one inherited whatever the last view scenario left behind — and in Icons mode the
     # panel's list is a different class, which made the label gate fail for the right reason in the wrong
     # place. Found by the full run, not by running this scenario alone.
+    # The same dump as keys-main, but with one more thing on screen. Written to answer "which view breaks
+    # the chain" and kept because they answered it: a *hidden* view is skipped when AppKit builds the key
+    # loop, and un-hiding one does not make it build a new one — so switching the preview panel or the
+    # shared tree on left fourteen controls unreachable, and whichever scenario left one of them on
+    # decided whether `keys-main` passed. Both states now have a gate of their own.
+    ("keys-preview", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                            "previewpanel on", "wait 1500",
+                            "keyloop /Users/admin/keyloop-keys-preview.txt", "wait 400",
+                            "panelsdump /Users/admin/keys-preview-done.txt", "wait 300"], 12),
+    ("keys-tree", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                         "sharedtree on", "wait 1500",
+                         "keyloop /Users/admin/keyloop-keys-tree.txt", "wait 400",
+                         "panelsdump /Users/admin/keys-tree-done.txt", "wait 300"], 12),
     ("keys-main", ["active left", "left /Users/admin/pc-demo", "wait 1200", "cmd cm_SrcLong", "wait 800",
                    "menudump /Users/admin/menu.txt",
                    "keyloop /Users/admin/keyloop-main.txt",
@@ -1121,6 +1134,8 @@ KEYBOARD_GATES = {
     # Named on purpose, unlike the ordinary AppKit windows above: both labels are set in code
     # (`setAccessibilityLabel`), so a refactor that drops them is exactly what this catches.
     "keyloop-history.txt": ["Search the history", "History entries"],
+    "keyloop-keys-preview.txt": [],
+    "keyloop-keys-tree.txt": [],
     "keyloop-overwrite.txt": [],
 }
 
@@ -1133,6 +1148,8 @@ KEYBOARD_REPORTS = {
     "keys-editorwin": ["keyloop-editorwin.txt", "a11y-editorwin.txt", "menu-editor.txt"],
     "keys-hotlist": ["keyloop-hotlist.txt", "a11y-hotlist.txt"],
     "keys-history": ["keyloop-history.txt", "a11y-history.txt"],
+    "keys-preview": ["keyloop-keys-preview.txt"],
+    "keys-tree": ["keyloop-keys-tree.txt"],
     "keys-overwrite": ["keyloop-overwrite.txt"],
 }
 
@@ -1410,6 +1427,8 @@ REPORTS = {
     "terminal-elsewhere-mounts": ("/Users/admin/te-mounts.txt",
                                   ["plugin.terminal.view container=bottom built=true made=1 closed=0"]),
     "keys-main": ("/Users/admin/keys-main-done.txt", ["left=/Users/admin/pc-demo"]),
+    "keys-preview": ("/Users/admin/keys-preview-done.txt", ["left="]),
+    "keys-tree": ("/Users/admin/keys-tree-done.txt", ["left="]),
     # The same last-file-to-wait-for that keys-main has had all along. Without it the guest kills the
     # app after the settle time whether or not the script got that far, and these six never did: every
     # one of them wrote nothing at all, for months, while reporting only that a file was empty. The
