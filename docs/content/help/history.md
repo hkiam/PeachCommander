@@ -17,6 +17,9 @@ The global history is one window that remembers your own working history: folder
 
 Entries are ranked by how recently *and* how often you used them, so the places you work in most are already near the top. Pinned entries always lead the list.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Figure: The global history — the search field has focus, and the list is ranked by how recently and how often you used each entry.)*
+
 ## Filter by kind
 
 The buttons under the search field limit the list to all entries, folders, files, operations or favorites. Option+1 to Option+5 switch between them from the keyboard.

@@ -17,6 +17,9 @@ Istoricul global este o fereastră care își amintește propria ta muncă: dosa
 
 Intrările sunt ordonate după cât de recent *și* cât de des le-ai folosit, așa că locurile în care lucrezi cel mai mult sunt deja sus. Intrările fixate conduc mereu lista.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Figură: Istoricul global — câmpul de căutare are focusul, iar lista este ordonată după cât de recent și cât de des ai folosit fiecare intrare.)*
+
 ## Filtrarea după tip
 
 Butoanele de sub câmpul de căutare limitează lista la toate intrările, la dosare, la fișiere, la operațiuni sau la favorite. Option+1 până la Option+5 comută între ele de la tastatură.

@@ -17,6 +17,9 @@ De globale geschiedenis is één venster dat je eigen werk onthoudt: bezochte ma
 
 Regels staan gesorteerd op hoe recent *en* hoe vaak je ze gebruikte, dus de plekken waar je het meest werkt staan al bovenaan. Vastgezette regels gaan altijd voorop.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Afbeelding: De globale geschiedenis — het zoekveld heeft de focus en de lijst is gesorteerd op hoe recent en hoe vaak je elke regel gebruikte.)*
+
 ## Filteren op soort
 
 De knoppen onder het zoekveld beperken de lijst tot alle regels, mappen, bestanden, bewerkingen of favorieten. Option+1 tot Option+5 wisselen ertussen met het toetsenbord.

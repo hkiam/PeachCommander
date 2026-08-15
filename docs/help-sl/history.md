@@ -17,6 +17,9 @@ Globalna zgodovina je eno okno, ki si zapomni vaše delo: obiskane mape, odprte 
 
 Vnosi so razvrščeni po tem, kako nedavno *in* kako pogosto ste jih uporabili, zato so mesta, kjer največ delate, že na vrhu. Pripeti vnosi so vedno prvi.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Slika: Globalna zgodovina — iskalno polje ima fokus, seznam pa je razvrščen po tem, kako nedavno in kako pogosto ste posamezni vnos uporabili.)*
+
 ## Filtriranje po vrsti
 
 Gumbi pod iskalnim poljem omejijo seznam na vse vnose, mape, datoteke, operacije ali priljubljene. Option+1 do Option+5 preklapljajo med njimi s tipkovnico.

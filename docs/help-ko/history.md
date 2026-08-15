@@ -17,6 +17,9 @@ related: [favorites, navigating]
 
 항목은 얼마나 최근에 *그리고* 얼마나 자주 사용했는지에 따라 정렬되므로, 가장 많이 작업하는 위치가 이미 위쪽에 있습니다. 고정된 항목은 항상 맨 앞에 옵니다.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(그림: 전체 기록 — 검색 필드에 포커스가 있고, 목록은 각 항목을 얼마나 최근에 그리고 얼마나 자주 사용했는지에 따라 정렬됩니다.)*
+
 ## 종류별 필터
 
 검색 필드 아래의 버튼은 목록을 전체 항목, 폴더, 파일, 작업 또는 즐겨찾기로 제한합니다. Option+1에서 Option+5까지로 키보드에서 전환할 수 있습니다.

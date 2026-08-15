@@ -324,6 +324,13 @@ extension MainWindowController {
                     let out = openHexEditorForAutomation(path: h[0]).automationDialogClipboard(h[1])
                     try? out.write(toFile: h[2], atomically: true, encoding: .utf8)
                 }
+            case "closelister":                         // closelister: shut the viewer window
+                // `closeviews` sounds like it would do this and does not — it tears down plugin view
+                // *containers* (F-381). A scenario or a screenshot that opens the viewer and then wants
+                // it gone had no way to say so, which is how a documentation shot came back showing
+                // report.txt instead of the window it was for.
+                currentLister()?.close()
+                automationListers.removeAll { $0.window == nil || !($0.window?.isVisible ?? false) }
             case "listerfind":                          // listerfind <pattern>|<regex 0|1>|<out>
                 let f = arg.split(separator: "|", maxSplits: 2).map(String.init)
                 if f.count == 3 {

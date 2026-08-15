@@ -17,6 +17,9 @@ Historia globalna to jedno okno, które pamięta twoją własną pracę: odwiedz
 
 Wpisy są uszeregowane według tego, jak niedawno *i* jak często ich używałeś, więc miejsca, w których pracujesz najwięcej, są już na górze. Przypięte wpisy zawsze prowadzą.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Ilustracja: Historia globalna — pole wyszukiwania ma fokus, a lista jest uszeregowana według tego, jak niedawno i jak często używałeś każdego wpisu.)*
+
 ## Filtrowanie według rodzaju
 
 Przyciski pod polem wyszukiwania ograniczają listę do wszystkich wpisów, folderów, plików, operacji lub ulubionych. Option+1 do Option+5 przełączają je z klawiatury.

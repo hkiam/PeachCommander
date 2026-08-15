@@ -17,6 +17,9 @@ related: [favorites, navigating]
 
 条目按使用的时间*和*频率排序，因此你最常工作的位置本来就在靠前的位置。已固定的条目始终排在最前。
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(图：全局历史记录——焦点在搜索栏上，列表按每个条目的使用时间与频率排序。)*
+
 ## 按类型筛选
 
 搜索栏下方的按钮把列表限定为全部条目、文件夹、文件、操作或个人收藏。Option+1 到 Option+5 可用键盘在它们之间切换。

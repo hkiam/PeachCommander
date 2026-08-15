@@ -43,6 +43,14 @@ def sh(cmd, **kw):
 def resolve_app(explicit):
     if explicit:
         return explicit
+    # The repository's own build directory first. `Tools/build.sh` (and every run in this project) builds
+    # with `-derivedDataPath build`, while asking xcodebuild below answers with the *default* DerivedData
+    # location — a different bundle, quite possibly an old one. That cost three screenshots: the guest ran
+    # an app without the verbs the spec was using, so the script silently did nothing and the shot showed
+    # whatever state the app happened to be in.
+    local = REPO / "build/Build/Products/Debug" / APPNAME
+    if local.exists():
+        return str(local)
     r = sh(["xcodebuild", "-project", str(REPO / "PeachCommander.xcodeproj"),
             "-scheme", "PeachCommander", "-configuration", "Debug", "-showBuildSettings"])
     for line in r.stdout.splitlines():
