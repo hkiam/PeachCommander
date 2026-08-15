@@ -17,6 +17,9 @@ El historial global es una ventana que recuerda tu propio trabajo: carpetas visi
 
 Las entradas se ordenan por lo reciente *y* lo frecuente de su uso, así que los sitios donde más trabajas ya están arriba. Las entradas fijadas siempre encabezan la lista.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Figura: El historial global — el campo de búsqueda tiene el foco y la lista se ordena según lo reciente y lo frecuente del uso de cada entrada.)*
+
 ## Filtrar por tipo
 
 Los botones bajo el campo de búsqueda limitan la lista a todas las entradas, carpetas, archivos, operaciones o favoritos. Option+1 a Option+5 cambian entre ellos con el teclado.

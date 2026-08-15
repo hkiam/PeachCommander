@@ -17,6 +17,9 @@ La cronologia globale è una finestra che ricorda il tuo lavoro: cartelle visita
 
 Le voci sono ordinate per quanto di recente *e* quanto spesso le hai usate, così i luoghi in cui lavori più spesso sono già in alto. Le voci fissate guidano sempre l’elenco.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Figura: La cronologia globale — il campo di ricerca ha il focus e l’elenco è ordinato per quanto di recente e quanto spesso hai usato ogni voce.)*
+
 ## Filtrare per tipo
 
 I pulsanti sotto il campo di ricerca limitano l’elenco a tutte le voci, alle cartelle, ai file, alle operazioni o ai preferiti. Option+1 fino a Option+5 li alternano da tastiera.

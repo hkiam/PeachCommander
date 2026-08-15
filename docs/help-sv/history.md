@@ -17,6 +17,9 @@ Den globala historiken är ett fönster som minns ditt eget arbete: mappar du be
 
 Posterna rangordnas efter hur nyligen *och* hur ofta du använt dem, så platserna där du arbetar mest ligger redan högst upp. Fästa poster går alltid först.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Figur: Den globala historiken — sökfältet har fokus och listan rangordnas efter hur nyligen och hur ofta du använt varje post.)*
+
 ## Filtrera efter typ
 
 Knapparna under sökfältet begränsar listan till alla poster, mappar, filer, åtgärder eller favoriter. Option+1 till Option+5 växlar mellan dem från tangentbordet.

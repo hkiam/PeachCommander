@@ -17,6 +17,9 @@ Der globale Verlauf ist ein Fenster, das Ihre eigene Arbeitsgeschichte kennt: be
 
 Die Einträge sind danach geordnet, wie kürzlich *und* wie häufig Sie sie benutzt haben — die Orte, an denen Sie am meisten arbeiten, stehen also schon oben. Angeheftete Einträge stehen immer voran.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Abbildung: Der globale Verlauf — das Suchfeld hat den Fokus, und die Liste ist danach geordnet, wie kürzlich und wie häufig Sie jeden Eintrag benutzt haben.)*
+
 ## Nach Art filtern
 
 Die Knöpfe unter dem Suchfeld beschränken die Liste auf alle Einträge, Ordner, Dateien, Operationen oder Favoriten. Option+1 bis Option+5 wechseln über die Tastatur.

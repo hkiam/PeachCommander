@@ -17,6 +17,9 @@ L’historique global est une fenêtre qui se souvient de votre propre travail :
 
 Les entrées sont classées selon la récence *et* la fréquence de leur usage : les endroits où vous travaillez le plus sont donc déjà en haut. Les entrées épinglées passent toujours en premier.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Figure : L’historique global — le champ de recherche a le focus, et la liste est classée selon la récence et la fréquence d’usage de chaque entrée.)*
+
 ## Filtrer par type
 
 Les boutons sous le champ de recherche limitent la liste à toutes les entrées, aux dossiers, aux fichiers, aux opérations ou aux favoris. Option+1 à Option+5 passent de l’un à l’autre au clavier.

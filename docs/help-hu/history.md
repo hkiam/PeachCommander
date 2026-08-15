@@ -17,6 +17,9 @@ A globális előzmények egyetlen ablak, amely emlékszik a saját munkájára: 
 
 A bejegyzések rangsora attól függ, milyen nemrég *és* milyen gyakran használta őket, így a legtöbbet használt helyek már fent vannak. A kitűzött bejegyzések mindig elöl állnak.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Ábra: A globális előzmények — a keresőmezőn van a fókusz, a lista pedig aszerint rendezett, milyen nemrég és milyen gyakran használta az egyes bejegyzéseket.)*
+
 ## Szűrés fajta szerint
 
 A keresőmező alatti gombok a listát az összes bejegyzésre, a mappákra, a fájlokra, a műveletekre vagy a kedvencekre szűkítik. Az Option+1 – Option+5 billentyűkkel váltogathat közöttük.

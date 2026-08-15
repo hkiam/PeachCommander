@@ -17,6 +17,9 @@ Den globale historikken er ett vindu som husker ditt eget arbeid: mapper du har 
 
 Oppføringene er rangert etter hvor nylig *og* hvor ofte du brukte dem, så stedene du jobber mest, står allerede øverst. Festede oppføringer går alltid først.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Figur: Den globale historikken — søkefeltet har fokus, og listen er rangert etter hvor nylig og hvor ofte du brukte hver oppføring.)*
+
 ## Filtrer etter type
 
 Knappene under søkefeltet begrenser listen til alle oppføringer, mapper, filer, handlinger eller favoritter. Option+1 til Option+5 bytter mellom dem fra tastaturet.

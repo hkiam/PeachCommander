@@ -17,6 +17,9 @@ Globálna história je jedno okno, ktoré si pamätá vašu vlastnú prácu: nav
 
 Položky sú zoradené podľa toho, ako nedávno *a* ako často ste ich použili, takže miesta, kde pracujete najviac, sú už navrchu. Pripnuté položky vedú vždy.
 
+![The global history window listing recently visited folders and opened files](screenshots/history-palette.png)
+*(Obrázok: Globálna história — vyhľadávacie pole má fokus a zoznam je zoradený podľa toho, ako nedávno a ako často ste každú položku použili.)*
+
 ## Filtrovanie podľa druhu
 
 Tlačidlá pod vyhľadávacím poľom obmedzia zoznam na všetky položky, priečinky, súbory, operácie alebo obľúbené. Option+1 až Option+5 medzi nimi prepínajú z klávesnice.
