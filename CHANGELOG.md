@@ -12,7 +12,7 @@ were reconstructed from the git history and the notes in `STATE.md` when it was 
 `README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
 does not have.
 
-## [Unreleased]
+## [0.6.4] — 2026-08-15
 
 ### Added
 
