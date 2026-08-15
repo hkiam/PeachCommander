@@ -76,11 +76,24 @@ enum DriverRegistry {
         UBIFSDriver.self,
         BtrfsDriver.self,
         CpioDriver.self,
+        // Last on purpose: a filesystem's own boot sector can end in 0x55AA, so this
+        // only ever sees images nothing else claimed.
+        PartitionedDriver.self,
     ]
 
     /// The first driver whose probe accepts `reader`, or nil.
-    static func driverType(for reader: ImageReader) -> (any ImageFilesystemDriver.Type)? {
-        all.first { $0.probe(reader) }
+    ///
+    /// `excluding` keeps the partition driver from opening a partition as another disk
+    /// image. One level of nesting covers every real image; without the exclusion, a
+    /// partition whose first sector happens to end in 0x55AA — which a FAT boot sector
+    /// does, by design — would recurse.
+    static func driverType(for reader: ImageReader,
+                           excluding: (any ImageFilesystemDriver.Type)? = nil)
+        -> (any ImageFilesystemDriver.Type)? {
+        all.first { candidate in
+            if let excluding, candidate.id == excluding.id { return false }
+            return candidate.probe(reader)
+        }
     }
 
     /// Open `path` with whichever driver claims it.
