@@ -363,6 +363,9 @@ final class TaskManagerPluginTests: XCTestCase {
         child.arguments = ["-c", "trap '' TERM; sleep 30"]
         try child.run()
         let pid = child.processIdentifier
+        // Whatever this test concludes, the child does not outlive it. `sleep 30` would
+        // end on its own, but only after every later test in the bundle has run beside it.
+        defer { if kill(pid, 0) == 0 { kill(pid, SIGKILL) } }
         // Give the shell time to install its `trap '' TERM` before we signal it,
         // otherwise the first SIGTERM races in before the handler and kills it.
         try await Task.sleep(nanoseconds: 400_000_000)
@@ -379,7 +382,20 @@ final class TaskManagerPluginTests: XCTestCase {
 
         // 2nd delete on the still-alive process → SIGKILL: it dies.
         try await fs.delete(path)
-        child.waitUntilExit()
+
+        // Bounded, because `waitUntilExit()` is not. It blocks with no deadline, and when
+        // the kill does not land it blocks *forever* — observed here as a test bundle that
+        // sat in this one call for forty minutes at full CPU, taking every later test's
+        // result with it. On CI that is not a red test, it is a job that runs to the job
+        // timeout with nothing to say about which test did it. Polling turns the same
+        // failure into a named assertion five seconds later.
+        let deadline = Date().addingTimeInterval(5)
+        while kill(pid, 0) == 0, Date() < deadline {
+            try await Task.sleep(nanoseconds: 50_000_000)
+        }
+        XCTAssertNotEqual(kill(pid, 0), 0,
+                          "a second delete must escalate to SIGKILL; the child is still alive")
+        child.waitUntilExit()   // already gone, so this returns at once and only reaps
         XCTAssertEqual(child.terminationReason, .uncaughtSignal)
         XCTAssertEqual(child.terminationStatus, SIGKILL)
     }
