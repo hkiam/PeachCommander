@@ -63,6 +63,8 @@ final class FSImagePluginTests: XCTestCase {
         "Plugins/FSImage/Drivers/CramFSDriver.swift",
         "Plugins/FSImage/Drivers/JFFS2Compression.swift",
         "Plugins/FSImage/Drivers/JFFS2Driver.swift",
+        "Plugins/FSImage/Drivers/UBIVolume.swift",
+        "Plugins/FSImage/Drivers/UBIFSDriver.swift",
         "Plugins/FSImage/Drivers/BtrfsChunkMap.swift",
         "Plugins/FSImage/Drivers/BtrfsDriver.swift",
     ]
@@ -702,6 +704,47 @@ final class FSImagePluginTests: XCTestCase {
         XCTAssertThrowsError(try PCXArchive(library: lib).list(archivePath: truncated.path))
     }
 
+    // MARK: - UBIFS
+
+    /// The bare filesystem, as `mkfs.ubifs` writes it.
+    ///
+    /// Reading a cleanly written UBIFS is easier than JFFS2, not harder: there is a real
+    /// B-tree on disk, so nothing has to be replayed. What is hard is that almost every
+    /// offset is unguessable — `node_type` sits at 20 of the common header, not 16, and
+    /// a branch is `lnum, offs, len, key` with the key *last*. Neither mistake fails
+    /// loudly; both were settled against this image.
+    func testUBIFSPassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try goldenFixture("rootfs.ubifs"), label: "ubifs")
+    }
+
+    /// The same filesystem inside the UBI container firmware actually ships.
+    ///
+    /// UBI hands out *logical* erase blocks and moves them between physical ones, so the
+    /// blocks are in whatever order the writer used — LEB 0 is rarely the first physical
+    /// block. Mapping them back has to produce byte-for-byte what the bare image is,
+    /// which is exactly what this asserts by running the same battery over both.
+    func testUBIContainerReadsIdenticallyToTheBareImage() async throws {
+        try await assertConformance(image: try goldenFixture("rootfs.ubi"), label: "ubi")
+
+        let bare = try PCXArchive(library: lib).list(archivePath: try goldenFixture("rootfs.ubifs"))
+        let wrapped = try PCXArchive(library: lib).list(archivePath: try goldenFixture("rootfs.ubi"))
+        XCTAssertEqual(Set(bare.map(\.path)), Set(wrapped.map(\.path)),
+                       "the container and the bare image are the same filesystem")
+    }
+
+    /// `mkfs.ubifs` compresses with LZO by default — 74 of 76 data nodes in this image.
+    /// Before `LZO.swift` existed, this driver could have listed the tree and failed on
+    /// nearly every file in it, which is why UBIFS waited for that decoder.
+    func testUBIFSMultiBlockLzoFileExtractsByteForByte() async throws {
+        let image = try goldenFixture("rootfs.ubifs")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:ubifs-lzo") else {
+            return XCTFail("the host could not mount the UBIFS image")
+        }
+        let data = try await read(fs, "/bin/pattern.dat")
+        XCTAssertEqual(data.count, 300_000)
+        XCTAssertEqual(data, Data(Self.patternFileContents))
+    }
+
     // MARK: - ext2 / ext3 / ext4
 
     func testExt4PassesTheConformanceBattery() async throws {
@@ -979,7 +1022,7 @@ final class FSImagePluginTests: XCTestCase {
     func testNoMutatedImageCrashesHangsOrEscapesTheRoot() throws {
         var sources: [(String, Data)] = []
         for name in ["cramfs-le.img", "cramfs-be.img", "jffs2-le.img", "jffs2-rtime.img",
-                     "btrfs.img", "btrfs-lzo.img"] {
+                     "btrfs.img", "btrfs-lzo.img", "rootfs.ubifs", "rootfs.ubi"] {
             if let path = try? goldenFixture(name),
                let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
                 sources.append((name, data))

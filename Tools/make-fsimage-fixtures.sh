@@ -89,6 +89,24 @@ record jffs2-be.img "mkfs.jffs2 -r \$TREE -o jffs2-be.img -e 128KiB -b -p" "$V"
 mkfs.jffs2 -r "$R" -o "$O/jffs2-rtime.img" -e 128KiB -l -p -x zlib -x lzo >/dev/null 2>&1
 record jffs2-rtime.img "mkfs.jffs2 -r \$TREE -o jffs2-rtime.img -e 128KiB -l -p -x zlib -x lzo" "$V"
 
+# --- UBIFS, bare and inside a UBI container ---------------------------------------------------------
+# The bare filesystem and the container firmware actually ships. UBI only reorders erase blocks, so
+# both must read identically — which is the point of having each.
+V="$(mkfs.ubifs -V 2>&1 | head -1)"
+mkfs.ubifs -q -r "$R" -m 2048 -e 126976 -c 200 -o "$O/rootfs.ubifs"
+record rootfs.ubifs "mkfs.ubifs -r \$TREE -m 2048 -e 126976 -c 200 -o rootfs.ubifs" "$V"
+cat > /tmp/ubinize.cfg <<CFG
+[rootfs]
+mode=ubi
+image=$O/rootfs.ubifs
+vol_id=0
+vol_type=dynamic
+vol_name=rootfs
+vol_flags=autoresize
+CFG
+ubinize -o "$O/rootfs.ubi" -m 2048 -p 128KiB /tmp/ubinize.cfg >/dev/null 2>&1
+record rootfs.ubi "ubinize -o rootfs.ubi -m 2048 -p 128KiB (wrapping rootfs.ubifs as volume 0)" "$V"
+
 # --- Btrfs ----------------------------------------------------------------------------------------
 # -M (mixed block groups) with 4 KB nodes is what keeps this to 16 MB. Without it mkfs.btrfs grows the
 # file to its ~109 MB minimum, and the committed fixture would be 120 KB compressed instead of 21 KB.
@@ -130,8 +148,13 @@ else
 fi
 
 cd "$O"
-for f in *.img; do sha256sum "$f"; done > sha256.txt
-gzip -9 *.img
+# Every fixture, not just *.img: UBIFS images are named .ubifs and .ubi, and matching on
+# one extension silently left them unchecksummed and uncompressed — after which the copy
+# on the host failed and `set -e` ended the run with no output at all.
+IMAGES=()
+for f in *; do [ "$f" = commands.txt ] && continue; IMAGES+=("$f"); done
+for f in "${IMAGES[@]}"; do sha256sum "$f"; done > sha256.txt
+gzip -9 "${IMAGES[@]}"
 CONTAINER_SCRIPT
 
 echo "==> Building fixtures in $IMAGE"

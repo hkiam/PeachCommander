@@ -18,7 +18,7 @@
 	     `CanYouHandleThisFile` when no extension matches, so those files are
 	     recognised by their magic instead, and a `.bin` that is not an image is never
 	     claimed at all. -->
-	<key>PCPluginExtensions</key><string>squashfs;sqsh;sfs;jffs2;jffs;cramfs;ext2;ext3;ext4;btrfs;initramfs;initrd</string>
+	<key>PCPluginExtensions</key><string>squashfs;sqsh;sfs;jffs2;jffs;cramfs;ext2;ext3;ext4;btrfs;initramfs;initrd;ubifs;ubi</string>
 	<!-- Off until the user asks for it (F-345). Content detection means reading a
 	     header off every file whose extension matched nothing, and only somebody who
 	     wants a firmware browser should pay for that. -->
