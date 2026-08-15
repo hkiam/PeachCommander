@@ -920,6 +920,14 @@ SCENARIOS = [
     # loop, and un-hiding one does not make it build a new one — so switching the preview panel or the
     # shared tree on left fourteen controls unreachable, and whichever scenario left one of them on
     # decided whether `keys-main` passed. Both states now have a gate of their own.
+    # Does anything in this app ask macOS for the local network? The consent panel appears about forty
+    # seconds after launch in the guest, steals the application's activation and has cost two wrong
+    # diagnoses. This scenario does nothing but wait past that moment and leave a report, so the
+    # *screenshot* answers the question — run once with the plugins in the bundle and once with them
+    # removed (`--app` at a stripped copy), and the difference names the culprit.
+    ("netpanel-watch", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                        "wait 60000",
+                        "panelsdump /Users/admin/netpanel-watch-done.txt", "wait 500"], 12),
     ("keys-preview", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                             "previewpanel on", "wait 1500",
                             "keyloop /Users/admin/keyloop-keys-preview.txt", "wait 400",
@@ -1428,6 +1436,7 @@ REPORTS = {
                                   ["plugin.terminal.view container=bottom built=true made=1 closed=0"]),
     "keys-main": ("/Users/admin/keys-main-done.txt", ["left=/Users/admin/pc-demo"]),
     "keys-preview": ("/Users/admin/keys-preview-done.txt", ["left="]),
+    "netpanel-watch": ("/Users/admin/netpanel-watch-done.txt", ["left="]),
     "keys-tree": ("/Users/admin/keys-tree-done.txt", ["left="]),
     # The same last-file-to-wait-for that keys-main has had all along. Without it the guest kills the
     # app after the settle time whether or not the script got that far, and these six never did: every
