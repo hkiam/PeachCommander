@@ -148,6 +148,18 @@ public final class PCXArchive {
         if let caps = packerCaps() { return caps & (Int(PC_CAP_NEW) | Int(PC_CAP_MODIFY)) != 0 }
         return lib.symbol("PackFiles") != nil
     }
+    /// Whether the plugin offers to recognise files by content (PC_CAP_BY_CONTENT).
+    ///
+    /// Opt-in on the plugin's side, and the host consults `canHandle` only for plugins
+    /// that say yes here: content detection means reading a header off every file whose
+    /// extension matched nothing, so a plugin has to ask for that cost rather than have
+    /// it applied on its behalf.
+    public var detectsByContent: Bool {
+        guard lib.symbol("CanYouHandleThisFile") != nil else { return false }
+        guard let caps = packerCaps() else { return false }
+        return caps & Int(PC_CAP_BY_CONTENT) != 0
+    }
+
     /// Whether the loaded plugin can delete entries (PC_CAP_DELETE, else DeleteFiles).
     public var canDelete: Bool {
         if let caps = packerCaps() { return caps & Int(PC_CAP_DELETE) != 0 }

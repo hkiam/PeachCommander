@@ -290,6 +290,21 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     var onGoUp: (() -> Void)?
     /// Enter the archive file at the given local path (Enter on a .zip etc.).
     var onEnterArchive: ((String) -> Void)?
+
+    /// Enter on a file whose extension says nothing, when a packer plugin has offered to
+    /// recognise archives by *content* (PC_CAP_BY_CONTENT).
+    ///
+    /// Left nil unless such a plugin is enabled, and that is the whole safety of it:
+    /// with no content detector installed nothing about Enter changes, and no file gets
+    /// read speculatively. Firmware is the case this exists for — a squashfs called
+    /// `firmware.bin` or a rootfs with no extension at all is not something an
+    /// extension list can ever match.
+    ///
+    /// Separate from `onEnterArchive` because the two need different answers when
+    /// nothing can open the file: that one beeps, which is right for a `.zip` that turned
+    /// out to be broken, and quite wrong for a `.txt` that was only being asked about.
+    /// This one falls through to opening the file normally.
+    var onProbeThenEnterArchive: ((String) -> Void)?
     /// Files were dropped onto this panel (from Finder, another app, or the other
     /// panel). `move` is true when the Command modifier was held. Paths are absolute.
     /// `intoFolder` is the absolute path of a folder row the files were dropped onto
@@ -1744,6 +1759,11 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         case .file, .symlinkFile:
             if archiveExtensions.contains(entry.ext.lowercased()) || Self.isFirstPartOfSplitZip(path) {
                 onEnterArchive?(path)
+            } else if let probe = onProbeThenEnterArchive {
+                // A content-detecting packer plugin is enabled: let it look before the file
+                // is handed to the system. It opens the file normally if nothing claims it,
+                // so this only ever adds an answer, never removes one.
+                probe(path)
             } else {
                 // Opening with the system is a file open like any other, and this is where Enter and a
                 // double-click both arrive (F-402).
