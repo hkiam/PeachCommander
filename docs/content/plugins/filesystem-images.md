@@ -18,12 +18,12 @@ It is **read-only**. Nothing in it can write to an image.
 
 | Format | Notes |
 |---|---|
-| SquashFS 4.0 | gzip, xz, lz4 and zstd; fragments, sparse files, uncompressed blocks |
+| SquashFS 4.0 | gzip, xz, lz4, zstd and LZO; fragments, sparse files, uncompressed blocks |
 | ext2 / ext3 / ext4 | extent trees and the classic block map, sparse files, both symlink kinds |
-| JFFS2 | little- and big-endian; `none`, `zero`, `rtime` and zlib nodes |
+| JFFS2 | little- and big-endian; `none`, `zero`, `rtime`, zlib and LZO nodes |
 | cramfs | little- and big-endian |
 | initramfs / initrd | cpio `newc`, plain or gzip/xz-wrapped, including concatenated archives |
-| Btrfs | single-device, zlib and zstd, subvolumes and snapshots |
+| Btrfs | single-device, zlib, zstd and LZO, subvolumes and snapshots |
 
 ## Turning it on
 
@@ -49,8 +49,6 @@ looking for a bad download.
   whatever happened to sit at that offset, so the image is declined rather than read
   wrongly.
 - **Multi-device Btrfs** — most of the data is in a file that is not this one.
-- **LZO compression** — there is no decoder available under a licence this product
-  can use. Use `unsquashfs` or a Linux host for those images.
 - **A NAND dump with its spare area** — a raw dump interleaves out-of-band ECC bytes
   with the data, so node payloads fail their own checksums. Re-dump it with
   `nanddump --omitoob`.

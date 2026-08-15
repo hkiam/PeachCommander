@@ -21,6 +21,7 @@ SOURCES=(
   "Plugins/FSImage/Support/ImageReader.swift"
   "Plugins/FSImage/Support/ImageEntry.swift"
   "Plugins/FSImage/Support/Decompressors.swift"
+  "Plugins/FSImage/Support/LZO.swift"
   "Plugins/FSImage/Support/DriverRegistry.swift"
   "Plugins/FSImage/Support/ImageCache.swift"
   "Plugins/FSImage/Drivers/CpioDriver.swift"

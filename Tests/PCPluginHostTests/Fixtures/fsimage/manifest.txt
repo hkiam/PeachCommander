@@ -7,8 +7,9 @@
 
 cramfs-le.img  319e7457caeec2afd0bda7c887dac68797c2524bf74853656ad4b47906ee536c  util-linux  mkfs.cramfs $TREE cramfs-le.img
 cramfs-be.img  ec139b9116b9113fd4ba1ae4385f009bde1f2c24b41b3d5c8c85a9d98c1bbda3  util-linux  mkfs.cramfs -N big $TREE cramfs-be.img
-jffs2-le.img  7833f1efa166dcf832705003d9c16ac84375b94ae195a5d97b21f91c34fcbd67  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-le.img -e 128KiB -l -p
-jffs2-be.img  e673b732857d027bab84d5b1ee738bb10f97d9c10bf6f9b1423ca35ae626a69f  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-be.img -e 128KiB -b -p
-jffs2-rtime.img  dcca8b6266cfd94b04a1c88b1fceb691b9d7d531021b8265b5a835f7c576b5d1  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-rtime.img -e 128KiB -l -p -x zlib -x lzo
-btrfs.img  3575b3193ca43074223cc8a7ca825f8ebf0b294fc868ddb1680e4d7ef7632ba7  mkfs.btrfs, part of btrfs-progs v6.6.3  truncate -s 16m btrfs.img && mkfs.btrfs -f -M -n 4096 -s 4096 -r $TREE btrfs.img
-btrfs-rich.img  83cea047c26046400f337537d10ff21e177f738b3b79b52f57f5067fe300617e  mkfs.btrfs, part of btrfs-progs v6.6.3  mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-rich.img, then mounted with compress-force=zlib and populated (subvolume + snapshot + 500 files)
+jffs2-le.img  6c858f0278aa93bf174f79f87e702591fefdd5c0b92505e6d8a84c293653be76  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-le.img -e 128KiB -l -p
+jffs2-be.img  4342a76a24329815b28aa4833a626ddcacd376eb1463e90726a6be9c3ae0ab41  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-be.img -e 128KiB -b -p
+jffs2-rtime.img  0426b6c9b15d1c0e4531f518ebf155f948dfe6c93ea903a865979da38c952945  mkfs.jffs2 (mtd-utils) 2.2.0  mkfs.jffs2 -r $TREE -o jffs2-rtime.img -e 128KiB -l -p -x zlib -x lzo
+btrfs.img  5285011a8c96296d18bdd1ec6b7349ea718a39f75b24a11d52d7aa890e746d57  mkfs.btrfs, part of btrfs-progs v6.6.3  truncate -s 16m btrfs.img && mkfs.btrfs -f -M -n 4096 -s 4096 -r $TREE btrfs.img
+btrfs-rich.img  fc07f36137bec5e68a2d0fa59a6a8635334baf79fbe3c5045854b718f29c92ef  mkfs.btrfs, part of btrfs-progs v6.6.3  mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-rich.img, then mounted with compress-force=zlib and populated (subvolume + snapshot + 500 files)
+btrfs-lzo.img  d95b33dbc415ffa805bd96fa246249ed00cffbbf0cd00aa717c20a65125b12aa  mkfs.btrfs, part of btrfs-progs v6.6.3  mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-lzo.img, then mounted with compress-force=lzo and populated

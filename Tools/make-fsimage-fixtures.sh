@@ -116,6 +116,14 @@ for i in range(500):
 "
   sync; btrfs filesystem sync /mnt/btr >/dev/null 2>&1; umount /mnt/btr
   record btrfs-rich.img "mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-rich.img, then mounted with compress-force=zlib and populated (subvolume + snapshot + 500 files)" "$V"
+  truncate -s 32m "$O/btrfs-lzo.img"
+  mkfs.btrfs -q -f -M -n 4096 -s 4096 "$O/btrfs-lzo.img" >/dev/null 2>&1
+  if mount -o loop,compress-force=lzo "$O/btrfs-lzo.img" /mnt/btr 2>/dev/null; then
+    cp -a "$R/." /mnt/btr/ ; sync; umount /mnt/btr
+    record btrfs-lzo.img "mkfs.btrfs -f -M -n 4096 -s 4096 btrfs-lzo.img, then mounted with compress-force=lzo and populated" "$V"
+  else
+    rm -f "$O/btrfs-lzo.img"
+  fi
 else
   echo "  note: skipping btrfs-rich.img — needs a privileged container (docker run --privileged)" >&2
   rm -f "$O/btrfs-rich.img"

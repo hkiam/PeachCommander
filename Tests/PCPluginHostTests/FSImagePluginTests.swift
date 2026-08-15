@@ -52,6 +52,7 @@ final class FSImagePluginTests: XCTestCase {
         "Plugins/FSImage/Support/ImageReader.swift",
         "Plugins/FSImage/Support/ImageEntry.swift",
         "Plugins/FSImage/Support/Decompressors.swift",
+        "Plugins/FSImage/Support/LZO.swift",
         "Plugins/FSImage/Support/DriverRegistry.swift",
         "Plugins/FSImage/Support/ImageCache.swift",
         "Plugins/FSImage/Drivers/CpioDriver.swift",
@@ -483,20 +484,41 @@ final class FSImagePluginTests: XCTestCase {
         try await assertConformance(image: try makeSquashFSImage(compressor: "zstd"), label: "sqfs-zstd")
     }
 
-    /// LZO has no licence-compatible decoder, so an image using it must be refused as
-    /// *unsupported* rather than as damaged: the difference tells the user to reach
-    /// for `unsquashfs` instead of going to look for a corrupt download.
-    func testSquashFSWithLzoSaysUnsupportedRatherThanReportingDamage() throws {
-        guard let image = try? makeSquashFSImage(compressor: "lzo") else {
-            throw XCTSkip("this mksquashfs cannot build an LZO image")
+    /// LZO, through the decoder written from the format description in `LZO.swift`.
+    ///
+    /// The one compressor every format here can meet and none of them could read.
+    /// Checked against a real `mksquashfs -comp lzo` image rather than against
+    /// round-tripped output, because there is nothing here that can *produce* an LZO
+    /// stream to round-trip against — which is the point.
+    func testSquashFSLzoPassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try makeSquashFSImage(compressor: "lzo"), label: "sqfs-lzo")
+    }
+
+    /// A 300 KB file is 74 LZO blocks, so this walks the decoder far past the first
+    /// instruction — which is where a mis-decoded `state` or a match copied as a range
+    /// instead of byte by byte first shows up.
+    func testLzoMultiBlockFileExtractsByteForByte() async throws {
+        let image = try makeSquashFSImage(compressor: "lzo")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:lzo-big") else {
+            return XCTFail("the host could not mount the LZO image")
         }
-        XCTAssertThrowsError(try PCXArchive(library: lib).list(archivePath: image)) { error in
-            guard case PCXArchive.PCXError.openFailed(let code) = error else {
-                return XCTFail("unexpected error \(error)")
-            }
-            XCTAssertEqual(code, Int(PC_E_NOT_SUPPORTED),
-                           "LZO should report 'not supported', not a damaged archive")
+        let data = try await read(fs, "/bin/big.dat")
+        XCTAssertEqual(data, Data(Self.bigFileContents))
+    }
+
+    /// Btrfs does not store a bare LZO stream: it wraps segments in its own framing —
+    /// a total length, then per-segment lengths, with headers never straddling a page.
+    /// Handing the whole extent to the LZO decoder fails on the first byte, because
+    /// what looks like an opcode is the low byte of a length.
+    func testBtrfsLzoUnwrapsItsSegmentFramingBeforeDecoding() async throws {
+        let image = try goldenFixture("btrfs-lzo.img")
+        try await assertConformance(image: image, label: "btrfs-lzo")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:btrfs-lzo") else {
+            return XCTFail("the host could not mount the LZO btrfs image")
         }
+        let data = try await read(fs, "/bin/pattern.dat")
+        XCTAssertEqual(data.count, 300_000)
+        XCTAssertEqual(data, Data(Self.patternFileContents))
     }
 
     func testATruncatedSquashFSFailsRatherThanListingWhatSurvived() throws {
@@ -956,7 +978,8 @@ final class FSImagePluginTests: XCTestCase {
     /// the plugin and silently turn every later case into a no-op.
     func testNoMutatedImageCrashesHangsOrEscapesTheRoot() throws {
         var sources: [(String, Data)] = []
-        for name in ["cramfs-le.img", "cramfs-be.img", "jffs2-le.img", "jffs2-rtime.img", "btrfs.img"] {
+        for name in ["cramfs-le.img", "cramfs-be.img", "jffs2-le.img", "jffs2-rtime.img",
+                     "btrfs.img", "btrfs-lzo.img"] {
             if let path = try? goldenFixture(name),
                let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
                 sources.append((name, data))
