@@ -92,7 +92,21 @@ final class ImageReader: ByteSource {
     let path: String
     private let fd: Int32
 
-    init(path: String) throws {
+    /// Byte offset in the file that this reader's offset 0 refers to.
+    ///
+    /// Non-zero for a partition: the whole point is that a driver written for a bare
+    /// image needs no idea it is looking at a slice of a larger disk. Every read adds
+    /// this, and `size` is the window's length, so the existing bounds checks confine a
+    /// partition's driver to its own partition for free.
+    private let base: Int64
+
+    /// The whole file.
+    convenience init(path: String) throws {
+        try self.init(path: path, windowOffset: 0, windowLength: nil)
+    }
+
+    /// A window into the file, for reading one partition of a disk image.
+    init(path: String, windowOffset: Int64, windowLength: Int64?) throws {
         self.path = path
         let fd = open(path, O_RDONLY)
         guard fd >= 0 else { throw ImageError.cannotOpen(path) }
@@ -101,8 +115,17 @@ final class ImageReader: ByteSource {
             close(fd)
             throw ImageError.cannotOpen(path)
         }
+        let fileSize = Int64(st.st_size)
+        guard windowOffset >= 0, windowOffset <= fileSize else {
+            close(fd)
+            throw ImageError.damaged(reason: "window starts at \(windowOffset), file is \(fileSize) bytes")
+        }
         self.fd = fd
-        self.size = Int64(st.st_size)
+        self.base = windowOffset
+        // A partition may claim more than the image actually holds — a truncated dump is
+        // the usual reason — so the window is clamped to what is there rather than
+        // trusted. Reads past the end then fail as out-of-bounds, which is the truth.
+        self.size = min(windowLength ?? (fileSize - windowOffset), fileSize - windowOffset)
     }
 
     deinit { close(fd) }
@@ -128,8 +151,11 @@ final class ImageReader: ByteSource {
         var done = 0
         while done < count {
             let n = buffer.withUnsafeMutableBytes { raw -> Int in
-                guard let base = raw.baseAddress else { return -1 }
-                return pread(fd, base.advanced(by: done), count - done, off_t(offset) + off_t(done))
+                guard let destination = raw.baseAddress else { return -1 }
+                // `base` is what makes a partition transparent: the caller's offset 0 is
+                // the partition's first byte, not the disk's.
+                return pread(fd, destination.advanced(by: done), count - done,
+                             off_t(self.base + offset) + off_t(done))
             }
             if n < 0 {
                 if errno == EINTR { continue }

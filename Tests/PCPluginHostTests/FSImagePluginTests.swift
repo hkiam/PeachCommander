@@ -55,7 +55,9 @@ final class FSImagePluginTests: XCTestCase {
         "Plugins/FSImage/Support/LZO.swift",
         "Plugins/FSImage/Support/DriverRegistry.swift",
         "Plugins/FSImage/Support/ImageCache.swift",
+        "Plugins/FSImage/Support/PartitionTable.swift",
         "Plugins/FSImage/Drivers/CpioDriver.swift",
+        "Plugins/FSImage/Drivers/PartitionedDriver.swift",
         "Plugins/FSImage/Drivers/SquashFSMetadata.swift",
         "Plugins/FSImage/Drivers/SquashFSDriver.swift",
         "Plugins/FSImage/Drivers/ExtLayout.swift",
@@ -704,6 +706,64 @@ final class FSImagePluginTests: XCTestCase {
         XCTAssertThrowsError(try PCXArchive(library: lib).list(archivePath: truncated.path))
     }
 
+    // MARK: - Partitioned disk images
+
+    /// The case every filesystem driver here would otherwise miss: the filesystem is a
+    /// slice of the file, not the file. Without a partition table the plugin finds
+    /// nothing at offset 0 and declines an image it could read one partition in.
+    ///
+    /// Both fixtures hold two partitions the plugin already reads — a SquashFS and an
+    /// ext4 — so what is under test is the table and the windowing, not another format.
+    func testMBRDiskImageListsEachPartitionAsADirectory() async throws {
+        let image = try goldenFixture("disk-mbr.img")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:mbr") else {
+            return XCTFail("the host could not mount the partitioned image")
+        }
+        let root = try await collect(fs, "/")
+        XCTAssertEqual(root.count, 2, "one directory per partition")
+        XCTAssertTrue(root.allSatisfy { $0.kind == .directory })
+
+        // Each partition's own tree hangs under it, with the sample tree intact.
+        guard let first = root.map(\.name).sorted().first else { return XCTFail("no partitions") }
+        let inside = try await collect(fs, "/\(first)")
+        XCTAssertEqual(Set(inside.map(\.name)), ["bin", "etc"])
+        let motd = try await read(fs, "/\(first)/etc/motd")
+        XCTAssertEqual(motd, Data(ExpectedTree.files["etc/motd"]!.utf8))
+    }
+
+    /// GPT records a *name* per partition, so the listing shows `1-rootfs` and `2-esp`
+    /// rather than a type — which is the difference between a usable listing and two
+    /// directories called "partition".
+    ///
+    /// GPT also always writes a protective MBR in sector 0 claiming the whole disk, so
+    /// reading MBR first would report one giant partition where two good ones exist.
+    func testGPTDiskImageUsesPartitionNamesAndIgnoresTheProtectiveMBR() async throws {
+        let image = try goldenFixture("disk-gpt.img")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:gpt") else {
+            return XCTFail("the host could not mount the GPT image")
+        }
+        let root = try await collect(fs, "/")
+        XCTAssertEqual(Set(root.map(\.name)), ["1-rootfs", "2-esp"],
+                       "GPT partition names, and exactly two — not the protective MBR's one")
+        let motd = try await read(fs, "/1-rootfs/etc/motd")
+        XCTAssertEqual(motd, Data(ExpectedTree.files["etc/motd"]!.utf8))
+    }
+
+    /// A partition's driver must not be able to read outside its own partition. The
+    /// window is what enforces it, and it is the only thing that does — every driver
+    /// happily follows an offset wherever it points.
+    func testAPartitionsDriverCannotReadPastItsOwnPartition() async throws {
+        let image = try goldenFixture("disk-mbr.img")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:window") else {
+            return XCTFail("the host could not mount the partitioned image")
+        }
+        // The second partition is ext4 and creates lost+found; the first is SquashFS and
+        // never does. Seeing it under the wrong one would mean a driver read across.
+        let first = try await collect(fs, "/1-Linux")
+        XCTAssertFalse(first.contains { $0.name == "lost+found" },
+                       "the SquashFS partition must not show the ext4 partition's contents")
+    }
+
     // MARK: - UBIFS
 
     /// The bare filesystem, as `mkfs.ubifs` writes it.
@@ -1022,7 +1082,7 @@ final class FSImagePluginTests: XCTestCase {
     func testNoMutatedImageCrashesHangsOrEscapesTheRoot() throws {
         var sources: [(String, Data)] = []
         for name in ["cramfs-le.img", "cramfs-be.img", "jffs2-le.img", "jffs2-rtime.img",
-                     "btrfs.img", "btrfs-lzo.img", "rootfs.ubifs", "rootfs.ubi"] {
+                     "btrfs.img", "btrfs-lzo.img", "rootfs.ubifs", "rootfs.ubi", "disk-mbr.img"] {
             if let path = try? goldenFixture(name),
                let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
                 sources.append((name, data))

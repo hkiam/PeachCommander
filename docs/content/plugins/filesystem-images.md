@@ -26,6 +26,17 @@ It is **read-only**. Nothing in it can write to an image.
 | Btrfs | single-device, zlib, zstd and LZO, subvolumes and snapshots |
 | UBIFS | bare `.ubifs` and `.ubi` containers; LZO, zlib, zstd |
 
+## Disk images with partitions
+
+An image straight off a device usually has a partition table rather than a bare
+filesystem, and the filesystem you want is a slice inside it. Such an image lists one
+directory per partition — `1-rootfs`, `2-esp` — each holding that partition's tree. MBR
+and GPT are both read; GPT partition names are used when the table records them.
+
+A partition this build cannot read is still listed, as an empty directory named after
+its type. Somebody auditing a device needs to see that a third partition exists even
+when its contents are out of reach.
+
 ## Turning it on
 
 The plugin ships **disabled**. Enable it in Settings ▸ Plugins.

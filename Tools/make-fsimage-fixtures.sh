@@ -46,7 +46,7 @@ cat > "$BUILD_SCRIPT" <<'CONTAINER_SCRIPT'
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq >/dev/null 2>&1 </dev/null
-apt-get install -y -qq util-linux mtd-utils btrfs-progs python3 >/dev/null 2>&1 </dev/null
+apt-get install -y -qq util-linux mtd-utils btrfs-progs fdisk gdisk squashfs-tools e2fsprogs python3 >/dev/null 2>&1 </dev/null
 
 # The sample tree. Must match `ExpectedTree` in FSImagePluginTests.swift — that is what makes the
 # conformance battery comparable across formats rather than three different trees checked three ways.
@@ -146,6 +146,26 @@ else
   echo "  note: skipping btrfs-rich.img — needs a privileged container (docker run --privileged)" >&2
   rm -f "$O/btrfs-rich.img"
 fi
+
+# --- Partitioned disk images, MBR and GPT -----------------------------------------------------------
+# The case every driver here would otherwise miss: the filesystem is a slice, not the file. Each
+# holds two partitions the plugin can already read, so what is being tested is the table and the
+# windowing, not another format.
+mksquashfs "$R" /tmp/p1.sqfs -comp gzip -noappend -no-progress -quiet >/dev/null 2>&1
+mke2fs -q -t ext4 -d "$R" -b 1024 /tmp/p2.img 8M >/dev/null 2>&1
+build_disk() {
+  local img="$1" layout="$2"
+  rm -f "$img"; truncate -s 48m "$img"
+  printf '%b' "$layout" | sfdisk -q "$img" >/dev/null 2>&1
+  dd if=/tmp/p1.sqfs of="$img" bs=512 seek=2048  conv=notrunc 2>/dev/null
+  dd if=/tmp/p2.img  of="$img" bs=512 seek=18432 conv=notrunc 2>/dev/null
+}
+V="$(sfdisk --version 2>&1 | head -1)"
+build_disk "$O/disk-mbr.img" 'label: dos\n1: start=2048, size=16384, type=83\n2: start=18432, size=20480, type=83\n'
+record disk-mbr.img "sfdisk 'label: dos' with two type-83 partitions, squashfs at LBA 2048 and ext4 at 18432" "$V"
+# GPT names the partitions, which is what the listing shows instead of a type.
+build_disk "$O/disk-gpt.img" 'label: gpt\n1: start=2048, size=16384, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="rootfs"\n2: start=18432, size=20480, type=C12A7328-F81F-11D2-BA4B-00A0C93EC93B, name="esp"\n'
+record disk-gpt.img "sfdisk 'label: gpt' with a Linux and an EFI partition, named rootfs and esp" "$V"
 
 cd "$O"
 # Every fixture, not just *.img: UBIFS images are named .ubifs and .ubi, and matching on
