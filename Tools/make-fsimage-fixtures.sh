@@ -46,7 +46,7 @@ cat > "$BUILD_SCRIPT" <<'CONTAINER_SCRIPT'
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq >/dev/null 2>&1 </dev/null
-apt-get install -y -qq util-linux mtd-utils btrfs-progs fdisk gdisk squashfs-tools e2fsprogs python3 >/dev/null 2>&1 </dev/null
+apt-get install -y -qq util-linux mtd-utils btrfs-progs fdisk gdisk squashfs-tools e2fsprogs dosfstools mtools python3 >/dev/null 2>&1 </dev/null
 
 # The sample tree. Must match `ExpectedTree` in FSImagePluginTests.swift — that is what makes the
 # conformance battery comparable across formats rather than three different trees checked three ways.
@@ -146,6 +146,31 @@ else
   echo "  note: skipping btrfs-rich.img — needs a privileged container (docker run --privileged)" >&2
   rm -f "$O/btrfs-rich.img"
 fi
+
+# --- FAT12 / FAT16 / FAT32 --------------------------------------------------------------------------
+# mtools writes into the image without mounting it, so this needs no privileges at all. The three
+# widths differ only in the allocation table, but the cluster count decides which one mkfs picks, so
+# each gets a size that lands it there. A deliberately long filename exercises VFAT long names —
+# without them the listing shows PATTER~1.DAT for a file called pattern.dat.
+export MTOOLS_SKIP_CHECK=1
+V="$(mkfs.vfat --help 2>&1 | head -1)"
+build_fat() {
+  local img="$O/$1" bits="$2" mb="$3"
+  rm -f "$img"; dd if=/dev/zero of="$img" bs=1M count="$mb" 2>/dev/null
+  mkfs.vfat -F "$bits" -n SAMPLE "$img" >/dev/null 2>&1
+  mmd -i "$img" ::/etc ::/etc/conf.d ::/bin
+  mcopy -i "$img" "$R/etc/motd" ::/etc/motd
+  mcopy -i "$img" "$R/etc/motd" "::/etc/a-rather-long-file-name.conf"
+  mcopy -i "$img" "$R/etc/conf.d/app.conf" ::/etc/conf.d/app.conf
+  mcopy -i "$img" "$R/bin/empty" ::/bin/empty
+  mcopy -i "$img" "$R/bin/pattern.dat" ::/bin/pattern.dat
+}
+build_fat fat12.img 12 8
+record fat12.img "mkfs.vfat -F 12 -n SAMPLE fat12.img (8 MB), populated with mtools" "$V"
+build_fat fat16.img 16 32
+record fat16.img "mkfs.vfat -F 16 -n SAMPLE fat16.img (32 MB), populated with mtools" "$V"
+build_fat fat32.img 32 64
+record fat32.img "mkfs.vfat -F 32 -n SAMPLE fat32.img (64 MB), populated with mtools" "$V"
 
 # --- Partitioned disk images, MBR and GPT -----------------------------------------------------------
 # The case every driver here would otherwise miss: the filesystem is a slice, not the file. Each

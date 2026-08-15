@@ -56,6 +56,7 @@ final class FSImagePluginTests: XCTestCase {
         "Plugins/FSImage/Support/DriverRegistry.swift",
         "Plugins/FSImage/Support/ImageCache.swift",
         "Plugins/FSImage/Support/PartitionTable.swift",
+        "Plugins/FSImage/Drivers/FATDriver.swift",
         "Plugins/FSImage/Drivers/CpioDriver.swift",
         "Plugins/FSImage/Drivers/PartitionedDriver.swift",
         "Plugins/FSImage/Drivers/SquashFSMetadata.swift",
@@ -706,6 +707,67 @@ final class FSImagePluginTests: XCTestCase {
         XCTAssertThrowsError(try PCXArchive(library: lib).list(archivePath: truncated.path))
     }
 
+    // MARK: - FAT12 / FAT16 / FAT32
+
+    /// The FAT fixtures hold a tree of their own — mtools writes it in, so the layout
+    /// differs slightly from `ExpectedTree` — and all three widths hold the same one.
+    private static let fatTree: [String: String] = [
+        "etc/motd": "hello from initramfs\n",
+        "etc/a-rather-long-file-name.conf": "hello from initramfs\n",
+        "etc/conf.d/app.conf": "key = value\n",
+        "bin/empty": "",
+    ]
+
+    private func assertFATImage(_ name: String, label: String) async throws {
+        let image = try goldenFixture(name)
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:\(label)") else {
+            return XCTFail("\(label): the host could not mount the image")
+        }
+        let root = try await collect(fs, "/")
+        XCTAssertEqual(Set(root.map(\.name)), ["bin", "etc"], "\(label): root")
+        for (path, contents) in Self.fatTree {
+            let data = try await read(fs, "/" + path)
+            XCTAssertEqual(data, Data(contents.utf8), "\(label): contents of \(path)")
+        }
+        let big = try await read(fs, "/bin/pattern.dat")
+        XCTAssertEqual(big, Data(Self.patternFileContents), "\(label): a file spanning many clusters")
+    }
+
+    /// FAT12 packs two allocation-table entries into three bytes, so an entry is the low
+    /// or the high twelve bits of a 16-bit read depending on whether its index is even.
+    /// Small media only — which includes plenty of embedded boot partitions.
+    func testFAT12ReadsIncludingItsPackedAllocationTable() async throws {
+        try await assertFATImage("fat12.img", label: "fat12")
+    }
+
+    func testFAT16Reads() async throws {
+        try await assertFATImage("fat16.img", label: "fat16")
+    }
+
+    /// FAT32 is the one where the root directory is an ordinary cluster chain rather
+    /// than a fixed region before the data area.
+    func testFAT32ReadsIncludingItsClusterChainedRoot() async throws {
+        try await assertFATImage("fat32.img", label: "fat32")
+    }
+
+    /// A name that is not 8.3 is stored as a chain of preceding entries holding UTF-16
+    /// fragments in reverse order, tied to the real entry by a checksum of its short
+    /// name. Without them the listing shows `A-RATH~1.CON` — plausible, wrong, and
+    /// exactly what defeats somebody searching a firmware dump for a filename.
+    func testFATLongFileNamesAreReassembled() async throws {
+        for name in ["fat12.img", "fat16.img", "fat32.img"] {
+            let image = try goldenFixture(name)
+            guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:lfn-\(name)") else {
+                return XCTFail("\(name): the host could not mount the image")
+            }
+            let etc = try await collect(fs, "/etc")
+            XCTAssertTrue(etc.contains { $0.name == "a-rather-long-file-name.conf" },
+                          "\(name): the long name, not its 8.3 alias")
+            XCTAssertFalse(etc.contains { $0.name.contains("~") },
+                           "\(name): no 8.3 alias should be listed in its place")
+        }
+    }
+
     // MARK: - Partitioned disk images
 
     /// The case every filesystem driver here would otherwise miss: the filesystem is a
@@ -1082,7 +1144,7 @@ final class FSImagePluginTests: XCTestCase {
     func testNoMutatedImageCrashesHangsOrEscapesTheRoot() throws {
         var sources: [(String, Data)] = []
         for name in ["cramfs-le.img", "cramfs-be.img", "jffs2-le.img", "jffs2-rtime.img",
-                     "btrfs.img", "btrfs-lzo.img", "rootfs.ubifs", "rootfs.ubi", "disk-mbr.img"] {
+                     "btrfs.img", "btrfs-lzo.img", "rootfs.ubifs", "rootfs.ubi", "disk-mbr.img", "fat16.img"] {
             if let path = try? goldenFixture(name),
                let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
                 sources.append((name, data))
