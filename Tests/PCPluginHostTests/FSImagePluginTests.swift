@@ -56,6 +56,7 @@ final class FSImagePluginTests: XCTestCase {
         "Plugins/FSImage/Support/DriverRegistry.swift",
         "Plugins/FSImage/Support/ImageCache.swift",
         "Plugins/FSImage/Support/PartitionTable.swift",
+        "Plugins/FSImage/Drivers/ExFATDriver.swift",
         "Plugins/FSImage/Drivers/FATDriver.swift",
         "Plugins/FSImage/Drivers/CpioDriver.swift",
         "Plugins/FSImage/Drivers/PartitionedDriver.swift",
@@ -733,6 +734,34 @@ final class FSImagePluginTests: XCTestCase {
         XCTAssertEqual(big, Data(Self.patternFileContents), "\(label): a file spanning many clusters")
     }
 
+    /// exFAT, despite the name, is not a wider FAT: different directory format, UTF-16
+    /// names with no 8.3 alias, and — the part that decides whether large files read at
+    /// all — a `NoFatChain` flag meaning the file is contiguous and the allocation table
+    /// holds nothing for it. Following the table anyway lands on whatever that cluster's
+    /// entry last described, and that flag is the normal case for anything written in
+    /// one go.
+    ///
+    /// The fixture carries no symlink: exFAT has none, and copying one in fails with
+    /// "Function not implemented".
+    func testExFATReadsIncludingContiguousFilesAndLongNames() async throws {
+        let image = try goldenFixture("exfat.img")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:exfat") else {
+            return XCTFail("the host could not mount the exFAT image")
+        }
+        let root = try await collect(fs, "/")
+        XCTAssertEqual(Set(root.map(\.name)), ["bin", "etc"])
+        for (path, contents) in Self.fatTree {
+            let data = try await read(fs, "/" + path)
+            XCTAssertEqual(data, Data(contents.utf8), "exfat: contents of \(path)")
+        }
+        let etc = try await collect(fs, "/etc")
+        XCTAssertTrue(etc.contains { $0.name == "a-rather-long-file-name.conf" },
+                      "exFAT names are UTF-16 with no 8.3 alias to fall back on")
+        let big = try await read(fs, "/bin/pattern.dat")
+        XCTAssertEqual(big, Data(Self.patternFileContents),
+                       "a 300 KB file, which mkfs writes contiguously — the NoFatChain path")
+    }
+
     /// FAT12 packs two allocation-table entries into three bytes, so an entry is the low
     /// or the high twelve bits of a 16-bit read depending on whether its index is even.
     /// Small media only — which includes plenty of embedded boot partitions.
@@ -1144,7 +1173,7 @@ final class FSImagePluginTests: XCTestCase {
     func testNoMutatedImageCrashesHangsOrEscapesTheRoot() throws {
         var sources: [(String, Data)] = []
         for name in ["cramfs-le.img", "cramfs-be.img", "jffs2-le.img", "jffs2-rtime.img",
-                     "btrfs.img", "btrfs-lzo.img", "rootfs.ubifs", "rootfs.ubi", "disk-mbr.img", "fat16.img"] {
+                     "btrfs.img", "btrfs-lzo.img", "rootfs.ubifs", "rootfs.ubi", "disk-mbr.img", "fat16.img", "exfat.img"] {
             if let path = try? goldenFixture(name),
                let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
                 sources.append((name, data))

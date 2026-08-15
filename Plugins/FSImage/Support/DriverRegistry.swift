@@ -75,6 +75,7 @@ enum DriverRegistry {
         JFFS2Driver.self,
         UBIFSDriver.self,
         BtrfsDriver.self,
+        ExFATDriver.self,
         FATDriver.self,
         CpioDriver.self,
         // Last on purpose: a filesystem's own boot sector can end in 0x55AA, so this

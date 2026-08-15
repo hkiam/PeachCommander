@@ -29,14 +29,23 @@ ROOT="$(pwd)"
 OUT="$ROOT/Tests/PCPluginHostTests/Fixtures/fsimage"
 FILTER="${1:-}"
 IMAGE="ubuntu:24.04"
-CONTAINER="pc-fsimage-fixtures"
 
 command -v docker >/dev/null || { echo "error: docker is required (colima start, or Docker Desktop)" >&2; exit 1; }
 docker info >/dev/null 2>&1 || { echo "error: the docker daemon is not running" >&2; exit 1; }
 
 mkdir -p "$OUT"
 BUILD_SCRIPT="$(mktemp)"
-trap 'rm -f "$BUILD_SCRIPT"; docker rm -f "$CONTAINER" >/dev/null 2>&1 || true' EXIT
+CONTAINER=""
+# The container is created without a fixed name and removed by id. A fixed name meant that
+# one run which failed to clean up — a FUSE mount left standing inside it did exactly that —
+# blocked every later run with a name conflict, and the stuck container could not be removed
+# to clear it either.
+cleanup() {
+  rm -f "$BUILD_SCRIPT"
+  [ -n "$CONTAINER" ] && docker rm -f "$CONTAINER" >/dev/null 2>&1
+  return 0
+}
+trap cleanup EXIT
 
 # The script is copied into the container rather than piped to `bash -s`: with the script on stdin,
 # any child process that reads stdin swallows the rest of it, and the run ends early and silently.
@@ -46,7 +55,7 @@ cat > "$BUILD_SCRIPT" <<'CONTAINER_SCRIPT'
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq >/dev/null 2>&1 </dev/null
-apt-get install -y -qq util-linux mtd-utils btrfs-progs fdisk gdisk squashfs-tools e2fsprogs dosfstools mtools python3 >/dev/null 2>&1 </dev/null
+apt-get install -y -qq util-linux mtd-utils btrfs-progs fdisk gdisk squashfs-tools e2fsprogs dosfstools mtools exfatprogs exfat-fuse fuse3 python3 >/dev/null 2>&1 </dev/null
 
 # The sample tree. Must match `ExpectedTree` in FSImagePluginTests.swift — that is what makes the
 # conformance battery comparable across formats rather than three different trees checked three ways.
@@ -78,7 +87,7 @@ record cramfs-be.img "mkfs.cramfs -N big \$TREE cramfs-be.img" "$V"
 # --- JFFS2: little- and big-endian ----------------------------------------------------------------
 # -e 128KiB is the erase-block size of the NOR flash these images target; -p pads to a whole block so
 # the image looks like a flash dump rather than stopping mid-block.
-V="$(mkfs.jffs2 --version 2>&1 | head -1)"
+V="$(mkfs.jffs2 --version 2>&1 | head -1 || true)"
 mkfs.jffs2 -r "$R" -o "$O/jffs2-le.img" -e 128KiB -l -p >/dev/null 2>&1
 record jffs2-le.img "mkfs.jffs2 -r \$TREE -o jffs2-le.img -e 128KiB -l -p" "$V"
 mkfs.jffs2 -r "$R" -o "$O/jffs2-be.img" -e 128KiB -b -p >/dev/null 2>&1
@@ -92,7 +101,7 @@ record jffs2-rtime.img "mkfs.jffs2 -r \$TREE -o jffs2-rtime.img -e 128KiB -l -p 
 # --- UBIFS, bare and inside a UBI container ---------------------------------------------------------
 # The bare filesystem and the container firmware actually ships. UBI only reorders erase blocks, so
 # both must read identically — which is the point of having each.
-V="$(mkfs.ubifs -V 2>&1 | head -1)"
+V="$(mkfs.ubifs -V 2>&1 | head -1 || true)"
 mkfs.ubifs -q -r "$R" -m 2048 -e 126976 -c 200 -o "$O/rootfs.ubifs"
 record rootfs.ubifs "mkfs.ubifs -r \$TREE -m 2048 -e 126976 -c 200 -o rootfs.ubifs" "$V"
 cat > /tmp/ubinize.cfg <<CFG
@@ -110,7 +119,7 @@ record rootfs.ubi "ubinize -o rootfs.ubi -m 2048 -p 128KiB (wrapping rootfs.ubif
 # --- Btrfs ----------------------------------------------------------------------------------------
 # -M (mixed block groups) with 4 KB nodes is what keeps this to 16 MB. Without it mkfs.btrfs grows the
 # file to its ~109 MB minimum, and the committed fixture would be 120 KB compressed instead of 21 KB.
-V="$(mkfs.btrfs --version 2>&1 | head -1)"
+V="$(mkfs.btrfs --version 2>&1 | head -1 || true)"
 truncate -s 16m "$O/btrfs.img"
 mkfs.btrfs -q -f -M -n 4096 -s 4096 -r "$R" "$O/btrfs.img" >/dev/null 2>&1
 record btrfs.img "truncate -s 16m btrfs.img && mkfs.btrfs -f -M -n 4096 -s 4096 -r \$TREE btrfs.img" "$V"
@@ -153,7 +162,7 @@ fi
 # each gets a size that lands it there. A deliberately long filename exercises VFAT long names —
 # without them the listing shows PATTER~1.DAT for a file called pattern.dat.
 export MTOOLS_SKIP_CHECK=1
-V="$(mkfs.vfat --help 2>&1 | head -1)"
+V="$(mkfs.vfat --help 2>&1 | head -1 || true)"
 build_fat() {
   local img="$O/$1" bits="$2" mb="$3"
   rm -f "$img"; dd if=/dev/zero of="$img" bs=1M count="$mb" 2>/dev/null
@@ -172,6 +181,39 @@ record fat16.img "mkfs.vfat -F 16 -n SAMPLE fat16.img (32 MB), populated with mt
 build_fat fat32.img 32 64
 record fat32.img "mkfs.vfat -F 32 -n SAMPLE fat32.img (64 MB), populated with mtools" "$V"
 
+# --- exFAT ------------------------------------------------------------------------------------------
+# No mtools equivalent exists for exFAT, so this one has to be mounted. The kernel exfat driver is not
+# in the container's kernel and exfat-fuse refuses a plain file, hence a loop device.
+#
+# The files are copied one by one rather than with `cp -R`: exFAT has no symbolic links, so copying the
+# sample tree wholesale fails on `bin/motd-link` with "Function not implemented" — and a failure there
+# left the FUSE mount standing, after which the container hung rather than ending. Everything is
+# therefore `|| true`-guarded and unwound in a fixed order.
+V="$(mkfs.exfat -V 2>&1 | head -1 || true)"
+truncate -s 64m "$O/exfat.img"
+mkfs.exfat -L SAMPLE "$O/exfat.img" >/dev/null 2>&1
+EXLOOP="$(losetup -f --show "$O/exfat.img" 2>/dev/null || true)"
+EXOK=0
+if [ -n "$EXLOOP" ] && mkdir -p /mnt/x && mount.exfat-fuse "$EXLOOP" /mnt/x 2>/dev/null; then
+  if mkdir -p /mnt/x/etc/conf.d /mnt/x/bin \
+     && cp "$R/etc/motd" /mnt/x/etc/motd \
+     && cp "$R/etc/motd" "/mnt/x/etc/a-rather-long-file-name.conf" \
+     && cp "$R/etc/conf.d/app.conf" /mnt/x/etc/conf.d/app.conf \
+     && cp "$R/bin/empty" /mnt/x/bin/empty \
+     && cp "$R/bin/pattern.dat" /mnt/x/bin/pattern.dat; then
+    EXOK=1
+  fi
+  sync || true
+  umount /mnt/x || true
+fi
+[ -n "$EXLOOP" ] && { losetup -d "$EXLOOP" || true; }
+if [ "$EXOK" = 1 ]; then
+  record exfat.img "mkfs.exfat -L SAMPLE exfat.img (64 MB), populated over a loop device with exfat-fuse" "$V"
+else
+  echo "  note: skipping exfat.img — needs --privileged and /dev/fuse" >&2
+  rm -f "$O/exfat.img"
+fi
+
 # --- Partitioned disk images, MBR and GPT -----------------------------------------------------------
 # The case every driver here would otherwise miss: the filesystem is a slice, not the file. Each
 # holds two partitions the plugin can already read, so what is being tested is the table and the
@@ -185,7 +227,7 @@ build_disk() {
   dd if=/tmp/p1.sqfs of="$img" bs=512 seek=2048  conv=notrunc 2>/dev/null
   dd if=/tmp/p2.img  of="$img" bs=512 seek=18432 conv=notrunc 2>/dev/null
 }
-V="$(sfdisk --version 2>&1 | head -1)"
+V="$(sfdisk --version 2>&1 | head -1 || true)"
 build_disk "$O/disk-mbr.img" 'label: dos\n1: start=2048, size=16384, type=83\n2: start=18432, size=20480, type=83\n'
 record disk-mbr.img "sfdisk 'label: dos' with two type-83 partitions, squashfs at LBA 2048 and ext4 at 18432" "$V"
 # GPT names the partitions, which is what the listing shows instead of a type.
@@ -203,12 +245,11 @@ gzip -9 "${IMAGES[@]}"
 CONTAINER_SCRIPT
 
 echo "==> Building fixtures in $IMAGE"
-docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
 # --privileged is needed for exactly one fixture: btrfs-rich.img has to be *mounted* to
 # get compressed extents, subvolumes and snapshots into it, and mount needs it. Every
 # other image is built by an mkfs that writes a file, so the run degrades to skipping
 # that one fixture rather than failing when privileges are unavailable.
-docker create --privileged --name "$CONTAINER" "$IMAGE" bash /build.sh >/dev/null
+CONTAINER="$(docker create --privileged --device /dev/fuse "$IMAGE" bash /build.sh)"
 docker cp "$BUILD_SCRIPT" "$CONTAINER:/build.sh" >/dev/null
 docker start -a "$CONTAINER"
 
