@@ -236,11 +236,18 @@ AppKit resolves it against the key window's responder chain — which an applica
 not have, and `NSApp.activate` does not take hold by the next line. That the item exists and carries ⌘V is
 what the menu dump is for; that the field can paste is what the probe now asks.
 
-**Open, and deliberately not guessed at:** the consent panel still appears in the guest after the System
-Monitor's network module is off, so something else in the process asks for local networking — the
-TaskManager plugin's `port:<n>` facet enumerates socket fds through `PROC_PIDFDSOCKETINFO`, which is the
-obvious candidate but only runs when a lookup asks for it, so that is a suspicion and not a finding. It
-blocks nothing; it takes activation, and both places that used to depend on activation no longer do.
+**Followed up on 2026-08-15, and the earlier note above was wrong in its conclusion.** Two runs settle
+what can be settled: a scenario that does nothing but idle for sixty seconds, and `hex-clipboard`, both
+with the plugins in the bundle and the network module seeded off — **no panel in either**. So it is not
+time-based (the "about forty seconds after launch" was a coincidence of what those scenarios were doing at
+the time), and switching the System Monitor's network module off does what it was meant to.
+
+What remains unproven is whether anything still *asks* quietly. The sighting that produced the suspicion
+above was in a run whose probe called `NSApp.activate(ignoringOtherApps:)` — since removed, because it did
+not help what it was added for — and activating an application is exactly what makes macOS present a
+consent prompt it has queued. So "nothing asks" and "something asks and nothing brings it forward" are
+both consistent with today's evidence, and the difference does not matter for the harness: the panel does
+not appear, and neither of the two places that depended on activation depends on it any more.
 
 **Rules worth keeping.** When a scenario writes nothing at all, look at its picture before its log. When
 it writes the *wrong* thing, do not assume the same cause: here one panel blocked, another only stole
