@@ -56,6 +56,10 @@ looking for a bad download.
   `nanddump --omitoob`.
 - **Encrypted, bigalloc or META_BG ext4; zoned or extent-tree-v2 Btrfs** — each
   changes how the image must be read in a way this plugin does not implement.
+- **An ext4 file whose inline data spills into `system.data`** — files and directories
+  small enough to live inside their inode are read; one that continues in an extended
+  attribute is declined rather than returned 60 bytes short, because a file that is
+  quietly truncated looks exactly like one that read correctly.
 
 ## Unclean ext filesystems
 
