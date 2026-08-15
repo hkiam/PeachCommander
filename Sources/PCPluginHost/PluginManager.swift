@@ -82,6 +82,17 @@ public actor PluginManager {
         }
     }
 
+    /// Every enabled PCX plugin, for the content-detection fallback.
+    ///
+    /// `packerPlugin(forExtension:)` answers the question the host asks first, and it can
+    /// only ever answer it by name. A filesystem image called `firmware.bin`, or a rootfs
+    /// with no extension at all, is not something an extension list can match — and those
+    /// are exactly the files somebody installs an image reader for. The caller loads each
+    /// of these and asks `CanYouHandleThisFile`, so the decision stays with the plugin.
+    public func packerPlugins() -> [DiscoveredPlugin] {
+        enabledPlugins().filter { $0.manifest.type == .pcx }
+    }
+
     public func setAssociation(ext: String, plugin: String?) {
         config.setAssociation(ext: ext, plugin: plugin)
         persist()

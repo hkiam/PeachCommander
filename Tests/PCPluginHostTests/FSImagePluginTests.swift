@@ -1132,6 +1132,31 @@ final class FSImagePluginTests: XCTestCase {
         XCTAssertEqual(entries.count, 2 * perArchive, "both archives' entries should be present")
     }
 
+    /// The plugin must both *offer* content detection and answer correctly, because the
+    /// host consults `CanYouHandleThisFile` only for plugins advertising
+    /// PC_CAP_BY_CONTENT — reading a header off every unmatched file is a cost a plugin
+    /// has to ask for rather than have applied on its behalf.
+    func testContentDetectionIsAdvertisedAndAnswersForExtensionlessImages() throws {
+        let archive = PCXArchive(library: lib)
+        XCTAssertTrue(archive.detectsByContent,
+                      "without PC_CAP_BY_CONTENT the host never asks, and an image named "
+                      + "`firmware` or `dump` can never be recognised")
+
+        // No extension at all — the case an association list cannot reach by design.
+        let image = try makeSquashFSImage()
+        let extensionless = dir.appendingPathComponent("dump")
+        try FileManager.default.copyItem(atPath: image, toPath: extensionless.path)
+        XCTAssertEqual(archive.canHandle(fileName: extensionless.path), true)
+        XCTAssertNotNil(PCXArchiveFS(archivePath: extensionless.path, library: lib, fsID: "fsimage:noext"),
+                        "what canHandle claims must be what actually opens")
+
+        // And the other direction, which is what keeps the probe from turning Enter on an
+        // ordinary file into something else: a non-image must be declined.
+        let text = dir.appendingPathComponent("notes.txt")
+        try Data("just text\n".utf8).write(to: text)
+        XCTAssertEqual(archive.canHandle(fileName: text.path), false)
+    }
+
     func testContentDetectionAgreesWithWhatWillActuallyOpen() throws {
         let image = try makeCpioImage()
         XCTAssertEqual(PCXArchive(library: lib).canHandle(fileName: image), true)

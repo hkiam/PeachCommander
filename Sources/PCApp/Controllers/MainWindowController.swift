@@ -5398,9 +5398,21 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let opener: (String) async -> VirtualFileSystem? = { [weak self] path in
             guard let self else { return nil }
             let ext = (path as NSString).pathExtension.lowercased()
-            guard let plugin = await self.pluginManager.packerPlugin(forExtension: ext),
-                  case .success(let lib) = PluginHost.openLibrary(plugin) else { return nil }
-            return PCXArchiveFS(archivePath: path, library: lib, fsID: "pcx:\(path)")
+            if let plugin = await self.pluginManager.packerPlugin(forExtension: ext),
+               case .success(let lib) = PluginHost.openLibrary(plugin),
+               let fs = PCXArchiveFS(archivePath: path, library: lib, fsID: "pcx:\(path)") {
+                return fs
+            }
+            // Nothing matched by name, or what did could not open it. Ask the plugins that
+            // offered to decide by content — a filesystem image called `firmware.bin` is
+            // the case an extension list can never cover.
+            for plugin in await self.pluginManager.packerPlugins() {
+                guard case .success(let lib) = PluginHost.openLibrary(plugin) else { continue }
+                let archive = PCXArchive(library: lib, pluginID: plugin.manifest.name)
+                guard archive.detectsByContent, archive.canHandle(fileName: path) == true else { continue }
+                if let fs = PCXArchiveFS(archivePath: path, library: lib, fsID: "pcx:\(path)") { return fs }
+            }
+            return nil
         }
         leftPanelController?.resolvePluginArchive = opener
         rightPanelController?.resolvePluginArchive = opener
@@ -5443,6 +5455,20 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             if !set.isEmpty {
                 self.leftPanelController?.tableView.addArchiveExtensions(set)
                 self.rightPanelController?.tableView.addArchiveExtensions(set)
+            }
+
+            // Enable the by-content probe only if some enabled packer actually asked for
+            // it. Costed deliberately: the probe reads a header off every file whose
+            // extension matched nothing, and nobody who has not installed such a plugin
+            // should pay for that — or have their files read speculatively at all.
+            let detectsByContent = await self.pluginManager.packerPlugins().contains { plugin in
+                guard case .success(let lib) = PluginHost.openLibrary(plugin) else { return false }
+                return PCXArchive(library: lib, pluginID: plugin.manifest.name).detectsByContent
+            }
+            for pc in [self.leftPanelController, self.rightPanelController] {
+                pc?.tableView.onProbeThenEnterArchive = detectsByContent
+                    ? { [weak pc] path in Task { @MainActor in await pc?.enterArchive(path, speculative: true) } }
+                    : nil
             }
             // User-configured extra archive extensions (F-274).
             self.applyExtraArchiveExtensions(await self.mainConfig.string("Pack", "ArchiveExtensions", default: ""))
@@ -6372,7 +6398,14 @@ final class PanelController: NSObject, PanelControllerProtocol {
 
     /// Enter a browsable archive at `localPath`: try an associated packer plugin
     /// first, then the built-in zip reader, else open the file externally.
-    func enterArchive(_ pathToOpen: String) async {
+    ///
+    /// `speculative` marks the case where nothing about the file *said* it was an
+    /// archive — a content-detecting plugin is merely being given a look (see
+    /// `PanelListView.onProbeThenEnterArchive`). Then "nothing could open it" is the
+    /// ordinary answer rather than a failure, so the file opens the way Enter would
+    /// have opened it anyway instead of beeping at somebody who pressed Enter on a
+    /// text file.
+    func enterArchive(_ pathToOpen: String, speculative: Bool = false) async {
         var localPath = pathToOpen
         // Nested archive (F-134): when we're already inside an archive/network
         // mount, `pathToOpen` is a vpath, not a local file — extract the inner
@@ -6397,6 +6430,13 @@ final class PanelController: NSObject, PanelControllerProtocol {
         }
         guard let archive = ArchiveFS(archiveFileURL: URL(fileURLWithPath: localPath),
                                       fsID: "zip:\(localPath)") else {
+            if speculative {
+                // Nobody claimed it, and nobody said it was an archive in the first
+                // place. Carry on with the open that would have happened.
+                HistoryService.shared.recordFile(localPath)
+                NSWorkspace.shared.open(URL(fileURLWithPath: localPath))
+                return
+            }
             // Not a (readable) archive — e.g. Ctrl+PageDown on a plain file. Beep
             // rather than launching it in an external app.
             NSSound.beep()
@@ -7802,6 +7842,10 @@ final class PanelView: NSView {
         tableView.onEnterArchive = { [weak controller] path in
             Task { @MainActor in await controller?.enterArchive(path) }
         }
+        // Left unset here on purpose: `loadPlugins` installs it only once an enabled
+        // packer plugin has advertised PC_CAP_BY_CONTENT, so with none installed Enter on
+        // an unrecognised file behaves exactly as before and reads nothing.
+        tableView.onProbeThenEnterArchive = nil
         tableView.onDropFiles = { [weak controller] paths, move, intoFolder in
             Task { @MainActor in await controller?.performDrop(paths: paths, move: move, into: intoFolder) }
         }

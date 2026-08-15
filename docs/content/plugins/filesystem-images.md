@@ -29,15 +29,14 @@ It is **read-only**. Nothing in it can write to an image.
 
 The plugin ships **disabled**. Enable it in Settings ▸ Plugins.
 
-That is deliberate. Peach Commander picks a plugin for a file by its extension, and
-firmware is rarely named tidily — the images worth opening are called `firmware.bin`
-or `rootfs.img` at least as often as `.squashfs`. So the plugin claims `img`, `bin`
-and `rootfs` as well as the obvious extensions. For someone analysing firmware that
-is exactly right; for everybody else it is a plugin taking an interest in file types
-it has no business with. Leaving it off by default makes that breadth a choice.
+Once it is on, an image opens whatever it is called. Firmware is rarely named tidily —
+the images worth opening are called `firmware.bin`, `rootfs.img` or simply `dump` at
+least as often as `.squashfs` — so when a file's extension means nothing, Peach
+Commander asks the plugin to look at the file's first bytes instead. A file that is not
+an image is declined after that one read and opens the way it always would have.
 
-Opening a `.bin` that is not an image costs one header read: the plugin declines and
-Peach Commander carries on with its own readers.
+That look is why the plugin is off by default: with none installed, nothing reads a
+file you only pressed Enter on.
 
 ## What it refuses, and why
 
