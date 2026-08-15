@@ -429,6 +429,13 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         if hasColumn(PanelColumn.comment.rawValue) { reloadData() }
     }
 
+    /// Whether the listing comes from the local filesystem. Columns that read local-only
+    /// metadata (extended attributes, Finder tags) are skipped when it does not: a remote
+    /// path can never carry them, and querying it anyway spends a syscall per visible row on
+    /// a path the kernel has to resolve — under an automounted prefix like `/home`, one that
+    /// blocks for milliseconds. Set by `PanelView.update(with:)`.
+    var isLocalFileSystem: Bool = true
+
     /// Resolves a qualified field id + local path to a display string (async).
     var contentValueProvider: ((_ fieldID: String, _ path: String) async -> String?)?
     /// A content field (qualified id) shown as a small badge on the name cell
@@ -586,7 +593,13 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
                 let val = await provider(fieldID, path) ?? ""
                 contentValues[path, default: [:]][fieldID] = val
                 contentPending.remove(key)
-                if let idx = visibleEntries.firstIndex(where: { fullPath(of: $0) == path }) {
+                // Find the row by name and confirm with one path build, rather than building
+                // every entry's path to compare. One of these tasks runs per row, so the scan
+                // was O(N²) path joins over the listing — the shape that made a large remote
+                // directory freeze the panel for minutes.
+                let name = (path as NSString).lastPathComponent
+                if let idx = visibleEntries.firstIndex(where: { $0.name == name }),
+                   fullPath(of: visibleEntries[idx]) == path {
                     reloadRow(forVisible: idx)
                 }
             }
@@ -676,7 +689,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// Full path of the entry (or `..`) under the cursor.
     func currentCursorFullPath() -> String? {
         guard let snapshot else { return nil }
-        if cursorRow == -1 { return URL(fileURLWithPath: snapshot.path).deletingLastPathComponent().path }
+        if cursorRow == -1 { return (snapshot.path as NSString).deletingLastPathComponent }
         guard let entry = entry(atCursor: cursorRow) else { return nil }
         return fullPath(of: entry)
     }
@@ -962,9 +975,17 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         return visibleEntries[visibleIndex]
     }
 
+    /// Joins the listing's directory with an entry name — as a *string*, never through `URL`.
+    ///
+    /// `URL(fileURLWithPath:)` and `appendingPathComponent(_:)` default to `directoryHint:
+    /// .checkFileSystem`, so each of them asks the local filesystem whether the path is a
+    /// directory. That is wrong twice over for a remote listing: the path is not a local file
+    /// at all, and an SFTP server's `/home/...` collides with the macOS `auto_home` automount,
+    /// where a single `lstat` costs ~7 ms instead of ~1 µs. This is the hottest call in the
+    /// panel (every cell, every row), so it does no I/O.
     private func fullPath(of entry: VFSEntry) -> String {
         guard let snapshot else { return entry.name }
-        return URL(fileURLWithPath: snapshot.path).appendingPathComponent(entry.name).path
+        return (snapshot.path as NSString).appendingPathComponent(entry.name)
     }
 
     private func effectiveSize(of entry: VFSEntry) -> Int64 {
@@ -1114,12 +1135,13 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             return cell
         case .attr:
             let cell = makePlainCell()
-            cell.configure(text: attrText(entry, path: path), isSelected: isSelected, monospaced: true,
+            cell.configure(text: attrText(entry, path: isLocalFileSystem ? path : nil),
+                           isSelected: isSelected, monospaced: true,
                            color: rowColor, keepColorOnCursorRow: keepColor)
             return cell
         case .tag:
             let cell = makeTagCell()
-            cell.configure(colors: FinderTagColor.colors(forPath: path))
+            cell.configure(colors: isLocalFileSystem ? FinderTagColor.colors(forPath: path) : [])
             return cell
         case .comment:
             let cell = makePlainCell()
@@ -1200,7 +1222,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
 
     private func parentPath() -> String {
         guard let snapshot else { return "/" }
-        return URL(fileURLWithPath: snapshot.path).deletingLastPathComponent().path
+        return (snapshot.path as NSString).deletingLastPathComponent
     }
 
     // MARK: - Formatting

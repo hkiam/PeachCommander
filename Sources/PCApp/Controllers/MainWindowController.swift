@@ -8000,6 +8000,7 @@ final class PanelView: NSView {
     /// listing is one (see `PathBarView.update`).
     func update(with snapshot: DirectorySnapshot, volume: Volume? = nil, rootLabel: String? = nil,
                 preserveViewport: Bool = false) {
+        tableView.isLocalFileSystem = controller?.currentFileSystem is LocalFS
         tableView.update(with: snapshot, preserveViewport: preserveViewport)
         pathBar.update(with: snapshot.path, volume: volume, rootLabel: rootLabel)
         currentPath = snapshot.path
