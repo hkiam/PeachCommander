@@ -126,6 +126,7 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 | Decompiled sources in a file panel | user, expert | Cmd+Shift+J | ✅ |
 | Disk Map | user | — | ✅ |
 | Java decompiler plugin (F3 on a .class file) | user, expert | — | ✅ |
+| Linux filesystem images (SquashFS, ext, JFFS2, cramfs, initramfs, Btrfs) | user, expert | — | ✅ |
 | Plugin ABIs | plugin, sdk | — | ✅ |
 | Plugin architecture | developer, plugin | — | ✅ |
 | Plugin views follow the colour theme | user, plugin, sdk | — | ✅ |
