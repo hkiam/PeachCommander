@@ -28,8 +28,16 @@ jobs:
         # libssh2 is explicit on purpose: CSSH2 resolves <libssh2.h> from the
         # Homebrew keg (nothing is vendored), and the runner image only happens to
         # carry it today. Don't build on an incidental preinstall.
+        #
+        # squashfs and e2fsprogs *build the fixtures* for the FSImage plugin's tests —
+        # mksquashfs and mke2fs author real filesystem images, so the reader is checked
+        # against a third-party encoder rather than against itself. Those tests skip
+        # when the tool is missing, so without this two whole formats go untested while
+        # the run stays green: the failure mode a skip is supposed to prevent, not
+        # cause. (The tests turn that skip into a hard failure when CI is set, so a
+        # broken install here is loud rather than invisible.)
         run: |
-          brew install xcodegen libssh2
+          brew install xcodegen libssh2 squashfs e2fsprogs
           ./Tools/bootstrap.sh
 
       # Static half of the release guard: catches a plugin that exists but would not be
@@ -92,6 +100,14 @@ jobs:
       # stale .xcodeproj is itself the failure being guarded against. Needs no build.
       - name: Check every test is registered and run
         run: python3 Tools/check-tests-registered.py
+
+      # The same failure, one level down, inside the filesystem-image plugin. It grows one format at a
+      # time across three lists — what the plugin probes, what the build script compiles, what the tests
+      # compile — and none of them fails loudly on its own. A driver missing from the build script is
+      # registered but absent from the shipped binary; missing from the test list means the tests build
+      # a different plugin than the one that ships, so a green run says nothing about it.
+      - name: Check every FSImage driver is built and tested
+        run: python3 Tools/check-fsimage-fixtures.py
 
       # The app's coverage gate reads the String Catalog and cannot see a plugin: a plugin ships its
       # strings in its own bundle. That is how twelve plugins came to be localized into German and
