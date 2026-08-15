@@ -39,6 +39,10 @@ does not have.
   which macOS does not ship — so the most ordinary choice in the Pack dialog failed on a clean Mac. A
   plain zip is now written by Peach Commander itself. A password or split volumes still need 7z, and say
   so, and so does anything over 512 MB.
+- **Tab reached only half the window.** With the preview panel or the folder tree switched on — and after
+  every launch, whatever the layout — the Tab order stopped at the left panel: the right panel, the command
+  line and the whole function-key bar could not be reached from the keyboard. Three separate causes, all
+  fixed; the window is fully Tab-navigable again.
 - **Extracting into a temporary folder did nothing.** The rule that keeps a crafted archive member from
   writing outside the folder you picked was refusing *every* write under `/private` — which includes
   `/var/folders/…`, the temporary directory macOS hands every app. The extraction reported success and

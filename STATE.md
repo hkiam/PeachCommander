@@ -26,6 +26,38 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-15 (F-363) — The key-view loop, and three ways one wrong sentence broke it
+
+`keys-main` was the one failure the suite kept reporting that nobody had explained. It is fixed, and the
+diagnosis is worth more than the fix: every part of it rested on a single sentence in `KeyboardLoop`,
+written as fact — *"with the flag set, AppKit keeps the loop up to date as views come and go"*.
+
+**First**, two probes built from keys-main's own dump, each with one extra thing on screen, said which
+view breaks the chain: the preview panel *and* the shared tree, both with the same fourteen controls
+missing — the entire right panel, the preview-mode switch, the command line, every function-key button.
+Both toggles **hide** rather than remove, and AppKit skips hidden views when it builds the loop; un-hiding
+one does not make it build a new one. Nine toggles are of that family (the two panels and seven bars) and
+all of them now rebuild.
+
+**Second**, that fix exposed a trap of its own making. `enable(for:)` skipped its work when the flag was
+already set — "cheap after the first time", resting on the same false sentence. The layout is applied
+before the first paint, one element at a time, so the first element to ask for a rebuild set the flag and
+the recalculation that runs when the window becomes key — after every element exists — then did nothing.
+The loop stayed as it was in the middle of startup. The shortcut is gone; it always recalculates.
+
+**Third**, even then keys-main stayed broken while every other keyboard scenario went green, and the
+difference named the cause: the probes toggle at *runtime*, keys-main measures after a *launch*. The
+window becomes key while `restoreTabs` is still filling the panels in, so AppKit built the Tab order
+around half-built panels and nothing came back afterwards. One rebuild at the end of the restore.
+
+Result: 29 stops, loop closed, nothing unreachable, nothing unlabelled — and `keys-viewer`, `keys-history`
+and both new probes green beside it. The probes are permanent gates now (`keys-preview`, `keys-tree`),
+because the state they hold is exactly the one that decided, for months, whether `keys-main` passed.
+
+**Method note.** Two of the three steps were only visible because a *passing* scenario stood next to a
+failing one: "the probes pass, keys-main does not" is what pointed at startup rather than at toggling. A
+single failing scenario would have left the second and third causes untouched.
+
 ## 2026-08-15 (VM suite) — Four failures, none of them from this work, and how that was established
 
 The first full suite run since this round of work: **155 reports ok, one wrong, no crashes**, and all

@@ -809,6 +809,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
         let active = await session.string("Window", "Active", default: "left")
         if active == "right" { activateRightPanel() } else { activateLeftPanel() }
+        // The window became key while this restore was still running, and that is when AppKit built the
+        // Tab order — so it was built around panels that were still being filled in. Measured: the loop
+        // stopped at the left panel's scroller and fourteen controls were unreachable, every launch,
+        // whatever the layout. One rebuild once the session is actually restored.
+        rebuildKeyLoopAfterLayoutChange()
         await loadHotlist()
         let launchOpts = LaunchOptions.parse(CommandLine.arguments)
         await applyLaunchOptions(launchOpts)
@@ -3608,6 +3613,19 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// last drag, so re-opening the panel does not undo the resize.
     private var preferredPreviewWidth: CGFloat = MainWindowController.previewWidth
 
+    /// Re-link the window's Tab order after part of the layout appeared or disappeared.
+    ///
+    /// `autorecalculatesKeyViewLoop` does not cover this, and the assumption that it did cost a gate:
+    /// AppKit **skips hidden views** when it builds the loop, and un-hiding one does not make it build a
+    /// new one. Measured with the preview panel switched on and, separately, with the shared tree: the
+    /// loop stopped at the left panel and fourteen controls were unreachable — the entire right panel,
+    /// the preview-mode switch, the command line and every function-key button. That is the same shape
+    /// as the view-mode swap and the Settings page swap, and it is why `keys-main` in the VM depended on
+    /// what had run before it: whichever scenario left a bar or a panel switched on decided the answer.
+    ///
+    /// Every one of these toggles hides rather than removes, so they all need it.
+    private func rebuildKeyLoopAfterLayoutChange() { KeyboardLoop.rebuild(for: window) }
+
     func togglePreviewPanel() {
         guard let c = previewWidthConstraint else { return }
         let show = c.constant == 0
@@ -3619,6 +3637,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         previewHandle.isPanelOpen = show
         previewPanel.applyTheme()
         Task { await mainConfig.setBool(show, "Layout", "PreviewPanel") }
+        rebuildKeyLoopAfterLayoutChange()
         updateTerminalMenuState()   // the sidebar may be where the terminal lives (F-388)
         previewTimer?.invalidate(); previewTimer = nil
         if show {
@@ -3988,20 +4007,22 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         case "Display.AlternatingRows":
             displayAlternatingRows = value
             applyDisplayOptionsToPanels()
+        // Each of these hides or shows a bar, so each one leaves the Tab order stale — see
+        // `rebuildKeyLoopAfterLayoutChange`.
         case "Layout.CommandLine":
-            setCommandLineVisible(value)
+            setCommandLineVisible(value); rebuildKeyLoopAfterLayoutChange()
         case "Layout.FunctionKeys":
-            setFunctionBarVisible(value)
+            setFunctionBarVisible(value); rebuildKeyLoopAfterLayoutChange()
         case "Layout.ButtonBar":
-            setButtonBarVisible(value)
+            setButtonBarVisible(value); rebuildKeyLoopAfterLayoutChange()
         case "Layout.DriveBar":
-            setDriveBarVisible(value)
+            setDriveBarVisible(value); rebuildKeyLoopAfterLayoutChange()
         case "Layout.StatusBar":
-            setStatusBarVisible(value)
+            setStatusBarVisible(value); rebuildKeyLoopAfterLayoutChange()
         case "Layout.TabBar":
-            setTabBarVisible(value)
+            setTabBarVisible(value); rebuildKeyLoopAfterLayoutChange()
         case "Layout.PathBar":
-            setPathBarVisible(value)
+            setPathBarVisible(value); rebuildKeyLoopAfterLayoutChange()
         case "Copy.PreserveMetadata":
             copyPreserveMetadata = value; applyCopyDefaultsToPanels()
         case "Copy.CloneCopy":
@@ -4518,6 +4539,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         sharedTree.isHidden = !visible          // no leftover sliver when collapsed
         setMenuCheck(cmd: "cm_TreeShared", on: visible)
         if visible { revealActivePathInSharedTree() }
+        rebuildKeyLoopAfterLayoutChange()
         if persist { Task { await mainConfig.setBool(visible, "Layout", "SharedTree") } }
     }
 
