@@ -25,6 +25,7 @@ SOURCES=(
   "Plugins/FSImage/Support/DriverRegistry.swift"
   "Plugins/FSImage/Support/ImageCache.swift"
   "Plugins/FSImage/Support/PartitionTable.swift"
+  "Plugins/FSImage/Drivers/FATDriver.swift"
   "Plugins/FSImage/Drivers/CpioDriver.swift"
   "Plugins/FSImage/Drivers/PartitionedDriver.swift"
   "Plugins/FSImage/Drivers/SquashFSMetadata.swift"
