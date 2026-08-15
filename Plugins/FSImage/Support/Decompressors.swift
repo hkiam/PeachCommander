@@ -30,11 +30,10 @@
 //                 and btrfs both reach for zstd by default now. The decode-only
 //                 amalgamation is one file under BSD-3 with no build system of its
 //                 own, which is the smallest obligation that closes the gap.
-//   lzo           Deliberately absent. liblzo2 and minilzo are GPL-2.0, which this
-//                 Apache-2.0 product cannot take, and there is no permissive
-//                 implementation to use instead. A squashfs or jffs2 image using
-//                 LZO therefore reports `.unsupported` naming LZO, which tells the
-//                 user what to do (unsquashfs it elsewhere) instead of "damaged".
+//   lzo           `LZO.swift`, written here from the documented bitstream. liblzo2 and
+//                 minilzo are GPL-2.0 and unusable in an Apache-2.0 product, but the
+//                 format is not the implementation — see that file for why this exists
+//                 and what it is not derived from.
 
 import Foundation
 import Compression
@@ -93,8 +92,12 @@ enum Decompressor {
             return try zstdDecode(input, maxSize: expectedSize, exact: true)
 
         case .lzo:
-            throw ImageError.unsupported(
-                reason: "LZO compression is not supported (no licence-compatible decoder)")
+            let out = try LZO.decompress(input, maxSize: expectedSize)
+            guard out.count == expectedSize else {
+                throw ImageError.damaged(
+                    reason: "lzo block decoded to \(out.count) bytes, expected \(expectedSize)")
+            }
+            return out
         }
     }
 
@@ -201,8 +204,7 @@ enum Decompressor {
         case .zstd:
             return try zstdDecode(input, maxSize: maxSize, exact: false)
         case .lzo:
-            throw ImageError.unsupported(
-                reason: "LZO compression is not supported (no licence-compatible decoder)")
+            return try LZO.decompress(input, maxSize: maxSize)
         }
         let payload = algorithm == COMPRESSION_ZLIB ? try strippingDeflateContainer(input, codec: codec) : input
         guard !payload.isEmpty else { throw ImageError.damaged(reason: "empty \(codec.rawValue) block") }

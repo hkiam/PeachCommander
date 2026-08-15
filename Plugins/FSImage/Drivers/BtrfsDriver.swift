@@ -13,12 +13,12 @@
 //   3. root tree  → where each subvolume's filesystem tree begins
 //   4. fs tree    → inodes, directory entries and file extents
 //
-// Scope. Single-device images with SINGLE, DUP or RAID1-family profiles; zlib and
-// zstd compression; the default subvolume plus every other subvolume, listed under its
-// own name. Refused by name rather than half-read: multi-device, RAID0/10/5/6
-// striping, zoned and extent-tree-v2 filesystems, and LZO compressed extents. Each
-// refusal says what it is, because "this image needs a tool that handles RAID0" is
-// actionable where "damaged" is not.
+// Scope. Single-device images with SINGLE, DUP or RAID1-family profiles; zlib, zstd
+// and LZO compression; the default subvolume plus every other subvolume, listed under
+// its own name. Refused by name rather than half-read: multi-device, RAID0/10/5/6
+// striping, and zoned or extent-tree-v2 filesystems. Each refusal says what it is,
+// because "this image needs a tool that handles RAID0" is actionable where "damaged"
+// is not.
 
 import Foundation
 
@@ -359,10 +359,13 @@ final class BtrfsDriver: ImageFilesystemDriver {
             let payload: [UInt8]
             switch extent.kind {
             case 0:   // inline: the bytes are in the leaf itself
-                payload = codec == .none
-                    ? extent.inlineData
-                    : try Decompressor.decompressVariable(extent.inlineData, codec: codec,
-                                                          maxSize: Int(extent.ramBytes))
+                switch codec {
+                case .none: payload = extent.inlineData
+                case .lzo:  payload = try decompressLzoExtent(extent.inlineData,
+                                                              expectedSize: Int(extent.ramBytes))
+                default:    payload = try Decompressor.decompressVariable(extent.inlineData, codec: codec,
+                                                                          maxSize: Int(extent.ramBytes))
+                }
             case 2:   // preallocated but never written: reads as zeros
                 continue
             default:
@@ -388,8 +391,10 @@ final class BtrfsDriver: ImageFilesystemDriver {
                     // whole number of sectors, while every full 128 KB extent before
                     // it decodes cleanly. That is why this only shows up on files
                     // larger than one extent.
-                    let expanded = try Decompressor.decompressVariable(raw, codec: codec,
-                                                                       maxSize: Int(extent.ramBytes))
+                    let expanded = codec == .lzo
+                        ? try decompressLzoExtent(raw, expectedSize: Int(extent.ramBytes))
+                        : try Decompressor.decompressVariable(raw, codec: codec,
+                                                              maxSize: Int(extent.ramBytes))
                     let start = Int(extent.dataOffset)
                     let count = Int(min(extent.numBytes, Int64(expanded.count) - extent.dataOffset))
                     guard start >= 0, count > 0, start + count <= expanded.count else { continue }
@@ -409,11 +414,49 @@ final class BtrfsDriver: ImageFilesystemDriver {
         switch compression {
         case 0: return .none
         case 1: return .zlib
-        case 2: throw ImageError.unsupported(
-            reason: "LZO-compressed extents are not supported (no licence-compatible decoder)")
+        case 2: return .lzo
         case 3: return .zstd
         default: throw ImageError.damaged(reason: "unknown Btrfs compression id \(compression)")
         }
+    }
+
+    /// Unwrap Btrfs's own framing around LZO before any of it is a stream to decode.
+    ///
+    /// Unlike every other compressor it supports, Btrfs does not store one LZO stream
+    /// per extent. It stores a 32-bit total length, then a sequence of segments — each a
+    /// 32-bit length followed by an LZO1X stream that decodes to at most one page — and
+    /// a segment header is never allowed to straddle a page boundary, so a header with
+    /// fewer than four bytes left in its page moves to the start of the next one.
+    ///
+    /// Handing the whole extent to the LZO decoder therefore fails on the very first
+    /// byte: what looks like an opcode is the low byte of a length. Worth stating
+    /// because the same file, compressed with zlib or zstd, needs none of this — the
+    /// framing is Btrfs's, not LZO's, which is why it lives here and not in `LZO`.
+    private func decompressLzoExtent(_ input: [UInt8], expectedSize: Int) throws -> [UInt8] {
+        guard input.count >= 4 else { throw ImageError.damaged(reason: "LZO extent shorter than its header") }
+        let declared = Int(input.u32(0))
+        guard declared >= 4, declared <= input.count else {
+            throw ImageError.damaged(reason: "LZO extent claims \(declared) bytes of \(input.count)")
+        }
+        let page = Int(sb.sectorSize)
+        var out = [UInt8]()
+        out.reserveCapacity(expectedSize)
+        var offset = 4
+
+        while offset < declared, out.count < expectedSize {
+            let remainingInPage = page - (offset % page)
+            if remainingInPage < 4 { offset += remainingInPage }
+            guard offset + 4 <= declared else { break }
+            let segmentLength = Int(input.u32(offset))
+            offset += 4
+            guard segmentLength > 0, offset + segmentLength <= input.count else {
+                throw ImageError.damaged(reason: "LZO segment of \(segmentLength) runs past the extent")
+            }
+            out.append(contentsOf: try LZO.decompress(Array(input[offset..<(offset + segmentLength)]),
+                                                      maxSize: page))
+            offset += segmentLength
+        }
+        return out
     }
 
     func extract(at index: Int, to handle: FileHandle) throws {
