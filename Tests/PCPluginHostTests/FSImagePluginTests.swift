@@ -1,0 +1,1167 @@
+// SPDX-License-Identifier: Apache-2.0
+// FSImagePluginTests.swift — the FSImage plugin, built as shipped and driven through the host.
+//
+// Two things this deliberately does NOT do. It does not call the driver types
+// directly — the plugin is built the way `Tools/build-fsimage-plugin.sh` builds it,
+// dlopen'd, and driven through `PCXArchive` and `PCXArchiveFS`, which is the exact
+// path the app takes when a user presses Enter on an image. A reader that parses
+// correctly but reports entries the host's tree builder mangles would pass a direct
+// test and fail in a panel. And it does not author its own images with its own
+// encoder: the fixtures come from `/usr/bin/cpio` and the system compressors, so a
+// misreading of the format cannot cancel out against a matching miswriting.
+//
+// The conformance cases here (root listing, nesting, symlinks, byte-exact
+// extraction, refusal of a foreign file) are the battery every later driver has to
+// pass too — they are written against `DriverCase` rather than against cpio, so
+// adding SquashFS means adding a fixture, not adding tests.
+
+import XCTest
+import CryptoKit
+import PCVFS
+import CPCX
+@testable import PCPluginHost
+
+final class FSImagePluginTests: XCTestCase {
+    private var dir: URL!
+    private var lib: PluginLibrary!
+
+    private var repoRoot: URL {
+        URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+    }
+
+    override func setUpWithError() throws {
+        dir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("fsimage-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        try buildPlugin()
+    }
+
+    override func tearDownWithError() throws {
+        if let dir { try? FileManager.default.removeItem(at: dir) }
+    }
+
+    // MARK: - Building the plugin as shipped
+
+    /// The source list mirrors `Tools/build-fsimage-plugin.sh`. It is duplicated
+    /// rather than parsed out of the script on purpose: a driver added to one and
+    /// not the other fails here loudly, which is cheaper to diagnose than a driver
+    /// that quietly is not in the shipped binary.
+    private static let pluginSources = [
+        "Plugins/FSImage/fsimage.swift",
+        "Plugins/FSImage/Support/ImageReader.swift",
+        "Plugins/FSImage/Support/ImageEntry.swift",
+        "Plugins/FSImage/Support/Decompressors.swift",
+        "Plugins/FSImage/Support/DriverRegistry.swift",
+        "Plugins/FSImage/Support/ImageCache.swift",
+        "Plugins/FSImage/Drivers/CpioDriver.swift",
+        "Plugins/FSImage/Drivers/SquashFSMetadata.swift",
+        "Plugins/FSImage/Drivers/SquashFSDriver.swift",
+        "Plugins/FSImage/Drivers/ExtLayout.swift",
+        "Plugins/FSImage/Drivers/ExtDriver.swift",
+        "Plugins/FSImage/Drivers/CramFSDriver.swift",
+        "Plugins/FSImage/Drivers/JFFS2Compression.swift",
+        "Plugins/FSImage/Drivers/JFFS2Driver.swift",
+        "Plugins/FSImage/Drivers/BtrfsChunkMap.swift",
+        "Plugins/FSImage/Drivers/BtrfsDriver.swift",
+    ]
+
+    /// C sources vendored into the plugin. Compiled and linked here exactly as
+    /// `Tools/build-fsimage-plugin.sh` does — without them the Swift half links
+    /// against undefined ZSTD symbols and *every* test in this file fails at once,
+    /// which is at least a loud way to find out the two builds have drifted.
+    private static let vendoredCSources = ["Plugins/FSImage/Vendor/zstddeclib.c"]
+
+    private func buildPlugin() throws {
+        let swiftc = "/usr/bin/swiftc"
+        try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: swiftc), "swiftc unavailable")
+
+        var objects: [String] = []
+        for source in Self.vendoredCSources {
+            let object = dir.appendingPathComponent((source as NSString).lastPathComponent + ".o")
+            let clang = Process()
+            clang.executableURL = URL(fileURLWithPath: "/usr/bin/clang")
+            clang.arguments = ["-O2", "-c", "-o", object.path,
+                               repoRoot.appendingPathComponent(source).path]
+            let clangErrors = Pipe(); clang.standardError = clangErrors
+            try clang.run(); clang.waitUntilExit()
+            guard clang.terminationStatus == 0 else {
+                let message = String(data: clangErrors.fileHandleForReading.readDataToEndOfFile(),
+                                     encoding: .utf8) ?? ""
+                return XCTFail("clang failed on \(source): \(message)")
+            }
+            objects.append(object.path)
+        }
+
+        let out = dir.appendingPathComponent("libfsimage.dylib")
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: swiftc)
+        process.arguments = [
+            "-emit-library", "-module-name", "FSImage",
+            "-import-objc-header", repoRoot.appendingPathComponent("Plugins/FSImage/FSImageBridging.h").path,
+            "-Xcc", "-I\(repoRoot.appendingPathComponent("Plugins/SDK").path)",
+            "-o", out.path,
+        ] + Self.pluginSources.map { repoRoot.appendingPathComponent($0).path } + objects
+        let pipe = Pipe(); process.standardError = pipe
+        try process.run(); process.waitUntilExit()
+        // `throw` rather than XCTFail: XCTFail records the failure and lets setUp
+        // finish, leaving `lib` nil for a test body that then force-unwraps it — which
+        // is a fatalError, and a fatalError takes the whole runner down along with
+        // every test after it. One unbuildable plugin should cost one red test, not
+        // the rest of the suite's results.
+        struct BuildFailure: Error, CustomStringConvertible { let description: String }
+        guard process.terminationStatus == 0 else {
+            let message = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+            throw BuildFailure(description: "swiftc failed: \(message)")
+        }
+        guard case .success(let lib) = PluginLibrary.open(
+            path: out.path, required: PCXSymbols.required, optional: PCXSymbols.optional) else {
+            throw BuildFailure(description: "dlopen/symbol resolution failed for \(out.path)")
+        }
+        self.lib = lib
+    }
+
+    // MARK: - Fixtures
+
+    /// The tree every fixture encodes. Kept as data so each driver's fixture can be
+    /// checked against one expectation rather than against a hand-written list per
+    /// format — the point of a conformance battery.
+    private struct ExpectedTree {
+        static let files: [String: String] = [
+            "etc/motd": "hello from initramfs\n",
+            "etc/conf.d/app.conf": "key = value\n",
+            "bin/empty": "",
+        ]
+        static let directories = ["bin", "etc", "etc/conf.d"]
+        static let symlink = (path: "bin/motd-link", target: "../etc/motd")
+    }
+
+    /// Author the sample tree on disk. Every format's fixture is built from *this*
+    /// directory, so the conformance battery is comparing like with like — three
+    /// copies of the tree-building code would drift, and the battery would quietly
+    /// stop testing the same thing in each format.
+    private func buildSampleTree(at root: URL) throws {
+        let manager = FileManager.default
+        for directory in ExpectedTree.directories {
+            try manager.createDirectory(at: root.appendingPathComponent(directory),
+                                        withIntermediateDirectories: true)
+        }
+        for (path, contents) in ExpectedTree.files {
+            try Data(contents.utf8).write(to: root.appendingPathComponent(path))
+        }
+        try manager.createSymbolicLink(atPath: root.appendingPathComponent(ExpectedTree.symlink.path).path,
+                                       withDestinationPath: ExpectedTree.symlink.target)
+        // Larger than one block so block lists and extent trees are actually walked,
+        // and incompressible so the stored bytes cannot accidentally be the plain ones.
+        try Data(Self.bigFileContents).write(to: root.appendingPathComponent("bin/big.dat"))
+    }
+
+    /// Deterministic pseudo-random bytes: the same on every run and on every machine,
+    /// so a mismatch is the reader's fault and never the fixture's.
+    private static let bigFileContents: [UInt8] =
+        (0..<300_000).map { UInt8(truncatingIfNeeded: $0 &* 2_654_435_761 >> 13) }
+
+    /// Author the tree on disk, then have `/usr/bin/cpio` turn it into a newc
+    /// archive — a third-party encoder, which is the whole value of this fixture.
+    private func makeCpioImage(compressor: (name: String, argument: String)? = nil) throws -> String {
+        let cpio = "/usr/bin/cpio"
+        try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: cpio), "cpio unavailable")
+        let root = dir.appendingPathComponent("root-\(UUID().uuidString)")
+        try buildSampleTree(at: root)
+
+        var image = dir.appendingPathComponent("initramfs-\(UUID().uuidString).cpio").path
+        // `find . | cpio -o -H newc` from inside the tree, exactly how an initramfs
+        // is built, so the names carry the "./" prefix real images have.
+        let shell = Process()
+        shell.executableURL = URL(fileURLWithPath: "/bin/sh")
+        shell.arguments = ["-c", "cd \(root.path) && find . | \(cpio) -o -H newc > \(image)"]
+        shell.standardError = FileHandle.nullDevice
+        try shell.run(); shell.waitUntilExit()
+        try XCTSkipUnless(shell.terminationStatus == 0, "cpio failed")
+
+        if let compressor {
+            guard let tool = Self.which(compressor.name) else {
+                throw XCTSkip("\(compressor.name) unavailable")
+            }
+            let compressed = image + "." + compressor.argument
+            let run = Process()
+            run.executableURL = URL(fileURLWithPath: "/bin/sh")
+            run.arguments = ["-c", "\(tool) -c \(image) > \(compressed)"]
+            run.standardError = FileHandle.nullDevice
+            try run.run(); run.waitUntilExit()
+            try XCTSkipUnless(run.terminationStatus == 0, "\(compressor.name) failed")
+            image = compressed
+        }
+        return image
+    }
+
+    /// The same tree as `makeCpioImage`, built by `mksquashfs` — a third-party
+    /// encoder, which is what makes a byte-exact comparison meaningful.
+    ///
+    /// Skips rather than fails when mksquashfs is absent: it is a Homebrew formula
+    /// (`brew install squashfs`), not something a checkout can assume. CI installs it.
+    private func makeSquashFSImage(compressor: String = "gzip", extraArguments: [String] = []) throws -> String {
+        let mksquashfs = try requireTool("mksquashfs", hint: "brew install squashfs")
+        let root = dir.appendingPathComponent("sqroot-\(UUID().uuidString)")
+        try buildSampleTree(at: root)
+
+        let image = dir.appendingPathComponent("root-\(UUID().uuidString).sqfs").path
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: mksquashfs)
+        process.arguments = [root.path, image, "-comp", compressor,
+                             "-noappend", "-no-progress", "-quiet"] + extraArguments
+        process.standardOutput = FileHandle.nullDevice
+        process.standardError = FileHandle.nullDevice
+        try process.run(); process.waitUntilExit()
+        guard process.terminationStatus == 0, FileManager.default.fileExists(atPath: image) else {
+            throw XCTSkip("mksquashfs cannot build a -comp \(compressor) image here")
+        }
+        return image
+    }
+
+    private static func which(_ name: String) -> String? {
+        for directory in ["/usr/bin", "/bin", "/opt/homebrew/bin", "/usr/local/bin"]
+                          + extraToolDirectories {
+            let path = "\(directory)/\(name)"
+            if FileManager.default.isExecutableFile(atPath: path) { return path }
+        }
+        return nil
+    }
+
+    /// The same tree again, this time as a real ext2/ext3/ext4 filesystem.
+    ///
+    /// `mke2fs -d` populates the image from a directory as it creates it — no mount,
+    /// no root privileges — which is what makes ext fixtures reproducible on macOS
+    /// and on a CI runner at all.
+    private func makeExtImage(type: String = "ext4", blockSize: Int = 4096,
+                              sizeMB: Int = 32, from source: URL? = nil) throws -> String {
+        let mke2fs = try requireTool("mke2fs", hint: "brew install e2fsprogs")
+        let root: URL
+        if let source {
+            root = source
+        } else {
+            let built = dir.appendingPathComponent("extroot-\(UUID().uuidString)")
+            try buildSampleTree(at: built)
+            root = built
+        }
+        let image = dir.appendingPathComponent("fs-\(UUID().uuidString).img").path
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: mke2fs)
+        process.arguments = ["-q", "-t", type, "-d", root.path, "-b", String(blockSize),
+                             image, "\(sizeMB)M"]
+        process.standardOutput = FileHandle.nullDevice
+        process.standardError = FileHandle.nullDevice
+        try process.run(); process.waitUntilExit()
+        guard process.terminationStatus == 0 else {
+            throw XCTSkip("mke2fs cannot build a \(type) image here")
+        }
+        return image
+    }
+
+    /// e2fsprogs is keg-only on Homebrew, so its tools are not on the default PATH.
+    private static let extraToolDirectories = ["/opt/homebrew/opt/e2fsprogs/sbin",
+                                               "/usr/local/opt/e2fsprogs/sbin"]
+
+    // MARK: - Golden fixtures
+    //
+    // cramfs, JFFS2 and Btrfs have no image builder on macOS — no Homebrew formula,
+    // and populating one otherwise needs a Linux kernel. Those images are built once
+    // by `Tools/make-fsimage-fixtures.sh` in a container and committed, gzipped, with
+    // a manifest recording the exact command and the sha256 of each uncompressed
+    // image. Committed rather than generated per run for a plain reason: a test that
+    // needs Docker is a test that does not run.
+
+    private var fixturesDirectory: URL {
+        URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .appendingPathComponent("Fixtures/fsimage")
+    }
+
+    /// `<name>  <sha256>  <tool>  <command>` rows from the manifest, comments dropped.
+    private func manifestRows() throws -> [(name: String, sha256: String)] {
+        let text = try String(contentsOf: fixturesDirectory.appendingPathComponent("manifest.txt"),
+                              encoding: .utf8)
+        return text.split(separator: "\n").compactMap { line in
+            guard !line.hasPrefix("#"), !line.trimmingCharacters(in: .whitespaces).isEmpty else { return nil }
+            let fields = line.split(separator: " ", omittingEmptySubsequences: true)
+            guard fields.count >= 2 else { return nil }
+            return (String(fields[0]), String(fields[1]))
+        }
+    }
+
+    /// Unpack a committed fixture and hand back its path.
+    ///
+    /// The checksum is verified on every use rather than in a test of its own. These
+    /// files are opaque binaries nobody reviews in a diff, so "is this still the image
+    /// the manifest describes" has to be asked where it matters — a fixture that was
+    /// replaced or half-written should fail the format's own tests, naming itself,
+    /// instead of surfacing as a confusing parse error.
+    private func goldenFixture(_ name: String) throws -> String {
+        let archive = fixturesDirectory.appendingPathComponent("\(name).gz")
+        try XCTSkipUnless(FileManager.default.fileExists(atPath: archive.path),
+                          "\(name).gz is missing — run Tools/make-fsimage-fixtures.sh")
+        let image = dir.appendingPathComponent("\(name)-\(UUID().uuidString)")
+
+        let gunzip = Process()
+        gunzip.executableURL = URL(fileURLWithPath: "/usr/bin/gunzip")
+        gunzip.arguments = ["-c", archive.path]
+        let output = Pipe()
+        gunzip.standardOutput = output
+        gunzip.standardError = FileHandle.nullDevice
+        try gunzip.run()
+        let data = output.fileHandleForReading.readDataToEndOfFile()
+        gunzip.waitUntilExit()
+        guard gunzip.terminationStatus == 0, !data.isEmpty else {
+            XCTFail("could not decompress \(name).gz")
+            throw XCTSkip("fixture unreadable")
+        }
+        try data.write(to: image)
+
+        let digest = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        guard let expected = try manifestRows().first(where: { $0.name == name })?.sha256 else {
+            XCTFail("\(name) is not listed in manifest.txt")
+            throw XCTSkip("fixture unlisted")
+        }
+        XCTAssertEqual(digest, expected,
+                       "\(name) does not match its manifest entry — the fixture changed without "
+                       + "Tools/make-fsimage-fixtures.sh being re-run, or it is damaged")
+        return image.path
+    }
+
+    /// Locate a fixture-building tool, skipping locally but *failing* on CI.
+    ///
+    /// A developer without `brew install squashfs` should not get a red suite for a
+    /// tool they never asked for. CI is the opposite case: it installs the tool on
+    /// purpose, and if the install ever breaks, a silent skip would retire an entire
+    /// format's coverage while the run still reports success. That is the failure a
+    /// skip exists to prevent, so here it has to be the loud one.
+    private func requireTool(_ name: String, hint: String) throws -> String {
+        if let path = Self.which(name) { return path }
+        let onCI = ProcessInfo.processInfo.environment["CI"] != nil
+            || ProcessInfo.processInfo.environment["GITHUB_ACTIONS"] != nil
+        if onCI {
+            // A plain error, not XCTFail-then-XCTSkip: a skipped test can carry its
+            // recorded failure quietly, and quiet is the one thing this must not be.
+            struct MissingTool: Error, CustomStringConvertible {
+                let description: String
+            }
+            throw MissingTool(description:
+                "\(name) is missing on CI — \(hint). Without it the tests that build fixtures "
+                + "with it stop running, and the suite still reports success.")
+        }
+        throw XCTSkip("\(name) unavailable (\(hint))")
+    }
+
+    private func collect(_ fs: PCXArchiveFS, _ path: String) async throws -> [VFSEntry] {
+        var out: [VFSEntry] = []
+        for try await batch in fs.list(fs.path(path)) { out.append(contentsOf: batch.entries) }
+        return out
+    }
+
+    private func read(_ fs: PCXArchiveFS, _ path: String) async throws -> Data {
+        var data = Data()
+        for try await element in try await fs.openRead(fs.path(path)) {
+            if let chunk = element as? Data { data.append(chunk) }
+        }
+        return data
+    }
+
+    // MARK: - The shared conformance battery
+    //
+    // Written against an image path, not against a format. A new driver earns all of
+    // it by producing a fixture with the same tree — it cannot start life with less
+    // coverage than the drivers already here, which is the whole point of the plugin
+    // growing one format at a time.
+
+    /// Every promise the plugin makes about an image, checked through the host adapter.
+    /// - Parameter alsoInRoot: root entries this image is expected to carry beyond the
+    ///   sample tree. The battery's claim is "the sample tree came through intact",
+    ///   not "nothing else exists" — a fixture may legitimately hold more, and saying
+    ///   so at the call site is clearer than loosening the check for everyone.
+    private func assertConformance(image: String, label: String, alsoInRoot: Set<String> = [],
+                                   file: StaticString = #filePath, line: UInt = #line) async throws {
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:\(label)") else {
+            return XCTFail("\(label): the host could not mount the image", file: file, line: line)
+        }
+
+        // A filesystem may also add entries of its own that no source tree asked for —
+        // ext always creates `lost+found`. Those are part of the image and must be
+        // *listed*, so they are excluded here rather than asserted absent.
+        let ignored = alsoInRoot.union(["lost+found"])
+        let root = try await collect(fs, "/").filter { !ignored.contains($0.name) }
+        XCTAssertEqual(Set(root.map(\.name)), ["bin", "etc"],
+                       "\(label): root listing", file: file, line: line)
+
+        let etc = try await collect(fs, "/etc")
+        XCTAssertEqual(Set(etc.map(\.name)), ["motd", "conf.d"],
+                       "\(label): /etc listing", file: file, line: line)
+        XCTAssertEqual(etc.first { $0.name == "conf.d" }?.kind, .directory,
+                       "\(label): nested directory kind", file: file, line: line)
+
+        let nested = try await collect(fs, "/etc/conf.d")
+        XCTAssertEqual(nested.map(\.name), ["app.conf"],
+                       "\(label): a directory two levels down must not be flattened",
+                       file: file, line: line)
+
+        for (path, expected) in ExpectedTree.files {
+            let data = try await read(fs, "/" + path)
+            XCTAssertEqual(data, Data(expected.utf8),
+                           "\(label): contents differ for \(path)", file: file, line: line)
+        }
+
+        let bin = try await collect(fs, "/bin")
+        XCTAssertTrue(bin.contains { $0.name == "motd-link" },
+                      "\(label): the symlink must appear in its directory", file: file, line: line)
+        let target = try await read(fs, "/" + ExpectedTree.symlink.path)
+        XCTAssertEqual(String(decoding: target, as: UTF8.self), ExpectedTree.symlink.target,
+                       "\(label): symlink target", file: file, line: line)
+
+        let empty = bin.first { $0.name == "empty" }
+        XCTAssertEqual(empty?.size, 0, "\(label): a zero-length file is still an entry",
+                       file: file, line: line)
+    }
+
+    // MARK: - SquashFS
+
+    func testSquashFSGzipPassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try makeSquashFSImage(compressor: "gzip"), label: "sqfs-gzip")
+    }
+
+    func testSquashFSXzPassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try makeSquashFSImage(compressor: "xz"), label: "sqfs-xz")
+    }
+
+    func testSquashFSLz4PassesTheConformanceBattery() async throws {
+        // Squashfs stores bare LZ4 blocks, which is COMPRESSION_LZ4_RAW rather than
+        // Apple's own "bv41"-framed COMPRESSION_LZ4 — this is the case that tells the
+        // two apart, because the wrong one decodes nothing at all.
+        try await assertConformance(image: try makeSquashFSImage(compressor: "lz4"), label: "sqfs-lz4")
+    }
+
+    /// `-noI -noD -noF` stores metadata, data and fragments uncompressed. Each block
+    /// then carries the "stored" flag instead of compressed bytes, which is a
+    /// separate branch in both the metadata reader and the extractor.
+    func testSquashFSWithUncompressedBlocks() async throws {
+        let image = try makeSquashFSImage(extraArguments: ["-noI", "-noD", "-noF", "-noX"])
+        try await assertConformance(image: image, label: "sqfs-stored")
+    }
+
+    /// Without fragments every file occupies whole blocks, so the tail-in-a-shared-
+    /// fragment path is skipped and the block-list path carries everything.
+    func testSquashFSWithoutFragments() async throws {
+        try await assertConformance(image: try makeSquashFSImage(extraArguments: ["-no-fragments"]),
+                                    label: "sqfs-nofrag")
+    }
+
+    /// A 4 KB block size turns the 300 KB file into a long block list, which is where
+    /// an off-by-one in the block count shows up.
+    func testSquashFSWithSmallBlocks() async throws {
+        try await assertConformance(image: try makeSquashFSImage(extraArguments: ["-b", "4096"]),
+                                    label: "sqfs-4k")
+    }
+
+    func testSquashFSMultiBlockFileExtractsByteForByte() async throws {
+        let image = try makeSquashFSImage()
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:sqfs-big") else {
+            return XCTFail("the host could not mount the image")
+        }
+        let expected = Data(Self.bigFileContents)
+        let actual = try await read(fs, "/bin/big.dat")
+        XCTAssertEqual(actual.count, expected.count, "a multi-block file must come back whole")
+        XCTAssertEqual(actual, expected)
+    }
+
+    /// Zstandard, through the vendored single-file decoder.
+    ///
+    /// This one image exercises both halves of that decoder. A squashfs built with
+    /// `-comp zstd` compresses its *metadata* blocks too, and those are decoded
+    /// against a ceiling (8 KB, the format's maximum) while data blocks are decoded
+    /// against a size the filesystem states exactly. Getting either wrong fails here.
+    func testSquashFSZstdPassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try makeSquashFSImage(compressor: "zstd"), label: "sqfs-zstd")
+    }
+
+    /// LZO has no licence-compatible decoder, so an image using it must be refused as
+    /// *unsupported* rather than as damaged: the difference tells the user to reach
+    /// for `unsquashfs` instead of going to look for a corrupt download.
+    func testSquashFSWithLzoSaysUnsupportedRatherThanReportingDamage() throws {
+        guard let image = try? makeSquashFSImage(compressor: "lzo") else {
+            throw XCTSkip("this mksquashfs cannot build an LZO image")
+        }
+        XCTAssertThrowsError(try PCXArchive(library: lib).list(archivePath: image)) { error in
+            guard case PCXArchive.PCXError.openFailed(let code) = error else {
+                return XCTFail("unexpected error \(error)")
+            }
+            XCTAssertEqual(code, Int(PC_E_NOT_SUPPORTED),
+                           "LZO should report 'not supported', not a damaged archive")
+        }
+    }
+
+    func testATruncatedSquashFSFailsRatherThanListingWhatSurvived() throws {
+        let image = try makeSquashFSImage()
+        let full = try Data(contentsOf: URL(fileURLWithPath: image))
+        let truncated = dir.appendingPathComponent("truncated.sqfs")
+        try full.prefix(full.count / 3).write(to: truncated)
+        XCTAssertThrowsError(try PCXArchive(library: lib).list(archivePath: truncated.path))
+    }
+
+    // MARK: - cramfs
+
+    func testCramFSLittleEndianPassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try goldenFixture("cramfs-le.img"), label: "cramfs-le")
+    }
+
+    /// `mkfs.cramfs -N big` is what MIPS and PowerPC devices ship, and firmware full
+    /// of them is exactly what this plugin is for.
+    ///
+    /// The interesting part is not the byte order of the words. An inode is three
+    /// 32-bit words carrying seven C bitfields at widths of 16/16/24/8/6/26, and a
+    /// big-endian target packs those from the most significant bit down rather than
+    /// up. Byte-swapping alone gives a superblock that parses and sizes in the
+    /// gigabytes — it does not fail, it just reads nonsense. So this is checked
+    /// against a real image rather than reasoned about.
+    func testCramFSBigEndianPassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try goldenFixture("cramfs-be.img"), label: "cramfs-be")
+    }
+
+    /// The 300 KB file spans 74 of cramfs's fixed 4 KB blocks, so this walks the
+    /// block-pointer array and the zlib path for every one of them — in both byte
+    /// orders, which is where a mirrored bitfield would show up as truncated data.
+    func testCramFSMultiBlockFileExtractsByteForByteInBothByteOrders() async throws {
+        for name in ["cramfs-le.img", "cramfs-be.img"] {
+            let image = try goldenFixture(name)
+            guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:\(name)") else {
+                return XCTFail("\(name): the host could not mount the image")
+            }
+            let data = try await read(fs, "/bin/pattern.dat")
+            XCTAssertEqual(data.count, 300_000, "\(name): length")
+            XCTAssertEqual(data, Data(Self.patternFileContents), "\(name): contents")
+        }
+    }
+
+    /// The generator's `bin/pattern.dat`, recomputed here. Committed fixtures are
+    /// opaque binaries, so what they are supposed to contain has to be stated in code
+    /// that a reviewer can check, not left implicit in the bytes.
+    private static let patternFileContents: [UInt8] =
+        (0..<300_000).map { UInt8((($0 * 7) + 3) % 251) }
+
+    func testEveryCommittedFixtureIsListedInTheManifest() throws {
+        let files = try FileManager.default.contentsOfDirectory(atPath: fixturesDirectory.path)
+            .filter { $0.hasSuffix(".img.gz") }
+            .map { String($0.dropLast(3)) }
+        try XCTSkipIf(files.isEmpty, "no committed fixtures yet")
+        let listed = Set(try manifestRows().map(\.name))
+        for file in files {
+            XCTAssertTrue(listed.contains(file),
+                          "\(file) is committed but not in manifest.txt — nothing records what "
+                          + "built it or what it should contain")
+        }
+    }
+
+    // MARK: - JFFS2
+
+    func testJFFS2LittleEndianPassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try goldenFixture("jffs2-le.img"), label: "jffs2-le")
+    }
+
+    func testJFFS2BigEndianPassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try goldenFixture("jffs2-be.img"), label: "jffs2-be")
+    }
+
+    /// An image whose nodes use JFFS2's own `rtime` codec throughout.
+    ///
+    /// mkfs.jffs2 picks rtime only when it beats zlib on a given node, which on this
+    /// tree is never — so the fixture is built with zlib and lzo disabled to force it.
+    /// Without that, the rtime decoder would ship having never decoded anything.
+    func testJFFS2RtimeCompressedImageReadsIdentically() async throws {
+        let image = try goldenFixture("jffs2-rtime.img")
+        try await assertConformance(image: image, label: "jffs2-rtime")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:rtime") else {
+            return XCTFail("the host could not mount the rtime image")
+        }
+        let data = try await read(fs, "/bin/pattern.dat")
+        XCTAssertEqual(data, Data(Self.patternFileContents),
+                       "300 KB through rtime must come back byte for byte")
+    }
+
+    /// A raw NAND dump has out-of-band ECC bytes interleaved with the data, so some
+    /// node payloads are cut apart by bytes that are not filesystem content.
+    ///
+    /// The detection is a plain data-integrity check, not a layout heuristic — the
+    /// first attempt counted how often the scan resynchronised, and that turned out
+    /// identical for a clean image and an interleaved one, because the scan hunts for
+    /// magic and finds every node either way. What actually differs is that the
+    /// affected nodes fail their own data CRC. Refusing matters more than naming the
+    /// cause: using a payload that fails its checksum puts wrong bytes into a file
+    /// the user then reads as the firmware's contents.
+    func testANandDumpWithInterleavedSpareAreaIsRefused() throws {
+        let source = try Data(contentsOf: URL(fileURLWithPath: try goldenFixture("jffs2-le.img")))
+        // 2048-byte pages each followed by 64 bytes of spare area, as a NAND dump has.
+        var interleaved = Data()
+        var offset = 0
+        while offset < source.count {
+            let end = min(offset + 2048, source.count)
+            interleaved.append(source[offset..<end])
+            interleaved.append(Data(repeating: 0xA5, count: 64))
+            offset = end
+        }
+        let dump = dir.appendingPathComponent("nand-dump.img")
+        try interleaved.write(to: dump)
+
+        XCTAssertThrowsError(try PCXArchive(library: lib).list(archivePath: dump.path),
+                             "payloads that fail their own CRC must not be served as file contents")
+    }
+
+    // MARK: - Btrfs
+
+    /// The plain image, built by `mkfs.btrfs -r` without ever being mounted: one flat
+    /// filesystem tree, no compression, no subvolumes.
+    func testBtrfsPassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try goldenFixture("btrfs.img"), label: "btrfs")
+    }
+
+    /// The image that was actually mounted and written to, which is the only way to
+    /// get the parts `mkfs.btrfs -r` cannot produce: zlib-compressed extents, a
+    /// subvolume, a snapshot of it, and enough files that the filesystem tree is more
+    /// than one level deep. A driver that only ever sees the flat image has tested
+    /// almost none of what btrfs is.
+    func testBtrfsWithCompressionSubvolumesAndAMultiLevelTree() async throws {
+        let image = try goldenFixture("btrfs-rich.img")
+        try await assertConformance(image: image, label: "btrfs-rich",
+                                    alsoInRoot: ["many", "subvolume-256", "subvolume-257"])
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:btrfs-rich") else {
+            return XCTFail("the host could not mount the image")
+        }
+
+        // 500 files in one directory only fit in a tree deeper than a single node, so
+        // reaching the last of them means internal nodes were walked, not just a leaf.
+        let many = try await collect(fs, "/many")
+        XCTAssertEqual(many.count, 500, "every file of a multi-level tree must be listed")
+        let last = try await read(fs, "/many/f0499.txt")
+        XCTAssertEqual(String(decoding: last, as: UTF8.self), "file 499\n")
+
+        // The subvolume and its snapshot are separate trees. Listing only the default
+        // one would hide where the older copies of a file actually live.
+        let root = try await collect(fs, "/")
+        let subvolumes = root.filter { $0.name.hasPrefix("subvolume-") }
+        XCTAssertEqual(subvolumes.count, 2, "the subvolume and its snapshot should both be listed")
+        for subvolume in subvolumes {
+            let note = try await read(fs, "/\(subvolume.name)/note.txt")
+            XCTAssertEqual(String(decoding: note, as: UTF8.self), "inside a subvolume\n")
+        }
+    }
+
+    /// 300 KB written to a filesystem mounted with `compress-force=zlib`.
+    ///
+    /// The case that caught a real defect. Btrfs compresses in extents of at most
+    /// 128 KB, so this file is three of them, and `ram_bytes` — the uncompressed span
+    /// — is rounded up to the sector size. The final extent claims 40960 and its
+    /// stream yields 37856. Demanding an exact match rejected that tail while the two
+    /// full extents ahead of it decoded cleanly, so anything up to 128 KB worked and
+    /// only larger files broke.
+    func testBtrfsCompressedFileLargerThanOneExtentExtractsByteForByte() async throws {
+        let image = try goldenFixture("btrfs-rich.img")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:btrfs-zlib") else {
+            return XCTFail("the host could not mount the image")
+        }
+        let data = try await read(fs, "/bin/pattern.dat")
+        XCTAssertEqual(data.count, 300_000, "a compressed file spanning three extents must come back whole")
+        XCTAssertEqual(data, Data(Self.patternFileContents))
+    }
+
+    func testATruncatedBtrfsImageFailsRatherThanListingWhatSurvived() throws {
+        let image = try goldenFixture("btrfs.img")
+        let full = try Data(contentsOf: URL(fileURLWithPath: image))
+        let truncated = dir.appendingPathComponent("truncated.btrfs")
+        // Keep the superblock (64 KB in) but cut away the trees it points at.
+        try full.prefix(200_000).write(to: truncated)
+        XCTAssertThrowsError(try PCXArchive(library: lib).list(archivePath: truncated.path))
+    }
+
+    // MARK: - ext2 / ext3 / ext4
+
+    func testExt4PassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try makeExtImage(type: "ext4"), label: "ext4")
+    }
+
+    /// ext2 has no extents at all: every file goes through the direct/indirect block
+    /// pointers, which is a completely separate code path from ext4's extent trees.
+    func testExt2PassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try makeExtImage(type: "ext2"), label: "ext2")
+    }
+
+    func testExt3PassesTheConformanceBattery() async throws {
+        try await assertConformance(image: try makeExtImage(type: "ext3"), label: "ext3")
+    }
+
+    /// 1 KB blocks move `s_first_data_block` to 1, shifting the group descriptor
+    /// table by a block, and push the 300 KB file past the singly-indirect level into
+    /// the doubly-indirect one.
+    func testExt2WithOneKilobyteBlocks() async throws {
+        try await assertConformance(image: try makeExtImage(type: "ext2", blockSize: 1024, sizeMB: 64),
+                                    label: "ext2-1k")
+    }
+
+    func testExtMultiBlockFileExtractsByteForByte() async throws {
+        let image = try makeExtImage(type: "ext4")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:ext-big") else {
+            return XCTFail("the host could not mount the image")
+        }
+        let actual = try await read(fs, "/bin/big.dat")
+        XCTAssertEqual(actual, Data(Self.bigFileContents))
+    }
+
+    /// A sparse file: a 300 KB hole, then four bytes.
+    ///
+    /// This is the case that caught two real defects, one per block-mapping scheme,
+    /// and both had the same shape — a run list treated as a dense sequence when it
+    /// is addressed by *logical block*. On ext4 the file has a single extent for
+    /// logical block 73, and writing the runs back to back put "TAIL" at offset 0.
+    /// On ext2 the singly-indirect level is entirely a hole and was skipped instead
+    /// of consuming its 256 blocks, so everything after it shifted forward. Both
+    /// produced a file of exactly the right length, full of plausible zeros, with the
+    /// content in the wrong place — nothing about the result looked wrong.
+    func testSparseFilesPlaceTheirContentAtTheRightOffset() async throws {
+        for (type, blockSize) in [("ext4", 4096), ("ext2", 1024)] {
+            let source = dir.appendingPathComponent("sparse-\(type)-\(UUID().uuidString)")
+            try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
+            let sparse = source.appendingPathComponent("sparse.dat")
+            FileManager.default.createFile(atPath: sparse.path, contents: nil)
+            let writer = try FileHandle(forWritingTo: sparse)
+            try writer.seek(toOffset: 300_000)
+            try writer.write(contentsOf: Data("TAIL".utf8))
+            try writer.close()
+
+            let image = try makeExtImage(type: type, blockSize: blockSize, sizeMB: 64, from: source)
+            guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:sparse-\(type)") else {
+                return XCTFail("\(type): the host could not mount the image")
+            }
+            let data = try await read(fs, "/sparse.dat")
+            XCTAssertEqual(data.count, 300_004, "\(type): sparse file length")
+            XCTAssertEqual(data.suffix(4), Data("TAIL".utf8),
+                           "\(type): the tail must land at the end, not at the start")
+            XCTAssertTrue(data.prefix(300_000).allSatisfy { $0 == 0 },
+                          "\(type): the hole must read as zeros")
+        }
+    }
+
+    /// A dirty journal means the committed truth is in the journal and the block
+    /// groups hold the older version. This driver does not replay journals, so the
+    /// only honest options are to refuse the image or to say so where the user will
+    /// see it. It says so — silently showing stale data to somebody auditing firmware
+    /// is the outcome worth going out of the way to avoid.
+    func testAnUncleanFilesystemIsAnnouncedInTheListing() async throws {
+        let image = try makeExtImage(type: "ext4")
+        // Set the RECOVER incompat bit (0x0004) in the superblock at 1024 + 96.
+        let handle = try FileHandle(forUpdating: URL(fileURLWithPath: image))
+        try handle.seek(toOffset: 1024 + 96)
+        guard let current = try handle.read(upToCount: 4), current.count == 4 else {
+            return XCTFail("could not read the incompat feature word")
+        }
+        var value = current.withUnsafeBytes { $0.loadUnaligned(as: UInt32.self) }.littleEndian
+        value |= 0x0004
+        try handle.seek(toOffset: 1024 + 96)
+        try handle.write(contentsOf: withUnsafeBytes(of: value.littleEndian) { Data($0) })
+        try handle.close()
+
+        let entries = try PCXArchive(library: lib).list(archivePath: image)
+        XCTAssertTrue(entries.contains { $0.path.contains("UNCLEAN") && $0.path.contains("e2fsck") },
+                      "an unclean filesystem must be visible in the listing, not only in a log")
+    }
+
+    func testATruncatedExtImageFailsRatherThanListingWhatSurvived() throws {
+        let image = try makeExtImage(type: "ext4")
+        let full = try Data(contentsOf: URL(fileURLWithPath: image))
+        let truncated = dir.appendingPathComponent("truncated.img")
+        try full.prefix(full.count / 8).write(to: truncated)
+        XCTAssertThrowsError(try PCXArchive(library: lib).list(archivePath: truncated.path),
+                             "an image smaller than the filesystem it describes must fail")
+    }
+
+    // MARK: - initramfs conformance battery
+
+    func testListsTheWholeTreeThroughTheHostAdapter() async throws {
+        let image = try makeCpioImage()
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:test") else {
+            return XCTFail("the host could not mount the image")
+        }
+
+        let root = try await collect(fs, "/")
+        XCTAssertEqual(Set(root.map(\.name)), ["bin", "etc"],
+                       "root should hold exactly the two top-level directories")
+
+        let etc = try await collect(fs, "/etc")
+        XCTAssertEqual(Set(etc.map(\.name)), ["motd", "conf.d"])
+        XCTAssertEqual(etc.first { $0.name == "conf.d" }?.kind, .directory)
+
+        let nested = try await collect(fs, "/etc/conf.d")
+        XCTAssertEqual(nested.map(\.name), ["app.conf"],
+                       "a directory two levels down must be reachable, not flattened")
+    }
+
+    func testFileContentsSurviveExtractionByteForByte() async throws {
+        let image = try makeCpioImage()
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:bytes") else {
+            return XCTFail("the host could not mount the image")
+        }
+        for (path, expected) in ExpectedTree.files {
+            let data = try await read(fs, "/" + path)
+            XCTAssertEqual(data, Data(expected.utf8), "contents differ for \(path)")
+        }
+    }
+
+    func testSymlinkIsListedAndCarriesItsTarget() async throws {
+        let image = try makeCpioImage()
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:link") else {
+            return XCTFail("the host could not mount the image")
+        }
+        let bin = try await collect(fs, "/bin")
+        XCTAssertTrue(bin.contains { $0.name == "motd-link" }, "the symlink must appear in its directory")
+        // The host has no symlink concept inside an archive, so the entry extracts as
+        // a file holding the link target — that is what the plugin promises, and it is
+        // what stops an image from planting a real link into the user's filesystem.
+        let data = try await read(fs, "/" + ExpectedTree.symlink.path)
+        XCTAssertEqual(String(decoding: data, as: UTF8.self), ExpectedTree.symlink.target)
+    }
+
+    func testAnEmptyFileListsAsEmptyRatherThanMissing() async throws {
+        let image = try makeCpioImage()
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:empty") else {
+            return XCTFail("the host could not mount the image")
+        }
+        let bin = try await collect(fs, "/bin")
+        let empty = bin.first { $0.name == "empty" }
+        XCTAssertNotNil(empty, "a zero-length file is still an entry")
+        XCTAssertEqual(empty?.size, 0)
+        let contents = try await read(fs, "/bin/empty")
+        XCTAssertEqual(contents, Data())
+    }
+
+    // MARK: - Compressed initramfs (the decompressor layer, end to end)
+
+    func testGzippedInitramfsReadsIdenticallyToThePlainOne() async throws {
+        let image = try makeCpioImage(compressor: (name: "gzip", argument: "gz"))
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:gz") else {
+            return XCTFail("the host could not mount the gzipped image")
+        }
+        let root = try await collect(fs, "/")
+        XCTAssertEqual(Set(root.map(\.name)), ["bin", "etc"])
+        let motd = try await read(fs, "/etc/motd")
+        XCTAssertEqual(motd, Data(ExpectedTree.files["etc/motd"]!.utf8))
+    }
+
+    func testXzInitramfsReadsIdenticallyToThePlainOne() async throws {
+        let image = try makeCpioImage(compressor: (name: "xz", argument: "xz"))
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:xz") else {
+            return XCTFail("the host could not mount the xz image")
+        }
+        let root = try await collect(fs, "/")
+        XCTAssertEqual(Set(root.map(\.name)), ["bin", "etc"])
+        let motd = try await read(fs, "/etc/motd")
+        XCTAssertEqual(motd, Data(ExpectedTree.files["etc/motd"]!.utf8))
+    }
+
+    // MARK: - Hardening: hostile and damaged images
+    //
+    // Firmware images come from update servers, forum posts and chip readers. The
+    // parsers here are the first thing to touch bytes nobody vouched for, so what
+    // matters is not that a damaged image reads *correctly* — it cannot — but that no
+    // image can make the plugin crash, hang, or hand the host a path that escapes the
+    // archive. Those three are asserted; being able to read a broken image is not.
+
+    /// Deterministic mutations of a fixture: truncations, bit flips, and length fields
+    /// smashed to extreme values.
+    ///
+    /// Seeded arithmetic rather than random, so a failure names a case that can be
+    /// reproduced exactly. Length fields get particular attention because they are how
+    /// an image tells the parser how much to allocate and how far to walk — every
+    /// unchecked one is an out-of-bounds read or an allocation the size of the field.
+    private static func mutations(of image: Data, count: Int) -> [(label: String, data: Data)] {
+        guard image.count > 512 else { return [] }
+        var out: [(String, Data)] = []
+        for index in 0..<count {
+            var copy = image
+            let position = (index &* 2_654_435_761) % (image.count - 8)
+            switch index % 4 {
+            case 0:
+                out.append(("truncated-at-\(position)", image.prefix(position)))
+                continue
+            case 1:
+                copy[copy.startIndex + position] ^= 0xFF
+                out.append(("byte-flip-at-\(position)", copy))
+            case 2:
+                // A 32-bit length field set to its maximum.
+                let aligned = position - (position % 4)
+                for byte in 0..<4 { copy[copy.startIndex + aligned + byte] = 0xFF }
+                out.append(("u32-max-at-\(aligned)", copy))
+            default:
+                // A 64-bit field set to the largest positive signed value, which is
+                // where a naive `Int64` size calculation overflows.
+                let aligned = position - (position % 8)
+                for byte in 0..<8 { copy[copy.startIndex + aligned + byte] = byte == 7 ? 0x7F : 0xFF }
+                out.append(("i64-max-at-\(aligned)", copy))
+            }
+        }
+        return out
+    }
+
+    /// Paths the plugin may hand the host. Anything else is a defect regardless of how
+    /// damaged the image was.
+    private func assertPathIsSafe(_ path: String, case label: String,
+                                  file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertFalse(path.hasPrefix("/"),
+                       "\(label): absolute path \"\(path)\" escapes the archive root", file: file, line: line)
+        let components = path.split(separator: "/", omittingEmptySubsequences: false)
+        XCTAssertFalse(components.contains(".."),
+                       "\(label): \"\(path)\" walks out of the archive", file: file, line: line)
+        XCTAssertFalse(components.contains(""),
+                       "\(label): \"\(path)\" has an empty component", file: file, line: line)
+        XCTAssertFalse(path.unicodeScalars.contains { $0.value < 0x20 || $0.value == 0x7F },
+                       "\(label): \"\(path)\" carries control characters", file: file, line: line)
+        XCTAssertLessThan(path.utf8.count, 1024,
+                          "\(label): path longer than the ABI buffer", file: file, line: line)
+    }
+
+    /// The corpus gate: no mutation of any fixture may crash, hang, or produce an
+    /// unsafe path.
+    ///
+    /// Each case runs under its own `PluginGuard` with its own id. The guard turns a
+    /// fatal signal into a reported failure instead of taking the whole test bundle
+    /// down with it — and because the id is per-case, one crash does not quarantine
+    /// the plugin and silently turn every later case into a no-op.
+    func testNoMutatedImageCrashesHangsOrEscapesTheRoot() throws {
+        var sources: [(String, Data)] = []
+        for name in ["cramfs-le.img", "cramfs-be.img", "jffs2-le.img", "jffs2-rtime.img", "btrfs.img"] {
+            if let path = try? goldenFixture(name),
+               let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+                sources.append((name, data))
+            }
+        }
+        if let squash = try? makeSquashFSImage(), let data = try? Data(contentsOf: URL(fileURLWithPath: squash)) {
+            sources.append(("squashfs", data))
+        }
+        if let ext = try? makeExtImage(), let data = try? Data(contentsOf: URL(fileURLWithPath: ext)) {
+            sources.append(("ext4", data))
+        }
+        try XCTSkipIf(sources.isEmpty, "no fixtures available to mutate")
+
+        var cases: [(label: String, path: String)] = []
+        for (name, data) in sources {
+            for (label, mutated) in Self.mutations(of: data, count: 28) {
+                let url = dir.appendingPathComponent("fuzz-\(name)-\(label)")
+                try mutated.write(to: url)
+                cases.append(("\(name)/\(label)", url.path))
+            }
+        }
+
+        // The whole batch runs on a background queue against one deadline. A parser
+        // that hangs would otherwise block this test forever with no indication of
+        // which input did it, so the index of the last case started is published as it
+        // goes and reported if the deadline passes.
+        let progress = NSLock()
+        var current = "(none)"
+        var crashed: [String] = []
+        var unsafePaths: [(String, String)] = []
+        /// Cases that got past the magic check into real parsing. Counted because a
+        /// corpus every case of which is rejected at the first four bytes exercises
+        /// nothing at all, and would pass forever while proving nothing.
+        var reachedParser = 0
+        let finished = DispatchSemaphore(value: 0)
+
+        DispatchQueue.global().async { [lib] in
+            for (label, path) in cases {
+                progress.lock(); current = label; progress.unlock()
+                // A fresh guard and a unique id per case: shared state here would let
+                // the first crash quarantine the plugin and make every later case pass
+                // by never running.
+                let archive = PCXArchive(library: lib!, pluginID: "fuzz-\(label)", guard: PluginGuard())
+                do {
+                    let entries = try archive.list(archivePath: path)
+                    progress.lock(); reachedParser += 1; progress.unlock()
+                    for entry in entries {
+                        if entry.path.hasPrefix("/") || entry.path.split(separator: "/",
+                                                                        omittingEmptySubsequences: false)
+                            .contains("..") {
+                            progress.lock(); unsafePaths.append((label, entry.path)); progress.unlock()
+                        }
+                    }
+                } catch PCXArchive.PCXError.crashed {
+                    progress.lock(); crashed.append(label); progress.unlock()
+                } catch PCXArchive.PCXError.openFailed(let code) where code == Int(PC_E_UNKNOWN_FMT) {
+                    // Turned away at the magic check — the mutation broke the header
+                    // before any parser saw it. Correct, but it tests nothing.
+                } catch {
+                    // Reached a parser and was rejected there, which is the outcome a
+                    // damaged image should get.
+                    progress.lock(); reachedParser += 1; progress.unlock()
+                }
+            }
+            finished.signal()
+        }
+
+        let deadline = DispatchTime.now() + .seconds(120)
+        if finished.wait(timeout: deadline) == .timedOut {
+            progress.lock(); let stuck = current; progress.unlock()
+            return XCTFail("a mutated image did not finish parsing within 120s — stuck on \(stuck)")
+        }
+
+        XCTAssertEqual(crashed, [], "these mutated images crashed the plugin")
+        for (label, path) in unsafePaths {
+            assertPathIsSafe(path, case: label)
+        }
+        XCTAssertEqual(unsafePaths.count, 0, "mutated images produced paths that escape the archive root")
+
+        // Without this the whole test is theatre: if every mutation were turned away
+        // at the magic check, nothing past `probe` would ever run and the gate would
+        // stay green through any defect in any parser.
+        XCTAssertGreaterThan(reachedParser, cases.count / 2,
+                             "only \(reachedParser) of \(cases.count) mutations got past the magic "
+                             + "check — the corpus is not reaching the parsers")
+    }
+
+    /// Even an intact image must never produce a path the host would resolve outside
+    /// the archive. `PCXArchiveFS` splits paths on "/" and filters nothing, so this is
+    /// the plugin's responsibility and nobody else's.
+    func testEveryFixtureProducesOnlySafePaths() throws {
+        var images: [(String, String)] = []
+        for name in ["cramfs-le.img", "jffs2-le.img", "btrfs.img", "btrfs-rich.img"] {
+            if let path = try? goldenFixture(name) { images.append((name, path)) }
+        }
+        if let path = try? makeSquashFSImage() { images.append(("squashfs", path)) }
+        if let path = try? makeExtImage() { images.append(("ext4", path)) }
+        if let path = try? makeCpioImage() { images.append(("cpio", path)) }
+        try XCTSkipIf(images.isEmpty, "no fixtures available")
+
+        for (name, path) in images {
+            for entry in try PCXArchive(library: lib).list(archivePath: path) {
+                assertPathIsSafe(entry.path, case: name)
+            }
+        }
+    }
+
+    // MARK: - Refusals
+    //
+    // The plugin claims broad extensions (.img, .bin), so being handed something
+    // that is not an image is the normal case, not the exceptional one. It has to
+    // decline in a way the host can fall back from.
+
+    func testAForeignFileIsDeclinedRatherThanMisread() throws {
+        let notAnImage = dir.appendingPathComponent("firmware.bin")
+        try Data(repeating: 0x42, count: 8192).write(to: notAnImage)
+        XCTAssertNil(PCXArchiveFS(archivePath: notAnImage.path, library: lib, fsID: "fsimage:foreign"),
+                     "a file no driver recognises must not mount")
+        XCTAssertEqual(PCXArchive(library: lib).canHandle(fileName: notAnImage.path), false)
+    }
+
+    func testAnEmptyFileIsDeclined() throws {
+        let empty = dir.appendingPathComponent("empty.img")
+        try Data().write(to: empty)
+        XCTAssertNil(PCXArchiveFS(archivePath: empty.path, library: lib, fsID: "fsimage:zero"))
+    }
+
+    func testATruncatedImageFailsInsteadOfReportingAPartialTree() throws {
+        let image = try makeCpioImage()
+        let full = try Data(contentsOf: URL(fileURLWithPath: image))
+        // Cut mid-way through the payload: the first headers parse, then a header
+        // promises bytes that are not there.
+        let truncated = dir.appendingPathComponent("truncated.cpio")
+        try full.prefix(full.count / 2).write(to: truncated)
+        XCTAssertThrowsError(try PCXArchive(library: lib).list(archivePath: truncated.path),
+                             "a truncated image must fail, not list what happened to survive")
+    }
+
+    /// Truncated so that a header's magic is present but the 110-byte header is not.
+    ///
+    /// This exact shape hung the parser: "no magic here" and "magic here, header cut
+    /// off" both came back as "not a header", so the scan looked for the next header
+    /// at the offset it had just rejected and never moved. The image that provokes it
+    /// is the one an interrupted download produces, so it is not a contrived input.
+    func testAHeaderCutOffMidwayFailsRatherThanSpinning() throws {
+        let image = try makeCpioImage()
+        let full = try Data(contentsOf: URL(fileURLWithPath: image))
+        let magic = Data("070701".utf8)
+        guard let lastHeader = full.range(of: magic, options: .backwards) else {
+            return XCTFail("fixture has no newc header to cut")
+        }
+        let cut = dir.appendingPathComponent("cut-header.cpio")
+        try full.prefix(lastHeader.lowerBound + magic.count).write(to: cut)
+
+        let expectation = expectation(description: "parse returns instead of spinning")
+        DispatchQueue.global().async {
+            _ = try? PCXArchive(library: self.lib).list(archivePath: cut.path)
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 10)
+        XCTAssertThrowsError(try PCXArchive(library: lib).list(archivePath: cut.path))
+    }
+
+    /// Cut exactly at an entry boundary: every record that is present parses cleanly,
+    /// and the only thing missing is the TRAILER!!! that says the archive ended.
+    ///
+    /// The tempting behaviour is to list what was found. It is also the worst one
+    /// available: someone auditing firmware would see a complete-looking tree and
+    /// conclude a file is not in the image when it is only unread. So a missing
+    /// trailer is a failure, not a short listing.
+    func testAnArchiveWithNoTrailerIsRefusedRatherThanListedShort() throws {
+        let image = try makeCpioImage()
+        let full = try Data(contentsOf: URL(fileURLWithPath: image))
+        guard let lastHeader = full.range(of: Data("070701".utf8), options: .backwards) else {
+            return XCTFail("fixture has no newc header to cut")
+        }
+        let cut = dir.appendingPathComponent("no-trailer.cpio")
+        try full.prefix(lastHeader.lowerBound).write(to: cut)
+        XCTAssertThrowsError(try PCXArchive(library: lib).list(archivePath: cut.path),
+                             "an archive with no trailer must not list a partial tree as if it were whole")
+    }
+
+    /// Boot images staple several cpio archives together — CPU microcode first, then
+    /// the real initramfs. Stopping at the first trailer would show the user the
+    /// microcode blob and hide the filesystem they opened the file for.
+    func testConcatenatedArchivesAreAllListed() async throws {
+        let first = try makeCpioImage()
+        let second = try makeCpioImage()
+        let combined = dir.appendingPathComponent("combined.cpio")
+        var bytes = try Data(contentsOf: URL(fileURLWithPath: first))
+        bytes.append(try Data(contentsOf: URL(fileURLWithPath: second)))
+        try bytes.write(to: combined)
+
+        let entries = try PCXArchive(library: lib).list(archivePath: combined.path)
+        let names = Set(entries.map(\.path))
+        XCTAssertTrue(names.contains("etc/motd"), "entries from the trailing archive must be listed too")
+        // Per archive: the sample files, the directories, the symlink and big.dat.
+        let perArchive = ExpectedTree.files.count + ExpectedTree.directories.count + 2
+        XCTAssertEqual(entries.count, 2 * perArchive, "both archives' entries should be present")
+    }
+
+    func testContentDetectionAgreesWithWhatWillActuallyOpen() throws {
+        let image = try makeCpioImage()
+        XCTAssertEqual(PCXArchive(library: lib).canHandle(fileName: image), true)
+    }
+
+    // MARK: - The parse cache
+    //
+    // The host reopens the archive for every single file it reads
+    // (`PCXArchive.extract`), so without a cache in the plugin a tree copy is
+    // quadratic in parse work. This asserts the behaviour that makes it linear.
+
+    func testRepeatedExtractionDoesNotReparseTheImageEachTime() throws {
+        let image = try makeCpioImage()
+        let archive = PCXArchive(library: lib)
+        let destination = dir.appendingPathComponent("out.txt").path
+
+        let first = Date()
+        try archive.extract(archivePath: image, entryPath: "etc/motd", to: destination)
+        let cold = Date().timeIntervalSince(first)
+
+        let second = Date()
+        for _ in 0..<50 {
+            try archive.extract(archivePath: image, entryPath: "etc/motd", to: destination)
+        }
+        let warmAverage = Date().timeIntervalSince(second) / 50
+
+        // A generous bound: the claim is "reopening is not a full reparse", not a
+        // specific speed. Timing on a shared CI machine is noisy, so this fails only
+        // on the behaviour actually being wrong.
+        XCTAssertLessThan(warmAverage, max(cold, 0.001) * 5,
+                          "reopening the image should not cost a fresh parse each time")
+    }
+}
