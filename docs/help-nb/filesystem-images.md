@@ -41,6 +41,8 @@ En partisjon programtillegget ikke kan lese, vises likevel som en tom mappe oppk
 
 En fastvarefil hentet ut av en ruter eller et kamera har som regel ingen partisjonstabell i det hele tatt. Den er et produsenthode, en oppstartslaster, en kjerne og et rootfs skrevet etter hverandre på posisjoner som ikke er notert noe sted. En slik fil åpnes med én oppføring per del, hver oppkalt etter posisjonen den begynner på: `0x00230044-squashfs` er et filsystem å gå inn i, `0x00030040-kernel.uimage` en fil å kopiere ut.
 
+![Et panel inne i en ruters fastvarefil med produsenthodet, U-Boot-kjernen og SquashFS-rotfilsystemet, hver oppkalt etter posisjonen de begynner på](screenshots/filesystem-images-carved.png)
+
 Delene finnes ved å søke gjennom filen etter selve filsystemene og åpne hvert treff for å se om det virkelig ligger et der. Et bytemønster som treffer tilfeldig, koster et øyeblikk og forkastes i stedet for å bli en oppdiktet oppføring; og en fil der det ikke finnes noe filsystem, avvises fortsatt og åpnes slik den alltid ville ha gjort.
 
 Det samme gjelder alt som ligger utenfor partisjonene i et partisjonert avtrykk. En Raspberry Pi holder oppstartslasteren sin i megabytene foran partisjon 1, og U-Boot sitter på de fleste ARM-kort på en fast posisjon i den samme utildelte plassen. Disse strekningene listes ved siden av partisjonene, slik at du kan se dem og kopiere dem ut.

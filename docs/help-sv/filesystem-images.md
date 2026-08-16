@@ -41,6 +41,8 @@ En partition som insticksmodulen inte kan läsa visas ändå, som en tom mapp up
 
 En fil med fast programvara hämtad ur en router eller en kamera har som regel ingen partitionstabell alls. Den är ett tillverkarhuvud, en starthanterare, en kärna och ett rootfs skrivna efter varandra på positioner som inte är noterade någonstans. En sådan fil öppnas med en post per del, var och en uppkallad efter positionen där den börjar: `0x00230044-squashfs` är ett filsystem att gå in i, `0x00030040-kernel.uimage` en fil att kopiera ut.
 
+![En panel inuti en routers fil med fast programvara: tillverkarhuvudet, U-Boot-kärnan och SquashFS-rotfilsystemet, var och en uppkallad efter positionen där den börjar](screenshots/filesystem-images-carved.png)
+
 Delarna hittas genom att filen genomsöks efter själva filsystemen och varje träff öppnas för att se om det verkligen ligger ett där. Ett bytemönster som råkar stämma kostar ett ögonblick och förkastas i stället för att bli en påhittad post; och en fil där inget filsystem står att finna avvisas fortfarande och öppnas som den alltid skulle ha gjort.
 
 Detsamma gäller allt som ligger utanför partitionerna i en partitionerad avbildning. En Raspberry Pi håller sin starthanterare i megabytena före partition 1, och U-Boot sitter på de flesta ARM-kort på en fast position i samma otilldelade utrymme. Dessa sträckor listas bredvid partitionerna så att du kan se dem och kopiera ut dem.

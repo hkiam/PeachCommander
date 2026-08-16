@@ -41,6 +41,8 @@ O partiție pe care modulul nu o poate citi apare totuși, ca dosar gol numit du
 
 Un fișier de firmware extras dintr-un router sau dintr-o cameră nu are de obicei nicio tabelă de partiții. Este un antet al producătorului, un încărcător de pornire, un nucleu și un rootfs scrise unul după altul la decalaje consemnate nicăieri. Un astfel de fișier se deschide cu câte o intrare pentru fiecare parte, denumită după decalajul de la care începe: `0x00230044-squashfs` este un sistem de fișiere în care se poate intra, iar `0x00030040-kernel.uimage` un fișier de copiat afară.
 
+![Un panou în interiorul unui fișier de firmware de router, cu antetul producătorului, nucleul U-Boot și sistemul de fișiere rădăcină SquashFS, fiecare denumit după decalajul de la care începe](screenshots/filesystem-images-carved.png)
+
 Părțile sunt găsite căutând în fișier chiar sistemele de fișiere și deschizând fiecare potrivire pentru a vedea dacă există într-adevăr unul acolo. Un tipar de octeți care se potrivește din întâmplare costă o clipă și este înlăturat în loc să devină o intrare inventată; iar un fișier în care nu se găsește niciun sistem de fișiere este în continuare refuzat și se deschide așa cum s-ar fi deschis dintotdeauna.
 
 Același lucru este valabil pentru tot ce se află în afara partițiilor unei imagini partiționate. Un Raspberry Pi își ține încărcătorul de pornire în megaocteții dinaintea partiției 1, iar U-Boot stă pe majoritatea plăcilor ARM la un decalaj fix în același spațiu nealocat. Acele porțiuni sunt listate lângă partiții, ca să le puteți vedea și copia afară.

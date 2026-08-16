@@ -41,6 +41,8 @@ Razdelek, ki ga vtičnik ne zna prebrati, se vseeno pokaže kot prazna mapa, poi
 
 Datoteka vdelane programske opreme, potegnjena iz usmerjevalnika ali kamere, običajno sploh nima razdelilne tabele. Je glava proizvajalca, zagonski nalagalnik, jedro in rootfs, zapisani drug za drugim na odmikih, ki niso nikjer zabeleženi. Taka datoteka se odpre z enim vnosom na vsak del, poimenovanim po odmiku, na katerem se začne: `0x00230044-squashfs` je datotečni sistem, v katerega je mogoče vstopiti, `0x00030040-kernel.uimage` pa datoteka za kopiranje ven.
 
+![Pult v notranjosti datoteke vdelane programske opreme usmerjevalnika: glava proizvajalca, jedro U-Boot in korenski datotečni sistem SquashFS, vsak poimenovan po odmiku, na katerem se začne](screenshots/filesystem-images-carved.png)
+
 Deli se najdejo tako, da se po datoteki iščejo datotečni sistemi sami, nato pa se vsak zadetek odpre, da se preveri, ali je res tam. Bajtni vzorec, ki se ujame po naključju, stane trenutek in se zavrže, namesto da bi postal izmišljen vnos; datoteka, v kateri ni nobenega datotečnega sistema, pa je še vedno zavrnjena in se odpre tako, kot bi se od nekdaj.
 
 Isto velja za vse, kar leži zunaj razdelkov razdeljene slike. Raspberry Pi hrani svoj zagonski nalagalnik v megabajtih pred razdelkom 1, U-Boot pa na večini plošč ARM sedi na stalnem odmiku v istem nedodeljenem prostoru. Ti odseki so navedeni poleg razdelkov, da jih lahko vidite in kopirate ven.

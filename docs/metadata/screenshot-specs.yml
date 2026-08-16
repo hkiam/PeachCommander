@@ -449,3 +449,33 @@ screenshots:
     pages: [copying-files]
     settle: 6
     script: [*main, progressdemo, wait 1000]
+
+  - id: filesystem-images-carved
+    feature: filesystem-images
+    alt: "A panel inside a router firmware file, listing the vendor header, the U-Boot kernel and the SquashFS root filesystem, each named by the offset it starts at"
+    caption: "Inside router firmware that has no partition table — each part named by where it begins."
+    pages: [filesystem-images]
+    dark: true
+    settle: 18
+    script:
+      # Two waits, and both were earned the hard way.
+      #
+      # The first is before any verb. The light shot is the run's first launch and so
+      # the cold one: without it the panels are still being built when `left` fires, it
+      # no-ops on a nil controller, and the capture is a picture of an empty window.
+      # The dark shot passed on the same script because by then the app was warm, which
+      # is exactly how this hides.
+      - wait 3000
+      - left /Users/admin/pc-demo/Firmware
+      - right /Users/admin/pc-demo/Documents
+      - active l
+      - focus rt9000-firmware.bin
+      # The second is before `enter`, and it waits for the *plugins*, not the panels.
+      # A file whose extension matches nothing only opens as an image once
+      # `loadExternalPlugins` has dlopen'd every enabled packer and wired
+      # `onProbeThenEnterArchive` — an async task that outlives app launch. Pressing
+      # Enter before it finishes hands the file to the system instead, and the shot
+      # shows the panel still sitting on rt9000-firmware.bin.
+      - wait 4000
+      - enter
+      - wait 3000

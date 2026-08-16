@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Immagini di file system</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Immagini di file system</h1>
+<p>Un'immagine di file system è un file che contiene un intero file system: il rootfs di un aggiornamento del router, una scheda SD copiata byte per byte, l'immagine di un dispositivo che state esaminando. Il plugin <strong>Linux Filesystem Images</strong> ne apre una come Peach Commander apre un archivio: posizionate il cursore, premete Invio e il pannello si trova dentro il file system. Da lì il visualizzatore, la ricerca e la copia funzionano esattamente come in una cartella.</p>
+<p>In un'immagine non viene mai scritto nulla. Il plugin sa soltanto leggere.</p>
+<h2 id="attivatelo-prima">Attivatelo prima</h2>
+<p>Il plugin viene fornito disattivato. Aprite <strong>Impostazioni ▸ Plugin</strong>, cercate <strong>Linux Filesystem Images</strong> e attivatelo.</p>
+<p>È disattivato per impostazione predefinita per il modo in cui trova le immagini. Il firmware ha raramente un nome ordinato: il file che cercate si chiama <code>firmware.bin</code>, <code>rootfs.img</code> o semplicemente <code>dump</code> almeno quanto <code>.squashfs</code>, quindi quando l'estensione non dice nulla il plugin guarda i primi byte per decidere. È quello che serve se esaminate immagini di dispositivi, ed è lavoro inutile altrimenti. Attivarlo è il modo di dire quale dei due casi è il vostro.</p>
+<p>Un file che si rivela non essere un'immagine resta intatto dopo quell'unica occhiata e si apre come avrebbe sempre fatto.</p>
+<h2 id="che-cosa-puo-aprire">Che cosa può aprire</h2>
+<table>
+<thead>
+<tr>
+<th>Formato</th>
+<th>Dove lo incontrate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SquashFS</td>
+<td>Il rootfs di quasi tutti i firmware di router, telecamere e decoder</td>
+</tr>
+<tr>
+<td>ext2, ext3, ext4</td>
+<td>La partizione principale della maggior parte dei dispositivi Linux embedded</td>
+</tr>
+<tr>
+<td>Btrfs</td>
+<td>Volumi NAS e sistemi Linux recenti, snapshot compresi</td>
+</tr>
+<tr>
+<td>JFFS2, UBIFS</td>
+<td>Memoria flash grezza di hardware embedded vecchio e attuale</td>
+</tr>
+<tr>
+<td>cramfs, initramfs</td>
+<td>File system di avvio e dispositivi datati ancora in servizio</td>
+</tr>
+<tr>
+<td>FAT12, FAT16, FAT32</td>
+<td>Schede SD, chiavette USB e la partizione EFI di qualsiasi PC moderno</td>
+</tr>
+<tr>
+<td>exFAT</td>
+<td>Schede SD e unità oltre i 32 GB</td>
+</tr>
+<tr>
+<td>NTFS</td>
+<td>Volumi Windows, inclusi i file compressi</td>
+</tr>
+</tbody>
+</table>
+<h2 id="immagini-disco-con-piu-partizioni">Immagini disco con più partizioni</h2>
+<p>Un'immagine copiata da un intero dispositivo di solito ha una tabella delle partizioni invece di un singolo file system. Un'immagine simile si apre come una cartella per partizione — <code>1-rootfs</code>, <code>2-esp</code> — ed entrate in quella che volete. Vengono lette sia le tabelle MBR sia quelle GPT, e dove la tabella registra i nomi delle partizioni vengono usati quei nomi.</p>
+<p>Una partizione che il plugin non sa leggere compare comunque, come cartella vuota che porta il nome del suo tipo. Se un dispositivo ha tre partizioni, dovete poter vedere che ne ha tre.</p>
+<h2 id="firmware-senza-tabella-delle-partizioni">Firmware senza tabella delle partizioni</h2>
+<p>Un file di firmware estratto da un router o da una telecamera di solito non ha alcuna tabella delle partizioni. È un’intestazione del produttore, un bootloader, un kernel e un rootfs scritti uno dopo l’altro a offset annotati da nessuna parte. Un file simile si apre con una voce per ciascuna parte, ognuna chiamata come l’offset da cui inizia: <code>0x00230044-squashfs</code> è un file system in cui entrare, <code>0x00030040-kernel.uimage</code> un file da copiare fuori.</p>
+<p><img alt="Un pannello all’interno di un file di firmware di un router, con l’intestazione del produttore, il kernel U-Boot e il file system radice SquashFS, ognuno chiamato come l’offset da cui inizia" src="images/filesystem-images-carved.png" /></p>
+<p>Le parti si trovano cercando nel file i file system stessi e aprendo ogni riscontro per vedere se ce n’è davvero uno. Uno schema di byte che coincide per caso costa un istante e viene scartato invece di diventare una voce inventata; e un file in cui non si trova alcun file system viene ancora rifiutato e si apre come si sarebbe sempre aperto.</p>
+<p>Lo stesso vale per tutto ciò che sta fuori dalle partizioni di un’immagine partizionata. Un Raspberry Pi tiene il proprio bootloader nei megabyte che precedono la partizione 1, e U-Boot occupa sulla maggior parte delle schede ARM un offset fisso nello stesso spazio non assegnato. Quei tratti compaiono accanto alle partizioni, così potete vederli e copiarli fuori.</p>
+<h2 id="mettere-per-iscritto-la-struttura">Mettere per iscritto la struttura</h2>
+<p><strong>Comandi ▸ Analizza la struttura dell’immagine…</strong> salva il risultato come file di testo accanto all’immagine e vi porta sopra il cursore: ogni regione con il suo offset, la sua dimensione e ciò che si è rivelata essere, più la tabella delle partizioni se l’immagine ne ha una. Quella tabella è di solito proprio ciò che serve a uno smontaggio o a un ticket, e ricostruirla percorrendo un pannello e ricopiando numeri a mano è un lavoro noioso.</p>
+<p>Il rapporto mostra anche ciò che il pannello tralascia — i piccoli spazi di allineamento tra le partizioni, per esempio — e nomina la scheda per cui è stato compilato un kernel U-Boot quando l’immagine lo registra.</p>
+<h2 id="lavorare-dentro-unimmagine">Lavorare dentro un'immagine</h2>
+<p>Vale tutto quello che già conoscete. F3 mostra un file, F5 copia i file in una cartella reale e <strong>Trova file</strong> cerca nel contenuto dell'immagine. Se ne esce come da un archivio.</p>
+<p>I collegamenti simbolici sono mostrati con il loro nome, e copiarne uno all'esterno restituisce un piccolo file di testo con la destinazione del collegamento invece di un collegamento vero: a un'immagine non si può permettere di piazzare un link che punta ovunque sul vostro disco.</p>
+<h2 id="quando-unimmagine-non-si-apre">Quando un'immagine non si apre</h2>
+<p>Il plugin vi dice il perché invece di segnalare un file danneggiato, perché le due cose vi portano altrove:</p>
+<ul>
+<li><strong>Un volume Btrfs in RAID0, RAID10, RAID5 o RAID6</strong>, oppure distribuito su più dispositivi. I dati sono sparsi su più dischi e la maggior parte non si trova nel file che avete.</li>
+<li><strong>Un dump NAND grezzo che contiene ancora la sua area di riserva.</strong> All'immagine non manca nulla: è stata copiata insieme ai byte di correzione degli errori. Ricopiatela con <code>nanddump --omitoob</code>.</li>
+<li><strong>Un volume ext4 o NTFS cifrato</strong>, illeggibile senza le sue chiavi.</li>
+<li><strong>Un file system ext smontato in modo non pulito</strong> si apre comunque, ma con una voce contrassegnata in cima alla radice che avverte che il contenuto potrebbe essere superato. Il file system è stato copiato mentre era in uso e le modifiche più recenti stanno in un journal che questo plugin non riproduce. Eseguite <code>e2fsck</code> su una copia se i dettagli contano.</li>
+</ul>
+<h2 id="note">Note</h2>
+<ul>
+<li>Un'immagine viene letta una volta e ricordata, quindi rientrarci è immediato.</li>
+<li>Le immagini molto grandi vengono lette secondo necessità invece che caricate per intero; un elenco è limitato a due milioni di voci.</li>
+<li>Un’immagine viene cercata per file system incorporati solo se non ha né una tabella delle partizioni né un file system all’inizio, quindi un’immagine ordinaria si apre esattamente con la stessa rapidità di prima.</li>
+<li>Il plugin aggiunge un comando di menu e nessuna impostazione propria oltre all’interruttore che lo attiva.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugin</a></li><li><a href="archives.html">Lavorare con gli archivi</a></li><li><a href="settings.html">Impostazioni</a></li><li><a href="viewing-files.html">Visualizzazione dei file</a></li></ul></section>
+</main>
+</body>
+</html>

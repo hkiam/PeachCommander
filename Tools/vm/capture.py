@@ -144,6 +144,15 @@ def setup_guest(ip):
     for theme in ("light", "dark"):
         ssh_guest(ip, f"mkdir -p ~/pc-cfg-{theme}/themes && "
                       f"cat > ~/pc-cfg-{theme}/themes/my-terminal.ini <<'PCTHEME'\n{USER_THEME}\nPCTHEME")
+    # Plugins that ship switched off have to be switched on, or a spec for one shows an
+    # empty menu and nothing says why. Written here rather than in the per-launch reset
+    # because it is installed state, like themes/ above: plugins.ini survives the reset,
+    # so one write covers every spec. Enabling Linux Filesystem Images costs the other
+    # specs one header read on a file whose extension matched nothing, and changes
+    # nothing they show.
+    for theme in ("light", "dark"):
+        ssh_guest(ip, f"printf '[Plugins]\\nEnabled=Linux Filesystem Images\\n' "
+                      f"> ~/pc-cfg-{theme}/plugins.ini")
     ssh_guest(ip, "defaults write com.apple.dock autohide -bool true; "
                   "defaults write com.apple.dock autohide-delay -float 999; killall Dock 2>/dev/null || true")
     # Force the GUEST's system locale to English. Plugin bundles resolve their
@@ -238,7 +247,16 @@ def main():
         sh(["rsync", "-a", "--delete", "-e", "ssh " + " ".join(SSH),
             f"{app}/", f"{GUEST}@{ip}:pc-test/{APPNAME}/"])
         ssh_guest(ip, "xattr -dr com.apple.quarantine ~/pc-test 2>/dev/null || true")
-        sh([str(REPO / "Tools/vm/demo-content.sh"), ip])
+        # Checked, not fired and forgotten. A spec whose panel content never arrived
+        # still captures a screenshot — of the app sitting in the home directory — and
+        # that shot looks like the feature not working rather than like a broken setup.
+        # It cost one wrong capture before this check existed.
+        content = sh([str(REPO / "Tools/vm/demo-content.sh"), ip])
+        if content.returncode != 0:
+            sys.exit(f"demo-content.sh failed ({content.returncode}):\n"
+                     f"{content.stdout}\n{content.stderr}")
+        print("  demo content: " + " · ".join(
+            line for line in content.stdout.splitlines() if line.strip())[:400])
         setup_guest(ip)
 
         for s in specs:

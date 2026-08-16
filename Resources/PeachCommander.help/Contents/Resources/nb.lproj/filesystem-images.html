@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filsystemavbilder</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Filsystemavbilder</h1>
+<p>En filsystemavbild er en fil som inneholder et helt filsystem — rootfs fra en ruteroppdatering, et SD-kort kopiert byte for byte, avbildet av en enhet du undersøker. Programtillegget <strong>Linux Filesystem Images</strong> åpner en slik slik Peach Commander åpner et arkiv: sett markøren på den, trykk Enter, og panelet står inne i filsystemet. Derfra virker viseren, søket og kopieringen nøyaktig som i en mappe.</p>
+<p>Det skrives aldri til en avbild. Programtillegget kan bare lese.</p>
+<h2 id="sla-det-pa-frst">Slå det på først</h2>
+<p>Programtillegget leveres avslått. Åpne <strong>Innstillinger ▸ Programtillegg</strong>, finn <strong>Linux Filesystem Images</strong>, og slå det på.</p>
+<p>Det er avslått som standard på grunn av måten det finner avbilder på. Fastvare har sjelden et ryddig navn — filen du leter etter heter minst like ofte <code>firmware.bin</code>, <code>rootfs.img</code> eller bare <code>dump</code> som <code>.squashfs</code> — så når filendelsen ikke sier noe, ser programtillegget på de første bytene for å avgjøre det. Det er akkurat riktig hvis du undersøker enhetsavbilder, og bortkastet arbeid ellers. Å slå det på er måten du sier hvilken av de to du er.</p>
+<p>En fil som viser seg ikke å være en avbild, blir liggende urørt etter det ene blikket og åpnes slik den alltid ville gjort.</p>
+<h2 id="hva-det-kan-apne">Hva det kan åpne</h2>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Hvor du møter det</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SquashFS</td>
+<td>Rootfs i nesten all fastvare til rutere, kameraer og dekodere</td>
+</tr>
+<tr>
+<td>ext2, ext3, ext4</td>
+<td>Hovedpartisjonen på de fleste innebygde Linux-enheter</td>
+</tr>
+<tr>
+<td>Btrfs</td>
+<td>NAS-volumer og nyere Linux-systemer, øyeblikksbilder inkludert</td>
+</tr>
+<tr>
+<td>JFFS2, UBIFS</td>
+<td>Rått flashminne i eldre og nåværende innebygd maskinvare</td>
+</tr>
+<tr>
+<td>cramfs, initramfs</td>
+<td>Oppstartsfilsystemer og langlivede eldre enheter</td>
+</tr>
+<tr>
+<td>FAT12, FAT16, FAT32</td>
+<td>SD-kort, USB-pinner og EFI-partisjonen på enhver moderne PC</td>
+</tr>
+<tr>
+<td>exFAT</td>
+<td>SD-kort og stasjoner over 32 GB</td>
+</tr>
+<tr>
+<td>NTFS</td>
+<td>Windows-volumer, også med komprimerte filer</td>
+</tr>
+</tbody>
+</table>
+<h2 id="diskavbilder-med-flere-partisjoner">Diskavbilder med flere partisjoner</h2>
+<p>En avbild kopiert fra en hel enhet har som regel en partisjonstabell i stedet for ett enkelt filsystem. En slik avbild åpnes som én mappe per partisjon — <code>1-rootfs</code>, <code>2-esp</code> — og du går inn i den du vil. Både MBR- og GPT-tabeller leses, og der tabellen inneholder partisjonsnavn, brukes de navnene.</p>
+<p>En partisjon programtillegget ikke kan lese, vises likevel som en tom mappe oppkalt etter typen sin. Har en enhet tre partisjoner, skal du kunne se at den har tre.</p>
+<h2 id="fastvare-uten-partisjonstabell">Fastvare uten partisjonstabell</h2>
+<p>En fastvarefil hentet ut av en ruter eller et kamera har som regel ingen partisjonstabell i det hele tatt. Den er et produsenthode, en oppstartslaster, en kjerne og et rootfs skrevet etter hverandre på posisjoner som ikke er notert noe sted. En slik fil åpnes med én oppføring per del, hver oppkalt etter posisjonen den begynner på: <code>0x00230044-squashfs</code> er et filsystem å gå inn i, <code>0x00030040-kernel.uimage</code> en fil å kopiere ut.</p>
+<p><img alt="Et panel inne i en ruters fastvarefil med produsenthodet, U-Boot-kjernen og SquashFS-rotfilsystemet, hver oppkalt etter posisjonen de begynner på" src="images/filesystem-images-carved.png" /></p>
+<p>Delene finnes ved å søke gjennom filen etter selve filsystemene og åpne hvert treff for å se om det virkelig ligger et der. Et bytemønster som treffer tilfeldig, koster et øyeblikk og forkastes i stedet for å bli en oppdiktet oppføring; og en fil der det ikke finnes noe filsystem, avvises fortsatt og åpnes slik den alltid ville ha gjort.</p>
+<p>Det samme gjelder alt som ligger utenfor partisjonene i et partisjonert avtrykk. En Raspberry Pi holder oppstartslasteren sin i megabytene foran partisjon 1, og U-Boot sitter på de fleste ARM-kort på en fast posisjon i den samme utildelte plassen. Disse strekningene listes ved siden av partisjonene, slik at du kan se dem og kopiere dem ut.</p>
+<h2 id="a-skrive-ned-oppbygningen">Å skrive ned oppbygningen</h2>
+<p><strong>Kommandoer ▸ Analyser oppbygningen av avtrykket…</strong> lagrer resultatet som en tekstfil ved siden av avtrykket og setter markøren på den: hvert område med sin posisjon, sin størrelse og det det viste seg å være, pluss partisjonstabellen dersom avtrykket har en. Nettopp den tabellen er som regel det en gjennomgang eller en sak trenger, og å bygge den opp igjen ved å gå gjennom et panel og skrive av tall er kjedelig arbeid.</p>
+<p>Rapporten viser også det panelet utelater — de små justeringshullene mellom partisjoner, for eksempel — og navngir kortet en U-Boot-kjerne er bygget for, når avtrykket noterer det.</p>
+<h2 id="a-arbeide-inne-i-en-avbild">Å arbeide inne i en avbild</h2>
+<p>Alt du allerede kan, gjelder. F3 viser en fil, F5 kopierer filer ut til en ekte mappe, og <strong>Finn filer</strong> søker i innholdet i avbilden. Du går ut av den slik du forlater et arkiv.</p>
+<p>Symbolske lenker vises med navnet sitt, og kopierer du en ut, får du en liten tekstfil med lenkens mål i stedet for en ekte lenke — en avbild kan ikke få lov til å plassere en lenke som peker hvor som helst på din egen disk.</p>
+<h2 id="nar-en-avbild-ikke-apnes">Når en avbild ikke åpnes</h2>
+<p>Programtillegget sier hvorfor i stedet for å melde om en ødelagt fil, for de to fører deg til hvert sitt sted:</p>
+<ul>
+<li><strong>Et Btrfs-volum med RAID0, RAID10, RAID5 eller RAID6</strong>, eller fordelt over flere enheter. Dataene ligger spredt over disker, og det meste er ikke i filen du har.</li>
+<li><strong>En rå NAND-dump som fortsatt inneholder reserveområdet sitt.</strong> Det er ingenting galt med avbilden; den ble kopiert med feilrettingsbytene og alt. Kopier den på nytt med <code>nanddump --omitoob</code>.</li>
+<li><strong>Et kryptert ext4- eller NTFS-volum</strong>, som ikke kan leses uten nøklene sine.</li>
+<li><strong>Et ext-filsystem som ikke ble koblet fra rent</strong> åpnes fortsatt, men med en merket oppføring øverst i roten som advarer om at innholdet kan være utdatert. Filsystemet ble kopiert mens det var i bruk, og de nyeste endringene ligger i en journal dette programtillegget ikke spiller av. Kjør <code>e2fsck</code> på en kopi hvis detaljene betyr noe.</li>
+</ul>
+<h2 id="merknader">Merknader</h2>
+<ul>
+<li>En avbild leses én gang og huskes, så det går umiddelbart å gå inn i den igjen.</li>
+<li>Svært store avbilder leses etter behov i stedet for å lastes inn i sin helhet; en liste er begrenset til to millioner oppføringer.</li>
+<li>Et avtrykk gjennomsøkes for innebygde filsystemer bare når det verken har en partisjonstabell eller et filsystem i starten, så et vanlig avtrykk åpnes akkurat like raskt som før.</li>
+<li>Programtillegget legger til én menykommando og ingen egne innstillinger utover bryteren som slår det på.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Programtillegg</a></li><li><a href="archives.html">Arbeide med arkiver</a></li><li><a href="settings.html">Innstillinger</a></li><li><a href="viewing-files.html">Vise filer</a></li></ul></section>
+</main>
+</body>
+</html>

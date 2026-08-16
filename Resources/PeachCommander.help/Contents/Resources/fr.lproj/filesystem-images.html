@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Images de systèmes de fichiers</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Images de systèmes de fichiers</h1>
+<p>Une image de système de fichiers est un fichier contenant un système de fichiers entier — le rootfs d'une mise à jour de routeur, une carte SD copiée octet par octet, l'image d'un appareil que vous examinez. Le plugin <strong>Linux Filesystem Images</strong> en ouvre une comme Peach Commander ouvre une archive : placez le curseur dessus, appuyez sur Entrée, et le panneau se trouve à l'intérieur du système de fichiers. De là, la visionneuse, la recherche et la copie fonctionnent exactement comme dans un dossier.</p>
+<p>Rien n'est jamais écrit dans une image. Le plugin ne sait que lire.</p>
+<h2 id="activez-le-dabord">Activez-le d'abord</h2>
+<p>Le plugin est livré désactivé. Ouvrez <strong>Réglages ▸ Plugins</strong>, trouvez <strong>Linux Filesystem Images</strong> et activez-le.</p>
+<p>Il est désactivé par défaut à cause de sa manière de trouver les images. Un micrologiciel est rarement nommé proprement — le fichier recherché s'appelle <code>firmware.bin</code>, <code>rootfs.img</code> ou simplement <code>dump</code> au moins aussi souvent que <code>.squashfs</code> — donc lorsque l'extension ne dit rien, le plugin examine les premiers octets pour décider. C'est exactement ce qu'il faut si vous examinez des images d'appareils, et du travail inutile sinon. L'activer, c'est dire lequel des deux vous êtes.</p>
+<p>Un fichier qui s'avère ne pas être une image est laissé tel quel après ce seul coup d'œil et s'ouvre comme il l'aurait toujours fait.</p>
+<h2 id="ce-quil-sait-ouvrir">Ce qu'il sait ouvrir</h2>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Où vous le rencontrez</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SquashFS</td>
+<td>Le rootfs de presque tous les micrologiciels de routeurs, caméras et décodeurs</td>
+</tr>
+<tr>
+<td>ext2, ext3, ext4</td>
+<td>La partition principale de la plupart des appareils Linux embarqués</td>
+</tr>
+<tr>
+<td>Btrfs</td>
+<td>Les volumes NAS et les systèmes Linux récents, instantanés compris</td>
+</tr>
+<tr>
+<td>JFFS2, UBIFS</td>
+<td>La mémoire flash brute du matériel embarqué ancien et actuel</td>
+</tr>
+<tr>
+<td>cramfs, initramfs</td>
+<td>Les systèmes de fichiers de démarrage et les appareils anciens encore en service</td>
+</tr>
+<tr>
+<td>FAT12, FAT16, FAT32</td>
+<td>Cartes SD, clés USB et la partition EFI de tout PC moderne</td>
+</tr>
+<tr>
+<td>exFAT</td>
+<td>Cartes SD et disques de plus de 32 Go</td>
+</tr>
+<tr>
+<td>NTFS</td>
+<td>Volumes Windows, y compris les fichiers compressés</td>
+</tr>
+</tbody>
+</table>
+<h2 id="images-disque-comportant-plusieurs-partitions">Images disque comportant plusieurs partitions</h2>
+<p>Une image copiée depuis un appareil entier comporte généralement une table de partitions plutôt qu'un seul système de fichiers. Une telle image s'ouvre comme un dossier par partition — <code>1-rootfs</code>, <code>2-esp</code> — et vous entrez dans celle que vous voulez. Les tables MBR et GPT sont toutes deux lues, et lorsque la table enregistre des noms de partitions, ces noms sont utilisés.</p>
+<p>Une partition que le plugin ne sait pas lire apparaît quand même, sous forme de dossier vide portant le nom de son type. Si un appareil a trois partitions, vous devez pouvoir voir qu'il en a trois.</p>
+<h2 id="micrologiciel-sans-table-de-partitions">Micrologiciel sans table de partitions</h2>
+<p>Un fichier de micrologiciel extrait d’un routeur ou d’une caméra n’a généralement aucune table de partitions. C’est un en-tête du fabricant, un chargeur d’amorçage, un noyau et un rootfs écrits les uns après les autres à des décalages consignés nulle part. Un tel fichier s’ouvre avec une entrée par partie, chacune nommée d’après le décalage où elle commence : <code>0x00230044-squashfs</code> est un système de fichiers dans lequel entrer, <code>0x00030040-kernel.uimage</code> un fichier à copier.</p>
+<p><img alt="Un panneau à l’intérieur d’un fichier de micrologiciel de routeur, listant l’en-tête du fabricant, le noyau U-Boot et le système de fichiers racine SquashFS, chacun nommé d’après le décalage où il commence" src="images/filesystem-images-carved.png" /></p>
+<p>Les parties sont trouvées en cherchant dans le fichier les systèmes de fichiers eux-mêmes, puis en ouvrant chacun d’eux pour voir s’il s’y trouve vraiment. Un motif d’octets correspondant par hasard coûte un instant et est écarté au lieu de devenir une entrée inventée ; et un fichier ne contenant aucun système de fichiers est toujours refusé et s’ouvre comme il l’aurait toujours fait.</p>
+<p>Il en va de même pour tout ce qui se trouve en dehors des partitions d’une image partitionnée. Un Raspberry Pi garde son chargeur d’amorçage dans les mégaoctets précédant la partition 1, et U-Boot occupe sur la plupart des cartes ARM un décalage fixe dans ce même espace non attribué. Ces plages sont listées à côté des partitions afin que vous puissiez les voir et les copier.</p>
+<h2 id="consigner-la-structure">Consigner la structure</h2>
+<p><strong>Commandes ▸ Analyser la structure de l’image…</strong> enregistre le résultat dans un fichier texte à côté de l’image et y place le curseur : chaque zone avec son décalage, sa taille et ce qu’elle s’est révélée être, ainsi que la table de partitions si l’image en possède une. C’est généralement ce tableau qu’un démontage ou un ticket réclame, et le reconstituer en parcourant un panneau et en recopiant des nombres est un travail fastidieux.</p>
+<p>Le rapport montre aussi ce que le panneau omet — les petits espaces d’alignement entre partitions, par exemple — et nomme la carte pour laquelle un noyau U-Boot a été compilé lorsque l’image le consigne.</p>
+<h2 id="travailler-dans-une-image">Travailler dans une image</h2>
+<p>Tout ce que vous connaissez déjà s'applique. F3 affiche un fichier, F5 copie des fichiers vers un vrai dossier, et <strong>Rechercher des fichiers</strong> fouille le contenu de l'image. On en ressort comme d'une archive.</p>
+<p>Les liens symboliques sont affichés avec leur nom, et en copier un vers l'extérieur donne un petit fichier texte contenant la cible du lien plutôt qu'un vrai lien — une image ne peut pas être autorisée à poser un lien pointant n'importe où sur votre propre disque.</p>
+<h2 id="quand-une-image-ne-souvre-pas">Quand une image ne s'ouvre pas</h2>
+<p>Le plugin vous dit pourquoi au lieu de signaler un fichier abîmé, car les deux vous mènent ailleurs :</p>
+<ul>
+<li><strong>Un volume Btrfs en RAID0, RAID10, RAID5 ou RAID6</strong>, ou réparti sur plusieurs appareils. Les données sont éparpillées sur plusieurs disques, et l'essentiel n'est pas dans le fichier dont vous disposez.</li>
+<li><strong>Un vidage NAND brut contenant encore sa zone de réserve.</strong> L'image n'a rien d'anormal ; elle a été copiée avec les octets de correction d'erreurs. Copiez-la de nouveau avec <code>nanddump --omitoob</code>.</li>
+<li><strong>Un volume ext4 ou NTFS chiffré</strong>, illisible sans ses clés.</li>
+<li><strong>Un système de fichiers ext non démonté proprement</strong> s'ouvre quand même, mais avec une entrée signalée en haut de sa racine avertissant que le contenu peut être périmé. Le système de fichiers a été copié pendant son utilisation, et les modifications les plus récentes sont dans un journal que ce plugin ne rejoue pas. Lancez <code>e2fsck</code> sur une copie si les détails comptent.</li>
+</ul>
+<h2 id="remarques">Remarques</h2>
+<ul>
+<li>Une image est lue une fois puis mémorisée : y revenir est immédiat.</li>
+<li>Les très grandes images sont lues au fur et à mesure plutôt que chargées entièrement ; une liste est plafonnée à deux millions d'entrées.</li>
+<li>Une image n’est fouillée à la recherche de systèmes de fichiers imbriqués que si elle n’a ni table de partitions ni système de fichiers à son début ; une image ordinaire s’ouvre donc exactement aussi vite qu’avant.</li>
+<li>Le plugin ajoute une commande de menu et aucun réglage propre, hormis l’interrupteur qui l’active.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Extensions</a></li><li><a href="archives.html">Utiliser les archives</a></li><li><a href="settings.html">Réglages</a></li><li><a href="viewing-files.html">Afficher des fichiers</a></li></ul></section>
+</main>
+</body>
+</html>

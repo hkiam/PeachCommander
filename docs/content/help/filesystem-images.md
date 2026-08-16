@@ -41,6 +41,8 @@ A partition the plugin cannot read still appears, as an empty folder named after
 
 A firmware file pulled off a router or a camera usually has no partition table at all. It is a vendor header, a bootloader, a kernel and a rootfs written one after another at offsets recorded nowhere. Such a file opens as one entry per part, each named by the offset it begins at: `0x00230044-squashfs` is a filesystem to step into, `0x00030040-kernel.uimage` is a file to copy out.
 
+![A panel inside a router firmware file, listing the vendor header, the U-Boot kernel and the SquashFS root filesystem, each named by the offset it starts at](screenshots/filesystem-images-carved.png)
+
 The parts are found by searching the file for the filesystems themselves and then opening each one to see whether it is really there. A byte pattern that matched by chance costs a moment and is discarded rather than becoming an invented entry, and a file that turns out to hold no filesystem at all is still declined and opens the way it always would have.
 
 The same applies to whatever lies outside the partitions of a partitioned image. A Raspberry Pi keeps its bootloader in the megabytes ahead of partition 1, and U-Boot on most ARM boards sits at a fixed offset in that same unclaimed space. Those runs are listed beside the partitions so you can see them and copy them out.

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imágenes de sistemas de archivos</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Imágenes de sistemas de archivos</h1>
+<p>Una imagen de sistema de archivos es un archivo que contiene un sistema de archivos entero: el rootfs de una actualización de router, una tarjeta SD copiada byte a byte, la imagen de un dispositivo que está examinando. El plugin <strong>Linux Filesystem Images</strong> abre una como Peach Commander abre un archivo comprimido: coloque el cursor encima, pulse Intro y el panel estará dentro del sistema de archivos. Desde ahí, el visor, la búsqueda y la copia funcionan igual que en una carpeta.</p>
+<p>Nunca se escribe nada en una imagen. El plugin solo puede leer.</p>
+<h2 id="activelo-primero">Actívelo primero</h2>
+<p>El plugin se entrega desactivado. Abra <strong>Ajustes ▸ Plugins</strong>, busque <strong>Linux Filesystem Images</strong> y actívelo.</p>
+<p>Está desactivado por omisión por cómo encuentra las imágenes. El firmware rara vez tiene un nombre ordenado: el archivo que busca se llama <code>firmware.bin</code>, <code>rootfs.img</code> o simplemente <code>dump</code> al menos tan a menudo como <code>.squashfs</code>, así que cuando la extensión no dice nada, el plugin mira sus primeros bytes para decidirlo. Eso es lo correcto si examina imágenes de dispositivos, y trabajo inútil si nunca lo hace. Activarlo es su forma de decir cuál de los dos casos es el suyo.</p>
+<p>Un archivo que resulta no ser una imagen queda intacto tras ese único vistazo y se abre como siempre lo habría hecho.</p>
+<h2 id="que-puede-abrir">Qué puede abrir</h2>
+<table>
+<thead>
+<tr>
+<th>Formato</th>
+<th>Dónde se lo encuentra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SquashFS</td>
+<td>El rootfs de casi todo firmware de routers, cámaras y descodificadores</td>
+</tr>
+<tr>
+<td>ext2, ext3, ext4</td>
+<td>La partición principal de la mayoría de dispositivos Linux embebidos</td>
+</tr>
+<tr>
+<td>Btrfs</td>
+<td>Volúmenes NAS y sistemas Linux recientes, instantáneas incluidas</td>
+</tr>
+<tr>
+<td>JFFS2, UBIFS</td>
+<td>Memoria flash en bruto de hardware embebido antiguo y actual</td>
+</tr>
+<tr>
+<td>cramfs, initramfs</td>
+<td>Sistemas de archivos de arranque y dispositivos antiguos de larga vida</td>
+</tr>
+<tr>
+<td>FAT12, FAT16, FAT32</td>
+<td>Tarjetas SD, memorias USB y la partición EFI de cualquier PC moderno</td>
+</tr>
+<tr>
+<td>exFAT</td>
+<td>Tarjetas SD y unidades de más de 32 GB</td>
+</tr>
+<tr>
+<td>NTFS</td>
+<td>Volúmenes de Windows, incluidos los archivos comprimidos</td>
+</tr>
+</tbody>
+</table>
+<h2 id="imagenes-de-disco-con-varias-particiones">Imágenes de disco con varias particiones</h2>
+<p>Una imagen copiada de un dispositivo entero suele tener una tabla de particiones en lugar de un único sistema de archivos. Una imagen así se abre como una carpeta por partición — <code>1-rootfs</code>, <code>2-esp</code> — y usted entra en la que quiera. Se leen tanto las tablas MBR como las GPT, y cuando la tabla registra nombres de partición se usan esos nombres.</p>
+<p>Una partición que el plugin no puede leer aparece igualmente, como una carpeta vacía con el nombre de su tipo. Si un dispositivo tiene tres particiones, usted debe poder ver que tiene tres.</p>
+<h2 id="firmware-sin-tabla-de-particiones">Firmware sin tabla de particiones</h2>
+<p>Un archivo de firmware extraído de un router o una cámara normalmente no tiene tabla de particiones alguna. Es una cabecera del fabricante, un gestor de arranque, un núcleo y un rootfs escritos uno tras otro en desplazamientos que no constan en ninguna parte. Un archivo así se abre con una entrada por cada parte, nombrada según el desplazamiento donde empieza: <code>0x00230044-squashfs</code> es un sistema de archivos en el que entrar, <code>0x00030040-kernel.uimage</code> un archivo que copiar.</p>
+<p><img alt="Un panel dentro de un archivo de firmware de router, con la cabecera del fabricante, el núcleo U-Boot y el sistema de archivos raíz SquashFS, cada uno nombrado según el desplazamiento donde empieza" src="images/filesystem-images-carved.png" /></p>
+<p>Las partes se encuentran buscando en el archivo los sistemas de archivos mismos y abriendo cada hallazgo para ver si de verdad hay uno allí. Un patrón de bytes que coincida por casualidad cuesta un instante y se descarta en lugar de convertirse en una entrada inventada; y un archivo en el que no aparece ningún sistema de archivos se sigue rechazando y se abre como siempre lo habría hecho.</p>
+<p>Lo mismo vale para todo lo que queda fuera de las particiones de una imagen particionada. Una Raspberry Pi guarda su gestor de arranque en los megabytes anteriores a la partición 1, y U-Boot ocupa en la mayoría de las placas ARM un desplazamiento fijo en ese mismo espacio sin asignar. Esos tramos aparecen junto a las particiones para que pueda verlos y copiarlos.</p>
+<h2 id="dejar-constancia-de-la-estructura">Dejar constancia de la estructura</h2>
+<p><strong>Comandos ▸ Analizar la estructura de la imagen…</strong> guarda el resultado como archivo de texto junto a la imagen y coloca el cursor en él: cada región con su desplazamiento, su tamaño y aquello en lo que resultó ser, además de la tabla de particiones si la imagen tiene una. Esa tabla suele ser justo lo que quiere un desmontaje o un ticket, y reconstruirla recorriendo un panel y copiando números a mano es un trabajo tedioso.</p>
+<p>El informe muestra además lo que el panel omite —los pequeños huecos de alineación entre particiones, por ejemplo— y nombra la placa para la que se compiló un núcleo U-Boot cuando la imagen lo registra.</p>
+<h2 id="trabajar-dentro-de-una-imagen">Trabajar dentro de una imagen</h2>
+<p>Todo lo que ya conoce sigue valiendo. F3 muestra un archivo, F5 copia archivos a una carpeta real y <strong>Buscar archivos</strong> busca dentro del contenido de la imagen. Se sale de ella como se sale de un archivo comprimido.</p>
+<p>Los enlaces simbólicos se muestran con su nombre, y copiar uno hacia fuera le da un pequeño archivo de texto con el destino del enlace en lugar de un enlace real: no se puede permitir que una imagen coloque un enlace apuntando a cualquier lugar de su propio disco.</p>
+<h2 id="cuando-una-imagen-no-se-abre">Cuando una imagen no se abre</h2>
+<p>El plugin le dice por qué en vez de informar de un archivo dañado, porque ambas cosas le llevan a sitios distintos:</p>
+<ul>
+<li><strong>Un volumen Btrfs con RAID0, RAID10, RAID5 o RAID6</strong>, o repartido entre varios dispositivos. Los datos están distribuidos entre discos y la mayor parte no está en el archivo que usted tiene.</li>
+<li><strong>Un volcado NAND en bruto que aún contiene su área de reserva.</strong> La imagen está bien; se copió con los bytes de corrección de errores incluidos. Cópiela de nuevo con <code>nanddump --omitoob</code>.</li>
+<li><strong>Un volumen ext4 o NTFS cifrado</strong>, que no se puede leer sin sus claves.</li>
+<li><strong>Un sistema de archivos ext desmontado incorrectamente</strong> se abre igualmente, pero con una entrada marcada en lo alto de su raíz que advierte de que el contenido puede estar desfasado. El sistema de archivos se copió mientras estaba en uso, y los cambios más recientes están en un diario que este plugin no reproduce. Ejecute <code>e2fsck</code> sobre una copia si los detalles importan.</li>
+</ul>
+<h2 id="notas">Notas</h2>
+<ul>
+<li>Una imagen se lee una vez y se recuerda, así que volver a entrar es inmediato.</li>
+<li>Las imágenes muy grandes se leen según se necesitan en vez de cargarse enteras; un listado está limitado a dos millones de entradas.</li>
+<li>Una imagen solo se explora en busca de sistemas de archivos incrustados cuando no tiene ni tabla de particiones ni sistema de archivos al principio, de modo que una imagen corriente se abre exactamente tan rápido como siempre.</li>
+<li>El plugin añade un comando de menú y ningún ajuste propio más allá del interruptor que lo activa.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Complementos</a></li><li><a href="archives.html">Trabajar con archivos comprimidos</a></li><li><a href="settings.html">Ajustes</a></li><li><a href="viewing-files.html">Ver archivos</a></li></ul></section>
+</main>
+</body>
+</html>

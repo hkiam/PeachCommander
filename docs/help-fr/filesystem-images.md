@@ -41,6 +41,8 @@ Une partition que le plugin ne sait pas lire apparaît quand même, sous forme d
 
 Un fichier de micrologiciel extrait d’un routeur ou d’une caméra n’a généralement aucune table de partitions. C’est un en-tête du fabricant, un chargeur d’amorçage, un noyau et un rootfs écrits les uns après les autres à des décalages consignés nulle part. Un tel fichier s’ouvre avec une entrée par partie, chacune nommée d’après le décalage où elle commence : `0x00230044-squashfs` est un système de fichiers dans lequel entrer, `0x00030040-kernel.uimage` un fichier à copier.
 
+![Un panneau à l’intérieur d’un fichier de micrologiciel de routeur, listant l’en-tête du fabricant, le noyau U-Boot et le système de fichiers racine SquashFS, chacun nommé d’après le décalage où il commence](screenshots/filesystem-images-carved.png)
+
 Les parties sont trouvées en cherchant dans le fichier les systèmes de fichiers eux-mêmes, puis en ouvrant chacun d’eux pour voir s’il s’y trouve vraiment. Un motif d’octets correspondant par hasard coûte un instant et est écarté au lieu de devenir une entrée inventée ; et un fichier ne contenant aucun système de fichiers est toujours refusé et s’ouvre comme il l’aurait toujours fait.
 
 Il en va de même pour tout ce qui se trouve en dehors des partitions d’une image partitionnée. Un Raspberry Pi garde son chargeur d’amorçage dans les mégaoctets précédant la partition 1, et U-Boot occupe sur la plupart des cartes ARM un décalage fixe dans ce même espace non attribué. Ces plages sont listées à côté des partitions afin que vous puissiez les voir et les copier.

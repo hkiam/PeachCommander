@@ -41,6 +41,8 @@ Een partitie die de plug-in niet kan lezen verschijnt toch, als lege map met de 
 
 Een firmwarebestand dat van een router of camera is gehaald, heeft meestal helemaal geen partitietabel. Het is een fabrikantkop, een bootloader, een kernel en een rootfs, achter elkaar weggeschreven op posities die nergens zijn vastgelegd. Zo’n bestand opent met één regel per onderdeel, elk genoemd naar de positie waar het begint: `0x00230044-squashfs` is een bestandssysteem om in te stappen, `0x00030040-kernel.uimage` een bestand om eruit te kopiëren.
 
+![Een venster binnen in een firmwarebestand van een router, met de fabrikantkop, de U-Boot-kernel en het SquashFS-hoofdbestandssysteem, elk genoemd naar de positie waar het begint](screenshots/filesystem-images-carved.png)
+
 De onderdelen worden gevonden door het bestand af te zoeken op de bestandssystemen zelf en elke vondst te openen om te zien of er werkelijk een ligt. Een bytepatroon dat toevallig past, kost een ogenblik en wordt verworpen in plaats van een verzonnen regel te worden; en een bestand waarin geen bestandssysteem blijkt te zitten, wordt nog steeds geweigerd en opent zoals het altijd al deed.
 
 Hetzelfde geldt voor alles wat buiten de partities van een gepartitioneerde image ligt. Een Raspberry Pi bewaart zijn bootloader in de megabytes vóór partitie 1, en U-Boot staat op de meeste ARM-borden op een vaste positie in diezelfde niet-toegewezen ruimte. Die stukken staan naast de partities in de lijst, zodat u ze kunt zien en eruit kunt kopiëren.

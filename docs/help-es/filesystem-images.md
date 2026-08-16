@@ -41,6 +41,8 @@ Una partición que el plugin no puede leer aparece igualmente, como una carpeta 
 
 Un archivo de firmware extraído de un router o una cámara normalmente no tiene tabla de particiones alguna. Es una cabecera del fabricante, un gestor de arranque, un núcleo y un rootfs escritos uno tras otro en desplazamientos que no constan en ninguna parte. Un archivo así se abre con una entrada por cada parte, nombrada según el desplazamiento donde empieza: `0x00230044-squashfs` es un sistema de archivos en el que entrar, `0x00030040-kernel.uimage` un archivo que copiar.
 
+![Un panel dentro de un archivo de firmware de router, con la cabecera del fabricante, el núcleo U-Boot y el sistema de archivos raíz SquashFS, cada uno nombrado según el desplazamiento donde empieza](screenshots/filesystem-images-carved.png)
+
 Las partes se encuentran buscando en el archivo los sistemas de archivos mismos y abriendo cada hallazgo para ver si de verdad hay uno allí. Un patrón de bytes que coincida por casualidad cuesta un instante y se descarta en lugar de convertirse en una entrada inventada; y un archivo en el que no aparece ningún sistema de archivos se sigue rechazando y se abre como siempre lo habría hecho.
 
 Lo mismo vale para todo lo que queda fuera de las particiones de una imagen particionada. Una Raspberry Pi guarda su gestor de arranque en los megabytes anteriores a la partición 1, y U-Boot ocupa en la mayoría de las placas ARM un desplazamiento fijo en ese mismo espacio sin asignar. Esos tramos aparecen junto a las particiones para que pueda verlos y copiarlos.

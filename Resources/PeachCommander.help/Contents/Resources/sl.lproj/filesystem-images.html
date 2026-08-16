@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slike datotečnih sistemov</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Slike datotečnih sistemov</h1>
+<p>Slika datotečnega sistema je datoteka, ki vsebuje celoten datotečni sistem — rootfs iz posodobitve usmerjevalnika, kartico SD, kopirano bajt za bajtom, sliko naprave, ki jo preučujete. Vtičnik <strong>Linux Filesystem Images</strong> tako datoteko odpre tako, kot Peach Commander odpre arhiv: postavite kazalec nanjo, pritisnite Enter in pult bo znotraj datotečnega sistema. Od tam pregledovalnik, iskanje in kopiranje delujejo natanko tako kot v mapi.</p>
+<p>V sliko se nikoli ne piše. Vtičnik zna samo brati.</p>
+<h2 id="najprej-ga-vklopite">Najprej ga vklopite</h2>
+<p>Vtičnik je dobavljen izklopljen. Odprite <strong>Nastavitve ▸ Vtičniki</strong>, poiščite <strong>Linux Filesystem Images</strong> in ga vklopite.</p>
+<p>Privzeto je izklopljen zaradi načina, kako najde slike. Vdelana programska oprema ima redko urejeno ime — iskana datoteka se imenuje <code>firmware.bin</code>, <code>rootfs.img</code> ali preprosto <code>dump</code> vsaj tako pogosto kot <code>.squashfs</code> — zato vtičnik ob nepovedni končnici pogleda prve bajte. To je natanko pravo, če preučujete slike naprav, in nepotrebno delo sicer. Vklop je način, kako poveste, kateri od obeh primerov je vaš.</p>
+<p>Datoteka, ki se izkaže, da ni slika, ostane po tem enem pogledu nedotaknjena in se odpre tako, kot bi se vedno.</p>
+<h2 id="kaj-zna-odpreti">Kaj zna odpreti</h2>
+<table>
+<thead>
+<tr>
+<th>Zapis</th>
+<th>Kje ga srečate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SquashFS</td>
+<td>Rootfs v skoraj vsaki vdelani opremi usmerjevalnikov, kamer in sprejemnikov</td>
+</tr>
+<tr>
+<td>ext2, ext3, ext4</td>
+<td>Glavna razdelitev večine vgrajenih naprav z Linuxom</td>
+</tr>
+<tr>
+<td>Btrfs</td>
+<td>Nosilci NAS in novejši sistemi Linux, vključno s posnetki</td>
+</tr>
+<tr>
+<td>JFFS2, UBIFS</td>
+<td>Neobdelan bliskovni pomnilnik v starejši in sedanji vgrajeni strojni opremi</td>
+</tr>
+<tr>
+<td>cramfs, initramfs</td>
+<td>Zagonski datotečni sistemi in dolgožive starejše naprave</td>
+</tr>
+<tr>
+<td>FAT12, FAT16, FAT32</td>
+<td>Kartice SD, ključki USB in razdelek EFI vsakega sodobnega računalnika</td>
+</tr>
+<tr>
+<td>exFAT</td>
+<td>Kartice SD in pogoni nad 32 GB</td>
+</tr>
+<tr>
+<td>NTFS</td>
+<td>Nosilci Windows, tudi s stisnjenimi datotekami</td>
+</tr>
+</tbody>
+</table>
+<h2 id="slike-diskov-z-vec-razdelki">Slike diskov z več razdelki</h2>
+<p>Slika, kopirana s celotne naprave, ima navadno razpredelnico razdelkov namesto enega samega datotečnega sistema. Taka slika se odpre kot ena mapa na razdelek — <code>1-rootfs</code>, <code>2-esp</code> — in vstopite v tistega, ki ga želite. Brani sta obe razpredelnici, MBR in GPT, in kjer razpredelnica hrani imena razdelkov, se uporabijo ta imena.</p>
+<p>Razdelek, ki ga vtičnik ne zna prebrati, se vseeno pokaže kot prazna mapa, poimenovana po svoji vrsti. Če ima naprava tri razdelke, morate videti, da jih ima tri.</p>
+<h2 id="vdelana-programska-oprema-brez-razdelilne-tabele">Vdelana programska oprema brez razdelilne tabele</h2>
+<p>Datoteka vdelane programske opreme, potegnjena iz usmerjevalnika ali kamere, običajno sploh nima razdelilne tabele. Je glava proizvajalca, zagonski nalagalnik, jedro in rootfs, zapisani drug za drugim na odmikih, ki niso nikjer zabeleženi. Taka datoteka se odpre z enim vnosom na vsak del, poimenovanim po odmiku, na katerem se začne: <code>0x00230044-squashfs</code> je datotečni sistem, v katerega je mogoče vstopiti, <code>0x00030040-kernel.uimage</code> pa datoteka za kopiranje ven.</p>
+<p><img alt="Pult v notranjosti datoteke vdelane programske opreme usmerjevalnika: glava proizvajalca, jedro U-Boot in korenski datotečni sistem SquashFS, vsak poimenovan po odmiku, na katerem se začne" src="images/filesystem-images-carved.png" /></p>
+<p>Deli se najdejo tako, da se po datoteki iščejo datotečni sistemi sami, nato pa se vsak zadetek odpre, da se preveri, ali je res tam. Bajtni vzorec, ki se ujame po naključju, stane trenutek in se zavrže, namesto da bi postal izmišljen vnos; datoteka, v kateri ni nobenega datotečnega sistema, pa je še vedno zavrnjena in se odpre tako, kot bi se od nekdaj.</p>
+<p>Isto velja za vse, kar leži zunaj razdelkov razdeljene slike. Raspberry Pi hrani svoj zagonski nalagalnik v megabajtih pred razdelkom 1, U-Boot pa na večini plošč ARM sedi na stalnem odmiku v istem nedodeljenem prostoru. Ti odseki so navedeni poleg razdelkov, da jih lahko vidite in kopirate ven.</p>
+<h2 id="zapis-zgradbe">Zapis zgradbe</h2>
+<p><strong>Ukazi ▸ Analiziraj zgradbo slike…</strong> shrani izid kot besedilno datoteko poleg slike in nanjo postavi kazalec: vsako območje z odmikom, velikostjo in tem, kar se je izkazalo, da je, ter razdelilna tabela, če jo slika ima. Prav ta razpredelnica je običajno tisto, kar potrebuje razčlemba ali prijava, in sestavljati jo znova s hojo po pultu in prepisovanjem številk je dolgočasno delo.</p>
+<p>Poročilo pokaže tudi to, kar pult izpusti — na primer majhne poravnalne vrzeli med razdelki — in poimenuje ploščo, za katero je bilo jedro U-Boot zgrajeno, če slika to zabeleži.</p>
+<h2 id="delo-znotraj-slike">Delo znotraj slike</h2>
+<p>Velja vse, kar že poznate. F3 prikaže datoteko, F5 kopira datoteke ven v pravo mapo, <strong>Poišči datoteke</strong> pa preišče vsebino slike. Ven pridete tako kot iz arhiva.</p>
+<p>Simbolne povezave so prikazane s svojim imenom, kopiranje take navzven pa vam da majhno besedilno datoteko s ciljem povezave namesto prave povezave — sliki ni dovoljeno postaviti povezave, ki kaže kamor koli na vaš lastni disk.</p>
+<h2 id="ko-se-slika-ne-odpre">Ko se slika ne odpre</h2>
+<p>Vtičnik pove, zakaj, namesto da bi javil pokvarjeno datoteko, saj vas oboje pelje drugam:</p>
+<ul>
+<li><strong>Nosilec Btrfs z RAID0, RAID10, RAID5 ali RAID6</strong> ali razporejen čez več naprav. Podatki so raztreseni po diskih in večine ni v datoteki, ki jo imate.</li>
+<li><strong>Neobdelan izpis NAND, ki še vsebuje svoje rezervno območje.</strong> Sliki ni nič narobe; kopirana je bila skupaj z bajti za popravljanje napak. Kopirajte jo znova z <code>nanddump --omitoob</code>.</li>
+<li><strong>Šifriran nosilec ext4 ali NTFS</strong>, ki ga brez ključev ni mogoče prebrati.</li>
+<li><strong>Datotečni sistem ext, ki ni bil čisto odklopljen,</strong> se še vedno odpre, a z označenim vnosom na vrhu korena, ki opozarja, da je vsebina lahko zastarela. Datotečni sistem je bil kopiran med uporabo, najnovejše spremembe pa so v dnevniku, ki ga ta vtičnik ne predvaja. Če so podrobnosti pomembne, poženite <code>e2fsck</code> nad kopijo.</li>
+</ul>
+<h2 id="opombe">Opombe</h2>
+<ul>
+<li>Slika se prebere enkrat in si jo zapomni, zato je vnovičen vstop takojšen.</li>
+<li>Zelo velike slike se berejo po potrebi, namesto da bi se naložile v celoti; seznam je omejen na dva milijona vnosov.</li>
+<li>Slika se pregleda za vgrajenimi datotečnimi sistemi le tedaj, ko nima ne razdelilne tabele ne datotečnega sistema na začetku, tako da se običajna slika odpre natanko tako hitro kot doslej.</li>
+<li>Vtičnik doda en ukaz menija in nobenih lastnih nastavitev razen stikala, ki ga vklopi.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Vtičniki</a></li><li><a href="archives.html">Delo z arhivi</a></li><li><a href="settings.html">Nastavitve</a></li><li><a href="viewing-files.html">Ogled datotek</a></li></ul></section>
+</main>
+</body>
+</html>
