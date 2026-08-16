@@ -53,9 +53,12 @@ final class FSImagePluginTests: XCTestCase {
         "Plugins/FSImage/Support/ImageEntry.swift",
         "Plugins/FSImage/Support/Decompressors.swift",
         "Plugins/FSImage/Support/LZO.swift",
+        "Plugins/FSImage/Support/LZNT1.swift",
         "Plugins/FSImage/Support/DriverRegistry.swift",
         "Plugins/FSImage/Support/ImageCache.swift",
         "Plugins/FSImage/Support/PartitionTable.swift",
+        "Plugins/FSImage/Drivers/NTFSRecord.swift",
+        "Plugins/FSImage/Drivers/NTFSDriver.swift",
         "Plugins/FSImage/Drivers/ExFATDriver.swift",
         "Plugins/FSImage/Drivers/FATDriver.swift",
         "Plugins/FSImage/Drivers/CpioDriver.swift",
@@ -797,6 +800,65 @@ final class FSImagePluginTests: XCTestCase {
         }
     }
 
+    // MARK: - NTFS
+
+    /// The flat image, written by `ntfscp` without ever mounting the filesystem.
+    ///
+    /// Two things here fail *silently* if misread, which is why each is checked against a
+    /// real image rather than reasoned about. Every MFT record has the last two bytes of
+    /// each of its sectors replaced by a signature, with the real values in an array at
+    /// the front — a reader that does not undo those fixups gets a record that parses and
+    /// is wrong two bytes per 512. And data runs encode each cluster offset as a *signed
+    /// delta* from the previous one, so treating it as unsigned works for the first run
+    /// of most files and puts everything after it elsewhere.
+    func testNTFSReadsResidentAndNonResidentFiles() async throws {
+        let image = try goldenFixture("ntfs.img")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:ntfs") else {
+            return XCTFail("the host could not mount the NTFS image")
+        }
+        let root = try await collect(fs, "/")
+        XCTAssertEqual(Set(root.map(\.name)),
+                       ["motd", "app.conf", "empty", "pattern.dat", "a-rather-long-file-name.conf"],
+                       "NTFS metadata files must not appear in the listing")
+
+        // A small file lives inside its own MFT record; a large one is a run list.
+        let resident = try await read(fs, "/app.conf")
+        XCTAssertEqual(String(decoding: resident, as: UTF8.self), "key = value\n")
+        let nonResident = try await read(fs, "/pattern.dat")
+        XCTAssertEqual(nonResident, Data(Self.patternFileContents))
+    }
+
+    /// The mounted image: directories, deep nesting, and files ntfs-3g compressed.
+    ///
+    /// NTFS compresses in fixed units of clusters rather than whole attributes, and how
+    /// many clusters a unit actually occupies is what says whether it is compressed:
+    /// none is a hole, a full unit is stored verbatim, fewer is an LZNT1 run.
+    /// Decompressing everything — or nothing — yields a file that is mostly right and
+    /// wrong in patches.
+    func testNTFSReadsDirectoriesAndLZNT1CompressedFiles() async throws {
+        let image = try goldenFixture("ntfs-rich.img")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:ntfs-rich") else {
+            return XCTFail("the host could not mount the NTFS image")
+        }
+        let root = try await collect(fs, "/")
+        XCTAssertEqual(Set(root.map(\.name)), ["bin", "etc", "deep", "comp"])
+
+        let leaf = try await read(fs, "/deep/a/b/c/leaf.txt")
+        XCTAssertEqual(String(decoding: leaf, as: UTF8.self), "nested\n")
+
+        // Written into a FILE_ATTRIBUTE_COMPRESSED directory, so these went through LZNT1.
+        let compressed = try await read(fs, "/comp/pattern.dat")
+        XCTAssertEqual(compressed.count, 300_000, "a compressed file must come back whole")
+        XCTAssertEqual(compressed, Data(Self.patternFileContents))
+        let short = try await read(fs, "/comp/motd")
+        XCTAssertEqual(String(decoding: short, as: UTF8.self), "hello from initramfs\n")
+
+        // And the uncompressed copy of the same bytes, so a decoder that quietly did
+        // nothing could not pass by accident.
+        let plain = try await read(fs, "/bin/pattern.dat")
+        XCTAssertEqual(plain, Data(Self.patternFileContents))
+    }
+
     // MARK: - Partitioned disk images
 
     /// The case every filesystem driver here would otherwise miss: the filesystem is a
@@ -1173,7 +1235,7 @@ final class FSImagePluginTests: XCTestCase {
     func testNoMutatedImageCrashesHangsOrEscapesTheRoot() throws {
         var sources: [(String, Data)] = []
         for name in ["cramfs-le.img", "cramfs-be.img", "jffs2-le.img", "jffs2-rtime.img",
-                     "btrfs.img", "btrfs-lzo.img", "rootfs.ubifs", "rootfs.ubi", "disk-mbr.img", "fat16.img", "exfat.img"] {
+                     "btrfs.img", "btrfs-lzo.img", "rootfs.ubifs", "rootfs.ubi", "disk-mbr.img", "fat16.img", "exfat.img", "ntfs.img"] {
             if let path = try? goldenFixture(name),
                let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
                 sources.append((name, data))

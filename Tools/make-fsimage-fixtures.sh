@@ -20,6 +20,11 @@
 # files stay a few KB — under the 100 KB rule in CONVENTIONS.md for fixtures in the tree. The tests
 # decompress with /usr/bin/gunzip, which is always present.
 #
+# The two NTFS images are the documented exception at 138 KB and 150 KB. An NTFS volume's own metadata
+# is the floor: `$UpCase` alone is a 128 KB table of UTF-16 mappings that barely compresses, and even
+# the smallest volume mkntfs will make lands there. Shrinking the sample tree does not help; the data
+# is not what makes them big.
+#
 # Usage:
 #   Tools/make-fsimage-fixtures.sh            # rebuild every fixture
 #   Tools/make-fsimage-fixtures.sh cramfs     # rebuild the ones whose name contains "cramfs"
@@ -55,7 +60,7 @@ cat > "$BUILD_SCRIPT" <<'CONTAINER_SCRIPT'
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq >/dev/null 2>&1 </dev/null
-apt-get install -y -qq util-linux mtd-utils btrfs-progs fdisk gdisk squashfs-tools e2fsprogs dosfstools mtools exfatprogs exfat-fuse fuse3 python3 >/dev/null 2>&1 </dev/null
+apt-get install -y -qq util-linux mtd-utils btrfs-progs fdisk gdisk squashfs-tools e2fsprogs dosfstools mtools exfatprogs exfat-fuse fuse3 ntfs-3g attr python3 >/dev/null 2>&1 </dev/null
 
 # The sample tree. Must match `ExpectedTree` in FSImagePluginTests.swift — that is what makes the
 # conformance battery comparable across formats rather than three different trees checked three ways.
@@ -212,6 +217,49 @@ if [ "$EXOK" = 1 ]; then
 else
   echo "  note: skipping exfat.img — needs --privileged and /dev/fuse" >&2
   rm -f "$O/exfat.img"
+fi
+
+# --- NTFS -------------------------------------------------------------------------------------------
+# Two images. `ntfscp` writes into one without mounting, which covers the flat case with no privileges
+# at all. The rich one has to be mounted to get directories and — the part worth the trouble —
+# compressed files: ntfs-3g compresses what is written into a directory carrying
+# FILE_ATTRIBUTE_COMPRESSED. The `_be` spelling of the attribute is the one that takes; the plain one
+# wants the other byte order and silently does nothing, which is how this looked like it was working
+# while producing zero compressed files.
+V="$(mkntfs -V 2>&1 | head -1 || true)"
+truncate -s 8m "$O/ntfs.img"
+mkntfs -Q -F -L SAMPLE "$O/ntfs.img" >/dev/null 2>&1
+for f in motd app.conf empty pattern.dat; do ntfscp "$O/ntfs.img" "$R/$f" "/$f" >/dev/null 2>&1 || true; done
+ntfscp "$O/ntfs.img" "$R/etc/motd" /motd >/dev/null 2>&1 || true
+ntfscp "$O/ntfs.img" "$R/etc/conf.d/app.conf" /app.conf >/dev/null 2>&1 || true
+ntfscp "$O/ntfs.img" "$R/bin/empty" /empty >/dev/null 2>&1 || true
+ntfscp "$O/ntfs.img" "$R/bin/pattern.dat" /pattern.dat >/dev/null 2>&1 || true
+ntfscp "$O/ntfs.img" "$R/etc/motd" "/a-rather-long-file-name.conf" >/dev/null 2>&1 || true
+record ntfs.img "mkntfs -Q -F -L SAMPLE ntfs.img (8 MB), populated with ntfscp (no mount)" "$V"
+
+truncate -s 16m "$O/ntfs-rich.img"
+mkntfs -Q -F -L SAMPLE "$O/ntfs-rich.img" >/dev/null 2>&1
+NTLOOP="$(losetup -f --show "$O/ntfs-rich.img" 2>/dev/null || true)"
+NTOK=0
+if [ -n "$NTLOOP" ] && mkdir -p /mnt/n && ntfs-3g -o compression "$NTLOOP" /mnt/n 2>/dev/null; then
+  if cp -R "$R/." /mnt/n/ \
+     && cp "$R/etc/motd" "/mnt/n/etc/a-rather-long-file-name.conf" \
+     && mkdir -p /mnt/n/deep/a/b/c && printf 'nested\n' > /mnt/n/deep/a/b/c/leaf.txt \
+     && mkdir -p /mnt/n/comp \
+     && setfattr -h -v 0x00000800 -n system.ntfs_attrib_be /mnt/n/comp \
+     && cp "$R/bin/pattern.dat" /mnt/n/comp/pattern.dat \
+     && cp "$R/etc/motd" /mnt/n/comp/motd; then
+    NTOK=1
+  fi
+  sync || true
+  umount /mnt/n || true
+fi
+[ -n "$NTLOOP" ] && { losetup -d "$NTLOOP" || true; }
+if [ "$NTOK" = 1 ]; then
+  record ntfs-rich.img "mkntfs then mounted with ntfs-3g -o compression; directories, deep nesting and a FILE_ATTRIBUTE_COMPRESSED directory" "$V"
+else
+  echo "  note: skipping ntfs-rich.img — needs --privileged and /dev/fuse" >&2
+  rm -f "$O/ntfs-rich.img"
 fi
 
 # --- Partitioned disk images, MBR and GPT -----------------------------------------------------------

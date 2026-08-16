@@ -75,6 +75,7 @@ enum DriverRegistry {
         JFFS2Driver.self,
         UBIFSDriver.self,
         BtrfsDriver.self,
+        NTFSDriver.self,
         ExFATDriver.self,
         FATDriver.self,
         CpioDriver.self,
