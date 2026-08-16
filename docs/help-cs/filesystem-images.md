@@ -49,7 +49,7 @@ Totéž platí pro vše, co leží mimo oddíly rozděleného obrazu. Raspberry 
 
 ## Zapsat si rozvržení
 
-**Příkazy ▸ Analyzovat rozvržení obrazu…** uloží výsledek jako textový soubor vedle obrazu a nastaví na něj kurzor: každá oblast se svým posunem, velikostí a tím, čím se ukázala být, plus tabulka oddílů, pokud ji obraz má. Právě tuto tabulku obvykle potřebuje rozbor nebo tiket a sestavovat ji znovu procházením panelu a opisováním čísel je únavná práce.
+**Příkazy ▸ Analyzovat rozvržení obrazu** uloží výsledek jako textový soubor vedle obrazu a nastaví na něj kurzor: každá oblast se svým posunem, velikostí a tím, čím se ukázala být, plus tabulka oddílů, pokud ji obraz má. Právě tuto tabulku obvykle potřebuje rozbor nebo tiket a sestavovat ji znovu procházením panelu a opisováním čísel je únavná práce.
 
 Zpráva ukazuje také to, co panel vynechává — například malé zarovnávací mezery mezi oddíly — a pojmenuje desku, pro kterou bylo jádro U-Boot sestaveno, pokud to obraz zaznamenává.
 

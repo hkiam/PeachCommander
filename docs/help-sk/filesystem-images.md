@@ -49,7 +49,7 @@ To isté platí pre všetko, čo leží mimo oddielov rozdeleného obrazu. Raspb
 
 ## Zapísať si rozloženie
 
-**Príkazy ▸ Analyzovať rozloženie obrazu…** uloží výsledok ako textový súbor vedľa obrazu a nastaví naň kurzor: každá oblasť so svojím posunom, veľkosťou a tým, čím sa ukázala byť, plus tabuľka oddielov, ak ju obraz má. Práve túto tabuľku obvykle potrebuje rozbor alebo tiket a zostavovať ju znova prechádzaním panela a odpisovaním čísel je únavná práca.
+**Príkazy ▸ Analyzovať rozloženie obrazu** uloží výsledok ako textový súbor vedľa obrazu a nastaví naň kurzor: každá oblasť so svojím posunom, veľkosťou a tým, čím sa ukázala byť, plus tabuľka oddielov, ak ju obraz má. Práve túto tabuľku obvykle potrebuje rozbor alebo tiket a zostavovať ju znova prechádzaním panela a odpisovaním čísel je únavná práca.
 
 Správa ukazuje aj to, čo panel vynecháva — napríklad malé zarovnávacie medzery medzi oddielmi — a pomenuje dosku, pre ktorú bolo jadro U-Boot zostavené, ak to obraz zaznamenáva.
 

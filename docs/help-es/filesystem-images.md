@@ -49,7 +49,7 @@ Lo mismo vale para todo lo que queda fuera de las particiones de una imagen part
 
 ## Dejar constancia de la estructura
 
-**Comandos ▸ Analizar la estructura de la imagen…** guarda el resultado como archivo de texto junto a la imagen y coloca el cursor en él: cada región con su desplazamiento, su tamaño y aquello en lo que resultó ser, además de la tabla de particiones si la imagen tiene una. Esa tabla suele ser justo lo que quiere un desmontaje o un ticket, y reconstruirla recorriendo un panel y copiando números a mano es un trabajo tedioso.
+**Comandos ▸ Analizar la estructura de la imagen** guarda el resultado como archivo de texto junto a la imagen y coloca el cursor en él: cada región con su desplazamiento, su tamaño y aquello en lo que resultó ser, además de la tabla de particiones si la imagen tiene una. Esa tabla suele ser justo lo que quiere un desmontaje o un ticket, y reconstruirla recorriendo un panel y copiando números a mano es un trabajo tedioso.
 
 El informe muestra además lo que el panel omite —los pequeños huecos de alineación entre particiones, por ejemplo— y nombra la placa para la que se compiló un núcleo U-Boot cuando la imagen lo registra.
 

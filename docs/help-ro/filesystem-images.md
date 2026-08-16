@@ -49,7 +49,7 @@ Același lucru este valabil pentru tot ce se află în afara partițiilor unei i
 
 ## Consemnarea structurii
 
-**Comenzi ▸ Analizează structura imaginii…** salvează rezultatul ca fișier text lângă imagine și pune cursorul pe el: fiecare regiune cu decalajul, dimensiunea și ceea ce s-a dovedit a fi, plus tabela de partiții dacă imaginea are una. De obicei tocmai acest tabel îi trebuie unei analize sau unui tichet, iar reconstruirea lui parcurgând un panou și copiind cifre de mână este o muncă anevoioasă.
+**Comenzi ▸ Analizează structura imaginii** salvează rezultatul ca fișier text lângă imagine și pune cursorul pe el: fiecare regiune cu decalajul, dimensiunea și ceea ce s-a dovedit a fi, plus tabela de partiții dacă imaginea are una. De obicei tocmai acest tabel îi trebuie unei analize sau unui tichet, iar reconstruirea lui parcurgând un panou și copiind cifre de mână este o muncă anevoioasă.
 
 Raportul arată și ceea ce panoul omite — micile spații de aliniere dintre partiții, de exemplu — și numește placa pentru care a fost compilat un nucleu U-Boot, atunci când imaginea consemnează acest lucru.
 

@@ -79,18 +79,25 @@ it ends, so a carved SquashFS cannot read into the kernel behind it. JFFS2 and U
 record no length, and a region from those is reported as running to whatever comes next
 rather than being given an invented extent.
 
-`CarvedDriver.probe` accepts any file between 512 bytes and 512 MB — the ceiling bounds how
-long a wrong guess costs, and 512 MB of pure entropy is declined in about 1.3 seconds —
-because whether an image
-holds a buried filesystem cannot be known without looking. The decision therefore lives in
-its initialiser, which throws `.notThisFormat` when the scan found no filesystem — that
+`CarvedDriver.probe` accepts any file at all, because whether an image holds a buried
+filesystem cannot be known without looking. The decision therefore lives in its
+initialiser, which throws `.notThisFormat` when the scan found no filesystem — that
 refusal is what keeps the plugin from claiming every `.bin` on the system, and
 `CanYouHandleThisFile` answers by opening for real (through the parse cache) rather than
 by probing, for the same reason.
 
+**No search covers more than 512 MB.** The ceiling lives in `ImageLayout.scannedSpan`,
+not at one entry point, because three callers reach the searching code and only one of
+them is carving: `PartitionedDriver` searches the runs between its partitions, and a
+whole-drive dump is mostly one such run — half a terabyte of unallocated tail at the
+measured 400 MB/s is twenty minutes of frozen panel. Whatever lies past the ceiling is
+still listed and still extracts; it is simply not searched, and the layout report says so
+rather than letting a short list read as a complete one. 512 MB is what the technique is
+for: it finds filesystems in *flash* images, and flash is not larger than that.
+
 ## The layout report
 
-The plugin contributes one command, **Commands ▸ Scan Image Layout…**, which writes the
+The plugin contributes one command, **Commands ▸ Scan Image Layout**, which writes the
 scan result as `<image>.layout.txt` beside the image and reveals it in the panel.
 
 It writes a report rather than navigating because it cannot navigate: `PcHostServices`

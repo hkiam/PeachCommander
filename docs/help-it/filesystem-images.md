@@ -49,7 +49,7 @@ Lo stesso vale per tutto ciò che sta fuori dalle partizioni di un’immagine pa
 
 ## Mettere per iscritto la struttura
 
-**Comandi ▸ Analizza la struttura dell’immagine…** salva il risultato come file di testo accanto all’immagine e vi porta sopra il cursore: ogni regione con il suo offset, la sua dimensione e ciò che si è rivelata essere, più la tabella delle partizioni se l’immagine ne ha una. Quella tabella è di solito proprio ciò che serve a uno smontaggio o a un ticket, e ricostruirla percorrendo un pannello e ricopiando numeri a mano è un lavoro noioso.
+**Comandi ▸ Analizza la struttura dell’immagine** salva il risultato come file di testo accanto all’immagine e vi porta sopra il cursore: ogni regione con il suo offset, la sua dimensione e ciò che si è rivelata essere, più la tabella delle partizioni se l’immagine ne ha una. Quella tabella è di solito proprio ciò che serve a uno smontaggio o a un ticket, e ricostruirla percorrendo un pannello e ricopiando numeri a mano è un lavoro noioso.
 
 Il rapporto mostra anche ciò che il pannello tralascia — i piccoli spazi di allineamento tra le partizioni, per esempio — e nomina la scheda per cui è stato compilato un kernel U-Boot quando l’immagine lo registra.
 

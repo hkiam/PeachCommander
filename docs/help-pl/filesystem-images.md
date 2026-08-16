@@ -49,7 +49,7 @@ To samo dotyczy wszystkiego, co leży poza partycjami obrazu z tablicą partycji
 
 ## Zapisanie budowy
 
-**Polecenia ▸ Analizuj budowę obrazu…** zapisuje wynik jako plik tekstowy obok obrazu i ustawia na nim kursor: każdy obszar z przesunięciem, rozmiarem i tym, czym się okazał, a do tego tablica partycji, jeśli obraz ją ma. Zwykle to właśnie ta tabela jest potrzebna przy analizie albo w zgłoszeniu, a odtwarzanie jej przez chodzenie po panelu i przepisywanie liczb to żmudna praca.
+**Polecenia ▸ Analizuj budowę obrazu** zapisuje wynik jako plik tekstowy obok obrazu i ustawia na nim kursor: każdy obszar z przesunięciem, rozmiarem i tym, czym się okazał, a do tego tablica partycji, jeśli obraz ją ma. Zwykle to właśnie ta tabela jest potrzebna przy analizie albo w zgłoszeniu, a odtwarzanie jej przez chodzenie po panelu i przepisywanie liczb to żmudna praca.
 
 Raport pokazuje też to, co panel pomija — na przykład małe przerwy wyrównania między partycjami — i podaje płytę, dla której zbudowano jądro U-Boot, jeśli obraz to odnotowuje.
 

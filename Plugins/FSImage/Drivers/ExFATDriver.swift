@@ -58,7 +58,9 @@ final class ExFATDriver: ImageFilesystemDriver {
         guard let shift = try? reader.u8(at: 108), shift >= 9, shift <= 12,
               let sectors = try? reader.u64le(at: 72), sectors > 0, sectors <= Int64.max
         else { return nil }
-        return Int64(sectors) << Int64(shift)
+        // A shift, unlike a multiply, discards the overflow silently — the answer would
+        // be a plausible-looking wrong length rather than a refusal.
+        return scaledLength(Int64(sectors), by: Int64(1) << Int64(shift))
     }
 
     init(reader: ImageReader) throws {

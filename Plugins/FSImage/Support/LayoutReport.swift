@@ -55,6 +55,13 @@ enum LayoutReport {
 
         let regions = try ImageLayout.scan(reader)
         lines.append("Contents found by scanning: \(regions.count) regions")
+        // Said out loud, because a bounded search that does not admit it produces a
+        // short list that reads exactly like a complete one.
+        let searched = ImageLayout.scannedSpan(of: reader)
+        if searched < reader.count {
+            lines.append("(searched the first \(size(searched)); the rest is listed but "
+                + "not searched)")
+        }
         lines.append(row("", "Offset", "Length", "Type", "Detail"))
         lines.append(rule())
         for region in regions {

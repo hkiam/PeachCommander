@@ -49,7 +49,7 @@ The same applies to whatever lies outside the partitions of a partitioned image.
 
 ## Writing down the layout
 
-**Commands ▸ Scan Image Layout…** saves what the scan found as a text file next to the image and puts the cursor on it: every region with its offset, its size and what it turned out to be, along with the partition table if the image has one. That table is usually the thing a teardown or a ticket actually wants, and rebuilding it by walking a panel and copying numbers by hand is tedious work.
+**Commands ▸ Scan Image Layout** saves what the scan found as a text file next to the image and puts the cursor on it: every region with its offset, its size and what it turned out to be, along with the partition table if the image has one. That table is usually the thing a teardown or a ticket actually wants, and rebuilding it by walking a panel and copying numbers by hand is tedious work.
 
 The report also shows what the panel leaves out, such as the small alignment gaps between partitions, and it names the board a U-Boot kernel was built for when the image records it.
 

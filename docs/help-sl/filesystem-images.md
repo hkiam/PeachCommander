@@ -49,7 +49,7 @@ Isto velja za vse, kar leži zunaj razdelkov razdeljene slike. Raspberry Pi hran
 
 ## Zapis zgradbe
 
-**Ukazi ▸ Analiziraj zgradbo slike…** shrani izid kot besedilno datoteko poleg slike in nanjo postavi kazalec: vsako območje z odmikom, velikostjo in tem, kar se je izkazalo, da je, ter razdelilna tabela, če jo slika ima. Prav ta razpredelnica je običajno tisto, kar potrebuje razčlemba ali prijava, in sestavljati jo znova s hojo po pultu in prepisovanjem številk je dolgočasno delo.
+**Ukazi ▸ Analiziraj zgradbo slike** shrani izid kot besedilno datoteko poleg slike in nanjo postavi kazalec: vsako območje z odmikom, velikostjo in tem, kar se je izkazalo, da je, ter razdelilna tabela, če jo slika ima. Prav ta razpredelnica je običajno tisto, kar potrebuje razčlemba ali prijava, in sestavljati jo znova s hojo po pultu in prepisovanjem številk je dolgočasno delo.
 
 Poročilo pokaže tudi to, kar pult izpusti — na primer majhne poravnalne vrzeli med razdelki — in poimenuje ploščo, za katero je bilo jedro U-Boot zgrajeno, če slika to zabeleži.
 

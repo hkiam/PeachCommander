@@ -78,7 +78,7 @@ final class NTFSDriver: ImageFilesystemDriver {
               [512, 1024, 2048, 4096].contains(Int(bytesPerSector)) else { return nil }
         // NTFS records one sector fewer than the volume holds: the backup boot sector
         // sits at the very end and is outside the count.
-        return Int64(sectors + 1) * Int64(bytesPerSector)
+        return scaledLength(Int64(sectors) + 1, by: Int64(bytesPerSector))
     }
 
     init(reader: ImageReader) throws {

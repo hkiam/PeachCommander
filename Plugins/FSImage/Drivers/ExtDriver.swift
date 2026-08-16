@@ -91,10 +91,13 @@ final class ExtDriver: ImageFilesystemDriver {
         let revision = (try? reader.u32le(at: base + 76)) ?? 0
         let features = revision >= 1 ? ((try? reader.u32le(at: base + 96)) ?? 0) : 0
         let high = features & Incompat.sixtyFourBit != 0
-            ? Int64((try? reader.u32le(at: base + 336)) ?? 0) : 0
-        let blocks = Int64(blocksLow) | high << 32
-        guard blocks > 0 else { return nil }
-        return blocks * (Int64(1024) << Int64(logBlockSize))
+            ? UInt64((try? reader.u32le(at: base + 336)) ?? 0) : 0
+        // Assembled unsigned. The 64-bit feature puts a full 32 bits in the high half,
+        // and shifting that into an Int64 runs through the sign bit before any check
+        // sees it — the count then reads as negative, or as a plausible huge positive.
+        let blocks = UInt64(blocksLow) | high << 32
+        guard blocks <= Int64.max else { return nil }
+        return scaledLength(Int64(blocks), by: Int64(1024) << Int64(logBlockSize))
     }
 
     init(reader: ImageReader) throws {
@@ -177,9 +180,13 @@ final class ExtDriver: ImageFilesystemDriver {
         // The superblock describes a filesystem larger than the file holding it: a
         // truncated image, and every block number in it is a promise the file cannot
         // keep. Caught here rather than as a confusing failure deep in a block walk.
-        guard blockCount * blockSize <= reader.size else {
+        // `scaledLength` rather than a plain multiply: both factors are superblock
+        // fields, and their product overflows Int64 for values a crafted image can
+        // easily state — which traps rather than failing the comparison.
+        guard let claimed = scaledLength(blockCount, by: blockSize), claimed <= reader.size else {
             throw ImageError.damaged(
-                reason: "the filesystem claims \(blockCount * blockSize) bytes, the image is \(reader.size)")
+                reason: "the filesystem claims \(blockCount) blocks of \(blockSize) bytes, "
+                    + "the image is \(reader.size)")
         }
 
         self.layout = ExtLayoutResolver(reader: reader, blockSize: blockSize, totalBlocks: blockCount)
