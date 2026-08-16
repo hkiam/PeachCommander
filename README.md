@@ -75,6 +75,7 @@ The goal for the text you're reading and the app you'll run is the same: no mark
 
 **Archives & search**
 - Walk into ZIP/TAR/… archives like folders — including ZIP64 and split sets (`.z01…`, `.zip.001…`)
+- Walk into filesystem images the same way — a router's SquashFS rootfs, an ext4 partition, an NTFS volume, a whole partitioned disk image
 - Pack / unpack, in-place ZIP edit, AES encryption
 - Full-text find: regex, hex, encoding-aware, in-archives, Spotlight, saved templates
 
@@ -173,6 +174,7 @@ Peach Commander keeps the core small and pushes special-purpose features out int
 | **System Monitor** | Live CPU / memory / system activity |
 | **Task Manager** | Running processes, browsable like files |
 | **Uninstaller** | Find and remove apps *and* their leftovers |
+| **Filesystem Images** | Walk into a firmware or disk image — SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS, MBR/GPT partitions. Read-only, off by default |
 | **WebDAV** | Mount and browse a WebDAV server as a folder |
 | **iCloud** · **Notes** · **Log Viewer** | Quick iCloud Drive access · notes beside your files · tail log files |
 | **CSV Lister** | F3 on a .csv/.tsv opens it as a sortable table, delimiter auto-detected |

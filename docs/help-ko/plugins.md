@@ -3,7 +3,7 @@ title: 플러그인
 slug: plugins
 section: 플러그인
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 플러그인은 Peach Commander에 추가 도구, 파일 형식, 탐색할 위치를 더해 줍니다. 열두 개의 플러그인이 기본 제공되어 바로 사용할 수 있으며, 개별 플러그인을 켜거나 끄고 — 또는 새로 설치하고 — 하나의 창에서 관리할 수 있습니다. 일상적인 복사와 탐색을 넘어서는 기능이 필요할 때 플러그인을 쓰세요: 디스크를 무엇이 채우는지 시각화하기, WebDAV 서버에 연결하기, Git 저장소 상태 확인하기, 시스템 활동 지켜보기 등.
@@ -19,6 +19,7 @@ related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller
 - **[Git](git.md)** — 각 파일의 작업 트리 상태와 현재 브랜치를 패널 열로 보여주고, 상태·스테이징·커밋·풀·푸시를 위한 **Git** 메뉴를 더합니다.
 - **[System Monitor](system-monitor.md)** — CPU, 메모리, 디스크, 네트워크(그리고 가능한 경우 GPU, 배터리, 센서)를 창 제목 표시줄에서 실시간으로 읽어 주며, 클릭하면 상세 그래프로 들어갑니다.
 - **[Task Manager](task-manager.md)** — 실행 중인 프로세스를 탐색 가능한 **TaskManager** 드라이브로 마운트합니다. 정렬하고, 파일처럼 살펴보고, 삭제로 종료하세요.
+- **[파일 시스템 이미지](filesystem-images.md)** — 파일 시스템 이미지(SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS)를 압축 파일처럼 엽니다. 파티션이 여러 개인 디스크 이미지도 포함합니다. 읽기 전용이며, 켜기 전까지는 꺼져 있습니다.
 - **[Uninstaller](uninstaller.md)** — 응용 프로그램 **과** 그것이 남기는 지원 파일, 캐시, 환경설정을 정확히 무엇이 사라질지 보여준 후 제거합니다.
 
 나머지 기본 제공 플러그인은 더 작아서 별도의 페이지가 필요하지 않습니다:

@@ -3,7 +3,7 @@ title: Plug-ins
 slug: plugins
 section: Plug-ins
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 Plug-ins breiden Peach Commander uit met extra hulpmiddelen, bestandsformaten en plekken om te bladeren. Een dozijn plug-ins is ingebouwd, zodat je ze meteen kunt gebruiken, en je kunt afzonderlijke plug-ins in- of uitschakelen — of nieuwe installeren — vanuit één venster. Gebruik plug-ins wanneer je mogelijkheden wilt die verder gaan dan alledaags kopiëren en bladeren: visualiseren wat een schijf vult, verbinden met een WebDAV-server, de status van een Git-repository bekijken, systeemactiviteit volgen, en meer.
@@ -19,6 +19,7 @@ Verschillende plug-ins hebben hun eigen uitgebreide helponderwerp — volg de ko
 - **[Git](git.md)** — toont per bestand de status in de werkboom en de huidige branch als paneelkolommen, en voegt een **Git**-menu toe voor status, stagen, committen, pullen en pushen.
 - **[System Monitor](system-monitor.md)** — een live-uitlezing van CPU, geheugen, schijf, netwerk (en, waar beschikbaar, GPU, batterij, sensoren) in de titelbalk van het venster, met detailgrafieken die je kunt aanklikken.
 - **[Task Manager](task-manager.md)** — koppelt je actieve processen als een doorbladerbare **TaskManager**-schijf; sorteer ze, inspecteer ze als bestanden of beëindig ze met Verwijderen.
+- **[Bestandssysteemimages](filesystem-images.md)** — opent een bestandssysteemimage (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) zoals een archief, inclusief schijfimages met meerdere partities. Alleen lezen, en uit tot u hem aanzet.
 - **[Uninstaller](uninstaller.md)** — verwijdert een applicatie **én** de ondersteuningsbestanden, caches en voorkeuren die het achterlaat, nadat het je precies heeft getoond wat er weggaat.
 
 De overige ingebouwde plug-ins zijn kleiner en hebben geen eigen pagina nodig:

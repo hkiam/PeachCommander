@@ -3,7 +3,7 @@ title: Insticksprogram
 slug: plugins
 section: Insticksprogram
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 Insticksprogram utökar Peach Commander med extra verktyg, filformat och platser att bläddra i. Ett dussin insticksprogram är inbyggda, så att du kan börja använda dem direkt, och du kan slå på eller av enskilda insticksprogram — eller installera nya — från ett enda fönster. Använd insticksprogram när du vill ha funktioner utöver vardaglig kopiering och bläddring: visualisera vad som fyller en disk, ansluta till en WebDAV-server, kontrollera tillståndet för ett Git-arkiv, övervaka systemaktivitet med mera.
@@ -19,6 +19,7 @@ Flera insticksprogram har sitt eget detaljerade hjälpavsnitt — följ länken 
 - **[Git](git.md)** — visar varje fils status i arbetsträdet och den aktuella grenen som panelkolumner, och lägger till en **Git**-meny för status, köa, checka in, hämta och skicka.
 - **[System Monitor](system-monitor.md)** — en avläsning i realtid av CPU, minne, disk, nätverk (och, där tillgängligt, GPU, batteri, sensorer) i fönstrets namnlist, med genomklickbara detaljgrafer.
 - **[Task Manager](task-manager.md)** — monterar dina processer som körs som en bläddringsbar **TaskManager**-enhet; sortera dem, granska dem som filer eller avsluta dem med Ta bort.
+- **[Filsystemsavbilder](filesystem-images.md)** — öppnar en filsystemsavbild (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) som ett arkiv, även diskavbilder med flera partitioner. Endast läsning, och avstängd tills du slår på den.
 - **[Uninstaller](uninstaller.md)** — tar bort ett program **och** de stödfiler, cacheminnen och inställningar det lämnar efter sig, efter att ha visat dig exakt vad som kommer att försvinna.
 
 De återstående inbyggda insticksprogrammen är mindre och behöver ingen egen sida:

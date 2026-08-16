@@ -3,7 +3,7 @@ title: 插件
 slug: plugins
 section: 插件
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 插件为 Peach Commander 增添额外工具、文件格式和可浏览的位置。十几个插件内置提供，因此你可以立即开始使用，并可在单个窗口中开启或关闭各个插件 —— 或安装新插件。当你需要超出日常复制和浏览的功能时使用插件：可视化磁盘被什么占满、连接到 WebDAV 服务器、检查 Git 仓库状态、监视系统活动等等。
@@ -19,6 +19,7 @@ related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller
 - **[Git](git.md)** —— 以面板列的形式显示每个文件的工作树状态和当前分支，并添加一个 **Git** 菜单用于状态、暂存、提交、拉取和推送。
 - **[System Monitor](system-monitor.md)** —— 在窗口标题栏中实时读出 CPU、内存、磁盘、网络（以及在可用时的 GPU、电池、传感器），并可点入查看详细图表。
 - **[Task Manager](task-manager.md)** —— 将你正在运行的进程挂载为一个可浏览的 **TaskManager** 驱动器；对它们排序、像文件一样查看，或用删除结束它们。
+- **[文件系统映像](filesystem-images.md)** — 像打开压缩包一样打开文件系统映像（SquashFS、ext、Btrfs、JFFS2、UBIFS、cramfs、initramfs、FAT、exFAT、NTFS），也包括含多个分区的磁盘映像。只读，并且在你启用之前处于关闭状态。
 - **[Uninstaller](uninstaller.md)** —— 移除一个应用程序**以及**它留下的支持文件、缓存和偏好设置，在此之前会准确地向你显示将被移除的内容。
 
 其余的内置插件较小，不需要各自单独的页面：

@@ -3,7 +3,7 @@ title: Plugins
 slug: plugins
 section: Plugins
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 Plugins udvider Peach Commander med ekstra værktøjer, filformater og steder at gennemse. Et dusin plugins er indbygget, så du kan begynde at bruge dem med det samme, og du kan slå enkelte plugins til eller fra — eller installere nye — fra ét enkelt vindue. Brug plugins, når du vil have muligheder ud over daglig kopiering og gennemsyn: visualisere hvad der fylder en disk, oprette forbindelse til en WebDAV-server, tjekke tilstanden af et Git-lager, holde øje med systemaktivitet og mere.
@@ -19,6 +19,7 @@ Flere plugins har deres eget detaljerede hjælpeemne — følg linket for hele h
 - **[Git](git.md)** — viser hver fils status i arbejdstræet og den aktuelle gren som panelkolonner, og tilføjer en **Git**-menu til status, stage, commit, pull og push.
 - **[System Monitor](system-monitor.md)** — en live aflæsning af CPU, hukommelse, disk, netværk (og, hvor tilgængeligt, GPU, batteri, sensorer) i vinduets titellinje, med detaljegrafer man kan klikke sig ind på.
 - **[Task Manager](task-manager.md)** — monterer dine kørende processer som et drev **TaskManager**, der kan gennemses; sortér dem, granske dem som filer, eller afslut dem med Slet.
+- **[Filsystemsbilleder](filesystem-images.md)** — åbner et filsystemsbillede (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) som et arkiv, også diskbilleder med flere partitioner. Kun læsning, og slået fra, indtil du slår det til.
 - **[Uninstaller](uninstaller.md)** — fjerner et program **og** de supportfiler, caches og indstillinger, det efterlader, efter at have vist dig præcis hvad der forsvinder.
 
 De resterende indbyggede plugins er mindre og behøver ikke en side for sig selv:

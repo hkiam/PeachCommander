@@ -3,7 +3,7 @@ title: Plugin
 slug: plugins
 section: Plugin
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 I plugin estendono Peach Commander con strumenti, formati di file e luoghi da sfogliare aggiuntivi. Una dozzina di plugin sono integrati, così puoi iniziare a usarli subito, e puoi attivare o disattivare singoli plugin — o installarne di nuovi — da un'unica finestra. Usa i plugin quando vuoi capacità oltre la copia e la navigazione quotidiane: visualizzare cosa riempie un disco, connetterti a un server WebDAV, controllare lo stato di un repository Git, osservare l'attività del sistema e altro.
@@ -19,6 +19,7 @@ Diversi plugin hanno un proprio argomento della guida dettagliato — segui il l
 - **[Git](git.md)** — mostra lo stato dell'albero di lavoro di ciascun file e il ramo corrente come colonne del pannello, e aggiunge un menu **Git** per status, stage, commit, pull e push.
 - **[System Monitor](system-monitor.md)** — una lettura in tempo reale di processore, memoria, disco, rete (e, dove disponibili, GPU, batteria, sensori) nella barra del titolo della finestra, con grafici di dettaglio raggiungibili con un clic.
 - **[Task Manager](task-manager.md)** — monta i tuoi processi in esecuzione come un'unità **TaskManager** sfogliabile; ordinali, esaminali come file o terminali con Elimina.
+- **[Immagini di file system](filesystem-images.md)** — apre un'immagine di file system (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) come un archivio, comprese le immagini disco con più partizioni. Sola lettura, e disattivato finché non lo attivate.
 - **[Uninstaller](uninstaller.md)** — rimuove un'applicazione **e** i file di supporto, le cache e le preferenze che lascia dietro di sé, dopo averti mostrato esattamente cosa verrà rimosso.
 
 I restanti plugin integrati sono più piccoli e non necessitano di una pagina propria:

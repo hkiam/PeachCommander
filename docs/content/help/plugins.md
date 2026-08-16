@@ -3,7 +3,7 @@ title: Plugins
 slug: plugins
 section: Plugins
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 Plugins extend Peach Commander with extra tools, file formats, and places to browse. A dozen plugins come built in, so you can start using them right away, and you can turn individual plugins on or off — or install new ones — from a single window. Use plugins when you want capabilities beyond everyday copying and browsing: visualizing what fills a disk, connecting to a WebDAV server, checking the state of a Git repository, watching system activity, and more.
@@ -19,6 +19,7 @@ Several plugins have their own detailed help topic — follow the link for the f
 - **[Git](git.md)** — shows each file's working-tree status and the current branch as panel columns, and adds a **Git** menu for status, stage, commit, pull, and push.
 - **[System Monitor](system-monitor.md)** — a live readout of CPU, memory, disk, network (and, where available, GPU, battery, sensors) in the window title bar, with click-through detail graphs.
 - **[Task Manager](task-manager.md)** — mounts your running processes as a browsable **TaskManager** drive; sort them, inspect them like files, or end them with Delete.
+- **[Filesystem Images](filesystem-images.md)** — opens a filesystem image (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) the way an archive opens, including disk images with several partitions. Read-only, and off until you switch it on.
 - **[Uninstaller](uninstaller.md)** — removes an application **and** the support files, caches, and preferences it leaves behind, after showing you exactly what will go.
 
 The remaining built-in plugins are smaller and don't need a page of their own:

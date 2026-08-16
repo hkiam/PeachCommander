@@ -3,7 +3,7 @@ title: Programtillegg
 slug: plugins
 section: Programtillegg
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 Programtillegg utvider Peach Commander med ekstra verktøy, filformater og steder å bla i. Et dusin programtillegg er innebygd, så du kan begynne å bruke dem med en gang, og du kan slå enkelte programtillegg på eller av – eller installere nye – fra ett enkelt vindu. Bruk programtillegg når du vil ha muligheter utover daglig kopiering og bla: visualisere hva som fyller en disk, koble til en WebDAV-server, sjekke tilstanden til et Git-depot, overvåke systemaktivitet og mer.
@@ -19,6 +19,7 @@ Flere programtillegg har sitt eget detaljerte hjelpeemne – følg lenken for he
 - **[Git](git.md)** – viser hver fils status i arbeidstreet og gjeldende gren som panelkolonner, og legger til en **Git**-meny for status, klargjøring, innsjekking, pull og push.
 - **[System Monitor](system-monitor.md)** – en sanntidsavlesning av CPU, minne, disk, nettverk (og, der tilgjengelig, GPU, batteri, sensorer) i vinduets tittellinje, med detaljgrafer du kan klikke deg inn på.
 - **[Task Manager](task-manager.md)** – monterer prosessene dine som kjører som en **TaskManager**-stasjon du kan bla i; sorter dem, gransk dem som filer, eller avslutt dem med Slett.
+- **[Filsystemavbilder](filesystem-images.md)** — åpner en filsystemavbild (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) som et arkiv, også diskavbilder med flere partisjoner. Bare lesing, og avslått til du slår det på.
 - **[Uninstaller](uninstaller.md)** – fjerner et program **og** støttefilene, hurtiglagrene og innstillingene det etterlater seg, etter å ha vist deg nøyaktig hva som forsvinner.
 
 De resterende innebygde programtilleggene er mindre og trenger ikke en egen side:

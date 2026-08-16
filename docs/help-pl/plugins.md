@@ -3,7 +3,7 @@ title: Wtyczki
 slug: plugins
 section: Wtyczki
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 Wtyczki rozszerzają Peach Commander o dodatkowe narzędzia, formaty plików i miejsca do przeglądania. Kilkanaście wtyczek jest wbudowanych, więc możesz zacząć ich używać od razu, a poszczególne wtyczki możesz włączać lub wyłączać — albo instalować nowe — z jednego okna. Używaj wtyczek, gdy chcesz możliwości wykraczające poza codzienne kopiowanie i przeglądanie: wizualizować, co zapełnia dysk, łączyć się z serwerem WebDAV, sprawdzać stan repozytorium Git, obserwować aktywność systemu i więcej.
@@ -19,6 +19,7 @@ Kilka wtyczek ma własny szczegółowy temat pomocy — kliknij łącze, aby poz
 - **[Git](git.md)** — pokazuje stan każdego pliku w drzewie roboczym oraz bieżącą gałąź jako kolumny panelu i dodaje menu **Git** dla statusu, dodawania do przechowalni, commita, pulla i pusha.
 - **[System Monitor](system-monitor.md)** — podgląd procesora, pamięci, dysku, sieci (a tam, gdzie dostępne, GPU, baterii, czujników) w czasie rzeczywistym na pasku tytułu okna, z klikalnymi wykresami szczegółów.
 - **[Task Manager](task-manager.md)** — montuje Twoje działające procesy jako przeglądalny dysk **TaskManager**; sortuj je, badaj jak pliki lub kończ klawiszem Usuń.
+- **[Obrazy systemów plików](filesystem-images.md)** — otwiera obraz systemu plików (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) jak archiwum, także obrazy dysków z wieloma partycjami. Tylko do odczytu i wyłączona, dopóki jej nie włączysz.
 - **[Uninstaller](uninstaller.md)** — usuwa aplikację **oraz** pliki pomocnicze, pamięci podręczne i preferencje, które po sobie zostawia, po pokazaniu Ci dokładnie, co zniknie.
 
 Pozostałe wbudowane wtyczki są mniejsze i nie potrzebują własnej strony:
