@@ -112,8 +112,24 @@ final class NTFSDriver: ImageFilesystemDriver {
         let mftLCN = Int64(bitPattern: try reader.u64le(at: 48))
         guard mftLCN > 0 else { throw ImageError.damaged(reason: "the boot sector has no MFT location") }
 
-        let mft = try readMasterFileTable(startingAt: mftLCN * bytesPerCluster)
+        let mft = try readMasterFileTable(startingAt: try clusterBytes(mftLCN))
         try buildTree(from: mft)
+    }
+
+    /// A cluster number or count as a byte offset, refused rather than trapped.
+    ///
+    /// Every cluster number NTFS hands this driver comes out of the image — the boot
+    /// sector's MFT location, and every LCN and length in every data run — and each is
+    /// multiplied by the cluster size to reach a byte offset. `*` on Int64 traps on
+    /// overflow, so each of those multiplications was a way to kill the process with a
+    /// number. A header sweep over the boot sector found the first one at offset 48;
+    /// the rest are the same shape and are routed here rather than judged one by one.
+    private func clusterBytes(_ clusters: Int64) throws -> Int64 {
+        guard clusters >= 0, let bytes = checkedProduct(clusters, bytesPerCluster) else {
+            throw ImageError.damaged(
+                reason: "cluster number \(clusters) is outside what this volume can address")
+        }
+        return bytes
     }
 
     // MARK: - Bootstrapping the MFT
@@ -142,11 +158,11 @@ final class NTFSDriver: ImageFilesystemDriver {
         mft.reserveCapacity(Int(size))
         for run in try NTFSRecord.dataRuns(first, data) {
             guard let lcn = run.lcn else {
-                mft.append(contentsOf: [UInt8](repeating: 0, count: Int(run.clusterCount * bytesPerCluster)))
+                mft.append(contentsOf: [UInt8](repeating: 0, count: Int(try clusterBytes(run.clusterCount))))
                 continue
             }
-            let bytes = Int(run.clusterCount * bytesPerCluster)
-            mft.append(contentsOf: try reader.bytes(at: lcn * bytesPerCluster, count: bytes))
+            let bytes = Int(try clusterBytes(run.clusterCount))
+            mft.append(contentsOf: try reader.bytes(at: try clusterBytes(lcn), count: bytes))
             guard mft.count <= ImageLimits.maxInMemoryImage else {
                 throw ImageError.limitExceeded(limit: "maxInMemoryImage")
             }
@@ -311,7 +327,7 @@ final class NTFSDriver: ImageFilesystemDriver {
     /// attribute's compressed flag alone.
     private func extractCompressed(_ contents: FileContents, to handle: FileHandle) throws {
         let unit = contents.compressionUnit
-        let unitBytes = unit * bytesPerCluster
+        let unitBytes = try clusterBytes(unit)
 
         // Flatten the runs into a cluster-per-VCN map so a unit's clusters can be looked
         // up regardless of how the runs happen to be split.
@@ -348,13 +364,13 @@ final class NTFSDriver: ImageFilesystemDriver {
                 var left = wanted
                 for lcn in allocated where left > 0 {
                     let take = min(left, bytesPerCluster)
-                    try reader.copy(at: lcn * bytesPerCluster, count: take, to: handle)
+                    try reader.copy(at: try clusterBytes(lcn), count: take, to: handle)
                     left -= take
                 }
             } else {
                 var compressed = [UInt8]()
                 for lcn in allocated {
-                    compressed.append(contentsOf: try reader.bytes(at: lcn * bytesPerCluster,
+                    compressed.append(contentsOf: try reader.bytes(at: try clusterBytes(lcn),
                                                                    count: Int(bytesPerCluster)))
                 }
                 let expanded = try LZNT1.decompress(compressed, maxSize: Int(unitBytes))
@@ -397,7 +413,7 @@ final class NTFSDriver: ImageFilesystemDriver {
         var remaining = contents.size
         for run in contents.runs {
             guard remaining > 0 else { break }
-            let runBytes = min(remaining, run.clusterCount * bytesPerCluster)
+            let runBytes = min(remaining, try clusterBytes(run.clusterCount))
             guard let lcn = run.lcn else {
                 // Sparse. Real on NTFS, and the zeros are the file's contents.
                 var left = runBytes
@@ -409,7 +425,7 @@ final class NTFSDriver: ImageFilesystemDriver {
                 remaining -= runBytes
                 continue
             }
-            try reader.copy(at: lcn * bytesPerCluster, count: runBytes, to: handle)
+            try reader.copy(at: try clusterBytes(lcn), count: runBytes, to: handle)
             remaining -= runBytes
         }
         guard remaining == 0 else {
