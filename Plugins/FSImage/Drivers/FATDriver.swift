@@ -66,6 +66,25 @@ final class FATDriver: ImageFilesystemDriver {
         return fatCount >= 1 && fatCount <= 4
     }
 
+    /// The boot-sector signature, and nothing better exists: FAT has no magic string of
+    /// its own. Two bytes match by chance about once every 64 KB, so a scan produces a
+    /// crowd of candidates here — all of which die in `probe` above, which checks that
+    /// the BIOS Parameter Block is self-consistent. This is the signature that most
+    /// depends on confirmation, and the reason confirmation is not optional.
+    static let carveSignatures = [CarveSignature([0x55, 0xAA], at: 510)]
+
+    static func byteLength(_ reader: ImageReader) -> Int64? {
+        guard let bytesPerSector = try? reader.u16le(at: 11),
+              [512, 1024, 2048, 4096].contains(Int(bytesPerSector)),
+              let small = try? reader.u16le(at: 19),
+              let large = try? reader.u32le(at: 32) else { return nil }
+        // The 16-bit count is used when it fits and is zero otherwise, in which case
+        // the 32-bit field at 32 carries it.
+        let sectors = small != 0 ? Int64(small) : Int64(large)
+        guard sectors > 0 else { return nil }
+        return sectors * Int64(bytesPerSector)
+    }
+
     init(reader: ImageReader) throws {
         self.reader = reader
         let boot = try reader.bytes(at: 0, count: 512)

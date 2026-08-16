@@ -49,6 +49,21 @@ final class CramFSDriver: ImageFilesystemDriver {
         return false
     }
 
+    /// Both byte orders: cramfs images from big-endian MIPS and PowerPC devices are
+    /// real, and a scan that only looked for one would walk straight past them.
+    static let carveSignatures = [
+        CarveSignature([0x45, 0x3D, 0xCD, 0x28], at: 0),   // 0x28CD3D45 little-endian
+        CarveSignature([0x28, 0xCD, 0x3D, 0x45], at: 0),   // and big-endian
+    ]
+
+    static func byteLength(_ reader: ImageReader) -> Int64? {
+        // Which order the size field is in follows from which order the magic was in.
+        let bigEndian = (try? reader.u32be(at: 0)) == magic
+        guard let size = bigEndian ? try? reader.u32be(at: 4) : try? reader.u32le(at: 4),
+              size > 0 else { return nil }
+        return Int64(size)
+    }
+
     init(reader: ImageReader) throws {
         self.reader = reader
         if let le = try? reader.u32le(at: 0), le == Self.magic {

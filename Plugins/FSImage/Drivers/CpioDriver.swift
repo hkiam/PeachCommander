@@ -55,6 +55,13 @@ final class CpioDriver: ImageFilesystemDriver {
         return Decompressor.detectStreamCodec(header) != .none
     }
 
+    /// Both newc variants. Worth scanning for because a kernel image carries its
+    /// initramfs as a plain cpio archive appended to it, at no offset anyone records.
+    static let carveSignatures = [
+        CarveSignature("070701", at: 0),
+        CarveSignature("070702", at: 0),
+    ]
+
     private static func isNewcMagic(_ bytes: [UInt8]) -> Bool {
         guard bytes.count >= 6 else { return false }
         // "070701" (newc) and "070702" (newc with CRC) are the two the kernel accepts.

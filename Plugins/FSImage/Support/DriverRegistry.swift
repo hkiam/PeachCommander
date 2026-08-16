@@ -10,6 +10,33 @@
 
 import Foundation
 
+/// A byte pattern that marks a filesystem, and where in that filesystem it sits.
+///
+/// Exists so an image can be searched for filesystems at *any* offset, not just at 0
+/// and at the partition starts. Router firmware is a concatenation of a vendor header,
+/// a bootloader, a kernel and a rootfs at whatever offsets the vendor chose, with no
+/// partition table to describe it; the only way in is to look for the filesystems
+/// themselves. See `ImageLayout`.
+///
+/// `offsetInFilesystem` is what makes the pattern usable: ext's magic is 1080 bytes
+/// into the filesystem and Btrfs's is 65600, so a match position is not a filesystem
+/// start — the start is the match minus this.
+struct CarveSignature {
+    let magic: [UInt8]
+    /// Distance from the filesystem's first byte to `magic`.
+    let offsetInFilesystem: Int64
+
+    init(_ magic: [UInt8], at offsetInFilesystem: Int64) {
+        self.magic = magic
+        self.offsetInFilesystem = offsetInFilesystem
+    }
+
+    /// A signature written as text, which most of them are.
+    init(_ magic: String, at offsetInFilesystem: Int64) {
+        self.init(Array(magic.utf8), at: offsetInFilesystem)
+    }
+}
+
 /// A read-only reader for one on-disk filesystem format.
 ///
 /// The shape is "parse everything at open, then answer from memory" rather than
@@ -30,6 +57,26 @@ protocol ImageFilesystemDriver: AnyObject {
     /// header, never the whole image, and must not throw for a foreign image —
     /// `false` and "not mine" are the same answer.
     static func probe(_ reader: ImageReader) -> Bool
+
+    /// Patterns that mark this format, for finding it at an offset nobody declared.
+    ///
+    /// Empty means "do not look for me by scanning", which is the right answer for a
+    /// format with no distinctive pattern to look for. A signature here is only ever a
+    /// *candidate*: `ImageLayout` confirms every hit by opening the filesystem at that
+    /// offset, so a short pattern that collides with compressed data costs a probe, not
+    /// a wrong answer.
+    static var carveSignatures: [CarveSignature] { get }
+
+    /// How far this filesystem extends from its own offset 0, read from its
+    /// superblock, or nil when the format does not record it.
+    ///
+    /// Static rather than a property of an opened driver because the caller needs it
+    /// *before* opening: knowing the length is what lets a filesystem found mid-image
+    /// be opened through a window that ends where it does, so it cannot read into
+    /// whatever follows it. Nil is honest for the log-structured formats — JFFS2 and
+    /// UBIFS have no total-size field, and a scan reports them as running to whatever
+    /// comes next.
+    static func byteLength(_ reader: ImageReader) -> Int64?
 
     /// Parse the image's metadata. Throws `ImageError` for an image that probes as
     /// this format but cannot be read.
@@ -58,6 +105,10 @@ protocol ImageFilesystemDriver: AnyObject {
 
 extension ImageFilesystemDriver {
     var droppedNames: Int { 0 }
+    /// Not scannable unless the driver says otherwise.
+    static var carveSignatures: [CarveSignature] { [] }
+    /// Length unknown unless the driver says otherwise.
+    static func byteLength(_ reader: ImageReader) -> Int64? { nil }
 }
 
 enum DriverRegistry {
@@ -82,6 +133,10 @@ enum DriverRegistry {
         // Last on purpose: a filesystem's own boot sector can end in 0x55AA, so this
         // only ever sees images nothing else claimed.
         PartitionedDriver.self,
+        // After even that: carving is the answer for an image with no table and no
+        // filesystem at offset 0, which is the one remaining case. Its probe accepts
+        // anything and its initialiser does the deciding, so nothing may follow it.
+        CarvedDriver.self,
     ]
 
     /// The first driver whose probe accepts `reader`, or nil.
@@ -90,13 +145,17 @@ enum DriverRegistry {
     /// image. One level of nesting covers every real image; without the exclusion, a
     /// partition whose first sector happens to end in 0x55AA — which a FAT boot sector
     /// does, by design — would recurse.
+    ///
+    /// It takes a list because the partition driver has a second one to exclude: the
+    /// carving driver accepts anything and decides in its initialiser, so letting it be
+    /// chosen here would run a full signature scan over every partition that nothing
+    /// else could read, and turn a partition documented as listing empty into one
+    /// holding invented entries.
     static func driverType(for reader: ImageReader,
-                           excluding: (any ImageFilesystemDriver.Type)? = nil)
+                           excluding: [any ImageFilesystemDriver.Type] = [])
         -> (any ImageFilesystemDriver.Type)? {
-        all.first { candidate in
-            if let excluding, candidate.id == excluding.id { return false }
-            return candidate.probe(reader)
-        }
+        let excludedIDs = Set(excluding.map { $0.id })
+        return all.first { !excludedIDs.contains($0.id) && $0.probe(reader) }
     }
 
     /// Open `path` with whichever driver claims it.

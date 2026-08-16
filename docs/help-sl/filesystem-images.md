@@ -37,6 +37,20 @@ Slika, kopirana s celotne naprave, ima navadno razpredelnico razdelkov namesto e
 
 Razdelek, ki ga vtičnik ne zna prebrati, se vseeno pokaže kot prazna mapa, poimenovana po svoji vrsti. Če ima naprava tri razdelke, morate videti, da jih ima tri.
 
+## Vdelana programska oprema brez razdelilne tabele
+
+Datoteka vdelane programske opreme, potegnjena iz usmerjevalnika ali kamere, običajno sploh nima razdelilne tabele. Je glava proizvajalca, zagonski nalagalnik, jedro in rootfs, zapisani drug za drugim na odmikih, ki niso nikjer zabeleženi. Taka datoteka se odpre z enim vnosom na vsak del, poimenovanim po odmiku, na katerem se začne: `0x00230044-squashfs` je datotečni sistem, v katerega je mogoče vstopiti, `0x00030040-kernel.uimage` pa datoteka za kopiranje ven.
+
+Deli se najdejo tako, da se po datoteki iščejo datotečni sistemi sami, nato pa se vsak zadetek odpre, da se preveri, ali je res tam. Bajtni vzorec, ki se ujame po naključju, stane trenutek in se zavrže, namesto da bi postal izmišljen vnos; datoteka, v kateri ni nobenega datotečnega sistema, pa je še vedno zavrnjena in se odpre tako, kot bi se od nekdaj.
+
+Isto velja za vse, kar leži zunaj razdelkov razdeljene slike. Raspberry Pi hrani svoj zagonski nalagalnik v megabajtih pred razdelkom 1, U-Boot pa na večini plošč ARM sedi na stalnem odmiku v istem nedodeljenem prostoru. Ti odseki so navedeni poleg razdelkov, da jih lahko vidite in kopirate ven.
+
+## Zapis zgradbe
+
+**Ukazi ▸ Analiziraj zgradbo slike…** shrani izid kot besedilno datoteko poleg slike in nanjo postavi kazalec: vsako območje z odmikom, velikostjo in tem, kar se je izkazalo, da je, ter razdelilna tabela, če jo slika ima. Prav ta razpredelnica je običajno tisto, kar potrebuje razčlemba ali prijava, in sestavljati jo znova s hojo po pultu in prepisovanjem številk je dolgočasno delo.
+
+Poročilo pokaže tudi to, kar pult izpusti — na primer majhne poravnalne vrzeli med razdelki — in poimenuje ploščo, za katero je bilo jedro U-Boot zgrajeno, če slika to zabeleži.
+
 ## Delo znotraj slike
 
 Velja vse, kar že poznate. F3 prikaže datoteko, F5 kopira datoteke ven v pravo mapo, **Poišči datoteke** pa preišče vsebino slike. Ven pridete tako kot iz arhiva.
@@ -56,4 +70,5 @@ Vtičnik pove, zakaj, namesto da bi javil pokvarjeno datoteko, saj vas oboje pel
 
 - Slika se prebere enkrat in si jo zapomni, zato je vnovičen vstop takojšen.
 - Zelo velike slike se berejo po potrebi, namesto da bi se naložile v celoti; seznam je omejen na dva milijona vnosov.
-- Vtičnik ne doda nobenega menijskega ukaza in nobenih lastnih nastavitev razen stikala, ki ga vklopi.
+- Slika se pregleda za vgrajenimi datotečnimi sistemi le tedaj, ko nima ne razdelilne tabele ne datotečnega sistema na začetku, tako da se običajna slika odpre natanko tako hitro kot doslej.
+- Vtičnik doda en ukaz menija in nobenih lastnih nastavitev razen stikala, ki ga vklopi.

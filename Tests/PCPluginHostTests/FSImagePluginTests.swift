@@ -19,7 +19,35 @@ import XCTest
 import CryptoKit
 import PCVFS
 import CPCX
+// For PcHostServices: the contributed Commands entry is driven through PcRunCommand with
+// a fake host table, which is the only way to test what that entry actually produces.
+import CContrib
 @testable import PCPluginHost
+
+/// Where the fake host was told to reveal the layout report. Global because a
+/// `@convention(c)` function pointer cannot capture context — the same constraint, and
+/// the same workaround, as `PCThemeTests`.
+private nonisolated(unsafe) var revealedPath: String?
+/// What the fake host was told to show in a dialog, if anything.
+private nonisolated(unsafe) var presentedMessage: String?
+/// What the fake host answers when the plugin asks for the cursor's path.
+private nonisolated(unsafe) var fakeCursorPath = ""
+
+private func fakeCursorPathCallback(_ host: UnsafeMutableRawPointer?,
+                                    _ out: UnsafeMutablePointer<CChar>?, _ maxlen: Int32) -> Int32 {
+    guard let out, !fakeCursorPath.isEmpty else { return 0 }
+    _ = strlcpy(out, fakeCursorPath, Int(maxlen))
+    return 1
+}
+
+private func fakeOpenPath(_ host: UnsafeMutableRawPointer?, _ path: UnsafePointer<CChar>?) {
+    revealedPath = path.map { String(cString: $0) }
+}
+
+private func fakePresentInfo(_ host: UnsafeMutableRawPointer?, _ title: UnsafePointer<CChar>?,
+                             _ message: UnsafePointer<CChar>?) {
+    presentedMessage = message.map { String(cString: $0) }
+}
 
 final class FSImagePluginTests: XCTestCase {
     private var dir: URL!
@@ -49,6 +77,8 @@ final class FSImagePluginTests: XCTestCase {
     /// that quietly is not in the shipped binary.
     private static let pluginSources = [
         "Plugins/FSImage/fsimage.swift",
+        "Plugins/FSImage/LayoutCommand.swift",
+        "Plugins/SDK/PluginLoc.swift",
         "Plugins/FSImage/Support/ImageReader.swift",
         "Plugins/FSImage/Support/ImageEntry.swift",
         "Plugins/FSImage/Support/Decompressors.swift",
@@ -57,12 +87,16 @@ final class FSImagePluginTests: XCTestCase {
         "Plugins/FSImage/Support/DriverRegistry.swift",
         "Plugins/FSImage/Support/ImageCache.swift",
         "Plugins/FSImage/Support/PartitionTable.swift",
+        "Plugins/FSImage/Support/BlobSignature.swift",
+        "Plugins/FSImage/Support/ImageLayout.swift",
+        "Plugins/FSImage/Support/LayoutReport.swift",
         "Plugins/FSImage/Drivers/NTFSRecord.swift",
         "Plugins/FSImage/Drivers/NTFSDriver.swift",
         "Plugins/FSImage/Drivers/ExFATDriver.swift",
         "Plugins/FSImage/Drivers/FATDriver.swift",
         "Plugins/FSImage/Drivers/CpioDriver.swift",
         "Plugins/FSImage/Drivers/PartitionedDriver.swift",
+        "Plugins/FSImage/Drivers/CarvedDriver.swift",
         "Plugins/FSImage/Drivers/SquashFSMetadata.swift",
         "Plugins/FSImage/Drivers/SquashFSDriver.swift",
         "Plugins/FSImage/Drivers/ExtLayout.swift",
@@ -124,8 +158,12 @@ final class FSImagePluginTests: XCTestCase {
             let message = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
             throw BuildFailure(description: "swiftc failed: \(message)")
         }
+        // Both ABIs: the plugin is a packer that also contributes a Commands entry, and
+        // the host resolves those through two separate opens. Combining them here is
+        // what lets one dlopen'd copy be driven from both sides in one test file.
         guard case .success(let lib) = PluginLibrary.open(
-            path: out.path, required: PCXSymbols.required, optional: PCXSymbols.optional) else {
+            path: out.path, required: PCXSymbols.required,
+            optional: PCXSymbols.optional + ContribSymbols.optional) else {
             throw BuildFailure(description: "dlopen/symbol resolution failed for \(out.path)")
         }
         self.lib = lib
@@ -892,11 +930,11 @@ final class FSImagePluginTests: XCTestCase {
             return XCTFail("the host could not mount the partitioned image")
         }
         let root = try await collect(fs, "/")
-        XCTAssertEqual(root.count, 2, "one directory per partition")
-        XCTAssertTrue(root.allSatisfy { $0.kind == .directory })
+        let partitions = root.filter { $0.kind == .directory }
+        XCTAssertEqual(partitions.count, 2, "one directory per partition")
 
         // Each partition's own tree hangs under it, with the sample tree intact.
-        guard let first = root.map(\.name).sorted().first else { return XCTFail("no partitions") }
+        guard let first = partitions.map(\.name).sorted().first else { return XCTFail("no partitions") }
         let inside = try await collect(fs, "/\(first)")
         XCTAssertEqual(Set(inside.map(\.name)), ["bin", "etc"])
         let motd = try await read(fs, "/\(first)/etc/motd")
@@ -915,7 +953,7 @@ final class FSImagePluginTests: XCTestCase {
             return XCTFail("the host could not mount the GPT image")
         }
         let root = try await collect(fs, "/")
-        XCTAssertEqual(Set(root.map(\.name)), ["1-rootfs", "2-esp"],
+        XCTAssertEqual(Set(root.filter { $0.kind == .directory }.map(\.name)), ["1-rootfs", "2-esp"],
                        "GPT partition names, and exactly two — not the protective MBR's one")
         let motd = try await read(fs, "/1-rootfs/etc/motd")
         XCTAssertEqual(motd, Data(ExpectedTree.files["etc/motd"]!.utf8))
@@ -1512,5 +1550,298 @@ final class FSImagePluginTests: XCTestCase {
         // on the behaviour actually being wrong.
         XCTAssertLessThan(warmAverage, max(cold, 0.001) * 5,
                           "reopening the image should not cost a fresh parse each time")
+    }
+
+    // MARK: - Carving: an image with no table and no filesystem at the front
+    //
+    // Everything above is handed a starting offset by something that knows one. These
+    // cases are the ones where nothing does: a firmware file straight off a router,
+    // which is a vendor header, a bootloader, a kernel and a rootfs concatenated at
+    // offsets recorded nowhere. The plugin has to find them by looking.
+    //
+    // The risk this whole area carries is false positives — a four-byte pattern occurs
+    // in compressed data constantly — so two of these tests are about *not* finding
+    // things, and they matter more than the ones about finding them.
+
+    /// A router firmware image, assembled the way a vendor's build does.
+    ///
+    /// Built at run time rather than committed because the only part that has to be
+    /// authentic is the SquashFS, and `mksquashfs` writes that — the headers around it
+    /// are a few dozen bytes of documented layout. Committing it would add 200 KB to
+    /// the repository to store bytes this function states more clearly.
+    ///
+    /// Returns where each part landed, so the tests assert against the real offsets
+    /// rather than against numbers copied into an expectation.
+    private struct RouterFirmware {
+        let path: String
+        let kernelOffset: Int64
+        let kernelPayload: Data
+        let squashfsOffset: Int64
+    }
+
+    /// `kernelName` is raw bytes rather than a string so a test can put something in the
+    /// uImage name field that is not text — which a header found at a chance offset
+    /// always has, and a real image with a broken build script sometimes does.
+    private func makeRouterFirmware(kernelName: [UInt8] = Array("Linux-6.1.0-test".utf8))
+        throws -> RouterFirmware {
+        let rootfs = try Data(contentsOf: URL(fileURLWithPath: try makeSquashFSImage()))
+        var image = Data()
+
+        // A vendor container header that declares its own length — 64 bytes, so the
+        // header is one region and the bootloader behind it is another.
+        image.append(contentsOf: Array("HDR0".utf8))
+        image.append(contentsOf: withUnsafeBytes(of: UInt32(64).littleEndian, Array.init))
+        image.append(Data(repeating: 0, count: 56))
+
+        // The bootloader: bytes that cannot accidentally carry any signature the scan
+        // looks for. Cycling 0…127 contains no 0xAA, so not even FAT's two-byte boot
+        // signature can appear here — which is what makes a hit in this test meaningful.
+        image.append(Data((0..<(192 * 1024)).map { UInt8($0 % 128) }))
+
+        // A U-Boot legacy image. Every field is big-endian by definition of the format,
+        // whatever the target's own byte order is.
+        let kernelOffset = Int64(image.count)
+        let payload = Data((0..<(128 * 1024)).map { UInt8(truncatingIfNeeded: $0 &* 31 &+ 7) })
+        var header = Data()
+        header.append(contentsOf: [0x27, 0x05, 0x19, 0x56])                     // magic
+        header.append(Data(repeating: 0, count: 8))                             // hcrc, time
+        header.append(contentsOf: withUnsafeBytes(of: UInt32(payload.count).bigEndian, Array.init))
+        header.append(Data(repeating: 0, count: 12))                            // load, ep, dcrc
+        header.append(contentsOf: [0x05, 0x02, 0x02, 0x01])                     // os, arch, KERNEL, gzip
+        var name = Array(kernelName.prefix(32))
+        name.append(contentsOf: [UInt8](repeating: 0, count: 32 - name.count))
+        header.append(contentsOf: name)
+        XCTAssertEqual(header.count, 64, "a uImage header is 64 bytes by definition")
+        image.append(header)
+        image.append(payload)
+
+        // Three bytes of slack, so the rootfs starts at an offset that is not aligned to
+        // anything. A scan that quietly assumed sector alignment would miss it, and real
+        // firmware does put filesystems at arbitrary offsets.
+        image.append(Data(repeating: 0xFF, count: 3))
+        let squashfsOffset = Int64(image.count)
+        image.append(rootfs)
+
+        let path = dir.appendingPathComponent("firmware-\(UUID().uuidString).bin").path
+        try image.write(to: URL(fileURLWithPath: path))
+        return RouterFirmware(path: path, kernelOffset: kernelOffset, kernelPayload: payload,
+                              squashfsOffset: squashfsOffset)
+    }
+
+    /// The case the whole feature exists for: no partition table, no filesystem at byte
+    /// zero, and a rootfs two megabytes in that used to make the plugin decline the file.
+    func testFirmwareWithNoPartitionTableIsCarvedIntoItsParts() async throws {
+        let firmware = try makeRouterFirmware()
+        guard let fs = PCXArchiveFS(archivePath: firmware.path, library: lib,
+                                    fsID: "fsimage:carve") else {
+            return XCTFail("a firmware image with an embedded rootfs must mount")
+        }
+        let root = try await collect(fs, "/")
+        let names = root.map(\.name)
+
+        XCTAssertTrue(names.contains("0x00000000-firmware.trx"),
+                      "the vendor header should be named, not left as unknown data: \(names)")
+        XCTAssertTrue(names.contains(String(format: "0x%08llx-kernel.uimage", firmware.kernelOffset)),
+                      "the kernel should be found at its real offset: \(names)")
+
+        let rootfsName = String(format: "0x%08llx-squashfs", firmware.squashfsOffset)
+        guard let rootfs = root.first(where: { $0.name == rootfsName }) else {
+            return XCTFail("the rootfs was not carved out: \(names)")
+        }
+        XCTAssertEqual(rootfs.kind, .directory, "a carved filesystem is a directory to walk into")
+
+        // And it is genuinely browsable, not merely named.
+        let inside = try await collect(fs, "/\(rootfsName)")
+        XCTAssertEqual(Set(inside.map(\.name)), ["bin", "etc"])
+        let motd = try await read(fs, "/\(rootfsName)/etc/motd")
+        XCTAssertEqual(motd, Data(ExpectedTree.files["etc/motd"]!.utf8))
+    }
+
+    /// The bootloader and the kernel cannot be browsed, so being able to copy them out
+    /// is the entire value of listing them. Byte-exact, because a region reported with
+    /// the right length and the wrong contents is the failure mode this plugin keeps
+    /// producing when an offset is off by a header.
+    func testACarvedKernelBlobExtractsByteForByte() async throws {
+        let firmware = try makeRouterFirmware()
+        guard let fs = PCXArchiveFS(archivePath: firmware.path, library: lib,
+                                    fsID: "fsimage:blob") else {
+            return XCTFail("the firmware image must mount")
+        }
+        let name = String(format: "0x%08llx-kernel.uimage", firmware.kernelOffset)
+        let extracted = try await read(fs, "/\(name)")
+        XCTAssertEqual(extracted.count, 64 + firmware.kernelPayload.count,
+                       "the uImage header declares its payload size, so the extent is exact")
+        XCTAssertEqual(extracted.suffix(firmware.kernelPayload.count), firmware.kernelPayload,
+                       "the payload must come back exactly as it went in")
+    }
+
+    /// A file that is not an image must still be declined, even though the carving
+    /// driver's probe accepts everything.
+    ///
+    /// This is the guard that keeps the plugin from claiming every `.bin` on the system:
+    /// the decision moved out of `probe` and into the initialiser, which refuses when the
+    /// scan found no filesystem. If that refusal ever stops working, the symptom is not a
+    /// crash — it is every unrecognised file in every panel opening as a folder holding
+    /// one meaningless entry.
+    func testAFileWithNoFilesystemInItIsStillDeclined() throws {
+        var noise = Data((0..<200_000).map { UInt8(truncatingIfNeeded: $0 &* 2_654_435_761 >> 11) })
+        // Plant the SquashFS magic in the middle of it. The pattern search will find it;
+        // opening a filesystem there is what has to fail.
+        noise.replaceSubrange(100_000..<100_004, with: Array("hsqs".utf8))
+        let path = dir.appendingPathComponent("noise.bin")
+        try noise.write(to: path)
+
+        XCTAssertNil(PCXArchiveFS(archivePath: path.path, library: lib, fsID: "fsimage:noise"),
+                     "a pattern match is not a filesystem — opening it is what decides")
+        XCTAssertEqual(PCXArchive(library: lib).canHandle(fileName: path.path), false)
+    }
+
+    /// The same claim from the other side: a real image with a planted magic must report
+    /// the one filesystem it has, not two.
+    func testAPlantedMagicDoesNotBecomeASecondFilesystem() async throws {
+        let firmware = try makeRouterFirmware()
+        var bytes = try Data(contentsOf: URL(fileURLWithPath: firmware.path))
+        // Inside the bootloader region, where nothing real lives.
+        bytes.replaceSubrange(70_000..<70_004, with: Array("hsqs".utf8))
+        let path = dir.appendingPathComponent("planted.bin")
+        try bytes.write(to: path)
+
+        guard let fs = PCXArchiveFS(archivePath: path.path, library: lib,
+                                    fsID: "fsimage:planted") else {
+            return XCTFail("the image still contains a real rootfs and must mount")
+        }
+        let directories = try await collect(fs, "/").filter { $0.kind == .directory }
+        XCTAssertEqual(directories.count, 1,
+                       "exactly one filesystem: \(directories.map(\.name))")
+    }
+
+    /// The bootloader on an embedded device lives outside every partition. Listing only
+    /// the partitions says an image plainly containing one does not, which is the wrong
+    /// answer about the hardware.
+    func testUnallocatedSpaceInAPartitionedImageIsListed() async throws {
+        let image = try goldenFixture("disk-mbr.img")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib,
+                                    fsID: "fsimage:gaps") else {
+            return XCTFail("the host could not mount the partitioned image")
+        }
+        let root = try await collect(fs, "/")
+        let gaps = root.filter { $0.kind != .directory }
+        XCTAssertFalse(gaps.isEmpty, "the megabyte ahead of partition 1 must be reachable")
+        XCTAssertTrue(gaps.contains { $0.name == "0x00000000-unknown.bin" },
+                      "the run before the first partition, named by its offset: \(root.map(\.name))")
+
+        // And it is the real bytes, not a placeholder: the first sector is the MBR, so
+        // the run has to start with the partition table's own boot signature.
+        guard let first = gaps.first(where: { $0.name == "0x00000000-unknown.bin" }) else { return }
+        let data = try await read(fs, "/\(first.name)")
+        XCTAssertEqual(data.count, 1 << 20, "one megabyte before the first partition")
+        XCTAssertEqual([data[510], data[511]], [0x55, 0xAA], "the MBR signature is in there")
+    }
+
+    /// A gap smaller than the threshold is not listed. Every partitioned image has a few
+    /// — the table's own sector, alignment slack — and reporting them would bury the one
+    /// gap that means something under two that never do.
+    func testStructuralSlackIsNotReportedAsAnUnallocatedRegion() async throws {
+        let image = try goldenFixture("disk-gpt.img")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib,
+                                    fsID: "fsimage:slack") else {
+            return XCTFail("the host could not mount the GPT image")
+        }
+        let blobs = try await collect(fs, "/").filter { $0.kind != .directory }
+        XCTAssertFalse(blobs.contains { $0.size < 64 << 10 },
+                       "nothing under the threshold should appear: \(blobs.map { "\($0.name)=\($0.size)" })")
+    }
+
+    // MARK: - The layout report
+
+    /// The contributed Commands entry, driven the way the host drives it.
+    ///
+    /// Worth testing through `PcRunCommand` rather than by calling the report builder
+    /// directly: what can break here is not the table formatting but the wiring around it
+    /// — which host service the path comes from, where the file is written, whether the
+    /// panel is told about it. None of that is reachable from a unit test of the
+    /// formatter, and all of it is what the user experiences as "the menu item did
+    /// nothing".
+    func testTheLayoutReportNamesEveryRegionAndIsRevealed() throws {
+        let firmware = try makeRouterFirmware()
+        revealedPath = nil
+        presentedMessage = nil
+        fakeCursorPath = firmware.path
+
+        try runLayoutCommand()
+
+        XCTAssertNil(presentedMessage, "a readable image should produce a report, not a dialog")
+        guard let reportPath = revealedPath else {
+            return XCTFail("the command must reveal the report it wrote")
+        }
+        XCTAssertEqual((reportPath as NSString).lastPathComponent,
+                       (firmware.path as NSString).lastPathComponent + ".layout.txt",
+                       "the report belongs beside the image it describes")
+        let report = try String(contentsOfFile: reportPath, encoding: .utf8)
+
+        XCTAssertTrue(report.contains("squashfs"), "the rootfs must be in the report:\n\(report)")
+        XCTAssertTrue(report.contains("kernel.uimage"), "and the kernel:\n\(report)")
+        XCTAssertTrue(report.contains("Linux-6.1.0-test"),
+                      "the uImage name is the one human-written string in the image:\n\(report)")
+        XCTAssertTrue(report.contains(String(format: "0x%08llx", firmware.squashfsOffset)),
+                      "offsets must be exact, in the same form the panel uses:\n\(report)")
+        XCTAssertTrue(report.contains("1 filesystem can be opened"),
+                      "the summary line should count what was found:\n\(report)")
+    }
+
+    /// The report is the one place where bytes out of an image become part of a document
+    /// somebody keeps and pastes elsewhere, so a name field that is not text must not
+    /// reach it.
+    ///
+    /// Found by reading a report rather than by reasoning about the code: a header at a
+    /// chance offset has 32 random bytes in its name field, and they came out as a row of
+    /// replacement characters in the middle of an otherwise clean table.
+    func testAnUnreadableNameFieldDoesNotReachTheReport() throws {
+        let firmware = try makeRouterFirmware(kernelName: [0xFF, 0x4E, 0x00, 0x9A, 0xC3, 0x28, 0x01])
+        revealedPath = nil
+        presentedMessage = nil
+        fakeCursorPath = firmware.path
+
+        try runLayoutCommand()
+
+        guard let reportPath = revealedPath else { return XCTFail("no report was written") }
+        let report = try String(contentsOfFile: reportPath, encoding: .utf8)
+        XCTAssertTrue(report.contains("U-Boot"), "the blob is still identified:\n\(report)")
+        XCTAssertFalse(report.contains("\u{FFFD}"),
+                       "no replacement characters from a lossy decode:\n\(report)")
+        XCTAssertTrue(report.unicodeScalars.allSatisfy { $0.value >= 0x20 || $0 == "\n" },
+                      "no control characters anywhere in the report")
+    }
+
+    /// With no cursor, the command says so instead of writing an empty report somewhere.
+    func testTheLayoutReportExplainsItselfWhenThereIsNoImage() throws {
+        revealedPath = nil
+        presentedMessage = nil
+        fakeCursorPath = ""
+
+        try runLayoutCommand()
+
+        XCTAssertNil(revealedPath, "nothing should be written when there is nothing to scan")
+        XCTAssertNotNil(presentedMessage, "the user has to be told why nothing happened")
+    }
+
+    /// Invoke the contributed command with a fake host table.
+    private func runLayoutCommand() throws {
+        typealias RunCommand = @convention(c) (UnsafePointer<CChar>?,
+                                              UnsafePointer<PcHostServices>?) -> Void
+        guard let symbol = lib.symbol("PcRunCommand") else {
+            return XCTFail("the plugin does not export PcRunCommand")
+        }
+        var services = PcHostServices()
+        services.localCursorPath = fakeCursorPathCallback
+        services.cursorPath = fakeCursorPathCallback
+        services.openPath = fakeOpenPath
+        services.presentInfo = fakePresentInfo
+
+        withUnsafePointer(to: &services) { table in
+            "plugin.fsimage.layout".withCString { id in
+                unsafeBitCast(symbol, to: RunCommand.self)(id, table)
+            }
+        }
     }
 }

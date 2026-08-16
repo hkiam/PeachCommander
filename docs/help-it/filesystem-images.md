@@ -37,6 +37,20 @@ Un'immagine copiata da un intero dispositivo di solito ha una tabella delle part
 
 Una partizione che il plugin non sa leggere compare comunque, come cartella vuota che porta il nome del suo tipo. Se un dispositivo ha tre partizioni, dovete poter vedere che ne ha tre.
 
+## Firmware senza tabella delle partizioni
+
+Un file di firmware estratto da un router o da una telecamera di solito non ha alcuna tabella delle partizioni. È un’intestazione del produttore, un bootloader, un kernel e un rootfs scritti uno dopo l’altro a offset annotati da nessuna parte. Un file simile si apre con una voce per ciascuna parte, ognuna chiamata come l’offset da cui inizia: `0x00230044-squashfs` è un file system in cui entrare, `0x00030040-kernel.uimage` un file da copiare fuori.
+
+Le parti si trovano cercando nel file i file system stessi e aprendo ogni riscontro per vedere se ce n’è davvero uno. Uno schema di byte che coincide per caso costa un istante e viene scartato invece di diventare una voce inventata; e un file in cui non si trova alcun file system viene ancora rifiutato e si apre come si sarebbe sempre aperto.
+
+Lo stesso vale per tutto ciò che sta fuori dalle partizioni di un’immagine partizionata. Un Raspberry Pi tiene il proprio bootloader nei megabyte che precedono la partizione 1, e U-Boot occupa sulla maggior parte delle schede ARM un offset fisso nello stesso spazio non assegnato. Quei tratti compaiono accanto alle partizioni, così potete vederli e copiarli fuori.
+
+## Mettere per iscritto la struttura
+
+**Comandi ▸ Analizza la struttura dell’immagine…** salva il risultato come file di testo accanto all’immagine e vi porta sopra il cursore: ogni regione con il suo offset, la sua dimensione e ciò che si è rivelata essere, più la tabella delle partizioni se l’immagine ne ha una. Quella tabella è di solito proprio ciò che serve a uno smontaggio o a un ticket, e ricostruirla percorrendo un pannello e ricopiando numeri a mano è un lavoro noioso.
+
+Il rapporto mostra anche ciò che il pannello tralascia — i piccoli spazi di allineamento tra le partizioni, per esempio — e nomina la scheda per cui è stato compilato un kernel U-Boot quando l’immagine lo registra.
+
 ## Lavorare dentro un'immagine
 
 Vale tutto quello che già conoscete. F3 mostra un file, F5 copia i file in una cartella reale e **Trova file** cerca nel contenuto dell'immagine. Se ne esce come da un archivio.
@@ -56,4 +70,5 @@ Il plugin vi dice il perché invece di segnalare un file danneggiato, perché le
 
 - Un'immagine viene letta una volta e ricordata, quindi rientrarci è immediato.
 - Le immagini molto grandi vengono lette secondo necessità invece che caricate per intero; un elenco è limitato a due milioni di voci.
-- Il plugin non aggiunge comandi di menu né impostazioni proprie oltre all'interruttore che lo attiva.
+- Un’immagine viene cercata per file system incorporati solo se non ha né una tabella delle partizioni né un file system all’inizio, quindi un’immagine ordinaria si apre esattamente con la stessa rapidità di prima.
+- Il plugin aggiunge un comando di menu e nessuna impostazione propria oltre all’interruttore che lo attiva.

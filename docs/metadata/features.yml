@@ -723,7 +723,21 @@ features:
       carries a BootCamp formatter and no mount helper); FAT and exFAT are readable without attaching
       the image, which is what a forensic look at a card wants. Two more decoders are written from
       their formats for the same licence reason as the readers: LZO (GPL implementations only, and the
-      default in mkfs.ubifs) and NTFS's LZNT1.
+      default in mkfs.ubifs) and NTFS's LZNT1. Router and camera firmware has no partition table at
+      all — it is a vendor header, a bootloader, a kernel and a rootfs concatenated at offsets
+      recorded nowhere — so when neither a table nor a filesystem at offset 0 is found, the image is
+      searched for the filesystems themselves and each hit is confirmed by opening it there. That
+      confirmation is the design: FAT's signature is two bytes and occurs by chance about a thousand
+      times in a 64 MB image, and only actually opening a filesystem separates a real one from a
+      coincidence. A file in which nothing opens is still declined, which is what keeps the plugin
+      from claiming every .bin on the system. Non-filesystem runs are named where a signature says
+      what they are (U-Boot uImage, device tree, Android boot, TRX, ELF, bare compressed streams) and
+      listed as extractable files either way, including the runs outside every partition of a
+      partitioned image — a Raspberry Pi keeps its bootloader in the megabytes ahead of partition 1,
+      and listing only the partitions says an image plainly containing one does not. Commands > Scan
+      Image Layout writes the whole layout — offsets, sizes, what each region turned out to be — as a
+      text file beside the image; a contributed command cannot mount a virtual filesystem, so the
+      report is what it can produce that navigating cannot.
 
   - id: java-decompiler
     name: Java-Decompiler-Plugin (F3 auf .class)

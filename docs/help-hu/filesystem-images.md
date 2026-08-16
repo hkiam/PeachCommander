@@ -37,6 +37,20 @@ Az egész eszközről másolt képmás rendszerint particiós táblát tartalmaz
 
 Az a partíció, amelyet a bővítmény nem tud olvasni, akkor is megjelenik: üres mappaként, a típusáról elnevezve. Ha egy eszköznek három partíciója van, látnia kell tudni, hogy három van.
 
+## Firmware partíciós tábla nélkül
+
+Az útválasztóból vagy kamerából kimentett firmware-fájlnak rendszerint egyáltalán nincs partíciós táblája. Gyártói fejléc, rendszertöltő, kernel és rootfs egymás után kiírva olyan eltolásokra, amelyeket sehol sem jegyeztek fel. Az ilyen fájl részenként egy-egy bejegyzéssel nyílik meg, mindegyik arról az eltolásról elnevezve, ahol kezdődik: a `0x00230044-squashfs` fájlrendszer, amelybe be lehet lépni, a `0x00030040-kernel.uimage` pedig kimásolható fájl.
+
+A részeket úgy találja meg, hogy magukat a fájlrendszereket keresi a fájlban, majd mindegyik találatot megnyitja, hogy kiderüljön, valóban ott van-e. A véletlenül egyező bájtminta egy pillanatba kerül, és elvetésre kerül ahelyett, hogy kitalált bejegyzéssé válna; a fájl pedig, amelyben nem található fájlrendszer, továbbra is elutasításra kerül, és úgy nyílik meg, ahogy mindig is.
+
+Ugyanez vonatkozik mindenre, ami a particionált lemezkép partícióin kívül esik. A Raspberry Pi az 1. partíció előtti megabájtokban tartja a rendszertöltőjét, az U-Boot pedig a legtöbb ARM-alaplapon rögzített eltolásban ül ugyanebben a le nem foglalt térben. Ezek a szakaszok a partíciók mellett jelennek meg, hogy láthassa és kimásolhassa őket.
+
+## A felépítés rögzítése
+
+A **Parancsok ▸ Lemezkép felépítésének elemzése…** szövegfájlként menti az eredményt a lemezkép mellé, és ráállítja a kurzort: minden terület az eltolásával, a méretével és azzal, aminek bizonyult, valamint a partíciós tábla, ha a lemezképnek van ilyen. Rendszerint épp erre a táblázatra van szüksége egy elemzésnek vagy egy hibajegynek, és panelt bejárva, számokat kézzel átmásolva újraépíteni fárasztó munka.
+
+A jelentés azt is megmutatja, amit a panel kihagy — például a partíciók közötti kis igazítási réseket —, és megnevezi azt az alaplapot, amelyhez az U-Boot kernelt fordították, ha a lemezkép ezt rögzíti.
+
 ## Munka a képmáson belül
 
 Minden érvényes marad, amit már ismer. Az F3 megjelenít egy fájlt, az F5 valódi mappába másol ki fájlokat, a **Fájlok keresése** pedig a képmás tartalmában keres. Kilépni belőle úgy lehet, ahogy egy archívumból.
@@ -56,4 +70,5 @@ A bővítmény megmondja, miért, ahelyett hogy sérült fájlt jelentene, mert 
 
 - A képmást egyszer olvassa be és megjegyzi, így a visszalépés azonnali.
 - A nagyon nagy képmásokat szükség szerint olvassa, nem egészben tölti be; egy listázás kétmillió bejegyzésre van korlátozva.
-- A bővítmény semmilyen menüparancsot és saját beállítást nem ad hozzá azon a kapcsolón kívül, amely bekapcsolja.
+- A lemezképet csak akkor vizsgálja beágyazott fájlrendszerek után, ha se partíciós táblája, se fájlrendszere nincs az elején, így egy szokásos lemezkép pontosan olyan gyorsan nyílik meg, mint eddig.
+- A bővítmény egy menüparancsot ad hozzá, és a bekapcsolásán kívül semmilyen saját beállítást.

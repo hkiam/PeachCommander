@@ -37,6 +37,20 @@ Obraz skopiowany z całego urządzenia zwykle zawiera tablicę partycji, a nie p
 
 Partycja, której wtyczka nie potrafi odczytać, i tak się pojawia — jako pusty folder nazwany według swojego typu. Jeśli urządzenie ma trzy partycje, powinieneś móc zobaczyć, że ma trzy.
 
+## Oprogramowanie układowe bez tablicy partycji
+
+Plik oprogramowania układowego wyciągnięty z routera lub kamery zwykle nie ma żadnej tablicy partycji. To nagłówek producenta, program rozruchowy, jądro i rootfs zapisane jeden po drugim pod przesunięciami, których nigdzie nie odnotowano. Taki plik otwiera się z jednym wpisem na każdą część, nazwanym od przesunięcia, w którym się zaczyna: `0x00230044-squashfs` to system plików, w który można wejść, a `0x00030040-kernel.uimage` plik do skopiowania na zewnątrz.
+
+Części znajdowane są przez przeszukanie pliku w poszukiwaniu samych systemów plików i otwarcie każdego trafienia, by sprawdzić, czy naprawdę tam jest. Wzorzec bajtów pasujący przypadkiem kosztuje chwilę i zostaje odrzucony, zamiast stać się zmyślonym wpisem; a plik, w którym nie znaleziono żadnego systemu plików, nadal jest odrzucany i otwiera się tak, jak zawsze by się otworzył.
+
+To samo dotyczy wszystkiego, co leży poza partycjami obrazu z tablicą partycji. Raspberry Pi trzyma swój program rozruchowy w megabajtach przed partycją 1, a U-Boot na większości płyt ARM siedzi pod stałym przesunięciem w tej samej nieprzydzielonej przestrzeni. Te odcinki są wypisane obok partycji, żeby można je było zobaczyć i skopiować.
+
+## Zapisanie budowy
+
+**Polecenia ▸ Analizuj budowę obrazu…** zapisuje wynik jako plik tekstowy obok obrazu i ustawia na nim kursor: każdy obszar z przesunięciem, rozmiarem i tym, czym się okazał, a do tego tablica partycji, jeśli obraz ją ma. Zwykle to właśnie ta tabela jest potrzebna przy analizie albo w zgłoszeniu, a odtwarzanie jej przez chodzenie po panelu i przepisywanie liczb to żmudna praca.
+
+Raport pokazuje też to, co panel pomija — na przykład małe przerwy wyrównania między partycjami — i podaje płytę, dla której zbudowano jądro U-Boot, jeśli obraz to odnotowuje.
+
 ## Praca wewnątrz obrazu
 
 Obowiązuje wszystko, co już znasz. F3 pokazuje plik, F5 kopiuje pliki do prawdziwego folderu, a **Znajdź pliki** przeszukuje zawartość obrazu. Wychodzi się z niego tak, jak z archiwum.
@@ -56,4 +70,5 @@ Wtyczka mówi dlaczego, zamiast zgłaszać uszkodzony plik, bo te dwie rzeczy pr
 
 - Obraz jest czytany raz i zapamiętywany, więc ponowne wejście do niego jest natychmiastowe.
 - Bardzo duże obrazy są czytane w miarę potrzeb zamiast wczytywane w całości; lista jest ograniczona do dwóch milionów wpisów.
-- Wtyczka nie dodaje żadnych poleceń menu ani własnych ustawień poza przełącznikiem, który ją włącza.
+- Obraz jest przeszukiwany pod kątem osadzonych systemów plików tylko wtedy, gdy nie ma ani tablicy partycji, ani systemu plików na początku, więc zwykły obraz otwiera się dokładnie tak samo szybko jak dotąd.
+- Wtyczka dodaje jedno polecenie menu i żadnych własnych ustawień poza przełącznikiem, który ją włącza.

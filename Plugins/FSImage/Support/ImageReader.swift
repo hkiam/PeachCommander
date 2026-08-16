@@ -100,6 +100,12 @@ final class ImageReader: ByteSource {
     /// partition's driver to its own partition for free.
     private let base: Int64
 
+    /// Where this reader's offset 0 sits in the file, so a caller that opens a *further*
+    /// window can express it in file coordinates. `ImageLayout` needs this: scanning a
+    /// partition for embedded filesystems means opening windows inside a window, and
+    /// adding the two bases is the only way the inner one lands in the right place.
+    var windowOffset: Int64 { base }
+
     /// The whole file.
     convenience init(path: String) throws {
         try self.init(path: path, windowOffset: 0, windowLength: nil)

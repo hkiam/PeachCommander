@@ -72,6 +72,14 @@ final class UBIFSDriver: ImageFilesystemDriver {
         return (try? reader.u8(at: 20)) == 6
     }
 
+    /// The UBI container's erase-counter header, and a bare UBIFS superblock. Firmware
+    /// carries the container far more often than the bare image, which is why "UBI#"
+    /// is listed first.
+    static let carveSignatures = [
+        CarveSignature("UBI#", at: 0),
+        CarveSignature([0x31, 0x18, 0x10, 0x06], at: 0),   // 0x06101831 little-endian
+    ]
+
     /// Open either a bare `.ubifs` image or a `.ubi` container.
     ///
     /// The container case is not a separate driver because it is not a separate

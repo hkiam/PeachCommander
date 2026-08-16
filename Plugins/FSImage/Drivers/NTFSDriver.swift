@@ -69,6 +69,18 @@ final class NTFSDriver: ImageFilesystemDriver {
         (try? reader.bytes(at: 3, count: 8)) == signature
     }
 
+    /// The OEM name field, three bytes into the boot sector.
+    static let carveSignatures = [CarveSignature("NTFS    ", at: 3)]
+
+    static func byteLength(_ reader: ImageReader) -> Int64? {
+        guard let sectors = try? reader.u64le(at: 40), sectors > 0, sectors < Int64.max,
+              let bytesPerSector = try? reader.u16le(at: 11),
+              [512, 1024, 2048, 4096].contains(Int(bytesPerSector)) else { return nil }
+        // NTFS records one sector fewer than the volume holds: the backup boot sector
+        // sits at the very end and is outside the count.
+        return Int64(sectors + 1) * Int64(bytesPerSector)
+    }
+
     init(reader: ImageReader) throws {
         self.reader = reader
         guard try reader.bytes(at: 3, count: 8) == Self.signature else { throw ImageError.notThisFormat }

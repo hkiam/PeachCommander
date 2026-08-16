@@ -37,6 +37,20 @@ Obraz skopírovaný z celého zariadenia máva tabuľku oddielov namiesto jedin�
 
 Oddiel, ktorý modul nevie prečítať, sa aj tak zobrazí ako prázdny priečinok pomenovaný podľa svojho typu. Ak má zariadenie tri oddiely, máte vidieť, že má tri.
 
+## Firmvér bez tabuľky oddielov
+
+Súbor firmvéru vytiahnutý zo smerovača alebo kamery zvyčajne nemá žiadnu tabuľku oddielov. Je to hlavička výrobcu, zavádzač, jadro a rootfs zapísané za sebou na posunoch, ktoré nie sú nikde zaznamenané. Takýto súbor sa otvorí s jednou položkou na každú časť, pomenovanou podľa posunu, kde sa začína: `0x00230044-squashfs` je súborový systém, do ktorého sa dá vstúpiť, `0x00030040-kernel.uimage` súbor na skopírovanie von.
+
+Časti sa nájdu tak, že sa v súbore hľadajú samotné súborové systémy a každý nález sa otvorí, aby sa overilo, či tam naozaj je. Bajtový vzor, ktorý sa zhoduje náhodou, stojí okamih a zahodí sa, namiesto toho, aby sa stal vymyslenou položkou; a súbor, v ktorom sa žiadny súborový systém nenájde, sa naďalej odmieta a otvorí sa tak, ako by sa otvoril vždy.
+
+To isté platí pre všetko, čo leží mimo oddielov rozdeleného obrazu. Raspberry Pi drží svoj zavádzač v megabajtoch pred oddielom 1 a U-Boot sedí na väčšine dosiek ARM na pevnom posune v tom istom nepridelenom priestore. Tieto úseky sa vypisujú vedľa oddielov, aby ste ich videli a mohli skopírovať von.
+
+## Zapísať si rozloženie
+
+**Príkazy ▸ Analyzovať rozloženie obrazu…** uloží výsledok ako textový súbor vedľa obrazu a nastaví naň kurzor: každá oblasť so svojím posunom, veľkosťou a tým, čím sa ukázala byť, plus tabuľka oddielov, ak ju obraz má. Práve túto tabuľku obvykle potrebuje rozbor alebo tiket a zostavovať ju znova prechádzaním panela a odpisovaním čísel je únavná práca.
+
+Správa ukazuje aj to, čo panel vynecháva — napríklad malé zarovnávacie medzery medzi oddielmi — a pomenuje dosku, pre ktorú bolo jadro U-Boot zostavené, ak to obraz zaznamenáva.
+
 ## Práca vnútri obrazu
 
 Platí všetko, čo už poznáte. F3 zobrazí súbor, F5 skopíruje súbory do skutočného priečinka a **Nájsť súbory** prehľadá obsah obrazu. Von sa dostanete rovnako ako z archívu.
@@ -56,4 +70,5 @@ Modul povie prečo, namiesto aby hlásil poškodený súbor, lebo obe možnosti 
 
 - Obraz sa prečíta raz a zapamätá, takže návrat doň je okamžitý.
 - Veľmi veľké obrazy sa čítajú podľa potreby namiesto načítania celé; výpis je obmedzený na dva milióny položiek.
-- Modul nepridáva žiadne príkazy ponuky ani vlastné nastavenia okrem prepínača, ktorý ho zapína.
+- Obraz sa prehľadáva na vnorené súborové systémy len vtedy, keď nemá ani tabuľku oddielov, ani súborový systém na začiatku, takže bežný obraz sa otvorí presne tak rýchlo ako doteraz.
+- Zásuvný modul pridáva jeden príkaz ponuky a žiadne vlastné nastavenia okrem prepínača, ktorý ho zapína.

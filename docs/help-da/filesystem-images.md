@@ -37,6 +37,20 @@ Et billede kopieret fra en hel enhed har som regel en partitionstabel frem for �
 
 En partition, pluginet ikke kan læse, vises alligevel som en tom mappe opkaldt efter sin type. Har en enhed tre partitioner, skal du kunne se, at den har tre.
 
+## Firmware uden partitionstabel
+
+En firmwarefil hentet ud af en router eller et kamera har som regel slet ingen partitionstabel. Den er et producenthoved, en bootloader, en kerne og et rootfs skrevet efter hinanden på positioner, der ikke står nogen steder. Sådan en fil åbner med én post pr. del, hver opkaldt efter den position, den begynder på: `0x00230044-squashfs` er et filsystem at gå ind i, `0x00030040-kernel.uimage` en fil at kopiere ud.
+
+Delene findes ved at gennemsøge filen for selve filsystemerne og åbne hvert fund for at se, om der virkelig ligger et. Et bytemønster, der passer tilfældigt, koster et øjeblik og kasseres i stedet for at blive til en opdigtet post; og en fil, hvori der ikke findes noget filsystem, afvises stadig og åbner, som den altid ville have gjort.
+
+Det samme gælder alt, hvad der ligger uden for partitionerne i et partitioneret billede. En Raspberry Pi holder sin bootloader i de megabyte, der ligger før partition 1, og U-Boot sidder på de fleste ARM-kort på en fast position i netop den ikke-tildelte plads. De strækninger vises ved siden af partitionerne, så du kan se dem og kopiere dem ud.
+
+## At skrive opbygningen ned
+
+**Kommandoer ▸ Analysér diskbilledets opbygning…** gemmer resultatet som en tekstfil ved siden af billedet og sætter markøren på den: hvert område med sin position, sin størrelse og det, det viste sig at være, plus partitionstabellen, hvis billedet har en. Netop den tabel er som regel dét, en gennemgang eller en sag skal bruge, og at bygge den op igen ved at gå et panel igennem og skrive tal af er kedeligt arbejde.
+
+Rapporten viser desuden det, panelet udelader — de små justeringshuller mellem partitioner, for eksempel — og nævner det kort, en U-Boot-kerne er bygget til, når billedet noterer det.
+
 ## At arbejde inde i et billede
 
 Alt det, du kender i forvejen, gælder. F3 viser en fil, F5 kopierer filer ud til en rigtig mappe, og **Find filer** søger i billedets indhold. Du går ud af det, som du forlader et arkiv.
@@ -56,4 +70,5 @@ Pluginet fortæller hvorfor i stedet for at melde en ødelagt fil, for de to fø
 
 - Et billede læses én gang og huskes, så det går øjeblikkeligt at gå ind i det igen.
 - Meget store billeder læses efter behov frem for at blive indlæst helt; en visning er begrænset til to millioner poster.
-- Pluginet tilføjer ingen menukommandoer og ingen egne indstillinger ud over kontakten, der slår det til.
+- Et billede gennemsøges kun for indlejrede filsystemer, når det hverken har en partitionstabel eller et filsystem i begyndelsen, så et almindeligt billede åbner præcis lige så hurtigt som hidtil.
+- Pluginet tilføjer én menukommando og ingen egne indstillinger ud over kontakten, der slår det til.

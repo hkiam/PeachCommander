@@ -18,6 +18,8 @@ source "$ROOT/Tools/lib/pc-universal.sh"
 
 SOURCES=(
   "Plugins/FSImage/fsimage.swift"
+  "Plugins/FSImage/LayoutCommand.swift"
+  "Plugins/SDK/PluginLoc.swift"
   "Plugins/FSImage/Support/ImageReader.swift"
   "Plugins/FSImage/Support/ImageEntry.swift"
   "Plugins/FSImage/Support/Decompressors.swift"
@@ -26,12 +28,16 @@ SOURCES=(
   "Plugins/FSImage/Support/DriverRegistry.swift"
   "Plugins/FSImage/Support/ImageCache.swift"
   "Plugins/FSImage/Support/PartitionTable.swift"
+  "Plugins/FSImage/Support/BlobSignature.swift"
+  "Plugins/FSImage/Support/ImageLayout.swift"
+  "Plugins/FSImage/Support/LayoutReport.swift"
   "Plugins/FSImage/Drivers/NTFSRecord.swift"
   "Plugins/FSImage/Drivers/NTFSDriver.swift"
   "Plugins/FSImage/Drivers/ExFATDriver.swift"
   "Plugins/FSImage/Drivers/FATDriver.swift"
   "Plugins/FSImage/Drivers/CpioDriver.swift"
   "Plugins/FSImage/Drivers/PartitionedDriver.swift"
+  "Plugins/FSImage/Drivers/CarvedDriver.swift"
   "Plugins/FSImage/Drivers/SquashFSMetadata.swift"
   "Plugins/FSImage/Drivers/SquashFSDriver.swift"
   "Plugins/FSImage/Drivers/ExtLayout.swift"
@@ -47,6 +53,14 @@ SOURCES=(
 
 rm -rf "$BUNDLE"; mkdir -p "$BUNDLE/Contents/MacOS"
 cp "$ROOT/Plugins/FSImage/Info.plist" "$BUNDLE/Contents/Info.plist"
+
+# The plugin's own localizations. `L` and the host's title lookup for the contributed
+# command both resolve against this bundle, so without them the Commands entry shows
+# its English key in every language.
+if [ -d "$ROOT/Plugins/FSImage/Resources" ]; then
+  mkdir -p "$BUNDLE/Contents/Resources"
+  cp -R "$ROOT/Plugins/FSImage/Resources/." "$BUNDLE/Contents/Resources/"
+fi
 
 # Zstandard comes from a vendored single-file decoder, so one C translation unit has to
 # be compiled and linked alongside the Swift. clang emits a fat object from several

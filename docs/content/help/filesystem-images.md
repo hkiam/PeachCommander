@@ -37,6 +37,20 @@ An image copied off a whole device usually has a partition table rather than a s
 
 A partition the plugin cannot read still appears, as an empty folder named after its type. If a device has three partitions, you should be able to see that it has three.
 
+## Firmware with no partition table
+
+A firmware file pulled off a router or a camera usually has no partition table at all. It is a vendor header, a bootloader, a kernel and a rootfs written one after another at offsets recorded nowhere. Such a file opens as one entry per part, each named by the offset it begins at: `0x00230044-squashfs` is a filesystem to step into, `0x00030040-kernel.uimage` is a file to copy out.
+
+The parts are found by searching the file for the filesystems themselves and then opening each one to see whether it is really there. A byte pattern that matched by chance costs a moment and is discarded rather than becoming an invented entry, and a file that turns out to hold no filesystem at all is still declined and opens the way it always would have.
+
+The same applies to whatever lies outside the partitions of a partitioned image. A Raspberry Pi keeps its bootloader in the megabytes ahead of partition 1, and U-Boot on most ARM boards sits at a fixed offset in that same unclaimed space. Those runs are listed beside the partitions so you can see them and copy them out.
+
+## Writing down the layout
+
+**Commands ▸ Scan Image Layout…** saves what the scan found as a text file next to the image and puts the cursor on it: every region with its offset, its size and what it turned out to be, along with the partition table if the image has one. That table is usually the thing a teardown or a ticket actually wants, and rebuilding it by walking a panel and copying numbers by hand is tedious work.
+
+The report also shows what the panel leaves out, such as the small alignment gaps between partitions, and it names the board a U-Boot kernel was built for when the image records it.
+
 ## Working inside an image
 
 Everything you already know applies. Press F3 to view a file, F5 to copy files out to a real folder, and use **Find Files** to search the image's contents. Walk out of it the way you leave an archive.
@@ -56,4 +70,5 @@ The plugin tells you why rather than reporting a broken file, because the two le
 
 - An image is read once and remembered, so stepping back into one is immediate.
 - Very large images are read as they are needed rather than loaded whole; a listing is capped at two million entries.
-- The plugin adds no menu commands and no settings of its own beyond the switch that turns it on.
+- Searching an image for embedded filesystems happens only when it has neither a partition table nor a filesystem at its start, so an ordinary image opens exactly as quickly as it always did.
+- The plugin adds one menu command and no settings of its own beyond the switch that turns it on.

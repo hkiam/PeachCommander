@@ -23,5 +23,37 @@
 	     header off every file whose extension matched nothing, and only somebody who
 	     wants a firmware browser should pay for that. -->
 	<key>PCPluginEnabledByDefault</key><false/>
+	<!-- One command, in Commands. It writes a layout report rather than navigating,
+	     because a contributed command can only open real paths (`openPath`) and has no
+	     way to mount an image — pressing Enter on the file is what does that. The
+	     title is looked up in this plugin's own Localizable.strings. -->
+	<key>PCContributions</key>
+	<dict>
+		<key>commands</key>
+		<array>
+			<dict>
+				<key>id</key><string>plugin.fsimage.layout</string>
+				<key>title</key><string>Scan Image Layout…</string>
+				<key>category</key><string>Tools</string>
+			</dict>
+		</array>
+		<key>menus</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.fsimage.layout</string>
+				<key>menu</key><string>Commands</string>
+				<key>group</key><string>2_tools</string>
+				<key>order</key><integer>120</integer>
+			</dict>
+		</array>
+		<key>contextMenus</key>
+		<array>
+			<dict>
+				<key>command</key><string>plugin.fsimage.layout</string>
+				<key>surface</key><string>panel.item</string>
+				<key>group</key><string>9_plugins</string>
+			</dict>
+		</array>
+	</dict>
 </dict>
 </plist>
