@@ -9,8 +9,22 @@
 #include <pthread.h>
 
 // The signals a crashing plugin is likely to raise.
-static const int kSignals[] = { SIGSEGV, SIGBUS, SIGILL, SIGFPE };
-enum { kNumSignals = 4 };
+//
+// SIGTRAP is here because most plugins are written in Swift, and Swift's runtime
+// failures are not any of the other four: an integer overflow, an array index out of
+// range, a nil force-unwrap, a failed `precondition` and `fatalError` all compile to
+// `brk #1` on arm64, which arrives as SIGTRAP. Without it this guard covered the way C
+// crashes and missed the way Swift crashes — which is the common case in this codebase.
+// It was found the way such things are: a plugin trapped on an integer overflow and took
+// the whole test runner down, past a guard that was supposed to contain exactly that.
+//
+// SIGABRT is deliberately *not* here. It is what `abort()` raises, and on Darwin the
+// caller is usually malloc's own corruption detector — at which point the heap is already
+// unsound and carrying on would trade a clean crash for silent corruption somewhere else.
+// The four faults above and a Swift trap all mean "this plugin got something wrong";
+// SIGABRT often means "the process is no longer trustworthy", which is a different claim.
+static const int kSignals[] = { SIGSEGV, SIGBUS, SIGILL, SIGFPE, SIGTRAP };
+enum { kNumSignals = 5 };
 
 // Per-thread recovery point + state, so concurrent guards on different threads
 // don't clobber each other. The handler runs on the crashing thread, so it sees

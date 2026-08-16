@@ -12,6 +12,45 @@ were reconstructed from the git history and the notes in `STATE.md` when it was 
 `README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
 does not have.
 
+## [Unreleased]
+
+### Added
+
+- **Filesystem images open like archives.** Put the cursor on a `rootfs.squashfs`, an SD-card dump or
+  a firmware file, press Enter, and the panel is inside it — the lister, the search and copying all
+  work as they do in a folder. SquashFS, ext2/3/4, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT12/16/32,
+  exFAT and NTFS are read, and a disk image with an MBR or GPT partition table lists one folder per
+  partition. Nothing is ever written to an image. The plugin ships **switched off**: turn it on under
+  Settings ▸ Plugins if you examine device images.
+
+- **Firmware with no partition table is taken apart.** A file pulled off a router or a camera is
+  usually a vendor header, a bootloader, a kernel and a rootfs written one after another at offsets
+  recorded nowhere — such a file used to be refused. It now opens as one entry per part, each named by
+  the offset it starts at: `0x00230044-squashfs` is a filesystem to step into, `0x00030040-kernel.uimage`
+  a file to copy out. The parts are found by searching for the filesystems themselves and confirming
+  each by opening it, so a byte pattern that matched by chance is discarded instead of becoming an
+  invented entry, and a file holding no filesystem is still declined and opens as it always would have.
+
+- **The space outside the partitions is listed too.** A Raspberry Pi keeps its bootloader in the
+  megabytes ahead of partition 1, and U-Boot on most ARM boards at a fixed offset in the same unclaimed
+  space. Those runs now appear beside the partitions and can be copied out, instead of an image that
+  plainly contains a bootloader appearing not to.
+
+- **Commands ▸ Scan Image Layout.** Writes what the scan found as a text file beside the image and puts
+  the cursor on it: every region with its offset, its size and what it turned out to be, plus the
+  partition table if there is one. That table is usually what a teardown or a ticket actually wants,
+  and rebuilding it by walking a panel and copying numbers by hand is tedious.
+
+### Fixed
+
+- **A crashing plugin written in Swift now stops at the plugin, not at the app.** The in-process crash
+  guard caught the four faults C code raises and none of the ways Swift fails — an integer overflow, an
+  index out of range, a nil force-unwrap and `fatalError` all arrive as a different signal, which the
+  guard passed straight through. Every plugin in Peach Commander is written in Swift, so the guard was
+  covering the rare case and missing the common one: such a plugin took the whole app down exactly as
+  if there were no guard at all. It is now caught, the plugin is quarantined for the session, and the
+  app carries on.
+
 ## [0.6.4] — 2026-08-15
 
 ### Added

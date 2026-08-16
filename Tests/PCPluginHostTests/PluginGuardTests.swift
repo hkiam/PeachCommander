@@ -26,6 +26,14 @@ final class PluginGuardTests: XCTestCase {
     // reaches our handler; raise() delivers the signal straight to it). In the
     // shipping app — no debugger attached — a genuine fault also arrives as SIGSEGV.
     void PgCrash(void) { raise(SIGSEGV); }
+    // How Swift fails. An overflow, an out-of-range index, a nil force-unwrap and
+    // fatalError all compile to `brk #1` on arm64 and arrive as SIGTRAP — a different
+    // signal from all four the guard originally caught, which is how a plugin trap
+    // walked straight past it. Raised rather than provoked for the same reason as
+    // above: a real `brk` is a Mach EXC_BREAKPOINT, and under a test harness the
+    // exception server takes it before any POSIX signal is delivered. With no debugger
+    // attached — the shipping app — a genuine Swift trap arrives here as SIGTRAP.
+    void PgSwiftTrap(void) { raise(SIGTRAP); }
     // A normal function.
     int PgAddOne(int x) { return x + 1; }
     """
@@ -75,6 +83,33 @@ final class PluginGuardTests: XCTestCase {
         XCTAssertFalse(called)
 
         // The guard did not poison unrelated plugins.
+        XCTAssertEqual(guardian.guarded("plugin.ok") { addOne(1) }, 2)
+    }
+
+    /// The way a Swift plugin actually crashes.
+    ///
+    /// The guard was written against the four faults C code raises, and every plugin in
+    /// this repository is written in Swift — where an overflow, an out-of-range index, a
+    /// nil force-unwrap and `fatalError` all arrive as SIGTRAP instead. So the guard
+    /// covered the rare case and missed the common one, and nothing said so: a plugin
+    /// that trapped took the host down exactly as if there were no guard at all.
+    ///
+    /// Found by a filesystem-image plugin trapping on an integer overflow and killing the
+    /// test runner, under a per-case guard meant to contain precisely that.
+    func testGuardCatchesASwiftRuntimeTrap() throws {
+        guard let handle = try buildLibrary() else { throw XCTSkip("clang unavailable") }
+        defer { dlclose(handle) }
+        typealias VoidFn = @convention(c) () -> Void
+        typealias IntFn = @convention(c) (Int32) -> Int32
+        let trap = unsafeBitCast(dlsym(handle, "PgSwiftTrap")!, to: VoidFn.self)
+        let addOne = unsafeBitCast(dlsym(handle, "PgAddOne")!, to: IntFn.self)
+
+        let guardian = PluginGuard()
+        let trapped: Int? = guardian.guarded("plugin.swift") { trap(); return 0 }
+        XCTAssertNil(trapped, "a Swift runtime trap must be caught, not fatal")
+        XCTAssertTrue(guardian.isQuarantined("plugin.swift"))
+
+        // And the process is still here to answer, which is the whole claim.
         XCTAssertEqual(guardian.guarded("plugin.ok") { addOne(1) }, 2)
     }
 }

@@ -199,7 +199,9 @@ an incompatible or malformed plugin is rejected up front rather than mid-call.
 `Sources/PCPluginHost/PluginGuard.swift` wraps each synchronous plugin C call. Its
 `guarded(_:_:)` runs the call through the `CPluginGuard` C shim
 (`pc_guard_call`), which installs a `sigsetjmp`/handler for fatal signals
-(SIGSEGV/SIGBUS/SIGILL/SIGFPE). If the plugin raises one of those, the guard catches
+(SIGSEGV/SIGBUS/SIGILL/SIGFPE/SIGTRAP — the last being how every Swift runtime failure
+arrives, which is the common case since the plugins are written in Swift). If the
+plugin raises one of those, the guard catches
 it, returns `nil` instead of propagating the crash, logs it, and **quarantines** the
 plugin id — every subsequent guarded call for that id fails fast for the rest of the
 session:
@@ -222,7 +224,7 @@ sequenceDiagram
             Shim-->>Guard: signo == 0
             Guard-->>Host: result
         else fatal signal
-            Plugin--xShim: SIGSEGV/SIGBUS/...
+            Plugin--xShim: SIGSEGV/SIGTRAP/...
             Shim-->>Guard: signo != 0 (longjmp)
             Guard->>Guard: quarantine(id) + log
             Guard-->>Host: nil

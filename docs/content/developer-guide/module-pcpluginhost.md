@@ -65,7 +65,7 @@ Plugins are macOS bundles containing a dylib that exports flat C functions with 
 
 ### Crash guard
 
-- **`PluginGuard`** (`PluginGuard.swift`) — an `@unchecked Sendable` class (shared singleton `PluginGuard.shared`). `guarded(_ id:_ work:)` runs a synchronous closure under a fatal-signal guard implemented in the `CPluginGuard` C shim (`pc_guard_call`, a `sigsetjmp`-based trampoline catching `SIGSEGV`/`SIGBUS`/`SIGILL`/`SIGFPE`). On a crash it returns `nil`, **quarantines** the plugin id (`quarantine`/`isQuarantined`/`quarantinedIDs`, guarded by an `NSLock`), logs via `PCFoundationLogger`, and skips all future calls to that id for the session (F-230).
+- **`PluginGuard`** (`PluginGuard.swift`) — an `@unchecked Sendable` class (shared singleton `PluginGuard.shared`). `guarded(_ id:_ work:)` runs a synchronous closure under a fatal-signal guard implemented in the `CPluginGuard` C shim (`pc_guard_call`, a `sigsetjmp`-based trampoline catching `SIGSEGV`/`SIGBUS`/`SIGILL`/`SIGFPE`/`SIGTRAP`, the last covering every Swift runtime trap — overflow, index out of range, nil force-unwrap, `fatalError` — which is how a Swift plugin actually crashes. `SIGABRT` is deliberately excluded: on Darwin its usual caller is malloc's corruption detector, where recovering trades a clean crash for silent corruption). On a crash it returns `nil`, **quarantines** the plugin id (`quarantine`/`isQuarantined`/`quarantinedIDs`, guarded by an `NSLock`), logs via `PCFoundationLogger`, and skips all future calls to that id for the session (F-230).
 
 ### Type adapters
 

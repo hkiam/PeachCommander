@@ -61,7 +61,9 @@ A TC-style `pluginst.inf` (`[plugininstall]` with `type` / `file` / `description
 ## Lifecycle & crash guard
 
 Plugin calls run inside `PluginGuard`, a per-thread `sigsetjmp`/`siglongjmp` guard
-that catches `SIGSEGV/SIGBUS/SIGILL/SIGFPE`. If a plugin crashes inside a guarded
+that catches `SIGSEGV/SIGBUS/SIGILL/SIGFPE/SIGTRAP`. SIGTRAP is the one that matters
+most here: a Swift plugin's overflow, out-of-range index, nil force-unwrap and
+`fatalError` all arrive as that and as none of the other four. If a plugin crashes inside a guarded
 call, the call returns an error and the plugin is **quarantined** for the rest of
 the session (not called again). Outside guarded calls the original handlers are
 restored, so ordinary crashes still reach the crash reporter. This is a safety net,
