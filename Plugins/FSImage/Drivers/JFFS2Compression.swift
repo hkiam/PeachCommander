@@ -10,6 +10,13 @@
 // The Rubin coders (`rubinmips`, `dynrubin`) are the other pair. They are arithmetic
 // coders that were already rare when JFFS2 was new, are not produced by any current
 // mkfs.jffs2, and are refused by name rather than guessed at.
+//
+// LZO goes through `LZO.swift`, plain — JFFS2 puts an LZO1X stream straight in the node,
+// with none of the segment framing Btrfs wraps around it. This path was dead for a while
+// without anyone noticing: LZO was wired into `Decompressor` but not into this switch,
+// and Ubuntu's mkfs.jffs2 is built without LZO, so no fixture reached it. Alpine's is
+// built with it, which is what finally produced an image and turned the gap into a
+// failing test.
 
 import Foundation
 
@@ -48,8 +55,13 @@ enum JFFS2Compression {
             throw ImageError.unsupported(
                 reason: "the \(kind == .rubinMips ? "rubinmips" : "dynrubin") compressor is not supported")
         case .lzo:
-            throw ImageError.unsupported(
-                reason: "LZO compression is not supported (no licence-compatible decoder)")
+            // Plain LZO1X on the node payload — no framing of its own, unlike Btrfs.
+            let out = try LZO.decompress(input, maxSize: expectedSize)
+            guard out.count == expectedSize else {
+                throw ImageError.damaged(
+                    reason: "lzo node decoded to \(out.count) bytes, expected \(expectedSize)")
+            }
+            return out
         }
     }
 

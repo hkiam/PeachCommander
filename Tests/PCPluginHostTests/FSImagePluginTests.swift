@@ -617,6 +617,25 @@ final class FSImagePluginTests: XCTestCase {
                        "300 KB through rtime must come back byte for byte")
     }
 
+    /// JFFS2 nodes compressed with LZO — the codec `mkfs.jffs2` prefers above all others
+    /// when it is available.
+    ///
+    /// This fixture exists because the path it covers was **dead**. LZO was wired into the
+    /// shared decompressor when it was written, but JFFS2 keeps its own codec switch and
+    /// that one still refused LZO by name. Nothing failed, because Ubuntu's mkfs.jffs2 is
+    /// built without LZO and no image ever reached it. Alpine's is built with it, and the
+    /// first run against this image turned a silent gap into an error.
+    func testJFFS2LzoCompressedImageReadsIdentically() async throws {
+        let image = try goldenFixture("jffs2-lzo.img")
+        try await assertConformance(image: image, label: "jffs2-lzo")
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:jffs2-lzo") else {
+            return XCTFail("the host could not mount the LZO image")
+        }
+        let data = try await read(fs, "/bin/pattern.dat")
+        XCTAssertEqual(data, Data(Self.patternFileContents),
+                       "300 KB through JFFS2's LZO nodes must come back byte for byte")
+    }
+
     /// A raw NAND dump has out-of-band ECC bytes interleaved with the data, so some
     /// node payloads are cut apart by bytes that are not filesystem content.
     ///
@@ -1235,7 +1254,7 @@ final class FSImagePluginTests: XCTestCase {
     func testNoMutatedImageCrashesHangsOrEscapesTheRoot() throws {
         var sources: [(String, Data)] = []
         for name in ["cramfs-le.img", "cramfs-be.img", "jffs2-le.img", "jffs2-rtime.img",
-                     "btrfs.img", "btrfs-lzo.img", "rootfs.ubifs", "rootfs.ubi", "disk-mbr.img", "fat16.img", "exfat.img", "ntfs.img"] {
+                     "btrfs.img", "btrfs-lzo.img", "jffs2-lzo.img", "rootfs.ubifs", "rootfs.ubi", "disk-mbr.img", "fat16.img", "exfat.img", "ntfs.img"] {
             if let path = try? goldenFixture(name),
                let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
                 sources.append((name, data))
