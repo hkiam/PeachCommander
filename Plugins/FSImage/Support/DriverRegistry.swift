@@ -50,7 +50,19 @@ struct CarveSignature {
 /// every caller already handles nil as "this format does not say".
 func scaledLength(_ count: Int64, by unit: Int64) -> Int64? {
     guard count > 0, unit > 0 else { return nil }
-    let (product, overflowed) = count.multipliedReportingOverflow(by: unit)
+    return checkedProduct(count, unit)
+}
+
+/// `a * b`, or nil when it overflows.
+///
+/// The same hazard as `scaledLength` in the places where zero is a legitimate answer —
+/// a sparse run of no clusters, an empty attribute — so the positivity rule cannot be
+/// folded in. Used wherever a number out of an image is scaled by a geometry field:
+/// an NTFS cluster number times the cluster size is the canonical case, and a boot
+/// sector claiming an MFT at cluster `Int64.max` crashed the plugin through exactly
+/// that multiplication, on an image opened at offset 0 with no carving involved.
+func checkedProduct(_ a: Int64, _ b: Int64) -> Int64? {
+    let (product, overflowed) = a.multipliedReportingOverflow(by: b)
     return overflowed ? nil : product
 }
 

@@ -1236,6 +1236,68 @@ final class FSImagePluginTests: XCTestCase {
     /// reproduced exactly. Length fields get particular attention because they are how
     /// an image tells the parser how much to allocate and how far to walk — every
     /// unchecked one is an out-of-bounds read or an allocation the size of the field.
+    /// The same bytes, moved off offset 0 so that only a scan can find them.
+    ///
+    /// This is the half of the corpus that was missing, and its absence let two crashes
+    /// through. A mutated fixture still probes as its own format at byte 0, so its own
+    /// driver opens it directly and the *carve* path never runs — which means
+    /// `byteLength` never runs either, because nothing else calls it. Both the ext and
+    /// the NTFS overflow lived there, in code the corpus was structurally unable to
+    /// reach no matter how many mutations it made.
+    ///
+    /// The prefix is 467 bytes of values below 128, which is deliberate on both counts:
+    /// an odd length so the filesystem starts aligned to nothing, and a range that
+    /// cannot contain 0xAA, 0xEF or any other byte of a signature the scan looks for, so
+    /// a hit inside the padding is impossible and a hit is always the real fixture.
+    private static func buried(_ image: Data) -> Data {
+        var out = Data((0..<467).map { UInt8(($0 &* 37 &+ 11) % 128) })
+        out.append(image)
+        return out
+    }
+
+    /// Every header field in turn, set to the value that overflows a size calculation.
+    ///
+    /// The random-position mutations above are the wrong instrument for this and burying
+    /// them did not fix it: the corpus reaches the carve path now, but a scatter of
+    /// twenty-eight offsets across a hundred-kilobyte image lands on a superblock field
+    /// essentially never. Reverting the NTFS overflow fix and re-running proved it —
+    /// the corpus stayed green.
+    ///
+    /// So this sweeps instead of sampling, and only where header fields actually live:
+    /// the boot sector, the ext superblock at 1024, the Btrfs superblock at 65536. That
+    /// is a few dozen aligned offsets rather than the whole image, which is what keeps a
+    /// sweep affordable. `0x7FFFFFFFFFFFFFFF` is the value chosen because it is the one
+    /// that survives every "is this positive and plausible" check and then overflows the
+    /// multiplication behind it.
+    ///
+    /// Buried, because `byteLength` — the function this is aimed at — runs only on the
+    /// carve path.
+    private static func headerFieldSweep(of image: Data) -> [(label: String, data: Data)] {
+        let regions: [(name: String, range: Range<Int>)] = [
+            ("boot", 0..<128),              // FAT, exFAT and NTFS boot sectors
+            ("ext-sb", 1024..<1400),        // the ext superblock
+            ("btrfs-sb", 65536..<65700),    // the Btrfs superblock
+        ]
+        var out: [(String, Data)] = []
+        for (name, range) in regions {
+            for offset in stride(from: range.lowerBound, to: range.upperBound, by: 8)
+            where offset + 8 <= image.count {
+                var copy = image
+                for byte in 0..<8 {
+                    copy[copy.startIndex + offset + byte] = byte == 7 ? 0x7F : 0xFF
+                }
+                // Truncated to the header region plus slack. The sweep is aimed at
+                // `byteLength`, which runs on the header the moment a magic matches, so
+                // the rest of the image contributes nothing but scanning time — and a
+                // 32 MB fixture swept sixty times is the difference between this batch
+                // finishing and blowing its deadline, which is how the first attempt
+                // failed.
+                out.append(("sweep-\(name)-\(offset)", buried(copy.prefix(128 << 10))))
+            }
+        }
+        return out
+    }
+
     private static func mutations(of image: Data, count: Int) -> [(label: String, data: Data)] {
         guard image.count > 512 else { return [] }
         var out: [(String, Data)] = []
@@ -1306,12 +1368,22 @@ final class FSImagePluginTests: XCTestCase {
         }
         try XCTSkipIf(sources.isEmpty, "no fixtures available to mutate")
 
-        var cases: [(label: String, path: String)] = []
+        var cases: [(label: String, path: String, buried: Bool)] = []
         for (name, data) in sources {
             for (label, mutated) in Self.mutations(of: data, count: 28) {
                 let url = dir.appendingPathComponent("fuzz-\(name)-\(label)")
                 try mutated.write(to: url)
-                cases.append(("\(name)/\(label)", url.path))
+                cases.append(("\(name)/\(label)", url.path, false))
+
+                // The same bytes again, buried, so the scan is the only way in.
+                let deep = dir.appendingPathComponent("fuzz-\(name)-\(label)-buried")
+                try Self.buried(mutated).write(to: deep)
+                cases.append(("\(name)/\(label)/buried", deep.path, true))
+            }
+            for (label, swept) in Self.headerFieldSweep(of: data) {
+                let url = dir.appendingPathComponent("fuzz-\(name)-\(label)")
+                try swept.write(to: url)
+                cases.append(("\(name)/\(label)", url.path, true))
             }
         }
 
@@ -1327,10 +1399,15 @@ final class FSImagePluginTests: XCTestCase {
         /// corpus every case of which is rejected at the first four bytes exercises
         /// nothing at all, and would pass forever while proving nothing.
         var reachedParser = 0
+        /// Of those, the ones that got there through the scan rather than through a
+        /// driver claiming byte 0. Counted separately because that is the path the
+        /// corpus could not reach at all until now, and a combined number would let it
+        /// stop reaching it again without anybody noticing.
+        var reachedParserBuried = 0
         let finished = DispatchSemaphore(value: 0)
 
         DispatchQueue.global().async { [lib] in
-            for (label, path) in cases {
+            for (label, path, buried) in cases {
                 progress.lock(); current = label; progress.unlock()
                 // A fresh guard and a unique id per case: shared state here would let
                 // the first crash quarantine the plugin and make every later case pass
@@ -1338,7 +1415,10 @@ final class FSImagePluginTests: XCTestCase {
                 let archive = PCXArchive(library: lib!, pluginID: "fuzz-\(label)", guard: PluginGuard())
                 do {
                     let entries = try archive.list(archivePath: path)
-                    progress.lock(); reachedParser += 1; progress.unlock()
+                    progress.lock()
+                    reachedParser += 1
+                    if buried { reachedParserBuried += 1 }
+                    progress.unlock()
                     for entry in entries {
                         if entry.path.hasPrefix("/") || entry.path.split(separator: "/",
                                                                         omittingEmptySubsequences: false)
@@ -1354,13 +1434,19 @@ final class FSImagePluginTests: XCTestCase {
                 } catch {
                     // Reached a parser and was rejected there, which is the outcome a
                     // damaged image should get.
-                    progress.lock(); reachedParser += 1; progress.unlock()
+                    progress.lock()
+                    reachedParser += 1
+                    if buried { reachedParserBuried += 1 }
+                    progress.unlock()
                 }
             }
             finished.signal()
         }
 
-        let deadline = DispatchTime.now() + .seconds(120)
+        // Raised from 120s when the header sweep roughly quadrupled the case count. It
+        // bounds the whole batch, not one case, so it is a hang detector with slack —
+        // not a performance budget.
+        let deadline = DispatchTime.now() + .seconds(300)
         if finished.wait(timeout: deadline) == .timedOut {
             progress.lock(); let stuck = current; progress.unlock()
             return XCTFail("a mutated image did not finish parsing within 120s — stuck on \(stuck)")
@@ -1378,6 +1464,10 @@ final class FSImagePluginTests: XCTestCase {
         XCTAssertGreaterThan(reachedParser, cases.count / 2,
                              "only \(reachedParser) of \(cases.count) mutations got past the magic "
                              + "check — the corpus is not reaching the parsers")
+        XCTAssertGreaterThan(reachedParserBuried, 0,
+                             "no buried mutation was found by scanning — the corpus is back to "
+                             + "testing only what a driver claims at byte 0, which is how two "
+                             + "overflow crashes got through")
     }
 
     /// Even an intact image must never produce a path the host would resolve outside
