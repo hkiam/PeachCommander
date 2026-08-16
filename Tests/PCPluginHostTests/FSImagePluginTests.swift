@@ -1752,6 +1752,91 @@ final class FSImagePluginTests: XCTestCase {
                        "nothing under the threshold should appear: \(blobs.map { "\($0.name)=\($0.size)" })")
     }
 
+    // MARK: - Carving: hostile arithmetic
+    //
+    // The scan asks a driver for its `byteLength` straight after a magic match, before
+    // anything has validated the superblock. Every field it reads at that moment is
+    // whatever the file says, and `*` on Int64 traps rather than wrapping — so a number
+    // in a header is a way to crash the process, not merely to get a wrong answer.
+    // Both of these took the plugin down with SIGTRAP before `scaledLength` existed.
+
+    /// An ext superblock claiming `Int64.max` blocks of 1 KB.
+    func testACraftedBlockCountCannotCrashTheScan() throws {
+        var image = Data((0..<65536).map { UInt8($0 % 251) })
+        let superblock = 2048 + 1024        // a filesystem at 2048, so only carving finds it
+        func put32(_ value: UInt32, at offset: Int) {
+            withUnsafeBytes(of: value.littleEndian) { image.replaceSubrange(offset..<(offset + 4), with: $0) }
+        }
+        put32(0xFFFF_FFFF, at: superblock + 4)      // s_blocks_count_lo
+        put32(0, at: superblock + 24)               // 1 KB blocks
+        put32(0x0000_EF53, at: superblock + 56)     // magic (low half of the word)
+        put32(1, at: superblock + 76)               // s_rev_level
+        put32(0x0080, at: superblock + 96)          // INCOMPAT_64BIT
+        put32(0x7FFF_FFFF, at: superblock + 336)    // s_blocks_count_hi
+
+        let path = dir.appendingPathComponent("ext-overflow.img")
+        try image.write(to: path)
+        XCTAssertNil(PCXArchiveFS(archivePath: path.path, library: lib, fsID: "fsimage:extmax"),
+                     "an impossible block count is refused, not multiplied")
+    }
+
+    /// An NTFS boot sector claiming `Int64.max` sectors of 512 bytes.
+    func testACraftedSectorCountCannotCrashTheScan() throws {
+        var image = Data((0..<65536).map { UInt8($0 % 251) })
+        let boot = 4096
+        image.replaceSubrange((boot + 3)..<(boot + 11), with: Array("NTFS    ".utf8))
+        withUnsafeBytes(of: UInt16(512).littleEndian) {
+            image.replaceSubrange((boot + 11)..<(boot + 13), with: $0)
+        }
+        image[boot + 13] = 8
+        withUnsafeBytes(of: UInt64(0x7FFF_FFFF_FFFF_FFFE).littleEndian) {
+            image.replaceSubrange((boot + 40)..<(boot + 48), with: $0)
+        }
+
+        let path = dir.appendingPathComponent("ntfs-overflow.img")
+        try image.write(to: path)
+        XCTAssertNil(PCXArchiveFS(archivePath: path.path, library: lib, fsID: "fsimage:ntfsmax"),
+                     "an impossible sector count is refused, not multiplied")
+    }
+
+    /// A run of unallocated space larger than the ceiling is listed, not searched.
+    ///
+    /// The bound exists because a whole-drive dump is mostly one such run: searching it
+    /// froze the panel for as long as the disk was large, where before this feature the
+    /// image opened at once. Asserted by behaviour rather than by a stopwatch — a header
+    /// planted deep inside the run must *not* be split out — because a timing assertion
+    /// on a shared machine fails for reasons that have nothing to do with the rule.
+    func testAnOversizedUnallocatedRunIsListedButNotSearched() async throws {
+        let path = dir.appendingPathComponent("bigdisk.img")
+        FileManager.default.createFile(atPath: path.path, contents: nil)
+        let handle = try FileHandle(forWritingTo: path)
+        defer { try? handle.close() }
+
+        var mbr = Data(repeating: 0, count: 512)
+        withUnsafeBytes(of: UInt32(2048).littleEndian) { mbr.replaceSubrange(454..<458, with: $0) }
+        withUnsafeBytes(of: UInt32(2048).littleEndian) { mbr.replaceSubrange(458..<462, with: $0) }
+        mbr[450] = 0x83
+        mbr[510] = 0x55; mbr[511] = 0xAA
+        try handle.write(contentsOf: mbr)
+        // Sparse: 700 MB of hole, past the 512 MB ceiling, costing no disk.
+        try handle.truncate(atOffset: 700 << 20)
+        // A U-Boot header 600 MB in — inside the oversized run, and findable only if the
+        // run were searched.
+        try handle.seek(toOffset: 600 << 20)
+        try handle.write(contentsOf: Data([0x27, 0x05, 0x19, 0x56] + [UInt8](repeating: 0, count: 60)))
+        try handle.close()
+
+        guard let fs = PCXArchiveFS(archivePath: path.path, library: lib,
+                                    fsID: "fsimage:bigdisk") else {
+            return XCTFail("a partitioned image must still mount")
+        }
+        let names = try await collect(fs, "/").map(\.name)
+        XCTAssertFalse(names.contains { $0.hasSuffix("uimage") },
+                       "the oversized run must not be searched for headers: \(names)")
+        XCTAssertTrue(names.contains { $0.hasSuffix("unknown.bin") },
+                      "but it must still be listed and extractable: \(names)")
+    }
+
     // MARK: - The layout report
 
     /// The contributed Commands entry, driven the way the host drives it.

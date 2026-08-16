@@ -49,7 +49,7 @@ Hetzelfde geldt voor alles wat buiten de partities van een gepartitioneerde imag
 
 ## De structuur vastleggen
 
-**Commando’s ▸ Structuur van image analyseren…** bewaart het resultaat als tekstbestand naast de image en zet de cursor erop: elk gebied met zijn positie, zijn grootte en wat het bleek te zijn, plus de partitietabel als de image er een heeft. Juist die tabel is meestal wat een analyse of een ticket nodig heeft, en hem opnieuw opbouwen door een venster af te lopen en getallen over te typen is vervelend werk.
+**Commando’s ▸ Structuur van image analyseren** bewaart het resultaat als tekstbestand naast de image en zet de cursor erop: elk gebied met zijn positie, zijn grootte en wat het bleek te zijn, plus de partitietabel als de image er een heeft. Juist die tabel is meestal wat een analyse of een ticket nodig heeft, en hem opnieuw opbouwen door een venster af te lopen en getallen over te typen is vervelend werk.
 
 Het rapport toont ook wat het venster weglaat — de kleine uitlijningsgaten tussen partities bijvoorbeeld — en noemt het bord waarvoor een U-Boot-kernel is gebouwd, als de image dat vastlegt.
 

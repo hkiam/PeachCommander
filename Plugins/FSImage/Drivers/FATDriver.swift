@@ -81,8 +81,10 @@ final class FATDriver: ImageFilesystemDriver {
         // The 16-bit count is used when it fits and is zero otherwise, in which case
         // the 32-bit field at 32 carries it.
         let sectors = small != 0 ? Int64(small) : Int64(large)
-        guard sectors > 0 else { return nil }
-        return sectors * Int64(bytesPerSector)
+        // Cannot overflow — both factors come from 16- and 32-bit fields — but it goes
+        // through the same helper as the others so the rule is one rule, not a judgement
+        // repeated per driver about which products happen to be safe.
+        return scaledLength(sectors, by: Int64(bytesPerSector))
     }
 
     init(reader: ImageReader) throws {

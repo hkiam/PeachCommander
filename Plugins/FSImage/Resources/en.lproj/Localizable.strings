@@ -1,12 +1,10 @@
 /* Linux Filesystem Images — English (source).
    The keys are the English text; a missing translation falls back to the key. */
 
-/* The Commands-menu entry. The title in Info.plist is looked up here too, so the
-   ellipsis form must match the manifest exactly or the menu shows the raw key. */
-"Scan Image Layout…" = "Scan Image Layout…";
+/* The Commands-menu entry, and the title of any dialog it puts up. No ellipsis:
+   in this app that promises a dialog you must complete, and this command asks for
+   nothing — it writes the report and selects it. */
 
-/* Dialog title, without the ellipsis: the ellipsis promises a dialog, and by the time
-   one is on screen the promise has been kept. */
 "Scan Image Layout" = "Scan Image Layout";
 
 "Put the cursor on a filesystem image first." = "Put the cursor on a filesystem image first.";

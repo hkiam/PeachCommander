@@ -49,7 +49,7 @@ Detsamma gäller allt som ligger utanför partitionerna i en partitionerad avbil
 
 ## Att skriva ner uppbyggnaden
 
-**Kommandon ▸ Analysera avbildningens uppbyggnad…** sparar resultatet som en textfil bredvid avbildningen och sätter markören på den: varje område med sin position, sin storlek och det den visade sig vara, plus partitionstabellen om avbildningen har en. Just den tabellen är oftast vad en genomgång eller ett ärende behöver, och att bygga upp den igen genom att gå igenom en panel och skriva av tal är tråkigt arbete.
+**Kommandon ▸ Analysera avbildningens uppbyggnad** sparar resultatet som en textfil bredvid avbildningen och sätter markören på den: varje område med sin position, sin storlek och det den visade sig vara, plus partitionstabellen om avbildningen har en. Just den tabellen är oftast vad en genomgång eller ett ärende behöver, och att bygga upp den igen genom att gå igenom en panel och skriva av tal är tråkigt arbete.
 
 Rapporten visar också det som panelen utelämnar — de små justeringsluckorna mellan partitioner, till exempel — och namnger kortet som en U-Boot-kärna byggts för, när avbildningen noterar det.
 

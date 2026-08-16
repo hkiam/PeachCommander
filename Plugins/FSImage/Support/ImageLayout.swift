@@ -119,6 +119,24 @@ enum ImageLayout {
         static let maxCarveLength: Int64 = 512 << 20
     }
 
+    /// How much of `reader` a scan will actually search.
+    ///
+    /// `maxCarveLength` bounds the *carving driver*, and for a while that was mistaken
+    /// for bounding the search. It is not: two other callers reach the same code with no
+    /// ceiling at all. `PartitionedDriver` searches the runs outside its partitions, and
+    /// a whole-drive dump is mostly one such run — 500 GB of unallocated tail at the
+    /// measured 400 MB/s is twenty minutes of frozen panel, where before this feature
+    /// existed the image opened instantly. The layout report searches whatever it is
+    /// pointed at, from a menu command with no progress and no cancel.
+    ///
+    /// So the ceiling belongs here, where the searching happens, rather than at one
+    /// entry point. What lies past it is still reported — as one unclaimed region, which
+    /// is what it is — and `LayoutReport` says plainly that the search stopped early
+    /// rather than letting a short list read as a complete one.
+    static func scannedSpan(of reader: ImageReader) -> Int64 {
+        min(reader.count, Limits.maxCarveLength)
+    }
+
     /// Find everything in `reader`, in offset order, covering the file end to end.
     ///
     /// The returned regions are contiguous and non-overlapping, and for any image that is
@@ -175,6 +193,12 @@ enum ImageLayout {
 
             try buffer.withUnsafeBufferPointer { raw in
                 guard let base = raw.baseAddress, raw.count >= longest else { return }
+                // Bounded by the *longest* pattern, so the final few bytes of the span
+                // go unexamined even for shorter ones. Harmless rather than overlooked:
+                // chunks overlap by that same length, so only the true end of the span
+                // is affected, and a filesystem whose magic sits in the last handful of
+                // bytes has no room to be a filesystem — `minFilesystemLength` refuses
+                // it a moment later anyway.
                 let usable = raw.count - longest + 1
                 // Keep the stride aligned to absolute file offsets, not to chunk
                 // starts, or a pattern at an aligned offset is missed in every chunk
@@ -234,7 +258,7 @@ enum ImageLayout {
     private static func findCandidates(in reader: ImageReader) throws -> [Candidate] {
         let patterns = self.patterns
         let hits = try search(reader, patterns: patterns.map(\.magic),
-                              from: 0, to: reader.count, stride: 1,
+                              from: 0, to: scannedSpan(of: reader), stride: 1,
                               limit: Limits.maxCandidates)
 
         var candidates = hits.compactMap { hit -> Candidate? in
@@ -366,10 +390,15 @@ enum ImageLayout {
     /// boundary chops a bootloader into a dozen invented "gzip stream" pieces.
     static func describe(_ reader: ImageReader, from start: Int64,
                          to end: Int64) throws -> [LayoutRegion] {
-        let anchors = try search(reader, patterns: BlobSignature.scanPatterns,
-                                 from: start, to: end, stride: 4,
-                                 limit: Limits.maxCandidates)
-            .map(\.offset).sorted()
+        // A run longer than the ceiling is not searched for headers at all. It still
+        // appears, and still extracts — which is the whole point for a bootloader — but
+        // the unallocated tail of a whole-drive dump is not worth twenty minutes to
+        // confirm that it holds nothing.
+        let anchors = end - start > Limits.maxCarveLength ? [] :
+            try search(reader, patterns: BlobSignature.scanPatterns,
+                       from: start, to: end, stride: 4,
+                       limit: Limits.maxCandidates)
+                .map(\.offset).sorted()
 
         var result: [LayoutRegion] = []
         var cursor = start

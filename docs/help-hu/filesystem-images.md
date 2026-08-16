@@ -49,7 +49,7 @@ Ugyanez vonatkozik mindenre, ami a particionált lemezkép partícióin kívül 
 
 ## A felépítés rögzítése
 
-A **Parancsok ▸ Lemezkép felépítésének elemzése…** szövegfájlként menti az eredményt a lemezkép mellé, és ráállítja a kurzort: minden terület az eltolásával, a méretével és azzal, aminek bizonyult, valamint a partíciós tábla, ha a lemezképnek van ilyen. Rendszerint épp erre a táblázatra van szüksége egy elemzésnek vagy egy hibajegynek, és panelt bejárva, számokat kézzel átmásolva újraépíteni fárasztó munka.
+A **Parancsok ▸ Lemezkép felépítésének elemzése** szövegfájlként menti az eredményt a lemezkép mellé, és ráállítja a kurzort: minden terület az eltolásával, a méretével és azzal, aminek bizonyult, valamint a partíciós tábla, ha a lemezképnek van ilyen. Rendszerint épp erre a táblázatra van szüksége egy elemzésnek vagy egy hibajegynek, és panelt bejárva, számokat kézzel átmásolva újraépíteni fárasztó munka.
 
 A jelentés azt is megmutatja, amit a panel kihagy — például a partíciók közötti kis igazítási réseket —, és megnevezi azt az alaplapot, amelyhez az U-Boot kernelt fordították, ha a lemezkép ezt rögzíti.
 

@@ -49,7 +49,7 @@ Det samme gjelder alt som ligger utenfor partisjonene i et partisjonert avtrykk.
 
 ## Å skrive ned oppbygningen
 
-**Kommandoer ▸ Analyser oppbygningen av avtrykket…** lagrer resultatet som en tekstfil ved siden av avtrykket og setter markøren på den: hvert område med sin posisjon, sin størrelse og det det viste seg å være, pluss partisjonstabellen dersom avtrykket har en. Nettopp den tabellen er som regel det en gjennomgang eller en sak trenger, og å bygge den opp igjen ved å gå gjennom et panel og skrive av tall er kjedelig arbeid.
+**Kommandoer ▸ Analyser oppbygningen av avtrykket** lagrer resultatet som en tekstfil ved siden av avtrykket og setter markøren på den: hvert område med sin posisjon, sin størrelse og det det viste seg å være, pluss partisjonstabellen dersom avtrykket har en. Nettopp den tabellen er som regel det en gjennomgang eller en sak trenger, og å bygge den opp igjen ved å gå gjennom et panel og skrive av tall er kjedelig arbeid.
 
 Rapporten viser også det panelet utelater — de små justeringshullene mellom partisjoner, for eksempel — og navngir kortet en U-Boot-kjerne er bygget for, når avtrykket noterer det.
 

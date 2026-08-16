@@ -49,7 +49,7 @@ Il en va de même pour tout ce qui se trouve en dehors des partitions d’une im
 
 ## Consigner la structure
 
-**Commandes ▸ Analyser la structure de l’image…** enregistre le résultat dans un fichier texte à côté de l’image et y place le curseur : chaque zone avec son décalage, sa taille et ce qu’elle s’est révélée être, ainsi que la table de partitions si l’image en possède une. C’est généralement ce tableau qu’un démontage ou un ticket réclame, et le reconstituer en parcourant un panneau et en recopiant des nombres est un travail fastidieux.
+**Commandes ▸ Analyser la structure de l’image** enregistre le résultat dans un fichier texte à côté de l’image et y place le curseur : chaque zone avec son décalage, sa taille et ce qu’elle s’est révélée être, ainsi que la table de partitions si l’image en possède une. C’est généralement ce tableau qu’un démontage ou un ticket réclame, et le reconstituer en parcourant un panneau et en recopiant des nombres est un travail fastidieux.
 
 Le rapport montre aussi ce que le panneau omet — les petits espaces d’alignement entre partitions, par exemple — et nomme la carte pour laquelle un noyau U-Boot a été compilé lorsque l’image le consigne.
 

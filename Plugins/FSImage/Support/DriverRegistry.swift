@@ -37,6 +37,23 @@ struct CarveSignature {
     }
 }
 
+/// Multiply a count of units by a unit size, refusing rather than trapping.
+///
+/// Both operands come out of an image header, so both are attacker-controlled — and `*`
+/// on `Int64` traps on overflow instead of wrapping. That is a crash, not a wrong answer:
+/// an ext superblock claiming `Int64.max` blocks of 1 KB, and an NTFS boot sector claiming
+/// `Int64.max` sectors of 512 bytes, both took the plugin down with SIGTRAP. Both were
+/// reachable through the carve path, where `byteLength` is asked *before* anything has
+/// validated the superblock — a magic match is the only thing that has happened by then.
+///
+/// A length that cannot be represented is not a length, so nil is the honest answer, and
+/// every caller already handles nil as "this format does not say".
+func scaledLength(_ count: Int64, by unit: Int64) -> Int64? {
+    guard count > 0, unit > 0 else { return nil }
+    let (product, overflowed) = count.multipliedReportingOverflow(by: unit)
+    return overflowed ? nil : product
+}
+
 /// A read-only reader for one on-disk filesystem format.
 ///
 /// The shape is "parse everything at open, then answer from memory" rather than

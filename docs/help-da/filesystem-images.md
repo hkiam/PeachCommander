@@ -49,7 +49,7 @@ Det samme gælder alt, hvad der ligger uden for partitionerne i et partitioneret
 
 ## At skrive opbygningen ned
 
-**Kommandoer ▸ Analysér diskbilledets opbygning…** gemmer resultatet som en tekstfil ved siden af billedet og sætter markøren på den: hvert område med sin position, sin størrelse og det, det viste sig at være, plus partitionstabellen, hvis billedet har en. Netop den tabel er som regel dét, en gennemgang eller en sag skal bruge, og at bygge den op igen ved at gå et panel igennem og skrive tal af er kedeligt arbejde.
+**Kommandoer ▸ Analysér diskbilledets opbygning** gemmer resultatet som en tekstfil ved siden af billedet og sætter markøren på den: hvert område med sin position, sin størrelse og det, det viste sig at være, plus partitionstabellen, hvis billedet har en. Netop den tabel er som regel dét, en gennemgang eller en sag skal bruge, og at bygge den op igen ved at gå et panel igennem og skrive tal af er kedeligt arbejde.
 
 Rapporten viser desuden det, panelet udelader — de små justeringshuller mellem partitioner, for eksempel — og nævner det kort, en U-Boot-kerne er bygget til, når billedet noterer det.
 

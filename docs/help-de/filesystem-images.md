@@ -49,7 +49,7 @@ Dasselbe gilt für alles, was außerhalb der Partitionen eines partitionierten I
 
 ## Den Aufbau festhalten
 
-**Befehle ▸ Image-Aufbau analysieren…** legt das Ergebnis als Textdatei neben dem Image ab und setzt den Cursor darauf: jeder Bereich mit Offset, Größe und dem, was er sich als sein herausgestellt hat, dazu die Partitionstabelle, sofern das Image eine hat. Genau diese Tabelle will eine Analyse oder ein Ticket meistens haben, und sie durch Ablaufen eines Panels und Abschreiben von Zahlen wiederherzustellen ist mühsame Arbeit.
+**Befehle ▸ Image-Aufbau analysieren** legt das Ergebnis als Textdatei neben dem Image ab und setzt den Cursor darauf: jeder Bereich mit Offset, Größe und dem, was er sich als sein herausgestellt hat, dazu die Partitionstabelle, sofern das Image eine hat. Genau diese Tabelle will eine Analyse oder ein Ticket meistens haben, und sie durch Ablaufen eines Panels und Abschreiben von Zahlen wiederherzustellen ist mühsame Arbeit.
 
 Der Bericht zeigt außerdem, was das Panel weglässt — etwa die kleinen Ausrichtungslücken zwischen Partitionen — und nennt das Board, für das ein U-Boot-Kernel gebaut wurde, wenn das Image es festhält.
 
