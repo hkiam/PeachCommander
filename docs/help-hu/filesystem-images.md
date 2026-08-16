@@ -41,6 +41,8 @@ Az a partíció, amelyet a bővítmény nem tud olvasni, akkor is megjelenik: ü
 
 Az útválasztóból vagy kamerából kimentett firmware-fájlnak rendszerint egyáltalán nincs partíciós táblája. Gyártói fejléc, rendszertöltő, kernel és rootfs egymás után kiírva olyan eltolásokra, amelyeket sehol sem jegyeztek fel. Az ilyen fájl részenként egy-egy bejegyzéssel nyílik meg, mindegyik arról az eltolásról elnevezve, ahol kezdődik: a `0x00230044-squashfs` fájlrendszer, amelybe be lehet lépni, a `0x00030040-kernel.uimage` pedig kimásolható fájl.
 
+![Egy panel egy útválasztó firmware-fájljának belsejében: a gyártói fejléc, az U-Boot kernel és a SquashFS gyökér-fájlrendszer, mindegyik arról az eltolásról elnevezve, ahol kezdődik](screenshots/filesystem-images-carved.png)
+
 A részeket úgy találja meg, hogy magukat a fájlrendszereket keresi a fájlban, majd mindegyik találatot megnyitja, hogy kiderüljön, valóban ott van-e. A véletlenül egyező bájtminta egy pillanatba kerül, és elvetésre kerül ahelyett, hogy kitalált bejegyzéssé válna; a fájl pedig, amelyben nem található fájlrendszer, továbbra is elutasításra kerül, és úgy nyílik meg, ahogy mindig is.
 
 Ugyanez vonatkozik mindenre, ami a particionált lemezkép partícióin kívül esik. A Raspberry Pi az 1. partíció előtti megabájtokban tartja a rendszertöltőjét, az U-Boot pedig a legtöbb ARM-alaplapon rögzített eltolásban ül ugyanebben a le nem foglalt térben. Ezek a szakaszok a partíciók mellett jelennek meg, hogy láthassa és kimásolhassa őket.

@@ -63,7 +63,11 @@ struct LayoutRegion {
     /// The offset is in the name because in a carved image it is the identifying fact —
     /// there are no names on disk to use instead, two regions of one type are told apart
     /// only by where they begin, and anyone moving on to `dd` needs the number anyway.
-    /// Fixed-width hex so an alphabetical sort is also an offset sort.
+    ///
+    /// Fixed-width hex, so sorting the names lexically sorts them by offset. Whether a
+    /// given listing does sort them that way is the host's business — the panel orders a
+    /// virtual filesystem its own way — but a name that cannot be sorted meaningfully at
+    /// all would be this file's fault, and this one can.
     var entryName: String {
         "\(String(format: "0x%08llx", offset))-\(typeName)"
     }

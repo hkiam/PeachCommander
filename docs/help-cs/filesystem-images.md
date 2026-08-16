@@ -41,6 +41,8 @@ Oddíl, který modul neumí přečíst, se přesto zobrazí jako prázdná slož
 
 Soubor firmwaru vytažený ze směrovače nebo kamery obvykle nemá žádnou tabulku oddílů. Je to hlavička výrobce, zavaděč, jádro a rootfs zapsané za sebou na posunech, které nejsou nikde zaznamenány. Takový soubor se otevře s jednou položkou na každou část, pojmenovanou podle posunu, kde začíná: `0x00230044-squashfs` je souborový systém, do kterého lze vstoupit, `0x00030040-kernel.uimage` soubor ke zkopírování ven.
 
+![Panel uvnitř souboru firmwaru směrovače s hlavičkou výrobce, jádrem U-Boot a kořenovým souborovým systémem SquashFS, každý pojmenovaný podle posunu, kde začíná](screenshots/filesystem-images-carved.png)
+
 Části se najdou tak, že se v souboru hledají samotné souborové systémy a každý nález se otevře, aby se ověřilo, zda tam opravdu je. Bajtový vzor, který se shoduje náhodou, stojí okamžik a je zahozen, místo aby se stal vymyšlenou položkou; a soubor, v němž se žádný souborový systém nenajde, je nadále odmítnut a otevře se tak, jak by se otevřel vždy.
 
 Totéž platí pro vše, co leží mimo oddíly rozděleného obrazu. Raspberry Pi drží svůj zavaděč v megabajtech před oddílem 1 a U-Boot sedí na většině desek ARM na pevném posunu v témže nepřiděleném prostoru. Tyto úseky se vypisují vedle oddílů, abyste je viděli a mohli je zkopírovat ven.

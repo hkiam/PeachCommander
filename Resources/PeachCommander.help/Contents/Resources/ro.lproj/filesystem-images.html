@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imagini de sisteme de fișiere</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Imagini de sisteme de fișiere</h1>
+<p>O imagine de sistem de fișiere este un fișier care conține un sistem de fișiere întreg — rootfs-ul dintr-o actualizare de router, un card SD copiat octet cu octet, imaginea unui dispozitiv pe care îl examinați. Modulul <strong>Linux Filesystem Images</strong> deschide una așa cum Peach Commander deschide o arhivă: puneți cursorul pe ea, apăsați Enter, iar panoul ajunge în interiorul sistemului de fișiere. De acolo, vizualizatorul, căutarea și copierea funcționează exact ca într-un dosar.</p>
+<p>Într-o imagine nu se scrie niciodată. Modulul poate doar să citească.</p>
+<h2 id="activati-l-mai-intai">Activați-l mai întâi</h2>
+<p>Modulul este livrat dezactivat. Deschideți <strong>Preferințe ▸ Module</strong>, găsiți <strong>Linux Filesystem Images</strong> și activați-l.</p>
+<p>Este dezactivat implicit din cauza felului în care găsește imaginile. Firmware-ul are rareori un nume îngrijit — fișierul căutat se numește <code>firmware.bin</code>, <code>rootfs.img</code> sau pur și simplu <code>dump</code> cel puțin la fel de des ca <code>.squashfs</code> — așa că atunci când extensia nu spune nimic, modulul se uită la primii octeți. Este exact ce trebuie dacă examinați imagini de dispozitive și muncă inutilă în caz contrar. Activarea este felul în care spuneți care dintre cele două este cazul dumneavoastră.</p>
+<p>Un fișier care se dovedește a nu fi o imagine rămâne neatins după acea singură privire și se deschide așa cum s-ar fi deschis mereu.</p>
+<h2 id="ce-poate-deschide">Ce poate deschide</h2>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Unde îl întâlniți</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SquashFS</td>
+<td>Rootfs-ul din aproape orice firmware de routere, camere și decodoare</td>
+</tr>
+<tr>
+<td>ext2, ext3, ext4</td>
+<td>Partiția principală a majorității dispozitivelor Linux încorporate</td>
+</tr>
+<tr>
+<td>Btrfs</td>
+<td>Volume NAS și sisteme Linux mai noi, inclusiv instantanee</td>
+</tr>
+<tr>
+<td>JFFS2, UBIFS</td>
+<td>Memorie flash brută din hardware încorporat vechi și actual</td>
+</tr>
+<tr>
+<td>cramfs, initramfs</td>
+<td>Sisteme de fișiere de pornire și dispozitive vechi cu viață lungă</td>
+</tr>
+<tr>
+<td>FAT12, FAT16, FAT32</td>
+<td>Carduri SD, stickuri USB și partiția EFI a oricărui PC modern</td>
+</tr>
+<tr>
+<td>exFAT</td>
+<td>Carduri SD și unități de peste 32 GB</td>
+</tr>
+<tr>
+<td>NTFS</td>
+<td>Volume Windows, inclusiv fișiere comprimate</td>
+</tr>
+</tbody>
+</table>
+<h2 id="imagini-de-disc-cu-mai-multe-partitii">Imagini de disc cu mai multe partiții</h2>
+<p>O imagine copiată de pe un dispozitiv întreg are de obicei o tabelă de partiții, nu un singur sistem de fișiere. O astfel de imagine se deschide ca un dosar pentru fiecare partiție — <code>1-rootfs</code>, <code>2-esp</code> — și intrați în cea pe care o doriți. Se citesc atât tabelele MBR, cât și cele GPT, iar acolo unde tabela reține nume de partiții, acele nume sunt folosite.</p>
+<p>O partiție pe care modulul nu o poate citi apare totuși, ca dosar gol numit după tipul ei. Dacă un dispozitiv are trei partiții, trebuie să puteți vedea că are trei.</p>
+<h2 id="firmware-fara-tabela-de-partitii">Firmware fără tabelă de partiții</h2>
+<p>Un fișier de firmware extras dintr-un router sau dintr-o cameră nu are de obicei nicio tabelă de partiții. Este un antet al producătorului, un încărcător de pornire, un nucleu și un rootfs scrise unul după altul la decalaje consemnate nicăieri. Un astfel de fișier se deschide cu câte o intrare pentru fiecare parte, denumită după decalajul de la care începe: <code>0x00230044-squashfs</code> este un sistem de fișiere în care se poate intra, iar <code>0x00030040-kernel.uimage</code> un fișier de copiat afară.</p>
+<p><img alt="Un panou în interiorul unui fișier de firmware de router, cu antetul producătorului, nucleul U-Boot și sistemul de fișiere rădăcină SquashFS, fiecare denumit după decalajul de la care începe" src="images/filesystem-images-carved.png" /></p>
+<p>Părțile sunt găsite căutând în fișier chiar sistemele de fișiere și deschizând fiecare potrivire pentru a vedea dacă există într-adevăr unul acolo. Un tipar de octeți care se potrivește din întâmplare costă o clipă și este înlăturat în loc să devină o intrare inventată; iar un fișier în care nu se găsește niciun sistem de fișiere este în continuare refuzat și se deschide așa cum s-ar fi deschis dintotdeauna.</p>
+<p>Același lucru este valabil pentru tot ce se află în afara partițiilor unei imagini partiționate. Un Raspberry Pi își ține încărcătorul de pornire în megaocteții dinaintea partiției 1, iar U-Boot stă pe majoritatea plăcilor ARM la un decalaj fix în același spațiu nealocat. Acele porțiuni sunt listate lângă partiții, ca să le puteți vedea și copia afară.</p>
+<h2 id="consemnarea-structurii">Consemnarea structurii</h2>
+<p><strong>Comenzi ▸ Analizează structura imaginii…</strong> salvează rezultatul ca fișier text lângă imagine și pune cursorul pe el: fiecare regiune cu decalajul, dimensiunea și ceea ce s-a dovedit a fi, plus tabela de partiții dacă imaginea are una. De obicei tocmai acest tabel îi trebuie unei analize sau unui tichet, iar reconstruirea lui parcurgând un panou și copiind cifre de mână este o muncă anevoioasă.</p>
+<p>Raportul arată și ceea ce panoul omite — micile spații de aliniere dintre partiții, de exemplu — și numește placa pentru care a fost compilat un nucleu U-Boot, atunci când imaginea consemnează acest lucru.</p>
+<h2 id="lucrul-in-interiorul-unei-imagini">Lucrul în interiorul unei imagini</h2>
+<p>Tot ce știți deja rămâne valabil. F3 afișează un fișier, F5 copiază fișiere într-un dosar real, iar <strong>Caută fișiere</strong> caută în conținutul imaginii. Ieșiți din ea așa cum ieșiți dintr-o arhivă.</p>
+<p>Legăturile simbolice sunt afișate cu numele lor, iar copierea uneia în afară vă dă un mic fișier text cu ținta legăturii în loc de o legătură reală — unei imagini nu i se poate permite să pună o legătură care indică oriunde pe propriul dumneavoastră disc.</p>
+<h2 id="cand-o-imagine-nu-se-deschide">Când o imagine nu se deschide</h2>
+<p>Modulul vă spune de ce, în loc să raporteze un fișier stricat, fiindcă cele două vă duc în locuri diferite:</p>
+<ul>
+<li><strong>Un volum Btrfs cu RAID0, RAID10, RAID5 sau RAID6</strong>, ori întins pe mai multe dispozitive. Datele sunt împrăștiate pe discuri, iar cea mai mare parte nu se află în fișierul pe care îl aveți.</li>
+<li><strong>O descărcare NAND brută care încă își conține zona de rezervă.</strong> Imaginea nu are nimic; a fost copiată împreună cu octeții de corecție a erorilor. Copiați-o din nou cu <code>nanddump --omitoob</code>.</li>
+<li><strong>Un volum ext4 sau NTFS criptat</strong>, care nu poate fi citit fără cheile sale.</li>
+<li><strong>Un sistem de fișiere ext demontat necurat</strong> se deschide totuși, dar cu o intrare marcată în vârful rădăcinii care avertizează că este posibil ca ce conține să fie învechit. Sistemul de fișiere a fost copiat în timp ce era folosit, iar cele mai recente modificări se află într-un jurnal pe care acest modul nu îl reia. Rulați <code>e2fsck</code> pe o copie dacă detaliile contează.</li>
+</ul>
+<h2 id="note">Note</h2>
+<ul>
+<li>O imagine este citită o dată și ținută minte, așa că revenirea în ea este imediată.</li>
+<li>Imaginile foarte mari sunt citite pe măsură ce e nevoie, nu încărcate în întregime; o listare este plafonată la două milioane de intrări.</li>
+<li>O imagine este căutată pentru sisteme de fișiere încorporate doar când nu are nici tabelă de partiții, nici sistem de fișiere la început, așa că o imagine obișnuită se deschide exact la fel de repede ca înainte.</li>
+<li>Pluginul adaugă o comandă de meniu și nicio setare proprie în afara comutatorului care îl activează.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Pluginuri</a></li><li><a href="archives.html">Lucrul cu arhive</a></li><li><a href="settings.html">Setări</a></li><li><a href="viewing-files.html">Vizualizarea fișierelor</a></li></ul></section>
+</main>
+</body>
+</html>

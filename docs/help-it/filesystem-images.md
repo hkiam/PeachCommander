@@ -41,6 +41,8 @@ Una partizione che il plugin non sa leggere compare comunque, come cartella vuot
 
 Un file di firmware estratto da un router o da una telecamera di solito non ha alcuna tabella delle partizioni. È un’intestazione del produttore, un bootloader, un kernel e un rootfs scritti uno dopo l’altro a offset annotati da nessuna parte. Un file simile si apre con una voce per ciascuna parte, ognuna chiamata come l’offset da cui inizia: `0x00230044-squashfs` è un file system in cui entrare, `0x00030040-kernel.uimage` un file da copiare fuori.
 
+![Un pannello all’interno di un file di firmware di un router, con l’intestazione del produttore, il kernel U-Boot e il file system radice SquashFS, ognuno chiamato come l’offset da cui inizia](screenshots/filesystem-images-carved.png)
+
 Le parti si trovano cercando nel file i file system stessi e aprendo ogni riscontro per vedere se ce n’è davvero uno. Uno schema di byte che coincide per caso costa un istante e viene scartato invece di diventare una voce inventata; e un file in cui non si trova alcun file system viene ancora rifiutato e si apre come si sarebbe sempre aperto.
 
 Lo stesso vale per tutto ciò che sta fuori dalle partizioni di un’immagine partizionata. Un Raspberry Pi tiene il proprio bootloader nei megabyte che precedono la partizione 1, e U-Boot occupa sulla maggior parte delle schede ARM un offset fisso nello stesso spazio non assegnato. Quei tratti compaiono accanto alle partizioni, così potete vederli e copiarli fuori.

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filsystemsavbilder</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Filsystemsavbilder</h1>
+<p>En filsystemsavbild är en fil som innehåller ett helt filsystem — rootfs från en routeruppdatering, ett SD-kort kopierat byte för byte, avbilden av en enhet du undersöker. Insticksmodulen <strong>Linux Filesystem Images</strong> öppnar en sådan som Peach Commander öppnar ett arkiv: ställ markören på den, tryck på Retur, och panelen står inne i filsystemet. Därifrån fungerar visaren, sökningen och kopieringen precis som i en mapp.</p>
+<p>Det skrivs aldrig till en avbild. Insticksmodulen kan bara läsa.</p>
+<h2 id="sla-pa-den-forst">Slå på den först</h2>
+<p>Insticksmodulen levereras avstängd. Öppna <strong>Inställningar ▸ Insticksmoduler</strong>, leta upp <strong>Linux Filesystem Images</strong> och slå på den.</p>
+<p>Den är avstängd som standard på grund av hur den hittar avbilder. Fast programvara har sällan ett städat namn — filen du söker heter minst lika ofta <code>firmware.bin</code>, <code>rootfs.img</code> eller bara <code>dump</code> som <code>.squashfs</code> — så när filändelsen inte säger något tittar insticksmodulen på de första byten för att avgöra saken. Det är precis rätt om du undersöker enhetsavbilder, och bortkastat arbete annars. Att slå på den är ditt sätt att säga vilket av de två som gäller dig.</p>
+<p>En fil som visar sig inte vara en avbild lämnas orörd efter den enda blicken och öppnas som den alltid skulle ha gjort.</p>
+<h2 id="vad-den-kan-oppna">Vad den kan öppna</h2>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Var du möter det</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SquashFS</td>
+<td>Rootfs i nästan all fast programvara för routrar, kameror och digitalboxar</td>
+</tr>
+<tr>
+<td>ext2, ext3, ext4</td>
+<td>Huvudpartitionen på de flesta inbyggda Linux-enheter</td>
+</tr>
+<tr>
+<td>Btrfs</td>
+<td>NAS-volymer och nyare Linux-system, ögonblicksbilder inkluderade</td>
+</tr>
+<tr>
+<td>JFFS2, UBIFS</td>
+<td>Rått flashminne i äldre och nuvarande inbyggd maskinvara</td>
+</tr>
+<tr>
+<td>cramfs, initramfs</td>
+<td>Startfilsystem och långlivade äldre enheter</td>
+</tr>
+<tr>
+<td>FAT12, FAT16, FAT32</td>
+<td>SD-kort, USB-minnen och EFI-partitionen på varje modern PC</td>
+</tr>
+<tr>
+<td>exFAT</td>
+<td>SD-kort och enheter över 32 GB</td>
+</tr>
+<tr>
+<td>NTFS</td>
+<td>Windows-volymer, även med komprimerade filer</td>
+</tr>
+</tbody>
+</table>
+<h2 id="diskavbilder-med-flera-partitioner">Diskavbilder med flera partitioner</h2>
+<p>En avbild kopierad från en hel enhet har oftast en partitionstabell i stället för ett enda filsystem. En sådan avbild öppnas som en mapp per partition — <code>1-rootfs</code>, <code>2-esp</code> — och du går in i den du vill. Både MBR- och GPT-tabeller läses, och där tabellen innehåller partitionsnamn används de namnen.</p>
+<p>En partition som insticksmodulen inte kan läsa visas ändå, som en tom mapp uppkallad efter sin typ. Har en enhet tre partitioner ska du kunna se att den har tre.</p>
+<h2 id="fast-programvara-utan-partitionstabell">Fast programvara utan partitionstabell</h2>
+<p>En fil med fast programvara hämtad ur en router eller en kamera har som regel ingen partitionstabell alls. Den är ett tillverkarhuvud, en starthanterare, en kärna och ett rootfs skrivna efter varandra på positioner som inte är noterade någonstans. En sådan fil öppnas med en post per del, var och en uppkallad efter positionen där den börjar: <code>0x00230044-squashfs</code> är ett filsystem att gå in i, <code>0x00030040-kernel.uimage</code> en fil att kopiera ut.</p>
+<p><img alt="En panel inuti en routers fil med fast programvara: tillverkarhuvudet, U-Boot-kärnan och SquashFS-rotfilsystemet, var och en uppkallad efter positionen där den börjar" src="images/filesystem-images-carved.png" /></p>
+<p>Delarna hittas genom att filen genomsöks efter själva filsystemen och varje träff öppnas för att se om det verkligen ligger ett där. Ett bytemönster som råkar stämma kostar ett ögonblick och förkastas i stället för att bli en påhittad post; och en fil där inget filsystem står att finna avvisas fortfarande och öppnas som den alltid skulle ha gjort.</p>
+<p>Detsamma gäller allt som ligger utanför partitionerna i en partitionerad avbildning. En Raspberry Pi håller sin starthanterare i megabytena före partition 1, och U-Boot sitter på de flesta ARM-kort på en fast position i samma otilldelade utrymme. Dessa sträckor listas bredvid partitionerna så att du kan se dem och kopiera ut dem.</p>
+<h2 id="att-skriva-ner-uppbyggnaden">Att skriva ner uppbyggnaden</h2>
+<p><strong>Kommandon ▸ Analysera avbildningens uppbyggnad…</strong> sparar resultatet som en textfil bredvid avbildningen och sätter markören på den: varje område med sin position, sin storlek och det den visade sig vara, plus partitionstabellen om avbildningen har en. Just den tabellen är oftast vad en genomgång eller ett ärende behöver, och att bygga upp den igen genom att gå igenom en panel och skriva av tal är tråkigt arbete.</p>
+<p>Rapporten visar också det som panelen utelämnar — de små justeringsluckorna mellan partitioner, till exempel — och namnger kortet som en U-Boot-kärna byggts för, när avbildningen noterar det.</p>
+<h2 id="att-arbeta-inuti-en-avbild">Att arbeta inuti en avbild</h2>
+<p>Allt du redan kan gäller. F3 visar en fil, F5 kopierar filer ut till en riktig mapp, och <strong>Sök filer</strong> söker i avbildens innehåll. Du går ut ur den som du lämnar ett arkiv.</p>
+<p>Symboliska länkar visas med sitt namn, och kopierar du ut en får du en liten textfil med länkens mål i stället för en riktig länk — en avbild får inte tillåtas placera en länk som pekar var som helst på din egen disk.</p>
+<h2 id="nar-en-avbild-inte-oppnas">När en avbild inte öppnas</h2>
+<p>Insticksmodulen säger varför i stället för att rapportera en trasig fil, eftersom de två leder dig till olika ställen:</p>
+<ul>
+<li><strong>En Btrfs-volym med RAID0, RAID10, RAID5 eller RAID6</strong>, eller utspridd över flera enheter. Data ligger spritt över diskar och det mesta finns inte i filen du har.</li>
+<li><strong>En rå NAND-dump som fortfarande innehåller sitt reservområde.</strong> Det är inget fel på avbilden; den kopierades med felrättningsbyten kvar. Kopiera den igen med <code>nanddump --omitoob</code>.</li>
+<li><strong>En krypterad ext4- eller NTFS-volym</strong>, som inte går att läsa utan sina nycklar.</li>
+<li><strong>Ett ext-filsystem som inte kopplades från rent</strong> öppnas ändå, men med en markerad post högst upp i roten som varnar för att innehållet kan vara inaktuellt. Filsystemet kopierades medan det användes, och de senaste ändringarna ligger i en journal som den här insticksmodulen inte spelar upp. Kör <code>e2fsck</code> på en kopia om detaljerna spelar roll.</li>
+</ul>
+<h2 id="anmarkningar">Anmärkningar</h2>
+<ul>
+<li>En avbild läses en gång och kommer ihåg, så att gå in i den igen sker omedelbart.</li>
+<li>Mycket stora avbilder läses efter behov i stället för att laddas i sin helhet; en lista är begränsad till två miljoner poster.</li>
+<li>En avbildning genomsöks efter inbäddade filsystem endast när den varken har en partitionstabell eller ett filsystem i början, så en vanlig avbildning öppnas precis lika snabbt som förut.</li>
+<li>Insticksmodulen lägger till ett menykommando och inga egna inställningar utöver reglaget som slår på den.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Insticksprogram</a></li><li><a href="archives.html">Arbeta med arkiv</a></li><li><a href="settings.html">Inställningar</a></li><li><a href="viewing-files.html">Visa filer</a></li></ul></section>
+</main>
+</body>
+</html>

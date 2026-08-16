@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Obrazy súborových systémov</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Obrazy súborových systémov</h1>
+<p>Obraz súborového systému je súbor obsahujúci celý súborový systém — rootfs z aktualizácie routera, kartu SD skopírovanú bajt po bajte, obraz zariadenia, ktoré skúmate. Zásuvný modul <strong>Linux Filesystem Images</strong> takýto súbor otvorí tak, ako Peach Commander otvára archív: umiestnite naň kurzor, stlačte Enter a panel bude vnútri súborového systému. Odtiaľ prehliadač, hľadanie aj kopírovanie fungujú presne ako v priečinku.</p>
+<p>Do obrazu sa nikdy nezapisuje. Zásuvný modul vie iba čítať.</p>
+<h2 id="najprv-ho-zapnite">Najprv ho zapnite</h2>
+<p>Zásuvný modul sa dodáva vypnutý. Otvorte <strong>Nastavenia ▸ Zásuvné moduly</strong>, nájdite <strong>Linux Filesystem Images</strong> a zapnite ho.</p>
+<p>Predvolene je vypnutý pre spôsob, akým obrazy nachádza. Firmvér máva zriedka upratané meno — hľadaný súbor sa volá <code>firmware.bin</code>, <code>rootfs.img</code> alebo jednoducho <code>dump</code> prinajmenšom tak často ako <code>.squashfs</code> — takže keď prípona nič nehovorí, modul sa pozrie na prvé bajty. To je presne to pravé, ak skúmate obrazy zariadení, a zbytočná práca, ak nie. Zapnutie je spôsob, ako poviete, ktorý z tých dvoch prípadov je ten váš.</p>
+<p>Súbor, ktorý sa ukáže nebyť obrazom, ostane po tomto jedinom pohľade nedotknutý a otvorí sa tak, ako by sa otvoril vždy.</p>
+<h2 id="co-dokaze-otvorit">Čo dokáže otvoriť</h2>
+<table>
+<thead>
+<tr>
+<th>Formát</th>
+<th>Kde ho stretnete</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SquashFS</td>
+<td>Rootfs takmer každého firmvéru routerov, kamier a set-top boxov</td>
+</tr>
+<tr>
+<td>ext2, ext3, ext4</td>
+<td>Hlavný oddiel väčšiny vstavaných zariadení s Linuxom</td>
+</tr>
+<tr>
+<td>Btrfs</td>
+<td>Zväzky NAS a novšie systémy Linux vrátane snímok</td>
+</tr>
+<tr>
+<td>JFFS2, UBIFS</td>
+<td>Surová pamäť flash v staršom aj súčasnom vstavanom hardvéri</td>
+</tr>
+<tr>
+<td>cramfs, initramfs</td>
+<td>Zavádzacie súborové systémy a dlhoveké staršie zariadenia</td>
+</tr>
+<tr>
+<td>FAT12, FAT16, FAT32</td>
+<td>Karty SD, USB kľúče a oddiel EFI každého moderného počítača</td>
+</tr>
+<tr>
+<td>exFAT</td>
+<td>Karty SD a disky nad 32 GB</td>
+</tr>
+<tr>
+<td>NTFS</td>
+<td>Zväzky Windows vrátane komprimovaných súborov</td>
+</tr>
+</tbody>
+</table>
+<h2 id="obrazy-diskov-s-viacerymi-oddielmi">Obrazy diskov s viacerými oddielmi</h2>
+<p>Obraz skopírovaný z celého zariadenia máva tabuľku oddielov namiesto jediného súborového systému. Takýto obraz sa otvorí ako jeden priečinok na oddiel — <code>1-rootfs</code>, <code>2-esp</code> — a vstúpite do toho, ktorý chcete. Čítajú sa tabuľky MBR aj GPT, a kde tabuľka obsahuje názvy oddielov, použijú sa tieto názvy.</p>
+<p>Oddiel, ktorý modul nevie prečítať, sa aj tak zobrazí ako prázdny priečinok pomenovaný podľa svojho typu. Ak má zariadenie tri oddiely, máte vidieť, že má tri.</p>
+<h2 id="firmver-bez-tabulky-oddielov">Firmvér bez tabuľky oddielov</h2>
+<p>Súbor firmvéru vytiahnutý zo smerovača alebo kamery zvyčajne nemá žiadnu tabuľku oddielov. Je to hlavička výrobcu, zavádzač, jadro a rootfs zapísané za sebou na posunoch, ktoré nie sú nikde zaznamenané. Takýto súbor sa otvorí s jednou položkou na každú časť, pomenovanou podľa posunu, kde sa začína: <code>0x00230044-squashfs</code> je súborový systém, do ktorého sa dá vstúpiť, <code>0x00030040-kernel.uimage</code> súbor na skopírovanie von.</p>
+<p><img alt="Panel vnútri súboru firmvéru smerovača s hlavičkou výrobcu, jadrom U-Boot a koreňovým súborovým systémom SquashFS, každý pomenovaný podľa posunu, kde sa začína" src="images/filesystem-images-carved.png" /></p>
+<p>Časti sa nájdu tak, že sa v súbore hľadajú samotné súborové systémy a každý nález sa otvorí, aby sa overilo, či tam naozaj je. Bajtový vzor, ktorý sa zhoduje náhodou, stojí okamih a zahodí sa, namiesto toho, aby sa stal vymyslenou položkou; a súbor, v ktorom sa žiadny súborový systém nenájde, sa naďalej odmieta a otvorí sa tak, ako by sa otvoril vždy.</p>
+<p>To isté platí pre všetko, čo leží mimo oddielov rozdeleného obrazu. Raspberry Pi drží svoj zavádzač v megabajtoch pred oddielom 1 a U-Boot sedí na väčšine dosiek ARM na pevnom posune v tom istom nepridelenom priestore. Tieto úseky sa vypisujú vedľa oddielov, aby ste ich videli a mohli skopírovať von.</p>
+<h2 id="zapisat-si-rozlozenie">Zapísať si rozloženie</h2>
+<p><strong>Príkazy ▸ Analyzovať rozloženie obrazu…</strong> uloží výsledok ako textový súbor vedľa obrazu a nastaví naň kurzor: každá oblasť so svojím posunom, veľkosťou a tým, čím sa ukázala byť, plus tabuľka oddielov, ak ju obraz má. Práve túto tabuľku obvykle potrebuje rozbor alebo tiket a zostavovať ju znova prechádzaním panela a odpisovaním čísel je únavná práca.</p>
+<p>Správa ukazuje aj to, čo panel vynecháva — napríklad malé zarovnávacie medzery medzi oddielmi — a pomenuje dosku, pre ktorú bolo jadro U-Boot zostavené, ak to obraz zaznamenáva.</p>
+<h2 id="praca-vnutri-obrazu">Práca vnútri obrazu</h2>
+<p>Platí všetko, čo už poznáte. F3 zobrazí súbor, F5 skopíruje súbory do skutočného priečinka a <strong>Nájsť súbory</strong> prehľadá obsah obrazu. Von sa dostanete rovnako ako z archívu.</p>
+<p>Symbolické odkazy sa zobrazujú so svojím názvom a skopírovanie takého von vám dá malý textový súbor s cieľom odkazu namiesto skutočného odkazu — obrazu nemožno dovoliť umiestniť odkaz smerujúci kamkoľvek na váš vlastný disk.</p>
+<h2 id="ked-sa-obraz-neotvori">Keď sa obraz neotvorí</h2>
+<p>Modul povie prečo, namiesto aby hlásil poškodený súbor, lebo obe možnosti vás zavedú inam:</p>
+<ul>
+<li><strong>Zväzok Btrfs s RAID0, RAID10, RAID5 alebo RAID6</strong>, prípadne rozložený na viac zariadení. Údaje sú roztrúsené po diskoch a väčšina z nich nie je v súbore, ktorý máte.</li>
+<li><strong>Surový výpis NAND, ktorý stále obsahuje svoju rezervnú oblasť.</strong> S obrazom nie je nič zlé; skopíroval sa aj s bajtmi na opravu chýb. Skopírujte ho znova príkazom <code>nanddump --omitoob</code>.</li>
+<li><strong>Šifrovaný zväzok ext4 alebo NTFS</strong>, ktorý sa bez kľúčov nedá prečítať.</li>
+<li><strong>Súborový systém ext odpojený nečisto</strong> sa aj tak otvorí, ale s označenou položkou hore v koreni, ktorá varuje, že obsah môže byť zastaraný. Súborový systém sa kopíroval počas používania a najnovšie zmeny sú v žurnáli, ktorý tento modul neprehráva. Spustite <code>e2fsck</code> nad kópiou, ak na detailoch záleží.</li>
+</ul>
+<h2 id="poznamky">Poznámky</h2>
+<ul>
+<li>Obraz sa prečíta raz a zapamätá, takže návrat doň je okamžitý.</li>
+<li>Veľmi veľké obrazy sa čítajú podľa potreby namiesto načítania celé; výpis je obmedzený na dva milióny položiek.</li>
+<li>Obraz sa prehľadáva na vnorené súborové systémy len vtedy, keď nemá ani tabuľku oddielov, ani súborový systém na začiatku, takže bežný obraz sa otvorí presne tak rýchlo ako doteraz.</li>
+<li>Zásuvný modul pridáva jeden príkaz ponuky a žiadne vlastné nastavenia okrem prepínača, ktorý ho zapína.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Zásuvné moduly</a></li><li><a href="archives.html">Práca s archívmi</a></li><li><a href="settings.html">Nastavenia</a></li><li><a href="viewing-files.html">Zobrazenie súborov</a></li></ul></section>
+</main>
+</body>
+</html>

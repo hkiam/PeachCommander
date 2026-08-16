@@ -48,32 +48,41 @@ def load_topics():
         m = FRONT_RE.match(raw)
         meta = yaml.safe_load(m.group(1)) if m else {}
         body = raw[m.end():] if m else raw
-        topics[p.stem] = {"path": p, "meta": meta or {}, "body": body, "raw": raw}
+        # Keyed by section/stem, not by stem alone. Two sections may legitimately hold a
+        # page of the same name — `help/filesystem-images` is written for somebody using
+        # the plugin and `plugins/filesystem-images` for somebody extending it — and with
+        # a bare stem the second silently replaced the first in this map. The dropped page
+        # was then checked for nothing at all: not its front matter, not its terminology,
+        # not its images. It surfaced as a screenshot reported unreferenced while the
+        # reference sat in the very page that had been shadowed.
+        key = str(p.relative_to(CONTENT).with_suffix(""))
+        topics[key] = {"path": p, "stem": p.stem, "meta": meta or {},
+                       "body": body, "raw": raw}
     return topics
 
 
 def main():
     topics = load_topics()
-    slugs = set(topics)
+    slugs = {t['stem'] for t in topics.values()}
     terms = yaml.safe_load((META / "terminology.yml").read_text())["terms"]
     features = yaml.safe_load((META / "features.yml").read_text())["features"]
 
     referenced_imgs = set()
 
-    for slug, t in topics.items():
-        meta, body = t["meta"], t["body"]
+    for key, t in topics.items():
+        slug, meta, body = t["stem"], t["meta"], t["body"]
         is_home = t["path"].parent.name == "website" and t["path"].stem == "index"
         # front matter (the homepage is the site root, not a nav topic — only needs title)
         required = ("title",) if is_home else ("title", "slug", "section", "order")
         for field in required:
             if field not in meta:
-                errors.append(f"{slug}.md: missing front-matter '{field}'")
+                errors.append(f"{key}.md: missing front-matter '{field}'")
         if not is_home and meta.get("slug") and meta["slug"] != slug:
-            errors.append(f"{slug}.md: front-matter slug '{meta['slug']}' != filename")
+            errors.append(f"{key}.md: front-matter slug '{meta['slug']}' != filename")
         # related links resolve
         for rel in (meta.get("related") or []):
             if rel not in slugs:
-                errors.append(f"{slug}.md: related '{rel}' is not a topic")
+                errors.append(f"{key}.md: related '{rel}' is not a topic")
         clean = strip_code(body)
         # inline topic links (foo.html / foo.md)
         for url in LINK_RE.findall(clean):
@@ -81,19 +90,19 @@ def main():
                 continue
             target = re.sub(r'\.(html|md)$', '', url.split("#")[0].split("/")[-1])
             if target and target not in slugs:
-                errors.append(f"{slug}.md: link to unknown topic '{url}'")
+                errors.append(f"{key}.md: link to unknown topic '{url}'")
         # images
         for url in IMG_RE.findall(body):
             name = url.split("/")[-1]
             referenced_imgs.add(name)
             if not (SHOTS / name).exists():
-                warnings.append(f"{slug}.md: image not found: {url}")
+                warnings.append(f"{key}.md: image not found: {url}")
         # terminology (the glossary legitimately names the forbidden synonyms)
         low = clean.lower()
         for entry in ([] if slug == "glossary" else terms):
             for bad in (entry.get("avoid") or []):
                 if re.search(rf'\b{re.escape(bad.lower())}\b', low):
-                    errors.append(f"{slug}.md: forbidden term '{bad}' (use '{entry['term']}')")
+                    errors.append(f"{key}.md: forbidden term '{bad}' (use '{entry['term']}')")
 
     # unreferenced screenshots (ignore -dark variants and -full crop backups)
     for img in sorted(SHOTS.glob("*.png")):

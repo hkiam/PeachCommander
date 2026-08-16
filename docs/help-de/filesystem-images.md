@@ -41,6 +41,8 @@ Eine Partition, die das Plugin nicht lesen kann, erscheint trotzdem — als leer
 
 Eine Firmware-Datei aus einem Router oder einer Kamera hat meist überhaupt keine Partitionstabelle. Sie besteht aus einem Hersteller-Header, einem Bootloader, einem Kernel und einem Rootfs, hintereinandergeschrieben an Offsets, die nirgends vermerkt sind. So eine Datei öffnet sich als ein Eintrag je Bestandteil, jeweils benannt nach dem Offset, an dem er beginnt: `0x00230044-squashfs` ist ein Dateisystem zum Hineingehen, `0x00030040-kernel.uimage` eine Datei zum Herauskopieren.
 
+![Ein Panel im Inneren einer Router-Firmware-Datei: Hersteller-Header, U-Boot-Kernel und SquashFS-Wurzeldateisystem, jeweils benannt nach dem Offset, an dem sie beginnen](screenshots/filesystem-images-carved.png)
+
 Gefunden werden die Bestandteile, indem die Datei nach den Dateisystemen selbst durchsucht und jeder Fund geöffnet wird, um zu sehen, ob dort wirklich eines liegt. Ein zufällig passendes Bytemuster kostet einen Augenblick und wird verworfen, statt zu einem erfundenen Eintrag zu werden; und eine Datei, in der sich kein Dateisystem findet, wird weiterhin abgelehnt und öffnet sich wie immer.
 
 Dasselbe gilt für alles, was außerhalb der Partitionen eines partitionierten Images liegt. Ein Raspberry Pi hält seinen Bootloader in den Megabyte vor Partition 1, und U-Boot sitzt auf den meisten ARM-Boards an einem festen Offset im selben nicht zugeordneten Bereich. Diese Bereiche werden neben den Partitionen aufgeführt, damit Sie sie sehen und herauskopieren können.

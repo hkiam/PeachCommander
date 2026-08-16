@@ -609,3 +609,28 @@ screenshots:
   status: captured
   alt: The global history window listing recently visited folders and opened files
   caption: 'The global history: everything recent, searchable from the keyboard.'
+- id: filesystem-images-carved
+  path: docs/assets/screenshots/filesystem-images-carved.png
+  feature: filesystem-images
+  pages: &id006
+  - filesystem-images
+  theme: light
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: A panel inside a router firmware file, listing the vendor header, the U-Boot
+    kernel and the SquashFS root filesystem, each named by the offset it starts at
+  caption: Inside router firmware that has no partition table — each part named by
+    where it begins.
+- id: filesystem-images-carved-dark
+  path: docs/assets/screenshots/filesystem-images-carved-dark.png
+  feature: filesystem-images
+  pages: *id006
+  theme: dark
+  language: en
+  app_version: 0.1.0
+  status: captured
+  alt: A panel inside a router firmware file, listing the vendor header, the U-Boot
+    kernel and the SquashFS root filesystem, each named by the offset it starts at
+  caption: Inside router firmware that has no partition table — each part named by
+    where it begins.

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fájlrendszerképek</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Fájlrendszerképek</h1>
+<p>A fájlrendszerkép egy teljes fájlrendszert tartalmazó fájl — egy router-frissítés rootfs-e, egy bájtról bájtra másolt SD-kártya, egy vizsgált eszköz képmása. A <strong>Linux Filesystem Images</strong> bővítmény úgy nyitja meg, ahogy a Peach Commander egy archívumot nyit meg: állítsa rá a kurzort, nyomjon Entert, és a panel a fájlrendszeren belül lesz. Onnantól a megjelenítő, a keresés és a másolás pontosan úgy működik, mint egy mappában.</p>
+<p>Képmásba soha nem ír semmit. A bővítmény kizárólag olvasni tud.</p>
+<h2 id="elobb-kapcsolja-be">Előbb kapcsolja be</h2>
+<p>A bővítmény kikapcsolva érkezik. Nyissa meg a <strong>Beállítások ▸ Bővítmények</strong> lapot, keresse meg a <strong>Linux Filesystem Images</strong> elemet, és kapcsolja be.</p>
+<p>Alapból azért van kikapcsolva, ahogyan a képmásokat megtalálja. A firmware-nek ritkán van rendes neve — a keresett fájl legalább annyiszor hívják <code>firmware.bin</code>, <code>rootfs.img</code> vagy egyszerűen <code>dump</code> néven, mint <code>.squashfs</code> néven —, ezért ha a kiterjesztés semmit sem mond, a bővítmény az első bájtokat nézi meg. Ez pontosan az, amire eszközképmások vizsgálatakor szükség van, és fölösleges munka egyébként. A bekapcsolás az a mód, ahogy megmondja, melyik a kettő közül az ön esete.</p>
+<p>Az a fájl, amelyről kiderül, hogy nem képmás, e egyetlen pillantás után érintetlen marad, és úgy nyílik meg, ahogy mindig is nyílt volna.</p>
+<h2 id="mit-tud-megnyitni">Mit tud megnyitni</h2>
+<table>
+<thead>
+<tr>
+<th>Formátum</th>
+<th>Hol találkozik vele</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SquashFS</td>
+<td>A rootfs szinte minden router-, kamera- és beltéri egység firmware-ében</td>
+</tr>
+<tr>
+<td>ext2, ext3, ext4</td>
+<td>A legtöbb beágyazott Linux-eszköz fő partíciója</td>
+</tr>
+<tr>
+<td>Btrfs</td>
+<td>NAS-kötetek és újabb Linux-rendszerek, a pillanatképekkel együtt</td>
+</tr>
+<tr>
+<td>JFFS2, UBIFS</td>
+<td>Nyers flashmemória régebbi és mai beágyazott hardverekben</td>
+</tr>
+<tr>
+<td>cramfs, initramfs</td>
+<td>Rendszerindító fájlrendszerek és hosszú életű régi eszközök</td>
+</tr>
+<tr>
+<td>FAT12, FAT16, FAT32</td>
+<td>SD-kártyák, USB-kulcsok és minden modern PC EFI-partíciója</td>
+</tr>
+<tr>
+<td>exFAT</td>
+<td>SD-kártyák és 32 GB fölötti meghajtók</td>
+</tr>
+<tr>
+<td>NTFS</td>
+<td>Windows-kötetek, tömörített fájlokkal együtt</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tobb-particiot-tartalmazo-lemezkepek">Több partíciót tartalmazó lemezképek</h2>
+<p>Az egész eszközről másolt képmás rendszerint particiós táblát tartalmaz, nem egyetlen fájlrendszert. Az ilyen képmás partíciónként egy mappaként nyílik meg — <code>1-rootfs</code>, <code>2-esp</code> —, és abba lép be, amelyikbe akar. Az MBR- és a GPT-táblát egyaránt beolvassa, és ahol a tábla partíciónevet őriz, azt a nevet használja.</p>
+<p>Az a partíció, amelyet a bővítmény nem tud olvasni, akkor is megjelenik: üres mappaként, a típusáról elnevezve. Ha egy eszköznek három partíciója van, látnia kell tudni, hogy három van.</p>
+<h2 id="firmware-particios-tabla-nelkul">Firmware partíciós tábla nélkül</h2>
+<p>Az útválasztóból vagy kamerából kimentett firmware-fájlnak rendszerint egyáltalán nincs partíciós táblája. Gyártói fejléc, rendszertöltő, kernel és rootfs egymás után kiírva olyan eltolásokra, amelyeket sehol sem jegyeztek fel. Az ilyen fájl részenként egy-egy bejegyzéssel nyílik meg, mindegyik arról az eltolásról elnevezve, ahol kezdődik: a <code>0x00230044-squashfs</code> fájlrendszer, amelybe be lehet lépni, a <code>0x00030040-kernel.uimage</code> pedig kimásolható fájl.</p>
+<p><img alt="Egy panel egy útválasztó firmware-fájljának belsejében: a gyártói fejléc, az U-Boot kernel és a SquashFS gyökér-fájlrendszer, mindegyik arról az eltolásról elnevezve, ahol kezdődik" src="images/filesystem-images-carved.png" /></p>
+<p>A részeket úgy találja meg, hogy magukat a fájlrendszereket keresi a fájlban, majd mindegyik találatot megnyitja, hogy kiderüljön, valóban ott van-e. A véletlenül egyező bájtminta egy pillanatba kerül, és elvetésre kerül ahelyett, hogy kitalált bejegyzéssé válna; a fájl pedig, amelyben nem található fájlrendszer, továbbra is elutasításra kerül, és úgy nyílik meg, ahogy mindig is.</p>
+<p>Ugyanez vonatkozik mindenre, ami a particionált lemezkép partícióin kívül esik. A Raspberry Pi az 1. partíció előtti megabájtokban tartja a rendszertöltőjét, az U-Boot pedig a legtöbb ARM-alaplapon rögzített eltolásban ül ugyanebben a le nem foglalt térben. Ezek a szakaszok a partíciók mellett jelennek meg, hogy láthassa és kimásolhassa őket.</p>
+<h2 id="a-felepites-rogzitese">A felépítés rögzítése</h2>
+<p>A <strong>Parancsok ▸ Lemezkép felépítésének elemzése…</strong> szövegfájlként menti az eredményt a lemezkép mellé, és ráállítja a kurzort: minden terület az eltolásával, a méretével és azzal, aminek bizonyult, valamint a partíciós tábla, ha a lemezképnek van ilyen. Rendszerint épp erre a táblázatra van szüksége egy elemzésnek vagy egy hibajegynek, és panelt bejárva, számokat kézzel átmásolva újraépíteni fárasztó munka.</p>
+<p>A jelentés azt is megmutatja, amit a panel kihagy — például a partíciók közötti kis igazítási réseket —, és megnevezi azt az alaplapot, amelyhez az U-Boot kernelt fordították, ha a lemezkép ezt rögzíti.</p>
+<h2 id="munka-a-kepmason-belul">Munka a képmáson belül</h2>
+<p>Minden érvényes marad, amit már ismer. Az F3 megjelenít egy fájlt, az F5 valódi mappába másol ki fájlokat, a <strong>Fájlok keresése</strong> pedig a képmás tartalmában keres. Kilépni belőle úgy lehet, ahogy egy archívumból.</p>
+<p>A szimbolikus hivatkozások a nevükkel jelennek meg, és ha egyet kimásol, egy kis szövegfájlt kap a hivatkozás céljával valódi hivatkozás helyett — egy képmásnak nem szabad megengedni, hogy a saját lemezén bárhová mutató hivatkozást helyezzen el.</p>
+<h2 id="amikor-egy-kepmas-nem-nyilik-meg">Amikor egy képmás nem nyílik meg</h2>
+<p>A bővítmény megmondja, miért, ahelyett hogy sérült fájlt jelentene, mert a kettő máshová vezeti önt:</p>
+<ul>
+<li><strong>RAID0, RAID10, RAID5 vagy RAID6 használó Btrfs-kötet</strong>, vagy több eszközre kiterjedő kötet. Az adatok lemezek között szóródnak szét, és a nagy részük nincs abban a fájlban, amely önnél van.</li>
+<li><strong>Nyers NAND-mentés, amely még tartalmazza a tartalék területét.</strong> A képmással semmi baj; a hibajavító bájtokkal együtt másolták le. Másolja le újra a <code>nanddump --omitoob</code> paranccsal.</li>
+<li><strong>Titkosított ext4- vagy NTFS-kötet</strong>, amely a kulcsai nélkül nem olvasható.</li>
+<li><strong>A nem tisztán leválasztott ext fájlrendszer</strong> így is megnyílik, de a gyökér tetején egy megjelölt bejegyzés figyelmeztet, hogy a tartalom elavult lehet. A fájlrendszert használat közben másolták, a legfrissebb változások pedig egy naplóban vannak, amelyet ez a bővítmény nem játszik vissza. Futtassa az <code>e2fsck</code> parancsot egy másolaton, ha a részletek számítanak.</li>
+</ul>
+<h2 id="megjegyzesek">Megjegyzések</h2>
+<ul>
+<li>A képmást egyszer olvassa be és megjegyzi, így a visszalépés azonnali.</li>
+<li>A nagyon nagy képmásokat szükség szerint olvassa, nem egészben tölti be; egy listázás kétmillió bejegyzésre van korlátozva.</li>
+<li>A lemezképet csak akkor vizsgálja beágyazott fájlrendszerek után, ha se partíciós táblája, se fájlrendszere nincs az elején, így egy szokásos lemezkép pontosan olyan gyorsan nyílik meg, mint eddig.</li>
+<li>A bővítmény egy menüparancsot ad hozzá, és a bekapcsolásán kívül semmilyen saját beállítást.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Bővítmények</a></li><li><a href="archives.html">Munka az archívumokkal</a></li><li><a href="settings.html">Beállítások</a></li><li><a href="viewing-files.html">Fájlok megtekintése</a></li></ul></section>
+</main>
+</body>
+</html>

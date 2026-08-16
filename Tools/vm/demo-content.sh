@@ -147,3 +147,64 @@ fi
 
 echo "demo content ready at $ROOT: $(find "$ROOT" -type f | wc -l | tr -d ' ') files"
 REMOTE
+
+# ---------------------------------------------------------------------------
+# A router firmware image, built on the HOST and copied in.
+#
+# Everything above runs inside the guest, and this cannot: the rootfs has to be a
+# real SquashFS written by mksquashfs, and macOS has no such tool. Building it here
+# and copying the result keeps the guest free of build dependencies, which is the
+# same reason the golden image carries no toolchain.
+#
+# What it is for: the Filesystem Images plugin finds filesystems inside a file that
+# has no partition table, and a screenshot of that needs a file actually shaped like
+# router firmware — a vendor header, a bootloader, a U-Boot kernel and a rootfs at an
+# offset nothing records. Faking it with an empty file would produce a screenshot of
+# a feature not working.
+mksquashfs="$(command -v mksquashfs || true)"
+if [ -z "$mksquashfs" ]; then
+  echo "mksquashfs not found (brew install squashfs) — skipping the firmware sample;" \
+       "the filesystem-images screenshot cannot be captured without it" >&2
+  exit 0
+fi
+
+STAGE="$(mktemp -d)"
+trap 'rm -rf "$STAGE"' EXIT
+mkdir -p "$STAGE/rootfs"/{bin,etc/init.d,lib,www}
+printf 'ImaginaryTech RT-9000\nfirmware 2.4.1\n' > "$STAGE/rootfs/etc/banner"
+printf 'hostname=rt9000\nlan_ip=192.168.1.1\nwifi_ssid=ImaginaryNet\n' > "$STAGE/rootfs/etc/config"
+printf '#!/bin/sh\n/bin/httpd -p 80 -h /www &\n' > "$STAGE/rootfs/etc/init.d/httpd"
+printf '<html><body><h1>RT-9000</h1></body></html>\n' > "$STAGE/rootfs/www/index.html"
+for f in busybox httpd nvram wpa_supplicant; do
+  head -c 24000 /dev/zero | tr '\0' 'x' > "$STAGE/rootfs/bin/$f"
+done
+head -c 90000 /dev/zero | tr '\0' 'y' > "$STAGE/rootfs/lib/libc.so.0"
+"$mksquashfs" "$STAGE/rootfs" "$STAGE/root.sqfs" -comp xz -noappend -no-progress -quiet
+
+python3 - "$STAGE" <<'PYFW'
+import struct, sys
+stage = sys.argv[1]
+blob = bytearray()
+# A vendor container header that declares its own length, so it reads as one region.
+blob += b"HDR0" + struct.pack("<I", 64) + bytes(56)
+# The bootloader: filler that cannot carry any signature the scan looks for.
+blob += bytes(i % 128 for i in range(192 * 1024))
+# A U-Boot legacy image. All fields big-endian, by definition of the format.
+kernel = bytes((i * 31 + 7) % 251 for i in range(1_100_000))
+name = b"Linux-5.15.0-rt9000"
+header = (b"\x27\x05\x19\x56" + bytes(8) + struct.pack(">I", len(kernel)) + bytes(12)
+          + bytes([5, 2, 2, 1]) + name + bytes(32 - len(name)))
+assert len(header) == 64
+blob += header + kernel
+# The rootfs follows the kernel directly. Its offset is still aligned to nothing —
+# the kernel's length sees to that — which is the property worth showing. Padding a
+# gap in on purpose only added a three-byte region to the picture, and a 0.0 KB row
+# in a documentation screenshot reads as a defect rather than as precision.
+blob += open(f"{stage}/root.sqfs", "rb").read()
+open(f"{stage}/rt9000-firmware.bin", "wb").write(bytes(blob))
+print(f"firmware image: {len(blob)} bytes")
+PYFW
+
+ssh $SSHOPTS "admin@$IP" "mkdir -p ~/pc-demo/Firmware"
+scp $SSHOPTS -q "$STAGE/rt9000-firmware.bin" "admin@$IP:~/pc-demo/Firmware/"
+echo "firmware sample copied to ~/pc-demo/Firmware/rt9000-firmware.bin"

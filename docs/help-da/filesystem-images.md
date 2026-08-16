@@ -41,6 +41,8 @@ En partition, pluginet ikke kan læse, vises alligevel som en tom mappe opkaldt 
 
 En firmwarefil hentet ud af en router eller et kamera har som regel slet ingen partitionstabel. Den er et producenthoved, en bootloader, en kerne og et rootfs skrevet efter hinanden på positioner, der ikke står nogen steder. Sådan en fil åbner med én post pr. del, hver opkaldt efter den position, den begynder på: `0x00230044-squashfs` er et filsystem at gå ind i, `0x00030040-kernel.uimage` en fil at kopiere ud.
 
+![Et panel inde i en routers firmwarefil med producenthovedet, U-Boot-kernen og SquashFS-rodfilsystemet, hver opkaldt efter den position, de begynder på](screenshots/filesystem-images-carved.png)
+
 Delene findes ved at gennemsøge filen for selve filsystemerne og åbne hvert fund for at se, om der virkelig ligger et. Et bytemønster, der passer tilfældigt, koster et øjeblik og kasseres i stedet for at blive til en opdigtet post; og en fil, hvori der ikke findes noget filsystem, afvises stadig og åbner, som den altid ville have gjort.
 
 Det samme gælder alt, hvad der ligger uden for partitionerne i et partitioneret billede. En Raspberry Pi holder sin bootloader i de megabyte, der ligger før partition 1, og U-Boot sidder på de fleste ARM-kort på en fast position i netop den ikke-tildelte plads. De strækninger vises ved siden af partitionerne, så du kan se dem og kopiere dem ud.

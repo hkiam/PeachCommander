@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Obrazy systemów plików</title>
+<link rel="stylesheet" href="shrd/help.css">
+</head>
+<body>
+<nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
+<main class="pc-help">
+<h1>Obrazy systemów plików</h1>
+<p>Obraz systemu plików to plik zawierający cały system plików — rootfs z aktualizacji routera, kartę SD skopiowaną bajt po bajcie, obraz urządzenia, które badasz. Wtyczka <strong>Linux Filesystem Images</strong> otwiera taki plik tak, jak Peach Commander otwiera archiwum: ustaw na nim kursor, naciśnij Enter, a panel znajdzie się wewnątrz systemu plików. Stamtąd podgląd, wyszukiwanie i kopiowanie działają dokładnie jak w folderze.</p>
+<p>Do obrazu nigdy nic nie jest zapisywane. Wtyczka potrafi wyłącznie czytać.</p>
+<h2 id="najpierw-ja-wacz">Najpierw ją włącz</h2>
+<p>Wtyczka jest dostarczana wyłączona. Otwórz <strong>Ustawienia ▸ Wtyczki</strong>, znajdź <strong>Linux Filesystem Images</strong> i włącz ją.</p>
+<p>Domyślnie jest wyłączona ze względu na sposób, w jaki znajduje obrazy. Oprogramowanie układowe rzadko ma porządną nazwę — szukany plik nazywa się <code>firmware.bin</code>, <code>rootfs.img</code> albo po prostu <code>dump</code> co najmniej tak często jak <code>.squashfs</code> — więc gdy rozszerzenie nic nie mówi, wtyczka zagląda w pierwsze bajty. To dokładnie to, czego trzeba przy badaniu obrazów urządzeń, i zbędna praca w przeciwnym razie. Włączenie jej to sposób, by powiedzieć, który z tych dwóch przypadków dotyczy ciebie.</p>
+<p>Plik, który okaże się nie być obrazem, po tym jednym spojrzeniu zostaje nietknięty i otwiera się tak, jak zawsze.</p>
+<h2 id="co-potrafi-otworzyc">Co potrafi otworzyć</h2>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Gdzie go spotkasz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SquashFS</td>
+<td>Rootfs w niemal każdym oprogramowaniu routerów, kamer i dekoderów</td>
+</tr>
+<tr>
+<td>ext2, ext3, ext4</td>
+<td>Główna partycja większości wbudowanych urządzeń z Linuksem</td>
+</tr>
+<tr>
+<td>Btrfs</td>
+<td>Wolumeny NAS i nowsze systemy Linux, wraz z migawkami</td>
+</tr>
+<tr>
+<td>JFFS2, UBIFS</td>
+<td>Surowa pamięć flash w starszym i obecnym sprzęcie wbudowanym</td>
+</tr>
+<tr>
+<td>cramfs, initramfs</td>
+<td>Rozruchowe systemy plików i długowieczne starsze urządzenia</td>
+</tr>
+<tr>
+<td>FAT12, FAT16, FAT32</td>
+<td>Karty SD, pendrive'y i partycja EFI każdego współczesnego komputera</td>
+</tr>
+<tr>
+<td>exFAT</td>
+<td>Karty SD i nośniki powyżej 32 GB</td>
+</tr>
+<tr>
+<td>NTFS</td>
+<td>Wolumeny Windows, także z plikami skompresowanymi</td>
+</tr>
+</tbody>
+</table>
+<h2 id="obrazy-dyskow-z-wieloma-partycjami">Obrazy dysków z wieloma partycjami</h2>
+<p>Obraz skopiowany z całego urządzenia zwykle zawiera tablicę partycji, a nie pojedynczy system plików. Taki obraz otwiera się jako jeden folder na partycję — <code>1-rootfs</code>, <code>2-esp</code> — i wchodzisz do tej, którą chcesz. Odczytywane są zarówno tablice MBR, jak i GPT, a tam, gdzie tablica zawiera nazwy partycji, używane są te nazwy.</p>
+<p>Partycja, której wtyczka nie potrafi odczytać, i tak się pojawia — jako pusty folder nazwany według swojego typu. Jeśli urządzenie ma trzy partycje, powinieneś móc zobaczyć, że ma trzy.</p>
+<h2 id="oprogramowanie-ukadowe-bez-tablicy-partycji">Oprogramowanie układowe bez tablicy partycji</h2>
+<p>Plik oprogramowania układowego wyciągnięty z routera lub kamery zwykle nie ma żadnej tablicy partycji. To nagłówek producenta, program rozruchowy, jądro i rootfs zapisane jeden po drugim pod przesunięciami, których nigdzie nie odnotowano. Taki plik otwiera się z jednym wpisem na każdą część, nazwanym od przesunięcia, w którym się zaczyna: <code>0x00230044-squashfs</code> to system plików, w który można wejść, a <code>0x00030040-kernel.uimage</code> plik do skopiowania na zewnątrz.</p>
+<p><img alt="Panel we wnętrzu pliku oprogramowania układowego routera: nagłówek producenta, jądro U-Boot i główny system plików SquashFS, każdy nazwany od przesunięcia, w którym się zaczyna" src="images/filesystem-images-carved.png" /></p>
+<p>Części znajdowane są przez przeszukanie pliku w poszukiwaniu samych systemów plików i otwarcie każdego trafienia, by sprawdzić, czy naprawdę tam jest. Wzorzec bajtów pasujący przypadkiem kosztuje chwilę i zostaje odrzucony, zamiast stać się zmyślonym wpisem; a plik, w którym nie znaleziono żadnego systemu plików, nadal jest odrzucany i otwiera się tak, jak zawsze by się otworzył.</p>
+<p>To samo dotyczy wszystkiego, co leży poza partycjami obrazu z tablicą partycji. Raspberry Pi trzyma swój program rozruchowy w megabajtach przed partycją 1, a U-Boot na większości płyt ARM siedzi pod stałym przesunięciem w tej samej nieprzydzielonej przestrzeni. Te odcinki są wypisane obok partycji, żeby można je było zobaczyć i skopiować.</p>
+<h2 id="zapisanie-budowy">Zapisanie budowy</h2>
+<p><strong>Polecenia ▸ Analizuj budowę obrazu…</strong> zapisuje wynik jako plik tekstowy obok obrazu i ustawia na nim kursor: każdy obszar z przesunięciem, rozmiarem i tym, czym się okazał, a do tego tablica partycji, jeśli obraz ją ma. Zwykle to właśnie ta tabela jest potrzebna przy analizie albo w zgłoszeniu, a odtwarzanie jej przez chodzenie po panelu i przepisywanie liczb to żmudna praca.</p>
+<p>Raport pokazuje też to, co panel pomija — na przykład małe przerwy wyrównania między partycjami — i podaje płytę, dla której zbudowano jądro U-Boot, jeśli obraz to odnotowuje.</p>
+<h2 id="praca-wewnatrz-obrazu">Praca wewnątrz obrazu</h2>
+<p>Obowiązuje wszystko, co już znasz. F3 pokazuje plik, F5 kopiuje pliki do prawdziwego folderu, a <strong>Znajdź pliki</strong> przeszukuje zawartość obrazu. Wychodzi się z niego tak, jak z archiwum.</p>
+<p>Dowiązania symboliczne są pokazywane z nazwą, a skopiowanie takiego na zewnątrz daje mały plik tekstowy z celem dowiązania zamiast prawdziwego dowiązania — obrazowi nie wolno pozwolić umieścić dowiązania wskazującego gdziekolwiek na twoim własnym dysku.</p>
+<h2 id="gdy-obraz-sie-nie-otwiera">Gdy obraz się nie otwiera</h2>
+<p>Wtyczka mówi dlaczego, zamiast zgłaszać uszkodzony plik, bo te dwie rzeczy prowadzą w różne miejsca:</p>
+<ul>
+<li><strong>Wolumen Btrfs w RAID0, RAID10, RAID5 lub RAID6</strong>, albo rozłożony na kilka urządzeń. Dane są rozproszone po dyskach, a większości nie ma w pliku, który masz.</li>
+<li><strong>Surowy zrzut NAND wciąż zawierający obszar zapasowy.</strong> Z obrazem wszystko w porządku; skopiowano go razem z bajtami korekcji błędów. Skopiuj go ponownie poleceniem <code>nanddump --omitoob</code>.</li>
+<li><strong>Zaszyfrowany wolumen ext4 lub NTFS</strong>, którego nie da się odczytać bez kluczy.</li>
+<li><strong>System plików ext odłączony nieczysto</strong> nadal się otwiera, ale z oznaczonym wpisem na górze katalogu głównego ostrzegającym, że zawartość może być nieaktualna. System plików skopiowano w trakcie użytkowania, a najnowsze zmiany są w dzienniku, którego ta wtyczka nie odtwarza. Uruchom <code>e2fsck</code> na kopii, jeśli szczegóły mają znaczenie.</li>
+</ul>
+<h2 id="uwagi">Uwagi</h2>
+<ul>
+<li>Obraz jest czytany raz i zapamiętywany, więc ponowne wejście do niego jest natychmiastowe.</li>
+<li>Bardzo duże obrazy są czytane w miarę potrzeb zamiast wczytywane w całości; lista jest ograniczona do dwóch milionów wpisów.</li>
+<li>Obraz jest przeszukiwany pod kątem osadzonych systemów plików tylko wtedy, gdy nie ma ani tablicy partycji, ani systemu plików na początku, więc zwykły obraz otwiera się dokładnie tak samo szybko jak dotąd.</li>
+<li>Wtyczka dodaje jedno polecenie menu i żadnych własnych ustawień poza przełącznikiem, który ją włącza.</li>
+</ul>
+<section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Wtyczki</a></li><li><a href="archives.html">Praca z archiwami</a></li><li><a href="settings.html">Ustawienia</a></li><li><a href="viewing-files.html">Podgląd plików</a></li></ul></section>
+</main>
+</body>
+</html>
