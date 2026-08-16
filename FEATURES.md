@@ -125,8 +125,8 @@ _Generated from `docs/metadata/features.yml` by `docs/scripts/gen-overviews.py`.
 | AI assistant | user | — | ✅ |
 | Decompiled sources in a file panel | user, expert | Cmd+Shift+J | ✅ |
 | Disk Map | user | — | ✅ |
+| Filesystem images (SquashFS, ext, JFFS2, UBIFS, cramfs, initramfs, Btrfs, FAT, exFAT, NTFS) | user, expert | — | ✅ |
 | Java decompiler plugin (F3 on a .class file) | user, expert | — | ✅ |
-| Linux filesystem images (SquashFS, ext, JFFS2, UBIFS, cramfs, initramfs, Btrfs) | user, expert | — | ✅ |
 | Plugin ABIs | plugin, sdk | — | ✅ |
 | Plugin architecture | developer, plugin | — | ✅ |
 | Plugin views follow the colour theme | user, plugin, sdk | — | ✅ |
