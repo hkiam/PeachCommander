@@ -691,8 +691,8 @@ features:
       persisted as [Layout] ButtonBar (default true).
 
   - id: filesystem-images
-    name: Linux-Dateisystem-Images (SquashFS, ext, JFFS2, UBIFS, cramfs, initramfs, Btrfs)
-    name_en: Linux filesystem images (SquashFS, ext, JFFS2, UBIFS, cramfs, initramfs, Btrfs)
+    name: Dateisystem-Images (SquashFS, ext, JFFS2, UBIFS, cramfs, initramfs, Btrfs, FAT, exFAT, NTFS)
+    name_en: Filesystem images (SquashFS, ext, JFFS2, UBIFS, cramfs, initramfs, Btrfs, FAT, exFAT, NTFS)
     category: plugins
     audiences: [user, expert]
     status: stable
@@ -716,7 +716,14 @@ features:
       rather than quietly showing pre-journal contents. Every format is checked against images
       built by its own upstream tool and compared byte for byte, so a misreading cannot cancel out
       against a matching miswriting; a mutation corpus asserts no image can crash it, hang it, or
-      hand the host a path escaping the archive root.
+      hand the host a path escaping the archive root. A disk image with a partition table lists one
+      directory per partition — MBR and GPT, using GPT's partition names — which is what makes the
+      Windows-side formats reachable at all: FAT, exFAT and NTFS are almost always a slice of a disk
+      rather than the whole file. NTFS is the one with no macOS alternative (this system's ntfs.fs
+      carries a BootCamp formatter and no mount helper); FAT and exFAT are readable without attaching
+      the image, which is what a forensic look at a card wants. Two more decoders are written from
+      their formats for the same licence reason as the readers: LZO (GPL implementations only, and the
+      default in mkfs.ubifs) and NTFS's LZNT1.
 
   - id: java-decompiler
     name: Java-Decompiler-Plugin (F3 auf .class)

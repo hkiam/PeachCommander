@@ -64,6 +64,10 @@ looking for a bad download.
   whatever happened to sit at that offset, so the image is declined rather than read
   wrongly.
 - **Multi-device Btrfs** — most of the data is in a file that is not this one.
+- **NTFS files whose attributes spill into an `$ATTRIBUTE_LIST`** — heavily fragmented
+  files whose data runs live in other records. Reading only the first would hand back a
+  fragment as if it were the file. Encrypted files and alternate data streams are
+  likewise left out.
 - **A NAND dump with its spare area** — a raw dump interleaves out-of-band ECC bytes
   with the data, so node payloads fail their own checksums. Re-dump it with
   `nanddump --omitoob`.
