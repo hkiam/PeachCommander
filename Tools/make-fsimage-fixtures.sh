@@ -34,6 +34,10 @@ ROOT="$(pwd)"
 OUT="$ROOT/Tests/PCPluginHostTests/Fixtures/fsimage"
 FILTER="${1:-}"
 IMAGE="ubuntu:24.04"
+# Ubuntu's mtd-utils is built without LZO, so the one JFFS2 fixture that exercises it has to
+# come from somewhere else. Alpine's is built with it — `mkfs.jffs2 -L` lists lzo at priority
+# 80, disabled by default. Cheaper than maintaining a Dockerfile: one extra pull.
+ALPINE_IMAGE="alpine:3.20"
 
 command -v docker >/dev/null || { echo "error: docker is required (colima start, or Docker Desktop)" >&2; exit 1; }
 docker info >/dev/null 2>&1 || { echo "error: the docker daemon is not running" >&2; exit 1; }
@@ -303,6 +307,42 @@ docker start -a "$CONTAINER"
 
 STAGING="$(mktemp -d)"
 docker cp "$CONTAINER:/out/." "$STAGING/" >/dev/null
+
+# --- The one fixture Ubuntu cannot build ------------------------------------------------------------
+# JFFS2 with LZO nodes. Worth the second image: the LZO path in the JFFS2 driver was dead for a while
+# — the codec was wired into the shared decompressor but not into JFFS2's own switch — and no fixture
+# reached it, so nothing failed. This one turned that into a red test.
+ALPINE_SCRIPT="$(mktemp)"
+cat > "$ALPINE_SCRIPT" <<'ALPINE_BUILD'
+#!/bin/sh
+set -eu
+apk add --no-cache mtd-utils python3 >/dev/null 2>&1
+R=/tmp/tree; rm -rf $R; mkdir -p $R/etc/conf.d $R/bin
+printf 'hello from initramfs\n' > $R/etc/motd
+printf 'key = value\n'          > $R/etc/conf.d/app.conf
+: > $R/bin/empty
+ln -s ../etc/motd $R/bin/motd-link
+python3 -c "
+import sys
+sys.stdout.buffer.write(bytes((i * 7 + 3) % 251 for i in range(300000)))
+" > $R/bin/pattern.dat
+mkdir -p /out
+# LZO is compiled in but off by default, so it is switched on and the other two off, leaving it as the
+# only compressor that can win a node.
+mkfs.jffs2 -r $R -o /out/jffs2-lzo.img -e 128KiB -l -p -X lzo -x zlib -x rtime
+cd /out && sha256sum jffs2-lzo.img > sha256.txt && gzip -9 jffs2-lzo.img
+ALPINE_BUILD
+ALPINE_CONTAINER="$(docker create "$ALPINE_IMAGE" sh /build.sh)"
+docker cp "$ALPINE_SCRIPT" "$ALPINE_CONTAINER:/build.sh" >/dev/null
+if docker start -a "$ALPINE_CONTAINER"; then
+  docker cp "$ALPINE_CONTAINER:/out/jffs2-lzo.img.gz" "$STAGING/" >/dev/null
+  docker cp "$ALPINE_CONTAINER:/out/sha256.txt" "$STAGING/alpine-sha256.txt" >/dev/null
+  cat "$STAGING/alpine-sha256.txt" >> "$STAGING/sha256.txt"
+  echo "jffs2-lzo.img|mkfs.jffs2 -r \$TREE -o jffs2-lzo.img -e 128KiB -l -p -X lzo -x zlib -x rtime|mtd-utils on $ALPINE_IMAGE" \
+    >> "$STAGING/commands.txt"
+fi
+docker rm -f "$ALPINE_CONTAINER" >/dev/null 2>&1
+rm -f "$ALPINE_SCRIPT"
 
 # The manifest is rewritten wholesale from what was just built, so it cannot describe a file that is
 # no longer there.
