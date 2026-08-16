@@ -3,7 +3,7 @@ title: Zásuvné moduly
 slug: plugins
 section: Zásuvné moduly
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 Zásuvné moduly rozširujú Peach Commander o ďalšie nástroje, formáty súborov a miesta na prehliadanie. Tucet zásuvných modulov je vstavaných, takže ich môžete začať používať ihneď, a jednotlivé zásuvné moduly môžete zapínať alebo vypínať — alebo inštalovať nové — z jedného okna. Zásuvné moduly použite, keď chcete schopnosti nad rámec každodenného kopírovania a prehliadania: vizualizovať, čo zapĺňa disk, pripojiť sa k serveru WebDAV, skontrolovať stav úložiska Git, sledovať systémovú aktivitu a viac.
@@ -19,6 +19,7 @@ Niekoľko zásuvných modulov má vlastnú podrobnú tému pomocníka — pre ce
 - **[Git](git.md)** — zobrazuje stav pracovného stromu každého súboru a aktuálnu vetvu ako stĺpce panela a pridáva ponuku **Git** pre stav, pripraviť, commit, pull a push.
 - **[System Monitor](system-monitor.md)** — živý odpočet procesora, pamäte, disku, siete (a, kde je to dostupné, GPU, batérie, senzorov) v titulnej lište okna, s preklikávateľnými detailnými grafmi.
 - **[Task Manager](task-manager.md)** — pripojí vaše bežiace procesy ako prehliadateľný disk **TaskManager**; trieďte ich, skúmajte ich ako súbory alebo ich ukončite klávesom Odstrániť.
+- **[Obrazy súborových systémov](filesystem-images.md)** — otvorí obraz súborového systému (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) ako archív, vrátane obrazov diskov s viacerými oddielmi. Iba na čítanie a vypnuté, kým ho nezapnete.
 - **[Uninstaller](uninstaller.md)** — odstráni aplikáciu **aj** podporné súbory, vyrovnávacie pamäte a predvoľby, ktoré za sebou nechá, po tom, ako vám presne ukáže, čo zmizne.
 
 Zvyšné vstavané zásuvné moduly sú menšie a nepotrebujú vlastnú stránku:

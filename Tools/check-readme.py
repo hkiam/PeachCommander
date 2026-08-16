@@ -101,7 +101,7 @@ def check_plugins(text, problems):
     directories do not ('Disk Map' is Plugins/Treemap), so a name is accepted when it matches a
     directory with the spaces removed, or is listed here as a deliberate alias."""
     aliases = {"Disk Map": "Treemap", "AI Assistant": "AIAssistant", "Archive formats": "Archive",
-               "iCloud": "ICloud"}
+               "iCloud": "ICloud", "Filesystem Images": "FSImage"}
     present = set(os.listdir(os.path.join(ROOT, "Plugins")))
     for row in re.findall(r"^\|\s*(\*\*.+?\*\*(?:\s*·\s*\*\*.+?\*\*)*)\s*\|", text, re.M):
         for name in re.findall(r"\*\*(.+?)\*\*", row):

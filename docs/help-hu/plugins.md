@@ -3,7 +3,7 @@ title: Bővítmények
 slug: plugins
 section: Bővítmények
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 A bővítmények kiegészítik a Peach Commandert extra eszközökkel, fájlformátumokkal és böngészhető helyekkel. Egy tucat bővítmény beépített, így azonnal elkezdheti használni őket, és egyes bővítményeket be- vagy kikapcsolhat — vagy újakat telepíthet — egyetlen ablakból. Használjon bővítményeket, ha a mindennapi másoláson és böngészésen túli képességeket szeretne: megjeleníteni, mi tölti meg a lemezt, csatlakozni egy WebDAV-kiszolgálóhoz, ellenőrizni egy Git-tároló állapotát, figyelni a rendszertevékenységet, és többet.
@@ -19,6 +19,7 @@ Több bővítménynek saját, részletes súgótémája van — kövesse a hivat
 - **[Git](git.md)** — megmutatja minden fájl munkafa-állapotát és az aktuális branchet paneloszlopokként, és hozzáad egy **Git** menüt a státuszhoz, előkészítéshez, committoláshoz, pullhoz és pushhoz.
 - **[System Monitor](system-monitor.md)** — valós idejű kijelzés a processzorról, memóriáról, lemezről, hálózatról (és ahol elérhető, GPU-ról, akkumulátorról, érzékelőkről) az ablak címsorában, átkattintható részletdiagramokkal.
 - **[Task Manager](task-manager.md)** — a futó folyamatait böngészhető **TaskManager** meghajtóként csatolja; rendezze, vizsgálja őket fájlokként, vagy zárja be őket a Törlés billentyűvel.
+- **[Fájlrendszerképek](filesystem-images.md)** — úgy nyit meg egy fájlrendszerképet (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS), mint egy archívumot, a több partíciót tartalmazó lemezképeket is. Csak olvasható, és ki van kapcsolva, amíg be nem kapcsolja.
 - **[Uninstaller](uninstaller.md)** — eltávolít egy alkalmazást **és** a hátrahagyott támogatófájlokat, gyorsítótárakat és beállításokat, miután pontosan megmutatta, mi tűnik el.
 
 A többi beépített bővítmény kisebb, és nincs szüksége saját oldalra:

@@ -3,7 +3,7 @@ title: Extensions
 slug: plugins
 section: Extensions
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 Les extensions étendent Peach Commander avec des outils supplémentaires, des formats de fichiers et des emplacements à parcourir. Une douzaine d'extensions sont intégrées, vous pouvez donc les utiliser immédiatement, et vous pouvez activer ou désactiver des extensions individuelles — ou en installer de nouvelles — depuis une seule fenêtre. Utilisez les extensions quand vous voulez des capacités au-delà de la copie et de la navigation quotidiennes : visualiser ce qui remplit un disque, se connecter à un serveur WebDAV, vérifier l'état d'un dépôt Git, surveiller l'activité du système, et plus encore.
@@ -19,6 +19,7 @@ Plusieurs extensions ont leur propre rubrique d'aide détaillée — suivez le l
 - **[Git](git.md)** — affiche le statut de chaque fichier dans l'arbre de travail et la branche courante sous forme de colonnes de panneau, et ajoute un menu **Git** pour le statut, l'indexation, le commit, le pull et le push.
 - **[System Monitor](system-monitor.md)** — un relevé en temps réel du processeur, de la mémoire, du disque, du réseau (et, là où c'est disponible, du GPU, de la batterie, des capteurs) dans la barre de titre de la fenêtre, avec des graphiques de détail au clic.
 - **[Task Manager](task-manager.md)** — monte vos processus en cours comme un lecteur **TaskManager** parcourable ; triez-les, examinez-les comme des fichiers, ou terminez-les avec Supprimer.
+- **[Images de systèmes de fichiers](filesystem-images.md)** — ouvre une image de système de fichiers (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) comme une archive, y compris les images disque à plusieurs partitions. En lecture seule, et désactivé tant que vous ne l'activez pas.
 - **[Uninstaller](uninstaller.md)** — retire une application **et** les fichiers de support, caches et préférences qu'elle laisse derrière elle, après vous avoir montré exactement ce qui va partir.
 
 Les autres extensions intégrées sont plus petites et n'ont pas besoin de leur propre page :

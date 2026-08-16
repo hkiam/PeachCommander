@@ -3,7 +3,7 @@ title: Plugins
 slug: plugins
 section: Plugins
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 Plugins erweitern Peach Commander um zusätzliche Werkzeuge, Dateiformate und Orte zum Durchsuchen. Ein Dutzend Plugins ist bereits eingebaut, sodass Sie sie sofort verwenden können, und Sie können einzelne Plugins ein- oder ausschalten — oder neue installieren — über ein einziges Fenster. Nutzen Sie Plugins, wenn Sie Funktionen über das alltägliche Kopieren und Durchsuchen hinaus möchten: visualisieren, was eine Festplatte füllt, sich mit einem WebDAV-Server verbinden, den Status eines Git-Repositorys prüfen, die Systemaktivität beobachten und mehr.
@@ -19,6 +19,7 @@ Mehrere Plugins haben ihr eigenes ausführliches Hilfethema — folgen Sie dem L
 - **[Git](git.md)** — zeigt den Arbeitsbaum-Status jeder Datei und den aktuellen Branch als Panel-Spalten und fügt ein **Git**-Menü für Status, bereitstellen, committen, pull und push hinzu.
 - **[System Monitor](system-monitor.md)** — eine Live-Anzeige von CPU, Speicher, Festplatte, Netzwerk (und, sofern verfügbar, GPU, Batterie, Sensoren) in der Fenster-Titelleiste, mit anklickbaren Detaildiagrammen.
 - **[Task Manager](task-manager.md)** — bindet Ihre laufenden Prozesse als durchsuchbares Laufwerk **TaskManager** ein; sortieren Sie sie, untersuchen Sie sie wie Dateien oder beenden Sie sie mit Löschen.
+- **[Dateisystem-Images](filesystem-images.md)** — öffnet ein Dateisystem-Image (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) wie ein Archiv, auch Disk-Images mit mehreren Partitionen. Nur lesend, und aus, bis Sie es einschalten.
 - **[Uninstaller](uninstaller.md)** — entfernt eine Anwendung **und** die Support-Dateien, Caches und Einstellungen, die sie hinterlässt, nachdem er Ihnen genau gezeigt hat, was verschwinden wird.
 
 Die übrigen eingebauten Plugins sind kleiner und brauchen keine eigene Seite:

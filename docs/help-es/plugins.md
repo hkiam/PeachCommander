@@ -3,7 +3,7 @@ title: Complementos
 slug: plugins
 section: Complementos
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 Los complementos amplían Peach Commander con herramientas, formatos de archivo y lugares que explorar adicionales. Una docena de complementos vienen integrados, así que puedes empezar a usarlos de inmediato, y puedes activar o desactivar complementos individuales —o instalar nuevos— desde una sola ventana. Usa complementos cuando quieras capacidades más allá del copiado y la exploración cotidianos: visualizar qué llena un disco, conectarte a un servidor WebDAV, comprobar el estado de un repositorio Git, vigilar la actividad del sistema y más.
@@ -19,6 +19,7 @@ Varios complementos tienen su propio tema de ayuda detallado; sigue el enlace pa
 - **[Git](git.md)** — muestra el estado del árbol de trabajo de cada archivo y la rama actual como columnas del panel, y añade un menú **Git** para estado, preparar, confirmar, pull y push.
 - **[System Monitor](system-monitor.md)** — una lectura en tiempo real de CPU, memoria, disco, red (y, donde esté disponible, GPU, batería, sensores) en la barra de título de la ventana, con gráficos de detalle al hacer clic.
 - **[Task Manager](task-manager.md)** — monta los procesos en ejecución como una unidad **TaskManager** explorable; ordénalos, inspecciónalos como archivos o finalízalos con Eliminar.
+- **[Imágenes de sistemas de archivos](filesystem-images.md)** — abre una imagen de sistema de archivos (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) como un archivo comprimido, incluidas las imágenes de disco con varias particiones. Solo lectura, y desactivado hasta que usted lo active.
 - **[Uninstaller](uninstaller.md)** — elimina una aplicación **y** los archivos de soporte, cachés y preferencias que deja atrás, tras mostrarte exactamente qué se va a ir.
 
 Los demás complementos integrados son más pequeños y no necesitan una página propia:

@@ -3,7 +3,7 @@ title: Pluginuri
 slug: plugins
 section: Pluginuri
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 Pluginurile extind Peach Commander cu instrumente suplimentare, formate de fișiere și locuri de parcurs. O duzină de pluginuri sunt încorporate, astfel încât puteți începe să le folosiți imediat, și puteți activa sau dezactiva pluginuri individuale — sau instala altele noi — dintr-o singură fereastră. Folosiți pluginuri când doriți capabilități dincolo de copierea și parcurgerea zilnică: vizualizarea a ceea ce umple un disc, conectarea la un server WebDAV, verificarea stării unui depozit Git, urmărirea activității sistemului și altele.
@@ -19,6 +19,7 @@ Mai multe pluginuri au propriul lor subiect detaliat de ajutor — urmați linku
 - **[Git](git.md)** — arată starea din arborele de lucru a fiecărui fișier și ramura curentă ca coloane de panou, și adaugă un meniu **Git** pentru status, pregătire, commit, pull și push.
 - **[System Monitor](system-monitor.md)** — o citire în timp real a procesorului, memoriei, discului, rețelei (și, unde este disponibil, GPU, baterie, senzori) în bara de titlu a ferestrei, cu grafice de detaliu accesibile prin clic.
 - **[Task Manager](task-manager.md)** — montează procesele care rulează ca o unitate **TaskManager** parcurgibilă; sortați-le, examinați-le ca pe fișiere sau încheiați-le cu Ștergere.
+- **[Imagini de sisteme de fișiere](filesystem-images.md)** — deschide o imagine de sistem de fișiere (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) ca pe o arhivă, inclusiv imaginile de disc cu mai multe partiții. Doar citire și dezactivat până când îl activați.
 - **[Uninstaller](uninstaller.md)** — elimină o aplicație **și** fișierele de suport, cache-urile și preferințele pe care le lasă în urmă, după ce vă arată exact ce va dispărea.
 
 Restul pluginurilor încorporate sunt mai mici și nu au nevoie de o pagină proprie:

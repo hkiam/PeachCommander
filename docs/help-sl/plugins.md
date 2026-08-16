@@ -3,7 +3,7 @@ title: Vtičniki
 slug: plugins
 section: Vtičniki
 order: 120
-related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, archives, ftp-and-sftp]
+related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]
 ---
 
 Vtičniki razširijo Peach Commander z dodatnimi orodji, oblikami datotek in mesti za brskanje. Ducat vtičnikov je vgrajenih, tako da jih lahko začnete uporabljati takoj, posamezne vtičnike pa lahko vklopite ali izklopite — ali namestite nove — iz enega samega okna. Vtičnike uporabite, ko želite zmožnosti onkraj vsakodnevnega kopiranja in brskanja: vizualizirati, kaj polni disk, se povezati s strežnikom WebDAV, preveriti stanje odložišča Git, spremljati sistemsko dejavnost in več.
@@ -19,6 +19,7 @@ Več vtičnikov ima svojo podrobno temo pomoči — sledite povezavi za celotno 
 - **[Git](git.md)** — prikaže stanje delovnega drevesa vsake datoteke in trenutno vejo kot stolpca podokna ter doda meni **Git** za stanje, pripravo, uveljavitev, prenos in potisk.
 - **[System Monitor](system-monitor.md)** — prikaz procesorja, pomnilnika, diska, omrežja (in, kjer je na voljo, GPE, baterije, senzorjev) v realnem času v naslovni vrstici okna, s podrobnimi grafi ob kliku.
 - **[Task Manager](task-manager.md)** — priklopi vaše izvajajoče se procese kot disk **TaskManager**, po katerem lahko brskate; razvrstite jih, preučite kot datoteke ali jih končajte z Izbriši.
+- **[Slike datotečnih sistemov](filesystem-images.md)** — odpre sliko datotečnega sistema (SquashFS, ext, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS) kot arhiv, vključno s slikami diskov z več razdelki. Samo za branje in izklopljeno, dokler ga ne vklopite.
 - **[Uninstaller](uninstaller.md)** — odstrani aplikacijo **in** podporne datoteke, predpomnilnike in nastavitve, ki jih pusti za seboj, potem ko vam natančno pokaže, kaj bo odšlo.
 
 Preostali vgrajeni vtičniki so manjši in ne potrebujejo svoje strani:
