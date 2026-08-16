@@ -1,0 +1,23 @@
+/* Linux Filesystem Images — English (source).
+   The keys are the English text; a missing translation falls back to the key. */
+
+/* The Commands-menu entry. The title in Info.plist is looked up here too, so the
+   ellipsis form must match the manifest exactly or the menu shows the raw key. */
+"Scan Image Layout…" = "Scan Image Layout…";
+
+/* Dialog title, without the ellipsis: the ellipsis promises a dialog, and by the time
+   one is on screen the promise has been kept. */
+"Scan Image Layout" = "Scan Image Layout";
+
+"Put the cursor on a filesystem image first." = "Put the cursor on a filesystem image first.";
+"The report could not be written. The folder may be read-only." = "The report could not be written. The folder may be read-only.";
+
+/* Prefixes completed by one of the reasons below, or by a message from the driver. */
+"This file could not be scanned: " = "This file could not be scanned: ";
+
+/* Reasons. Lower-case and without a full stop: each is the tail of the sentence above. */
+"the file could not be opened" = "the file could not be opened";
+"the file could not be read" = "the file could not be read";
+"it is not a filesystem image" = "it is not a filesystem image";
+"the image ends before its own structures do" = "the image ends before its own structures do";
+"the image is past a structural limit: " = "the image is past a structural limit: ";

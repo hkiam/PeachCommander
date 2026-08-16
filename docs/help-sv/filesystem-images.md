@@ -37,6 +37,20 @@ En avbild kopierad från en hel enhet har oftast en partitionstabell i stället 
 
 En partition som insticksmodulen inte kan läsa visas ändå, som en tom mapp uppkallad efter sin typ. Har en enhet tre partitioner ska du kunna se att den har tre.
 
+## Fast programvara utan partitionstabell
+
+En fil med fast programvara hämtad ur en router eller en kamera har som regel ingen partitionstabell alls. Den är ett tillverkarhuvud, en starthanterare, en kärna och ett rootfs skrivna efter varandra på positioner som inte är noterade någonstans. En sådan fil öppnas med en post per del, var och en uppkallad efter positionen där den börjar: `0x00230044-squashfs` är ett filsystem att gå in i, `0x00030040-kernel.uimage` en fil att kopiera ut.
+
+Delarna hittas genom att filen genomsöks efter själva filsystemen och varje träff öppnas för att se om det verkligen ligger ett där. Ett bytemönster som råkar stämma kostar ett ögonblick och förkastas i stället för att bli en påhittad post; och en fil där inget filsystem står att finna avvisas fortfarande och öppnas som den alltid skulle ha gjort.
+
+Detsamma gäller allt som ligger utanför partitionerna i en partitionerad avbildning. En Raspberry Pi håller sin starthanterare i megabytena före partition 1, och U-Boot sitter på de flesta ARM-kort på en fast position i samma otilldelade utrymme. Dessa sträckor listas bredvid partitionerna så att du kan se dem och kopiera ut dem.
+
+## Att skriva ner uppbyggnaden
+
+**Kommandon ▸ Analysera avbildningens uppbyggnad…** sparar resultatet som en textfil bredvid avbildningen och sätter markören på den: varje område med sin position, sin storlek och det den visade sig vara, plus partitionstabellen om avbildningen har en. Just den tabellen är oftast vad en genomgång eller ett ärende behöver, och att bygga upp den igen genom att gå igenom en panel och skriva av tal är tråkigt arbete.
+
+Rapporten visar också det som panelen utelämnar — de små justeringsluckorna mellan partitioner, till exempel — och namnger kortet som en U-Boot-kärna byggts för, när avbildningen noterar det.
+
 ## Att arbeta inuti en avbild
 
 Allt du redan kan gäller. F3 visar en fil, F5 kopierar filer ut till en riktig mapp, och **Sök filer** söker i avbildens innehåll. Du går ut ur den som du lämnar ett arkiv.
@@ -56,4 +70,5 @@ Insticksmodulen säger varför i stället för att rapportera en trasig fil, eft
 
 - En avbild läses en gång och kommer ihåg, så att gå in i den igen sker omedelbart.
 - Mycket stora avbilder läses efter behov i stället för att laddas i sin helhet; en lista är begränsad till två miljoner poster.
-- Insticksmodulen lägger inte till några menykommandon och inga egna inställningar utöver reglaget som slår på den.
+- En avbildning genomsöks efter inbäddade filsystem endast när den varken har en partitionstabell eller ett filsystem i början, så en vanlig avbildning öppnas precis lika snabbt som förut.
+- Insticksmodulen lägger till ett menykommando och inga egna inställningar utöver reglaget som slår på den.

@@ -622,6 +622,11 @@ targets:
       - target: PCFoundation
       - target: PCVFS
       - target: PCPluginHost
+      # For PcHostServices: the FSImage plugin contributes a Commands-menu entry, and the
+      # only way to test what that entry actually does is to call PcRunCommand with a fake
+      # host table — the same pattern PCThemeTests uses for the plugin side of the theme
+      # bridge. Without it the report the command produces could only be tested by hand.
+      - target: CContrib
     frameworks:
       - XCTest
 

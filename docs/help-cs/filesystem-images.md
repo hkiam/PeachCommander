@@ -37,6 +37,20 @@ Obraz zkopírovaný z celého zařízení má obvykle tabulku oddílů namísto 
 
 Oddíl, který modul neumí přečíst, se přesto zobrazí jako prázdná složka pojmenovaná podle svého typu. Má-li zařízení tři oddíly, měli byste vidět, že má tři.
 
+## Firmware bez tabulky oddílů
+
+Soubor firmwaru vytažený ze směrovače nebo kamery obvykle nemá žádnou tabulku oddílů. Je to hlavička výrobce, zavaděč, jádro a rootfs zapsané za sebou na posunech, které nejsou nikde zaznamenány. Takový soubor se otevře s jednou položkou na každou část, pojmenovanou podle posunu, kde začíná: `0x00230044-squashfs` je souborový systém, do kterého lze vstoupit, `0x00030040-kernel.uimage` soubor ke zkopírování ven.
+
+Části se najdou tak, že se v souboru hledají samotné souborové systémy a každý nález se otevře, aby se ověřilo, zda tam opravdu je. Bajtový vzor, který se shoduje náhodou, stojí okamžik a je zahozen, místo aby se stal vymyšlenou položkou; a soubor, v němž se žádný souborový systém nenajde, je nadále odmítnut a otevře se tak, jak by se otevřel vždy.
+
+Totéž platí pro vše, co leží mimo oddíly rozděleného obrazu. Raspberry Pi drží svůj zavaděč v megabajtech před oddílem 1 a U-Boot sedí na většině desek ARM na pevném posunu v témže nepřiděleném prostoru. Tyto úseky se vypisují vedle oddílů, abyste je viděli a mohli je zkopírovat ven.
+
+## Zapsat si rozvržení
+
+**Příkazy ▸ Analyzovat rozvržení obrazu…** uloží výsledek jako textový soubor vedle obrazu a nastaví na něj kurzor: každá oblast se svým posunem, velikostí a tím, čím se ukázala být, plus tabulka oddílů, pokud ji obraz má. Právě tuto tabulku obvykle potřebuje rozbor nebo tiket a sestavovat ji znovu procházením panelu a opisováním čísel je únavná práce.
+
+Zpráva ukazuje také to, co panel vynechává — například malé zarovnávací mezery mezi oddíly — a pojmenuje desku, pro kterou bylo jádro U-Boot sestaveno, pokud to obraz zaznamenává.
+
 ## Práce uvnitř obrazu
 
 Platí vše, co už znáte. F3 zobrazí soubor, F5 zkopíruje soubory do skutečné složky a **Najít soubory** prohledá obsah obrazu. Ven se dostanete stejně jako z archivu.
@@ -56,4 +70,5 @@ Modul řekne proč, místo aby hlásil poškozený soubor, protože obojí vás 
 
 - Obraz se přečte jednou a zapamatuje, takže návrat do něj je okamžitý.
 - Velmi velké obrazy se čtou podle potřeby, místo aby se načítaly celé; výpis je omezen na dva miliony položek.
-- Modul nepřidává žádné příkazy nabídky ani vlastní nastavení kromě přepínače, který jej zapíná.
+- Obraz se prohledává na vnořené souborové systémy jen tehdy, když nemá ani tabulku oddílů, ani souborový systém na začátku, takže běžný obraz se otevře přesně tak rychle jako dosud.
+- Zásuvný modul přidává jeden příkaz nabídky a žádná vlastní nastavení kromě přepínače, který jej zapíná.

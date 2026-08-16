@@ -40,6 +40,66 @@ A partition this build cannot read is still listed, as an empty directory named 
 its type. Somebody auditing a device needs to see that a third partition exists even
 when its contents are out of reach.
 
+Whatever falls outside every partition is listed too, as an extractable blob named by
+its offset. That space is where embedded devices keep their bootloader — a Raspberry Pi
+uses the four megabytes ahead of partition 1, U-Boot on most ARM boards a fixed sector
+offset — so listing only the partitions reports an image as having no bootloader when it
+plainly has one. Runs below 64 KB are skipped: the table's own sector and a partition's
+alignment slack are structure, not content, and reporting them would bury the one gap
+that means something.
+
+## Images with no table at all
+
+Router and camera firmware usually has no partition table and no filesystem at offset 0.
+It is a vendor header, a bootloader, a kernel and a rootfs concatenated at offsets the
+vendor chose and recorded nowhere. When nothing else claims such a file, `CarvedDriver`
+searches it for the filesystems themselves and lists what it finds:
+
+```
+0x00000000-firmware.trx      64 B    TRX firmware container
+0x00000040-unknown.bin     192 KB    unrecognised data
+0x00030040-kernel.uimage   2.0 MB    U-Boot kernel, gzip — Linux-6.1.0
+0x00230044-squashfs/       1.4 MB    SquashFS 4.0, xz
+```
+
+Filesystems are directories to walk into; everything else is a file to copy out. The
+offset is in the name because it is the only identifying fact such a region has.
+
+**Every candidate is confirmed by opening it.** A signature match is never the answer on
+its own — FAT's is the two bytes `55 AA`, which occur by chance roughly a thousand times
+in a 64 MB image — so each hit is opened with the driver that claimed it, using the same
+superblock validation an ordinary open performs. A coincidence fails that in microseconds.
+This is what makes scanning for a two-byte pattern reasonable rather than a source of
+invented entries.
+
+Two consequences worth knowing when adding a driver. A driver joins the scan by declaring
+`carveSignatures`, and declares `byteLength` when its superblock records how far the
+filesystem extends — with a length, the driver is opened through a window that ends where
+it ends, so a carved SquashFS cannot read into the kernel behind it. JFFS2 and UBIFS
+record no length, and a region from those is reported as running to whatever comes next
+rather than being given an invented extent.
+
+`CarvedDriver.probe` accepts any file between 512 bytes and 512 MB — the ceiling bounds how
+long a wrong guess costs, and 512 MB of pure entropy is declined in about 1.3 seconds —
+because whether an image
+holds a buried filesystem cannot be known without looking. The decision therefore lives in
+its initialiser, which throws `.notThisFormat` when the scan found no filesystem — that
+refusal is what keeps the plugin from claiming every `.bin` on the system, and
+`CanYouHandleThisFile` answers by opening for real (through the parse cache) rather than
+by probing, for the same reason.
+
+## The layout report
+
+The plugin contributes one command, **Commands ▸ Scan Image Layout…**, which writes the
+scan result as `<image>.layout.txt` beside the image and reveals it in the panel.
+
+It writes a report rather than navigating because it cannot navigate: `PcHostServices`
+offers `openPath`, which goes to a real path, and there is no service that mounts a
+virtual filesystem. Only pressing Enter on a file does that. What a command *can* produce
+is the artefact — offsets, sizes, detected types, and the partition table if there is one
+— which is usually what firmware work actually keeps, and which is tedious to rebuild by
+walking a panel and copying numbers.
+
 ## Turning it on
 
 The plugin ships **disabled**. Enable it in Settings ▸ Plugins.

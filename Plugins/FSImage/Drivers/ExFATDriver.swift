@@ -52,6 +52,15 @@ final class ExFATDriver: ImageFilesystemDriver {
         (try? reader.bytes(at: 3, count: 8)) == signature
     }
 
+    static let carveSignatures = [CarveSignature("EXFAT   ", at: 3)]
+
+    static func byteLength(_ reader: ImageReader) -> Int64? {
+        guard let shift = try? reader.u8(at: 108), shift >= 9, shift <= 12,
+              let sectors = try? reader.u64le(at: 72), sectors > 0, sectors <= Int64.max
+        else { return nil }
+        return Int64(sectors) << Int64(shift)
+    }
+
     init(reader: ImageReader) throws {
         self.reader = reader
         guard try reader.bytes(at: 3, count: 8) == Self.signature else { throw ImageError.notThisFormat }

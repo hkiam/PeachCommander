@@ -37,6 +37,20 @@ Ein von einem ganzen Gerät kopiertes Image enthält meist eine Partitionstabell
 
 Eine Partition, die das Plugin nicht lesen kann, erscheint trotzdem — als leerer Ordner, benannt nach ihrem Typ. Hat ein Gerät drei Partitionen, sollen Sie sehen können, dass es drei hat.
 
+## Firmware ohne Partitionstabelle
+
+Eine Firmware-Datei aus einem Router oder einer Kamera hat meist überhaupt keine Partitionstabelle. Sie besteht aus einem Hersteller-Header, einem Bootloader, einem Kernel und einem Rootfs, hintereinandergeschrieben an Offsets, die nirgends vermerkt sind. So eine Datei öffnet sich als ein Eintrag je Bestandteil, jeweils benannt nach dem Offset, an dem er beginnt: `0x00230044-squashfs` ist ein Dateisystem zum Hineingehen, `0x00030040-kernel.uimage` eine Datei zum Herauskopieren.
+
+Gefunden werden die Bestandteile, indem die Datei nach den Dateisystemen selbst durchsucht und jeder Fund geöffnet wird, um zu sehen, ob dort wirklich eines liegt. Ein zufällig passendes Bytemuster kostet einen Augenblick und wird verworfen, statt zu einem erfundenen Eintrag zu werden; und eine Datei, in der sich kein Dateisystem findet, wird weiterhin abgelehnt und öffnet sich wie immer.
+
+Dasselbe gilt für alles, was außerhalb der Partitionen eines partitionierten Images liegt. Ein Raspberry Pi hält seinen Bootloader in den Megabyte vor Partition 1, und U-Boot sitzt auf den meisten ARM-Boards an einem festen Offset im selben nicht zugeordneten Bereich. Diese Bereiche werden neben den Partitionen aufgeführt, damit Sie sie sehen und herauskopieren können.
+
+## Den Aufbau festhalten
+
+**Befehle ▸ Image-Aufbau analysieren…** legt das Ergebnis als Textdatei neben dem Image ab und setzt den Cursor darauf: jeder Bereich mit Offset, Größe und dem, was er sich als sein herausgestellt hat, dazu die Partitionstabelle, sofern das Image eine hat. Genau diese Tabelle will eine Analyse oder ein Ticket meistens haben, und sie durch Ablaufen eines Panels und Abschreiben von Zahlen wiederherzustellen ist mühsame Arbeit.
+
+Der Bericht zeigt außerdem, was das Panel weglässt — etwa die kleinen Ausrichtungslücken zwischen Partitionen — und nennt das Board, für das ein U-Boot-Kernel gebaut wurde, wenn das Image es festhält.
+
 ## Arbeiten im Image
 
 Alles Gewohnte gilt weiter. F3 zeigt eine Datei an, F5 kopiert Dateien in einen echten Ordner heraus, und **Dateien suchen** durchsucht den Inhalt des Images. Hinaus geht es wie aus einem Archiv.
@@ -56,4 +70,5 @@ Das Plugin nennt den Grund, statt eine defekte Datei zu melden — die beiden f�
 
 - Ein Image wird einmal gelesen und behalten, der Wiedereinstieg ist daher sofort da.
 - Sehr große Images werden nach Bedarf gelesen statt vollständig geladen; eine Auflistung ist auf zwei Millionen Einträge begrenzt.
-- Das Plugin fügt keine Menübefehle und keine eigenen Einstellungen hinzu außer dem Schalter, der es aktiviert.
+- Ein Image wird nur dann nach eingebetteten Dateisystemen durchsucht, wenn es weder eine Partitionstabelle noch ein Dateisystem an seinem Anfang hat; ein gewöhnliches Image öffnet sich also genauso schnell wie bisher.
+- Das Plugin fügt einen Menübefehl und keine eigenen Einstellungen hinzu außer dem Schalter, der es aktiviert.

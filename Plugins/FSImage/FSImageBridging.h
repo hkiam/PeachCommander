@@ -3,6 +3,13 @@
 
 #include "pcx.h"
 
+/*
+ * The contribution ABI, for the single Commands-menu entry in LayoutCommand.swift.
+ * Orthogonal to the packer ABI above: a plugin of any type may carry contributions,
+ * and this one is a packer that also contributes a command.
+ */
+#include "contrib.h"
+
 #include <stddef.h>
 
 /*

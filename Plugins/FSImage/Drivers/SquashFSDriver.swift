@@ -77,6 +77,19 @@ final class SquashFSDriver: ImageFilesystemDriver {
         return value == magic
     }
 
+    /// "hsqs" — the magic as the bytes read on disk, right at the front. This is the
+    /// signature that matters most for carving: a SquashFS rootfs appended to a
+    /// bootloader and a kernel is what a router firmware file *is*.
+    static let carveSignatures = [CarveSignature("hsqs", at: 0)]
+
+    /// `bytes_used` from the superblock. Distinct from the file's length: mksquashfs
+    /// pads its output up to an erase-block boundary, and firmware appends the next
+    /// blob after that padding, so the file is longer than the filesystem.
+    static func byteLength(_ reader: ImageReader) -> Int64? {
+        guard let used = try? reader.u64le(at: 40), used > 0, used <= Int64.max else { return nil }
+        return Int64(used)
+    }
+
     init(reader: ImageReader) throws {
         self.reader = reader
         guard try reader.u32le(at: 0) == Self.magic else { throw ImageError.notThisFormat }

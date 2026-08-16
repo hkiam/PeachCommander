@@ -37,6 +37,20 @@ En avbild kopiert fra en hel enhet har som regel en partisjonstabell i stedet fo
 
 En partisjon programtillegget ikke kan lese, vises likevel som en tom mappe oppkalt etter typen sin. Har en enhet tre partisjoner, skal du kunne se at den har tre.
 
+## Fastvare uten partisjonstabell
+
+En fastvarefil hentet ut av en ruter eller et kamera har som regel ingen partisjonstabell i det hele tatt. Den er et produsenthode, en oppstartslaster, en kjerne og et rootfs skrevet etter hverandre på posisjoner som ikke er notert noe sted. En slik fil åpnes med én oppføring per del, hver oppkalt etter posisjonen den begynner på: `0x00230044-squashfs` er et filsystem å gå inn i, `0x00030040-kernel.uimage` en fil å kopiere ut.
+
+Delene finnes ved å søke gjennom filen etter selve filsystemene og åpne hvert treff for å se om det virkelig ligger et der. Et bytemønster som treffer tilfeldig, koster et øyeblikk og forkastes i stedet for å bli en oppdiktet oppføring; og en fil der det ikke finnes noe filsystem, avvises fortsatt og åpnes slik den alltid ville ha gjort.
+
+Det samme gjelder alt som ligger utenfor partisjonene i et partisjonert avtrykk. En Raspberry Pi holder oppstartslasteren sin i megabytene foran partisjon 1, og U-Boot sitter på de fleste ARM-kort på en fast posisjon i den samme utildelte plassen. Disse strekningene listes ved siden av partisjonene, slik at du kan se dem og kopiere dem ut.
+
+## Å skrive ned oppbygningen
+
+**Kommandoer ▸ Analyser oppbygningen av avtrykket…** lagrer resultatet som en tekstfil ved siden av avtrykket og setter markøren på den: hvert område med sin posisjon, sin størrelse og det det viste seg å være, pluss partisjonstabellen dersom avtrykket har en. Nettopp den tabellen er som regel det en gjennomgang eller en sak trenger, og å bygge den opp igjen ved å gå gjennom et panel og skrive av tall er kjedelig arbeid.
+
+Rapporten viser også det panelet utelater — de små justeringshullene mellom partisjoner, for eksempel — og navngir kortet en U-Boot-kjerne er bygget for, når avtrykket noterer det.
+
 ## Å arbeide inne i en avbild
 
 Alt du allerede kan, gjelder. F3 viser en fil, F5 kopierer filer ut til en ekte mappe, og **Finn filer** søker i innholdet i avbilden. Du går ut av den slik du forlater et arkiv.
@@ -56,4 +70,5 @@ Programtillegget sier hvorfor i stedet for å melde om en ødelagt fil, for de t
 
 - En avbild leses én gang og huskes, så det går umiddelbart å gå inn i den igjen.
 - Svært store avbilder leses etter behov i stedet for å lastes inn i sin helhet; en liste er begrenset til to millioner oppføringer.
-- Programtillegget legger ikke til menykommandoer eller egne innstillinger utover bryteren som slår det på.
+- Et avtrykk gjennomsøkes for innebygde filsystemer bare når det verken har en partisjonstabell eller et filsystem i starten, så et vanlig avtrykk åpnes akkurat like raskt som før.
+- Programtillegget legger til én menykommando og ingen egne innstillinger utover bryteren som slår det på.

@@ -127,6 +127,19 @@ final class BtrfsDriver: ImageFilesystemDriver {
         BtrfsSuperblock.isPresent(in: reader)
     }
 
+    /// 65600 bytes in — the superblock is deliberately placed past the first 64 KB so a
+    /// bootloader can live in front of it, which also makes this the one signature here
+    /// whose offset really matters.
+    static let carveSignatures = [
+        CarveSignature(BtrfsSuperblock.magic, at: BtrfsSuperblock.offset + 64),
+    ]
+
+    static func byteLength(_ reader: ImageReader) -> Int64? {
+        guard let total = try? reader.u64le(at: BtrfsSuperblock.offset + 112),
+              total > 0, total <= Int64.max else { return nil }
+        return Int64(total)
+    }
+
     init(reader: ImageReader) throws {
         self.reader = reader
         self.sb = try BtrfsSuperblock(reader: reader)

@@ -37,6 +37,20 @@ Een image dat van een heel apparaat is gekopieerd heeft meestal een partitietabe
 
 Een partitie die de plug-in niet kan lezen verschijnt toch, als lege map met de naam van het type. Heeft een apparaat drie partities, dan moet u kunnen zien dat het er drie heeft.
 
+## Firmware zonder partitietabel
+
+Een firmwarebestand dat van een router of camera is gehaald, heeft meestal helemaal geen partitietabel. Het is een fabrikantkop, een bootloader, een kernel en een rootfs, achter elkaar weggeschreven op posities die nergens zijn vastgelegd. Zo’n bestand opent met één regel per onderdeel, elk genoemd naar de positie waar het begint: `0x00230044-squashfs` is een bestandssysteem om in te stappen, `0x00030040-kernel.uimage` een bestand om eruit te kopiëren.
+
+De onderdelen worden gevonden door het bestand af te zoeken op de bestandssystemen zelf en elke vondst te openen om te zien of er werkelijk een ligt. Een bytepatroon dat toevallig past, kost een ogenblik en wordt verworpen in plaats van een verzonnen regel te worden; en een bestand waarin geen bestandssysteem blijkt te zitten, wordt nog steeds geweigerd en opent zoals het altijd al deed.
+
+Hetzelfde geldt voor alles wat buiten de partities van een gepartitioneerde image ligt. Een Raspberry Pi bewaart zijn bootloader in de megabytes vóór partitie 1, en U-Boot staat op de meeste ARM-borden op een vaste positie in diezelfde niet-toegewezen ruimte. Die stukken staan naast de partities in de lijst, zodat u ze kunt zien en eruit kunt kopiëren.
+
+## De structuur vastleggen
+
+**Commando’s ▸ Structuur van image analyseren…** bewaart het resultaat als tekstbestand naast de image en zet de cursor erop: elk gebied met zijn positie, zijn grootte en wat het bleek te zijn, plus de partitietabel als de image er een heeft. Juist die tabel is meestal wat een analyse of een ticket nodig heeft, en hem opnieuw opbouwen door een venster af te lopen en getallen over te typen is vervelend werk.
+
+Het rapport toont ook wat het venster weglaat — de kleine uitlijningsgaten tussen partities bijvoorbeeld — en noemt het bord waarvoor een U-Boot-kernel is gebouwd, als de image dat vastlegt.
+
 ## Werken in een image
 
 Alles wat u al kent blijft gelden. F3 toont een bestand, F5 kopieert bestanden naar een echte map, en **Bestanden zoeken** doorzoekt de inhoud van het image. U verlaat het zoals u een archief verlaat.
@@ -56,4 +70,5 @@ De plug-in zegt waarom in plaats van een kapot bestand te melden, want die twee 
 
 - Een image wordt één keer gelezen en onthouden, dus er weer instappen gaat direct.
 - Zeer grote images worden gelezen wanneer nodig in plaats van in hun geheel geladen; een lijst is begrensd op twee miljoen items.
-- De plug-in voegt geen menuopdrachten en geen eigen instellingen toe, afgezien van de schakelaar die hem aanzet.
+- Een image wordt alleen op ingebedde bestandssystemen doorzocht als hij noch een partitietabel noch een bestandssysteem aan het begin heeft; een gewone image opent dus precies zo snel als altijd.
+- De plugin voegt één menucommando toe en geen eigen instellingen behalve de schakelaar die hem inschakelt.

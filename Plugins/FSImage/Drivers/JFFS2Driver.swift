@@ -70,6 +70,21 @@ final class JFFS2Driver: ImageFilesystemDriver {
         return false
     }
 
+    /// Magic plus node type, in both byte orders.
+    ///
+    /// The magic alone is two bytes, which occurs by chance roughly every 64 KB of
+    /// arbitrary data — far too often to scan a whole image for. Pairing it with the
+    /// three node types that can legitimately open a filesystem makes the pattern four
+    /// bytes, and the CRC check inside the driver rejects whatever still gets through.
+    static let carveSignatures: [CarveSignature] = [
+        CarveSignature([0x85, 0x19, 0x03, 0x20], at: 0),   // cleanmarker, little-endian
+        CarveSignature([0x85, 0x19, 0x01, 0xE0], at: 0),   // dirent
+        CarveSignature([0x85, 0x19, 0x02, 0xE0], at: 0),   // inode
+        CarveSignature([0x19, 0x85, 0x20, 0x03], at: 0),   // and the same three big-endian
+        CarveSignature([0x19, 0x85, 0xE0, 0x01], at: 0),
+        CarveSignature([0x19, 0x85, 0xE0, 0x02], at: 0),
+    ]
+
     init(reader: ImageReader) throws {
         self.reader = reader
         guard let head = try? reader.bytes(at: 0, count: min(4096, Int(reader.size))) else {

@@ -76,14 +76,23 @@ public func PcGetApiVersion() -> Int32 { 1 }
 @_cdecl("GetPackerCaps")
 public func GetPackerCaps() -> Int32 { PC_CAP_MULTIPLE | PC_CAP_BY_CONTENT }
 
-/// Content detection. Exported for completeness and for the host's own tests —
-/// the archive-open path does not currently consult it (see the file header), but
-/// it is the correct answer to the question and costs one header read.
+/// Content detection: the host asks this when a file's extension matched no plugin,
+/// which is how `firmware.bin` gets opened at all.
+///
+/// It answers by **actually opening the image**, not by probing. Probing used to be
+/// enough, and stopped being enough when carving arrived: `CarvedDriver` accepts any
+/// file large enough to hold a filesystem and decides in its initialiser, because
+/// whether an image has a rootfs buried in it cannot be known without looking for one.
+/// A probe-based answer therefore became "yes" for every file on the system — and this
+/// function's answer is load-bearing, since the host takes it as permission to open.
+///
+/// The work is not wasted. It goes through `ImageCache`, so a "yes" leaves the parsed
+/// driver in the cache and the `OpenArchive` that follows is a dictionary hit. And the
+/// host only asks on Enter, for one file the user chose — not while listing a folder.
 @_cdecl("CanYouHandleThisFile")
 public func CanYouHandleThisFile(_ fileName: UnsafeMutablePointer<CChar>?) -> Int32 {
     guard let fileName else { return 0 }
-    guard let reader = try? ImageReader(path: String(cString: fileName)) else { return 0 }
-    return DriverRegistry.driverType(for: reader) != nil ? 1 : 0
+    return (try? ImageCache.shared.driver(for: String(cString: fileName))) != nil ? 1 : 0
 }
 
 @_cdecl("OpenArchive")

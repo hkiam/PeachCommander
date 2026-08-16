@@ -79,6 +79,24 @@ final class ExtDriver: ImageFilesystemDriver {
         return value == magic
     }
 
+    /// 0xEF53, little-endian, 1080 bytes in — the superblock is at 1024 and the magic
+    /// 56 bytes into it. Two bytes is a weak pattern on its own; every hit is confirmed
+    /// by opening the filesystem, which is what makes it usable.
+    static let carveSignatures = [CarveSignature([0x53, 0xEF], at: superblockOffset + 56)]
+
+    static func byteLength(_ reader: ImageReader) -> Int64? {
+        let base = superblockOffset
+        guard let logBlockSize = try? reader.u32le(at: base + 24), logBlockSize <= 6,
+              let blocksLow = try? reader.u32le(at: base + 4) else { return nil }
+        let revision = (try? reader.u32le(at: base + 76)) ?? 0
+        let features = revision >= 1 ? ((try? reader.u32le(at: base + 96)) ?? 0) : 0
+        let high = features & Incompat.sixtyFourBit != 0
+            ? Int64((try? reader.u32le(at: base + 336)) ?? 0) : 0
+        let blocks = Int64(blocksLow) | high << 32
+        guard blocks > 0 else { return nil }
+        return blocks * (Int64(1024) << Int64(logBlockSize))
+    }
+
     init(reader: ImageReader) throws {
         self.reader = reader
         let base = Self.superblockOffset
