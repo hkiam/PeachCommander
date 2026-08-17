@@ -4285,8 +4285,26 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     }
 
     /// True when the OS is currently in Dark Mode.
+    ///
+    /// The app's own `effectiveAppearance` is only the OS's answer while the app has not overridden it —
+    /// and a named palette does exactly that (`NSApp.appearance = .darkAqua` for Norton or Midnight). So
+    /// asking it while an override is in place answers "what did we set", not "what is the Mac set to",
+    /// and switching *from* a dark palette *to* System therefore resolved the dark palette one last time
+    /// while handing the system a light appearance: dark panels in a light window, until the next launch.
+    /// Measured (F-409): after Light → Midnight → System the panel background was `#333333`, which is
+    /// `Theme.dark`, with `appAppearance=follows OS` and the Mac in light mode.
+    ///
+    /// With an override in place the question goes to the OS itself. `AppleInterfaceStyle` is absent in
+    /// light mode and "Dark" in dark mode, and it tracks the current state even when macOS is switching
+    /// automatically — which is what "follow the appearance" has to mean. Clearing the override first and
+    /// re-reading is not an option: `effectiveAppearance` updates a moment later, which the
+    /// system-appearance handler below already has to work around.
     static func systemIsDark() -> Bool {
-        NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
+        if NSApp.appearance != nil {
+            let style = UserDefaults.standard.string(forKey: "AppleInterfaceStyle") ?? ""
+            return style.lowercased().hasPrefix("dark")
+        }
+        return NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
     }
 
     /// macOS toggled light/dark — re-derive our palette when following the system.
@@ -5622,6 +5640,35 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         themeId = original
         applyAppearance(appearanceSetting)
         try? (lines.joined(separator: "\n") + "\n").write(toFile: file, atomically: true, encoding: .utf8)
+    }
+
+    /// Diagnostic: what the theme resolved to, on both sides of the split it can get wrong (F-409).
+    ///
+    /// A theme has two halves — the palette the app paints panels with, and the `NSAppearance` the
+    /// system paints controls, sheets and scrollers with — and the failure worth catching is the two
+    /// disagreeing: a dark palette under a light aqua window is "some areas have the wrong colours"
+    /// and nothing else. `dark` is the answer the palette was chosen with, `appAppearance` is what the
+    /// system was told, and the background hex is what a panel actually shows.
+    func themeStateDump() -> String {
+        let isDark = Self.appearanceIsDark(themeId: themeId, setting: appearanceSetting)
+        let appAppearance = NSApp.appearance?.name.rawValue ?? "follows OS"
+        let effective = NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua])?.rawValue ?? "?"
+        // The invariant, stated so a check does not have to name a colour: the palette the panels are
+        // painted with and the appearance the system paints controls with must be on the same side of
+        // light/dark. That holds whichever mode the Mac is in, which a hex value never could.
+        let paletteIsDark = Self.isDarkColour(Theme.current.listBackground)
+        let agrees = paletteIsDark == (effective == NSAppearance.Name.darkAqua.rawValue)
+        return "theme=\(themeId)\nappearance=\(appearanceSetting)\ndark=\(isDark)\n"
+            + "appAppearance=\(appAppearance)\neffective=\(effective)\nsystemIsDark=\(Self.systemIsDark())\n"
+            + "paletteIsDark=\(paletteIsDark)\nagrees=\(agrees)\n"
+            + "listBackground=\(Theme.pluginHex(Theme.current.listBackground))\n"
+            + "windowBackground=\(Theme.pluginHex(Theme.current.windowBackground))\n"
+    }
+
+    /// Perceived brightness of a palette surface, for the agreement check above.
+    static func isDarkColour(_ colour: NSColor) -> Bool {
+        guard let rgb = colour.usingColorSpace(.sRGB) else { return false }
+        return (0.299 * rgb.redComponent + 0.587 * rgb.greenComponent + 0.114 * rgb.blueComponent) < 0.5
     }
 
     /// Diagnostic: every visible window's surfaces, in every palette (F-015).

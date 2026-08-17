@@ -920,6 +920,20 @@ SCENARIOS = [
                          "findtext |/Users/admin/ft-empty.txt", "wait 600",
                          "findtext superseded|/Users/admin/ft-typed.txt", "wait 600",
                          "findtext |/Users/admin/ft-cleared.txt", "wait 800"], 12),
+    # Switching *to* System after a named palette (F-409). Two defects in one sequence: the palette used
+    # to be resolved from the app's own overridden appearance, so Light → Midnight → System kept the dark
+    # colours under a light window until the next launch; and repainting the Settings sidebar reloaded it,
+    # which dropped its selection and threw the reader from Colors back to Layout. The check is that the
+    # palette and the system appearance agree — true in either mode, unlike a hex value — and that the
+    # page the reader was on is still the page.
+    ("theme-system", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                      "settingspage Colors", "wait 1200",
+                      "theme light", "wait 600",
+                      "theme midnight", "wait 600",
+                      "themestate /Users/admin/theme-midnight.txt", "wait 400",
+                      "theme system", "wait 900",
+                      "settingspagedump /Users/admin/theme-page.txt", "wait 400",
+                      "themestate /Users/admin/theme-system.txt", "wait 600"], 12),
     # Searching the settings by name, across the pages (F-408). Three claims: a query finds the setting
     # wherever it lives, a word that is only in the *note* under a control still finds that control, and
     # choosing a result lands on the page with the control on screen and something pointing at it. Typed
@@ -1823,6 +1837,16 @@ REPORTS = {
     # to explain itself.
     "find-comments": ("/Users/admin/found.txt",
                       ["count=1", "table.csv", "comment: superseded by the 2026 export", "!ERROR"]),
+    # F-409. The primary report is the state after the switch to System, which is the last file written.
+    # "agrees" is the whole finding: before the fix the palette said dark and the window said light.
+    "theme-system": ("/Users/admin/theme-system.txt",
+                     ["theme=system", "appAppearance=follows OS", "agrees=true", "!ERROR"]),
+    # The control: a named dark palette must still *be* dark, or "agrees" could pass by never being dark.
+    "theme-system-midnight": ("/Users/admin/theme-midnight.txt",
+                              ["theme=midnight", "paletteIsDark=true", "agrees=true", "!ERROR"]),
+    # And the reader is still where they were, rather than back on the first page.
+    "theme-system-page": ("/Users/admin/theme-page.txt",
+                          ["page=Colors", "mounted=Colors", "!row=0", "!ERROR"]),
     # F-408. The primary report is the navigation, which is the last file written. "indexed" is part of
     # the check: an index that harvested nothing would report zero and every search would look like a
     # query with no answer.

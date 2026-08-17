@@ -533,7 +533,14 @@ public final class SettingsWindowController: NSWindowController {
     public func applyTheme() {
         sourceList.backgroundColor = Theme.current.listBackground
         sourceList.enclosingScrollView?.backgroundColor = Theme.current.listBackground
-        sourceList.reloadData()
+        // A redraw, *not* `reloadData()` (F-409). This list has `allowsEmptySelection = false`, and a
+        // reload drops the selection and lets AppKit re-select row 0 — so changing the theme on the
+        // Colors page threw the reader back to Layout, measured as row=4/Farben before and row=0/Layout
+        // after. The rows carry no palette colours of their own (their text is `labelColor`, which
+        // follows the appearance), so repainting is all that was ever wanted here.
+        sourceList.needsDisplay = true
+        // The search result list paints its own surface, so it has to be told (F-408).
+        resultsView.applyTheme()
     }
 
     private func setupSourceList(in parent: NSView) {
@@ -1680,6 +1687,17 @@ extension SettingsWindowController: NSTableViewDataSource, NSTableViewDelegate {
     }
 
     #if DEBUG
+    /// Diagnostic: which page the window is showing, from both sides — the row the source list has
+    /// selected and the view actually mounted (F-409). A theme change used to move the first without
+    /// anybody asking, and only the pair shows that.
+    public func automationPageDump() -> String {
+        let row = sourceList.selectedRow
+        let title = SettingsPage(rawValue: row)?.title
+            ?? (pluginPanes.indices.contains(row - builtinPageCount) ? pluginPanes[row - builtinPageCount].title : "-")
+        let mounted = pageViews.first { $0.value.window != nil }?.key.title ?? "-"
+        return "row=\(row)\npage=\(title)\nmounted=\(mounted)\nresults=\(isShowingResults)\n"
+    }
+
     /// Type into the search field the way a person does — through the field editor, so the change
     /// notification that filters the list is the real one (F-408). Returns the rows as shown.
     public func automationSearch(_ query: String) -> String {

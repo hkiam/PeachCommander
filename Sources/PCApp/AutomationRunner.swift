@@ -478,6 +478,11 @@ extension MainWindowController {
                 dumpTreeColours(arg)
             case "surfacecolors":                       // surfacecolors <out> (F-015)
                 dumpSurfaceColours(arg)
+            case "themestate":                          // themestate <out> (F-409)
+                // What the theme *resolved to*, which is the question a screenshot cannot answer on its
+                // own: a dark palette under a light window appearance looks like "some areas have the
+                // wrong colours", and the numbers say which half is wrong.
+                try? themeStateDump().write(toFile: arg, atomically: true, encoding: .utf8)
             case "fkeydump":                            // fkeydump <out> (F-381)
                 // Whether the function-key bar is claiming keys it does not have. Reported next to the
                 // responder, because "dimmed" only means anything alongside "and this is what has the
@@ -773,6 +778,9 @@ extension MainWindowController {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
                     self?.settingsWindow?.showPage(titled: title)
                 }
+            case "settingspagedump":                       // settingspagedump <out> (F-409)
+                try? (settingsWindow?.automationPageDump() ?? "ERROR: no settings window\n")
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
             case "settingsearch":                          // settingsearch <query>|<out> (F-408)
                 let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
                 if a.count == 2 {

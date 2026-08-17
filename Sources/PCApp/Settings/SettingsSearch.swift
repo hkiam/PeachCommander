@@ -207,6 +207,12 @@ final class SettingsResultsView: NSView {
         ])
     }
 
+    /// Repaint after a theme change: this list draws its own background, so nothing else can do it.
+    func applyTheme() {
+        table.backgroundColor = Theme.current.listBackground
+        table.needsDisplay = true
+    }
+
     /// Show `results`; an empty list says so rather than looking like a page that failed to load.
     func show(_ results: [SettingsSearchEntry]) {
         self.results = results
