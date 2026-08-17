@@ -27,6 +27,7 @@ Peach Commander tiene un visor integrado que te permite mirar dentro de un archi
 - Si el texto se ve corrupto, haz clic en Codificación en la barra de herramientas (o pulsa E) para recorrer las codificaciones de texto hasta que se lea correctamente; el ajuste automático suele acertar.
 - Pulsa W para alternar el ajuste de línea para las líneas largas.
 - Pulsa Ctrl+G para ir a una línea, o a un desplazamiento de bytes en modo hexadecimal. Admite operaciones entre bases: `0x1000 + 15 + 1` lleva a 4112 — hexadecimal con `0x`, `$` o una `h` final, binario con `0b`, octal con `0o`, y `+ - * /` con paréntesis.
+- Si abres un resultado de Buscar archivos con **Buscar texto** rellenado, el visor empieza con esa búsqueda: el texto ya está en el campo de búsqueda y la primera aparición se ve en pantalla, así que aterrizas en la coincidencia y no al principio del archivo. Si lo cambias o lo borras ahí, se queda tu versión. Puedes desactivarlo en Ajustes ▸ Editar/Ver si prefieres que cada archivo se abra por el principio.
 
 ## Ampliar una imagen
 

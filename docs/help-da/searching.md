@@ -20,7 +20,7 @@ Når du har brug for at spore filer hvor som helst på din Mac — efter navn, e
 
 ## Søg efter indhold, størrelse og dato
 
-1. For at søge inde i filer skal du vælge **Find tekst** på fanen Generelt og indtaste teksten, der skal søges efter. Indstillinger lader dig gøre den **forskel på store/små**, kun matche et **helt ord**, behandle teksten som et **regulært udtryk**, lave en **hex-indholdssøgning** eller finde filer, der **ikke indeholder** teksten.
+1. For at søge inde i filer skal du skrive teksten i **Find tekst** på fanen Generelt — det, der står i feltet, søges efter, og et tomt felt søger kun på navne. Indstillinger lader dig gøre den **forskel på store/små**, kun matche et **helt ord**, behandle teksten som et **regulært udtryk**, lave en **hex-indholdssøgning** eller finde filer, der **ikke indeholder** teksten.
 2. Skift til fanen **Avanceret** for at indsnævre resultater efter **størrelse** (for eksempel `10K` til `5M`), efter **ændringsdato**-interval eller til filer ændret inden for de sidste N dage.
 3. Slå **Søg inde i arkiver** til for at kigge i arkiver af zip-familien (zip, jar, war og lignende).
 4. For at begrænse søgningen til det, du allerede har valgt, slå **Søg kun i valgte emner** til før start.
@@ -43,6 +43,7 @@ For lokale mapper, macOS allerede har indekseret, slå **Brug Spotlight** til p�
 
 - **Send til listeboks** placerer hvert resultat i det aktive panel som en midlertidig liste, så du kan kopiere, flytte eller slette hele sættet på én gang.
 - På fanen **Indlæs / Gem** skal du vælge **Gem som skabelon…** for at gemme den aktuelle søgning (mønstre og indstillinger) og vælge den igen senere fra skabelonlisten.
+- **Søg efter** og **Find tekst** husker hver de seneste 20 emner, du har søgt med — sidst brugte først; klik på pilen for enden af feltet for at vælge et af dem igen. Et ord, du bruger to gange, rykker op øverst i stedet for at optræde to gange, og listerne overlever både lukning af vinduet og afslutning af appen. **Ryd historik…** på fanen **Indlæs / Gem** glemmer dem begge; gemte skabeloner berøres ikke.
 
 ## Genveje
 

@@ -20,7 +20,7 @@ Când trebuie să depistați fișiere oriunde pe Mac-ul dvs. — după nume, dup
 
 ## Căutare după conținut, dimensiune și dată
 
-1. Pentru a căuta în interiorul fișierelor, selectați **Găsește text** pe fila General și tastați textul de căutat. Opțiunile vă permit să-l faceți **Sensibil la majuscule**, să potrivească doar un **Cuvânt întreg**, să trateze textul ca o **Expresie regulată**, să facă o **Căutare de conținut hexazecimal** sau să găsească fișiere care **Nu conțin** textul.
+1. Pentru a căuta în interiorul fișierelor, tastați textul în **Găsește text** pe fila General — se caută ce se află în câmp, iar un câmp gol caută doar după nume. Opțiunile vă permit să-l faceți **Sensibil la majuscule**, să potrivească doar un **Cuvânt întreg**, să trateze textul ca o **Expresie regulată**, să facă o **Căutare de conținut hexazecimal** sau să găsească fișiere care **Nu conțin** textul.
 2. Comutați la fila **Avansat** pentru a îngusta rezultatele după **Dimensiune** (de exemplu `10K` până la `5M`), după interval de **dată de modificare**, sau la fișiere modificate în ultimele N zile.
 3. Activați **Caută în interiorul arhivelor** pentru a privi în arhivele din familia zip (zip, jar, war și similare).
 4. Pentru a limita căutarea la ce ați ales deja, activați **Caută doar în elementele selectate** înainte de a începe.
@@ -43,6 +43,7 @@ Pentru folderele locale pe care macOS le-a indexat deja, activați **Folosește 
 
 - **Trimite în listă** plasează fiecare rezultat în panoul activ ca o listă temporară, astfel încât să puteți copia, muta sau șterge întregul set deodată.
 - Pe fila **Încarcă / Salvează**, alegeți **Salvează ca șablon…** pentru a stoca căutarea curentă (tipare și opțiuni) și a o alege din nou mai târziu din lista de șabloane.
+- **Caută** și **Găsește text** rețin fiecare ultimele 20 de intrări folosite, cea mai recentă prima — faceți clic pe săgeata de la capătul câmpului pentru a alege din nou una. Un termen folosit de două ori urcă înapoi în vârf în loc să apară de două ori, iar listele supraviețuiesc închiderii ferestrei și ieșirii din aplicație. **Golește istoricul…** de pe fila **Încarcă / Salvează** le uită pe amândouă; șabloanele salvate nu sunt afectate.
 
 ## Comenzi rapide
 

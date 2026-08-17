@@ -278,6 +278,45 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Ask for a note about the line the caret is on, exactly as the menu item does.
     func automationNoteForCurrentLine() { docNote() }
 
+    /// Diagnostic: the state a seeded search left behind (F-407) — what the viewer's own search holds,
+    /// what the find bar shows, and where the first hit put the reader.
+    ///
+    /// `line` is the 1-based line of the selection, because "jumped to the first hit" is a claim about
+    /// where the reader is looking, and a byte offset of 0 is also what an unsearched file reports.
+    func automationSearchState() -> String {
+        let term = String(bytes: lastNeedle, encoding: .utf8) ?? ""
+        let board = NSPasteboard(name: .find).string(forType: .string) ?? ""
+        var line = "-"
+        var selected = ""
+        if let tv = textContentView {
+            let sel = tv.selectedRange()
+            selected = (tv.string as NSString).substring(with: sel)
+            line = String(EditorLineIndex(text: tv.string as NSString).line(containing: sel.location))
+        }
+        let focus = window?.firstResponder.map { String(describing: type(of: $0)) } ?? "none"
+        return "term=\(term)\nfindboard=\(board)\nfindbar=\(scrollView.isFindBarVisible ? "open" : "closed")\n"
+            + "selected=\(selected)\nline=\(line)\nbyte=\(lastMatchOffset)\nregex=\(lastRegex != nil)\n"
+            + "caseInsensitive=\(searchCaseInsensitive)\nfocus=\(focus)\n"
+    }
+
+    /// Reload the file the way the Auto representation button does — the path the seed is applied from,
+    /// so a scenario can prove the reader's own term survives it (F-407).
+    func automationReloadContent() { loadCurrent(autoMode: true) }
+
+    /// Type into the seeded search, as a reader correcting it would (F-407): the term they leave behind
+    /// must be the one that survives, and nothing may put the seeded one back.
+    func automationRetypeSearch(_ text: String) {
+        lastNeedle = Array(text.utf8)
+        lastRegex = nil
+        searchOffset = 0
+        lastMatchOffset = -1
+        findNext()
+        if let tv = textContentView {
+            let hit = (tv.string as NSString).range(of: text, options: [.caseInsensitive])
+            if hit.location != NSNotFound { tv.setSelectedRange(hit); tv.scrollRangeToVisible(hit) }
+        }
+    }
+
     /// Diagnostic: move the focus where a click would move it, then press Esc — and report whether the
     /// window closed.
     ///
@@ -390,11 +429,19 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Set when the viewer is showing a directory summary rather than a file.
     private let directoryPath: String?
 
-    init(files: [String], startIndex: Int, plugins: [PLXLister] = []) {
+    /// A search to start this viewer with, from whoever opened it (F-407); consumed once.
+    private var pendingSearchSeed: ViewerSearchSeed?
+
+    /// - Parameter searchSeed: the term the file was *found* with, when the viewer is opened from a
+    ///   content search (F-407). It becomes this window's own search — prefilled and on its first hit —
+    ///   and is then forgotten, so anything the reader types or clears afterwards stands.
+    init(files: [String], startIndex: Int, plugins: [PLXLister] = [],
+         searchSeed: ViewerSearchSeed? = nil) {
         self.files = files
         self.index = max(0, min(startIndex, files.count - 1))
         self.plugins = plugins
         self.directoryPath = nil
+        self.pendingSearchSeed = searchSeed
         let window = NSWindow(contentRect: NSMakeRect(0, 0, 800, 600),
                               styleMask: [.titled, .closable, .resizable, .miniaturizable],
                               backing: .buffered, defer: false)
@@ -732,6 +779,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             }
         }
         rebuildContent()
+        applyPendingSearchSeed()
     }
 
     /// All plugins whose detect string claims this file, in order (F-119).
@@ -1248,6 +1296,13 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     @objc func vmFindNext() {
         if let tv = textContentView { finder(tv, .nextMatch) } else { findNext() }
     }
+    /// Shift+F3. Same routing as `vmFindNext`, which the raw F3 key did *not* use: it called the byte
+    /// scanner directly, and in a text view that scan has nothing to scroll — so F3 was silently dead
+    /// there while ⌘G from the menu worked. Seeding the search from Find Files (F-407) made that visible,
+    /// because there is now a term to continue.
+    @objc func vmFindPrevious() {
+        if let tv = textContentView { finder(tv, .previousMatch) } else { findPrevious() }
+    }
     @objc func vmGoto() { promptGoto() }
     @objc func vmNextFile() { step(1) }
     @objc func vmPrevFile() { step(-1) }
@@ -1536,8 +1591,8 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         case 3 where ctrl: promptSearch(); return true             // Ctrl+F
         case 98: promptSearch(); return true                       // F7 = open search (TC parity)
         case 5 where ctrl: promptGoto(); return true               // Ctrl+G (goto line/offset)
-        case 99 where shift: findPrevious(); return true           // Shift+F3 = previous match
-        case 99: findNext(); return true                           // F3 = next match
+        case 99 where shift: vmFindPrevious(); return true         // Shift+F3 = previous match
+        case 99: vmFindNext(); return true                         // F3 = next match
         case 126 where mode != .web: scrollContent(by: -lineStep); return true       // ↑
         case 125 where mode != .web: scrollContent(by: lineStep); return true        // ↓
         case 116 where mode != .web: scrollContent(by: -pageStep); return true       // PageUp
@@ -1632,6 +1687,78 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         }
         searchDialog = dialog
         dialog.runModalDialog(over: window)
+    }
+
+    // MARK: - The search that found this file (F-407)
+
+    /// Adopt the search the file was found with, once, right after the content is on screen.
+    ///
+    /// Consumed on first use, which is what makes the rest of the requirement fall out by itself: F3
+    /// repeats it, Ctrl+F opens showing it, and the moment the reader edits or clears the field it is
+    /// theirs — nothing puts the old term back, not the next file in the window and not a change of
+    /// representation.
+    ///
+    /// Whether the *first hit* can be shown depends on what is on screen, so this seeds the state either
+    /// way and jumps only where a jump means something: an `NSTextView` (text and code up to 4 MB) is
+    /// searched through its own find bar so ⌘G continues from it, a byte-scannable view is scanned, and
+    /// a rendered page or a plugin view is left alone because its content is still loading — a search
+    /// there would find nothing and beep at somebody who did not ask for it. Nothing beeps here at all:
+    /// the term matched the *file*, and the representation on screen may legitimately not contain it —
+    /// a match past the 16 MB text cap, or in a comment rather than the contents (F-373).
+    private func applyPendingSearchSeed() {
+        guard let seed = pendingSearchSeed else { return }
+        pendingSearchSeed = nil
+        searchCaseInsensitive = !seed.caseSensitive
+        lastNeedle = seed.needle
+        lastRegex = nil
+        if seed.isRegex {
+            // A pattern that will not compile here is one the file-search accepted, so it does compile;
+            // if it somehow does not, the term is still seeded and the search stays literal.
+            lastRegex = ChunkRegexSearcher.compile(seed.term, caseInsensitive: searchCaseInsensitive).regex
+        }
+        searchOffset = 0
+        lastMatchOffset = -1
+        if let tv = textContentView, !seed.isHex {
+            seedTextViewSearch(tv, seed)
+        } else if contentView is ListerScrollable {
+            findNext()
+        }
+    }
+
+    /// Select the first hit in a text view and hand the term to the native find bar.
+    ///
+    /// The bar is opened deliberately — a prefilled search nobody can see is indistinguishable from no
+    /// search at all — and the keyboard goes back to the content afterwards, so the viewer's own keys
+    /// (n/p, space, F3) keep working while the term stays visible and editable in the bar.
+    private func seedTextViewSearch(_ tv: NSTextView, _ seed: ViewerSearchSeed) {
+        let text = tv.string as NSString
+        let whole = NSRange(location: 0, length: text.length)
+        let hit: NSRange
+        if let regex = lastRegex {
+            hit = regex.firstMatch(in: tv.string, options: [], range: whole)?.range
+                ?? NSRange(location: NSNotFound, length: 0)
+        } else {
+            hit = text.range(of: seed.term, options: seed.caseSensitive ? [] : [.caseInsensitive],
+                             range: whole)
+        }
+        // The system find pasteboard is where a find bar takes its initial value from, and it is also
+        // what makes the term the one ⌘G continues with in every text view of the app — the same
+        // mechanism that carries a search between apps on macOS.
+        let findBoard = NSPasteboard(name: .find)
+        findBoard.clearContents()
+        findBoard.setString(seed.term, forType: .string)
+        // `setSearchString` takes what is *selected*, so the selection has to be the hit before it is
+        // asked; with no hit it would put the empty selection in the field and undo the line above.
+        if hit.location != NSNotFound {
+            tv.setSelectedRange(hit)
+            tv.scrollRangeToVisible(hit)
+            finder(tv, .setSearchString)
+        }
+        finder(tv, .showFindInterface)
+        if hit.location != NSNotFound { tv.showFindIndicator(for: hit) }
+        // Without this the find bar keeps the keyboard and the reader's first keystroke edits the search
+        // instead of scrolling the file they came here to read.
+        if let window { window.makeFirstResponder(tv) }
     }
 
     /// Decode the file's bounded prefix to text using the active/auto encoding.

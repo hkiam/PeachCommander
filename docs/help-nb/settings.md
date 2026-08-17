@@ -14,6 +14,7 @@ Innstillinger-vinduet er der du skreddersyr Peach Commander til måten du arbeid
 2. Du kan også åpne det samme vinduet fra **Konfigurasjon > Alternativer…**.
 3. Velg en side fra listen til venstre; valgene for den siden vises til høyre.
 4. Juster kontrollene. Endringer trer i kraft med en gang med mindre en merknad på siden sier noe annet.
+5. Vil du rett til en innstilling, skriv i søkefeltet øverst i vinduet. Treff fra *alle* sider listes opp med siden hver av dem hører til, og velger du en, åpnes den siden med innstillingen uthevet. ↑/↓ flytter gjennom resultatene, Return åpner det uthevede, og Esc forlater søket og setter tilbake siden du kom fra.
 
 ![Innstillinger-vinduet som viser Oppsett-siden med avkrysningsruter for grensesnittlinjene](screenshots/settings-layout.png)
 *(Figur: Oppsett-siden styrer hvilke linjer som vises rundt panelene.)*

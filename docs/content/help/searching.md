@@ -20,7 +20,7 @@ When you need to track down files anywhere on your Mac — by name, by what they
 
 ## Search by content, size, and date
 
-1. To search inside files, select **Find text** on the General tab and type the text to look for. Options let you make it **Case sensitive**, match only a **Whole word**, treat the text as a **Regular expression**, do a **Hex content search**, or find files that are **Not containing** the text.
+1. To search inside files, type the text into **Find text** on the General tab — anything in that field is searched for, and an empty field searches by name only. Options let you make it **Case sensitive**, match only a **Whole word**, treat the text as a **Regular expression**, do a **Hex content search**, or find files that are **Not containing** the text.
 2. Switch to the **Advanced** tab to narrow results by **Size** (for example `10K` to `5M`), by **modified date** range, or to files changed in the last N days.
 3. Turn on **Search inside archives** to look within zip-family archives (zip, jar, war, and similar).
 4. To limit the search to what you already picked, turn on **Search in selected items only** before starting.
@@ -43,6 +43,7 @@ For local folders that macOS has already indexed, turn on **Use Spotlight** on t
 
 - **Feed to Listbox** places every result into the active panel as a temporary list, so you can copy, move, or delete the whole set at once.
 - On the **Load / Save** tab, choose **Save as Template…** to store the current search (patterns and options) and pick it again later from the template list.
+- **Search for** and **Find text** each remember the last 20 entries you searched with, most recently used first — click the arrow at the end of the field to pick one again. The same term used twice moves back to the top rather than appearing twice, and the lists survive closing the window and quitting the app. **Clear History…** on the **Load / Save** tab forgets both of them; saved templates are not affected.
 
 ## Shortcuts
 

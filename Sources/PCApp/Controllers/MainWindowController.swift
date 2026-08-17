@@ -214,6 +214,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// The filesystem the last search ran over, so "View" can extract a hit that
     /// lives inside an archive/network mount (F-153).
     private var lastSearchFS: VirtualFileSystem?
+    /// The content term of the last search, handed to the viewer a hit is opened in (F-407). Nil for a
+    /// name-only search: there is no hit inside the file to jump to.
+    private var lastSearchSeed: ViewerSearchSeed?
+    /// Viewer.SearchFromFind — may a viewer opened from a content search adopt that search (F-407)?
+    private var viewerSearchFromFind = true
     private var renameWindow: MultiRenameWindowController?
     private var renameUndoLog: [(from: String, to: String)] = []
     private var diffWindows: [DiffWindowController] = []
@@ -798,6 +803,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // The editors save on the main actor and cannot await the config store there, so the answer is
         // read once here and kept where all three save paths can see it (F-387).
         DocumentFile.keepBackups = await mainConfig.bool("Editor", "CreateBackups", default: false)
+        viewerSearchFromFind = await mainConfig.bool("Viewer", "SearchFromFind", default: true)
         // Panel tabs (session).
         didRestore = true
         // Putting the panels back is not visiting them (F-402): the per-panel history still gets the
@@ -3389,7 +3395,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         Task { @MainActor in
             let startDir = await panel.getCurrentPath()
             let win = FindFilesWindowController(startDirectory: startDir,
-                                                templatesURL: self.configPaths.searchTemplates)
+                                                templatesURL: self.configPaths.searchTemplates,
+                                                configRoot: self.configPaths.root)
             win.setContentFields(self.contentFieldRegistry.allQualifiedFields()
                 .filter { !$0.field.isFullText }
                 .map { ($0.qualifiedID, $0.field.title) })   // F-157
@@ -3400,6 +3407,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 guard let self, let win else { return }
                 self.searchTask?.cancel()
                 win.clearResults()
+                // Remembered per search, not per hit: it is the term *this* search ran with that a
+                // viewer opened from its results should carry (F-407).
+                self.lastSearchSeed = ViewerSearchSeed(template: template)
                 self.searchTask = Task { @MainActor in
                     guard let panel = self.activePanel else { return }
                     // Search over the panel's current filesystem, so a panel inside
@@ -3515,13 +3525,16 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             }
             win.onView = { [weak self] path in
                 guard let self else { return }
+                // The search that found this file becomes the viewer's own (F-407), unless the setting
+                // says otherwise.
+                let seed = self.viewerSearchFromFind ? self.lastSearchSeed : nil
                 if FileManager.default.fileExists(atPath: path) {
-                    self.openLister(files: [path], index: 0)
+                    self.openLister(files: [path], index: 0, searchSeed: seed)
                 } else if let fs = self.lastSearchFS {
                     // Archive/network hit: extract to a temp file, then view it.
                     Task { @MainActor in
                         if let url = (try? await fs.localFileIfAvailable(VFSPath(filesystemId: fs.scheme, path: path))) ?? nil {
-                            self.openLister(files: [url.path], index: 0)
+                            self.openLister(files: [url.path], index: 0, searchSeed: seed)
                         } else { NSSound.beep() }
                     }
                 } else { NSSound.beep() }
@@ -3530,10 +3543,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
     }
 
-    private func openLister(files: [String], index: Int, plugins: [PLXLister] = []) {
+    private func openLister(files: [String], index: Int, plugins: [PLXLister] = [],
+                            searchSeed: ViewerSearchSeed? = nil) {
         if index >= 0, index < files.count { HistoryService.shared.recordFile(files[index]) }
         listerWindows.removeAll { $0.window == nil || !($0.window?.isVisible ?? false) }
-        let lister = ListerWindowController(files: files, startIndex: index, plugins: plugins)
+        let lister = ListerWindowController(files: files, startIndex: index, plugins: plugins,
+                                            searchSeed: searchSeed)
         listerWindows.append(lister)
         lister.showWindow(nil)
         lister.window?.makeKeyAndOrderFront(nil)
@@ -3926,6 +3941,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             packLevel: Int(await mainConfig.string("Pack", "Level", default: "5")) ?? 5,
             packArchiveExtensions: await mainConfig.string("Pack", "ArchiveExtensions", default: ""),
             editorCreateBackups: await mainConfig.bool("Editor", "CreateBackups", default: false),
+            viewerSearchFromFind: await mainConfig.bool("Viewer", "SearchFromFind", default: true),
             tabOpenInForeground: await mainConfig.bool("Tabs", "OpenInForeground", default: true),
             tabLockedOpensNewTab: await mainConfig.bool("Tabs", "LockedOpensNewTab", default: true),
             ftpKeepAliveSeconds: Int(await mainConfig.string("FTP", "KeepAliveSeconds", default: "0")) ?? 0,
@@ -4033,6 +4049,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             // Editors that are already open pick this up too: the flag is consulted at save time, and a
             // setting the user just changed applying only to the next window would read as ignored.
             DocumentFile.keepBackups = value
+        case "Viewer.SearchFromFind":
+            // Read when a viewer is opened, so this takes effect on the next hit opened rather than
+            // reaching back into windows that are already up (F-407).
+            viewerSearchFromFind = value
         case "Tabs.OpenInForeground":
             tabOpenInForeground = value; applyTabDefaultsToPanels()
         case "Tabs.LockedOpensNewTab":

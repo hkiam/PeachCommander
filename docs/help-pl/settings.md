@@ -14,6 +14,7 @@ Okno Ustawienia to miejsce, w którym dopasowujesz Peach Commander do sposobu, w
 2. To samo okno możesz otworzyć również z **Konfiguracja > Opcje…**.
 3. Wybierz stronę z listy po lewej; opcje tej strony pojawiają się po prawej.
 4. Dostosuj elementy sterujące. Zmiany wchodzą w życie od razu, chyba że uwaga na stronie mówi inaczej.
+5. Aby przejść wprost do opcji, wpisz tekst w pole wyszukiwania u góry okna. Pasujące ustawienia ze *wszystkich* kart są wypisane wraz z kartą, na której się znajdują, a wybranie jednego otwiera tę kartę z podświetlonym ustawieniem. ↑/↓ przechodzą przez wyniki, Return otwiera podświetlony, a Esc opuszcza wyszukiwanie i przywraca kartę, z której przyszedłeś.
 
 ![Okno Ustawienia pokazujące stronę Układ z polami wyboru dla pasków interfejsu](screenshots/settings-layout.png)
 *(Rysunek: strona Układ kontroluje, które paski są pokazywane wokół paneli.)*

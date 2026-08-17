@@ -27,6 +27,7 @@ Peach Commander har en inbyggd visare som låter dig titta inuti en fil utan att
 - Om texten ser förvrängd ut, klicka på Teckenkodning i verktygsfältet (eller tryck på E) för att bläddra genom teckenkodningar tills den läses korrekt; det automatiska läget brukar träffa rätt.
 - Tryck på W för att växla radbrytning för långa rader.
 - Tryck Ctrl+G för att gå till en rad, eller till en byteposition i hexläge. Räkning över talsystem är tillåten: `0x1000 + 15 + 1` leder till 4112 — hexadecimalt med `0x`, `$` eller ett avslutande `h`, binärt med `0b`, oktalt med `0o`, och `+ - * /` med parenteser.
+- Öppnar du en träff från Hitta filer där **Sök text** var ifyllt startar visaren med den sökningen: texten står redan i sökfältet och den första förekomsten syns, så du landar vid träffen i stället för högst upp i filen. Ändrar eller rensar du den där är det din version som står kvar. Det kan stängas av i Inställningar ▸ Redigera/Visa om du hellre vill att varje fil öppnas från början.
 
 ## Zooma en bild
 

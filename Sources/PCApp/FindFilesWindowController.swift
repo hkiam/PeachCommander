@@ -36,7 +36,10 @@ public final class FindFilesWindowController: NSWindowController {
     /// True while a search is in progress (Start acts as Stop).
     private var isSearching = false
 
-    private let nameMaskField = NSTextField()
+    /// "Search for:" and "Find text:" are combo boxes rather than plain fields because each carries its
+    /// own history (F-406) — a dropdown of what was searched for before, most recent first. `NSComboBox`
+    /// *is* an `NSTextField`, so everything else in this file reads and writes them unchanged.
+    private let nameMaskField = NSComboBox()
     private let startDirField = NSTextField()
     // Content-field predicate (F-157): "<field> <op> <value>", e.g. fileinfo.width > 1000.
     private let contentFieldCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
@@ -48,8 +51,7 @@ public final class FindFilesWindowController: NSWindowController {
     // Attribute filters (F-152): tri-state Any / Yes / No.
     private let hiddenAttrPopup = NSPopUpButton()
     private let readOnlyAttrPopup = NSPopUpButton()
-    private let findTextCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
-    private let findTextField = NSTextField()
+    private let findTextField = NSComboBox()
     private let caseSensitiveCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let regexCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let wholeWordCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
@@ -83,6 +85,10 @@ public final class FindFilesWindowController: NSWindowController {
     /// Saved-template persistence + current list (populates the template popup).
     private var templateStore: SearchTemplateStore?
     private var templates: [SearchTemplate] = []
+    /// What the two search fields remember (F-406); nil when the owner passed no config root, which is
+    /// how the dialog behaves in tests: everything works, nothing is written.
+    private var history: FindFilesHistory?
+    private let clearHistoryButton = NSButton()
     private let statusLabel = NSTextField(labelWithString: "")
     private let tableView = NSTableView()   // results; labelled in `build` (I19 T06)
     private let startStopButton = NSButton()
@@ -94,8 +100,9 @@ public final class FindFilesWindowController: NSWindowController {
     private static let resultCellIdentifier = NSUserInterfaceItemIdentifier("pathCell")
 
     /// Creates the dialog, prefilling the search directory. `templatesURL` enables
-    /// the saved-template picker (Find dialog persists templates as JSON there).
-    public init(startDirectory: String, templatesURL: URL? = nil) {
+    /// the saved-template picker (Find dialog persists templates as JSON there);
+    /// `configRoot` enables the two search fields' histories (F-406).
+    public init(startDirectory: String, templatesURL: URL? = nil, configRoot: URL? = nil) {
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 640, height: 670),
             styleMask: [.titled, .closable, .resizable],
@@ -110,8 +117,10 @@ public final class FindFilesWindowController: NSWindowController {
             templateStore = store
             templates = store.load()
         }
+        if let configRoot { history = FindFilesHistory(configRoot: configRoot) }
         setupDialog(startDirectory: startDirectory)
         reloadTemplatePopup()
+        reloadHistories()
     }
 
     required init?(coder: NSCoder) {
@@ -140,17 +149,86 @@ public final class FindFilesWindowController: NSWindowController {
 
     /// Run a content search with "also search file comments" on, and report what came back (F-373).
     ///
-    /// Driving the real controls — the checkbox, the find-text field, Start — because the question is
+    /// Driving the real controls — the find-text field, the option, Start — because the question is
     /// whether the option reaches the engine at all. It did not on the first attempt: the flag was set and
     /// the local fast path ignored the provider, exactly as the plugin-text option once did.
     public func automationSearchComments(mask: String, text: String, directory: String) {
         nameMaskField.stringValue = mask
-        findTextCheckbox.state = .on
         findTextField.stringValue = text
         commentsCheckbox.state = .on
         startDirField.stringValue = directory
         updateOptionAvailability()
         handleStartStop()
+    }
+
+    /// Run a search with both fields set, so the content term is recorded too (F-406).
+    public func automationStart(mask: String, text: String) {
+        nameMaskField.stringValue = mask
+        findTextField.stringValue = text
+        updateOptionAvailability()
+        handleStartStop()
+    }
+
+    /// Type into "Find text" the way a person does — through the field editor, so the change
+    /// notification that drives the options is the real one (F-407). Assigning `stringValue` posts
+    /// nothing, and a scenario built on that would pass while the dialog sat there with dead options.
+    public func automationTypeFindText(_ text: String) {
+        guard let window else { return }
+        window.makeFirstResponder(findTextField)
+        guard let editor = window.firstResponder as? NSTextView, editor.isFieldEditor else { return }
+        editor.selectAll(nil)
+        if text.isEmpty { editor.deleteBackward(nil) } else { editor.insertText(text, replacementRange: editor.selectedRange()) }
+    }
+
+    /// Diagnostic: what the content term is, and which options it made available (F-407).
+    ///
+    /// `contentTerm` comes from the assembled template rather than the field, because the question the
+    /// checkbox used to answer is now "does this search carry a content term at all".
+    public func automationOptionsDump() -> String {
+        let template = currentTemplate(name: "")
+        func state(_ b: NSButton) -> String { b.isEnabled ? "on" : "off" }
+        // The label column is measured from the longest label (see `alignRowLabels`), and truncation is a
+        // width comparison rather than something a screenshot of one language could show: 90 pt fits
+        // "Search for:" and cuts the Hungarian "Szöveg keresése:" in half.
+        // Only the labels of the tab on screen: a page that is not the visible one is laid out at
+        // whatever width it last had — measured, the Advanced tab's label sat at 91 pt while asking for
+        // 114 — which says nothing about truncation in the dialog the reader is looking at.
+        let page = optionsTabView.selectedTabViewItem?.view
+        let shown = rowLabels.filter { label in page.map(label.isDescendant(of:)) ?? false }
+        let fits = shown.allSatisfy { $0.frame.width + 0.5 >= $0.fittingSize.width }
+        let measured = shown.map { "\($0.stringValue)=\(Int($0.frame.width))/\(Int($0.fittingSize.width))" }
+        return "labelColumn=\(Int(shown.map(\.frame.width).max() ?? 0))\nlabelsFit=\(fits)\n"
+            + "labels=\(measured.joined(separator: " "))\n"
+            + "typed=[\(findTextField.stringValue)]\nfieldEnabled=\(findTextField.isEnabled)\n"
+            + "case=\(state(caseSensitiveCheckbox))\nregex=\(state(regexCheckbox))\n"
+            + "hex=\(state(hexCheckbox))\nwholeWord=\(state(wholeWordCheckbox))\n"
+            + "notContaining=\(state(notContainingCheckbox))\ncomments=\(state(commentsCheckbox))\n"
+            + "contentTerm=\(template.contentText ?? template.hexContent ?? "-")\n"
+    }
+
+    /// Point a scripted search at a directory (automation).
+    public func automationSetDirectory(_ path: String) {
+        startDirField.stringValue = path
+    }
+
+    /// "View" on the first result, exactly as the button does — the path a hit takes into the viewer,
+    /// including the search it should arrive with (F-407).
+    public func automationViewFirstResult() {
+        guard let first = results.first else { return }
+        tableView.selectRowIndexes(IndexSet(integer: 0), byExtendingSelection: false)
+        onView?(first.path)
+    }
+
+    /// Diagnostic: what each field's dropdown offers, in order — the only way to see a history that is
+    /// otherwise a list AppKit draws in a popped-up window.
+    public func automationHistoryDump() -> String {
+        "names=" + nameMaskField.objectValues.map { "\($0)" }.joined(separator: ",") + "\n"
+        + "texts=" + findTextField.objectValues.map { "\($0)" }.joined(separator: ",") + "\n"
+    }
+
+    /// Clear the histories without the confirmation alert — a modal would stall the whole script.
+    public func automationClearHistory() {
+        performClearHistory()
     }
 
     /// Diagnostic: the result rows as shown, one per line, with the preview column.
@@ -201,12 +279,29 @@ public final class FindFilesWindowController: NSWindowController {
         startDirField.font = Fonts.system13
         startDirField.toolTip = String(localized: "One or more folders, separated by “;”, are each searched (F-150).")
 
-        findTextCheckbox.title = String(localized: "Find text:")
-        findTextCheckbox.font = Fonts.system13
-        findTextCheckbox.target = self; findTextCheckbox.action = #selector(toggleFindText)
-        findTextField.isEnabled = false
+        // No checkbox in front of the content term (F-407): the field decides. Something in it is
+        // searched for, an empty one is not — which is what the tick box said anyway, one click later,
+        // and it could disagree with the field it gated ("case sensitive" greyed out with a term sitting
+        // right there). The text is not lost by turning the search off either: it is in the field's own
+        // history now, so clearing it is undoable in a way unticking a box never made it.
         findTextField.font = Fonts.system13
         preferWidth(findTextField, atLeast: 280)
+        // The options below the field follow what is typed, so they cannot lag behind it.
+        findTextField.delegate = self
+
+        // The two history dropdowns (F-406). No inline completion: a search field that finishes the
+        // word for you turns "*.s" into last week's "*.swift" the moment you stop typing, and the term
+        // that actually ran would then be one nobody typed.
+        for (combo, label) in [(nameMaskField, String(localized: "Search for:")),
+                               (findTextField, String(localized: "Find text:"))] {
+            combo.usesDataSource = false
+            combo.completes = false
+            // 20 remembered entries in a 5-row list is four scrolls to reach the oldest.
+            combo.numberOfVisibleItems = 10
+            // A combo box announces itself as an unlabelled one: the row's own label is a separate view
+            // and AppKit does not connect the two (I19 T06).
+            combo.setAccessibilityLabel(label)
+        }
 
         caseSensitiveCheckbox.title = String(localized: "Case sensitive"); caseSensitiveCheckbox.font = Fonts.system13
         regexCheckbox.title = String(localized: "Regular expression"); regexCheckbox.font = Fonts.system13
@@ -313,6 +408,16 @@ public final class FindFilesWindowController: NSWindowController {
         saveTemplateButton.bezelStyle = .rounded
         let tmplRow = hStack([tmplLabel, templatePopup, saveTemplateButton], spacing: 8)
 
+        // Emptying the two field histories (F-406). Here rather than beside the fields themselves: it is
+        // housekeeping, it is done rarely, and this tab is already where the dialog's stored things are
+        // managed — while a button under "Search for" would be one more control between the user and
+        // starting a search.
+        clearHistoryButton.title = String(localized: "Clear History…")
+        clearHistoryButton.bezelStyle = .rounded
+        clearHistoryButton.target = self
+        clearHistoryButton.action = #selector(clearHistory)
+        clearHistoryButton.toolTip = String(localized: "Forget the entries remembered by the “Search for” and “Find text” fields.")
+
         // --- Tabbed options area (F-150): General / Advanced / Plugins / Load & Save ---
         let tabView = optionsTabView
         tabView.translatesAutoresizingMaskIntoConstraints = false
@@ -321,7 +426,7 @@ public final class FindFilesWindowController: NSWindowController {
         tabView.addTabViewItem(makeTab(String(localized: "General"), rows: [
             labeledField(String(localized: "Search for:"), nameMaskField),
             labeledField(String(localized: "Search in:"), startDirField),
-            hStack([findTextCheckbox, findTextField], spacing: 8),
+            labeledField(String(localized: "Find text:"), findTextField),
             hStack([caseSensitiveCheckbox, regexCheckbox, wholeWordCheckbox], spacing: 20),
             hStack([hexCheckbox, encodingCheckbox, notContainingCheckbox], spacing: 20),
             inSelectionCheckbox,
@@ -342,6 +447,8 @@ public final class FindFilesWindowController: NSWindowController {
         tabView.addTabViewItem(makeTab(String(localized: "Load / Save"), rows: [
             hintLabel(String(localized: "Load a saved search, or save the current settings as a reusable template.")),
             tmplRow,
+            hintLabel(String(localized: "“Search for” and “Find text” each offer the last 20 entries you searched with, most recently used first.")),
+            clearHistoryButton,
         ]))
         content.addSubview(tabView)
 
@@ -439,7 +546,19 @@ public final class FindFilesWindowController: NSWindowController {
             buttons.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -20),
             buttons.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -20)
         ])
+        alignRowLabels()
         updateOptionAvailability()
+    }
+
+    /// One width for every "label: control" row, measured from the longest label rather than chosen.
+    ///
+    /// 90 pt was enough for "Search for:" in English and is not enough for "Szöveg keresése:" — and a
+    /// truncated label in a dialog whose whole subject is text is the kind of thing only a Hungarian user
+    /// would ever report. The labels report what they need; the widest one sets the column, so the rows
+    /// stay aligned in all nineteen languages.
+    private func alignRowLabels() {
+        let widest = rowLabels.map(\.fittingSize.width).max() ?? 90
+        for label in rowLabels { preferWidth(label, exactly: max(90, widest.rounded(.up))) }
     }
 
     /// A horizontal stack row of leading-aligned controls.
@@ -452,15 +571,19 @@ public final class FindFilesWindowController: NSWindowController {
         return s
     }
 
-    /// A "label: control" row: a right-aligned fixed-width label plus the control.
+    /// A "label: control" row: a right-aligned label plus the control. The label's width is settled once
+    /// all of them exist, by `alignRowLabels`.
     private func labeledField(_ title: String, _ control: NSView, controlMinWidth: CGFloat = 300) -> NSView {
         let label = NSTextField(labelWithString: title)
         label.font = Fonts.system13
         label.alignment = .right
-        preferWidth(label, exactly: 90)
+        rowLabels.append(label)
         preferWidth(control, atLeast: controlMinWidth)
         return hStack([label, control], spacing: 8)
     }
+
+    /// The labels of the "label: control" rows, so their column can be measured (see `alignRowLabels`).
+    private var rowLabels: [NSTextField] = []
 
     /// A dimmed, wrapping explanatory label used at the top of a sparse tab.
     private func hintLabel(_ text: String) -> NSTextField {
@@ -525,8 +648,12 @@ public final class FindFilesWindowController: NSWindowController {
 
     // MARK: - Actions
 
-    @objc private func toggleFindText() { updateOptionAvailability() }
     @objc private func optionsChanged() { updateOptionAvailability() }
+
+    /// Is there a content term to search for? The field alone decides (F-407).
+    private var hasContentTerm: Bool {
+        !findTextField.stringValue.trimmingCharacters(in: .whitespaces).isEmpty
+    }
 
     /// Enable only the option combinations that make sense together:
     /// - content sub-options (hex / whole-word / encoding-aware) need "Find text";
@@ -538,14 +665,13 @@ public final class FindFilesWindowController: NSWindowController {
         let spotlight = spotlightCheckbox.state == .on
         // Looking for empty folders is a different question: there are no files, so nothing about
         // their *content* applies. Everything below reads `findText`, so disabling the content
-        // search at the source disables all of it — the checkbox can stay ticked from a previous
+        // search at the source disables all of it — text can stay in the field from a previous
         // search without any of it quietly taking effect.
         let emptyDirs = emptyDirsCheckbox.state == .on
-        let findText = findTextCheckbox.state == .on && !emptyDirs
+        let findText = hasContentTerm && !emptyDirs
         let hex = hexCheckbox.state == .on && findText && !spotlight
 
-        findTextCheckbox.isEnabled = !emptyDirs
-        findTextField.isEnabled = findText
+        findTextField.isEnabled = !emptyDirs
         hexCheckbox.isEnabled = findText && !spotlight
         wholeWordCheckbox.isEnabled = findText && !hex && !spotlight
         encodingCheckbox.isEnabled = findText && !hex && !spotlight
@@ -594,12 +720,56 @@ public final class FindFilesWindowController: NSWindowController {
         }
         isSearching = true
         startStopButton.title = String(localized: "Stop")
+        rememberSearchTerms()
         onStart?(currentTemplate(name: ""), startDirField.stringValue,
                  inSelectionCheckbox.state == .on, spotlightCheckbox.state == .on,
                  searchArchivesCheckbox.state == .on, notContainingCheckbox.state == .on,
                  currentContentPredicate(),
                  pluginTextCheckbox.state == .on && !pluginTextCheckbox.isHidden,
                  commentsCheckbox.state == .on)
+    }
+
+    // MARK: - Field histories (F-406)
+
+    /// Record what this search looked for, so the next one can pick it from the dropdown.
+    ///
+    /// On Start rather than on every keystroke: a history of half-typed masks would push out the terms
+    /// that were actually used, and it is the search that ran that the user wants back. The content term
+    /// is only recorded when it took part in the search — in an empty-folder search the field's
+    /// leftover text searched for nothing.
+    private func rememberSearchTerms() {
+        guard let history else { return }
+        history.names.remember(nameMaskField.stringValue)
+        if emptyDirsCheckbox.state != .on {
+            history.texts.remember(findTextField.stringValue)
+        }
+        reloadHistories()
+    }
+
+    /// Refill both dropdowns from disk, leaving what is typed in the fields alone.
+    private func reloadHistories() {
+        for (combo, entries) in [(nameMaskField, history?.names), (findTextField, history?.texts)] {
+            combo.removeAllItems()
+            combo.addItems(withObjectValues: entries?.load() ?? [])
+        }
+    }
+
+    /// The Clear History button: confirmed, because the list is gone for good afterwards.
+    @objc private func clearHistory() {
+        let alert = NSAlert()
+        alert.messageText = String(localized: "Forget the remembered search entries?")
+        alert.informativeText = String(localized: "The “Search for” and “Find text” fields will offer nothing until you search again. Saved templates are not affected.")
+        alert.addButton(withTitle: String(localized: "Clear"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        performClearHistory()
+    }
+
+    /// The half of Clear History that touches no modal, so automation can drive it (see `clearHistory`).
+    private func performClearHistory() {
+        history?.clear()
+        reloadHistories()
+        setStatus(String(localized: "Search history cleared."))
     }
 
     /// Reveal the plugin-text option, when some loaded plugin can actually produce text.
@@ -646,7 +816,7 @@ public final class FindFilesWindowController: NSWindowController {
         let text = findTextField.stringValue
         // The dialog greys the content search out for an empty-folder search; the template must
         // agree, or a saved search would carry a term the engine ignores.
-        let hasText = findTextCheckbox.state == .on && !text.isEmpty && emptyDirsCheckbox.state != .on
+        let hasText = hasContentTerm && emptyDirsCheckbox.state != .on
         let isHex = hexCheckbox.state == .on
         return SearchTemplate(
             name: name,
@@ -691,8 +861,6 @@ public final class FindFilesWindowController: NSWindowController {
         hexCheckbox.state = isHex ? .on : .off
         let text = isHex ? (t.hexContent ?? "") : (t.contentText ?? "")
         findTextField.stringValue = text
-        findTextCheckbox.state = text.isEmpty ? .off : .on
-        findTextField.isEnabled = !text.isEmpty
         caseSensitiveCheckbox.state = t.caseSensitive ? .on : .off
         regexCheckbox.state = t.useRegex ? .on : .off
         wholeWordCheckbox.state = t.wholeWord ? .on : .off
@@ -768,6 +936,22 @@ public final class FindFilesWindowController: NSWindowController {
 
     @objc private func handleClose() {
         window?.close()
+    }
+}
+
+// MARK: - The content term drives the options (F-407)
+
+extension FindFilesWindowController: NSComboBoxDelegate {
+    /// Typing in "Find text" is what turns the content options on and off now that no checkbox does —
+    /// without this they would stay grey with a term sitting right above them.
+    public func controlTextDidChange(_ obj: Notification) {
+        updateOptionAvailability()
+    }
+
+    /// Picking an entry from the history dropdown is not typing, and AppKit posts this *before* the
+    /// field's value is the new one — hence the hop through the main queue.
+    public func comboBoxSelectionDidChange(_ notification: Notification) {
+        DispatchQueue.main.async { [weak self] in self?.updateOptionAvailability() }
     }
 }
 

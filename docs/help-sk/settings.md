@@ -14,6 +14,7 @@ Okno Nastavenia je miesto, kde prispôsobíte Peach Commander spôsobu, akým pr
 2. To isté okno môžete otvoriť aj z **Konfigurácia > Možnosti…**.
 3. Vyberte stránku zo zoznamu vľavo; možnosti tej stránky sa objavia vpravo.
 4. Upravte ovládacie prvky. Zmeny sa prejavia ihneď, pokiaľ poznámka na stránke nehovorí inak.
+5. Ak chcete prejsť priamo k voľbe, zadajte text do hľadacieho poľa v hornej časti okna. Zhodujúce sa nastavenia zo *všetkých* stránok sa vypíšu so stránkou, na ktorej ležia, a výberom sa táto stránka otvorí so zvýrazneným nastavením. ↑/↓ sa pohybujú medzi výsledkami, Return otvorí zvýraznený a Esc hľadanie opustí a vráti stránku, z ktorej ste prišli.
 
 ![Okno Nastavenia zobrazujúce stránku Rozloženie so zaškrtávacími poľami pre lišty rozhrania](screenshots/settings-layout.png)
 *(Obrázok: stránka Rozloženie ovláda, ktoré lišty sa zobrazujú okolo panelov.)*

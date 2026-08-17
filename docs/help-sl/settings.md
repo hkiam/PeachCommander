@@ -14,6 +14,7 @@ Okno Nastavitve je mesto, kjer prilagodite Peach Commander načinu, kako delate:
 2. Isto okno lahko odprete tudi iz **Konfiguracija > Možnosti…**.
 3. Izberite stran s seznama na levi; možnosti te strani se pojavijo na desni.
 4. Prilagodite gumbe. Spremembe začnejo veljati takoj, razen če opomba na strani pravi drugače.
+5. Če želite neposredno do možnosti, vnesite besedilo v iskalno polje na vrhu okna. Ustrezne nastavitve z *vseh* strani so navedene skupaj s stranjo, na kateri so, izbira pa odpre to stran z označeno nastavitvijo. ↑/↓ se premikata po rezultatih, Return odpre označenega, Esc pa zapusti iskanje in vrne stran, s katere ste prišli.
 
 ![Okno Nastavitve, ki prikazuje stran Postavitev s potrditvenimi polji za vrstice vmesnika](screenshots/settings-layout.png)
 *(Slika: stran Postavitev nadzira, katere vrstice so prikazane okoli podoken.)*

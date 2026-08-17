@@ -11,7 +11,7 @@
 | Evidence sweep | **Batches 1–24 (2026-08-07/08): 73 rows checked, 33 defects fixed, 87 → 21 rows without evidence; the last 21 were then worked through on 2026-08-09 and the count is now **0** — five of them turned out not to be implemented at all (the window title, the splitter's double-click, sequential transfers, the icon-off mode and the DMG layout).** A follow-up *interpreter sweep* (2026-08-08, after 0.4.0) then went at one defect class on purpose — a string from somewhere else reaching something that interprets it — and found four more: the panel's extract walk wrote above the destination (F-131), an XML file could read your other files through external entities (F-368), previewing a document fetched a remote image and so reported that you opened it (F-116), and the assistant's approval gate was bypassable through `run_command`. See the entry below. Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive wrote outside the chosen folder (F-131); the archive password stood in the process list (F-136); a CRLF code file rendered as one line six million characters wide (F-110); undoing a batch rename did nothing (F-175); Num/ did nothing (F-056); a wildcard selected the *wrong* file (F-055); a Windows-written .sfv verified nothing (F-097). Six defects were one Swift trap — `"\r\n"` is a single Character. New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, `check-tests-registered.py`, `check-vm-flags.sh`, plus `check-descript-format.sh` extended. Of the 21 rows left, 8 are blocked externally (Apple credentials, SMB mounts, the Services menu). |
 | Current iteration | **0.7.0 — released 2026-08-16** — a read-only plugin that opens filesystem images the way archives open (F-403): SquashFS, ext2/3/4, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT12/16/32, exFAT, NTFS, plus MBR and GPT partition tables. Router firmware with no partition table is carved — the filesystems are found by searching for them and confirmed by opening each one — and the bootloader, kernel and vendor header around them are listed and extractable. Every reader is written here from its published layout rather than vendored, for licence reasons; only zstd's own single-file decoder (BSD-3) is taken in. Reviewing it turned up three integer-overflow crashes reachable from a crafted image, one of them older than the plugin, and a mutation corpus that structurally could not reach the code it was meant to guard. That in turn exposed F-230: the crash guard caught the four faults C code raises and none of the ways Swift fails, so a trapping plugin took the whole app down. Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update — the workflow exists, four repo secrets are missing. |
 | Build status | ✅ builds; app launches |
-| Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **87 scenarios with reports** (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. |
+| Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **92 scenarios with reports** (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `settings-search` with F-408 — those five not yet run on the VM, their unit tests and driven runs of the real app are what stand behind the features today) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
 | Last updated | 2026-08-17 |
 | Released | **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
@@ -25,6 +25,62 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-17 (F-408) — Sixteen pages and no way to ask
+
+**The Settings window can be searched by name now (F-408).** A field above both columns; while it has
+text, the page area becomes the matches — the setting on one line, the page it lives on underneath —
+picked with a click or ↑/↓ and Return, with Esc putting back the page the reader came from. Choosing one
+opens its page and tints the control briefly. Two things had to be measured rather than reasoned about: a
+focus ring is invisible on a checkbox unless Full Keyboard Access is on, and a tint animated the moment it
+is added never appears at all (the animator sets the model alpha at once) — the screenshot said so while
+the state said "tinted". The index is harvested from the *built pages* rather than written down beside
+them, because a hand-kept name→page table is a second copy of the UI and would be wrong within a release;
+it found 103 entries on the first run, including ones nobody would have listed. Notes under a control are
+keywords for it rather than results of their own, and so are the words of the action it calls — which is
+how "hidden" finds "Versteckte Dateien anzeigen" in a German UI. Matching is substring, deliberately not
+the palette's `FuzzyMatch`: with fuzzy matching "hidden" returned "Eine Dateisuche im Betrachter
+fortsetzen" and four more results whose only claim was containing h-i-d-d-e-n in order.
+
+## 2026-08-17 (F-407) — A search you had to state twice
+
+**Opening a hit now continues the search in the viewer (F-407).** A content search found the file, the
+viewer opened at byte 0 with an empty find box, and the term that produced the window had to be typed
+into it again. `ViewerSearchSeed` (PCVFS, so the translation is testable without a window) turns the
+finished `SearchTemplate` into a viewer search — term, bytes, case, regex — and the viewer adopts it once:
+the find bar shows it, the first hit is selected and on screen, and the keyboard goes back to the content
+so the reader's first keystroke scrolls rather than edits the search. Consumed on first use, which is the
+whole of "what you type afterwards stands" — no reload, no next file and no representation change puts the
+seeded term back. Hex searches carry their parsed bytes while the field still reads `48 65 6C`; a
+name-only search seeds nothing rather than prefilling a box with something that never matched; nothing
+beeps when the representation on screen does not hold the term, because the term matched the *file* (a
+comment match, or past the 16 MB text cap). Off by one checkbox on Settings ▸ Edit/View, applied live.
+Verified in the running app on both search backends: line 25 selected in an NSTextView with the term in
+the find bar, and a 14 MB log scrolled to byte 12,888,921.
+
+**"Find text" no longer needs a tick box (F-407).** The field is the switch: something in it is searched
+for, an empty one searches names only. The checkbox said nothing the field could not, one click later, and
+it could disagree with it — "Case sensitive" greyed out with a term sitting right above it. The content
+options now follow what is typed, through the field's own change notification; the scenario types through
+the field editor on purpose, because assigning `stringValue` posts nothing and would pass with every
+option dead. Turning the content search off is clearing the field, which F-406 made undoable in a way
+unticking a box never was. The row moved to the same aligned "label: control" shape as the two above it, and the label column is now measured from the longest label rather than the 90 pt that fitted the English one: measured, that column is 94 pt in English, 103 in Russian and 114 in Hungarian, where "Szöveg keresése:" had been cut in half.
+
+## 2026-08-17 (F-406) — The Find dialog forgot every term the moment it closed
+
+**"Search for" and "Find text" now remember, most recently used first (F-406).** Twenty entries each, in a
+dropdown on the field itself: both are `NSComboBox` now, which *is* an `NSTextField`, so the templates, the
+automation verbs and everything else that reads those fields needed no change. Two lists, not one — a
+dropdown offering `*.log` next to `TODO(` makes both fields worse. The list is `RecentLines`, lifted out of
+`TextPipeHistory` (F-356) instead of written a second time, so promote-on-reuse and the 0600 permissions
+cannot drift apart between the editor's filter history and this one; what somebody searches for is as
+telling as the files it finds. Recorded on Start rather than per keystroke, and the content term only when
+it took part in the search. No inline completion, deliberately: a field that finishes the word turns `*.s`
+into last week's `*.swift`, and the term that ran would be one nobody typed. **Clear History…** on the
+Load / Save tab empties both, confirmed first, and deletes the files rather than blanking them. Verified in
+the running app, not only in tests: three searches in one dialog, a re-used mask moving back to the top
+instead of appearing twice, a freshly opened dialog offering what the previous one recorded, and nothing
+left in either dropdown or on disk after Clear. New VM scenario `find-history` covers the same three claims.
 
 ## 2026-08-17 (F-110, F-404, F-405) — Two keystrokes that went to the wrong place, and a sidebar that stayed blank
 

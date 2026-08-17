@@ -14,6 +14,7 @@ Im Einstellungsfenster passen Sie Peach Commander an Ihre Arbeitsweise an: welch
 2. Sie können dasselbe Fenster auch über **Konfiguration > Optionen…** öffnen.
 3. Wählen Sie eine Seite aus der Liste auf der linken Seite; die Optionen dieser Seite erscheinen rechts.
 4. Passen Sie die Steuerelemente an. Änderungen werden sofort wirksam, sofern ein Hinweis auf der Seite nichts anderes angibt.
+5. Um direkt zu einer Option zu kommen, tippen Sie in das Suchfeld oben im Fenster. Passende Einstellungen aus *allen* Seiten werden mit der Seite aufgeführt, auf der sie jeweils liegen, und die Auswahl öffnet diese Seite mit hervorgehobener Einstellung. ↑/↓ bewegen sich durch die Ergebnisse, Return öffnet das hervorgehobene, und Esc verlässt die Suche und stellt die Seite wieder her, von der Sie kamen.
 
 ![Das Einstellungsfenster mit der Seite Layout und Kontrollkästchen für die Oberflächenleisten](screenshots/settings-layout.png)
 *(Abbildung: Auf der Seite Layout legen Sie fest, welche Leisten rund um die Panels angezeigt werden.)*

@@ -27,6 +27,7 @@ Peach Commander har en indbygget fremviser, der lader dig kigge inde i en fil ud
 - Hvis tekst ser forvansket ud, klik på Kodning i værktøjslinjen (eller tryk på E) for at cykle gennem tekstkodninger, indtil den læses korrekt; den automatiske indstilling rammer det som regel rigtigt.
 - Tryk på W for at skifte tekstombrydning for lange linjer.
 - Tryk Ctrl+G for at gå til en linje, eller til en byteforskydning i hex-tilstand. Regning på tværs af talsystemer er tilladt: `0x1000 + 15 + 1` fører til 4112 — hexadecimalt med `0x`, `$` eller et afsluttende `h`, binært med `0b`, oktalt med `0o`, og `+ - * /` med parenteser.
+- Åbner du et hit fra Find filer, hvor **Find tekst** var udfyldt, starter fremviseren med den søgning: teksten står allerede i søgefeltet, og den første forekomst er synlig, så du lander ved træffet i stedet for øverst i filen. Ændrer eller sletter du den dér, er det din version, der bliver. Det kan slås fra i Indstillinger under Redigér/Vis, hvis hver fil hellere skal åbne fra begyndelsen.
 
 ## Zoom et billede
 

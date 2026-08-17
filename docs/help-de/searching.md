@@ -20,7 +20,7 @@ Wenn Sie Dateien irgendwo auf Ihrem Mac aufspüren müssen — nach Namen, nach 
 
 ## Nach Inhalt, Größe und Datum suchen
 
-1. Um innerhalb von Dateien zu suchen, wählen Sie **Text suchen** auf dem Tab Allgemein und tippen Sie den zu suchenden Text. Optionen ermöglichen es Ihnen, ihn **Groß-/Kleinschreibung beachten** zu lassen, nur ein **ganzes Wort** zu treffen, den Text als **regulären Ausdruck** zu behandeln, eine **Hex-Inhaltssuche** durchzuführen oder Dateien zu finden, die den Text **nicht enthalten**.
+1. Um innerhalb von Dateien zu suchen, tippen Sie den Text in **Text suchen** auf dem Tab Allgemein — was in diesem Feld steht, wird gesucht, ein leeres Feld sucht nur nach Namen. Optionen ermöglichen es Ihnen, ihn **Groß-/Kleinschreibung beachten** zu lassen, nur ein **ganzes Wort** zu treffen, den Text als **regulären Ausdruck** zu behandeln, eine **Hex-Inhaltssuche** durchzuführen oder Dateien zu finden, die den Text **nicht enthalten**.
 2. Wechseln Sie zum Tab **Erweitert**, um Ergebnisse nach **Größe** (zum Beispiel `10K` bis `5M`), nach **Änderungsdatum**-Bereich oder auf Dateien einzugrenzen, die in den letzten N Tagen geändert wurden.
 3. Schalten Sie **In Archiven suchen** ein, um innerhalb von Archiven der Zip-Familie (zip, jar, war und ähnliche) zu suchen.
 4. Um die Suche auf das bereits Ausgewählte zu beschränken, schalten Sie **Nur in ausgewählten Objekten suchen** ein, bevor Sie starten.
@@ -43,6 +43,7 @@ Für lokale Ordner, die macOS bereits indiziert hat, schalten Sie **Spotlight ve
 
 - **An Listenfeld übergeben** platziert jedes Ergebnis als temporäre Liste in das aktive Panel, sodass Sie den gesamten Satz auf einmal kopieren, verschieben oder löschen können.
 - Wählen Sie auf dem Tab **Laden / Speichern** die Option **Als Vorlage speichern…**, um die aktuelle Suche (Muster und Optionen) zu speichern und sie später wieder aus der Vorlagenliste auszuwählen.
+- **Suchen nach** und **Text suchen** merken sich jeweils die letzten 20 verwendeten Einträge, zuletzt verwendete zuerst — klicken Sie auf den Pfeil am Ende des Feldes, um einen davon erneut zu wählen. Ein zweimal verwendeter Begriff rückt wieder nach oben, statt doppelt zu erscheinen, und die Listen überstehen das Schließen des Fensters und das Beenden der App. **Verlauf leeren…** auf dem Tab **Laden / Speichern** vergisst beide; gesicherte Vorlagen bleiben unberührt.
 
 ## Tastaturkürzel
 

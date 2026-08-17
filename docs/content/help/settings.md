@@ -14,6 +14,7 @@ The Settings window is where you tailor Peach Commander to the way you work: whi
 2. You can also open the same window from **Configuration > Settings…** — the same entry, in the menu where you may expect to find it.
 3. Pick a page from the list on the left; the options for that page appear on the right.
 4. Adjust the controls. Changes take effect immediately unless a note on the page says otherwise.
+5. To go straight to an option, type into the search field at the top of the window. Matching settings from *every* page are listed with the page each one lives on, and choosing one opens that page with the setting highlighted. ↑/↓ move through the results, Return opens the highlighted one, and Esc leaves the search and puts back the page you came from.
 
 ![The Settings window showing the Layout page with checkboxes for the interface bars](screenshots/settings-layout.png)
 *(Figure: The Layout page controls which bars are shown around the panels.)*

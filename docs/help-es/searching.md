@@ -20,7 +20,7 @@ Cuando necesitas localizar archivos en cualquier parte de tu Mac —por nombre, 
 
 ## Buscar por contenido, tamaño y fecha
 
-1. Para buscar dentro de los archivos, marca **Buscar texto** en la pestaña General y escribe el texto a buscar. Las opciones permiten hacerlo **Distinguir mayúsculas**, coincidir solo con una **Palabra completa**, tratar el texto como **Expresión regular**, hacer una **Búsqueda de contenido en hexadecimal**, o encontrar archivos que **No contengan** el texto.
+1. Para buscar dentro de los archivos, escribe el texto en **Buscar texto** en la pestaña General: se busca lo que haya en ese campo, y un campo vacío busca solo por nombre. Las opciones permiten hacerlo **Distinguir mayúsculas**, coincidir solo con una **Palabra completa**, tratar el texto como **Expresión regular**, hacer una **Búsqueda de contenido en hexadecimal**, o encontrar archivos que **No contengan** el texto.
 2. Cambia a la pestaña **Avanzado** para acotar los resultados por **Tamaño** (por ejemplo, `10K` a `5M`), por rango de **fecha de modificación**, o a archivos cambiados en los últimos N días.
 3. Activa **Buscar dentro de archivos comprimidos** para mirar en archivos de la familia zip (zip, jar, war y similares).
 4. Para limitar la búsqueda a lo que ya seleccionaste, activa **Buscar solo en los elementos seleccionados** antes de empezar.
@@ -43,6 +43,7 @@ Para carpetas locales que macOS ya ha indexado, activa **Usar Spotlight** en la 
 
 - **Enviar a la lista** coloca cada resultado en el panel activo como una lista temporal, para que puedas copiar, mover o eliminar todo el conjunto de una vez.
 - En la pestaña **Cargar / Guardar**, elige **Guardar como plantilla…** para almacenar la búsqueda actual (patrones y opciones) y volver a elegirla más tarde en la lista de plantillas.
+- **Buscar** y **Buscar texto** recuerdan cada uno las últimas 20 entradas que has usado, la más reciente primero: haz clic en la flecha al final del campo para volver a elegir una. Un término usado dos veces vuelve arriba en lugar de aparecer duplicado, y las listas sobreviven al cierre de la ventana y a la salida de la app. **Borrar historial…** en la pestaña **Cargar / Guardar** olvida ambas; las plantillas guardadas no se ven afectadas.
 
 ## Atajos
 

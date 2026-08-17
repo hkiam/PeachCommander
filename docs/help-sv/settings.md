@@ -14,6 +14,7 @@ Inställningsfönstret är där du skräddarsyr Peach Commander efter hur du arb
 2. Du kan även öppna samma fönster från **Konfiguration > Alternativ…**.
 3. Välj en sida från listan till vänster; alternativen för den sidan visas till höger.
 4. Justera reglagen. Ändringar träder i kraft direkt om inte en anmärkning på sidan säger annat.
+5. Vill du direkt till en inställning skriver du i sökfältet högst upp i fönstret. Matchande inställningar från *alla* sidor listas med den sida de hör till, och väljer du en öppnas den sidan med inställningen markerad. ↑/↓ flyttar genom resultaten, Retur öppnar det markerade och Esc lämnar sökningen och sätter tillbaka sidan du kom från.
 
 ![Inställningsfönstret med sidan Layout och kryssrutor för gränssnittsraderna](screenshots/settings-layout.png)
 *(Bild: Sidan Layout styr vilka rader som visas runt panelerna.)*

@@ -20,7 +20,7 @@ När du behöver spåra upp filer var som helst på din Mac — efter namn, efte
 
 ## Sök efter innehåll, storlek och datum
 
-1. För att söka inuti filer, markera **Hitta text** på fliken Allmänt och skriv texten att leta efter. Alternativ låter dig göra den **Skiftlägeskänslig**, matcha endast ett **Helt ord**, behandla texten som ett **Reguljärt uttryck**, göra en **Hexadecimal innehållssökning**, eller hitta filer som **Inte innehåller** texten.
+1. För att söka inuti filer skriver du texten i **Sök text** på fliken Allmänt — det som står i fältet söks efter, och ett tomt fält söker bara på namn. Alternativ låter dig göra den **Skiftlägeskänslig**, matcha endast ett **Helt ord**, behandla texten som ett **Reguljärt uttryck**, göra en **Hexadecimal innehållssökning**, eller hitta filer som **Inte innehåller** texten.
 2. Växla till fliken **Avancerat** för att smalna av resultaten efter **Storlek** (till exempel `10K` till `5M`), efter **ändringsdatum**-intervall, eller till filer ändrade de senaste N dagarna.
 3. Slå på **Sök inuti arkiv** för att titta inuti arkiv av zip-familjen (zip, jar, war och liknande).
 4. För att begränsa sökningen till det du redan valt, slå på **Sök endast i markerade objekt** innan du startar.
@@ -43,6 +43,7 @@ För lokala mappar som macOS redan har indexerat, slå på **Använd Spotlight**
 
 - **Skicka till lista** placerar varje resultat i den aktiva panelen som en tillfällig lista, så att du kan kopiera, flytta eller radera hela uppsättningen på en gång.
 - På fliken **Läs in / Spara**, välj **Spara som mall…** för att lagra den aktuella sökningen (mönster och alternativ) och välja den igen senare från mall-listan.
+- **Sök efter** och **Sök text** kommer vardera ihåg de 20 senaste posterna du sökt med, senast använda först — klicka på pilen i slutet av fältet för att välja en igen. Ett uttryck som används två gånger flyttas överst i stället för att stå med två gånger, och listorna överlever både att fönstret stängs och att appen avslutas. **Rensa historiken…** på fliken **Läs in / Spara** glömmer bort båda; sparade mallar påverkas inte.
 
 ## Kortkommandon
 

@@ -47,11 +47,17 @@ private var automationListers: [ListerWindowController] = []
 /// Retains hex editors opened by the `hexgoto` / `hexclip` verbs (F-400, F-401).
 private var automationHexEditors: [HexEditorWindowController] = []
 
-/// The viewer window a viewer command should act on: the one automation opened, else whichever is up.
+/// The viewer window a viewer command should act on: the frontmost one, else the one automation opened,
+/// else whichever is up.
 ///
 /// One lookup, so `listerdump` and `listermarks` can never disagree about which window they mean.
+///
+/// The key window comes first because a scenario may open a *second* viewer — a second hit from the Find
+/// dialog (F-407) — and `NSApp.windows` is in no particular order, so "the first lister" silently
+/// answered about the previous window and made the second half of the run report the first half's state.
 @MainActor
 private func currentLister() -> ListerWindowController? {
+    if let key = NSApp.keyWindow?.windowController as? ListerWindowController { return key }
     if let opened = automationListers.last { return opened }
     return NSApp.windows.first { $0.windowController is ListerWindowController }?
         .windowController as? ListerWindowController
@@ -767,6 +773,32 @@ extension MainWindowController {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
                     self?.settingsWindow?.showPage(titled: title)
                 }
+            case "settingsearch":                          // settingsearch <query>|<out> (F-408)
+                let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+                if a.count == 2 {
+                    if settingsWindow == nil {
+                        showSettings()
+                        try? await Task.sleep(nanoseconds: 800_000_000)
+                    }
+                    let dump = settingsWindow?.automationSearch(a[0]) ?? "ERROR: no settings window\n"
+                    try? dump.write(toFile: a[1], atomically: true, encoding: .utf8)
+                }
+            case "settingsopen":                           // settingsopen <query>|<n>|<out> (F-408)
+                let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+                if a.count == 3 {
+                    if settingsWindow == nil {
+                        showSettings()
+                        try? await Task.sleep(nanoseconds: 800_000_000)
+                    }
+                    _ = settingsWindow?.automationSearch(a[0])
+                    try? await Task.sleep(nanoseconds: 400_000_000)
+                    settingsWindow?.automationOpenResult(Int(a[1]) ?? 1)
+                    // The reveal lands one run-loop turn later, on purpose: the page has to lay out
+                    // before a control can be scrolled to.
+                    try? await Task.sleep(nanoseconds: 900_000_000)
+                    try? (settingsWindow?.automationRevealState() ?? "ERROR: no settings window\n")
+                        .write(toFile: a[2], atomically: true, encoding: .utf8)
+                }
             case "settingsdump":                          // settingsdump <out> (F-381)
                 // Every string the settings window is showing, the way `sidebardump` reads the
                 // sidebar: a plugin's page is a real NSView inside the host's window, so what it
@@ -830,6 +862,67 @@ extension MainWindowController {
                 showFindFiles()
                 let mask = arg.isEmpty ? "*.*" : arg
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in self?.findWindow?.automationStart(mask: mask) }
+            case "findsearch":                             // findsearch <mask>|<text> (F-406): a search that records both fields
+                let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+                if a.count == 2 {
+                    // Reuse the dialog if one is already up: three searches in *one* dialog is both the
+                    // realistic path and the one that shows the dropdown being updated as they run.
+                    if findWindow == nil {
+                        showFindFiles()
+                        try? await Task.sleep(nanoseconds: 700_000_000)
+                    }
+                    findWindow?.automationStart(mask: a[0], text: a[1])
+                }
+            case "findtext":                               // findtext <text>|<out> (F-407): type into
+                // "Find text" and report which options that turned on — the field is the switch now.
+                let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+                if a.count == 2 {
+                    if findWindow == nil {
+                        showFindFiles()
+                        try? await Task.sleep(nanoseconds: 700_000_000)
+                    }
+                    findWindow?.automationTypeFindText(a[0])
+                    try? await Task.sleep(nanoseconds: 300_000_000)
+                    try? (findWindow?.automationOptionsDump() ?? "ERROR: no find window\n")
+                        .write(toFile: a[1], atomically: true, encoding: .utf8)
+                }
+            case "findviewhit":                            // findviewhit <mask>|<text>|<dir>|<out> (F-407)
+                // A content search, then View on its first result, then what the viewer's own search
+                // holds — the whole point of the feature is that those two are the same search.
+                let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+                if a.count == 4 {
+                    if findWindow == nil {
+                        showFindFiles()
+                        try? await Task.sleep(nanoseconds: 700_000_000)
+                    }
+                    findWindow?.automationSetDirectory(a[2])
+                    findWindow?.automationStart(mask: a[0], text: a[1])
+                    try? await Task.sleep(nanoseconds: 2_500_000_000)   // let the walk finish
+                    findWindow?.automationViewFirstResult()
+                    try? await Task.sleep(nanoseconds: 1_500_000_000)   // let the viewer load + seed
+                    try? (currentLister()?.automationSearchState() ?? "ERROR: no viewer\n")
+                        .write(toFile: a[3], atomically: true, encoding: .utf8)
+                }
+            case "listerreload":                           // listerreload <out> (F-407): reload, then dump
+                currentLister()?.automationReloadContent()
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                try? (currentLister()?.automationSearchState() ?? "ERROR: no viewer\n")
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
+            case "listerretype":                           // listerretype <text>|<out> (F-407)
+                let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+                if a.count == 2 {
+                    currentLister()?.automationRetypeSearch(a[0])
+                    try? await Task.sleep(nanoseconds: 400_000_000)
+                    try? (currentLister()?.automationSearchState() ?? "ERROR: no viewer\n")
+                        .write(toFile: a[1], atomically: true, encoding: .utf8)
+                }
+            case "findhistory":                            // findhistory <out> (F-406): what the two dropdowns offer
+                try? (findWindow?.automationHistoryDump() ?? "ERROR: no find window\n")
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
+            case "findhistoryclear":                       // findhistoryclear <out> (F-406): clear, then dump again
+                findWindow?.automationClearHistory()
+                try? (findWindow?.automationHistoryDump() ?? "ERROR: no find window\n")
+                    .write(toFile: arg, atomically: true, encoding: .utf8)
             case "findcomments":                           // findcomments <mask>|<text>|<dir>|<out> (F-373)
                 let a = arg.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
                 if a.count == 4 {

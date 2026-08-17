@@ -14,6 +14,7 @@ A Beállítások ablak az a hely, ahol a Peach Commandert a munkamódjához igaz
 2. Ugyanezt az ablakot a **Konfiguráció > Lehetőségek…** alól is megnyithatja.
 3. Válasszon egy oldalt a bal oldali listából; az adott oldal lehetőségei a jobb oldalon jelennek meg.
 4. Állítsa be a vezérlőket. A változtatások azonnal életbe lépnek, hacsak egy megjegyzés az oldalon mást nem mond.
+5. Ha közvetlenül egy beállításhoz szeretne jutni, írjon az ablak felső részén lévő keresőmezőbe. Az *összes* lap találatai megjelennek azzal a lappal együtt, amelyen vannak, és a kiválasztás megnyitja azt a lapot a kijelölt beállítással. ↑/↓ lépteti az eredményeket, a Return megnyitja a kijelöltet, az Esc pedig kilép a keresésből és visszaadja azt a lapot, ahonnan jött.
 
 ![A Beállítások ablak az Elrendezés oldalt mutatja jelölőnégyzetekkel a felület sávjaihoz](screenshots/settings-layout.png)
 *(Ábra: az Elrendezés oldal vezérli, mely sávok jelennek meg a panelek körül.)*

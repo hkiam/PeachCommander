@@ -20,7 +20,7 @@ Ko morate izslediti datoteke kjer koli na svojem Macu — po imenu, po tem, kaj 
 
 ## Iskanje po vsebini, velikosti in datumu
 
-1. Za iskanje znotraj datotek izberite **Poišči besedilo** na zavihku Splošno in vnesite besedilo za iskanje. Možnosti vam omogočajo, da ga naredite **razlikuje velikost**, ujema le **celo besedo**, obravnava besedilo kot **regularni izraz**, izvede **šestnajstiško iskanje vsebine** ali najde datoteke, ki besedila **ne vsebujejo**.
+1. Za iskanje znotraj datotek vnesite besedilo v polje **Najdi besedilo** na zavihku Splošno — išče se to, kar je v polju, prazno polje išče samo po imenih. Možnosti vam omogočajo, da ga naredite **razlikuje velikost**, ujema le **celo besedo**, obravnava besedilo kot **regularni izraz**, izvede **šestnajstiško iskanje vsebine** ali najde datoteke, ki besedila **ne vsebujejo**.
 2. Preklopite na zavihek **Napredno**, da zožite rezultate po **velikosti** (na primer od `10K` do `5M`), po obsegu **datuma spremembe**, ali na datoteke, spremenjene v zadnjih N dneh.
 3. Vklopite **Išči znotraj arhivov**, da pogledate v arhive družine zip (zip, jar, war in podobne).
 4. Za omejitev iskanja na to, kar ste že izbrali, pred začetkom vklopite **Išči le v izbranih elementih**.
@@ -43,6 +43,7 @@ Za lokalne mape, ki jih je macOS že indeksiral, vklopite **Uporabi Spotlight** 
 
 - **Pošlji v seznam** postavi vsak rezultat v dejavno podokno kot začasni seznam, tako da lahko kopirate, premaknete ali izbrišete celoten nabor naenkrat.
 - Na zavihku **Naloži / Shrani** izberite **Shrani kot predlogo…**, da shranite trenutno iskanje (vzorce in možnosti) in ga kasneje znova izberete s seznama predlog.
+- **Poišči** in **Najdi besedilo** si zapomnita zadnjih 20 uporabljenih vnosov, nazadnje uporabljeni na vrhu — kliknite puščico na koncu polja in enega izberite znova. Dvakrat uporabljen izraz se vrne na vrh, namesto da bi se pojavil dvakrat, seznama pa preživita zaprtje okna in izhod iz programa. **Počisti zgodovino…** na zavihku **Naloži / Shrani** pozabi oba; shranjene predloge ostanejo nedotaknjene.
 
 ## Bližnjice
 

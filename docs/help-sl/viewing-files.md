@@ -27,6 +27,7 @@ Peach Commander ima vgrajen pregledovalnik, ki omogoča, da pogledate v datoteko
 - Če je besedilo videti popačeno, kliknite Kodiranje v orodni vrstici (ali pritisnite E), da se pomikate skozi kodiranja besedila, dokler se ne prebere pravilno; samodejna nastavitev to običajno zadene prav.
 - Pritisnite W za preklop preloma besed za dolge vrstice.
 - Pritisnite Ctrl+G za skok na vrstico, v šestnajstiškem načinu na bajtni odmik. Računanje med številskimi sistemi je dovoljeno: `0x1000 + 15 + 1` pripelje na 4112 — šestnajstiško z `0x`, `$` ali končnim `h`, dvojiško z `0b`, osmiško z `0o`, in `+ - * /` z oklepaji.
+- Če odprete zadetek iz Poišči datoteke, kjer je bilo polje **Najdi besedilo** izpolnjeno, se pregledovalnik začne s tem iskanjem: besedilo je že v iskalni vrstici in prva pojavitev je na zaslonu, tako da pristanete pri ujemanju in ne na začetku datoteke. Če ga tam spremenite ali počistite, ostane vaša različica. V Nastavitvah ▸ Urejanje/Ogled je to mogoče izklopiti, če naj se vsaka datoteka odpre na začetku.
 
 ## Povečava slike
 

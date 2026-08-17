@@ -883,6 +883,53 @@ SCENARIOS = [
                        "comment table.csv|superseded by the 2026 export", "wait 800",
                        "findcomments *.csv|superseded|/Users/admin/pc-demo|/Users/admin/found.txt",
                        "wait 1000"], 11),
+    # What the two search fields remember (F-406). Three searches in one dialog: the second must sit
+    # above the first, re-running the first must promote it rather than duplicate it, and Clear must
+    # leave both dropdowns empty. A dropdown is a list AppKit draws in a window of its own, so the
+    # report is what the combo boxes actually offer — a file on disk would not prove the field sees it.
+    ("find-history", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                      "findsearch *.csv|superseded", "wait 2500",
+                      "findsearch *.txt|", "wait 2500",
+                      "findhistory /Users/admin/fh-after.txt", "wait 600",
+                      "findsearch *.csv|", "wait 2500",
+                      "findhistory /Users/admin/fh-promoted.txt", "wait 600",
+                      "findhistoryclear /Users/admin/fh-cleared.txt", "wait 800"], 12),
+    # The search that found the file, continued in the viewer (F-407). Three claims: the term arrives in
+    # the viewer's own search *and* in the find bar, the reader lands on the first hit rather than at the
+    # top of the file, and a term they retype is theirs — a reload does not put the seeded one back. The
+    # find bar's value is read from the window, not from the find pasteboard alone: that pasteboard is
+    # system-wide and survives the previous scenario, so it would report a pass for a build that seeded
+    # nothing at all.
+    ("find-seeded-viewer", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                            "findviewhit *.csv|superseded|/Users/admin/pc-demo|/Users/admin/seed-on.txt",
+                            "wait 1200",
+                            "listerretype 2026|/Users/admin/seed-retyped.txt", "wait 800",
+                            "listerreload /Users/admin/seed-reloaded.txt", "wait 1000"], 13),
+    # The same feature switched off in Settings, which is the half a checkbox can silently stop doing:
+    # nothing is seeded, and the viewer opens where it always did.
+    ("find-seed-off", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                       "setbool Viewer.SearchFromFind|0", "wait 600",
+                       "findviewhit *.csv|superseded|/Users/admin/pc-demo|/Users/admin/seed-off.txt",
+                       "wait 1200"], 12),
+    # "Find text" with no checkbox in front of it (F-407): the field is live from the moment the dialog
+    # opens, what is in it is searched for, and an empty one searches names only. Typed through the field
+    # editor, because assigning `stringValue` posts no change notification and would pass with the
+    # options dead.
+    ("find-text-field", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                         "findtab 0", "wait 1500",
+                         "findtext |/Users/admin/ft-empty.txt", "wait 600",
+                         "findtext superseded|/Users/admin/ft-typed.txt", "wait 600",
+                         "findtext |/Users/admin/ft-cleared.txt", "wait 800"], 12),
+    # Searching the settings by name, across the pages (F-408). Three claims: a query finds the setting
+    # wherever it lives, a word that is only in the *note* under a control still finds that control, and
+    # choosing a result lands on the page with the control on screen and something pointing at it. Typed
+    # through the field editor, because assigning `stringValue` posts no change notification and a
+    # scenario built on that would pass with the search dead.
+    ("settings-search", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                         "settingsearch hidden|/Users/admin/ss-hidden.txt", "wait 700",
+                         "settingsearch backup|/Users/admin/ss-backup.txt", "wait 700",
+                         "settingsearch mainframe|/Users/admin/ss-none.txt", "wait 700",
+                         "settingsopen hidden|1|/Users/admin/ss-open.txt", "wait 1200"], 13),
     # One note, three faces (F-372): the Notes plugin's sidebar shows and edits the *host's* per-file
     # comment, so a comment typed with Ctrl+Z is not invisible to the plugin and vice versa. This is also
     # the first scenario that exercises a plugin at all — the harness used to ship an app with none.
@@ -1776,6 +1823,54 @@ REPORTS = {
     # to explain itself.
     "find-comments": ("/Users/admin/found.txt",
                       ["count=1", "table.csv", "comment: superseded by the 2026 export", "!ERROR"]),
+    # F-408. The primary report is the navigation, which is the last file written. "indexed" is part of
+    # the check: an index that harvested nothing would report zero and every search would look like a
+    # query with no answer.
+    "settings-search": ("/Users/admin/ss-open.txt",
+                        ["page=Display", "searchCleared=true", "results=false",
+                         "control=Show hidden files", "visible=true", "tinted=true", "!ERROR"]),
+    "settings-search-hidden": ("/Users/admin/ss-hidden.txt",
+                               ["query=hidden", "count=1", "|Show hidden files|Display", "!ERROR"]),
+    # "backup" is not in the checkbox's title — it is in the sentence under it and in the action it calls.
+    "settings-search-backup": ("/Users/admin/ss-backup.txt",
+                               ["query=backup", "|Edit/View", "!count=0", "!ERROR"]),
+    "settings-search-none": ("/Users/admin/ss-none.txt", ["query=mainframe", "count=0", "!ERROR"]),
+    # F-407. The primary report is the last file written, so the guest waits for the retype-and-reload
+    # check rather than for the seed it is about to be compared against.
+    "find-seeded-viewer": ("/Users/admin/seed-reloaded.txt",
+                           ["term=2026", "!term=superseded", "!ERROR"]),
+    "find-seeded-viewer-on": ("/Users/admin/seed-on.txt",
+                              ["term=superseded", "findbar=open", "selected=superseded",
+                               "focus=ViewerTextView", "!line=1", "!ERROR"]),
+    "find-seeded-viewer-retyped": ("/Users/admin/seed-retyped.txt",
+                                   ["term=2026", "selected=2026", "!ERROR"]),
+    # Switched off: no term, no find bar, and the file opens at the top like any other.
+    "find-seed-off": ("/Users/admin/seed-off.txt",
+                      ["term=\n", "findbar=closed", "selected=\n", "!term=superseded", "!ERROR"]),
+    # The field is the switch now. "contentTerm" is what the search would actually run with, so an empty
+    # field must produce none and a filled one must produce exactly what was typed.
+    "find-text-field": ("/Users/admin/ft-cleared.txt",
+                        ["typed=[]", "fieldEnabled=true", "contentTerm=-", "hex=off",
+                         "notContaining=off", "labelsFit=true", "!ERROR"]),
+    # The label column is measured from the longest label, so it must fit whatever language the guest
+    # runs in rather than the 90 pt that fitted the English one.
+    "find-text-field-empty": ("/Users/admin/ft-empty.txt",
+                              ["typed=[]", "fieldEnabled=true", "contentTerm=-", "labelsFit=true",
+                               "!ERROR"]),
+    "find-text-field-typed": ("/Users/admin/ft-typed.txt",
+                              ["typed=[superseded]", "contentTerm=superseded", "hex=on",
+                               "wholeWord=on", "notContaining=on", "comments=on", "!ERROR"]),
+    # F-406. The primary report is the one after Clear, because that is the last file written and the
+    # guest waits for it; the two before it are what there was to clear. Each dump asserts the *order*:
+    # "names=*.txt,*.csv" would also fail for a build that remembered both and sorted them by name.
+    "find-history": ("/Users/admin/fh-cleared.txt",
+                     ["names=\n", "texts=\n", "!*.csv", "!superseded", "!ERROR"]),
+    "find-history-after": ("/Users/admin/fh-after.txt",
+                           ["names=*.txt,*.csv", "texts=superseded", "!ERROR"]),
+    # The third search re-used the first mask: it moves to the front instead of appearing twice, and the
+    # content term is untouched because that search had none.
+    "find-history-promoted": ("/Users/admin/fh-promoted.txt",
+                              ["names=*.csv,*.txt", "texts=superseded", "!ERROR"]),
     # Read as UTF-16, the multi-line comment as two lines, still UTF-16 after writing, and the untouched
     # comment intact.
     "tc-descript": ("/Users/admin/tc.txt",

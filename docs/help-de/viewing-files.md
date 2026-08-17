@@ -27,6 +27,7 @@ Peach Commander verfügt über einen integrierten Betrachter, mit dem Sie in ein
 - Wenn Text verstümmelt aussieht, klicken Sie in der Symbolleiste auf Kodierung (oder drücken Sie E), um durch die Textkodierungen zu blättern, bis er korrekt lesbar ist; die automatische Einstellung trifft es meist richtig.
 - Drücken Sie W, um den Zeilenumbruch für lange Zeilen umzuschalten.
 - Drücken Sie Ctrl+G, um zu einer Zeile zu springen — im Hex-Modus zu einem Byte-Offset. Dabei ist Rechnen über Zahlensysteme hinweg erlaubt: `0x1000 + 15 + 1` führt zu 4112 — hexadezimal mit `0x`, `$` oder angehängtem `h`, binär mit `0b`, oktal mit `0o`, und `+ - * /` mit Klammern.
+- Öffnen Sie einen Treffer aus Dateien suchen, in dem **Text suchen** gefüllt war, beginnt der Betrachter mit dieser Suche: der Text steht bereits im Suchfeld und das erste Vorkommen ist zu sehen, Sie landen also beim Treffer statt am Dateianfang. Ändern oder löschen Sie ihn dort, bleibt Ihre Fassung. In den Einstellungen unter Bearbeiten/Ansehen lässt sich das abschalten, wenn jede Datei am Anfang öffnen soll.
 
 ## Ein Bild zoomen
 

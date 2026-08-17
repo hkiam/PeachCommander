@@ -14,6 +14,7 @@ La finestra Impostazioni è dove adatti Peach Commander al tuo modo di lavorare:
 2. Puoi anche aprire la stessa finestra da **Configurazione > Opzioni…**.
 3. Scegli una pagina dall'elenco a sinistra; le opzioni di quella pagina compaiono a destra.
 4. Regola i controlli. Le modifiche hanno effetto subito a meno che una nota sulla pagina non dica diversamente.
+5. Per andare direttamente a un'opzione, digita nel campo di ricerca in cima alla finestra. Le impostazioni corrispondenti di *tutte* le pagine sono elencate con la pagina in cui si trovano, e sceglierne una apre quella pagina con l'impostazione evidenziata. ↑/↓ scorrono i risultati, Invio apre quello evidenziato ed Esc lascia la ricerca e riporta la pagina da cui venivi.
 
 ![La finestra Impostazioni che mostra la pagina Layout con caselle per le barre dell'interfaccia](screenshots/settings-layout.png)
 *(Figura: la pagina Layout controlla quali barre sono mostrate attorno ai pannelli.)*

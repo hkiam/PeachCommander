@@ -14,6 +14,7 @@ La ventana de Ajustes es donde adaptas Peach Commander a tu forma de trabajar: q
 2. También puedes abrir la misma ventana desde **Configuración > Opciones…**.
 3. Elige una página de la lista de la izquierda; las opciones de esa página aparecen a la derecha.
 4. Ajusta los controles. Los cambios surten efecto de inmediato salvo que una nota en la página indique lo contrario.
+5. Para ir directamente a una opción, escribe en el campo de búsqueda de la parte superior de la ventana. Los ajustes coincidentes de *todas* las páginas se listan junto con la página en la que están, y al elegir uno se abre esa página con el ajuste resaltado. ↑/↓ recorren los resultados, Retorno abre el resaltado y Esc sale de la búsqueda y devuelve la página de la que venías.
 
 ![La ventana de Ajustes con la página Disposición y casillas para las barras de la interfaz](screenshots/settings-layout.png)
 *(Figura: La página Disposición controla qué barras se muestran alrededor de los paneles.)*

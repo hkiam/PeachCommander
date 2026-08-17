@@ -27,6 +27,7 @@ Peach Commander dispose d'un lecteur intégré qui vous permet de regarder à l'
 - Si le texte semble déformé, cliquez sur Encodage dans la barre d'outils (ou appuyez sur E) pour faire défiler les encodages jusqu'à ce qu'il se lise correctement ; le réglage automatique est généralement juste.
 - Appuyez sur W pour basculer le retour à la ligne pour les lignes longues.
 - Appuyez sur Ctrl+G pour aller à une ligne, ou à un décalage d'octet en mode hexadécimal. Le calcul entre bases est accepté : `0x1000 + 15 + 1` mène à 4112 — hexadécimal avec `0x`, `$` ou un `h` final, binaire avec `0b`, octal avec `0o`, et `+ - * /` avec des parenthèses.
+- Ouvrez un résultat de Rechercher des fichiers dont **Rechercher le texte** était rempli et la visionneuse démarre avec cette recherche : le texte est déjà dans la barre de recherche et la première occurrence est à l'écran, vous arrivez donc sur la correspondance plutôt qu'en début de fichier. Si vous le modifiez ou l'effacez là, c'est votre version qui reste. Désactivez-le dans Réglages ▸ Modifier/Afficher si vous préférez que chaque fichier s'ouvre au début.
 
 ## Zoomer une image
 

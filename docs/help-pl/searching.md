@@ -20,7 +20,7 @@ Gdy potrzebujesz wytropić pliki gdziekolwiek na swoim Macu — po nazwie, po ty
 
 ## Szukaj według zawartości, rozmiaru i daty
 
-1. Aby szukać wewnątrz plików, wybierz **Znajdź tekst** na karcie Ogólne i wpisz tekst do wyszukania. Opcje pozwalają uczynić go **z uwzględnieniem wielkości**, dopasować tylko **całe słowo**, traktować tekst jako **wyrażenie regularne**, wykonać **szesnastkowe wyszukiwanie zawartości** lub znaleźć pliki **niezawierające** tekstu.
+1. Aby szukać wewnątrz plików, wpisz tekst w polu **Znajdź tekst** na karcie Ogólne — szukane jest to, co znajduje się w polu, a puste pole szuka tylko po nazwach. Opcje pozwalają uczynić go **z uwzględnieniem wielkości**, dopasować tylko **całe słowo**, traktować tekst jako **wyrażenie regularne**, wykonać **szesnastkowe wyszukiwanie zawartości** lub znaleźć pliki **niezawierające** tekstu.
 2. Przełącz na kartę **Zaawansowane**, aby zawęzić wyniki według **rozmiaru** (na przykład od `10K` do `5M`), według zakresu **daty modyfikacji** lub do plików zmienionych w ciągu ostatnich N dni.
 3. Włącz **Szukaj wewnątrz archiwów**, aby zaglądać do archiwów rodziny zip (zip, jar, war i podobnych).
 4. Aby ograniczyć wyszukiwanie do tego, co już wybrałeś, włącz **Szukaj tylko w zaznaczonych elementach** przed startem.
@@ -43,6 +43,7 @@ W przypadku folderów lokalnych, które macOS już zindeksował, włącz **Użyj
 
 - **Wyślij do listy** umieszcza każdy wynik w aktywnym panelu jako tymczasową listę, dzięki czemu możesz skopiować, przenieść lub usunąć cały zestaw naraz.
 - Na karcie **Wczytaj / Zapisz** wybierz **Zapisz jako szablon…**, aby zapamiętać bieżące wyszukiwanie (wzorce i opcje) i wybrać je ponownie później z listy szablonów.
+- Pola **Szukaj** i **Znajdź tekst** zapamiętują po 20 ostatnio użytych wpisów, od najnowszego — kliknij strzałkę na końcu pola, aby wybrać któryś ponownie. Ten sam termin użyty dwa razy wraca na górę, zamiast pojawiać się dwukrotnie, a listy przetrwają zamknięcie okna i zakończenie aplikacji. **Wyczyść historię…** na karcie **Wczytaj / Zapisz** zapomina obie; zapisanych szablonów to nie dotyczy.
 
 ## Skróty
 

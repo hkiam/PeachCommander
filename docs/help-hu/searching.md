@@ -20,7 +20,7 @@ Amikor fájlokat kell felkutatnia bárhol a Macjén — név szerint, tartalmuk 
 
 ## Keresés tartalom, méret és dátum szerint
 
-1. A fájlokon belüli kereséshez válassza a **Szöveg keresése** lehetőséget az Általános lapon, és írja be a keresendő szöveget. A beállítások lehetővé teszik, hogy **kis- és nagybetűre érzékennyé** tegye, csak **egész szó**-ra illesszen, a szöveget **reguláris kifejezés**-ként kezelje, **hexadecimális tartalomkeresést** végezzen, vagy olyan fájlokat találjon, amelyek **nem tartalmazzák** a szöveget.
+1. Ha a fájlokon belül szeretne keresni, írja be a szöveget a **Szöveg keresése** mezőbe az Általános lapon — amit a mezőbe ír, arra keres a program, üres mező esetén csak a nevekre. A beállítások lehetővé teszik, hogy **kis- és nagybetűre érzékennyé** tegye, csak **egész szó**-ra illesszen, a szöveget **reguláris kifejezés**-ként kezelje, **hexadecimális tartalomkeresést** végezzen, vagy olyan fájlokat találjon, amelyek **nem tartalmazzák** a szöveget.
 2. Váltson a **Speciális** lapra az eredmények **méret** szerinti szűkítéséhez (például `10K`-tól `5M`-ig), **módosítási dátum** tartomány szerint, vagy az utolsó N napban módosított fájlokra.
 3. Kapcsolja be a **Keresés archívumokon belül** lehetőséget a zip-családú archívumokon (zip, jar, war és hasonlók) belüli nézéshez.
 4. A keresés arra korlátozásához, amit már kiválasztott, kapcsolja be a **Keresés csak a kijelölt elemekben** lehetőséget indítás előtt.
@@ -43,6 +43,7 @@ Olyan helyi mappákhoz, amelyeket a macOS már indexelt, kapcsolja be a **Spotli
 
 - A **Küldés a listadobozba** minden eredményt az aktív panelbe helyez ideiglenes listaként, így az egész készletet egyszerre másolhatja, helyezheti át vagy törölheti.
 - A **Betöltés / Mentés** lapon válassza a **Mentés sablonként…** lehetőséget az aktuális keresés (minták és beállítások) tárolásához és későbbi újbóli kiválasztásához a sablonlistából.
+- A **Keresés** és a **Szöveg keresése** mező is megjegyzi a legutóbbi 20 használt bejegyzést, a legutóbb használtat elöl — a mező végén lévő nyílra kattintva bármelyiket újra kiválaszthatja. A kétszer használt kifejezés visszakerül a lista élére ahelyett, hogy kétszer szerepelne, és a listák túlélik az ablak bezárását és az app kilépését is. A **Betöltés / Mentés** lapon az **Előzmények törlése…** mindkettőt elfelejti; a mentett sablonokat ez nem érinti.
 
 ## Billentyűparancsok
 

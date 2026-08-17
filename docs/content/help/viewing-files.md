@@ -27,6 +27,7 @@ Peach Commander has a built-in viewer that lets you look inside a file without o
 - If text looks garbled, click Encoding in the toolbar (or press E) to cycle through text encodings until it reads correctly; the automatic setting usually gets it right.
 - Press W to toggle word wrap for long lines.
 - Press Ctrl+G to jump to a line, or to a byte offset in hex mode. It takes arithmetic across number bases, so `0x1000 + 15 + 1` goes to 4112 — hexadecimal with `0x`, `$` or a trailing `h`, binary with `0b`, octal with `0o`, and `+ - * /` with parentheses.
+- Open a hit from Find Files with **Find text** filled in and the viewer starts with that search: the text is already in the find bar and the first occurrence is on screen, so you land where the match is rather than at the top of the file. Change it or clear it there and yours is the one that stays. Switch it off under Settings ▸ Edit/View if you would rather every file opened at the beginning.
 
 ## Zoom a picture
 

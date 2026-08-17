@@ -27,6 +27,7 @@ Peach Commander har en innebygd visning som lar deg se inni en fil uten å åpne
 - Hvis teksten ser forvansket ut, klikk på Tegnkoding i verktøylinjen (eller trykk E) for å bla gjennom tegnkodinger til den leses riktig; den automatiske innstillingen treffer vanligvis riktig.
 - Trykk W for å veksle tekstbryting for lange linjer.
 - Trykk Ctrl+G for å gå til en linje, eller til en byteforskyvning i heksmodus. Regning på tvers av tallsystemer er tillatt: `0x1000 + 15 + 1` fører til 4112 — heksadesimalt med `0x`, `$` eller en `h` til slutt, binært med `0b`, oktalt med `0o`, og `+ - * /` med parenteser.
+- Åpner du et treff fra Finn filer der **Finn tekst** var fylt ut, starter fremviseren med det søket: teksten står allerede i søkefeltet og det første treffet er synlig, så du havner ved treffet i stedet for øverst i filen. Endrer eller tømmer du det der, er det din versjon som blir stående. Det kan slås av i Innstillinger under Rediger/Vis hvis du heller vil at hver fil åpnes fra begynnelsen.
 
 ## Zoom et bilde
 

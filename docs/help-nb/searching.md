@@ -20,7 +20,7 @@ Når du trenger å spore opp filer hvor som helst på Macen din — etter navn, 
 
 ## Søk etter innhold, størrelse og dato
 
-1. For å søke inni filer, velg **Finn tekst** på Generelt-fanen og skriv teksten du vil lete etter. Alternativer lar deg gjøre den **Skiller mellom store og små bokstaver**, samsvare bare med et **Helt ord**, behandle teksten som et **Regulært uttrykk**, gjøre et **Heksadesimalt innholdssøk**, eller finne filer som **Ikke inneholder** teksten.
+1. For å søke inne i filer skriver du teksten i **Finn tekst** på Generelt-fanen — det som står i feltet, blir søkt etter, og et tomt felt søker bare på navn. Alternativer lar deg gjøre den **Skiller mellom store og små bokstaver**, samsvare bare med et **Helt ord**, behandle teksten som et **Regulært uttrykk**, gjøre et **Heksadesimalt innholdssøk**, eller finne filer som **Ikke inneholder** teksten.
 2. Bytt til **Avansert**-fanen for å snevre inn resultatene etter **Størrelse** (for eksempel `10K` til `5M`), etter **endret dato**-område, eller til filer som er endret de siste N dagene.
 3. Slå på **Søk inni arkiver** for å se i zip-familiens arkiver (zip, jar, war og lignende).
 4. For å begrense søket til det du allerede har valgt, slå på **Søk bare i merkede elementer** før du starter.
@@ -43,6 +43,7 @@ For lokale mapper som macOS allerede har indeksert, slå på **Bruk Spotlight** 
 
 - **Send til liste** plasserer hvert resultat i det aktive panelet som en midlertidig liste, slik at du kan kopiere, flytte eller slette hele settet på én gang.
 - På **Last inn / Lagre**-fanen velger du **Lagre som mal…** for å lagre det gjeldende søket (mønstre og alternativer) og velge det igjen senere fra mal-listen.
+- **Søk etter** og **Finn tekst** husker hver de siste 20 oppføringene du søkte med, sist brukte først — klikk pilen i enden av feltet for å velge en av dem igjen. Et uttrykk du bruker to ganger flyttes øverst i stedet for å stå der to ganger, og listene overlever både at vinduet lukkes og at appen avsluttes. **Tøm historikken…** på **Last inn / Lagre**-fanen glemmer begge; lagrede maler berøres ikke.
 
 ## Snarveier
 

@@ -14,6 +14,7 @@ Het instellingenvenster is waar je Peach Commander afstemt op jouw werkwijze: we
 2. Je kunt hetzelfde venster ook openen via **Configuratie > Opties…**.
 3. Kies een pagina uit de lijst links; de opties voor die pagina verschijnen rechts.
 4. Pas de regelaars aan. Wijzigingen werken meteen, tenzij een opmerking op de pagina anders vermeldt.
+5. Wil je direct naar een optie, typ dan in het zoekveld boven aan het venster. Overeenkomende instellingen uit *alle* pagina's worden vermeld met de pagina waar ze staan, en als je er een kiest, opent die pagina met de instelling gemarkeerd. ↑/↓ lopen door de resultaten, Return opent de gemarkeerde, en Esc verlaat de zoekopdracht en zet de pagina terug waar je vandaan kwam.
 
 ![Het instellingenvenster met de pagina Lay-out en aankruisvakken voor de interfacebalken](screenshots/settings-layout.png)
 *(Afbeelding: De pagina Lay-out bepaalt welke balken rond de panelen worden getoond.)*

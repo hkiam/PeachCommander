@@ -27,6 +27,7 @@ Peach Commander heeft een ingebouwde viewer waarmee je in een bestand kunt kijke
 - Als tekst er verminkt uitziet, klik je op Codering in de werkbalk (of druk je op E) om door tekstcoderingen te bladeren tot het correct leest; de automatische instelling krijgt het meestal goed.
 - Druk op W om regelterugloop voor lange regels te wisselen.
 - Druk op Ctrl+G om naar een regel te gaan, of naar een byte-positie in hexmodus. Rekenen over talstelsels heen mag: `0x1000 + 15 + 1` leidt naar 4112 — hexadecimaal met `0x`, `$` of een `h` erachter, binair met `0b`, octaal met `0o`, en `+ - * /` met haakjes.
+- Open je een resultaat van Bestanden zoeken waarin **Tekst zoeken** was ingevuld, dan begint de weergave met die zoekopdracht: de tekst staat al in de zoekbalk en het eerste voorkomen is in beeld, dus je landt bij de overeenkomst en niet aan het begin van het bestand. Pas je het daar aan of wis je het, dan blijft jouw versie staan. In Instellingen ▸ Wijzigen/Weergeven kun je het uitzetten als je liever elk bestand vooraan opent.
 
 ## Een afbeelding zoomen
 

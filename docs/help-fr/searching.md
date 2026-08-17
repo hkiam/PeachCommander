@@ -20,7 +20,7 @@ Lorsque vous devez retrouver des fichiers n'importe où sur votre Mac — par no
 
 ## Rechercher par contenu, taille et date
 
-1. Pour rechercher à l'intérieur des fichiers, sélectionnez **Rechercher un texte** dans l'onglet Général et saisissez le texte à trouver. Des options vous permettent de le rendre **Sensible à la casse**, de ne faire correspondre qu'un **Mot entier**, de traiter le texte comme une **Expression régulière**, d'effectuer une **Recherche de contenu hexadécimal**, ou de trouver les fichiers **Ne contenant pas** le texte.
+1. Pour rechercher à l'intérieur des fichiers, saisissez le texte dans **Rechercher le texte** dans l'onglet Général — ce qui figure dans ce champ est recherché, un champ vide ne recherche que les noms. Des options vous permettent de le rendre **Sensible à la casse**, de ne faire correspondre qu'un **Mot entier**, de traiter le texte comme une **Expression régulière**, d'effectuer une **Recherche de contenu hexadécimal**, ou de trouver les fichiers **Ne contenant pas** le texte.
 2. Passez à l'onglet **Avancé** pour restreindre les résultats par **Taille** (par exemple de `10K` à `5M`), par plage de **date de modification**, ou aux fichiers modifiés au cours des N derniers jours.
 3. Activez **Rechercher dans les archives** pour regarder à l'intérieur des archives de la famille zip (zip, jar, war et similaires).
 4. Pour limiter la recherche à ce que vous avez déjà choisi, activez **Rechercher uniquement dans les éléments sélectionnés** avant de démarrer.
@@ -43,6 +43,7 @@ Pour les dossiers locaux que macOS a déjà indexés, activez **Utiliser Spotlig
 
 - **Envoyer dans la liste** place chaque résultat dans le panneau actif sous forme de liste temporaire, afin que vous puissiez copier, déplacer ou supprimer l'ensemble d'un coup.
 - Dans l'onglet **Charger / Enregistrer**, choisissez **Enregistrer comme modèle…** pour conserver la recherche actuelle (motifs et options) et la reprendre plus tard dans la liste des modèles.
+- **Rechercher** et **Rechercher le texte** mémorisent chacun les 20 dernières entrées utilisées, la plus récente en premier : cliquez sur la flèche au bout du champ pour en reprendre une. Un terme utilisé deux fois remonte en tête au lieu d'apparaître en double, et les listes survivent à la fermeture de la fenêtre comme à la sortie de l'app. **Effacer l'historique…** dans l'onglet **Charger / Enregistrer** les oublie toutes les deux ; les modèles enregistrés ne sont pas touchés.
 
 ## Raccourcis
 

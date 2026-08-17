@@ -20,7 +20,7 @@ Keď potrebujete vystopovať súbory kdekoľvek na svojom Macu — podľa názvu
 
 ## Hľadanie podľa obsahu, veľkosti a dátumu
 
-1. Na hľadanie vnútri súborov vyberte **Nájsť text** na karte Všeobecné a zadajte hľadaný text. Možnosti umožňujú urobiť ho **rozlišujúcim veľkosť**, zhodovať sa len s **celým slovom**, zaobchádzať s textom ako s **regulárnym výrazom**, urobiť **šestnástkové hľadanie obsahu** alebo nájsť súbory, ktoré text **neobsahujú**.
+1. Ak chcete hľadať vnútri súborov, zadajte text do poľa **Nájsť text** na karte Všeobecné — hľadá sa to, čo je v poli, prázdne pole hľadá len podľa názvov. Možnosti umožňujú urobiť ho **rozlišujúcim veľkosť**, zhodovať sa len s **celým slovom**, zaobchádzať s textom ako s **regulárnym výrazom**, urobiť **šestnástkové hľadanie obsahu** alebo nájsť súbory, ktoré text **neobsahujú**.
 2. Prepnite na kartu **Rozšírené** na zúženie výsledkov podľa **veľkosti** (napríklad `10K` až `5M`), podľa rozsahu **dátumu úpravy**, alebo na súbory zmenené za posledných N dní.
 3. Zapnite **Hľadať vnútri archívov** na nazretie do archívov rodiny zip (zip, jar, war a podobné).
 4. Na obmedzenie hľadania na to, čo ste už vybrali, zapnite pred štartom **Hľadať len vo vybraných položkách**.
@@ -43,6 +43,7 @@ Pri lokálnych priečinkoch, ktoré macOS už zaindexoval, zapnite **Použiť Sp
 
 - **Poslať do zoznamu** umiestni každý výsledok do aktívneho panela ako dočasný zoznam, takže môžete celú sadu skopírovať, presunúť alebo odstrániť naraz.
 - Na karte **Načítať / Uložiť** vyberte **Uložiť ako šablónu…** na uloženie aktuálneho hľadania (vzory a možnosti) a jeho neskoršie opätovné vybratie zo zoznamu šablón.
+- **Hľadať** aj **Nájsť text** si pamätajú posledných 20 použitých výrazov, naposledy použité ako prvé — kliknutím na šípku na konci poľa niektorý z nich vyberiete znova. Dvakrát použitý výraz sa vráti nahor, namiesto toho aby sa objavil dvakrát, a zoznamy prežijú zatvorenie okna aj ukončenie aplikácie. **Vymazať históriu…** na karte **Načítať / Uložiť** zabudne oba; uložených šablón sa to netýka.
 
 ## Skratky
 

@@ -20,7 +20,7 @@ Wanneer je bestanden ergens op je Mac wilt opsporen — op naam, op wat ze bevat
 
 ## Zoeken op inhoud, grootte en datum
 
-1. Om binnen bestanden te zoeken, selecteer je **Tekst zoeken** op het tabblad Algemeen en typ je de te zoeken tekst. Met opties kun je het **Hoofdlettergevoelig** maken, alleen een **Heel woord** laten overeenkomen, de tekst als een **Reguliere expressie** behandelen, een **Hex-inhoudszoekopdracht** uitvoeren, of bestanden vinden die de tekst **Niet bevatten**.
+1. Om binnen bestanden te zoeken, typ je de tekst in **Tekst zoeken** op het tabblad Algemeen — wat in dat veld staat wordt gezocht, een leeg veld zoekt alleen op naam. Met opties kun je het **Hoofdlettergevoelig** maken, alleen een **Heel woord** laten overeenkomen, de tekst als een **Reguliere expressie** behandelen, een **Hex-inhoudszoekopdracht** uitvoeren, of bestanden vinden die de tekst **Niet bevatten**.
 2. Schakel naar het tabblad **Geavanceerd** om resultaten te versmallen op **Grootte** (bijvoorbeeld `10K` tot `5M`), op **gewijzigde datum**-bereik, of op bestanden die in de laatste N dagen zijn gewijzigd.
 3. Zet **In archieven zoeken** aan om binnen zip-achtige archieven te kijken (zip, jar, war en dergelijke).
 4. Om de zoekopdracht te beperken tot wat je al hebt gekozen, zet je **Alleen in geselecteerde items zoeken** aan voordat je begint.
@@ -43,6 +43,7 @@ Voor lokale mappen die macOS al heeft geïndexeerd, zet je **Spotlight gebruiken
 
 - **Naar lijst sturen** plaatst elk resultaat in het actieve paneel als een tijdelijke lijst, zodat je de hele set tegelijk kunt kopiëren, verplaatsen of verwijderen.
 - Kies op het tabblad **Laden / Bewaren** de optie **Bewaren als sjabloon…** om de huidige zoekopdracht (patronen en opties) op te slaan en later opnieuw te kiezen uit de sjabloonlijst.
+- **Zoeken naar** en **Tekst zoeken** onthouden elk de laatste 20 gebruikte items, laatst gebruikte eerst — klik op de pijl aan het eind van het veld om er weer een te kiezen. Een term die je twee keer gebruikt schuift terug naar boven in plaats van dubbel te verschijnen, en de lijsten overleven het sluiten van het venster en het stoppen van de app. **Wis geschiedenis…** op het tabblad **Laden / Bewaren** vergeet ze allebei; bewaarde sjablonen blijven ongemoeid.
 
 ## Sneltoetsen
 

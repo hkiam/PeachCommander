@@ -27,6 +27,7 @@ Peach Commander ma wbudowaną przeglądarkę, która pozwala zajrzeć do wnętrz
 - Jeśli tekst wygląda na zniekształcony, kliknij Kodowanie na pasku narzędzi (lub naciśnij E), aby przełączać kodowania tekstu, dopóki nie odczyta się poprawnie; ustawienie automatyczne zwykle trafia.
 - Naciśnij W, aby przełączyć zawijanie wierszy dla długich linii.
 - Naciśnij Ctrl+G, aby przejść do wiersza, a w trybie szesnastkowym do przesunięcia w bajtach. Można liczyć między systemami liczbowymi: `0x1000 + 15 + 1` prowadzi do 4112 — szesnastkowo z `0x`, `$` lub końcowym `h`, dwójkowo z `0b`, ósemkowo z `0o`, i `+ - * /` z nawiasami.
+- Jeśli otworzysz trafienie z Znajdź pliki, w którym wypełnione było pole **Znajdź tekst**, przeglądarka zaczyna od tego wyszukiwania: tekst jest już w pasku wyszukiwania, a pierwsze wystąpienie widać na ekranie, więc trafiasz na dopasowanie, a nie na początek pliku. Jeśli go tam zmienisz lub wyczyścisz, zostaje twoja wersja. W Ustawieniach ▸ Edycja/Podgląd można to wyłączyć, jeśli wolisz, by każdy plik otwierał się od początku.
 
 ## Powiększanie obrazu
 

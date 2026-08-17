@@ -20,7 +20,7 @@ Když potřebujete vystopovat soubory kdekoli na svém Macu — podle názvu, po
 
 ## Hledání podle obsahu, velikosti a data
 
-1. Chcete-li hledat uvnitř souborů, vyberte **Najít text** na kartě Obecné a zadejte hledaný text. Možnosti umožňují učinit jej **rozlišujícím velikost**, shodovat se jen s **celým slovem**, zacházet s textem jako s **regulárním výrazem**, provést **hexadecimální hledání obsahu** nebo najít soubory, které text **neobsahují**.
+1. Chcete-li hledat uvnitř souborů, zadejte text do pole **Najít text** na kartě Obecné — hledá se to, co je v poli, prázdné pole hledá jen podle názvů. Možnosti umožňují učinit jej **rozlišujícím velikost**, shodovat se jen s **celým slovem**, zacházet s textem jako s **regulárním výrazem**, provést **hexadecimální hledání obsahu** nebo najít soubory, které text **neobsahují**.
 2. Přepněte na kartu **Pokročilé** pro zúžení výsledků podle **velikosti** (například `10K` až `5M`), podle rozsahu **data změny** nebo na soubory změněné za posledních N dní.
 3. Zapněte **Hledat uvnitř archivů** pro nahlédnutí do archivů rodiny zip (zip, jar, war a podobné).
 4. Chcete-li omezit hledání jen na to, co jste už vybrali, zapněte před spuštěním **Hledat jen ve vybraných položkách**.
@@ -43,6 +43,7 @@ U místních složek, které macOS už zaindexoval, zapněte **Použít Spotligh
 
 - **Poslat do seznamu** umístí každý výsledek do aktivního panelu jako dočasný seznam, takže můžete zkopírovat, přesunout nebo smazat celou sadu najednou.
 - Na kartě **Načíst / Uložit** zvolte **Uložit jako šablonu…** pro uložení aktuálního hledání (vzory a možnosti) a jeho pozdější opětovný výběr ze seznamu šablon.
+- **Hledat** a **Najít text** si pamatují posledních 20 použitých výrazů, naposledy použité první — klepnutím na šipku na konci pole některý z nich vyberete znovu. Dvakrát použitý výraz se vrátí nahoru, místo aby se objevil dvakrát, a seznamy přežijí zavření okna i ukončení aplikace. **Vymazat historii…** na kartě **Načíst / Uložit** zapomene oba; uložených šablon se to netýká.
 
 ## Zkratky
 

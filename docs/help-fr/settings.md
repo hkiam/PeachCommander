@@ -14,6 +14,7 @@ La fenêtre Réglages est l'endroit où vous adaptez Peach Commander à votre fa
 2. Vous pouvez aussi ouvrir la même fenêtre depuis **Configuration > Options…**.
 3. Choisissez une page dans la liste de gauche ; les options de cette page apparaissent à droite.
 4. Ajustez les contrôles. Les changements prennent effet immédiatement sauf si une note sur la page indique le contraire.
+5. Pour aller droit à une option, saisissez du texte dans le champ de recherche en haut de la fenêtre. Les réglages correspondants de *toutes* les pages sont listés avec la page où chacun se trouve, et en choisir un ouvre cette page avec le réglage mis en évidence. ↑/↓ parcourent les résultats, Retour ouvre celui qui est sélectionné, et Échap quitte la recherche et rétablit la page d'où vous venez.
 
 ![La fenêtre Réglages montrant la page Disposition avec des cases pour les barres d'interface](screenshots/settings-layout.png)
 *(Figure : la page Disposition contrôle quelles barres sont affichées autour des panneaux.)*

@@ -47,6 +47,8 @@ public struct SettingsSnapshot: Sendable {
     // Edit/View page
     /// Editor.CreateBackups — keep a `<name>.bak` copy when saving (F-387, off by default).
     public var editorCreateBackups: Bool = false
+    /// Viewer.SearchFromFind — a viewer opened from a content search starts with that search (F-407).
+    public var viewerSearchFromFind: Bool = true
     // Tabs page
     public var tabOpenInForeground: Bool
     public var tabLockedOpensNewTab: Bool
@@ -93,6 +95,7 @@ public struct SettingsSnapshot: Sendable {
                 packDefaultFormat: String = "zip", packLevel: Int = 5,
                 packArchiveExtensions: String = "",
                 editorCreateBackups: Bool = false,
+                viewerSearchFromFind: Bool = true,
                 tabOpenInForeground: Bool = true, tabLockedOpensNewTab: Bool = true,
                 ftpKeepAliveSeconds: Int = 0,
                 aiMCPEnabled: Bool = false, aiMCPPort: Int = 8790, aiMCPToken: String = "",
@@ -152,6 +155,7 @@ public struct SettingsSnapshot: Sendable {
         self.packLevel = packLevel
         self.packArchiveExtensions = packArchiveExtensions
         self.editorCreateBackups = editorCreateBackups
+        self.viewerSearchFromFind = viewerSearchFromFind
         self.tabOpenInForeground = tabOpenInForeground
         self.tabLockedOpensNewTab = tabLockedOpensNewTab
         self.ftpKeepAliveSeconds = ftpKeepAliveSeconds
@@ -213,6 +217,24 @@ public final class SettingsWindowController: NSWindowController {
     private let sourceList = NSTableView()
     private let contentContainer = NSView()
     private var pageViews: [SettingsPage: NSView] = [:]
+
+    // Searching the settings by name, across the pages (F-408).
+    private let searchField = NSSearchField()
+    private lazy var resultsView = SettingsResultsView()
+    /// Built on the first search and kept: it is harvested from the pages themselves, and building it
+    /// means building all of them, which is exactly what clicking through the source list would do.
+    private var searchIndex = SettingsSearchIndex()
+    /// What each entry's `ref` points at, parallel to the index.
+    private var searchTargets: [SettingsSearchHarvester.Target] = []
+    /// The page that was on screen before the search started, restored when the field is cleared.
+    private var pageBeforeSearch: SettingsPage = .layout
+    /// The control the last result opened, so a diagnostic can report about *it* rather than about
+    /// whatever happens to hold the keyboard (a checkbox cannot take focus unless Full Keyboard Access
+    /// is on, which is exactly why the tint exists).
+    private weak var lastRevealed: NSView?
+    /// Its name as the result list showed it — an editable field has no title of its own, and reporting
+    /// "NSTextField" says nothing about which setting was opened.
+    private var lastRevealedName = ""
 
     // Plugin-contributed settings panes (container "settings"), appended after the
     // fixed built-in pages. Each pane's view is built lazily via PcMakeView and torn
@@ -295,6 +317,7 @@ public final class SettingsWindowController: NSWindowController {
 
     // Edit/View page controls
     private let editorBackupsCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-387
+    private let viewerSearchFromFindCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil) // F-407
 
     // Tabs page controls
     private let openInForegroundCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
@@ -439,6 +462,22 @@ public final class SettingsWindowController: NSWindowController {
         content.translatesAutoresizingMaskIntoConstraints = false
         window.contentView = content
 
+        // Above both columns rather than over the 150 pt source list (F-408): the query is a sentence
+        // ("show hidden"), the sidebar is not wide enough to type one in, and a search that spans the
+        // window reads as being about the whole dialog — which it is.
+        searchField.translatesAutoresizingMaskIntoConstraints = false
+        searchField.placeholderString = String(localized: "Search settings")
+        searchField.setAccessibilityLabel(String(localized: "Search settings"))
+        searchField.delegate = self
+        // Filtering happens on every keystroke through `controlTextDidChange`; the *action* is then left
+        // to mean Return and the cancel button only. With the default incremental setting the action
+        // fires while typing, and Return-means-open would have opened a page on the first letter.
+        searchField.sendsWholeSearchString = true
+        searchField.target = self
+        searchField.action = #selector(searchFieldAction)
+        resultsView.onChoose = { [weak self] ref in self?.reveal(ref: ref) }
+        content.addSubview(searchField)
+
         let splitContainer = NSView()
         splitContainer.translatesAutoresizingMaskIntoConstraints = false
         content.addSubview(splitContainer)
@@ -460,7 +499,11 @@ public final class SettingsWindowController: NSWindowController {
         guard let scrollView = sourceList.enclosingScrollView else { return }
 
         NSLayoutConstraint.activate([
-            splitContainer.topAnchor.constraint(equalTo: content.topAnchor, constant: 16),
+            searchField.topAnchor.constraint(equalTo: content.topAnchor, constant: 12),
+            searchField.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 16),
+            searchField.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -16),
+
+            splitContainer.topAnchor.constraint(equalTo: searchField.bottomAnchor, constant: 12),
             splitContainer.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 16),
             splitContainer.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -16),
             splitContainer.bottomAnchor.constraint(equalTo: closeButton.topAnchor, constant: -16),
@@ -514,6 +557,103 @@ public final class SettingsWindowController: NSWindowController {
 
         sourceList.reloadData()
         sourceList.selectRowIndexes(IndexSet(integer: SettingsPage.layout.rawValue), byExtendingSelection: false)
+    }
+
+    // MARK: - Searching the settings by name (F-408)
+
+    /// Harvest every page once, so a query can be answered across all of them.
+    ///
+    /// Building all sixteen pages is what makes the index complete, and it is the same work as clicking
+    /// through the source list — the same `buildAndCachePage`, cached the same way, so the pages the
+    /// reader visits afterwards are the ones that were indexed. A plugin's pane is different: building
+    /// its view runs the plugin, so an unopened pane contributes its *title* and nothing else rather
+    /// than starting a plugin because somebody typed a letter.
+    private func buildSearchIndex() {
+        var harvester = SettingsSearchHarvester()
+        for page in SettingsPage.allCases {
+            harvester.add(page: page.title, view: pageViews[page] ?? buildAndCachePage(page))
+        }
+        for pane in pluginPanes {
+            harvester.add(page: pane.title, view: pluginPaneViews[pane.id])
+        }
+        searchIndex = SettingsSearchIndex(harvester.entries)
+        searchTargets = harvester.targets
+    }
+
+    /// Run the field's current text: results in place of the page, or the page back when it is empty.
+    private func runSearch() {
+        let query = searchField.stringValue.trimmingCharacters(in: .whitespaces)
+        guard !query.isEmpty else { endSearch(); return }
+        if searchIndex.isEmpty { buildSearchIndex() }
+        if !isShowingResults {
+            // Remember where the reader was *before* the first keystroke, not after each one, or Esc
+            // would put them back on the page they were merely searching from.
+            pageBeforeSearch = currentPage
+            mountResults()
+        }
+        resultsView.show(searchIndex.search(query))
+    }
+
+    /// True while the result list is what the content area holds.
+    private var isShowingResults: Bool { resultsView.superview === contentContainer }
+
+    /// The result list fills the content area directly — not through `mount`, which wraps a page in a
+    /// scroll view whose height comes from the page. This list scrolls itself and has no height of its
+    /// own, so inside that wrapper it would be ambiguous, i.e. nothing.
+    private func mountResults() {
+        contentContainer.subviews.forEach { $0.removeFromSuperview() }
+        resultsView.translatesAutoresizingMaskIntoConstraints = false
+        contentContainer.addSubview(resultsView)
+        NSLayoutConstraint.activate([
+            resultsView.topAnchor.constraint(equalTo: contentContainer.topAnchor),
+            resultsView.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
+            resultsView.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
+            resultsView.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor),
+        ])
+        // The list is reachable by Tab like any mounted page, but the keyboard stays in the field: the
+        // reader is still typing, and ↑/↓ there move the selection (see `doCommandBy`).
+        KeyboardLoop.rebuild(for: window)
+    }
+
+    /// The built-in page currently selected in the source list.
+    private var currentPage: SettingsPage {
+        SettingsPage(rawValue: sourceList.selectedRow) ?? .layout
+    }
+
+    /// Leave the search: field empty, the page the reader came from back on screen.
+    private func endSearch() {
+        searchField.stringValue = ""
+        // Emptied rather than merely hidden, or the next search shows the previous answer for the moment
+        // between the first keystroke and its result.
+        resultsView.show([])
+        guard isShowingResults else { return }
+        sourceList.selectRowIndexes(IndexSet(integer: pageBeforeSearch.rawValue), byExtendingSelection: false)
+        selectPage(pageBeforeSearch)
+    }
+
+    /// Open what a result points at: its page, then the control itself, tinted so the eye can find it.
+    private func reveal(ref: Int) {
+        guard searchTargets.indices.contains(ref) else { return }
+        let target = searchTargets[ref]
+        searchField.stringValue = ""
+        showPage(titled: target.page)
+        lastRevealed = target.control
+        lastRevealedName = searchIndex.entries.first { $0.ref == ref }?.name ?? ""
+        guard let control = target.control else { return }
+        // After the page is mounted *and* laid out: scrolling to a control whose frame is still zero
+        // scrolls nowhere, which is the mistake the preview panel and the tab pages both made.
+        DispatchQueue.main.async { [weak self] in
+            guard let self, control.window != nil else { return }
+            self.window?.layoutIfNeeded()
+            SettingsSpotlight.flash(control)
+            if control.canBecomeKeyView { self.window?.makeFirstResponder(control) }
+        }
+    }
+
+    @objc private func searchFieldAction() {
+        // The search field's action fires on Return and on the cancel button; an empty field means the
+        // reader has just cleared it.
+        searchField.stringValue.isEmpty ? endSearch() : resultsView.chooseSelected()
     }
 
     // MARK: - Page switching
@@ -644,11 +784,19 @@ public final class SettingsWindowController: NSWindowController {
             "Applies to the built-in text editor, the hex editor and the compare window. The copy is written next to the file as “name.bak”."))
         note.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
         note.textColor = .secondaryLabelColor
+        // F-407: the viewer adopts the search a hit was found with.
+        makeCheckbox(viewerSearchFromFindCheckbox,
+                     title: String(localized: "Continue a file search in the viewer"),
+                     isOn: snapshot.viewerSearchFromFind, action: #selector(viewerSearchFromFindChanged))
+        let seedNote = NSTextField(wrappingLabelWithString: String(localized:
+            "Opening a hit from a text search puts that text into the viewer's own search and jumps to the first occurrence. Editing or clearing it there keeps whatever you leave behind."))
+        seedNote.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        seedNote.textColor = .secondaryLabelColor
         let table = AssociationsPageView(associations: associations) { [weak self] updated in
             self?.onSaveAssociations(updated)
         }
         let page = NSView()
-        for view in [editorBackupsCheckbox, note, table] as [NSView] {
+        for view in [editorBackupsCheckbox, note, viewerSearchFromFindCheckbox, seedNote, table] as [NSView] {
             view.translatesAutoresizingMaskIntoConstraints = false
             page.addSubview(view)
         }
@@ -658,7 +806,12 @@ public final class SettingsWindowController: NSWindowController {
             note.topAnchor.constraint(equalTo: editorBackupsCheckbox.bottomAnchor, constant: 6),
             note.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
             note.trailingAnchor.constraint(equalTo: page.trailingAnchor, constant: -16),
-            table.topAnchor.constraint(equalTo: note.bottomAnchor, constant: 18),
+            viewerSearchFromFindCheckbox.topAnchor.constraint(equalTo: note.bottomAnchor, constant: 14),
+            viewerSearchFromFindCheckbox.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
+            seedNote.topAnchor.constraint(equalTo: viewerSearchFromFindCheckbox.bottomAnchor, constant: 6),
+            seedNote.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
+            seedNote.trailingAnchor.constraint(equalTo: page.trailingAnchor, constant: -16),
+            table.topAnchor.constraint(equalTo: seedNote.bottomAnchor, constant: 18),
             table.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
             table.trailingAnchor.constraint(equalTo: page.trailingAnchor, constant: -16),
             table.bottomAnchor.constraint(equalTo: page.bottomAnchor, constant: -16)
@@ -668,6 +821,10 @@ public final class SettingsWindowController: NSWindowController {
 
     @objc private func editorBackupsChanged() {
         onSetBool("Editor.CreateBackups", editorBackupsCheckbox.state == .on)
+    }
+
+    @objc private func viewerSearchFromFindChanged() {
+        onSetBool("Viewer.SearchFromFind", viewerSearchFromFindCheckbox.state == .on)
     }
 
     // MARK: - Copy/Delete page (F-271)
@@ -1469,6 +1626,32 @@ public final class SettingsWindowController: NSWindowController {
 
 extension SettingsWindowController: NSTextViewDelegate {}
 
+// MARK: - The settings search field (F-408)
+
+extension SettingsWindowController: NSSearchFieldDelegate {
+    public func controlTextDidChange(_ obj: Notification) {
+        guard (obj.object as AnyObject) === searchField else { return }
+        runSearch()
+    }
+
+    /// ↑/↓ move through the results while the keyboard stays in the field, Return opens the highlighted
+    /// one, Esc leaves the search. Anything else is ordinary typing.
+    ///
+    /// Handled here rather than by focusing the list, because a search you have to Tab out of to use is
+    /// a search you type twice: the whole point is to keep typing until the right row is on top.
+    public func control(_ control: NSControl, textView: NSTextView,
+                        doCommandBy selector: Selector) -> Bool {
+        guard control === searchField, isShowingResults else { return false }
+        switch selector {
+        case #selector(NSResponder.moveDown(_:)):     resultsView.moveSelection(by: 1); return true
+        case #selector(NSResponder.moveUp(_:)):       resultsView.moveSelection(by: -1); return true
+        case #selector(NSResponder.insertNewline(_:)): resultsView.chooseSelected(); return true
+        case #selector(NSResponder.cancelOperation(_:)): endSearch(); return true
+        default: return false
+        }
+    }
+}
+
 // MARK: - NSTableViewDataSource / NSTableViewDelegate
 
 extension SettingsWindowController: NSTableViewDataSource, NSTableViewDelegate {
@@ -1495,6 +1678,50 @@ extension SettingsWindowController: NSTableViewDataSource, NSTableViewDelegate {
         textField.stringValue = title
         return textField
     }
+
+    #if DEBUG
+    /// Type into the search field the way a person does — through the field editor, so the change
+    /// notification that filters the list is the real one (F-408). Returns the rows as shown.
+    public func automationSearch(_ query: String) -> String {
+        guard let window else { return "ERROR: no window\n" }
+        window.makeFirstResponder(searchField)
+        guard let editor = window.firstResponder as? NSTextView, editor.isFieldEditor else {
+            return "ERROR: search field did not take focus\n"
+        }
+        editor.selectAll(nil)
+        if query.isEmpty { editor.deleteBackward(nil) } else { editor.insertText(query, replacementRange: editor.selectedRange()) }
+        return "query=\(searchField.stringValue)\nindexed=\(searchIndex.entries.count)\n"
+            + resultsView.dump()
+    }
+
+    /// Open the n-th result (1-based), exactly as Return on it does.
+    public func automationOpenResult(_ index: Int) {
+        resultsView.moveSelection(by: 0)
+        for _ in 1..<max(1, index) { resultsView.moveSelection(by: 1) }
+        resultsView.chooseSelected()
+    }
+
+    /// Where opening a result left the window (F-408).
+    ///
+    /// `visible` and `tinted` are the two claims a page switch alone does not make: the control has to be
+    /// inside the scrolled area the reader is looking at, and something has to point at it. The caller
+    /// waits first — the reveal is deferred by one turn of the run loop, because a control cannot be
+    /// scrolled to before its page has laid out.
+    public func automationRevealState() -> String {
+        let page = SettingsPage(rawValue: sourceList.selectedRow)?.title ?? "-"
+        var visible = "-", tinted = "-", name = "-", onPage = "-"
+        if let control = lastRevealed {
+            name = lastRevealedName.isEmpty ? String(describing: type(of: control)) : lastRevealedName
+            // Inside the scrolled area the reader is looking at — a page switch alone does not put the
+            // control on screen, and neither does scrolling to a view whose frame is still zero.
+            visible = "\(control.visibleRect.height > 0)"
+            onPage = "\(control.window != nil)"
+            tinted = "\(SettingsSpotlight.isFlashing(control))"
+        }
+        return "page=\(page)\nsearchCleared=\(searchField.stringValue.isEmpty)\nresults=\(isShowingResults)\n"
+            + "control=\(name)\nonPage=\(onPage)\nvisible=\(visible)\ntinted=\(tinted)\n"
+    }
+    #endif
 
     /// Programmatically show a built-in page by its (localized) title. Used by
     /// automation to screenshot a specific page (F-274).

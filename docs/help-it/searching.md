@@ -20,7 +20,7 @@ Quando devi rintracciare file ovunque sul tuo Mac — per nome, per ciò che con
 
 ## Cerca per contenuto, dimensione e data
 
-1. Per cercare dentro i file, seleziona **Trova testo** nella scheda Generale e digita il testo da cercare. Le opzioni ti permettono di renderlo **Distingui maiuscole**, corrispondere solo a una **Parola intera**, trattare il testo come un'**Espressione regolare**, fare una **Ricerca contenuto esadecimale** o trovare file **Non contenenti** il testo.
+1. Per cercare all'interno dei file, digita il testo in **Trova testo** nella scheda Generale: viene cercato ciò che è nel campo, e un campo vuoto cerca solo per nome. Le opzioni ti permettono di renderlo **Distingui maiuscole**, corrispondere solo a una **Parola intera**, trattare il testo come un'**Espressione regolare**, fare una **Ricerca contenuto esadecimale** o trovare file **Non contenenti** il testo.
 2. Passa alla scheda **Avanzate** per restringere i risultati per **Dimensione** (per esempio da `10K` a `5M`), per intervallo di **data di modifica**, o ai file modificati negli ultimi N giorni.
 3. Attiva **Cerca dentro gli archivi** per guardare negli archivi della famiglia zip (zip, jar, war e simili).
 4. Per limitare la ricerca a ciò che hai già scelto, attiva **Cerca solo negli elementi selezionati** prima di avviare.
@@ -43,6 +43,7 @@ Per le cartelle locali che macOS ha già indicizzato, attiva **Usa Spotlight** n
 
 - **Invia all'elenco** colloca ogni risultato nel pannello attivo come elenco temporaneo, così puoi copiare, spostare o eliminare l'intero insieme in una volta.
 - Nella scheda **Carica / Salva**, scegli **Salva come modello…** per memorizzare la ricerca corrente (schemi e opzioni) e sceglierla di nuovo più tardi dall'elenco dei modelli.
+- **Cerca** e **Trova testo** ricordano ciascuno le ultime 20 voci usate, dalla più recente: fai clic sulla freccia in fondo al campo per sceglierne di nuovo una. Un termine usato due volte torna in cima invece di comparire due volte, e gli elenchi sopravvivono alla chiusura della finestra e all'uscita dall'app. **Cancella cronologia…** nella scheda **Carica / Salva** li dimentica entrambi; i modelli salvati non sono interessati.
 
 ## Scorciatoie
 

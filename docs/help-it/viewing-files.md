@@ -27,6 +27,7 @@ Peach Commander ha un visualizzatore integrato che ti permette di guardare dentr
 - Se il testo appare confuso, fai clic su Codifica nella barra degli strumenti (o premi E) per scorrere le codifiche di testo finché non si legge correttamente; l'impostazione automatica di solito è corretta.
 - Premi W per commutare l'a capo automatico per le righe lunghe.
 - Premi Ctrl+G per andare a una riga, o a un offset di byte in modalità esadecimale. Sono ammessi calcoli tra basi diverse: `0x1000 + 15 + 1` porta a 4112 — esadecimale con `0x`, `$` o una `h` finale, binario con `0b`, ottale con `0o`, e `+ - * /` con parentesi.
+- Se apri un risultato di Trova file con **Trova testo** compilato, il visualizzatore parte da quella ricerca: il testo è già nella barra di ricerca e la prima occorrenza è a schermo, quindi arrivi sulla corrispondenza invece che all'inizio del file. Se lo modifichi o lo cancelli lì, resta la tua versione. Puoi disattivarlo in Impostazioni ▸ Modifica/Visualizza se preferisci che ogni file si apra dall'inizio.
 
 ## Zoom di un’immagine
 

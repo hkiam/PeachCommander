@@ -14,6 +14,7 @@ Fereastra Setări este locul unde adaptați Peach Commander la modul în care lu
 2. Puteți de asemenea deschide aceeași fereastră din **Configurare > Opțiuni…**.
 3. Alegeți o pagină din lista din stânga; opțiunile acelei pagini apar în dreapta.
 4. Ajustați controalele. Modificările intră în vigoare imediat, cu excepția cazului în care o notă de pe pagină spune altfel.
+5. Pentru a ajunge direct la o opțiune, tastați în câmpul de căutare din partea de sus a ferestrei. Configurările potrivite din *toate* filele sunt listate împreună cu fila pe care se află, iar alegerea unei configurări deschide fila respectivă cu ea evidențiată. ↑/↓ parcurg rezultatele, Return deschide cea evidențiată, iar Esc părăsește căutarea și readuce fila de la care ați plecat.
 
 ![Fereastra Setări care arată pagina Aspect cu casete de bifare pentru barele interfeței](screenshots/settings-layout.png)
 *(Figura: pagina Aspect controlează ce bare sunt afișate în jurul panourilor.)*
