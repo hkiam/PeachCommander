@@ -157,7 +157,7 @@ SCENARIOS = [
     # of it, and that is exactly this window.
     ("editor-filter", ["editfilter /Users/admin/pc-demo/hosts.txt|sort -u|/Users/admin/filter.txt",
                        "wait 2500"], 9),
-    ("editor-filter-dialog", ["editfilterdlg /Users/admin/pc-demo/hosts.txt", "wait 2000"], 9),
+    ("filter-dialog", ["editfilterdlg /Users/admin/pc-demo/hosts.txt", "wait 2000"], 9),
     # Zooming a picture in the viewer (F-389). Three things a screenshot cannot state: the level is a
     # number and the commands move it, "actual size" is 100% of the image's own pixels rather than the
     # fitted rendering the old code called by that name, and the picture is *drawn* — `drawn=yes` compares
@@ -221,8 +221,13 @@ SCENARIOS = [
     # Dropping something onto the button bar (F-010). The drag itself cannot be scripted, but the entry
     # point the bar view calls can — and what matters is the other end: the button has to reach
     # default.bar, or it is gone at the next launch. That file is read by the shell afterwards.
+    # The dump at the end is what the guest waits for. Without it this scenario had only its settle time,
+    # and in a full run — where a launch can take ten seconds — the external check read a `default.bar`
+    # the app had never got round to writing, which reads as "the drop is broken" rather than "the app
+    # was still starting". Measured in the first full run: the screenshot showed empty panels.
     ("toolbar-drop", ["active left", "left /Users/admin/pc-demo", "wait 1200",
-                      "bardrop /System/Applications/Calculator.app", "wait 1500"], 9),
+                      "bardrop /System/Applications/Calculator.app", "wait 1500",
+                      "bardump /Users/admin/bar.txt", "wait 400"], 10),
     # Double-clicking the divider gives two equal panels (F-001). The row promised it and nothing did
     # it — the window used an NSSplitView directly, with no click handling anywhere. Widen the left
     # panel first, so "equal" is a result rather than the state it started in.
@@ -691,9 +696,13 @@ SCENARIOS = [
     #
     # Both trees, because they are two instances of the same class reached by different routes — the
     # shared column and the one inside a panel — and only one of them was noticed.
+    # Set, not toggled: `cm_TreeShared` and `cm_SrcTree` flip a state that the guest's peachcmd.ini
+    # remembers between scenarios, so this audit used to get whichever tree the previous scenario left
+    # behind — and with the panel tree off it read an unpainted view and reported the *app's* colours as
+    # wrong. It passes alone and failed in the full suite, which is the worst shape a check can have.
     ("tree-colours", ["active left", "left /Users/admin/pc-demo", "wait 1200",
-                      "cmd cm_TreeShared", "wait 1000",
-                      "cmd cm_SrcTree", "wait 1200",
+                      "treevisible shared|1", "wait 1000",
+                      "treevisible panel|1", "wait 1200",
                       "treecolors /Users/admin/treecolours.txt", "wait 600"], 14),
     # The rest of the surfaces (F-015). `tree-colours` knows what the tree should be and checks it;
     # this one knows nothing about any widget and reports surfaces that break the two properties the
@@ -794,8 +803,11 @@ SCENARIOS = [
                     "cmd cm_SrcThumbs", "wait 2500", "dump /Users/admin/thumbs.txt", "wait 400"], 10),
     # The panel paths reach session.ini, which is what a restart reads (F-013). Saving is debounced by
     # 0.3 s, so the wait matters; the file is read by the shell afterwards.
+    # Same treatment as `toolbar-drop`: the panel dump is a file the guest can wait for, so the external
+    # check reads `session.ini` after both panels have actually loaded rather than after a fixed sleep.
     ("session-save", ["active left", "left /Users/admin/pc-demo", "wait 800",
-                      "right /Users/admin/sync-src", "wait 2000"], 9),
+                      "right /Users/admin/sync-src", "wait 2000",
+                      "panelsdump /Users/admin/session-panels.txt", "wait 400"], 10),
     # Ctrl+Right: the folder under the cursor opens in the *other* panel (F-063). The dump reports the
     # active panel, so the right one is activated afterwards — otherwise this would report where the
     # left panel is, which never moved, and pass either way.
@@ -900,16 +912,21 @@ SCENARIOS = [
     # find bar's value is read from the window, not from the find pasteboard alone: that pasteboard is
     # system-wide and survives the previous scenario, so it would report a pass for a build that seeded
     # nothing at all.
+    # The term has to be in a file's *contents*, and one file's only: the first version searched for
+    # "superseded", which exists in the demo tree as a *comment* set by `find-comments` and in no file at
+    # all — so the search found nothing, no viewer opened, and the report said "ERROR: no viewer". Found
+    # by the first VM run of this scenario, which is what it is for. `report.txt` names exactly one file,
+    # and "Revenue" sits on its fourth line, so "landed on the hit" is not the same as "opened the file".
     ("find-seeded-viewer", ["active left", "left /Users/admin/pc-demo", "wait 1200",
-                            "findviewhit *.csv|superseded|/Users/admin/pc-demo|/Users/admin/seed-on.txt",
+                            "findviewhit report.txt|Revenue|/Users/admin/pc-demo|/Users/admin/seed-on.txt",
                             "wait 1200",
-                            "listerretype 2026|/Users/admin/seed-retyped.txt", "wait 800",
+                            "listerretype Quarterly|/Users/admin/seed-retyped.txt", "wait 800",
                             "listerreload /Users/admin/seed-reloaded.txt", "wait 1000"], 13),
     # The same feature switched off in Settings, which is the half a checkbox can silently stop doing:
     # nothing is seeded, and the viewer opens where it always did.
     ("find-seed-off", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                        "setbool Viewer.SearchFromFind|0", "wait 600",
-                       "findviewhit *.csv|superseded|/Users/admin/pc-demo|/Users/admin/seed-off.txt",
+                       "findviewhit report.txt|Revenue|/Users/admin/pc-demo|/Users/admin/seed-off.txt",
                        "wait 1200"], 12),
     # "Find text" with no checkbox in front of it (F-407): the field is live from the moment the dialog
     # opens, what is in it is searched for, and an empty one searches names only. Typed through the field
@@ -926,7 +943,11 @@ SCENARIOS = [
     # which dropped its selection and threw the reader from Colors back to Layout. The check is that the
     # palette and the system appearance agree — true in either mode, unlike a hex value — and that the
     # page the reader was on is still the page.
+    # `Colors.Appearance` is stated rather than inherited: the guest's config had it at "dark", which
+    # short-circuits `appearanceIsDark` before the OS is ever consulted — so the first VM run of this
+    # scenario passed while exercising none of the code it exists to check.
     ("theme-system", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                      "setstring Colors.Appearance|system", "wait 600",
                       "settingspage Colors", "wait 1200",
                       "theme light", "wait 600",
                       "theme midnight", "wait 600",
@@ -939,7 +960,11 @@ SCENARIOS = [
     # choosing a result lands on the page with the control on screen and something pointing at it. Typed
     # through the field editor, because assigning `stringValue` posts no change notification and a
     # scenario built on that would pass with the search dead.
-    ("settings-search", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+    # Named "search-settings" rather than "settings-search": a scenario claims every report key that
+    # starts with its own name and a dash, so the `settings` scenario adopted all four of these and
+    # failed on reports it never writes. Found by the first full VM run — the targeted run could not see
+    # it, because the scenario that does the claiming was not in it.
+    ("search-settings", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                          "settingsearch hidden|/Users/admin/ss-hidden.txt", "wait 700",
                          "settingsearch backup|/Users/admin/ss-backup.txt", "wait 700",
                          "settingsearch mainframe|/Users/admin/ss-none.txt", "wait 700",
@@ -1043,9 +1068,13 @@ SCENARIOS = [
     # diagnoses. This scenario does nothing but wait past that moment and leave a report, so the
     # *screenshot* answers the question — run once with the plugins in the bundle and once with them
     # removed (`--app` at a stripped copy), and the difference names the culprit.
+    # Settle 70, not 12: the guest sleeps the settle time and then waits at most forty seconds more for
+    # the report, so a scenario that deliberately idles for sixty could never deliver one — it reported
+    # "never written" on every run since it was written, which is a gate that only ever says no. The
+    # settle has to cover the wait it exists to perform.
     ("netpanel-watch", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                         "wait 60000",
-                        "panelsdump /Users/admin/netpanel-watch-done.txt", "wait 500"], 12),
+                        "panelsdump /Users/admin/netpanel-watch-done.txt", "wait 500"], 70),
     ("keys-preview", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                             "previewpanel on", "wait 1500",
                             "keyloop /Users/admin/keyloop-keys-preview.txt", "wait 400",
@@ -1766,15 +1795,20 @@ REPORTS = {
     # The symbol outline for a language with no grammar (F-405). The tags are part of the answer: "C" for
     # the type, "m" for a method inside it, "E" for an extension, "ƒ" for a file-scope function. A scanner
     # that found every name and got the nesting wrong would produce the same list with "ƒ" throughout.
-    "swift-outline": ("/Users/admin/swift-outline.txt",
-                      ["count=", "[C  Machine]", "[m  greet]", "[E  Machine]", "[ƒ  topLevel]",
-                       "status=Swift", "crumb@mid=Machine", "!BLANK!",
-                       # The negative cases in the fixture: a declaration keyword in a comment or a
-                       # string is not a declaration.
-                       "!Commented", "!InAString"]),
-    # The viewer's button being pressable is the whole bug report.
-    "swift-outline-viewer": ("/Users/admin/swift-viewer.txt",
-                             ["symboltoggle=enabled", "Code · Swift", "!ERROR"]),
+    # The *primary* entry is the last file the scenario writes, and that is not a detail: the guest waits
+    # for the primary report and the app is killed once the settle time is up, so anything written after
+    # it is a race. `check-scenario-reports.py` had been warning about this scenario, `viewer-esc` and
+    # `menu-key-guard` for months; the first full run on a loaded machine turned all three warnings into
+    # failures at once, with every later report empty. The viewer's button being pressable is the whole
+    # bug report anyway, so it is no loss to lead with it.
+    "swift-outline": ("/Users/admin/swift-viewer.txt",
+                      ["symboltoggle=enabled", "Code · Swift", "!ERROR"]),
+    "swift-outline-tree": ("/Users/admin/swift-outline.txt",
+                           ["count=", "[C  Machine]", "[m  greet]", "[E  Machine]", "[ƒ  topLevel]",
+                            "status=Swift", "crumb@mid=Machine", "!BLANK!",
+                            # The negative cases in the fixture: a declaration keyword in a comment or a
+                            # string is not a declaration.
+                            "!Commented", "!InAString"]),
     # `Greet`, not `m`: a missing receiver rule reports the receiver as the method's name.
     "go-outline": ("/Users/admin/go-outline.txt",
                    ["[C  Machine]", "[m  Greet]", "[ƒ  main]", "status=Go", "!BLANK!"]),
@@ -1792,8 +1826,12 @@ REPORTS = {
     #
     # The panel keeps the key: this is the command working, and the modal proves it reached the engine.
     # Aborted by `modaldump`, so the scenario deletes nothing.
-    "menu-key-guard": ("/Users/admin/mk-panel-del.txt",
-                       ["responder=PanelListView", "|cm_Delete", "menuClaimed=yes", "!ERROR"]),
+    # Primary = the last file written (see `swift-outline` above): the ⌘A check is what the guest waits
+    # for, so everything before it has been written by the time the app is stopped.
+    "menu-key-guard": ("/Users/admin/mk-find-cmda.txt",
+                       ["menuClaimed=yes", "!ERROR"]),
+    "menu-key-guard-panel-del": ("/Users/admin/mk-panel-del.txt",
+                                 ["responder=PanelListView", "|cm_Delete", "menuClaimed=yes", "!ERROR"]),
     "menu-key-guard-panel-modal": ("/Users/admin/mk-panel-modal.txt", ["modal=true"]),
     # Del in a text field: refused whether the field is in another window or in the file manager itself.
     "menu-key-guard-find-del": ("/Users/admin/mk-find-del.txt",
@@ -1813,12 +1851,14 @@ REPORTS = {
     # these the fix would have taken the keyboard away from the file manager to protect it.
     "menu-key-guard-cmdline-f2": ("/Users/admin/mk-cmdline-f2.txt",
                                   ["responder=NSTextView", "menuClaimed=yes", "!ERROR"]),
-    "menu-key-guard-find-cmda": ("/Users/admin/mk-find-cmda.txt",
-                                 ["menuClaimed=yes", "!ERROR"]),
+    # (`mk-find-cmda.txt` is the primary entry above — a ⌘ chord is still the menu's, everywhere.)
     # Esc from the text area and from the symbol filter: the focus line is half the check, because
     # "closed=yes" is what a viewer whose focus never moved would also report.
-    "viewer-esc": ("/Users/admin/esc-text.txt",
-                   ["focus=ViewerTextView", "closed=yes", "!closed=no", "!ERROR"]),
+    # Primary = the last file written (see `swift-outline` above).
+    "viewer-esc": ("/Users/admin/esc-find2.txt",
+                   ["findbar=closed→closed", "closed=yes", "!ERROR"]),
+    "viewer-esc-text": ("/Users/admin/esc-text.txt",
+                        ["focus=ViewerTextView", "closed=yes", "!closed=no", "!ERROR"]),
     "viewer-esc-filter": ("/Users/admin/esc-filter.txt",
                           ["editing NSSearchField", "closed=yes", "!closed=no", "!ERROR"]),
     # A filter with something in it is the other thing Esc means locally: the text goes, the window stays,
@@ -1831,12 +1871,17 @@ REPORTS = {
     # sides of the arrow matter — "closed" alone would also describe a find bar that never opened.
     "viewer-esc-findbar": ("/Users/admin/esc-find.txt",
                            ["findbar=open→closed", "closed=no", "!ERROR"]),
-    "viewer-esc-findbar-again": ("/Users/admin/esc-find2.txt",
-                                 ["findbar=closed→closed", "closed=yes", "!ERROR"]),
+    # (`esc-find2.txt` is the primary entry above: the second Esc closes the window.)
     # The hit, and the preview saying where the term was: a row whose text is nowhere in the file needs
     # to explain itself.
     "find-comments": ("/Users/admin/found.txt",
                       ["count=1", "table.csv", "comment: superseded by the 2026 export", "!ERROR"]),
+    # F-409: both of these had only a settle time and an external check, so a slow launch failed them
+    # with a message about the *feature*. The reports are what the guest waits for; the external checks
+    # then read a config file that the app has demonstrably reached.
+    "toolbar-drop": ("/Users/admin/bar.txt", ["Calculator", "!ERROR"]),
+    "session-save": ("/Users/admin/session-panels.txt",
+                     ["left=/Users/admin/pc-demo", "right=/Users/admin/sync-src", "!ERROR"]),
     # F-409. The primary report is the state after the switch to System, which is the last file written.
     # "agrees" is the whole finding: before the fix the palette said dark and the window said light.
     "theme-system": ("/Users/admin/theme-system.txt",
@@ -1850,27 +1895,28 @@ REPORTS = {
     # F-408. The primary report is the navigation, which is the last file written. "indexed" is part of
     # the check: an index that harvested nothing would report zero and every search would look like a
     # query with no answer.
-    "settings-search": ("/Users/admin/ss-open.txt",
+    "search-settings": ("/Users/admin/ss-open.txt",
                         ["page=Display", "searchCleared=true", "results=false",
                          "control=Show hidden files", "visible=true", "tinted=true", "!ERROR"]),
-    "settings-search-hidden": ("/Users/admin/ss-hidden.txt",
+    "search-settings-hidden": ("/Users/admin/ss-hidden.txt",
                                ["query=hidden", "count=1", "|Show hidden files|Display", "!ERROR"]),
     # "backup" is not in the checkbox's title — it is in the sentence under it and in the action it calls.
-    "settings-search-backup": ("/Users/admin/ss-backup.txt",
+    "search-settings-backup": ("/Users/admin/ss-backup.txt",
                                ["query=backup", "|Edit/View", "!count=0", "!ERROR"]),
-    "settings-search-none": ("/Users/admin/ss-none.txt", ["query=mainframe", "count=0", "!ERROR"]),
+    "search-settings-none": ("/Users/admin/ss-none.txt", ["query=mainframe", "count=0", "!ERROR"]),
     # F-407. The primary report is the last file written, so the guest waits for the retype-and-reload
     # check rather than for the seed it is about to be compared against.
     "find-seeded-viewer": ("/Users/admin/seed-reloaded.txt",
-                           ["term=2026", "!term=superseded", "!ERROR"]),
+                           ["term=Quarterly", "!term=Revenue", "!ERROR"]),
     "find-seeded-viewer-on": ("/Users/admin/seed-on.txt",
-                              ["term=superseded", "findbar=open", "selected=superseded",
+                              ["term=Revenue", "findbar=open", "selected=Revenue",
                                "focus=ViewerTextView", "!line=1", "!ERROR"]),
     "find-seeded-viewer-retyped": ("/Users/admin/seed-retyped.txt",
-                                   ["term=2026", "selected=2026", "!ERROR"]),
-    # Switched off: no term, no find bar, and the file opens at the top like any other.
+                                   ["term=Quarterly", "selected=Quarterly", "!ERROR"]),
+    # Switched off: no term and no find bar, on a file that *does* contain the term — searching for
+    # something absent would leave the same empty report and pass for the wrong reason.
     "find-seed-off": ("/Users/admin/seed-off.txt",
-                      ["term=\n", "findbar=closed", "selected=\n", "!term=superseded", "!ERROR"]),
+                      ["term=\n", "findbar=closed", "selected=\n", "!term=Revenue", "!ERROR"]),
     # The field is the switch now. "contentTerm" is what the search would actually run with, so an empty
     # field must produce none and a filled one must produce exactly what was typed.
     "find-text-field": ("/Users/admin/ft-cleared.txt",

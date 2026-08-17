@@ -11,9 +11,9 @@
 | Evidence sweep | **Batches 1–24 (2026-08-07/08): 73 rows checked, 33 defects fixed, 87 → 21 rows without evidence; the last 21 were then worked through on 2026-08-09 and the count is now **0** — five of them turned out not to be implemented at all (the window title, the splitter's double-click, sequential transfers, the icon-off mode and the DMG layout).** A follow-up *interpreter sweep* (2026-08-08, after 0.4.0) then went at one defect class on purpose — a string from somewhere else reaching something that interprets it — and found four more: the panel's extract walk wrote above the destination (F-131), an XML file could read your other files through external entities (F-368), previewing a document fetched a remote image and so reported that you opened it (F-116), and the assistant's approval gate was bypassable through `run_command`. See the entry below. Worst: a file name could run a shell command through a user-menu %-token (F-252); a crafted archive wrote outside the chosen folder (F-131); the archive password stood in the process list (F-136); a CRLF code file rendered as one line six million characters wide (F-110); undoing a batch rename did nothing (F-175); Num/ did nothing (F-056); a wildcard selected the *wrong* file (F-055); a Windows-written .sfv verified nothing (F-097). Six defects were one Swift trap — `"\r\n"` is a single Character. New gates: `check-checksums.sh`, `check-pack-formats.sh`, `check-strings-extracted.py`, `check-tests-registered.py`, `check-vm-flags.sh`, plus `check-descript-format.sh` extended. Of the 21 rows left, 8 are blocked externally (Apple credentials, SMB mounts, the Services menu). |
 | Current iteration | **0.7.0 — released 2026-08-16** — a read-only plugin that opens filesystem images the way archives open (F-403): SquashFS, ext2/3/4, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT12/16/32, exFAT, NTFS, plus MBR and GPT partition tables. Router firmware with no partition table is carved — the filesystems are found by searching for them and confirmed by opening each one — and the bootloader, kernel and vendor header around them are listed and extractable. Every reader is written here from its published layout rather than vendored, for licence reasons; only zstd's own single-file decoder (BSD-3) is taken in. Reviewing it turned up three integer-overflow crashes reachable from a crafted image, one of them older than the plugin, and a mutation corpus that structurally could not reach the code it was meant to guard. That in turn exposed F-230: the crash guard caught the four faults C code raises and none of the ways Swift fails, so a trapping plugin took the whole app down. Remaining big blocks: I20 Developer-ID signing/notarization + Sparkle auto-update — the workflow exists, four repo secrets are missing. |
 | Build status | ✅ builds; app launches |
-| Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **93 scenarios with reports** (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `settings-search` with F-408 and `theme-system` with F-409 — those six not yet run on the VM, their unit tests and driven runs of the real app are what stand behind the features today) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. |
+| Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **98 scenarios with reports** (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `search-settings` with F-408 and `theme-system` with F-409 — **all six now run on the VM and green**, see the harness entry below for the five measurement defects that run caught) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
-| Last updated | 2026-08-17 |
+| Last updated | 2026-08-18 |
 | Released | **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
@@ -25,6 +25,55 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-18 (VM harness) — The first full run in a fortnight, and the eight ways it was measuring wrong
+
+The six scenarios written for F-406…F-409 were run on the VM, then the whole suite twice. **No product
+defect came out of any of it.** The first full run failed 21 checks across seven scenarios; the last one
+failed two, both already fixed by then and since verified. Every failure was the harness measuring the
+wrong thing, and five of the eight had been latent for months — which is the point of running it.
+
+* **A scenario claims every report key beginning with its own name and a dash.** `settings` therefore
+  adopted all four `settings-search` reports and failed on files it never writes, while the real scenario
+  passed later in the same run. Renamed to `search-settings`; the same trap had `editor-filter` adopting
+  `editor-filter-dialog` (now `filter-dialog`), which nobody had noticed. `check-scenario-reports.py` now
+  refuses the shape — and only a *full* run could ever have shown it, since the claiming scenario has to
+  be in the same run.
+* **The primary report must be the last file a scenario writes**, because the guest waits for that one and
+  the app is stopped when it appears. `menu-key-guard`, `viewer-esc` and `swift-outline` had it in the
+  middle; the gate had warned about all three for months, and this run turned the warnings into thirteen
+  empty reports at once. Primary swapped in each.
+* **A scenario with no report has nothing to wait for.** `toolbar-drop` and `session-save` read a config
+  file after a fixed sleep and failed whenever the app was slow to launch — reported as "the drop is
+  broken". Both write a report now (new `bardump` verb for the bar), and both pass.
+* **`netpanel-watch` could never pass**: it idles sixty seconds on purpose and the guest waits at most
+  settle + forty. Settle raised to 70; it now delivers the screenshot it exists for, which shows the macOS
+  local-network consent panel up over the app about a minute after launch.
+* **`keysend` compared its focus argument with `==`.** Every caller passes `field+menu`, so the field was
+  never focused and `menu-key-guard` reported `responder=NSTabView` and `field=[]→[]` — which reads as the
+  *dialog* being broken rather than as the harness never having clicked into it. The menu half of the same
+  function had always used `contains`. With that one word fixed the scenario passes on the VM for the
+  first time since it was written with F-404, all eight reports.
+* **`tree-colours` and `theme-system` toggled state the guest remembers.** `cm_SrcTree` and
+  `cm_TreeShared` flip; inherit "on" and the scenario turns the tree *off*, then audits a hidden, unpainted
+  view and reports the app's colours as wrong. A new `treevisible` verb sets the state instead, and
+  `theme-system` states its `Colors.Appearance` rather than inheriting `dark`, which had been
+  short-circuiting the branch it exists to check.
+
+Two diagnostics were added while chasing these and are worth keeping: `themestate` (what the theme
+resolved to on both sides of the palette/appearance split) and the `focusField`/`focusTaken` lines in
+`keysend` — the latter proved the Find dialog's new combo boxes take focus perfectly well, which is what
+ruled out the obvious suspect.
+
+**Left open, and not the harness's to fix:** the consent panel takes the key window when it appears, so a
+keyboard scenario that runs into it reports `ERROR: no key window`. It is real — screenshots in
+`docs/generated/layout-regression/` show it — and `netpanel-watch` now produces the picture that can name
+which part of the app asks for the local network. Until that is answered, or the golden image answers the
+prompt once, keyboard scenarios remain at its mercy.
+
+The recorded output under `docs/generated/layout-regression/` is the final full run (110 scenarios, zero
+Auto Layout conflicts everywhere) with `menu-key-guard` and `tree-colours` re-run afterwards against the
+fixed harness; `report.md` counts conflicts only, so it is unaffected by that split.
 
 ## 2026-08-17 (F-409) — Switching to System kept the dark palette, and the repaint moved the page
 

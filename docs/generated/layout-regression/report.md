@@ -6,4 +6,5 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| hex-clipboard | 0 | 0 | — | `hex-clipboard.png` |
+| menu-key-guard | 0 | — | — | `menu-key-guard.png` |
+| tree-colours | 0 | — | — | `tree-colours.png` |

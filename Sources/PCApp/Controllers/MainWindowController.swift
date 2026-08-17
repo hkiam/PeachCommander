@@ -5794,8 +5794,18 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         guard let (char, mask) = KeymapMenu.keyEquivalent(for: chord) else {
             return "ERROR: \(spec) is not representable as a key equivalent\n"
         }
-        if focus == "field" { automationFocusTextField(in: window, text: "abc") }
+        // `contains`, not `==`: every scenario that wants a focused field asks for "field+menu", because
+        // the menu route is the half that answers "did the accelerator claim the key". Compared exactly,
+        // the field was never focused at all — the report then said `responder=NSTabView` and
+        // `field=[]→[]`, which reads as the *dialog* being wrong rather than the harness never having
+        // clicked into it. The menu half two dozen lines below has always used `contains`.
+        var focusNote = ""
+        if focus.contains("field") { focusNote = automationFocusTextField(in: window, text: "abc") }
         var out = "keyWindow=\(window.title.isEmpty ? "<untitled>" : window.title)\n"
+        // Which field the walk picked and whether it took the focus. Without this, "responder=NSTabView"
+        // says only that focusing failed, not what it tried — and the answer is a one-line difference
+        // between "there is no editable field" and "this one refused".
+        if !focusNote.isEmpty { out += focusNote }
         let responder = window.firstResponder
         var who = responder.map { String(describing: type(of: $0)) } ?? "none"
         if let editor = responder as? NSTextView, editor.isFieldEditor,
@@ -5860,15 +5870,18 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     }
 
     /// Click into a window's first editable text field and put `text` in it, caret at the start.
-    private func automationFocusTextField(in window: NSWindow, text: String) {
+    @discardableResult
+    private func automationFocusTextField(in window: NSWindow, text: String) -> String {
         func walk(_ view: NSView) -> NSTextField? {
             if let field = view as? NSTextField, field.isEditable, !field.isHidden { return field }
             for sub in view.subviews { if let hit = walk(sub) { return hit } }
             return nil
         }
-        guard let root = window.contentView, let field = walk(root) else { return }
+        guard let root = window.contentView, let field = walk(root) else {
+            return "focusField=none\nfocusTaken=no\n"
+        }
         field.stringValue = text
-        window.makeFirstResponder(field)
+        let taken = window.makeFirstResponder(field)
         // Through the field editor as well. A dialog often opens with this field already focused, so
         // `makeFirstResponder` is a no-op and the live editor keeps the value it had — the report then
         // describes a field the scenario never set up. Measured: the Find dialog kept showing "*.*".
@@ -5876,6 +5889,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // Caret at the start, so a forward delete has something to delete: the check is that the *field*
         // consumed the key, and a caret at the end would leave the text unchanged either way.
         field.currentEditor()?.selectedRange = NSRange(location: 0, length: 0)
+        return "focusField=\(String(describing: type(of: field)))\nfocusTaken=\(taken ? "yes" : "no")\n"
     }
     #endif
 
@@ -6209,6 +6223,15 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         saveButtonBar()
         logger.info("Button bar: added \(inserted) button(s) from a drop")
     }
+
+    #if DEBUG
+    /// Diagnostic: the button bar as it stands (F-409) — a file the guest can wait for, and a check
+    /// that a dropped button reached the *bar* and not only the file behind it.
+    func barButtonsDump() -> String {
+        "count=\(buttonBar.buttons.count)\n"
+            + buttonBar.buttons.map { "\($0.cmd)|\($0.param)|\($0.menu)" }.joined(separator: "\n") + "\n"
+    }
+    #endif
 
     /// Turn a dropped path into a button, or nil if it is nothing we can run.
     ///

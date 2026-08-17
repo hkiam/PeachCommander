@@ -3,8 +3,7 @@ fullKeyboardAccess: true
 focused: NSTabView | Search options
 autorecalculatesKeyViewLoop: true
 initialFirstResponder: NSView
-focusRefused: 7
-  REFUSES: NSTextField accepts=false hidden=false enabled=false refuses=false
+focusRefused: 6
   REFUSES: NSButton | Whole word / Whole word accepts=false hidden=false enabled=false refuses=false
   REFUSES: NSButton | Hex content search / Hex content search accepts=false hidden=false enabled=false refuses=false
   REFUSES: NSButton | Encoding-aware / Encoding-aware accepts=false hidden=false enabled=false refuses=false
@@ -13,9 +12,9 @@ focusRefused: 7
   REFUSES: NSButton | Also search file comments / Also search file comments accepts=false hidden=false enabled=false refuses=false
   tab[1]: NSView
   tab[2]: NSTabView | Search options
-  tab[3]: NSTextField | *.*
+  tab[3]: NSComboBox | Search for: / *.*
   tab[4]: NSTextField | /Users/admin/pc-demo
-  tab[5]: NSButton | Find text: / Find text:
+  tab[5]: NSComboBox | Find text:
   tab[6]: NSButton | Case sensitive / Case sensitive
   tab[7]: NSButton | Regular expression / Regular expression
   tab[8]: NSButton | Search in selected items only / Search in selected items only

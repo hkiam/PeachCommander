@@ -2,7 +2,12 @@ window: ~/pc-demo
 AXUnknown
   AXScrollArea
     AXOutline | Folder tree
-    AXScrollBar = 0
+    AXScrollBar = 0.03493449781659388
+      AXValueIndicator = 0.03493449781659388
+      AXButton
+      AXButton
+      AXButton
+      AXButton
   AXSplitGroup
     AXScrollArea
       AXTable | File list, left panel
@@ -14,14 +19,19 @@ AXUnknown
         AXButton
         AXButton
       AXScrollBar = 0
+        AXValueIndicator = 0
+        AXButton
+        AXButton
+        AXButton
+        AXButton
     AXTabGroup | Panel tabs
       AXRadioButton | pc-demo = 1
     AXGroup | Drive bar
       AXButton | Favorites
       AXButton | All volumes
-      AXButton | Macintosh HD, Startup disk, 17.66 GB free
+      AXButton | Macintosh HD, Startup disk, 17.35 GB free
       AXButton | TaskManager, Plugin drive
-    AXSplitter = 504
+    AXSplitter = 241
     AXScrollArea
       AXTable | File list, right panel
         AXGroup
@@ -42,7 +52,11 @@ AXUnknown
     AXGroup | Drive bar
       AXButton | Favorites
       AXButton | All volumes
-      AXButton | Macintosh HD, Startup disk, 17.66 GB free
+      AXButton | Macintosh HD, Startup disk, 17.35 GB free
       AXButton | TaskManager, Plugin drive
-  AXSplitter | Preview panel width = 0
-  AXSplitter | Dock height = 0
+  AXScrollArea
+    AXScrollBar = 1
+  AXSplitter | Preview panel width = 300
+  AXSplitter | Dock height = 220
+  AXSplitGroup
+    AXScrollBar = 0

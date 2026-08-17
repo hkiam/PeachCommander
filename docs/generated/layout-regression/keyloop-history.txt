@@ -3,16 +3,35 @@ fullKeyboardAccess: true
 focused: NSSearchField | Search the history / Search folders, files, operations… (editing)
 autorecalculatesKeyViewLoop: true
 initialFirstResponder: HistoryPaletteContentView
-focusRefused: 3
+focusRefused: 21
   REFUSES: NSButton | Search / search accepts=false hidden=false enabled=true refuses=true
   REFUSES: NSButton | Close accepts=false hidden=true enabled=true refuses=true
   REFUSES: NSImageView | move accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | move accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | document accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | document accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | move accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | move accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | document accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | move accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | move accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | move accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | move accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | move accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | move accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | move accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | move accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSImageView | document accepts=false hidden=false enabled=true refuses=true
   tab[1]: HistoryPaletteContentView
   tab[2]: NSSearchField | Search the history / Search folders, files, operations…
   tab[3]: NSSegmentedControl | History filter
   tab[4]: NSScrollView
   tab[5]: NSClipView
   tab[6]: NSTableView | History entries
+  tab[7]: NSScroller
 loopClosed: true
 unreachable: 0
 unlabelled: 0

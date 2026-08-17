@@ -57,5 +57,18 @@ for m in re.finditer(r'\("([a-z0-9-]+)",\s*\[(.*?)\],\s*(\d+)\)', scenarios, re.
               f"{written[-1]} — everything after the wait is a race the app loses on a slow launch")
         problems += 1
 
+# A second rule from the same machinery: the host collects a scenario's reports as its own key *plus*
+# every key starting with "<name>-", so a scenario whose name begins with another scenario's name and a
+# dash has its reports adopted by that other one — which then fails on files it never writes, while the
+# real scenario still passes later in the run. `settings-search` was adopted by `settings` exactly this
+# way, and only a *full* run could show it: the scenario doing the claiming has to be in the same run.
+names = set(re.findall(r'\("([a-z0-9-]+)",\s*\[', scenarios))
+for name in sorted(names):
+    owners = [other for other in names if other != name and name.startswith(other + "-")]
+    if owners:
+        print(f"  ⚠️  {name}: its reports are claimed by the scenario “{owners[0]}”, which will fail on "
+              f"files it never writes — rename it so it does not start with another scenario's name")
+        problems += 1
+
 print(f"scenarios_with_reports={checked} problems={problems}")
 sys.exit(1 if problems else 0)

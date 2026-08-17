@@ -3,7 +3,9 @@ fullKeyboardAccess: true
 focused: Optional<NSResponder>
 autorecalculatesKeyViewLoop: true
 initialFirstResponder: NSButton
-focusRefused: 0
+focusRefused: 2
+  REFUSES: NSButton | Search / search accepts=false hidden=false enabled=true refuses=true
+  REFUSES: NSButton | Close accepts=false hidden=true enabled=true refuses=true
   tab[1]: NSButton | Show command line / Show command line
   tab[2]: NSButton | Show function key bar / Show function key bar
   tab[3]: NSButton | Show button bar / Show button bar
@@ -12,10 +14,11 @@ focusRefused: 0
   tab[6]: NSButton | Show tab bar / Show tab bar
   tab[7]: NSButton | Show path bar / Show path bar
   tab[8]: NSButton | Close / Close
-  tab[9]: NSScrollView
-  tab[10]: NSClipView
-  tab[11]: NSTableView | Settings pages
-  tab[12]: NSScroller
+  tab[9]: NSSearchField | Search settings / Search settings
+  tab[10]: NSScrollView
+  tab[11]: NSClipView
+  tab[12]: NSTableView | Settings pages
+  tab[13]: NSScroller
 loopClosed: true
 unreachable: 0
 unlabelled: 0

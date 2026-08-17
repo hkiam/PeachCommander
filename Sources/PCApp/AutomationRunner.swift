@@ -162,6 +162,14 @@ extension MainWindowController {
             case "editlines":  await editLines(arg)     // editlines <src>|<out> (F-359)
             case "editstruct": await editStructure(arg) // editstruct <src>|<needle>|<out> (F-369)
             case "editsave":   await editSave(arg)      // editsave <src>|<text>|<out> (F-387)
+            case "setstring":                           // setstring <Section.Key>|<value> (F-409)
+                // `setbool`'s counterpart, and needed for the same reason: a scenario that depends on a
+                // *setting* has to state it, because the guest's peachcmd.ini carries whatever earlier
+                // runs left there. The theme scenario found this the hard way — the guest had
+                // `Colors.Appearance=dark`, which short-circuits the code path the scenario exists to
+                // check, so it passed while testing nothing.
+                let s = arg.split(separator: "|", maxSplits: 1).map { String($0).trimmingCharacters(in: .whitespaces) }
+                if s.count == 2 { applyStringOption(s[0], s[1]) }
             case "setbool":                             // setbool <Section.Key>|<0|1> (F-387)
                 // Through the settings dialog's own callback, so a script changes an option exactly the
                 // way a click does — including whatever the host does besides writing the config.
@@ -478,6 +486,16 @@ extension MainWindowController {
                 dumpTreeColours(arg)
             case "surfacecolors":                       // surfacecolors <out> (F-015)
                 dumpSurfaceColours(arg)
+            case "treevisible":                         // treevisible <shared|panel>|<0|1> (F-409)
+                // Sets the state instead of toggling it. `cm_TreeShared` and `cm_SrcTree` are toggles,
+                // and the tree's visibility is persisted in the guest's peachcmd.ini — so a scenario
+                // built on toggles gets the state its predecessor happened to leave, and the colour
+                // audit read an unpainted, hidden tree while reporting it as the app's own colours.
+                let t = arg.split(separator: "|", maxSplits: 1).map { String($0).trimmingCharacters(in: .whitespaces) }
+                if t.count == 2 {
+                    let on = t[1] == "1" || t[1].lowercased() == "true"
+                    if t[0] == "shared" { setSharedTreeVisible(on) } else { activePanel?.setTreeVisible(on) }
+                }
             case "themestate":                          // themestate <out> (F-409)
                 // What the theme *resolved to*, which is the question a screenshot cannot answer on its
                 // own: a dark palette under a light window appearance looks like "some areas have the
@@ -1034,6 +1052,12 @@ extension MainWindowController {
                 // The drag itself cannot be scripted, but everything after it can: this is the
                 // exact entry point the bar view calls, so a scripted run exercises the real path.
                 addBarButtons(for: [arg], at: 0)
+            case "bardump":                               // bardump <out> (F-409): the bar's buttons
+                // A file for the guest to wait for, and an assertion of its own: the scenario used to
+                // rely on its settle time alone and read the *config* afterwards, so a slow launch left
+                // "the button is not in default.bar" — which reads as the drop being broken rather than
+                // as the app never having got there.
+                try? barButtonsDump().write(toFile: arg, atomically: true, encoding: .utf8)
             case "theme":                                  // theme <id> — select a colour palette (F-2xx)
                 // Documentation screenshots of a theme have to be reproducible, and driving the
                 // Settings popup by hand is not. Goes through the same sink as the popup, so the
