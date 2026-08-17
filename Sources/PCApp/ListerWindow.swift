@@ -272,6 +272,77 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
 
     /// Ask for a note about the line the caret is on, exactly as the menu item does.
     func automationNoteForCurrentLine() { docNote() }
+
+    /// Diagnostic: move the focus where a click would move it, then press Esc — and report whether the
+    /// window closed.
+    ///
+    /// The key is posted to the window rather than handed to `handleKey`, because the defect was in the
+    /// routing and not in the handler: a dispatch that starts at the first responder is the only kind
+    /// that can reproduce "Esc works until you click something". `focus` is part of the report for the
+    /// same reason — if the click did not move the focus, the check proves nothing.
+    func automationEscape(focusing target: String) -> String {
+        guard let window else { return "ERROR: no window\n" }
+        switch target.lowercased() {
+        case "text":   if let tv = textContentView { window.makeFirstResponder(tv) }
+        case "filter": setSymbolSidebar(visible: true)   // opening it focuses the filter field
+        case "marks":  marks.show(); focusFirstResponderKind("MarksTableView")
+        case "findbar":                                  // find bar open, focus back in the text
+            vmFind()
+            if let tv = textContentView { window.makeFirstResponder(tv) }
+        case "filtertext":                               // something typed in the filter, then Esc
+            setSymbolSidebar(visible: true)
+            // Typed as a key event, not assigned: what Esc has to see is a *field editor* holding text,
+            // and setting `stringValue` behind its back is the one arrangement that cannot reproduce it.
+            if let key = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [],
+                                         timestamp: 0, windowNumber: window.windowNumber, context: nil,
+                                         characters: "o", charactersIgnoringModifiers: "o",
+                                         isARepeat: false, keyCode: 31) {
+                window.sendEvent(key)
+            }
+        default:       break
+        }
+        let responder = window.firstResponder
+        // A focused NSTextField reports its *field editor*, which is a shared NSTextView and says
+        // nothing about which field the reader clicked into — so name the field behind it.
+        var focus = responder.map { String(describing: type(of: $0)) } ?? "none"
+        if let editor = responder as? NSTextView, editor.isFieldEditor,
+           let owner = editor.delegate.map({ String(describing: type(of: $0)) }) {
+            focus += "(editing \(owner))"
+        }
+        // Both the find bar and the filter text are reported from both sides of the key, because each has
+        // a local meaning for Esc that the "closed" line alone cannot distinguish from its absence: a
+        // `vmFind()` that never opened the bar reads exactly like Esc having dismissed it, and a build
+        // that closed the window on a typed-in filter also leaves that filter empty.
+        //
+        // `editorText` looks at field editors only — a focused content view is an NSTextView too, and
+        // reporting the file's first forty characters as "typed" would be a lie in the shape of a fact.
+        let barBefore = scrollView.isFindBarVisible
+        func editorText() -> String {
+            guard let editor = window.firstResponder as? NSTextView, editor.isFieldEditor else { return "" }
+            return editor.string
+        }
+        let typedBefore = editorText()
+        let esc = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0,
+                                   windowNumber: window.windowNumber, context: nil,
+                                   characters: "\u{1B}", charactersIgnoringModifiers: "\u{1B}",
+                                   isARepeat: false, keyCode: 53)
+        if let esc { window.sendEvent(esc) }
+        func bar(_ open: Bool) -> String { open ? "open" : "closed" }
+        return "focus=\(focus)\nfindbar=\(bar(barBefore))→\(bar(scrollView.isFindBarVisible))\n"
+            + "typed=[\(typedBefore.prefix(40))]→[\(editorText().prefix(40))]\n"
+            + "closed=\(window.isVisible ? "no" : "yes")\n"
+    }
+
+    /// Make the first view of the given class (by name) the first responder.
+    private func focusFirstResponderKind(_ name: String) {
+        guard let root = window?.contentView else { return }
+        func walk(_ view: NSView) -> NSView? {
+            if String(describing: type(of: view)) == name { return view }
+            for sub in view.subviews { if let hit = walk(sub) { return hit } }
+            return nil
+        }
+        if let target = walk(root) { window?.makeFirstResponder(target) }
+    }
     #endif
     private let scrollView = NSScrollView()
     private var contentView: NSView?
@@ -361,6 +432,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         guard let window else { return }
         let container = ListerContainerView()
         container.onKey = { [weak self] event in self?.handleKey(event) ?? false }
+        container.onCancel = { [weak self] in self?.window?.close() }
         window.contentView = container
         self.container = container
 
@@ -1878,11 +1950,20 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
 /// Container that routes key events to the controller.
 private final class ListerContainerView: NSView {
     var onKey: ((NSEvent) -> Bool)?
+    /// Esc that arrives as a *responder-chain* message rather than as a key event on this view.
+    ///
+    /// `onKey` only ever fires while this view is the first responder, which it stops being the moment
+    /// the reader clicks into the text area, the symbol filter or the marks table — those views consume
+    /// the keystroke and turn Esc into `cancelOperation:`, which AppKit then sends up the superview
+    /// chain. This view is the window's content view, so every focusable thing in the viewer is inside
+    /// it and that chain ends here: one hook covers all of them, present and future.
+    var onCancel: (() -> Void)?
     override var acceptsFirstResponder: Bool { true }
     override func keyDown(with event: NSEvent) {
         if onKey?(event) == true { return }
         super.keyDown(with: event)
     }
+    override func cancelOperation(_ sender: Any?) { onCancel?() }
 }
 
 /// WKWebView that offers the viewer's command keys to the controller first, then
@@ -1965,6 +2046,21 @@ final class ViewerTextView: NSTextView, ViewerTextProviding {
             return
         }
         super.mouseDown(with: event)
+    }
+
+    /// Esc must keep closing the viewer once the reader has clicked into the text.
+    ///
+    /// This is where it stopped: NSTextView maps Esc to `complete:` (word completion), so the key was
+    /// consumed by a feature a read-only viewer does not have, and the container above never saw it.
+    /// A visible find bar is the one thing Esc does mean locally — dismiss that first, as every other
+    /// Mac text view does, and only pass the key on when there is nothing left to cancel here.
+    override func cancelOperation(_ sender: Any?) {
+        if let scroll = enclosingScrollView, scroll.isFindBarVisible {
+            scroll.isFindBarVisible = false
+            window?.makeFirstResponder(self)
+            return
+        }
+        nextResponder?.tryToPerform(#selector(NSResponder.cancelOperation(_:)), with: sender)
     }
 }
 

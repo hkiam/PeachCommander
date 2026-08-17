@@ -331,6 +331,13 @@ extension MainWindowController {
                 // report.txt instead of the window it was for.
                 currentLister()?.close()
                 automationListers.removeAll { $0.window == nil || !($0.window?.isVisible ?? false) }
+            case "listeresc":                           // listeresc <text|filter|filtertext|marks|findbar>|<out>
+                // Esc closing the viewer is only interesting *after* the focus has moved off the
+                // container view, so the verb takes where to click first.
+                let e = arg.split(separator: "|", maxSplits: 1).map { String($0).trimmingCharacters(in: .whitespaces) }
+                let out = currentLister()?.automationEscape(focusing: e[0]) ?? "ERROR: no lister window\n"
+                if e.count == 2 { try? out.write(toFile: e[1], atomically: true, encoding: .utf8) }
+                automationListers.removeAll { !($0.window?.isVisible ?? false) }
             case "listerfind":                          // listerfind <pattern>|<regex 0|1>|<out>
                 let f = arg.split(separator: "|", maxSplits: 2).map(String.init)
                 if f.count == 3 {

@@ -34,6 +34,7 @@ final class SymbolSidebar: NSView {
         search.target = self
         search.action = #selector(filterChanged)
         search.sendsSearchStringImmediately = true
+        search.delegate = self   // for Esc (see `control(_:textView:doCommandBy:)`)
         addSubview(search)
 
         outline.setAccessibilityLabel(String(localized: "Symbols"))
@@ -176,6 +177,28 @@ final class SymbolSidebar: NSView {
 
     private func applyFilter() {
         controller.setFilter(search.stringValue)
+    }
+}
+
+extension SymbolSidebar: NSSearchFieldDelegate {
+    /// Esc in the filter field: clear it, and once it is empty hand the key on.
+    ///
+    /// A field editor ends editing on Esc and keeps the key, so in the viewer Esc stopped closing the
+    /// window for as long as this field had focus — which is from the moment the sidebar is opened,
+    /// since opening it focuses the filter. Passing it up the responder chain lets the owning window
+    /// decide (the viewer closes; the editor, which has no such handler, ignores it as before).
+    func control(_ control: NSControl, textView: NSTextView, doCommandBy selector: Selector) -> Bool {
+        guard selector == #selector(NSResponder.cancelOperation(_:)) else { return false }
+        // The field editor's own text, not `search.stringValue`: while a field is being edited the cell
+        // can still hold the value from before the keystroke, and a filter that reads as empty when it is
+        // not would send Esc on to close the window instead of clearing what was typed.
+        if !textView.string.isEmpty {
+            textView.string = ""
+            search.stringValue = ""
+            applyFilter()
+            return true
+        }
+        return nextResponder?.tryToPerform(selector, with: nil) ?? false
     }
 }
 

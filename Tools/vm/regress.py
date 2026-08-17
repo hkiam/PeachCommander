@@ -73,6 +73,22 @@ SCENARIOS = [
                   "settingspage Layout", "wait 2500"], 10),
     ("viewer-text", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                      "focus notes.txt", "wait 500", "cmd cm_List", "wait 2000"], 10),
+    # Esc closing the viewer once the reader has clicked something. It only worked while the container
+    # view held the focus, and the text area, the symbol filter and the native find bar each keep the
+    # key — so Esc stopped closing the window as soon as anyone touched the content, which is the state
+    # a viewer is normally in. The report names the focused responder because a check that Esc closed a
+    # window nobody had clicked into proves nothing. The find bar is the exception that must survive:
+    # there the first Esc dismisses the bar and the window stays, and the second one closes it.
+    ("viewer-esc", ["view /Users/admin/pc-demo/notes.txt", "wait 1800",
+                    "listeresc text|/Users/admin/esc-text.txt", "wait 700",
+                    "view /Users/admin/pc-demo/notes.txt", "wait 1800",
+                    "listeresc filter|/Users/admin/esc-filter.txt", "wait 700",
+                    "view /Users/admin/pc-demo/notes.txt", "wait 1800",
+                    "listeresc filtertext|/Users/admin/esc-typed.txt", "wait 700",
+                    "listeresc filter|/Users/admin/esc-typed2.txt", "wait 700",
+                    "view /Users/admin/pc-demo/notes.txt", "wait 1800",
+                    "listeresc findbar|/Users/admin/esc-find.txt", "wait 700",
+                    "listeresc text|/Users/admin/esc-find2.txt", "wait 700"], 10),
     # Does the sidebar show the structure of a YAML or XML file (F-368)? It was empty for JSON, YAML and
     # XML — the three formats an administrator edits most. `editdump` reports the rows actually rendered
     # into the live outline, so an entry that exists only in the parser cannot pass here.
@@ -1645,6 +1661,24 @@ REPORTS = {
     # The summary has to be *there*: a crash leaves no report at all, which is how the crash announced
     # itself in the first place.
     "viewer-folder": ("/Users/admin/folder-view.txt", ["status=", "Folder", "!ERROR"]),
+    # Esc from the text area and from the symbol filter: the focus line is half the check, because
+    # "closed=yes" is what a viewer whose focus never moved would also report.
+    "viewer-esc": ("/Users/admin/esc-text.txt",
+                   ["focus=ViewerTextView", "closed=yes", "!closed=no", "!ERROR"]),
+    "viewer-esc-filter": ("/Users/admin/esc-filter.txt",
+                          ["editing NSSearchField", "closed=yes", "!closed=no", "!ERROR"]),
+    # A filter with something in it is the other thing Esc means locally: the text goes, the window stays,
+    # and the Esc after that closes it. The "typed" pair is the check — a build that closed the window on
+    # the first Esc would also report an empty filter afterwards.
+    "viewer-esc-typed": ("/Users/admin/esc-typed.txt",
+                         ["typed=[o]→[]", "closed=no", "!ERROR"]),
+    "viewer-esc-typed-again": ("/Users/admin/esc-typed2.txt", ["closed=yes", "!ERROR"]),
+    # The find bar is the one thing Esc means locally: open before, gone after, window still up. Both
+    # sides of the arrow matter — "closed" alone would also describe a find bar that never opened.
+    "viewer-esc-findbar": ("/Users/admin/esc-find.txt",
+                           ["findbar=open→closed", "closed=no", "!ERROR"]),
+    "viewer-esc-findbar-again": ("/Users/admin/esc-find2.txt",
+                                 ["findbar=closed→closed", "closed=yes", "!ERROR"]),
     # The hit, and the preview saying where the term was: a row whose text is nowhere in the file needs
     # to explain itself.
     "find-comments": ("/Users/admin/found.txt",
