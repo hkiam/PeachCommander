@@ -299,7 +299,8 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Debounced outline refresh after edits.
     private func scheduleSymbolRefresh() {
         let ext = (path as NSString).pathExtension.lowercased()
-        guard SymbolOutline.supports(ext: ext) || StructureOutline.supports(ext: ext) else { return }
+        guard SymbolOutline.supports(ext: ext) || StructureOutline.supports(ext: ext)
+                || DeclarationOutline.supports(ext: ext) else { return }
         symbolWork?.cancel()
         let work = DispatchWorkItem { [weak self] in self?.refreshSymbols() }
         symbolWork = work

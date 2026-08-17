@@ -180,6 +180,11 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         if let addressable = contentView as? ListerLineAddressable {
             lines.append("lines=\(addressable.lineCount)")
         }
+        // The symbol sidebar as the reader meets it: whether the toggle can be pressed at all, and what
+        // the outline holds. A blank sidebar and a dead button look identical in a screenshot, and it was
+        // the dead button that got reported for Swift (F-405).
+        lines.append("symboltoggle=\(symbolToggle.isEnabled ? "enabled" : "disabled")")
+        for row in symbolSidebar.renderedCellStrings() { lines.append("symbolrow=\(row)") }
         // The marks panel's model, not its pixels: the notes group (F-379) is built from a plugin field,
         // and walking the view tree would only see it when the panel happens to be open and tall enough.
         for group in marksPanelGroups() {

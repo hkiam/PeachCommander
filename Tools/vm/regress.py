@@ -111,6 +111,25 @@ SCENARIOS = [
                     "view /Users/admin/pc-demo/notes.txt", "wait 1800",
                     "listeresc findbar|/Users/admin/esc-find.txt", "wait 700",
                     "listeresc text|/Users/admin/esc-find2.txt", "wait 700"], 10),
+    # The symbol sidebar for a language with no grammar (F-405). Swift had none — the app's own language —
+    # and the toggle was dead, which looks exactly like "this file has no symbols". `editdump` reads the
+    # rows actually rendered into the live outline and `listerdump` reports whether the viewer's button can
+    # be pressed at all, which is the half a screenshot cannot show.
+    ("swift-outline", ["editdump /Users/admin/pc-demo/outline.swift /Users/admin/swift-outline.txt",
+                       "wait 2500",
+                       "view /Users/admin/pc-demo/outline.swift", "wait 2200",
+                       "listerdump /Users/admin/swift-viewer.txt", "wait 500"], 10),
+    # And a second scanner language, to catch a table that lost an entry: Go's receiver form is the one
+    # rule whose absence turns a method's name into its receiver.
+    ("go-outline", ["editdump /Users/admin/pc-demo/outline.go /Users/admin/go-outline.txt",
+                    "wait 2500"], 10),
+    # Markdown headings and the HTML element tree, the two outlines whose sources are not declarations.
+    # Both fixtures carry the case that breaks them: a fenced shell block full of `#` lines, and a page
+    # written with void elements and paragraphs that never close.
+    ("markdown-outline", ["editdump /Users/admin/pc-demo/outline.md /Users/admin/md-outline.txt",
+                          "wait 2500"], 10),
+    ("html-outline", ["editdump /Users/admin/pc-demo/outline.html /Users/admin/html-outline.txt",
+                      "wait 2500"], 10),
     # Does the sidebar show the structure of a YAML or XML file (F-368)? It was empty for JSON, YAML and
     # XML — the three formats an administrator edits most. `editdump` reports the rows actually rendered
     # into the live outline, so an entry that exists only in the parser cannot pass here.
@@ -1683,6 +1702,30 @@ REPORTS = {
     # The summary has to be *there*: a crash leaves no report at all, which is how the crash announced
     # itself in the first place.
     "viewer-folder": ("/Users/admin/folder-view.txt", ["status=", "Folder", "!ERROR"]),
+    # The symbol outline for a language with no grammar (F-405). The tags are part of the answer: "C" for
+    # the type, "m" for a method inside it, "E" for an extension, "ƒ" for a file-scope function. A scanner
+    # that found every name and got the nesting wrong would produce the same list with "ƒ" throughout.
+    "swift-outline": ("/Users/admin/swift-outline.txt",
+                      ["count=", "[C  Machine]", "[m  greet]", "[E  Machine]", "[ƒ  topLevel]",
+                       "status=Swift", "crumb@mid=Machine", "!BLANK!",
+                       # The negative cases in the fixture: a declaration keyword in a comment or a
+                       # string is not a declaration.
+                       "!Commented", "!InAString"]),
+    # The viewer's button being pressable is the whole bug report.
+    "swift-outline-viewer": ("/Users/admin/swift-viewer.txt",
+                             ["symboltoggle=enabled", "Code · Swift", "!ERROR"]),
+    # `Greet`, not `m`: a missing receiver rule reports the receiver as the method's name.
+    "go-outline": ("/Users/admin/go-outline.txt",
+                   ["[C  Machine]", "[m  Greet]", "[ƒ  main]", "status=Go", "!BLANK!"]),
+    # Markdown: the headings, the breadcrumb they feed, and — the point — nothing from the fenced block.
+    "markdown-outline": ("/Users/admin/md-outline.txt",
+                         ["[H  PeachCommander]", "[H  Building]", "[H  Requirements]",
+                          "[H  Underlined Section]", "crumb@0=PeachCommander", "!nor this", "!BLANK!"]),
+    # HTML: `meta` is a leaf and `b` does not exist — a `<meta>` pushed as an open element swallows the
+    # page, and `if (a < b)` in a script opens an element called b.
+    "html-outline": ("/Users/admin/html-outline.txt",
+                     ["head", "meta", "body", "header #top", "main #content", "script",
+                      "!  b]", "!BLANK!"]),
     # The bare-key guard. Titles are localized and the command names are not, so the checks are on
     # "|cm_…" and on `menuClaimed` — which is AppKit's own answer about whether the item fired.
     #

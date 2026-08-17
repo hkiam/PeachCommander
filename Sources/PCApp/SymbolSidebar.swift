@@ -95,6 +95,12 @@ final class SymbolSidebar: NSView {
             loadStructure(text: text, ext: ext)
             return
         }
+        // Third source, for the languages with no grammar at all — Swift among them, which is what this
+        // app is written in (F-405). Same background-parse shape as the other two.
+        if SymbolOutline.supports(ext: ext) == false, DeclarationOutline.supports(ext: ext) {
+            loadDeclarations(text: text, ext: ext)
+            return
+        }
         guard SymbolOutline.supports(ext: ext), let handles = SymbolOutline.handles(ext: ext) else {
             lastSignature = nil; setRoots([]); return
         }
@@ -115,13 +121,27 @@ final class SymbolSidebar: NSView {
 
     /// Outline a structured-data file off the main thread, like the tree-sitter path.
     private func loadStructure(text: String, ext: String) {
+        parseOffMainThread(text: text, ext: ext) { StructureOutline.parse($0, ext: $1) }
+    }
+
+    /// Outline a language with no grammar (Swift, Go, Ruby, …) off the main thread.
+    private func loadDeclarations(text: String, ext: String) {
+        parseOffMainThread(text: text, ext: ext) { DeclarationOutline.parse($0, ext: $1) }
+    }
+
+    /// Run `build` on the utility queue and install its result, if nothing newer has been asked for.
+    ///
+    /// The dedupe-by-signature and the generation check are the point: typing in the editor asks for a
+    /// re-outline on every keystroke, and a stale parse arriving late would replace the current one.
+    private func parseOffMainThread(text: String, ext: String,
+                                   build: @escaping @Sendable (String, String) -> [SymbolNode]) {
         let signature = text.utf16.count &* 31 &+ text.hashValue
         if signature == lastSignature { return }
         lastSignature = signature
         generation += 1
         let gen = generation
         queue.async { [weak self] in
-            let roots = StructureOutline.parse(text, ext: ext)
+            let roots = build(text, ext)
             DispatchQueue.main.async {
                 guard let self, gen == self.generation else { return }
                 self.setRoots(roots)
@@ -242,8 +262,14 @@ final class SymbolOutlineController: NSObject, NSOutlineViewDataSource, NSOutlin
     private static func tag(_ kind: String) -> (String, NSColor) {
         let p = Theme.currentSyntax
         switch kind {
-        case "class", "struct", "enum", "union": return ("C", p.type)
+        // "object" is Kotlin's and Scala's singleton — a class as far as an outline is concerned.
+        case "class", "struct", "enum", "union", "object": return ("C", p.type)
         case "interface", "protocol", "trait":   return ("I", p.type)
+        // Swift and Dart extensions. Listed separately rather than as their extended type: an extension
+        // of something declared in another file has nothing here to be merged into.
+        case "extension":                         return ("E", p.type)
+        // Markdown headings. One tag for all six levels: the tree already shows which level a heading is.
+        case "heading":                           return ("H", p.keyword)
         case "method":                            return ("m", p.function)
         case "function", "macro":                 return ("ƒ", p.function)
         case "module", "namespace":               return ("M", p.keyword)

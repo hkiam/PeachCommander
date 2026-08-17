@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<!-- A fixture for the HTML outline (F-405): a void element that does not close itself, paragraphs
+     without end tags, and a script holding a "<" that is not markup. -->
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Seite</title>
+  <style>.card > .title { color: red; }</style>
+</head>
+<body>
+  <header id="top"><h1>Hallo</h1></header>
+  <main id="content">
+    <p>Erster
+    <p>Zweiter
+    <img src="x.png">
+    <script>if (a < b) { go(); }</script>
+  </main>
+</body>
+</html>

@@ -992,13 +992,29 @@ extension MainWindowController {
         guard a.count == 2 else { NSLog("[automation] symbols needs <src> <out>"); return }
         let src = a[0], outFile = a[1]
         let ext = (src as NSString).pathExtension.lowercased()
-        guard let text = try? String(contentsOfFile: src, encoding: .utf8),
-              let h = SymbolOutline.handles(ext: ext) else {
-            try? "ERROR: cannot read or unsupported ext\n".write(toFile: outFile, atomically: true, encoding: .utf8)
+        guard let text = try? String(contentsOfFile: src, encoding: .utf8) else {
+            try? "ERROR: cannot read \(src)\n".write(toFile: outFile, atomically: true, encoding: .utf8)
             return
         }
-        let roots = SymbolOutline.parse(text, query: h.query, language: h.language)
-        var lines: [String] = []
+        // The same three sources the sidebar chooses between, in the same order (F-405). Asking only
+        // tree-sitter reported "unsupported ext" for every language whose outline comes from a scanner —
+        // Swift included, which is the file type this app is written in.
+        let roots: [SymbolNode]
+        let source: String
+        if let h = SymbolOutline.handles(ext: ext) {
+            roots = SymbolOutline.parse(text, query: h.query, language: h.language)
+            source = "tree-sitter"
+        } else if StructureOutline.supports(ext: ext) {
+            roots = StructureOutline.parse(text, ext: ext)
+            source = "structure"
+        } else if DeclarationOutline.supports(ext: ext) {
+            roots = DeclarationOutline.parse(text, ext: ext)
+            source = "declarations"
+        } else {
+            try? "ERROR: no outline for .\(ext)\n".write(toFile: outFile, atomically: true, encoding: .utf8)
+            return
+        }
+        var lines: [String] = ["source=\(source)"]
         func walk(_ nodes: [SymbolNode], _ depth: Int) {
             for n in nodes {
                 let blank = n.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty

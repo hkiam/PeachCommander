@@ -227,6 +227,79 @@ final class StructureOutlineTests: XCTestCase {
         nodes.reduce(0) { $0 + 1 + countNodes($1.children) }
     }
 
+    // MARK: - HTML (the same walk, with the three ways HTML is not XML)
+
+    /// A page written the way real pages are: void elements that do not close themselves, a paragraph
+    /// without an end tag, and a script holding a `<` that is not markup.
+    private let page = """
+    <!DOCTYPE html>
+    <html lang="de">
+    <head>
+      <meta charset="utf-8">
+      <title>Seite</title>
+      <style>.a > .b { color: red; }</style>
+    </head>
+    <body>
+      <header id="top"><h1>Hallo</h1></header>
+      <main>
+        <p>Erster
+        <p>Zweiter
+        <img src="x.png">
+        <script>if (a < b) { go(); }</script>
+      </main>
+    </body>
+    </html>
+    """
+
+    func testHtmlIsOutlinedAndVoidElementsDoNotSwallowTheDocument() {
+        let roots = StructureOutline.parse(page, ext: "html")
+        // `<html>` is the single root and is unwrapped, so head and body are the top level.
+        XCTAssertEqual(roots.map(\.name), ["head", "body"])
+        // `<meta>` never closes: pushed as an open element, it would contain the whole rest of the page.
+        XCTAssertEqual(roots[0].children.map(\.name), ["meta", "title", "style"])
+        XCTAssertEqual(roots[0].children[0].kind, "value")   // a leaf, like a self-closed XML tag
+    }
+
+    func testHtmlParagraphsWithoutEndTagsAreSiblings() {
+        let roots = StructureOutline.parse(page, ext: "html")
+        let main = roots[1].children[1]
+        XCTAssertEqual(main.name, "main")
+        XCTAssertEqual(main.children.prefix(2).map(\.name), ["p", "p"])
+        // Not a paragraph inside a paragraph: with implied end tags missing, every list item and table
+        // row of a real page nests one level deeper than it is.
+        XCTAssertTrue(main.children[0].children.isEmpty)
+    }
+
+    func testHtmlScriptAndStyleContentIsNotReadAsMarkup() {
+        let roots = StructureOutline.parse(page, ext: "html")
+        func allNames(_ nodes: [SymbolNode]) -> [String] { nodes.flatMap { [$0.name] + allNames($0.children) } }
+        let names = allNames(roots)
+        XCTAssertTrue(names.contains("script"))
+        // `if (a < b)` would open an element called "b"; `.a > .b` in the stylesheet does the same.
+        XCTAssertFalse(names.contains("b"))
+        XCTAssertEqual(names.filter { $0 == "script" }.count, 1)
+    }
+
+    func testHtmlIdsLabelTheElements() {
+        let roots = StructureOutline.parse(page, ext: "html")
+        XCTAssertEqual(roots[1].children.first?.name, "header #top")
+    }
+
+    func testAClosingTagClosesTheElementOfThatName() {
+        // Pop-by-name, which XML gets too: a stray or misplaced closer used to pop whatever was on top,
+        // leaving the real parent open and nesting the rest of the document inside it.
+        let xml = """
+        <root>
+          <a>
+            <b></c>
+          </a>
+          <d/>
+        </root>
+        """
+        let roots = StructureOutline.parse(xml, ext: "xml")
+        XCTAssertEqual(roots.map(\.name), ["a", "d"])
+    }
+
     func testAStrayCloserInsideAnArrayDoesNotStall() {
         // Malformed input is the normal case for this parser, so a scanner that cannot advance has to
         // stop rather than loop.

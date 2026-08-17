@@ -30,6 +30,32 @@ public enum StructureOutline {
     private static let xml: Set<String> = ["xml", "svg", "plist", "xsd", "xsl", "xslt", "storyboard",
                                           "xib", "rss", "atom", "pom", "xhtml", "resx", "csproj",
                                           "vcxproj", "nuspec", "wsdl"]
+    /// HTML is scanned by the same walk with three concessions to it not being XML (see `parseXML`).
+    private static let html: Set<String> = ["html", "htm"]
+
+    /// Elements that never close. In XML `<br/>` says so itself; in HTML `<br>` does not, and a scanner
+    /// that pushes it nests the entire rest of the document inside a line break.
+    private static let voidElements: Set<String> = [
+        "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source",
+        "track", "wbr"
+    ]
+
+    /// Elements whose content is not markup. `<script>` holding `if (a < b)` would otherwise open an
+    /// element called "b", and a stylesheet's `>` combinators do the same thing.
+    private static let rawTextElements: Set<String> = ["script", "style"]
+
+    /// HTML's implied end tags: which open element a new one closes. `<p>Erster<p>Zweiter` is two
+    /// paragraphs and not a paragraph inside a paragraph, and a page written that way — legal HTML, and
+    /// common — otherwise nested one level deeper with every list item and table row.
+    private static let closedBy: [String: Set<String>] = [
+        "p": ["p"],
+        "li": ["li"],
+        "tr": ["tr"], "td": ["td", "th"], "th": ["td", "th"],
+        "dt": ["dt", "dd"], "dd": ["dt", "dd"],
+        "option": ["option"], "optgroup": ["optgroup", "option"],
+        "thead": ["thead", "tbody", "tfoot"], "tbody": ["thead", "tbody", "tfoot"],
+        "tfoot": ["thead", "tbody", "tfoot"],
+    ]
 
     /// How many nodes are produced at most. A 200 MB JSON array would otherwise build an outline nobody
     /// can use out of memory nobody has; the sidebar shows what fits and the file still opens.
@@ -37,7 +63,7 @@ public enum StructureOutline {
 
     public static func supports(ext: String) -> Bool {
         let e = ext.lowercased()
-        return json.contains(e) || yaml.contains(e) || xml.contains(e)
+        return json.contains(e) || yaml.contains(e) || xml.contains(e) || html.contains(e)
     }
 
     /// Build the outline for `text`, or an empty array when the extension is not one of ours.
@@ -46,6 +72,7 @@ public enum StructureOutline {
         if json.contains(e) { return parseJSON(text) }
         if yaml.contains(e) { return parseYAML(text) }
         if xml.contains(e) { return parseXML(text) }
+        if html.contains(e) { return parseXML(text, html: true) }
         return []
     }
 
@@ -303,10 +330,17 @@ public enum StructureOutline {
     ///
     /// A scanner over `<`…`>` rather than XMLDocument, for the offsets — and because a document with one
     /// unclosed tag still outlines down to that tag, which is exactly when somebody is looking.
-    static func parseXML(_ text: String) -> [SymbolNode] {
+    /// - Parameter html: read the text as HTML rather than XML. Three concessions, and each one is a
+    ///   defect without it: void elements (`<br>`, `<meta>`) close themselves, `<script>`/`<style>`
+    ///   content is skipped as opaque text, and a closing tag closes the innermost element *of that name*
+    ///   rather than whatever happens to be open — which is how a page with an unclosed `<p>` (legal HTML)
+    ///   still nests everything after it correctly.
+    static func parseXML(_ text: String, html: Bool = false) -> [SymbolNode] {
         var scanner = Scanner(text)
         var roots: [SymbolNode] = []
-        var stack: [SymbolNode] = []
+        /// The element's tag travels with the node: the node's `name` is a label (`div#main`) and cannot
+        /// be matched against a closing tag.
+        var stack: [(node: SymbolNode, tag: String)] = []
         var count = 0
 
         while let c = scanner.peek() {
@@ -320,28 +354,49 @@ public enum StructureOutline {
                 scanner.skipUntil(">")                     // declaration, comment, doctype, CDATA
                 continue
             case "/":
+                let closing = scanner.readTagName()?.lowercased()
                 scanner.skipUntil(">")
-                if let node = stack.popLast() { node.end = scanner.offset }
+                // Pop to the matching element. For well-formed XML that is always the top, so this keeps
+                // the old behaviour there and rescues the nesting for everything else.
+                if let closing, let match = stack.lastIndex(where: { $0.tag == closing }) {
+                    for entry in stack[match...] { entry.node.end = scanner.offset }
+                    stack.removeSubrange(match...)
+                } else if closing == nil, let entry = stack.popLast() {
+                    entry.node.end = scanner.offset
+                }
                 continue
             default: break
             }
             guard let name = scanner.readTagName(), !name.isEmpty else { continue }
             let attributes = scanner.readAttributes()
-            let selfClosing = scanner.lastTagWasSelfClosing
+            let tag = name.lowercased()
+            let selfClosing = scanner.lastTagWasSelfClosing || (html && voidElements.contains(tag))
+            // An element that implies the end of the one still open closes it before being added.
+            if html, let closes = closedBy[tag], let top = stack.last, closes.contains(top.tag) {
+                top.node.end = tagStart
+                stack.removeLast()
+            }
             let label = Self.label(tag: name, attributes: attributes)
             let node = SymbolNode(name: label, kind: selfClosing ? "value" : "object", line: tagLine,
                                   utf16Location: tagStart + 1, start: tagStart, end: scanner.offset,
                                   pathComponent: StructurePath.xmlStep(tag: name, attributes: attributes))
             count += 1
-            if let parent = stack.last {
+            if let parent = stack.last?.node {
                 parent.children.append(node)
             } else {
                 roots.append(node)
             }
-            if !selfClosing { stack.append(node) }
+            if html, rawTextElements.contains(tag), !selfClosing {
+                // Straight to the closing tag: what is in between is JavaScript or CSS, not markup.
+                scanner.skipTo("</\(name)")
+                scanner.skipUntil(">")
+                node.end = scanner.offset
+                continue
+            }
+            if !selfClosing { stack.append((node, tag)) }
         }
         let end = text.utf16.count
-        for node in stack { node.end = end }
+        for entry in stack { entry.node.end = end }
         // One root element carries no information by itself; its children are the structure.
         if roots.count == 1, !roots[0].children.isEmpty { return roots[0].children }
         return roots
@@ -401,6 +456,30 @@ public enum StructureOutline {
                 advance()
                 if c == terminator { return }
             }
+        }
+
+        /// Stop at the start of `needle`, or at the end of the text if it never comes.
+        ///
+        /// Case-insensitive over ASCII, because it is used for HTML's `</script>`, which a page may spell
+        /// `</SCRIPT>` — and stopping at the end rather than throwing is what lets a document that forgets
+        /// the closing tag still produce the outline it has so far.
+        mutating func skipTo(_ needle: String) {
+            let pattern = Array(needle.utf16).map(Self.lowerASCII)
+            guard !pattern.isEmpty else { return }
+            while offset + pattern.count <= units.count {
+                var matched = true
+                for k in 0..<pattern.count where Self.lowerASCII(units[offset + k]) != pattern[k] {
+                    matched = false
+                    break
+                }
+                if matched { return }
+                advance()
+            }
+            while offset < units.count { advance() }
+        }
+
+        private static func lowerASCII(_ unit: UInt16) -> UInt16 {
+            (unit >= 65 && unit <= 90) ? unit + 32 : unit
         }
 
         /// Read a JSON string, returning its contents with escapes left as written.
