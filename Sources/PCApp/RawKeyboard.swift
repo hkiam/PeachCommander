@@ -26,10 +26,14 @@
 // of the app's Swift protocols. They declare `rawKeyboard` in their manifest instead, and the host
 // resolves the focused responder up its view hierarchy to see whether it lands inside one of them.
 //
-// What this deliberately does *not* cover: menu key equivalents. Those are matched before the
-// responder chain, so ⌘-anything bound in the menu bar reaches the menu rather than the focused view.
-// That is correct macOS behaviour and it is what Terminal.app does as well — ⌘W closes the tab, and a
-// program wanting ⌘W inside a terminal does not get it there either.
+// Menu key equivalents used not to be covered here at all, on the grounds that they are matched before
+// the responder chain and that this is correct macOS behaviour: ⌘-anything bound in the menu bar
+// reaches the menu rather than the focused view, exactly as ⌘W closes a Terminal.app tab. That
+// reasoning holds for ⌘ chords and breaks for *bare* ones, which this app has — the keymap binds
+// `DELETE=cm_Delete`, and `KeymapMenu.apply` puts it on File ▸ Delete as a modifier-less accelerator.
+// A bare accelerator is matched app-wide before any keystroke reaches a text field, so pressing Del
+// while typing in the Find dialog asked to move the panel's file to the Trash. `menuMayClaim` below is
+// the rule for that case.
 
 import AppKit
 
@@ -55,6 +59,43 @@ enum RawKeyboard {
     /// Deliberately tiny. Every entry here is a key taken away from whatever is focused, which is the
     /// opposite of what `rawKeyboard` is for, so the bar is "without it the user is stuck".
     static let reservedCommands: Set<String> = ["cm_TerminalFocus"]
+
+    /// May the menu bar claim this key event, or was it aimed at something else?
+    ///
+    /// Only bare keystrokes are in question. A chord with ⌘/⌃/⌥ belongs to the menu wherever it is
+    /// pressed — that is macOS, and changing it would be the surprise. A key with none of those is what
+    /// a person is typing, and this app puts file commands on such keys: Del deletes, F5 copies, F7
+    /// makes a folder. Two things then have to be true before the menu bar may act on one.
+    ///
+    /// **The keystroke must have been aimed at the file manager.** These commands work on the panels of
+    /// the main window; while a dialog, an inspector or a tool window is key, the person is looking
+    /// somewhere else entirely and the panel behind it is not what they are pressing keys at. This is the
+    /// half that made the reported defect dangerous: any text field in any window of the app could ask
+    /// for a file to be deleted.
+    ///
+    /// **The keystroke must not be one the focused thing is typing.** Inside the file manager the same
+    /// `wantsRaw` rule as everywhere else applies — with one deliberate exception, the function keys.
+    /// F1–F12 are not typing keys, and a file manager whose F5 stops copying because the cursor happens
+    /// to sit in the command line has lost the property that makes it one. So Del, Backspace, Return and
+    /// the arrows stay with the text; the function keys still reach the panels.
+    ///
+    /// - Parameters:
+    ///   - keyWindowIsFileManager: is the key window the one that owns the file panels?
+    ///   - responder: the key window's first responder.
+    ///   - rawViews: mounted plugin views whose manifest declares `rawKeyboard`.
+    static func menuMayClaim(_ event: NSEvent, keyWindowIsFileManager: Bool,
+                             firstResponder responder: NSResponder?, rawViews: [NSView]) -> Bool {
+        guard event.modifierFlags.intersection([.command, .control, .option]).isEmpty else { return true }
+        guard keyWindowIsFileManager else { return false }
+        if isFunctionKey(event) { return true }
+        return !wantsRaw(event, firstResponder: responder, rawViews: rawViews)
+    }
+
+    /// F1…F12 — the same range `KeymapMenu` uses when it turns an event into a key token.
+    private static func isFunctionKey(_ event: NSEvent) -> Bool {
+        guard let scalar = event.charactersIgnoringModifiers?.unicodeScalars.first else { return false }
+        return (0xF704...0xF70F).contains(scalar.value)
+    }
 
     /// Should this key event be left to the focused view rather than routed to a command?
     ///

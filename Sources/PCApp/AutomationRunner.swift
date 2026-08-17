@@ -413,6 +413,14 @@ extension MainWindowController {
                     out += "text=\(text.prefix(80))\n"
                     try? out.write(toFile: a[1], atomically: true, encoding: .utf8)
                 }
+            case "keysend":                             // keysend <chord>|<field|asis>|<out> (F-404)
+                // The key goes to whatever window is *key*, not to the main window: the question is what
+                // a keystroke aimed at a dialog does to the file panels behind it.
+                let k = arg.split(separator: "|", maxSplits: 2).map { String($0).trimmingCharacters(in: .whitespaces) }
+                if k.count == 3 {
+                    let out = automationSendKey(k[0], focus: k[1])
+                    try? out.write(toFile: k[2], atomically: true, encoding: .utf8)
+                }
             case "closeviews":                          // closeviews (F-381)
                 // The same teardown path quitting takes, but with the app still running — which is the
                 // only way to observe that PcCloseView did anything. After the process exits, every

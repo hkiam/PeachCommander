@@ -5709,6 +5709,107 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         if viaMenu, NSApp.mainMenu?.performKeyEquivalent(with: event) == true { return true }
         return window.contentView?.performKeyEquivalent(with: event) ?? false
     }
+
+    /// Diagnostic: press a chord in whatever window is *key*, the whole way AppKit dispatches it, and
+    /// report who claimed it (F-404).
+    ///
+    /// `sendKeyEquivalentForAutomation` cannot answer this: it broadcasts into the main window's view
+    /// hierarchy, and the defect is about a key pressed in a *different* window. A menu key equivalent
+    /// is matched app-wide before any window sees the keystroke, so the report has to name the key
+    /// window, the responder, the menu item that matches — and what the focused field did with the key,
+    /// since "the text field kept its keystroke" is the property that was lost.
+    ///
+    /// - Parameter focus: `field` clicks into the key window's first editable text field first, which is
+    ///   the situation being reported; anything else leaves the focus alone.
+    func automationSendKey(_ spec: String, focus: String) -> String {
+        guard let chord = KeyChord(parsing: spec) else { return "ERROR: bad chord \(spec)\n" }
+        guard let window = NSApp.keyWindow else { return "ERROR: no key window\n" }
+        guard let (char, mask) = KeymapMenu.keyEquivalent(for: chord) else {
+            return "ERROR: \(spec) is not representable as a key equivalent\n"
+        }
+        if focus == "field" { automationFocusTextField(in: window, text: "abc") }
+        var out = "keyWindow=\(window.title.isEmpty ? "<untitled>" : window.title)\n"
+        let responder = window.firstResponder
+        var who = responder.map { String(describing: type(of: $0)) } ?? "none"
+        if let editor = responder as? NSTextView, editor.isFieldEditor,
+           let owner = editor.delegate.map({ String(describing: type(of: $0)) }) {
+            who += "(editing \(owner))"
+        }
+        out += "responder=\(who)\n"
+        // The menu item is the cause, and naming it is safe: this only *reads* the menu tree. What
+        // follows dispatches for real, which is how the effect gets observed at all.
+        let match = automationMenuItem(matching: char, mask: mask)
+        out += "menuItem=\(match.map { "\($0.title)|\($0.command)" } ?? "none")\n"
+        // Enablement decides whether the match is a real dispatch or a dead accelerator: with
+        // `autoenablesItems` off, AppKit fires a matching item exactly when `isEnabled` says so.
+        out += "menuEnabled=\(match.map { $0.enabled ? "yes" : "no" } ?? "n/a")\n"
+        func fieldText() -> String {
+            guard let editor = window.firstResponder as? NSTextView, editor.isFieldEditor else { return "" }
+            return editor.string
+        }
+        let before = fieldText()
+        // The key code as well as the character: `interpretKeyEvents` reads the character, but a view
+        // switching on `keyCode` (the panel does) would see 0 and answer about the wrong key.
+        let code: UInt16 = chord.key == "DELETE" ? 117 : 0
+        if let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: mask,
+                                       timestamp: ProcessInfo.processInfo.systemUptime,
+                                       windowNumber: window.windowNumber, context: nil,
+                                       characters: char, charactersIgnoringModifiers: char,
+                                       isARepeat: false, keyCode: code) {
+            // Two routes, because they answer different halves of the question. `sendEvent` is the whole
+            // dispatch as the app sees it; `menu` asks the menu bar on its own, which is the step AppKit
+            // performs before any window sees a real keystroke and the only one a synthesized event
+            // cannot be trusted to reproduce.
+            if focus.contains("menu") {
+                out += "menuClaimed=\(NSApp.mainMenu?.performKeyEquivalent(with: event) == true ? "yes" : "no")\n"
+            } else {
+                NSApp.sendEvent(event)
+            }
+        }
+        out += "field=[\(before)]→[\(fieldText())]\n"
+        return out
+    }
+
+    /// The first main-menu item whose key equivalent matches this chord.
+    ///
+    /// A naming aid, not the verdict: `menuClaimed` is what AppKit actually did. The two can disagree —
+    /// F2 reports no item and is claimed all the same — because a submenu filled in by a delegate is
+    /// populated during a real match and is still empty to a static walk like this one.
+    private func automationMenuItem(matching char: String, mask: NSEvent.ModifierFlags)
+        -> (title: String, command: String, enabled: Bool)? {
+        let wanted: NSEvent.ModifierFlags = [.command, .control, .option, .shift]
+        func walk(_ menu: NSMenu) -> (String, String, Bool)? {
+            for item in menu.items {
+                if let sub = item.submenu, let hit = walk(sub) { return hit }
+                guard !item.keyEquivalent.isEmpty,
+                      item.keyEquivalent.lowercased() == char.lowercased(),
+                      item.keyEquivalentModifierMask.intersection(wanted) == mask.intersection(wanted)
+                else { continue }
+                return (item.title, item.representedObject as? String ?? "<no command>", item.isEnabled)
+            }
+            return nil
+        }
+        return NSApp.mainMenu.flatMap(walk)
+    }
+
+    /// Click into a window's first editable text field and put `text` in it, caret at the start.
+    private func automationFocusTextField(in window: NSWindow, text: String) {
+        func walk(_ view: NSView) -> NSTextField? {
+            if let field = view as? NSTextField, field.isEditable, !field.isHidden { return field }
+            for sub in view.subviews { if let hit = walk(sub) { return hit } }
+            return nil
+        }
+        guard let root = window.contentView, let field = walk(root) else { return }
+        field.stringValue = text
+        window.makeFirstResponder(field)
+        // Through the field editor as well. A dialog often opens with this field already focused, so
+        // `makeFirstResponder` is a no-op and the live editor keeps the value it had — the report then
+        // describes a field the scenario never set up. Measured: the Find dialog kept showing "*.*".
+        if let editor = field.currentEditor() { editor.string = text }
+        // Caret at the start, so a forward delete has something to delete: the check is that the *field*
+        // consumed the key, and a caret at the end would leave the text unchanged either way.
+        field.currentEditor()?.selectedRange = NSRange(location: 0, length: 0)
+    }
     #endif
 
     /// Keep the function-key bar honest about whose keys these are (F-381).

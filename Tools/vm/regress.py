@@ -73,6 +73,28 @@ SCENARIOS = [
                   "settingspage Layout", "wait 2500"], 10),
     ("viewer-text", ["active left", "left /Users/admin/pc-demo", "wait 1200",
                      "focus notes.txt", "wait 500", "cmd cm_List", "wait 2000"], 10),
+    # Who owns a *bare* keystroke: the menu bar, or what the person is typing into. The keymap binds
+    # `DELETE=cm_Delete` and `KeymapMenu.apply` puts it on File ▸ Delete as a modifier-less accelerator,
+    # which AppKit matches app-wide before any window sees the key — so Del in the Find dialog's text
+    # field asked to move the panel's file to the Trash. Both halves are checked: the keys that must stop
+    # leaking (Del in a dialog, Del in the command line, F5 in a dialog) and the ones that must not
+    # change (a function key inside the file manager, a ⌘ chord anywhere, and Del on a focused panel —
+    # which is the command doing its job, caught as a modal and aborted so nothing is deleted).
+    #
+    # The panel step comes first, while the file manager is still the only window there is: the Find
+    # dialog has no "close" verb, and a check that needs the main window to be key cannot run behind it.
+    ("menu-key-guard", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                        "focus notes.txt", "wait 700",
+                        "keysend DELETE|asis+menu|/Users/admin/mk-panel-del.txt",
+                        "modaldump /Users/admin/mk-panel-modal.txt", "wait 3000",
+                        "focuscmdline", "wait 700",
+                        "keysend DELETE|asis+menu|/Users/admin/mk-cmdline-del.txt", "wait 500",
+                        "keysend F2|asis+menu|/Users/admin/mk-cmdline-f2.txt", "wait 700",
+                        "findtab 0", "wait 2000",
+                        "keysend DELETE|field+menu|/Users/admin/mk-find-del.txt", "wait 500",
+                        "keysend DELETE|field|/Users/admin/mk-find-typed.txt", "wait 500",
+                        "keysend F5|field+menu|/Users/admin/mk-find-f5.txt", "wait 500",
+                        "keysend W+a|field+menu|/Users/admin/mk-find-cmda.txt", "wait 700"], 10),
     # Esc closing the viewer once the reader has clicked something. It only worked while the container
     # view held the focus, and the text area, the symbol filter and the native find bar each keep the
     # key — so Esc stopped closing the window as soon as anyone touched the content, which is the state
@@ -1661,6 +1683,34 @@ REPORTS = {
     # The summary has to be *there*: a crash leaves no report at all, which is how the crash announced
     # itself in the first place.
     "viewer-folder": ("/Users/admin/folder-view.txt", ["status=", "Folder", "!ERROR"]),
+    # The bare-key guard. Titles are localized and the command names are not, so the checks are on
+    # "|cm_…" and on `menuClaimed` — which is AppKit's own answer about whether the item fired.
+    #
+    # The panel keeps the key: this is the command working, and the modal proves it reached the engine.
+    # Aborted by `modaldump`, so the scenario deletes nothing.
+    "menu-key-guard": ("/Users/admin/mk-panel-del.txt",
+                       ["responder=PanelListView", "|cm_Delete", "menuClaimed=yes", "!ERROR"]),
+    "menu-key-guard-panel-modal": ("/Users/admin/mk-panel-modal.txt", ["modal=true"]),
+    # Del in a text field: refused whether the field is in another window or in the file manager itself.
+    "menu-key-guard-find-del": ("/Users/admin/mk-find-del.txt",
+                                ["responder=NSTextView", "|cm_Delete", "menuClaimed=no", "!ERROR"]),
+    "menu-key-guard-cmdline-del": ("/Users/admin/mk-cmdline-del.txt",
+                                   ["responder=NSTextView", "|cm_Delete", "menuClaimed=no", "!ERROR"]),
+    # And the other half of "refused": the keystroke has to end up somewhere. Sent through the whole
+    # dispatch rather than to the menu bar, Del deletes the character in front of the caret — "abc"
+    # becomes "bc", which is all a person pressing that key wanted.
+    "menu-key-guard-find-typed": ("/Users/admin/mk-find-typed.txt",
+                                  ["field=[abc]→[bc]", "!ERROR"]),
+    # F5 is Copy: a dialog's keystroke must not start a file operation behind it either.
+    "menu-key-guard-find-f5": ("/Users/admin/mk-find-f5.txt",
+                               ["|cm_Copy", "menuClaimed=no", "!ERROR"]),
+    # The two deliberate exceptions. A function key inside the file manager still commands the panels even
+    # with the command line focused, and a ⌘ chord belongs to the menu wherever it is pressed — without
+    # these the fix would have taken the keyboard away from the file manager to protect it.
+    "menu-key-guard-cmdline-f2": ("/Users/admin/mk-cmdline-f2.txt",
+                                  ["responder=NSTextView", "menuClaimed=yes", "!ERROR"]),
+    "menu-key-guard-find-cmda": ("/Users/admin/mk-find-cmda.txt",
+                                 ["menuClaimed=yes", "!ERROR"]),
     # Esc from the text area and from the symbol filter: the focus line is half the check, because
     # "closed=yes" is what a viewer whose focus never moved would also report.
     "viewer-esc": ("/Users/admin/esc-text.txt",

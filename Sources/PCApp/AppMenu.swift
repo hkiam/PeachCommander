@@ -7,11 +7,34 @@
 
 import AppKit
 
+/// The file manager's own menu bar: a menu that refuses a keystroke aimed at something else.
+///
+/// This bar carries file commands on *bare* keys — the keymap binds Del to Delete and F5 to Copy, and
+/// `KeymapMenu.apply` installs them as modifier-less accelerators. AppKit matches those app-wide before
+/// any window sees the keystroke, so pressing Del while typing in the Find dialog put up "move 1 item to
+/// the Trash?" for the file under the panel's cursor. `RawKeyboard.menuMayClaim` is the rule; this class
+/// is the one place it has to be asked, because `NSApp.mainMenu.performKeyEquivalent` is the step being
+/// governed. Only the *full* bar is built from it: the transient bars a tool window installs
+/// (`buildTool`) carry that window's own commands, which it is entitled to claim.
+final class CommandMenuBar: NSMenu {
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        let window = NSApp.keyWindow
+        let mayClaim = MainActor.assumeIsolated {
+            RawKeyboard.menuMayClaim(event,
+                                     keyWindowIsFileManager: window?.windowController is MainWindowController,
+                                     firstResponder: window?.firstResponder,
+                                     rawViews: ViewContainerRegistry.shared.rawKeyboardViews())
+        }
+        guard mayClaim else { return false }
+        return super.performKeyEquivalent(with: event)
+    }
+}
+
 enum AppMenu {
     /// Build the application's main menu. `commandAction` is invoked for command
     /// items with `sender.representedObject` set to the cm_* name.
     static func build(target: AnyObject, commandAction: Selector) -> NSMenu {
-        let main = NSMenu()
+        let main = CommandMenuBar()
 
         // Application menu
         let appItem = NSMenuItem()
@@ -522,7 +545,7 @@ enum AppMenu {
     /// Window and Help menus. Keeps the AppKit essentials (About/Quit, Undo/Copy/
     /// Paste, window list) working while the middle of the bar is data-driven.
     static func build(target: AnyObject, commandAction: Selector, commandMenus: [NSMenu]) -> NSMenu {
-        let main = NSMenu()
+        let main = CommandMenuBar()   // a user `.mnu` carries the same bare-key commands
         main.addItem(appMenuItem(target: target, commandAction: commandAction))
         let editItem = NSMenuItem()
         editItem.submenu = standardEditMenu()
