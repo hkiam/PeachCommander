@@ -12,6 +12,73 @@ were reconstructed from the git history and the notes in `STATE.md` when it was 
 `README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
 does not have.
 
+## [0.7.1] — 2026-08-18
+
+A round of reported defects, four of which were losing something rather than merely looking wrong.
+
+### Fixed
+
+- **A Total Commander menu file (`.mnu`) now actually loads.** It was read as strict UTF-8, so a file
+  written on Windows — ANSI, or UTF-16 with a BOM — failed to decode, and the app could not tell that
+  apart from "there is no menu file": you got the built-in menu and no explanation. Windows line endings
+  were the second half; a CRLF file parsed as a single empty menu. The same two fixes apply to `.bar`
+  button bars, `usercmd.ini` and the `wincmd.ini` import, which reported "the file could not be read" for
+  perfectly good files. Beyond that: an `em_` entry in a menu file now runs its user command (that is the
+  only way a `%P`/`%N` parameter reaches a menu entry, and it did nothing at all), a command this app does
+  not have is greyed out instead of looking live and swallowing the click, and your own Start-menu entries
+  survive a custom menu file instead of being replaced.
+
+- **A CSV or TSV whose first line is data keeps that line.** It was always taken as the column titles, so
+  the first record vanished from the table — you could not filter, sort or find it. The first line is now
+  guessed, and a checkbox beside the filter bar overrules the guess either way.
+
+- **JSON Lines files (`.jsonl`, `.ndjson`) are no longer reported as broken.** The structure check handed
+  the whole file to a JSON parser, which stops at the second record — so every valid JSON Lines file failed
+  it. Each record is checked on its own now, and a bad one is named by its line. Formatting works on them
+  too, one record per line, which is what the format is; the outline lists records by the line they start
+  on.
+
+- **Formatting a large file no longer freezes the window.** Pressing Format on a 2 MB log with very long
+  lines locked the app up for minutes at a time while scrolling: the code view converted character
+  positions to text offsets by re-copying the line for every syntax token. Building thirty lines of such a
+  file took over three minutes and now takes a tenth of a second. Formatted output also respects the size
+  limits the normal Code view has, instead of always using the heaviest one.
+
+- **Files in a firmware image no longer show 0 bytes when they have content.** In cpio and initramfs
+  images, a hardlinked file (busybox under thirty names, typically) carries its bytes with the last link;
+  the earlier ones were listed as empty while opening them showed the whole file. The size shown is the
+  real one now — which is what the status bar totals, what a copy's progress is measured against and what
+  "select files larger than" uses.
+
+- **The symbol outline works on a rendered Markdown document.** In the viewer it could not even be opened
+  for Markdown, which is the one representation Markdown is normally read in; picking a heading now scrolls
+  the page to it. Underlined headings (`Title` over `===`) are drawn as headings rather than as a paragraph
+  followed by a line.
+
+- **Esc closes the viewer again** once you have clicked into its content, and **Del in a text field no
+  longer offers to delete the file under the panel's cursor** — that also covered F2…F7 and Shift+F8, the
+  last of which deletes without the Trash. Switching the theme to **System** no longer keeps the dark
+  palette until the next launch, and changing it no longer throws the Settings window back to the first
+  page.
+
+- **A plugin that crashes no longer takes the app down.** The guard caught the four ways C code fails and
+  none of the ways Swift does.
+
+### Added
+
+- **A symbol outline for twenty more languages**, Swift among them — the sidebar was empty and its button
+  dead for everything without a bundled grammar: Swift, Go, Kotlin, Scala, Dart, C++, Objective-C, PHP,
+  Ruby, Perl, Lua, shell, SQL, CSS and more, plus Markdown headings and the HTML element tree.
+
+- **The Find dialog remembers what you searched for** — the last 20 entries per field, most recent first,
+  emptied on request — and a text search **continues in the viewer**: opening a hit no longer comes up at
+  the top of the file with an empty search box. The tick box in front of "Find text" is gone; the field
+  decides.
+
+- **Search the settings by name.** A search field above both columns of the Settings window finds an option
+  across all sixteen pages and the plugins', shows which page it lives on, and takes you there with the
+  control highlighted.
+
 ## [0.7.0] — 2026-08-16
 
 ### Added
