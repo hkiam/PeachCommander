@@ -21,7 +21,8 @@ final class ContributionParserTests: XCTestCase {
             "hides": [["command": "builtin.foo"]],
         ]]
         let c = ContributionParser.parse(infoPlist: dict).contributions
-        XCTAssertEqual(c.commands, [CommandContribution(id: "p.cmd", title: "Do It", category: "Tools", needsLocalPath: true)])
+        XCTAssertEqual(c.commands, [CommandContribution(id: "p.cmd", title: "Do It", category: "Tools",
+                                                        needsLocalPath: true)])
         XCTAssertEqual(c.menus.first?.group, "9_plugins")
         XCTAssertEqual(c.menus.first?.order, 100)
         XCTAssertEqual(c.menus.first?.menu, "File")
@@ -113,5 +114,20 @@ final class WhenExpressionTests: XCTestCase {
         XCTAssertFalse(WhenExpression.evaluate("a &&", context: ctx(["a": .bool(true)])))
         XCTAssertFalse(WhenExpression.evaluate("== 3", context: ctx([:])))
         XCTAssertThrowsError(try WhenExpression("a &&"))
+    }
+
+    /// A command declared long-running: the host runs it off the main thread (F-422). Declared rather than
+    /// detected, because it changes the contract the plugin's own code is written against.
+    func testAsyncFlagIsParsed() {
+        let plist: [String: Any] = ["PCContributions": ["commands": [
+            ["id": "p.slow", "title": "Push", "async": true],
+            ["id": "p.quick", "title": "Status"],
+            ["id": "p.explicit", "title": "Pull", "async": false],
+        ]]]
+        let commands = ContributionParser.parse(infoPlist: plist).contributions.commands
+        let byId = Dictionary(uniqueKeysWithValues: commands.map { ($0.id, $0) })
+        XCTAssertEqual(byId["p.slow"]?.isAsync, true)
+        XCTAssertEqual(byId["p.quick"]?.isAsync, false, "absent means synchronous — the old contract")
+        XCTAssertEqual(byId["p.explicit"]?.isAsync, false)
     }
 }

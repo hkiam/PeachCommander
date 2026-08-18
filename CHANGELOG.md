@@ -36,6 +36,12 @@ does not have.
   than guessing at them. Not a merge editor: for a region that needs both sides interleaved by hand, the
   editor is one button away.
 
+- **A plugin command that talks to the network no longer freezes the window.** A plugin can now declare a
+  command long-running; the app then runs it in the background, shows a small progress window with the
+  command's own output, and lets you cancel it — which actually stops the work rather than just closing the
+  window. Git's Push and Pull use it: an unreachable server used to lock the whole application up for as
+  long as the network took to give up.
+
 - **A push that fails for want of a password now has somewhere to look.** `Credentials…` says what this
   repository authenticates with — SSH or HTTPS, whether a credential helper is configured, whether an SSH
   agent is running and actually holds a key — and offers one action: let git keep credentials in the macOS

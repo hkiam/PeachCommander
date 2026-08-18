@@ -54,6 +54,13 @@ public protocol ContributionHost: ToolHost {
     func contribAutomationCore() -> AutomationCore?
     /// The host's current autonomy policy (applied to plugin-invoked tools).
     func contribAutomationPolicy() async -> PermissionPolicy
+    /// Open the host's progress window for a command declared asynchronous, and return a token for it
+    /// (F-422). nil when the host will not show one.
+    func contribBeginProgress(title: String) -> Int?
+    /// Update it; false once the reader pressed Cancel.
+    func contribUpdateProgress(token: Int, fraction: Double, text: String?) -> Bool
+    /// Close it. A token the host does not know is ignored.
+    func contribEndProgress(token: Int)
 }
 
 public extension ContributionHost {
@@ -68,6 +75,9 @@ public extension ContributionHost {
     func contribPresentSidebarView(viewId: String, root: String) {}
     func contribDismissSidebarView(viewId: String) {}
     func contribAugmentContext(_ context: inout ContributionContext) {}
+    func contribBeginProgress(title: String) -> Int? { nil }
+    func contribUpdateProgress(token: Int, fraction: Double, text: String?) -> Bool { true }
+    func contribEndProgress(token: Int) {}
     func contribAutomationCore() -> AutomationCore? { nil }
     func contribAutomationPolicy() async -> PermissionPolicy { .standard }
 }
@@ -111,6 +121,33 @@ final class ContribHostBridge {
         self.selection = selection
     }
 
+    /// Run a service's body on the main actor, from whichever thread the plugin called on (F-422).
+    ///
+    /// Every service below reaches into UI state, so it has to run on the main actor. Until asynchronous
+    /// commands existed that was simply true — the host dispatched every command on the main thread, and
+    /// `MainActor.assumeIsolated` was an honest assertion about a fact. An asynchronous command runs on a
+    /// background thread, and there `assumeIsolated` does not return false or misbehave: it *traps*, so a
+    /// plugin asking for the cursor path would take the whole application down.
+    ///
+    /// Hence two cases rather than one. On the main thread, assert as before — no queue hop, no cost, and
+    /// the assertion still catches a service called from somewhere it may not be. Off it, hop and wait:
+    /// that cannot deadlock, because the main thread is precisely what an asynchronous command is not
+    /// blocking. A synchronous command still blocks main, and there this branch is never taken.
+    nonisolated static func onMain<T>(_ body: @MainActor () -> T) -> T {
+        if Thread.isMainThread { return MainActor.assumeIsolated { body() } }
+        return withoutActuallyEscaping(body) { escaping in
+            let box = UncheckedBox(escaping)
+            return DispatchQueue.main.sync { MainActor.assumeIsolated { box.value() } }
+        }
+    }
+
+    /// Carries a non-Sendable closure across the queue hop above. Sound because `DispatchQueue.sync` runs
+    /// it before returning and nothing else ever holds the box.
+    private final class UncheckedBox<T>: @unchecked Sendable {
+        let value: @MainActor () -> T
+        init(_ value: @escaping @MainActor () -> T) { self.value = value }
+    }
+
     func makeServices() -> PcHostServices {
         var s = PcHostServices()
         s.host = Unmanaged.passUnretained(self).toOpaque()
@@ -118,7 +155,7 @@ final class ContribHostBridge {
 
         s.cursorPath = { host, out, maxlen in
             guard let host, let out else { return 0 }
-            return MainActor.assumeIsolated {
+            return ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 guard let p = b.host?.toolCursorPath() else { return Int32(0) }
                 _ = strlcpy(out, p, Int(maxlen)); return Int32(1)
@@ -126,7 +163,7 @@ final class ContribHostBridge {
         }
         s.localCursorPath = { host, out, maxlen in
             guard let host, let out else { return 0 }
-            return MainActor.assumeIsolated {
+            return ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 guard let p = b.localPath else { return Int32(0) }
                 _ = strlcpy(out, p, Int(maxlen)); return Int32(1)
@@ -134,13 +171,13 @@ final class ContribHostBridge {
         }
         s.selectionCount = { host in
             guard let host else { return 0 }
-            return MainActor.assumeIsolated {
+            return ContribHostBridge.onMain {
                 Int32(Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue().selection.count)
             }
         }
         s.selectionPath = { host, index, out, maxlen in
             guard let host, let out else { return 0 }
-            return MainActor.assumeIsolated {
+            return ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 guard b.selection.indices.contains(Int(index)) else { return Int32(0) }
                 _ = strlcpy(out, b.selection[Int(index)], Int(maxlen)); return Int32(1)
@@ -148,27 +185,27 @@ final class ContribHostBridge {
         }
         s.moveToTrash = { host, paths, count in
             guard let host else { return }
-            MainActor.assumeIsolated {
+            ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.toolMoveToTrash(ContribHostBridge.strings(paths, count))
             }
         }
         s.deletePermanently = { host, paths, count in
             guard let host else { return }
-            MainActor.assumeIsolated {
+            ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.toolDeletePermanently(ContribHostBridge.strings(paths, count))
             }
         }
         s.reloadActivePanel = { host in
             guard let host else { return }
-            MainActor.assumeIsolated {
+            ContribHostBridge.onMain {
                 Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue().host?.toolReloadActivePanel()
             }
         }
         s.presentInfo = { host, title, message in
             guard let host else { return }
-            MainActor.assumeIsolated {
+            ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.toolPresentInfo(title.map { String(cString: $0) } ?? "",
                                         message.map { String(cString: $0) } ?? "")
@@ -176,7 +213,7 @@ final class ContribHostBridge {
         }
         s.getContext = { host, key, out, maxlen in
             guard let host, let key, let out else { return 0 }
-            return MainActor.assumeIsolated {
+            return ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 guard let v = b.host?.contribContextValue(String(cString: key)) else { return Int32(0) }
                 _ = strlcpy(out, v, Int(maxlen)); return Int32(1)
@@ -184,14 +221,14 @@ final class ContribHostBridge {
         }
         s.invokeCommand = { host, commandId in
             guard let host, let commandId else { return }
-            MainActor.assumeIsolated {
+            ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.contribInvokeCommand(String(cString: commandId))
             }
         }
         s.crypt = { host, mode, store, password, maxlen in
             guard let host else { return Int32(PC_E_NOT_SUPPORTED) }
-            return MainActor.assumeIsolated {
+            return ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 return b.crypt(mode: Int(mode), store: store.map { String(cString: $0) } ?? "",
                                password: password, maxlen: Int(maxlen))
@@ -199,7 +236,7 @@ final class ContribHostBridge {
         }
         s.registerToolWindow = { host, window, editMenu, contentMenu, title in
             guard let host, let window else { return }
-            MainActor.assumeIsolated {
+            ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.contribRegisterToolWindow(window: window, editMenu: editMenu,
                                                   contentMenu: contentMenu,
@@ -208,21 +245,21 @@ final class ContribHostBridge {
         }
         s.openPath = { host, path in
             guard let host, let path else { return }
-            MainActor.assumeIsolated {
+            ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.contribOpenPath(String(cString: path))
             }
         }
         s.openPathInPanel = { host, side, path in
             guard let host, let path else { return }
-            MainActor.assumeIsolated {
+            ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.contribOpenPathInPanel(side: Int(side), path: String(cString: path))
             }
         }
         s.compareFiles = { host, pathA, pathB, titleA, titleB in
             guard let host, let pathA, let pathB else { return }
-            MainActor.assumeIsolated {
+            ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.contribCompareFiles(pathA: String(cString: pathA), pathB: String(cString: pathB),
                                             titleA: titleA.map { String(cString: $0) },
@@ -231,14 +268,14 @@ final class ContribHostBridge {
         }
         s.presentSidebarView = { host, viewId, root in
             guard let host, let viewId, let root else { return }
-            MainActor.assumeIsolated {
+            ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.contribPresentSidebarView(viewId: String(cString: viewId), root: String(cString: root))
             }
         }
         s.dismissSidebarView = { host, viewId in
             guard let host, let viewId else { return }
-            MainActor.assumeIsolated {
+            ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.contribDismissSidebarView(viewId: String(cString: viewId))
             }
@@ -283,7 +320,7 @@ final class ContribHostBridge {
         s.getFileComment = { host, pathC, out, maxlen in
             guard let host, let pathC, let out, maxlen > 0 else { return 0 }
             let path = String(cString: pathC)
-            let text: String? = MainActor.assumeIsolated {
+            let text: String? = ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 return b.host?.contribFileComment(path)
             }
@@ -295,11 +332,43 @@ final class ContribHostBridge {
             }
             return 1
         }
+        // Progress for an asynchronous command (F-422). Called from the plugin's background thread, which
+        // is what `onMain` above is for: the window is built and updated on the main actor while the
+        // command keeps running. The handle is a small integer the host maps to its window, not a pointer
+        // to an object — a plugin that keeps a stale handle then gets an ignored call rather than a crash.
+        s.beginProgress = { host, titleC in
+            guard let host else { return nil }
+            let title = titleC.map { String(cString: $0) } ?? ""
+            return ContribHostBridge.onMain {
+                let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
+                guard let token = b.host?.contribBeginProgress(title: title) else { return nil }
+                return UnsafeMutableRawPointer(bitPattern: UInt(bitPattern: token))
+            }
+        }
+        s.updateProgress = { host, handle, fraction, textC in
+            guard let host, let handle else { return 1 }
+            let text = textC.map { String(cString: $0) }
+            let token = Int(bitPattern: handle)
+            return ContribHostBridge.onMain {
+                let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
+                let keepGoing = b.host?.contribUpdateProgress(token: token, fraction: fraction,
+                                                              text: text) ?? true
+                return keepGoing ? Int32(1) : Int32(0)
+            }
+        }
+        s.endProgress = { host, handle in
+            guard let host, let handle else { return }
+            let token = Int(bitPattern: handle)
+            ContribHostBridge.onMain {
+                let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
+                b.host?.contribEndProgress(token: token)
+            }
+        }
         s.setFileComment = { host, pathC, commentC in
             guard let host, let pathC else { return }
             let path = String(cString: pathC)
             let comment = commentC.map { String(cString: $0) }
-            MainActor.assumeIsolated {
+            ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.contribSetFileComment(comment, path: path)
             }

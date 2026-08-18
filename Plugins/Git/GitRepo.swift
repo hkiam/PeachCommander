@@ -77,6 +77,58 @@ enum PluginGitRepo {
         return process.terminationStatus == 0 ? data : nil
     }
 
+    /// Run git while something else watches: `progress` is called with each line git writes and returns
+    /// false to stop it (F-422).
+    ///
+    /// This is what an asynchronous command buys. `push` used to be started on a queue and forgotten —
+    /// nothing could report it, nothing could stop it, and a push to an unreachable host sat there for the
+    /// network's whole timeout. Now the command itself runs off the main thread, so it can block on git,
+    /// hand each line to the host's progress window, and `terminate()` when the reader presses Cancel.
+    ///
+    /// Line-by-line rather than `readDataToEndOfFile`: the point is to notice the Cancel *while* git runs,
+    /// and reading to the end means noticing it afterwards. A quiet git (a large push computing objects)
+    /// would still not be noticed, so the caller gets a tick per line and the window stays indeterminate.
+    static func runCancellable(_ arguments: [String],
+                               progress: (String) -> Bool) -> (out: String, ok: Bool, cancelled: Bool) {
+        guard let executable = executable() else { return (L("Git was not found on this Mac."), false, false) }
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: executable)
+        process.arguments = arguments
+        var environment = ProcessInfo.processInfo.environment
+        environment["GIT_TERMINAL_PROMPT"] = "0"
+        environment["GIT_OPTIONAL_LOCKS"] = "0"
+        process.environment = environment
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+        do { try process.run() } catch { return (L("Git could not be started."), false, false) }
+
+        var collected = ""
+        var pending = ""
+        var cancelled = false
+        let handle = pipe.fileHandleForReading
+        while true {
+            let chunk = handle.availableData          // blocks until git writes or closes the pipe
+            if chunk.isEmpty { break }
+            let text = String(decoding: chunk, as: UTF8.self)
+            collected += text
+            pending += text
+            // git reports progress with carriage returns, so a "line" ends with either.
+            while let end = pending.firstIndex(where: { $0 == "\n" || $0 == "\r" }) {
+                let line = String(pending[pending.startIndex..<end]).trimmingCharacters(in: .whitespaces)
+                pending = String(pending[pending.index(after: end)...])
+                if !line.isEmpty, !progress(line) {
+                    cancelled = true
+                    process.terminate()
+                    break
+                }
+            }
+            if cancelled { break }
+        }
+        process.waitUntilExit()
+        return (collected, process.terminationStatus == 0 && !cancelled, cancelled)
+    }
+
     /// Run something that is not git — `ssh-add`, for the credential report — and hand back its output
     /// *and* its exit code, because `ssh-add -l` says "no keys" with 1 and "no agent" with 2 and those are
     /// different pieces of advice (F-421).

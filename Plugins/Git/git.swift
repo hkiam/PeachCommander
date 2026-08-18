@@ -334,10 +334,29 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         // The host calls PcRunCommand on the main thread (ContributionRegistry is @MainActor); the alert
         // this may raise must be built there, and asserting it is honest where a hop would hide it.
         MainActor.assumeIsolated { openOnTheWeb(remote: remote.url, target: target, svc) }
-    case "plugin.git.push":
-        background(L("Git Push")) { PluginGitRepo.run(["-C", root, "push"], combined: true) }
-    case "plugin.git.pull":
-        background(L("Git Pull")) { PluginGitRepo.run(["-C", root, "pull", "--ff-only"], combined: true) }
+    case "plugin.git.push", "plugin.git.pull":
+        // Declared `"async": true` in the manifest, so this runs OFF the main thread (F-422): it may block
+        // on git, report each line into the host's progress window, and be cancelled — which is the whole
+        // difference between a push to an unreachable host and an application that appears to have died.
+        let isPush = id == "plugin.git.push"
+        let title = isPush ? L("Git Push") : L("Git Pull")
+        let arguments = isPush ? ["-C", root, "push"] : ["-C", root, "pull", "--ff-only"]
+        let handle = title.withCString { svc.beginProgress?(svc.host, $0) }
+        let result = PluginGitRepo.runCancellable(arguments) { line in
+            guard let handle else { return true }   // no progress window: nothing to cancel from either
+            return line.withCString { svc.updateProgress?(svc.host, handle, -1, $0) != 0 } ?? true
+        }
+        if let handle { svc.endProgress?(svc.host, handle) }
+        PluginGitRepo.invalidate()
+        let message = result.out.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Back to the main thread by hand: this code is no longer on it, and the services that touch the
+        // window insist on it.
+        DispatchQueue.main.async {
+            svc.reloadActivePanel?(svc.host)
+            svc.presentInfo?(svc.host, title, result.cancelled
+                ? L("Cancelled.")
+                : (message.isEmpty ? (result.ok ? L("Done.") : L("Failed.")) : message))
+        }
     default:
         break
     }

@@ -205,3 +205,36 @@ the System Monitor's titlebar chips and every settings pane are not.
 
 If you theme text, theme its background in the same pass. A themed foreground on an unthemed
 background is how you get cyan on white.
+
+## Long-running commands: `"async": true`, progress and cancel (F-422)
+
+A contributed command runs on the host's main thread by default, which is right for anything that opens a
+window or reads a cached value and wrong for anything that talks to a network: the application stops
+redrawing for as long as the call takes, and a `push` to an unreachable host is indistinguishable from a
+crash.
+
+Declare such a command asynchronous in the manifest:
+
+```xml
+<dict>
+    <key>id</key><string>plugin.example.push</string>
+    <key>title</key><string>Push</string>
+    <key>async</key><true/>
+</dict>
+```
+
+The host then calls `PcRunCommand` on a background thread, and three rules follow from that:
+
+1. **Do not touch AppKit directly.** Build no windows, run no `NSAlert`. The host services may be called
+   from your thread — they hop to the main actor themselves — but your own AppKit calls may not.
+2. **Report through the progress services**, which exist only for this case:
+   `beginProgress(host, title)` returns an opaque handle (NULL means the host will not show one — cope with
+   it), `updateProgress(host, handle, fraction, text)` sets the bar (`fraction < 0` = indeterminate) and
+   returns **0 once the reader pressed Cancel**, and `endProgress(host, handle)` closes the window. Call
+   `endProgress` on every path out, including your error paths.
+3. **Cancellation is cooperative.** The host cannot kill your command; a plugin that never calls
+   `updateProgress` cannot be cancelled. If you run a child process, keep it and `terminate()` it when
+   `updateProgress` returns 0.
+
+A synchronous command sees no change: the flag is opt-in, and its absence means the old contract.
+

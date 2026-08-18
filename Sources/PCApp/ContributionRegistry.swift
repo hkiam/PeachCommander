@@ -12,6 +12,7 @@ import AppKit
 import PCFoundation
 import PCPluginHost
 import PCAutomation
+import CContrib   // PcHostServices, for the asynchronous dispatch path (F-422)
 
 @MainActor
 final class ContributionRegistry {
@@ -206,8 +207,25 @@ final class ContributionRegistry {
         let selection = await host.toolSelectionPaths()
         let b = hostBridge(for: host)
         b.update(localPath: localPath, selection: selection)
-        var services = b.makeServices()
-        withUnsafePointer(to: &services) { plugin.runCommand(commandId, services: $0) }
+        guard cmd.isAsync else {
+            var services = b.makeServices()
+            withUnsafePointer(to: &services) { plugin.runCommand(commandId, services: $0) }
+            return true
+        }
+        // A command the manifest declares long-running (F-422): started on a background thread and *not*
+        // awaited. Awaiting looked more honest and was the same defect one level up — it moved the block
+        // from the main thread to whoever called dispatch, which is how the automation harness ended up
+        // waiting five minutes on a push to an unroutable host while the window itself drew perfectly.
+        // Nobody needs the completion: the progress window is the feedback, and the plugin reports its own
+        // result. The services struct is heap-allocated and freed by the same closure, because a pointer to
+        // a local would outlive this stack frame.
+        let services = UnsafeMutablePointer<PcHostServices>.allocate(capacity: 1)
+        services.initialize(to: b.makeServices())
+        DispatchQueue.global(qos: .userInitiated).async {
+            plugin.runCommand(commandId, services: services)
+            services.deinitialize(count: 1)
+            services.deallocate()
+        }
         return true
     }
 

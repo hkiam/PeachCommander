@@ -449,6 +449,13 @@ extension MainWindowController {
                     let out = automationSendKey(k[0], focus: k[1])
                     try? out.write(toFile: k[2], atomically: true, encoding: .utf8)
                 }
+            case "plugincancel":                        // plugincancel <out> (F-422)
+                // Press Cancel in the progress window of an asynchronous plugin command. Not `keysend
+                // escape`: a synthesised key event does not reach a button's `keyEquivalent`, so that
+                // reported success while the command kept running.
+                let cancelled = automationCancelPluginProgress()
+                try? "cancelled=\(cancelled ? 1 : 0)\n".write(toFile: arg, atomically: true,
+                                                              encoding: .utf8)
             case "closeviews":                          // closeviews (F-381)
                 // The same teardown path quitting takes, but with the app still running — which is the
                 // only way to observe that PcCloseView did anything. After the process exits, every

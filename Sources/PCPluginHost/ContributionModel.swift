@@ -22,6 +22,19 @@ public struct CommandContribution: Sendable, Equatable {
     /// If true, the host resolves the cursor's local (VFS→temp) path before
     /// dispatching, so the plugin's synchronous callbacks can read it.
     public let needsLocalPath: Bool
+    /// If true, the host runs `PcRunCommand` OFF the main thread (F-422).
+    ///
+    /// Declared rather than detected, because it changes the contract the plugin's own code is written
+    /// against: an asynchronous command may not touch AppKit directly, and it may use the progress
+    /// services. A `push` to an unreachable host is the case that forced this — it blocked the main
+    /// thread for the network's timeout, which is an application that appears to have died.
+    public let isAsync: Bool
+
+    public init(id: String, title: String, category: String? = nil,
+                needsLocalPath: Bool = false, isAsync: Bool = false) {
+        self.id = id; self.title = title; self.category = category
+        self.needsLocalPath = needsLocalPath; self.isAsync = isAsync
+    }
 }
 
 /// Placement of a command in the main menu bar.
@@ -204,7 +217,7 @@ public enum ContributionParser {
             }
             c.commands.append(CommandContribution(
                 id: id, title: title, category: str(d, "category"),
-                needsLocalPath: bool(d, "needsLocalPath")))
+                needsLocalPath: bool(d, "needsLocalPath"), isAsync: bool(d, "async")))
         }
         for d in arr("menus") {
             guard let command = str(d, "command"), let menu = str(d, "menu") else {

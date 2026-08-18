@@ -47,6 +47,33 @@ regression from here on. The run's report and screenshots are under `/tmp/vm-new
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
 
+## 2026-08-18 (F-422) — Asynchronous plugin commands, and two traps one level apart
+
+§6.3 of the Git plan, which everything else in phase 5d was waiting on. A contributed command ran on the
+main thread; for a `push` that means the application stops redrawing until the network gives up. Now a
+command can declare `"async": true` and the host runs it on a background thread with three progress
+services (`beginProgress`/`updateProgress`/`endProgress`), where `updateProgress` returning 0 is how a
+Cancel reaches the plugin. Cooperative by design — the host cannot kill a call inside a plugin, and the
+header says so instead of implying otherwise.
+
+**Trap one: the host bridge could not be called off the main thread at all.** Every service was written as
+`MainActor.assumeIsolated`, which was an honest assertion while every command ran on main — and off-main it
+does not return false or misbehave, it *traps*. The first asynchronous plugin asking for the cursor path
+would have taken the whole application down. `ContribHostBridge.onMain` now asserts when already on main
+and hops-and-waits when not; that cannot deadlock precisely because an asynchronous command is not the
+thing blocking main.
+
+**Trap two, one level up: dispatch must not await the command.** Awaiting felt more honest — the caller
+learns when it is over — and it moved the block from the main thread to whoever called dispatch. Measured:
+the automation harness sat for five minutes on a push to an unroutable host while the window beside it drew
+perfectly. Nobody needs the completion; the progress window is the feedback.
+
+Verification worth keeping: `PCGitExecutable` pointed at a shell script that is slow **only for `push`** and
+delegates everything else to the real git — the first attempt was slow for every call, including the
+`rev-parse` the columns make, which looks exactly like a hung application. And the harness needed a real
+verb (`plugincancel`): a synthesised Escape does not reach a button's `keyEquivalent`, so `keysend escape`
+reported success while the command kept running.
+
 ## 2026-08-18 (F-420) — The four things that were "out of scope", asked about directly
 
 Asked what I made of interactive rebase, an own merge editor, a credential store and GitHub/GitLab

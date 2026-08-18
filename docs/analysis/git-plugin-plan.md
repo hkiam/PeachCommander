@@ -9,8 +9,8 @@
 > **glyph** rather than an icon, because an icon needs the host field in §6.2 and a glyph buys most of the
 > benefit for none of the ABI; and **per-repository settings** were dropped, because git already has that
 > configuration and a second place to set it can only disagree with the first. What remains is the host
-> work in §6 — blame in the viewer's gutter, an icon column field, declared asynchronous commands, and
-> localized column headers — and §5's **phase 5**, which re-examines the four things the first version
+> work in §6 — blame in the viewer's gutter, an icon column field, and localized column headers (declared
+> asynchronous commands are **built**, F-422) — and §5's **phase 5**, which re-examines the four things the first version
 > of this plan put out of scope: the conflict resolver on the markers (5a, F-420), credential *diagnosis*
 > without storage and "open on the web" without an API (5b/5c, F-421) are **built**; what is left of phase 5
 > is 5d, a rebase bounded to the commits ahead of the upstream, which needs §6.3 first.
@@ -351,9 +351,14 @@ The plugin cannot do the following through today's SDK, and each is small on the
 2. **A column field that carries an icon** (§2.8's sibling): the content ABI returns strings today.
    Phase 4 shipped a leading glyph instead (`● Modified`), which is most of the benefit; the field is
    still what a real icon needs.
-3. **Declared asynchronous commands with progress and cancel** — `PcRunCommandAsync` plus a progress
-   handle, or the host running `PcRunCommand` off the main thread when the manifest says the command
-   is long. Needed by push/pull/fetch and by anything in Phase 3.
+3. **Declared asynchronous commands with progress and cancel** — *built (F-422)*, and as the second
+   option rather than the first: a manifest flag (`"async": true`) makes the host run the existing
+   `PcRunCommand` off the main thread, plus `beginProgress`/`updateProgress`/`endProgress` in
+   `PcHostServices`. No new entry point, so a plugin that does not opt in is unaffected. Two things had to
+   change underneath: the host bridge's services now hop to the main actor instead of *asserting* they are
+   already on it (`assumeIsolated` traps off-main, so the first asynchronous plugin would have killed the
+   application), and dispatch does not await the command — awaiting merely moved the block from the main
+   thread to the caller. Push and pull use it, and are cancellable.
 4. **Localized column headers** — the id/title split described in §2.8.
 
 Each addition bumps the plugin SDK version and belongs in `Plugins/SDK/contrib.h` with a note in

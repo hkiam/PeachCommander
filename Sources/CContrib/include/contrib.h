@@ -135,6 +135,25 @@ typedef struct PcHostServices {
        string clears it. Both appended at the end for ABI compatibility. */
     int  (*getFileComment)(void *host, const char *path, char *out, int maxlen);
     void (*setFileComment)(void *host, const char *path, const char *comment);
+    /* Progress and cancel for a command whose manifest entry says `"async": true` (F-422).
+
+       `beginProgress` opens the host's own small progress window and returns an opaque handle (NULL when
+       the host will not show one — a plugin must cope with that and simply not report). `updateProgress`
+       sets the fraction (a value < 0 means indeterminate) and the line of text under the bar, and returns
+       0 once the reader has pressed Cancel: that is the plugin's signal to stop and to call `endProgress`.
+       `endProgress` closes the window; forgetting it leaves a window nobody can dismiss, so a plugin
+       should call it on every path out, including its error paths.
+
+       All three may be called from the command's background thread — which is where an asynchronous
+       command runs — and only from a command declared asynchronous: on the main thread the window could
+       not draw, because the thread that would draw it is the one inside the plugin.
+
+       This exists because a `push` to an unreachable host blocked the main thread for the network's whole
+       timeout, and an application that does not redraw is one the reader believes has died. Appended at
+       the end for ABI compatibility. */
+    void *(*beginProgress)(void *host, const char *title);
+    int  (*updateProgress)(void *host, void *handle, double fraction, const char *text);
+    void (*endProgress)(void *host, void *handle);
 } PcHostServices;
 
 /* ---- Behavior entry points --------------------------------------------- */

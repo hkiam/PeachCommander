@@ -8608,6 +8608,46 @@ extension MainWindowController: ContributionHost {
         contribFileComment(path)
     }
 
+    // MARK: - Progress for asynchronous plugin commands (F-422)
+
+    /// Windows opened by `beginProgress`, keyed by the token the plugin holds. A dictionary rather than a
+    /// single window: two asynchronous commands can be in flight, and the second one's Cancel must not
+    /// stop the first.
+    private static var pluginProgress: [Int: PluginProgressDialog] = [:]
+    private static var nextProgressToken = 1
+
+    func contribBeginProgress(title: String) -> Int? {
+        let token = Self.nextProgressToken
+        Self.nextProgressToken += 1
+        let dialog = PluginProgressDialog(title: title.isEmpty ? String(localized: "Plugins") : title)
+        Self.pluginProgress[token] = dialog
+        dialog.present(over: window)
+        return token
+    }
+
+    func contribUpdateProgress(token: Int, fraction: Double, text: String?) -> Bool {
+        // A token we no longer know says keep going: the alternative is telling a plugin it was cancelled
+        // when in truth the host lost its window, and a cancelled push reports something that never
+        // happened.
+        guard let dialog = Self.pluginProgress[token] else { return true }
+        return dialog.update(fraction: fraction, text: text)
+    }
+
+    func contribEndProgress(token: Int) {
+        guard let dialog = Self.pluginProgress.removeValue(forKey: token) else { return }
+        dialog.dismiss()
+    }
+
+    /// Cancel the most recently opened plugin progress window, for the automation harness (F-422).
+    /// Returns false when there is none — which is itself the answer to "did a progress window appear".
+    func automationCancelPluginProgress() -> Bool {
+        guard let token = Self.pluginProgress.keys.max(), let dialog = Self.pluginProgress[token] else {
+            return false
+        }
+        dialog.automationCancel()
+        return true
+    }
+
     func contribFileComment(_ path: String) -> String? {
         let dir = (path as NSString).deletingLastPathComponent
         let file = dir + "/" + CommentStore.fileName
