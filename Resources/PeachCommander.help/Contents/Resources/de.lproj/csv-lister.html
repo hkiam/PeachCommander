@@ -20,7 +20,7 @@
 <p>Das Suchfeld filtert beim Tippen, ohne auf Groß- und Kleinschreibung zu achten. Standardmäßig sieht es in allen Spalten nach; wählen Sie im Aufklappmenü daneben eine Spalte, um nur dort zu suchen.</p>
 <h2 id="was-es-nicht-kann">Was es nicht kann</h2>
 <p>Der Parser ist bewusst klein, und eine Grenze sollten Sie kennen, bevor sie Sie überrascht: <strong>Ein Trennzeichen innerhalb eines Feldes in Anführungszeichen gilt trotzdem als Trennzeichen.</strong> Eine Zeile wie</p>
-<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+<div class="codehilite"><pre><span></span><code>"Smith, John",42
 </code></pre></div>
 
 <p>wird zu drei Zellen statt zu zweien. Umschließende Anführungszeichen werden entfernt, wenn sie ein ganzes Feld einfassen, darüber hinaus wird Quoting aber nicht ausgewertet. Für eine Datei, bei der das zählt, ist der eingebaute Betrachter oder eine Tabellenkalkulation das bessere Werkzeug.</p>

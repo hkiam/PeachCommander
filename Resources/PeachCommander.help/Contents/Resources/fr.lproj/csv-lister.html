@@ -20,7 +20,7 @@
 <p>Le champ de recherche filtre à la frappe, sans distinguer majuscules et minuscules. Par défaut il regarde dans toutes les colonnes ; choisissez une colonne dans le menu à côté pour ne chercher que là.</p>
 <h2 id="ce-quelle-ne-fait-pas">Ce qu’elle ne fait pas</h2>
 <p>L’analyseur est volontairement minimal, et une limite mérite d’être connue avant de vous surprendre : <strong>un séparateur à l’intérieur d’un champ entre guillemets reste traité comme un séparateur.</strong> Une ligne comme</p>
-<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+<div class="codehilite"><pre><span></span><code>"Smith, John",42
 </code></pre></div>
 
 <p>donne trois cellules au lieu de deux. Les guillemets encadrants sont retirés lorsqu’ils entourent un champ entier, mais le guillemetage n’est pas interprété au-delà. Pour un fichier où cela compte, la visionneuse intégrée ou un tableur est l’outil approprié.</p>

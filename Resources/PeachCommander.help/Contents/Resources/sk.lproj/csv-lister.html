@@ -20,7 +20,7 @@
 <p>Vyhľadávacie pole filtruje počas písania, bez ohľadu na veľkosť písmen. V predvolenom stave hľadá vo všetkých stĺpcoch; výberom stĺpca v ponuke vedľa hľadá len v ňom.</p>
 <h2 id="co-nedokaze">Čo nedokáže</h2>
 <p>Parser je zámerne malý a jedno obmedzenie je dobré poznať skôr, než vás prekvapí: <strong>oddeľovač vnútri poľa v úvodzovkách sa stále považuje za oddeľovač.</strong> Riadok ako</p>
-<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+<div class="codehilite"><pre><span></span><code>"Smith, John",42
 </code></pre></div>
 
 <p>sa stane tromi bunkami namiesto dvoch. Obklopujúce úvodzovky sa odstránia, ak obopínajú celé pole, ďalej sa však úvodzovky nevyhodnocujú. Pri súbore, kde na tom záleží, je lepším nástrojom vstavaný prehliadač alebo tabuľkový procesor.</p>

@@ -20,7 +20,7 @@
 <p>El campo de búsqueda filtra mientras escribes, sin distinguir mayúsculas. Por omisión mira en todas las columnas; elige una columna en el menú de al lado para mirar solo ahí.</p>
 <h2 id="lo-que-no-hace">Lo que no hace</h2>
 <p>El analizador es deliberadamente pequeño, y conviene conocer un límite antes de que te sorprenda: <strong>un delimitador dentro de un campo entrecomillado sigue tratándose como delimitador.</strong> Una fila como</p>
-<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+<div class="codehilite"><pre><span></span><code>"Smith, John",42
 </code></pre></div>
 
 <p>da tres celdas en lugar de dos. Las comillas envolventes se quitan cuando rodean un campo entero, pero el entrecomillado no se interpreta más allá. Para un archivo donde eso importe, el visor integrado o una hoja de cálculo es la herramienta adecuada.</p>

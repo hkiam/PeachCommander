@@ -20,7 +20,7 @@
 <p>The search field filters as you type, case-insensitively. By default it looks in every column; pick a column from the popup beside it to look only there.</p>
 <h2 id="what-it-does-not-do">What it does not do</h2>
 <p>The parser is deliberately small, and one limit is worth knowing before it surprises you: <strong>a delimiter inside a quoted field is still treated as a delimiter.</strong> A row like</p>
-<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+<div class="codehilite"><pre><span></span><code>"Smith, John",42
 </code></pre></div>
 
 <p>becomes three cells rather than two. Surrounding quotes are removed when they wrap a whole field, but quoting is not otherwise interpreted. For a file where that matters, the built-in viewer or a spreadsheet is the better tool.</p>

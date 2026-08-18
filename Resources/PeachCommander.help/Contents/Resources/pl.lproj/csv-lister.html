@@ -20,7 +20,7 @@
 <p>Pole wyszukiwania filtruje w trakcie pisania, bez rozróżniania wielkości liter. Domyślnie zagląda do wszystkich kolumn; wybierz kolumnę w menu obok, aby szukać tylko w niej.</p>
 <h2 id="czego-nie-robi">Czego nie robi</h2>
 <p>Parser jest celowo niewielki, a jedno ograniczenie warto znać, zanim cię zaskoczy: <strong>separator wewnątrz pola w cudzysłowie nadal jest traktowany jako separator.</strong> Wiersz taki jak</p>
-<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+<div class="codehilite"><pre><span></span><code>"Smith, John",42
 </code></pre></div>
 
 <p>daje trzy komórki zamiast dwóch. Otaczające cudzysłowy są usuwane, gdy obejmują całe pole, ale poza tym cytowanie nie jest interpretowane. Do pliku, w którym to ma znaczenie, lepszym narzędziem jest wbudowana przeglądarka lub arkusz kalkulacyjny.</p>

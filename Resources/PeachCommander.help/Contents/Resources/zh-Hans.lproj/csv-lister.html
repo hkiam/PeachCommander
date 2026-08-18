@@ -20,7 +20,7 @@
 <p>搜索框在你输入时即时筛选，不区分大小写。默认它会查看所有列；在旁边的弹出菜单里选一列，就只查看那一列。</p>
 <h2 id="_3">它不做的事</h2>
 <p>解析器是刻意做小的，有一个限制值得在它让你意外之前知道：<strong>引号包围的字段里的分隔符仍然被当作分隔符。</strong>像这样的一行</p>
-<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+<div class="codehilite"><pre><span></span><code>"Smith, John",42
 </code></pre></div>
 
 <p>会变成三个单元格而不是两个。当引号包住整个字段时会被去掉，但除此之外并不解释引用规则。对于这一点很重要的文件，内置查看器或电子表格是更合适的工具。</p>

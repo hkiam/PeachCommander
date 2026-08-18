@@ -20,7 +20,7 @@
 <p>Il campo di ricerca filtra mentre scrivete, senza distinguere maiuscole e minuscole. Per impostazione predefinita guarda in tutte le colonne; scegliete una colonna dal menu accanto per guardare solo lì.</p>
 <h2 id="cio-che-non-fa">Ciò che non fa</h2>
 <p>L’analizzatore è volutamente minimo, e un limite vale la pena conoscerlo prima che vi sorprenda: <strong>un delimitatore dentro un campo tra virgolette viene comunque trattato come delimitatore.</strong> Una riga come</p>
-<div class="codehilite"><pre><span></span><code>&quot;Smith, John&quot;,42
+<div class="codehilite"><pre><span></span><code>"Smith, John",42
 </code></pre></div>
 
 <p>diventa tre celle invece di due. Le virgolette esterne vengono rimosse quando racchiudono un campo intero, ma oltre a questo il quoting non viene interpretato. Per un file in cui la cosa conta, il visualizzatore integrato o un foglio di calcolo è lo strumento migliore.</p>

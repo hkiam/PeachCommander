@@ -74,10 +74,10 @@
 </table>
 <p>복사와 이동은 F5/F6과 같은 백그라운드 전송 대기열을 사용하므로, 진행 상황과 덮어쓰기 프롬프트가 수동 작업과 정확히 동일하게 나타납니다.</p>
 <h2 id="_4">예시</h2>
-<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
-    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
-    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
-    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">"Peach Commander"</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">"~/Downloads"</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">"*.pdf"</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">"~/Documents/PDFs"</span>
     <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
 <span class="k">end</span> <span class="k">tell</span>
 </code></pre></div>

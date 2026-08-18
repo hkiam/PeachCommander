@@ -74,10 +74,10 @@
 </table>
 <p>Copy and move use the same background transfer queue as F5/F6, so progress and any overwrite prompts appear exactly as they do for a manual operation.</p>
 <h2 id="example">Example</h2>
-<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Peach Commander&quot;</span>
-    <span class="nb">go</span> <span class="k">to</span> <span class="s2">&quot;~/Downloads&quot;</span> <span class="k">in</span> <span class="nv">left</span>
-    <span class="nb">select</span> <span class="s2">&quot;*.pdf&quot;</span>
-    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">&quot;~/Documents/PDFs&quot;</span>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">"Peach Commander"</span>
+    <span class="nb">go</span> <span class="k">to</span> <span class="s2">"~/Downloads"</span> <span class="k">in</span> <span class="nv">left</span>
+    <span class="nb">select</span> <span class="s2">"*.pdf"</span>
+    <span class="nb">copy</span> <span class="nb">items</span> <span class="k">to</span> <span class="s2">"~/Documents/PDFs"</span>
     <span class="no">return</span> <span class="nv">selection</span> <span class="nv">paths</span>
 <span class="k">end</span> <span class="k">tell</span>
 </code></pre></div>

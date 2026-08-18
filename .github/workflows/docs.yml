@@ -19,8 +19,15 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+      # markdown and pygments are PINNED because two steps below compare the generated
+      # Help Book byte for byte against what is committed. Unpinned, an upstream release
+      # moves those bytes and this job goes red for a reason that has nothing to do with
+      # the documentation: pygments 2.21.0 stopped escaping `"` as `&quot;` inside code
+      # blocks, which rewrote `automation.html` and `csv-lister.html` in all nineteen
+      # languages and could not be reproduced on a machine with 2.20 installed. When a
+      # version is raised here, regenerate the book in the same commit.
       - name: Install tooling
-        run: python3 -m pip install --quiet markdown pyyaml pygments mkdocs-material
+        run: python3 -m pip install --quiet markdown==3.9 pygments==2.21.0 pyyaml mkdocs-material
       - name: Regenerate derived outputs (must be committed & up to date)
         run: |
           python3 docs/scripts/gen-api-reference.py
