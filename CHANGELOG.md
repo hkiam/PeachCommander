@@ -28,6 +28,12 @@ does not have.
   **cherry-pick** a commit from the history window, each refusing up front when the working tree is not
   clean rather than stopping half-way through.
 
+- **Tidy up the commits you have not pushed yet.** `Rebase…` lists the commits ahead of the upstream and
+  lets you squash, fix up, drop, reorder or reword them, then rewrites the branch — with a plain refusal
+  when something is in the way (uncommitted changes, an open conflict, no upstream) instead of git's
+  terminal wording. If a rebase stops in a conflict, the same window becomes Continue / Skip / Abort, so a
+  half-finished branch is not something you have to finish in a terminal.
+
 - **A conflict can now be resolved in the app.** `Resolve Conflict…` used to show *ours* against *theirs*
   and leave the conflict markers in the file — the actual resolution happened somewhere else. It now opens
   a list of the file's conflicted regions with a decision per region (take ours, take theirs, take both,

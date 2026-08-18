@@ -302,6 +302,10 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         svc.reloadActivePanel?(svc.host)
         svc.presentInfo?(svc.host, L("Git"),
                          String(format: L("Added “%@” to .gitignore."), pattern))
+    case "plugin.git.rebase":
+        // The commits ahead of the upstream, and what to do with each (F-423). A window rather than a
+        // command with arguments: the plan is the point, and it is built by looking at the list.
+        MainActor.assumeIsolated { showRebaseWindow(root: root, svc) }
     case "plugin.git.credentials":
         // Diagnose, and offer exactly one action: git's own helper. No secret is read, shown or stored
         // here — see the plan's 5b for why a store of our own could only be a stale copy of git's.
@@ -366,6 +370,9 @@ private func showStatus(_ repo: PluginGit.RepoStatus, root: String, _ svc: PcHos
     var lines = [String(format: L("Branch: %@"), repo.detached ? L("(detached)") : repo.branch)]
     if let upstream = repo.upstream {
         lines.append(String(format: L("Tracking: %@  ↑%lld ↓%lld"), upstream, repo.ahead, repo.behind))
+    }
+    if PluginGitRepo.rebaseIsRunning(root: root) {
+        lines.append(L("A rebase is half-finished — use “Rebase…” to continue or abort it."))
     }
     lines.append("")
     let files = repo.ordered
@@ -505,6 +512,14 @@ private func showToolWindow(title: String, view: NSView, size: NSSize, _ svc: Pc
         svc.registerToolWindow?(svc.host, pointer, nil, nil, name)
     }
     window.makeKeyAndOrderFront(nil)
+}
+
+@MainActor
+private func showRebaseWindow(root: String, _ svc: PcHostServices) {
+    let name = (root as NSString).lastPathComponent
+    showToolWindow(title: String(format: L("Rebase — %@"), name),
+                   view: GitRebaseView(services: svc, root: root),
+                   size: NSSize(width: 720, height: 420), svc)
 }
 
 @MainActor

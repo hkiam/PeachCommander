@@ -58,6 +58,35 @@ enum PluginGitRepo {
         return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
     }
 
+    /// Run git with extra environment — the interactive rebase needs `GIT_SEQUENCE_EDITOR` and
+    /// `GIT_EDITOR`, which is how a GUI with no terminal drives one (F-423).
+    static func runWith(environment extra: [String: String], _ arguments: [String]) -> (out: String, ok: Bool) {
+        guard let executable = executable() else { return (L("Git was not found on this Mac."), false) }
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: executable)
+        process.arguments = arguments
+        var environment = ProcessInfo.processInfo.environment
+        environment["GIT_TERMINAL_PROMPT"] = "0"
+        environment["GIT_OPTIONAL_LOCKS"] = "0"
+        environment.merge(extra) { _, new in new }
+        process.environment = environment
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+        do { try process.run() } catch { return (L("Git could not be started."), false) }
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
+    }
+
+    /// Is a rebase half-finished here? Asked of the real git directory, which in a worktree is not
+    /// `<root>/.git` (F-419).
+    static func rebaseIsRunning(root: String) -> Bool {
+        cacheLock.lock(); let gitDir = gitDirByRoot[root]; cacheLock.unlock()
+        let base = gitDir ?? (root as NSString).appendingPathComponent(".git")
+        return PluginGit.rebaseIsRunning(gitDir: base) { FileManager.default.fileExists(atPath: $0) }
+    }
+
     /// Run git and hand back raw bytes — for `show`, whose output is a file's content and may not be text.
     static func runData(_ arguments: [String]) -> Data? {
         guard let executable = executable() else { return nil }

@@ -11,9 +11,11 @@
 > configuration and a second place to set it can only disagree with the first. What remains is the host
 > work in §6 — blame in the viewer's gutter, an icon column field, and localized column headers (declared
 > asynchronous commands are **built**, F-422) — and §5's **phase 5**, which re-examines the four things the first version
-> of this plan put out of scope: the conflict resolver on the markers (5a, F-420), credential *diagnosis*
-> without storage and "open on the web" without an API (5b/5c, F-421) are **built**; what is left of phase 5
-> is 5d, a rebase bounded to the commits ahead of the upstream, which needs §6.3 first.
+> of this plan put out of scope — all four settled: the conflict resolver on the markers (5a, F-420),
+> credential *diagnosis* without storage and "open on the web" without an API (5b/5c, F-421), and the
+> rebase bounded to the commits ahead of the upstream (5d, F-423) are **built**, with a merge editor,
+> credential *storage* and the GitHub/GitLab API argued down rather than deferred. What is left is host
+> work: blame in the viewer's gutter, an icon column field, localized column headers.
 > Everything marked *measured* was measured in this repository or on this
 > machine on 2026-08-18; everything else is named as an estimate or an open question.
 
@@ -316,15 +318,18 @@ remote (GitHub, GitLab, Bitbucket, Azure DevOps, both SSH and HTTPS forms) for a
 commit or a branch, and hand it to the browser. It is the thing one most often wants a *file
 manager* to do with a hosted repository, and it is a handful of string rules with tests.
 
-**5d. A bounded interactive rebase — build it last, after §6.3. Size M–L.** The blocker I assumed
+**5d. A bounded interactive rebase — built (F-423), after §6.3. Size M–L.** The blocker I assumed
 turns out not to exist: git runs `$GIT_SEQUENCE_EDITOR <todo-file>`, so
 `GIT_SEQUENCE_EDITOR="cp <our-todo>"` hands git a todo list we generated, with no editor process and
 no terminal, and `GIT_EDITOR` covers a reworded message the same way. What is genuinely expensive is
 the *state afterwards*: a rebase that hits a conflict leaves the repository mid-sequence, so this
 needs "rebase in progress" in the panel header with *Continue / Skip / Abort* — without that we
 create exactly the situation where the user must finish in a terminal while the plugin says nothing.
-It also needs the asynchronous command path (§6.3), because rebasing a long branch must not run on
-the main thread. Scope it to *the commits ahead of the upstream*, with squash / fixup / drop /
+It also needs the asynchronous command path (§6.3) — built as F-422, which is why this came last. In the
+end the run itself is started from the *window* rather than from a command, so the window owns its
+threading (as the branches window already did) and §6.3's value here was the precondition plus what push
+and pull gained from it. There is deliberately no cancel for the run: git's sequencer cannot be killed
+safely mid-flight, and Abort is the operation that undoes what it leaves behind. Scope it to *the commits ahead of the upstream*, with squash / fixup / drop /
 reorder / reword — "clean up what I have not pushed yet", not a general rebase editor.
 
 ### Deliberately out of scope

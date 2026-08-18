@@ -735,6 +735,94 @@ public enum PluginGit {
         return (root, prefix, gitDir)
     }
 
+    // MARK: - Rebase, bounded to the commits ahead of the upstream (phase 5d)
+
+    /// What to do with one commit in a rebase. Deliberately the five that "clean up what I have not pushed
+    /// yet" needs — not git's full vocabulary (no `exec`, no `break`, no `label`/`merge`).
+    public enum RebaseAction: String, Sendable, CaseIterable {
+        case pick, reword, squash, fixup, drop
+    }
+
+    /// Why a rebase must not be started.
+    public enum RebaseRefusal: Sendable, Equatable {
+        case dirtyWorkingTree, conflictOpen, noUpstream, nothingAhead
+        case squashWithoutParent          // the oldest line cannot be squashed into anything
+        case severalRewords(Int)          // one message can be supplied, not several (see `editorValue`)
+        case rebaseAlreadyRunning
+    }
+
+    /// Check a plan before running it. The order matters: what has to be dealt with first comes first.
+    public static func rebaseRefusal(repo: RepoStatus, aheadCount: Int, actions: [RebaseAction],
+                                    rebaseRunning: Bool) -> RebaseRefusal? {
+        if rebaseRunning { return .rebaseAlreadyRunning }
+        if let refusal = refusal(forCommitActionIn: repo) {
+            return refusal == .conflictOpen ? .conflictOpen : .dirtyWorkingTree
+        }
+        if repo.upstream == nil { return .noUpstream }
+        if aheadCount == 0 { return .nothingAhead }
+        // The list is oldest-first, as git's todo file is: a squash on the first line has no parent left.
+        if let first = actions.first, first == .squash || first == .fixup { return .squashWithoutParent }
+        let rewords = actions.filter { $0 == .reword }.count
+        if rewords > 1 { return .severalRewords(rewords) }
+        return nil
+    }
+
+    /// The todo file git's sequence editor would have been opened on.
+    ///
+    /// Oldest first, which is the opposite of `log` order and the direction git applies them in — getting
+    /// this backwards produces a rebase that succeeds and reorders the branch wrongly, which is the worst
+    /// kind of wrong here. `drop` is written as a `drop` line rather than omitted: git then confirms it
+    /// dropped that commit, and a todo missing a commit git expected is an error rather than an intention.
+    public static func rebaseTodo(commits: [Commit], actions: [RebaseAction]) -> String {
+        var lines: [String] = []
+        for (index, commit) in commits.enumerated() {
+            let action = actions.indices.contains(index) ? actions[index] : .pick
+            lines.append("\(action.rawValue) \(commit.hash) \(commit.subject)")
+        }
+        return lines.joined(separator: "\n") + "\n"
+    }
+
+    /// `GIT_SEQUENCE_EDITOR`: the todo file is handed over by copying ours onto the one git offers.
+    ///
+    /// git runs this through a shell with the todo path appended, so `cp <ours>` becomes
+    /// `cp <ours> <git's>`. That is the whole trick that makes an interactive rebase possible from a GUI
+    /// with no terminal to open an editor on. Single-quoted, since a repository can live under a path with
+    /// spaces in it, and any single quote inside is escaped the shell's way.
+    public static func sequenceEditorValue(todoPath: String) -> String {
+        "cp " + shellQuoted(todoPath)
+    }
+
+    /// `GIT_EDITOR`: supply a commit message from a file, or accept whatever git pre-filled.
+    ///
+    /// `true` is not a no-op editor by accident — it is the editor that changes nothing and exits happily,
+    /// which for a `squash` means keeping the concatenated message git prepared. With a message file it
+    /// becomes `cp`, and that is why only *one* reword is allowed per run: every invocation would be handed
+    /// the same file, so two rewords would silently give both commits the same message.
+    public static func editorValue(messagePath: String?) -> String {
+        guard let messagePath else { return "true" }
+        return "cp " + shellQuoted(messagePath)
+    }
+
+    static func shellQuoted(_ path: String) -> String {
+        "'" + path.replacingOccurrences(of: "'", with: "'\\''") + "'"
+    }
+
+    public static func rebaseArguments(upstream: String) -> [String] { ["rebase", "-i", upstream] }
+    public static let rebaseContinueArguments = ["rebase", "--continue"]
+    public static let rebaseSkipArguments = ["rebase", "--skip"]
+    public static let rebaseAbortArguments = ["rebase", "--abort"]
+
+    /// Is a rebase half-finished in this repository?
+    ///
+    /// From the git directory rather than from a command: `rebase-merge` (the interactive machinery) and
+    /// `rebase-apply` (the older/`--apply` one) are what git itself looks for, and asking costs a `stat`
+    /// rather than a process per listing. `gitDir` must be the *real* one — in a worktree that is not
+    /// `<root>/.git`, which is what F-419 taught this file.
+    public static func rebaseIsRunning(gitDir: String, exists: (String) -> Bool) -> Bool {
+        exists((gitDir as NSString).appendingPathComponent("rebase-merge"))
+            || exists((gitDir as NSString).appendingPathComponent("rebase-apply"))
+    }
+
     // MARK: - Remotes: transport, credentials, web links (phase 5b/5c)
 
     public enum RemoteTransport: String, Sendable, Equatable { case ssh, https, git, local, unknown }

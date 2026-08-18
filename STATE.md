@@ -47,6 +47,22 @@ regression from here on. The run's report and screenshots are under `/tmp/vm-new
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
 
+## 2026-08-18 (F-423) — The bounded rebase, and why it is bounded
+
+The last of the four "out of scope" items, built as the narrow version phase 5 argued for: the commits
+ahead of the upstream, with pick/reword/squash/fixup/drop and reordering. The enabling trick is that git
+runs `$GIT_SEQUENCE_EDITOR <todo>`, so `cp <ours>` hands it a todo file the window wrote — no editor
+process, no terminal — and `GIT_EDITOR=true` accepts the message git pre-filled, which is what a squash
+needs. Only one reword per run, stated rather than hidden: each invocation would be handed the same file,
+so two rewords would silently give both commits the same message.
+
+Two things worth keeping. The todo file is **oldest first**, the opposite of `log` order — getting that
+backwards yields a rebase that succeeds and reorders the branch wrongly, which is the worst failure mode
+available here, so it has its own test. And there is **no cancel** for the run: git's sequencer cannot be
+killed safely mid-flight, and what it leaves behind is precisely the state Abort undoes — so the
+half-finished case became a feature of the same window (Continue / Skip / Abort), which is the part the
+reference products tend to leave to the terminal.
+
 ## 2026-08-18 (F-422) — Asynchronous plugin commands, and two traps one level apart
 
 §6.3 of the Git plan, which everything else in phase 5d was waiting on. A contributed command ran on the

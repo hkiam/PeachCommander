@@ -501,6 +501,72 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(PluginGit.cherryPickArguments("abc"), ["cherry-pick", "--no-edit", "abc"])
     }
 
+    // MARK: - Rebase (phase 5d)
+
+    private static func commit(_ hash: String, _ subject: String) -> PluginGit.Commit {
+        PluginGit.Commit(hash: hash, shortHash: String(hash.prefix(8)), parents: [], author: "T",
+                         date: Date(timeIntervalSince1970: 0), subject: subject)
+    }
+
+    /// Oldest first, which is the opposite of `log` order and the direction git applies them in. Getting it
+    /// backwards produces a rebase that succeeds and reorders the branch wrongly.
+    func testRebaseTodoIsWrittenInApplyOrder() {
+        let commits = [Self.commit("aaa", "first"), Self.commit("bbb", "second"),
+                       Self.commit("ccc", "third")]
+        let todo = PluginGit.rebaseTodo(commits: commits, actions: [.pick, .squash, .drop])
+        XCTAssertEqual(todo, "pick aaa first\nsquash bbb second\ndrop ccc third\n")
+        // A short actions list means the rest is picked, not dropped.
+        XCTAssertEqual(PluginGit.rebaseTodo(commits: commits, actions: [.reword]),
+                       "reword aaa first\npick bbb second\npick ccc third\n")
+    }
+
+    func testSequenceEditorHandsGitOurTodoFile() {
+        XCTAssertEqual(PluginGit.sequenceEditorValue(todoPath: "/tmp/a b/todo"),
+                       "cp '/tmp/a b/todo'", "a repository may live under a path with spaces")
+        XCTAssertEqual(PluginGit.sequenceEditorValue(todoPath: "/tmp/it's/todo"),
+                       "cp '/tmp/it'\\''s/todo'", "and a quote must not end the quoting")
+        XCTAssertEqual(PluginGit.editorValue(messagePath: nil), "true",
+                       "no message: accept what git pre-filled, which is what a squash needs")
+        XCTAssertEqual(PluginGit.editorValue(messagePath: "/tmp/msg"), "cp '/tmp/msg'")
+    }
+
+    func testRebaseRefusals() {
+        let clean = PluginGit.parseStatus("# branch.head main\0# branch.upstream origin/main\0")
+        let dirty = PluginGit.parseStatus("# branch.head main\0# branch.upstream origin/main\0"
+            + "1 .M N... 100644 100644 100644 ccc ddd a.txt\0")
+        let noUpstream = PluginGit.parseStatus("# branch.head main\0")
+
+        XCTAssertNil(PluginGit.rebaseRefusal(repo: clean, aheadCount: 2, actions: [.pick, .squash],
+                                             rebaseRunning: false))
+        XCTAssertEqual(PluginGit.rebaseRefusal(repo: clean, aheadCount: 2, actions: [.pick],
+                                               rebaseRunning: true), .rebaseAlreadyRunning)
+        XCTAssertEqual(PluginGit.rebaseRefusal(repo: dirty, aheadCount: 2, actions: [.pick],
+                                               rebaseRunning: false), .dirtyWorkingTree)
+        XCTAssertEqual(PluginGit.rebaseRefusal(repo: noUpstream, aheadCount: 2, actions: [.pick],
+                                               rebaseRunning: false), .noUpstream)
+        XCTAssertEqual(PluginGit.rebaseRefusal(repo: clean, aheadCount: 0, actions: [],
+                                               rebaseRunning: false), .nothingAhead)
+        // The oldest line has nothing left to squash into.
+        XCTAssertEqual(PluginGit.rebaseRefusal(repo: clean, aheadCount: 2, actions: [.squash, .pick],
+                                               rebaseRunning: false), .squashWithoutParent)
+        // Two rewords would be handed the same message file, so both commits would get the same message.
+        XCTAssertEqual(PluginGit.rebaseRefusal(repo: clean, aheadCount: 3,
+                                               actions: [.reword, .reword, .pick],
+                                               rebaseRunning: false), .severalRewords(2))
+    }
+
+    func testRebaseIsRunningLooksWhereGitLooks() {
+        let merge = "/repo/.git/rebase-merge"
+        XCTAssertTrue(PluginGit.rebaseIsRunning(gitDir: "/repo/.git") { $0 == merge })
+        XCTAssertTrue(PluginGit.rebaseIsRunning(gitDir: "/repo/.git") { $0.hasSuffix("rebase-apply") },
+                      "the --apply machinery counts too")
+        XCTAssertFalse(PluginGit.rebaseIsRunning(gitDir: "/repo/.git") { _ in false })
+        // A linked worktree keeps its state in its own git dir, not in <root>/.git (F-419).
+        XCTAssertTrue(PluginGit.rebaseIsRunning(gitDir: "/main/.git/worktrees/wt") {
+            $0 == "/main/.git/worktrees/wt/rebase-merge"
+        })
+    }
+
     // MARK: - Remotes, credentials, web links (phase 5b/5c)
 
     /// Which credentials apply is decided by the transport, and telling somebody to add an SSH key when
@@ -924,5 +990,89 @@ final class PluginGitTests: XCTestCase {
                        "both sides, ours first, and no markers left behind")
         XCTAssertTrue(try git(["commit", "-q", "-m", "merged"]).ok,
                       "and the merge can be committed")
+    }
+
+    /// The rebase trick against the real binary: git runs `$GIT_SEQUENCE_EDITOR <todo>`, so `cp <ours>`
+    /// hands it a todo list we wrote — no editor process, no terminal (F-423).
+    ///
+    /// Two commits squashed into one and a third dropped, then git is asked what the branch looks like.
+    /// Without `GIT_EDITOR=true` the squash would try to open an editor for the combined message and the
+    /// rebase would stop half-way, which is exactly the failure this proves cannot happen.
+    func testInteractiveRebaseAgainstRealGit() throws {
+        let found = PluginGit.resolveExecutable(
+            setting: nil,
+            isExecutable: { FileManager.default.isExecutableFile(atPath: $0) },
+            exists: { FileManager.default.fileExists(atPath: $0) })
+        let executable = try XCTUnwrap(found, "no git on this machine")
+        let dir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("pcgit-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+
+        @discardableResult
+        func git(_ arguments: [String], environment extra: [String: String] = [:])
+            throws -> (out: String, ok: Bool) {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: executable)
+            process.arguments = ["-C", dir.path] + arguments
+            let pipe = Pipe(); process.standardOutput = pipe; process.standardError = pipe
+            var environment = ProcessInfo.processInfo.environment
+            environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
+            environment["GIT_CONFIG_NOSYSTEM"] = "1"
+            environment["GIT_TERMINAL_PROMPT"] = "0"
+            environment["GIT_AUTHOR_NAME"] = "T"; environment["GIT_AUTHOR_EMAIL"] = "t@example.com"
+            environment["GIT_COMMITTER_NAME"] = "T"; environment["GIT_COMMITTER_EMAIL"] = "t@example.com"
+            environment.merge(extra) { _, new in new }
+            process.environment = environment
+            try process.run()
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+            return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
+        }
+
+        try git(["init", "-q", "-b", "main", "."])
+        try "base\n".write(to: dir.appendingPathComponent("a.txt"), atomically: true, encoding: .utf8)
+        try git(["add", "-A"]); try git(["commit", "-q", "-m", "base"])
+        try git(["branch", "upstream-stand-in"])
+        // A real upstream, because the refusal check asks for one — a local branch is allowed to be one,
+        // which keeps this test off the network.
+        try git(["branch", "--set-upstream-to=upstream-stand-in", "main"])
+        for (file, message) in [("b.txt", "adds b"), ("c.txt", "adds c"), ("d.txt", "adds d")] {
+            try "x\n".write(to: dir.appendingPathComponent(file), atomically: true, encoding: .utf8)
+            try git(["add", "-A"]); try git(["commit", "-q", "-m", message])
+        }
+
+        // The commits ahead, oldest first — which is the order the todo file wants.
+        let ahead = PluginGit.parseLog(try git(PluginGit.logArguments(limit: 20, path: nil)
+            + ["upstream-stand-in..HEAD"]).out).reversed().map { $0 }
+        XCTAssertEqual(ahead.map(\.subject), ["adds b", "adds c", "adds d"])
+        XCTAssertNil(PluginGit.rebaseRefusal(
+            repo: PluginGit.parseStatus(try git(PluginGit.statusArguments).out),
+            aheadCount: ahead.count, actions: [.pick, .squash, .drop], rebaseRunning: false),
+            "a clean tree with three commits ahead: nothing in the way except the missing upstream")
+
+        let todo = dir.appendingPathComponent("pc-todo")
+        try PluginGit.rebaseTodo(commits: ahead, actions: [.pick, .squash, .drop])
+            .write(to: todo, atomically: true, encoding: .utf8)
+        let result = try git(PluginGit.rebaseArguments(upstream: "upstream-stand-in"), environment: [
+            "GIT_SEQUENCE_EDITOR": PluginGit.sequenceEditorValue(todoPath: todo.path),
+            "GIT_EDITOR": PluginGit.editorValue(messagePath: nil),
+        ])
+        XCTAssertTrue(result.ok, "rebase failed: \(result.out)")
+
+        let after = PluginGit.parseLog(try git(PluginGit.logArguments(limit: 20, path: nil)
+            + ["upstream-stand-in..HEAD"]).out)
+        XCTAssertEqual(after.count, 1, "two commits squashed into one, the third dropped")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: dir.appendingPathComponent("b.txt").path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: dir.appendingPathComponent("c.txt").path),
+                      "the squashed commit's change must still be there")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: dir.appendingPathComponent("d.txt").path),
+                       "and the dropped one's must not")
+
+        // And nothing is left half-finished.
+        let gitDir = dir.appendingPathComponent(".git").path
+        XCTAssertFalse(PluginGit.rebaseIsRunning(gitDir: gitDir) {
+            FileManager.default.fileExists(atPath: $0)
+        })
     }
 }
