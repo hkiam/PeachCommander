@@ -157,6 +157,25 @@ SCENARIOS = [
     # written with void elements and paragraphs that never close.
     ("markdown-outline", ["editdump /Users/admin/pc-demo/outline.md /Users/admin/md-outline.txt",
                           "wait 2500"], 10),
+    # A Mac with no developer toolchain, which is what the guest is (Tools/vm/README.md: the app is built
+    # on the host, "no Xcode needed in the guest"). `/usr/bin/git` there is the Command Line Tools *shim*:
+    # running it opens the installer. The Git plugin used to invoke that path from a **column value**, so
+    # scrolling through a folder could put an installer dialog on screen (F-415). The folder below even
+    # looks like a repository — it has a `.git` directory — and the plugin must still stay quiet: an empty
+    # column and no modal window. `modal=false` is the assertion that matters; the probe records what the
+    # guest's git situation actually is, so the report says why rather than only that.
+    ("git-no-toolchain", ["probe /Users/admin/git-env.txt|"
+                          "{ /usr/bin/xcode-select -p 2>&1 | head -1; "
+                          "ls /Library/Developer/CommandLineTools/usr/bin/git 2>&1 | head -1; } && "
+                          "mkdir -p ~/pc-gitfake/.git && printf x > ~/pc-gitfake/file.txt && "
+                          "ls ~/pc-gitfake",
+                          "wait 700",
+                          "active left", "left /Users/admin/pc-gitfake", "wait 1300",
+                          "column git_status", "wait 1500",
+                          "focus file.txt", "wait 600",
+                          "rowdump /Users/admin/git-row.txt", "wait 500",
+                          "modaldump /Users/admin/git-modal.txt", "wait 2500",
+                          "panelsdump /Users/admin/git-no-toolchain.txt", "wait 500"], 13),
     # Formatting a file with very long lines used to freeze the window (F-414). The mapping from character
     # index to UTF-16 offset in the code view's drawing path was quadratic in the line length — asked once
     # per syntax token — so a 2 MB JSON Lines log with thirty ~68,000-character records needed 193,934 ms to
@@ -1906,6 +1925,14 @@ REPORTS = {
     "go-outline": ("/Users/admin/go-outline.txt",
                    ["[C  Machine]", "[m  Greet]", "[ƒ  main]", "status=Go", "!BLANK!"]),
     # Markdown: the headings, the breadcrumb they feed, and — the point — nothing from the fenced block.
+    # No developer toolchain in the guest: the column is there and empty, and nothing was put on screen
+    # (F-415). Primary = the panel dump, written last.
+    "git-no-toolchain": ("/Users/admin/git-no-toolchain.txt", ["pc-gitfake", "!ERROR"]),
+    # The row carries the column but no status — the plugin found no git and said nothing.
+    "git-no-toolchain-row": ("/Users/admin/git-row.txt",
+                             ["git.git_status", "!Modified", "!Untracked", "!Geändert"]),
+    # And no installer dialog: this is the defect, not the empty column.
+    "git-no-toolchain-modal": ("/Users/admin/git-modal.txt", ["modal=false"]),
     # The formatted long-line file draws at a linear cost, and the JSON Lines formatter is what ran (F-414).
     "viewer-long-lines": ("/Users/admin/longline.txt",
                           ["formatter=JSON Lines", "formatted=1", "line_build=fast", "!line_build=slow"]),

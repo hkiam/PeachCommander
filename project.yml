@@ -343,6 +343,8 @@ targets:
       # The CSV plugin's parsing and its header guess, same arrangement: the plugin bundle compiles this
       # file too (Tools/build-csvlister-plugin.sh), and nothing else in the app's build reaches it.
       - path: Plugins/SDK/PluginCSV.swift
+      # The Git plugin's status parsing and its git-resolution policy, same arrangement (F-415).
+      - path: Plugins/SDK/PluginGit.swift
     settings:
       PRODUCT_NAME: PCFoundationTests
       CODE_SIGNING_ALLOWED: NO
