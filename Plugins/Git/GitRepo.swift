@@ -77,6 +77,33 @@ enum PluginGitRepo {
         return process.terminationStatus == 0 ? data : nil
     }
 
+    /// Run something that is not git — `ssh-add`, for the credential report — and hand back its output
+    /// *and* its exit code, because `ssh-add -l` says "no keys" with 1 and "no agent" with 2 and those are
+    /// different pieces of advice (F-421).
+    static func runTool(_ executable: String, _ arguments: [String]) -> (out: String, code: Int32) {
+        guard FileManager.default.isExecutableFile(atPath: executable) else { return ("", -1) }
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: executable)
+        process.arguments = arguments
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+        do { try process.run() } catch { return ("", -1) }
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        return (String(decoding: data, as: UTF8.self), process.terminationStatus)
+    }
+
+    /// The remote a branch pushes to, and its URL. `origin` is the fallback, not the assumption: a
+    /// repository whose branch tracks `upstream/main` would otherwise be diagnosed against a remote it
+    /// does not use.
+    static func remote(root: String, upstream: String?) -> (name: String, url: String) {
+        let name = upstream.flatMap { $0.split(separator: "/").first.map(String.init) } ?? "origin"
+        let result = run(["-C", root, "config", "--get", "remote.\(name).url"])
+        let url = result.ok ? result.out.trimmingCharacters(in: .whitespacesAndNewlines) : ""
+        return (name, url)
+    }
+
     // MARK: - Repository lookup and cache
 
     private struct CacheEntry {

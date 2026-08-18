@@ -82,6 +82,7 @@ final class GitBranchesView: NSView {
             (L("New…"), #selector(createBranch)),
             (L("Merge…"), #selector(mergeSelected)),
             (L("Delete…"), #selector(deleteSelected)),
+            (L("Open on the web"), #selector(openSelectedOnTheWeb)),
         ])
         let stashButtons = buttonRow([
             (L("Stash changes…"), #selector(stashPush)),
@@ -208,6 +209,23 @@ final class GitBranchesView: NSView {
                     branches.filter { !$0.isRemote }.count, stashes.count)
             }
         }
+    }
+
+    /// The selected branch on the hosting service. A remote branch's name carries its remote
+    /// ("origin/main"), which is not what a URL wants — the link is to the branch, not to the ref (F-421).
+    @objc private func openSelectedOnTheWeb() {
+        guard let branch = selectedBranch else { return }
+        let upstream = PluginGitRepo.status(root: root)?.upstream
+        let remote = PluginGitRepo.remote(root: root, upstream: upstream)
+        guard !remote.url.isEmpty else {
+            services.presentInfo?(services.host, L("Git"),
+                                  String(format: L("“%@” has no remote to open."), remote.name))
+            return
+        }
+        let name = branch.isRemote
+            ? branch.name.split(separator: "/").dropFirst().joined(separator: "/")
+            : branch.name
+        openOnTheWeb(remote: remote.url, target: .branch(name), services)
     }
 
     private var selectedBranch: PluginGit.Branch? {

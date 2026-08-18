@@ -36,6 +36,17 @@ does not have.
   than guessing at them. Not a merge editor: for a region that needs both sides interleaved by hand, the
   editor is one button away.
 
+- **A push that fails for want of a password now has somewhere to look.** `Credentials…` says what this
+  repository authenticates with — SSH or HTTPS, whether a credential helper is configured, whether an SSH
+  agent is running and actually holds a key — and offers one action: let git keep credentials in the macOS
+  Keychain. The plugin never asks for, shows or stores a passphrase; it configures git's own helper and
+  otherwise points at the SSH agent.
+
+- **"Open on the Web" for a file, a commit or a branch.** Built from the remote's URL — GitHub, GitLab,
+  Bitbucket, Azure DevOps — with no API, no token and no account. A file link points at the branch your
+  colleagues can actually see. For a host whose link layout is unknown it offers the repository page rather
+  than guessing at a URL that would 404.
+
 ### Fixed
 
 - **The Git status column no longer lies inside a linked worktree or a submodule.** There `.git` is a

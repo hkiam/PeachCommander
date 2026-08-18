@@ -735,6 +735,189 @@ public enum PluginGit {
         return (root, prefix, gitDir)
     }
 
+    // MARK: - Remotes: transport, credentials, web links (phase 5b/5c)
+
+    public enum RemoteTransport: String, Sendable, Equatable { case ssh, https, git, local, unknown }
+
+    /// How a remote is reached, which is what decides *where its credentials come from*: an SSH remote
+    /// asks the agent, an HTTPS remote asks a credential helper, and telling a user to add an SSH key when
+    /// their remote is HTTPS is worse than saying nothing.
+    public static func transport(of url: String) -> RemoteTransport {
+        let text = url.trimmingCharacters(in: .whitespacesAndNewlines)
+        if text.isEmpty { return .unknown }
+        if text.hasPrefix("https://") || text.hasPrefix("http://") { return .https }
+        if text.hasPrefix("ssh://") { return .ssh }
+        if text.hasPrefix("git://") { return .git }
+        if text.hasPrefix("/") || text.hasPrefix("file://") || text.hasPrefix(".") { return .local }
+        // scp-like: user@host:path — an SSH remote without saying so.
+        if let at = text.firstIndex(of: "@"), text[at...].contains(":") { return .ssh }
+        return .unknown
+    }
+
+    /// Host and repository path from any of the forms git accepts, with credentials and `.git` stripped.
+    public static func remoteHostAndPath(_ url: String) -> (host: String, path: String)? {
+        var text = url.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return nil }
+        for prefix in ["https://", "http://", "ssh://", "git://"] where text.hasPrefix(prefix) {
+            text.removeFirst(prefix.count)
+        }
+        if text.hasPrefix("git@") || text.contains("@") , let at = text.firstIndex(of: "@"),
+           !text.hasPrefix("/") {
+            text = String(text[text.index(after: at)...])   // drop user[:password]@
+        }
+        // scp-like "host:owner/repo" becomes "host/owner/repo"; a port ("host:22/x") is dropped.
+        if let colon = text.firstIndex(of: ":") {
+            let after = text[text.index(after: colon)...]
+            let digits = after.prefix(while: \.isNumber)
+            if !digits.isEmpty, after.dropFirst(digits.count).hasPrefix("/") {
+                text = String(text[text.startIndex..<colon]) + String(after.dropFirst(digits.count))
+            } else {
+                text = String(text[text.startIndex..<colon]) + "/" + String(after)
+            }
+        }
+        let parts = text.split(separator: "/", omittingEmptySubsequences: true).map(String.init)
+        guard parts.count >= 2 else { return nil }
+        var path = parts.dropFirst().joined(separator: "/")
+        if path.hasSuffix(".git") { path.removeLast(4) }
+        guard !path.isEmpty else { return nil }
+        return (parts[0], path)
+    }
+
+    /// What the plugin knows about how this repository authenticates.
+    public struct CredentialReport: Sendable {
+        public var remoteName: String
+        public var remoteURL: String
+        public var helper: String?          // credential.helper, if configured
+        /// Keys the SSH agent holds; nil when the agent could not be asked at all.
+        public var agentKeys: Int?
+        public init(remoteName: String, remoteURL: String, helper: String?, agentKeys: Int?) {
+            self.remoteName = remoteName; self.remoteURL = remoteURL
+            self.helper = helper; self.agentKeys = agentKeys
+        }
+    }
+
+    /// The findings a report leads to, in the order they should be read.
+    ///
+    /// `offerKeychain` is the *only* action this plugin takes about credentials: it sets git's own
+    /// `credential.helper` to `osxkeychain`, which ships with git and keeps the secret in the macOS
+    /// Keychain under git's management. The plugin never sees a passphrase — and a store of its own would
+    /// be a stale copy of git's, because git looks credentials up by URL and decides their lifetime.
+    public enum CredentialFinding: String, Sendable, Equatable {
+        case noRemote, httpsWithoutHelper, httpsWithHelper, sshAgentReady, sshAgentEmpty
+        case sshAgentUnreachable, gitProtocolAnonymous, localRemote, unknownTransport
+    }
+
+    public static func findings(_ report: CredentialReport) -> [CredentialFinding] {
+        guard !report.remoteURL.isEmpty else { return [.noRemote] }
+        switch transport(of: report.remoteURL) {
+        case .https:
+            return [(report.helper?.isEmpty == false) ? .httpsWithHelper : .httpsWithoutHelper]
+        case .ssh:
+            switch report.agentKeys {
+            case .some(let count) where count > 0: return [.sshAgentReady]
+            case .some:                            return [.sshAgentEmpty]
+            case nil:                              return [.sshAgentUnreachable]
+            }
+        case .git:     return [.gitProtocolAnonymous]
+        case .local:   return [.localRemote]
+        case .unknown: return [.unknownTransport]
+        }
+    }
+
+    public static func offersKeychainHelper(_ findings: [CredentialFinding]) -> Bool {
+        findings.contains(.httpsWithoutHelper)
+    }
+
+    /// Configure git's own helper. `--global`, because credentials are a property of the person, not of
+    /// one checkout, and that is where git's documentation puts it.
+    public static let keychainHelperArguments =
+        ["config", "--global", "credential.helper", "osxkeychain"]
+
+    /// How many identities the agent holds, from `ssh-add -l`. nil when there is no agent to ask.
+    ///
+    /// `ssh-add` says "The agent has no identities." on exit code 1 and "Could not open a connection to
+    /// your authentication agent." on 2 — the difference between "add a key" and "start an agent", which
+    /// is exactly the advice a reader needs and the reason this is not a boolean.
+    public static func parseAgentKeys(output: String, exitCode: Int32) -> Int? {
+        if exitCode == 0 {
+            let lines = output.split(separator: "\n", omittingEmptySubsequences: true)
+                .filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+            return lines.count
+        }
+        if output.lowercased().contains("no identities") { return 0 }
+        return nil
+    }
+
+    // MARK: - Web links (phase 5c)
+
+    /// What to open on the hosting service.
+    public enum WebTarget: Sendable, Equatable {
+        case repository
+        case file(path: String, ref: String)
+        case commit(String)
+        case branch(String)
+    }
+
+    /// The URL for a target on the service the remote points at, or nil when there is nothing sensible.
+    ///
+    /// Deep links are only built for hosts whose URL shape is *known* — github.com, gitlab.com,
+    /// bitbucket.org, dev.azure.com. A self-hosted GitHub Enterprise or GitLab cannot be told from any
+    /// other host by its name, so an unknown host gets the repository root and the window says why:
+    /// guessing `/blob/main/…` at a service that spells it differently produces a 404 that looks like a
+    /// bug in the file manager.
+    public static func webURL(remote: String, target: WebTarget) -> String? {
+        guard let (host, path) = remoteHostAndPath(remote) else { return nil }
+        let root = "https://\(host)/\(path)"
+        func encoded(_ path: String) -> String {
+            path.split(separator: "/").map {
+                $0.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? String($0)
+            }.joined(separator: "/")
+        }
+        let lower = host.lowercased()
+        if lower == "dev.azure.com" || lower.hasSuffix(".visualstudio.com") {
+            // Azure keeps the path in a query parameter rather than in the URL's path.
+            switch target {
+            case .repository:              return root
+            case .file(let file, let ref):
+                let p = "/" + encoded(file)
+                return "\(root)?path=\(p.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? p)&version=GB\(ref)"
+            case .commit(let hash):        return "\(root)/commit/\(hash)"
+            case .branch(let name):        return "\(root)?version=GB\(name)"
+            }
+        }
+        let isGitLab = lower == "gitlab.com" || lower.hasPrefix("gitlab.")
+        let isBitbucket = lower == "bitbucket.org"
+        let isGitHub = lower == "github.com" || lower == "www.github.com"
+        guard isGitHub || isGitLab || isBitbucket else {
+            // Known-unknown: the root is always right, a deep link would be a guess.
+            return target == .repository ? root : nil
+        }
+        let infix = isGitLab ? "/-" : ""
+        switch target {
+        case .repository:
+            return root
+        case .file(let file, let ref):
+            return isBitbucket ? "\(root)/src/\(ref)/\(encoded(file))"
+                               : "\(root)\(infix)/blob/\(ref)/\(encoded(file))"
+        case .commit(let hash):
+            return isBitbucket ? "\(root)/commits/\(hash)" : "\(root)\(infix)/commit/\(hash)"
+        case .branch(let name):
+            return isBitbucket ? "\(root)/branch/\(name)" : "\(root)\(infix)/tree/\(name)"
+        }
+    }
+
+    /// Which ref a file link should point at: the tracking branch's name when there is one, else the local
+    /// branch, else `HEAD` — a link to a branch that exists only on this Mac is a 404 to everyone else,
+    /// and every one of the four services resolves `HEAD` to their default branch.
+    public static func webRef(_ repo: RepoStatus) -> String {
+        if let upstream = repo.upstream, let slash = upstream.firstIndex(of: "/") {
+            let name = String(upstream[upstream.index(after: slash)...])
+            if !name.isEmpty { return name }
+        }
+        if repo.detached || repo.branch.isEmpty { return "HEAD" }
+        return repo.branch
+    }
+
     // MARK: - Conflict markers (phase 5a)
 
     /// One conflicted region of a file, as git left it.

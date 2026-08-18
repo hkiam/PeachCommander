@@ -136,6 +136,22 @@
 				<key>title</key>
 				<string>Ignore This Folder…</string>
 			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.credentials</string>
+				<key>title</key>
+				<string>Credentials…</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.web</string>
+				<key>title</key>
+				<string>Open on the Web</string>
+			</dict>
 		</array>
 		<key>contextMenus</key>
 		<array>
@@ -262,6 +278,18 @@
 			<dict>
 				<key>command</key>
 				<string>plugin.git.ignore.directory</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Git</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.web</string>
 				<key>group</key>
 				<string>9_plugins</string>
 				<key>submenu</key>
@@ -447,6 +475,26 @@
 				<integer>190</integer>
 				<key>when</key>
 				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.credentials</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>200</integer>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.web</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>210</integer>
 			</dict>
 		</array>
 		<key>views</key>

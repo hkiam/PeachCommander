@@ -302,6 +302,38 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         svc.reloadActivePanel?(svc.host)
         svc.presentInfo?(svc.host, L("Git"),
                          String(format: L("Added “%@” to .gitignore."), pattern))
+    case "plugin.git.credentials":
+        // Diagnose, and offer exactly one action: git's own helper. No secret is read, shown or stored
+        // here — see the plan's 5b for why a store of our own could only be a stale copy of git's.
+        let upstream = PluginGitRepo.status(root: root)?.upstream
+        DispatchQueue.global(qos: .userInitiated).async {
+            let remote = PluginGitRepo.remote(root: root, upstream: upstream)
+            let helper = PluginGitRepo.run(["-C", root, "config", "--get", "credential.helper"])
+            let agent = PluginGitRepo.runTool("/usr/bin/ssh-add", ["-l"])
+            let report = PluginGit.CredentialReport(
+                remoteName: remote.name, remoteURL: remote.url,
+                helper: helper.ok ? helper.out.trimmingCharacters(in: .whitespacesAndNewlines) : nil,
+                agentKeys: PluginGit.parseAgentKeys(output: agent.out, exitCode: agent.code))
+            DispatchQueue.main.async {
+                MainActor.assumeIsolated { showCredentialReport(report, root: root, svc) }
+            }
+        }
+    case "plugin.git.web":
+        // The file (or the repository) on the hosting service. No API, no token, no account: the URL is
+        // built from the remote, and only for hosts whose shape is known (plan 5c).
+        guard let repo = PluginGitRepo.status(root: root) else { return }
+        let remote = PluginGitRepo.remote(root: root, upstream: repo.upstream)
+        guard !remote.url.isEmpty else {
+            svc.presentInfo?(svc.host, L("Git"),
+                             String(format: L("“%@” has no remote to open."), remote.name))
+            return
+        }
+        let target: PluginGit.WebTarget = relative.isEmpty
+            ? .repository
+            : .file(path: relative, ref: PluginGit.webRef(repo))
+        // The host calls PcRunCommand on the main thread (ContributionRegistry is @MainActor); the alert
+        // this may raise must be built there, and asserting it is honest where a hop would hide it.
+        MainActor.assumeIsolated { openOnTheWeb(remote: remote.url, target: target, svc) }
     case "plugin.git.push":
         background(L("Git Push")) { PluginGitRepo.run(["-C", root, "push"], combined: true) }
     case "plugin.git.pull":
@@ -331,6 +363,92 @@ private func showStatus(_ repo: PluginGit.RepoStatus, root: String, _ svc: PcHos
         }
     }
     svc.presentInfo?(svc.host, L("Git Status"), lines.joined(separator: "\n"))
+}
+
+/// Open a target on the hosting service, or say why not.
+///
+/// An unknown host gets the repository page *after asking*, because the alternative — guessing
+/// `/blob/main/…` at a service that spells it differently — is a 404 that reads as a defect here.
+@MainActor
+func openOnTheWeb(remote: String, target: PluginGit.WebTarget, _ svc: PcHostServices) {
+    if let link = PluginGit.webURL(remote: remote, target: target), let url = URL(string: link) {
+        NSWorkspace.shared.open(url)
+        return
+    }
+    guard let root = PluginGit.webURL(remote: remote, target: .repository),
+          let url = URL(string: root) else {
+        svc.presentInfo?(svc.host, L("Git"), L("That remote is not a web address."))
+        return
+    }
+    let alert = NSAlert()
+    alert.messageText = L("This host's link layout is unknown.")
+    // The URL goes on its own line rather than into the sentence: a key with an embedded newline is one
+    // every translator has to reproduce exactly, for no gain.
+    alert.informativeText = L("A direct link would be a guess. Open the repository page instead?")
+        + "\n\n" + root
+    alert.addButton(withTitle: L("Open repository"))
+    alert.addButton(withTitle: L("Cancel"))
+    if alert.runModal() == .alertFirstButtonReturn { NSWorkspace.shared.open(url) }
+}
+
+/// What this repository authenticates with, in words, plus the one action worth offering.
+///
+/// Every line here is advice, not a secret: no passphrase is read, shown or stored, and the single action
+/// sets git's own `credential.helper` so the secret lives in the macOS Keychain under git's management.
+@MainActor
+private func showCredentialReport(_ report: PluginGit.CredentialReport, root: String,
+                                  _ svc: PcHostServices) {
+    let findings = PluginGit.findings(report)
+    var lines: [String] = []
+    if !report.remoteURL.isEmpty {
+        lines.append(String(format: L("Remote “%@”: %@"), report.remoteName, report.remoteURL))
+    }
+    for finding in findings {
+        switch finding {
+        case .noRemote:
+            lines.append(L("This repository has no remote, so nothing needs credentials."))
+        case .httpsWithoutHelper:
+            lines.append(L("An HTTPS remote asks for a password on every push, and no credential helper is configured."))
+        case .httpsWithHelper:
+            lines.append(String(format: L("An HTTPS remote, with the credential helper “%@”. git stores and finds the secret itself."),
+                                report.helper ?? ""))
+        case .sshAgentReady:
+            lines.append(String(format: L("An SSH remote, and the agent holds %lld key(s). Nothing to do."),
+                                report.agentKeys ?? 0))
+        case .sshAgentEmpty:
+            lines.append(L("An SSH remote, but the SSH agent holds no key. Add one with “ssh-add”."))
+        case .sshAgentUnreachable:
+            lines.append(L("An SSH remote, and no SSH agent answered. Start one, or add your key with “ssh-add --apple-use-keychain”."))
+        case .gitProtocolAnonymous:
+            lines.append(L("A git:// remote: read-only and anonymous. Pushing needs an SSH or HTTPS URL."))
+        case .localRemote:
+            lines.append(L("A remote on this Mac. No credentials are involved."))
+        case .unknownTransport:
+            lines.append(L("This remote's form is not one of SSH, HTTPS, git:// or a local path."))
+        }
+    }
+    // No blank element: the paragraphs are joined with a blank line already, and an empty entry showed up
+    // in the real dialog as two of them (checked in the running app).
+    lines.append(L("This plugin never asks for, shows or stores a passphrase — it only configures git's own helper and points at the SSH agent."))
+
+    let alert = NSAlert()
+    alert.messageText = L("Git Credentials")
+    alert.informativeText = lines.joined(separator: "\n\n")
+    let offersKeychain = PluginGit.offersKeychainHelper(findings)
+    if offersKeychain { alert.addButton(withTitle: L("Use the macOS Keychain")) }
+    alert.addButton(withTitle: L("Close"))
+    let response = alert.runModal()
+    guard offersKeychain, response == .alertFirstButtonReturn else { return }
+
+    DispatchQueue.global(qos: .userInitiated).async {
+        let result = PluginGitRepo.run(PluginGit.keychainHelperArguments, combined: true)
+        let message = result.out.trimmingCharacters(in: .whitespacesAndNewlines)
+        DispatchQueue.main.async {
+            svc.presentInfo?(svc.host, L("Git Credentials"), result.ok
+                ? L("git will now keep credentials in the macOS Keychain (credential.helper = osxkeychain).")
+                : (message.isEmpty ? L("Failed.") : message))
+        }
+    }
 }
 
 /// Modal commit-message prompt; nil if cancelled/empty.

@@ -36,6 +36,7 @@ final class GitLogView: NSView {
     private let loadMoreButton = NSButton()
     private let revertButton = NSButton()
     private let cherryPickButton = NSButton()
+    private let webButton = NSButton()
     private var limit = 100
     private let split = NSSplitView()
 
@@ -82,6 +83,7 @@ final class GitLogView: NSView {
             (loadMoreButton, L("Load more"), #selector(loadMore)),
             (revertButton, L("Revert commit"), #selector(revertSelectedCommit)),
             (cherryPickButton, L("Cherry-pick"), #selector(cherryPickSelectedCommit)),
+            (webButton, L("Open on the web"), #selector(openSelectedOnTheWeb)),
         ] as [(NSButton, String, Selector)] {
             button.title = title
             button.bezelStyle = .rounded
@@ -114,6 +116,7 @@ final class GitLogView: NSView {
         footer.alignment = .centerY
         footer.addView(loadMoreButton, in: .leading)
         footer.addView(busy, in: .leading)
+        footer.addView(webButton, in: .leading)
         footer.addView(revertButton, in: .trailing)
         footer.addView(cherryPickButton, in: .trailing)
 
@@ -323,6 +326,22 @@ final class GitLogView: NSView {
                 self.reload()
             }
         }
+    }
+
+    /// This commit on the hosting service — no API and no token, just the remote's URL (F-421).
+    @objc private func openSelectedOnTheWeb() {
+        guard commits.indices.contains(commitTable.selectedRow) else {
+            report(L("Git"), L("Select a commit first."))
+            return
+        }
+        let hash = commits[commitTable.selectedRow].hash
+        let upstream = PluginGitRepo.status(root: root)?.upstream
+        let remote = PluginGitRepo.remote(root: root, upstream: upstream)
+        guard !remote.url.isEmpty else {
+            report(L("Git"), String(format: L("“%@” has no remote to open."), remote.name))
+            return
+        }
+        openOnTheWeb(remote: remote.url, target: .commit(hash), services)
     }
 
     private func report(_ title: String, _ message: String) {

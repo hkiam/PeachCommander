@@ -501,6 +501,106 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(PluginGit.cherryPickArguments("abc"), ["cherry-pick", "--no-edit", "abc"])
     }
 
+    // MARK: - Remotes, credentials, web links (phase 5b/5c)
+
+    /// Which credentials apply is decided by the transport, and telling somebody to add an SSH key when
+    /// their remote is HTTPS is worse than saying nothing.
+    func testRemoteTransport() {
+        XCTAssertEqual(PluginGit.transport(of: "https://github.com/o/r.git"), .https)
+        XCTAssertEqual(PluginGit.transport(of: "git@github.com:o/r.git"), .ssh,
+                       "the scp-like form is SSH without saying so")
+        XCTAssertEqual(PluginGit.transport(of: "ssh://git@example.com:2222/o/r.git"), .ssh)
+        XCTAssertEqual(PluginGit.transport(of: "git://example.com/o/r.git"), .git)
+        XCTAssertEqual(PluginGit.transport(of: "/Users/x/repo"), .local)
+        XCTAssertEqual(PluginGit.transport(of: ""), .unknown)
+    }
+
+    func testRemoteHostAndPathAcrossEveryFormGitAccepts() {
+        let cases: [(String, String, String)] = [
+            ("https://github.com/owner/repo.git", "github.com", "owner/repo"),
+            ("https://user@github.com/owner/repo", "github.com", "owner/repo"),
+            ("git@github.com:owner/repo.git", "github.com", "owner/repo"),
+            ("ssh://git@gitlab.com/group/sub/repo.git", "gitlab.com", "group/sub/repo"),
+            ("ssh://git@example.com:2222/owner/repo.git", "example.com", "owner/repo"),
+            ("git://example.com/owner/repo.git", "example.com", "owner/repo"),
+        ]
+        for (url, host, path) in cases {
+            let parsed = PluginGit.remoteHostAndPath(url)
+            XCTAssertEqual(parsed?.host, host, url)
+            XCTAssertEqual(parsed?.path, path, url)
+        }
+        XCTAssertNil(PluginGit.remoteHostAndPath("nonsense"))
+        XCTAssertNil(PluginGit.remoteHostAndPath(""))
+    }
+
+    func testCredentialFindings() {
+        func report(_ url: String, helper: String? = nil, keys: Int? = nil) -> PluginGit.CredentialReport {
+            PluginGit.CredentialReport(remoteName: "origin", remoteURL: url, helper: helper,
+                                       agentKeys: keys)
+        }
+        XCTAssertEqual(PluginGit.findings(report("")), [.noRemote])
+        XCTAssertEqual(PluginGit.findings(report("https://github.com/o/r.git")), [.httpsWithoutHelper])
+        XCTAssertEqual(PluginGit.findings(report("https://github.com/o/r.git", helper: "osxkeychain")),
+                       [.httpsWithHelper])
+        XCTAssertEqual(PluginGit.findings(report("git@github.com:o/r.git", keys: 2)), [.sshAgentReady])
+        XCTAssertEqual(PluginGit.findings(report("git@github.com:o/r.git", keys: 0)), [.sshAgentEmpty])
+        XCTAssertEqual(PluginGit.findings(report("git@github.com:o/r.git", keys: nil)),
+                       [.sshAgentUnreachable], "no agent to ask is different advice from an empty agent")
+        XCTAssertEqual(PluginGit.findings(report("/Users/x/repo")), [.localRemote])
+
+        // The one action offered — and only where it applies.
+        XCTAssertTrue(PluginGit.offersKeychainHelper([.httpsWithoutHelper]))
+        XCTAssertFalse(PluginGit.offersKeychainHelper([.sshAgentEmpty]))
+        XCTAssertEqual(PluginGit.keychainHelperArguments,
+                       ["config", "--global", "credential.helper", "osxkeychain"])
+    }
+
+    /// `ssh-add -l` distinguishes "no keys" (1) from "no agent" (2), which is the difference between
+    /// "add a key" and "start an agent" — hence Int? rather than Bool.
+    func testParseAgentKeys() {
+        XCTAssertEqual(PluginGit.parseAgentKeys(output: "256 SHA256:aa a@b (ED25519)\n", exitCode: 0), 1)
+        XCTAssertEqual(PluginGit.parseAgentKeys(output: "a\nb\n\n", exitCode: 0), 2)
+        XCTAssertEqual(PluginGit.parseAgentKeys(output: "The agent has no identities.\n", exitCode: 1), 0)
+        XCTAssertNil(PluginGit.parseAgentKeys(
+            output: "Could not open a connection to your authentication agent.\n", exitCode: 2))
+    }
+
+    func testWebURLsPerService() {
+        let file = PluginGit.WebTarget.file(path: "src/app swift/main.swift", ref: "main")
+        XCTAssertEqual(PluginGit.webURL(remote: "git@github.com:o/r.git", target: file),
+                       "https://github.com/o/r/blob/main/src/app%20swift/main.swift")
+        XCTAssertEqual(PluginGit.webURL(remote: "https://gitlab.com/g/r.git", target: file),
+                       "https://gitlab.com/g/r/-/blob/main/src/app%20swift/main.swift")
+        XCTAssertEqual(PluginGit.webURL(remote: "git@bitbucket.org:o/r.git", target: file),
+                       "https://bitbucket.org/o/r/src/main/src/app%20swift/main.swift")
+        XCTAssertEqual(PluginGit.webURL(remote: "git@github.com:o/r.git", target: .commit("abc123")),
+                       "https://github.com/o/r/commit/abc123")
+        XCTAssertEqual(PluginGit.webURL(remote: "https://gitlab.example.org/g/r.git",
+                                        target: .commit("abc123")),
+                       "https://gitlab.example.org/g/r/-/commit/abc123",
+                       "a host named gitlab.* is one we do know the shape of")
+        XCTAssertEqual(PluginGit.webURL(remote: "git@github.com:o/r.git", target: .branch("feature/x")),
+                       "https://github.com/o/r/tree/feature/x")
+    }
+
+    /// A self-hosted GitHub Enterprise cannot be told from any other host by its name, so a deep link
+    /// would be a guess that 404s and looks like a defect in the file manager.
+    func testUnknownHostGetsTheRootOnly() {
+        XCTAssertEqual(PluginGit.webURL(remote: "git@git.company.example:o/r.git", target: .repository),
+                       "https://git.company.example/o/r")
+        XCTAssertNil(PluginGit.webURL(remote: "git@git.company.example:o/r.git",
+                                      target: .commit("abc123")))
+        XCTAssertNil(PluginGit.webURL(remote: "nonsense", target: .repository))
+    }
+
+    func testWebRefPrefersWhatOtherPeopleCanSee() {
+        XCTAssertEqual(PluginGit.webRef(PluginGit.RepoStatus(branch: "local-name",
+                                                            upstream: "origin/main")), "main")
+        XCTAssertEqual(PluginGit.webRef(PluginGit.RepoStatus(branch: "feature")), "feature")
+        XCTAssertEqual(PluginGit.webRef(PluginGit.RepoStatus(branch: "", detached: true)), "HEAD",
+                       "every one of the four services resolves HEAD to their default branch")
+    }
+
     // MARK: - Conflict markers (phase 5a)
 
     private static let twoWay = """

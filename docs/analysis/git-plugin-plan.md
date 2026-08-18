@@ -11,9 +11,9 @@
 > configuration and a second place to set it can only disagree with the first. What remains is the host
 > work in §6 — blame in the viewer's gutter, an icon column field, declared asynchronous commands, and
 > localized column headers — and §5's **phase 5**, which re-examines the four things the first version
-> of this plan put out of scope: the conflict resolver on the markers is **built** (5a, F-420); credential
-> *diagnosis* without storage, "open on the web" without an API, and a rebase bounded to the commits ahead
-> of the upstream are next.
+> of this plan put out of scope: the conflict resolver on the markers (5a, F-420), credential *diagnosis*
+> without storage and "open on the web" without an API (5b/5c, F-421) are **built**; what is left of phase 5
+> is 5d, a rebase bounded to the commits ahead of the upstream, which needs §6.3 first.
 > Everything marked *measured* was measured in this repository or on this
 > machine on 2026-08-18; everything else is named as an estimate or an open question.
 
@@ -300,7 +300,7 @@ work is needed. This is explicitly **not** a merge editor: no base pane, no resu
 hunk-level text editing — the app already has an editor and a compare window, and a second one of
 each is a second set of defects.
 
-**5b. Credential diagnosis and setup — build it, but store nothing. Size S.** With
+**5b. Credential diagnosis and setup — built (F-421), storing nothing. Size S.** With
 `GIT_TERMINAL_PROMPT=0` a `push` that needs a secret fails immediately, which is correct and
 unhelpful: the message does not say what to configure. So report the situation — is a remote HTTPS or
 SSH, is an agent running and does it hold a key (`ssh-add -l`), is a credential helper configured —
@@ -311,7 +311,7 @@ here: git looks credentials up by URL and decides their lifetime, and a second s
 only be a stale copy. Writing our own `git credential-…` helper would be possible and would add a
 second secret path for no gain over the one git already ships.
 
-**5c. "Open on the web" — build it. Size S.** No API, no token, no account: build the URL from the
+**5c. "Open on the web" — built (F-421). Size S.** No API, no token, no account: build the URL from the
 remote (GitHub, GitLab, Bitbucket, Azure DevOps, both SSH and HTTPS forms) for a file, a line, a
 commit or a branch, and hand it to the browser. It is the thing one most often wants a *file
 manager* to do with a hosted repository, and it is a handful of string rules with tests.

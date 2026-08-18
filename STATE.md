@@ -60,11 +60,18 @@ marker set that does not parse is refused rather than guessed at, staging is ref
 still open (git commits markers without complaint), and a non-UTF-8 file is sent to the editor rather than
 silently re-encoded by a resolver.
 
+5b and 5c followed the same day (F-421): the credential *report* — transport, helper, and whether an SSH
+agent answered and held a key, where `ssh-add -l`'s exit code 1 vs 2 is the difference between "add a key"
+and "start an agent" — with exactly one action, setting git's own `credential.helper` to `osxkeychain`; and
+"open on the web" for a file, commit or branch, built from the remote URL for the four services whose shape
+is known, with the repository page (after asking) for any other host. Worth remembering from the
+verification: on this Mac `git config --get credential.helper` answers `osxkeychain` from the *system*
+config even though the global one is empty — the report is about what git will really do, which is why it
+reads the effective value rather than the global one.
+
 Still deliberately **not** built: a merge editor with base and result panes, credential *storage* of any
-kind (5b will configure `credential.helper osxkeychain` and diagnose the SSH agent instead — note that
-`PcHostServices.crypt` exists and is still the wrong tool, because git looks credentials up by URL and
-owns their lifetime), and the GitHub/GitLab API (5c gets "open on the web" from the remote URL, with no
-token and no account). 5d — rebase bounded to the commits ahead of the upstream — turned out not to be
+kind (note that `PcHostServices.crypt` exists and is still the wrong tool, because git looks credentials up
+by URL and owns their lifetime), and the GitHub/GitLab API. 5d — rebase bounded to the commits ahead of the upstream — turned out not to be
 blocked by what I assumed: git runs `$GIT_SEQUENCE_EDITOR <todo>`, so `cp <our-todo>` hands it a todo list
 with no editor process at all. What it needs is the *in-progress* state (Continue / Skip / Abort) and §6.3.
 
