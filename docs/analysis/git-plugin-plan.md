@@ -10,7 +10,11 @@
 > benefit for none of the ABI; and **per-repository settings** were dropped, because git already has that
 > configuration and a second place to set it can only disagree with the first. What remains is the host
 > work in §6 — blame in the viewer's gutter, an icon column field, declared asynchronous commands, and
-> localized column headers. Everything marked *measured* was measured in this repository or on this
+> localized column headers — and §5's **phase 5**, which re-examines the four things the first version
+> of this plan put out of scope: the conflict resolver on the markers is **built** (5a, F-420); credential
+> *diagnosis* without storage, "open on the web" without an API, and a rebase bounded to the commits ahead
+> of the upstream are next.
+> Everything marked *measured* was measured in this repository or on this
 > machine on 2026-08-18; everything else is named as an estimate or an open question.
 
 The Git plugin shipped as a first pass: two panel columns and five commands. This document asks two
@@ -279,11 +283,60 @@ A view in the bottom dock (default) or the sidebar, following the active panel:
 
 **Size: M.** Individually small, each one independently useful.
 
+### Phase 5 — The four that were out of scope, reconsidered
+
+Asked directly about interactive rebase, an own merge editor, credential storage and
+GitHub/GitLab integration (2026-08-18). Re-examined rather than re-quoted, because two of the four
+have a *bounded* version that is worth building and one of them closes a gap phase 3 left open. The
+order below is by value per unit of work, not by the order they were asked in.
+
+**5a. A conflict resolver on the markers — built (F-420). Size M.** Phase 3's `Resolve Conflict…` shows
+*ours* against *theirs* and then leaves the reader alone with `<<<<<<<` in the file, which means a
+conflict still ends in a terminal. Instead: parse the file's conflict hunks, list them, and offer
+*ours / theirs / both / open in the editor* per hunk, then write the file and stage it. The parsing
+is pure, testable logic (including diff3-style `|||||||` sections, CRLF, and a truncated marker set,
+which must fail safely rather than eat the file); the window is the size of the blame window; no host
+work is needed. This is explicitly **not** a merge editor: no base pane, no result pane, no
+hunk-level text editing — the app already has an editor and a compare window, and a second one of
+each is a second set of defects.
+
+**5b. Credential diagnosis and setup — build it, but store nothing. Size S.** With
+`GIT_TERMINAL_PROMPT=0` a `push` that needs a secret fails immediately, which is correct and
+unhelpful: the message does not say what to configure. So report the situation — is a remote HTTPS or
+SSH, is an agent running and does it hold a key (`ssh-add -l`), is a credential helper configured —
+and offer one action: set `credential.helper` to `osxkeychain`, which ships with git and keeps the
+secret in the macOS Keychain under git's management. The plugin never sees a passphrase. Note that
+`PcHostServices.crypt` *would* give a plugin a Keychain-backed store, and it is still the wrong tool
+here: git looks credentials up by URL and decides their lifetime, and a second store beside it can
+only be a stale copy. Writing our own `git credential-…` helper would be possible and would add a
+second secret path for no gain over the one git already ships.
+
+**5c. "Open on the web" — build it. Size S.** No API, no token, no account: build the URL from the
+remote (GitHub, GitLab, Bitbucket, Azure DevOps, both SSH and HTTPS forms) for a file, a line, a
+commit or a branch, and hand it to the browser. It is the thing one most often wants a *file
+manager* to do with a hosted repository, and it is a handful of string rules with tests.
+
+**5d. A bounded interactive rebase — build it last, after §6.3. Size M–L.** The blocker I assumed
+turns out not to exist: git runs `$GIT_SEQUENCE_EDITOR <todo-file>`, so
+`GIT_SEQUENCE_EDITOR="cp <our-todo>"` hands git a todo list we generated, with no editor process and
+no terminal, and `GIT_EDITOR` covers a reworded message the same way. What is genuinely expensive is
+the *state afterwards*: a rebase that hits a conflict leaves the repository mid-sequence, so this
+needs "rebase in progress" in the panel header with *Continue / Skip / Abort* — without that we
+create exactly the situation where the user must finish in a terminal while the plugin says nothing.
+It also needs the asynchronous command path (§6.3), because rebasing a long branch must not run on
+the main thread. Scope it to *the commits ahead of the upstream*, with squash / fixup / drop /
+reorder / reword — "clean up what I have not pushed yet", not a general rebase editor.
+
 ### Deliberately out of scope
 
-Interactive rebase UI, a merge *editor* of our own (the compare window plus the editor is enough),
-credential storage, GitHub/GitLab integration (pull requests are a different product), and a
-graphical branch-diagram editor. Each is a product in itself, and none is what a file manager is for.
+Still out, after the re-examination in phase 5: a **merge editor** with base and result panes (5a
+builds the useful half of it), **credential storage** of any kind (5b configures the stores that
+already exist instead), the **GitHub/GitLab API** — pull requests, reviews, issues — which needs
+OAuth tokens, a client, rate limits and enterprise hosts, and would drag in the token store 5b
+declines to be (5c gets the web links without any of it), a **general interactive-rebase editor**
+across arbitrary history (5d does the commits ahead of the upstream), and a graphical
+branch-diagram editor. Each of these is a product in itself, and none of them is what a file manager
+is for.
 
 ---
 

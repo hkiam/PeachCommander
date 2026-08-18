@@ -201,34 +201,16 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
     case "plugin.git.branches":
         MainActor.assumeIsolated { showBranchesWindow(root: root, svc) }
     case "plugin.git.conflict":
-        // "ours" against "theirs" for a conflicted file. Stage 1, the common ancestor, is not shown: the
-        // host's compare window takes two files, and pretending otherwise would be worse than saying so
-        // (recorded in the plan's §5, phase 3).
+        // The resolver, not the comparison. Phase 3 opened *ours* against *theirs* here and left the
+        // reader with `<<<<<<<` still in the file, which means the conflict ended somewhere else — a
+        // terminal, usually. The window lists the file's conflicted regions and decides them; the
+        // comparison is one of its buttons, so nothing that worked before is gone (F-420).
         guard !relative.isEmpty, let repo = PluginGitRepo.status(root: root),
               repo.files[relative]?.summary == .conflict else {
             svc.presentInfo?(svc.host, L("Git"), L("That file has no conflict."))
             return
         }
-        let specs = PluginGit.conflictSpecs(path: relative)
-        DispatchQueue.global(qos: .userInitiated).async {
-            let ours = PluginGitRepo.writeBlob(root: root, spec: specs.ours, path: relative, base: .index)
-            let theirs = PluginGitRepo.writeBlob(root: root, spec: specs.theirs, path: relative, base: .head)
-            DispatchQueue.main.async {
-                guard let ours, let theirs else {
-                    svc.presentInfo?(svc.host, L("Git"), L("That version could not be read."))
-                    return
-                }
-                ours.withCString { a in
-                    theirs.withCString { b in
-                        L("ours").withCString { at in
-                            L("theirs").withCString { bt in
-                                svc.compareFiles?(svc.host, a, b, at, bt)
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        MainActor.assumeIsolated { showConflictWindow(root: root, relative: relative, svc) }
     case "plugin.git.blame":
         guard !relative.isEmpty else {
             svc.presentInfo?(svc.host, L("Git"), L("Select a file to blame.")); return
@@ -386,6 +368,13 @@ private func showToolWindow(title: String, view: NSView, size: NSSize, _ svc: Pc
         svc.registerToolWindow?(svc.host, pointer, nil, nil, name)
     }
     window.makeKeyAndOrderFront(nil)
+}
+
+@MainActor
+private func showConflictWindow(root: String, relative: String, _ svc: PcHostServices) {
+    let view = GitConflictView(services: svc, root: root, relative: relative)
+    showToolWindow(title: String(format: L("Resolve Conflict — %@"), relative), view: view,
+                   size: NSSize(width: 780, height: 440), svc)
 }
 
 @MainActor

@@ -22,6 +22,7 @@ pc_swiftc -emit-library -O -module-name Git -target "$TARGET" -framework AppKit 
   "$ROOT/Plugins/Git/GitLogView.swift" \
   "$ROOT/Plugins/Git/GitBlameView.swift" \
   "$ROOT/Plugins/Git/GitBranchesView.swift" \
+  "$ROOT/Plugins/Git/GitConflictView.swift" \
   "$ROOT/Plugins/SDK/PluginLoc.swift" \
   "$ROOT/Plugins/SDK/PluginGit.swift"
 

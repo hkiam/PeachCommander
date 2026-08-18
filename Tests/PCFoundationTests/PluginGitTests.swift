@@ -501,6 +501,111 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(PluginGit.cherryPickArguments("abc"), ["cherry-pick", "--no-edit", "abc"])
     }
 
+    // MARK: - Conflict markers (phase 5a)
+
+    private static let twoWay = """
+        keep this
+        <<<<<<< HEAD
+        ours line
+        =======
+        theirs line
+        >>>>>>> feature
+        and this
+
+        """
+
+    func testParseTwoWayConflict() throws {
+        let file = try XCTUnwrap(PluginGit.parseConflicts(Self.twoWay))
+        XCTAssertEqual(file.hunks.count, 1)
+        XCTAssertEqual(file.hunks[0].ours, ["ours line"])
+        XCTAssertEqual(file.hunks[0].theirs, ["theirs line"])
+        XCTAssertEqual(file.hunks[0].oursLabel, "HEAD")
+        XCTAssertEqual(file.hunks[0].theirsLabel, "feature")
+        XCTAssertNil(file.hunks[0].base)
+        XCTAssertEqual(file.hunks[0].startLine, 2, "the list has to be able to say where it is")
+    }
+
+    func testParseDiff3StyleKeepsTheAncestor() throws {
+        let text = """
+            <<<<<<< HEAD
+            ours
+            ||||||| base commit
+            original
+            =======
+            theirs
+            >>>>>>> other
+
+            """
+        let file = try XCTUnwrap(PluginGit.parseConflicts(text))
+        XCTAssertEqual(file.hunks[0].base, ["original"])
+        XCTAssertEqual(file.hunks[0].baseLabel, "base commit")
+    }
+
+    func testRenderPerChoice() throws {
+        let file = try XCTUnwrap(PluginGit.parseConflicts(Self.twoWay))
+        XCTAssertEqual(PluginGit.render(file, choices: [.ours]),
+                       "keep this\nours line\nand this\n")
+        XCTAssertEqual(PluginGit.render(file, choices: [.theirs]),
+                       "keep this\ntheirs line\nand this\n")
+        XCTAssertEqual(PluginGit.render(file, choices: [.both]),
+                       "keep this\nours line\ntheirs line\nand this\n",
+                       "both means ours first, which is the order the file had them in")
+    }
+
+    /// Writing a half-finished resolution must lose nothing: an untouched hunk goes back marker for
+    /// marker, so the file is exactly as conflicted as it was.
+    func testUnresolvedRoundTripsByteForByte() throws {
+        for text in [Self.twoWay,
+                     "<<<<<<< HEAD\nours\n||||||| base\nold\n=======\ntheirs\n>>>>>>> them\n",
+                     "<<<<<<<\nours\n=======\ntheirs\n>>>>>>>\n"] {
+            let file = try XCTUnwrap(PluginGit.parseConflicts(text))
+            XCTAssertEqual(PluginGit.render(file, choices: []), text)
+        }
+    }
+
+    /// `"\r\n"` is a single Character in Swift, so a parser splitting on `"\n"` sees a Windows file as
+    /// one line — the trap the menu-file parsers hit (F-257). Here it would write the file back with the
+    /// wrong endings on every line.
+    func testCRLFSurvives() throws {
+        let text = Self.twoWay.replacingOccurrences(of: "\n", with: "\r\n")
+        let file = try XCTUnwrap(PluginGit.parseConflicts(text))
+        XCTAssertTrue(file.usesCRLF)
+        XCTAssertEqual(file.hunks[0].ours, ["ours line"], "no stray carriage return in the content")
+        XCTAssertEqual(PluginGit.render(file, choices: []), text)
+        XCTAssertEqual(PluginGit.render(file, choices: [.ours]),
+                       "keep this\r\nours line\r\nand this\r\n")
+    }
+
+    func testFileWithoutTrailingNewlineStaysThatWay() throws {
+        let file = try XCTUnwrap(PluginGit.parseConflicts(
+            "<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> them"))
+        XCTAssertFalse(file.endsWithNewline)
+        XCTAssertEqual(PluginGit.render(file, choices: [.ours]), "ours")
+    }
+
+    /// This text is about to be written over the reader's file. A marker set we cannot read must stop the
+    /// window, not produce a best guess.
+    func testMalformedMarkersAreRefused() {
+        let cases = [
+            "<<<<<<< HEAD\nours\n>>>>>>> them\n":                     "no separator",
+            "<<<<<<< a\nx\n<<<<<<< b\ny\n=======\nz\n>>>>>>> c\n": "nested conflict",
+            "=======\nstray\n":                                      "separator outside a conflict",
+            ">>>>>>> them\n":                                         "closes nothing",
+            "<<<<<<< HEAD\nours\n=======\ntheirs\n":                 "truncated: no closing marker",
+            "||||||| base\nx\n":                                     "an ancestor outside a conflict",
+        ]
+        for (text, why) in cases {
+            XCTAssertNil(PluginGit.parseConflicts(text), "must refuse — \(why)")
+        }
+    }
+
+    func testACleanFileHasNoHunksAndSurvivesUnchanged() throws {
+        let text = "nothing here\nnot even a marker\n=========== not a separator either\n"
+        let file = try XCTUnwrap(PluginGit.parseConflicts(text))
+        XCTAssertTrue(file.hunks.isEmpty, "a longer run of equals signs is a document, not a marker")
+        XCTAssertEqual(PluginGit.render(file, choices: []), text)
+    }
+
     // MARK: - Against the real binary
 
     /// The fixtures above are shapes; this proves the shape is real. Builds a repository with the cases
@@ -644,5 +749,80 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(PluginGit.refusal(forCommitActionIn: try status()), .dirtyWorkingTree)
         XCTAssertFalse(try git(PluginGit.revertArguments(toRevert)).ok,
                        "git itself refuses too — the check only says so in better words")
+    }
+
+    /// A conflict git actually produced, resolved the way the window resolves it: parse the working file,
+    /// render one side, write it, stage it — and then ask git whether the conflict is gone (F-420).
+    ///
+    /// The fixtures above are hand-written marker sets; this proves the markers git writes are the ones
+    /// the parser reads, including the labels, and that the resolved text satisfies git rather than only
+    /// looking right.
+    func testResolvingARealConflict() throws {
+        let found = PluginGit.resolveExecutable(
+            setting: nil,
+            isExecutable: { FileManager.default.isExecutableFile(atPath: $0) },
+            exists: { FileManager.default.fileExists(atPath: $0) })
+        let executable = try XCTUnwrap(found, "no git on this machine")
+        let dir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("pcgit-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+
+        @discardableResult
+        func git(_ arguments: [String]) throws -> (out: String, ok: Bool) {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: executable)
+            process.arguments = ["-C", dir.path] + arguments
+            let pipe = Pipe(); process.standardOutput = pipe; process.standardError = pipe
+            var environment = ProcessInfo.processInfo.environment
+            environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
+            environment["GIT_CONFIG_NOSYSTEM"] = "1"
+            environment["GIT_TERMINAL_PROMPT"] = "0"
+            environment["GIT_EDITOR"] = "false"
+            environment["GIT_AUTHOR_NAME"] = "T"; environment["GIT_AUTHOR_EMAIL"] = "t@example.com"
+            environment["GIT_COMMITTER_NAME"] = "T"; environment["GIT_COMMITTER_EMAIL"] = "t@example.com"
+            process.environment = environment
+            try process.run()
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+            return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
+        }
+        let file = dir.appendingPathComponent("shared.txt")
+
+        try git(["init", "-q", "-b", "main", "."])
+        try "top\nmiddle\nbottom\n".write(to: file, atomically: true, encoding: .utf8)
+        try git(["add", "-A"]); try git(["commit", "-q", "-m", "start"])
+        try git(["checkout", "-q", "-b", "side"])
+        try "top\ntheir middle\nbottom\n".write(to: file, atomically: true, encoding: .utf8)
+        try git(["commit", "-qam", "theirs"])
+        try git(["checkout", "-q", "main"])
+        try "top\nour middle\nbottom\n".write(to: file, atomically: true, encoding: .utf8)
+        try git(["commit", "-qam", "ours"])
+        XCTAssertFalse(try git(["merge", "side"]).ok, "this merge is supposed to conflict")
+
+        let conflicted = try String(contentsOf: file, encoding: .utf8)
+        let parsed = try XCTUnwrap(PluginGit.parseConflicts(conflicted),
+                                   "git's own markers must parse")
+        XCTAssertEqual(parsed.hunks.count, 1)
+        XCTAssertEqual(parsed.hunks[0].ours, ["our middle"])
+        XCTAssertEqual(parsed.hunks[0].theirs, ["their middle"])
+        XCTAssertEqual(parsed.hunks[0].oursLabel, "HEAD", "git labels our side HEAD")
+        XCTAssertEqual(parsed.hunks[0].theirsLabel, "side")
+
+        // Unresolved must round-trip through git's own text, not just through our fixtures.
+        XCTAssertEqual(PluginGit.render(parsed, choices: []), conflicted)
+
+        // Now resolve it the way the window does, and let git judge the result.
+        try PluginGit.render(parsed, choices: [.both]).write(to: file, atomically: true, encoding: .utf8)
+        try git(["add", "--", "shared.txt"])
+        let after = PluginGit.parseStatus(try git(PluginGit.statusArguments).out)
+        XCTAssertNil(after.files["shared.txt"].map(\.summary).flatMap { $0 == .conflict ? true : nil },
+                     "git must no longer see a conflict")
+        XCTAssertEqual(after.files["shared.txt"]?.isStaged, true)
+        XCTAssertEqual(try String(contentsOf: file, encoding: .utf8),
+                       "top\nour middle\ntheir middle\nbottom\n",
+                       "both sides, ours first, and no markers left behind")
+        XCTAssertTrue(try git(["commit", "-q", "-m", "merged"]).ok,
+                      "and the merge can be committed")
     }
 }

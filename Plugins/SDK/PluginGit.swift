@@ -735,6 +735,150 @@ public enum PluginGit {
         return (root, prefix, gitDir)
     }
 
+    // MARK: - Conflict markers (phase 5a)
+
+    /// One conflicted region of a file, as git left it.
+    public struct ConflictHunk: Sendable, Equatable {
+        public var ours: [String]
+        /// The common ancestor's lines — present only in diff3 style (`merge.conflictStyle`).
+        public var base: [String]?
+        public var theirs: [String]
+        public var oursLabel: String
+        public var theirsLabel: String
+        public var baseLabel: String?
+        /// 1-based line number of the `<<<<<<<` marker, so the list can say where it is.
+        public var startLine: Int
+    }
+
+    /// What the reader decided for a hunk. `unresolved` writes the markers back unchanged.
+    public enum ConflictChoice: String, Sendable, CaseIterable { case unresolved, ours, theirs, both }
+
+    /// A conflicted file split into the parts that are plain text and the parts that are a conflict.
+    public struct ConflictFile: Sendable {
+        public enum Segment: Sendable, Equatable { case text([String]); case conflict(Int) }
+        public var segments: [Segment]
+        public var hunks: [ConflictHunk]
+        /// The line ending to write back, and whether the file ended with one.
+        public var usesCRLF: Bool
+        public var endsWithNewline: Bool
+    }
+
+    /// Split a conflicted file into text and hunks, or nil when the markers do not make sense.
+    ///
+    /// Returning nil rather than a best guess is the whole point: this text is about to be written back
+    /// over the reader's file, and a marker set we misread is how a resolver eats a working tree. A
+    /// `<<<<<<<` with no `=======`, a nested `<<<<<<<`, a `>>>>>>>` that closes nothing — all nil, and
+    /// the window says so instead of offering buttons.
+    ///
+    /// CRLF is normalized first and restored on the way out. `"\r\n"` is a *single* Character in Swift,
+    /// so splitting on `"\n"` never sees it and a Windows file would arrive as one enormous line — the
+    /// same trap the menu-file parsers hit (F-257).
+    public static func parseConflicts(_ text: String, markerLength: Int = 7) -> ConflictFile? {
+        let usesCRLF = text.contains("\r\n")
+        let normalized = usesCRLF ? text.replacingOccurrences(of: "\r\n", with: "\n") : text
+        let endsWithNewline = normalized.hasSuffix("\n")
+        var lines = normalized.components(separatedBy: "\n")
+        if endsWithNewline { lines.removeLast() }   // the trailing "" after the final newline
+
+        let ours = String(repeating: "<", count: markerLength)
+        let base = String(repeating: "|", count: markerLength)
+        let separator = String(repeating: "=", count: markerLength)
+        let theirs = String(repeating: ">", count: markerLength)
+        /// A marker line is the run followed by end-of-line or a space and a label — not a line of a
+        /// document that happens to start with seven equals signs under a heading.
+        func marker(_ line: String, _ run: String) -> String?? {
+            guard line.hasPrefix(run) else { return nil }
+            let rest = String(line.dropFirst(run.count))
+            if rest.isEmpty { return .some(nil) }
+            guard rest.hasPrefix(" ") else { return nil }
+            return .some(String(rest.dropFirst()))
+        }
+
+        enum State { case text, ours, base, theirs }
+        var state = State.text
+        var segments: [ConflictFile.Segment] = []
+        var hunks: [ConflictHunk] = []
+        var plain: [String] = []
+        var current: ConflictHunk?
+
+        for (index, line) in lines.enumerated() {
+            if let label = marker(line, ours) {
+                guard state == .text else { return nil }         // nested conflict: refuse
+                if !plain.isEmpty { segments.append(.text(plain)); plain = [] }
+                current = ConflictHunk(ours: [], base: nil, theirs: [], oursLabel: label ?? "",
+                                      theirsLabel: "", baseLabel: nil, startLine: index + 1)
+                state = .ours
+            } else if let label = marker(line, base) {
+                guard state == .ours, var hunk = current else { return nil }
+                hunk.base = []
+                hunk.baseLabel = label ?? ""
+                current = hunk
+                state = .base
+            } else if marker(line, separator) != nil {
+                guard state == .ours || state == .base else { return nil }
+                state = .theirs
+            } else if let label = marker(line, theirs) {
+                guard state == .theirs, var hunk = current else { return nil }
+                hunk.theirsLabel = label ?? ""
+                segments.append(.conflict(hunks.count))
+                hunks.append(hunk)
+                current = nil
+                state = .text
+            } else {
+                switch state {
+                case .text:   plain.append(line)
+                case .ours:   current?.ours.append(line)
+                case .base:   current?.base?.append(line)
+                case .theirs: current?.theirs.append(line)
+                }
+            }
+        }
+        guard state == .text, current == nil else { return nil }  // truncated markers: refuse
+        if !plain.isEmpty { segments.append(.text(plain)) }
+        return ConflictFile(segments: segments, hunks: hunks, usesCRLF: usesCRLF,
+                            endsWithNewline: endsWithNewline)
+    }
+
+    /// The file's text with each hunk resolved as chosen. Fewer choices than hunks counts as unresolved.
+    ///
+    /// An unresolved hunk is written back marker for marker, so writing a half-finished resolution loses
+    /// nothing and the file stays exactly as conflicted as it was.
+    public static func render(_ file: ConflictFile, choices: [ConflictChoice],
+                              markerLength: Int = 7) -> String {
+        var out: [String] = []
+        for segment in file.segments {
+            switch segment {
+            case .text(let lines):
+                out += lines
+            case .conflict(let index):
+                let hunk = file.hunks[index]
+                switch choices.indices.contains(index) ? choices[index] : .unresolved {
+                case .ours:   out += hunk.ours
+                case .theirs: out += hunk.theirs
+                case .both:   out += hunk.ours + hunk.theirs
+                case .unresolved:
+                    func line(_ run: Character, _ label: String?) -> String {
+                        let marker = String(repeating: run, count: markerLength)
+                        guard let label, !label.isEmpty else { return marker }
+                        return marker + " " + label
+                    }
+                    out.append(line("<", hunk.oursLabel))
+                    out += hunk.ours
+                    if let base = hunk.base {
+                        out.append(line("|", hunk.baseLabel))
+                        out += base
+                    }
+                    out.append(line("=", nil))
+                    out += hunk.theirs
+                    out.append(line(">", hunk.theirsLabel))
+                }
+            }
+        }
+        var text = out.joined(separator: "\n")
+        if file.endsWithNewline, !text.isEmpty || !out.isEmpty { text += "\n" }
+        return file.usesCRLF ? text.replacingOccurrences(of: "\n", with: "\r\n") : text
+    }
+
     // MARK: - Commit-level actions (phase 4)
 
     /// Why a revert or cherry-pick must not be started.

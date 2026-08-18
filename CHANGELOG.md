@@ -28,6 +28,14 @@ does not have.
   **cherry-pick** a commit from the history window, each refusing up front when the working tree is not
   clean rather than stopping half-way through.
 
+- **A conflict can now be resolved in the app.** `Resolve Conflict…` used to show *ours* against *theirs*
+  and leave the conflict markers in the file — the actual resolution happened somewhere else. It now opens
+  a list of the file's conflicted regions with a decision per region (take ours, take theirs, take both,
+  leave open), writes the file and stages it. It refuses to stage while a region is still open, because
+  git will happily commit `<<<<<<<`, and it refuses to touch a file whose markers it cannot read rather
+  than guessing at them. Not a merge editor: for a region that needs both sides interleaved by hand, the
+  editor is one button away.
+
 ### Fixed
 
 - **The Git status column no longer lies inside a linked worktree or a submodule.** There `.git` is a

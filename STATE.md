@@ -47,6 +47,27 @@ regression from here on. The run's report and screenshots are under `/tmp/vm-new
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
 
+## 2026-08-18 (F-420) — The four things that were "out of scope", asked about directly
+
+Asked what I made of interactive rebase, an own merge editor, a credential store and GitHub/GitLab
+integration — the four the plan had waved off. Re-examined rather than re-quoted, and two of the four have
+a bounded version worth building (plan §5, phase 5).
+
+The first of them is built: **a conflict resolver on the file's own markers** (5a). It closes something
+phase 3 left open — the conflict command showed the two sides and then left `<<<<<<<` in the file, so the
+resolution itself happened in a terminal. What decided the design was less the UI than the refusals: a
+marker set that does not parse is refused rather than guessed at, staging is refused while a region is
+still open (git commits markers without complaint), and a non-UTF-8 file is sent to the editor rather than
+silently re-encoded by a resolver.
+
+Still deliberately **not** built: a merge editor with base and result panes, credential *storage* of any
+kind (5b will configure `credential.helper osxkeychain` and diagnose the SSH agent instead — note that
+`PcHostServices.crypt` exists and is still the wrong tool, because git looks credentials up by URL and
+owns their lifetime), and the GitHub/GitLab API (5c gets "open on the web" from the remote URL, with no
+token and no account). 5d — rebase bounded to the commits ahead of the upstream — turned out not to be
+blocked by what I assumed: git runs `$GIT_SEQUENCE_EDITOR <todo>`, so `cp <our-todo>` hands it a todo list
+with no editor process at all. What it needs is the *in-progress* state (Continue / Skip / Abort) and §6.3.
+
 ## 2026-08-18 (F-415…F-419) — The Git plugin, assessed and then built out in five stages
 
 Asked to judge the plugin technically *and* functionally before extending it, so
