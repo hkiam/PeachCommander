@@ -730,6 +730,12 @@ extension MainWindowController {
                 try? "auto\n".write(toFile: arg, atomically: true, encoding: .utf8)
             case "view":       openViewer(arg)
             case "menudump":   dumpMenu(arg)
+            case "menuclick":  clickMenuItem(arg)      // menuclick <cm_/em_ name>|<out> (F-257)
+            case "reloadmenu":                          // reloadmenu (F-257): re-read .mnu + usercmd.ini
+                // What activating the app does, on demand: a scenario writes a menu file and
+                // then needs it applied, and it cannot deactivate and reactivate the app.
+                reloadUserCommandsFromDisk()
+                reloadMenuFileFromDisk()
             case "a11ydump":   dumpAccessibility(arg)   // a11ydump <outfile> (I19 T06)
             case "keyloop":    dumpKeyLoop(arg)         // keyloop <outfile> (I19 T06)
             case "keyloopmodal":                        // keyloopmodal <outfile> (I19 T06)
@@ -1204,6 +1210,43 @@ extension MainWindowController {
         }
         try? (lines.joined(separator: "\n") + "\n").write(toFile: file, atomically: true, encoding: .utf8)
         NSLog("[automation] menudump → \(file)")
+    }
+
+    /// Invoke a main-menu item the way a click does — through the item's own target and
+    /// action — and report what was found: `menuclick <cm_/em_ name>|<outfile>`.
+    ///
+    /// `menudump` proves an item exists, carries a command and is enabled; it cannot prove
+    /// the item is wired to the dispatcher that can run that command. That was the defect
+    /// (F-257): an `em_` item in a user `.mnu` went to the cm_ registry, so it looked
+    /// perfect in every dump and did nothing at all when clicked. Only sending the action
+    /// tests it.
+    private func clickMenuItem(_ arg: String) {
+        let parts = arg.split(separator: "|", maxSplits: 1).map(String.init)
+        let wanted = parts.first ?? ""
+        var report = "menuclick \(wanted)\n"
+        if let main = NSApp.mainMenu, let item = Self.findMenuItem(command: wanted, in: main) {
+            report += "found=1\ntitle=\(item.title)\nenabled=\(item.isEnabled ? 1 : 0)\n"
+            if item.isEnabled, let action = item.action {
+                report += "sent=\(NSApp.sendAction(action, to: item.target, from: item) ? 1 : 0)\n"
+            } else {
+                report += "sent=0\n"
+            }
+        } else {
+            report += "found=0\n"
+        }
+        if parts.count == 2 { try? report.write(toFile: parts[1], atomically: true, encoding: .utf8) }
+        NSLog("[automation] menuclick \(wanted)")
+    }
+
+    /// The first item anywhere in `menu` whose represented command is `command`.
+    private static func findMenuItem(command: String, in menu: NSMenu) -> NSMenuItem? {
+        for item in menu.items {
+            if (item.representedObject as? String) == command { return item }
+            if let submenu = item.submenu, let found = findMenuItem(command: command, in: submenu) {
+                return found
+            }
+        }
+        return nil
     }
 
     /// A shortcut in the scheme files' notation (C=Ctrl A=Alt S=Shift W=Cmd), so the menu dump and the

@@ -60,4 +60,12 @@ final class FileAssociationsTests: XCTestCase {
         // rows → init(rows:) → rows is stable.
         XCTAssertEqual(FileAssociations(rows: a.rows), a)
     }
+
+    /// CRLF: "\r\n" is one Character in Swift, so splitting on "\n" left the file as a
+    /// single line and nothing was associated.
+    func testCRLFFileIsParsed() {
+        let assoc = FileAssociations.parse("[Viewer]\r\ntxt=/usr/bin/less\r\n[Editor]\r\ntxt=/usr/bin/vi\r\n")
+        XCTAssertEqual(assoc.viewerApp(forExtension: "txt"), "/usr/bin/less")
+        XCTAssertEqual(assoc.editorApp(forExtension: "txt"), "/usr/bin/vi")
+    }
 }

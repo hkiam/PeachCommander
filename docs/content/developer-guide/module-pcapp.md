@@ -328,7 +328,8 @@ ends.
   way to drive deeper flows — including the network connect path — deterministically
   without fragile GUI clicking. It runs one verb per script line (`left`, `right`,
   `active`, `focus`, `enter`, `cmd`, `connect`, `disconnect`, `wait`, `dump`,
-  `view`, `editdump`, `menudump`, `symbols`, and many feature-specific verbs) and
+  `view`, `editdump`, `menudump`, `menuclick`, `reloadmenu`, `symbols`, and many
+feature-specific verbs) and
   can dump live view state (visible entries, rendered outline rows, menu trees,
   context menus) to files for a driver to assert on. It is compiled out of release
   builds (`#if DEBUG`).

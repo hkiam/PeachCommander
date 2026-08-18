@@ -15,7 +15,9 @@ public struct AliasStore: Sendable {
 
     public init(parsing text: String) {
         var m: [String: String] = [:]
-        for raw in text.split(separator: "\n", omittingEmptySubsequences: false) {
+        // Newlines, not the character "\n": Swift reads "\r\n" as one Character, so a file
+        // saved with CRLF line endings arrived as a single line (see INIDocument).
+        for raw in text.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }) {
             let line = raw.trimmingCharacters(in: .whitespaces)
             if line.isEmpty || line.hasPrefix(";") || line.hasPrefix("#") || line.hasPrefix("[") { continue }
             guard let eq = line.firstIndex(of: "=") else { continue }

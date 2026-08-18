@@ -66,7 +66,10 @@ public struct UserCommands: Sendable, Equatable {
         // when we're outside of any em_ section (or inside a non-em_ one).
         var currentIndex: Int?
 
-        let rawLines = text.split(separator: "\n", omittingEmptySubsequences: false)
+        // On newlines, not on the character "\n": "\r\n" is a single Character in Swift, so
+        // splitting on "\n" leaves a CRLF file — which is what a `usercmd.ini` brought over
+        // from Total Commander is — as one line, and not one user command was found in it.
+        let rawLines = text.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline })
         for (index, substring) in rawLines.enumerated() {
             // Drop a trailing empty element produced by a final "\n".
             if index == rawLines.count - 1 && substring.isEmpty {

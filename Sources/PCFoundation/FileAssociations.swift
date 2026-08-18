@@ -95,7 +95,9 @@ public struct FileAssociations: Equatable, Sendable {
         var viewers: [String: String] = [:]
         var editors: [String: String] = [:]
         var section = ""
-        for raw in text.split(separator: "\n", omittingEmptySubsequences: false) {
+        // Newlines, not the character "\n": Swift reads "\r\n" as one Character, so a file
+        // saved with CRLF line endings arrived as a single line (see INIDocument).
+        for raw in text.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }) {
             let line = raw.trimmingCharacters(in: .whitespaces)
             if line.isEmpty || line.hasPrefix(";") || line.hasPrefix("#") { continue }
             if line.hasPrefix("[") && line.hasSuffix("]") {

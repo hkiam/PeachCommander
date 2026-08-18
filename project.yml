@@ -691,9 +691,16 @@ targets:
       # @testable import. Same arrangement as PCThemeTests. RawKeyboard.swift depends on AppKit
       # and nothing else, which is what makes it possible.
       - path: Sources/PCApp/RawKeyboard.swift
+      # The two halves of "what does a menu item do when it is clicked": the builder that
+      # turns a user .mnu into menu items, and the pass that decides which of them are
+      # enabled. Both depend only on AppKit + PCFoundation (F-257).
+      - path: Sources/PCApp/MnuMenuBuilder.swift
+      - path: Sources/PCApp/KeymapMenu.swift
     settings:
       PRODUCT_NAME: PCKeyboardTests
       CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: PCFoundation
     frameworks:
       - XCTest
 

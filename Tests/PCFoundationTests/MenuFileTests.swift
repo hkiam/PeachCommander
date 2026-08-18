@@ -90,4 +90,93 @@ final class MenuFileTests: XCTestCase {
         guard case .command(_, let c) = kids[0] else { return XCTFail() }
         XCTAssertEqual(c, "cm_Good")
     }
+
+    // MARK: - Diagnostics
+
+    /// Lenient is not the same as silent: whatever the parser skips has to be reportable,
+    /// or the user is left with a menu entry that is simply not there.
+    func testEverySkippedLineIsReported() {
+        let (menu, diagnostics) = MenuFile.parse("""
+        POPUP "&Good"
+          MENUITEM "Fine", cm_Fine
+        END_POPUP
+        GARBAGE here
+        MENUITEM "Homeless", cm_Nowhere
+        END_POPUP
+        POPUP "&Never closed"
+          MENUITEM "Nameless",
+        """)
+        XCTAssertEqual(diagnostics.map(\.kind),
+                       [.unknownLine, .itemOutsideMenu, .strayEndPopup, .unclosedPopup, .itemWithoutCommand])
+        XCTAssertEqual(diagnostics.map(\.line), [4, 5, 6, 7, 8])
+        XCTAssertEqual(diagnostics[0].text, "GARBAGE here")
+        XCTAssertEqual(diagnostics[3].text, "&Never closed")   // the popup's caption, not the line
+        // The tree is still what the lenient parser always produced.
+        XCTAssertEqual(menu.roots.count, 3)   // &Good, the homeless item, &Never closed
+    }
+
+    func testCleanFileHasNoDiagnostics() {
+        XCTAssertEqual(MenuFile.parse(sample).diagnostics, [])
+    }
+
+    func testCommentsAndBlankLinesAreNotDiagnostics() {
+        let (_, diagnostics) = MenuFile.parse("""
+
+        ; comment
+        # comment
+        // comment
+        POPUP "&X"
+          MENUITEM SEPARATOR
+        END_POPUP
+        """)
+        XCTAssertEqual(diagnostics, [])
+    }
+
+    // MARK: - Captions containing a quote
+
+    /// A caption with a `"` in it used to be cut at that quote and its command lost with
+    /// it — reachable from the generated starter file, whose captions come from the live
+    /// menu (a plugin may contribute any title).
+    func testDoubledQuoteInCaptionIsOneLiteralQuote() {
+        let menu = MenuFile(parsing: """
+        POPUP "&P"
+          MENUITEM "Say ""hello"" now", cm_Say
+        END_POPUP
+        """)
+        guard case .popup(_, let kids) = menu.roots[0], case .command(let caption, let cmd) = kids[0]
+        else { return XCTFail("expected one command item") }
+        XCTAssertEqual(caption, "Say \"hello\" now")
+        XCTAssertEqual(cmd, "cm_Say")
+    }
+
+    func testQuoteInCaptionRoundTrips() {
+        let original = MenuFile(roots: [.popup(caption: "&\"P\"", children: [
+            .command(caption: "A \"B\" C", command: "cm_X")
+        ])])
+        XCTAssertEqual(MenuFile(parsing: original.serialize()), original)
+    }
+
+    func testUnterminatedQuoteIsSkippedNotCrashed() {
+        let (menu, diagnostics) = MenuFile.parse("""
+        POPUP "&P"
+          MENUITEM "no closing quote, cm_X
+          MENUITEM "Good", cm_Good
+        END_POPUP
+        """)
+        guard case .popup(_, let kids) = menu.roots[0] else { return XCTFail() }
+        XCTAssertEqual(kids.count, 1)
+        XCTAssertEqual(diagnostics.map(\.kind), [.itemWithoutCommand])
+    }
+
+    // MARK: - Files as Total Commander writes them
+
+    /// CRLF line endings and a numeric command id, i.e. the shape of a real TC menu file
+    /// (its encoding is WindowsTextFile's job).
+    func testCRLFFileWithNumericIdsParses() {
+        let menu = MenuFile(parsing: "POPUP \"&Dateien\"\r\n  MENUITEM \"&Kopieren\", 540\r\nEND_POPUP\r\n")
+        guard case .popup(let caption, let kids) = menu.roots[0],
+              case .command(_, let cmd) = kids[0] else { return XCTFail() }
+        XCTAssertEqual(caption, "&Dateien")
+        XCTAssertEqual(cmd, "540")
+    }
 }

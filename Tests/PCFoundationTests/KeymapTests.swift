@@ -323,4 +323,12 @@ final class KeymapTests: XCTestCase {
         XCTAssertEqual(eff[KeyChord(key: "F8")], "cm_Delete")
         XCTAssertEqual(eff.count, 3)
     }
+
+    /// A scheme file saved by a Windows editor is CRLF, which `split(separator: "\n")` does
+    /// not split at all — it bound nothing.
+    func testCRLFSchemeFileIsParsed() {
+        let scheme = KeymapScheme(parsing: "[Shortcuts]\r\nC+S+F5=cm_CopySamepanel\r\nF8=cm_Delete\r\n")
+        XCTAssertEqual(scheme.bindings[KeyChord(ctrl: true, shift: true, key: "F5")], "cm_CopySamepanel")
+        XCTAssertEqual(scheme.bindings[KeyChord(key: "F8")], "cm_Delete")
+    }
 }

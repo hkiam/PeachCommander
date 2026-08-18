@@ -153,4 +153,17 @@ final class UserCommandsTests: XCTestCase {
         let reloaded = UserCommands(parsing: original.serialize())
         XCTAssertEqual(reloaded.commands.map { $0.name }, ["em_Zeta", "em_Alpha"])
     }
+
+    /// A `usercmd.ini` written on Windows has CRLF line endings, and Swift reads "\r\n" as
+    /// one Character — so splitting on "\n" left the whole file as a single line and not one
+    /// user command was found in it. That is the file the %P/%N parameters come from.
+    func testCRLFFileIsParsed() {
+        let ini = "[em_Terminal]\r\ncmd=/usr/bin/open\r\nparam=-a Terminal %P\r\nmenu=Terminal here\r\n"
+        let parsed = UserCommands(parsing: ini)
+        XCTAssertEqual(parsed.commands.count, 1)
+        XCTAssertEqual(parsed.commands.first?.name, "em_Terminal")
+        XCTAssertEqual(parsed.commands.first?.cmd, "/usr/bin/open")
+        XCTAssertEqual(parsed.commands.first?.param, "-a Terminal %P")
+        XCTAssertEqual(parsed.commands.first?.menu, "Terminal here")
+    }
 }

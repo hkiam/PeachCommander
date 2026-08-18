@@ -26,6 +26,69 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-18 (F-257) — The .mnu format was supported on paper, and four things stopped it working
+
+The question was whether Total Commander's `.mnu` main-menu format is fully supported, placeholders
+included. The parser, the builder and the editor command were all there and the inventory said `done`;
+none of what follows was visible from the outside, which is why I19 T09 had been left as "to reconcile".
+
+* **A `.mnu` from TC never loaded at all.** It was read with `try? String(contentsOf:encoding:.utf8)`,
+  and a TC menu file is ANSI (Windows-1252) or UTF-16 with a BOM — so the read returned nil, which this
+  code could not tell apart from "the user has no menu file". A German `wcmd_deu.mnu` silently produced
+  the built-in menu. `WindowsTextFile` now decodes BOM → UTF-8 → code page, and is used for every format
+  shared with TC: `.mnu`, `.bar`, `usercmd.ini`, `wincmd.ini` (whose importer reported "could not be
+  read" for perfectly good files) and the referenced-bar path inside the importer.
+* **And once decoded it parsed as nothing.** `split(separator: "\n")` does not split a CRLF file in
+  Swift, because `"\r\n"` is a single Character — the seventh, eighth, ninth and tenth defects of that
+  one trap in this repo. The whole file arrived as one line whose keyword was POPUP: one empty menu. The
+  same line stood in `UserCommands` (a TC `usercmd.ini` yielded **no** user commands), `Keymap`,
+  `AliasStore` and `FileAssociations`; all five now split on `isNewline`, as `INIDocument` already did.
+* **An `em_` menu entry did nothing** — and `em_` is the only way a `%P`/`%N` parameter reaches a menu
+  entry, since only user commands carry a command line. `runMenuCommand` sent every name to the cm_
+  registry, which logged "Unknown command". The placeholder engine itself (`ParamExpander`, `%P %N %T %M
+  %S %L %F %D %W %%`) was complete and is unchanged.
+* **An unknown command looked live.** TC has several hundred numeric command ids and this registry ~150,
+  so an imported menu file has entries that resolve to nothing. The token was passed through as the
+  item's command, where the enable pass ignored it for not starting with `cm_`: an enabled entry that
+  swallowed the click. Now such an item has no action and is greyed out, an `em_` name absent from
+  `usercmd.ini` likewise, and both are named in the log — as is every line the lenient parser skips
+  (`MenuFile.parse` returns a diagnostic per line, so the report says `default.mnu:16: unknownLine`).
+* **The Start menu emptied itself under a user `.mnu`.** Its items were injected by looking for a
+  submenu titled `"Start"` — a hardcoded English string, while the built-in title is localized
+  ("Starter") and a user's menu file can call it anything. The popup is now found by the item carrying
+  `cm_ChangeStartMenu`, only the injected items are replaced (`removeAllItems()` deleted the user's own
+  entries from their own Start popup), and a rebuild re-injects them instead of leaving the menu bare
+  until `usercmd.ini` happened to change.
+
+Deliberately **not** done, and recorded on the F-257 row rather than left to look like an omission: the
+`\tF3` accelerator hint in a caption stays ignored, because the keymap is this app's single source for
+shortcuts and a label out of the file would state a key that may not be bound; numeric ids stay aligned
+with TC's only where a 1:1 command exists (a full TOTALCMD.INC table would be several hundred ids for
+commands that do not exist here, and nothing in the app refers to a command by number except this
+parser); and there is no Load/Save/Restore dialog like TC's, because `menus/*.mnu` covers dropping a
+file in and deleting `default.mnu` restores the built-in menu.
+
+Verified in the running app, not only by unit test: a CP1252 + CRLF `default.mnu` with a renamed
+"&Starter" popup, an `em_` command from a CP1252 `usercmd.ini` and a numeric id this app does not have —
+`menudump` shows the umlauts intact, `540` resolved to `cm_RereadSource`, `2400` disabled, the unknown
+`em_` disabled, the known one enabled, and the user command injected above "Startmenü ändern…" with the
+user's own entries untouched. New tests: `WindowsTextFileTests`, `MnuMenuTests` (PCKeyboardTests now
+compiles `MnuMenuBuilder`/`KeymapMenu` in, as PCThemeTests does with Theme), plus the diagnostics,
+quote-in-caption and CRLF cases in `MenuFileTests` and one CRLF test per parser fixed above.
+
+**A dump cannot prove a click.** `menudump` shows an item's title, command and enabled state — all three
+of which were *right* while the item did nothing, because it was wired to the wrong dispatcher. Two verbs
+close that: `menuclick <cm_/em_ name>|<out>` invokes an item through its own target and action and reports
+`found`/`enabled`/`sent`, and `reloadmenu` performs the re-read that until now only happened when the app
+was activated (so a scenario can put a menu file in place and see it applied). The new `menu-file`
+scenario in `regress.py` writes a TC menu file with `printf` — Windows-1252 bytes, CRLF, as TC writes it
+— reloads, asserts the dump, clicks the `em_` item, and then deletes the file and asserts the built-in
+menu is back (which is also the cleanup: a menu file left in `~/pc-cfg` would replace the bar for every
+scenario after it). Its external check asks the guest's filesystem whether the program really ran with
+`%P` expanded. **Run locally four times against the Debug build (the exact verb list read back out of
+`regress.py`), not yet on the VM** — the one miss of five was on a machine loaded by a full test run, and
+the wait after the click carries 2.5s for that reason.
+
 ## 2026-08-18 (VM harness) — The first full run in a fortnight, and the eight ways it was measuring wrong
 
 The six scenarios written for F-406…F-409 were run on the VM, then the whole suite twice. **No product

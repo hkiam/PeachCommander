@@ -478,6 +478,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             // then rebuild in case a user .mnu is present and needed id resolution.
             let all = await self.commandRegistry.getAllCommands()
             self.commandIdToName = Dictionary(all.map { ($0.id, $0.name) }, uniquingKeysWith: { a, _ in a })
+            self.registeredCommandNames = Set(all.map(\.name))
             if self.hasUserMenuFile { self.rebuildMainMenu() }
             await self.restoreStateAndLoad()   // loads the keymap
             await self.applyKeymapToMenu()
@@ -2053,7 +2054,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         if let iniType = UTType(filenameExtension: "ini") { panel.allowedContentTypes = [iniType] }
         panel.allowsOtherFileTypes = true
         guard panel.runModal() == .OK, let url = panel.url else { return }
-        guard let text = try? String(contentsOf: url, encoding: .utf8) else {
+        // wincmd.ini comes off a Windows machine by definition: ANSI, or UTF-16 with a
+        // BOM. Read as strict UTF-8 it failed on the first non-ASCII byte and the import
+        // reported "could not be read" for a perfectly good file.
+        guard let text = WindowsTextFile.read(url) else {
             presentInfo(String(localized: "Import wincmd.ini"),
                         String(localized: "The file could not be read."))
             return
@@ -5015,8 +5019,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private var fullMainMenu: NSMenu?
     /// Numeric TC command id → cm_ name, for resolving `.mnu` items (F-257).
     private var commandIdToName: [Int: String] = [:]
+    /// Every registered cm_ name (implemented or a stub), so a `.mnu` naming a command
+    /// this app does not have can be told apart from one it merely has not implemented.
+    private var registeredCommandNames: Set<String> = []
     /// The raw text of the user `.mnu` menu(s) last applied, to detect on-disk edits.
     private var lastMenuFileText: String?
+    /// The menu-file problems last written to the log, so a rebuild that changes nothing
+    /// does not repeat them.
+    private var lastReportedMenuProblems: [String]?
     /// Retains the delegate that validates injected plugin menu items' `when`.
     private var contribMenuValidator: ContributionMenuValidator?
     /// Menu-bar menus contributed by external plugin windows (keyed by NSWindow),
@@ -5133,13 +5143,14 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     private func rebuildMainMenu() {
         let wasActive = fullMainMenu == nil || NSApp.mainMenu === fullMainMenu
         let menu: NSMenu
-        if let menuFile = loadUserMenuFile() {
+        if let loaded = loadUserMenuFile() {
             // A user .mnu drives the command menus; App/Edit/Window/Help stay standard.
-            let commandMenus = MnuMenuBuilder.build(
-                roots: menuFile.roots, target: self, action: #selector(runMenuCommand(_:)),
-                resolve: { [weak self] in self?.resolveMenuCommand($0) ?? $0 })
+            let built = MnuMenuBuilder.build(
+                roots: loaded.menu.roots, target: self, action: #selector(runMenuCommand(_:)),
+                resolve: { [weak self] in self?.resolveMenuCommand($0) })
             menu = AppMenu.build(target: self, commandAction: #selector(runMenuCommand(_:)),
-                                 commandMenus: commandMenus)
+                                 commandMenus: built.menus)
+            reportMenuFileProblems(loaded.problems, unresolved: built.unresolved)
         } else {
             menu = AppMenu.build(target: self, commandAction: #selector(runMenuCommand(_:)))
         }
@@ -5151,6 +5162,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             AppMenu.dropDuplicateItems(in: menu)
             NSApp.mainMenu = menu
             bindStandardMenus(menu)
+            // The user commands live in a menu that was just rebuilt, so they have to be
+            // put back: without this a rebuild (a plugin toggled, the .mnu re-read) left
+            // the Start menu holding nothing but "Change Start Menu…" until usercmd.ini
+            // happened to change.
+            refreshStartMenu()
             Task { await applyKeymapToMenu() }
         }
     }
@@ -5188,47 +5204,124 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             AppMenu.dropDuplicateItems(in: full)
             NSApp.mainMenu = full
             bindStandardMenus(full)
+            // A bar rebuilt while a tool window was key never got the user commands put
+            // into it (that step needs the bar to be installed); doing it here is
+            // idempotent, because only the items tagged by refreshStartMenu are replaced.
+            refreshStartMenu()
         }
     }
 
     @objc private func runMenuCommand(_ sender: NSMenuItem) {
         guard let name = sender.representedObject as? String else { return }
+        // A menu item may name a *user* command: that is how a `.mnu` entry (or a plugin
+        // contribution) reaches a program with `%P`/`%N` parameters, since only em_
+        // commands carry a command line. Routing those through the cm_ registry, as this
+        // did, logged "Unknown command" and did nothing — the one path by which a
+        // parameter placeholder can appear in the menu bar at all (F-257/F-252).
+        if name.hasPrefix("em_") { runUserCommand(name); return }
         runCommandNamed(name)
     }
 
     // MARK: - User main-menu file (.mnu, F-257)
 
+    /// A user menu file's parsed content plus the problems found reading it, each
+    /// already prefixed with the file and line it is on.
+    private struct LoadedMenuFile {
+        var menu: MenuFile
+        var problems: [String]
+    }
+
     /// Whether the user has a `.mnu` override on disk (main file or menus/*.mnu).
     private var hasUserMenuFile: Bool { loadUserMenuFile() != nil }
 
-    /// Concatenate the user's `default.mnu` (if any) with every `menus/*.mnu`
+    /// Parse the user's `default.mnu` (if any) followed by every `menus/*.mnu`
     /// (sorted), returning nil when the user has provided no menu file at all.
-    private func loadUserMenuFile() -> MenuFile? {
-        var text = ""
-        if let main = try? String(contentsOf: configPaths.mainMenu, encoding: .utf8) { text += main + "\n" }
+    ///
+    /// Each file is parsed on its own — not concatenated first — so a diagnostic names
+    /// the file and the line the user can actually go and fix. Reading goes through
+    /// `WindowsTextFile`: a `.mnu` carried over from Total Commander is ANSI or UTF-16,
+    /// and reading it as strict UTF-8 failed at the first umlaut, which this code then
+    /// could not tell apart from "there is no menu file" — a German TC menu loaded as
+    /// no menu at all.
+    private func loadUserMenuFile() -> LoadedMenuFile? {
+        var files: [(name: String, text: String)] = []
+        if let main = WindowsTextFile.read(configPaths.mainMenu) {
+            files.append((configPaths.mainMenu.lastPathComponent, main))
+        }
         if let extra = try? FileManager.default.contentsOfDirectory(
             at: configPaths.menusDirectory, includingPropertiesForKeys: nil) {
             for url in extra.filter({ $0.pathExtension.lowercased() == "mnu" })
                             .sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
-                if let t = try? String(contentsOf: url, encoding: .utf8) { text += t + "\n" }
+                if let text = WindowsTextFile.read(url) { files.append((url.lastPathComponent, text)) }
             }
         }
-        lastMenuFileText = text.isEmpty ? nil : text
-        guard !text.isEmpty else { return nil }
-        let menu = MenuFile(parsing: text)
-        return menu.roots.isEmpty ? nil : menu
+        let combined = files.map(\.text).joined(separator: "\n")
+        lastMenuFileText = combined.isEmpty ? nil : combined
+        guard !combined.isEmpty else { return nil }
+
+        var roots: [MenuNode] = []
+        var problems: [String] = []
+        for file in files {
+            let (menu, diagnostics) = MenuFile.parse(file.text)
+            roots += menu.roots
+            problems += diagnostics.map { "\(file.name):\($0.line): \($0.kind.rawValue) — \($0.text)" }
+        }
+        guard !roots.isEmpty else { return nil }
+        return LoadedMenuFile(menu: MenuFile(roots: roots), problems: problems)
     }
 
-    /// Resolve a `.mnu` command token (numeric TC id or cm_/em_ name) to a cm_/em_
-    /// name; unknown tokens pass through so KeymapMenu disables them.
-    private func resolveMenuCommand(_ token: String) -> String {
-        if token.hasPrefix("cm_") || token.hasPrefix("em_") { return token }
+    /// Resolve a `.mnu` command token (numeric TC id or cm_/em_ name) to a command
+    /// name, or nil when this app has no such command — the builder then shows the
+    /// entry disabled instead of pretending it works.
+    ///
+    /// Numeric ids match Total Commander's only where a 1:1 command exists (see
+    /// docs/product/menus-and-commands.md); TC has several hundred, so a menu file
+    /// imported from TC will have entries that land here as nil.
+    private func resolveMenuCommand(_ token: String) -> String? {
+        // Before the registry has been built (the very first bar, drawn from the file
+        // synchronously) nothing is known yet; pass cm_ names through then and let the
+        // rebuild that follows registration re-decide.
+        if token.hasPrefix("cm_") {
+            return registeredCommandNames.isEmpty || registeredCommandNames.contains(token) ? token : nil
+        }
+        if token.hasPrefix("em_") { return token }   // enablement is KeymapMenu's job (usercmd.ini)
         if let id = Int(token), let name = commandIdToName[id] { return name }
-        return token
+        // A plugin contributes commands under its own ids (`notes.open`), and a menu file may
+        // name one: they were reachable while every unknown token was passed through, and
+        // dropping them with the unresolved ones would be a regression rather than a fix.
+        if ContributionRegistry.shared.canHandle(token) { return token }
+        return nil
+    }
+
+    /// Log what a menu file asked for and did not get. Deliberately the log and not a
+    /// dialog: the bar is rebuilt on every activation and whenever a plugin's
+    /// contributions change, and an alert per rebuild would be worse than the problem.
+    /// The user-visible half is that the affected entries are greyed out
+    /// (MnuMenuBuilder) rather than dead-but-enabled.
+    ///
+    /// Reported only when it changes, for the same reason: the first bar alone produced
+    /// forty identical lines in one launch. And not at all before the command registry
+    /// exists, when *every* numeric id is unknown and the rebuild that follows
+    /// registration is the one that knows the truth.
+    private func reportMenuFileProblems(_ problems: [String], unresolved: [String]) {
+        guard !registeredCommandNames.isEmpty else { return }
+        let report = problems + unresolved.map { "unknown command: \($0)" }
+        guard report != lastReportedMenuProblems else { return }
+        lastReportedMenuProblems = report
+        for problem in problems { logger.warning("menu file: \(problem, privacy: .public)") }
+        if !unresolved.isEmpty {
+            logger.warning("""
+                menu file: \(unresolved.count, privacy: .public) command(s) unknown to this app, \
+                shown disabled: \(unresolved.joined(separator: ", "), privacy: .public)
+                """)
+        }
     }
 
     /// Re-read the `.mnu` on app activation; rebuild the bar only if it changed.
-    private func reloadMenuFileFromDisk() {
+    /// Not private: the `reloadmenu` automation verb drives exactly this pair of reloads,
+    /// because a scenario has to be able to put a menu file in place and see it applied
+    /// without depending on the app being deactivated and activated again.
+    func reloadMenuFileFromDisk() {
         let previous = lastMenuFileText
         _ = loadUserMenuFile()   // refreshes lastMenuFileText
         if lastMenuFileText != previous { rebuildMainMenu(); Task { await applyKeymapToMenu() } }
@@ -5267,8 +5360,18 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let header = """
         ; Peach Commander menu file (Total Commander .mnu format).
         ; Generated from the built-in menu — edit freely; changes apply when the app
-        ; is next activated. Reference commands by cm_ name or numeric id. Delete this
-        ; file to restore the built-in menu. Extra menus/*.mnu files are appended.
+        ; is next activated. Delete this file to restore the built-in menu; extra
+        ; menus/*.mnu files are appended to it (sorted by name).
+        ;
+        ; MENUITEM "&Caption", <command>   command = cm_ name, em_ name (a user command
+        ;                                  from usercmd.ini, incl. %P/%N parameters), or
+        ;                                  a numeric Total Commander command id
+        ; MENUITEM SEPARATOR
+        ; POPUP "&Submenu" … END_POPUP
+        ;
+        ; A command this app does not have is shown greyed out (the log names it).
+        ; A "\\tF3"-style accelerator in a caption is ignored: shortcuts come from the
+        ; active keymap (Settings > Keys), which is what the menu displays.
 
 
         """
@@ -5314,7 +5417,9 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     // MARK: - Start menu / user commands (I13 §4)
 
     private func loadUserCommands() {
-        let text = (try? String(contentsOf: configPaths.userCommands, encoding: .utf8)) ?? ""
+        // Windows-encoded like the rest of the TC-format config files — a usercmd.ini
+        // brought over from TC has the user's own captions in it (F-257).
+        let text = WindowsTextFile.read(configPaths.userCommands) ?? ""
         userCommands = UserCommands(parsing: text)
         refreshStartMenu()
         if startMenuObserver == nil {
@@ -5326,29 +5431,60 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         }
     }
 
-    private func reloadUserCommandsFromDisk() {
-        let text = (try? String(contentsOf: configPaths.userCommands, encoding: .utf8)) ?? ""
+    func reloadUserCommandsFromDisk() {
+        let text = WindowsTextFile.read(configPaths.userCommands) ?? ""
         let parsed = UserCommands(parsing: text)
         guard parsed != userCommands else { return }
         userCommands = parsed
         refreshStartMenu()
     }
 
-    /// Rebuild the Start menu's user-command items (kept above "Change Start Menu…").
+    /// Items this method put in the Start menu, so a refresh can take exactly those out
+    /// again and leave whatever else the menu holds alone.
+    private static let startMenuInjectedTag = 0x50_43_53_4D   // 'PCSM'
+
+    /// Put the user commands into the Start menu, above "Change Start Menu…".
+    ///
+    /// The menu is found by the item that carries `cm_ChangeStartMenu`, not by title:
+    /// with a user `.mnu` the popup is whatever the user called it (and even the
+    /// built-in title is localized — "Starter" in German), so a title match found
+    /// nothing and the user's commands never appeared. For the same reason only the
+    /// items injected here are replaced — a `.mnu` Start popup may hold the user's own
+    /// entries, and `removeAllItems()` deleted them.
     private func refreshStartMenu() {
-        guard let startMenu = NSApp.mainMenu?.items.first(where: { $0.submenu?.title == "Start" })?.submenu
-            ?? NSApp.mainMenu?.item(withTitle: "Start")?.submenu else { return }
-        // Remove everything except the trailing "Change Start Menu…" command.
-        let changeItem = startMenu.items.first { ($0.representedObject as? String) == "cm_ChangeStartMenu" }
-        startMenu.removeAllItems()
+        guard let menu = NSApp.mainMenu, let host = Self.menuContaining(command: "cm_ChangeStartMenu", in: menu)
+        else { return }
+        for item in host.menu.items where item.tag == Self.startMenuInjectedTag {
+            host.menu.removeItem(item)
+        }
+        // Insert above the "Change Start Menu…" item, wherever the user moved it to.
+        var index = host.menu.items.firstIndex { ($0.representedObject as? String) == "cm_ChangeStartMenu" }
+            ?? host.menu.items.count
         for cmd in userCommands.commands {
             let item = NSMenuItem(title: cmd.displayTitle, action: #selector(runUserCommandMenu(_:)), keyEquivalent: "")
             item.representedObject = cmd.name
             item.target = self
-            startMenu.addItem(item)
+            item.tag = Self.startMenuInjectedTag
+            host.menu.insertItem(item, at: index)
+            index += 1
         }
-        if !userCommands.commands.isEmpty { startMenu.addItem(.separator()) }
-        if let changeItem { startMenu.addItem(changeItem) }
+        if !userCommands.commands.isEmpty {
+            let separator = NSMenuItem.separator()
+            separator.tag = Self.startMenuInjectedTag
+            host.menu.insertItem(separator, at: index)
+        }
+    }
+
+    /// Depth-first search for the menu holding an item with `command` as its represented
+    /// object, skipping the top-level bar itself.
+    private static func menuContaining(command: String, in menu: NSMenu) -> (menu: NSMenu, item: NSMenuItem)? {
+        for item in menu.items {
+            if (item.representedObject as? String) == command { return (menu, item) }
+            if let submenu = item.submenu, let found = menuContaining(command: command, in: submenu) {
+                return found
+            }
+        }
+        return nil
     }
 
     @objc private func runUserCommandMenu(_ sender: NSMenuItem) {
@@ -5930,7 +6066,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let enabled = Set(await commandRegistry.getAllCommands().filter { $0.implemented }.map { $0.name })
         implementedCommands = enabled
         guard let menu = NSApp.mainMenu else { return }
-        KeymapMenu.apply(keymap, to: menu, registered: enabled)
+        KeymapMenu.apply(keymap, to: menu, registered: enabled,
+                         userCommands: Set(userCommands.commands.map(\.name)))
         markActiveScheme()
     }
 
@@ -6088,7 +6225,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         if !FileManager.default.fileExists(atPath: url.path) {
             try? Self.defaultButtonBar().serialize().write(to: url, atomically: true, encoding: .utf8)
         }
-        let text = (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+        // A `.bar` is a TC format users port over, so it may be ANSI/UTF-16 (F-253).
+        let text = WindowsTextFile.read(url) ?? ""
         buttonBar = ButtonBar(parsing: text)
         buttonBarView.setBar(buttonBar)
         applyButtonBarThickness()
@@ -6170,7 +6308,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             // Descend into the subbar (F-253). Resolve relative to the bar directory.
             let path = (cmd as NSString).isAbsolutePath
                 ? cmd : configPaths.root.appendingPathComponent(cmd).path
-            if let text = try? String(contentsOfFile: path, encoding: .utf8) {
+            if let text = WindowsTextFile.read(URL(fileURLWithPath: path)) {
                 buttonBarView.enterSubbar(ButtonBar(parsing: text))
             } else {
                 NSWorkspace.shared.open(URL(fileURLWithPath: path))   // missing file → open for editing

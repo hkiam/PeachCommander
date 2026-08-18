@@ -95,6 +95,35 @@ SCENARIOS = [
                         "keysend DELETE|field|/Users/admin/mk-find-typed.txt", "wait 500",
                         "keysend F5|field+menu|/Users/admin/mk-find-f5.txt", "wait 500",
                         "keysend W+a|field+menu|/Users/admin/mk-find-cmda.txt", "wait 700"], 10),
+    # A Total Commander menu file, as TC actually writes one: Windows-1252 bytes and CRLF
+    # line endings (F-257). Both halves were broken and neither could be seen from outside —
+    # the file was read as strict UTF-8, so it decoded to nothing and the app fell back to the
+    # built-in menu, and `split(separator: "\n")` does not split a CRLF file in Swift at all.
+    # `printf` writes the bytes, so the encoding comes from the guest's shell and not from this
+    # file. Then: the em_ entry must actually run its program (it used to be dispatched to the
+    # cm_ registry, which logged "Unknown command" and did nothing — and em_ is the only way a
+    # %P parameter reaches a menu entry), a numeric TC id this app has no command for must be
+    # greyed out rather than enabled-and-dead, and deleting the file must bring the built-in
+    # menu back. The last one is also this scenario's cleanup: a menu file left in ~/pc-cfg
+    # would replace the menu bar for every scenario after it.
+    ("menu-file", ["active left", "left /Users/admin/pc-demo", "wait 1200",
+                   "probe /Users/admin/menu-file-seed.txt|"
+                   "printf '[em_Marke]\\r\\ncmd=/usr/bin/touch\\r\\n"
+                   "param=%%P/menu-file-marker.txt\\r\\nmenu=Marke\\r\\n' > ~/pc-cfg/usercmd.ini && "
+                   "printf 'POPUP \\042\\046Pr\\374fung\\042\\r\\n"
+                   "\\tMENUITEM \\042Marke setzen\\042, em_Marke\\r\\n"
+                   "\\tMENUITEM \\042Unbekannt\\042, 2400\\r\\nEND_POPUP\\r\\n' "
+                   "> ~/pc-cfg/default.mnu && wc -c < ~/pc-cfg/default.mnu",
+                   "wait 800", "reloadmenu", "wait 1500",
+                   "menudump /Users/admin/menu-file-dump.txt", "wait 400",
+                   # 2.5s, not 1.5: running the em_ command is asynchronous (panel state off the
+                   # main actor, then a shell), and on a machine loaded by the rest of the suite the
+                   # program had not run yet when the app was stopped — measured once, locally.
+                   "menuclick em_Marke|/Users/admin/menu-file-click.txt", "wait 2500",
+                   "probe /Users/admin/menu-file-clean.log|"
+                   "rm -f ~/pc-cfg/default.mnu ~/pc-cfg/usercmd.ini && echo removed",
+                   "wait 600", "reloadmenu", "wait 1500",
+                   "menudump /Users/admin/menu-file-restored.txt", "wait 500"], 12),
     # Esc closing the viewer once the reader has clicked something. It only worked while the container
     # view held the focus, and the text area, the symbol filter and the native find bar each keep the
     # key — so Esc stopped closing the window as soon as anyone touched the content, which is the state
@@ -1241,6 +1270,9 @@ EXTERNAL_CHECKS = {
     # The button is in the file the app will read at the next launch, not merely in the view.
     # The `cmd` line specifically: a button writes the path twice, once as its icon and once as the
     # command, so counting mentions says 2 and says nothing about which is which.
+    # The em_ item's program ran and its %P expanded to the active panel: the app is only the
+    # messenger, the file is the fact.
+    "menu-file": ("test -f ~/pc-demo/menu-file-marker.txt && echo yes || echo no", "yes"),
     "toolbar-drop": ("grep -c '^cmd[0-9]*=.*Calculator.app$' ~/pc-cfg/default.bar 2>/dev/null || echo 0",
                      "1"),
     # Both panel paths in the file a restart reads.
@@ -1879,6 +1911,16 @@ REPORTS = {
     # F-409: both of these had only a settle time and an external check, so a slow launch failed them
     # with a message about the *feature*. The reports are what the guest waits for; the external checks
     # then read a config file that the app has demonstrably reached.
+    # The menu file (F-257). Primary = the restored dump, which is the last file written: the
+    # cleanup that restores the built-in menu is the same step, so the guest must not stop the
+    # app before it has run.
+    "menu-file": ("/Users/admin/menu-file-restored.txt", ["# Start", "!Pr\u00fcfung"]),
+    # The bar built from the file: the caption's umlaut survived the code page, the em_ item
+    # carries its command, and the TC id nothing here implements is disabled rather than live.
+    "menu-file-menu": ("/Users/admin/menu-file-dump.txt",
+                       ["# Pr\u00fcfung", "[em_Marke]", "Unbekannt  disabled"]),
+    # Clicking it goes through the item's own target/action, which is what was mis-wired.
+    "menu-file-click": ("/Users/admin/menu-file-click.txt", ["found=1", "enabled=1", "sent=1"]),
     "toolbar-drop": ("/Users/admin/bar.txt", ["Calculator", "!ERROR"]),
     "session-save": ("/Users/admin/session-panels.txt",
                      ["left=/Users/admin/pc-demo", "right=/Users/admin/sync-src", "!ERROR"]),

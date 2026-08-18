@@ -41,4 +41,12 @@ final class AliasStoreTests: XCTestCase {
         let s = AliasStore(parsing: "sync = cm_SyncDirs")
         XCTAssertEqual(s.expand("sync"), "cm_SyncDirs")
     }
+
+    /// CRLF: "\r\n" is one Character in Swift, so splitting on "\n" left the file as a
+    /// single line and no alias was read.
+    func testCRLFFileIsParsed() {
+        let store = AliasStore(parsing: "[Alias]\r\nll=ls -la\r\ngs=git status\r\n")
+        XCTAssertEqual(store.expansion(for: "ll"), "ls -la")
+        XCTAssertEqual(store.expansion(for: "gs"), "git status")
+    }
 }

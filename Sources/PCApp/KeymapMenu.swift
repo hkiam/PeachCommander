@@ -97,16 +97,27 @@ enum KeymapMenu {
     }
 
     /// Walk the menu tree: sync accelerators from `keymap`, and disable items whose
-    /// cm_ command is not in `registered`. `menu.autoenablesItems` must be false for
-    /// the disabling to take effect (the caller sets it).
-    static func apply(_ keymap: Keymap, to menu: NSMenu, registered: Set<String>) {
+    /// cm_ command is not in `registered` or whose em_ command is not in
+    /// `userCommands`. `menu.autoenablesItems` must be false for the disabling to take
+    /// effect (the caller sets it).
+    ///
+    /// The em_ half matters for a user `.mnu`, which may name a user command that
+    /// `usercmd.ini` does not define (a typo, or a menu file carried over from a
+    /// machine whose user commands did not come along): such an item used to stay
+    /// enabled, because only `cm_` names were checked. Items with a represented
+    /// command in neither namespace are left alone — plugin contributions carry their
+    /// own command ids and are enabled by the contribution registry.
+    static func apply(_ keymap: Keymap, to menu: NSMenu, registered: Set<String>,
+                      userCommands: Set<String>) {
         menu.autoenablesItems = false
         for item in menu.items {
             if let submenu = item.submenu {
-                apply(keymap, to: submenu, registered: registered)
+                apply(keymap, to: submenu, registered: registered, userCommands: userCommands)
             }
             guard let cmd = item.representedObject as? String else { continue }
             if cmd.hasPrefix("cm_"), !registered.contains(cmd) {
+                item.isEnabled = false
+            } else if cmd.hasPrefix("em_"), !userCommands.contains(cmd) {
                 item.isEnabled = false
             } else {
                 item.isEnabled = true

@@ -176,6 +176,14 @@ Kept in PCFoundation so their serialization is unit-testable without a UI:
 `DescriptionFile`, `SymbolTree`, `XMLTree` / `XPathQuery`, `HexDocument`,
 `WincmdImporter` (reads Total Commander `wincmd.ini`).
 
+Every format shared with Total Commander (`.mnu`, `.bar`, `usercmd.ini`,
+`wincmd.ini`) is read through **`WindowsTextFile`** (BOM → UTF-8 →
+Windows-1252/Latin-1): such a file is written on Windows, and reading it as strict
+UTF-8 failed on the first umlaut — which the callers could not tell apart from the
+file not existing. Their parsers split lines on `isNewline`, never on the character
+`"\n"`, because Swift reads `"\r\n"` as a single Character and a CRLF file would
+otherwise arrive as one line.
+
 ### Logging
 
 - **`PCFoundationLogger`** (`PCFoundation.swift`) — thin `os.Logger` wrapper

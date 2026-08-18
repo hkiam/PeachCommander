@@ -163,7 +163,10 @@ public struct KeymapScheme: Sendable, Equatable {
         var result: [KeyChord: String] = [:]
         var inShortcuts = false
 
-        for rawLine in ini.split(separator: "\n", omittingEmptySubsequences: false) {
+        // Newlines, not the character "\n" — Swift reads "\r\n" as one Character, so a
+        // scheme file saved by a Windows editor would otherwise arrive as a single line and
+        // bind nothing (the trap INIDocument documents).
+        for rawLine in ini.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }) {
             let line = rawLine.trimmingCharacters(in: .whitespaces)
             if line.isEmpty { continue }
             // Comments.

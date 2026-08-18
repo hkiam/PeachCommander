@@ -103,7 +103,7 @@ public enum WincmdImporter {
         // only use its filename and look for it next to the wincmd.ini.
         let fileName = ref.split(whereSeparator: { $0 == "\\" || $0 == "/" }).last.map(String.init) ?? ref
         if let url = locate(fileName: fileName, in: sourceDirectory, fileManager: fileManager),
-           let text = try? String(contentsOf: url, encoding: .utf8) {
+           let text = WindowsTextFile.read(url) {
             let bar = ButtonBar(parsing: text)
             return (bar.buttons.isEmpty ? nil : bar, ref)
         }

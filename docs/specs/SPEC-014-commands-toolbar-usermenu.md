@@ -40,6 +40,31 @@ All menu items/toolbar/fkey buttons resolve через registry — single sourc
 Menu built from a menu-definition table (not IB), enabling F-257 later
 (user-editable .mnu file parser P3 in I19).
 
+### §3.1 User menu file (.mnu, F-257 — implemented)
+
+`default.mnu` plus every `menus/*.mnu` (sorted) replace the command menus; App/Edit/
+Window/Help stay standard AppKit menus. Grammar: `POPUP "&Caption"` … `END_POPUP`
+(nested), `MENUITEM "&Caption", <command>`, `MENUITEM SEPARATOR`, `;`/`#`/`//`
+comments; `&` mnemonic markers and `&&` are handled for display; a `"` inside a
+caption is written and read doubled (`""`). `<command>` is a `cm_` name, an `em_`
+name (dispatched to the user-command runner — the only route by which a `%P`-style
+parameter reaches a menu entry) or a numeric TC command id.
+
+Rules that are decisions, not gaps:
+- **Encoding**: read through `WindowsTextFile` (BOM → UTF-8 → Windows-1252/Latin-1),
+  because these files come from Windows; written back as UTF-8.
+- **CRLF**: split on `isNewline`, never on the character `"\n"` (`"\r\n"` is one
+  Character in Swift).
+- **Accelerator hints** (`"&View\tF3"`) are parsed and *not* honoured: the keymap is
+  the single source for shortcuts, so the menu shows what is bound.
+- **Numeric ids** match TC's only where a 1:1 command exists; a token that resolves
+  to nothing becomes a disabled item and is logged, never a live item that does
+  nothing. Same for an `em_` name absent from usercmd.ini.
+- **Lenient but not silent**: `MenuFile.parse` returns a diagnostic (file, line,
+  kind) for every line it skips or repairs.
+- No Load/Save/Restore dialog: `menus/*.mnu` is the drop-in path, deleting
+  `default.mnu` restores the built-in menu.
+
 ## §4 User menu / Start menu & user commands (F-252)
 
 - usercmd.ini analog: `[em_name] cmd=… param=… path=… menu=Title key=…`.
