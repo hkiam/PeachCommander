@@ -52,6 +52,7 @@ contrib.h — Peach Commander plugin contributions, behavior ABI (SPEC-013).
 - `openPathInPanel`
 - `presentSidebarView`
 - `dismissSidebarView`
+- `compareFiles`
 - `automationToolsJson`
 - `automationContextJson`
 - `automationInvoke`
@@ -158,6 +159,17 @@ typedef struct PcHostServices {
        again. Both appended at the end for ABI compatibility. */
     void (*presentSidebarView)(void *host, const char *viewId, const char *rootPath);
     void (*dismissSidebarView)(void *host, const char *viewId);
+
+    /* Compare two files in the host's own compare window (F-416). `titleA`/`titleB`
+       name the sides — a plugin usually has one side in a temp file whose name means
+       nothing to the reader ("HEAD:src/app.swift" vs "Working tree"); NULL falls back
+       to the file names. Appended at the end for ABI compatibility.
+
+       This exists so a plugin does not have to bring its own diff view: the host
+       already diffs two files with syntax highlighting, and a second implementation
+       of that in the same application would be a second set of defects. */
+    void (*compareFiles)(void *host, const char *pathA, const char *pathB,
+                         const char *titleA, const char *titleB);
 
     /* Automation core — the host's file-manager tool engine (the same one that
        drives the MCP server), so a plugin (e.g. the AI assistant) can run tools
