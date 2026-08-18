@@ -17,6 +17,8 @@ pc_swiftc -emit-library -O -module-name Git -target "$TARGET" -framework AppKit 
   -Xcc -I"$ROOT/Plugins/SDK" \
   -o "$BUNDLE/Contents/MacOS/Git" \
   "$ROOT/Plugins/Git/git.swift" \
+  "$ROOT/Plugins/Git/GitRepo.swift" \
+  "$ROOT/Plugins/Git/GitPanelView.swift" \
   "$ROOT/Plugins/SDK/PluginLoc.swift" \
   "$ROOT/Plugins/SDK/PluginGit.swift"
 

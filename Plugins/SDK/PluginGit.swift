@@ -266,6 +266,86 @@ public enum PluginGit {
         return path
     }
 
+    // MARK: - The panel's model (phase 1)
+
+    /// The three groups the panel shows, in the order a reader works through them.
+    public enum Section: String, Sendable, CaseIterable {
+        case conflicts, staged, changed, untracked
+    }
+
+    /// Which section a file belongs in. A file can be in *two* states at once — staged edit plus a
+    /// further unstaged edit — and it is then listed in both, because staging it again and committing
+    /// what is staged are different actions on the same file.
+    public static func sections(for file: FileStatus) -> [Section] {
+        if file.summary == .conflict { return [.conflicts] }
+        var out: [Section] = []
+        if file.isStaged { out.append(.staged) }
+        switch file.worktree {
+        case .untracked: out.append(.untracked)
+        case .ignored:   break
+        case .unchanged: break
+        default:         out.append(.changed)
+        }
+        return out
+    }
+
+    /// The panel's grouping: section → files, each alphabetically, ignored files left out.
+    public static func grouped(_ status: RepoStatus) -> [(section: Section, files: [FileStatus])] {
+        var out: [(Section, [FileStatus])] = []
+        for section in Section.allCases {
+            let files = status.files.values
+                .filter { sections(for: $0).contains(section) }
+                .sorted { $0.path < $1.path }
+            if !files.isEmpty { out.append((section, files)) }
+        }
+        return out
+    }
+
+    /// What the panel's diff means for a file, and therefore which two things to compare.
+    ///
+    /// Staged: the index against HEAD. Unstaged: the working file against the index. Untracked: there is
+    /// nothing to compare it with, and offering an empty left side would be a worse answer than refusing.
+    public enum DiffBase: String, Sendable, Equatable { case head, index, none }
+
+    public static func diffBase(for file: FileStatus, section: Section) -> DiffBase {
+        switch section {
+        case .untracked: return .none
+        case .staged:    return .head
+        case .changed:   return .index
+        case .conflicts: return .index
+        }
+    }
+
+    /// `git show` argument for one side of that comparison — `HEAD:path` or `:path` (the index).
+    public static func showSpec(base: DiffBase, path: String) -> String? {
+        switch base {
+        case .head:  return "HEAD:" + path
+        case .index: return ":" + path
+        case .none:  return nil
+        }
+    }
+
+    /// The column title for the left (git) side of the compare window, so the reader knows what they are
+    /// looking at rather than the temp file's name.
+    public static func diffTitle(base: DiffBase, path: String) -> String {
+        switch base {
+        case .head:  return "HEAD:" + path
+        case .index: return "index:" + path
+        case .none:  return path
+        }
+    }
+
+    /// A temp file name for a blob: recognisable, collision-free, and it keeps the extension so the
+    /// compare window highlights it as the language it is.
+    public static func blobFileName(path: String, base: DiffBase, token: String) -> String {
+        let name = (path as NSString).lastPathComponent
+        let stem = (name as NSString).deletingPathExtension
+        let ext = (name as NSString).pathExtension
+        let tag = base == .head ? "HEAD" : "index"
+        let leaf = "\(stem)@\(tag)-\(token)"
+        return ext.isEmpty ? leaf : leaf + "." + ext
+    }
+
     // MARK: - Cache freshness
 
     /// Whether a cached status may still be used.

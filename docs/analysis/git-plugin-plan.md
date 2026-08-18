@@ -1,8 +1,9 @@
 # Git plugin — assessment and plan
 
-> **Status: phase 0 built (F-415), phases 1–4 planned.** §1 describes the first pass, §2–§3 the
-> assessment of it, and §5.0 is done: the four defects named there are fixed and gated. Everything
-> from §5.1 on is still undecided until it is built. Everything marked *measured* was measured in this repository or on
+> **Status: phases 0 and 1 built (F-415, F-416), phases 2–4 planned.** §1 describes the first pass, §2–§3 the
+> assessment of it, and §5's phase 0 and phase 1 are done — the four defects and the panel with the compare-window
+> handover, including the `compareFiles` host service §6.1 asked for. Everything from phase 2 on
+> (history, blame, branches, sync) is still undecided until it is built. Everything marked *measured* was measured in this repository or on
 > this machine on 2026-08-18; everything else is named as an estimate or an open question.
 
 The Git plugin shipped as a first pass: two panel columns and five commands. This document asks two

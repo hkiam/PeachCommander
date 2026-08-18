@@ -46,10 +46,17 @@ final class DiffWindowController: NSWindowController, NSTableViewDataSource, NST
     private let saveLeftButton = NSButton()
     private let saveRightButton = NSButton()
     private let font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+    /// Column titles a caller supplied instead of the file names (F-416).
+    private let leftTitleOverride: String?
+    private let rightTitleOverride: String?
 
-    init(leftPath: String, rightPath: String) {
+    /// `leftTitle`/`rightTitle` name the columns when the file names would not: a plugin comparing a
+    /// blob it wrote to a temp file needs to say "HEAD:src/app.swift", not "git-blob-4F2A.swift" (F-416).
+    init(leftPath: String, rightPath: String, leftTitle: String? = nil, rightTitle: String? = nil) {
         self.leftPath = leftPath
         self.rightPath = rightPath
+        self.leftTitleOverride = leftTitle
+        self.rightTitleOverride = rightTitle
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 900, height: 600),
                               styleMask: [.titled, .closable, .resizable, .miniaturizable],
                               backing: .buffered, defer: false)
@@ -136,12 +143,12 @@ final class DiffWindowController: NSWindowController, NSTableViewDataSource, NST
         let lnLeft = NSTableColumn(identifier: .init("ln-l"))
         lnLeft.title = ""; lnLeft.width = 46; lnLeft.minWidth = 34
         let leftCol = NSTableColumn(identifier: .init("left"))
-        leftCol.title = (leftPath as NSString).lastPathComponent
+        leftCol.title = leftTitleOverride ?? (leftPath as NSString).lastPathComponent
         leftCol.width = 380
         let lnRight = NSTableColumn(identifier: .init("ln-r"))
         lnRight.title = ""; lnRight.width = 46; lnRight.minWidth = 34
         let rightCol = NSTableColumn(identifier: .init("right"))
-        rightCol.title = (rightPath as NSString).lastPathComponent
+        rightCol.title = rightTitleOverride ?? (rightPath as NSString).lastPathComponent
         rightCol.width = 380
         tableView.addTableColumn(lnLeft)
         tableView.addTableColumn(leftCol)
@@ -331,8 +338,13 @@ final class DiffWindowController: NSWindowController, NSTableViewDataSource, NST
     }
 
     private func updateTitle() {
-        let l = (leftPath as NSString).lastPathComponent + (leftDirty ? " •" : "")
-        let r = (rightPath as NSString).lastPathComponent + (rightDirty ? " •" : "")
+        // The dirty marker stays: it says there are unsaved edits in that side of the window, which is
+        // true whether the side is named by its file or by a caller-supplied title.
+        let l = (leftTitleOverride ?? (leftPath as NSString).lastPathComponent) + (leftDirty ? " •" : "")
+        let r = (rightTitleOverride ?? (rightPath as NSString).lastPathComponent) + (rightDirty ? " •" : "")
+        // The supplied titles win: a plugin comparing a blob it wrote to a temp file has already said
+        // what the two sides are ("HEAD:src/app.swift" ↔ "Working tree"), and the file names would put
+        // "app@HEAD-43012B.swift" in the title bar (F-416).
         window?.title = String(format: String(localized: "Compare — %@ ↔ %@"), l, r)
     }
 

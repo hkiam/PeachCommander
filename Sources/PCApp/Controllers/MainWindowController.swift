@@ -2624,8 +2624,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         openBinaryCompare(leftPath, rightPath)
     }
 
-    private func openTextCompare(_ leftPath: String, _ rightPath: String) {
-        let win = DiffWindowController(leftPath: leftPath, rightPath: rightPath)
+    private func openTextCompare(_ leftPath: String, _ rightPath: String,
+                                leftTitle: String? = nil, rightTitle: String? = nil) {
+        let win = DiffWindowController(leftPath: leftPath, rightPath: rightPath,
+                                       leftTitle: leftTitle, rightTitle: rightTitle)
         diffWindows.append(win)
         win.onClose = { [weak self, weak win] in
             self?.diffWindows.removeAll { $0 === win }
@@ -8639,6 +8641,12 @@ extension MainWindowController: ContributionHost {
         FinderComment.write(comment, to: path)       // same mirror the host's own editor keeps (F-023)
         // The Comment column reads separately, so it has to be told.
         for panel in [leftPanelController, rightPanelController] { panel?.refreshComments() }
+    }
+
+    /// A plugin asked for two files side by side (F-416). Its own diff view would be a second
+    /// implementation of the compare window in the same application.
+    func contribCompareFiles(pathA: String, pathB: String, titleA: String?, titleB: String?) {
+        openTextCompare(pathA, pathB, leftTitle: titleA, rightTitle: titleB)
     }
 
     func contribOpenPath(_ path: String) {

@@ -23,6 +23,8 @@ public protocol ContributionHost: ToolHost {
     func contribContextValue(_ key: String) -> String?
     /// Trigger any host or plugin command by id (composition).
     func contribInvokeCommand(_ id: String)
+    /// Show two files side by side in the host's compare window (F-416).
+    func contribCompareFiles(pathA: String, pathB: String, titleA: String?, titleB: String?)
     /// Run the generic PFX connect+mount for the plugin bundle `pluginId` (used
     /// when a contributed command's behavior is "connect this file-system plugin"
     /// rather than a self-contained PcRunCommand). Returns true if handled.
@@ -216,6 +218,15 @@ final class ContribHostBridge {
             MainActor.assumeIsolated {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.contribOpenPathInPanel(side: Int(side), path: String(cString: path))
+            }
+        }
+        s.compareFiles = { host, pathA, pathB, titleA, titleB in
+            guard let host, let pathA, let pathB else { return }
+            MainActor.assumeIsolated {
+                let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
+                b.host?.contribCompareFiles(pathA: String(cString: pathA), pathB: String(cString: pathB),
+                                            titleA: titleA.map { String(cString: $0) },
+                                            titleB: titleB.map { String(cString: $0) })
             }
         }
         s.presentSidebarView = { host, viewId, root in

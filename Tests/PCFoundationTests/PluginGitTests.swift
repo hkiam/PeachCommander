@@ -178,6 +178,60 @@ final class PluginGitTests: XCTestCase {
                                               cachedAt: stamp, now: stamp.addingTimeInterval(4)))
     }
 
+    // MARK: - The panel's model (phase 1)
+
+    /// A file can be staged *and* changed again, and then belongs in both lists: staging it once more and
+    /// committing what is already staged are different actions on the same file.
+    func testAFileStagedAndChangedAgainIsInBothSections() {
+        let file = PluginGit.FileStatus(path: "a.txt", staged: .modified, worktree: .modified)
+        XCTAssertEqual(PluginGit.sections(for: file), [.staged, .changed])
+    }
+
+    func testSectionsForTheSimpleCases() {
+        XCTAssertEqual(PluginGit.sections(for: .init(path: "a", staged: .modified, worktree: .unchanged)),
+                       [.staged])
+        XCTAssertEqual(PluginGit.sections(for: .init(path: "a", staged: .unchanged, worktree: .modified)),
+                       [.changed])
+        XCTAssertEqual(PluginGit.sections(for: .init(path: "a", staged: .unchanged, worktree: .untracked)),
+                       [.untracked])
+        XCTAssertEqual(PluginGit.sections(for: .init(path: "a", staged: .conflict, worktree: .conflict)),
+                       [.conflicts], "a conflict is not also a staged change")
+        XCTAssertEqual(PluginGit.sections(for: .init(path: "a", staged: .unchanged, worktree: .ignored)),
+                       [], "ignored files are not the panel's business")
+    }
+
+    func testGroupedOrderAndContents() {
+        let status = PluginGit.parseStatus(
+            "? u.txt\0"
+            + "1 .M N... 100644 100644 100644 a b c.txt\0"
+            + "1 M. N... 100644 100644 100644 a b s.txt\0"
+            + "u UU N... 100644 100644 100644 100644 a b c k.txt\0")
+        let grouped = PluginGit.grouped(status)
+        XCTAssertEqual(grouped.map(\.section), [.conflicts, .staged, .changed, .untracked])
+        XCTAssertEqual(grouped.map { $0.files.map(\.path) }, [["k.txt"], ["s.txt"], ["c.txt"], ["u.txt"]])
+    }
+
+    /// What "diff" means depends on which list the file was picked from — index against HEAD for a staged
+    /// file, working tree against the index for a changed one, and nothing for an untracked one.
+    func testDiffBaseAndSpec() {
+        let file = PluginGit.FileStatus(path: "src/a.swift", staged: .modified, worktree: .modified)
+        XCTAssertEqual(PluginGit.diffBase(for: file, section: .staged), .head)
+        XCTAssertEqual(PluginGit.diffBase(for: file, section: .changed), .index)
+        XCTAssertEqual(PluginGit.diffBase(for: file, section: .untracked), PluginGit.DiffBase.none)
+        XCTAssertEqual(PluginGit.showSpec(base: .head, path: "src/a.swift"), "HEAD:src/a.swift")
+        XCTAssertEqual(PluginGit.showSpec(base: .index, path: "src/a.swift"), ":src/a.swift")
+        XCTAssertNil(PluginGit.showSpec(base: PluginGit.DiffBase.none, path: "src/a.swift"))
+        XCTAssertEqual(PluginGit.diffTitle(base: .head, path: "src/a.swift"), "HEAD:src/a.swift")
+    }
+
+    /// The temp file keeps its extension, or the compare window highlights a Swift file as plain text.
+    func testBlobFileNameKeepsTheExtension() {
+        XCTAssertEqual(PluginGit.blobFileName(path: "src/app.swift", base: .head, token: "1A"),
+                       "app@HEAD-1A.swift")
+        XCTAssertEqual(PluginGit.blobFileName(path: "Makefile", base: .index, token: "2B"),
+                       "Makefile@index-2B")
+    }
+
     // MARK: - Against the real binary
 
     /// The fixtures above are shapes; this proves the shape is real. Builds a repository with the cases

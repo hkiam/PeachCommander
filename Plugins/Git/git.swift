@@ -25,128 +25,9 @@
 
 import AppKit
 
-// MARK: - Which git
-
-private let gitLock = NSLock()
-private var resolvedGit: String??           // nil = not looked for yet; .some(nil) = looked, not found
-
-/// The git to use, resolved once. `PCGitExecutable` in the environment overrides everything, which is
-/// what the tests and the automation harness set.
-private func gitExecutable() -> String? {
-    gitLock.lock()
-    if let cached = resolvedGit { gitLock.unlock(); return cached }
-    gitLock.unlock()
-    let manager = FileManager.default
-    let found = PluginGit.resolveExecutable(
-        setting: ProcessInfo.processInfo.environment["PCGitExecutable"],
-        isExecutable: { manager.isExecutableFile(atPath: $0) },
-        exists: { manager.fileExists(atPath: $0) })
-    gitLock.lock(); resolvedGit = .some(found); gitLock.unlock()
-    if found == nil {
-        NSLog("[git plugin] no usable git found — the columns stay empty and the commands report it")
-    }
-    return found
-}
-
-// MARK: - Running git
-
-/// Run git, capturing stdout (and stderr when `combined`, because git says useful things there).
-///
-/// `GIT_TERMINAL_PROMPT=0` is the important one: a `push` that wants a password must fail and say so
-/// rather than wait forever on a terminal this process does not have.
-private func runGit(_ arguments: [String], combined: Bool = false) -> (out: String, ok: Bool) {
-    guard let executable = gitExecutable() else { return (L("Git was not found on this Mac."), false) }
-    let process = Process()
-    process.executableURL = URL(fileURLWithPath: executable)
-    process.arguments = arguments
-    var environment = ProcessInfo.processInfo.environment
-    environment["GIT_TERMINAL_PROMPT"] = "0"
-    environment["GIT_OPTIONAL_LOCKS"] = "0"
-    process.environment = environment
-    let pipe = Pipe()
-    process.standardOutput = pipe
-    process.standardError = combined ? pipe : FileHandle.nullDevice
-    do { try process.run() } catch { return (L("Git could not be started."), false) }
-    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    process.waitUntilExit()
-    return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
-}
-
-// MARK: - Repository lookup and cache
-
-private struct CacheEntry {
-    let status: PluginGit.RepoStatus
-    let indexMTime: Date?
-    let cachedAt: Date
-}
-
-private let cacheLock = NSLock()
-/// directory -> (repo root, the directory's repo-relative prefix); nil = not a repository
-private var locationByDirectory: [String: (root: String, prefix: String)?] = [:]
-private var statusByRoot: [String: CacheEntry] = [:]
-
-private func indexMTime(root: String) -> Date? {
-    let path = (root as NSString).appendingPathComponent(".git/index")
-    let attributes = try? FileManager.default.attributesOfItem(atPath: path)
-    return attributes?[.modificationDate] as? Date
-}
-
-/// The repository a directory belongs to and where inside it that directory sits, cached. One
-/// `rev-parse` per directory, not per file — and it answers both questions in the same call.
-private func location(forDirectory directory: String) -> (root: String, prefix: String)? {
-    cacheLock.lock()
-    if let cached = locationByDirectory[directory] { cacheLock.unlock(); return cached }
-    cacheLock.unlock()
-    let result = runGit(["-C", directory] + PluginGit.locateArguments)
-    let location = result.ok ? PluginGit.parseLocate(result.out) : nil
-    cacheLock.lock()
-    if locationByDirectory.count > 4096 { locationByDirectory.removeAll() }
-    locationByDirectory[directory] = location
-    cacheLock.unlock()
-    return location
-}
-
-/// The repository's status, cached per root and refreshed when the index moved or the entry aged out.
-private func status(forRoot root: String) -> PluginGit.RepoStatus? {
-    let mtime = indexMTime(root: root)
-    cacheLock.lock()
-    if let entry = statusByRoot[root],
-       PluginGit.cacheIsFresh(cachedIndexMTime: entry.indexMTime, currentIndexMTime: mtime,
-                              cachedAt: entry.cachedAt, now: Date()) {
-        cacheLock.unlock()
-        return entry.status
-    }
-    cacheLock.unlock()
-    let result = runGit(["-C", root] + PluginGit.statusArguments)
-    guard result.ok else { return nil }
-    let parsed = PluginGit.parseStatus(result.out)
-    cacheLock.lock()
-    if statusByRoot.count > 64 { statusByRoot.removeAll() }   // many repositories open: keep it bounded
-    statusByRoot[root] = CacheEntry(status: parsed, indexMTime: mtime, cachedAt: Date())
-    cacheLock.unlock()
-    return parsed
-}
-
-private func invalidateCaches() {
-    cacheLock.lock(); statusByRoot.removeAll(); locationByDirectory.removeAll(); cacheLock.unlock()
-}
-
-/// Repository root plus the item's repository-relative path, from git's own prefix.
-///
-/// No comparing of paths: git answers with `/private/tmp/r` where the host says `/tmp/r`, and
-/// `resolvingSymlinksInPath` maps `/private/tmp` back to `/tmp`, so neither prefixes the other (see
-/// `PluginGit.relativePath`).
-private func locate(_ path: String) -> (root: String, relative: String)? {
-    var isDirectory: ObjCBool = false
-    let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
-    let isDir = exists && isDirectory.boolValue
-    let directory = isDir ? path : (path as NSString).deletingLastPathComponent
-    guard let location = location(forDirectory: directory) else { return nil }
-    let relative = isDir
-        ? PluginGit.relativePath(directoryPrefix: location.prefix)
-        : PluginGit.relativePath(prefix: location.prefix, name: (path as NSString).lastPathComponent)
-    return (location.root, relative)
-}
+// Running git, the repository lookup and the status cache live in GitRepo.swift; the panel (phase 1,
+// F-416) shares them. The decisions — parsing, which git, cache freshness — live in
+// Plugins/SDK/PluginGit.swift, where they are unit-tested.
 
 /// The label a status gets in the column. Localized here; `PluginGit` stays free of user-facing text.
 private func label(for change: PluginGit.Change) -> String {
@@ -202,7 +83,7 @@ public func ContentGetValue(_ fileName: UnsafeMutablePointer<CChar>?, _ fieldInd
                             _ fieldValue: UnsafeMutableRawPointer?, _ maxlen: Int32, _ flags: Int32) -> Int32 {
     guard let fileName, let fieldValue else { return Int32(PC_FT_NOSUCHFIELD) }
     let path = String(cString: fileName)
-    guard let (root, relative) = locate(path), let repo = status(forRoot: root) else {
+    guard let (root, relative) = PluginGitRepo.item(path), let repo = PluginGitRepo.status(root: root) else {
         return Int32(PC_FT_FIELDEMPTY)
     }
     switch fieldIndex {
@@ -258,11 +139,11 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
     let ok = svc.cursorPath.map { $0(svc.host, &buf, 4096) } ?? 0
     let cursor = ok != 0 ? String(cString: buf) : FileManager.default.currentDirectoryPath
 
-    guard gitExecutable() != nil else {
+    guard PluginGitRepo.executable() != nil else {
         svc.presentInfo?(svc.host, L("Git"), L("Git was not found on this Mac."))
         return
     }
-    guard let (root, relative) = locate(cursor) else {
+    guard let (root, relative) = PluginGitRepo.item(cursor) else {
         svc.presentInfo?(svc.host, L("Git"), L("Not a Git repository."))
         return
     }
@@ -272,7 +153,7 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         DispatchQueue.global(qos: .userInitiated).async {
             let result = work()
             DispatchQueue.main.async {
-                invalidateCaches()                  // the repository moved under our cache
+                PluginGitRepo.invalidate()          // the repository moved under our cache
                 svc.reloadActivePanel?(svc.host)
                 let message = result.out.trimmingCharacters(in: .whitespacesAndNewlines)
                 svc.presentInfo?(svc.host, title,
@@ -282,27 +163,69 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
     }
 
     switch id {
+    case "plugin.git.panel.show":
+        // The panel is a declared view; this is the menu route to it, rooted at the repository the
+        // cursor is in so it does not have to guess which of several open repositories is meant.
+        gitPanelViewId.withCString { viewId in
+            root.withCString { rootPath in
+                svc.presentSidebarView?(svc.host, viewId, rootPath)
+            }
+        }
+    case "plugin.git.diff":
+        // Compare the cursor file with the version git has: the index when there is a staged change,
+        // HEAD otherwise. The host's own compare window does the showing (F-416).
+        guard !relative.isEmpty, let repo = PluginGitRepo.status(root: root),
+              let file = repo.files[relative] else {
+            svc.presentInfo?(svc.host, L("Git"), L("This file has no changes to compare."))
+            return
+        }
+        let section: PluginGit.Section = file.isStaged ? .staged : .changed
+        let base = PluginGit.diffBase(for: file, section: section)
+        guard let spec = PluginGit.showSpec(base: base, path: relative) else {
+            svc.presentInfo?(svc.host, L("Git"), L("An untracked file has nothing to compare with."))
+            return
+        }
+        let working = cursor
+        DispatchQueue.global(qos: .userInitiated).async {
+            let blob = PluginGitRepo.writeBlob(root: root, spec: spec, path: relative, base: base)
+            DispatchQueue.main.async {
+                guard let blob else {
+                    svc.presentInfo?(svc.host, L("Git"), L("That version could not be read."))
+                    return
+                }
+                let title = PluginGit.diffTitle(base: base, path: relative)
+                blob.withCString { left in
+                    working.withCString { right in
+                        title.withCString { leftTitle in
+                            L("Working tree").withCString { rightTitle in
+                                svc.compareFiles?(svc.host, left, right, leftTitle, rightTitle)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     case "plugin.git.status":
         // Reading is bounded and cached; keep it synchronous so the sheet appears at once.
-        if let repo = status(forRoot: root) { showStatus(repo, root: root, svc) }
+        if let repo = PluginGitRepo.status(root: root) { showStatus(repo, root: root, svc) }
     case "plugin.git.stage":
         let target = relative.isEmpty ? "." : relative
-        background(L("Git Add")) { runGit(["-C", root, "add", "--", target], combined: true) }
+        background(L("Git Add")) { PluginGitRepo.run(["-C", root, "add", "--", target], combined: true) }
     case "plugin.git.commit":
         // The index, not `-a`: staging and committing were contradicting each other, so a file staged
         // with the command next to this one had no bearing on what was committed.
-        guard let repo = status(forRoot: root) else { return }
+        guard let repo = PluginGitRepo.status(root: root) else { return }
         guard repo.files.values.contains(where: \.isStaged) else {
             svc.presentInfo?(svc.host, L("Git Commit"),
                              L("Nothing is staged. Use “Git Add (stage)” first."))
             return
         }
         guard let message = promptCommitMessage() else { return }
-        background(L("Git Commit")) { runGit(["-C", root, "commit", "-m", message], combined: true) }
+        background(L("Git Commit")) { PluginGitRepo.run(["-C", root, "commit", "-m", message], combined: true) }
     case "plugin.git.push":
-        background(L("Git Push")) { runGit(["-C", root, "push"], combined: true) }
+        background(L("Git Push")) { PluginGitRepo.run(["-C", root, "push"], combined: true) }
     case "plugin.git.pull":
-        background(L("Git Pull")) { runGit(["-C", root, "pull", "--ff-only"], combined: true) }
+        background(L("Git Pull")) { PluginGitRepo.run(["-C", root, "pull", "--ff-only"], combined: true) }
     default:
         break
     }
@@ -338,4 +261,33 @@ private func promptCommitMessage() -> String? {
     guard alert.runModal() == .alertFirstButtonReturn else { return nil }
     let msg = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
     return msg.isEmpty ? nil : msg
+}
+
+// MARK: - The Git panel (phase 1, F-416)
+
+/// Views the plugin can build, by the id declared in Info.plist.
+private let gitPanelViewId = "plugin.git.panel"
+
+@_cdecl("PcMakeView")
+public func PcMakeView(_ viewId: UnsafePointer<CChar>?, _ containerId: UnsafePointer<CChar>?,
+                       _ services: UnsafePointer<PcHostServices>?) -> UnsafeMutableRawPointer? {
+    guard let viewId, let services, String(cString: viewId) == gitPanelViewId else { return nil }
+    // The services struct is a stack value in the host; copy it, since the view outlives this call.
+    let view = MainActor.assumeIsolated { GitPanelView(services: services.pointee) }
+    return Unmanaged.passRetained(view).toOpaque()
+}
+
+@_cdecl("PcCloseView")
+public func PcCloseView(_ view: UnsafeMutableRawPointer?) {
+    guard let view else { return }
+    Unmanaged<GitPanelView>.fromOpaque(view).release()
+}
+
+@_cdecl("PcNotifyView")
+public func PcNotifyView(_ view: UnsafeMutableRawPointer?, _ key: UnsafePointer<CChar>?,
+                         _ value: UnsafePointer<CChar>?) {
+    guard let view, let key, let value else { return }
+    let panel = Unmanaged<GitPanelView>.fromOpaque(view).takeUnretainedValue()
+    let k = String(cString: key), v = String(cString: value)
+    MainActor.assumeIsolated { panel.notify(key: k, value: v) }
 }

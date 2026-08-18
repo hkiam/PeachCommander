@@ -56,6 +56,22 @@
 				<key>title</key>
 				<string>Git Pull</string>
 			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.panel.show</string>
+				<key>title</key>
+				<string>Git Panel</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.diff</string>
+				<key>title</key>
+				<string>Git Diff…</string>
+			</dict>
 		</array>
 		<key>contextMenus</key>
 		<array>
@@ -86,6 +102,30 @@
 			<dict>
 				<key>command</key>
 				<string>plugin.git.commit</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Git</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.panel.show</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Git</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.diff</string>
 				<key>group</key>
 				<string>9_plugins</string>
 				<key>submenu</key>
@@ -157,6 +197,39 @@
 				<integer>140</integer>
 				<key>when</key>
 				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.panel.show</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>90</integer>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.diff</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>95</integer>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+		</array>
+		<key>views</key>
+		<array>
+			<dict>
+				<key>container</key>
+				<string>sidebar</string>
+				<key>id</key>
+				<string>plugin.git.panel</string>
+				<key>title</key>
+				<string>Git</string>
 			</dict>
 		</array>
 	</dict>
