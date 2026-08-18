@@ -411,14 +411,13 @@ final class DiffWindowController: NSWindowController, NSTableViewDataSource, NST
     private static func highlighted(_ text: String, ranges: [Range<Int>], font: NSFont) -> NSAttributedString {
         let attr = NSMutableAttributedString(string: text, attributes: [.font: font])
         let chars = Array(text)
+        // Grapheme range → UTF-16 range through one pass over the line; the same line used to be copied
+        // once per highlighted range, which is quadratic on a long line (see UTF16OffsetTable).
+        let offsets = UTF16OffsetTable(chars)
         let hl = NSColor.systemOrange.withAlphaComponent(0.55)
         for r in ranges where r.lowerBound < chars.count {
-            let lo = r.lowerBound
-            let hi = min(r.upperBound, chars.count)
-            // Map grapheme range to UTF-16 range.
-            let start = String(chars[0..<lo]).utf16.count
-            let len = String(chars[lo..<hi]).utf16.count
-            if len > 0 { attr.addAttribute(.backgroundColor, value: hl, range: NSRange(location: start, length: len)) }
+            let range = offsets.range(r.lowerBound, min(r.upperBound, chars.count))
+            if range.length > 0 { attr.addAttribute(.backgroundColor, value: hl, range: range) }
         }
         return attr
     }

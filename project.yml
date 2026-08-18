@@ -340,6 +340,9 @@ targets:
       # exercises it. Included here for the same reason PluginTheme.swift is in PCThemeTests.
       - path: Plugins/SDK/PluginDecompiler.swift
       - path: Plugins/SDK/PluginSyntax.swift
+      # The CSV plugin's parsing and its header guess, same arrangement: the plugin bundle compiles this
+      # file too (Tools/build-csvlister-plugin.sh), and nothing else in the app's build reaches it.
+      - path: Plugins/SDK/PluginCSV.swift
     settings:
       PRODUCT_NAME: PCFoundationTests
       CODE_SIGNING_ALLOWED: NO

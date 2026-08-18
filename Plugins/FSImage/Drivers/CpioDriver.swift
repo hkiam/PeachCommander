@@ -165,10 +165,14 @@ final class CpioDriver: ImageFilesystemDriver {
                       + " — the image is truncated")
         }
 
-        // Resolve hardlinks whose data-carrying twin appeared after them.
+        // Resolve hardlinks whose data-carrying twin appeared after them — the bytes *and* the length.
+        // Only the bytes were resolved here, so such a file listed as 0 in the panel and opened with its
+        // full contents: the size the status bar sums, a copy's progress and "larger than" all read 0
+        // (F-413). An initramfs is full of hardlinks — busybox is one binary under thirty names.
         for link in pendingLinks {
             guard let data = dataByInode[link.ino] else { continue }
             dataRange[link.index] = data
+            collector.correctSize(at: link.index, to: data.length)
         }
 
         entries = collector.entries
@@ -216,6 +220,7 @@ final class CpioDriver: ImageFilesystemDriver {
             dataByInode[header.ino] = (dataStart, header.fileSize)
         } else if let existing = dataByInode[header.ino] {
             dataRange[index] = existing                      // earlier twin held the data
+            collector.correctSize(at: index, to: existing.length)
         } else {
             pendingLinks.append((index, header.ino))         // a later twin may
         }

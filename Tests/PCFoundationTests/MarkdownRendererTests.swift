@@ -6,10 +6,99 @@ final class MarkdownRendererTests: XCTestCase {
     private func body(_ md: String) -> String { MarkdownRenderer.bodyHTML(from: md) }
 
     func testHeadings() {
-        XCTAssertEqual(body("# Title"), "<h1>Title</h1>")
-        XCTAssertEqual(body("### Sub"), "<h3>Sub</h3>")
+        // Every heading carries an id, so the viewer's outline can scroll the rendered page to it.
+        XCTAssertEqual(body("# Title"), "<h1 id=\"title\">Title</h1>")
+        XCTAssertEqual(body("### Sub"), "<h3 id=\"sub\">Sub</h3>")
         // Trailing hashes stripped.
-        XCTAssertEqual(body("## Heading ##"), "<h2>Heading</h2>")
+        XCTAssertEqual(body("## Heading ##"), "<h2 id=\"heading\">Heading</h2>")
+    }
+
+    // MARK: - Heading anchors (F-410)
+
+    /// The anchors are keyed by the heading's source line, which is what the outline knows a heading by.
+    func testAnchorsAreKeyedBySourceLine() {
+        let rendered = MarkdownRenderer.render("""
+        # Titel
+
+        ## Erster Abschnitt
+
+        text
+
+        ### Unterpunkt A
+        """)
+        XCTAssertEqual(rendered.anchors[1], "titel")
+        XCTAssertEqual(rendered.anchors[3], "erster-abschnitt")
+        XCTAssertEqual(rendered.anchors[7], "unterpunkt-a")
+        XCTAssertEqual(rendered.anchors.count, 3)
+    }
+
+    /// A `#` inside a fenced code block is code, and must not become an anchor — the reason the anchors
+    /// come out of the render pass instead of a second scan over the source.
+    func testHashInsideACodeFenceIsNotAHeading() {
+        let rendered = MarkdownRenderer.render("""
+        # Real
+
+        ```
+        # not a heading
+        ```
+        """)
+        XCTAssertEqual(rendered.anchors, [1: "real"])
+        XCTAssertFalse(rendered.html.contains("id=\"not-a-heading\""))
+    }
+
+    /// A document may repeat a heading; the ids must still be unique or navigation goes to the first one.
+    func testRepeatedHeadingsGetDistinctAnchors() {
+        let rendered = MarkdownRenderer.render("""
+        ## Notes
+
+        ## Notes
+
+        ## Notes
+        """)
+        XCTAssertEqual([rendered.anchors[1], rendered.anchors[3], rendered.anchors[5]],
+                       ["notes", "notes-2", "notes-3"])
+    }
+
+    /// Unicode letters are kept (the id is only ever looked up by this app), punctuation collapses to a
+    /// single dash, and a heading with nothing usable in it still gets an id.
+    func testAnchorSlugRules() {
+        XCTAssertEqual(MarkdownRenderer.render("# Größe & Datum!").anchors[1], "größe-datum")
+        XCTAssertEqual(MarkdownRenderer.render("# A -- B").anchors[1], "a-b")
+        XCTAssertEqual(MarkdownRenderer.render("# 42").anchors[1], "42")
+        XCTAssertEqual(MarkdownRenderer.render("# ***").anchors[1], "section")
+    }
+
+    // MARK: - Underlined (setext) headings
+
+    /// `Title` over `===` / `---` is a heading, not a paragraph followed by a rule. The outline has always
+    /// read this form (the repo's own README uses it), so the rendered page had entries with no anchor.
+    func testUnderlinedHeadings() {
+        let rendered = MarkdownRenderer.render("""
+        Titel
+        =====
+
+        Abschnitt
+        ---------
+        """)
+        XCTAssertEqual(rendered.anchors, [1: "titel", 4: "abschnitt"])
+        XCTAssertTrue(rendered.html.contains("<h1 id=\"titel\">Titel</h1>"))
+        XCTAssertTrue(rendered.html.contains("<h2 id=\"abschnitt\">Abschnitt</h2>"))
+        XCTAssertFalse(rendered.html.contains("<hr>"))
+    }
+
+    /// A rule on its own is still a rule, and a table's delimiter row is still a table.
+    func testDashesThatAreNotHeadings() {
+        XCTAssertEqual(body("---"), "<hr>")
+        XCTAssertTrue(body("A | B\n--- | ---\n1 | 2").hasPrefix("<table>"))
+        // A dash run inside a code fence stays code.
+        XCTAssertTrue(body("```\nTitle\n---\n```").contains("<pre><code>"))
+    }
+
+    /// The anchors survive the document wrapper, which is what the viewer actually loads.
+    func testDocumentCarriesTheSameAnchors() {
+        let rendered = MarkdownRenderer.document(from: "# Hi\n\n## There", title: "t")
+        XCTAssertEqual(rendered.anchors, [1: "hi", 3: "there"])
+        XCTAssertTrue(rendered.html.contains("<h2 id=\"there\">There</h2>"))
     }
 
     func testParagraphAndInline() {
@@ -72,7 +161,7 @@ final class MarkdownRendererTests: XCTestCase {
         let doc = MarkdownRenderer.htmlDocument(from: "# Hi", title: "t")
         XCTAssertTrue(doc.hasPrefix("<!DOCTYPE html>"))
         XCTAssertTrue(doc.contains("<style>"))          // embedded CSS, no network
-        XCTAssertTrue(doc.contains("<h1>Hi</h1>"))
+        XCTAssertTrue(doc.contains("<h1 id=\"hi\">Hi</h1>"))
         XCTAssertFalse(doc.lowercased().contains("http://") || doc.lowercased().contains("https://"))
     }
 

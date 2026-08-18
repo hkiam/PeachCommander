@@ -69,7 +69,7 @@ public enum StructureOutline {
     /// Build the outline for `text`, or an empty array when the extension is not one of ours.
     public static func parse(_ text: String, ext: String) -> [SymbolNode] {
         let e = ext.lowercased()
-        if json.contains(e) { return parseJSON(text) }
+        if json.contains(e) { return parseJSON(text, perLineRecords: ["jsonl", "ndjson"].contains(e)) }
         if yaml.contains(e) { return parseYAML(text) }
         if xml.contains(e) { return parseXML(text) }
         if html.contains(e) { return parseXML(text, html: true) }
@@ -83,7 +83,10 @@ public enum StructureOutline {
     /// Array *scalars* get no node on purpose: a list of ten thousand numbers would bury the structure
     /// it is part of. An array of objects does get one entry per element, because that is the shape
     /// people navigate — `[0]`, `[1]`, each with the object's own keys beneath it.
-    static func parseJSON(_ text: String) -> [SymbolNode] {
+    /// `perLineRecords` names the roots by the line they start on rather than counting documents, which
+    /// is what a JSON Lines file is read by: "line 4207" is a place in the file, "(document 4207)" is a
+    /// number the reader then has to count out.
+    static func parseJSON(_ text: String, perLineRecords: Bool = false) -> [SymbolNode] {
         var scanner = Scanner(text)
         var roots: [SymbolNode] = []
         var count = 0
@@ -177,7 +180,8 @@ public enum StructureOutline {
             guard scanner.peek() != nil, count < nodeLimit else { break }
             let offset = scanner.offset
             let line = scanner.line
-            guard let root = value(name: rootName(for: roots.count), startOffset: offset, line: line) else {
+            let name = perLineRecords ? "(line \(line))" : rootName(for: roots.count)
+            guard let root = value(name: name, startOffset: offset, line: line) else {
                 break
             }
             roots.append(root)

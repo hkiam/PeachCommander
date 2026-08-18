@@ -105,6 +105,20 @@ struct EntryCollector {
 
     mutating func dropName() { droppedNames += 1 }
 
+    /// Correct the size of an entry already added.
+    ///
+    /// For the one case where the size is not known when the entry is created: a cpio hardlink. `newc`
+    /// stores the bytes with the *last* link and writes filesize 0 in the headers of the earlier ones, so
+    /// those entries are added with 0 and learn their real length when the twin turns up. Reading them
+    /// already worked — the data is resolved through the inode — which is what made the wrong size so easy
+    /// to miss: the file opened with its full contents and the listing said 0 bytes.
+    mutating func correctSize(at index: Int, to size: Int64) {
+        guard entries.indices.contains(index) else { return }
+        let old = entries[index]
+        entries[index] = ImageEntry(path: old.path, size: size, mtime: old.mtime, kind: old.kind,
+                                    mode: old.mode, locator: old.locator)
+    }
+
     /// Check a depth before descending. Called by drivers whose directory walk
     /// recurses; a cycle in a damaged image is otherwise unbounded.
     static func checkDepth(_ depth: Int) throws {

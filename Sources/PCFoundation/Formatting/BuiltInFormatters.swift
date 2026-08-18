@@ -28,6 +28,42 @@ public struct JSONFormatter: TextFormatter {
     }
 }
 
+/// JSON Lines (`.jsonl`, `.ndjson`): one JSON document per line.
+///
+/// Deliberately **not** pretty-printing. The format's whole rule is one record per line, so the JSON
+/// formatter's output — an indented object spanning many lines — would produce a file that no longer
+/// parses as JSON Lines at all. What formatting can honestly do here is normalise each record: parse it
+/// and write it back compactly, with sorted keys for the same reason `JSONFormatter` sorts them (stable
+/// diffs). Blank lines are dropped; a line that is not valid JSON fails the whole run, naming its number,
+/// rather than being copied through and leaving the reader with a half-formatted file.
+public struct JSONLinesFormatter: TextFormatter {
+    public let name = "JSON Lines"
+    public let supportedExtensions = ["jsonl", "ndjson"]
+    public init() {}
+
+    public func format(_ text: String) throws -> String {
+        var out: [String] = []
+        var lineNumber = 0
+        for line in text.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }) {
+            lineNumber += 1
+            let record = String(line).trimmingCharacters(in: .whitespaces)
+            if record.isEmpty { continue }
+            guard let data = record.data(using: .utf8),
+                  let object = try? JSONSerialization.jsonObject(with: data, options: [.fragmentsAllowed]),
+                  let compact = try? JSONSerialization.data(withJSONObject: object,
+                                                            options: [.sortedKeys, .fragmentsAllowed]),
+                  let formatted = String(data: compact, encoding: .utf8) else {
+                throw FormatError.invalidInput("JSON Lines (line \(lineNumber))")
+            }
+            out.append(formatted)
+        }
+        guard !out.isEmpty else { throw FormatError.invalidInput("JSON Lines") }
+        let result = out.joined(separator: "\n") + "\n"
+        guard result != text else { throw FormatError.unchanged }
+        return result
+    }
+}
+
 /// XML via XMLDocument, which is libxml2 underneath.
 public struct XMLFormatter: TextFormatter {
     public let name = "XML"

@@ -2000,6 +2000,146 @@ final class FSImagePluginTests: XCTestCase {
         XCTAssertNotNil(presentedMessage, "the user has to be told why nothing happened")
     }
 
+    // MARK: - Does the listed size match what the file actually holds? (F-413)
+    //
+    // Asked because a reader reported files listed as 0 bytes that clearly had content. A listing is a
+    // promise about the file, and the panel acts on it: the status bar sums it, a copy shows progress
+    // against it, "select files larger than" filters on it, and a 0 for a file with content makes every
+    // one of those wrong. The conformance battery compares *contents* and asserts that the deliberately
+    // empty file is 0 — it never asked whether a non-empty file's size is the truth.
+    //
+    // So: walk every image in the fixture set, read every file, and hold the listed size against the
+    // bytes. One test over all drivers rather than one per driver, because the question is the same for
+    // all of them and a driver added later must answer it too.
+
+    /// Every regular file's listed size must equal the number of bytes reading it produces.
+    func testListedSizesMatchTheBytesInEveryImage() async throws {
+        for name in try Self.everyGoldenImage(self) {
+            let image = try goldenFixture(name)
+            guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:size-\(name)") else {
+                XCTFail("\(name): the host could not mount the image"); continue
+            }
+            var checked = 0
+            var mismatches: [String] = []
+            try await walk(fs, "/") { path, entry in
+                guard entry.kind == .file else { return }
+                let data = try await self.read(fs, path)
+                checked += 1
+                if Int64(data.count) != entry.size {
+                    mismatches.append("\(path): listed \(entry.size), read \(data.count)")
+                }
+            }
+            XCTAssertGreaterThan(checked, 0, "\(name): no files were checked at all")
+            XCTAssertEqual(mismatches, [], "\(name): listed size differs from the content")
+        }
+    }
+
+    /// An initramfs is full of hardlinks — busybox is one binary under thirty names — and `newc` stores
+    /// the bytes with the *last* link, writing filesize 0 in the headers of the earlier ones (F-413).
+    ///
+    /// Reading such a link already worked, because the data is resolved through the inode. Its **size** was
+    /// not: the entry kept the 0 from its own header, so the file listed as empty and opened with its full
+    /// contents. That is what the panel's status bar sums, what a copy shows progress against and what
+    /// "select files larger than" filters on. Both directions are built here, because the fix has two
+    /// branches: the twin that comes *after* the link (resolved at the end of the parse) and the one that
+    /// came *before* it (resolved on the spot).
+    func testHardlinkedFilesInACpioImageAreListedWithTheirRealSize() async throws {
+        let cpio = "/usr/bin/cpio"
+        try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: cpio), "cpio unavailable")
+        let root = dir.appendingPathComponent("linkroot-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        let payload = "busybox pretends to be many programs\n"
+        let real = root.appendingPathComponent("bin-busybox")
+        try payload.write(to: real, atomically: true, encoding: .utf8)
+        // Two more names for the same inode. `find` walks them in name order, so `aa-first` is listed
+        // before the data-carrying entry and `zz-last` after it.
+        for name in ["aa-first", "zz-last"] {
+            try FileManager.default.linkItem(at: real, to: root.appendingPathComponent(name))
+        }
+
+        let image = dir.appendingPathComponent("links-\(UUID().uuidString).cpio").path
+        let shell = Process()
+        shell.executableURL = URL(fileURLWithPath: "/bin/sh")
+        shell.arguments = ["-c", "cd \(root.path) && find . | \(cpio) -o -H newc > \(image)"]
+        shell.standardError = FileHandle.nullDevice
+        try shell.run(); shell.waitUntilExit()
+        try XCTSkipUnless(shell.terminationStatus == 0, "cpio failed")
+
+        guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:links") else {
+            return XCTFail("the host could not mount the image")
+        }
+        let expected = Int64(payload.utf8.count)
+        let entries = try await collect(fs, "/").filter { $0.kind == .file }
+        XCTAssertEqual(entries.count, 3, "all three names are files")
+        for entry in entries {
+            XCTAssertEqual(entry.size, expected, "\(entry.name): listed size")
+            let data = try await read(fs, "/" + entry.name)
+            XCTAssertEqual(String(decoding: data, as: UTF8.self), payload, "\(entry.name): contents")
+        }
+    }
+
+    /// The same question for the images that are *built* here rather than committed — ext above all, the
+    /// filesystem the report named, plus the SquashFS variants and a cpio archive. Skipped where the
+    /// builder is not installed, which is why it cannot replace the golden sweep above.
+    func testListedSizesMatchTheBytesInBuiltImages() async throws {
+        var images: [(String, String)] = []
+        // Small files with `inline_data` have no blocks at all — their content sits where the block
+        // pointers would be. If a size were going to be reported as 0 for a file that has content, this is
+        // the shape it would happen in.
+        for (label, make) in [
+            ("ext4", { try self.makeExtImage(type: "ext4") }),
+            ("ext3-1k", { try self.makeExtImage(type: "ext3", blockSize: 1024) }),
+            ("ext2", { try self.makeExtImage(type: "ext2") }),
+            ("ext4-inline", { try self.makeExtImage(type: "ext4", features: "inline_data", inodeSize: 256) }),
+            ("squashfs-gzip", { try self.makeSquashFSImage(compressor: "gzip") }),
+            ("squashfs-zstd", { try self.makeSquashFSImage(compressor: "zstd") }),
+            ("cpio", { try self.makeCpioImage() }),
+        ] as [(String, () throws -> String)] {
+            do { images.append((label, try make())) }
+            catch { continue }   // builder missing here; the golden sweep still ran
+        }
+        try XCTSkipIf(images.isEmpty, "no image builder available on this machine")
+
+        for (label, image) in images {
+            guard let fs = PCXArchiveFS(archivePath: image, library: lib, fsID: "fsimage:size-\(label)") else {
+                XCTFail("\(label): the host could not mount the image"); continue
+            }
+            var checked = 0
+            var mismatches: [String] = []
+            try await walk(fs, "/") { path, entry in
+                guard entry.kind == .file else { return }
+                let data = try await self.read(fs, path)
+                checked += 1
+                if Int64(data.count) != entry.size {
+                    mismatches.append("\(path): listed \(entry.size), read \(data.count)")
+                }
+            }
+            XCTAssertGreaterThan(checked, 0, "\(label): no files were checked at all")
+            XCTAssertEqual(mismatches, [], "\(label): listed size differs from the content")
+        }
+    }
+
+    /// The images the manifest describes, as the fixture names the tests use.
+    private static func everyGoldenImage(_ test: FSImagePluginTests) throws -> [String] {
+        try test.manifestRows().map(\.name)
+    }
+
+    /// Depth-first walk over an image, calling `visit` for every entry.
+    ///
+    /// Bounded: a fixture is small, but a walk that follows a driver's own loop — a directory that lists
+    /// itself — would never end, and that is exactly the sort of defect these images exist to catch.
+    private func walk(_ fs: PCXArchiveFS, _ path: String, depth: Int = 0,
+                     visit: (String, VFSEntry) async throws -> Void) async throws {
+        guard depth < 16 else { return }
+        for entry in try await collect(fs, path) {
+            let child = path == "/" ? "/" + entry.name : path + "/" + entry.name
+            try await visit(child, entry)
+            if entry.kind == .directory {
+                try await walk(fs, child, depth: depth + 1, visit: visit)
+            }
+        }
+    }
+
     /// Invoke the contributed command with a fake host table.
     private func runLayoutCommand() throws {
         typealias RunCommand = @convention(c) (UnsafePointer<CChar>?,

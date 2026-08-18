@@ -337,6 +337,33 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
     /// looked at. It described the last key in the file while the caret sat on line 1.
     func automationStatusLine() -> String { statusLabel.stringValue }
 
+    /// Diagnostic: run the structure check and report what it said and where it put the caret (F-412).
+    ///
+    /// The note is the window's subtitle, which is where `structureNote` writes: a valid `.jsonl` used to
+    /// be reported as broken at its second record, and "the caret did not move" is half the answer.
+    func automationValidate() -> String {
+        textView.setSelectedRange(NSRange(location: 0, length: 0))
+        structureValidate()
+        // The line comes from the outcome, not from the note: the note is a translated sentence, and a
+        // gate that matches translated prose passes or fails by which language the machine runs in.
+        let outcome = StructureValidator.validate(textView.string,
+                                                 ext: (path as NSString).pathExtension)
+        var line = "-"
+        if case .problem(let problem) = outcome { line = String(problem.line) }
+        return "problemLine=\(line)\nnote=\(window?.subtitle ?? "")\n"
+            + "caret=\(textView.selectedRange().location)\n"
+    }
+
+    /// Diagnostic: press Format and report the document afterwards, plus the status line — which names
+    /// the formatter that ran, so "nothing happened" and "the wrong formatter ran" are different answers
+    /// (F-412: JSON Lines must not be pretty-printed into a file that is no longer JSON Lines).
+    func automationFormat() -> String {
+        lastFormatterUsed = nil
+        format()
+        return "formatter=\(lastFormatterUsed ?? "-")\nstatus=\(statusLabel.stringValue)\n"
+            + "text=\(textView.string)\n"
+    }
+
     /// Diagnostic: move the caret and report the breadcrumb that follows from it.
     func automationBreadcrumb(at offset: Int) -> String {
         textView.setSelectedRange(NSRange(location: offset, length: 0))
@@ -733,8 +760,14 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         let whole = NSRange(location: 0, length: (textView.string as NSString).length)
         EditorTextFilter.replace(whole, with: result.text, in: textView,
                                  actionName: String(localized: "Format"))
+        lastFormatterUsed = result.formatter
         afterProgrammaticEdit()
     }
+
+    /// The formatter that last ran, for the `editformat` automation report. Which formatter produced a
+    /// text can matter more than the text: for `.jsonl` the JSON one would yield a valid JSON document
+    /// that is no longer JSON Lines.
+    private var lastFormatterUsed: String?
 
     // MARK: - Filter through a shell command (F-356)
 

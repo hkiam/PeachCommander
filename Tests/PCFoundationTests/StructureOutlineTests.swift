@@ -78,8 +78,17 @@ final class StructureOutlineTests: XCTestCase {
         XCTAssertEqual(roots.map(\.name), ["a\\\"b"])
     }
 
+    /// JSON Lines names its records by the line they start on: that is how the format is read, and
+    /// "(document 4207)" is a number the reader would have to count out (F-412).
     func testSeveralDocumentsInOneFile() {
         let roots = StructureOutline.parse("{\"a\":1}\n{\"b\":2}\n", ext: "ndjson")
+        XCTAssertEqual(roots.map(\.name), ["(line 1)", "(line 2)"])
+    }
+
+    /// A `.json` file holding two documents is still counted, not lined: that is a malformed single
+    /// document rather than a record stream, and the count says how many values were found in it.
+    func testSeveralDocumentsInAPlainJSONFile() {
+        let roots = StructureOutline.parse("{\"a\":1}\n{\"b\":2}\n", ext: "json")
         XCTAssertEqual(roots.map(\.name), ["(root)", "(document 2)"])
     }
 

@@ -69,12 +69,46 @@ public enum StructureValidator {
 
     public static func validate(_ text: String, ext: String) -> Outcome {
         let e = ext.lowercased()
-        if ["json", "jsonc", "geojson", "webmanifest", "jsonl", "ndjson"].contains(e) {
+        // JSON Lines is not one document: every line is its own, and handing the whole file to a JSON
+        // parser reports "garbage at the end" for a perfectly good `.jsonl` — the second record. The
+        // outline has always read the format that way; the validator had not.
+        if ["jsonl", "ndjson"].contains(e) { return validateJSONLines(text) }
+        if ["json", "jsonc", "geojson", "webmanifest"].contains(e) {
             return validateJSON(text, allowComments: e == "jsonc")
         }
         if ["yaml", "yml"].contains(e) { return validateYAML(text) }
         if StructureOutline.supports(ext: e) { return validateXML(text) }
         return .unsupported
+    }
+
+    // MARK: - JSON Lines
+
+    /// Validate a JSON Lines document: each non-blank line on its own, reporting the first bad one at its
+    /// own line and column.
+    ///
+    /// Blank lines are skipped rather than refused — a trailing newline is normal, and files written by
+    /// appending records often carry one. A record must be a *complete* JSON value on one line, which is
+    /// what the format is; a pretty-printed object spanning lines is exactly the mistake worth naming.
+    static func validateJSONLines(_ text: String) -> Outcome {
+        var offset = 0                     // UTF-16 offset of the current line's start
+        var lineNumber = 1
+        for line in text.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }) {
+            let content = String(line)
+            let trimmed = content.trimmingCharacters(in: .whitespaces)
+            if !trimmed.isEmpty {
+                switch validateJSON(content, allowComments: false) {
+                case .valid, .checked, .unsupported:
+                    break
+                case .problem(let problem):
+                    // The offsets in `problem` are relative to the line; lift them to the document.
+                    return .problem(Problem(utf16Location: offset + problem.utf16Location,
+                                            line: lineNumber, reason: problem.reason))
+                }
+            }
+            offset += content.utf16.count + 1   // + the newline that separated it
+            lineNumber += 1
+        }
+        return .valid(parser: "JSONSerialization")
     }
 
     // MARK: - JSON

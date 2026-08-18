@@ -27,7 +27,8 @@ public final class FormatterRegistry: @unchecked Sendable {
     public init(external: [TextFormatter]? = nil, builtIn: [TextFormatter]? = nil) {
         self.external = external ?? DefaultExternalFormatters.all()
         self.builtIn = builtIn ?? [
-            JSONFormatter(), XMLFormatter(), HTMLFormatter(), INIFormatter(), YAMLTidyFormatter()
+            JSONFormatter(), JSONLinesFormatter(), XMLFormatter(), HTMLFormatter(), INIFormatter(),
+            YAMLTidyFormatter()
         ]
     }
 

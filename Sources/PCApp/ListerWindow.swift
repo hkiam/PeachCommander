@@ -155,6 +155,15 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
     /// Parsed XML tree + its outline data source, for the collapsible tree mode.
     private var xmlRoot: XMLTreeNode?
     private var xmlOutline: XMLOutlineController?
+    /// The Markdown *source* behind the rendered page, and the anchors its headings were given.
+    ///
+    /// Kept because the rendered representation is a web view: the outline is built from the source
+    /// (headings and their nesting), while navigating goes to an element in the page. Without these two
+    /// the symbol sidebar had nothing to show for a Markdown file in its normal, rendered mode — the
+    /// toggle was simply dead, and the reader had to switch to the text representation to get an outline
+    /// of the document they were already reading.
+    private var webMarkdownSource: String?
+    private var webMarkdownAnchors: [Int: String] = [:]
 
     private let statusLabel = NSTextField(labelWithString: "")
     #if DEBUG
@@ -198,6 +207,108 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
 
     /// Open the docked marks panel, so a dump reads what is on screen and not only what is in the model.
     func automationShowMarks() { marks.show() }
+
+    /// Automation: format the current file and then *draw* it, reporting how long each took (F-414).
+    ///
+    /// Both halves are needed. Formatting is a parse and a view construction; the freeze a reader reports
+    /// happens afterwards, while the view draws — so a report that timed only the format would have said
+    /// 40 ms about a window that then hung for minutes. `display()` is a synchronous draw of the whole
+    /// content view, which is the same work scrolling does one screenful at a time.
+    func automationFormatAndDraw() -> String {
+        let startFormat = Date()
+        formatStructured()
+        let formatMs = Int(Date().timeIntervalSince(startFormat) * 1000)
+        let view = contentView ?? scrollView.documentView
+        view?.frame = NSRect(x: 0, y: 0, width: 1200, height: 800)
+        let startDraw = Date()
+        view?.display()
+        let drawMs = Int(Date().timeIntervalSince(startDraw) * 1000)
+        // `display()` draws the visible rect only, which is empty for a window that is not on screen — so
+        // the line-building cost is measured directly as well. That is the work scrolling repeats.
+        var lineCostMs = -1
+        #if DEBUG
+        if let code = view as? CodeListerView { lineCostMs = code.automationAttributedLineCost(lines: 30) }
+        #endif
+        return """
+        view=\(view.map { String(describing: type(of: $0)) } ?? "-")
+        formatter=\(formatterUsed ?? "-")
+        formatted=\(isFormatted ? 1 : 0)
+        format_ms=\(formatMs)
+        draw_ms=\(drawMs)
+        line_build_ms_30=\(lineCostMs)
+        line_build=\(Self.lineBuildVerdict(lineCostMs))
+        status=\(statusLabel.stringValue)
+        """ + "\n"
+    }
+
+    /// Automation: pick the outline entry named `name` and report where the content ended up.
+    ///
+    /// The report is the *position*, not the fact that a method was called: for the rendered
+    /// representation the outline used to be unavailable altogether, and once it is available a click
+    /// that scrolls nowhere looks exactly like one that works (F-410). For the page this asks the DOM
+    /// after the scroll; for a text view it reads the selection back.
+    func automationNavigateToSymbol(_ name: String) async -> String {
+        guard let sym = symbolSidebar.definition(named: name) else {
+            return "symbol=\(name)\nfound=0\n"
+        }
+        var out = "symbol=\(name)\nfound=1\nline=\(sym.line)\n"
+        if mode == .web, let web = webView {
+            let anchor = webMarkdownAnchors[sym.line] ?? ""
+            out += "anchor=\(anchor.isEmpty ? "-" : anchor)\n"
+            let before = await webScrollY(web)
+            out += "scrollYBefore=\(before)\n"
+            navigate(to: sym)
+            // The scroll is animated/asynchronous in the page; give it a moment before reading back.
+            try? await Task.sleep(nanoseconds: 600_000_000)
+            let after = await webScrollY(web)
+            out += "scrollYAfter=\(after)\n"
+            // The verdict, not only the numbers: a gate can match a word, and "the page moved" is the
+            // question — a document short enough to need no scrolling would otherwise read as a failure.
+            out += "scrolled=\(after != before ? "yes" : "no")\n"
+            out += "headingTop=\(await webElementTop(web, anchor: anchor))\n"
+        } else {
+            navigate(to: sym)
+            if let tv = textContentView {
+                out += "selection=\(tv.selectedRange().location)\n"
+            }
+        }
+        return out
+    }
+
+    /// A word for the line-building cost, so a gate can match it: a substring expectation cannot compare
+    /// numbers, and the number itself varies with the machine.
+    ///
+    /// The threshold is generous on purpose. The measurement it exists for is not a few per cent: building
+    /// thirty lines of a real 2 MB JSON Lines log took 193,934 ms with the quadratic mapping and 126 ms
+    /// without it, so anything under a couple of seconds means the mapping is still linear (F-414).
+    private static func lineBuildVerdict(_ milliseconds: Int) -> String {
+        if milliseconds < 0 { return "n/a" }
+        return milliseconds < 3_000 ? "fast" : "slow"
+    }
+
+    /// The page's vertical scroll offset, or -1 when it cannot be read.
+    private func webScrollY(_ web: WKWebView) async -> Int {
+        await withCheckedContinuation { continuation in
+            web.evaluateJavaScript("Math.round(window.scrollY)") { result, _ in
+                continuation.resume(returning: (result as? NSNumber)?.intValue ?? -1)
+            }
+        }
+    }
+
+    /// An element's distance from the top of the viewport, or -9999 when it is not there.
+    private func webElementTop(_ web: WKWebView, anchor: String) async -> Int {
+        let js = """
+        (function() {
+          var el = document.getElementById(\(Self.jsString(anchor)));
+          return el ? Math.round(el.getBoundingClientRect().top) : -9999;
+        })()
+        """
+        return await withCheckedContinuation { continuation in
+            web.evaluateJavaScript(js) { result, _ in
+                continuation.resume(returning: (result as? NSNumber)?.intValue ?? -9999)
+            }
+        }
+    }
 
     /// Diagnostic: run a zoom command through the same selector the menu item sends, and report the
     /// result (F-389).
@@ -652,6 +763,11 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         let ext = files.indices.contains(index) ? (files[index] as NSString).pathExtension.lowercased() : ""
         if mode == .code || mode == .text, let tv = textContentView {
             symbolSidebar.load(text: tv.string, ext: ext)
+        } else if mode == .web, let markdown = webMarkdownSource {
+            // The rendered page has no text view, but the *source* is right here and already bounded by
+            // the render cap — so the reader of a rendered document gets the same outline of it as the
+            // reader of its source, instead of a dead toggle (F-410).
+            symbolSidebar.load(text: markdown, ext: ext)
         } else {
             symbolSidebar.clear()
         }
@@ -717,6 +833,10 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
 
     /// Jump the content view to a symbol's definition.
     private func navigate(to sym: SymbolNode) {
+        if mode == .web, let web = webView, let anchor = webMarkdownAnchors[sym.line] {
+            scrollWeb(to: anchor, web: web)
+            return
+        }
         if let tv = textContentView {
             let ns = tv.string as NSString
             let loc = max(0, min(sym.utf16Location, ns.length))
@@ -728,6 +848,39 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
             (contentView as? CodeListerView)?.scroll(toLine: sym.line)
             (contentView as? TextListerView)?.scroll(toLine: sym.line)
         }
+    }
+
+    /// Scroll the rendered page to a heading's anchor.
+    ///
+    /// Through `evaluateJavaScript`, which the host may run even though the page itself may not:
+    /// `allowsContentJavaScript` is off and the document's CSP is `default-src 'none'`, so a script
+    /// *inside* a Markdown file still cannot run — the two protections that matter here are untouched.
+    /// The scroll is reported back so a failure shows up in the log rather than as a click that does
+    /// nothing.
+    private func scrollWeb(to anchor: String, web: WKWebView) {
+        let js = """
+        (function() {
+          var el = document.getElementById(\(Self.jsString(anchor)));
+          if (!el) { return "missing"; }
+          el.scrollIntoView(true);
+          return "ok";
+        })()
+        """
+        web.evaluateJavaScript(js) { result, error in
+            if let error {
+                PCFoundationLogger.logger.error("viewer: scrolling to \(anchor, privacy: .public) failed: \(error.localizedDescription, privacy: .public)")
+            } else if let outcome = result as? String, outcome != "ok" {
+                PCFoundationLogger.logger.error("viewer: no element for anchor \(anchor, privacy: .public)")
+            }
+        }
+    }
+
+    /// A Swift string as a JavaScript string literal.
+    private static func jsString(_ s: String) -> String {
+        let escaped = s.replacingOccurrences(of: "\\", with: "\\\\")
+                       .replacingOccurrences(of: "\"", with: "\\\"")
+                       .replacingOccurrences(of: "\n", with: "\\n")
+        return "\"\(escaped)\""
     }
 
     @objc private func toolbarReprChanged(_ sender: NSPopUpButton) {
@@ -1102,6 +1255,10 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         // makes every capability below answer truthfully.
         contentView = web
         textMarks = nil
+        // A previous file's Markdown state must not survive into this one: an HTML file rendered after a
+        // Markdown one would otherwise keep the outline of the document before it.
+        webMarkdownSource = nil
+        webMarkdownAnchors = [:]
         // Focus the web view so arrows / space / PageUp-Down scroll the page natively.
         DispatchQueue.main.async { [weak self] in self?.window?.makeFirstResponder(web) }
 
@@ -1109,7 +1266,7 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         let dir = url.deletingLastPathComponent()
         let ext = (path as NSString).pathExtension.lowercased()
 
-        loadWithoutNetwork(web) {
+        loadWithoutNetwork(web) { [weak self] in
             if Self.htmlExts.contains(ext) {
                 let cap = 16 * 1024 * 1024
                 let raw = slice.bytes(at: 0, length: min(cap, Int(slice.count)))
@@ -1135,8 +1292,12 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
                 let data = slice.bytes(at: 0, length: min(cap, Int(slice.count)))
                 let enc = EncodingDetector.detect(Array(data.prefix(64 * 1024)))
                 let text = String(bytes: data, encoding: enc) ?? String(decoding: data, as: UTF8.self)
-                let html = MarkdownRenderer.htmlDocument(from: text, title: url.lastPathComponent)
-                web.loadHTMLString(html, baseURL: dir)
+                let rendered = MarkdownRenderer.document(from: text, title: url.lastPathComponent)
+                // Keep source and anchors so the symbol outline works on the rendered page.
+                self?.webMarkdownSource = text
+                self?.webMarkdownAnchors = rendered.anchors
+                web.loadHTMLString(rendered.html, baseURL: dir)
+                self?.refreshSymbols()
             }
         }
     }
@@ -1802,8 +1963,17 @@ final class ListerWindowController: NSWindowController, NSWindowDelegate, NSText
         }
         // Highlight by the file's own extension, not by whichever formatter ran — a .yml
         // formatted by yq is still YAML.
+        //
+        // And through the same size thresholds the Code representation uses, which this path skipped: it
+        // put *any* formatted text into `CodeListerView`, a view that materialises every token and draws
+        // whole lines at once. That is what turned a 2 MB JSON Lines file into a frozen window — the
+        // reader pressed Format and the result went into the one view with no cap on it. The line-drawing
+        // cost is fixed too (UTF16OffsetTable), but a limit that exists in the path beside this one and
+        // not in this one is a defect of its own.
         let view: NSView
-        if let language = SyntaxHighlighter.language(forExtension: ext) {
+        let formattedBytes = Int64(result.text.utf8.count)
+        if let language = SyntaxHighlighter.language(forExtension: ext),
+           formattedBytes <= Self.highlightSizeLimit {
             view = CodeListerView(text: result.text, language: language)
         } else {
             view = TextListerView(string: result.text)
@@ -2684,21 +2854,40 @@ final class CodeListerView: NSView, ListerScrollable, ListerLineAddressable, Vie
         let lineChars = Array(chars[lr])
         let attr = NSMutableAttributedString(string: String(lineChars),
             attributes: [.font: font, .foregroundColor: Theme.current.listText])
+        // One pass for the whole line, not one copy of the line's prefix per token. This is drawing code,
+        // called for every visible line on every scroll, and it used to ask
+        // `String(lineChars[0..<lo]).utf16.count` — quadratic in the line's length. On a 2 MB JSON Lines
+        // file (thirty records of ~68,000 characters, thousands of tokens each) that is about 10^8
+        // character copies per drawn line on the main thread: the viewer froze for as long as the reader
+        // kept scrolling, which is exactly how it was found.
+        let offsets = UTF16OffsetTable(lineChars)
         var k = firstTokenIndex(endingAfter: lr.lowerBound)
         while k < tokens.count, tokens[k].range.lowerBound < lr.upperBound {
             let t = tokens[k]; k += 1
             let lo = max(t.range.lowerBound, lr.lowerBound) - lr.lowerBound
             let hi = min(t.range.upperBound, lr.upperBound) - lr.lowerBound
             guard lo < hi, lo >= 0, hi <= lineChars.count else { continue }
-            let startU = String(lineChars[0..<lo]).utf16.count
-            let lenU = String(lineChars[lo..<hi]).utf16.count
-            if lenU > 0 {
-                attr.addAttribute(.foregroundColor, value: SyntaxTheme.color(t.kind),
-                                  range: NSRange(location: startU, length: lenU))
+            let range = offsets.range(lo, hi)
+            if range.length > 0 {
+                attr.addAttribute(.foregroundColor, value: SyntaxTheme.color(t.kind), range: range)
             }
         }
         return attr
     }
+
+    #if DEBUG
+    /// Diagnostic: build the attributed string for the first `lines` lines and report the milliseconds.
+    ///
+    /// This *is* the drawing cost: `draw(_:)` calls `attributedLine` once per visible line, so a screenful
+    /// of a file with very long lines costs what this measures. Timed here rather than through `display()`,
+    /// which draws only the visible rect and therefore reports 0 ms for a window that is not on screen —
+    /// a measurement that would have looked like a fix (F-414).
+    func automationAttributedLineCost(lines: Int) -> Int {
+        let start = Date()
+        for i in 0..<min(lines, lineRanges.count) { _ = attributedLine(lineRanges[i]) }
+        return Int(Date().timeIntervalSince(start) * 1000)
+    }
+    #endif
 
     /// First token whose range ends after `pos` (binary search; tokens are ordered).
     private func firstTokenIndex(endingAfter pos: Int) -> Int {

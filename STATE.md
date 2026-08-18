@@ -26,6 +26,72 @@ harness was copying it to the guest*, so the VM ran a half-written bundle that l
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
 
+## 2026-08-18 (F-410…F-413) — Four reports, and the two that were worse than they sounded
+
+Four things asked for in one message. Two were what they looked like; two turned out to be data loss with
+a cosmetic-sounding symptom.
+
+**F-410 — the outline for Markdown in the viewer.** Reported as "not expandable in the viewer, expandable
+in the editor". The sidebar is built from a text view and the viewer's normal representation for Markdown
+is the *rendered page*, so the outline was cleared and the toggle went dead (`symboltoggle=disabled`,
+measured). It is built from the source now — which is right there, already bounded by the render cap —
+while navigating goes to an element in the page: every heading gets an `id`, produced by the render pass
+rather than a second scan (two scans that disagree about a `#` inside a fenced block would send the reader
+to the wrong place), and the scroll goes through `evaluateJavaScript`, which the host may run although the
+page may not — `allowsContentJavaScript` stays off and the CSP stays `default-src 'none'`. The second
+defect was underneath: **`Titel` over `===` was rendered as a paragraph plus a horizontal rule**, so a form
+the outline has always read (the repo's own README uses it) offered entries the page had no anchor for.
+
+**F-411 — CSV without a header line.** Not just "the wrong titles": the first line became the column
+headers, so **the first record was gone from the table** — not filterable, not sortable, not findable, and
+nothing on screen said so or could undo it. There is no marker in the format, so the reader gets a guess
+and a checkbox to overrule it. The guess is four rules, each something a header row does not do; what it
+deliberately does *not* do is compare the first line's types against the rows below, which reads like the
+better rule and fails on the file this exists for — a table of strings only. Parsing and the guess moved to
+`Plugins/SDK/PluginCSV.swift`, compiled into the plugin *and* into PCFoundationTests, because reaching the
+view through the PLX C ABI is no way to test a decision.
+
+**F-412 — JSON Lines.** Highlighting, the outline, the paths and the transforms already knew the format.
+The validator did not: it handed the whole file to a JSON parser, which reports the second record as
+garbage after the end of the first, so **every valid `.jsonl` was marked broken**. It validates per record
+now and names the first bad one by its own line. And there was no formatter at all — the safer half, since
+the JSON one would have pretty-printed the file into something that is no longer JSON Lines;
+`JSONLinesFormatter` normalises each record and keeps one per line. The outline names records by the line
+they start on rather than counting documents.
+
+**F-413 — the 0-byte suspicion in the filesystem-image plugin**, offered as "I am not sure, test it". It
+was right. In cpio/initramfs — the format firmware ships in — `newc` stores the bytes with the *last*
+hardlink and writes `filesize 0` in the earlier ones' headers. The driver resolved the data through the
+inode, so the file *opened* with its full contents, and kept the 0 as its size: what the status bar sums,
+what a copy's progress is measured against and what "larger than" filters on. Found by measuring rather
+than by reading: a new sweep walks every image the tests can build — sixteen committed fixtures plus
+ext2/3/4 (including `inline_data`, where a small file has no blocks at all), SquashFS gzip/zstd and cpio —
+and holds every file's listed size against the bytes it reads. The sweep found **nothing**, which is what
+sent the search to what the sample tree has none of. With the fix removed the dedicated test reports 0
+against 37 for two of three names.
+
+**F-414 — and then the reader pressed Format on a real 2 MB `.jsonl` and the window froze.** Diagnosed in
+the live process: a sample showed the main thread inside scroller tracking, 80% of it in
+`String.append(contentsOf:)` under `CodeListerView.attributedLine` — which asked
+`String(lineChars[0..<lo]).utf16.count` once per syntax token, copying the line's prefix every time.
+Quadratic, in drawing code, on the main thread. The file (a Jira health log: thirty records of ~68,000
+characters) needed **193,934 ms to build thirty lines; 126 ms after the fix**, measured both ways by
+reverting it. `UTF16OffsetTable` walks a line once and skips the table entirely when every character is one
+UTF-16 unit; the diff window's highlighter had the same line and the same fix. Two defects had to line up:
+the post-format path also **ignored the size thresholds** the Code representation applies and put any
+formatted text into the materialising view. Note what made this findable at all — the JSON Lines formatter
+from F-412 is what made Format *work* on that file; before it, the button refused and the freeze was out of
+reach.
+
+Verified in the running app, not only by unit test, and four verbs exist now because a dump could not
+answer the question: `listersymbol` (drives the viewer's outline and reports where the page ended up),
+`editformat` (reports *which* formatter ran — for `.jsonl` the text alone would not say) and
+`editvalidate` (reports the problem's line, not the translated sentence) and `listerformat` (formats and
+draws, reporting both times *and* the line-building cost — `display()` draws only the visible rect and
+would have reported 0 ms for an off-screen window, which is a measurement that looks like a fix). New VM scenarios:
+`viewer-md-outline`, `csv-no-header`, `jsonl`. New tests: `MarkdownRendererTests` (+8), `PluginCSVTests`
+(14), `JSONLinesTests` (12), two size sweeps and the hardlink case in `FSImagePluginTests`.
+
 ## 2026-08-18 (F-257) — The .mnu format was supported on paper, and four things stopped it working
 
 The question was whether Total Commander's `.mnu` main-menu format is fully supported, placeholders

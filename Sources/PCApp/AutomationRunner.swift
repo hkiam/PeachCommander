@@ -159,6 +159,8 @@ extension MainWindowController {
             case "editfilter": await editFilter(arg)   // editfilter <src>|<command>|<out> (F-356)
             case "editregex":  await editRegex(arg)    // editregex <src>|<pat>|<repl>|<all 0|1>|<out>
             case "editfilterdlg": await editFilterDialog(arg)   // editfilterdlg <src> (F-356)
+            case "editformat": await editFormat(arg)    // editformat <src>|<out> (F-412)
+            case "editvalidate": await editValidate(arg) // editvalidate <src>|<out> (F-412)
             case "editlines":  await editLines(arg)     // editlines <src>|<out> (F-359)
             case "editstruct": await editStructure(arg) // editstruct <src>|<needle>|<out> (F-369)
             case "editsave":   await editSave(arg)      // editsave <src>|<text>|<out> (F-387)
@@ -261,6 +263,18 @@ extension MainWindowController {
                 // So the next `listerdump` reads rendered labels, not just the model behind them: a group
                 // the panel never draws is not a feature the user has.
                 currentLister()?.automationShowMarks()
+            case "listerformat":                        // listerformat <out> (F-414): format, then draw, timed
+                let out = currentLister()?.automationFormatAndDraw() ?? "ERROR: no lister window\n"
+                try? out.write(toFile: arg, atomically: true, encoding: .utf8)
+            case "listersymbol":                        // listersymbol <name>|<out> (F-410)
+                // Drive the viewer's symbol outline and report where the content went. For a rendered
+                // Markdown page that is the only way to tell a working entry from a dead one.
+                let s = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if s.count == 2 {
+                    let out = await currentLister()?.automationNavigateToSymbol(s[0])
+                        ?? "ERROR: no lister window\n"
+                    try? out.write(toFile: s[1], atomically: true, encoding: .utf8)
+                }
             case "listerdump":                          // listerdump <outfile>: what the viewer window shows
                 let out = currentLister()?.automationSummary() ?? "ERROR: no lister window\n"
                 try? out.write(toFile: arg, atomically: true, encoding: .utf8)
@@ -1507,6 +1521,38 @@ extension MainWindowController {
         text += "crumb@mid=\(win.automationBreadcrumb(at: middle))\n"
         try? text.write(toFile: a[1], atomically: true, encoding: .utf8)
         NSLog("[automation] editdump \(cells.count) rendered rows → \(a[1])")
+    }
+
+    /// Open `src` in the editor, run the structure check, and report it: `editvalidate <src>|<out>`.
+    private func editValidate(_ arg: String) async {
+        let a = arg.split(separator: "|", maxSplits: 1).map(String.init)
+        guard a.count == 2 else { NSLog("[automation] editvalidate needs <src>|<out>"); return }
+        let win = EditorWindowController(path: a[0])
+        automationEditors.append(win)
+        win.showWindow(nil)
+        win.window?.makeKeyAndOrderFront(nil)
+        try? await Task.sleep(nanoseconds: 1_200_000_000)
+        let report = win.automationValidate()
+        try? report.write(toFile: a[1], atomically: true, encoding: .utf8)
+        NSLog("[automation] editvalidate → \(a[1])")
+    }
+
+    /// Open `src` in the editor, press Format, and report the result: `editformat <src>|<out>`.
+    ///
+    /// The status line is part of the report because it names the formatter that ran. For a `.jsonl` file
+    /// the answer that matters is *which* formatter: the JSON one would produce a valid JSON document that
+    /// is no longer JSON Lines, and a diff of the text alone would not say which of the two happened.
+    private func editFormat(_ arg: String) async {
+        let a = arg.split(separator: "|", maxSplits: 1).map(String.init)
+        guard a.count == 2 else { NSLog("[automation] editformat needs <src>|<out>"); return }
+        let win = EditorWindowController(path: a[0])
+        automationEditors.append(win)
+        win.showWindow(nil)
+        win.window?.makeKeyAndOrderFront(nil)
+        try? await Task.sleep(nanoseconds: 1_200_000_000)   // let the load + highlight settle
+        let report = win.automationFormat()
+        try? report.write(toFile: a[1], atomically: true, encoding: .utf8)
+        NSLog("[automation] editformat → \(a[1])")
     }
 
     /// Download a file over a real SFTP connection twice: once whole, then — after truncating the local

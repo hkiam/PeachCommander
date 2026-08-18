@@ -33,6 +33,7 @@ pc_swiftc -emit-library -O \
        -target "$TARGET" \
        -framework AppKit \
        -o "$BUNDLE/Contents/MacOS/CSVLister" \
-       "$SRC"
+       "$SRC" \
+       "Plugins/SDK/PluginCSV.swift"
 
 echo "Built $BUNDLE"

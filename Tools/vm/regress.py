@@ -157,6 +157,67 @@ SCENARIOS = [
     # written with void elements and paragraphs that never close.
     ("markdown-outline", ["editdump /Users/admin/pc-demo/outline.md /Users/admin/md-outline.txt",
                           "wait 2500"], 10),
+    # Formatting a file with very long lines used to freeze the window (F-414). The mapping from character
+    # index to UTF-16 offset in the code view's drawing path was quadratic in the line length — asked once
+    # per syntax token — so a 2 MB JSON Lines log with thirty ~68,000-character records needed 193,934 ms to
+    # build thirty lines, against 126 ms after the fix. The report carries a *word* rather than the number,
+    # because an expectation cannot compare numbers and the number varies with the machine; the threshold
+    # (3 s for thirty lines) sits a hundredfold below the defect and a twentyfold above the fix.
+    ("viewer-long-lines", ["probe /Users/admin/longline-seed.txt|mkdir -p ~/pc-longline && "
+                           "python3 -c \"import json,io;"
+                           "rec=lambda i:json.dumps([{'i':i,'blob':[{'k%d'%j:'v'*40} for j in range(600)]}]);"
+                           "open('/Users/admin/pc-longline/big.jsonl','w')"
+                           ".write(''.join(rec(i)+chr(10) for i in range(30)))\" && "
+                           "wc -c < ~/pc-longline/big.jsonl",
+                           "wait 900",
+                           "view /Users/admin/pc-longline/big.jsonl", "wait 2500",
+                           "listermode code|/Users/admin/longline-mode.txt", "wait 1200",
+                           "listerformat /Users/admin/longline.txt", "wait 800"], 14),
+    # JSON Lines (F-412), which is not one JSON document: one complete value per line. The validator used
+    # to hand the whole file to a JSON parser, which reports the *second record* as garbage after the end
+    # of the first — so every valid .jsonl was marked broken. And there was no formatter for it at all,
+    # which was the safer half: the JSON one would have pretty-printed the file into something that is no
+    # longer JSON Lines. Three answers in one scenario: a valid file is valid, a bad record is named by its
+    # own line, and formatting keeps one record per line — with the *formatter's name* in the report,
+    # because the text alone would not say which of the two ran.
+    ("jsonl", ["probe /Users/admin/jsonl-seed.txt|mkdir -p ~/pc-jsonl && "
+               "printf '{\"id\":1,\"name\":\"alpha\"}\\n{\"id\":2,\"name\":\"beta\"}\\n' "
+               "> ~/pc-jsonl/good.jsonl && "
+               "printf '{\"id\":1}\\n{\"id\":2,}\\n' > ~/pc-jsonl/bad.jsonl && "
+               "printf '{  \"b\" : 2,  \"a\" : 1 }\\n{\"c\":[1,   2]}\\n' > ~/pc-jsonl/messy.jsonl && "
+               "ls ~/pc-jsonl | wc -l",
+               "wait 700",
+               "editvalidate /Users/admin/pc-jsonl/bad.jsonl|/Users/admin/jsonl-bad.txt", "wait 900",
+               "editformat /Users/admin/pc-jsonl/messy.jsonl|/Users/admin/jsonl-format.txt", "wait 900",
+               "editvalidate /Users/admin/pc-jsonl/good.jsonl|/Users/admin/jsonl.txt", "wait 900"], 12),
+    # A delimited file with no header line (F-411). Its first line used to become the column titles, so
+    # the first record was gone from the table — not filterable, not sortable, not findable — and nothing
+    # said so. The dump reports the *cells*, so `label=1` is the assertion: the first record is a row.
+    # Its own folder, because pc-demo is what every screenshot baseline shows.
+    ("csv-no-header", ["probe /Users/admin/csv-seed.txt|mkdir -p ~/pc-csvnh && "
+                       "printf '1,2,3\\n4,5,6\\n7,8,9\\n' > ~/pc-csvnh/nohdr.csv && "
+                       "wc -l < ~/pc-csvnh/nohdr.csv",
+                       "wait 700",
+                       "view /Users/admin/pc-csvnh/nohdr.csv", "wait 2500",
+                       "listerdump /Users/admin/csv-nohdr.txt", "wait 500"], 11),
+    # The same outline, in the *viewer* — where Markdown is normally read, because the viewer renders it
+    # (F-410). It was unavailable there: the sidebar is built from a text view and the rendered page has
+    # none, so the toggle was simply dead and the reader had to switch to the source to get an outline of
+    # the document in front of them. And an entry that cannot be clicked to any effect is no better, so
+    # the navigation is measured in the page itself: `scrolled` is the app's own verdict on whether the
+    # view moved, `headingTop` where the heading ended up. Its own folder and its own file, long enough to
+    # have to scroll and with the target in the middle rather than at the end; `pc-demo` is left alone
+    # because every screenshot baseline shows it.
+    ("viewer-md-outline", ["probe /Users/admin/md-nav-seed.txt|mkdir -p ~/pc-mdnav && "
+                           "{ printf 'Titel\\n=====\\n\\n'; "
+                           "for i in $(seq 1 150); do printf 'Zeile %s im ersten Teil.\\n' $i; done; "
+                           "printf '\\n## Ziel\\n\\n'; "
+                           "for i in $(seq 1 150); do printf 'Zeile %s im zweiten Teil.\\n' $i; done; } "
+                           "> ~/pc-mdnav/long.md && wc -l < ~/pc-mdnav/long.md",
+                           "wait 800",
+                           "view /Users/admin/pc-mdnav/long.md", "wait 2500",
+                           "listersymbol Ziel|/Users/admin/md-viewer-nav.txt", "wait 1500",
+                           "listerdump /Users/admin/md-viewer.txt", "wait 500"], 12),
     ("html-outline", ["editdump /Users/admin/pc-demo/outline.html /Users/admin/html-outline.txt",
                       "wait 2500"], 10),
     # Does the sidebar show the structure of a YAML or XML file (F-368)? It was empty for JSON, YAML and
@@ -1845,6 +1906,31 @@ REPORTS = {
     "go-outline": ("/Users/admin/go-outline.txt",
                    ["[C  Machine]", "[m  Greet]", "[ƒ  main]", "status=Go", "!BLANK!"]),
     # Markdown: the headings, the breadcrumb they feed, and — the point — nothing from the fenced block.
+    # The formatted long-line file draws at a linear cost, and the JSON Lines formatter is what ran (F-414).
+    "viewer-long-lines": ("/Users/admin/longline.txt",
+                          ["formatter=JSON Lines", "formatted=1", "line_build=fast", "!line_build=slow"]),
+    # JSON Lines (F-412). Primary = the valid file, written last: "valid" is the answer that used to be
+    # wrong for every .jsonl in existence. The parser's name is in the note, and the caret stays put.
+    "jsonl": ("/Users/admin/jsonl.txt", ["problemLine=-", "JSONSerialization", "caret=0", "!ERROR"]),
+    # The bad record is named by its own line — not by an offset into a file the reader would have to count.
+    # `problemLine` rather than the note: the note is a translated sentence, and a gate that matches
+    # translated prose passes or fails by which language the guest runs in.
+    "jsonl-bad": ("/Users/admin/jsonl-bad.txt", ["problemLine=2", "!caret=0"]),
+    # Formatting normalised each record and kept one per line, and it was the JSON Lines formatter.
+    "jsonl-format": ("/Users/admin/jsonl-format.txt",
+                     ["formatter=JSON Lines", "text={\"a\":1,\"b\":2}", "{\"c\":[1,2]}"]),
+    # The headerless CSV (F-411): the plugin is what renders it, and every one of the nine values is a
+    # cell. `label=1` is the first record's first field — as a column title it would not be in the dump.
+    "csv-no-header": ("/Users/admin/csv-nohdr.txt",
+                      ["CSV Lister", "label=1", "label=5", "label=9", "!ERROR"]),
+    # The viewer's outline for rendered Markdown (F-410). The dump answers "can it be opened at all and
+    # what does it hold" — including the underlined (setext) heading, which the renderer used to draw as a
+    # paragraph and a rule.
+    "viewer-md-outline": ("/Users/admin/md-viewer.txt",
+                          ["symboltoggle=enabled", "[H  Titel]", "[H  Ziel]", "!ERROR"]),
+    # And the click: the page moved, and the heading came to rest at the top of the view.
+    "viewer-md-outline-nav": ("/Users/admin/md-viewer-nav.txt",
+                              ["found=1", "anchor=ziel", "scrolled=yes", "headingTop=0"]),
     "markdown-outline": ("/Users/admin/md-outline.txt",
                          ["[H  PeachCommander]", "[H  Building]", "[H  Requirements]",
                           "[H  Underlined Section]", "crumb@0=PeachCommander", "!nor this", "!BLANK!"]),

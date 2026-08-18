@@ -28,11 +28,30 @@ public enum MarkdownRenderer {
     public static let contentSecurityPolicy =
         "default-src 'none'; img-src file: data:; style-src 'unsafe-inline'; font-src file: data:"
 
+    /// A rendered document plus the anchors its headings were given.
+    ///
+    /// The anchors exist so a caller can navigate the *rendered* page: the viewer's symbol outline
+    /// knows a heading by the source line it is on, and the page can only be scrolled to an element.
+    /// They are produced by the render pass itself rather than by a second scan of the source, because
+    /// two scans that disagree about what counts as a heading (a `#` inside a fenced code block, say)
+    /// would send the reader to the wrong place.
+    public struct Rendered: Sendable, Equatable {
+        public let html: String
+        /// 1-based source line of a heading → the `id` its element carries.
+        public let anchors: [Int: String]
+    }
+
     /// Convert Markdown to a complete, styled HTML document.
     public static func htmlDocument(from markdown: String, title: String = "") -> String {
-        let body = bodyHTML(from: markdown)
+        document(from: markdown, title: title).html
+    }
+
+    /// As `htmlDocument`, and also the heading anchors, for a caller that navigates the page.
+    public static func document(from markdown: String, title: String = "") -> Rendered {
+        let rendered = render(markdown)
+        let body = rendered.html
         let safeTitle = escape(title)
-        return """
+        let html = """
         <!DOCTYPE html>
         <html><head><meta charset="utf-8">
         <meta http-equiv="Content-Security-Policy" content="\(contentSecurityPolicy)">
@@ -43,16 +62,24 @@ public enum MarkdownRenderer {
         \(body)
         </article></body></html>
         """
+        return Rendered(html: html, anchors: rendered.anchors)
     }
 
     /// Convert Markdown to the inner HTML (no document wrapper). Exposed for tests.
     public static func bodyHTML(from markdown: String) -> String {
+        render(markdown).html
+    }
+
+    /// The inner HTML plus its heading anchors.
+    public static func render(_ markdown: String) -> Rendered {
         // Normalize line endings and expand tabs used for indentation.
         let normalized = markdown.replacingOccurrences(of: "\r\n", with: "\n")
                                  .replacingOccurrences(of: "\r", with: "\n")
         let lines = normalized.components(separatedBy: "\n")
         var out: [String] = []
         var i = 0
+        var anchors: [Int: String] = [:]
+        var usedAnchors = Set<String>()
 
         func flushParagraph(_ buf: inout [String]) {
             guard !buf.isEmpty else { return }
@@ -91,7 +118,9 @@ public enum MarkdownRenderer {
             // ATX heading: #..###### followed by space.
             if let (level, text) = atxHeading(trimmed) {
                 flushParagraph(&para)
-                out.append("<h\(level)>\(inline(text))</h\(level)>")
+                let id = uniqueAnchor(for: text, used: &usedAnchors)
+                anchors[i + 1] = id
+                out.append("<h\(level) id=\"\(escape(id))\">\(inline(text))</h\(level)>")
                 i += 1
                 continue
             }
@@ -138,12 +167,67 @@ public enum MarkdownRenderer {
                 continue
             }
 
+            // Underlined (setext) heading: `Title` over a run of `=` (level 1) or `-` (level 2).
+            //
+            // Last of the block rules on purpose: a table's delimiter row and a list item that happens to
+            // be followed by dashes are decided above. Without this, `Title` + `---` rendered as a
+            // paragraph followed by a horizontal rule — it *looked* like a heading and was none, so the
+            // outline (which has always read this form) offered an entry the page had no anchor for. The
+            // one-line rule and the line the heading is reported on are DeclarationOutline.parseMarkdown's,
+            // so the two agree about what a heading is and where it starts.
+            if i + 1 < lines.count {
+                let under = lines[i + 1].trimmingCharacters(in: .whitespaces)
+                if under.count >= 2,
+                   under.allSatisfy({ $0 == "=" }) || under.allSatisfy({ $0 == "-" }) {
+                    flushParagraph(&para)
+                    let level = under.first == "=" ? 1 : 2
+                    let id = uniqueAnchor(for: trimmed, used: &usedAnchors)
+                    anchors[i + 1] = id
+                    out.append("<h\(level) id=\"\(escape(id))\">\(inline(trimmed))</h\(level)>")
+                    i += 2
+                    continue
+                }
+            }
+
             // Otherwise: paragraph text.
             para.append(trimmed)
             i += 1
         }
         flushParagraph(&para)
-        return out.joined(separator: "\n")
+        return Rendered(html: out.joined(separator: "\n"), anchors: anchors)
+    }
+
+    /// A heading's element id: its text reduced to letters, digits, `-` and `_`, lowercased, with a
+    /// numeric suffix when a document repeats a heading (two "Notes" sections are two anchors).
+    ///
+    /// Unicode letters are kept rather than transliterated — the id is only ever looked up by this app,
+    /// and "prüfung" is a perfectly good element id, while dropping the umlaut would collide two
+    /// different headings sooner.
+    static func uniqueAnchor(for text: String, used: inout Set<String>) -> String {
+        var slug = ""
+        var lastWasDash = false
+        for character in text.lowercased() {
+            if character.isLetter || character.isNumber {
+                slug.append(character); lastWasDash = false
+            } else if character == "_" {
+                slug.append(character); lastWasDash = false
+            } else if character == "-" {
+                // Runs of dashes collapse, whether they came from punctuation or were written as dashes:
+                // "A -- B" and "A - B" are one id, not "a---b" and "a-b".
+                if !slug.isEmpty && !lastWasDash { slug.append("-"); lastWasDash = true }
+            } else if !slug.isEmpty && !lastWasDash {
+                slug.append("-"); lastWasDash = true
+            }
+        }
+        while slug.hasSuffix("-") { slug.removeLast() }
+        var base = slug.isEmpty ? "section" : slug
+        if used.contains(base) {
+            var n = 2
+            while used.contains("\(base)-\(n)") { n += 1 }
+            base = "\(base)-\(n)"
+        }
+        used.insert(base)
+        return base
     }
 
     // MARK: - Block helpers

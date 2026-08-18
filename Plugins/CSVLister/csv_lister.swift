@@ -19,39 +19,33 @@ final class CSVListerView: NSView, NSTableViewDataSource, NSTableViewDelegate {
     private let table = NSTableView()
     private let columnPopup = NSPopUpButton()
     private let searchField = NSSearchField()
+    private let headerToggle = NSButton(checkboxWithTitle: "First row is header", target: nil, action: nil)
     private var header: [String] = []
     private var allRows: [[String]] = []   // unfiltered, unsorted source
     private var rows: [[String]] = []       // currently displayed (filtered + sorted)
     private var sortColumn: Int?
     private var sortAscending = true
+    /// The document, kept so the header question can be answered again without re-reading the file.
+    private let source: String
+    /// What the reader chose, or `auto` until they do.
+    private var headerMode: PluginCSV.HeaderMode = .auto
 
     init(csv: String) {
+        source = csv
         super.init(frame: NSRect(x: 0, y: 0, width: 640, height: 420))
-        parse(csv)
+        parse()
         build()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    /// Very small CSV split: lines on \n (\r trimmed); the field delimiter is
-    /// auto-detected among , ; tab | : (most consistent across the first lines);
-    /// optional surrounding double quotes are stripped. Enough for a reference renderer.
-    private func parse(_ csv: String) {
-        let lines = csv.split(separator: "\n", omittingEmptySubsequences: false)
-            .map { $0.hasSuffix("\r") ? String($0.dropLast()) : String($0) }
-            .filter { !$0.isEmpty }
-        guard !lines.isEmpty else { return }
-        let delimiter = Self.detectDelimiter(lines)
-        func fields(_ line: String) -> [String] {
-            line.split(separator: delimiter, omittingEmptySubsequences: false).map {
-                var s = String($0)
-                if s.hasPrefix("\""), s.hasSuffix("\""), s.count >= 2 { s = String(s.dropFirst().dropLast()) }
-                return s
-            }
-        }
-        header = fields(lines[0])
-        allRows = lines.dropFirst().map(fields)
+    /// (Re)read the document with the current header mode. `PluginCSV` holds the parsing and the guess.
+    private func parse() {
+        let table = PluginCSV.parse(source, headerMode: headerMode)
+        header = table.header
+        allRows = table.rows
         rows = allRows
+        headerToggle.state = table.usedHeader ? .on : .off
     }
 
     // MARK: - Pure filter/sort logic (isolated for clarity/testability)
@@ -93,25 +87,6 @@ final class CSVListerView: NSView, NSTableViewDataSource, NSTableViewDelegate {
 
     @objc private func filterChanged() { applyFilterAndSort() }
 
-    /// Pick the delimiter whose per-line occurrence count is most consistent (and > 0)
-    /// across a sample of lines, favouring more columns to break ties.
-    static func detectDelimiter(_ lines: [String]) -> Character {
-        let candidates: [Character] = [",", ";", "\t", "|", ":"]
-        let sample = Array(lines.prefix(20))
-        var best: Character = ","
-        var bestScore = 0.0
-        for d in candidates {
-            let counts = sample.map { line in line.reduce(0) { $1 == d ? $0 + 1 : $0 } }
-            let sorted = counts.sorted()
-            let modal = sorted[sorted.count / 2]
-            guard modal > 0 else { continue }
-            let consistent = Double(counts.filter { $0 == modal }.count) / Double(counts.count)
-            let score = consistent * Double(modal)
-            if score > bestScore { bestScore = score; best = d }
-        }
-        return best
-    }
-
     private func build() {
         if header.isEmpty { header = ["(empty)"] }
 
@@ -121,10 +96,6 @@ final class CSVListerView: NSView, NSTableViewDataSource, NSTableViewDelegate {
         filterBar.orientation = .horizontal
         filterBar.spacing = 8
         filterBar.edgeInsets = NSEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
-        columnPopup.addItem(withTitle: "All columns")
-        for (i, title) in header.enumerated() {
-            columnPopup.addItem(withTitle: title.isEmpty ? "Column \(i + 1)" : title)
-        }
         columnPopup.target = self
         columnPopup.action = #selector(filterChanged)
         searchField.placeholderString = "Filter…"
@@ -133,9 +104,15 @@ final class CSVListerView: NSView, NSTableViewDataSource, NSTableViewDelegate {
         searchField.sendsSearchStringImmediately = false
         searchField.sendsWholeSearchString = false
         let label = NSTextField(labelWithString: "Filter:")
+        // The header question, answered where the table is: a file that starts straight into data used to
+        // lose its first record to the column titles, and nothing on screen said so or could undo it.
+        headerToggle.target = self
+        headerToggle.action = #selector(headerToggleChanged)
+        headerToggle.toolTip = "Whether the first line names the columns. Guessed when the file is opened."
         filterBar.addArrangedSubview(label)
         filterBar.addArrangedSubview(columnPopup)
         filterBar.addArrangedSubview(searchField)
+        filterBar.addArrangedSubview(headerToggle)
         searchField.setContentHuggingPriority(.defaultLow, for: .horizontal)
         addSubview(filterBar)
 
@@ -146,12 +123,7 @@ final class CSVListerView: NSView, NSTableViewDataSource, NSTableViewDelegate {
         table.columnAutoresizingStyle = .uniformColumnAutoresizingStyle
         table.rowHeight = 18
 
-        for (i, title) in header.enumerated() {
-            let col = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("c\(i)"))
-            col.title = title.isEmpty ? "Column \(i + 1)" : title
-            col.width = 140
-            table.addTableColumn(col)
-        }
+        rebuildColumns()
         table.dataSource = self
         table.delegate = self
         scroll.documentView = table
@@ -165,6 +137,40 @@ final class CSVListerView: NSView, NSTableViewDataSource, NSTableViewDelegate {
             scroll.trailingAnchor.constraint(equalTo: trailingAnchor),
             scroll.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
+    }
+
+    /// (Re)create the table columns and the filter popup from the current `header`.
+    ///
+    /// Both are derived from the same array, so switching the header row on or off has to redo both or the
+    /// popup would offer titles the table no longer has — and the popup's selection is an index into them.
+    private func rebuildColumns() {
+        for col in table.tableColumns { table.removeTableColumn(col) }
+        for (i, title) in header.enumerated() {
+            let col = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("c\(i)"))
+            col.title = title.isEmpty ? "Column \(i + 1)" : title
+            col.width = 140
+            table.addTableColumn(col)
+        }
+        columnPopup.removeAllItems()
+        columnPopup.addItem(withTitle: "All columns")
+        for (i, title) in header.enumerated() {
+            columnPopup.addItem(withTitle: title.isEmpty ? "Column \(i + 1)" : title)
+        }
+    }
+
+    /// The reader answered the header question: re-read the document that way.
+    ///
+    /// The sort is dropped, because a sort is by column index and the columns are being replaced; the
+    /// filter text is kept, since it is the reader's and still means the same thing.
+    @objc private func headerToggleChanged() {
+        headerMode = headerToggle.state == .on ? .header : .noHeader
+        sortColumn = nil
+        for col in table.tableColumns { table.setIndicatorImage(nil, in: col) }
+        table.highlightedTableColumn = nil
+        parse()
+        if header.isEmpty { header = ["(empty)"] }
+        rebuildColumns()
+        applyFilterAndSort()
     }
 
     /// Click a column header to sort by it; click again to reverse.

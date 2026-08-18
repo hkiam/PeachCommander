@@ -61,6 +61,10 @@ final class CSVListerTests: XCTestCase {
         Self.libDir = libDir
 
         let src = repoRoot.appendingPathComponent("Plugins/CSVLister/csv_lister.swift")
+        // The plugin is two files: the view, and the parsing + header guess it shares with
+        // PCFoundationTests (Plugins/SDK/PluginCSV.swift). Tools/build-csvlister-plugin.sh compiles both,
+        // and so must this — otherwise the one thing this test proves is that a stale command line fails.
+        let shared = repoRoot.appendingPathComponent("Plugins/SDK/PluginCSV.swift")
         let out = libDir.appendingPathComponent("libsamplecsv.dylib")
         #if arch(arm64)
         let target = "arm64-apple-macos13.0"
@@ -70,7 +74,7 @@ final class CSVListerTests: XCTestCase {
         let p = Process()
         p.executableURL = URL(fileURLWithPath: swiftc)
         p.arguments = ["-emit-library", "-module-name", "CSVLister", "-target", target,
-                       "-framework", "AppKit", "-o", out.path, src.path]
+                       "-framework", "AppKit", "-o", out.path, src.path, shared.path]
         let pipe = Pipe(); p.standardError = pipe
         try p.run(); p.waitUntilExit()
         guard p.terminationStatus == 0 else {
