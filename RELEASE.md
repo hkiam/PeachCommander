@@ -29,7 +29,12 @@ Steps:
    `Tools/bundle-libssh2.sh` copies the dylibs out of it.
 2. `Tools/bootstrap.sh` — generates `PeachCommander.xcodeproj` from `project.yml`
    (the project is not tracked in git) and enforces Xcode 26+.
-3. `Tools/build.sh` and `Tools/test.sh` — a release is never cut from a red tree.
+3. **A green CI run for this exact commit is required, and checked** — a release is never cut from a
+   red tree. The workflow asks the GitHub API for the CI conclusion of `GITHUB_SHA` and refuses to
+   package anything without a `success`; it then runs `Tools/build.sh` only. The full suite is not run a
+   second time, because CI has already run it on this commit and re-running it is where two release dry
+   runs hung (reproducibly, at `SwiftDriver PCVFSTests`, while CI stayed green on the same tree). Running
+   the tests locally before tagging is still the right habit — the *check* is what the pipeline enforces.
 4. `Tools/make-dmg.sh` — see below.
 5. Upload `build/PeachCommander.dmg` as the `PeachCommander-dmg` artifact.
 6. On a tag only: create a **draft** GitHub Release with generated notes and the

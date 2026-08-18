@@ -43,10 +43,27 @@ jobs:
           brew install xcodegen libssh2
           ./Tools/bootstrap.sh
 
-      - name: Build & test
+      # The release's job is packaging, not re-validating: CI already built and tested this exact commit,
+      # and running the full suite a second time is where two dry runs hung (reproducibly, at
+      # `SwiftDriver PCVFSTests`, while CI stayed green on the same tree — a runner under load, not a
+      # defect in the tree). So the precondition is *checked* instead of re-derived: a tag whose commit CI
+      # has not passed does not get a release at all, which is a stronger statement than a second test run
+      # that nobody reads when it is green.
+      - name: Require a green CI run for this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          ./Tools/build.sh
-          ./Tools/test.sh
+          set -euo pipefail
+          conclusion="$(gh run list --commit "$GITHUB_SHA" --workflow CI \
+                          --json conclusion --jq '.[0].conclusion // ""')"
+          echo "CI for $GITHUB_SHA: ${conclusion:-<no run>}"
+          if [ "$conclusion" != "success" ]; then
+            echo "::error::No successful CI run for this commit — refusing to package a release from it."
+            exit 1
+          fi
+
+      - name: Build
+        run: ./Tools/build.sh
 
       # --- Signing (only when secrets are configured) ------------------------
       # Must run BEFORE packaging: make-dmg.sh signs the app on the way into the
