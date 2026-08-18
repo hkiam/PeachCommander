@@ -124,6 +124,12 @@ final class GitBranchesView: NSView {
 
         let stack = NSStackView(views: [header, split, footer])
         stack.orientation = .vertical
+        stack.alignment = .width
+        // Same as the log window: `.width` alone does not stretch a scroll or split view inside a stack,
+        // so the ones that should fill the window say so (F-419).
+        for child in [header, split, footer] as [NSView] {
+            child.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -16).isActive = true
+        }
         stack.spacing = 6
         stack.edgeInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         stack.translatesAutoresizingMaskIntoConstraints = false

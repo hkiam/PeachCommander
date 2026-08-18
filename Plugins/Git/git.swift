@@ -45,12 +45,24 @@ private func label(for change: PluginGit.Change) -> String {
     }
 }
 
-/// "Modified" for an unstaged change, "Modified (staged)" when it is in the index — the distinction the
-/// commit command depends on, and the one v1 porcelain could not report.
+/// "● Modified" for an unstaged change, "● Modified (staged)" when it is in the index — the distinction
+/// the commit command depends on, and the one v1 porcelain could not report.
+///
+/// The leading glyph (F-419) is what makes a listing scannable: "which of these forty files is in
+/// conflict" becomes a glance instead of reading every row. It is deliberately *not* an icon — the PDX
+/// content ABI hands back strings, and a real icon column is host work the plan records in §6.2. A glyph
+/// in front of the word is what a plugin can do today, and it costs the host nothing.
 private func columnLabel(for file: PluginGit.FileStatus) -> String {
     let base = label(for: file.summary)
-    guard file.isStaged, file.summary != .conflict else { return base }
-    return String(format: L("%@ (staged)"), base)
+    let glyph = PluginGit.glyph(for: file.summary)
+    let text = glyph.isEmpty ? base : "\(glyph) \(base)"
+    guard file.isStaged, file.summary != .conflict else { return text }
+    return String(format: L("%@ (staged)"), text)
+}
+
+private func isDirectory(_ path: String) -> Bool {
+    var isDir: ObjCBool = false
+    return FileManager.default.fileExists(atPath: path, isDirectory: &isDir) && isDir.boolValue
 }
 
 private func setCString(_ s: String, _ dst: UnsafeMutableRawPointer, _ cap: Int) {
@@ -273,6 +285,41 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         }
         guard let message = promptCommitMessage() else { return }
         background(L("Git Commit")) { PluginGitRepo.run(["-C", root, "commit", "-m", message], combined: true) }
+    case "plugin.git.ignore.name", "plugin.git.ignore.extension", "plugin.git.ignore.directory":
+        // Writing .gitignore rather than shelling out: git has no "add a pattern" command, and the file
+        // is the interface. The pattern itself is decided (and unit-tested) in the SDK, because a leading
+        // slash is the difference between ignoring this build directory and every directory called build.
+        guard !relative.isEmpty else {
+            svc.presentInfo?(svc.host, L("Git"), L("Select a file or folder first."))
+            return
+        }
+        let kind: PluginGit.IgnoreKind = id.hasSuffix("extension") ? .extensionGlob
+            : id.hasSuffix("directory") ? .directory : .name
+        guard kind != .directory || isDirectory(cursor) else {
+            svc.presentInfo?(svc.host, L("Git"), L("That is not a folder."))
+            return
+        }
+        guard let pattern = PluginGit.ignorePattern(kind: kind, relativePath: relative) else {
+            svc.presentInfo?(svc.host, L("Git"), L("That file has no extension to ignore."))
+            return
+        }
+        let file = (root as NSString).appendingPathComponent(".gitignore")
+        let existing = (try? String(contentsOfFile: file, encoding: .utf8)) ?? ""
+        guard let updated = PluginGit.appendingIgnore(pattern, to: existing) else {
+            svc.presentInfo?(svc.host, L("Git"),
+                             String(format: L("“%@” is already in .gitignore."), pattern))
+            return
+        }
+        do {
+            try updated.write(toFile: file, atomically: true, encoding: .utf8)
+        } catch {
+            svc.presentInfo?(svc.host, L("Git"), L("Could not write .gitignore."))
+            return
+        }
+        PluginGitRepo.invalidate()
+        svc.reloadActivePanel?(svc.host)
+        svc.presentInfo?(svc.host, L("Git"),
+                         String(format: L("Added “%@” to .gitignore."), pattern))
     case "plugin.git.push":
         background(L("Git Push")) { PluginGitRepo.run(["-C", root, "push"], combined: true) }
     case "plugin.git.pull":

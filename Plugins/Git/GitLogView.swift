@@ -34,6 +34,8 @@ final class GitLogView: NSView {
     private let fileTable = NSTableView()
     private let busy = NSProgressIndicator()
     private let loadMoreButton = NSButton()
+    private let revertButton = NSButton()
+    private let cherryPickButton = NSButton()
     private var limit = 100
     private let split = NSSplitView()
 
@@ -76,12 +78,18 @@ final class GitLogView: NSView {
         fileTable.doubleAction = #selector(diffSelectedFile)
         commitTable.doubleAction = #selector(diffSelectedFile)
 
-        loadMoreButton.title = L("Load more")
-        loadMoreButton.bezelStyle = .rounded
-        loadMoreButton.controlSize = .small
-        loadMoreButton.font = .systemFont(ofSize: 11)
-        loadMoreButton.target = self
-        loadMoreButton.action = #selector(loadMore)
+        for (button, title, action) in [
+            (loadMoreButton, L("Load more"), #selector(loadMore)),
+            (revertButton, L("Revert commit"), #selector(revertSelectedCommit)),
+            (cherryPickButton, L("Cherry-pick"), #selector(cherryPickSelectedCommit)),
+        ] as [(NSButton, String, Selector)] {
+            button.title = title
+            button.bezelStyle = .rounded
+            button.controlSize = .small
+            button.font = .systemFont(ofSize: 11)
+            button.target = self
+            button.action = action
+        }
         busy.style = .spinning
         busy.controlSize = .small
         busy.isDisplayedWhenStopped = false
@@ -96,13 +104,29 @@ final class GitLogView: NSView {
         split.addArrangedSubview(right)
         split.translatesAutoresizingMaskIntoConstraints = false
 
-        let footer = NSStackView(views: [loadMoreButton, busy])
+        // Gravity areas rather than a spacer view: "Load more" belongs to the list on the left, the two
+        // commit actions to the right. A spacer NSView would work too, but it is a subview with no
+        // intrinsic size whose only job is to be wide, and `.trailing` says the same thing to AppKit
+        // without one.
+        let footer = NSStackView()
         footer.orientation = .horizontal
         footer.spacing = 6
         footer.alignment = .centerY
+        footer.addView(loadMoreButton, in: .leading)
+        footer.addView(busy, in: .leading)
+        footer.addView(revertButton, in: .trailing)
+        footer.addView(cherryPickButton, in: .trailing)
 
         let stack = NSStackView(views: [header, split, footer])
         stack.orientation = .vertical
+        // Vertical stacks default to `.centerX`: children keep their intrinsic width and the whole
+        // window's content sits in a narrow column in the middle. Measured in the log window: an 820-point
+        // view with a 436-point split view and a 121-point header floating in the centre of it (F-419).
+        // `.width` is what "fill the window" means for an NSStackView.
+        stack.alignment = .width
+        for child in [header, split, footer] as [NSView] {
+            child.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -16).isActive = true
+        }
         stack.spacing = 6
         stack.edgeInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -241,6 +265,62 @@ final class GitLogView: NSView {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // MARK: - Revert and cherry-pick (phase 4, F-419)
+
+    private enum Sequencer { case revert, cherryPick }
+
+    @objc private func revertSelectedCommit() { run(.revert) }
+    @objc private func cherryPickSelectedCommit() { run(.cherryPick) }
+
+    /// Undo a commit on top of the branch, or replay it here.
+    ///
+    /// Both refuse before they start when the working tree is not clean: git's sequencer requires that and
+    /// says so in terms of overwritten local changes, which reads as if the chosen commit were the problem.
+    /// A conflicting result is *not* an error — git stops mid-sequence and leaves the conflict markers, and
+    /// saying that plainly is more use than a red "failed", since the next step is the conflict command.
+    private func run(_ kind: Sequencer) {
+        let title = kind == .revert ? L("Revert commit") : L("Cherry-pick")
+        guard commits.indices.contains(commitTable.selectedRow) else {
+            report(title, L("Select a commit first."))
+            return
+        }
+        let commit = commits[commitTable.selectedRow]
+        if let repo = PluginGitRepo.status(root: root),
+           let refusal = PluginGit.refusal(forCommitActionIn: repo) {
+            report(title, refusal == .conflictOpen
+                ? L("There is an unresolved conflict. Finish it first.")
+                : L("The working tree has changes. Commit or stash them first."))
+            return
+        }
+
+        let alert = NSAlert()
+        alert.messageText = kind == .revert
+            ? String(format: L("Revert %@?"), commit.shortHash)
+            : String(format: L("Cherry-pick %@ onto the current branch?"), commit.shortHash)
+        alert.informativeText = commit.subject
+        alert.addButton(withTitle: kind == .revert ? L("Revert") : L("Cherry-pick"))
+        alert.addButton(withTitle: L("Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+
+        busy.startAnimation(nil)
+        let root = self.root
+        let arguments = kind == .revert
+            ? PluginGit.revertArguments(commit.hash)
+            : PluginGit.cherryPickArguments(commit.hash)
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let result = PluginGitRepo.run(["-C", root] + arguments, combined: true)
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.busy.stopAnimation(nil)
+                PluginGitRepo.invalidate()          // HEAD and the index both moved
+                self.services.reloadActivePanel?(self.services.host)
+                let message = result.out.trimmingCharacters(in: .whitespacesAndNewlines)
+                self.report(title, message.isEmpty ? L("Done.") : message)
+                self.reload()
             }
         }
     }

@@ -89,9 +89,21 @@ enum PluginGitRepo {
     /// directory -> (repo root, the directory's repo-relative prefix); nil = not a repository
     private static var locationByDirectory: [String: (root: String, prefix: String)?] = [:]
     private static var statusByRoot: [String: CacheEntry] = [:]
+    /// repo root -> the *real* git directory, learned while locating (F-419).
+    private static var gitDirByRoot: [String: String] = [:]
 
+    /// The index's mtime, which is what tells the cache the repository moved.
+    ///
+    /// Via the git directory git itself reported, not `<root>/.git`: in a linked worktree `.git` is a
+    /// *file*, so `<root>/.git/index` does not exist and this returned nil for every call — the cache then
+    /// had nothing to compare and fell back to the age check alone, which is the difference between a
+    /// column that follows a commit at once and one that follows it within the TTL (F-419).
     private static func indexMTime(root: String) -> Date? {
-        let path = (root as NSString).appendingPathComponent(".git/index")
+        cacheLock.lock()
+        let gitDir = gitDirByRoot[root]
+        cacheLock.unlock()
+        let base = gitDir ?? (root as NSString).appendingPathComponent(".git")
+        let path = (base as NSString).appendingPathComponent("index")
         let attributes = try? FileManager.default.attributesOfItem(atPath: path)
         return attributes?[.modificationDate] as? Date
     }
@@ -102,11 +114,16 @@ enum PluginGitRepo {
         cacheLock.lock()
         if let cached = locationByDirectory[directory] { cacheLock.unlock(); return cached }
         cacheLock.unlock()
-        let result = run(["-C", directory] + PluginGit.locateArguments)
-        let location = result.ok ? PluginGit.parseLocate(result.out) : nil
+        let result = run(["-C", directory] + PluginGit.locateArgumentsWithGitDir)
+        let found = result.ok ? PluginGit.parseLocateWithGitDir(result.out) : nil
+        let location = found.map { (root: $0.root, prefix: $0.prefix) }
         cacheLock.lock()
         if locationByDirectory.count > 4096 { locationByDirectory.removeAll() }
         locationByDirectory[directory] = location
+        if let found {
+            if gitDirByRoot.count > 64 { gitDirByRoot.removeAll() }
+            gitDirByRoot[found.root] = found.gitDir
+        }
         cacheLock.unlock()
         return location
     }
@@ -133,7 +150,9 @@ enum PluginGitRepo {
     }
 
     static func invalidate() {
-        cacheLock.lock(); statusByRoot.removeAll(); locationByDirectory.removeAll(); cacheLock.unlock()
+        cacheLock.lock()
+        statusByRoot.removeAll(); locationByDirectory.removeAll(); gitDirByRoot.removeAll()
+        cacheLock.unlock()
     }
 
     /// Repository root plus the item's repository-relative path, from git's own prefix.

@@ -47,6 +47,39 @@ regression from here on. The run's report and screenshots are under `/tmp/vm-new
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
 
+## 2026-08-18 (F-415…F-419) — The Git plugin, assessed and then built out in five stages
+
+Asked to judge the plugin technically *and* functionally before extending it, so
+`docs/analysis/git-plugin-plan.md` came first: what exists, what is wrong with it, what the reference
+products (TortoiseGit, GitFinder, Git Extensions) do that matters in a file manager, and five phases that
+each ship on their own. Third-party components were allowed if the licence fits — none was needed. git
+plumbing (`--porcelain=v2 -z`, `for-each-ref --format`, `blame --porcelain`) is a stable interface, and
+libgit2 would have added a dependency to parse output we already parse correctly.
+
+**What that assessment found** was mostly not "missing features": the column reported the parent
+repository's status for a file in a subdirectory, a rename shifted every status after it by one record, a
+non-ASCII path came back quoted and blank, and `push` could wait forever on a terminal this process does
+not have. Those were phase 0.
+
+**Phases 1–3** then added the panel, the history with a lane graph, blame, and branches/stashes/sync —
+with the compare window borrowed from the host (`compareFiles`, the one host-side addition) so the
+application still has exactly one diff.
+
+**Phase 4** finished it, and two of its five planned bullets were argued down rather than built. Status
+*icons* became a leading *glyph*, because the content ABI returns strings and a glyph buys the scanning
+benefit without an ABI change. Per-repository settings were dropped outright: git already stores
+`pull.ff` and `remote.pushDefault` per repository, and a second place to set them can only disagree with
+the first. What phase 4 did build: `.gitignore` from the context menu, revert and cherry-pick with an
+up-front refusal on a dirty tree, and the fix behind "submodule and worktree awareness" — `.git` is a
+*file* in both, so the cache was watching an index path that does not exist and an outside commit reached
+the column only when the TTL expired.
+
+**Two things worth remembering.** A vertical `NSStackView` aligns `.centerX`: every window in this plugin
+drew its content in a strip down the middle, and `alignment = .width` alone does not stretch a split or
+scroll view — the children that must fill say so explicitly now. And `a11ydump` does not enumerate a
+stack view's children, so "the buttons are not in the tree" was not evidence that the buttons were
+missing; their frames were.
+
 ## 2026-08-18 (F-410…F-413) — Four reports, and the two that were worse than they sounded
 
 Four things asked for in one message. Two were what they looked like; two turned out to be data loss with

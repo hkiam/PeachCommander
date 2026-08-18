@@ -1,14 +1,17 @@
 # Git plugin — assessment and plan
 
-> **Status: phases 0–3 built (F-415…F-418), phase 4 planned.** §1 describes the first pass, §2–§3 the
-> assessment of it, and §5's phase 0 and phase 1 are done — the four defects and the panel with the compare-window
-> handover, including the `compareFiles` host service §6.1 asked for. Phase 2 (history, file history, blame) is built too, with
-> blame as a table rather than in the viewer's gutter — that needs a host service for line
-> annotations, which stays in §6. Phase 3 (branches, stashes, sync with cancel, conflict
-> compare) is built as well. What remains is phase 4 — status icons in the column, ignore
-> management, revert/cherry-pick, submodule and worktree awareness — plus the host services in
-> §6 that blame-in-the-gutter and localized column headers need. Everything marked *measured* was measured in this repository or on
-> this machine on 2026-08-18; everything else is named as an estimate or an open question.
+> **Status: phases 0–4 built (F-415…F-419).** §1 describes the first pass, §2–§3 the assessment of it,
+> and §5's phases 0–4 are done: the four defects and the panel with the compare-window handover
+> (including the `compareFiles` host service §6.1 asked for), the history with a lane graph, file history
+> and blame, branches/stashes/sync with a cancel and conflict compare, and phase 4's ignore management,
+> revert/cherry-pick, worktree- and submodule-correct status and a scannable column. Two of phase 4's
+> five bullets were *decided against as written* and are argued where they stand: the status column got a
+> **glyph** rather than an icon, because an icon needs the host field in §6.2 and a glyph buys most of the
+> benefit for none of the ABI; and **per-repository settings** were dropped, because git already has that
+> configuration and a second place to set it can only disagree with the first. What remains is the host
+> work in §6 — blame in the viewer's gutter, an icon column field, declared asynchronous commands, and
+> localized column headers. Everything marked *measured* was measured in this repository or on this
+> machine on 2026-08-18; everything else is named as an estimate or an open question.
 
 The Git plugin shipped as a first pass: two panel columns and five commands. This document asks two
 questions — is what exists technically sound, and is it *functionally* worth having next to
@@ -241,13 +244,38 @@ A view in the bottom dock (default) or the sidebar, following the active panel:
 
 **Size: M–L.** The sync part depends on Phase 0's asynchronous command path.
 
-### Phase 4 — Parity and finish
+### Phase 4 — Parity and finish · **built (F-419)**
 
 * Status *icons* in the panel column rather than words (needs a host-side icon field, §6.2).
-* `.gitignore` management from the context menu (ignore by name, extension, directory).
-* Revert/discard a file, revert a commit, cherry-pick a commit.
-* Submodule and worktree *awareness* (listed, status correct inside them) — not management.
-* Per-repository settings (default remote, pull strategy) in the plugin's own config pane.
+  → **Built as a glyph, not an icon.** `● Modified`, `⚠ Conflict`, `✚ Added`, `? Untracked`: the column
+  becomes scannable — "which of these forty files is in conflict" is a glance rather than a read — without
+  the ABI change §6.2 describes. The icon field stays worth having and stays host work; this is what a
+  plugin can ship today, and it costs the host nothing.
+* `.gitignore` management from the context menu (ignore by name, extension, directory). → **Built.** The
+  pattern is decided in the SDK and unit-tested, because a leading `/` is the difference between ignoring
+  *this* `build` directory and every directory called `build`, and an extension glob must *not* be
+  anchored. An exact duplicate line is refused with a message; whether an existing pattern *implies* the
+  new one is git's judgement, not the plugin's.
+* Revert/discard a file, revert a commit, cherry-pick a commit. → **Built.** Discarding a file was
+  already in the panel (phase 1); the two commit-level actions are buttons in the history window, where
+  the commit is. Both refuse before they start when the working tree is not clean: git's sequencer
+  requires that and phrases its refusal in terms of overwritten local changes, which reads as if the
+  chosen commit were at fault. A conflicting *result* is not treated as an error — git stops and leaves
+  the markers, and saying so points at the conflict command instead of at a red "failed".
+* Submodule and worktree *awareness* (listed, status correct inside them) — not management. → **Built,
+  and it was a defect, not a gap.** `rev-parse` is now asked for `--absolute-git-dir` as well, because in
+  a linked worktree — and in a submodule — `.git` is a *file*, so `<root>/.git/index` does not exist and
+  the cache's index-mtime check had nothing to compare: the column followed an outside commit only when
+  the three-second TTL expired. Measured in the running app: in a linked worktree an external
+  `git add` is reflected on the next listing, and inside a submodule the file shows the *submodule's*
+  status and branch, which is what §7 asked phase 4 to decide.
+* ~~Per-repository settings (default remote, pull strategy) in the plugin's own config pane.~~
+  → **Dropped, deliberately.** git already stores exactly these (`remote.pushDefault`, `pull.ff`,
+  `pull.rebase`) per repository, and everything else in the repository — hooks, CI, the command line —
+  reads them from there. A second place to set the same thing cannot make the first one wrong, so it can
+  only disagree with it: the plugin would either silently override the repository's own configuration or
+  quietly ignore its own pane. If a UI for git's configuration is wanted, it belongs in an editor for
+  `git config` values, not in a plugin's private settings, and it needs the config service §6 lists.
 
 **Size: M.** Individually small, each one independently useful.
 
@@ -268,6 +296,8 @@ The plugin cannot do the following through today's SDK, and each is small on the
    window. Without it the plugin would have to open its own diff view, which is a second diff
    implementation in the same application.
 2. **A column field that carries an icon** (§2.8's sibling): the content ABI returns strings today.
+   Phase 4 shipped a leading glyph instead (`● Modified`), which is most of the benefit; the field is
+   still what a real icon needs.
 3. **Declared asynchronous commands with progress and cancel** — `PcRunCommandAsync` plus a progress
    handle, or the host running `PcRunCommand` off the main thread when the manifest says the command
    is long. Needed by push/pull/fetch and by anything in Phase 3.
@@ -290,9 +320,11 @@ Each addition bumps the plugin SDK version and belongs in `Plugins/SDK/contrib.h
   `GIT_TERMINAL_PROMPT=0` git fails fast instead of waiting on a terminal that does not exist; the
   plugin then says so and points at the SSH agent. Open: whether to offer an in-app passphrase sheet
   at all (leaning no).
-* **Worktrees and submodules.** `rev-parse --show-toplevel` inside a submodule returns the
-  *submodule's* root, which is correct but means "the repository" is ambiguous in the UI. Phase 4
-  decides how to show it; Phase 0 must at least not report the parent's status for a submodule's file.
+* **Worktrees and submodules.** *Settled in phase 4.* `rev-parse --show-toplevel` inside a submodule
+  returns the *submodule's* root, and that is what the columns report — the file's status and the
+  submodule's branch, never the parent's, verified in the running app. The part that was actually broken
+  was refreshing: `.git` is a file in both a linked worktree and a submodule, so the index-mtime check
+  was looking at a path that does not exist. `--absolute-git-dir` fixed it.
 * **Terminal plugin overlap.** With the Terminal plugin open, a user will run git there and expect the
   column to follow. That is what Phase 0's index-mtime invalidation is for, and it is worth a scenario
   of its own: commit in the terminal pane, column updates.

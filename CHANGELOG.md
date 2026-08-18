@@ -12,6 +12,33 @@ were reconstructed from the git history and the notes in `STATE.md` when it was 
 `README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
 does not have.
 
+## [Unreleased]
+
+### Added
+
+- **The Git plugin grew from two columns and five commands into something worth reaching for.** A
+  **panel** with the working tree's changes, staging, unstaging, discarding and committing (amend
+  included), and any file's diff opening in the app's own compare window — no second diff
+  implementation. A **history** window: commits with a lane graph, what each one changed, a diff per
+  file, and the same window for one file's history. **Blame** as a table, each line's commit openable
+  as a diff. **Branches and stashes**: switch, create, merge, delete, stash push/pop/drop, and
+  fetch/pull/push that can be cancelled instead of appearing to hang — credentials are left entirely to
+  the SSH agent and git's own credential helper, and a conflicted file opens as *ours* against *theirs*.
+  **`.gitignore` from the context menu** (this file, this file type, this folder), and **revert** or
+  **cherry-pick** a commit from the history window, each refusing up front when the working tree is not
+  clean rather than stopping half-way through.
+
+### Fixed
+
+- **The Git status column no longer lies inside a linked worktree or a submodule.** There `.git` is a
+  file rather than a directory, so the plugin was watching an index file that does not exist: a commit or
+  a `git add` made outside the app reached the column only after a delay. It now asks git where its
+  directory really is. The column also leads with a small glyph — `● Modified`, `⚠ Conflict`,
+  `? Untracked` — so a listing can be scanned rather than read.
+
+- **A Git plugin window drew its content in a narrow strip down the middle.** An 820-point window held
+  a 436-point commit list, with the header floating in the centre. All four windows now fill.
+
 ## [0.7.1] — 2026-08-18
 
 A round of reported defects, four of which were losing something rather than merely looking wrong.

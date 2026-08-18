@@ -24,7 +24,7 @@ import Foundation
 public enum PluginGit {
 
     /// What happened to a file, on one side (index or worktree).
-    public enum Change: String, Sendable, Equatable {
+    public enum Change: String, Sendable, Equatable, CaseIterable {
         case unchanged, modified, added, deleted, renamed, copied, typeChanged, untracked, ignored, conflict
     }
 
@@ -665,6 +665,123 @@ public enum PluginGit {
     /// shown — recorded in the plan rather than pretended away.)
     public static func conflictSpecs(path: String) -> (ours: String, theirs: String) {
         (":2:" + path, ":3:" + path)
+    }
+
+    // MARK: - Ignoring (phase 4)
+
+    /// What to add to `.gitignore` for an item — the three choices the reference products offer.
+    public enum IgnoreKind: String, Sendable, CaseIterable { case name, extensionGlob, directory }
+
+    /// The pattern to write, anchored the way git reads it.
+    ///
+    /// A leading `/` matters: without it `build` matches a directory of that name at *any* depth, which is
+    /// almost never what somebody clicking "ignore this folder" means. An extension glob is deliberately
+    /// *not* anchored, because `*.o` everywhere is exactly what it means.
+    public static func ignorePattern(kind: IgnoreKind, relativePath: String) -> String? {
+        let name = (relativePath as NSString).lastPathComponent
+        guard !name.isEmpty else { return nil }
+        switch kind {
+        case .name:
+            return "/" + relativePath
+        case .extensionGlob:
+            let ext = (name as NSString).pathExtension
+            return ext.isEmpty ? nil : "*." + ext
+        case .directory:
+            return "/" + relativePath + "/"
+        }
+    }
+
+    /// Append `pattern` to an existing `.gitignore`'s text, or return nil when it is already covered.
+    ///
+    /// Only an exact line match counts as "already there". Deciding whether an existing pattern *implies*
+    /// the new one is git's job, not a plugin's — `**/build` covers `/src/build` and this code has no
+    /// business claiming to know that — and a duplicate line is harmless, while a wrongly-skipped one
+    /// leaves the reader wondering why their click did nothing.
+    public static func appendingIgnore(_ pattern: String, to text: String) -> String? {
+        let lines = text.split(separator: "\n", omittingEmptySubsequences: false).map {
+            $0.trimmingCharacters(in: .whitespaces)
+        }
+        guard !lines.contains(pattern) else { return nil }
+        var out = text
+        if !out.isEmpty && !out.hasSuffix("\n") { out += "\n" }
+        out += pattern + "\n"
+        return out
+    }
+
+    // MARK: - Worktrees (phase 4)
+
+    /// `rev-parse` answering all three questions a listing needs: the working tree's root, the directory's
+    /// prefix inside it, and where the *real* git directory is.
+    ///
+    /// The third one is what makes linked worktrees work. In a worktree created with `git worktree add`,
+    /// `.git` is a *file* pointing elsewhere, so `<root>/.git/index` does not exist — the cache's
+    /// index-mtime check then found nothing to compare and fell back to the TTL alone, which is the
+    /// difference between a column that follows a commit immediately and one that follows it eventually.
+    public static let locateArgumentsWithGitDir =
+        ["rev-parse", "--show-toplevel", "--show-prefix", "--absolute-git-dir"]
+
+    /// Root, prefix and git-dir from `locateArgumentsWithGitDir`.
+    public static func parseLocateWithGitDir(_ output: String) -> (root: String, prefix: String,
+                                                                  gitDir: String)? {
+        let lines = output.split(separator: "\n", omittingEmptySubsequences: false).map {
+            $0.trimmingCharacters(in: .whitespaces)
+        }
+        guard let root = lines.first, !root.isEmpty else { return nil }
+        let prefix = lines.count > 1 ? lines[1] : ""
+        // An older git without --absolute-git-dir prints nothing for it; the caller then falls back to
+        // <root>/.git, which is right for a normal clone and merely imprecise for a worktree.
+        let gitDir = lines.count > 2 && !lines[2].isEmpty ? lines[2] : (root as NSString)
+            .appendingPathComponent(".git")
+        return (root, prefix, gitDir)
+    }
+
+    // MARK: - Commit-level actions (phase 4)
+
+    /// Why a revert or cherry-pick must not be started.
+    ///
+    /// git's sequencer requires a clean working tree and index for both, and refuses with a message about
+    /// overwritten local changes that reads as if the *commit* were the problem. Checking the status the
+    /// column already has lets the plugin say what is actually in the way.
+    public enum CommitActionRefusal: String, Sendable { case conflictOpen, dirtyWorkingTree }
+
+    public static func refusal(forCommitActionIn repo: RepoStatus) -> CommitActionRefusal? {
+        if repo.files.values.contains(where: { $0.summary == .conflict }) { return .conflictOpen }
+        // Untracked files are none of the sequencer's business; tracked changes are.
+        if repo.files.values.contains(where: { $0.summary != .untracked && $0.summary != .ignored }) {
+            return .dirtyWorkingTree
+        }
+        return nil
+    }
+
+    /// `revert`/`cherry-pick` with no editor: this process has no terminal to open one on.
+    public static func revertArguments(_ hash: String) -> [String] {
+        ["revert", "--no-edit", hash]
+    }
+
+    public static func cherryPickArguments(_ hash: String) -> [String] {
+        ["cherry-pick", "--no-edit", hash]
+    }
+
+    // MARK: - Column glyphs (phase 4)
+
+    /// A leading glyph for the status column, so a listing can be scanned rather than read.
+    ///
+    /// Not an icon: the PDX content ABI returns strings, and a real icon field is host work (see the
+    /// plan's §6). A glyph in front of the word is what a plugin can do today, and it is what makes
+    /// "which of these forty files is in conflict" a glance instead of a search.
+    public static func glyph(for change: Change) -> String {
+        switch change {
+        case .conflict:    return "⚠"
+        case .added:       return "✚"
+        case .deleted:     return "✖"
+        case .modified:    return "●"
+        case .renamed:     return "→"
+        case .copied:      return "⧉"
+        case .typeChanged: return "◐"
+        case .untracked:   return "?"
+        case .ignored:     return "·"
+        case .unchanged:   return ""
+        }
     }
 
     // MARK: - Cache freshness

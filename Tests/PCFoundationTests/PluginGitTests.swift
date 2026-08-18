@@ -429,6 +429,78 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(specs.theirs, ":3:src/app.swift")
     }
 
+    // MARK: - Ignoring, worktrees, glyphs (phase 4)
+
+    /// A leading slash matters: without it `build` matches a directory of that name at any depth, which is
+    /// not what "ignore this folder" means. An extension glob is deliberately not anchored.
+    func testIgnorePatterns() {
+        XCTAssertEqual(PluginGit.ignorePattern(kind: .name, relativePath: "src/secret.txt"),
+                       "/src/secret.txt")
+        XCTAssertEqual(PluginGit.ignorePattern(kind: .extensionGlob, relativePath: "src/app.o"), "*.o")
+        XCTAssertEqual(PluginGit.ignorePattern(kind: .directory, relativePath: "build"), "/build/")
+        XCTAssertNil(PluginGit.ignorePattern(kind: .extensionGlob, relativePath: "Makefile"),
+                     "a file without an extension has no extension glob")
+    }
+
+    func testAppendingIgnoreSkipsAnExactDuplicateOnly() {
+        XCTAssertEqual(PluginGit.appendingIgnore("*.o", to: "build/\n"), "build/\n*.o\n")
+        XCTAssertEqual(PluginGit.appendingIgnore("*.o", to: "build/"), "build/\n*.o\n",
+                       "a file without a trailing newline still gets one")
+        XCTAssertNil(PluginGit.appendingIgnore("*.o", to: "build/\n*.o\n"))
+        XCTAssertNil(PluginGit.appendingIgnore("*.o", to: "build/\n  *.o  \n"),
+                     "surrounding whitespace does not make it a different line")
+        // Whether an existing pattern *implies* the new one is git's judgement, not this code's.
+        XCTAssertEqual(PluginGit.appendingIgnore("/src/build/", to: "**/build\n"),
+                       "**/build\n/src/build/\n")
+    }
+
+    /// In a linked worktree `.git` is a file, so `<root>/.git/index` does not exist and the cache had
+    /// nothing to compare — the column then followed a commit only when the TTL expired.
+    func testParseLocateWithGitDir() {
+        let worktree = PluginGit.parseLocateWithGitDir(
+            "/Users/x/wt\nsub/\n/Users/x/main/.git/worktrees/wt\n")
+        XCTAssertEqual(worktree?.root, "/Users/x/wt")
+        XCTAssertEqual(worktree?.prefix, "sub/")
+        XCTAssertEqual(worktree?.gitDir, "/Users/x/main/.git/worktrees/wt")
+    }
+
+    func testParseLocateWithGitDirFallsBackForAnOlderGit() {
+        let plain = PluginGit.parseLocateWithGitDir("/Users/x/repo\n\n")
+        XCTAssertEqual(plain?.gitDir, "/Users/x/repo/.git",
+                       "no --absolute-git-dir output: assume the normal layout")
+        XCTAssertNil(PluginGit.parseLocateWithGitDir(""))
+    }
+
+    func testGlyphsAreDistinctPerChange() {
+        let glyphs = PluginGit.Change.allCases.map(PluginGit.glyph(for:))
+        XCTAssertEqual(Set(glyphs).count, glyphs.count, "each state needs its own glyph to be scannable")
+        XCTAssertEqual(PluginGit.glyph(for: .conflict), "⚠")
+        XCTAssertEqual(PluginGit.glyph(for: .unchanged), "")
+    }
+
+    /// git's own refusal talks about overwritten local changes as if the commit were at fault; the status
+    /// the column already has says what is really in the way.
+    func testCommitActionRefusal() {
+        let clean = PluginGit.parseStatus("# branch.head main\0")
+        XCTAssertNil(PluginGit.refusal(forCommitActionIn: clean))
+
+        let untracked = PluginGit.parseStatus("# branch.head main\0? notes.txt\0")
+        XCTAssertNil(PluginGit.refusal(forCommitActionIn: untracked),
+                     "untracked files are none of the sequencer's business")
+
+        let dirty = PluginGit.parseStatus("# branch.head main\0" + "1 .M N... 100644 100644 100644 ccc ddd a.txt\0")
+        XCTAssertEqual(PluginGit.refusal(forCommitActionIn: dirty), .dirtyWorkingTree)
+
+        let conflicted = PluginGit.parseStatus("# branch.head main\0" + "u UU N... 100644 100644 100644 100644 aaa bbb ccc a.txt\0")
+        XCTAssertEqual(PluginGit.refusal(forCommitActionIn: conflicted), .conflictOpen,
+                       "an open conflict outranks the generic dirty-tree reason")
+    }
+
+    func testRevertAndCherryPickNeverOpenAnEditor() {
+        XCTAssertEqual(PluginGit.revertArguments("abc"), ["revert", "--no-edit", "abc"])
+        XCTAssertEqual(PluginGit.cherryPickArguments("abc"), ["cherry-pick", "--no-edit", "abc"])
+    }
+
     // MARK: - Against the real binary
 
     /// The fixtures above are shapes; this proves the shape is real. Builds a repository with the cases
@@ -497,5 +569,80 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(dirty.files["Größe mit Leerzeichen.txt"]?.worktree, .modified,
                        "the umlaut path must arrive raw — this is the reported defect")
         XCTAssertFalse(dirty.files.keys.contains { $0.contains("\\303") }, "no quoted path may survive")
+    }
+
+    /// Revert and cherry-pick against the real binary, in a repository built for it.
+    ///
+    /// The claim worth proving is not that git can revert — it is that *these* argument lists do it
+    /// without an editor and without a terminal, which is the only way a plugin inside a GUI process can
+    /// run them. `GIT_EDITOR=false` makes that check real: an editor that gets launched fails, so a
+    /// missing `--no-edit` turns into a failed test rather than a window nobody can close (F-419).
+    func testRevertAndCherryPickAgainstRealGit() throws {
+        let found = PluginGit.resolveExecutable(
+            setting: nil,
+            isExecutable: { FileManager.default.isExecutableFile(atPath: $0) },
+            exists: { FileManager.default.fileExists(atPath: $0) })
+        let executable = try XCTUnwrap(found, "no git on this machine")
+        let dir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("pcgit-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+
+        @discardableResult
+        func git(_ arguments: [String]) throws -> (out: String, ok: Bool) {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: executable)
+            process.arguments = ["-C", dir.path] + arguments
+            let pipe = Pipe(); process.standardOutput = pipe; process.standardError = pipe
+            var environment = ProcessInfo.processInfo.environment
+            environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
+            environment["GIT_CONFIG_NOSYSTEM"] = "1"
+            environment["GIT_TERMINAL_PROMPT"] = "0"
+            environment["GIT_EDITOR"] = "false"     // any editor launch is a failure, not a hang
+            environment["GIT_AUTHOR_NAME"] = "T"; environment["GIT_AUTHOR_EMAIL"] = "t@example.com"
+            environment["GIT_COMMITTER_NAME"] = "T"; environment["GIT_COMMITTER_EMAIL"] = "t@example.com"
+            process.environment = environment
+            try process.run()
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+            return (String(decoding: data, as: UTF8.self), process.terminationStatus == 0)
+        }
+        func read(_ name: String) -> String? {
+            try? String(contentsOf: dir.appendingPathComponent(name), encoding: .utf8)
+        }
+        func status() throws -> PluginGit.RepoStatus {
+            PluginGit.parseStatus(try git(PluginGit.statusArguments).out)
+        }
+
+        try git(["init", "-q", "-b", "main", "."])
+        try "one\n".write(to: dir.appendingPathComponent("a.txt"), atomically: true, encoding: .utf8)
+        try git(["add", "-A"]); try git(["commit", "-q", "-m", "start"])
+        try "one\ntwo\n".write(to: dir.appendingPathComponent("a.txt"), atomically: true, encoding: .utf8)
+        try git(["commit", "-qam", "adds two"])
+        let toRevert = try git(["rev-parse", "HEAD"]).out.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // A side branch with a commit to pick, and back to main.
+        try git(["checkout", "-q", "-b", "side"])
+        try "picked\n".write(to: dir.appendingPathComponent("b.txt"), atomically: true, encoding: .utf8)
+        try git(["add", "-A"]); try git(["commit", "-q", "-m", "adds b"])
+        let toPick = try git(["rev-parse", "HEAD"]).out.trimmingCharacters(in: .whitespacesAndNewlines)
+        try git(["checkout", "-q", "main"])
+
+        XCTAssertNil(PluginGit.refusal(forCommitActionIn: try status()), "the tree is clean here")
+
+        let reverted = try git(PluginGit.revertArguments(toRevert))
+        XCTAssertTrue(reverted.ok, "revert failed: \(reverted.out)")
+        XCTAssertEqual(read("a.txt"), "one\n", "the revert must undo the second commit's change")
+
+        let picked = try git(PluginGit.cherryPickArguments(toPick))
+        XCTAssertTrue(picked.ok, "cherry-pick failed: \(picked.out)")
+        XCTAssertEqual(read("b.txt"), "picked\n", "the picked commit's file must be here")
+        XCTAssertNil(try status().files["b.txt"], "and it must be committed, not left in the index")
+
+        // Finally the refusal the buttons rely on: a modified tracked file, and git would refuse anyway.
+        try "dirty\n".write(to: dir.appendingPathComponent("a.txt"), atomically: true, encoding: .utf8)
+        XCTAssertEqual(PluginGit.refusal(forCommitActionIn: try status()), .dirtyWorkingTree)
+        XCTAssertFalse(try git(PluginGit.revertArguments(toRevert)).ok,
+                       "git itself refuses too — the check only says so in better words")
     }
 }
