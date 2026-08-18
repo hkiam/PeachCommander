@@ -96,6 +96,22 @@
 				<key>title</key>
 				<string>Blame…</string>
 			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.branches</string>
+				<key>title</key>
+				<string>Branches &amp; Stashes…</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.conflict</string>
+				<key>title</key>
+				<string>Resolve Conflict…</string>
+			</dict>
 		</array>
 		<key>contextMenus</key>
 		<array>
@@ -174,6 +190,18 @@
 			<dict>
 				<key>command</key>
 				<string>plugin.git.blame</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Git</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.conflict</string>
 				<key>group</key>
 				<string>9_plugins</string>
 				<key>submenu</key>
@@ -299,6 +327,28 @@
 				<string>Commands/Git</string>
 				<key>order</key>
 				<integer>140</integer>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.branches</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>150</integer>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.conflict</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>160</integer>
 				<key>when</key>
 				<string>cursorPath</string>
 			</dict>

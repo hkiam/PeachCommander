@@ -359,6 +359,76 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(line?.line, 4)
     }
 
+    // MARK: - Branches, stashes, conflicts (phase 3)
+
+    private func us(_ parts: [String]) -> String { parts.joined(separator: "\u{1F}") }
+
+    /// `for-each-ref` with an explicit format rather than `git branch -vv`, whose output is written for
+    /// people: a `*` for the current branch, space-aligned columns, and the tracking state in brackets
+    /// inside the subject.
+    func testParseBranches() {
+        let out = [
+            us(["main", "*", "origin/main", "[ahead 2, behind 1]", "latest work", "refs/heads/main"]),
+            us(["feature/x", " ", "", "", "a branch with no upstream", "refs/heads/feature/x"]),
+            us(["origin/main", " ", "", "", "latest work", "refs/remotes/origin/main"]),
+        ].joined(separator: "\n")
+        let branches = PluginGit.parseBranches(out)
+        XCTAssertEqual(branches.map(\.name), ["main", "feature/x", "origin/main"])
+        XCTAssertTrue(branches[0].isCurrent)
+        XCTAssertEqual(branches[0].upstream, "origin/main")
+        XCTAssertEqual(branches[0].ahead, 2)
+        XCTAssertEqual(branches[0].behind, 1)
+        XCTAssertFalse(branches[0].isRemote)
+        XCTAssertNil(branches[1].upstream)
+        XCTAssertEqual(branches[1].ahead, 0)
+        XCTAssertTrue(branches[2].isRemote)
+    }
+
+    func testParseBranchesHandlesAGoneUpstream() {
+        let out = us(["old", " ", "origin/old", "[gone]", "subject", "refs/heads/old"])
+        let branch = PluginGit.parseBranches(out).first
+        XCTAssertEqual(branch?.upstream, "origin/old")
+        XCTAssertEqual(branch?.ahead, 0)
+        XCTAssertEqual(branch?.behind, 0)
+    }
+
+    /// A stash's own description says which branch it was made on, and that is the one worth showing: a
+    /// stash from another branch is the one that needs care when popping.
+    func testParseStashes() {
+        let out = [us(["stash@{0}", "WIP on main: 1a2b3c4 the last commit"]),
+                   us(["stash@{1}", "On feature/x: a message I typed"])].joined(separator: "\n")
+        let stashes = PluginGit.parseStashes(out)
+        XCTAssertEqual(stashes.map(\.ref), ["stash@{0}", "stash@{1}"])
+        XCTAssertEqual(stashes[0].branch, "main")
+        XCTAssertEqual(stashes[0].subject, "1a2b3c4 the last commit")
+        XCTAssertEqual(stashes[1].branch, "feature/x")
+        XCTAssertEqual(stashes[1].subject, "a message I typed")
+    }
+
+    /// Switching branches with a conflict or a staged change in the way is refused with a reason, because
+    /// a half-finished checkout is worse than a refusal and git's own message is written for a terminal.
+    func testSwitchRefusals() {
+        let clean = PluginGit.parseStatus("# branch.head main\0")
+        XCTAssertEqual(PluginGit.canSwitch(clean), PluginGit.SwitchRefusal.none)
+
+        let staged = PluginGit.parseStatus("1 M. N... 100644 100644 100644 a b s.txt\0")
+        XCTAssertEqual(PluginGit.canSwitch(staged), .staged(1))
+
+        let conflicted = PluginGit.parseStatus(
+            "u UU N... 100644 100644 100644 100644 a b c k.txt\0"
+            + "1 M. N... 100644 100644 100644 a b s.txt\0")
+        XCTAssertEqual(PluginGit.canSwitch(conflicted), .conflicts(1),
+                       "a conflict outranks a staged change: it is the thing to deal with first")
+    }
+
+    /// Stage 2 is "ours", stage 3 is "theirs"; the common ancestor is stage 1 and is not shown, because
+    /// the host's compare window takes two files.
+    func testConflictSpecs() {
+        let specs = PluginGit.conflictSpecs(path: "src/app.swift")
+        XCTAssertEqual(specs.ours, ":2:src/app.swift")
+        XCTAssertEqual(specs.theirs, ":3:src/app.swift")
+    }
+
     // MARK: - Against the real binary
 
     /// The fixtures above are shapes; this proves the shape is real. Builds a repository with the cases

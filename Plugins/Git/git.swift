@@ -186,6 +186,37 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         // The host calls PcRunCommand on the main thread (ContributionRegistry is @MainActor); windows
         // must be built there, and asserting that is honest where a hop would merely hide it.
         MainActor.assumeIsolated { showLogWindow(root: root, path: forFile ? relative : nil, svc) }
+    case "plugin.git.branches":
+        MainActor.assumeIsolated { showBranchesWindow(root: root, svc) }
+    case "plugin.git.conflict":
+        // "ours" against "theirs" for a conflicted file. Stage 1, the common ancestor, is not shown: the
+        // host's compare window takes two files, and pretending otherwise would be worse than saying so
+        // (recorded in the plan's §5, phase 3).
+        guard !relative.isEmpty, let repo = PluginGitRepo.status(root: root),
+              repo.files[relative]?.summary == .conflict else {
+            svc.presentInfo?(svc.host, L("Git"), L("That file has no conflict."))
+            return
+        }
+        let specs = PluginGit.conflictSpecs(path: relative)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let ours = PluginGitRepo.writeBlob(root: root, spec: specs.ours, path: relative, base: .index)
+            let theirs = PluginGitRepo.writeBlob(root: root, spec: specs.theirs, path: relative, base: .head)
+            DispatchQueue.main.async {
+                guard let ours, let theirs else {
+                    svc.presentInfo?(svc.host, L("Git"), L("That version could not be read."))
+                    return
+                }
+                ours.withCString { a in
+                    theirs.withCString { b in
+                        L("ours").withCString { at in
+                            L("theirs").withCString { bt in
+                                svc.compareFiles?(svc.host, a, b, at, bt)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     case "plugin.git.blame":
         guard !relative.isEmpty else {
             svc.presentInfo?(svc.host, L("Git"), L("Select a file to blame.")); return
@@ -317,6 +348,13 @@ private func showLogWindow(root: String, path: String?, _ svc: PcHostServices) {
         ?? String(format: L("Git Log — %@"), name)
     let view = GitLogView(services: svc, root: root, path: path)
     showToolWindow(title: title, view: view, size: NSSize(width: 820, height: 460), svc)
+}
+
+@MainActor
+private func showBranchesWindow(root: String, _ svc: PcHostServices) {
+    let view = GitBranchesView(services: svc, root: root)
+    showToolWindow(title: String(format: L("Branches — %@"), (root as NSString).lastPathComponent),
+                   view: view, size: NSSize(width: 780, height: 440), svc)
 }
 
 @MainActor

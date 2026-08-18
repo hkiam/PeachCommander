@@ -554,6 +554,119 @@ public enum PluginGit {
         return lines
     }
 
+    // MARK: - Branches, stashes, remotes (phase 3)
+
+    /// A branch as `for-each-ref` reports it.
+    public struct Branch: Sendable, Equatable {
+        public let name: String
+        public let isCurrent: Bool
+        public let isRemote: Bool
+        public let upstream: String?
+        public let ahead: Int
+        public let behind: Int
+        public let subject: String
+
+        public init(name: String, isCurrent: Bool, isRemote: Bool, upstream: String?,
+                    ahead: Int, behind: Int, subject: String) {
+            self.name = name; self.isCurrent = isCurrent; self.isRemote = isRemote
+            self.upstream = upstream; self.ahead = ahead; self.behind = behind; self.subject = subject
+        }
+    }
+
+    /// `for-each-ref` with an explicit format, rather than parsing `git branch -vv`, whose output is
+    /// meant for people: it marks the current branch with a `*`, aligns columns with spaces and puts the
+    /// tracking information in brackets inside the subject line.
+    public static let branchArguments = [
+        "--no-optional-locks", "for-each-ref", "--sort=-committerdate",
+        "--format=%(refname:short)\u{1F}%(HEAD)\u{1F}%(upstream:short)\u{1F}%(upstream:track)"
+        + "\u{1F}%(contents:subject)\u{1F}%(refname)",
+        "refs/heads", "refs/remotes",
+    ]
+
+    public static func parseBranches(_ output: String) -> [Branch] {
+        var branches: [Branch] = []
+        for line in output.split(separator: "\n", omittingEmptySubsequences: true) {
+            let fields = String(line).components(separatedBy: unitSeparator)
+            guard fields.count >= 6, !fields[0].isEmpty else { continue }
+            let track = fields[3]      // "[ahead 2, behind 1]", "[gone]" or empty
+            var ahead = 0, behind = 0
+            if let range = track.range(of: "ahead ") {
+                ahead = Int(track[range.upperBound...].prefix(while: \.isNumber)) ?? 0
+            }
+            if let range = track.range(of: "behind ") {
+                behind = Int(track[range.upperBound...].prefix(while: \.isNumber)) ?? 0
+            }
+            branches.append(Branch(name: fields[0], isCurrent: fields[1] == "*",
+                                   isRemote: fields[5].hasPrefix("refs/remotes/"),
+                                   upstream: fields[2].isEmpty ? nil : fields[2],
+                                   ahead: ahead, behind: behind, subject: fields[4]))
+        }
+        return branches
+    }
+
+    /// One stash entry.
+    public struct Stash: Sendable, Equatable {
+        /// `stash@{0}` — the name every stash command takes.
+        public let ref: String
+        public let branch: String
+        public let subject: String
+        public init(ref: String, branch: String, subject: String) {
+            self.ref = ref; self.branch = branch; self.subject = subject
+        }
+    }
+
+    public static let stashListArguments = [
+        "--no-optional-locks", "stash", "list",
+        "--format=%gd\u{1F}%gs",
+    ]
+
+    /// Parse `stash list`. `%gs` reads "WIP on main: abc1234 subject" or "On main: message"; the branch is
+    /// worth pulling out because a stash made on another branch is the one you have to be careful with.
+    public static func parseStashes(_ output: String) -> [Stash] {
+        var stashes: [Stash] = []
+        for line in output.split(separator: "\n", omittingEmptySubsequences: true) {
+            let fields = String(line).components(separatedBy: unitSeparator)
+            guard fields.count >= 2, !fields[0].isEmpty else { continue }
+            var branch = ""
+            var subject = fields[1]
+            for prefix in ["WIP on ", "On "] where subject.hasPrefix(prefix) {
+                let rest = subject.dropFirst(prefix.count)
+                if let colon = rest.firstIndex(of: ":") {
+                    branch = String(rest[rest.startIndex..<colon])
+                    subject = String(rest[rest.index(after: colon)...])
+                        .trimmingCharacters(in: .whitespaces)
+                }
+                break
+            }
+            stashes.append(Stash(ref: fields[0], branch: branch, subject: subject))
+        }
+        return stashes
+    }
+
+    /// Whether switching branches is safe right now, and if not, why — in a form the caller can turn into
+    /// a sentence. A half-finished checkout is worse than a refusal, and git's own error text is written
+    /// for a terminal.
+    public enum SwitchRefusal: Sendable, Equatable {
+        case conflicts(Int)
+        case staged(Int)
+        case none
+    }
+
+    public static func canSwitch(_ status: RepoStatus) -> SwitchRefusal {
+        let conflicts = status.files.values.filter { $0.summary == .conflict }.count
+        if conflicts > 0 { return .conflicts(conflicts) }
+        let staged = status.files.values.filter(\.isStaged).count
+        if staged > 0 { return .staged(staged) }
+        return .none
+    }
+
+    /// The two sides of a conflicted file, as `git show` specs: stage 2 is "ours", stage 3 is "theirs".
+    /// (Stage 1 is the common ancestor; the host's compare window takes two files, so the base is not
+    /// shown — recorded in the plan rather than pretended away.)
+    public static func conflictSpecs(path: String) -> (ours: String, theirs: String) {
+        (":2:" + path, ":3:" + path)
+    }
+
     // MARK: - Cache freshness
 
     /// Whether a cached status may still be used.
