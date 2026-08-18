@@ -155,6 +155,19 @@ enum PluginGitRepo {
 
     // MARK: - Blobs
 
+    /// An empty temp file, for the older side of a file this commit *added*: comparing against nothing is
+    /// what the reference products show, and it is more honest than refusing to diff at all (F-417).
+    static func writeEmptyBlob(path: String) -> String? {
+        let token = String(UUID().uuidString.prefix(6))
+        let directory = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent("pc-git-blobs", isDirectory: true)
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let url = directory.appendingPathComponent(
+            PluginGit.blobFileName(path: path, base: .index, token: "empty-" + token))
+        do { try Data().write(to: url) } catch { return nil }
+        return url.path
+    }
+
     /// Write `git show <spec>` to a temp file and return its path, for the compare window (F-416).
     ///
     /// A file rather than a string because the host's compare window reads paths — and a *named* file,

@@ -232,6 +232,133 @@ final class PluginGitTests: XCTestCase {
                        "Makefile@index-2B")
     }
 
+    // MARK: - History and the lane graph (phase 2)
+
+    private func logRecord(_ hash: String, _ short: String, _ parents: String,
+                           _ author: String, _ time: String, _ subject: String) -> String {
+        [hash, short, parents, author, time, subject].joined(separator: "\u{1F}") + "\u{1E}"
+    }
+
+    func testParseLog() {
+        let out = logRecord("a1", "a1s", "b2 c3", "Ada", "1700000000", "Merge branch 'x'")
+            + logRecord("b2", "b2s", "d4", "Grace", "1699999000", "Fix: a subject with | and \t in it")
+        let commits = PluginGit.parseLog(out)
+        XCTAssertEqual(commits.count, 2)
+        XCTAssertEqual(commits[0].parents, ["b2", "c3"])
+        XCTAssertTrue(commits[0].isMerge)
+        XCTAssertEqual(commits[1].author, "Grace")
+        XCTAssertEqual(commits[1].subject, "Fix: a subject with | and \t in it",
+                       "the separators are ASCII US/RS precisely so a subject may contain anything")
+        XCTAssertEqual(commits[1].date, Date(timeIntervalSince1970: 1699999000))
+        XCTAssertFalse(commits[1].isMerge)
+    }
+
+    func testLogArgumentsAskForTopologicalOrder() {
+        // Date order can list a parent before its child, and then a lane never closes (see `graph`).
+        XCTAssertTrue(PluginGit.logArguments(limit: 10).contains("--topo-order"))
+    }
+
+    func testLogArgumentsFollowAFileOnlyWhenGivenOne() {
+        XCTAssertFalse(PluginGit.logArguments(limit: 50).contains("--follow"))
+        let forFile = PluginGit.logArguments(limit: 50, path: "src/app.swift")
+        XCTAssertTrue(forFile.contains("--follow"))
+        XCTAssertEqual(forFile.last, "src/app.swift")
+    }
+
+    /// A straight line of commits stays in one lane.
+    func testGraphOfALinearHistory() {
+        let commits = PluginGit.parseLog(
+            logRecord("a", "a", "b", "A", "3", "third")
+            + logRecord("b", "b", "c", "A", "2", "second")
+            + logRecord("c", "c", "", "A", "1", "first"))
+        let rows = PluginGit.graph(commits)
+        XCTAssertEqual(rows.map(\.lane), [0, 0, 0])
+        XCTAssertEqual(rows.map { PluginGit.graphText($0, width: 1) }, ["●", "●", "●"])
+    }
+
+    /// A merge puts its second parent in a new lane, and the commits of that branch then occupy it.
+    func testGraphOfAMerge() {
+        let commits = PluginGit.parseLog(
+            logRecord("m", "m", "a b", "A", "5", "merge")
+            + logRecord("a", "a", "base", "A", "4", "on main")
+            + logRecord("b", "b", "base", "A", "3", "on branch")
+            + logRecord("base", "base", "", "A", "1", "base"))
+        let rows = PluginGit.graph(commits)
+        XCTAssertEqual(rows[0].lane, 0)
+        XCTAssertEqual(rows[0].merged, [1], "the second parent takes a free lane")
+        XCTAssertEqual(rows[1].lane, 0, "the first parent continues the merge's lane")
+        XCTAssertEqual(rows[2].lane, 1, "the branch commit sits in the lane its parent was put in")
+        XCTAssertEqual(rows[3].lane, 0, "the base is waited for by lane 0 first")
+        XCTAssertTrue(PluginGit.graphText(rows[0], width: 2).contains("●"))
+    }
+
+    /// Two lanes waiting for the same commit converge there: the second one must **end**, or the graph
+    /// claims a branch continues past the commit that absorbed it (`git log --graph` draws `|/`).
+    func testConvergingLanesEnd() {
+        let commits = PluginGit.parseLog(
+            logRecord("m", "m", "a b", "A", "5", "merge")
+            + logRecord("a", "a", "base", "A", "4", "on main")
+            + logRecord("b", "b", "base", "A", "3", "on branch")
+            + logRecord("base", "base", "", "A", "1", "base"))
+        let rows = PluginGit.graph(commits)
+        XCTAssertEqual(rows[3].lane, 0)
+        XCTAssertEqual(rows[3].closed, [1], "lane 1 was waiting for base too and ends there")
+        XCTAssertTrue(PluginGit.graphText(rows[3], width: 2).contains("┘"))
+    }
+
+    func testGraphTextIsWideEnoughForTheLaneItDraws() {
+        let row = PluginGit.GraphRow(lane: 3, lanes: ["a", "b", nil, "d"], merged: [])
+        let text = PluginGit.graphText(row)
+        XCTAssertEqual(text.count, 4)
+        XCTAssertEqual(Array(text)[3], "●")
+        XCTAssertEqual(Array(text)[2], " ", "a free lane draws nothing")
+        XCTAssertEqual(Array(text)[0], "│")
+    }
+
+    // MARK: - Blame (phase 2)
+
+    /// The porcelain format states a commit's details only the first time that commit appears; a parser
+    /// that reads each block on its own loses the author from the second line of every commit onwards.
+    func testParseBlameRemembersCommitDetails() {
+        let out = """
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 1 1 2
+        author Ada Lovelace
+        author-time 1700000000
+        summary first commit
+        filename a.txt
+        \tline one
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 2 2
+        \tline two
+        bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb 3 3 1
+        author Grace Hopper
+        author-time 1700001000
+        summary second commit
+        filename a.txt
+        \tline three
+        """
+        let lines = PluginGit.parseBlame(out)
+        XCTAssertEqual(lines.map(\.line), [1, 2, 3])
+        XCTAssertEqual(lines.map(\.author), ["Ada Lovelace", "Ada Lovelace", "Grace Hopper"])
+        XCTAssertEqual(lines[1].summary, "first commit", "the referred-back commit keeps its details")
+        XCTAssertEqual(lines.map(\.text), ["line one", "line two", "line three"])
+        XCTAssertEqual(lines[2].date, Date(timeIntervalSince1970: 1700001000))
+    }
+
+    /// An uncommitted line is all zeros, and must not be shown as some very old commit.
+    func testUncommittedBlameLine() {
+        let out = """
+        0000000000000000000000000000000000000000 4 4 1
+        author Not Committed Yet
+        author-time 1700002000
+        summary uncommitted
+        filename a.txt
+        \tnew line
+        """
+        let line = PluginGit.parseBlame(out).first
+        XCTAssertEqual(line?.isUncommitted, true)
+        XCTAssertEqual(line?.line, 4)
+    }
+
     // MARK: - Against the real binary
 
     /// The fixtures above are shapes; this proves the shape is real. Builds a repository with the cases

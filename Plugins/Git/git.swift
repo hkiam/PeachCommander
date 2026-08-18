@@ -135,9 +135,18 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
     guard let commandId, let services else { return }
     let id = String(cString: commandId)
     let svc = services.pointee
+    // The cursor item if there is one, else the *panel's directory* — not the process's working
+    // directory, which is wherever the app was launched from and in a developer's case is another
+    // repository entirely: the log window opened on PeachCommander itself while the panel was in the
+    // repository the reader was looking at (F-417).
     var buf = [CChar](repeating: 0, count: 4096)
     let ok = svc.cursorPath.map { $0(svc.host, &buf, 4096) } ?? 0
-    let cursor = ok != 0 ? String(cString: buf) : FileManager.default.currentDirectoryPath
+    var cursor = ok != 0 ? String(cString: buf) : ""
+    if cursor.isEmpty, let get = svc.getContext {
+        var dirBuf = [CChar](repeating: 0, count: 4096)
+        if get(svc.host, "dir", &dirBuf, 4096) != 0 { cursor = String(cString: dirBuf) }
+    }
+    if cursor.isEmpty { cursor = FileManager.default.currentDirectoryPath }
 
     guard PluginGitRepo.executable() != nil else {
         svc.presentInfo?(svc.host, L("Git"), L("Git was not found on this Mac."))
@@ -171,6 +180,17 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
                 svc.presentSidebarView?(svc.host, viewId, rootPath)
             }
         }
+    case "plugin.git.log", "plugin.git.history":
+        // The whole repository's history, or one file's. Same view; the path is what differs (F-417).
+        let forFile = id == "plugin.git.history" && !relative.isEmpty
+        // The host calls PcRunCommand on the main thread (ContributionRegistry is @MainActor); windows
+        // must be built there, and asserting that is honest where a hop would merely hide it.
+        MainActor.assumeIsolated { showLogWindow(root: root, path: forFile ? relative : nil, svc) }
+    case "plugin.git.blame":
+        guard !relative.isEmpty else {
+            svc.presentInfo?(svc.host, L("Git"), L("Select a file to blame.")); return
+        }
+        MainActor.assumeIsolated { showBlameWindow(root: root, path: relative, svc) }
     case "plugin.git.diff":
         // Compare the cursor file with the version git has: the index when there is a staged change,
         // HEAD otherwise. The host's own compare window does the showing (F-416).
@@ -261,6 +281,49 @@ private func promptCommitMessage() -> String? {
     guard alert.runModal() == .alertFirstButtonReturn else { return nil }
     let msg = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
     return msg.isEmpty ? nil : msg
+}
+
+// MARK: - History windows (phase 2, F-417)
+
+/// The plugin's own windows, held so they are not deallocated the moment the command returns. The host
+/// removes its menus when a window closes (contrib.h), so there is no teardown call to make.
+@MainActor private var openWindows: [NSWindow] = []
+
+/// A window around a plugin view, registered with the host so it gets the standard Edit menu.
+@MainActor
+private func showToolWindow(title: String, view: NSView, size: NSSize, _ svc: PcHostServices) {
+    let window = NSWindow(contentRect: NSRect(origin: .zero, size: size),
+                          styleMask: [.titled, .closable, .resizable, .miniaturizable],
+                          backing: .buffered, defer: false)
+    window.title = title
+    window.contentView = view
+    window.center()
+    openWindows.append(window)
+    NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification,
+                                          object: window, queue: .main) { _ in
+        MainActor.assumeIsolated { openWindows.removeAll { $0 === window } }
+    }
+    let pointer = Unmanaged.passUnretained(window).toOpaque()
+    title.withCString { name in
+        svc.registerToolWindow?(svc.host, pointer, nil, nil, name)
+    }
+    window.makeKeyAndOrderFront(nil)
+}
+
+@MainActor
+private func showLogWindow(root: String, path: String?, _ svc: PcHostServices) {
+    let name = (root as NSString).lastPathComponent
+    let title = path.map { String(format: L("History of %@"), $0) }
+        ?? String(format: L("Git Log — %@"), name)
+    let view = GitLogView(services: svc, root: root, path: path)
+    showToolWindow(title: title, view: view, size: NSSize(width: 820, height: 460), svc)
+}
+
+@MainActor
+private func showBlameWindow(root: String, path: String, _ svc: PcHostServices) {
+    let view = GitBlameView(services: svc, root: root, path: path)
+    showToolWindow(title: String(format: L("Blame: %@"), path), view: view,
+                   size: NSSize(width: 820, height: 500), svc)
 }
 
 // MARK: - The Git panel (phase 1, F-416)

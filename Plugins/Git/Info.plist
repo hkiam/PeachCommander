@@ -72,6 +72,30 @@
 				<key>title</key>
 				<string>Git Diff…</string>
 			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.log</string>
+				<key>title</key>
+				<string>Git Log…</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.history</string>
+				<key>title</key>
+				<string>File History…</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.blame</string>
+				<key>title</key>
+				<string>Blame…</string>
+			</dict>
 		</array>
 		<key>contextMenus</key>
 		<array>
@@ -126,6 +150,30 @@
 			<dict>
 				<key>command</key>
 				<string>plugin.git.diff</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Git</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.history</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Git</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.blame</string>
 				<key>group</key>
 				<string>9_plugins</string>
 				<key>submenu</key>
@@ -217,6 +265,40 @@
 				<string>Commands/Git</string>
 				<key>order</key>
 				<integer>95</integer>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.log</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>120</integer>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.history</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>130</integer>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.blame</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>140</integer>
 				<key>when</key>
 				<string>cursorPath</string>
 			</dict>

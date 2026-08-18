@@ -346,6 +346,214 @@ public enum PluginGit {
         return ext.isEmpty ? leaf : leaf + "." + ext
     }
 
+    // MARK: - History (phase 2)
+
+    /// One commit, as `parseLog` reads it.
+    public struct Commit: Sendable, Equatable {
+        public let hash: String
+        public let shortHash: String
+        public let parents: [String]
+        public let author: String
+        public let date: Date
+        public let subject: String
+
+        public init(hash: String, shortHash: String, parents: [String], author: String,
+                    date: Date, subject: String) {
+            self.hash = hash; self.shortHash = shortHash; self.parents = parents
+            self.author = author; self.date = date; self.subject = subject
+        }
+
+        public var isMerge: Bool { parents.count > 1 }
+    }
+
+    /// Field and record separators: ASCII US (0x1F) and RS (0x1E). Chosen because a commit subject may
+    /// contain anything a human types — tabs, quotes, newlines, pipes — and every one of those has been
+    /// used as a separator by somebody's log parser that then broke on a real repository.
+    static let unitSeparator = "\u{1F}"
+    static let recordSeparator = "\u{1E}"
+
+    /// `git log` arguments for `parseLog`. `path` limits the history to one file (its file history).
+    public static func logArguments(limit: Int, path: String? = nil) -> [String] {
+        // `--topo-order`, not git's default date order: with date order a parent can be listed *before*
+        // its child (a branch committed earlier than the commit it forked from), and then the lane waiting
+        // for that parent never closes — the graph shows a branch running past the commit that ended it.
+        // Measured on a repository with one merge; this is also why every graph viewer asks for topo order.
+        var out = ["--no-optional-locks", "log", "--topo-order", "--max-count=\(limit)",
+                   "--format=%H\(unitSeparator)%h\(unitSeparator)%P\(unitSeparator)%an"
+                   + "\(unitSeparator)%at\(unitSeparator)%s\(recordSeparator)"]
+        if let path, !path.isEmpty { out += ["--follow", "--", path] }
+        return out
+    }
+
+    public static func parseLog(_ output: String) -> [Commit] {
+        var commits: [Commit] = []
+        for record in output.components(separatedBy: recordSeparator) {
+            let fields = record.trimmingCharacters(in: .whitespacesAndNewlines)
+                .components(separatedBy: unitSeparator)
+            guard fields.count >= 6, !fields[0].isEmpty else { continue }
+            let parents = fields[2].split(separator: " ").map(String.init)
+            let seconds = Double(fields[4]) ?? 0
+            commits.append(Commit(hash: fields[0], shortHash: fields[1], parents: parents,
+                                  author: fields[3], date: Date(timeIntervalSince1970: seconds),
+                                  subject: fields[5]))
+        }
+        return commits
+    }
+
+    // MARK: - The lane graph
+
+    /// Where a commit sits in the graph, and which lanes are alive around it.
+    ///
+    /// `lanes` is what each lane is *waiting for* when the row is drawn — a commit hash, or nil for a free
+    /// lane — and `lane` is the one this commit occupies. `merged` names the lanes this commit's extra
+    /// parents were placed into, which is what a renderer draws as branches joining.
+    public struct GraphRow: Sendable, Equatable {
+        public let lane: Int
+        public let lanes: [String?]
+        public let merged: [Int]
+        /// Lanes that were also waiting for this commit and therefore end here — two branches converging.
+        /// `git log --graph` draws this as `|/`; without it the graph claims a lane continues past a
+        /// commit that in fact absorbed it.
+        public let closed: [Int]
+
+        public init(lane: Int, lanes: [String?], merged: [Int], closed: [Int] = []) {
+            self.lane = lane; self.lanes = lanes; self.merged = merged; self.closed = closed
+        }
+    }
+
+    /// Assign lanes to a linear list of commits (newest first), the way every commit graph does it: a
+    /// commit takes the lane that was waiting for it, then hands that lane to its first parent; further
+    /// parents take free lanes. No dependency for this — it is a hundred lines and a vendored graph
+    /// library would bring a licence question with it (see the plan's §4).
+    public static func graph(_ commits: [Commit]) -> [GraphRow] {
+        var lanes: [String?] = []
+        var rows: [GraphRow] = []
+        for commit in commits {
+            let before = lanes
+            var lane = lanes.firstIndex(where: { $0 == commit.hash }) ?? -1
+            if lane < 0 {
+                lane = lanes.firstIndex(where: { $0 == nil }) ?? lanes.count
+                if lane == lanes.count { lanes.append(nil) }
+            }
+            // The lane continues with the first parent; a commit with no parents ends it.
+            lanes[lane] = commit.parents.first
+            // Any *other* lane waiting for this same commit converges here and ends.
+            var closed: [Int] = []
+            for (index, waiting) in lanes.enumerated() where index != lane && waiting == commit.hash {
+                lanes[index] = nil
+                closed.append(index)
+            }
+            var merged: [Int] = []
+            for parent in commit.parents.dropFirst() {
+                if let existing = lanes.firstIndex(where: { $0 == parent }) {
+                    merged.append(existing)          // that parent is already on its way down
+                    continue
+                }
+                let free = lanes.firstIndex(where: { $0 == nil }) ?? lanes.count
+                if free == lanes.count { lanes.append(parent) } else { lanes[free] = parent }
+                merged.append(free)
+            }
+            // A lane whose expectation is now nil and that nobody else waits for is free again.
+            rows.append(GraphRow(lane: lane, lanes: before.isEmpty ? [commit.hash] : before,
+                                 merged: merged, closed: closed))
+        }
+        return rows
+    }
+
+    /// The graph as monospace text, which is what a table column can show without a custom renderer:
+    /// `│ ● │` for a commit on the middle lane, `●─┐` where a merge brings in a second parent.
+    public static func graphText(_ row: GraphRow, width: Int? = nil) -> String {
+        let count = max(width ?? row.lanes.count, row.lane + 1,
+                        (row.merged.max() ?? 0) + 1)
+        var cells = [String](repeating: " ", count: count)
+        for (index, lane) in row.lanes.enumerated() where index < count {
+            cells[index] = lane == nil ? " " : "│"
+        }
+        cells[row.lane] = "●"
+        for lane in row.merged where lane < count {
+            cells[lane] = cells[lane] == " " ? "┐" : "┤"
+        }
+        for lane in row.closed where lane < count {
+            cells[lane] = "┘"      // this branch ends in the commit on this row
+        }
+        return cells.joined()
+    }
+
+    // MARK: - Blame (phase 2)
+
+    /// One line of `git blame --porcelain`.
+    public struct BlameLine: Sendable, Equatable {
+        public let line: Int
+        public let hash: String
+        public let author: String
+        public let date: Date
+        public let summary: String
+        public let text: String
+
+        public init(line: Int, hash: String, author: String, date: Date, summary: String, text: String) {
+            self.line = line; self.hash = hash; self.author = author
+            self.date = date; self.summary = summary; self.text = text
+        }
+
+        /// A commit that is not committed: `git blame` writes all-zero for a line that is not in any
+        /// commit yet, which is a different thing from an old commit and must not be shown as one.
+        public var isUncommitted: Bool { hash.allSatisfy { $0 == "0" } }
+    }
+
+    public static let blameArguments = ["--no-optional-locks", "blame", "--porcelain", "--"]
+
+    /// Parse `git blame --porcelain`.
+    ///
+    /// The format repeats a commit's details only the *first* time that commit appears, and refers back to
+    /// it afterwards by hash alone — so a parser that reads each block independently loses the author on
+    /// every line after the first of each commit. The details are therefore remembered per hash.
+    public static func parseBlame(_ output: String) -> [BlameLine] {
+        var details: [String: (author: String, date: Date, summary: String)] = [:]
+        var lines: [BlameLine] = []
+        var hash = ""
+        var lineNumber = 0
+        var author = "", summary = ""
+        var date = Date(timeIntervalSince1970: 0)
+
+        for raw in output.split(separator: "\n", omittingEmptySubsequences: false) {
+            let line = String(raw)
+            if line.hasPrefix("\t") {
+                let known = details[hash]
+                lines.append(BlameLine(line: lineNumber, hash: hash,
+                                       author: known?.author ?? author,
+                                       date: known?.date ?? date,
+                                       summary: known?.summary ?? summary,
+                                       text: String(line.dropFirst())))
+                continue
+            }
+            let parts = line.split(separator: " ", maxSplits: 3).map(String.init)
+            guard let first = parts.first else { continue }
+            if first.count == 40, first.allSatisfy({ $0.isHexDigit }), parts.count >= 3 {
+                hash = first
+                lineNumber = Int(parts[2]) ?? 0
+                if let known = details[hash] {
+                    author = known.author; date = known.date; summary = known.summary
+                } else {
+                    author = ""; summary = ""; date = Date(timeIntervalSince1970: 0)
+                }
+                continue
+            }
+            switch first {
+            case "author":
+                author = parts.count > 1 ? line.dropFirst("author ".count).trimmingCharacters(in: .whitespaces) : ""
+            case "author-time":
+                date = Date(timeIntervalSince1970: Double(parts.count > 1 ? parts[1] : "0") ?? 0)
+            case "summary":
+                summary = String(line.dropFirst("summary ".count))
+            case "filename":
+                details[hash] = (author, date, summary)
+            default:
+                break
+            }
+        }
+        return lines
+    }
+
     // MARK: - Cache freshness
 
     /// Whether a cached status may still be used.
