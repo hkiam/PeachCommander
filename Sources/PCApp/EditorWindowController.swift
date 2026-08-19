@@ -573,6 +573,35 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate, NSText
         }
     }
 
+    // MARK: - Per-line annotations from a plugin (F-426)
+
+    /// Show a plugin's per-line annotations in the gutter, or clear them with an empty array.
+    ///
+    /// The editor does not know what they mean — blame, coverage, anything — which is the point: the gutter
+    /// is the host's, the knowledge is the plugin's, and this is the seam between the two.
+    func showAnnotations(_ annotations: [GutterAnnotation], title: String,
+                         onClick: ((Int) -> Void)? = nil) {
+        // Annotations are drawn *by* the line-number ruler, so they need it visible. Turning it on rather
+        // than failing silently: a reader who asked for blame asked to see it.
+        if !annotations.isEmpty, lineNumbers == nil || gutterToggle.state == .off {
+            gutterToggle.state = .on
+            toggleLineNumbers()
+        }
+        lineNumbers?.onAnnotationClicked = onClick
+        lineNumbers?.setAnnotations(annotations, title: title)
+    }
+
+    /// Click a gutter annotation, for the harness (F-426).
+    func automationClickAnnotation(line: Int) -> Bool {
+        lineNumbers?.automationClickAnnotation(line: line) ?? false
+    }
+
+    /// What the gutter is showing, for the automation harness (F-426).
+    func automationAnnotationDump() -> String {
+        guard let ruler = lineNumbers else { return "ERROR: no gutter\n" }
+        return ruler.automationDump()
+    }
+
     @objc private func toggleLineNumbers() {
         let visible = gutterToggle.state == .on
         scrollView.rulersVisible = visible

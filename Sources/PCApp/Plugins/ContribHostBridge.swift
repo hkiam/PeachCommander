@@ -10,6 +10,7 @@
 
 import AppKit
 import PCVFS
+import PCFoundation   // GutterAnnotation, for the gutter service (F-426)
 import PCPluginHost
 import PCAutomation
 import CContrib
@@ -61,6 +62,10 @@ public protocol ContributionHost: ToolHost {
     func contribUpdateProgress(token: Int, fraction: Double, text: String?) -> Bool
     /// Close it. A token the host does not know is ignored.
     func contribEndProgress(token: Int)
+    /// Annotate a file's lines in the editor's gutter — blame, coverage, anything per line (F-426).
+    /// Opens an editor for `path` when none is showing it. Returns false when it could not.
+    func contribAnnotateLines(path: String, annotations: [GutterAnnotation], title: String,
+                              commandId: String?) -> Bool
 }
 
 public extension ContributionHost {
@@ -78,6 +83,8 @@ public extension ContributionHost {
     func contribBeginProgress(title: String) -> Int? { nil }
     func contribUpdateProgress(token: Int, fraction: Double, text: String?) -> Bool { true }
     func contribEndProgress(token: Int) {}
+    func contribAnnotateLines(path: String, annotations: [GutterAnnotation], title: String,
+                              commandId: String?) -> Bool { false }
     func contribAutomationCore() -> AutomationCore? { nil }
     func contribAutomationPolicy() async -> PermissionPolicy { .standard }
 }
@@ -362,6 +369,23 @@ final class ContribHostBridge {
             ContribHostBridge.onMain {
                 let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
                 b.host?.contribEndProgress(token: token)
+            }
+        }
+        // Per-line gutter annotations (F-426). The buffer is parsed on this side — one place, tested — and
+        // the click is routed back as a command id, which needs no new callback pointer and so no new way
+        // for a plugin to be called after it has gone away.
+        s.annotateLines = { host, pathC, annotationsC, titleC, commandC in
+            guard let host, let pathC else { return 0 }
+            let path = String(cString: pathC)
+            let raw = annotationsC.map { String(cString: $0) } ?? ""
+            let title = titleC.map { String(cString: $0) } ?? ""
+            let commandId = commandC.map { String(cString: $0) }
+            let annotations = GutterAnnotations.parse(raw)
+            return ContribHostBridge.onMain {
+                let b = Unmanaged<ContribHostBridge>.fromOpaque(host).takeUnretainedValue()
+                let ok = b.host?.contribAnnotateLines(path: path, annotations: annotations,
+                                                      title: title, commandId: commandId) ?? false
+                return ok ? Int32(1) : Int32(0)
             }
         }
         s.setFileComment = { host, pathC, commentC in

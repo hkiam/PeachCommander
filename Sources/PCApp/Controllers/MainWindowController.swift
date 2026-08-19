@@ -8608,6 +8608,51 @@ extension MainWindowController: ContributionHost {
         contribFileComment(path)
     }
 
+    // MARK: - Per-line gutter annotations from a plugin (F-426)
+
+    /// The line whose annotation was clicked last, read back by the plugin through
+    /// `getContext("gutterAnnotationLine")`. One value, because a click is one event and the command runs
+    /// immediately after it.
+    private static var lastAnnotationLine: Int?
+
+    func contribAnnotateLines(path: String, annotations: [GutterAnnotation], title: String,
+                              commandId: String?) -> Bool {
+        editorWindows.removeAll { $0.window == nil || !($0.window?.isVisible ?? false) }
+        // The editor already showing this file, if there is one: annotating a *second* window on the same
+        // file would leave the one the reader is looking at unannotated.
+        var editor = editorWindows.first { $0.path == path }
+        if editor == nil {
+            guard !annotations.isEmpty else { return false }   // nothing to show: do not open a window
+            openEditor(path: path)
+            editor = editorWindows.first { $0.path == path }
+        }
+        guard let editor else { return false }
+        let onClick: ((Int) -> Void)? = commandId.map { id in
+            { [weak self] line in
+                Self.lastAnnotationLine = line
+                self?.contribInvokeCommand(id)
+            }
+        }
+        editor.showAnnotations(annotations, title: title, onClick: onClick)
+        editor.window?.makeKeyAndOrderFront(nil)
+        return true
+    }
+
+    /// Click the gutter annotation of a line, for the harness (F-426) — the whole chain from the ruler
+    /// through the invoked command, which a synthesised mouse event cannot reach inside a ruler view.
+    func automationClickGutterAnnotation(line: Int) -> Bool {
+        let candidates = editorWindows.filter { $0.window?.isVisible ?? false }
+        return candidates.last?.automationClickAnnotation(line: line) ?? false
+    }
+
+    /// The gutter of the editor showing `path` (or the frontmost one), for the harness (F-426).
+    func automationGutterDump(path: String?) -> String {
+        let candidates = editorWindows.filter { $0.window?.isVisible ?? false }
+        let editor = path.flatMap { p in candidates.first { $0.path == p } } ?? candidates.last
+        guard let editor else { return "ERROR: no editor window\n" }
+        return "path=\(editor.path)\n" + editor.automationAnnotationDump()
+    }
+
     // MARK: - Progress for asynchronous plugin commands (F-422)
 
     /// Windows opened by `beginProgress`, keyed by the token the plugin holds. A dictionary rather than a
@@ -8765,6 +8810,8 @@ extension MainWindowController: ContributionHost {
     private static let noteLinesFieldID = "note_lines"
 
     func contribAugmentContext(_ context: inout ContributionContext) {
+        // Which line's annotation was clicked, for the command the gutter invokes (F-426).
+        context.set("gutterAnnotationLine", Self.lastAnnotationLine.map(String.init))
         // Only meaningful for the one command that reads it, and cleared by whoever set it — a stale
         // target would silently send the next plain "edit note" to a line in some other file.
         context.set("noteTarget", pendingNoteTarget)

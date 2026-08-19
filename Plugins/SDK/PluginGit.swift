@@ -919,6 +919,52 @@ public enum PluginGit {
             || exists((gitDir as NSString).appendingPathComponent("rebase-apply"))
     }
 
+    // MARK: - Blame in the host's gutter (F-426)
+
+    /// The wire format the host's `annotateLines` reads: one record per source line, `text\ttooltip`.
+    ///
+    /// Kept here, next to the parsing of `blame --porcelain`, and unit-tested — the buffer is the whole
+    /// interface to the gutter, and a record count that disagrees with the file shifts every annotation
+    /// against the line it describes, which is worse than showing nothing.
+    ///
+    /// `dateText` is passed in rather than formatted here: a date's rendering is the host's locale's
+    /// business, and this file stays free of user-facing text.
+    public static func gutterAnnotations(_ lines: [BlameLine],
+                                        dateText: (Date) -> String,
+                                        uncommittedLabel: String) -> String {
+        guard let highest = lines.map(\.line).max() else { return "" }
+        // Indexed by line number, because `blame` may skip lines (it does not, today) and because the
+        // host's reader is "record N describes line N".
+        var records = [String](repeating: "", count: highest)
+        for line in lines {
+            guard line.line >= 1, line.line <= highest else { continue }
+            let text: String
+            let tooltip: String
+            if line.isUncommitted {
+                text = uncommittedLabel
+                tooltip = uncommittedLabel
+            } else {
+                text = "\(String(line.hash.prefix(8)))  \(line.author)"
+                tooltip = "\(String(line.hash.prefix(8)))  \(line.author)  \(dateText(line.date))"
+                    + (line.summary.isEmpty ? "" : "  ·  \(line.summary)")
+            }
+            // A tab separates the two fields and a newline separates records, so neither field may contain
+            // either. A newline in a tooltip was the first version of this and the test caught it: it
+            // splits one record into two and shifts every annotation after it against the line it
+            // describes — which looks like blame that is simply wrong rather than like a format defect.
+            records[line.line - 1] = Self.oneLine(text) + "\t" + Self.oneLine(tooltip)
+        }
+        return records.joined(separator: "\n") + "\n"
+    }
+
+    /// A field of the gutter's wire format: no tabs, no newlines.
+    static func oneLine(_ text: String) -> String {
+        text.replacingOccurrences(of: "\t", with: " ")
+            .replacingOccurrences(of: "\r\n", with: " · ")
+            .replacingOccurrences(of: "\n", with: " · ")
+            .replacingOccurrences(of: "\r", with: " · ")
+    }
+
     // MARK: - Remotes: transport, credentials, web links (phase 5b/5c)
 
     public enum RemoteTransport: String, Sendable, Equatable { case ssh, https, git, local, unknown }

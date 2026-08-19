@@ -9,8 +9,8 @@
 > **glyph** rather than an icon, because an icon needs the host field in §6.2 and a glyph buys most of the
 > benefit for none of the ABI; and **per-repository settings** were dropped, because git already has that
 > configuration and a second place to set it can only disagree with the first. What remains is the host
-> work in §6 — blame in the viewer's gutter, an icon column field, and localized column headers (declared
-> asynchronous commands are **built**, F-422) — and §5's **phase 5**, which re-examines the four things the first version
+> work in §6 — an icon column field and localized column headers (declared asynchronous commands are
+> **built**, F-422, and blame in the gutter is **built**, F-426) — and §5's **phase 5**, which re-examines the four things the first version
 > of this plan put out of scope — all four settled: the conflict resolver on the markers (5a, F-420),
 > credential *diagnosis* without storage and "open on the web" without an API (5b/5c, F-421), and the
 > rebase bounded to the commits ahead of the upstream (5d, F-423) are **built**, with a merge editor,
@@ -349,6 +349,10 @@ is for.
 
 The plugin cannot do the following through today's SDK, and each is small on the host side:
 
+0. **Annotate lines in the editor's gutter** — *built (F-426)*: `annotateLines(path, records, title,
+   commandId)`, one record per line, the click routed back as a command id rather than as a callback
+   pointer. This is what blame-in-the-gutter needed, and it serves anything else per line (coverage, a
+   linter) for free.
 1. **Compare two files on demand** — `compareFiles(a, b, titleA, titleB)` in `PcHostServices`, so a
    plugin can put a blob written to a temp file next to the working file in the app's own compare
    window. Without it the plugin would have to open its own diff view, which is a second diff

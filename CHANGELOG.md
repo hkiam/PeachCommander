@@ -12,6 +12,22 @@ were reconstructed from the git history and the notes in `STATE.md` when it was 
 `README.md` explains the Control-click route. Signing needs an Apple Developer ID, which the project
 does not have.
 
+## [Unreleased]
+
+### Added
+
+- **Blame in the editor's gutter.** `Git ▸ Blame in the Editor` opens the file and writes who last touched
+  each line next to the line numbers, with the commit, author, date and subject on hover; clicking a line
+  opens that commit against its parent in the compare window. The mechanism is a new host service, so any
+  plugin can annotate lines this way — coverage, a linter, anything per line.
+
+### Changed
+
+- **The Git menu reads like a menu.** Inside a submenu already called *Git*, every entry said "Git" again:
+  `Git ▸ Git Status…`. The titles are now `Status…`, `Stage`, `Commit…`, `Push`, `Pull`, `Panel`, `Diff…`,
+  `History…` next to `File History…`, `Branches, Stashes & Tags…` and `Blame (list)…` beside the new
+  `Blame in the Editor` — and the entries are in a sensible order instead of the order they were added in.
+
 ## [0.7.2] — 2026-08-19
 
 The Git plugin, from a first pass into something worth reaching for — and the host change that

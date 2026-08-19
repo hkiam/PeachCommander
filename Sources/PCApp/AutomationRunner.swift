@@ -449,6 +449,20 @@ extension MainWindowController {
                     let out = automationSendKey(k[0], focus: k[1])
                     try? out.write(toFile: k[2], atomically: true, encoding: .utf8)
                 }
+            case "gutterclick":                         // gutterclick <line>|<out> (F-426)
+                let c = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if c.count == 2, let line = Int(c[0]) {
+                    let fired = automationClickGutterAnnotation(line: line)
+                    try? "clicked=\(fired ? 1 : 0)\n".write(toFile: c[1], atomically: true,
+                                                             encoding: .utf8)
+                }
+            case "gutterdump":                          // gutterdump <out>[|<path>] (F-426)
+                // What a plugin's per-line annotations actually reached: the gutter's width, how many
+                // annotations it holds and the first of them. Without this, "blame in the gutter" could
+                // only be checked by looking at a screenshot.
+                let g = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                let text = automationGutterDump(path: g.count > 1 ? g[1] : nil)
+                try? text.write(toFile: g[0], atomically: true, encoding: .utf8)
             case "plugincancel":                        // plugincancel <out> (F-422)
                 // Press Cancel in the progress window of an asynchronous plugin command. Not `keysend
                 // escape`: a synthesised key event does not reach a button's `keyEquivalent`, so that

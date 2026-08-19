@@ -25,9 +25,6 @@
 "Cancel" = "Abbrechen";
 
 /* Info.plist contribution titles (menu items) */
-"Git Status…" = "Git-Status…";
-"Git Add (stage)" = "Git Add (Stage)";
-"Git Commit…" = "Git Commit…";
 "Git Push" = "Git Push";
 "Git Pull" = "Git Pull";
 
@@ -64,8 +61,6 @@
 "This file has no changes to compare." = "Diese Datei hat keine Änderungen zum Vergleichen.";
 "Unstage" = "Unstagen";
 "Working tree" = "Arbeitskopie";
-"Git Diff…" = "Git Diff…";
-"Git Panel" = "Git-Panel";
 
 /* Phase 2 (F-417): the history and blame windows */
 "%@ — %lld commit(s)" = "%@ — %lld Commit(s)";
@@ -78,7 +73,6 @@
 "File" = "Datei";
 "File History…" = "Dateihistorie…";
 "Git Log — %@" = "Git-Log — %@";
-"Git Log…" = "Git-Log…";
 "History of %@" = "Historie von %@";
 "History of %@ — %lld commit(s)" = "Historie von %@ — %lld Commit(s)";
 "Load more" = "Mehr laden";
@@ -89,13 +83,11 @@
 "That line is not committed yet." = "Diese Zeile ist noch nicht committet.";
 
 /* Phase 3 (F-418): branches, stashes, remotes, conflicts */
-"%@ — on %@, %lld branch(es), %lld stash(es)" = "%@ — auf %@, %lld Branch(es), %lld Stash(es)";
 "%lld conflicted file(s) have to be resolved first." = "%lld Datei(en) mit Konflikt müssen zuerst gelöst werden.";
 "%lld staged change(s) would be carried over. Commit or unstage first." = "%lld gestagte Änderung(en) würden mitgenommen. Zuerst committen oder unstagen.";
 "A merge that conflicts stops and leaves the conflicts to resolve." = "Ein Merge mit Konflikt bricht ab und lässt die Konflikte zum Lösen stehen.";
 "Another Git operation is still running." = "Eine andere Git-Operation läuft noch.";
 "Branches" = "Branches";
-"Branches & Stashes…" = "Branches & Stashes…";
 "Branches — %@" = "Branches — %@";
 "Cancelled." = "Abgebrochen.";
 "Delete" = "Löschen";
@@ -132,7 +124,6 @@
 "Unmerged commits are refused unless you choose Force." = "Nicht gemergte Commits werden abgelehnt, außer du erzwingst es.";
 "ours" = "unsere";
 "theirs" = "ihre";
-"Git asks the SSH agent or your credential helper for credentials; this plugin never stores them." = "Git fragt den SSH-Agenten oder deinen Credential-Helper nach Zugangsdaten; dieses Plugin speichert sie nie.";
 
 /* Phase 4 (F-419): Ignorieren, Revert/Cherry-Pick. „Commit“, „Stash“, „Branch“ und
    „Cherry-Pick“ bleiben englisch — so heißen sie auch in git und in TortoiseGit. */
@@ -230,7 +221,6 @@
 "Skip commit" = "Commit überspringen";
 "Squash" = "Squash";
 "Start rebase" = "Rebase starten";
-"The commits are replaced by new ones. Anything already pushed would have to be force-pushed, which rewrites history for everybody else." = "Die Commits werden durch neue ersetzt. Was schon gepusht ist, müsste force-gepusht werden — das schreibt die Historie für alle anderen um.";
 "The message could not be written." = "Die Nachricht konnte nicht geschrieben werden.";
 "The oldest commit cannot be squashed — there is nothing before it on this branch." = "Der älteste Commit kann nicht gesquasht werden — davor liegt auf diesem Branch nichts.";
 "The plan could not be written." = "Der Plan konnte nicht geschrieben werden.";
@@ -269,3 +259,18 @@
 "Tags" = "Tags";
 "The commits are replaced by new ones. These are not on the upstream yet, so nobody else has them — but anything referring to them locally (another branch, a stash, an open worktree) keeps pointing at the old ones." = "Die Commits werden durch neue ersetzt. Sie sind noch nicht im Upstream, niemand anders hat sie also — aber alles, was lokal auf sie zeigt (ein anderer Branch, ein Stash, ein offener Worktree), zeigt weiter auf die alten.";
 "This deletes it here only. A tag already pushed stays on the remote until it is deleted there too." = "Das löscht ihn nur hier. Ein bereits gepushter Tag bleibt auf dem Remote, bis er dort ebenfalls gelöscht wird.";
+
+/* F-426/F-427: Blame im Editor-Gutter, und die aufgeräumten Befehlstitel. Die Titel stehen im
+   Untermenü „Git“, deshalb ohne „Git“ davor. */
+"Blame" = "Blame";
+"Blame (list)…" = "Blame (Liste)…";
+"Blame in the Editor" = "Blame im Editor";
+"Branches, Stashes & Tags…" = "Branches, Stashes & Tags…";
+"Commit…" = "Commit…";
+"Diff…" = "Diff…";
+"History…" = "Historie…";
+"Panel" = "Panel";
+"Select a file first." = "Wähle zuerst eine Datei.";
+"Show the Blamed Line's Commit" = "Commit der Blame-Zeile anzeigen";
+"Status…" = "Status…";
+"This file could not be annotated. Use “Blame…” for the list instead." = "Diese Datei konnte nicht annotiert werden. Nimm „Blame (Liste)…“ für die Liste.";

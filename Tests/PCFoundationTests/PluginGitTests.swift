@@ -501,6 +501,48 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(PluginGit.cherryPickArguments("abc"), ["cherry-pick", "--no-edit", "abc"])
     }
 
+    // MARK: - Blame in the gutter (F-426)
+
+    /// Record N describes line N: an off-by-one here shifts every annotation against the line it is about,
+    /// which is worse than showing nothing at all.
+    func testGutterAnnotationsAreIndexedByLine() {
+        let lines = [
+            PluginGit.BlameLine(line: 1, hash: "aaaaaaaaaaaa", author: "Ada",
+                                date: Date(timeIntervalSince1970: 0), summary: "adds the parser", text: "let x = 1"),
+            PluginGit.BlameLine(line: 3, hash: "bbbbbbbbbbbb", author: "Linus",
+                                date: Date(timeIntervalSince1970: 0), summary: "fixes it", text: "let z = 3"),
+        ]
+        let buffer = PluginGit.gutterAnnotations(lines, dateText: { _ in "1970-01-01" },
+                                                uncommittedLabel: "(uncommitted)")
+        let records = buffer.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+        XCTAssertEqual(records.count, 4, "three lines plus the terminator")
+        XCTAssertTrue(records[0].hasPrefix("aaaaaaaa  Ada"))
+        XCTAssertEqual(records[1], "", "line 2 has no blame line, so it stays blank")
+        XCTAssertTrue(records[2].hasPrefix("bbbbbbbb  Linus"))
+        XCTAssertTrue(records[0].contains("\tadds the parser") || records[0].contains("adds the parser"),
+                      "the subject belongs in the tooltip")
+    }
+
+    func testGutterAnnotationsMarkUncommittedAndNeverEmitATabInAField() {
+        let lines = [
+            PluginGit.BlameLine(line: 1, hash: "000000000000", author: "Not Committed Yet",
+                                date: Date(timeIntervalSince1970: 0), summary: "with\ta tab", text: "x"),
+            PluginGit.BlameLine(line: 2, hash: "cccccccccccc", author: "A\tB",
+                                date: Date(timeIntervalSince1970: 0), summary: "sub\tject", text: "y"),
+        ]
+        let buffer = PluginGit.gutterAnnotations(lines, dateText: { _ in "x" },
+                                                uncommittedLabel: "(uncommitted)")
+        let records = buffer.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+        XCTAssertTrue(records[0].hasPrefix("(uncommitted)\t"))
+        // Exactly one tab per record: the host cuts at the first one, so a second would put half the
+        // tooltip into the column the gutter draws.
+        for record in records where !record.isEmpty {
+            XCTAssertEqual(record.filter { $0 == "\t" }.count, 1, record)
+            XCTAssertFalse(record.contains("\n"), "a newline in a record shifts every annotation after it")
+        }
+        XCTAssertEqual(PluginGit.gutterAnnotations([], dateText: { _ in "" }, uncommittedLabel: ""), "")
+    }
+
     // MARK: - Refs in the history, and tags (F-425)
 
     func testParseRefsFromGitDecoration() {

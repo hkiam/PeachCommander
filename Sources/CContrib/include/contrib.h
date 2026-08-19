@@ -154,6 +154,25 @@ typedef struct PcHostServices {
     void *(*beginProgress)(void *host, const char *title);
     int  (*updateProgress)(void *host, void *handle, double fraction, const char *text);
     void (*endProgress)(void *host, void *handle);
+    /* Annotate a text file's lines in the host's editor gutter — blame, coverage, anything per line
+       (F-426).
+
+       `path` is the file; the host annotates an editor window already showing it and opens one if there is
+       none, so a plugin does not have to know whether the reader has the file open. `annotations` is one
+       record per source line, in order from line 1, separated by '\n', each record either `text` or
+       `text\ttooltip`; an empty record leaves that line unannotated, and a list shorter than the file
+       annotates only the lines it covers. Pass NULL or "" to clear.
+
+       `title` names the column for the reader (a tooltip on the gutter). `commandId`, when not NULL, is a
+       command the host invokes when an annotation is clicked; that command can read which line it was
+       through `getContext("gutterAnnotationLine")`. Both may be NULL.
+
+       Returns 1 when a window was annotated. This exists because the reference products draw blame in the
+       gutter and a plugin cannot: the gutter belongs to the host's editor, and the alternative — a plugin
+       shipping its own text view — is a second editor in the same application. Appended at the end for ABI
+       compatibility. */
+    int (*annotateLines)(void *host, const char *path, const char *annotations,
+                         const char *title, const char *commandId);
 } PcHostServices;
 
 /* ---- Behavior entry points --------------------------------------------- */

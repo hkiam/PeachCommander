@@ -22,7 +22,7 @@
 				<key>id</key>
 				<string>plugin.git.status</string>
 				<key>title</key>
-				<string>Git Status…</string>
+				<string>Status…</string>
 			</dict>
 			<dict>
 				<key>category</key>
@@ -30,7 +30,7 @@
 				<key>id</key>
 				<string>plugin.git.stage</string>
 				<key>title</key>
-				<string>Git Add (stage)</string>
+				<string>Stage</string>
 			</dict>
 			<dict>
 				<key>category</key>
@@ -38,7 +38,7 @@
 				<key>id</key>
 				<string>plugin.git.commit</string>
 				<key>title</key>
-				<string>Git Commit…</string>
+				<string>Commit…</string>
 			</dict>
 			<dict>
 				<key>async</key>
@@ -48,7 +48,7 @@
 				<key>id</key>
 				<string>plugin.git.push</string>
 				<key>title</key>
-				<string>Git Push</string>
+				<string>Push</string>
 			</dict>
 			<dict>
 				<key>async</key>
@@ -58,7 +58,7 @@
 				<key>id</key>
 				<string>plugin.git.pull</string>
 				<key>title</key>
-				<string>Git Pull</string>
+				<string>Pull</string>
 			</dict>
 			<dict>
 				<key>category</key>
@@ -66,7 +66,7 @@
 				<key>id</key>
 				<string>plugin.git.panel.show</string>
 				<key>title</key>
-				<string>Git Panel</string>
+				<string>Panel</string>
 			</dict>
 			<dict>
 				<key>category</key>
@@ -74,7 +74,7 @@
 				<key>id</key>
 				<string>plugin.git.diff</string>
 				<key>title</key>
-				<string>Git Diff…</string>
+				<string>Diff…</string>
 			</dict>
 			<dict>
 				<key>category</key>
@@ -82,7 +82,7 @@
 				<key>id</key>
 				<string>plugin.git.log</string>
 				<key>title</key>
-				<string>Git Log…</string>
+				<string>History…</string>
 			</dict>
 			<dict>
 				<key>category</key>
@@ -98,7 +98,7 @@
 				<key>id</key>
 				<string>plugin.git.blame</string>
 				<key>title</key>
-				<string>Blame…</string>
+				<string>Blame (list)…</string>
 			</dict>
 			<dict>
 				<key>category</key>
@@ -106,7 +106,7 @@
 				<key>id</key>
 				<string>plugin.git.branches</string>
 				<key>title</key>
-				<string>Branches &amp; Stashes…</string>
+				<string>Branches, Stashes &amp; Tags…</string>
 			</dict>
 			<dict>
 				<key>category</key>
@@ -164,9 +164,39 @@
 				<key>title</key>
 				<string>Rebase…</string>
 			</dict>
+			<dict>
+				<key>async</key>
+				<true/>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.blame.gutter</string>
+				<key>title</key>
+				<string>Blame in the Editor</string>
+			</dict>
+			<dict>
+				<key>category</key>
+				<string>Commands</string>
+				<key>id</key>
+				<string>plugin.git.blame.commit</string>
+				<key>title</key>
+				<string>Show the Blamed Line's Commit</string>
+			</dict>
 		</array>
 		<key>contextMenus</key>
 		<array>
+			<dict>
+				<key>command</key>
+				<string>plugin.git.blame.gutter</string>
+				<key>group</key>
+				<string>9_plugins</string>
+				<key>submenu</key>
+				<string>Git</string>
+				<key>surface</key>
+				<string>panel.item</string>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
 			<dict>
 				<key>command</key>
 				<string>plugin.git.status</string>
@@ -316,13 +346,25 @@
 		<array>
 			<dict>
 				<key>command</key>
+				<string>plugin.git.blame.gutter</string>
+				<key>group</key>
+				<string>5_git</string>
+				<key>menu</key>
+				<string>Commands/Git</string>
+				<key>order</key>
+				<integer>90</integer>
+				<key>when</key>
+				<string>cursorPath</string>
+			</dict>
+			<dict>
+				<key>command</key>
 				<string>plugin.git.status</string>
 				<key>group</key>
 				<string>5_git</string>
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>100</integer>
+				<integer>20</integer>
 				<key>when</key>
 				<string>cursorPath</string>
 			</dict>
@@ -334,7 +376,7 @@
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>110</integer>
+				<integer>40</integer>
 				<key>when</key>
 				<string>cursorPath</string>
 			</dict>
@@ -346,7 +388,7 @@
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>120</integer>
+				<integer>50</integer>
 				<key>when</key>
 				<string>cursorPath</string>
 			</dict>
@@ -382,7 +424,7 @@
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>90</integer>
+				<integer>10</integer>
 			</dict>
 			<dict>
 				<key>command</key>
@@ -392,7 +434,7 @@
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>95</integer>
+				<integer>30</integer>
 				<key>when</key>
 				<string>cursorPath</string>
 			</dict>
@@ -404,7 +446,7 @@
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>120</integer>
+				<integer>60</integer>
 			</dict>
 			<dict>
 				<key>command</key>
@@ -414,7 +456,7 @@
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>130</integer>
+				<integer>70</integer>
 				<key>when</key>
 				<string>cursorPath</string>
 			</dict>
@@ -426,7 +468,7 @@
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>140</integer>
+				<integer>80</integer>
 				<key>when</key>
 				<string>cursorPath</string>
 			</dict>
@@ -438,7 +480,7 @@
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>150</integer>
+				<integer>100</integer>
 			</dict>
 			<dict>
 				<key>command</key>
@@ -448,7 +490,7 @@
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>160</integer>
+				<integer>110</integer>
 				<key>when</key>
 				<string>cursorPath</string>
 			</dict>
@@ -496,7 +538,7 @@
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>200</integer>
+				<integer>150</integer>
 			</dict>
 			<dict>
 				<key>command</key>
@@ -506,7 +548,7 @@
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>210</integer>
+				<integer>160</integer>
 			</dict>
 			<dict>
 				<key>command</key>
@@ -516,7 +558,7 @@
 				<key>menu</key>
 				<string>Commands/Git</string>
 				<key>order</key>
-				<integer>220</integer>
+				<integer>120</integer>
 			</dict>
 		</array>
 		<key>views</key>

@@ -302,6 +302,59 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         svc.reloadActivePanel?(svc.host)
         svc.presentInfo?(svc.host, L("Git"),
                          String(format: L("Added “%@” to .gitignore."), pattern))
+    case "plugin.git.blame.gutter":
+        // Blame where the code is: the host's editor gutter (F-426). Declared asynchronous, because
+        // `blame` on a large file takes seconds and the reader should see progress rather than a frozen
+        // window — this is the first command outside push/pull to use that path.
+        guard !relative.isEmpty else {
+            svc.presentInfo?(svc.host, L("Git"), L("Select a file first."))
+            return
+        }
+        let handle = L("Blame").withCString { svc.beginProgress?(svc.host, $0) }
+        let result = PluginGitRepo.run(["-C", root] + PluginGit.blameArguments + [relative])
+        let lines = result.ok ? PluginGit.parseBlame(result.out) : []
+        if let handle { svc.endProgress?(svc.host, handle) }
+        guard !lines.isEmpty else {
+            DispatchQueue.main.async {
+                svc.presentInfo?(svc.host, L("Blame"), result.ok
+                    ? L("No lines.") : result.out.trimmingCharacters(in: .whitespacesAndNewlines))
+            }
+            return
+        }
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
+        let buffer = PluginGit.gutterAnnotations(lines, dateText: formatter.string(from:),
+                                                uncommittedLabel: L("(uncommitted)"))
+        let absolute = (root as NSString).appendingPathComponent(relative)
+        DispatchQueue.main.async {
+            MainActor.assumeIsolated { gutterBlame = (root: root, path: relative, lines: lines) }
+            var shown = false
+            absolute.withCString { path in
+                buffer.withCString { annotations in
+                    L("Blame").withCString { title in
+                        "plugin.git.blame.commit".withCString { command in
+                            shown = svc.annotateLines?(svc.host, path, annotations, title, command) == 1
+                        }
+                    }
+                }
+            }
+            if !shown {
+                // An older host has no `annotateLines` at all, and one that has it can still refuse (a
+                // file it cannot open in an editor). Saying so beats a command that silently does nothing.
+                svc.presentInfo?(svc.host, L("Blame"),
+                                 L("This file could not be annotated. Use “Blame…” for the list instead."))
+            }
+        }
+    case "plugin.git.blame.commit":
+        // The gutter was clicked. Which line is in the host's context, and what it means is in the blame
+        // this plugin computed for that file — no state travels through the ABI but the line number.
+        //
+        // Deliberately NOT declared `async`: this opens a window, and PORTING.md's first rule for an
+        // asynchronous command is that it may not touch AppKit. Declaring it async cost a crash on the
+        // first click — `MainActor.assumeIsolated` off the main thread does not fail politely, it traps,
+        // which is the same trap F-422 fixed one level down in the host bridge (F-426).
+        MainActor.assumeIsolated { showCommitOfBlamedLine(svc) }
     case "plugin.git.rebase":
         // The commits ahead of the upstream, and what to do with each (F-423). A window rather than a
         // command with arguments: the plan is the point, and it is built by looking at the list.
@@ -488,6 +541,56 @@ private func promptCommitMessage() -> String? {
 }
 
 // MARK: - History windows (phase 2, F-417)
+
+/// The blame this plugin last put into the host's gutter, so a click on it can be answered (F-426).
+///
+/// Held here rather than sent through the ABI: the host reports *which line* was clicked, and what a line
+/// means is the plugin's own knowledge — sending commit hashes into the host would make it carry state it
+/// has no use for.
+@MainActor private var gutterBlame: (root: String, path: String, lines: [PluginGit.BlameLine])?
+
+/// The commit behind a clicked gutter annotation, against its parent, in the host's compare window.
+@MainActor
+private func showCommitOfBlamedLine(_ svc: PcHostServices) {
+    guard let blame = gutterBlame else { return }
+    var buffer = [CChar](repeating: 0, count: 64)
+    let ok = "gutterAnnotationLine".withCString { key in
+        svc.getContext?(svc.host, key, &buffer, Int32(buffer.count)) == 1
+    }
+    guard ok, let line = Int(String(cString: buffer)),
+          let blamed = blame.lines.first(where: { $0.line == line }) else { return }
+    guard !blamed.isUncommitted else {
+        svc.presentInfo?(svc.host, L("Blame"), L("That line is not committed yet."))
+        return
+    }
+    let root = blame.root, path = blame.path, hash = blamed.hash
+    DispatchQueue.global(qos: .userInitiated).async {
+        let newer = PluginGitRepo.writeBlob(root: root, spec: "\(hash):\(path)", path: path, base: .head)
+        let parentResult = PluginGitRepo.run(["-C", root, "rev-parse", "\(hash)^"])
+        let parent = parentResult.ok
+            ? parentResult.out.trimmingCharacters(in: .whitespacesAndNewlines) : nil
+        let older = parent.flatMap {
+            PluginGitRepo.writeBlob(root: root, spec: "\($0):\(path)", path: path, base: .index)
+        } ?? PluginGitRepo.writeEmptyBlob(path: path)
+        DispatchQueue.main.async {
+            guard let newer, let older else {
+                svc.presentInfo?(svc.host, L("Git"), L("That version could not be read."))
+                return
+            }
+            let short = String(hash.prefix(8))
+            let leftTitle = parent.map { "\(String($0.prefix(8))):\(path)" } ?? L("(added)")
+            older.withCString { a in
+                newer.withCString { b in
+                    leftTitle.withCString { at in
+                        "\(short):\(path)".withCString { bt in
+                            svc.compareFiles?(svc.host, a, b, at, bt)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 /// The plugin's own windows, held so they are not deallocated the moment the command returns. The host
 /// removes its menus when a window closes (contrib.h), so there is no teardown call to make.

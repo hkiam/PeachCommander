@@ -47,6 +47,30 @@ regression from here on. The run's report and screenshots are under `/tmp/vm-new
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
 
+## 2026-08-19 (F-426, F-427) — Blame where the code is, and a menu read as a menu
+
+The last of the three host items the Git plan named: `annotateLines`, a service for putting one line of text
+next to every source line. The gutter belongs to the host's editor, so a plugin could never draw blame there
+— and the alternative, a plugin shipping its own text view, is a second editor in the same application.
+
+Three decisions worth keeping. The **wire format is the interface** (one record per line, `text\ttooltip`),
+so it is parsed in one tested place — and the test earned itself immediately: the first Git side put the
+commit subject into the tooltip *with a newline*, which splits a record in two and shifts every annotation
+after it against the line it describes. That reads as blame being wrong, not as a format defect. The
+**click is a command, not a callback**: the plugin passes a command id, the host invokes it and exposes the
+line through `getContext`, so no function pointer crosses the ABI and nothing can call into a plugin that
+has gone away. And the host **finds the editor already showing the file** rather than opening a second one.
+
+Then it bit its own author: declaring the click command `"async": true` crashed the app on the first click,
+because `MainActor.assumeIsolated` off the main thread traps — which is exactly rule one of the
+asynchronous-command section *I wrote* in PORTING.md four commits earlier. The crash report named it in one
+line; the fix was removing one key.
+
+F-427 was the leftover polish: every contributed title was checked against every surface that renders one
+(the two `Git` submenus — the button-bar editor lists internal names), which made the `Git ` prefix
+redundant everywhere it appeared. Ten titles normalized, the menu reordered out of its append order, ten
+stale keys pruned from nineteen languages.
+
 ## 2026-08-19 (F-424, F-425) — Reviewing the plugin as somebody who has to use it
 
 Asked to check the Git plugin functionally *and* as an interface. Going through it as a user rather than as

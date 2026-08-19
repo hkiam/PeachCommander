@@ -238,3 +238,34 @@ The host then calls `PcRunCommand` on a background thread, and three rules follo
 
 A synchronous command sees no change: the flag is opt-in, and its absence means the old contract.
 
+## Annotating lines in the host's editor: `annotateLines` (F-426)
+
+A plugin often knows something about every line of a file — who last touched it, whether a test covered it,
+what a linter said — and cannot draw it: the gutter belongs to the host's editor, and a plugin shipping its
+own text view would be a second editor in the same application. So the plugin sends text and the host draws
+it:
+
+```c
+int shown = svc->annotateLines(svc->host, "/path/to/file.swift",
+                               "a1b2c3d4  Ada\tadds the parser\n"   /* line 1 */
+                               "\n"                                 /* line 2: nothing */
+                               "ffffffff  Linus\tfixes it\n",       /* line 3 */
+                               "Blame", "plugin.example.showcommit");
+```
+
+* **One record per source line**, in order from line 1, separated by `\n`; each record is `text` or
+  `text\ttooltip`. An empty record leaves that line blank, and a short list annotates only what it covers.
+  Neither field may contain a tab or a newline — a newline inside a record splits it in two and shifts
+  every annotation after it against the line it describes.
+* **The host finds or opens the editor** for that path, so the plugin does not have to know whether the
+  reader has the file open. It returns 0 when it could not (an older host, or a file it cannot edit) —
+  worth reporting, because a command that silently does nothing reads as broken.
+* **The click is a command, not a callback.** Pass a command id and the host invokes it when an annotation
+  is clicked; that command reads which line through `getContext("gutterAnnotationLine")`. No function
+  pointer crosses the ABI, so there is no way for the host to call into a plugin that has gone away.
+* **Clear** with `NULL` or `""`.
+
+One rule bears repeating here, because writing this service was where it bit its own author: a command that
+opens a window **must not** be declared `"async": true`. `MainActor.assumeIsolated` off the main thread does
+not fail politely, it traps — see the asynchronous-command section above.
+

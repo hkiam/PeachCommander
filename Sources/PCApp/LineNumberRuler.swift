@@ -13,6 +13,7 @@
 // the file and not to a row on screen. That is also what "go to line 42" means.
 
 import AppKit
+import PCFoundation
 
 final class LineNumberRuler: NSRulerView {
     /// Where the lines start. See `EditorLineIndex` for why this is not PCVFS's LineIndexer.
@@ -23,6 +24,71 @@ final class LineNumberRuler: NSRulerView {
     var isOffsetFolded: ((Int) -> Bool)?
     private var digitsShown = 2
     private weak var editorTextView: NSTextView?
+
+    // MARK: - Per-line annotations (F-426)
+
+    /// What a plugin knows about each line — blame, coverage — drawn left of the numbers. Index 0 is line 1.
+    private var annotations: [GutterAnnotation] = []
+    private var annotationWidth: CGFloat = 0
+    /// Called with the 1-based line whose annotation was clicked.
+    var onAnnotationClicked: ((Int) -> Void)?
+    /// What the annotation column is (shown as the gutter's tooltip), e.g. "Blame".
+    private var annotationTitle: String = ""
+
+    /// Show these annotations, or none. The gutter widens to fit the widest one and the owner is told, so
+    /// the text container is inset in step — the same handshake the digits use.
+    func setAnnotations(_ annotations: [GutterAnnotation], title: String) {
+        self.annotations = annotations
+        self.annotationTitle = title
+        let font = Self.annotationFont
+        annotationWidth = GutterAnnotations.columnWidth(annotations, measure: {
+            ($0 as NSString).size(withAttributes: [.font: font]).width
+        })
+        if annotationWidth > 0 { annotationWidth += Self.padding }
+        toolTip = annotations.isEmpty ? nil : title
+        updateThickness(force: true)
+        needsDisplay = true
+    }
+
+    var hasAnnotations: Bool { !annotations.isEmpty }
+
+    private static let annotationFont = NSFont.monospacedSystemFont(ofSize: 9, weight: .regular)
+
+    /// The gutter's width: digits, plus the annotation column when there is one.
+    private func updateThickness(force: Bool) {
+        let digits = max(2, String(index.count).count)
+        let wanted = CGFloat(digits) * 8 + Self.padding * 2 + annotationWidth
+        guard force || digits != digitsShown || wanted != ruleThickness else { return }
+        digitsShown = digits
+        ruleThickness = wanted
+        onThicknessChanged?(ruleThickness)
+    }
+
+    /// Which line is at a point in the ruler — the inverse of the drawing loop, used by the click.
+    private func line(at point: NSPoint) -> Int? {
+        guard let textView = editorTextView, let layoutManager = textView.layoutManager,
+              let container = textView.textContainer else { return nil }
+        let visible = scrollView?.contentView.bounds ?? .zero
+        let inset = textView.textContainerInset.height
+        // The ruler's y runs the same way as the text view's here, so undo the same shift the drawing adds.
+        let textY = point.y + visible.minY - inset
+        let glyph = layoutManager.glyphIndex(for: NSPoint(x: 0, y: textY), in: container)
+        let offset = layoutManager.characterIndexForGlyph(at: glyph)
+        return line(containing: offset)
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        guard !annotations.isEmpty, let onAnnotationClicked else {
+            super.mouseDown(with: event)
+            return
+        }
+        let point = convert(event.locationInWindow, from: nil)
+        guard let line = line(at: point), GutterAnnotations.annotation(annotations, line: line) != nil else {
+            super.mouseDown(with: event)
+            return
+        }
+        onAnnotationClicked(line)
+    }
 
     /// Space either side of the digits.
     private static let padding: CGFloat = 6
@@ -59,12 +125,7 @@ final class LineNumberRuler: NSRulerView {
     /// from disk, format, a line operation) does not post `NSText.didChangeNotification`.
     func refresh() {
         rebuildLineStarts()
-        let digits = max(2, String(index.count).count)
-        if digits != digitsShown {
-            digitsShown = digits
-            ruleThickness = CGFloat(digits) * 8 + Self.padding * 2
-            onThicknessChanged?(ruleThickness)
-        }
+        updateThickness(force: false)
         needsDisplay = true
     }
 
@@ -76,6 +137,26 @@ final class LineNumberRuler: NSRulerView {
 
     private func line(containing offset: Int) -> Int { index.line(containing: offset) }
 
+    /// Click the annotation of a 1-based line, for the harness (F-426). Returns false when that line has
+    /// none — which is the answer to "does the click do anything here".
+    func automationClickAnnotation(line: Int) -> Bool {
+        guard GutterAnnotations.annotation(annotations, line: line) != nil,
+              let onAnnotationClicked else { return false }
+        onAnnotationClicked(line)
+        return true
+    }
+
+    /// What the gutter holds, for the harness: the width it took and the first annotations, so a scenario
+    /// can assert that a plugin's blame actually reached the gutter rather than only that a window opened.
+    func automationDump() -> String {
+        var lines = ["thickness=\(Int(ruleThickness))", "annotations=\(annotations.count)",
+                     "title=\(annotationTitle)"]
+        for (index, annotation) in annotations.prefix(12).enumerated() where !annotation.isEmpty {
+            lines.append("line \(index + 1)=\(annotation.text)\ttip=\(annotation.tooltip)")
+        }
+        return lines.joined(separator: "\n") + "\n"
+    }
+
     override func drawHashMarksAndLabels(in rect: NSRect) {
         guard let textView = editorTextView,
               let layoutManager = textView.layoutManager,
@@ -85,6 +166,9 @@ final class LineNumberRuler: NSRulerView {
         // rect AppKit hands in covered the whole content area, so the file looked empty while the
         // numbers next to it counted its lines correctly — the strongest hint that this was a painting
         // problem and not a loading one.
+        // Tooltip rects are re-added per draw below, so the old ones have to go — otherwise scrolling
+        // leaves the previous lines' tooltips behind at the same y (F-426).
+        if annotationWidth > 0 { removeAllToolTips() }
         let strip = NSRect(x: 0, y: rect.minY, width: ruleThickness, height: rect.height)
         Theme.current.listBackground.setFill()
         strip.fill()
@@ -119,6 +203,27 @@ final class LineNumberRuler: NSRulerView {
             let size = label.size(withAttributes: attributes)
             label.draw(at: NSPoint(x: ruleThickness - size.width - Self.padding, y: y),
                        withAttributes: attributes)
+
+            // The annotation, left of the numbers and dimmer than the text: it is context, not content
+            // (F-426). Clipped to its own column so a long one cannot run under the line number.
+            if annotationWidth > 0,
+               let annotation = GutterAnnotations.annotation(annotations, line: lineNumber) {
+                let column = NSRect(x: Self.padding, y: y,
+                                    width: annotationWidth - Self.padding, height: fragment.height)
+                NSGraphicsContext.saveGraphicsState()
+                NSBezierPath(rect: column).addClip()
+                (annotation.text as NSString).draw(
+                    at: NSPoint(x: column.minX, y: y),
+                    withAttributes: [.font: Self.annotationFont,
+                                     .foregroundColor: Theme.current.listText.withAlphaComponent(
+                                         lineNumber == cursorLine ? 0.8 : 0.5)])
+                NSGraphicsContext.restoreGraphicsState()
+                if !annotation.tooltip.isEmpty {
+                    // Per-line tooltips, rebuilt for the visible lines only: the alternative is one
+                    // tooltip for the whole gutter, which cannot say who touched *this* line.
+                    addToolTip(column, owner: annotation.tooltip as NSString, userData: nil)
+                }
+            }
 
             lineNumber += 1
             guard lineNumber <= index.count else { break }
