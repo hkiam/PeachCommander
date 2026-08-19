@@ -24,6 +24,8 @@ import AppKit
 @MainActor
 final class GitBranchesView: NSView {
     private let services: PcHostServices
+    /// The host's palette, re-read when it changes (F-431).
+    private var theme: PluginTheme
     private let root: String
 
     private var branches: [PluginGit.Branch] = []
@@ -43,8 +45,10 @@ final class GitBranchesView: NSView {
     init(services: PcHostServices, root: String) {
         self.services = services
         self.root = root
+        self.theme = PluginTheme(services)
         super.init(frame: NSRect(x: 0, y: 0, width: 720, height: 420))
         build()
+        applyTheme()
         reload()
     }
 
@@ -52,10 +56,32 @@ final class GitBranchesView: NSView {
 
     // MARK: - Building
 
+    /// Follow the host's palette (F-431). A plugin window that does not is a white rectangle in every dark
+    /// theme — which is what the surface-colour audit found in the Git panel, and these five never read the
+    /// theme at all.
+    func applyTheme() {
+        theme = PluginTheme(services)
+        wantsLayer = true
+        layer?.backgroundColor = theme.windowBackground.cgColor
+        // The header names the repository and its state, the status line reports what a
+        // command just did: both are read, not glanced at, so they take the primary
+        // colour. Only the pane captions are secondary — `secondaryText` on white is
+        // contrast 2.4, which the surface audit rightly rejects (F-431).
+        header.textColor = theme.text
+        statusLabel.textColor = theme.text
+        for caption in paneCaptions { caption.textColor = theme.secondaryText }
+        for table in [branchTable, stashTable, tagTable] {
+            table.backgroundColor = theme.background
+            table.gridColor = theme.separator
+            table.enclosingScrollView?.drawsBackground = true
+            table.enclosingScrollView?.backgroundColor = theme.background
+            table.reloadData()
+        }
+    }
+
     private func build() {
         header.font = .systemFont(ofSize: 12, weight: .semibold)
         statusLabel.font = .systemFont(ofSize: 11)
-        statusLabel.textColor = .secondaryLabelColor
         statusLabel.lineBreakMode = .byTruncatingTail
 
         for (table, columns) in [
@@ -210,10 +236,14 @@ final class GitBranchesView: NSView {
         NSLayoutConstraint.activate([left, middle, right, ratio])
     }
 
+    /// The captions above the three lists. Kept, so a palette change can recolour them too.
+    private var paneCaptions: [NSTextField] = []
+
     private func labelled(_ text: String) -> NSTextField {
         let field = NSTextField(labelWithString: text)
         field.font = .systemFont(ofSize: 11, weight: .semibold)
-        field.textColor = .secondaryLabelColor
+        field.textColor = theme.secondaryText
+        paneCaptions.append(field)
         return field
     }
 
@@ -637,7 +667,7 @@ extension GitBranchesView: NSTableViewDataSource, NSTableViewDelegate {
                 field.stringValue = branch.isCurrent ? "●" : ""
             case "name":
                 field.stringValue = branch.name
-                field.textColor = branch.isRemote ? .secondaryLabelColor : .labelColor
+                field.textColor = branch.isRemote ? theme.secondaryText : theme.text
             case "track":
                 if let upstream = branch.upstream {
                     field.stringValue = branch.ahead == 0 && branch.behind == 0
@@ -654,7 +684,7 @@ extension GitBranchesView: NSTableViewDataSource, NSTableViewDelegate {
             switch tableColumn.identifier.rawValue {
             case "tag":
                 field.stringValue = tag.name
-                field.textColor = .labelColor
+                field.textColor = theme.text
             case "kind":
                 // An annotated tag carries a message and a date; a lightweight one is just a name pointing
                 // at a commit. Marking which is which is the difference between an empty Subject column
@@ -666,7 +696,7 @@ extension GitBranchesView: NSTableViewDataSource, NSTableViewDelegate {
                 // useful, but borrowed, so it is drawn in the secondary colour rather than looking like
                 // something somebody wrote about the tag (checked in the running app, F-425).
                 field.stringValue = tag.subject
-                field.textColor = tag.isAnnotated ? .labelColor : .secondaryLabelColor
+                field.textColor = tag.isAnnotated ? theme.text : theme.secondaryText
                 if let date = tag.date { field.toolTip = Self.tagDateFormatter.string(from: date) }
             }
         } else {

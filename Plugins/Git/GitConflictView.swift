@@ -19,6 +19,8 @@ import AppKit
 @MainActor
 final class GitConflictView: NSView {
     private let services: PcHostServices
+    /// The host's palette, re-read when it changes (F-431).
+    private var theme: PluginTheme
     private let root: String
     /// Repository-relative, which is what git wants; `absolute` is what the filesystem wants.
     private let relative: String
@@ -44,14 +46,33 @@ final class GitConflictView: NSView {
         self.root = root
         self.relative = relative
         self.absolute = (root as NSString).appendingPathComponent(relative)
+        self.theme = PluginTheme(services)
         super.init(frame: NSRect(x: 0, y: 0, width: 780, height: 440))
         build()
+        applyTheme()
         reload()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     // MARK: - Building
+
+    /// Follow the host's palette (F-431). A plugin window that does not is a white rectangle in every dark
+    /// theme — which is what the surface-colour audit found in the Git panel, and these five never read the
+    /// theme at all.
+    func applyTheme() {
+        theme = PluginTheme(services)
+        wantsLayer = true
+        layer?.backgroundColor = theme.windowBackground.cgColor
+        header.textColor = theme.text
+        for table in [table] {
+            table.backgroundColor = theme.background
+            table.gridColor = theme.separator
+            table.enclosingScrollView?.drawsBackground = true
+            table.enclosingScrollView?.backgroundColor = theme.background
+            table.reloadData()
+        }
+    }
 
     private func build() {
         header.font = .systemFont(ofSize: 12, weight: .semibold)
@@ -362,7 +383,7 @@ extension GitConflictView: NSTableViewDataSource, NSTableViewDelegate {
                 f.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
                 return f
             }()
-        field.textColor = .labelColor
+        field.textColor = theme.text
         switch tableColumn.identifier.rawValue {
         case "line":
             field.stringValue = String(hunk.startLine)
@@ -373,7 +394,7 @@ extension GitConflictView: NSTableViewDataSource, NSTableViewDelegate {
             switch choice {
             case .unresolved:
                 field.stringValue = "⚠ " + L("open")
-                field.textColor = .secondaryLabelColor
+                field.textColor = theme.secondaryText
             case .ours:   field.stringValue = "◀ " + L("ours")
             case .theirs: field.stringValue = "▶ " + L("theirs")
             case .both:   field.stringValue = "◆ " + L("both")

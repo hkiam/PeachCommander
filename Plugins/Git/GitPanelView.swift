@@ -23,6 +23,8 @@ final class GitPanelView: NSView {
     /// Where the panel is looking; set by the host through PcNotifyView("dir").
     private var directory: String = ""
     private var root: String?
+    /// The host's palette, re-read when it changes (F-431).
+    private var theme: PluginTheme
     private var status: PluginGit.RepoStatus?
     private var groups: [(section: PluginGit.Section, files: [PluginGit.FileStatus])] = []
 
@@ -45,6 +47,7 @@ final class GitPanelView: NSView {
 
     init(services: PcHostServices) {
         self.services = services
+        self.theme = PluginTheme(services)
         super.init(frame: NSRect(x: 0, y: 0, width: 420, height: 360))
         build()
         reload()
@@ -176,21 +179,27 @@ final class GitPanelView: NSView {
     }
 
     /// Colours come from the host, so the panel matches whichever palette is active.
-    private func applyTheme() {
-        let background = hostColor("theme.listBackground") ?? .controlBackgroundColor
-        let text = hostColor("theme.listText") ?? .labelColor
+    ///
+    /// Through `PluginTheme`, which reads the keys the host actually publishes. The first version asked for
+    /// `theme.listBackground` and `theme.listText` — names that do not exist (the host's raw vocabulary is
+    /// `theme.color.<name>`, the semantic one `theme.background`), so every call failed and the fallback
+    /// `.controlBackgroundColor` painted the panel **white in every dark palette**, with the labels' own
+    /// `theme.text` turning white on top of it. Found by the surface-colour audit, which had been
+    /// reporting `GitPanelView bg=#FFFFFF luminance=1.00` all along (F-431).
+    func applyTheme() {
+        theme = PluginTheme(services)
         wantsLayer = true
-        layer?.backgroundColor = background.cgColor
-        header.textColor = text
-        outline.backgroundColor = background
-        scroll.backgroundColor = background
+        layer?.backgroundColor = theme.windowBackground.cgColor
+        header.textColor = theme.text
+        outline.backgroundColor = theme.background
+        scroll.backgroundColor = theme.background
+        scroll.drawsBackground = true
+        // A text field keeps its own background: unthemed, it is a white bar under a dark theme.
+        messageField.backgroundColor = theme.background
+        messageField.textColor = theme.text
+        messageField.drawsBackground = true
+        amendCheckbox.contentTintColor = theme.text
         outline.reloadData()
-    }
-
-    private func hostColor(_ key: String) -> NSColor? {
-        var buffer = [CChar](repeating: 0, count: 32)
-        guard let get = services.getContext, get(services.host, key, &buffer, 32) != 0 else { return nil }
-        return NSColor(hex: String(cString: buffer))
     }
 
     // MARK: - Loading
@@ -490,13 +499,13 @@ extension GitPanelView: NSOutlineViewDataSource, NSOutlineViewDelegate {
         if let section = item as? SectionNode {
             field.font = .systemFont(ofSize: 11, weight: .semibold)
             field.stringValue = "\(sectionTitle(section.section))  (\(section.files.count))"
-            field.textColor = .secondaryLabelColor
+            field.textColor = theme.secondaryText
         } else if let node = item as? FileNode {
             field.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
             field.stringValue = node.file.path
             field.toolTip = node.file.originalPath.map { String(format: L("Renamed from %@"), $0) }
                 ?? node.file.path
-            field.textColor = node.section == .conflicts ? .systemRed : .labelColor
+            field.textColor = node.section == .conflicts ? .systemRed : theme.text
         }
         return field
     }

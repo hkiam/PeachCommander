@@ -824,6 +824,12 @@ SCENARIOS = [
                          "cmd cm_TreeShared", "wait 800",
                          "cmd cm_SrcTree", "wait 800",
                          "previewpanel on", "wait 1000",
+                         # The Git panel is mounted on purpose (F-431): it was white in every dark palette
+                         # for four commits, with white labels on top, and the audit had been saying so —
+                         # nobody had asked it about a view that has to be *opened* first. The guest has no
+                         # usable git, so the panel says "not a repository" — and gets painted, which is all
+                         # the audit needs.
+                         "presentview plugin.git.panel", "wait 1500",
                          "dock on", "wait 2500",
                          "settingspage Layout", "wait 2500",
                          "surfacecolors /Users/admin/surfaces.txt", "wait 1200",
@@ -1726,6 +1732,8 @@ REPORTS = {
     # defect (the terminal status line, black on Norton blue) is fixed. So the expectation is now
     # "nothing" — and the window count is asserted with it, because nothing found by looking at
     # nothing is not the same claim.
+    # `windows=32` stays part of the expectation: `findings=0` alone is also true of a run that audited
+    # nothing, and mounting the Git panel adds a *view*, not a window — so the count is unchanged (F-431).
     "surface-colours": ("/Users/admin/surfaces.txt", ["windows=32", "findings=0"]),
     # The dump is written last and only by a living app: if the theme change killed it, this file is
     # never written and the scenario fails with an empty report, which is the whole question.

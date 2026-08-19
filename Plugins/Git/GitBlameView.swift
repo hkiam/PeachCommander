@@ -15,6 +15,8 @@ import AppKit
 @MainActor
 final class GitBlameView: NSView {
     private let services: PcHostServices
+    /// The host's palette, re-read when it changes (F-431).
+    private var theme: PluginTheme
     private let root: String
     private let path: String
     private var lines: [PluginGit.BlameLine] = []
@@ -27,12 +29,31 @@ final class GitBlameView: NSView {
         self.services = services
         self.root = root
         self.path = path
+        self.theme = PluginTheme(services)
         super.init(frame: NSRect(x: 0, y: 0, width: 760, height: 460))
         build()
+        applyTheme()
         reload()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    /// Follow the host's palette (F-431). A plugin window that does not is a white rectangle in every dark
+    /// theme — which is what the surface-colour audit found in the Git panel, and these five never read the
+    /// theme at all.
+    func applyTheme() {
+        theme = PluginTheme(services)
+        wantsLayer = true
+        layer?.backgroundColor = theme.windowBackground.cgColor
+        header.textColor = theme.text
+        for table in [table] {
+            table.backgroundColor = theme.background
+            table.gridColor = theme.separator
+            table.enclosingScrollView?.drawsBackground = true
+            table.enclosingScrollView?.backgroundColor = theme.background
+            table.reloadData()
+        }
+    }
 
     private func build() {
         header.font = .systemFont(ofSize: 12, weight: .semibold)
@@ -198,7 +219,7 @@ extension GitBlameView: NSTableViewDataSource, NSTableViewDelegate {
         switch tableColumn.identifier.rawValue {
         case "commit":
             field.stringValue = line.isUncommitted ? L("(uncommitted)") : String(line.hash.prefix(8))
-            field.textColor = line.isUncommitted ? .secondaryLabelColor : .labelColor
+            field.textColor = line.isUncommitted ? theme.secondaryText : theme.text
         case "author":
             field.stringValue = line.author
         case "date":

@@ -80,6 +80,24 @@ private func setCString(_ s: String, _ dst: UnsafeMutableRawPointer, _ cap: Int)
 
 // MARK: - PDX entry points
 
+/// The host switched palette (contrib.h): re-read the colours everywhere this plugin draws (F-431).
+///
+/// Without this a window opened under one theme keeps it — and the panel, which lives as long as the
+/// sidebar does, would never follow a change at all.
+@_cdecl("PcNotifyThemeChanged")
+public func PcNotifyThemeChanged() {
+    MainActor.assumeIsolated {
+        for window in openWindows {
+            (window.contentView as? GitLogView)?.applyTheme()
+            (window.contentView as? GitBlameView)?.applyTheme()
+            (window.contentView as? GitBranchesView)?.applyTheme()
+            (window.contentView as? GitConflictView)?.applyTheme()
+            (window.contentView as? GitRebaseView)?.applyTheme()
+        }
+        panelView?.applyTheme()
+    }
+}
+
 @_cdecl("PcGetApiVersion")
 public func PcGetApiVersion() -> Int32 { 1 }
 
@@ -701,12 +719,18 @@ private func showBlameWindow(root: String, path: String, _ svc: PcHostServices) 
 /// Views the plugin can build, by the id declared in Info.plist.
 private let gitPanelViewId = "plugin.git.panel"
 
+/// The mounted panel view, weakly: the host owns it (PcMakeView/PcCloseView), and this is only so a palette
+/// change can be handed to it (F-431).
+@MainActor private weak var panelView: GitPanelView?
+
 @_cdecl("PcMakeView")
 public func PcMakeView(_ viewId: UnsafePointer<CChar>?, _ containerId: UnsafePointer<CChar>?,
                        _ services: UnsafePointer<PcHostServices>?) -> UnsafeMutableRawPointer? {
     guard let viewId, let services, String(cString: viewId) == gitPanelViewId else { return nil }
     // The services struct is a stack value in the host; copy it, since the view outlives this call.
     let view = MainActor.assumeIsolated { GitPanelView(services: services.pointee) }
+    // Weakly, so a theme change can reach the panel while the host owns its lifetime (F-431).
+    MainActor.assumeIsolated { panelView = view }
     return Unmanaged.passRetained(view).toOpaque()
 }
 

@@ -21,6 +21,8 @@ import AppKit
 @MainActor
 final class GitRebaseView: NSView {
     private let services: PcHostServices
+    /// The host's palette, re-read when it changes (F-431).
+    private var theme: PluginTheme
     private let root: String
 
     /// Oldest first, which is the order git applies them in and the order the todo file wants.
@@ -43,12 +45,31 @@ final class GitRebaseView: NSView {
     init(services: PcHostServices, root: String) {
         self.services = services
         self.root = root
+        self.theme = PluginTheme(services)
         super.init(frame: NSRect(x: 0, y: 0, width: 720, height: 420))
         build()
+        applyTheme()
         reload()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    /// Follow the host's palette (F-431). A plugin window that does not is a white rectangle in every dark
+    /// theme — which is what the surface-colour audit found in the Git panel, and these five never read the
+    /// theme at all.
+    func applyTheme() {
+        theme = PluginTheme(services)
+        wantsLayer = true
+        layer?.backgroundColor = theme.windowBackground.cgColor
+        header.textColor = theme.text
+        for table in [table] {
+            table.backgroundColor = theme.background
+            table.gridColor = theme.separator
+            table.enclosingScrollView?.drawsBackground = true
+            table.enclosingScrollView?.backgroundColor = theme.background
+            table.reloadData()
+        }
+    }
 
     private func build() {
         header.font = .systemFont(ofSize: 12, weight: .semibold)
@@ -397,12 +418,12 @@ extension GitRebaseView: NSTableViewDataSource, NSTableViewDelegate {
                 f.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
                 return f
             }()
-        field.textColor = .labelColor
+        field.textColor = theme.text
         switch tableColumn.identifier.rawValue {
         case "action":
             let action = actions.indices.contains(row) ? actions[row] : .pick
             field.stringValue = Self.label(for: action)
-            field.textColor = action == .drop ? .secondaryLabelColor : .labelColor
+            field.textColor = action == .drop ? theme.secondaryText : theme.text
         case "hash":
             field.stringValue = commit.shortHash
         default:

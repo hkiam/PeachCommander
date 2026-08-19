@@ -47,6 +47,27 @@ regression from here on. The run's report and screenshots are under `/tmp/vm-new
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
 
+## 2026-08-19 (F-431) — "the side panel is not nice in dark mode": it was white
+
+The Git panel *had* an `applyTheme()`. It asked for `theme.listBackground` and `theme.listText` — two keys
+the host does not publish (semantic names are `theme.background`/`theme.text`, raw ones
+`theme.color.<name>`), so every call failed, the `.controlBackgroundColor` fallback painted it white in all
+three dark palettes, and the labels' `.labelColor` went white on top. A silent fallback is how a themed view
+ends up unthemed while looking deliberate in code review.
+
+The five Git windows were worse: `PluginTheme.swift` was not compiled into the plugin at all. All six now use
+it, and the plugin exports `PcNotifyThemeChanged` — without it a window keeps the palette it opened under,
+and the panel would never follow a change.
+
+**The lesson is about the tool, not the colours.** The surface-colour audit had been printing
+`GitPanelView bg=#FFFFFF luminance=1.00` and `text=#FFFFFF on #FFFFFF ratio=1.0` since the panel shipped;
+nobody had asked it about a view that has to be *mounted* first. The VM scenario now mounts the Git panel
+before auditing. Its `windows=32` expectation stays, because `findings=0` on its own is equally true of a run
+that audited nothing — mounting a view adds no window.
+
+Second pass, from the audit again: headers and the status line take the primary colour. `secondaryText` on
+white is contrast 2.4, and putting every label on it traded a dark-mode defect for a light-mode one.
+
 ## 2026-08-19 (F-430) — The review, and the fix that had to be fixed
 
 A high-effort review over everything since the 0.7.2 tag found nine things; all nine held up when checked

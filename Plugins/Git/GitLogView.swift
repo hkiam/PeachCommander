@@ -20,6 +20,8 @@ import AppKit
 @MainActor
 final class GitLogView: NSView {
     private let services: PcHostServices
+    /// The host's palette, re-read when it changes (F-431).
+    private var theme: PluginTheme
     private let root: String
     /// nil = the whole repository; otherwise this file's history.
     private let path: String?
@@ -44,12 +46,30 @@ final class GitLogView: NSView {
         self.services = services
         self.root = root
         self.path = path
+        self.theme = PluginTheme(services)
         super.init(frame: NSRect(x: 0, y: 0, width: 720, height: 420))
         build()
+        applyTheme()
         reload()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    /// Follow the host's palette (F-431). A plugin window that does not is a white rectangle in every
+    /// dark theme — which is exactly what the surface-colour audit found in the Git panel.
+    func applyTheme() {
+        theme = PluginTheme(services)
+        wantsLayer = true
+        layer?.backgroundColor = theme.windowBackground.cgColor
+        header.textColor = theme.text
+        for table in [commitTable, fileTable] {
+            table.backgroundColor = theme.background
+            table.gridColor = theme.separator
+            table.enclosingScrollView?.drawsBackground = true
+            table.enclosingScrollView?.backgroundColor = theme.background
+            table.reloadData()
+        }
+    }
 
     // MARK: - Building
 

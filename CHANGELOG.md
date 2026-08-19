@@ -16,6 +16,11 @@ does not have.
 
 ### Added
 
+- **The Git panel and its windows follow the colour scheme.** In every dark palette the Git panel in the
+  side panel was a white rectangle with white labels on it; the history, blame, branches, conflict and rebase
+  windows ignored the scheme entirely. They now take their colours from the app — and follow a change while
+  they are open.
+
 - **PDFs and Word documents render in the preview, with zoom.** The side panel's preview, Quick View and
   the info page now draw PDFs themselves — page by page, with the same zoom buttons a picture has (zoom in,
   zoom out, actual size, fit) — and show Word, OpenDocument and RTF documents as formatted, selectable text.
