@@ -27,6 +27,22 @@ static const char *basename_of(const char *path) {
     return slash ? slash + 1 : path;
 }
 
+/*
+ * The optional localized header (F-428). Implemented for field 0 only, on purpose: this file is the
+ * fixture the host's tests use, and having one field with a title and the others without exercises both
+ * paths — the plugin's title, and the fall back to the name.
+ *
+ * A real plugin would look the string up in its own bundle; sample code has no bundle, so this is a
+ * constant that merely differs from the name.
+ */
+int ContentGetSupportedFieldTitle(int fieldIndex, char *title, int maxlen) {
+    if (!title || maxlen <= 0) return 0;
+    if (fieldIndex != 0) return 0;
+    strncpy(title, "Größe", (size_t)maxlen - 1);
+    title[maxlen - 1] = '\0';
+    return 1;
+}
+
 int ContentGetSupportedField(int fieldIndex, char *fieldName, char *units, int maxlen) {
     if (!fieldName || !units || maxlen <= 0) return PC_FT_NOMOREFIELDS;
     units[0] = '\0';

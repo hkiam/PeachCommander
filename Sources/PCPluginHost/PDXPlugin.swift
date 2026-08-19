@@ -41,6 +41,15 @@ public final class PDXPlugin: @unchecked Sendable {
         public let name: String
         public let units: [String]   // parsed from the plugin's '|'-separated units
         public let kind: PDXFieldKind
+        /// The plugin's localized *display* title, when it offers one (F-428). `name` above stays the
+        /// stable id — it keys saved column sets — so only this may change with the interface language.
+        public let title: String?
+
+        public init(index: Int, name: String, units: [String], kind: PDXFieldKind,
+                    title: String? = nil) {
+            self.index = index; self.name = name; self.units = units
+            self.kind = kind; self.title = title
+        }
     }
 
     public enum PDXError: Error, Equatable {
@@ -54,6 +63,9 @@ public final class PDXPlugin: @unchecked Sendable {
     // C function-pointer signatures (pdx.h).
     private typealias SupportedFn = @convention(c) (Int32, UnsafeMutablePointer<CChar>?,
                                                     UnsafeMutablePointer<CChar>?, Int32) -> Int32
+    /// Optional export (F-428): the localized header for a field.
+    private typealias SupportedTitleFn = @convention(c) (Int32, UnsafeMutablePointer<CChar>?,
+                                                         Int32) -> Int32
     private typealias GetValueFn = @convention(c) (UnsafeMutablePointer<CChar>?, Int32, Int32,
                                                    UnsafeMutableRawPointer?, Int32, Int32) -> Int32
     private typealias SetValueFn = @convention(c) (UnsafeMutablePointer<CChar>?, Int32, Int32,
@@ -110,14 +122,32 @@ public final class PDXPlugin: @unchecked Sendable {
             let unitsStr = String(cString: unitsBuf)
             let units = unitsStr.isEmpty ? [] : unitsStr.split(separator: "|").map(String.init)
             out.append(SupportedField(index: Int(index), name: String(cString: nameBuf),
-                                      units: units, kind: PDXFieldKind(rawType: type)))
+                                      units: units, kind: PDXFieldKind(rawType: type),
+                                      title: supportedFieldTitle(index: Int(index))))
             index += 1
             if index > 4096 { break }   // runaway-plugin backstop
         }
         return out
     }
 
-    /// Fetch one field's value for a local file, decoded to a `ContentValue`.
+    /// The plugin's localized *display* title for a field, or nil when it does not offer one (F-428).
+    ///
+    /// Separate from `name`, which the host turns into the stable field id: that id keys saved column sets,
+    /// search criteria and rename placeholders, so it must not change with the interface language, and the
+    /// header is the only part that should. A plugin that does not export the symbol — every plugin built
+    /// before this existed — gets nil and keeps the English header it had.
+    public func supportedFieldTitle(index: Int) -> String? {
+        guard let ptr = lib.symbol("ContentGetSupportedFieldTitle") else { return nil }
+        let fn = unsafeBitCast(ptr, to: SupportedTitleFn.self)
+        var buffer = [CChar](repeating: 0, count: Self.bufferCapacity)
+        let ok = buffer.withUnsafeMutableBufferPointer { b in
+            fn(Int32(index), b.baseAddress, Int32(Self.bufferCapacity))
+        }
+        guard ok == 1 else { return nil }
+        let title = String(cString: buffer)
+        return title.isEmpty ? nil : title
+    }
+
     /// Fetch one field's value for a local file, decoded to a `ContentValue`.
     ///
     /// `capacity` is the buffer handed to the plugin. Callers that know the field is full text pass
@@ -250,7 +280,9 @@ public struct PDXContentProvider: ContentFieldProvider {
         var map: [String: Int] = [:]
         for f in try plugin.supportedFields() {
             let id = Self.fieldID(f.name)
-            fields.append(ContentField(id: id, title: f.name, unit: f.units.first,
+            // The localized header when the plugin offers one, the name otherwise (F-428); `id` above stays
+            // derived from the name, because saved column sets are keyed by it.
+            fields.append(ContentField(id: id, title: f.title ?? f.name, unit: f.units.first,
                                        isFullText: f.kind == .fullText))
             map[id] = f.index
         }

@@ -54,10 +54,19 @@ private func label(for change: PluginGit.Change) -> String {
 /// in front of the word is what a plugin can do today, and it costs the host nothing.
 private func columnLabel(for file: PluginGit.FileStatus) -> String {
     let base = label(for: file.summary)
-    let glyph = PluginGit.glyph(for: file.summary)
-    let text = glyph.isEmpty ? base : "\(glyph) \(base)"
-    guard file.isStaged, file.summary != .conflict else { return text }
-    return String(format: L("%@ (staged)"), text)
+    guard file.isStaged, file.summary != .conflict else { return base }
+    return String(format: L("%@ (staged)"), base)
+}
+
+/// The column's value: `symbolName\ttext` where there is a symbol, plain text otherwise (F-428).
+///
+/// The glyph that used to lead this string is gone — the host now draws a real icon, and keeping both
+/// would say the same thing twice in a column three words wide. Where a host cannot draw icons, the words
+/// still carry the whole meaning.
+private func columnValue(for file: PluginGit.FileStatus) -> String {
+    let text = columnLabel(for: file)
+    guard let symbol = PluginGit.symbolName(for: file.summary) else { return text }
+    return symbol + "\t" + text
 }
 
 private func isDirectory(_ path: String) -> Bool {
@@ -74,6 +83,25 @@ private func setCString(_ s: String, _ dst: UnsafeMutableRawPointer, _ cap: Int)
 @_cdecl("PcGetApiVersion")
 public func PcGetApiVersion() -> Int32 { 1 }
 
+/// The localized header for a column (F-428).
+///
+/// The *name* above stays English because the host derives the stable field id from it — that id keys saved
+/// column sets — and this is the part that may change with the language. Both strings are already
+/// translated: they are the same words the status dialog uses.
+@_cdecl("ContentGetSupportedFieldTitle")
+public func ContentGetSupportedFieldTitle(_ index: Int32, _ title: UnsafeMutablePointer<CChar>?,
+                                          _ maxlen: Int32) -> Int32 {
+    guard let title, maxlen > 0 else { return 0 }
+    let text: String
+    switch index {
+    case 0: text = L("Git Status")
+    case 1: text = L("Branch")
+    default: return 0
+    }
+    setCString(text, UnsafeMutableRawPointer(title), Int(maxlen))
+    return 1
+}
+
 @_cdecl("ContentGetSupportedField")
 public func ContentGetSupportedField(_ index: Int32, _ fieldName: UnsafeMutablePointer<CChar>?,
                                      _ units: UnsafeMutablePointer<CChar>?, _ maxlen: Int32) -> Int32 {
@@ -84,7 +112,12 @@ public func ContentGetSupportedField(_ index: Int32, _ fieldName: UnsafeMutableP
     // column HEADERS need a host-side id/title split — a separate task. Cell values
     // (ContentGetValue → columnLabel) and all dialogs ARE localized.
     switch index {
-    case 0: _ = "Git Status".withCString { strlcpy(fieldName, $0, Int(maxlen)) }; return Int32(PC_FT_STRING)
+    case 0:
+        _ = "Git Status".withCString { strlcpy(fieldName, $0, Int(maxlen)) }
+        // Unit "icon" opts this column into an icon (F-428), the same way Notes opts into a name-cell
+        // badge with "badge". The value then reads `symbolName\ttext`.
+        _ = "icon".withCString { strlcpy(units, $0, Int(maxlen)) }
+        return Int32(PC_FT_STRING)
     case 1: _ = "Branch".withCString { strlcpy(fieldName, $0, Int(maxlen)) }; return Int32(PC_FT_STRING)
     default: return Int32(PC_FT_NOMOREFIELDS)
     }
@@ -103,7 +136,7 @@ public func ContentGetValue(_ fileName: UnsafeMutablePointer<CChar>?, _ fieldInd
         // A directory carries the status of what is inside it: a folder holding a modified file is worth
         // seeing at a glance, which is what an overlay icon does in the reference products.
         if let file = repo.files[relative] {
-            setCString(columnLabel(for: file), fieldValue, Int(maxlen))
+            setCString(columnValue(for: file), fieldValue, Int(maxlen))
             return Int32(PC_FT_STRING)
         }
         if !relative.isEmpty, let summary = directorySummary(repo, relative: relative) {
@@ -435,7 +468,10 @@ private func showStatus(_ repo: PluginGit.RepoStatus, root: String, _ svc: PcHos
         let staged = files.filter(\.isStaged).count
         lines.append(String(format: L("%lld change(s), %lld staged:"), files.count, staged))
         for file in files.prefix(40) {
-            lines.append("  \(columnLabel(for: file))  \(file.path)")
+            // The glyph stays here: this dialog is text, nothing draws an icon in it, and a list of forty
+            // files is what the glyph was for (the column itself now gets a real icon, F-428).
+            let glyph = PluginGit.glyph(for: file.summary)
+            lines.append("  \(glyph.isEmpty ? "" : glyph + " ")\(columnLabel(for: file))  \(file.path)")
         }
         if files.count > 40 {
             lines.append(String(format: L("  … and %lld more"), files.count - 40))

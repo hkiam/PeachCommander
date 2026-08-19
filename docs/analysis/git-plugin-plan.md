@@ -9,8 +9,9 @@
 > **glyph** rather than an icon, because an icon needs the host field in §6.2 and a glyph buys most of the
 > benefit for none of the ABI; and **per-repository settings** were dropped, because git already has that
 > configuration and a second place to set it can only disagree with the first. What remains is the host
-> work in §6 — an icon column field and localized column headers (declared asynchronous commands are
-> **built**, F-422, and blame in the gutter is **built**, F-426) — and §5's **phase 5**, which re-examines the four things the first version
+> work in §6 — **all of which is now built**: `compareFiles` (F-416), asynchronous commands with progress
+> and cancel (F-422), blame in the gutter (F-426), and the icon column field plus localized column headers
+> (F-428) — and §5's **phase 5**, which re-examines the four things the first version
 > of this plan put out of scope — all four settled: the conflict resolver on the markers (5a, F-420),
 > credential *diagnosis* without storage and "open on the web" without an API (5b/5c, F-421), and the
 > rebase bounded to the commits ahead of the upstream (5d, F-423) are **built**, with a merge editor,
@@ -357,9 +358,9 @@ The plugin cannot do the following through today's SDK, and each is small on the
    plugin can put a blob written to a temp file next to the working file in the app's own compare
    window. Without it the plugin would have to open its own diff view, which is a second diff
    implementation in the same application.
-2. **A column field that carries an icon** (§2.8's sibling): the content ABI returns strings today.
-   Phase 4 shipped a leading glyph instead (`● Modified`), which is most of the benefit; the field is
-   still what a real icon needs.
+2. **A column field that carries an icon** — *built (F-428)*: a field declares units `"icon"` and returns
+   `symbolName\ttext`, and the panel draws the symbol. Phase 4's leading glyph moved to the status dialog,
+   which is text and where it still earns its place.
 3. **Declared asynchronous commands with progress and cancel** — *built (F-422)*, and as the second
    option rather than the first: a manifest flag (`"async": true`) makes the host run the existing
    `PcRunCommand` off the main thread, plus `beginProgress`/`updateProgress`/`endProgress` in
@@ -368,7 +369,9 @@ The plugin cannot do the following through today's SDK, and each is small on the
    already on it (`assumeIsolated` traps off-main, so the first asynchronous plugin would have killed the
    application), and dispatch does not await the command — awaiting merely moved the block from the main
    thread to the caller. Push and pull use it, and are cancellable.
-4. **Localized column headers** — the id/title split described in §2.8.
+4. **Localized column headers** — *built (F-428)*: the optional export `ContentGetSupportedFieldTitle`
+   carries the display title while the field *name* stays the id, so saved column sets survive a change of
+   language.
 
 Each addition bumps the plugin SDK version and belongs in `Plugins/SDK/contrib.h` with a note in
 `PORTING.md`.

@@ -611,12 +611,30 @@ public func PcNotifyView(_ view: UnsafeMutableRawPointer?, _ key: UnsafePointer<
     }
 }
 
+/// The localized column header for each field (F-428) — the names above stay English because the field id
+/// is derived from them.
+@_cdecl("ContentGetSupportedFieldTitle")
+public func ContentGetSupportedFieldTitle(_ index: Int32, _ title: UnsafeMutablePointer<CChar>?,
+                                          _ maxlen: Int32) -> Int32 {
+    guard let title, maxlen > 0 else { return 0 }
+    let text: String
+    switch index {
+    case 0: text = L("Note")
+    case 1: text = L("Note text")
+    case 2: text = L("Note lines")
+    default: return 0
+    }
+    _ = text.withCString { strlcpy(title, $0, Int(maxlen)) }
+    return 1
+}
+
 // PDX content field: a subtle "●" on rows that have a note.
 @_cdecl("ContentGetSupportedField")
 public func ContentGetSupportedField(_ index: Int32, _ fieldName: UnsafeMutablePointer<CChar>?,
                                      _ units: UnsafeMutablePointer<CChar>?, _ maxlen: Int32) -> Int32 {
     guard let fieldName, let units else { return Int32(PC_FT_NOMOREFIELDS) }
-    // Not localized: the host derives a stable field id from these names (see LOCALIZATION.md).
+    // The *names* stay English: the host derives a stable field id from them, and that id keys saved column
+    // sets. The localized column header comes from ContentGetSupportedFieldTitle below (F-428).
     switch index {
     case 0:
         _ = "Note".withCString { strlcpy(fieldName, $0, Int(maxlen)) }

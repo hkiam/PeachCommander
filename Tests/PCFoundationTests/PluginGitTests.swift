@@ -501,6 +501,15 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(PluginGit.cherryPickArguments("abc"), ["cherry-pick", "--no-edit", "abc"])
     }
 
+    /// Every state a reader can see needs its own symbol, or the column trades one ambiguity for another.
+    func testSymbolNamesAreDistinctPerChange() {
+        let named = PluginGit.Change.allCases.compactMap(PluginGit.symbolName(for:))
+        XCTAssertEqual(Set(named).count, named.count)
+        XCTAssertNil(PluginGit.symbolName(for: .unchanged), "an unchanged file draws nothing")
+        XCTAssertEqual(PluginGit.symbolName(for: .conflict), "exclamationmark.triangle.fill",
+                       "the one a reader must not miss gets the system's warning symbol")
+    }
+
     // MARK: - Blame in the gutter (F-426)
 
     /// Record N describes line N: an off-by-one here shifts every annotation against the line it is about,

@@ -36,6 +36,10 @@ public enum PDXSymbols {
     public static let optional = [
         "ContentSetValue", "ContentCompareFiles",
         "ContentSetDefaultParams", "ContentPluginUnloading", "ContentStopGetValue",
+        // The localized column header (F-428). Optional, and listed here because this allow-list is what a
+        // plugin's symbols are looked up through — a new export the list does not know about is invisible,
+        // which is how the first version of it silently kept the English header.
+        "ContentGetSupportedFieldTitle",
         "PcGetApiVersion", "PcSafeToUnload",
     ]
 }

@@ -16,6 +16,11 @@ does not have.
 
 ### Added
 
+- **Plugin column headers are translated, and can carry an icon.** *Git Status* and the other plugin columns
+  showed English headers in every language; they now use the plugin's own translations — while your saved
+  column sets keep working, because only the header changed and not the column's identity. Git's status
+  column also shows a real icon next to the word instead of a text glyph.
+
 - **Blame in the editor's gutter.** `Git ▸ Blame in the Editor` opens the file and writes who last touched
   each line next to the line numbers, with the commit, author, date and subject on hover; clicking a line
   opens that commit against its parent in the compare window. The mechanism is a new host service, so any

@@ -1373,6 +1373,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         registry.register(BuiltinContentProvider())   // builtin.name/size/extension/modified (F-157)
         var pluginFields: [ColumnSpec] = []
         var badgeField: String?
+        var iconFields: Set<String> = []
         // Content fields from any plugin that exports them, not only declared `pdx` bundles — the
         // same rule contributions have always followed. A lister that turns a .class into text can
         // also answer "what is this file's text", and the type gate was all that stopped the
@@ -1395,6 +1396,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 pluginFields.append(ColumnSpec(fieldID: qid, title: title, width: 120))
                 // A field can opt into a name-cell badge via unit "badge".
                 if f.unit == "badge", badgeField == nil { badgeField = qid }
+                // …or into an icon in its own column via unit "icon" (F-428).
+                if f.unit == "icon" { iconFields.insert(qid) }
             }
         }
         contentFieldRegistry = registry
@@ -1415,6 +1418,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 return await resolve(fieldID, path)
             }
             panel.tableView.badgeFieldID = badgeField
+            panel.tableView.iconContentFields = iconFields
         }
         applyColumns()
     }

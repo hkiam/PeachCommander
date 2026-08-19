@@ -126,4 +126,25 @@ final class SampleContentPluginTests: XCTestCase {
         // A non-comparable field → nil (PC_CMP_NOTSUPPORTED).
         XCTAssertNil(plugin.compareFiles(fieldIndex: 2, file1: small.path, file2: big.path))
     }
+
+    /// A localized header, without moving the id (F-428). The sample plugin titles field 0 only, so this
+    /// covers both paths: the plugin's title where it offers one, the field *name* where it does not.
+    func testLocalizedFieldTitleDoesNotChangeTheFieldID() throws {
+        guard let lib = try buildSampleContentPlugin() else { throw XCTSkip("clang unavailable") }
+        let plugin = PDXPlugin(library: lib)
+        let fields = try plugin.supportedFields()
+
+        XCTAssertEqual(fields[0].name, "Size", "the name is the stable part")
+        XCTAssertEqual(fields[0].title, "Größe", "and the title is what the header shows")
+        XCTAssertNil(fields[1].title, "a field the plugin does not title keeps the name")
+
+        // What the host actually publishes: the id derived from the name either way, the header localized
+        // only where there is a title. An id that moved with the language would orphan saved column sets.
+        let provider = try PDXContentProvider(providerName: "sample", plugin: plugin)
+        let published = provider.fields
+        XCTAssertEqual(published[0].id, PDXContentProvider.fieldID("Size"))
+        XCTAssertEqual(published[0].title, "Größe")
+        XCTAssertEqual(published[1].id, PDXContentProvider.fieldID("Name Length"))
+        XCTAssertEqual(published[1].title, "Name Length")
+    }
 }

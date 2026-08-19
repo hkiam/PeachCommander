@@ -449,6 +449,15 @@ extension MainWindowController {
                     let out = automationSendKey(k[0], focus: k[1])
                     try? out.write(toFile: k[2], atomically: true, encoding: .utf8)
                 }
+            case "columnsdump":                         // columnsdump <out> (F-428)
+                // Column ids next to the titles actually drawn: the id keys saved column sets and must NOT
+                // move with the language, the title must. One report shows both halves of that promise.
+                let panel = activePanel?.tableView
+                let rows = (panel?.tableColumns ?? []).map { column in
+                    "id=\(column.identifier.rawValue)\ttitle=\(column.title)"
+                }
+                try? (rows.joined(separator: "\n") + "\n").write(toFile: arg, atomically: true,
+                                                                encoding: .utf8)
             case "gutterclick":                         // gutterclick <line>|<out> (F-426)
                 let c = arg.split(separator: "|", maxSplits: 1).map(String.init)
                 if c.count == 2, let line = Int(c[0]) {
@@ -564,7 +573,12 @@ extension MainWindowController {
                 activePanel?.tableView.automationScrollTo(row: Int(arg) ?? 0)
             case "rowdump":                             // rowdump <out> (F-392): the cursor row, column by column
                 let cells = activePanel?.tableView.automationCursorRowCells() ?? []
-                let out = cells.map { "\($0.field)\t\($0.text)" }.joined(separator: "\n")
+                var out = cells.map { "\($0.field)\t\($0.text)" }.joined(separator: "\n")
+                // What the row is *drawing* as an icon (F-428) — a value carrying a symbol name is not
+                // proof that an image reached the cell.
+                for drawn in activePanel?.tableView.automationCursorRowSymbols() ?? [] {
+                    out += "\nsymbol \(drawn.field)\t\(drawn.symbol)"
+                }
                 try? (out + "\n").write(toFile: arg, atomically: true, encoding: .utf8)
             case "gotoopenfile":                        // gotoopenfile (F-391): "Go to File" on the cursor row
                 if let real = activePanel?.tableView.cursorOpenFilePath() {

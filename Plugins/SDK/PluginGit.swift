@@ -1341,6 +1341,25 @@ public enum PluginGit {
         }
     }
 
+    /// The SF Symbol for a status, for a host that can draw one in the column (F-428).
+    ///
+    /// Chosen for what they mean at 13 points rather than for looking like git: a conflict is the one a
+    /// reader must not miss, so it gets the warning triangle every other part of macOS uses for that.
+    public static func symbolName(for change: Change) -> String? {
+        switch change {
+        case .conflict:    return "exclamationmark.triangle.fill"
+        case .added:       return "plus.circle.fill"
+        case .deleted:     return "minus.circle.fill"
+        case .modified:    return "pencil.circle.fill"
+        case .renamed:     return "arrow.right.circle.fill"
+        case .copied:      return "doc.on.doc.fill"
+        case .typeChanged: return "arrow.triangle.2.circlepath.circle.fill"
+        case .untracked:   return "questionmark.circle"
+        case .ignored:     return "circle.dotted"
+        case .unchanged:   return nil
+        }
+    }
+
     // MARK: - Cache freshness
 
     /// Whether a cached status may still be used.

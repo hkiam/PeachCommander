@@ -200,6 +200,14 @@ final class PlainCellView: NSTableCellView {
         setup()
     }
 
+    /// A plugin column's icon (F-428), left of the text. Hidden unless the field opted into one, and the
+    /// text's leading constraint follows it, so a column without an icon is laid out exactly as before.
+    private let icon = NSImageView()
+    private var textLeadingWithoutIcon: NSLayoutConstraint!
+    private var textLeadingWithIcon: NSLayoutConstraint!
+    /// The symbol currently shown, for the automation harness — a drawn image is otherwise unreadable.
+    private(set) var symbolName: String?
+
     private func setup() {
         identifier = PlainCellView.reuseID
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -209,17 +217,52 @@ final class PlainCellView: NSTableCellView {
         label.lineBreakMode = .byTruncatingTail
         addSubview(label)
         textField = label
+
+        icon.translatesAutoresizingMaskIntoConstraints = false
+        icon.imageScaling = .scaleProportionallyDown
+        icon.isHidden = true
+        addSubview(icon)
+
+        textLeadingWithoutIcon = label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 2)
+        textLeadingWithIcon = label.leadingAnchor.constraint(equalTo: icon.trailingAnchor, constant: 4)
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 2),
+            icon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 3),
+            icon.centerYAnchor.constraint(equalTo: centerYAnchor),
+            icon.widthAnchor.constraint(equalToConstant: 13),
+            icon.heightAnchor.constraint(equalToConstant: 13),
+            textLeadingWithoutIcon,
             label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -2),
             label.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
     }
 
+    /// Show an SF Symbol left of the text, or none. `nil` restores the plain layout.
+    ///
+    /// A name the system does not know draws nothing rather than a placeholder: a plugin naming a symbol
+    /// this macOS has never heard of should cost the reader a missing icon, not a broken row.
+    func setSymbol(_ name: String?, tint: NSColor) {
+        symbolName = name
+        guard let name, let image = NSImage(systemSymbolName: name, accessibilityDescription: nil) else {
+            icon.image = nil
+            icon.isHidden = true
+            textLeadingWithIcon.isActive = false
+            textLeadingWithoutIcon.isActive = true
+            return
+        }
+        icon.image = image
+        icon.contentTintColor = tint
+        icon.isHidden = false
+        textLeadingWithoutIcon.isActive = false
+        textLeadingWithIcon.isActive = true
+    }
+
     func configure(text: String, isSelected: Bool, monospaced: Bool = false,
                    alignment: NSTextAlignment = .left, color: NSColor? = nil,
-                   keepColorOnCursorRow: Bool = false) {
+                   keepColorOnCursorRow: Bool = false, symbolName: String? = nil) {
         label.stringValue = text
+        // Cells are recycled, so an icon from the row this view drew last has to be cleared explicitly —
+        // otherwise a conflict marker walks down the list as the reader scrolls.
+        setSymbol(symbolName, tint: isSelected ? Theme.current.selectedText : Theme.current.listText)
         isMarked = isSelected || keepColorOnCursorRow
         baseTextColor = isSelected ? Theme.current.selectedText : (color ?? Theme.current.listText)
         label.textColor = baseTextColor

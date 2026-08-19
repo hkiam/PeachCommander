@@ -413,6 +413,22 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         return visibleColumns.map { ($0.fieldID, cellText(forColumn: $0.fieldID, entry: entry)) }
     }
 
+    /// The SF Symbol each column of the cursor row is actually *drawing* (F-428).
+    ///
+    /// Read from the cell view rather than from the value, for the same reason
+    /// `automationRenderedNameColor` exists: a value that contains a symbol name is not proof that an
+    /// image was drawn, and a screenshot cannot tell one glyph from another.
+    func automationCursorRowSymbols() -> [(field: String, symbol: String)] {
+        guard cursorRow >= 0 else { return [] }
+        var out: [(String, String)] = []
+        for (index, column) in tableColumns.enumerated() {
+            guard let cell = view(atColumn: index, row: cursorRow + 1, makeIfNecessary: true)
+                    as? PlainCellView, let symbol = cell.symbolName else { continue }
+            out.append((column.identifier.rawValue, symbol))
+        }
+        return out
+    }
+
     /// The colour the name cell of `name` is actually drawing its label in, as "#RRGGBB".
     ///
     /// A colour that was *decided* is not a colour that is *drawn*: the row colour travels through
@@ -459,6 +475,9 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// Content-field ids whose values sort numerically rather than lexically
     /// (e.g. a TaskManager's CPU/PID/Threads columns).
     var numericContentFields: Set<String> = []
+    /// Plugin fields whose value is `symbolName\ttext` — opted into with unit "icon" (F-428), the same
+    /// shape the "badge" unit already used to opt into a name-cell badge.
+    var iconContentFields: Set<String> = []
     private var contentValues: [String: [String: String]] = [:]   // path -> fieldID -> value
     private var contentPending: Set<String> = []
 
@@ -1088,8 +1107,18 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             // its name and plain in PID / CPU / Command — which in a TaskManager listing is most of
             // what the eye is on.
             let handleColor = fileHandleHighlights[entry.name]?.color
-            cell.configure(text: contentValue(columnID, path: path), isSelected: selectedPaths.contains(path),
-                           color: handleColor, keepColorOnCursorRow: handleColor != nil)
+            var text = contentValue(columnID, path: path)
+            var symbol: String?
+            if iconContentFields.contains(columnID), let tab = text.firstIndex(of: "\t") {
+                // `symbolName\ttext`: the icon is what the eye scans, the words are what it reads once it
+                // has stopped. A value without a tab is drawn as plain text — a plugin that opted in but
+                // sent no symbol for this row loses the icon, not the value.
+                symbol = String(text[text.startIndex..<tab])
+                text = String(text[text.index(after: tab)...])
+            }
+            cell.configure(text: text, isSelected: selectedPaths.contains(path),
+                           color: handleColor, keepColorOnCursorRow: handleColor != nil,
+                           symbolName: symbol)
             return cell
         }
 

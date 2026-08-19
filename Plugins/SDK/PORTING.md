@@ -269,3 +269,31 @@ One rule bears repeating here, because writing this service was where it bit its
 opens a window **must not** be declared `"async": true`. `MainActor.assumeIsolated` off the main thread does
 not fail politely, it traps — see the asynchronous-command section above.
 
+## Localized column headers, and an icon in the column (F-428)
+
+A content field's **name** is what the host derives the stable field id from: that id keys saved column sets,
+search criteria and multi-rename placeholders, so it must never change with the interface language. Which is
+why every plugin column had an English header in an application translated into nineteen languages.
+
+Export the display title separately, and keep the name as it is:
+
+```c
+int ContentGetSupportedFieldTitle(int fieldIndex, char *title, int maxlen) {
+    if (!title || maxlen <= 0) return 0;
+    if (fieldIndex != 0) return 0;          /* 0 = "use the name", per field */
+    strncpy(title, localized("Git Status"), (size_t)maxlen - 1);
+    return 1;
+}
+```
+
+The export is optional: a plugin that does not have it — every plugin built before this existed — keeps the
+name as its header, which is the behaviour it had. Note that the host looks symbols up through an allow-list
+(`PDXSymbols`), so a *new* export the host does not know about is invisible to it; that is what kept the
+first version of this silently English.
+
+**An icon in the column** works through the units string, the same way Notes opts into a name-cell badge with
+`"badge"`: declare the field's units as `"icon"`, and return values as `symbolName\ttext` — the SF Symbol the
+host draws, a tab, then the words. A value without a tab is drawn as plain text, so a row with nothing to
+show loses the icon and not the value. Opt in only if you target this host version or newer: an older host
+knows nothing of the convention and would show the symbol name as part of the value.
+

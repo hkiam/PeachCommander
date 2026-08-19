@@ -47,6 +47,28 @@ regression from here on. The run's report and screenshots are under `/tmp/vm-new
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
 
+## 2026-08-19 (F-428) — The last two §6 items, and a help page that had drifted further than expected
+
+Localized column headers and the icon field, in one pass because they are the same piece of ABI. The headers
+were the interesting half: the field *name* is what the field id is derived from, and that id keys saved
+column sets — so the id must not move with the language and the header must. An optional export
+(`ContentGetSupportedFieldTitle`) carries the title; absent, the name stays the header, which is what every
+existing plugin gets.
+
+**The trap worth remembering:** the host resolves plugin symbols through an allow-list (`PDXSymbols`), so the
+new export was invisible until it was listed there. Everything else was right and the header stayed English —
+which is exactly the shape of defect that reads as "the feature does not work".
+
+The icon rides on the units string (`"icon"` → value `symbolName\ttext`), following the `"badge"` precedent
+Notes already set, and the panel cell has to *clear* the symbol on recycled cells or a conflict marker walks
+down the list while scrolling. Git's glyph moved to the status dialog, which is text and where it still helps.
+
+**Found on the way, and bigger than the feature:** `docs/content/help/git.md` still described the
+five-command plugin of 0.7.0, including a paragraph that was outright wrong (`git commit -a`, changed in
+F-416). English and German are rewritten; the other seventeen are recorded in
+`docs/metadata/translation-drift-allow.json` with the reason naming it as debt rather than as a deliberate
+deviation — the drift check keeps reporting it, which is the point.
+
 ## 2026-08-19 (F-426, F-427) — Blame where the code is, and a menu read as a menu
 
 The last of the three host items the Git plan named: `annotateLines`, a service for putting one line of text
