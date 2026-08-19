@@ -107,8 +107,15 @@ public extension ContentFieldRegistry {
     /// Return the files (by URL) whose resolved field satisfies `predicate`.
     func filter(_ urls: [URL], matching predicate: ContentFieldPredicate) async -> [URL] {
         var out: [URL] = []
+        // An icon column's value carries `symbolName\ttext` (F-428); a search must compare what the reader
+        // sees, or "equals Modified" never matches a column that shows exactly that (F-430).
+        let isIcon = allQualifiedFields()
+            .first { $0.qualifiedID == predicate.qualifiedID }?.field.unit == "icon"
         for url in urls {
-            let v = await value(qualifiedID: predicate.qualifiedID, forFileAt: url)
+            var v = await value(qualifiedID: predicate.qualifiedID, forFileAt: url)
+            if isIcon, case .string(let raw) = v, let tab = raw.firstIndex(of: "\t") {
+                v = .string(String(raw[raw.index(after: tab)...]))
+            }
             if predicate.evaluate(v) { out.append(url) }
         }
         return out

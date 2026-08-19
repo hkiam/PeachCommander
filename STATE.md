@@ -47,6 +47,30 @@ regression from here on. The run's report and screenshots are under `/tmp/vm-new
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
 
+## 2026-08-19 (F-430) — The review, and the fix that had to be fixed
+
+A high-effort review over everything since the 0.7.2 tag found nine things; all nine held up when checked
+against the code, which is worth saying because the reflex is to argue with a reviewer.
+
+**The one that mattered** was semantic, not cosmetic: the icon column's `symbolName\ttext` wire format was
+undone where the cell is *drawn*, so the raw string sat in the value cache that sorting, copying, filtering
+and the harness dump all read. Sorting a status column by SF Symbol name is the kind of defect nobody
+reports because it merely looks arbitrary. It is now split once on the way in, in a tested helper — and
+checking that found two consumers the review had missed: a rename placeholder would have put a tab into a
+file name, and a Find Files criterion compared against the symbol name.
+
+**The fix that had to be fixed:** the stale "which line was clicked" value. Consuming it on read looked
+right until the read path turned out to be the same context menus are evaluated against; clearing it after
+`contribInvokeCommand` looked right until `runCommandNamed` turned out to wrap the work in a Task — so the
+line was gone before the plugin read it, and the gutter click silently stopped working. Measured, not
+reasoned: the compare window simply did not appear. Awaiting the dispatch and clearing afterwards is what
+holds.
+
+The rest were the ordinary kind and all real: a PDF left drawn over a folder's icon, a zoom bar surviving a
+fallback to Quick Look, a synchronous document read blocking the panel per file, tooltip rects outliving the
+annotations that made them, a click hit test that ignored x, and an `@discardableResult` stranded on the
+wrong function by an insertion — that last one the compiler had been saying all along.
+
 ## 2026-08-19 (F-429) — "PDF is no longer rendered", and a preview nobody could measure
 
 Reported: PDF and DOCX no longer render in the preview, everything looks like markdown. The investigation

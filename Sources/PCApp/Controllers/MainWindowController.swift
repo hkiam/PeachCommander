@@ -247,6 +247,8 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Content-field registry (rebuilt when enabled PDX plugins change) + the
     /// plugin fields available as columns.
     private var contentFieldRegistry = ContentFieldRegistry()
+    /// Content fields whose value carries an SF Symbol before a tab (unit "icon", F-428/F-430).
+    private var iconContentFieldIDs: Set<String> = []
     /// The "<path>#L<line>" the viewer last asked for a note about, published through the plugin
     /// context for the length of one command dispatch (F-379).
     fileprivate var pendingNoteTarget: String?
@@ -1211,7 +1213,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             let url = URL(fileURLWithPath: (dir as NSString).appendingPathComponent(input.name))
             var values: [String: String] = [:]
             for (qid, _) in fields {
-                let display = await contentFieldRegistry.value(qualifiedID: qid, forFileAt: url).display
+                var display = await contentFieldRegistry.value(qualifiedID: qid, forFileAt: url).display
+                // An icon column's value is `symbolName\ttext` (F-428). A rename placeholder must take the
+                // words: the symbol name is not what the reader sees, and the tab in the middle would end up
+                // in a file name (F-430, found while checking the review's panel-side finding).
+                if iconContentFieldIDs.contains(qid) { display = IconColumnValue.split(display).text }
                 if !display.isEmpty { values[qid] = display }
             }
             out.append(RenameInput(name: input.name, modified: input.modified,
@@ -1377,7 +1383,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         registry.register(BuiltinContentProvider())   // builtin.name/size/extension/modified (F-157)
         var pluginFields: [ColumnSpec] = []
         var badgeField: String?
-        var iconFields: Set<String> = []
+        var iconFields: Set<String> = []   // also kept on the controller, for the rename placeholders
         // Content fields from any plugin that exports them, not only declared `pdx` bundles — the
         // same rule contributions have always followed. A lister that turns a .class into text can
         // also answer "what is this file's text", and the type gate was all that stopped the
@@ -1423,6 +1429,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             }
             panel.tableView.badgeFieldID = badgeField
             panel.tableView.iconContentFields = iconFields
+            iconContentFieldIDs = iconFields
         }
         applyColumns()
     }
@@ -8650,8 +8657,19 @@ extension MainWindowController: ContributionHost {
         guard let editor else { return false }
         let onClick: ((Int) -> Void)? = commandId.map { id in
             { [weak self] line in
+                guard let self else { return }
+                // Valid for this dispatch only: the command is a declared one, so it can also be started
+                // from the command browser, and a line left over from an editor long since closed would
+                // open a diff for a file the reader is not looking at (F-430).
+                //
+                // Awaited rather than cleared after `contribInvokeCommand`, which returns at once because
+                // `runCommandNamed` wraps the work in a Task: clearing there wiped the line *before* the
+                // plugin could read it, and the click stopped opening anything at all (measured).
                 Self.lastAnnotationLine = line
-                self?.contribInvokeCommand(id)
+                Task { @MainActor in
+                    _ = await ContributionRegistry.shared.dispatch(id, host: self)
+                    Self.lastAnnotationLine = nil
+                }
             }
         }
         editor.showAnnotations(annotations, title: title, onClick: onClick)
@@ -8832,6 +8850,10 @@ extension MainWindowController: ContributionHost {
 
     func contribAugmentContext(_ context: inout ContributionContext) {
         // Which line's annotation was clicked, for the command the gutter invokes (F-426).
+        // Which line's annotation was clicked, for the command the gutter invokes (F-426). Not cleared here:
+        // this context is *also* what menu and keybinding `when` expressions are evaluated against, so a
+        // menu update between the click and the plugin's read would consume the line and break the click.
+        // The click sets it and clears it around the dispatch instead (F-430).
         context.set("gutterAnnotationLine", Self.lastAnnotationLine.map(String.init))
         // Only meaningful for the one command that reads it, and cleared by whoever set it — a stale
         // target would silently send the next plain "edit note" to a line in some other file.

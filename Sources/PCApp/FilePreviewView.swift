@@ -48,6 +48,8 @@ final class FilePreviewView: NSView {
 
     /// The item currently shown, so a repeated selection does not rebuild anything.
     private var shownPath: String?
+    /// The icon the host handed over with the current path, so a reload can show it again (F-430).
+    private var lastFallbackIcon: NSImage?
     /// Pending debounced load; cancelled when the cursor moves on.
     private var pendingLoad: DispatchWorkItem?
 
@@ -158,18 +160,30 @@ final class FilePreviewView: NSView {
     func reloadCurrent() {
         let path = shownPath
         shownPath = nil
-        show(path: path, fallbackIcon: nil)
+        // The icon the caller gave us last time, not nil: for something that cannot be previewed at all,
+        // passing nil emptied the panel until the cursor moved again (F-430).
+        show(path: path, fallbackIcon: lastFallbackIcon)
     }
 
     func show(path: String?, fallbackIcon: NSImage?) {
         guard shownPath != path else { return }
         shownPath = path
+        lastFallbackIcon = fallbackIcon
         pendingLoad?.cancel()
 
         guard let path, Self.canQuickLook(path) else {
+            // Every renderer, not only QuickLook and the image: a PDFView left visible is drawn *over* the
+            // icon, so the panel kept showing the previous document while claiming to preview a folder
+            // (F-430). The bar and its number go with them — `hideImage()` cannot do it, since its guard
+            // returns early when there was no image.
             quickLook?.previewItem = nil
             quickLook?.isHidden = true
+            hidePDF()
+            hideRich()
             hideImage()
+            route = .quickLook
+            zoomBar.isHidden = true
+            levelLabel.stringValue = ""
             iconView.isHidden = false
             iconView.image = fallbackIcon
             return
@@ -210,8 +224,20 @@ final class FilePreviewView: NSView {
         // Either the file is something else, or the in-process reader could not read it — an .doc AppKit
         // declines, a PDF that is not one. QuickLook is the fallback rather than an error, because it can
         // often still show something.
+        // The in-process renderer declined, so this is a QuickLook preview now.
         route = .quickLook
+        showQuickLook(path)
+    }
+
+    /// Hand a file to QuickLook, creating its view on first use.
+    ///
+    /// Also used when the in-process reader declines a file *after* it said it would show it (an .doc AppKit
+    /// cannot read), which is why the zoom bar is cleared here rather than at the call sites: it may still
+    /// be showing the PDF route's "45 %" over a preview it cannot touch (F-430).
+    private func showQuickLook(_ path: String) {
         hidePDF(); hideRich()
+        zoomBar.isHidden = true
+        levelLabel.stringValue = ""
         let view = quickLook ?? {
             let created = QLPreviewView(frame: .zero, style: .normal) ?? QLPreviewView()
             created.autostarts = false      // don't start playing media just because the cursor moved
@@ -277,12 +303,42 @@ final class FilePreviewView: NSView {
     }
 
     /// Show a word-processor document as formatted text, read by AppKit itself.
+    ///
+    /// The read happens off the main thread (F-430): `NSAttributedString(url:)` converts the whole document,
+    /// and for some formats starts the HTML importer — on a folder of large .docx files, or one on a slow
+    /// mount, arrowing down froze the panel for the length of each read. QuickLook did this out of process
+    /// and asynchronously, so the in-process route has to do it deliberately.
+    ///
+    /// Returns true when it *will* show the document; a file AppKit cannot read reports itself later, by
+    /// falling back to QuickLook once the read has failed.
     private func showRich(_ path: String) -> Bool {
-        // No documentType option: AppKit sniffs the format, which is what makes one call cover .docx, .odt
-        // and .rtf — and what makes a file it cannot read return nil instead of an empty document.
-        guard let attributed = try? NSAttributedString(url: URL(fileURLWithPath: path), options: [:],
-                                                      documentAttributes: nil),
-              attributed.length > 0 else { return false }
+        hidePDF()
+        quickLook?.previewItem = nil
+        quickLook?.isHidden = true
+        zoomBar.isHidden = true
+        levelLabel.stringValue = ""
+        let token = path
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            // No documentType option: AppKit sniffs the format, which is what makes one call cover .docx,
+            // .odt and .rtf — and what makes a file it cannot read return nil instead of an empty document.
+            let attributed = try? NSAttributedString(url: URL(fileURLWithPath: path), options: [:],
+                                                    documentAttributes: nil)
+            DispatchQueue.main.async {
+                guard let self, self.shownPath == token else { return }   // the cursor moved on
+                guard let attributed, attributed.length > 0 else {
+                    // AppKit declined it after all: QuickLook is still worth a try.
+                    self.route = .quickLook
+                    self.showQuickLook(path)
+                    return
+                }
+                self.presentRich(attributed)
+            }
+        }
+        return true
+    }
+
+    /// Put a read document into the text view, creating it on first use.
+    private func presentRich(_ attributed: NSAttributedString) {
         hidePDF()
         quickLook?.previewItem = nil
         quickLook?.isHidden = true
@@ -311,11 +367,9 @@ final class FilePreviewView: NSView {
         }()
         scroll.isHidden = false
         richText?.textStorage?.setAttributedString(attributed)
-        // Text reflows, so a zoom percentage would promise something it cannot keep. The label is cleared
-        // with the bar: a stale "45%" from the previous file is worse than no number (F-429).
+        // Text reflows, so a zoom percentage would promise something it cannot keep (F-429).
         zoomBar.isHidden = true
         levelLabel.stringValue = ""
-        return true
     }
 
     @objc private func pdfScaleChanged() { refreshLevel() }

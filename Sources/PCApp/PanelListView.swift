@@ -478,6 +478,8 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     /// Plugin fields whose value is `symbolName\ttext` — opted into with unit "icon" (F-428), the same
     /// shape the "badge" unit already used to opt into a name-cell badge.
     var iconContentFields: Set<String> = []
+    /// path -> fieldID -> SF Symbol, split off the raw value on the way in (F-430).
+    private var contentSymbols: [String: [String: String]] = [:]
     private var contentValues: [String: [String: String]] = [:]   // path -> fieldID -> value
     private var contentPending: Set<String> = []
 
@@ -602,7 +604,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     func setColumns(_ specs: [ColumnSpec]) {
         for tc in tableColumns { removeTableColumn(tc) }
         visibleColumns = specs.isEmpty ? PanelColumn.defaultSpecs : specs
-        contentValues.removeAll(); contentPending.removeAll()
+        contentValues.removeAll(); contentSymbols.removeAll(); contentPending.removeAll()
         for spec in visibleColumns { addColumn(id: spec.fieldID, title: spec.title, width: CGFloat(spec.width)) }
         reloadData()
     }
@@ -616,6 +618,31 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         }
     }
 
+    /// Store a value a provider returned, undoing the `symbolName\ttext` wire format of an icon column
+    /// *here* rather than where the cell is drawn (F-430).
+    ///
+    /// One place, because everything else reads this cache: sorting, "copy column value", the unaimed
+    /// filter and the harness dump. The first version split it only while drawing, so the column sorted by
+    /// SF Symbol name and the clipboard got `pencil.circle.fill<TAB>Modified`.
+    private func storeContent(_ raw: String, _ fieldID: String, path: String) {
+        guard iconContentFields.contains(fieldID) else {
+            contentValues[path, default: [:]][fieldID] = raw
+            return
+        }
+        let split = IconColumnValue.split(raw)
+        contentValues[path, default: [:]][fieldID] = split.text
+        if let symbol = split.symbol {
+            contentSymbols[path, default: [:]][fieldID] = symbol
+        } else {
+            contentSymbols[path]?[fieldID] = nil
+        }
+    }
+
+    /// The words of a value a *synchronous* provider returned — the two closures that bypass the cache.
+    private func contentText(_ raw: String, _ fieldID: String) -> String {
+        iconContentFields.contains(fieldID) ? IconColumnValue.split(raw).text : raw
+    }
+
     /// Cached content value for `fieldID`/`path`, kicking a one-shot async fetch
     /// (then reloading the row) when not yet cached.
     private func contentValue(_ fieldID: String, path: String) -> String {
@@ -625,7 +652,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             contentPending.insert(key)
             Task { @MainActor in
                 let val = await provider(fieldID, path) ?? ""
-                contentValues[path, default: [:]][fieldID] = val
+                storeContent(val, fieldID, path: path)
                 contentPending.remove(key)
                 // Find the row by name and confirm with one path build, rather than building
                 // every entry's path to compare. One of these tasks runs per row, so the scan
@@ -665,7 +692,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         if let sortDescriptor { self.sortDescriptor = sortDescriptor }
         dirSizes.removeAll()
         commentMap.removeAll()   // descript.ion comments are per-listing (controller refills)
-        contentValues.removeAll(); contentPending.removeAll()   // plugin-column values are per-listing
+        contentValues.removeAll(); contentSymbols.removeAll(); contentPending.removeAll()   // plugin-column values are per-listing
         rebuildVisibleEntries()
         // A refresh must not move the cursor OR the view. Resetting to the first row was right for a
         // navigation and wrong for the reload a volatile mount does every two seconds: it threw away
@@ -697,7 +724,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
         for entry in visibleEntries {
             let p = fullPath(of: entry)
             for fieldID in contentColumns {
-                contentValues[p, default: [:]][fieldID] = resolve(fieldID, p) ?? ""
+                storeContent(resolve(fieldID, p) ?? "", fieldID, path: p)
             }
         }
     }
@@ -929,7 +956,7 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     private func fieldValue(_ fieldID: String, entry: VFSEntry) -> String {
         let path = fullPath(of: entry)
         if let v = contentValues[path]?[fieldID] { return v }
-        return syncContentValue?(fieldID, path) ?? ""
+        return contentText(syncContentValue?(fieldID, path) ?? "", fieldID)
     }
 
     /// Everything an unaimed term may match: the name, and on a mount the columns it shows.
@@ -1107,15 +1134,10 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             // its name and plain in PID / CPU / Command — which in a TaskManager listing is most of
             // what the eye is on.
             let handleColor = fileHandleHighlights[entry.name]?.color
-            var text = contentValue(columnID, path: path)
-            var symbol: String?
-            if iconContentFields.contains(columnID), let tab = text.firstIndex(of: "\t") {
-                // `symbolName\ttext`: the icon is what the eye scans, the words are what it reads once it
-                // has stopped. A value without a tab is drawn as plain text — a plugin that opted in but
-                // sent no symbol for this row loses the icon, not the value.
-                symbol = String(text[text.startIndex..<tab])
-                text = String(text[text.index(after: tab)...])
-            }
+            // The words come from the value cache and the icon from beside it: both were split on the way
+            // in, so nothing here has to know about the wire format (F-430).
+            let text = contentValue(columnID, path: path)
+            let symbol = contentSymbols[path]?[columnID]
             cell.configure(text: text, isSelected: selectedPaths.contains(path),
                            color: handleColor, keepColorOnCursorRow: handleColor != nil,
                            symbolName: symbol)
@@ -1201,7 +1223,8 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
     func cellText(forColumn fieldID: String, entry: VFSEntry) -> String {
         let path = fullPath(of: entry)
         guard let column = PanelColumn(rawValue: fieldID) else {
-            return contentValues[path]?[fieldID] ?? syncContentValue?(fieldID, path) ?? ""
+            return contentValues[path]?[fieldID]
+                ?? contentText(syncContentValue?(fieldID, path) ?? "", fieldID)
         }
         switch column {
         case .name: return entry.name
@@ -1719,11 +1742,14 @@ final class PanelListView: NSTableView, NSTableViewDataSource, NSTableViewDelega
             for e in visibleEntries {
                 let p = fullPath(of: e)
                 if contentValues[p]?[fieldID] == nil {
-                    contentValues[p, default: [:]][fieldID] = await provider(fieldID, p) ?? ""
+                    storeContent(await provider(fieldID, p) ?? "", fieldID, path: p)
                 }
                 // Order by the raw value where the mount offers one (a formatted size does not
-                // compare), else by what is on screen.
-                values[p] = sortContentValue?(fieldID, p) ?? contentValues[p]?[fieldID] ?? ""
+                // compare), else by what is on screen — in both cases the *words*, never the icon's
+                // symbol name, which would order a status column alphabetically by symbol (F-430).
+                let sorted = sortContentValue?(fieldID, p)
+                values[p] = sorted.map { contentText($0, fieldID) }
+                    ?? contentValues[p]?[fieldID] ?? ""
             }
             let numeric = numericContentFields.contains(fieldID)
             visibleEntries.sort { a, b in

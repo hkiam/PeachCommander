@@ -78,12 +78,17 @@ final class LineNumberRuler: NSRulerView {
     }
 
     override func mouseDown(with event: NSEvent) {
-        guard !annotations.isEmpty, let onAnnotationClicked else {
+        guard !annotations.isEmpty, annotationWidth > 0, let onAnnotationClicked else {
             super.mouseDown(with: event)
             return
         }
         let point = convert(event.locationInWindow, from: nil)
-        guard let line = line(at: point), GutterAnnotations.annotation(annotations, line: line) != nil else {
+        // Inside the annotation *column*, not merely somewhere on that line: without the x test a click on
+        // the line number — or on the separator at the gutter's edge — opened a commit diff, and the
+        // responder chain never saw the click at all (F-430). The bounds match what the drawing uses.
+        guard point.x >= Self.padding, point.x <= annotationWidth,
+              let line = line(at: point),
+              GutterAnnotations.annotation(annotations, line: line) != nil else {
             super.mouseDown(with: event)
             return
         }
@@ -167,8 +172,10 @@ final class LineNumberRuler: NSRulerView {
         // numbers next to it counted its lines correctly — the strongest hint that this was a painting
         // problem and not a loading one.
         // Tooltip rects are re-added per draw below, so the old ones have to go — otherwise scrolling
-        // leaves the previous lines' tooltips behind at the same y (F-426).
-        if annotationWidth > 0 { removeAllToolTips() }
+        // leaves the previous lines' tooltips behind at the same y (F-426). Unconditionally: guarding on
+        // `annotationWidth > 0` meant that *clearing* the annotations (which sets it to 0) left the last
+        // set's tooltips popping up for the rest of the window's life (F-430).
+        removeAllToolTips()
         let strip = NSRect(x: 0, y: rect.minY, width: ruleThickness, height: rect.height)
         Theme.current.listBackground.setFill()
         strip.fill()
