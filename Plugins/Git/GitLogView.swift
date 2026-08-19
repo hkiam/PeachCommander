@@ -30,8 +30,8 @@ final class GitLogView: NSView {
     private var files: [(status: String, path: String)] = []
 
     private let header = NSTextField(labelWithString: "")
-    private let commitTable = NSTableView()
-    private let fileTable = NSTableView()
+    private let commitTable = GitTable()
+    private let fileTable = GitTable()
     private let busy = NSProgressIndicator()
     private let loadMoreButton = NSButton()
     private let revertButton = NSButton()
@@ -58,7 +58,7 @@ final class GitLogView: NSView {
         header.lineBreakMode = .byTruncatingMiddle
 
         for (table, columns) in [
-            (commitTable, [("graph", "", 44), ("subject", L("Subject"), 320),
+            (commitTable, [("graph", "", 44), ("refs", "", 130), ("subject", L("Subject"), 300),
                            ("author", L("Author"), 120), ("date", L("Date"), 130)]),
             (fileTable, [("status", "", 28), ("file", L("File"), 320)]),
         ] as [(NSTableView, [(String, String, CGFloat)])] {
@@ -78,6 +78,27 @@ final class GitLogView: NSView {
         fileTable.target = self
         fileTable.doubleAction = #selector(diffSelectedFile)
         commitTable.doubleAction = #selector(diffSelectedFile)
+        // Return does what a double-click does, and a right-click acts on the row under the cursor (F-424).
+        commitTable.onEnter = { [weak self] in self?.diffSelectedFile() }
+        fileTable.onEnter = { [weak self] in self?.diffSelectedFile() }
+        commitTable.menu = gitMenu([
+            (L("Show changes of this file"), #selector(diffSelectedFile)),
+            (nil, nil),
+            (L("Copy commit hash"), #selector(copyHash)),
+            (L("Copy subject"), #selector(copySubject)),
+            (nil, nil),
+            (L("Revert commit"), #selector(revertSelectedCommit)),
+            (L("Cherry-pick"), #selector(cherryPickSelectedCommit)),
+            (L("Open on the web"), #selector(openSelectedOnTheWeb)),
+            (nil, nil),
+            (L("Reload"), #selector(reloadFromMenu)),
+        ], target: self)
+        fileTable.menu = gitMenu([
+            (L("Show changes of this file"), #selector(diffSelectedFile)),
+            (L("Blame…"), #selector(blameSelectedFile)),
+            (nil, nil),
+            (L("Copy file path"), #selector(copyFilePath)),
+        ], target: self)
 
         for (button, title, action) in [
             (loadMoreButton, L("Load more"), #selector(loadMore)),
@@ -162,6 +183,42 @@ final class GitLogView: NSView {
         ratio.priority = .init(500)
         NSLayoutConstraint.activate([leftMinimum, rightMinimum, ratio])
     }
+
+    /// Cmd+R reloads, wherever the focus happens to be — a commit made in a terminal used to leave this
+    /// window quietly out of date with no way to refresh it (F-424).
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "r" {
+            reload()
+            return true
+        }
+        return super.performKeyEquivalent(with: event)
+    }
+
+    @objc private func reloadFromMenu() { reload() }
+
+    @objc private func copyHash() {
+        guard commits.indices.contains(commitTable.selectedRow) else { return }
+        gitCopyToClipboard(commits[commitTable.selectedRow].hash)
+    }
+
+    @objc private func copySubject() {
+        guard commits.indices.contains(commitTable.selectedRow) else { return }
+        gitCopyToClipboard(commits[commitTable.selectedRow].subject)
+    }
+
+    @objc private func copyFilePath() {
+        guard files.indices.contains(fileTable.selectedRow) else { return }
+        gitCopyToClipboard(files[fileTable.selectedRow].path)
+    }
+
+    /// Who last touched this file — from the history, which is where the question usually arises.
+    @objc private func blameSelectedFile() {
+        guard files.indices.contains(fileTable.selectedRow) else { return }
+        blameRequested?(files[fileTable.selectedRow].path)
+    }
+
+    /// Set by the window factory, so the log window does not have to know how a blame window is built.
+    var blameRequested: (@MainActor (String) -> Void)?
 
     // MARK: - Loading
 
@@ -375,6 +432,14 @@ extension GitLogView: NSTableViewDataSource, NSTableViewDelegate {
             case "graph":
                 field.stringValue = graph.indices.contains(row)
                     ? PluginGit.graphText(graph[row], width: graphWidth) : ""
+            case "refs":
+                // Where `main`, `origin/main` and the release tag actually are — the question a history is
+                // usually opened for, and one this window could not answer at all (F-425). Glyphs rather
+                // than colours: the column is monospaced text, and `↗` reads as "over there on the remote"
+                // in a way a shade of grey does not.
+                field.stringValue = commit.refs.map(Self.label(for:)).joined(separator: " ")
+                field.toolTip = commit.refs.isEmpty ? nil
+                    : commit.refs.map(\.name).joined(separator: ", ")
             case "subject":
                 field.stringValue = commit.subject
                 field.toolTip = "\(commit.shortHash)  \(commit.subject)"
@@ -397,6 +462,17 @@ extension GitLogView: NSTableViewDataSource, NSTableViewDelegate {
         files = []
         fileTable.reloadData()
         loadFiles(for: commits[table.selectedRow])
+    }
+
+    /// `● main` for the branch HEAD is on, `↗ origin/main` for a remote-tracking branch, `⚑ v1.0` for a
+    /// tag, and a plain name for any other local branch.
+    private static func label(for ref: PluginGit.Ref) -> String {
+        switch ref.kind {
+        case .head:   return "● " + ref.name
+        case .remote: return "↗ " + ref.name
+        case .tag:    return "⚑ " + ref.name
+        case .branch: return ref.name
+        }
     }
 
     private static let dateFormatter: DateFormatter = {

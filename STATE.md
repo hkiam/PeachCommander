@@ -47,6 +47,27 @@ regression from here on. The run's report and screenshots are under `/tmp/vm-new
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
 
+## 2026-08-19 (F-424, F-425) — Reviewing the plugin as somebody who has to use it
+
+Asked to check the Git plugin functionally *and* as an interface. Going through it as a user rather than as
+its author found one uniform gap and two functional ones.
+
+**The uniform gap: it could only be operated with the left mouse button.** Not one of the six views had a
+context menu, none had any keyboard handling, and five of six had no reload — so a commit made in a
+terminal left a window quietly stale. Context menus, Return as the primary action and Cmd+R everywhere are
+F-424, and the detail that matters is that a right-click now *selects the row under the cursor first*:
+without that, a menu acts on the previous selection, which is how somebody reverts the wrong commit.
+
+**Functionally, tags were missing entirely** — the plan said "branch and tag list" in phase 3 and the ref
+query only ever asked for `refs/heads refs/remotes`, so releases were invisible. And the **history did not
+show where any ref was**, because `%D` was never in the log format. Both are F-425; the decoration is
+appended as a seventh field so no existing index moves, since a shifted field is precisely the defect
+`parseStatus` had with renames.
+
+Also caught by reading the text rather than the code: the rebase confirmation warned about force-pushing
+other people's history, while the list it confirms is `upstream..HEAD` — by construction the commits nobody
+else has. A warning that does not apply is one a reader learns to click through.
+
 ## 2026-08-18 (F-423) — The bounded rebase, and why it is bounded
 
 The last of the four "out of scope" items, built as the narrow version phase 5 argued for: the commits

@@ -27,7 +27,7 @@ final class GitPanelView: NSView {
     private var groups: [(section: PluginGit.Section, files: [PluginGit.FileStatus])] = []
 
     private let header = NSTextField(labelWithString: "")
-    private let outline = NSOutlineView()
+    private let outline = GitOutline()
     private let scroll = NSScrollView()
     private let messageField = NSTextField()
     private let commitButton = NSButton()
@@ -36,6 +36,8 @@ final class GitPanelView: NSView {
     private let unstageButton = NSButton()
     private let discardButton = NSButton()
     private let refreshButton = NSButton()
+    private let pullButton = NSButton()
+    private let pushButton = NSButton()
     private let busy = NSProgressIndicator()
 
     /// Host services, copied — the host's is a stack value and must not be kept by pointer.
@@ -79,6 +81,8 @@ final class GitPanelView: NSView {
             (stageButton, L("Stage"), #selector(stageSelected)),
             (unstageButton, L("Unstage"), #selector(unstageSelected)),
             (discardButton, L("Discard…"), #selector(discardSelected)),
+            (pullButton, L("Pull"), #selector(pull)),
+            (pushButton, L("Push"), #selector(push)),
             (refreshButton, L("Refresh"), #selector(refreshNow)),
         ] as [(NSButton, String, Selector)] {
             button.title = title
@@ -92,7 +96,8 @@ final class GitPanelView: NSView {
         amendCheckbox.controlSize = .small
         amendCheckbox.font = .systemFont(ofSize: 11)
 
-        let buttons = NSStackView(views: [stageButton, unstageButton, discardButton, refreshButton])
+        let buttons = NSStackView(views: [stageButton, unstageButton, discardButton,
+                                         pullButton, pushButton, refreshButton])
         buttons.orientation = .horizontal
         buttons.spacing = 4
         buttons.distribution = .fillEqually
@@ -104,6 +109,18 @@ final class GitPanelView: NSView {
         outline.delegate = self
         outline.target = self
         outline.doubleAction = #selector(diffSelected)
+        outline.onEnter = { [weak self] in self?.diffSelected() }
+        // The actions this list has, on the right button — where a file manager's reader looks first (F-424).
+        outline.menu = gitMenu([
+            (L("Show changes"), #selector(diffSelected)),
+            (nil, nil),
+            (L("Stage"), #selector(stageSelected)),
+            (L("Unstage"), #selector(unstageSelected)),
+            (L("Discard…"), #selector(discardSelected)),
+            (nil, nil),
+            (L("Copy file path"), #selector(copyFilePath)),
+            (L("Reload"), #selector(refreshNow)),
+        ], target: self)
         outline.allowsMultipleSelection = true
         outline.addTableColumn(NSTableColumn(identifier: .init("file")))
         outline.outlineTableColumn = outline.tableColumns.first
@@ -179,6 +196,31 @@ final class GitPanelView: NSView {
     // MARK: - Loading
 
     @objc private func refreshNow() { PluginGitRepo.invalidate(); reload() }
+
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "r" {
+            refreshNow()
+            return true
+        }
+        return super.performKeyEquivalent(with: event)
+    }
+
+    /// Sync where the commit is made. Routed back through the host by command id rather than run here:
+    /// those two commands are declared asynchronous (F-422), so this way they keep the progress window and
+    /// the Cancel button instead of becoming a second, silent implementation inside the panel (F-424).
+    @objc private func pull() { invoke("plugin.git.pull") }
+    @objc private func push() { invoke("plugin.git.push") }
+
+    private func invoke(_ commandId: String) {
+        commandId.withCString { services.invokeCommand?(services.host, $0) }
+    }
+
+    /// The full path, not the repository-relative one: it is copied to be pasted somewhere else, and
+    /// "src/app.swift" means nothing outside this repository.
+    @objc private func copyFilePath() {
+        guard let root, let first = selectedFiles().first else { return }
+        gitCopyToClipboard((root as NSString).appendingPathComponent(first.file.path))
+    }
 
     /// Re-read the repository off the main thread and rebuild the list on it.
     private func reload() {

@@ -349,6 +349,15 @@ public enum PluginGit {
     // MARK: - History (phase 2)
 
     /// One commit, as `parseLog` reads it.
+    /// One name pointing at a commit: a local branch, a remote-tracking branch or a tag. `head` is the
+    /// branch HEAD is on, which git prints as "HEAD -> main" and a reader wants to see marked (F-425).
+    public struct Ref: Sendable, Equatable {
+        public enum Kind: String, Sendable, Equatable { case head, branch, remote, tag }
+        public let name: String
+        public let kind: Kind
+        public init(name: String, kind: Kind) { self.name = name; self.kind = kind }
+    }
+
     public struct Commit: Sendable, Equatable {
         public let hash: String
         public let shortHash: String
@@ -356,6 +365,11 @@ public enum PluginGit {
         public let author: String
         public let date: Date
         public let subject: String
+        /// Branch, remote-branch and tag names pointing at this commit, in git's own order (F-425).
+        ///
+        /// A history without these does not answer the question it is usually opened for — *where* is
+        /// `main`, what did the release tag point at — and every reference product shows them.
+        public var refs: [Ref] = []
 
         public init(hash: String, shortHash: String, parents: [String], author: String,
                     date: Date, subject: String) {
@@ -378,9 +392,12 @@ public enum PluginGit {
         // its child (a branch committed earlier than the commit it forked from), and then the lane waiting
         // for that parent never closes — the graph shows a branch running past the commit that ended it.
         // Measured on a repository with one merge; this is also why every graph viewer asks for topo order.
+        // `%D` last, after the subject: a subject may contain anything, including our separators in
+        // principle, but appending a field keeps every existing index where it was — the rename defect in
+        // `parseStatus` was exactly a shifted field, and it is not worth repeating here (F-425).
         var out = ["--no-optional-locks", "log", "--topo-order", "--max-count=\(limit)",
                    "--format=%H\(unitSeparator)%h\(unitSeparator)%P\(unitSeparator)%an"
-                   + "\(unitSeparator)%at\(unitSeparator)%s\(recordSeparator)"]
+                   + "\(unitSeparator)%at\(unitSeparator)%s\(unitSeparator)%D\(recordSeparator)"]
         if let path, !path.isEmpty { out += ["--follow", "--", path] }
         return out
     }
@@ -393,9 +410,13 @@ public enum PluginGit {
             guard fields.count >= 6, !fields[0].isEmpty else { continue }
             let parents = fields[2].split(separator: " ").map(String.init)
             let seconds = Double(fields[4]) ?? 0
-            commits.append(Commit(hash: fields[0], shortHash: fields[1], parents: parents,
-                                  author: fields[3], date: Date(timeIntervalSince1970: seconds),
-                                  subject: fields[5]))
+            var commit = Commit(hash: fields[0], shortHash: fields[1], parents: parents,
+                                author: fields[3], date: Date(timeIntervalSince1970: seconds),
+                                subject: fields[5])
+            // An older format (or a caller with its own) simply has no seventh field, and then there are
+            // no refs — not a parse error.
+            if fields.count >= 7 { commit.refs = parseRefs(fields[6]) }
+            commits.append(commit)
         }
         return commits
     }
@@ -734,6 +755,81 @@ public enum PluginGit {
             .appendingPathComponent(".git")
         return (root, prefix, gitDir)
     }
+
+    /// git's `%D` decoration: `HEAD -> main, origin/main, tag: v1.0`.
+    public static func parseRefs(_ decoration: String) -> [Ref] {
+        var refs: [Ref] = []
+        for piece in decoration.components(separatedBy: ", ") {
+            let text = piece.trimmingCharacters(in: .whitespaces)
+            guard !text.isEmpty else { continue }
+            if text.hasPrefix("HEAD -> ") {
+                refs.append(Ref(name: String(text.dropFirst(8)), kind: .head))
+            } else if text.hasPrefix("tag: ") {
+                refs.append(Ref(name: String(text.dropFirst(5)), kind: .tag))
+            } else if text == "HEAD" {
+                refs.append(Ref(name: "HEAD", kind: .head))     // detached
+            } else {
+                refs.append(Ref(name: text, kind: text.contains("/") ? .remote : .branch))
+            }
+        }
+        return refs
+    }
+
+    // MARK: - Tags (F-425)
+
+    /// A tag, as the list shows it. `isAnnotated` matters: a lightweight tag has no message and no tagger,
+    /// so a window that pretends otherwise shows empty columns for half the rows.
+    public struct Tag: Sendable, Equatable {
+        public let name: String
+        public let isAnnotated: Bool
+        public let subject: String
+        public let date: Date?
+        public init(name: String, isAnnotated: Bool, subject: String, date: Date?) {
+            self.name = name; self.isAnnotated = isAnnotated; self.subject = subject; self.date = date
+        }
+    }
+
+    /// Tags newest first, with the same explicit format the branch list uses.
+    ///
+    /// `creatordate` rather than `taggerdate`: a lightweight tag has no tagger, so sorting by taggerdate
+    /// puts every lightweight tag in one undated clump at the end.
+    public static let tagArguments = [
+        "--no-optional-locks", "for-each-ref", "--sort=-creatordate",
+        "--format=%(refname:short)\u{1F}%(objecttype)\u{1F}%(contents:subject)\u{1F}%(creatordate:unix)",
+        "refs/tags",
+    ]
+
+    public static func parseTags(_ output: String) -> [Tag] {
+        var tags: [Tag] = []
+        for line in output.split(separator: "\n", omittingEmptySubsequences: true) {
+            let fields = line.components(separatedBy: unitSeparator)
+            guard fields.count >= 4, !fields[0].isEmpty else { continue }
+            let seconds = Double(fields[3].trimmingCharacters(in: .whitespaces))
+            tags.append(Tag(name: fields[0],
+                            isAnnotated: fields[1] == "tag",
+                            subject: fields[2],
+                            date: seconds.map { Date(timeIntervalSince1970: $0) }))
+        }
+        return tags
+    }
+
+    /// Annotated when there is a message, lightweight when there is not — which is the actual difference
+    /// between the two, so the choice is made by whether the reader typed something rather than by a
+    /// checkbox they would have to understand first.
+    public static func createTagArguments(name: String, message: String?) -> [String] {
+        guard let message, !message.isEmpty else { return ["tag", name] }
+        return ["tag", "-a", name, "-m", message]
+    }
+
+    public static func deleteTagArguments(_ name: String) -> [String] { ["tag", "-d", name] }
+
+    /// Publishing a tag is explicit: `git push` does not carry tags, which is the single most common
+    /// surprise about them ("I tagged it and nobody else can see it").
+    public static func pushTagArguments(remote: String, name: String) -> [String] {
+        ["push", remote, "refs/tags/" + name]
+    }
+
+    public static func checkoutTagArguments(_ name: String) -> [String] { ["checkout", name] }
 
     // MARK: - Rebase, bounded to the commits ahead of the upstream (phase 5d)
 

@@ -31,6 +31,20 @@ made the last of it possible.
   **cherry-pick** a commit from the history window, each refusing up front when the working tree is not
   clean rather than stopping half-way through.
 
+- **Tags.** The Branches window has a third list: create a tag (typing a message makes it annotated),
+  delete it, switch to it — with a plain warning that a tag is not a branch and HEAD ends up detached — and
+  **push a tag**, which is its own action because `git push` does not carry tags. Previously the plugin
+  showed branches and stashes and no tags at all.
+
+- **The history shows where the branches and tags are.** A commit row now names the refs pointing at it:
+  `● main`, `↗ origin/main`, `⚑ v1.0`.
+
+- **Right-click, Return and Cmd+R work in every Git window.** Each list has a context menu with its own
+  actions, right-clicking selects the row under the cursor first, Return does what a double-click does, and
+  Cmd+R reloads — a commit made in a terminal used to leave a Git window quietly out of date with no way to
+  refresh it. You can also copy what these windows are actually asked for: a commit hash, a subject, a file
+  path, a blamed line, a branch or tag name. And Push/Pull are in the Git panel, next to the commit.
+
 - **Tidy up the commits you have not pushed yet.** `Rebase…` lists the commits ahead of the upstream and
   lets you squash, fix up, drop, reorder or reword them, then rewrites the branch — with a plain refusal
   when something is in the way (uncommitted changes, an open conflict, no upstream) instead of git's

@@ -501,6 +501,58 @@ final class PluginGitTests: XCTestCase {
         XCTAssertEqual(PluginGit.cherryPickArguments("abc"), ["cherry-pick", "--no-edit", "abc"])
     }
 
+    // MARK: - Refs in the history, and tags (F-425)
+
+    func testParseRefsFromGitDecoration() {
+        let refs = PluginGit.parseRefs("HEAD -> main, origin/main, tag: v1.0, feature")
+        XCTAssertEqual(refs.map(\.name), ["main", "origin/main", "v1.0", "feature"])
+        XCTAssertEqual(refs.map(\.kind), [.head, .remote, .tag, .branch])
+        XCTAssertEqual(PluginGit.parseRefs(""), [])
+        XCTAssertEqual(PluginGit.parseRefs("HEAD"), [PluginGit.Ref(name: "HEAD", kind: .head)],
+                       "a detached HEAD decorates as just HEAD")
+    }
+
+    /// The decoration is appended as a seventh field, so every existing index stays where it was — a
+    /// shifted field is the defect `parseStatus` had with renames, and it is not worth repeating.
+    func testLogParsesRefsAndStillWorksWithoutThem() {
+        let us = "\u{1F}", rs = "\u{1E}"
+        let withRefs = "aaa\(us)aaa1\(us)bbb\(us)T\(us)0\(us)subject\(us)HEAD -> main, tag: v2\(rs)"
+        let commit = PluginGit.parseLog(withRefs).first
+        XCTAssertEqual(commit?.subject, "subject")
+        XCTAssertEqual(commit?.refs.map(\.name), ["main", "v2"])
+
+        let withoutRefs = "aaa\(us)aaa1\(us)bbb\(us)T\(us)0\(us)subject\(rs)"
+        let older = PluginGit.parseLog(withoutRefs).first
+        XCTAssertEqual(older?.subject, "subject", "six fields must still parse")
+        XCTAssertEqual(older?.refs, [], "and simply carry no refs")
+    }
+
+    func testParseTags() {
+        let us = "\u{1F}"
+        let out = "v2.0\(us)tag\(us)the second release\(us)1700000000\n"
+            + "v1.9\(us)commit\(us)\(us)1690000000\n"
+        let tags = PluginGit.parseTags(out)
+        XCTAssertEqual(tags.map(\.name), ["v2.0", "v1.9"])
+        XCTAssertTrue(tags[0].isAnnotated)
+        XCTAssertEqual(tags[0].subject, "the second release")
+        XCTAssertFalse(tags[1].isAnnotated, "objecttype commit means a lightweight tag")
+        XCTAssertEqual(tags[1].date, Date(timeIntervalSince1970: 1690000000))
+        XCTAssertEqual(PluginGit.parseTags("nonsense\n"), [], "a line with too few fields is skipped")
+    }
+
+    /// Annotated when there is a message, lightweight when there is not — that *is* the difference.
+    func testTagArguments() {
+        XCTAssertEqual(PluginGit.createTagArguments(name: "v1", message: nil), ["tag", "v1"])
+        XCTAssertEqual(PluginGit.createTagArguments(name: "v1", message: ""), ["tag", "v1"])
+        XCTAssertEqual(PluginGit.createTagArguments(name: "v1", message: "ship it"),
+                       ["tag", "-a", "v1", "-m", "ship it"])
+        XCTAssertEqual(PluginGit.deleteTagArguments("v1"), ["tag", "-d", "v1"])
+        // `git push` does not carry tags, which is the standard surprise about them.
+        XCTAssertEqual(PluginGit.pushTagArguments(remote: "origin", name: "v1"),
+                       ["push", "origin", "refs/tags/v1"])
+        XCTAssertEqual(PluginGit.checkoutTagArguments("v1"), ["checkout", "v1"])
+    }
+
     // MARK: - Rebase (phase 5d)
 
     private static func commit(_ hash: String, _ subject: String) -> PluginGit.Commit {

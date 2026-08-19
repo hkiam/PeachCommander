@@ -535,14 +535,19 @@ private func showLogWindow(root: String, path: String?, _ svc: PcHostServices) {
     let title = path.map { String(format: L("History of %@"), $0) }
         ?? String(format: L("Git Log — %@"), name)
     let view = GitLogView(services: svc, root: root, path: path)
+    // "Blame this file" from the history: the log window asks, this factory knows how a blame window is
+    // built — so neither view has to know about the other (F-424).
+    view.blameRequested = { file in showBlameWindow(root: root, path: file, svc) }
     showToolWindow(title: title, view: view, size: NSSize(width: 820, height: 460), svc)
 }
 
 @MainActor
 private func showBranchesWindow(root: String, _ svc: PcHostServices) {
     let view = GitBranchesView(services: svc, root: root)
+    // Wider than before: the window carries three lists since tags arrived (F-425), and 780 points gave
+    // each of them less than the minimum they ask for.
     showToolWindow(title: String(format: L("Branches — %@"), (root as NSString).lastPathComponent),
-                   view: view, size: NSSize(width: 780, height: 440), svc)
+                   view: view, size: NSSize(width: 1000, height: 460), svc)
 }
 
 @MainActor

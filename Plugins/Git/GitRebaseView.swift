@@ -30,7 +30,7 @@ final class GitRebaseView: NSView {
     private var running = false
 
     private let header = NSTextField(labelWithString: "")
-    private let table = NSTableView()
+    private let table = GitTable()
     private let busy = NSProgressIndicator()
     private var actionButtons: [NSButton] = []
     private let upButton = NSButton()
@@ -66,6 +66,19 @@ final class GitRebaseView: NSView {
         table.usesAlternatingRowBackgroundColors = true
         table.dataSource = self
         table.delegate = self
+        table.menu = gitMenu([
+            (L("Pick"), #selector(menuPick)),
+            (L("Reword…"), #selector(menuReword)),
+            (L("Squash"), #selector(menuSquash)),
+            (L("Fixup"), #selector(menuFixup)),
+            (L("Drop"), #selector(menuDrop)),
+            (nil, nil),
+            (L("Move up"), #selector(moveCommitUp)),
+            (L("Move down"), #selector(moveCommitDown)),
+            (nil, nil),
+            (L("Copy commit hash"), #selector(copyHash)),
+            (L("Reload"), #selector(reloadFromMenu)),
+        ], target: self)
 
         // One button per action rather than a popup in every row: the same shape the conflict resolver uses,
         // and a row's action is a decision about the selection, not a field of it.
@@ -197,13 +210,39 @@ final class GitRebaseView: NSView {
 
     // MARK: - Editing the plan
 
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "r" {
+            PluginGitRepo.invalidate()
+            reload()
+            return true
+        }
+        return super.performKeyEquivalent(with: event)
+    }
+
+    @objc private func reloadFromMenu() { PluginGitRepo.invalidate(); reload() }
+
+    @objc private func menuPick()   { decide(.pick) }
+    @objc private func menuReword() { decide(.reword) }
+    @objc private func menuSquash() { decide(.squash) }
+    @objc private func menuFixup()  { decide(.fixup) }
+    @objc private func menuDrop()   { decide(.drop) }
+
+    private func decide(_ action: PluginGit.RebaseAction) {
+        let rows = table.selectedRowIndexes
+        guard !rows.isEmpty else { return }
+        for row in rows where actions.indices.contains(row) { actions[row] = action }
+        table.reloadData()
+    }
+
+    @objc private func copyHash() {
+        guard commits.indices.contains(table.selectedRow) else { return }
+        gitCopyToClipboard(commits[table.selectedRow].hash)
+    }
+
     @objc private func setActionFromButton(_ sender: NSButton) {
         let all = PluginGit.RebaseAction.allCases
         guard all.indices.contains(sender.tag) else { return }
-        let rows = table.selectedRowIndexes
-        guard !rows.isEmpty else { return }
-        for row in rows where actions.indices.contains(row) { actions[row] = all[sender.tag] }
-        table.reloadData()
+        decide(all[sender.tag])
     }
 
     // Not `moveUp`/`moveDown`: NSResponder has those, and a selector of the same name is ambiguous.
@@ -248,7 +287,10 @@ final class GitRebaseView: NSView {
 
         let alert = NSAlert()
         alert.messageText = String(format: L("Rewrite %lld commit(s) on this branch?"), commits.count)
-        alert.informativeText = L("The commits are replaced by new ones. Anything already pushed would have to be force-pushed, which rewrites history for everybody else.")
+        // Not "you would have to force-push": the list is `upstream..HEAD`, so every commit in it is by
+        // construction one the upstream does not have. Warning about rewriting other people's history here
+        // was inaccurate, and a warning that does not apply is one a reader learns to click through (F-424).
+        alert.informativeText = L("The commits are replaced by new ones. These are not on the upstream yet, so nobody else has them — but anything referring to them locally (another branch, a stash, an open worktree) keeps pointing at the old ones.")
         alert.addButton(withTitle: L("Rebase"))
         alert.addButton(withTitle: L("Cancel"))
         guard alert.runModal() == .alertFirstButtonReturn else { return }

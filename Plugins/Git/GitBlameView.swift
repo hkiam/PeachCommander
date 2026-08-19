@@ -20,7 +20,7 @@ final class GitBlameView: NSView {
     private var lines: [PluginGit.BlameLine] = []
 
     private let header = NSTextField(labelWithString: "")
-    private let table = NSTableView()
+    private let table = GitTable()
     private let busy = NSProgressIndicator()
 
     init(services: PcHostServices, root: String, path: String) {
@@ -54,6 +54,15 @@ final class GitBlameView: NSView {
         table.delegate = self
         table.target = self
         table.doubleAction = #selector(diffSelected)
+        table.onEnter = { [weak self] in self?.diffSelected() }
+        table.menu = gitMenu([
+            (L("Show this commit's changes"), #selector(diffSelected)),
+            (nil, nil),
+            (L("Copy commit hash"), #selector(copyHash)),
+            (L("Copy line"), #selector(copyLine)),
+            (nil, nil),
+            (L("Reload"), #selector(reloadFromMenu)),
+        ], target: self)
 
         busy.style = .spinning
         busy.controlSize = .small
@@ -86,6 +95,26 @@ final class GitBlameView: NSView {
         let height = scroll.heightAnchor.constraint(greaterThanOrEqualTo: heightAnchor, multiplier: 0.7)
         height.priority = .init(999)
         height.isActive = true
+    }
+
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "r" {
+            reload()
+            return true
+        }
+        return super.performKeyEquivalent(with: event)
+    }
+
+    @objc private func reloadFromMenu() { reload() }
+
+    @objc private func copyHash() {
+        guard lines.indices.contains(table.selectedRow) else { return }
+        gitCopyToClipboard(lines[table.selectedRow].hash)
+    }
+
+    @objc private func copyLine() {
+        guard lines.indices.contains(table.selectedRow) else { return }
+        gitCopyToClipboard(lines[table.selectedRow].text)
     }
 
     private func reload() {

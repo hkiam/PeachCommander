@@ -30,8 +30,10 @@ final class GitBranchesView: NSView {
     private var stashes: [PluginGit.Stash] = []
 
     private let header = NSTextField(labelWithString: "")
-    private let branchTable = NSTableView()
-    private let stashTable = NSTableView()
+    private let branchTable = GitTable()
+    private let stashTable = GitTable()
+    private let tagTable = GitTable()
+    private var tags: [PluginGit.Tag] = []
     private let split = NSSplitView()
     private let busy = NSProgressIndicator()
     private let statusLabel = NSTextField(labelWithString: "")
@@ -76,6 +78,23 @@ final class GitBranchesView: NSView {
         }
         branchTable.target = self
         branchTable.doubleAction = #selector(switchToSelected)
+        branchTable.onEnter = { [weak self] in self?.switchToSelected() }
+        branchTable.menu = gitMenu([
+            (L("Switch"), #selector(switchToSelected)),
+            (L("Merge…"), #selector(mergeSelected)),
+            (L("Delete…"), #selector(deleteSelected)),
+            (nil, nil),
+            (L("Copy branch name"), #selector(copyBranchName)),
+            (L("Open on the web"), #selector(openSelectedOnTheWeb)),
+            (nil, nil),
+            (L("Reload"), #selector(reloadFromMenu)),
+        ], target: self)
+        stashTable.menu = gitMenu([
+            (L("Pop"), #selector(stashPop)),
+            (L("Drop…"), #selector(stashDrop)),
+            (nil, nil),
+            (L("Reload"), #selector(reloadFromMenu)),
+        ], target: self)
 
         let branchButtons = buttonRow([
             (L("Switch"), #selector(switchToSelected)),
@@ -84,6 +103,36 @@ final class GitBranchesView: NSView {
             (L("Delete…"), #selector(deleteSelected)),
             (L("Open on the web"), #selector(openSelectedOnTheWeb)),
         ])
+        for (id, title, width) in [("tag", L("Tag"), 140), ("kind", "", 26),
+                                   ("subject", L("Subject"), 180)] as [(String, String, CGFloat)] {
+            let column = NSTableColumn(identifier: .init(id))
+            column.title = title
+            column.width = width
+            tagTable.addTableColumn(column)
+        }
+        tagTable.rowHeight = 17
+        tagTable.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
+        tagTable.usesAlternatingRowBackgroundColors = true
+        tagTable.dataSource = self
+        tagTable.delegate = self
+        tagTable.target = self
+        tagTable.doubleAction = #selector(switchToSelectedTag)
+        tagTable.onEnter = { [weak self] in self?.switchToSelectedTag() }
+        tagTable.menu = gitMenu([
+            (L("Switch to tag…"), #selector(switchToSelectedTag)),
+            (L("Push tag…"), #selector(pushSelectedTag)),
+            (L("Delete…"), #selector(deleteSelectedTag)),
+            (nil, nil),
+            (L("Copy tag name"), #selector(copyTagName)),
+            (L("Reload"), #selector(reloadFromMenu)),
+        ], target: self)
+
+        let tagButtons = buttonRow([
+            (L("New tag…"), #selector(createTag)),
+            (L("Push tag…"), #selector(pushSelectedTag)),
+            (L("Delete…"), #selector(deleteSelectedTag)),
+        ])
+
         let stashButtons = buttonRow([
             (L("Stash changes…"), #selector(stashPush)),
             (L("Pop"), #selector(stashPop)),
@@ -114,8 +163,16 @@ final class GitBranchesView: NSView {
 
         split.isVertical = true
         split.dividerStyle = .thin
+        let tagPane = NSStackView(views: [labelled(L("Tags")), scrolled(tagTable), tagButtons])
+        tagPane.orientation = .vertical
+        tagPane.spacing = 4
+
         split.addArrangedSubview(branchPane)
         split.addArrangedSubview(stashPane)
+        // Tags were in the plan for this window from the start (§5, phase 3) and shipped nowhere: the ref
+        // list asked for `refs/heads` and `refs/remotes` only, so a repository's releases were invisible in
+        // an application that shows everything else about it (F-425).
+        split.addArrangedSubview(tagPane)
         split.translatesAutoresizingMaskIntoConstraints = false
 
         let footer = NSStackView(views: [remoteButtons, busy, cancelButton, statusLabel])
@@ -145,10 +202,12 @@ final class GitBranchesView: NSView {
         // split view under constraint layout will happily give one pane everything — measured in the log
         // window, where the commit list came out zero points wide (F-417).
         let left = branchPane.widthAnchor.constraint(greaterThanOrEqualToConstant: 300)
-        let right = stashPane.widthAnchor.constraint(greaterThanOrEqualToConstant: 200)
-        let ratio = branchPane.widthAnchor.constraint(equalTo: split.widthAnchor, multiplier: 0.58)
-        left.priority = .init(999); right.priority = .init(999); ratio.priority = .init(500)
-        NSLayoutConstraint.activate([left, right, ratio])
+        let middle = stashPane.widthAnchor.constraint(greaterThanOrEqualToConstant: 200)
+        let right = tagPane.widthAnchor.constraint(greaterThanOrEqualToConstant: 200)
+        let ratio = branchPane.widthAnchor.constraint(equalTo: split.widthAnchor, multiplier: 0.42)
+        left.priority = .init(999); middle.priority = .init(999); right.priority = .init(999)
+        ratio.priority = .init(500)
+        NSLayoutConstraint.activate([left, middle, right, ratio])
     }
 
     private func labelled(_ text: String) -> NSTextField {
@@ -193,20 +252,24 @@ final class GitBranchesView: NSView {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let branchResult = PluginGitRepo.run(["-C", root] + PluginGit.branchArguments)
             let stashResult = PluginGitRepo.run(["-C", root] + PluginGit.stashListArguments)
+            let tagResult = PluginGitRepo.run(["-C", root] + PluginGit.tagArguments)
             let branches = branchResult.ok ? PluginGit.parseBranches(branchResult.out) : []
             let stashes = stashResult.ok ? PluginGit.parseStashes(stashResult.out) : []
+            let tags = tagResult.ok ? PluginGit.parseTags(tagResult.out) : []
             DispatchQueue.main.async {
                 guard let self else { return }
                 self.busy.stopAnimation(nil)
                 self.branches = branches
                 self.stashes = stashes
+                self.tags = tags
                 self.branchTable.reloadData()
                 self.stashTable.reloadData()
+                self.tagTable.reloadData()
                 let current = branches.first(where: \.isCurrent)?.name ?? L("(detached)")
                 self.header.stringValue = String(
-                    format: L("%@ — on %@, %lld branch(es), %lld stash(es)"),
+                    format: L("%@ — on %@, %lld branch(es), %lld stash(es), %lld tag(s)"),
                     (self.root as NSString).lastPathComponent, current,
-                    branches.filter { !$0.isRemote }.count, stashes.count)
+                    branches.filter { !$0.isRemote }.count, stashes.count, tags.count)
             }
         }
     }
@@ -226,6 +289,22 @@ final class GitBranchesView: NSView {
             ? branch.name.split(separator: "/").dropFirst().joined(separator: "/")
             : branch.name
         openOnTheWeb(remote: remote.url, target: .branch(name), services)
+    }
+
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "r" {
+            PluginGitRepo.invalidate()
+            reload()
+            return true
+        }
+        return super.performKeyEquivalent(with: event)
+    }
+
+    @objc private func reloadFromMenu() { PluginGitRepo.invalidate(); reload() }
+
+    @objc private func copyBranchName() {
+        guard let branch = selectedBranch else { return }
+        gitCopyToClipboard(branch.name)
     }
 
     private var selectedBranch: PluginGit.Branch? {
@@ -300,6 +379,96 @@ final class GitBranchesView: NSView {
     }
 
     // MARK: - Stash actions
+
+    // MARK: - Tags (F-425)
+
+    private var selectedTag: PluginGit.Tag? {
+        tags.indices.contains(tagTable.selectedRow) ? tags[tagTable.selectedRow] : nil
+    }
+
+    @objc private func copyTagName() {
+        guard let tag = selectedTag else { return }
+        gitCopyToClipboard(tag.name)
+    }
+
+    /// A name, and optionally a message. Whether the tag is annotated follows from that rather than from a
+    /// checkbox: a message *is* what makes it annotated, and git decides the rest.
+    @objc private func createTag() {
+        let alert = NSAlert()
+        alert.messageText = L("New tag")
+        alert.informativeText = L("A message makes it an annotated tag; without one it is lightweight.")
+        let name = NSTextField(frame: NSRect(x: 0, y: 0, width: 320, height: 22))
+        name.placeholderString = L("Name, e.g. v1.2.0")
+        let message = NSTextField(frame: NSRect(x: 0, y: 26, width: 320, height: 22))
+        message.placeholderString = L("Message (optional)")
+        let box = NSView(frame: NSRect(x: 0, y: 0, width: 320, height: 48))
+        box.addSubview(name); box.addSubview(message)
+        alert.accessoryView = box
+        alert.addButton(withTitle: L("Create"))
+        alert.addButton(withTitle: L("Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        let tagName = name.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !tagName.isEmpty else { return }
+        // git's own `check-ref-format` decides what a valid name is; repeating those rules here would only
+        // be a second, wronger copy of them, so an invalid name comes back as git's message.
+        run(["-C", root] + PluginGit.createTagArguments(
+                name: tagName,
+                message: message.stringValue.trimmingCharacters(in: .whitespaces)))
+    }
+
+    @objc private func deleteSelectedTag() {
+        guard let tag = selectedTag else { return }
+        let alert = NSAlert()
+        alert.messageText = String(format: L("Delete tag “%@”?"), tag.name)
+        alert.informativeText = L("This deletes it here only. A tag already pushed stays on the remote until it is deleted there too.")
+        alert.addButton(withTitle: L("Delete"))
+        alert.addButton(withTitle: L("Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        run(["-C", root] + PluginGit.deleteTagArguments(tag.name))
+    }
+
+    /// Publishing a tag is its own step, because `git push` does not carry tags — the single most common
+    /// surprise about them ("I tagged the release and nobody else can see it").
+    @objc private func pushSelectedTag() {
+        guard let tag = selectedTag else { return }
+        let upstream = PluginGitRepo.status(root: root)?.upstream
+        let remote = PluginGitRepo.remote(root: root, upstream: upstream)
+        guard !remote.url.isEmpty else {
+            services.presentInfo?(services.host, L("Git"),
+                                  String(format: L("“%@” has no remote to open."), remote.name))
+            return
+        }
+        runCancellable(["-C", root] + PluginGit.pushTagArguments(remote: remote.name, name: tag.name),
+                       String(format: L("Pushing %@…"), tag.name))
+    }
+
+    /// Checking out a tag leaves HEAD detached, which is fine and worth saying out loud — a reader who
+    /// commits there and switches away loses the commit, and that is the whole content of the warning.
+    @objc private func switchToSelectedTag() {
+        guard let tag = selectedTag else { return }
+        if let repo = PluginGitRepo.status(root: root) {
+            // The same refusals a branch switch gets: a detached checkout with conflicts in the tree is no
+            // better than a detached checkout without them (F-425).
+            switch PluginGit.canSwitch(repo) {
+            case .conflicts(let count):
+                report(String(format: L("%lld conflicted file(s) have to be resolved first."), count))
+                return
+            case .staged(let count):
+                report(String(format: L("%lld staged change(s) would be carried over. Commit or unstage first."),
+                              count))
+                return
+            case .none:
+                break
+            }
+        }
+        let alert = NSAlert()
+        alert.messageText = String(format: L("Switch to tag “%@”?"), tag.name)
+        alert.informativeText = L("A tag is not a branch: HEAD ends up detached. Commits made there belong to no branch until you create one.")
+        alert.addButton(withTitle: L("Switch"))
+        alert.addButton(withTitle: L("Cancel"))
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        run(["-C", root] + PluginGit.checkoutTagArguments(tag.name))
+    }
 
     @objc private func stashPush() {
         let message = prompt(L("Stash changes"), L("Message (optional):")) ?? ""
@@ -438,8 +607,14 @@ final class GitBranchesView: NSView {
 }
 
 extension GitBranchesView: NSTableViewDataSource, NSTableViewDelegate {
+    static let tagDateFormatter: DateFormatter = {
+        let f = DateFormatter(); f.dateStyle = .medium; f.timeStyle = .short; return f
+    }()
+
     func numberOfRows(in tableView: NSTableView) -> Int {
-        tableView === branchTable ? branches.count : stashes.count
+        if tableView === branchTable { return branches.count }
+        if tableView === tagTable { return tags.count }
+        return stashes.count
     }
 
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
@@ -472,6 +647,27 @@ extension GitBranchesView: NSTableViewDataSource, NSTableViewDelegate {
                 }
             default:
                 field.stringValue = branch.subject
+            }
+        } else if tableView === tagTable {
+            guard tags.indices.contains(row) else { return nil }
+            let tag = tags[row]
+            switch tableColumn.identifier.rawValue {
+            case "tag":
+                field.stringValue = tag.name
+                field.textColor = .labelColor
+            case "kind":
+                // An annotated tag carries a message and a date; a lightweight one is just a name pointing
+                // at a commit. Marking which is which is the difference between an empty Subject column
+                // that looks broken and one that is empty for a reason.
+                field.stringValue = tag.isAnnotated ? "⚑" : ""
+                field.toolTip = tag.isAnnotated ? L("Annotated tag") : L("Lightweight tag")
+            default:
+                // For a lightweight tag `contents:subject` is the *commit's* subject, not a tag message —
+                // useful, but borrowed, so it is drawn in the secondary colour rather than looking like
+                // something somebody wrote about the tag (checked in the running app, F-425).
+                field.stringValue = tag.subject
+                field.textColor = tag.isAnnotated ? .labelColor : .secondaryLabelColor
+                if let date = tag.date { field.toolTip = Self.tagDateFormatter.string(from: date) }
             }
         } else {
             guard stashes.indices.contains(row) else { return nil }

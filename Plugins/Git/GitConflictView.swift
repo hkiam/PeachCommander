@@ -28,7 +28,7 @@ final class GitConflictView: NSView {
     private var choices: [PluginGit.ConflictChoice] = []
 
     private let header = NSTextField(labelWithString: "")
-    private let table = NSTableView()
+    private let table = GitTable()
     private let oursButton = NSButton()
     private let theirsButton = NSButton()
     private let bothButton = NSButton()
@@ -72,6 +72,18 @@ final class GitConflictView: NSView {
         table.delegate = self
         table.target = self
         table.doubleAction = #selector(compareOursAndTheirs)
+        table.onEnter = { [weak self] in self?.compareOursAndTheirs() }
+        table.menu = gitMenu([
+            (L("Take ours"), #selector(takeOurs)),
+            (L("Take theirs"), #selector(takeTheirs)),
+            (L("Take both"), #selector(takeBoth)),
+            (L("Undecide"), #selector(undecide)),
+            (nil, nil),
+            (L("Compare ours ↔ theirs"), #selector(compareOursAndTheirs)),
+            (L("Open in editor"), #selector(openInEditor)),
+            (nil, nil),
+            (L("Reload"), #selector(reloadFromMenu)),
+        ], target: self)
 
         for (button, title, action) in [
             (oursButton, L("Take ours"), #selector(takeOurs)),
@@ -137,6 +149,16 @@ final class GitConflictView: NSView {
     }
 
     // MARK: - Loading
+
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        if event.modifierFlags.contains(.command), event.charactersIgnoringModifiers == "r" {
+            reload()
+            return true
+        }
+        return super.performKeyEquivalent(with: event)
+    }
+
+    @objc private func reloadFromMenu() { reload() }
 
     /// Read the working file and split it. A file we cannot read *safely* disables every decision: the
     /// buttons would otherwise offer to write a guess over the reader's conflict.
