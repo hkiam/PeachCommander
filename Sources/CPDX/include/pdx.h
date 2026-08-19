@@ -40,6 +40,27 @@ extern "C" {
 #define PC_FT_FULLTEXT         9   /* searchable full text (string)            */
 #define PC_FT_DATETIME         10  /* fieldValue is int64_t epoch seconds      */
 
+/* ---- Optional: a localized column header (F-428) ---------------------------
+ *
+ * `ContentGetSupportedField` returns the field's *name*, and the host derives the
+ * stable field id from it — that id keys saved column sets, search criteria and
+ * multi-rename placeholders, so it must never change with the interface language.
+ * Which left every plugin column with an English header in an application
+ * translated into nineteen languages.
+ *
+ * A plugin may therefore also export:
+ *
+ *     int ContentGetSupportedFieldTitle(int fieldIndex, char *title, int maxlen);
+ *
+ * writing the *display* title for that field and returning 1; return 0 (or do not
+ * export the symbol at all) and the host keeps using the name. The export is
+ * optional on purpose: a plugin built before this existed is unaffected, and one
+ * that has no translations has nothing to gain by implementing it.
+ *
+ * Localize it with the plugin's own bundle (see PluginLoc.swift): the host asks
+ * once per enumeration, in the language the application is running in.
+ */
+
 /* ---- Status codes (negative; returned by ContentGetValue instead of a type) */
 
 #define PC_FT_NOSUCHFIELD  (-1)   /* fieldIndex out of range                   */
