@@ -47,6 +47,20 @@ regression from here on. The run's report and screenshots are under `/tmp/vm-new
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
 
+## 2026-08-19 (F-432) — Why the plugin build warned
+
+Twenty-eight lines, four causes, each printed twice per architecture. Three causes were ours, two of them
+mine from the last two days: a `?? true` that could never run (comparing an `Optional<Int32>` with `0`
+already yields a Bool, and nil compares unequal — which *is* the "older host, keep going" answer), and two
+places handing `PcHostServices` across a queue. That struct is a C table of function pointers and cannot be
+made `Sendable` from a plugin; the capture is sound for the reasons F-422 documents, so the reasoning now
+sits in one `ServicesBox: @unchecked Sendable` rather than in warnings that become errors under the Swift 6
+language mode. The third was older: the decompiler's Save-As panel still used `allowedFileTypes`, deprecated
+in macOS 12.
+
+The remaining eight lines are SwiftTerm's, a pinned dependency. Left alone on purpose — suppressing a
+dependency's warnings suppresses the next real one too, and it is not ours to police.
+
 ## 2026-08-19 (F-431) — "the side panel is not nice in dark mode": it was white
 
 The Git panel *had* an `applyTheme()`. It asked for `theme.listBackground` and `theme.listText` — two keys

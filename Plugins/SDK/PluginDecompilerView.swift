@@ -16,6 +16,7 @@
 // that — so a plugin that claims .class or .dll already works inside archives.
 
 import AppKit
+import UniformTypeIdentifiers
 import os
 
 /// Diagnostics. A plugin that shells out to tools the user installed has to be able to answer
@@ -447,7 +448,11 @@ final class DecompiledView: DecompilerListerView {
     @objc private func saveAs() {
         let panel = NSSavePanel()
         panel.nameFieldStringValue = suggestedFileName
-        panel.allowedFileTypes = [profile.sourceExtension, "txt"]
+        // `allowedFileTypes` has been deprecated since macOS 12; the content-type form is the same
+        // restriction expressed in types rather than in extensions (F-432). An extension the system has no
+        // type for simply contributes nothing, which is why plain text is listed explicitly.
+        panel.allowedContentTypes = [UTType(filenameExtension: profile.sourceExtension), .plainText]
+            .compactMap { $0 }
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do { try currentSource.write(to: url, atomically: true, encoding: .utf8) }
         catch { status.stringValue = error.localizedDescription }

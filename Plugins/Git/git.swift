@@ -452,7 +452,10 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         let handle = title.withCString { svc.beginProgress?(svc.host, $0) }
         let result = PluginGitRepo.runCancellable(arguments) { line in
             guard let handle else { return true }   // no progress window: nothing to cancel from either
-            return line.withCString { svc.updateProgress?(svc.host, handle, -1, $0) != 0 } ?? true
+            // `svc.updateProgress?(…) != 0` is already a Bool — comparing an Optional<Int32> with 0 lifts
+            // the operator, and nil compares unequal, which is the "older host, keep going" answer. The
+            // `?? true` this used to carry was dead code the compiler pointed at.
+            return line.withCString { svc.updateProgress?(svc.host, handle, -1, $0) != 0 }
         }
         if let handle { svc.endProgress?(svc.host, handle) }
         PluginGitRepo.invalidate()
@@ -573,10 +576,12 @@ private func showCredentialReport(_ report: PluginGit.CredentialReport, root: St
     let response = alert.runModal()
     guard offersKeychain, response == .alertFirstButtonReturn else { return }
 
+    let box = ServicesBox(svc)
     DispatchQueue.global(qos: .userInitiated).async {
         let result = PluginGitRepo.run(PluginGit.keychainHelperArguments, combined: true)
         let message = result.out.trimmingCharacters(in: .whitespacesAndNewlines)
         DispatchQueue.main.async {
+            let svc = box.services
             svc.presentInfo?(svc.host, L("Git Credentials"), result.ok
                 ? L("git will now keep credentials in the macOS Keychain (credential.helper = osxkeychain).")
                 : (message.isEmpty ? L("Failed.") : message))
@@ -595,6 +600,18 @@ private func promptCommitMessage() -> String? {
 }
 
 // MARK: - History windows (phase 2, F-417)
+
+/// Carries `PcHostServices` across a queue boundary.
+///
+/// The struct is a C table of function pointers with an opaque host token: not `Sendable`, and it cannot be
+/// made so from here. Every service in it is either safe to call from any thread (the host hops to the main
+/// actor itself, F-422) or is called back on the main queue by the code below — so the capture is sound and
+/// this box is where that reasoning lives, rather than in eight `@Sendable` warnings the compiler will turn
+/// into errors under the Swift 6 language mode (F-432).
+private final class ServicesBox: @unchecked Sendable {
+    let services: PcHostServices
+    init(_ services: PcHostServices) { self.services = services }
+}
 
 /// The blame this plugin last put into the host's gutter, so a click on it can be answered (F-426).
 ///
@@ -618,6 +635,7 @@ private func showCommitOfBlamedLine(_ svc: PcHostServices) {
         return
     }
     let root = blame.root, path = blame.path, hash = blamed.hash
+    let box = ServicesBox(svc)
     DispatchQueue.global(qos: .userInitiated).async {
         let newer = PluginGitRepo.writeBlob(root: root, spec: "\(hash):\(path)", path: path, base: .head)
         let parentResult = PluginGitRepo.run(["-C", root, "rev-parse", "\(hash)^"])
@@ -627,6 +645,7 @@ private func showCommitOfBlamedLine(_ svc: PcHostServices) {
             PluginGitRepo.writeBlob(root: root, spec: "\($0):\(path)", path: path, base: .index)
         } ?? PluginGitRepo.writeEmptyBlob(path: path)
         DispatchQueue.main.async {
+            let svc = box.services
             guard let newer, let older else {
                 svc.presentInfo?(svc.host, L("Git"), L("That version could not be read."))
                 return
