@@ -16,6 +16,15 @@ does not have.
 
 ### Added
 
+- **PDFs and Word documents render in the preview, with zoom.** The side panel's preview, Quick View and
+  the info page now draw PDFs themselves — page by page, with the same zoom buttons a picture has (zoom in,
+  zoom out, actual size, fit) — and show Word, OpenDocument and RTF documents as formatted, selectable text.
+  Everything else is still previewed by macOS Quick Look. Reported as "PDF and DOCX are no longer rendered":
+  what those formats went through before renders outside the application, where nothing inside it can tell a
+  rendered page from a blank one — so this also makes the preview something that can be checked. If you
+  prefer the system's preview for everything, switch *Render PDFs and documents in the preview* off in
+  **Configuration ▸ Edit/View**.
+
 - **Plugin column headers are translated, and can carry an icon.** *Git Status* and the other plugin columns
   showed English headers in every language; they now use the plugin's own translations — while your saved
   column sets keep working, because only the header changed and not the column's identity. Git's status

@@ -805,6 +805,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         // read once here and kept where all three save paths can see it (F-387).
         DocumentFile.keepBackups = await mainConfig.bool("Editor", "CreateBackups", default: false)
         viewerSearchFromFind = await mainConfig.bool("Viewer", "SearchFromFind", default: true)
+        // F-429: which renderer the previews use for PDFs and documents. Read before the first preview is
+        // built, so the first file the cursor lands on already follows the setting.
+        FilePreviewView.rendersDocumentsInApp =
+            await mainConfig.bool("Viewer", "RenderDocumentsInApp", default: true)
         // Panel tabs (session).
         didRestore = true
         // Putting the panels back is not visiting them (F-402): the per-panel history still gets the
@@ -3594,6 +3598,13 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         setQuickViewItem(activePanel?.tableView.cursorItemFullPath())
     }
 
+    /// Re-show what every open preview is showing, so a renderer change takes effect at once (F-429).
+    private func refreshOpenPreviews() {
+        quickViewPreview?.reloadCurrent()
+        previewPanel.reloadPreview()
+        refreshPreview()
+    }
+
     private func setQuickViewItem(_ path: String?) {
         guard let preview = quickViewPreview else { return }
         let exists = path.map { FileManager.default.fileExists(atPath: $0) } ?? false
@@ -3952,6 +3963,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             packArchiveExtensions: await mainConfig.string("Pack", "ArchiveExtensions", default: ""),
             editorCreateBackups: await mainConfig.bool("Editor", "CreateBackups", default: false),
             viewerSearchFromFind: await mainConfig.bool("Viewer", "SearchFromFind", default: true),
+            previewRenderDocuments: await mainConfig.bool("Viewer", "RenderDocumentsInApp", default: true),
             tabOpenInForeground: await mainConfig.bool("Tabs", "OpenInForeground", default: true),
             tabLockedOpensNewTab: await mainConfig.bool("Tabs", "LockedOpensNewTab", default: true),
             ftpKeepAliveSeconds: Int(await mainConfig.string("FTP", "KeepAliveSeconds", default: "0")) ?? 0,
@@ -4059,6 +4071,11 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             // Editors that are already open pick this up too: the flag is consulted at save time, and a
             // setting the user just changed applying only to the next window would read as ignored.
             DocumentFile.keepBackups = value
+        case "Viewer.RenderDocumentsInApp":
+            // Applied to the previews that are already open, not only to the next one: the side panel is
+            // showing a file *now*, and a setting whose effect one has to go and provoke reads as ignored.
+            FilePreviewView.rendersDocumentsInApp = value
+            refreshOpenPreviews()
         case "Viewer.SearchFromFind":
             // Read when a viewer is opened, so this takes effect on the next hit opened rather than
             // reaching back into windows that are already up (F-407).

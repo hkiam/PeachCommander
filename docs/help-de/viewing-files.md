@@ -58,7 +58,7 @@ Quick View zeigt eine Live-Vorschau in dem Panel, das Sie *nicht* verwenden, sod
 2. Bewegen Sie den Cursor über verschiedene Dateien im aktiven Panel, um jede einzeln vorzuschauen.
 3. Drücken Sie erneut Ctrl+Q oder Esc, um das Panel wieder in eine normale Dateiliste zu verwandeln.
 
-Ein Bild in der Schnellansicht bringt dieselben Zoomknöpfe mit wie die Vorschau in der Seitenleiste — in der Ecke des Panels, das sie übernommen hat.
+Ein Bild in der Schnellansicht bringt dieselben Zoomknöpfe mit wie die Vorschau in der Seitenleiste — in der Ecke des Panels, das sie übernommen hat. **PDFs** werden Seite für Seite mit genau diesen Knöpfen dargestellt — verkleinern, vergrößern, Originalgröße, einpassen — und **Word-, OpenDocument- und RTF-Dokumente** als formatierter, markierbarer Text. Alles andere übernimmt macOS Quick Look.
 
 Für eine schnelle Vollbild-Vorschau, die macOS selbst übernimmt, drücken Sie Cmd+Y (Quick Look). Drücken Sie erneut Cmd+Y oder die Leertaste, um sie zu schließen.
 
@@ -68,7 +68,7 @@ Das Seitenfenster (**Ansicht > Vorschau-Panel** oder Cmd+Shift+P) hat eine Seite
 
 - Die Vorschau nimmt die volle Breite des Fensters ein — verbreitern Sie das Fenster, wächst sie mit. Ziehen Sie an der linken Kante des Fensters, um es breiter oder schmaler zu machen; die Breite wird gemerkt.
 - Es ist eine echte macOS-Vorschau, kein kleines Miniaturbild: jedes Format, das Quick Look anzeigen kann, funktioniert hier, und ein mehrseitiges Dokument lässt sich in der Vorschau Seite für Seite durchblättern.
-- Ein Bild bringt eigene Zoomknöpfe in der Ecke der Vorschau mit — verkleinern, vergrößern, Originalgröße und einpassen — daneben die aktuelle Stufe; Aufziehen und Cmd+Scrollen funktionieren dort ebenfalls. Alles andere, was die Vorschau darstellt, etwa ein PDF oder ein Video, verhält sich wie bisher.
+- Ein Bild bringt eigene Zoomknöpfe in der Ecke der Vorschau mit — verkleinern, vergrößern, Originalgröße und einpassen — daneben die aktuelle Stufe; Aufziehen und Cmd+Scrollen funktionieren dort ebenfalls. Ein PDF bringt dieselben Knöpfe mit, ein Word-, OpenDocument- oder RTF-Dokument erscheint als formatierter Text, und alles Übrige übernimmt Quick Look.
 - Darunter stehen Name, Art und Größe, dann wann der Eintrag erstellt und geändert wurde und in welchem Ordner er liegt.
 
 Beim Bewegen des Cursors werden Name und Angaben sofort aktualisiert; die Vorschau folgt einen Moment später, damit das Durchhalten einer Pfeiltaste durch einen langen Ordner nicht für jede Zeile eine Vorschau startet.

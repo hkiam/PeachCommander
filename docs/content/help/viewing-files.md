@@ -58,7 +58,7 @@ Quick View shows a live preview in the panel you are *not* using, so you can kee
 2. Move the cursor over different files in the active panel to preview each one.
 3. Press Ctrl+Q again, or Esc, to return the panel to a normal file list.
 
-A picture in Quick View carries the same zoom controls as the preview in the side panel, in the corner of the panel it took over.
+A picture in Quick View carries the same zoom controls as the preview in the side panel, in the corner of the panel it took over. **PDFs** are rendered page by page with those same zoom buttons — zoom in, zoom out, actual size, fit — and **Word, OpenDocument and RTF documents** are shown as formatted, selectable text. Everything else is previewed by macOS Quick Look.
 
 For a fast full-screen preview handled by macOS itself, press Cmd+Y (Quick Look). Press Cmd+Y or Space again to close it.
 
@@ -68,7 +68,7 @@ The side panel (**View > Preview Panel**, or Cmd+Shift+P) has an **Info** page t
 
 - The preview fills the width of the panel, so widen the panel and the preview grows with it. Drag the panel's left edge to make it wider or narrower; the width is remembered.
 - It is a real macOS preview, not a small thumbnail: every format Quick Look can show works here, and a multi-page document scrolls page by page inside the preview.
-- A picture carries its own zoom controls in the corner of the preview — zoom out, zoom in, actual size and fit — with the current level beside them; pinching and Cmd+scroll work there too. Everything else the preview renders, such as a PDF or a video, behaves as it always did.
+- A picture carries its own zoom controls in the corner of the preview — zoom out, zoom in, actual size and fit — with the current level beside them; pinching and Cmd+scroll work there too. A **PDF** brings the same buttons, a **Word, OpenDocument or RTF document** appears as formatted text, and everything else is left to Quick Look.
 - Below it are the name, the kind and the size, then when the item was created and changed and which folder it is in.
 
 Moving the cursor updates the name and details immediately; the preview itself follows a moment later, so holding an arrow key through a long folder does not start a preview for every row it passes.

@@ -12,6 +12,7 @@
 // this codebase has paid that bill before, in the three save paths that each kept their own `.bak`.
 
 import AppKit
+import PDFKit
 import Quartz
 import PCFoundation
 
@@ -22,6 +23,21 @@ final class FilePreviewView: NSView {
     // rebuilding a QLPreviewView per selection makes the panel flicker and throws away QuickLook's own
     // state — including which page of a document the user had scrolled to.
     private var quickLook: QLPreviewView?
+    /// PDF and word-processor documents are rendered in-process (F-429): QuickLook draws them out of
+    /// process, so nothing here could tell a rendered page from a blank one — and these two are the formats
+    /// a file manager is asked about most. They also gain the zoom the image route already had.
+    private var pdfView: PDFView?
+    private var richScroll: NSScrollView?
+    private var richText: NSTextView?
+    /// Which renderer is showing, so the zoom buttons act on the right one.
+    private var route: PreviewRoute = .quickLook
+
+    /// `Viewer.RenderDocumentsInApp` (F-429): render PDFs and word-processor documents in the application,
+    /// or leave everything to Quick Look as before.
+    ///
+    /// Static, because every preview in the window — the side panel, Quick View, the info page — must answer
+    /// the same way, and the setting is one switch rather than one per view. Read at startup and on change.
+    @MainActor static var rendersDocumentsInApp = true
     private let iconView = NSImageView()
     private let imageScroll = NSScrollView()
     private let imageView = NSImageView()
@@ -137,6 +153,14 @@ final class FilePreviewView: NSView {
     /// Show `path`, or the icon when there is nothing to preview.
     ///
     /// Debounced and deduplicated: called on every cursor move by both callers.
+    /// Re-show whatever is showing, ignoring the "same path" shortcut — for a setting that changes which
+    /// renderer a file gets (F-429).
+    func reloadCurrent() {
+        let path = shownPath
+        shownPath = nil
+        show(path: path, fallbackIcon: nil)
+    }
+
     func show(path: String?, fallbackIcon: NSImage?) {
         guard shownPath != path else { return }
         shownPath = path
@@ -157,7 +181,18 @@ final class FilePreviewView: NSView {
 
     private func load(_ path: String) {
         iconView.isHidden = true
-        if Self.isImage(path), let image = NSImage(contentsOfFile: path) {
+        let ext = (path as NSString).pathExtension
+        route = PreviewRoute.route(forExtension: ext, isImage: Self.isImage(path),
+                                   rendersDocumentsInApp: Self.rendersDocumentsInApp)
+        if route != .image, route != .pdf {
+            // Neither of the zoomable routes: no bar, and no number left over from the file before —
+            // `hideImage()` cannot do it, because its guard returns early when there was no image (measured:
+            // switching a PDF to Quick Look kept "100 %" beside a hidden bar).
+            zoomBar.isHidden = true
+            levelLabel.stringValue = ""
+        }
+        if route == .image, let image = NSImage(contentsOfFile: path) {
+            hidePDF(); hideRich()
             quickLook?.previewItem = nil
             quickLook?.isHidden = true
             imageScroll.isHidden = false
@@ -170,6 +205,13 @@ final class FilePreviewView: NSView {
             return
         }
         hideImage()
+        if route == .pdf, showPDF(path) { return }
+        if route == .rich, showRich(path) { return }
+        // Either the file is something else, or the in-process reader could not read it — an .doc AppKit
+        // declines, a PDF that is not one. QuickLook is the fallback rather than an error, because it can
+        // often still show something.
+        route = .quickLook
+        hidePDF(); hideRich()
         let view = quickLook ?? {
             let created = QLPreviewView(frame: .zero, style: .normal) ?? QLPreviewView()
             created.autostarts = false      // don't start playing media just because the cursor moved
@@ -192,6 +234,102 @@ final class FilePreviewView: NSView {
         view.previewItem = URL(fileURLWithPath: path) as NSURL
     }
 
+    // MARK: - PDF and rich documents, in process (F-429)
+
+    /// Show a PDF with PDFKit. Returns false when the file is not a readable PDF, so the caller can fall
+    /// back rather than leave an empty view claiming to be a preview.
+    private func showPDF(_ path: String) -> Bool {
+        guard let document = PDFDocument(url: URL(fileURLWithPath: path)) else { return false }
+        hideRich()
+        quickLook?.previewItem = nil
+        quickLook?.isHidden = true
+        let view = pdfView ?? {
+            let created = PDFView()
+            created.translatesAutoresizingMaskIntoConstraints = false
+            created.displayMode = .singlePageContinuous
+            created.displayDirection = .vertical
+            // PDFKit's own background is a heavy grey; the panel decides its own colours (F-338).
+            created.backgroundColor = Theme.current.windowBackground
+            addSubview(created, positioned: .below, relativeTo: zoomBar)
+            NSLayoutConstraint.activate([
+                created.topAnchor.constraint(equalTo: topAnchor),
+                created.leadingAnchor.constraint(equalTo: leadingAnchor),
+                created.trailingAnchor.constraint(equalTo: trailingAnchor),
+                created.bottomAnchor.constraint(equalTo: bottomAnchor),
+            ])
+            pdfView = created
+            return created
+        }()
+        view.isHidden = false
+        view.document = document
+        layoutSubtreeIfNeeded()
+        // PDFKit computes the fitting scale *after* it has the document and the size, and says so only by
+        // notification. Without this the label read 100 % beside a page drawn at 45 % (measured).
+        NotificationCenter.default.removeObserver(self, name: .PDFViewScaleChanged, object: view)
+        NotificationCenter.default.addObserver(self, selector: #selector(pdfScaleChanged),
+                                              name: .PDFViewScaleChanged, object: view)
+        // Fit the page to the panel first: a PDF at 100 % in a 280-point sidebar shows a corner of a page,
+        // which reads as "it did not render".
+        view.autoScales = true
+        zoomBar.isHidden = false
+        refreshLevel()
+        return true
+    }
+
+    /// Show a word-processor document as formatted text, read by AppKit itself.
+    private func showRich(_ path: String) -> Bool {
+        // No documentType option: AppKit sniffs the format, which is what makes one call cover .docx, .odt
+        // and .rtf — and what makes a file it cannot read return nil instead of an empty document.
+        guard let attributed = try? NSAttributedString(url: URL(fileURLWithPath: path), options: [:],
+                                                      documentAttributes: nil),
+              attributed.length > 0 else { return false }
+        hidePDF()
+        quickLook?.previewItem = nil
+        quickLook?.isHidden = true
+        let scroll = richScroll ?? {
+            let text = NSTextView()
+            text.isEditable = false
+            text.isSelectable = true
+            text.drawsBackground = true
+            text.backgroundColor = .white     // a document assumes paper; keeps its own colours readable
+            text.textContainerInset = NSSize(width: 8, height: 8)
+            let created = NSScrollView()
+            created.documentView = text
+            created.hasVerticalScroller = true
+            created.drawsBackground = false
+            created.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(created, positioned: .below, relativeTo: zoomBar)
+            NSLayoutConstraint.activate([
+                created.topAnchor.constraint(equalTo: topAnchor),
+                created.leadingAnchor.constraint(equalTo: leadingAnchor),
+                created.trailingAnchor.constraint(equalTo: trailingAnchor),
+                created.bottomAnchor.constraint(equalTo: bottomAnchor),
+            ])
+            richScroll = created
+            richText = text
+            return created
+        }()
+        scroll.isHidden = false
+        richText?.textStorage?.setAttributedString(attributed)
+        // Text reflows, so a zoom percentage would promise something it cannot keep. The label is cleared
+        // with the bar: a stale "45%" from the previous file is worse than no number (F-429).
+        zoomBar.isHidden = true
+        levelLabel.stringValue = ""
+        return true
+    }
+
+    @objc private func pdfScaleChanged() { refreshLevel() }
+
+    private func hidePDF() {
+        pdfView?.document = nil
+        pdfView?.isHidden = true
+    }
+
+    private func hideRich() {
+        richScroll?.isHidden = true
+        richText?.textStorage?.setAttributedString(NSAttributedString())
+    }
+
     /// Whether media should start by itself. Quick View follows the cursor and a video that begins
     /// playing on its own there is what the user asked for; in the side panel it is not.
     var autostartsMedia: Bool = false {
@@ -200,10 +338,13 @@ final class FilePreviewView: NSView {
 
     /// Put the image route away, releasing the bitmap: walking a folder of 40-megapixel photographs
     /// otherwise keeps the last one alive for as long as the preview is open.
+    /// Leaving a zoomable route: the bar goes and the number with it, so no stale percentage survives into
+    /// a preview that cannot be zoomed (F-429).
     private func hideImage() {
         guard !imageScroll.isHidden || zoom.hasImage else { return }
         imageScroll.isHidden = true
         zoomBar.isHidden = true
+        levelLabel.stringValue = ""
         zoom.clear()
     }
 
@@ -215,12 +356,55 @@ final class FilePreviewView: NSView {
 
     // MARK: - Zoom
 
-    @objc private func zoomInPressed() { zoom.zoomIn() }
-    @objc private func zoomOutPressed() { zoom.zoomOut() }
-    @objc private func actualSizePressed() { zoom.actualSize() }
-    @objc private func zoomToFitPressed() { zoom.zoomToFit() }
+    // The same four buttons drive whichever renderer is showing (F-429). PDFKit has its own scale factor
+    // and its own idea of "fit", so the PDF route asks it rather than reimplementing zoom over a page.
+    @objc private func zoomInPressed() {
+        route == .pdf ? scalePDF(by: 1.25) : zoom.zoomIn()
+    }
+    @objc private func zoomOutPressed() {
+        route == .pdf ? scalePDF(by: 1 / 1.25) : zoom.zoomOut()
+    }
+    @objc private func actualSizePressed() {
+        guard route == .pdf else { zoom.actualSize(); return }
+        pdfView?.autoScales = false
+        pdfView?.scaleFactor = 1
+        refreshLevel()
+    }
+    @objc private func zoomToFitPressed() {
+        guard route == .pdf else { zoom.zoomToFit(); return }
+        pdfView?.autoScales = true
+        refreshLevel()
+    }
 
-    private func refreshLevel() { levelLabel.stringValue = zoom.levelText }
+    private func scalePDF(by factor: CGFloat) {
+        guard let view = pdfView else { return }
+        view.autoScales = false
+        // PDFKit's own limits, so a click that cannot do anything does not pretend to: below the minimum a
+        // page is unreadable, above the maximum it stops scaling and the label would drift from the view.
+        view.scaleFactor = min(max(view.scaleFactor * factor, view.minScaleFactor), view.maxScaleFactor)
+        refreshLevel()
+    }
+
+    private func refreshLevel() {
+        switch route {
+        case .image:
+            levelLabel.stringValue = zoom.levelText
+            return
+        case .rich, .quickLook:
+            // Neither is zoomable, and the image controller still has a level from the file before — which
+            // is how "100 %" kept appearing beside a hidden bar (measured twice, F-429).
+            levelLabel.stringValue = ""
+            return
+        case .pdf:
+            break
+        }
+        guard let view = pdfView else {
+            levelLabel.stringValue = zoom.levelText
+            return
+        }
+        // PDFKit's scale is against the page's natural size, which is what "100 %" means for a document.
+        levelLabel.stringValue = "\(Int((view.scaleFactor * 100).rounded()))%"
+    }
 
     /// Whether we draw this file ourselves — i.e. whether it is an image.
     ///
@@ -272,20 +456,60 @@ final class FilePreviewView: NSView {
     ///
     /// `route` comes first because it is the whole feature: an image takes a different path from a PDF,
     /// and no screenshot of a zoomed picture can say which view drew it.
+    /// Whether a preview view is actually *drawing* anything: sample its cached display and count distinct
+    /// colours (F-429).
+    ///
+    /// For the in-process renderers this is the answer — a uniform image means nothing was drawn. For
+    /// QuickLook it is *not*: that content is composited from another process and never appears in our
+    /// bitmap, which is precisely why PDF and word-processor documents no longer go through it.
+    private static func qlDrawnReport(_ view: NSView?) -> String {
+        guard let view, !view.isHidden, view.frame.width > 4, view.frame.height > 4 else { return "n/a" }
+        guard let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return "no-rep" }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        var colours = Set<String>()
+        let width = Int(rep.size.width), height = Int(rep.size.height)
+        for y in stride(from: 2, to: max(3, height - 2), by: max(1, height / 12)) {
+            for x in stride(from: 2, to: max(3, width - 2), by: max(1, width / 12)) {
+                guard let c = rep.colorAt(x: x, y: y) else { continue }
+                colours.insert(String(format: "%02X%02X%02X", Int(c.redComponent * 255),
+                                      Int(c.greenComponent * 255), Int(c.blueComponent * 255)))
+            }
+        }
+        return "distinct=\(colours.count) sample=\(colours.sorted().prefix(3).joined(separator: ","))"
+    }
+
+    /// The preview's state for the harness.
+    ///
+    /// `level` is what the panel *shows*, whichever renderer drives it; `imagelevel` is the image
+    /// controller's own value, reported separately because reading `level=100%` next to `pdfscale=0.45`
+    /// cost one wrong conclusion. Note that a comment cannot go inside the literal below — `//` in a
+    /// multiline Swift string is text, and it duly appeared in the report (F-429).
     func automationZoomReport() -> String {
         let route: String
         if !imageScroll.isHidden, zoom.hasImage { route = "image" }
+        else if pdfView?.isHidden == false { route = "pdf" }
+        else if richScroll?.isHidden == false { route = "rich" }
         else if quickLook?.isHidden == false { route = "quicklook" }
         else { route = "icon" }
         let size = zoom.hasImage ? ImageZoomController.pixelSize(of: imageView.image ?? NSImage()) : .zero
         return """
         route=\(route)
         bar=\(zoomBar.isHidden ? "hidden" : "shown")
-        level=\(zoom.levelText)
+        level=\(levelLabel.stringValue)
+        imagelevel=\(zoom.levelText)
         scale=\(String(format: "%.4f", zoom.scale))
         fitting=\(zoom.isFitting)
         pixels=\(Int(size.width))x\(Int(size.height))
         viewport=\(Int(imageScroll.contentView.frame.width))x\(Int(imageScroll.contentView.frame.height))
+        ql=\(quickLook == nil ? "absent" : (quickLook!.isHidden ? "hidden" : "visible"))
+        qlframe=\(Int(quickLook?.frame.width ?? 0))x\(Int(quickLook?.frame.height ?? 0))
+        qlitem=\((quickLook?.previewItem?.previewItemURL?.lastPathComponent) ?? "none")
+        qlpixels=\(Self.qlDrawnReport(quickLook))
+        pdfpages=\(pdfView?.document?.pageCount ?? 0)
+        pdfscale=\(String(format: "%.2f", pdfView?.scaleFactor ?? 0))
+        pdfpixels=\(Self.qlDrawnReport(pdfView?.isHidden == false ? pdfView : nil))
+        richchars=\(richText?.string.count ?? 0)
+        richhead=\(String((richText?.string ?? "").replacingOccurrences(of: "\n", with: " ⏎ ").prefix(60)))
         buttons=\(zoomBar.views.compactMap { $0 as? NSButton }
                     .map { "\($0.accessibilityLabel() ?? "?"):\($0.image == nil ? "NO-IMAGE" : "ok")" }
                     .joined(separator: ","))

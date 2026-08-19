@@ -47,6 +47,31 @@ regression from here on. The run's report and screenshots are under `/tmp/vm-new
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
 
+## 2026-08-19 (F-429) — "PDF is no longer rendered", and a preview nobody could measure
+
+Reported: PDF and DOCX no longer render in the preview, everything looks like markdown. The investigation
+was the valuable part, because the answer was **that the old behaviour could not be observed at all**.
+Everything except images went through `QLPreviewView`, which renders out of process: `cacheDisplay` returns
+a uniform rectangle whether or not a page was drawn, so no measurement from inside the app can tell the two
+apart. What could be established: the view was visible, correctly sized and held the right item; the
+system's QuickLook renders those files (`qlmanage -t` gives thumbnails); and `FilePreviewView` had not
+changed since before 0.7.0. Neither reproduced nor honestly deniable.
+
+So the two formats a file manager is asked about most are now rendered **in process** — PDFKit for PDF (with
+the zoom bar the image route already had), AppKit's document reader for Word/OpenDocument/RTF — and
+QuickLook keeps the long tail. The point beyond the feature: a PDF page that is mostly ink now reports
+`pdfpixels=distinct=2 sample=000000,FFFFFF`, which is proof that it is *drawn*. A preview that cannot be
+measured is a preview that cannot be defended.
+
+Made switchable on request: `Viewer.RenderDocumentsInApp` (on by default) in *Configuration ▸ Edit/View*, applied to the previews already open rather than only to the next file.
+
+Two traps for the notebook. PDFKit computes its fitting scale only after it has both the document and the
+size, and announces it by notification — without observing that, the level label read 100 % beside a page
+drawn at 45 %. And a `//` comment inside a multiline Swift string is *text*: mine went straight into the
+harness report, where it sat in the middle of a line of measurements.
+
+And two of my own process errors, both cheap to avoid: a gate's output must not be piped through `tail -1` (that is how the third copy of `pdx.h` reached CI unnoticed — `Sources/CPDX/include/` alongside `Plugins/SDK/` and the plugin SDK package), and the shipped **Help Book has to be rebuilt and committed** when a help page changes. Rebuilding it locally also needs the *pinned* `pygments==2.21.0` from `docs.yml`: with 2.20 every code block re-escapes `"` as `&quot;`, which turns four changed pages into sixty-one. The search indexes are non-deterministic, which is why the workflow compares `':!*.helpindex'` — so they stay out of the commit.
+
 ## 2026-08-19 (F-428) — The last two §6 items, and a help page that had drifted further than expected
 
 Localized column headers and the icon field, in one pass because they are the same piece of ABI. The headers

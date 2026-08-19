@@ -10,35 +10,80 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Git</h1>
-<p>Das Git-Plugin bringt den Zustand eines Git-Repositorys direkt in das Datei-Panel — keine separate App, kein Terminal. Es fügt zwei Spalten hinzu, die den Arbeitsbaum-Status jeder Datei und den aktuellen Branch anzeigen, ein Untermenü <strong>Git</strong> für die alltäglichen Befehle (Status, bereitstellen, committen, pull, push), und es verwendet das <code>git</code>, das bereits auf Ihrem Mac installiert ist. Da es sich um ein Plugin handelt, können Sie es über <strong>Konfiguration ▸ Plugins…</strong> ausschalten oder entfernen.</p>
+<p>Das Git-Plugin bringt den Zustand eines Git-Repositorys direkt in das Datei-Panel — keine separate App, kein
+Terminal. Es fügt zwei Spalten hinzu, ein Untermenü <strong>Git</strong>, ein andockbares Panel für Bereitstellen und
+Committen sowie Fenster für Historie, Blame, Branches, Konflikte und Rebase. Es verwendet das <code>git</code>, das
+bereits auf Ihrem Mac installiert ist. Da es sich um ein Plugin handelt, können Sie es über <strong>Konfiguration ▸
+Plugins…</strong> ausschalten oder entfernen.</p>
 <h2 id="was-es-hinzufugt">Was es hinzufügt</h2>
 <ul>
-<li><strong>Zwei Spalten in der Dateiliste</strong> — <em>Git Status</em> und <em>Branch</em>. In einem Repository zeigt jede Datei ein kurzes Statuswort (Geändert, Hinzugefügt, Gelöscht, Nicht verfolgt, Umbenannt, Kopiert, Konflikt, Ignoriert oder Verändert), und das Panel zeigt den aktuellen Branch. Schalten Sie die Spalten unter <strong>Konfiguration ▸ Spalten…</strong> ein (siehe <a href="view-modes-and-sorting.md">Ansichtsmodi &amp; Sortierung</a>).</li>
-<li><strong>Ein Git-Menü</strong> — unter <strong>Befehle ▸ Git</strong> sowie im Rechtsklick-Menü einer Datei, mit: <strong>Git Status…</strong>, <strong>Git Add (bereitstellen)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong> und <strong>Git Push</strong>.</li>
+<li><strong>Zwei Spalten in der Dateiliste</strong> — <em>Git-Status</em> und <em>Branch</em>. Jede Datei zeigt ein Symbol und ein kurzes
+  Statuswort (Geändert, Hinzugefügt, Gelöscht, Nicht verfolgt, Umbenannt, Kopiert, Konflikt, Ignoriert, Typ
+  geändert), mit <em>(gestaged)</em>, wenn die Änderung schon im Index liegt; die Spalte <em>Branch</em> zeigt den Branch,
+  auf dem das Repository dieser Datei steht. Schalten Sie die Spalten in <strong>Konfiguration ▸ Spalten…</strong> ein
+  (siehe <a href="view-modes-and-sorting.md">Ansichtsmodi &amp; Sortierung</a>).</li>
+<li><strong>Ein Git-Menü</strong> — unter <strong>Befehle ▸ Git</strong> und im Kontextmenü einer Datei.</li>
 </ul>
 <p><img alt="Der Git-Status-Dialog mit dem aktuellen Branch und den geänderten Dateien im Repository" src="images/git-status.png" />
-<em>(Abbildung: Git Status meldet den Branch und jede Änderung im Arbeitsbaum.)</em></p>
-<h2 id="den-status-prufen">Den Status prüfen</h2>
-<ol>
-<li>Setzen Sie den Cursor auf eine Datei oder einen Ordner innerhalb eines Git-Repositorys.</li>
-<li>Wählen Sie <strong>Befehle ▸ Git ▸ Git Status…</strong> (oder Rechtsklick ▸ <strong>Git ▸ Git Status…</strong>).</li>
-<li>Eine Zusammenfassung erscheint: der aktuelle Branch (oder <em>(losgelöst)</em>), dann entweder <em>Arbeitsbaum sauber.</em> oder eine Liste der Änderungen, wobei jede Zeile den Status und den Dateipfad zeigt.</li>
-</ol>
-<p>Befindet sich der Cursor nicht innerhalb eines Repositorys, meldet das Plugin schlicht <em>Kein Git-Repository.</em></p>
-<h2 id="bereitstellen-committen-pull-push">Bereitstellen, committen, pull, push</h2>
+<em>(Abbildung: Git-Status nennt den Branch und jede Änderung im Arbeitsbaum.)</em></p>
+<h2 id="das-panel-bereitstellen-committen-synchronisieren">Das Panel: bereitstellen, committen, synchronisieren</h2>
+<p><strong>Befehle ▸ Git ▸ Panel</strong> dockt eine Ansicht an, die den Arbeitsbaum nach <em>gestaged</em>, <em>geändert</em> und <em>nicht
+verfolgt</em> gruppiert. Wählen Sie Dateien aus und nutzen Sie <strong>Stage</strong>, <strong>Unstage</strong> oder <strong>Verwerfen…</strong>, tippen
+Sie eine Nachricht und drücken <strong>Commit</strong> — mit <strong>Amend</strong> wird die Änderung in den vorigen Commit gefaltet.
+<strong>Pull</strong> und <strong>Push</strong> liegen daneben, dort, wo der Commit ohnehin passiert; beide zeigen Fortschritt und
+lassen sich abbrechen.</p>
+<p>Committet wird der <em>Index</em>, nicht <code>git commit -a</code>: was Sie bereitgestellt haben, wird committet.</p>
+<h2 id="historie-blame-und-das-web">Historie, Blame und das Web</h2>
 <ul>
-<li><strong>Git Add (bereitstellen)</strong> stellt die Datei unter dem Cursor bereit (<code>git add</code>).</li>
-<li><strong>Git Commit…</strong> fragt nach einer Commit-Nachricht und committet dann alle Änderungen (<code>git commit -a</code>). Die gesammelte Ausgabe wird angezeigt, sodass Sie genau sehen, was geschehen ist.</li>
-<li><strong>Git Pull</strong> führt einen reinen Fast-Forward-Pull aus (<code>git pull --ff-only</code>).</li>
-<li><strong>Git Push</strong> pusht den aktuellen Branch (<code>git push</code>).</li>
+<li><strong>Historie…</strong> listet die Commits mit einem Lane-Graphen, den Refs, die auf sie zeigen (<code>● main</code>,
+  <code>↗ origin/main</code>, <code>⚑ v1.0</code>), und die Dateien, die jeder Commit berührt hat. Return oder ein Doppelklick
+  öffnet die Version dieser Datei gegen ihren Vorgänger im Vergleichsfenster. <strong>Commit zurücknehmen</strong> und
+  <strong>Cherry-Pick</strong> sind dort, und beide verweigern vorab, wenn der Arbeitsbaum nicht clean ist.</li>
+<li><strong>Datei-Historie…</strong> ist dasselbe Fenster für eine einzelne Datei.</li>
+<li><strong>Blame (Liste)…</strong> zeigt jede Zeile mit Commit, Autor und Datum. <strong>Blame im Editor</strong> schreibt dieselbe
+  Information in den Gutter des Editors, neben die Zeilennummern: Zeiger auf eine Zeile zeigt die
+  Commit-Nachricht, ein Klick öffnet diesen Commit gegen seinen Vorgänger.</li>
+<li><strong>Im Browser öffnen</strong> öffnet Datei, Commit oder Branch bei GitHub, GitLab, Bitbucket oder Azure DevOps,
+  gebaut aus der Remote-URL — kein Konto, kein Token. Bei einem Host, dessen Link-Aufbau es nicht kennt,
+  bietet es die Repository-Seite an, statt zu raten.</li>
 </ul>
-<p>Nach einem Befehl, der das Repository verändert, aktualisiert sich das aktive Panel, damit die Statusspalten aktuell bleiben.</p>
+<h2 id="branches-stashes-und-tags">Branches, Stashes und Tags</h2>
+<p><strong>Branches, Stashes &amp; Tags…</strong> listet alle drei. Branch wechseln, anlegen, mergen oder löschen; Stash pushen,
+poppen oder verwerfen; Tag anlegen, löschen, pushen oder darauf wechseln — ein Tag ist kein Branch, deshalb
+sagt es vorab, dass HEAD danach detached ist. Fetch, Pull und Push liegen im selben Fenster und lassen sich
+während des Laufs abbrechen.</p>
+<p>Einen Tag zu pushen ist absichtlich eine eigene Aktion: <code>git push</code> nimmt Tags nicht mit.</p>
+<h2 id="konflikte">Konflikte</h2>
+<p><strong>Konflikt lösen…</strong> listet die konfliktbehafteten Regionen der Datei unter dem Cursor und nimmt für jede eine
+Entscheidung: <em>unsere</em>, <em>ihre</em>, <em>beide</em> — oder offen lassen. Dann <strong>Datei schreiben</strong> oder <strong>Schreiben und
+stagen</strong>. Es verweigert das Stagen, solange eine Region offen ist — Git committet <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>-Marken
+anstandslos — und es rührt eine Datei nicht an, deren Marken es nicht lesen kann, statt zu raten. Für eine
+Region, die beide Seiten von Hand verschränkt braucht, ist <strong>Im Editor öffnen</strong> einen Knopf entfernt.</p>
+<h2 id="rebase">Rebase</h2>
+<p><strong>Rebase…</strong> listet die Commits vor dem Upstream — die, die noch niemand sonst hat — und lässt Sie sie
+squashen, als Fixup anhängen, verwerfen, umsortieren oder umbenennen, bevor der Branch neu geschrieben wird.
+Bleibt ein Rebase in einem Konflikt stehen, wird dasselbe Fenster zu <strong>Fortsetzen</strong> / <strong>Commit überspringen</strong>
+/ <strong>Rebase abbrechen</strong>, damit ein halb fertiges Rebase nicht im Terminal beendet werden muss.</p>
+<h2 id="dateien-ignorieren-und-zugangsdaten">Dateien ignorieren, und Zugangsdaten</h2>
+<ul>
+<li><strong>Diese Datei ignorieren…</strong>, <strong>Diesen Dateityp ignorieren…</strong> und <strong>Diesen Ordner ignorieren…</strong> tragen das
+  passende Muster in <code>.gitignore</code> ein — dort verankert, wo es hingehört, damit <em>dieser</em> <code>build</code>-Ordner
+  ignoriert wird und nicht jeder Ordner namens <code>build</code>.</li>
+<li><strong>Zugangsdaten…</strong> berichtet, wie sich dieses Repository authentifiziert: SSH oder HTTPS, ob ein
+  Credential-Helper eingerichtet ist, ob ein SSH-Agent läuft und einen Schlüssel hält. Wo es hilft, bietet es
+  genau eine Aktion an — Git die Zugangsdaten im macOS-Schlüsselbund verwalten lassen. Das Plugin fragt nie
+  nach einer Passphrase, zeigt sie nicht und speichert sie nicht.</li>
+</ul>
 <h2 id="hinweise">Hinweise</h2>
 <ul>
-<li>Das Plugin verwendet das System-Git unter <code>/usr/bin/git</code>. Ist Git nicht installiert, melden die Befehle, dass Git nicht verfügbar ist. (Die Installation der Xcode Command Line Tools stellt es bereit.)</li>
-<li>Der Repository-Status wird pro Ordner einmal gelesen und zwischengespeichert, sodass das Scrollen in einem großen Repository schnell bleibt; der Cache wird nach jedem Befehl, der den Baum verändert, aktualisiert.</li>
-<li>Commit verwendet <code>git commit -a</code>, was verfolgte Änderungen committet; brandneue Dateien benötigen weiterhin zuerst <strong>Git Add (bereitstellen)</strong>.</li>
-<li>Die Spaltenüberschriften <em>Git Status</em> und <em>Branch</em> erscheinen derzeit auch in anderen Oberflächensprachen auf Englisch; die Werte und Dialoge sind lokalisiert.</li>
+<li>Das Plugin verwendet das System-Git unter <code>/usr/bin/git</code>. Fehlt Git, melden die Befehle, dass Git nicht
+  verfügbar ist. (Die Xcode Command Line Tools bringen es mit.)</li>
+<li>Der Repository-Status wird einmal pro Ordner gelesen und zwischengespeichert, damit das Blättern in einem
+  großen Repository schnell bleibt; der Cache erneuert sich nach jedem Befehl, der den Baum ändert, und folgt
+  auch einem Commit, der außerhalb der App gemacht wurde.</li>
+<li>Linked Worktrees und Submodule werden unterstützt: eine Datei in einem Submodul zeigt den Status und den
+  Branch <em>des Submoduls</em>, nicht die des übergeordneten Repositorys.</li>
+<li>Jede Liste hat ein Kontextmenü, <strong>Return</strong> führt ihre Hauptaktion aus und <strong>Cmd+R</strong> lädt das Fenster neu.</li>
 </ul>
 <section class="pc-related"><h2>Verwandte Themen</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="view-modes-and-sorting.html">Ansichtsmodi &amp; Sortierung</a></li></ul></section>
 </main>

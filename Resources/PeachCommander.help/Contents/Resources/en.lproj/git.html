@@ -10,35 +10,75 @@
 <nav class="pc-help-top"><a href="index.html">&#8592; Peach Commander Help</a></nav>
 <main class="pc-help">
 <h1>Git</h1>
-<p>The Git plugin surfaces the state of a Git repository right inside the file panel — no separate app, no terminal. It adds two columns that show each file's working-tree status and the current branch, a <strong>Git</strong> submenu for the everyday commands (status, stage, commit, pull, push), and it runs the <code>git</code> already installed on your Mac. It's a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Plugins…</strong>.</p>
+<p>The Git plugin surfaces the state of a Git repository right inside the file panel — no separate app, no
+terminal. It adds two columns, a <strong>Git</strong> submenu, a docked panel for staging and committing, and windows for
+history, blame, branches, conflicts and rebasing. It drives the <code>git</code> already installed on your Mac. It's a
+plugin, so you can turn it off or remove it in <strong>Configuration ▸ Plugins…</strong>.</p>
 <h2 id="what-it-adds">What it adds</h2>
 <ul>
-<li><strong>Two file-list columns</strong> — <em>Git Status</em> and <em>Branch</em>. In a repository, each file shows a short status word (Modified, Added, Deleted, Untracked, Renamed, Copied, Conflict, Ignored, or Changed) and the panel shows the current branch. Turn the columns on in <strong>Configuration ▸ Columns…</strong> (see <a href="view-modes-and-sorting.md">View modes &amp; sorting</a>).</li>
-<li><strong>A Git menu</strong> — under <strong>Commands ▸ Git</strong>, and in the right-click menu of a file, with: <strong>Git Status…</strong>, <strong>Git Add (stage)</strong>, <strong>Git Commit…</strong>, <strong>Git Pull</strong>, and <strong>Git Push</strong>.</li>
+<li><strong>Two file-list columns</strong> — <em>Git Status</em> and <em>Branch</em>. Each file shows an icon and a short status word
+  (Modified, Added, Deleted, Untracked, Renamed, Copied, Conflict, Ignored, Type changed), with <em>(staged)</em>
+  where the change is already in the index; the <em>Branch</em> column shows the branch that file's repository is
+  on. Turn the columns on in <strong>Configuration ▸ Columns…</strong> (see
+  <a href="view-modes-and-sorting.md">View modes &amp; sorting</a>).</li>
+<li><strong>A Git menu</strong> — under <strong>Commands ▸ Git</strong>, and in the right-click menu of a file.</li>
 </ul>
 <p><img alt="The Git Status dialog showing the current branch and the changed files in the repository" src="images/git-status.png" />
 <em>(Figure: Git Status reports the branch and every change in the working tree.)</em></p>
-<h2 id="check-the-status">Check the status</h2>
-<ol>
-<li>Put the cursor on a file or folder inside a Git repository.</li>
-<li>Choose <strong>Commands ▸ Git ▸ Git Status…</strong> (or right-click ▸ <strong>Git ▸ Git Status…</strong>).</li>
-<li>A summary appears: the current branch (or <em>(detached)</em>), then either <em>Working tree clean.</em> or a list of changes, each line showing the status and the file path.</li>
-</ol>
-<p>If the cursor isn't inside a repository, the plugin simply says <em>Not a Git repository.</em></p>
-<h2 id="stage-commit-pull-push">Stage, commit, pull, push</h2>
+<h2 id="the-panel-stage-commit-sync">The panel: stage, commit, sync</h2>
+<p><strong>Commands ▸ Git ▸ Panel</strong> docks a view showing the working tree grouped into <em>staged</em>, <em>changed</em> and
+<em>untracked</em>. Select files and use <strong>Stage</strong>, <strong>Unstage</strong> or <strong>Discard…</strong>, type a message and press
+<strong>Commit</strong> — with <strong>Amend</strong> to fold the change into the previous commit instead. <strong>Pull</strong> and <strong>Push</strong> are
+there too, next to the commit that usually precedes them; both show progress and can be cancelled.</p>
+<p>Committing uses the <em>index</em>, not <code>git commit -a</code>: what you staged is what is committed.</p>
+<h2 id="history-blame-and-the-web">History, blame and the web</h2>
 <ul>
-<li><strong>Git Add (stage)</strong> stages the file under the cursor (<code>git add</code>).</li>
-<li><strong>Git Commit…</strong> asks for a commit message, then commits all changes (<code>git commit -a</code>). The combined output is shown so you can see exactly what happened.</li>
-<li><strong>Git Pull</strong> does a fast-forward-only pull (<code>git pull --ff-only</code>).</li>
-<li><strong>Git Push</strong> pushes the current branch (<code>git push</code>).</li>
+<li><strong>History…</strong> lists the commits with a lane graph, the refs pointing at each one (<code>● main</code>,
+  <code>↗ origin/main</code>, <code>⚑ v1.0</code>), and the files each commit touched. Enter or a double-click opens that file's
+  version against its parent in the compare window. <strong>Revert commit</strong> and <strong>Cherry-pick</strong> are there, and
+  both refuse up front if the working tree is not clean.</li>
+<li><strong>File History…</strong> is the same window for one file.</li>
+<li><strong>Blame (list)…</strong> shows every line with its commit, author and date. <strong>Blame in the Editor</strong> puts the same
+  information in the editor's gutter, next to the line numbers: hover a line for the commit's message, click
+  it to open that commit against its parent.</li>
+<li><strong>Open on the Web</strong> opens the file, commit or branch on GitHub, GitLab, Bitbucket or Azure DevOps, built
+  from the remote's URL — no account, no token. For a host whose link layout it does not know, it offers the
+  repository page rather than guessing.</li>
 </ul>
-<p>After a command that changes the repository, the active panel refreshes so the status columns stay current.</p>
+<h2 id="branches-stashes-and-tags">Branches, stashes and tags</h2>
+<p><strong>Branches, Stashes &amp; Tags…</strong> lists all three. Switch, create, merge or delete a branch; push, pop or drop a
+stash; create, delete or push a tag, or switch to one — a tag is not a branch, so it says up front that HEAD
+will end up detached. Fetch, Pull and Push are in the same window and can be cancelled while they run.</p>
+<p>Pushing a tag is a separate action on purpose: <code>git push</code> does not carry tags.</p>
+<h2 id="conflicts">Conflicts</h2>
+<p><strong>Resolve Conflict…</strong> lists the conflicted regions of the file under the cursor and takes a decision for
+each: <em>ours</em>, <em>theirs</em>, <em>both</em>, or leave it open. Then <strong>Write file</strong> or <strong>Write and stage</strong>. It refuses to
+stage while a region is still open — Git will happily commit <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> markers — and it refuses to touch a
+file whose markers it cannot read rather than guessing at them. For a region that needs both sides
+interleaved by hand, <strong>Open in editor</strong> is one button away.</p>
+<h2 id="rebase">Rebase</h2>
+<p><strong>Rebase…</strong> lists the commits ahead of the upstream — the ones nobody else has yet — and lets you squash,
+fix up, drop, reorder or reword them before rewriting the branch. If a rebase stops in a conflict, the same
+window becomes <strong>Continue</strong> / <strong>Skip commit</strong> / <strong>Abort rebase</strong>, so a half-finished rebase does not have to
+be finished in a terminal.</p>
+<h2 id="ignoring-files-and-credentials">Ignoring files, and credentials</h2>
+<ul>
+<li><strong>Ignore This File…</strong>, <strong>Ignore This File Type…</strong> and <strong>Ignore This Folder…</strong> add the right pattern to
+  <code>.gitignore</code> — anchored where it should be, so ignoring <em>this</em> <code>build</code> folder does not ignore every folder
+  called <code>build</code>.</li>
+<li><strong>Credentials…</strong> reports how this repository authenticates: SSH or HTTPS, whether a credential helper is
+  configured, whether an SSH agent is running and holds a key. Where it helps, it offers one action — let
+  Git keep credentials in the macOS Keychain. The plugin never asks for, shows or stores a passphrase.</li>
+</ul>
 <h2 id="notes">Notes</h2>
 <ul>
-<li>The plugin uses the system Git at <code>/usr/bin/git</code>. If Git isn't installed, the commands report that Git is not available. (Installing the Xcode Command Line Tools provides it.)</li>
-<li>Repository status is read once per folder and cached, so scrolling a large repo stays fast; the cache refreshes after any command that changes the tree.</li>
-<li>Commit uses <code>git commit -a</code>, which commits tracked changes; brand-new files still need <strong>Git Add (stage)</strong> first.</li>
-<li>The <em>Git Status</em> and <em>Branch</em> column headers currently show in English even in other interface languages; the values and dialogs are localized.</li>
+<li>The plugin uses the system Git at <code>/usr/bin/git</code>. If Git isn't installed, the commands report that Git is
+  not available. (Installing the Xcode Command Line Tools provides it.)</li>
+<li>Repository status is read once per folder and cached, so scrolling a large repo stays fast; the cache
+  refreshes after any command that changes the tree, and follows a commit made outside the app.</li>
+<li>Linked worktrees and submodules are supported: a file inside a submodule shows the <em>submodule's</em> status and
+  branch, not the parent's.</li>
+<li>Every list has a context menu, <strong>Return</strong> runs its main action and <strong>Cmd+R</strong> reloads the window.</li>
 </ul>
 <section class="pc-related"><h2>Related topics</h2><ul><li><a href="plugins.html">Plugins</a></li><li><a href="view-modes-and-sorting.html">View modes &amp; sorting</a></li></ul></section>
 </main>

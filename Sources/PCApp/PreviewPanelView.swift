@@ -218,6 +218,9 @@ final class PreviewPanelView: NSView {
     var automationSelectedTab: String { segmented.label(forSegment: segmented.selectedSegment) ?? "" }
 
     @discardableResult
+    /// Re-show the current file, for a setting that changes which renderer it gets (F-429).
+    func reloadPreview() { previewArea.reloadCurrent() }
+
     func automationSelectTab(titled title: String) -> String {
         let titles = (0..<segmented.segmentCount).map { segmented.label(forSegment: $0) ?? "" }
         guard let index = titles.firstIndex(of: title) else { return "no such tab; have: " + titles.joined(separator: ", ") }

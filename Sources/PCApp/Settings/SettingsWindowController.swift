@@ -49,6 +49,9 @@ public struct SettingsSnapshot: Sendable {
     public var editorCreateBackups: Bool = false
     /// Viewer.SearchFromFind — a viewer opened from a content search starts with that search (F-407).
     public var viewerSearchFromFind: Bool = true
+    /// Viewer.RenderDocumentsInApp — render PDFs and word-processor documents in the previews, rather than
+    /// leaving every non-image file to Quick Look (F-429).
+    public var previewRenderDocuments: Bool = true
     // Tabs page
     public var tabOpenInForeground: Bool
     public var tabLockedOpensNewTab: Bool
@@ -96,6 +99,7 @@ public struct SettingsSnapshot: Sendable {
                 packArchiveExtensions: String = "",
                 editorCreateBackups: Bool = false,
                 viewerSearchFromFind: Bool = true,
+                previewRenderDocuments: Bool = true,
                 tabOpenInForeground: Bool = true, tabLockedOpensNewTab: Bool = true,
                 ftpKeepAliveSeconds: Int = 0,
                 aiMCPEnabled: Bool = false, aiMCPPort: Int = 8790, aiMCPToken: String = "",
@@ -156,6 +160,7 @@ public struct SettingsSnapshot: Sendable {
         self.packArchiveExtensions = packArchiveExtensions
         self.editorCreateBackups = editorCreateBackups
         self.viewerSearchFromFind = viewerSearchFromFind
+        self.previewRenderDocuments = previewRenderDocuments
         self.tabOpenInForeground = tabOpenInForeground
         self.tabLockedOpensNewTab = tabLockedOpensNewTab
         self.ftpKeepAliveSeconds = ftpKeepAliveSeconds
@@ -318,6 +323,7 @@ public final class SettingsWindowController: NSWindowController {
     // Edit/View page controls
     private let editorBackupsCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)   // F-387
     private let viewerSearchFromFindCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil) // F-407
+    private let previewRenderDocumentsCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil) // F-429
 
     // Tabs page controls
     private let openInForegroundCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
@@ -799,11 +805,21 @@ public final class SettingsWindowController: NSWindowController {
             "Opening a hit from a text search puts that text into the viewer's own search and jumps to the first occurrence. Editing or clearing it there keeps whatever you leave behind."))
         seedNote.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
         seedNote.textColor = .secondaryLabelColor
+        // F-429: which renderer the previews use for PDFs and documents.
+        makeCheckbox(previewRenderDocumentsCheckbox,
+                     title: String(localized: "Render PDFs and documents in the preview"),
+                     isOn: snapshot.previewRenderDocuments,
+                     action: #selector(previewRenderDocumentsChanged))
+        let previewNote = NSTextField(wrappingLabelWithString: String(localized:
+            "The side panel, Quick View and the info page draw PDFs page by page with zoom controls, and show Word, OpenDocument and RTF documents as formatted text. Switch this off to leave every file except pictures to macOS Quick Look."))
+        previewNote.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        previewNote.textColor = .secondaryLabelColor
         let table = AssociationsPageView(associations: associations) { [weak self] updated in
             self?.onSaveAssociations(updated)
         }
         let page = NSView()
-        for view in [editorBackupsCheckbox, note, viewerSearchFromFindCheckbox, seedNote, table] as [NSView] {
+        for view in [editorBackupsCheckbox, note, viewerSearchFromFindCheckbox, seedNote,
+                     previewRenderDocumentsCheckbox, previewNote, table] as [NSView] {
             view.translatesAutoresizingMaskIntoConstraints = false
             page.addSubview(view)
         }
@@ -818,7 +834,12 @@ public final class SettingsWindowController: NSWindowController {
             seedNote.topAnchor.constraint(equalTo: viewerSearchFromFindCheckbox.bottomAnchor, constant: 6),
             seedNote.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
             seedNote.trailingAnchor.constraint(equalTo: page.trailingAnchor, constant: -16),
-            table.topAnchor.constraint(equalTo: seedNote.bottomAnchor, constant: 18),
+            previewRenderDocumentsCheckbox.topAnchor.constraint(equalTo: seedNote.bottomAnchor, constant: 14),
+            previewRenderDocumentsCheckbox.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
+            previewNote.topAnchor.constraint(equalTo: previewRenderDocumentsCheckbox.bottomAnchor, constant: 6),
+            previewNote.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
+            previewNote.trailingAnchor.constraint(equalTo: page.trailingAnchor, constant: -16),
+            table.topAnchor.constraint(equalTo: previewNote.bottomAnchor, constant: 18),
             table.leadingAnchor.constraint(equalTo: page.leadingAnchor, constant: 16),
             table.trailingAnchor.constraint(equalTo: page.trailingAnchor, constant: -16),
             table.bottomAnchor.constraint(equalTo: page.bottomAnchor, constant: -16)
@@ -832,6 +853,10 @@ public final class SettingsWindowController: NSWindowController {
 
     @objc private func viewerSearchFromFindChanged() {
         onSetBool("Viewer.SearchFromFind", viewerSearchFromFindCheckbox.state == .on)
+    }
+
+    @objc private func previewRenderDocumentsChanged() {
+        onSetBool("Viewer.RenderDocumentsInApp", previewRenderDocumentsCheckbox.state == .on)
     }
 
     // MARK: - Copy/Delete page (F-271)
