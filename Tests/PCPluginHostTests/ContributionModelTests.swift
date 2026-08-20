@@ -131,3 +131,81 @@ final class WhenExpressionTests: XCTestCase {
         XCTAssertEqual(byId["p.explicit"]?.isAsync, false)
     }
 }
+
+// An "open family" declaration: `acceptsSuffix` lets a command id the manifest does not declare
+// reach the plugin anyway, provided it extends a declared one by exactly one component. This is
+// what makes a user-invented "AI ▸" action reachable — from the user menu, the button bar or a
+// keyboard shortcut — without the host having to load a plugin to find out what it offers.
+final class OpenCommandFamilyTests: XCTestCase {
+
+    private func contributions(acceptsSuffix: Bool) -> PluginContributions {
+        var c = PluginContributions()
+        c.commands = [
+            CommandContribution(id: "plugin.ai.skill.summarize", title: "Summarize"),
+            CommandContribution(id: "plugin.ai.skill.custom", title: "Custom",
+                                acceptsSuffix: acceptsSuffix),
+        ]
+        return c
+    }
+
+    func test_declaredCommand_answersForItself() {
+        let c = contributions(acceptsSuffix: true)
+        XCTAssertEqual(c.command(answering: "plugin.ai.skill.summarize")?.title, "Summarize")
+    }
+
+    func test_undeclaredSuffix_reachesTheOpenDeclaration() {
+        let c = contributions(acceptsSuffix: true)
+        XCTAssertEqual(c.command(answering: "plugin.ai.skill.mein-eigener")?.id,
+                       "plugin.ai.skill.custom")
+    }
+
+    func test_withoutTheFlag_anUndeclaredIdIsNotAnswered() {
+        XCTAssertNil(contributions(acceptsSuffix: false).command(answering: "plugin.ai.skill.mein-eigener"))
+    }
+
+    // A family is one level deep: an open family must not answer for everything beneath it.
+    func test_deeperNesting_isNotAnswered() {
+        XCTAssertNil(contributions(acceptsSuffix: true).command(answering: "plugin.ai.skill.a.b"))
+    }
+
+    func test_emptySuffix_isNotAnswered() {
+        XCTAssertNil(contributions(acceptsSuffix: true).command(answering: "plugin.ai.skill."))
+    }
+
+    func test_anotherFamily_isNotAnswered() {
+        let c = contributions(acceptsSuffix: true)
+        XCTAssertNil(c.command(answering: "plugin.ai.folderskill.organize"))
+        XCTAssertNil(c.command(answering: "plugin.git.commit"))
+    }
+
+    // An exact declaration wins, so opening a family cannot shadow a real entry.
+    func test_exactMatchWins_overTheOpenFamily() {
+        let c = contributions(acceptsSuffix: true)
+        XCTAssertEqual(c.command(answering: "plugin.ai.skill.summarize")?.id, "plugin.ai.skill.summarize")
+    }
+
+    func test_flagIsParsedFromTheManifest() {
+        let plist: [String: Any] = ["PCContributions": ["commands": [
+            ["id": "plugin.ai.skill.custom", "title": "Custom", "acceptsSuffix": true],
+            ["id": "plugin.ai.skill.summarize", "title": "Summarize"],
+        ]]]
+        let parsed = ContributionParser.parse(infoPlist: plist).contributions
+        XCTAssertTrue(parsed.commands.first { $0.id.hasSuffix("custom") }?.acceptsSuffix ?? false)
+        XCTAssertFalse(parsed.commands.first { $0.id.hasSuffix("summarize") }?.acceptsSuffix ?? true)
+        XCTAssertEqual(parsed.command(answering: "plugin.ai.skill.was-anderes")?.id,
+                       "plugin.ai.skill.custom")
+    }
+
+    // The real manifest, so the declaration cannot quietly go missing from the shipped plugin.
+    func test_theAssistantsManifest_opensItsSkillFamily() throws {
+        let url = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Plugins/AIAssistant/Info.plist")
+        let data = try Data(contentsOf: url)
+        let plist = try PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any]
+        let parsed = ContributionParser.parse(infoPlist: plist ?? [:]).contributions
+        XCTAssertNotNil(parsed.command(answering: "plugin.ai.skill.eine-eigene-aktion"),
+                        "a skill the user invents must be reachable")
+        XCTAssertNil(parsed.command(answering: "plugin.ai.nonsense.thing"))
+    }
+}

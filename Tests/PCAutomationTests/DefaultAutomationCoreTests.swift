@@ -14,6 +14,8 @@ actor FakeBridge: AutomationHostBridge {
     var copied: (sources: [String], dest: String)?
     var trashed: [String]?
     var madeDir: String?
+    var renamed: (path: String, newName: String)?
+    var moved: (sources: [String], dest: String)?
     var setConfigKV: (String, String)?
     var comments: [String: String] = ["/a/f.txt": "an existing comment"]
     var setCommentCalls: [(path: String, comment: String?)] = []
@@ -55,8 +57,8 @@ actor FakeBridge: AutomationHostBridge {
         return .unknown
     }
     func copy(sources: [String], destination: String) { copied = (sources, destination) }
-    func move(sources: [String], destination: String) {}
-    func rename(path: String, newName: String) {}
+    func move(sources: [String], destination: String) { moved = (sources, destination) }
+    func rename(path: String, newName: String) { renamed = (path, newName) }
     func makeDirectory(_ path: String) { madeDir = path }
     func setConfig(_ key: String, _ value: String) { setConfigKV = (key, value) }
     func moveToTrash(_ paths: [String]) { trashed = paths }

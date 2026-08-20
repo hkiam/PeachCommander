@@ -17,7 +17,12 @@ public actor DefaultAutomationCore: AutomationCore {
     private let bus: HostEventBus
     private let externalTools: [ToolDefinition]
     private let externalRouter: ExternalToolRouter?
-    private var pending: [String: (tool: String, args: Data?)] = [:]
+    private var pending: [String: (tool: String, args: Data?, isUndo: Bool)] = [:]
+    /// Where executed actions are recorded. Nil in tests that do not care; the host supplies one.
+    private let audit: AuditLog?
+    /// Timestamps already used, so two actions in the same millisecond stay distinguishable
+    /// (the log matches an entry on its time when marking it undone).
+    private var lastStamp: Double = 0
 
     /// - Parameters:
     ///   - externalTools: extra tools contributed by plugins (merged into the catalogue,
@@ -25,11 +30,13 @@ public actor DefaultAutomationCore: AutomationCore {
     ///   - externalRouter: executes a contributed tool by name; the host routes to the
     ///     owning plugin.
     public init(bridge: AutomationHostBridge, bus: HostEventBus = HostEventBus(),
-                externalTools: [ToolDefinition] = [], externalRouter: ExternalToolRouter? = nil) {
+                externalTools: [ToolDefinition] = [], externalRouter: ExternalToolRouter? = nil,
+                audit: AuditLog? = nil) {
         self.bridge = bridge
         self.bus = bus
         self.externalTools = externalTools
         self.externalRouter = externalRouter
+        self.audit = audit
     }
 
     /// Emit a host event to subscribers (the host calls this via `eventBus`).
@@ -43,6 +50,19 @@ public actor DefaultAutomationCore: AutomationCore {
     public func context() async throws -> AutomationContext { try await bridge.context() }
 
     public func invoke(tool name: String, arguments: Data?, policy: PermissionPolicy) async throws -> AutomationOutcome {
+        // Undo is its own entry point: it looks up the inverse and then goes back through this
+        // method to run it, so the gate and the log apply to it exactly as to anything else.
+        if name == "undo_last_action" { return try await undoLast(policy: policy) }
+        return try await invoke(tool: name, arguments: arguments, policy: policy, isUndo: false)
+    }
+
+    /// - Parameter isUndo: an undo is an action and belongs in the log, but it must not itself be
+    ///   offered as undoable — otherwise "undo" twice redoes what was undone and the button
+    ///   ping-pongs between two states instead of walking back. Threaded through as a parameter
+    ///   rather than held in a field: the actor suspends at every `await` in here, so a field
+    ///   would also mislabel any tool call that arrived while an undo was in flight.
+    private func invoke(tool name: String, arguments: Data?, policy: PermissionPolicy,
+                        isUndo: Bool) async throws -> AutomationOutcome {
         guard let tool = toolDefinition(named: name) else { throw AutomationError.unknownTool(name) }
         // `run_command` is judged by what the command does, not by the fact that it is a command.
         // Otherwise the gate is bypassable by construction: `delete_permanently` presents a plan while
@@ -58,14 +78,19 @@ public actor DefaultAutomationCore: AutomationCore {
         case .refuse:
             // The effective capability, not the tool's declared one: refusing `run_command` because it
             // needs "runCommand" would name a permission the session actually has.
-            return .refused(reason: "The current permissions do not allow '\(capability.rawValue)' actions.")
+            let refusal = AutomationOutcome.refused(
+                reason: "The current permissions do not allow '\(capability.rawValue)' actions.")
+            // Recorded, though nothing ran. An attempt to delete that the policy stopped is
+            // exactly what someone opens this log to find out about.
+            record(name, arguments, refusal, capability: capability, isUndo: isUndo)
+            return refusal
         case .confirm:
             let token = UUID().uuidString
-            pending[token] = (name, arguments)
+            pending[token] = (name, arguments, isUndo)
             return .needsConfirmation(plan: planText(tool: name, arguments: arguments,
                                                       commandLabel: commandLabel), token: token)
         case .allow:
-            return await execute(name, arguments)
+            return await execute(name, arguments, isUndo: isUndo)
         }
     }
 
@@ -73,7 +98,7 @@ public actor DefaultAutomationCore: AutomationCore {
         guard let p = pending.removeValue(forKey: token) else {
             return .failed(error: "Unknown or already-used confirmation token.")
         }
-        return await execute(p.tool, p.args)
+        return await execute(p.tool, p.args, isUndo: p.isUndo)
     }
 
     /// Number of plans awaiting confirmation (tests/diagnostics).
@@ -81,7 +106,91 @@ public actor DefaultAutomationCore: AutomationCore {
 
     // MARK: - Dispatch
 
-    private func execute(_ name: String, _ arguments: Data?) async -> AutomationOutcome {
+    private func execute(_ name: String, _ arguments: Data?, isUndo: Bool) async -> AutomationOutcome {
+        let outcome = await run(name, arguments)
+        record(name, arguments, outcome, isUndo: isUndo)
+        return outcome
+    }
+
+    /// Write the action to the audit log. Every consumer goes through `execute`, so this is the
+    /// one place that has to remember — the alternative is a log that is complete until someone
+    /// adds a call site.
+    private func record(_ name: String, _ arguments: Data?, _ outcome: AutomationOutcome,
+                        capability: Capability? = nil, isUndo: Bool) {
+        guard let audit else { return }
+        // Reads are not recorded: they change nothing, and a log of every list_directory buries
+        // the entries someone opens the log to find.
+        let capability = capability ?? toolDefinition(named: name)?.capability ?? .read
+        guard capability != .read, capability != .navigate else { return }
+        var stamp = Date().timeIntervalSince1970
+        if stamp <= lastStamp { stamp = lastStamp + 0.001 }
+        lastStamp = stamp
+        let dictionary = (arguments.flatMap {
+            try? JSONSerialization.jsonObject(with: $0) } as? [String: Any]) ?? [:]
+        var entry = AuditEntry(at: stamp, tool: name, capability: capability.rawValue,
+                               arguments: Self.readableArguments(dictionary),
+                               outcome: "ok", detail: nil)
+        switch outcome {
+        case .ok: break
+        case .refused(let reason):            entry.outcome = "refused"; entry.detail = reason
+        case .failed(let error):              entry.outcome = "failed";  entry.detail = error
+        // Unreachable: a plan awaiting confirmation is recorded when it runs, not when it is
+        // proposed, so that one action is one line.
+        case .needsConfirmation(let plan, _): entry.outcome = "pending"; entry.detail = plan
+        }
+        if entry.outcome == "ok", !isUndo, let inverse = AuditInverse.of(tool: name, arguments: dictionary),
+           let data = try? JSONSerialization.data(withJSONObject: inverse.arguments),
+           let text = String(data: data, encoding: .utf8) {
+            entry.undoTool = inverse.tool
+            entry.undoArguments = text
+        } else {
+            entry.undoUnavailable = isUndo ? "this action undid an earlier one"
+                                           : AuditInverse.unavailableReason(tool: name)
+        }
+        audit.append(entry)
+    }
+
+    /// Arguments as one short line: a `write_file` carries a whole document, and the log is
+    /// read by a person.
+    static func readableArguments(_ dictionary: [String: Any]) -> String {
+        dictionary.keys.sorted().map { key in
+            let value = dictionary[key]
+            if let text = value as? String {
+                return "\(key)=\(text.count > 60 ? String(text.prefix(60)) + "…" : text)"
+            }
+            if let list = value as? [Any] { return "\(key)=[\(list.count)]" }
+            return "\(key)=\(value ?? "")"
+        }.joined(separator: " ")
+    }
+
+    /// Take back the most recent action that has an inverse. Runs under `policy`, so a session
+    /// that may not write may not undo either.
+    public func undoLast(policy: PermissionPolicy) async throws -> AutomationOutcome {
+        guard let audit else { return .failed(error: "No action log is being kept.") }
+        guard let entry = audit.lastUndoable() else {
+            let last = audit.recent(limit: 1).first
+            let reason = last?.undoUnavailable ?? "there is nothing to undo"
+            return .failed(error: "Nothing to undo — \(reason).")
+        }
+        guard let tool = entry.undoTool, let text = entry.undoArguments else {
+            return .failed(error: "Nothing to undo.")
+        }
+        let outcome = try await invoke(tool: tool, arguments: Data(text.utf8), policy: policy,
+                                       isUndo: true)
+        // A gated undo is carried out: the user asked for exactly this, by name.
+        if case .needsConfirmation(_, let token) = outcome {
+            let done = try await confirm(token: token)
+            if case .ok = done { audit.markUndone(entry) }
+            return done
+        }
+        if case .ok = outcome { audit.markUndone(entry) }
+        return outcome
+    }
+
+    /// The recorded actions, newest first.
+    public func auditTrail(limit: Int = 50) -> [AuditEntry] { audit?.recent(limit: limit) ?? [] }
+
+    private func run(_ name: String, _ arguments: Data?) async -> AutomationOutcome {
         // Plugin-contributed tools route to their owning plugin (KI-06).
         if externalTools.contains(where: { $0.name == name }) {
             return await externalRouter?(name, arguments) ?? .failed(error: "No handler for '\(name)'.")
@@ -93,8 +202,21 @@ public actor DefaultAutomationCore: AutomationCore {
             case "list_directory": return .ok(payload: try encode(try await bridge.listDirectory(try a.string("path"))))
             case "stat_path":     return .ok(payload: try encode(try await bridge.stat(try a.string("path"))))
             case "read_file":
-                let text = try await bridge.readFile(try a.string("path"), maxBytes: a.int("max_bytes", default: 65536))
-                return .ok(payload: try json(["content": text]))
+                // A caller that asked for a slice needs to know it got one. Without this the model
+                // summarises the first few kilobytes of a long document and presents it as a summary
+                // of the whole — a wrong answer is worse than a refusal, and the small on-device
+                // model has to read in slices (its context window is a few thousand tokens).
+                let path = try a.string("path")
+                let maxBytes = a.int("max_bytes", default: 65536)
+                let offset = a.int("offset", default: 0)
+                let text = try await bridge.readFile(path, maxBytes: maxBytes, offset: offset)
+                let total = (try? await bridge.stat(path).size) ?? 0
+                let end = Int64(offset) + Int64(text.utf8.count)
+                return .ok(payload: try json(["content": text,
+                                              "offset": offset,
+                                              "bytes": text.utf8.count,
+                                              "total_bytes": Int(total),
+                                              "truncated": end < total]))
             case "search":        return .ok(payload: try encode(try await bridge.search(queryJSON: try a.object("query"))))
             case "hash_file":
                 let h = try await bridge.hashFile(try a.string("path"), algorithm: (try? a.string("algorithm")) ?? "sha256")
@@ -127,6 +249,13 @@ public actor DefaultAutomationCore: AutomationCore {
                 let text = try a.string("comment")
                 try await bridge.setComment(try a.string("path"), comment: text.isEmpty ? nil : text)
                 return .ok(payload: nil)
+            case "list_recent_actions":
+                let entries = await auditTrail(limit: a.int("limit", default: 20))
+                return .ok(payload: try encode(entries))
+            case "undo_last_action":
+                // Runs under the policy of the session asking for it; `undoing` keeps the undo
+                // itself out of the undo history.
+                return .failed(error: "handled before dispatch")
             case "list_commands": return .ok(payload: try await bridge.listCommandsJSON())
             case "list_plugins":  return .ok(payload: try await bridge.listPluginsJSON())
             case "open_path":     try await bridge.openPath(try a.string("path")); return .ok(payload: nil)
@@ -146,9 +275,34 @@ public actor DefaultAutomationCore: AutomationCore {
             default: throw AutomationError.notImplemented(name)
             }
         } catch let e as AutomationError {
-            return .failed(error: String(describing: e))
+            return .failed(error: Self.readableError(e, tool: name))
         } catch {
             return .failed(error: error.localizedDescription)
+        }
+    }
+
+    /// A failure the *model* can act on. The failure text goes back into the conversation as the
+    /// tool's result, and `missingArgument("path")` — a Swift enum printed with `String(describing:)`
+    /// — was observed producing a paragraph of speculation about permissions and installed tools
+    /// instead of a second call with the argument supplied. Saying which argument is missing, and
+    /// what the tool takes, is the difference between a retry and a dead end.
+    static func readableError(_ error: AutomationError, tool name: String) -> String {
+        switch error {
+        case .missingArgument(let argument):
+            guard let definition = AutomationCatalog.tool(named: name) else {
+                return "The argument \"\(argument)\" is required. Call \(name) again with it."
+            }
+            let expected = definition.parameters
+                .map { "\($0.name) (\($0.type.rawValue))\($0.required ? "" : ", optional")" }
+                .joined(separator: ", ")
+            return "\(name) needs the argument \"\(argument)\". Call it again with all required "
+                + "arguments. \(name) takes: \(expected.isEmpty ? "no arguments" : expected)."
+        case .unknownTool(let unknown):
+            return "There is no tool called \"\(unknown)\". Use one of the tools you were given."
+        case .notImplemented(let what):
+            return "Not available here: \(what)."
+        case .operationFailed(let detail):
+            return detail
         }
     }
 

@@ -155,7 +155,7 @@ final class ContributionRegistry {
 
     func command(_ id: String) -> CommandContribution? {
         for pid in order {
-            if let c = entries[pid]?.contributions.commands.first(where: { $0.id == id }) { return c }
+            if let c = entries[pid]?.contributions.command(answering: id) { return c }
         }
         return nil
     }
@@ -235,10 +235,15 @@ final class ContributionRegistry {
     }
 
     private func owner(of commandId: String) -> (pluginId: String, command: CommandContribution)? {
+        // An exact declaration anywhere wins before an open family elsewhere, so a plugin that
+        // opens a family cannot intercept another plugin's declared command.
         for pid in order {
             if let c = entries[pid]?.contributions.commands.first(where: { $0.id == commandId }) {
                 return (pid, c)
             }
+        }
+        for pid in order {
+            if let c = entries[pid]?.contributions.command(answering: commandId) { return (pid, c) }
         }
         return nil
     }

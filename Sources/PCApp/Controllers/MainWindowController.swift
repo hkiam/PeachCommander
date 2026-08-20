@@ -116,8 +116,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             }
             return .ok(payload: try? JSONSerialization.data(withJSONObject: ["result": text]))
         }
+        // Every executed action is recorded here — the assistant's, an external agent's over
+        // MCP, and a plugin-contributed tool's — because they all come through this one core.
+        let audit = AuditLog(url: configPaths.root.appendingPathComponent("aichat/actions.jsonl"))
         return DefaultAutomationCore(bridge: HostAutomationBridge(host: self), bus: hostEventBus,
-                                     externalTools: externalTools, externalRouter: router)
+                                     externalTools: externalTools, externalRouter: router,
+                                     audit: audit)
     }
     /// The optional MCP server exposing the Automation Core to external agents
     /// (off by default; enabled via the Automation.MCPServerEnabled config key).
@@ -458,6 +462,10 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
 
 
         // Persist session state when a panel's path/sort changes.
+        // Background operations reach the automation event bus, so a consumer can wait for a
+        // copy instead of guessing. (The automation tools themselves no longer need to guess —
+        // copy and move await completion — but an external consumer has no other way to know.)
+        TransferManager.shared.onOperationEvent = { [weak self] event in self?.hostEventBus.emit(event) }
         leftPanelController?.onStateChanged = { [weak self] in self?.scheduleSaveState(); self?.updateCommandLinePrompt(); self?.emitPanelEvent(.left) }
         rightPanelController?.onStateChanged = { [weak self] in self?.scheduleSaveState(); self?.updateCommandLinePrompt(); self?.emitPanelEvent(.right) }
         leftPanelController?.onCursorChanged = { [weak self] in self?.updateQuickView(); self?.notifyPluginViews(); self?.emitCursorEvent(.left) }
@@ -4023,6 +4031,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Not private, for the same reason as `applyStringOption`: the DEBUG automation runner changes a
     /// setting through exactly the path the Settings dialog uses rather than a second one of its own.
     func applyBoolOption(_ keyPath: String, _ value: Bool) {
+        hostEventBus.emit(.configChanged(key: keyPath))
         let (section, key) = Self.splitKeyPath(keyPath)
         Task { await mainConfig.setBool(value, section, key) }
         switch keyPath {
@@ -4091,11 +4100,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             tabOpenInForeground = value; applyTabDefaultsToPanels()
         case "Tabs.LockedOpensNewTab":
             tabLockedOpensNewTab = value; applyTabDefaultsToPanels()
+        case "AI.AllowShell":
+            // Part of the policy too — see AI.Autonomy above.
+            Task { if mcpServer != nil { stopMCPServer(); await startMCPServerIfEnabled() } }
         case "Automation.MCPServerEnabled":
             if value {
-                Task { let p = await mainConfig.int("Automation", "MCPPort", default: 8790)
-                       let t = await mainConfig.string("Automation", "MCPAuthToken", default: "")
-                       startMCPServer(port: UInt16(clamping: p), authToken: t) }
+                Task { await startMCPServerIfEnabled() }
             } else {
                 stopMCPServer()
             }
@@ -4107,20 +4117,31 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     /// Not private: the DEBUG automation runner uses it so a scripted run changes a setting
     /// through exactly the same path the Settings dialog does.
     func applyStringOption(_ keyPath: String, _ value: String) {
+        hostEventBus.emit(.configChanged(key: keyPath))
         // The Cloud API key goes to the Keychain, never to the config store.
         if keyPath == "AI.CloudKey" { Self.saveCloudKeyToKeychain(value); return }
         // AI-plugin-owned prefs persist to the plugin's JSON (aichat/config.json), which
         // the plugin reads when building a chat. Surfaced on the host AI page for one
         // unified settings location; harmless if the plugin is removed.
         if keyPath == "AIPlugin.ModelPreference" {
-            Self.writeAIPluginConfig(root: configPaths.root, field: "modelPreference", value: value); return
+            Self.writeAIPluginConfig(root: configPaths.root, field: "modelPreference", value: value)
+            notifyAIConfigChanged(); return
         }
         if keyPath == "AIPlugin.SystemPrompt" {
-            Self.writeAIPluginConfig(root: configPaths.root, field: "systemPrompt", value: value); return
+            Self.writeAIPluginConfig(root: configPaths.root, field: "systemPrompt", value: value)
+            notifyAIConfigChanged(); return
         }
         let (section, key) = Self.splitKeyPath(keyPath)
         Task { await mainConfig.setString(value, section, key) }
         switch keyPath {
+        // A running MCP server holds the policy it was started with, so a change of autonomy
+        // has to reach it. Restarting is the whole mechanism: the socket is loopback and
+        // off by default, and a client reconnects.
+        case "AI.Autonomy":
+            Task { if mcpServer != nil { stopMCPServer(); await startMCPServerIfEnabled() } }
+            notifyAIConfigChanged()
+        case "AI.CloudBaseURL", "AI.CloudModel":
+            notifyAIConfigChanged()
         case "History.MaxEntries":
             HistoryService.shared.setCapacity(Int(value) ?? HistoryService.defaultCapacity)
         case "History.KeepDays":
@@ -7367,6 +7388,10 @@ final class PanelController: NSObject, PanelControllerProtocol {
         }
         let locked = tabs.tabs.map { $0.locked }
         view.updateTabBar(titles: titles, activeIndex: tabs.activeIndex, locked: locked)
+        // Every tab change funnels through here, whichever command made it.
+        if let wc = view.window?.windowController as? MainWindowController {
+            wc.hostEventBus.emit(.tabsChanged(side: self === wc.leftPanelController ? .left : .right))
+        }
     }
 
     /// The display name of the drive-bar volume with this sentinel path, or nil if no loaded plugin
@@ -8217,8 +8242,18 @@ final class PanelView: NSView {
                 await controller.sort(by: column.toPanelSortColumn(), ascending: ascending)
             }
         }
-        tableView.onSelectionOrCursorChanged = { [weak controller] in
+        tableView.onSelectionOrCursorChanged = { [weak controller, weak self] in
             controller?.viewStateChanged()
+            // The event bus declared eight kinds of event and emitted two, which is a worse
+            // state than declaring none: a consumer written against it would wait forever for
+            // a selection it can see happening. The remaining kinds are emitted here and below.
+            guard let controller,
+                  let host = self?.window?.windowController as? MainWindowController else { return }
+            let side: HostEvent.PanelSide = controller === host.leftPanelController ? .left : .right
+            Task { @MainActor in
+                let count = await controller.selectedOrCursorPaths().count
+                host.hostEventBus.emit(.selectionChanged(side: side, count: count))
+            }
         }
         tableView.onShowSelectDialog = { [weak controller] unselect in
             Task { @MainActor in
@@ -8976,14 +9011,19 @@ extension MainWindowController: ContributionHost {
         guard await mainConfig.bool("Automation", "MCPServerEnabled", default: false) else { return }
         let port = UInt16(clamping: await mainConfig.int("Automation", "MCPPort", default: 8790))
         let token = await mainConfig.string("Automation", "MCPAuthToken", default: "")
-        startMCPServer(port: port, authToken: token)
+        startMCPServer(port: port, authToken: token, policy: await currentAutonomyPolicy())
     }
 
     /// Start the loopback MCP server on `port` (no-op if already running). If
     /// `authToken` is non-empty, clients must authenticate with it first.
-    func startMCPServer(port: UInt16, authToken: String = "") {
+    ///
+    /// The policy is the one from Settings, not a fixed `.standard`. It used to be fixed, which
+    /// meant "read-only" on the AI page — a setting whose whole promise is that nothing changes
+    /// — held for the assistant in the window and not for an external agent on the socket, even
+    /// though both are configured on that same page.
+    func startMCPServer(port: UInt16, authToken: String = "", policy: PermissionPolicy = .standard) {
         guard mcpServer == nil else { return }
-        let server = MCPSocketServer(mcp: MCPServer(core: automationCore, policy: .standard), authToken: authToken)
+        let server = MCPSocketServer(mcp: MCPServer(core: automationCore, policy: policy), authToken: authToken)
         do {
             try server.start(port: port) { p in NSLog("[mcp] MCP server listening on 127.0.0.1:\(p)") }
             mcpServer = server
@@ -8993,6 +9033,13 @@ extension MainWindowController: ContributionHost {
     }
 
     func stopMCPServer() { mcpServer?.stop(); mcpServer = nil }
+
+    /// Tell a mounted assistant view that its configuration changed. Without this, the chat
+    /// keeps the provider and system prompt it was built with: switching to a cloud model in
+    /// Settings looked like it did nothing until the panel happened to be rebuilt.
+    func notifyAIConfigChanged() {
+        _ = ViewContainerRegistry.shared.notifyView(viewId: "plugin.ai.view", key: "aiconfig", value: "")
+    }
 
     // AI plugin config (aichat/config.json) — shared with the plugin, which reads it
     // when building a chat. Kept as a plain dict here to avoid coupling the host to the
@@ -9066,6 +9113,7 @@ extension MainWindowController: ContributionHost {
             hits.append(hit.path)
             if hits.count >= limit { break }
         }
+        hostEventBus.emit(.searchResults(count: hits.count))
         return hits
     }
 }

@@ -17,8 +17,14 @@ private var aiVCKey: UInt8 = 0   // associates the view controller's lifetime wi
 @MainActor private weak var liveChatVC: AIChatViewController?
 /// The services table the live chat was built with, so PcNotifyView("theme") can re-read colours.
 @MainActor private var liveChatServices: PcHostServices?
+/// The container the chat is mounted in, so a configuration change can rebuild the chat in
+/// place instead of waiting for the panel to be re-created.
+@MainActor private weak var liveChatContainer: NSView?
 @MainActor private var pendingSkillPrompt: (prompt: String, title: String)?
 @MainActor private var pendingTableRequest: (path: String, name: String)?
+@MainActor private var pendingRenameRequest: (path: String, name: String)?
+@MainActor private var pendingBatchRequest: BatchRequest?
+@MainActor private var pendingNotice: String?
 
 @_cdecl("PcGetApiVersion")
 public func PcGetApiVersion() -> Int32 { 1 }
@@ -34,17 +40,8 @@ public func PcMakeView(_ viewId: UnsafePointer<CChar>?,
     // Chat sidebar: return a container immediately; build the (async) chat into it.
     let container = NSView(frame: NSRect(x: 0, y: 0, width: 380, height: 520))
     Task { @MainActor in
-        let vc = await AIPlugin.buildChat(svc)
-        let v = vc.view
-        v.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(v)
-        NSLayoutConstraint.activate([
-            v.topAnchor.constraint(equalTo: container.topAnchor),
-            v.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            v.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            v.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-        ])
-        objc_setAssociatedObject(container, &aiVCKey, vc, .OBJC_ASSOCIATION_RETAIN)
+        liveChatContainer = container
+        let vc = await AIPlugin.mount(svc, in: container)
         liveChatVC = vc
         // F-338: colour the chat for the host's theme, and remember the services table so a later
         // theme change can be re-read (PcNotifyView below).
@@ -55,6 +52,9 @@ public func PcMakeView(_ viewId: UnsafePointer<CChar>?,
         // A skill invoked before the panel existed queued its request — run it now.
         if let q = pendingSkillPrompt { pendingSkillPrompt = nil; vc.sendInNewChat(q.prompt, title: q.title) }
         if let t = pendingTableRequest { pendingTableRequest = nil; vc.sendTableRequest(path: t.path, displayName: t.name) }
+        if let r = pendingRenameRequest { pendingRenameRequest = nil; vc.sendRenameRequest(path: r.path, displayName: r.name) }
+        if let b = pendingBatchRequest { pendingBatchRequest = nil; vc.sendBatchSkill(b) }
+        if let n = pendingNotice { pendingNotice = nil; vc.showNotice(n) }
         // DEBUG host-verification: auto-send a probe message and log the transcript.
         if let probe = ProcessInfo.processInfo.environment["PC_AI_PROBE"] {
             await vc.sendProgrammatically(probe)
@@ -85,6 +85,18 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
         presentAIView(svc)
         return
     }
+    // "Suggest a name" uses guided generation too, and ends in a button rather than a
+    // sentence the user has to copy by hand.
+    if id == "plugin.ai.skill.suggest-rename" {
+        guard let path = AIPlugin.cursorPath(svc) else { return }
+        let name = (path as NSString).lastPathComponent
+        Task { @MainActor in
+            presentAIView(svc)
+            if let vc = liveChatVC { vc.sendRenameRequest(path: path, displayName: name) }
+            else { pendingRenameRequest = (path, name) }
+        }
+        return
+    }
     // "Make a table" uses guided generation (read file → structured table).
     if id == "plugin.ai.skill.make-table" {
         guard let path = AIPlugin.cursorPath(svc) else { return }
@@ -99,16 +111,38 @@ public func PcRunCommand(_ commandId: UnsafePointer<CChar>?, _ services: UnsafeP
     // Other "AI ▸" skills: build the prompt from the skill template + the cursor path.
     if id.hasPrefix("plugin.ai.skill.") {
         let skillId = String(id.dropFirst("plugin.ai.skill.".count))
-        guard let skill = SkillCatalog.fileSkills.first(where: { $0.id == skillId }),
-              let path = AIPlugin.cursorPath(svc) else { return }
-        let name = (path as NSString).lastPathComponent
-        sendSkill(skill.prompt(name: name, path: path), title: "\(skill.title) – \(name)", svc)
+        // The id may be one the user invented: the manifest opens this family (acceptsSuffix), so
+        // a skill added to skills.json can be put on a menu, the button bar or a shortcut. An id
+        // with no skill behind it says so — a command that silently does nothing is indistinguishable
+        // from one that is broken.
+        guard let skill = AIPlugin.skills(svc).load().first(where: { $0.id == skillId }) else {
+            Task { @MainActor in AIPlugin.reportUnknownSkill(skillId, svc) }
+            return
+        }
+        let paths = AIPlugin.selectedPaths(svc)
+        guard !paths.isEmpty else { return }
+        if paths.count == 1 {
+            let name = (paths[0] as NSString).lastPathComponent
+            sendSkill(skill.prompt(name: name, path: paths[0]), title: "\(skill.title) – \(name)", svc)
+        } else {
+            // One chat, one result per file, in order, with progress and a way to stop.
+            let request = BatchRequest(skill: skill, paths: paths,
+                                       title: "\(skill.title) – \(paths.count)")
+            Task { @MainActor in
+                presentAIView(svc)
+                if let vc = liveChatVC { vc.sendBatchSkill(request) }
+                else { pendingBatchRequest = request }
+            }
+        }
     }
     // "AI ▸" folder skill (panel background): acts on the active folder.
     if id.hasPrefix("plugin.ai.folderskill.") {
         let skillId = String(id.dropFirst("plugin.ai.folderskill.".count))
-        guard let skill = SkillCatalog.folderSkills.first(where: { $0.id == skillId }),
-              let folder = AIPlugin.hostContext(svc, "dir") else { return }
+        guard let skill = AIPlugin.skills(svc).loadFolderSkills().first(where: { $0.id == skillId }) else {
+            Task { @MainActor in AIPlugin.reportUnknownSkill(skillId, svc) }
+            return
+        }
+        guard let folder = AIPlugin.hostContext(svc, "dir") else { return }
         let name = (folder as NSString).lastPathComponent
         sendSkill(skill.prompt(name: name, path: folder), title: "\(skill.title) – \(name)", svc)
     }
@@ -133,21 +167,70 @@ private func presentAIView(_ svc: PcHostServices) {
 
 @_cdecl("PcNotifyView")
 public func PcNotifyView(_ view: UnsafeMutableRawPointer?, _ key: UnsafePointer<CChar>?, _ value: UnsafePointer<CChar>?) {
-    guard let key, String(cString: key) == "theme" else { return }
-    MainActor.assumeIsolated { liveChatVC?.applyTheme(liveChatServices) }
+    guard let key else { return }
+    switch String(cString: key) {
+    case "theme":
+        MainActor.assumeIsolated { liveChatVC?.applyTheme(liveChatServices) }
+    case "aiconfig":
+        // Model, system prompt or autonomy changed in Settings. The provider and the prompt are
+        // fixed when a chat is built, so the chat is rebuilt — reading the new configuration —
+        // and reopened on the conversation the user was in. Doing nothing here is what made
+        // switching to a cloud model look broken until the next app start.
+        MainActor.assumeIsolated {
+            guard let container = liveChatContainer, let svc = liveChatServices else { return }
+            let resumeId = liveChatVC?.currentSessionIdentifier
+            Task { @MainActor in
+                let vc = await AIPlugin.mount(svc, in: container, resuming: resumeId)
+                liveChatVC = vc
+                vc.applyTheme(svc)
+                await vc.start(resuming: resumeId)
+                vc.focusInput()
+            }
+        }
+    default:
+        return
+    }
 }
 
 // MARK: - Chat construction (mirrors the app's former openAIChat wiring)
 
 enum AIPlugin {
+    /// Build a chat and put it in `container`, replacing whatever was there. Used both for the
+    /// first mount and for a rebuild after a settings change.
+    @MainActor
+    static func mount(_ svc: PcHostServices, in container: NSView,
+                      resuming sessionId: String? = nil) async -> AIChatViewController {
+        let vc = await buildChat(svc)
+        container.subviews.forEach { $0.removeFromSuperview() }
+        let v = vc.view
+        v.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(v)
+        NSLayoutConstraint.activate([
+            v.topAnchor.constraint(equalTo: container.topAnchor),
+            v.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            v.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            v.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+        ])
+        objc_setAssociatedObject(container, &aiVCKey, vc, .OBJC_ASSOCIATION_RETAIN)
+        return vc
+    }
+
     @MainActor
     static func buildChat(_ svc: PcHostServices) async -> AIChatViewController {
         let (mcp, mcpTools) = await connectMCP()
         let core = RemoteAutomationCore(services: svc, mcp: mcp, mcpTools: mcpTools)
         let root = hostContext(svc, "configRoot") ?? NSHomeDirectory()
         let cfg = AIPluginConfig.load(root: root)   // plugin-owned prefs (Settings pane)
+        // Write the editable prompt templates on first run, so the format is discoverable
+        // without documentation archaeology.
+        SkillStore(directory: URL(fileURLWithPath: root).appendingPathComponent("aichat"))
+            .seedTemplateIfMissing()
         let (provider, providerName, useNative) = await pickProvider(svc, preference: cfg.modelPreference)
         let relay = ConfirmationRelay()
+        // Kept between runs so the panel's "AI Summary" column can show what the assistant
+        // has already read, and a second ask does not pay for the folding again.
+        let summaries = SummaryStore(url: URL(fileURLWithPath: root)
+            .appendingPathComponent("aichat/summaries.json"))
         let defaultSys = "You are the Peach Commander assistant. Help the user manage files in the "
             + "two-panel file manager. To answer what is INSIDE a file, you MUST call read_file "
             + "with its path — use get_context and list_directory to find exact paths in the "
@@ -166,7 +249,8 @@ enum AIPlugin {
             if useNative, #available(macOS 26, *) {
                 native = AppleNativeToolSession(core: core, policy: .standard, instructions: sys, broker: relay,
                                                 onProgress: { n in await relay.reportProgress(n) },
-                                                onPartial: { t in await relay.reportPartial(t) })
+                                                onPartial: { t in await relay.reportPartial(t) },
+                                                summaryStore: summaries)
             }
             #endif
             if let snapshot {
@@ -175,7 +259,8 @@ enum AIPlugin {
             return AgentSession(core: core, provider: provider, policy: .standard, systemPrompt: sys, nativeRunner: native)
         }
         let dir = URL(fileURLWithPath: root).appendingPathComponent("aichat/sessions")
-        let manager = SessionManager(store: SessionStore(directory: dir), makeSession: factory)
+        let manager = SessionManager(store: SessionStore(directory: dir), makeSession: factory,
+                                     readActions: { limit in await core.auditTrail(limit: limit) })
         let vc = AIChatViewController(
             manager: manager, providerName: providerName,
             contextProvider: {
@@ -229,6 +314,25 @@ enum AIPlugin {
         } catch { return (nil, []) }
     }
 
+    /// Say that a named skill does not exist, in the chat, with where to add it. Reached when a
+    /// menu entry or shortcut names a skill id that is not in the skill files (a typo, or a skill
+    /// that was removed after the entry was made).
+    @MainActor
+    static func reportUnknownSkill(_ skillId: String, _ svc: PcHostServices) {
+        let text = String(format: String(localized: "There is no AI action called “%@”. Add it to aichat/skills.json, or correct the menu entry.",
+                                          comment: "AI: unknown skill id"), skillId)
+        presentAIView(svc)
+        if let vc = liveChatVC { vc.showNotice(text) }
+        else { pendingNotice = text }
+    }
+
+    /// The skill store under the host's config root. What each "AI ▸" action asks the model
+    /// is a prompt template the user can edit; the built-ins are the fallback.
+    static func skills(_ svc: PcHostServices) -> SkillStore {
+        let root = hostContext(svc, "configRoot") ?? NSHomeDirectory()
+        return SkillStore(directory: URL(fileURLWithPath: root).appendingPathComponent("aichat"))
+    }
+
     /// Read a host context value via the getContext service callback.
     static func hostContext(_ svc: PcHostServices, _ key: String) -> String? {
         guard let fn = svc.getContext else { return nil }
@@ -245,6 +349,22 @@ enum AIPlugin {
         let rc = "AI.CloudKey".withCString { s in fn(svc.host, Int32(PC_CRYPT_LOAD_PASSWORD), s, &buf, 2048) }
         let key = rc == Int32(PC_OK) ? String(cString: buf) : ""
         return key.isEmpty ? nil : key
+    }
+
+    /// Every selected path, or just the cursor's when nothing is marked. This is what makes an
+    /// "AI ▸" action a commander action: the same skill over forty files, not one.
+    static func selectedPaths(_ svc: PcHostServices) -> [String] {
+        guard let count = svc.selectionCount, let pathAt = svc.selectionPath else {
+            return cursorPath(svc).map { [$0] } ?? []
+        }
+        let n = Int(count(svc.host))
+        guard n > 0 else { return cursorPath(svc).map { [$0] } ?? [] }
+        var paths: [String] = []
+        for i in 0..<n {
+            var buf = [CChar](repeating: 0, count: 4096)
+            if pathAt(svc.host, Int32(i), &buf, 4096) == 1 { paths.append(String(cString: buf)) }
+        }
+        return paths.isEmpty ? (cursorPath(svc).map { [$0] } ?? []) : paths
     }
 
     /// The full path of the file under the cursor (for "AI ▸" skills).

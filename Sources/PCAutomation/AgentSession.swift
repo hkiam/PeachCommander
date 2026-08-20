@@ -17,10 +17,15 @@ public protocol NativeTurnRunner: Sendable {
     func runTurn(_ text: String, policy: PermissionPolicy) async throws -> String
     /// Read a file and guided-generate a Markdown table from it (nil = unsupported).
     func makeTable(fromFile path: String) async throws -> String?
+    /// Read a file and guided-generate a better name for it (nil = unsupported). Structured
+    /// rather than prose, because a name the user has to retype by hand is not a suggestion —
+    /// it is homework.
+    func suggestName(forFile path: String) async throws -> (newName: String, reason: String)?
 }
 
 public extension NativeTurnRunner {
     func makeTable(fromFile path: String) async throws -> String? { nil }
+    func suggestName(forFile path: String) async throws -> (newName: String, reason: String)? { nil }
 }
 
 public actor AgentSession {
@@ -95,10 +100,75 @@ public actor AgentSession {
         public let token: String
     }
 
+    /// A proposal the user can accept with one click. The assistant says what it would do;
+    /// accepting is what carries it out, so the click is the approval and no second dialog
+    /// asks the same question again.
+    public struct Suggestion: Sendable, Equatable {
+        public enum Kind: String, Sendable { case rename }
+        public let kind: Kind
+        public let path: String
+        /// The new name for `.rename`.
+        public let value: String
+        /// What to show the user (why this name).
+        public let explanation: String
+        public init(kind: Kind, path: String, value: String, explanation: String) {
+            self.kind = kind; self.path = path; self.value = value; self.explanation = explanation
+        }
+    }
+
     public enum Result: Sendable, Equatable {
         case answer(String)
         case needsConfirmation([PendingPlan])
         case stopped(String)
+        /// An answer plus something the user can apply (`apply(_:)`).
+        case suggestion(text: String, action: Suggestion)
+    }
+
+    /// Read a file and propose a better name for it, as a suggestion the user can apply.
+    /// Falls back to a normal turn where the provider cannot generate structured output.
+    public func suggestRename(path: String, displayName: String) async throws -> Result {
+        history.append(ModelMessage(role: .user,
+                                    content: "Suggest a better name for \(displayName)."))
+        if let s = try await nativeRunner?.suggestName(forFile: path) {
+            let text = "\(displayName) → **\(s.newName)**\n\n\(s.reason)"
+            history.append(ModelMessage(role: .assistant, content: text))
+            return .suggestion(text: text,
+                               action: Suggestion(kind: .rename, path: path,
+                                                  value: s.newName, explanation: s.reason))
+        }
+        return try await runLoop()
+    }
+
+    /// Carry out an accepted suggestion. The user accepted the named change, so a policy that
+    /// asks for confirmation is answered by that acceptance — the plan was the suggestion.
+    /// A policy that forbids the change refuses it here, as it would anywhere else.
+    public func apply(_ suggestion: Suggestion) async throws -> Result {
+        let arguments: Data?
+        switch suggestion.kind {
+        case .rename:
+            arguments = try? JSONSerialization.data(withJSONObject: [
+                "path": suggestion.path, "new_name": suggestion.value])
+        }
+        var outcome = try await core.invoke(tool: toolName(for: suggestion.kind),
+                                            arguments: arguments, policy: policy)
+        if case .needsConfirmation(_, let token) = outcome {
+            outcome = try await core.confirm(token: token)
+        }
+        let message: String
+        switch outcome {
+        case .ok:                    message = "Renamed to \(suggestion.value)."
+        case .refused(let reason):   message = "Refused: \(reason)"
+        case .failed(let error):     message = "Failed: \(error)"
+        case .needsConfirmation(let plan, _): message = "Confirmation required: \(plan)"
+        }
+        history.append(ModelMessage(role: .assistant, content: message))
+        return .answer(message)
+    }
+
+    private func toolName(for kind: Suggestion.Kind) -> String {
+        switch kind {
+        case .rename: return "rename"
+        }
     }
 
     /// Send a user message and run the agent loop to a result.
@@ -123,6 +193,22 @@ public actor AgentSession {
             return .answer(md)
         }
         return try await runLoop()
+    }
+
+    /// Take back the most recent undoable change, under this session's policy.
+    public func undoLastChange() async throws -> Result {
+        history.append(ModelMessage(role: .user, content: "Undo the last change."))
+        let outcome = try await core.undoLast(policy: policy)
+        let message: String
+        switch outcome {
+        case .ok(let payload):
+            message = payload.flatMap { String(data: $0, encoding: .utf8) } ?? "Done — the last change was undone."
+        case .refused(let reason):   message = "Refused: \(reason)"
+        case .failed(let error):     message = error
+        case .needsConfirmation(let plan, _): message = "Confirmation required: \(plan)"
+        }
+        history.append(ModelMessage(role: .assistant, content: message))
+        return .answer(message)
     }
 
     /// Confirm previously surfaced plans (their tokens) and resume the loop.

@@ -28,4 +28,47 @@ final class ChatComposerTests: XCTestCase {
         XCTAssertTrue(out.contains("/p/two"))
         XCTAssertTrue(out.contains("Attached"))
     }
+
+    // The form resent when the on-device model's input guardrail rejects the composed
+    // prompt: the paths go (they are what reads as non-natural language), the names stay
+    // (they are what the model answers from), and the user's question is untouched.
+    func test_stripPaths_dropsFolderPath_keepsSelectionNames() {
+        let ctx = ChatContext(folder: "/var/folders/kx/T/6EB7337A-3470-474D-848E-8892DF1A52E5",
+                              selection: ["/tmp/bericht.txt"])
+        let out = ChatComposer.stripPaths(
+            ChatComposer.compose(userText: "um was geht die aktuell markierte Datei?",
+                                 context: ctx, attachments: []))
+        XCTAssertFalse(out.contains("/var/folders"), "the path must be gone: \(out)")
+        XCTAssertFalse(out.contains("6EB7337A"), "no opaque folder name either: \(out)")
+        XCTAssertTrue(out.contains("bericht.txt"), "the selected file's name must survive: \(out)")
+        XCTAssertTrue(out.hasSuffix("um was geht die aktuell markierte Datei?"))
+    }
+
+    func test_stripPaths_reducesAttachmentsToNames() {
+        let out = ChatComposer.stripPaths(
+            ChatComposer.compose(userText: "check these", context: nil,
+                                 attachments: ["/p/one.txt", "/p/deep/two.md"]))
+        XCTAssertFalse(out.contains("/p/"))
+        XCTAssertTrue(out.contains("one.txt"))
+        XCTAssertTrue(out.contains("two.md"))
+        XCTAssertTrue(out.hasSuffix("check these"))
+    }
+
+    func test_stripPaths_isIdempotent_andLeavesPlainTextAlone() {
+        XCTAssertEqual(ChatComposer.stripPaths("just a question"), "just a question")
+        let composed = ChatComposer.compose(userText: "hi",
+                                            context: ChatContext(folder: "/f/g", selection: ["/f/g/a.txt"]),
+                                            attachments: ["/p/one.txt"])
+        let once = ChatComposer.stripPaths(composed)
+        XCTAssertEqual(ChatComposer.stripPaths(once), once)
+    }
+
+    // A multi-line question keeps all of its lines: only the header is rewritten.
+    func test_stripPaths_keepsMultiLineUserText() {
+        let text = "erste Zeile\nzweite Zeile"
+        let out = ChatComposer.stripPaths(
+            ChatComposer.compose(userText: text, context: ChatContext(folder: "/f", selection: []),
+                                 attachments: ["/p/one"]))
+        XCTAssertTrue(out.hasSuffix(text), "got: \(out)")
+    }
 }

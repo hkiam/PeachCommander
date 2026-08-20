@@ -56,6 +56,22 @@ final class RemoteAutomationCore: AutomationCore, @unchecked Sendable {
         return Self.decodeOutcome(json)
     }
 
+    /// Both of these go over the same `automationInvoke` as every other tool: the log and the
+    /// undo are catalogue tools, so the plugin needs no new ABI to reach them, and an external
+    /// agent over MCP gets them for free.
+    func auditTrail(limit: Int) async -> [AuditEntry] {
+        let args = try? JSONSerialization.data(withJSONObject: ["limit": limit])
+        guard let outcome = try? await invoke(tool: "list_recent_actions", arguments: args,
+                                              policy: .readOnly),
+              case .ok(let payload) = outcome, let data = payload,
+              let entries = try? JSONDecoder().decode([AuditEntry].self, from: data) else { return [] }
+        return entries
+    }
+
+    func undoLast(policy: PermissionPolicy) async throws -> AutomationOutcome {
+        try await invoke(tool: "undo_last_action", arguments: nil, policy: policy)
+    }
+
     func confirm(token: String) async throws -> AutomationOutcome {
         let json = await call { s in token.withCString { tp in s.automationConfirm?(s.host, tp) } }
         return Self.decodeOutcome(json)

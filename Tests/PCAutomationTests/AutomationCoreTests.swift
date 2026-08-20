@@ -120,3 +120,42 @@ final class AutomationCoreTests: XCTestCase {
         XCTAssertEqual(try JSONDecoder().decode(AutomationContext.self, from: data), c)
     }
 }
+
+// A tool failure is read by a model, and it has to be able to act on it. `missingArgument("path")`
+// printed as a Swift enum was observed producing a paragraph of speculation about file permissions
+// and tool installation instead of a second call with the argument supplied.
+final class ReadableErrorTests: XCTestCase {
+
+    func test_missingArgument_namesTheArgumentAndWhatTheToolTakes() {
+        let text = DefaultAutomationCore.readableError(.missingArgument("path"), tool: "read_file")
+        XCTAssertTrue(text.contains("\"path\""), text)
+        XCTAssertTrue(text.contains("read_file"), text)
+        XCTAssertTrue(text.contains("max_bytes"), "the other arguments are listed too: \(text)")
+        XCTAssertTrue(text.contains("optional"), "and which of them are optional: \(text)")
+        XCTAssertFalse(text.contains("missingArgument"), "no Swift enum syntax: \(text)")
+    }
+
+    func test_unknownTool_saysSo_withoutEnumSyntax() {
+        let text = DefaultAutomationCore.readableError(.unknownTool("read_files"), tool: "read_files")
+        XCTAssertTrue(text.contains("read_files"), text)
+        XCTAssertFalse(text.contains("unknownTool"), text)
+    }
+
+    func test_operationFailed_passesItsDetailThrough() {
+        let text = DefaultAutomationCore.readableError(
+            .operationFailed("Copy 3 item(s) did not complete — see the Transfer Manager."),
+            tool: "copy")
+        XCTAssertEqual(text, "Copy 3 item(s) did not complete — see the Transfer Manager.")
+    }
+
+    // A tool with no parameters must not produce "takes: ." — the sentence still has to read.
+    func test_toolWithoutParameters_readsProperly() {
+        let text = DefaultAutomationCore.readableError(.missingArgument("x"), tool: "get_context")
+        XCTAssertTrue(text.contains("no arguments"), text)
+    }
+
+    func test_unknownToolName_stillProducesAdvice() {
+        let text = DefaultAutomationCore.readableError(.missingArgument("path"), tool: "not_a_tool")
+        XCTAssertTrue(text.contains("\"path\""), text)
+    }
+}

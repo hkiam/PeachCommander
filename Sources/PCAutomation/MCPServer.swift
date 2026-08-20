@@ -113,7 +113,10 @@ public struct MCPServer: Sendable {
                 return Self.toolResult(id: id, text: "Failed: \(error)", isError: true)
             }
         } catch let e as AutomationError {
-            return Self.toolResult(id: id, text: "Error: \(String(describing: e))", isError: true)
+            // The same readable form the in-app agent gets: an external agent has to recover from
+            // this too, and it cannot act on a printed Swift enum either.
+            return Self.toolResult(id: id, text: DefaultAutomationCore.readableError(e, tool: name),
+                                   isError: true)
         } catch {
             return Self.toolResult(id: id, text: "Error: \(error.localizedDescription)", isError: true)
         }

@@ -13,7 +13,7 @@
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **98 scenarios with reports** (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `search-settings` with F-408 and `theme-system` with F-409 — **all six now run on the VM and green**, see the harness entry below for the five measurement defects that run caught) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
-| Last updated | 2026-08-19 |
+| Last updated | 2026-08-20 |
 | Released | **0.7.1 (build 12), 2026-08-18** — the defect round above; unsigned, as every build so far. Previously **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
@@ -46,6 +46,140 @@ All five are now in `docs/metadata/layout-baseline.json` at zero, so a conflict 
 regression from here on. The run's report and screenshots are under `/tmp/vm-new-scenarios/` — not recorded
 in `docs/generated/layout-regression/`, which is written from *full* runs; this was a five-scenario run and
 overwriting the recorded set with it would delete 105 other rows.
+
+## 2026-08-20 (F-433) — The assistant's error message named the wrong cause
+
+Reported: the AI assistant answers "um was geht die aktuell markierte Datei?" with "the on-device model
+produced an invalid tool call. Try rephrasing it more simply". Reproduced against the real on-device model
+in `LiveNativeToolTests`, and the message was wrong in the way that matters — it sent the user off to fix
+their phrasing when nothing about the phrasing was the problem.
+
+`AppleNativeToolSession.send` mapped **every** thrown `GenerationError` to that one sentence. The error
+actually raised is `unsupportedLanguageOrLocale`: Apple's on-device model screens its *input*, and every
+message the chat sends is prefixed by `ChatComposer`'s context header naming the active folder. A header
+dominated by an opaque path does not read to it as natural language and the turn is refused before a tool
+is ever chosen. Measured: with the folder path in the header, rejected 3/3; the identical German question
+without it, answered. Not language-specific — the English question was rejected the same way. Nor is it
+exotic: the shape is any temp, DerivedData, or UUID- or hash-named directory.
+
+Two more things were wrong behind it. The retry resent the *identical* prompt into the same session, so a
+deterministic input rejection failed twice by construction — the loop existed but could never recover.
+And the raw error was logged under `#if DEBUG` only, so a shipped build kept no record of which of the
+eight failure kinds had occurred.
+
+The retry now sends a form that can succeed: `ChatComposer.stripPaths` keeps the header's *names* and drops
+the paths. That combination was chosen by measurement rather than taste — names kept, paths dropped: 5/5
+answered; whole header dropped: accepted by the guardrail but 0/5 answered, the model having nothing left to
+read; folder reduced to its last component: accepted, 0/5, the UUID name being no more readable than the
+path. Each failure kind now carries its own message (a full context window says start a new chat; assets
+still downloading say so; a retry that cannot help is not attempted), and the cause goes to `OSLog` in every
+build. Regression test asserts the reported turn recovers *and* answers from the file; 3/3 locally.
+
+## 2026-08-20 (F-434) — The assistant review, implemented
+
+A fachlich/technisch review of the AI plugin (published separately) found the core sound and the
+layer above it thin, and named twelve things in priority order. All of them are in, plus three
+defects the work uncovered. What the review measured is what drove the order.
+
+**The one that mattered.** `read_file` defaulted to 64 KB into a context window that holds about
+4 KB. Measured against the real model: 2 KB and 4 KB slices are summarised correctly, 8 KB and above
+throw `exceededContextWindowSize` — so "summarise this file", the most used skill, failed on the
+*first* message for any document past about six kilobytes, and the message it failed with told the
+user to start a new chat. There is now a `summarize_file` tool that reads a file in 4 KB slices and
+folds the slice summaries in Swift, one fresh session per slice, so no generation ever sees more than
+a slice. A 38 KB report now comes back summarised **including a sentence planted in its last
+section** — the check that distinguishes a real fold from a summary of the first page. Regression
+test asserts it live. A conversation that fills the window is folded into a summary and continued
+rather than ended.
+
+**Tool parity and gating.** The native (on-device) path offered 24 of the catalogue's 28 tools:
+`semantic_search`, `remember`, `recall` and `run_shell` existed only for the cloud path, so the
+*default* provider was the poorer one and had no memory at all. The list is now derived from
+`AutomationCatalog` and filtered by the session's `PermissionPolicy`, so read-only offers no writes
+instead of offering them and refusing them — on a small model, a round of doomed attempts is the
+budget for the answer. A test asserts catalogue/native parity so the two cannot drift again.
+
+**Three defects the work turned up, none of them in the review.**
+1. `copy` and `move` enqueued a transfer and returned immediately, so the tool reported success
+   before a byte moved — and the undo I was building would have taken back a move still in flight.
+   Both wait now; `TransferManager.enqueue` grew an `onFinish` because `onComplete` fires only on
+   success and a caller waiting on it would wait forever on a failure.
+2. The truncation note appended to a `read_file` result broke the JSON the folding parses, so the
+   slice loop stopped after one slice and "summarised" the beginning of the file. Found by counting
+   `read_file` calls in the live run: one, where ten were expected. Model-facing notes and
+   machine-facing payloads are separate calls now (`run` vs `runRaw`).
+3. My own first cut of the semantic-search cutoff (`max(best * 0.7, 0.2)`) filtered out the best
+   match whenever the whole folder scored low, i.e. it answered "nothing matches" when something
+   did. Relative to the best match only, and the best match is always returned.
+
+**What the small model gets wrong, compensated rather than lectured.** Asked "which file is about
+the roof repair" it calls `search` with the subject in the *file-name mask* — sometimes in `mask`
+and `text` both. The honest answer to that ("no file has that name") is useless. A mask that is a
+bare word rather than a pattern is now read as what is being looked for. 3 of 4 live runs answer
+correctly; the fourth passed correct arguments and still lost the result, which is the model.
+
+**Trust.** Every executed action is recorded (`aichat/actions.jsonl`) at the single point in
+`DefaultAutomationCore` where a tool runs, so the chat, an MCP agent and a plugin tool are all
+covered by construction. Refused attempts are recorded too — an attempt to delete that the policy
+stopped is exactly what someone opens the log to find. Undo is offered only where an inverse
+genuinely exists (rename, move) and states the reason where it does not; the undo does not itself
+become undoable, or the button ping-pongs. Both are catalogue tools rather than UI-only, so no new
+plugin ABI was needed and the model can be asked to undo.
+
+**The rest, briefly.** Markdown is rendered in the chat (real `NSTextTable` tables — the transcript
+had to move to TextKit 1 for that; verified in the running app, screenshot in the review); "Suggest a
+name" ends in a Rename button rather than a sentence to retype; an "AI ▸" action runs over a whole
+selection with progress and Stop; `SkillStore` is finally wired, so the prompts are editable data;
+the file-system tools left the main actor and hashing is streamed; the MCP server takes the autonomy
+setting; a model change in Settings rebuilds the chat instead of being ignored until restart; the
+event bus emits all eight of its declared kinds (it emitted two); the AI column shows the
+assistant's summaries and its language field is no longer called "AI".
+
+**Localisation.** 20 new user-facing strings, all 18 target languages, catalogue and
+`Tools/translations/` both. One self-check worth keeping: a scan for CJK characters in non-CJK
+languages caught a stray 長 in the Russian string I had just written.
+
+**The one I had deferred, done differently.** A skill the user invents had no way to be *invoked*:
+the host builds plugin menus from the bundle's Info.plist without loading the plugin (deliberately),
+so a new entry looked like it needed a sidecar manifest and a directory watcher. It does not. A
+command declaration can now say its family is open (`acceptsSuffix`), and an id extending it by one
+component dispatches to the same plugin — so `plugin.ai.skill.<own-id>` works from the user menu,
+the button bar or a keyboard shortcut, three places where a user can already name a command. Opt-in
+per declaration, exact matches always win, one level deep only, and the rule lives in `PCPluginHost`
+as a pure function with nine tests including one against the shipped manifest. Verified end to end:
+a `zaehle-zeilen` skill written into `skills.json` and invoked by id reached the model with the right
+file. No ABI change, no watcher, and it composes with three existing customisation mechanisms
+instead of adding a fourth.
+
+**Two more of my own, found by measuring rather than reading.** `summarize_file` folds through
+prompts written in English, and the model relays the language it is handed: a German file came back
+summarised in English **4 of 4 times**, to a user who had asked in German. Asking for "the same
+language as the text" did not fix it — it made things worse (one empty answer, one answer *about*
+the text) — so the language is detected with `NLLanguageRecognizer` and named: " Write in German."
+4 of 4 in German afterwards, pinned by a live test plus deterministic tests for the detection. And
+the chat's two-minute watchdog, which is right for a hung model, is wrong for a turn that reads a
+40 KB file slice by slice: progress re-arms it now, and the status line counts the slices. That
+also turned up three stale entries in the activity map (`write_file`, `merge_files`, `set_comment`
+said "working…") and one that could never match, because it named `stat` after the tool had been
+renamed to `stat_path`.
+
+**Still not done, and now recorded as such.** The help pages for the other 17 languages describe
+the assistant before this work. I had written that "the gate only checks that a page exists per
+topic" — that is true of `check-translations.py` and wrong about the project: there is a second gate,
+`check-translation-drift.py`, which compares the *structure* of every translated page against the
+English one, and my change had turned it red with exactly those 17 pages. It is now green again the
+way this project already handles the case: `docs/metadata/translation-drift-allow.json` carries an
+entry per language with the reason, counted as accepted rather than hidden (`drifted=0
+accepted=102`). The precedent is the Git plugin page, rewritten for 0.7.2 in English and German with
+the other languages recorded the same way — so the project has already answered this question, and
+its answer is to owe the translation rather than to machine-translate twelve thousand words of prose
+nobody here can check. The allow entry lists exactly the 17 that drift: not German, which the same
+gate confirms is structurally in step, and no spare languages, because an over-broad entry would
+swallow the next real gap.
+
+Worth noting how the German gap was found at all: the page silently missed a whole section because
+my insertion anchored on the English heading and I had written that one replacement without an
+assertion — the others had one and would have failed loudly.
 
 ## 2026-08-19 (F-432) — Why the plugin build warned
 

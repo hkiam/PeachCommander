@@ -8,6 +8,7 @@
 // the manager just tracks their live state and notifies observers on every change.
 
 import AppKit
+import PCAutomation
 import PCOperations
 
 @MainActor
@@ -28,6 +29,7 @@ final class TransferManager {
         var status: Status = .running
         var errorText: String?
         let onComplete: (@MainActor ([String]) -> Void)?
+        let onFinish: (@MainActor (Bool) -> Void)?
         /// Serializes pause/resume/cancel calls onto `control` in click order so a
         /// quick Pause→Resume can't reach the control actor out of order.
         var controlChain: Task<Void, Never>?
@@ -38,17 +40,22 @@ final class TransferManager {
         var speedLimit: Int64?
 
         init(title: String, kind: OperationKind, control: OperationControl,
-             onComplete: (@MainActor ([String]) -> Void)?) {
+             onComplete: (@MainActor ([String]) -> Void)?,
+             onFinish: (@MainActor (Bool) -> Void)? = nil) {
             self.title = title
             self.kind = kind
             self.control = control
             self.onComplete = onComplete
+            self.onFinish = onFinish
         }
     }
 
     private(set) var jobs: [Job] = []
     /// Called on any change to the job list or a job's state (window observes this).
     var onChange: (() -> Void)?
+    /// Background operations as typed host events, for the Automation Core's event bus. Set by
+    /// the window controller, which owns the bus; nil in any context that has none.
+    var onOperationEvent: ((HostEvent) -> Void)?
 
     var hasActiveJobs: Bool { jobs.contains { !$0.status.isFinished } }
     /// Whether any job is waiting in the download list to be started (F-215).
@@ -58,10 +65,16 @@ final class TransferManager {
     /// paths on success (e.g. to unmark + reload the originating panel).
     /// With `startHeld: true` the job is added to the download list in a `.queued`
     /// state and only runs when the user starts it (F-215).
+    /// - Parameter onFinish: called once the job reaches a terminal state, with whether it
+    ///   succeeded. `onComplete` fires only on success, so a caller that has to *wait* for the
+    ///   operation — the automation tools do, or the assistant reports a copy that has not
+    ///   happened yet — would wait forever on a failure or a cancellation.
     func enqueue(_ kind: OperationKind, title: String, startHeld: Bool = false,
-                 onComplete: (@MainActor ([String]) -> Void)? = nil) {
+                 onComplete: (@MainActor ([String]) -> Void)? = nil,
+                 onFinish: (@MainActor (Bool) -> Void)? = nil) {
         let queue = TransferQueue()
-        let job = Job(title: title, kind: kind, control: queue.control, onComplete: onComplete)
+        let job = Job(title: title, kind: kind, control: queue.control, onComplete: onComplete,
+                      onFinish: onFinish)
         if startHeld {
             job.status = .queued
             job.pendingQueue = queue
@@ -123,6 +136,12 @@ final class TransferManager {
             case .progress(let p):
                 if job.status == .running || job.status == .paused { job.progress = p }
                 onChange?()
+                // A fraction, because that is what a consumer of the event stream can use; the
+                // window shows the byte and file counts from the same OpProgress.
+                let fraction = p.bytesTotal > 0
+                    ? Double(p.bytesDone) / Double(p.bytesTotal)
+                    : (p.filesTotal > 0 ? Double(p.filesDone) / Double(p.filesTotal) : 0)
+                onOperationEvent?(.operationProgress(id: job.id.uuidString, fraction: fraction))
             case .completed(let done):
                 job.status = .done
                 onChange?()
@@ -140,6 +159,8 @@ final class TransferManager {
         }
         if !job.status.isFinished { job.status = .done }
         onChange?()
+        job.onFinish?(job.status == .done)
+        onOperationEvent?(.operationFinished(id: job.id.uuidString, ok: job.status == .done))
         // Whatever the outcome, the slot is free: let the next held job have it.
         startNextQueuedJob()
         // Continue-on-error summary for the background job (F-089).

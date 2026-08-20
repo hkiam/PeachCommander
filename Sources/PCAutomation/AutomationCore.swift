@@ -58,6 +58,9 @@ public enum AutomationError: Error, Sendable, Equatable {
     case unknownTool(String)
     case missingArgument(String)
     case notImplemented(String)
+    /// The action ran and did not succeed — a background transfer that failed or was
+    /// cancelled. Distinct from `notImplemented`: something was attempted.
+    case operationFailed(String)
 }
 
 /// The automation seam. A concrete implementation lives in PCApp; consumers hold
@@ -80,8 +83,20 @@ public protocol AutomationCore: Sendable {
 
     /// The host event stream (panel/selection/operation/config/search).
     func events() -> AsyncStream<HostEvent>
+    /// Take back the most recent recorded action that has an inverse (rename, move). Defaulted,
+    /// so a core that keeps no log simply says there is nothing to undo.
+    func undoLast(policy: PermissionPolicy) async throws -> AutomationOutcome
+    /// The recorded actions, newest first.
+    func auditTrail(limit: Int) async -> [AuditEntry]
 }
 
 public extension AutomationCore {
     var tools: [ToolDefinition] { AutomationCatalog.tools }
+}
+
+public extension AutomationCore {
+    func undoLast(policy: PermissionPolicy) async throws -> AutomationOutcome {
+        .failed(error: "No action log is being kept.")
+    }
+    func auditTrail(limit: Int) async -> [AuditEntry] { [] }
 }

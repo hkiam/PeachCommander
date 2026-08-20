@@ -29,11 +29,51 @@ public struct CommandContribution: Sendable, Equatable {
     /// services. A `push` to an unreachable host is the case that forced this — it blocked the main
     /// thread for the network's timeout, which is an application that appears to have died.
     public let isAsync: Bool
+    /// If true, an id the manifest does NOT declare but which extends this one's family — same
+    /// dotted prefix, one more component — dispatches here too.
+    ///
+    /// This is what lets a user add an action of their own. The assistant's "AI ▸" entries are
+    /// prompts in an editable file, and a prompt the user invents has no menu entry, because the
+    /// host builds plugin menus from the manifest without loading the plugin (deliberately: a
+    /// disabled plugin must contribute nothing and no plugin code may decide menu presence).
+    /// Rather than grow the ABI a sidecar manifest, a declaration can say that its family is
+    /// open: `plugin.ai.skill.my-own` then reaches the assistant through the user menu, the
+    /// button bar or a keyboard shortcut — three places where the user can already name a
+    /// command — and the plugin resolves the suffix itself.
+    ///
+    /// Opt-in per declaration, so no other plugin starts receiving ids it never declared.
+    public let acceptsSuffix: Bool
 
     public init(id: String, title: String, category: String? = nil,
-                needsLocalPath: Bool = false, isAsync: Bool = false) {
+                needsLocalPath: Bool = false, isAsync: Bool = false,
+                acceptsSuffix: Bool = false) {
         self.id = id; self.title = title; self.category = category
         self.needsLocalPath = needsLocalPath; self.isAsync = isAsync
+        self.acceptsSuffix = acceptsSuffix
+    }
+
+    /// The family this declaration opens, e.g. `plugin.ai.skill.custom` → `plugin.ai.skill.`.
+    var family: String? {
+        guard acceptsSuffix, let dot = id.lastIndex(of: ".") else { return nil }
+        return String(id[id.startIndex...dot])
+    }
+
+    /// Does this declaration answer for `candidate`? Either it is the declaration, or the
+    /// declaration opens its family and the candidate names one more component in it.
+    public func answers(_ candidate: String) -> Bool {
+        if candidate == id { return true }
+        guard let family, candidate.hasPrefix(family) else { return false }
+        let suffix = candidate.dropFirst(family.count)
+        // One more component, and a real one: no empty suffix, no deeper nesting.
+        return !suffix.isEmpty && !suffix.contains(".")
+    }
+}
+
+public extension PluginContributions {
+    /// The declaration that answers for `commandId` — an exact match first, then a declaration
+    /// whose family is open. Exact wins, so an open family can never shadow a real entry.
+    func command(answering commandId: String) -> CommandContribution? {
+        commands.first { $0.id == commandId } ?? commands.first { $0.answers(commandId) }
     }
 }
 
@@ -217,7 +257,8 @@ public enum ContributionParser {
             }
             c.commands.append(CommandContribution(
                 id: id, title: title, category: str(d, "category"),
-                needsLocalPath: bool(d, "needsLocalPath"), isAsync: bool(d, "async")))
+                needsLocalPath: bool(d, "needsLocalPath"), isAsync: bool(d, "async"),
+                acceptsSuffix: bool(d, "acceptsSuffix")))
         }
         for d in arr("menus") {
             guard let command = str(d, "command"), let menu = str(d, "menu") else {

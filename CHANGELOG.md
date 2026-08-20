@@ -16,6 +16,44 @@ does not have.
 
 ### Added
 
+- **The assistant summarises a whole file, however long.** Its on-device model takes in a few
+  thousand words at a time, so "summarise this report" failed outright on anything past about six
+  kilobytes — measured on this machine: a four-kilobyte slice is answered, an eight-kilobyte one is
+  refused, and the assistant was asking for sixty-four. It now reads a long file in slices and folds
+  the slice summaries into one, so the length of a file costs time instead of failing. A 38 KB report
+  comes back summarised, including what its last page says.
+
+- **What the assistant did, and taking it back.** **Actions ▾** in the chat shows every change it
+  made — what was asked of it, how it turned out, and the attempts the autonomy setting refused —
+  and takes back the last change that has an inverse: a rename is renamed back, a move is moved back.
+  Where nothing can be taken back the list says why, rather than offering a button that would lie.
+  An external agent connected over MCP writes to the same log. You can also just ask the assistant
+  to undo it.
+
+- **An "AI ▸" action over a whole selection.** Mark forty files and the action runs over all of
+  them, one after another, with progress in the status line; Stop ends the run between files. This
+  is the part a two-panel file manager was missing: the assistant could only ever act on the file
+  under the cursor.
+
+- **Answers you can act on.** The chat renders the model's Markdown: a table is a table, a fenced
+  block is a code block, a list is a list, and a path is clickable. *(Make a table* produces a
+  well-formed Markdown table by construction, and the chat used to show it as rows of pipe
+  characters.) **Suggest a name** now ends in a **Rename** button carrying the proposed name —
+  pressing it is the approval, so nothing is asked twice.
+
+- **Your own "AI ▸" actions.** What each action asks the model is a file you can edit
+  (`aichat/skills.json`, `aichat/folder-skills.json`), written out with the built-in wording on
+  first run — and an action you invent is a real command: name `plugin.ai.skill.<your-id>` in the
+  user menu, on the button bar or on a keyboard shortcut and it runs. A plugin can now declare that
+  a command family is open to ids it does not itself list, which is what makes this possible without
+  the host having to load a plugin to find out what it offers. Name an id that does not exist and
+  the assistant says so rather than doing nothing.
+
+- **An AI Summary panel column.** It shows the first line of the summary for each file the assistant
+  has already summarised, and stays empty for the rest — the column shows work already done and
+  never starts a model itself. The plugin's other column, which detects a text file's language
+  without any model, is now called **Language** rather than "AI Language".
+
 - **The Git panel and its windows follow the colour scheme.** In every dark palette the Git panel in the
   side panel was a white rectangle with white labels on it; the history, blame, branches, conflict and rebase
   windows ignored the scheme entirely. They now take their colours from the app — and follow a change while
@@ -41,6 +79,34 @@ does not have.
   plugin can annotate lines this way — coverage, a linter, anything per line.
 
 ### Changed
+
+- **The assistant is offered only the tools it is allowed to use.** Under "read-only" the write and
+  delete tools are no longer offered and then refused: for a model with a few thousand tokens of
+  context, a round of attempts that can only fail is the budget for the real answer. Memory
+  (`remember`/`recall`) and the semantic search reached only the cloud path before — the on-device
+  default, which is what most people run, had no memory at all.
+
+- **"Which file is about X" finds it.** The semantic search ranked file *names* only, with an
+  English-only embedding, so a German query fell back to counting shared words and the "semantic"
+  part quietly did nothing. It now reads the beginning of each file too, follows the language of the
+  query, and returns what is close to the best match instead of the whole folder.
+
+- **A copy or a move is reported as done when it is done.** Both tools queued the transfer and
+  returned immediately, so the assistant announced a copy before a byte had moved — and a plan of
+  several steps ran against a queue that had not started. They now wait for the transfer, which is
+  still an ordinary background job in the Transfer Manager.
+
+- **Reading, hashing and searching no longer block the window.** The automation tools ran on the
+  main thread, and "find duplicates" mapped every file into memory there. Hashing is streamed now,
+  and the file-system tools run off the main actor.
+
+- **A model change in Settings takes effect at once.** The chat kept the provider and the system
+  prompt it was built with, so switching to a cloud model looked like it did nothing until the panel
+  happened to be rebuilt.
+
+- **The MCP server follows the autonomy setting.** It was fixed at "confirm changes", so "read-only"
+  on the AI page held for the assistant in the window and not for an external agent on the socket —
+  both of which are configured on that same page.
 
 - **The Git menu reads like a menu.** Inside a submenu already called *Git*, every entry said "Git" again:
   `Git ▸ Git Status…`. The titles are now `Status…`, `Stage`, `Commit…`, `Push`, `Pull`, `Panel`, `Diff…`,
@@ -112,6 +178,39 @@ made the last of it possible.
   than guessing at a URL that would 404.
 
 ### Fixed
+
+- **A summary of a German file is in German.** `summarize_file` folds a long file through prompts
+  of its own, and those were written in English — so a German report was summarised in English four
+  times out of four, and the assistant relayed that to a user who had asked in German. The file's
+  language is now detected and named in those prompts (naming it is what this model follows;
+  "answer in the same language as the text" did not work at all). Four of four in German afterwards.
+
+- **A long read is no longer cut off as "too slow".** The chat gives a turn two minutes before it
+  frees the interface, which is right for a model that has hung and wrong for one reading a
+  40-kilobyte file section by section. Progress now re-arms that timer, and the status line counts
+  the sections ("reading section 3 of 10…") instead of showing an unchanging spinner. While there:
+  writing a file, merging files and setting a comment reported "working…" rather than "preparing
+  changes…", and the entry for inspecting a file never matched at all — it named a tool that had
+  been renamed.
+
+- **The assistant's messages say what actually went wrong, in your language.** Every failure of the
+  on-device model produced one sentence about an invalid tool call, whatever had happened, and only
+  in English. A full context window now says to start a new chat, a model still downloading says so,
+  and each message is translated like the rest of the application. A conversation that fills the
+  window is folded into a summary and continues instead of ending.
+
+- **The assistant no longer refuses a plain question with the wrong reason.** Asked "um was geht die aktuell
+  markierte Datei?", the on-device assistant answered "the on-device model produced an invalid tool call" and
+  suggested rephrasing — advice that could not help, because the model had rejected the *input* before ever
+  choosing a tool. Every message the assistant sends carries a context header naming the active folder, and
+  Apple's on-device model screens what it is given: a header dominated by an opaque path — a temp folder, a
+  UUID- or hash-named directory — does not read as natural language and the whole turn is refused. The retry
+  then resent exactly the same text, so it failed identically. A rejected turn is now retried with the paths
+  in that header reduced to plain names, which the model accepts and answers from (measured on the on-device
+  model: five of five, where dropping the header wholesale was accepted but answered none). The remaining
+  failure kinds each say what actually happened — a full context window asks you to start a new chat, a model
+  still downloading says so — and the real cause is now written to the system log in every build, not only in
+  debug ones, which is what made this diagnosable at all.
 
 - **The Git status column no longer lies inside a linked worktree or a submodule.** There `.git` is a
   file rather than a directory, so the plugin was watching an index file that does not exist: a commit or

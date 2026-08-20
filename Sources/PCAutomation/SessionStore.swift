@@ -48,15 +48,26 @@ public struct SessionInfo: Sendable, Equatable, Identifiable {
 public actor SessionManager {
     private let store: SessionStore
     private let makeSession: @Sendable (AgentSession.Snapshot?) -> AgentSession
+    /// Reads the recorded actions. Supplied by the app because the log lives with the core,
+    /// not with the conversations — the same log covers an external agent's actions too.
+    private let readActions: (@Sendable (Int) async -> [AuditEntry])?
     private var live: [String: AgentSession] = [:]
     private var order: [String] = []
     private var titles: [String: String] = [:]
 
     /// - Parameter makeSession: factory building an AgentSession, either fresh (nil)
     ///   or restored from a snapshot. The app injects the core + provider here.
-    public init(store: SessionStore, makeSession: @escaping @Sendable (AgentSession.Snapshot?) -> AgentSession) {
+    public init(store: SessionStore,
+                makeSession: @escaping @Sendable (AgentSession.Snapshot?) -> AgentSession,
+                readActions: (@Sendable (Int) async -> [AuditEntry])? = nil) {
         self.store = store
         self.makeSession = makeSession
+        self.readActions = readActions
+    }
+
+    /// The recorded actions, newest first — what the assistant (or an external agent) changed.
+    public func recentActions(limit: Int) async -> [AuditEntry] {
+        await readActions?(limit) ?? []
     }
 
     /// Populate the index from saved sessions on disk.

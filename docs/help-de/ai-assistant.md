@@ -8,6 +8,9 @@ related: [plugins, settings, privacy-and-security]
 
 Der KI-Assistent ist ein optionales, entfernbares Plugin, das Ihnen dabei hilft, in natürlicher Sprache mit Ihren Dateien zu arbeiten. Er kann ein Dokument zusammenfassen oder erläutern, einen besseren Dateinamen vorschlagen, Text übersetzen oder Korrektur lesen, Daten in eine Tabelle umwandeln und sogar einen Ordner organisieren – und er kann Dateiaktionen für Sie ausführen, nachdem er Ihnen zuvor einen Plan gezeigt hat. Er läuft direkt auf dem Gerät mit Apple Intelligence, sofern verfügbar, oder Sie können ihn auf ein Cloud-Modell verweisen. Da es sich um ein Plugin handelt, können Sie es über **Konfiguration ▸ Plugins…** vollständig deaktivieren oder entfernen.
 
+**Auf dem Gerät oder in der Cloud.** Das Modell auf dem Gerät ist privat und kostenlos — und es ist klein: es nimmt einige tausend Wörter auf einmal auf. Eine *ganze* lange Datei wird deshalb anders gelesen: der Assistent liest sie in Abschnitten und fasst die Ergebnisse zusammen, was mit der Dateilänge länger dauert. Für viel Arbeit über viele Dateien oder für lange Gespräche ist ein Cloud-Modell schneller und behält mehr im Blick; die Wahl treffen Sie in **Einstellungen ▸ KI**, und der Assistent stellt sofort um.
+
+
 ## Den Assistenten öffnen
 
 Wählen Sie **Befehle ▸ KI-Assistent**, um den Assistenten in einem angedockten Panel rechts im Fenster anzuzeigen. Geben Sie eine Anfrage ein und drücken Sie die Eingabetaste; der Assistent kann Dateien lesen, Dinge nachschlagen und – mit Ihrer Bestätigung – Änderungen vornehmen.
@@ -24,6 +27,16 @@ Am schnellsten nutzen Sie den Assistenten über das Untermenü **KI ▸** im Rec
 
 Jede **KI ▸**-Aktion öffnet ihren **eigenen benannten Chat** (zum Beispiel *Zusammenfassen – report.txt*), sodass verschiedene Aufgaben getrennt bleiben und sich nicht zu einer langen Konversation aufstauen. Wenn Sie selbst in das Eingabefeld tippen, setzt diese Anfrage den aktuellen Chat fort.
 
+**Mehrere Dateien auf einmal.** Markieren Sie eine Auswahl, dann läuft die Aktion über jede markierte Datei, eine nach der anderen, mit dem Fortschritt in der Statuszeile. **Stopp** beendet den Lauf zwischen zwei Dateien — Sie können die ersten Ergebnisse ansehen und abbrechen.
+
+**Namen vorschlagen** endet in einer Schaltfläche statt in einem Satz: der vorgeschlagene Name steht in einer Leiste unter dem Gespräch, mit **Umbenennen** daneben. Das Drücken ist die Zustimmung — Sie werden nicht zweimal gefragt.
+
+### Eigene Formulierungen
+
+Was jede Aktion das Modell fragt, ist eine Textdatei, die Sie ändern können: `aichat/skills.json` für die Datei-Aktionen und `aichat/folder-skills.json` für die Ordner-Aktionen, in Ihrem Konfigurationsordner. Beide werden beim ersten Start mit den eingebauten Formulierungen angelegt, damit das Format sichtbar ist. `{name}` und `{path}` stehen für die Datei. Löschen Sie eine Datei, gilt wieder die eingebaute Formulierung.
+
+**Eigene Aktionen.** Legen Sie einen Eintrag mit einer `id` Ihrer Wahl an — er lässt sich dann wie jeder andere Befehl aufrufen, indem Sie `plugin.ai.skill.<id>` benennen: im Benutzermenü, in der Buttonbar oder auf einem Tastenkürzel. (Für eine Ordner-Aktion `plugin.ai.folderskill.<id>`.) Das Untermenü **KI ▸** selbst zeigt die eingebauten Aktionen: es wird aus dem Manifest des Plugins gebaut, ohne das Plugin zu laden — damit ein deaktiviertes Plugin nichts beiträgt. Deshalb platzieren Sie eigene Aktionen selbst, statt dass sie dort erscheinen. Benennen Sie eine id, die es nicht gibt, sagt der Assistent das, statt nichts zu tun.
+
 ## Ihre Chats verwalten
 
 - Verwenden Sie den Chat-Umschalter oben im Panel, um zwischen Konversationen zu wechseln.
@@ -32,6 +45,19 @@ Jede **KI ▸**-Aktion öffnet ihren **eigenen benannten Chat** (zum Beispiel *Z
 ## Änderungen werden zuerst bestätigt
 
 Bei allem, was Dateien verändert – Verschieben, Umbenennen, Schreiben, Löschen –, zeigt der Assistent einen **Plan und wartet auf Ihre Bestätigung**, bevor er handelt. Sie können dies in den Einstellungen ändern, indem Sie die Autonomie des Assistenten erhöhen, oder sie auf schreibgeschützt senken, sodass er niemals etwas ändert.
+
+## Was der Assistent getan hat, und wie Sie es zurücknehmen
+
+**Aktionen ▾** im Chat hat zwei Einträge:
+
+- **Zeigen, was der Assistent getan hat…** listet jede Änderung, die neueste zuerst, mit dem, was verlangt wurde, und dem Ergebnis — einschließlich Versuche, die die Autonomie-Einstellung abgelehnt hat. Ein extern über MCP verbundener Agent steht in derselben Liste.
+- **Letzte Änderung rückgängig** nimmt die neueste Änderung zurück, für die es eine Umkehrung gibt: ein Umbenennen wird zurückbenannt, ein Verschieben zurückverschoben. Wo nichts zurückgenommen werden kann, sagt die Liste warum — eine überschriebene Datei wurde nirgends aufbewahrt, und Papierkorb-Einträge holt man im Finder zurück.
+
+Sie können auch einfach fragen: *„mach das rückgängig"* und *„was hast du geändert?"* erreichen dieselben zwei Funktionen.
+
+## Spalten im Dateifenster
+
+Die Zusammenfassungen des Assistenten gibt es als Spalte. Fügen Sie **AI Summary** über den Spalten-Editor hinzu: sie zeigt die erste Zeile der Zusammenfassung für jede Datei, die der Assistent schon zusammengefasst hat, und bleibt für die übrigen leer — die Spalte zeigt bereits geleistete Arbeit und startet selbst niemals das Modell. **Language** im selben Plugin erkennt ohne Modell, in welcher Sprache eine Textdatei geschrieben ist.
 
 ## Einstellungen
 

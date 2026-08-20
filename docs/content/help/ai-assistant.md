@@ -8,6 +8,8 @@ related: [plugins, settings, privacy-and-security]
 
 The AI assistant is an optional, removable plugin that helps you work with your files in plain language. It can summarize or explain a document, suggest a better file name, translate or proofread text, turn data into a table, and even organize a folder — and it can carry out file actions for you after showing you a plan first. It runs on-device with Apple Intelligence when available, or you can point it at a cloud model. Because it is a plugin, you can disable or remove it entirely from **Configuration ▸ Plugins…**.
 
+**On-device or cloud.** The on-device model is private and free, and it is small: it takes in a few thousand words at a time. Reading a *whole* long file therefore works differently — the assistant reads it in slices and folds the results together, which takes longer the longer the file is. For heavy work across many files, or long conversations, a cloud model is faster and holds more at once; you choose in **Settings ▸ AI** and the assistant switches over straight away.
+
 ## Open the assistant
 
 Choose **Commands ▸ AI Assistant** to show the assistant in a docked panel on the right of the window. Type a request and press Return; the assistant can read files, look things up, and — with your confirmation — make changes.
@@ -24,6 +26,16 @@ The quickest way to use the assistant is the **AI ▸** submenu in the right-cli
 
 Each **AI ▸** action opens its **own titled chat** (for example, *Summarize – report.txt*), so different tasks stay separate instead of piling into one long conversation. When you type into the input field yourself, that request continues the current chat.
 
+**Several files at once.** Mark a selection and the action runs over every marked file, one after another, with the progress in the status line. **Stop** ends the run between files, so you can look at the first few results and call it off.
+
+**Suggest a name** ends in a button rather than a sentence: the proposed name appears in a bar under the conversation with a **Rename** button beside it. Pressing it is the approval — you are not asked twice.
+
+### Your own wording
+
+What each action asks the model is a text file you can edit: `aichat/skills.json` for the file actions and `aichat/folder-skills.json` for the folder ones, in your configuration folder. Both are written out with the built-in wording the first time the assistant runs, so you can see the format. `{name}` and `{path}` stand for the file. Delete a file to go back to the built-in wording.
+
+**Actions of your own.** Add an entry with an `id` of your choosing, and it can be run like any other command by naming `plugin.ai.skill.<id>` — in the user menu, on the button bar, or on a keyboard shortcut. (For a folder action, `plugin.ai.folderskill.<id>`.) The **AI ▸** submenu itself lists the built-in actions: it is built from the plugin's manifest without loading the plugin, so that a disabled plugin contributes nothing, which is why your own actions are placed by you rather than appearing there. Name an id that does not exist and the assistant says so instead of doing nothing.
+
 ## Manage your chats
 
 - Use the chat switcher at the top of the panel to move between conversations.
@@ -31,7 +43,20 @@ Each **AI ▸** action opens its **own titled chat** (for example, *Summarize �
 
 ## Changes are confirmed first
 
-For anything that modifies files — moving, renaming, writing, deleting — the assistant shows a **plan and waits for your confirmation** before acting. You can change this in Settings by raising the assistant's autonomy, or lower it to read-only so it never changes anything.
+For anything that modifies files — moving, renaming, writing, deleting — the assistant shows a **plan and waits for your confirmation** before acting. You can change this in Settings by raising the assistant's autonomy, or lower it to read-only so it never changes anything. A copy or a move is reported as done when it is done: the assistant waits for the transfer to finish, and you can follow it in the Transfer Manager as with any other operation.
+
+## What the assistant did, and taking it back
+
+**Actions ▾** in the chat has two entries:
+
+- **Show what the assistant did…** lists every change, newest first, with what was asked of it and how it turned out — including attempts the autonomy setting refused. An external agent connected over MCP is in the same list.
+- **Undo the last change** takes back the most recent change that has an inverse: a rename is renamed back, a move is moved back. Where nothing can be taken back, the list says why — an overwritten file was not kept anywhere, and items in the Trash are restored from the Finder.
+
+You can also just ask: *"undo that"* and *"what did you change?"* reach the same two functions.
+
+## Panel columns
+
+The assistant's summaries are available as a panel column. Add **AI Summary** from the column set editor: it shows the first line of the summary for each file the assistant has already summarized, and stays empty for the rest — the column shows work already done and never starts the model itself. **Language** in the same plugin detects the language a text file is written in, without a model.
 
 ## Settings
 

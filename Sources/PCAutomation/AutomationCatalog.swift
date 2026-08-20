@@ -60,15 +60,16 @@ public enum AutomationCatalog {
               [.init("path", .string, "Absolute path or VFS path to list.")]),
         .init("stat_path", .read, "Get metadata (size, kind, dates, attributes) for a path.",
               [.init("path", .string, "Path to inspect.")]),
-        .init("read_file", .read, "Read a bounded slice of a file's text content, with encoding detection.",
+        .init("read_file", .read, "Read a bounded slice of a file's text content, with encoding detection. The result reports whether more of the file remains, so a long file can be read in slices.",
               [.init("path", .string, "File to read."),
-               .init("max_bytes", .integer, "Maximum bytes to read.", required: false)]),
+               .init("max_bytes", .integer, "Maximum bytes to read.", required: false),
+               .init("offset", .integer, "Byte offset to start at (default 0).", required: false)]),
         .init("hash_file", .read, "Compute a cryptographic hash of a file's bytes (default SHA-256).",
               [.init("path", .string, "File to hash."),
                .init("algorithm", .string, "\"sha256\" (default), \"sha1\", or \"md5\".", required: false)]),
-        .init("search", .read, "Run a file search (name mask, content, filters) and return structured results.",
+        .init("search", .read, "Find files by a NAME pattern, or by exact words inside them. The mask matches file names only; put words to find inside files in \"text\". For \"which file is about X\", prefer semantic_search.",
               [.init("query", .object, "Search query: masks, text, regex, size/date filters, start folders.")]),
-        .init("semantic_search", .read, "Find files in a folder whose NAMES are semantically related to a natural-language query, ranked by on-device similarity. Use this for fuzzy 'find files about X' requests; use read_file to read a match.",
+        .init("semantic_search", .read, "Find files in a folder that are about something, ranked by on-device similarity over their names AND the beginning of their contents. Use this for fuzzy 'find the file about X' requests; use read_file or summarize_file on a match.",
               [.init("query", .string, "Natural-language description of what to find."),
                .init("path", .string, "Folder to search (default: active folder).", required: false),
                .init("limit", .integer, "Max results (default 10).", required: false)]),
@@ -81,6 +82,8 @@ public enum AutomationCatalog {
                .init("limit", .integer, "Max notes (default 10).", required: false)]),
         .init("get_comment", .read, "Read the comment attached to a file or folder (the descript.ion comment the Comment column shows, or the macOS Finder comment when there is none). Empty when the item has no comment.",
               [.init("path", .string, "Absolute path of the file or folder.")]),
+        .init("list_recent_actions", .read, "List what the assistant has recently done (tool, arguments, outcome), newest first, and whether each can still be undone.",
+              [.init("limit", .integer, "How many entries (default 20).", required: false)]),
         .init("list_commands", .read, "List the available commands (id, name, category, help)."),
         .init("list_plugins", .read, "List enabled plugins and their contributed commands and columns."),
         // navigate
@@ -119,6 +122,11 @@ public enum AutomationCatalog {
               [.init("paths", .array, "Absolute paths to trash.")]),
         .init("delete_permanently", .delete, "Delete files/folders permanently (not reversible).",
               [.init("paths", .array, "Absolute paths to delete.")]),
+        // Undoing is a write: it changes the file system back, and it is gated like any other
+        // change. Declared as a tool rather than hidden in the UI so the assistant can be asked
+        // to do it, and an external agent over MCP has the same way back.
+        .init("undo_last_action", .write, "Undo the most recent action that can be undone (a rename or a move). Says why if the last action has no inverse.")
+        ,
         // commands
         .init("run_command", .runCommand, "Invoke a named command (cm_*) by id.",
               [.init("command_id", .string, "The command id, e.g. \"cm_PackFiles\".")]),

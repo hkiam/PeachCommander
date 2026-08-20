@@ -11,7 +11,13 @@ actor RealFSBridge: AutomationHostBridge {
     // A small model naturally uses names relative to "the current folder"; resolve them
     // against the sandbox root (as a real file manager resolves against the active panel).
     private func resolve(_ path: String) -> String {
-        path.hasPrefix("/") ? path : (root as NSString).appendingPathComponent(path)
+        let fm = FileManager.default
+        if fm.fileExists(atPath: path) { return path }
+        // The dropped leading slash the model produces after a search hands it an absolute path
+        // — the host resolves this the same way, and a live test that did not would be testing
+        // something the app does not do.
+        if !path.hasPrefix("/"), fm.fileExists(atPath: "/" + path) { return "/" + path }
+        return path.hasPrefix("/") ? path : (root as NSString).appendingPathComponent(path)
     }
 
     func context() -> AutomationContext {
@@ -42,7 +48,34 @@ actor RealFSBridge: AutomationHostBridge {
         let d = try Data(contentsOf: URL(fileURLWithPath: resolve(path)))
         return String(decoding: d.prefix(maxBytes), as: UTF8.self)
     }
-    func search(queryJSON: Data) -> [AutomationEntry] { [] }
+    /// A real search over the sandbox: name mask and/or content, the same two things the host's
+    /// search does. It used to return nothing, which let a live test "pass" while the model never
+    /// found the files the test had written — a green test proving nothing.
+    func search(queryJSON: Data) throws -> [AutomationEntry] {
+        let d = (try? JSONSerialization.jsonObject(with: queryJSON)) as? [String: Any] ?? [:]
+        let mask = (d["mask"] as? String) ?? "*"
+        let text = (d["text"] as? String) ?? ""
+        let requested = (d["path"] as? String) ?? ""
+        let start = (requested.isEmpty || requested == "." || !requested.hasPrefix("/"))
+            ? root : requested
+        let names = (try? FileManager.default.contentsOfDirectory(atPath: start)) ?? []
+        var out: [AutomationEntry] = []
+        for name in names {
+            let full = (start as NSString).appendingPathComponent(name)
+            if mask != "*", !Self.matches(mask: mask, name: name) { continue }
+            if !text.isEmpty {
+                let content = (try? String(contentsOfFile: full, encoding: .utf8)) ?? ""
+                guard content.localizedCaseInsensitiveContains(text) else { continue }
+            }
+            if let entry = try? stat(full) { out.append(entry) }
+        }
+        return out
+    }
+
+    /// `fnmatch`, which is what a wildcard mask means everywhere else in this app.
+    private static func matches(mask: String, name: String) -> Bool {
+        mask.withCString { m in name.withCString { n in fnmatch(m, n, 0) == 0 } }
+    }
     func getConfig(_ key: String) -> String? { nil }
     func listCommandsJSON() -> Data { Data("[]".utf8) }
     func listPluginsJSON() -> Data { Data("[]".utf8) }

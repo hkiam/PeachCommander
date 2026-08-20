@@ -614,6 +614,27 @@ targets:
       - target: CContrib
       - target: CPluginGuard
 
+  # The assistant plugin's presentation layer. The chat renders the model's Markdown itself
+  # (tables, code, lists, linked paths), and that parsing is exactly the kind of code that
+  # needs a test rather than a look — the plugin bundle has no test target of its own, so the
+  # sources are compiled in here, the way PCThemeTests compiles the SDK theme helper.
+  PCAIChatTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - Tests/PCAIChatTests
+      - path: Plugins/AIAssistant/ChatMarkdown.swift
+      - path: Plugins/SDK/PluginTheme.swift
+    settings:
+      PRODUCT_NAME: PCAIChatTests
+      CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - target: CContrib
+      - target: PCAutomation
+    frameworks:
+      - XCTest
+
   PCPluginHostTests:
     type: bundle.unit-test
     platform: macOS
@@ -748,6 +769,7 @@ schemes:
         - PCPluginHostTests
         - PCNetTests
         - PCThemeTests
+        - PCAIChatTests
         - PCAccessibilityTests
         - PCTagTests
         - PCShellQuoteTests
@@ -772,6 +794,7 @@ schemes:
         - PCNetTests
         - PCPerfTests
         - PCThemeTests
+        - PCAIChatTests
         - PCAccessibilityTests
         - PCTagTests
         - PCShellQuoteTests

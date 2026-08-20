@@ -14,6 +14,13 @@ import PCAutomation
 import Speech
 import AVFoundation
 
+/// One "AI ▸" action to run over several files.
+struct BatchRequest {
+    let skill: Skill
+    let paths: [String]
+    let title: String
+}
+
 /// A Sendable bridge so a native (Apple) tool session — built in a `@Sendable` factory
 /// before the view exists — can route plan-then-confirm to the chat view once it does.
 final class ConfirmationRelay: ConfirmationBroker, @unchecked Sendable {
@@ -38,6 +45,8 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     private var sessions: [SessionInfo] = []
     private var pendingTokens: [String] = []
     private var attachments: [String] = []
+    /// A proposal on offer (rename). Accepting it is what carries it out.
+    private var pendingSuggestion: AgentSession.Suggestion?
 
     // Run state: a generation token lets a Stop or timeout free the UI immediately and
     // makes any late result from an un-cancellable model call be discarded as stale.
@@ -54,9 +63,28 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
 
     private let sessionPopup = NSPopUpButton()
     private let deletePopup = NSPopUpButton()
+    private let actionsPopup = NSPopUpButton()
     private let attachButton = NSPopUpButton()
     private let attachLabel = NSTextField(labelWithString: "")
-    private let transcript = NSTextView()
+    /// Built on TextKit 1 deliberately: the answers contain tables, and `NSTextTable` (the
+    /// only way to lay one out inside a text view) exists in TextKit 1 alone. A plain
+    /// `NSTextView()` would be TextKit 2, where the table paragraph style is ignored and a
+    /// table silently comes out as its cells in a column.
+    private let transcript: NSTextView = {
+        let storage = NSTextStorage()
+        let layout = NSLayoutManager()
+        let container = NSTextContainer()
+        container.widthTracksTextView = true
+        storage.addLayoutManager(layout)
+        layout.addTextContainer(container)
+        let view = NSTextView(frame: .zero, textContainer: container)
+        view.minSize = NSSize(width: 0, height: 0)
+        view.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: .greatestFiniteMagnitude)
+        view.isVerticallyResizable = true
+        view.isHorizontallyResizable = false
+        view.autoresizingMask = [.width]
+        return view
+    }()
     private let input = NSTextField()
     private let sendButton = NSButton()
     private let stopButton = NSButton()
@@ -70,6 +98,11 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     private let spinner = NSProgressIndicator()
     private let statusLabel = NSTextField(labelWithString: "")
     private let confirmBar = NSStackView()
+    /// Shown when the assistant proposes something applicable, with the proposal spelled out
+    /// on the button: a suggestion the user has to retype is not a suggestion.
+    private let suggestionBar = NSStackView()
+    private let suggestionLabel = NSTextField(labelWithString: "")
+    private let applyButton = NSButton()
 
     init(manager: SessionManager, providerName: String,
          contextProvider: (@MainActor () async -> ChatContext?)? = nil,
@@ -86,14 +119,23 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
 
     // MARK: - Lifecycle
 
-    /// Load the session index (creating one if none), select the first, and render it.
-    func start() async {
+    /// The conversation currently on screen, so a rebuild (after a settings change) can
+    /// reopen the same one instead of dropping the user into the first in the list.
+    var currentSessionIdentifier: String? { currentSessionId }
+
+    /// Load the session index (creating one if none), select `resuming` if it is still there,
+    /// otherwise the first, and render it.
+    func start(resuming sessionId: String? = nil) async {
         await manager.loadIndex()
         var list = await manager.list()
         if list.isEmpty { _ = await manager.create(title: Self.newChatTitle); list = await manager.list() }
         sessions = list
         rebuildPopup()
-        if let first = list.first { await switchTo(id: first.id) }
+        if let sessionId, list.contains(where: { $0.id == sessionId }) {
+            await switchTo(id: sessionId)
+        } else if let first = list.first {
+            await switchTo(id: first.id)
+        }
     }
 
     /// When the panel is hidden/closed: cancel any run and prune empty sessions so
@@ -150,7 +192,18 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         deletePopup.bezelStyle = .rounded
         deletePopup.target = self
         deletePopup.action = #selector(deleteMenuChanged)
-        let topRow = NSStackView(views: [sessionPopup, newButton, renameButton, deletePopup])
+        // What the assistant did, and taking it back. In the chat rather than in Settings,
+        // because it is read in the moment something looks wrong.
+        actionsPopup.pullsDown = true
+        actionsPopup.addItems(withTitles: [
+            String(localized: "Actions ▾", comment: "AI: actions menu"),
+            String(localized: "Show what the assistant did…", comment: "AI: show the action log"),
+            String(localized: "Undo the last change", comment: "AI: undo the last AI change")])
+        actionsPopup.bezelStyle = .rounded
+        actionsPopup.target = self
+        actionsPopup.action = #selector(actionsMenuChanged)
+
+        let topRow = NSStackView(views: [sessionPopup, newButton, renameButton, deletePopup, actionsPopup])
         topRow.orientation = .horizontal
         topRow.spacing = 6
         sessionPopup.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -231,9 +284,25 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         confirmButton.bezelStyle = .rounded
         confirmBar.addArrangedSubview(confirmButton)
 
+        suggestionBar.orientation = .horizontal
+        suggestionBar.spacing = 8
+        suggestionBar.isHidden = true
+        suggestionLabel.font = .systemFont(ofSize: 11)
+        suggestionLabel.lineBreakMode = .byTruncatingMiddle
+        suggestionLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        applyButton.bezelStyle = .rounded
+        applyButton.target = self
+        applyButton.action = #selector(applySuggestionTapped)
+        let discardButton = NSButton(title: String(localized: "Discard", comment: "AI: discard a suggestion"),
+                                     target: self, action: #selector(discardSuggestionTapped))
+        discardButton.bezelStyle = .rounded
+        suggestionBar.addArrangedSubview(suggestionLabel)
+        suggestionBar.addArrangedSubview(discardButton)
+        suggestionBar.addArrangedSubview(applyButton)
+
         var rows: [NSView] = [topRow]
         if contextProvider != nil { rows.append(attachRow) }
-        rows += [statusRow, scroll, confirmBar, inputRow]
+        rows += [statusRow, scroll, suggestionBar, confirmBar, inputRow]
         let stack = NSStackView(views: rows)
         stack.orientation = .vertical
         stack.spacing = 8
@@ -366,6 +435,7 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         // Don't tear a conversation out from under a running request.
         cancelActiveRun()
         pendingTokens = []; confirmBar.isHidden = true
+        clearSuggestion()
         guard let session = await manager.session(id: id) else { return }
         currentSession = session
         currentSessionId = id
@@ -454,7 +524,8 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     /// Compose the user's text with context + attachments, show it, and run the turn.
     private func submit(_ userText: String) async {
         guard !busy else { return }
-        append(role: youLabel, text: userText)
+        clearSuggestion()   // a new question replaces an unanswered proposal
+        append(role: youLabel, text: userText, markdown: false)
         let context = await contextProvider?()
         let attached = attachments
         attachments = []; updateAttachLabel()
@@ -484,6 +555,168 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     func sendProgrammatically(_ text: String) async {
         if currentSession == nil { await start() }
         await submit(text)
+    }
+
+    @objc private func actionsMenuChanged() {
+        let idx = actionsPopup.indexOfSelectedItem
+        actionsPopup.selectItem(at: 0)
+        if idx == 1 { showActionLog() }
+        else if idx == 2 { undoLastChange() }
+    }
+
+    /// The recorded actions, as a list. Read through the same tool the assistant uses, so what
+    /// the user sees is what was actually recorded — not a second, parallel account of it.
+    private func showActionLog() {
+        Task {
+            let entries = await manager.recentActions(limit: 40)
+            let alert = NSAlert()
+            alert.messageText = String(localized: "What the assistant did", comment: "AI: action log title")
+            if entries.isEmpty {
+                alert.informativeText = String(localized: "Nothing has been changed yet.",
+                                               comment: "AI: empty action log")
+            } else {
+                let formatter = DateFormatter()
+                formatter.dateStyle = .short
+                formatter.timeStyle = .medium
+                let text = NSTextView(frame: NSRect(x: 0, y: 0, width: 520, height: 260))
+                text.isEditable = false
+                text.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
+                text.string = entries.map { entry in
+                    let when = formatter.string(from: Date(timeIntervalSince1970: entry.at))
+                    let mark = entry.isUndoable ? "↩︎ " : "   "
+                    return "\(mark)\(when)  \(entry.summary)"
+                }.joined(separator: "\n")
+                let scroll = NSScrollView(frame: text.frame)
+                scroll.documentView = text
+                scroll.hasVerticalScroller = true
+                scroll.borderType = .bezelBorder
+                alert.accessoryView = scroll
+                alert.informativeText = String(localized: "↩︎ marks a change that can still be undone.",
+                                               comment: "AI: action log legend")
+            }
+            alert.addButton(withTitle: String(localized: "Close", comment: "AI: close the log"))
+            alert.runModal()
+        }
+    }
+
+    /// Take back the last undoable change. Runs through the session, so the autonomy policy
+    /// applies: a read-only assistant cannot undo either, and says so.
+    private func undoLastChange() {
+        guard !busy else { NSSound.beep(); return }
+        clearSuggestion()
+        append(role: youLabel, text: String(localized: "Undo the last change",
+                                            comment: "AI: undo request"), markdown: false)
+        beginRun { try await $0.undoLastChange() }
+    }
+
+    /// Put a proposal on offer. The button says exactly what pressing it does.
+    private func offer(_ suggestion: AgentSession.Suggestion) {
+        pendingSuggestion = suggestion
+        let current = (suggestion.path as NSString).lastPathComponent
+        switch suggestion.kind {
+        case .rename:
+            suggestionLabel.stringValue = String(
+                format: String(localized: "Rename %1$@ to %2$@?", comment: "AI: rename suggestion"),
+                current, suggestion.value)
+            applyButton.title = String(localized: "Rename", comment: "AI: apply a rename suggestion")
+        }
+        suggestionLabel.textColor = theme.text
+        suggestionBar.isHidden = false
+    }
+
+    private func clearSuggestion() {
+        pendingSuggestion = nil
+        suggestionBar.isHidden = true
+    }
+
+    @objc private func applySuggestionTapped() {
+        guard !busy, let suggestion = pendingSuggestion else { return }
+        clearSuggestion()
+        beginRun { try await $0.apply(suggestion) }
+    }
+
+    @objc private func discardSuggestionTapped() {
+        clearSuggestion()
+        append(role: assistantLabel, text: String(localized: "Okay, I’ll leave the name as it is.",
+                                                  comment: "AI: suggestion discarded"))
+    }
+
+    /// "Suggest a name" action → its own fresh chat, ending in a proposal that can be applied.
+    func sendRenameRequest(path: String, displayName: String) {
+        Task {
+            let session = await manager.create(title: String(
+                format: String(localized: "Name: %@", comment: "AI: rename chat title"), displayName))
+            sessions = await manager.list()
+            rebuildPopup()
+            await switchTo(id: session.id)
+            append(role: youLabel, text: String(
+                format: String(localized: "Suggest a name for %@", comment: "AI: rename request"), displayName))
+            beginRun { try await $0.suggestRename(path: path, displayName: displayName) }
+        }
+    }
+
+    /// Put a line in the current conversation from the plugin itself (not from the model).
+    func showNotice(_ text: String) {
+        append(role: assistantLabel, text: text, markdown: false)
+    }
+
+    /// Run one skill over several files: its own chat, one result per file, in order.
+    ///
+    /// Sequential on purpose. The on-device model is one resource, the actions may be writes
+    /// that need approving one at a time, and a user watching forty files go past wants to be
+    /// able to stop after the third — which Stop does, between files.
+    func sendBatchSkill(_ request: BatchRequest) {
+        guard !busy else { NSSound.beep(); return }
+        Task {
+            let session = await manager.create(title: request.title)
+            sessions = await manager.list()
+            rebuildPopup()
+            await switchTo(id: session.id)
+            guard let agent = currentSession, let id = currentSessionId else { return }
+
+            busy = true
+            runGeneration += 1
+            let gen = runGeneration
+            currentRunId = id
+            setBusyUI(true)
+            Task { await agent.setProgressHandler { [weak self] name in await self?.showActivity(name, gen: gen) } }
+            if let p = await policyProvider?() { await agent.setPolicy(p) }
+
+            var done = 0
+            for path in request.paths {
+                guard gen == runGeneration else { break }   // Stop, or another run took over
+                let name = (path as NSString).lastPathComponent
+                done += 1
+                statusLabel.stringValue = String(
+                    format: String(localized: "Model: %1$@ — file %2$d of %3$d: %4$@",
+                                   comment: "AI: batch progress"),
+                    providerName, done, request.paths.count, name)
+                append(role: youLabel, text: request.skill.title + " – " + name, markdown: false)
+                armWatchdog(gen: gen, id: id)
+                do {
+                    let result = try await agent.send(request.skill.prompt(name: name, path: path))
+                    guard gen == runGeneration else { break }
+                    render(result)
+                    // A file whose turn needs approval stops the run: the next file must not
+                    // scroll the question off the screen before it is answered.
+                    if case .needsConfirmation = result { break }
+                } catch {
+                    guard gen == runGeneration else { break }
+                    append(role: assistantLabel,
+                           text: String(format: String(localized: "Error: %@", comment: "AI: error line"),
+                                         error.localizedDescription))
+                }
+                await manager.persist(id: id)
+            }
+            watchdog?.cancel(); watchdog = nil
+            if gen == runGeneration {
+                busy = false
+                setBusyUI(false)
+                append(role: assistantLabel, text: String(
+                    format: String(localized: "Done — %1$d of %2$d files.", comment: "AI: batch summary"),
+                    done, request.paths.count))
+            }
+        }
     }
 
     /// "Make a table" action → its own fresh chat (read a file, show a guided table).
@@ -629,7 +862,12 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         transcript.insertionPointColor = theme.text
         transcript.selectedTextAttributes = [.backgroundColor: theme.selectionBackground,
                                              .foregroundColor: theme.selectionText]
+        guard old.id != theme.id || old.isDark != theme.isDark else { return }
         guard let ts = transcript.textStorage, ts.length > 0 else { return }
+        // Re-render rather than recolour. A rendered answer carries table borders, code
+        // backgrounds and link colours; substituting the two text colours left the rest in the
+        // previous theme, which reads as a rendering bug.
+        if !renderedHistory.isEmpty { renderHistory(renderedHistory); return }
         ts.beginEditing()
         ts.enumerateAttribute(.foregroundColor, in: NSRange(location: 0, length: ts.length)) { value, range, _ in
             guard let c = value as? NSColor else { return }
@@ -644,7 +882,7 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     func streamPartial(_ text: String) {
         guard busy, let ts = transcript.textStorage else { return }
         if streamBodyStart == nil {
-            ts.append(NSAttributedString(string: "\(assistantLabel): ", attributes: labelAttrs))
+            ts.append(NSAttributedString(string: "\(assistantLabel):\n", attributes: labelAttrs))
             streamBodyStart = ts.length
         }
         let start = streamBodyStart ?? ts.length
@@ -660,11 +898,15 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
     private func finalizeStreamIfActive(replaceWith finalText: String? = nil) -> Bool {
         guard let start = streamBodyStart, let ts = transcript.textStorage else { return false }
         if let finalText {
+            // The partials stream as plain text (they are half-written Markdown most of the
+            // way); the finished answer replaces them, rendered.
             let shown = finalText.trimmingCharacters(in: .whitespacesAndNewlines)
             let range = NSRange(location: start, length: max(0, ts.length - start))
-            ts.replaceCharacters(in: range, with: NSAttributedString(
-                string: shown.isEmpty ? String(localized: "I couldn’t produce a clear answer. Please try again or rephrase.", comment: "AI: empty answer fallback") : shown,
-                attributes: bodyAttrs))
+            let rendered: NSAttributedString = shown.isEmpty
+                ? NSAttributedString(string: String(localized: "I couldn’t produce a clear answer. Please try again or rephrase.",
+                                                    comment: "AI: empty answer fallback"), attributes: bodyAttrs)
+                : ChatMarkdown.render(shown, style: markdownStyle)
+            ts.replaceCharacters(in: range, with: rendered)
         }
         ts.append(NSAttributedString(string: "\n\n", attributes: bodyAttrs))
         streamBodyStart = nil
@@ -674,20 +916,36 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
 
     private func showActivity(_ toolName: String, gen: Int) {
         guard gen == runGeneration, busy else { return }
+        // Progress re-arms the watchdog. It is there to free the UI from a model that is stuck,
+        // and a turn that reads a long file in slices takes a generation per slice — without this
+        // it would be cut off at two minutes and reported as too slow while it was working.
+        if let id = currentRunId, nativeConfirm == nil { armWatchdog(gen: gen, id: id) }
         statusLabel.stringValue = String(format: String(localized: "Model: %1$@ — %2$@", comment: "AI: model + current activity"),
                                           providerName, Self.friendlyActivity(toolName))
     }
 
     private static func friendlyActivity(_ tool: String) -> String {
+        // "summarize_file:3/10" — the folding counts its slices, so a long read shows movement
+        // instead of a spinner that looks like nothing is happening.
+        if tool.hasPrefix("summarize_file") {
+            let parts = tool.split(separator: ":").last.map { $0.split(separator: "/") } ?? []
+            if parts.count == 2, let n = Int(parts[0]), let m = Int(parts[1]) {
+                return String(format: String(localized: "reading section %1$d of %2$d…",
+                                              comment: "AI activity: one slice of a long file"), n, m)
+            }
+            return String(localized: "reading the whole file…", comment: "AI activity")
+        }
         switch tool {
         case "get_context":     return String(localized: "checking the current folder…", comment: "AI activity")
         case "list_directory":  return String(localized: "listing files…", comment: "AI activity")
         case "read_file":       return String(localized: "reading a file…", comment: "AI activity")
         case "search":          return String(localized: "searching…", comment: "AI activity")
-        case "stat":            return String(localized: "inspecting a file…", comment: "AI activity")
-        case "get_config", "list_commands", "list_plugins":
+        case "stat_path":       return String(localized: "inspecting a file…", comment: "AI activity")
+        case "semantic_search": return String(localized: "searching…", comment: "AI activity")
+        case "get_config", "list_commands", "list_plugins", "recall", "list_recent_actions":
                                 return String(localized: "looking things up…", comment: "AI activity")
-        case "copy", "move", "rename", "make_directory", "set_config", "move_to_trash", "delete_permanently":
+        case "copy", "move", "rename", "make_directory", "set_config", "move_to_trash",
+             "delete_permanently", "write_file", "merge_files", "set_comment", "undo_last_action":
                                 return String(localized: "preparing changes…", comment: "AI activity")
         default:                return String(localized: "working…", comment: "AI activity")
         }
@@ -707,6 +965,9 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
                             comment: "AI: empty answer fallback")
                    : trimmed)
         case .stopped(let reason): append(role: assistantLabel, text: reason)
+        case .suggestion(let text, let action):
+            append(role: assistantLabel, text: text)
+            offer(action)
         case .needsConfirmation(let plans):
             pendingTokens = plans.map(\.token)
             let header = String(localized: "I’d like to:", comment: "AI: plan header")
@@ -717,35 +978,50 @@ final class AIChatViewController: NSViewController, NSTextFieldDelegate, NSTextV
         }
     }
 
+    /// The messages last rendered, so a theme change can redraw them rather than recolour
+    /// them in place (the rendered answers carry more colours than a substitution can track).
+    private var renderedHistory: [ModelMessage] = []
+
     private func renderHistory(_ messages: [ModelMessage]) {
+        renderedHistory = messages
         transcript.textStorage?.setAttributedString(NSAttributedString(string: ""))
-        let visible = messages.filter { $0.role != .system }
+        // Tool results are the model's working material, not the conversation: a restored chat
+        // used to show pages of raw JSON between the messages. What the assistant did with them
+        // is in its answers, and every call is in the AI activity log.
+        let visible = messages.filter { $0.role == .user || $0.role == .assistant }
+            .filter { !$0.content.hasPrefix("[tool calls:") }
         if visible.isEmpty {
             append(role: assistantLabel, text: String(localized: "Hi! Tell me what to do with your files. I’ll show a plan before making any changes.",
                                                       comment: "AI: greeting"))
             return
         }
         for m in visible {
-            let label: String
-            switch m.role {
-            case .user: label = youLabel
-            case .tool: label = String(format: String(localized: "Tool (%@)", comment: "AI: tool role label"), m.toolName ?? "")
-            default: label = assistantLabel
-            }
-            append(role: label, text: m.content)
+            let isUser = m.role == .user
+            // The user's own line is shown as typed; only the assistant writes Markdown.
+            append(role: isUser ? youLabel : assistantLabel,
+                   text: isUser ? ChatComposer.stripPaths(m.content) : m.content,
+                   markdown: !isUser)
         }
     }
 
-    private func append(role: String, text: String) {
+    /// The style the renderer draws with, following the host theme.
+    private var markdownStyle: ChatMarkdownStyle { ChatMarkdownStyle(theme: theme) }
+
+    /// Append one message. The body goes through the Markdown renderer, so a table is a
+    /// table, a fenced block is a code block, and a path is clickable — the model writes
+    /// Markdown, and showing it raw was the reason "Make a table" produced pipe characters.
+    private func append(role: String, text: String, markdown: Bool = true) {
         let m = NSMutableAttributedString()
-        m.append(NSAttributedString(string: "\(role): ", attributes: labelAttrs))
-        let bodyStart = m.length
-        m.append(NSAttributedString(string: text, attributes: bodyAttrs))
-        for match in PathDetector.detect(in: text) {
-            guard let encoded = match.path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
-                  let url = URL(string: "pcfile://" + encoded) else { continue }
-            m.addAttribute(.link, value: url,
-                           range: NSRange(location: bodyStart + match.range.location, length: match.range.length))
+        // The label gets its own line. Inline, a body that opens with a block element — a
+        // table, a code block — continues the label's paragraph, and the table's first cell
+        // ends up beside the word "Assistant" instead of in the table.
+        m.append(NSAttributedString(string: "\(role):\n", attributes: labelAttrs))
+        if markdown {
+            m.append(ChatMarkdown.render(text, style: markdownStyle))
+        } else {
+            let plain = NSMutableAttributedString(string: text, attributes: bodyAttrs)
+            ChatMarkdown.linkPaths(in: plain, style: markdownStyle)
+            m.append(plain)
         }
         m.append(NSAttributedString(string: "\n\n", attributes: [.font: NSFont.systemFont(ofSize: 13)]))
         transcript.textStorage?.append(m)

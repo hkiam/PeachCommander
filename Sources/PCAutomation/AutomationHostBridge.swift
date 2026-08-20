@@ -43,6 +43,10 @@ public protocol AutomationHostBridge: Sendable {
     func listDirectory(_ path: String) async throws -> [AutomationEntry]
     func stat(_ path: String) async throws -> AutomationEntry
     func readFile(_ path: String, maxBytes: Int) async throws -> String
+    /// Read a bounded slice starting at `offset` bytes. A file too large for the model's
+    /// context window is read in slices, so this is what makes a long document readable
+    /// at all. Defaulted below, so an existing bridge keeps working.
+    func readFile(_ path: String, maxBytes: Int, offset: Int) async throws -> String
     func search(queryJSON: Data) async throws -> [AutomationEntry]
     func getConfig(_ key: String) async throws -> String?
     func listCommandsJSON() async throws -> Data
@@ -96,6 +100,14 @@ public protocol AutomationHostBridge: Sendable {
 }
 
 public extension AutomationHostBridge {
+    /// Reads from the start and drops the prefix. Correct for any bridge, and cheap at the
+    /// sizes a context window allows; a bridge that can seek should override it.
+    func readFile(_ path: String, maxBytes: Int, offset: Int) async throws -> String {
+        guard offset > 0 else { return try await readFile(path, maxBytes: maxBytes) }
+        let bytes = Array(try await readFile(path, maxBytes: offset + maxBytes).utf8)
+        guard offset < bytes.count else { return "" }
+        return String(decoding: bytes[offset..<min(bytes.count, offset + maxBytes)], as: UTF8.self)
+    }
     func semanticSearch(query: String, path: String?, limit: Int) async throws -> [AutomationEntry] { [] }
     func remember(_ text: String) async throws {}
     func recall(_ query: String, limit: Int) async throws -> [String] { [] }

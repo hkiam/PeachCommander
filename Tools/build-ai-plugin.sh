@@ -73,6 +73,7 @@ pc_swiftc -emit-library -O \
   "$ROOT/Plugins/AIAssistant/aiplugin.swift" \
   "$ROOT/Plugins/AIAssistant/RemoteAutomationCore.swift" \
   "$ROOT/Plugins/AIAssistant/AIChatViewController.swift" \
+  "$ROOT/Plugins/AIAssistant/ChatMarkdown.swift" \
   "$ROOT/Plugins/AIAssistant/AISettings.swift" \
   "$ROOT/Plugins/SDK/PluginTheme.swift"
 

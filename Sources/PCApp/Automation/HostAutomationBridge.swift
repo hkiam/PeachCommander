@@ -39,8 +39,33 @@ final class HostAutomationBridge: AutomationHostBridge {
             viewMode: active?.viewMode.rawValue ?? "details")
     }
 
-    func listDirectory(_ path: String) async throws -> [AutomationEntry] {
+    // The reads below are `nonisolated` on a @MainActor class on purpose: they touch the file
+    // system and nothing else in the app, and the assistant is exactly the feature that asks
+    // for them on large inputs. Left on the main actor, "hash these files" or "summarise this
+    // report" froze the window for as long as the I/O took — the plugin waits on a background
+    // thread either way, so the main thread was blocked for no one's benefit.
+
+    // MARK: Paths
+
+    /// The path a tool was given, resolved to one that exists — see `AutomationPath`, where the
+    /// rules live so they can be tested against the cases the model actually produces.
+    nonisolated func resolveExisting(_ path: String) async -> String {
+        let active = await MainActor.run { self.host?.activePanel?.directoryPath ?? "" }
+        return AutomationPath.resolveExisting(path, activeFolder: active,
+                                              exists: { FileManager.default.fileExists(atPath: $0) })
+    }
+
+    /// For a path being *created*: resolved by its parent, so a new file lands where the user is
+    /// looking rather than in the process's working directory.
+    nonisolated func resolveForWriting(_ path: String) async -> String {
+        let active = await MainActor.run { self.host?.activePanel?.directoryPath ?? "" }
+        return AutomationPath.resolveForWriting(path, activeFolder: active,
+                                                exists: { FileManager.default.fileExists(atPath: $0) })
+    }
+
+    nonisolated func listDirectory(_ path: String) async throws -> [AutomationEntry] {
         let fm = FileManager.default
+        let path = await resolveExisting(path)
         return try fm.contentsOfDirectory(atPath: path).map { name in
             let full = (path as NSString).appendingPathComponent(name)
             let attrs = try? fm.attributesOfItem(atPath: full)
@@ -51,7 +76,8 @@ final class HostAutomationBridge: AutomationHostBridge {
         }
     }
 
-    func stat(_ path: String) async throws -> AutomationEntry {
+    nonisolated func stat(_ path: String) async throws -> AutomationEntry {
+        let path = await resolveExisting(path)
         let attrs = try FileManager.default.attributesOfItem(atPath: path)
         return AutomationEntry(name: (path as NSString).lastPathComponent, path: path,
                                isDirectory: (attrs[.type] as? FileAttributeType) == .typeDirectory,
@@ -59,9 +85,17 @@ final class HostAutomationBridge: AutomationHostBridge {
                                modified: attrs[.modificationDate] as? Date)
     }
 
-    func readFile(_ path: String, maxBytes: Int) async throws -> String {
-        let handle = try FileHandle(forReadingFrom: URL(fileURLWithPath: path))
+    nonisolated func readFile(_ path: String, maxBytes: Int) async throws -> String {
+        try await readFile(path, maxBytes: maxBytes, offset: 0)
+    }
+
+    /// Seeks instead of reading and discarding: a file read in slices is read once per slice,
+    /// not once per slice from the beginning. (The protocol's default does the latter, which is
+    /// quadratic over a long file.)
+    nonisolated func readFile(_ path: String, maxBytes: Int, offset: Int) async throws -> String {
+        let handle = try FileHandle(forReadingFrom: URL(fileURLWithPath: await resolveExisting(path)))
         defer { try? handle.close() }
+        if offset > 0 { try handle.seek(toOffset: UInt64(offset)) }
         let data = try handle.read(upToCount: max(0, maxBytes)) ?? Data()
         return String(decoding: data, as: UTF8.self)
     }
@@ -72,7 +106,15 @@ final class HostAutomationBridge: AutomationHostBridge {
         let mask = (d["mask"] as? String) ?? (d["nameMask"] as? String) ?? "*"
         let text = d["text"] as? String
         let path = (d["path"] as? String) ?? (d["startDirectory"] as? String) ?? ""
-        let start = path.isEmpty ? host.automationActivePath() : path
+        // A relative start directory means the active folder, not the process's working
+        // directory. Measured: the model passes "." for "here", and searching the app's own
+        // working directory answers a question nobody asked — with "nothing found", which reads
+        // as "there is no such file".
+        let active = host.automationActivePath()
+        let start: String
+        if path.isEmpty || path == "." { start = active }
+        else if path.hasPrefix("/") { start = path }
+        else { start = (active as NSString).appendingPathComponent(path) }
         let depth = d["maxDepth"] as? Int ?? 0
         let paths = await host.automationSearch(mask: mask, text: text, startDirectory: start,
                                                 maxDepth: depth, limit: 200)
@@ -81,50 +123,134 @@ final class HostAutomationBridge: AutomationHostBridge {
         return out
     }
 
-    func semanticSearch(query: String, path: String?, limit: Int) async throws -> [AutomationEntry] {
-        let folder = (path?.isEmpty == false) ? path! : (host?.activePanel?.directoryPath ?? "")
+    /// Rank a folder's files against a description — by their names AND by the beginning of
+    /// what is inside them.
+    ///
+    /// Names only was the previous behaviour, and it could not answer the question the tool is
+    /// named for: "find the invoice about the roof repair" is not a statement about file names.
+    /// A bounded prefix of each file is read and scored too, which is what lets a file whose
+    /// name says nothing be found by what it says. Still no index — the work is per call, over
+    /// one folder, so nothing is built up behind the user's back.
+    ///
+    /// The embedding follows the query's own language. It was pinned to English, so a German
+    /// query fell back to counting shared tokens and the "semantic" part quietly did nothing.
+    nonisolated func semanticSearch(query: String, path: String?, limit: Int) async throws -> [AutomationEntry] {
+        let folder: String
+        if let path, !path.isEmpty { folder = path }
+        else { folder = await MainActor.run { self.host?.activePanel?.directoryPath ?? "" } }
         guard !folder.isEmpty else { return [] }
         let entries = (try? await listDirectory(folder))?.filter { !$0.isDirectory } ?? []
-        let emb = NLEmbedding.sentenceEmbedding(for: .english)
+        let embedding = Self.embedding(for: query)
         let q = query.lowercased()
-        let qTokens = Set(q.split(whereSeparator: { !$0.isLetter && !$0.isNumber }).map(String.init))
-        func normalized(_ name: String) -> String {
-            (name as NSString).deletingPathExtension
-                .replacingOccurrences(of: "[_.\\-]", with: " ", options: .regularExpression).lowercased()
+        let queryTokens = Set(Self.tokens(of: q))
+
+        func semantic(_ text: String) -> Double? {
+            guard let embedding, !text.isEmpty else { return nil }
+            let d = embedding.distance(between: q, and: text)   // smaller = closer
+            guard d.isFinite, d > 0, d < 2 else { return nil }
+            return 2 - d                                        // higher = better
         }
-        func score(_ name: String) -> Double {
-            let n = normalized(name)
-            if let emb {
-                let d = emb.distance(between: q, and: n)     // smaller = closer
-                if d.isFinite && d > 0 && d < 2 { return 2 - d }   // higher = better
-            }
-            // Lexical fallback: fraction of query tokens present in the name.
-            let nTokens = Set(n.split(separator: " ").map(String.init))
-            guard !qTokens.isEmpty else { return 0 }
-            return Double(qTokens.intersection(nTokens).count) / Double(qTokens.count)
+        func lexical(_ text: String) -> Double {
+            guard !queryTokens.isEmpty else { return 0 }
+            return Double(queryTokens.intersection(Set(Self.tokens(of: text))).count)
+                / Double(queryTokens.count)
         }
-        return entries
-            .map { ($0, score($0.name)) }
-            .sorted { $0.1 > $1.1 }
+        func score(_ text: String) -> Double { semantic(text) ?? lexical(text) }
+
+        var scored: [(AutomationEntry, Double)] = []
+        // A folder can hold thousands of files and each one costs a read; the cap keeps a
+        // "find X here" from turning into a scan of everything.
+        for entry in entries.prefix(300) {
+            let nameScore = score(Self.readableName(entry.name))
+            // Only text-shaped files are worth reading, and only their beginning.
+            let sample = (try? await readFile(entry.path, maxBytes: 2048)) ?? ""
+            let contentScore = Self.looksLikeText(sample) ? score(Self.condensed(sample)) : 0
+            // The name is the stronger signal when it says anything at all; the content is what
+            // rescues a file called scan_0001.pdf.txt.
+            scored.append((entry, max(nameScore, contentScore * 0.9)))
+        }
+        // Everything with a score above zero is not an answer: the model reads a list of the
+        // whole folder as "these are all about it" and passes that on. Keep what is close to
+        // the best match, so a clear winner arrives as one, and a folder with nothing to do
+        // with the query comes back empty rather than complete.
+        let ranked = scored.filter { $0.1 > 0 }.sorted { $0.1 > $1.1 }
+        guard let best = ranked.first?.1 else { return [] }
+        // Relative to the best match, never absolute: an absolute floor threw away the best
+        // match too whenever the whole folder scored low, and "no file matches" is a worse
+        // answer than a weak one. The best match is always returned; the cutoff only decides
+        // how much company it keeps.
+        let cutoff = best * 0.7
+        return ranked.enumerated()
+            .filter { $0.offset == 0 || $0.element.1 >= cutoff }
             .prefix(max(1, limit))
-            .map { $0.0 }
+            .map { $0.element.0 }
     }
 
-    func hashFile(_ path: String, algorithm: String) async throws -> (hash: String, algorithm: String) {
-        let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
-        let algo = algorithm.lowercased()
-        let hex: String
-        switch algo {
-        case "sha1":   hex = Insecure.SHA1.hash(data: data).map { String(format: "%02x", $0) }.joined()
-        case "md5":    hex = Insecure.MD5.hash(data: data).map { String(format: "%02x", $0) }.joined()
-        default:       hex = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+    /// The sentence embedding for the query's language, English as the fallback.
+    nonisolated private static func embedding(for query: String) -> NLEmbedding? {
+        let recognizer = NLLanguageRecognizer()
+        recognizer.processString(query)
+        if let language = recognizer.dominantLanguage,
+           let embedding = NLEmbedding.sentenceEmbedding(for: language) {
+            return embedding
         }
-        return (hex, algo == "sha1" || algo == "md5" ? algo : "sha256")
+        return NLEmbedding.sentenceEmbedding(for: .english)
+    }
+
+    nonisolated private static func tokens(of text: String) -> [String] {
+        text.lowercased().split(whereSeparator: { !$0.isLetter && !$0.isNumber }).map(String.init)
+    }
+
+    /// "quartals_bericht-q3.txt" → "quartals bericht q3": separators carry no meaning here.
+    nonisolated private static func readableName(_ name: String) -> String {
+        (name as NSString).deletingPathExtension
+            .replacingOccurrences(of: "[_.\\-]", with: " ", options: .regularExpression)
+            .lowercased()
+    }
+
+    /// Whether a sample is text at all — a binary read as a string is noise to an embedding.
+    nonisolated private static func looksLikeText(_ sample: String) -> Bool {
+        guard !sample.isEmpty else { return false }
+        let printable = sample.unicodeScalars.prefix(400).filter {
+            $0 == "\n" || $0 == "\t" || $0 == "\r" || ($0.value >= 32 && $0.value != 0xFFFD)
+        }.count
+        return Double(printable) / Double(min(sample.unicodeScalars.count, 400)) > 0.9
+    }
+
+    /// The first few hundred characters, whitespace collapsed: an embedding gains nothing from
+    /// a page of it, and the distance call is what costs the time.
+    nonisolated private static func condensed(_ text: String) -> String {
+        String(text.split(whereSeparator: \.isWhitespace).joined(separator: " ").prefix(400)).lowercased()
+    }
+
+    /// Hashed in chunks rather than mapped whole: "find duplicates" over a folder of disk
+    /// images used to pull each file into memory before hashing it, on the main thread.
+    nonisolated func hashFile(_ path: String, algorithm: String) async throws -> (hash: String, algorithm: String) {
+        let algo = algorithm.lowercased()
+        let handle = try FileHandle(forReadingFrom: URL(fileURLWithPath: await resolveExisting(path)))
+        defer { try? handle.close() }
+        var sha256 = SHA256(), sha1 = Insecure.SHA1(), md5 = Insecure.MD5()
+        while let chunk = try handle.read(upToCount: 1 << 20), !chunk.isEmpty {
+            switch algo {
+            case "sha1": sha1.update(data: chunk)
+            case "md5":  md5.update(data: chunk)
+            default:     sha256.update(data: chunk)
+            }
+            await Task.yield()   // a multi-gigabyte file stays cancellable and stays polite
+        }
+        func hex<D: Sequence>(_ digest: D) -> String where D.Element == UInt8 {
+            digest.map { String(format: "%02x", $0) }.joined()
+        }
+        switch algo {
+        case "sha1": return (hex(sha1.finalize()), "sha1")
+        case "md5":  return (hex(md5.finalize()), "md5")
+        default:     return (hex(sha256.finalize()), "sha256")
+        }
     }
 
     func getComment(_ path: String) async throws -> String? {
         guard let host else { throw AutomationError.notImplemented("host released") }
-        return host.contribFileComment(path)
+        return host.contribFileComment(await resolveExisting(path))
     }
 
     func setComment(_ path: String, comment: String?) async throws {
@@ -135,6 +261,7 @@ final class HostAutomationBridge: AutomationHostBridge {
     }
 
     func writeFile(_ path: String, content: String) async throws {
+        let path = await resolveForWriting(path)
         try content.write(to: URL(fileURLWithPath: path), atomically: true, encoding: .utf8)
         Task { @MainActor in await host?.activePanel?.reload() }
     }
@@ -261,18 +388,35 @@ final class HostAutomationBridge: AutomationHostBridge {
 
     // MARK: Write / delete / config (reached only after the policy allows/confirms)
 
+    // Both of these WAIT for the transfer to finish. They used to enqueue and return, so the
+    // tool reported success before a single byte had moved: an assistant asked to copy files and
+    // then read them raced its own copy, a plan of several steps ran against a queue that had
+    // not started, and taking a move back could undo something still in flight. The transfer is
+    // still a normal background job — visible, pausable, cancellable in the Transfer Manager —
+    // the tool simply does not claim to be done until it is.
     func copy(sources: [String], destination: String) async throws {
-        TransferManager.shared.enqueue(.copy(items: sources, toDirectory: destination, options: CopyOptions()),
-                                       title: "Copy \(sources.count) item(s)")
+        try await runTransfer(.copy(items: sources, toDirectory: destination, options: CopyOptions()),
+                              title: "Copy \(sources.count) item(s)")
     }
     func move(sources: [String], destination: String) async throws {
-        TransferManager.shared.enqueue(.move(items: sources, toDirectory: destination, options: CopyOptions()),
-                                       title: "Move \(sources.count) item(s)")
+        try await runTransfer(.move(items: sources, toDirectory: destination, options: CopyOptions()),
+                              title: "Move \(sources.count) item(s)")
+    }
+
+    private func runTransfer(_ kind: OperationKind, title: String) async throws {
+        let succeeded: Bool = await withCheckedContinuation { continuation in
+            TransferManager.shared.enqueue(kind, title: title,
+                                           onFinish: { ok in continuation.resume(returning: ok) })
+        }
+        guard succeeded else {
+            throw AutomationError.operationFailed("\(title) did not complete — see the Transfer Manager.")
+        }
     }
     func rename(path: String, newName: String) async throws {
         guard !newName.contains("/"), newName != ".", newName != ".." else {
             throw AutomationError.missingArgument("new_name must be a single path component")
         }
+        let path = await resolveExisting(path)
         let dst = (path as NSString).deletingLastPathComponent + "/" + newName
         try FileManager.default.moveItem(atPath: path, toPath: dst)
         host?.toolReloadActivePanel()
