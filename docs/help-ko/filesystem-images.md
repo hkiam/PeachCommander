@@ -1,7 +1,7 @@
 ---
 title: 파일 시스템 이미지
 slug: filesystem-images
-section: Plugins
+section: 플러그인
 order: 122
 related: [plugins, archives, settings, viewing-files]
 ---

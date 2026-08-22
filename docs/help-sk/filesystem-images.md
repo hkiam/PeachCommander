@@ -1,7 +1,7 @@
 ---
 title: Obrazy súborových systémov
 slug: filesystem-images
-section: Plugins
+section: Zásuvné moduly
 order: 122
 related: [plugins, archives, settings, viewing-files]
 ---

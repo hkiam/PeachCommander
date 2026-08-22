@@ -1,7 +1,7 @@
 ---
 title: 内置终端
 slug: terminal
-section: Plugins
+section: 插件
 order: 127
 related: [plugins, opening-files, macos-integration, keyboard-shortcuts]
 ---

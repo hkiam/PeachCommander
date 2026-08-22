@@ -1,7 +1,7 @@
 ---
 title: Dekompilacja Javy i .NET
 slug: decompilers
-section: Plugins
+section: Wtyczki
 order: 131
 related: [plugins, viewing-files, searching]
 ---

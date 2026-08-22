@@ -1,7 +1,7 @@
 ---
 title: Strežniki WebDAV
 slug: webdav
-section: Plugins
+section: Vtičniki
 order: 130
 related: [plugins, ftp-and-sftp, network-shares]
 ---

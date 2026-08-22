@@ -1,7 +1,7 @@
 ---
 title: Servery WebDAV
 slug: webdav
-section: Plugins
+section: Zásuvné moduly
 order: 130
 related: [plugins, ftp-and-sftp, network-shares]
 ---

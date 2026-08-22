@@ -1,7 +1,7 @@
 ---
 title: Java és .NET visszafejtése
 slug: decompilers
-section: Plugins
+section: Bővítmények
 order: 131
 related: [plugins, viewing-files, searching]
 ---

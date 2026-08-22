@@ -1,7 +1,7 @@
 ---
 title: CSV-filer som tabell
 slug: csv-lister
-section: Plugins
+section: Insticksprogram
 order: 129
 related: [plugins, viewing-files, log-viewer]
 ---

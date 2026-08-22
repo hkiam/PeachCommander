@@ -1,7 +1,7 @@
 ---
 title: Décompiler Java et .NET
 slug: decompilers
-section: Plugins
+section: Extensions
 order: 131
 related: [plugins, viewing-files, searching]
 ---

@@ -1,7 +1,7 @@
 ---
 title: Imagini de sisteme de fișiere
 slug: filesystem-images
-section: Plugins
+section: Pluginuri
 order: 122
 related: [plugins, archives, settings, viewing-files]
 ---

@@ -1,7 +1,7 @@
 ---
 title: 把 CSV 文件当作表格
 slug: csv-lister
-section: Plugins
+section: 插件
 order: 129
 related: [plugins, viewing-files, log-viewer]
 ---

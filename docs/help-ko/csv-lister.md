@@ -1,7 +1,7 @@
 ---
 title: CSV 파일을 표로 보기
 slug: csv-lister
-section: Plugins
+section: 플러그인
 order: 129
 related: [plugins, viewing-files, log-viewer]
 ---

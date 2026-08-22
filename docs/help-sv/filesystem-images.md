@@ -1,7 +1,7 @@
 ---
 title: Filsystemsavbilder
 slug: filesystem-images
-section: Plugins
+section: Insticksprogram
 order: 122
 related: [plugins, archives, settings, viewing-files]
 ---

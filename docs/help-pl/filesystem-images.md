@@ -1,7 +1,7 @@
 ---
 title: Obrazy systemów plików
 slug: filesystem-images
-section: Plugins
+section: Wtyczki
 order: 122
 related: [plugins, archives, settings, viewing-files]
 ---

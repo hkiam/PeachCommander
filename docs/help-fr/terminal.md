@@ -1,7 +1,7 @@
 ---
 title: Le terminal intégré
 slug: terminal
-section: Plugins
+section: Extensions
 order: 127
 related: [plugins, opening-files, macos-integration, keyboard-shortcuts]
 ---

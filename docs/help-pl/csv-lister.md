@@ -1,7 +1,7 @@
 ---
 title: Pliki CSV jako tabela
 slug: csv-lister
-section: Plugins
+section: Wtyczki
 order: 129
 related: [plugins, viewing-files, log-viewer]
 ---

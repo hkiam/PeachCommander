@@ -212,6 +212,14 @@ derives from that list.
 - **Help** lives in `docs/content/help/` (English SSOT) and `docs/help-<code>/` for each
   other language — one `.md` per topic, same `slug`/`order`/`related`; only `title`,
   `section`, and prose are translated. Screenshots are shared (English) to keep it simple.
+- **Website tabs** come from a `group:` key that exists in the English pages only. A
+  translated topic is placed by looking up its English counterpart's group by slug — the slug
+  sets are identical, and `check-translations.py` gates that — so the 918 translated files
+  need no `group:` of their own. A tab whose group holds exactly one section is labelled from
+  that section's *translated* name; the one umbrella group that spans several sections has its
+  per-language label in `docs/metadata/nav-groups.yml`. `check-nav-order.py` fails if either
+  route cannot produce a label, which is how it caught 16 languages showing a stray English
+  "Plugins" section.
 
 **Rule — keep every language in sync.** When you add or change an English UI string or
 help topic, you MUST add/update the corresponding translation for **all** languages in

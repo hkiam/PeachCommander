@@ -1,7 +1,7 @@
 ---
 title: Java en .NET decompileren
 slug: decompilers
-section: Plugins
+section: Plug-ins
 order: 131
 related: [plugins, viewing-files, searching]
 ---

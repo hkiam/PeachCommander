@@ -187,6 +187,48 @@ The byte-comparison gate should have caught that at the time. Local `markdown 3.
 `pygments 2.21.0` match the pins in `docs.yml:30`, so the diff carries no formatting noise.
 
 
+## 2026-08-22 (F-439) — The other eighteen languages
+
+F-437 gave the English site seven tabs and left the 18 translated Help subsites exactly as
+they were: a flat list of twelve sections, and for 17 of the 18 a **three-line** landing page
+from `synth_index()` — a heading and the name of the language. For a non-English visitor the
+whole point of the restructure had not happened.
+
+**Almost nothing had to be translated.** The subsites hold only `docs/content/help/`, which
+spans five of the seven groups — and four of those five contain exactly *one* section, whose
+name the translators had already chosen. A group holding one section **is** that section, so
+its tab label is derived from the translated `section:` rather than repeated in a second table
+that would disagree the moment somebody renames one. That leaves the single umbrella group
+("Using Peach Commander", eight sections) as the only thing needing words:
+`docs/metadata/nav-groups.yml`, 18 strings, and that file says plainly that they are the one
+thing on the translated sites nobody has reviewed.
+
+Placement needs no per-language front matter either: a translated topic's group is looked up
+from its English counterpart **by slug**, which `check-translations.py` already gates in both
+directions. 918 files untouched.
+
+**The front pages are built from translated prose that already existed.** The lead is the
+first paragraph of that language's own `introduction.md` — reviewed text, not a welcome
+sentence invented here in eighteen languages — followed by every topic grouped the way the
+tabs group them. 3 lines became 97. The hand-written German exception (`DE_INDEX`) is gone;
+German now gets the same treatment as the rest.
+
+**What the work uncovered.** Deriving labels from translations only works if the grouping
+agrees, and in **16 of 18 languages it did not**: the plugin help was split in two, seven
+topics under the translated word and six — `csv-lister`, `decompilers`, `filesystem-images`,
+`log-viewer`, `terminal`, `webdav` — left under the English "Plugins". The same six
+everywhere, i.e. the later-added plugin pages, whose translations copied the English
+`section:` along with the prose. Those readers have been looking at two plugin sections in the
+shipped in-app help, one of them untranslated, and no gate anywhere noticed. Fixed in 96
+files, which changed the Help Book index for those 16 languages and nothing else — English
+untouched but for its `.helpindex`, which the byte gate excludes. `de` and `da` were already
+consistent: both use "Plugins" as their own word.
+
+`check-nav-order.py` grew the two rules that would have caught it: a group that is one section
+in English must be one section in every language, and an umbrella group needs a label for
+every language. Both verified by reproducing the defect.
+
+
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 
 Run with `--only menu-file,viewer-md-outline,csv-no-header,jsonl,viewer-long-lines`, which is the debt both

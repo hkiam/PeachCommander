@@ -1,7 +1,7 @@
 ---
 title: WebDAV-tjenere
 slug: webdav
-section: Plugins
+section: Programtillegg
 order: 130
 related: [plugins, ftp-and-sftp, network-shares]
 ---

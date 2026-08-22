@@ -66,6 +66,40 @@ SECTION_LABEL = {
 }
 
 
+def group_labels() -> dict[str, dict[str, str]]:
+    """Umbrella-group labels per language, from docs/metadata/nav-groups.yml.
+
+    Only groups that hold more than one section are in there — see that file for why.
+    """
+    ymlp = REPO / "docs/metadata/nav-groups.yml"
+    if not ymlp.exists():
+        return {}
+    data = yaml.safe_load(ymlp.read_text(encoding="utf-8")) or {}
+    return {g["id"]: (g.get("labels") or {}) for g in (data.get("groups") or [])}
+
+
+GROUP_LABELS = group_labels()
+
+
+def group_label(grp: str, sections: dict, lang: str, warn: set) -> str:
+    """The tab label for a group, in the reader's language.
+
+    English shows the id, which is written to be the label. For a translated subsite a group
+    holding exactly one section IS that section, and the translators already named it — so it
+    is derived rather than repeated in a table that could fall out of date the moment somebody
+    renames a section. Only the umbrella group needs a translation of its own.
+    """
+    if lang == "en":
+        return grp
+    if len(sections) == 1:
+        return section_label(next(iter(sections)))
+    label = GROUP_LABELS.get(grp, {}).get(lang)
+    if not label:
+        warn.add(f"{lang}: no label for group '{grp}' — showing the English id")
+        return grp
+    return label
+
+
 def section_label(sec: str) -> str:
     """Human label for a `section:` value.
 
@@ -124,17 +158,6 @@ nav:
 {nav}
 """
 
-DE_INDEX = """---
-title: Peach Commander – Hilfe
----
-
-# Peach Commander – Hilfe
-
-Willkommen bei der deutschen Hilfe zu **Peach Commander** — einem schnellen,
-tastaturorientierten Dateimanager mit zwei Panels für macOS. Wählen Sie links ein
-Thema oder nutzen Sie die Suche oben. Über den Sprachumschalter oben rechts gelangen
-Sie zur vollständigen englischen Dokumentation.
-"""
 
 
 def parse(md: str):
@@ -145,8 +168,10 @@ def parse(md: str):
 
 
 def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
-              recursive: bool, home_from_website: bool, synth_index: str | None,
-              alternate: list[tuple[str, str, str]], mkdocs: str, strict: bool):
+              recursive: bool, home_from_website: bool,
+              alternate: list[tuple[str, str, str]], mkdocs: str, strict: bool,
+              lang: str = "en", group_by_slug: dict[str, str] | None = None,
+              synth_title: str | None = None, synth_lead: str = ""):
     """Stage one language's pages into build/<workspace> and render to out_dir."""
     work = BUILD / workspace
     docs = work / "docs"
@@ -189,11 +214,12 @@ def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
         fm_text = "---\n" + yaml.safe_dump(fm, sort_keys=False, allow_unicode=True) + "---\n\n" if fm else ""
         (docs / out_name).write_text(fm_text + body, encoding="utf-8")
         if not is_home:
-            pages.append((meta.get("group"), meta.get("section", "Other"),
+            # A translated topic carries no `group:` of its own — the key is website-only, so
+            # adding it to 918 files would buy nothing the slug parity gate does not already
+            # give us. Its English counterpart's group is looked up by slug instead.
+            grp = meta.get("group") or (group_by_slug or {}).get(slug)
+            pages.append((grp, meta.get("section", "Other"),
                           meta.get("order", 999), meta.get("title", slug), out_name))
-    if not have_index and synth_index is not None:
-        (docs / "index.md").write_text(synth_index, encoding="utf-8")
-
     # group -> section -> pages, with anything ungrouped kept on one level as before.
     grouped: dict[str, dict[str, list]] = {}
     flat: dict[str, list] = {}
@@ -208,26 +234,56 @@ def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
         return sorted(bucket, key=lambda s: min(o for o, _, _ in bucket[s]))
 
     nav_lines = ["  - Home: index.md"]
+    toc: list[str] = []          # the same structure again, as a page (synthesised index)
+    label_warnings: set[str] = set()
     # GROUP_ORDER first and in its stated order; a group nobody listed still appears, at the
     # end and named, rather than disappearing from the site without a word.
     for grp in [g for g in GROUP_ORDER if g in grouped] + sorted(g for g in grouped
                                                                  if g not in GROUP_ORDER):
-        nav_lines.append(f"  - {grp}:")
         secs = grouped[grp]
+        label = group_label(grp, secs, lang, label_warnings)
+        nav_lines.append(f"  - {label}:")
+        toc.append(f"\n## {label}\n")
         if len(secs) == 1:
             # One section in the group: its label would only repeat the tab ("Plugins > Plugins",
             # "Tutorials > Tutorials"), so the pages hang directly off the tab.
             for _, title, name in sorted(next(iter(secs.values()))):
                 nav_lines.append(f'    - "{title}": {name}')
+                toc.append(f"- [{title}]({name})")
             continue
         for sec in by_min_order(secs):
             nav_lines.append(f"    - {section_label(sec)}:")
+            toc.append(f"\n**{section_label(sec)}**\n")
             for _, title, name in sorted(secs[sec]):
                 nav_lines.append(f'      - "{title}": {name}')
+                toc.append(f"- [{title}]({name})")
     for sec in by_min_order(flat):
         nav_lines.append(f"  - {section_label(sec)}:")
+        toc.append(f"\n## {section_label(sec)}\n")
         for _, title, name in sorted(flat[sec]):
             nav_lines.append(f'    - "{title}": {name}')
+            toc.append(f"- [{title}]({name})")
+
+    for w in sorted(label_warnings):
+        print(f"  ⚠️  {w}")
+
+    # A subsite has no homepage of its own — docs/help-<code>/ holds topics only. It used to get
+    # a three-line stub, which is what 17 of the 18 languages had as their front page. Build a
+    # real one instead: a lead paragraph taken from that language's own translated introduction
+    # (reviewed prose, not something invented here) followed by the same grouping the tabs show.
+    if not have_index and synth_title is not None:
+        lead = f"{synth_lead}\n" if synth_lead else ""
+        # Collapse runs of blank lines rather than tuning every emitted fragment: the group and
+        # section headings each carry their own spacing, and where they meet that adds up.
+        body: list[str] = []
+        for line in "\n".join(toc).split("\n"):
+            if line == "" and body and body[-1] == "":
+                continue
+            body.append(line)
+        (docs / "index.md").write_text(
+            f"---\ntitle: {synth_title}\n---\n\n# {synth_title}\n\n{lead}"
+            + "\n".join(body).strip("\n") + "\n",
+            encoding="utf-8")
 
     # Tabs only where there is a tab bar to show. Turning them on for the flat Help subsites
     # would promote their twelve sections to twelve tabs and change 18 sites nobody asked to
@@ -278,8 +334,36 @@ def alternates_for(current: str, langs) -> list[tuple[str, str, str]]:
     return out
 
 
-def synth_index(native: str) -> str:
-    return f"---\ntitle: Peach Commander\n---\n\n# Peach Commander\n\n_{native}_\n"
+def english_help_groups() -> dict[str, str]:
+    """slug -> `group:` for the English help topics.
+
+    The translated subsites hold the same slugs — check-translations.py gates that both ways —
+    so this is enough to place a translated topic under the right tab without touching any of
+    the 918 translated files.
+    """
+    out: dict[str, str] = {}
+    for md in sorted((CONTENT / "help").glob("*.md")):
+        meta, _ = parse(md.read_text(encoding="utf-8"))
+        if meta.get("group"):
+            out[meta.get("slug") or md.stem] = meta["group"]
+    return out
+
+
+def lead_paragraph(src: Path) -> str:
+    """The first real paragraph of a language's `introduction.md`.
+
+    Used as the lead on that language's front page. Deliberately not written here: this is
+    prose a translator already produced and reviewed, and inventing a welcome sentence in
+    eighteen languages is exactly the kind of text nobody would ever check.
+    """
+    intro = src / "introduction.md"
+    if not intro.exists():
+        return ""
+    _, body = parse(intro.read_text(encoding="utf-8"))
+    for para in (p.strip() for p in body.split("\n\n")):
+        if para and not para.startswith(("#", "!", "|", ">", "-", "*", "```")):
+            return para
+    return ""
 
 
 def main():
@@ -297,7 +381,7 @@ def main():
     # English — the full site at the root.
     rc_en, out_en, n_en = build_one(
         workspace="site-en", out_dir=SITE, site_name="Peach Commander",
-        sources=CONTENT, recursive=True, home_from_website=True, synth_index=None,
+        sources=CONTENT, recursive=True, home_from_website=True,
         alternate=alt("en", langs), mkdocs=mkdocs, strict=not args.serve)
     if args.serve:
         subprocess.run([mkdocs, "serve", "-f", str(BUILD / "site-en" / "mkdocs.yml")])
@@ -305,15 +389,18 @@ def main():
 
     # Each other language — its translated Help, published under /<code>/.
     results = {"en": (rc_en, out_en, n_en)}
+    en_groups = english_help_groups()
     for code, native in langs:
         if code == "en":
             continue
+        src = REPO / "docs" / f"help-{code}"
         results[code] = build_one(
             workspace=f"site-{code}", out_dir=SITE / code,
             site_name=f"Peach Commander – {native}",
-            sources=REPO / "docs" / f"help-{code}", recursive=False,
-            home_from_website=False, synth_index=DE_INDEX if code == "de" else synth_index(native),
-            alternate=alt(code, langs), mkdocs=mkdocs, strict=True)
+            sources=src, recursive=False, home_from_website=False,
+            alternate=alt(code, langs), mkdocs=mkdocs, strict=True,
+            lang=code, group_by_slug=en_groups,
+            synth_title=f"Peach Commander – {native}", synth_lead=lead_paragraph(src))
 
     failed = [c for c, (rc, _, _) in results.items() if rc != 0]
     summary = " · ".join(f"{c}:{results[c][2]}" for c, _ in langs)

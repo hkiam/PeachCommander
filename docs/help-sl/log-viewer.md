@@ -1,7 +1,7 @@
 ---
 title: Pregledovalnik dnevnikov
 slug: log-viewer
-section: Plugins
+section: Vtičniki
 order: 128
 related: [plugins, viewing-files, searching]
 ---

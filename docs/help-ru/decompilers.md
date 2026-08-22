@@ -1,7 +1,7 @@
 ---
 title: Декомпиляция Java и .NET
 slug: decompilers
-section: Plugins
+section: Плагины
 order: 131
 related: [plugins, viewing-files, searching]
 ---

@@ -1,7 +1,7 @@
 ---
 title: Povratno prevajanje Jave in .NET
 slug: decompilers
-section: Plugins
+section: Vtičniki
 order: 131
 related: [plugins, viewing-files, searching]
 ---

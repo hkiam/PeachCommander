@@ -1,7 +1,7 @@
 ---
 title: Dekompilera Java och .NET
 slug: decompilers
-section: Plugins
+section: Insticksprogram
 order: 131
 related: [plugins, viewing-files, searching]
 ---

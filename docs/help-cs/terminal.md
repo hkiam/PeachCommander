@@ -1,7 +1,7 @@
 ---
 title: Vestavěný terminál
 slug: terminal
-section: Plugins
+section: Zásuvné moduly
 order: 127
 related: [plugins, opening-files, macos-integration, keyboard-shortcuts]
 ---

@@ -1,0 +1,46 @@
+# Tab labels for the translated Help subsites (F-439).
+#
+# The website's top level comes from each page's `group:` front matter; the English name is
+# the id. For the 18 translated Help subsites that id has to be shown in the reader's
+# language — and for four of the five groups it already is, so nothing is listed here:
+#
+#   Get started       holds only the section "Getting started"
+#   Customise         holds only "Customizing"
+#   Plugins           holds only "Plugins"
+#   Reference & help  holds only "Help & troubleshooting"
+#
+# A group holding exactly one section IS that section, and the translators already named it.
+# `build-site.py` derives those labels from the translated `section:` values rather than
+# repeating them here, so renaming a section in one language keeps its tab correct instead of
+# quietly disagreeing with a second table.
+#
+# That leaves the umbrella — the one group with no section of its own — which genuinely needs
+# a name per language. It is the only reason this file exists, and the only thing to add here
+# if another umbrella group is ever introduced.
+#
+# NOTE FOR TRANSLATORS: unlike every other string in this project, these 18 were not written
+# by a translator. They are a plain rendering of the English and are the one thing on the
+# translated sites nobody has reviewed. Corrections belong here and take effect on the next
+# `build-site.py` run — no other file needs touching.
+
+groups:
+  - id: Using Peach Commander
+    labels:
+      de: Peach Commander benutzen
+      fr: Utiliser Peach Commander
+      zh-Hans: 使用 Peach Commander
+      da: Brug af Peach Commander
+      nl: Peach Commander gebruiken
+      it: Usare Peach Commander
+      ko: Peach Commander 사용하기
+      nb: Bruke Peach Commander
+      pl: Korzystanie z Peach Commander
+      sv: Använda Peach Commander
+      sk: Používanie Peach Commander
+      sl: Uporaba Peach Commanderja
+      es: Usar Peach Commander
+      cs: Používání Peach Commanderu
+      uk: Використання Peach Commander
+      hu: A Peach Commander használata
+      ro: Utilizarea Peach Commander
+      ru: Использование Peach Commander

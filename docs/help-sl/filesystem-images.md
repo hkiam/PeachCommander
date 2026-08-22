@@ -1,7 +1,7 @@
 ---
 title: Slike datotečnih sistemov
 slug: filesystem-images
-section: Plugins
+section: Vtičniki
 order: 122
 related: [plugins, archives, settings, viewing-files]
 ---

@@ -1,7 +1,7 @@
 ---
 title: WebDAV 서버
 slug: webdav
-section: Plugins
+section: 플러그인
 order: 130
 related: [plugins, ftp-and-sftp, network-shares]
 ---

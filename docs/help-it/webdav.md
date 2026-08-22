@@ -1,7 +1,7 @@
 ---
 title: Server WebDAV
 slug: webdav
-section: Plugins
+section: Plugin
 order: 130
 related: [plugins, ftp-and-sftp, network-shares]
 ---

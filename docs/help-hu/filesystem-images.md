@@ -1,7 +1,7 @@
 ---
 title: Fájlrendszerképek
 slug: filesystem-images
-section: Plugins
+section: Bővítmények
 order: 122
 related: [plugins, archives, settings, viewing-files]
 ---

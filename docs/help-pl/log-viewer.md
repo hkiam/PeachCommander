@@ -1,7 +1,7 @@
 ---
 title: Przeglądarka logów
 slug: log-viewer
-section: Plugins
+section: Wtyczki
 order: 128
 related: [plugins, viewing-files, searching]
 ---

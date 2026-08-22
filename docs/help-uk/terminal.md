@@ -1,7 +1,7 @@
 ---
 title: Вбудований термінал
 slug: terminal
-section: Plugins
+section: Плагіни
 order: 127
 related: [plugins, opening-files, macos-integration, keyboard-shortcuts]
 ---

@@ -1,7 +1,7 @@
 ---
 title: La terminal integrada
 slug: terminal
-section: Plugins
+section: Complementos
 order: 127
 related: [plugins, opening-files, macos-integration, keyboard-shortcuts]
 ---

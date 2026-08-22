@@ -1,7 +1,7 @@
 ---
 title: Archivos CSV como tabla
 slug: csv-lister
-section: Plugins
+section: Complementos
 order: 129
 related: [plugins, viewing-files, log-viewer]
 ---

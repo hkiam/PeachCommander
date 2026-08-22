@@ -1,7 +1,7 @@
 ---
 title: 日志查看器
 slug: log-viewer
-section: Plugins
+section: 插件
 order: 128
 related: [plugins, viewing-files, searching]
 ---

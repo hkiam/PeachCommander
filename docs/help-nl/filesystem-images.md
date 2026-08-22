@@ -1,7 +1,7 @@
 ---
 title: Bestandssysteemimages
 slug: filesystem-images
-section: Plugins
+section: Plug-ins
 order: 122
 related: [plugins, archives, settings, viewing-files]
 ---

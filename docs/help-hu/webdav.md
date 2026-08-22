@@ -1,7 +1,7 @@
 ---
 title: WebDAV-kiszolgálók
 slug: webdav
-section: Plugins
+section: Bővítmények
 order: 130
 related: [plugins, ftp-and-sftp, network-shares]
 ---

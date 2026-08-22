@@ -1,7 +1,7 @@
 ---
 title: Filsystemavbilder
 slug: filesystem-images
-section: Plugins
+section: Programtillegg
 order: 122
 related: [plugins, archives, settings, viewing-files]
 ---

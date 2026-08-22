@@ -1,7 +1,7 @@
 ---
 title: 내장 터미널
 slug: terminal
-section: Plugins
+section: 플러그인
 order: 127
 related: [plugins, opening-files, macos-integration, keyboard-shortcuts]
 ---

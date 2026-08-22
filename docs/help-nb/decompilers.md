@@ -1,7 +1,7 @@
 ---
 title: Dekompilere Java og .NET
 slug: decompilers
-section: Plugins
+section: Programtillegg
 order: 131
 related: [plugins, viewing-files, searching]
 ---

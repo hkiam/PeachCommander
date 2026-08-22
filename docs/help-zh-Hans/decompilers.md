@@ -1,7 +1,7 @@
 ---
 title: 反编译 Java 与 .NET
 slug: decompilers
-section: Plugins
+section: 插件
 order: 131
 related: [plugins, viewing-files, searching]
 ---

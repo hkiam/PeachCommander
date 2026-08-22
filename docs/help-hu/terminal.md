@@ -1,7 +1,7 @@
 ---
 title: A beépített terminál
 slug: terminal
-section: Plugins
+section: Bővítmények
 order: 127
 related: [plugins, opening-files, macos-integration, keyboard-shortcuts]
 ---

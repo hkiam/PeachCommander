@@ -1,7 +1,7 @@
 ---
 title: Dekompilace Javy a .NET
 slug: decompilers
-section: Plugins
+section: Zásuvné moduly
 order: 131
 related: [plugins, viewing-files, searching]
 ---

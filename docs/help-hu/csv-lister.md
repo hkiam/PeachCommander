@@ -1,7 +1,7 @@
 ---
 title: CSV-fájlok táblázatként
 slug: csv-lister
-section: Plugins
+section: Bővítmények
 order: 129
 related: [plugins, viewing-files, log-viewer]
 ---

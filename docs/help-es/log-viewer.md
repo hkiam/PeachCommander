@@ -1,7 +1,7 @@
 ---
 title: El visor de registros
 slug: log-viewer
-section: Plugins
+section: Complementos
 order: 128
 related: [plugins, viewing-files, searching]
 ---

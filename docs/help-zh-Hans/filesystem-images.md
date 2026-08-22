@@ -1,7 +1,7 @@
 ---
 title: 文件系统映像
 slug: filesystem-images
-section: Plugins
+section: 插件
 order: 122
 related: [plugins, archives, settings, viewing-files]
 ---

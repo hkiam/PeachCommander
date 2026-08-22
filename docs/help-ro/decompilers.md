@@ -1,7 +1,7 @@
 ---
 title: Decompilarea Java și .NET
 slug: decompilers
-section: Plugins
+section: Pluginuri
 order: 131
 related: [plugins, viewing-files, searching]
 ---

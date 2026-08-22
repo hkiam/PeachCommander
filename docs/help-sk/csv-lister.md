@@ -1,7 +1,7 @@
 ---
 title: Súbory CSV ako tabuľka
 slug: csv-lister
-section: Plugins
+section: Zásuvné moduly
 order: 129
 related: [plugins, viewing-files, log-viewer]
 ---

@@ -1,7 +1,7 @@
 ---
 title: Файлы CSV как таблица
 slug: csv-lister
-section: Plugins
+section: Плагины
 order: 129
 related: [plugins, viewing-files, log-viewer]
 ---

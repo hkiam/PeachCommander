@@ -1,7 +1,7 @@
 ---
 title: Prehliadač logov
 slug: log-viewer
-section: Plugins
+section: Zásuvné moduly
 order: 128
 related: [plugins, viewing-files, searching]
 ---

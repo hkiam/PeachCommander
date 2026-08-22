@@ -1,7 +1,7 @@
 ---
 title: Loggvisaren
 slug: log-viewer
-section: Plugins
+section: Insticksprogram
 order: 128
 related: [plugins, viewing-files, searching]
 ---

@@ -1,7 +1,7 @@
 ---
 title: Образы файловых систем
 slug: filesystem-images
-section: Plugins
+section: Плагины
 order: 122
 related: [plugins, archives, settings, viewing-files]
 ---

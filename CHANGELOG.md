@@ -115,6 +115,20 @@ does not have.
 
 ### Fixed
 
+- **The other eighteen languages got the same site, and a front page.** The translated help
+  was published as a flat list of twelve sections with a three-line stub for a landing page —
+  seventeen of the eighteen languages had a heading and the name of their language, nothing
+  else. They now have the same five tabs as the English site, named in their own language, and
+  a real front page: the opening paragraph of that language's own introduction topic followed
+  by every topic grouped the way the tabs group them. No prose was invented for it — all of it
+  is text a translator already wrote.
+
+- **Sixteen languages showed a stray English "Plugins" section in the in-app help.** Seven
+  plugin topics sat under the translated word and six under the English one, because whoever
+  added the later plugin pages copied the English `section:` along with them. Every reader of
+  those sixteen languages saw two plugin sections in the Help Book, one of them untranslated.
+
+
 - **The documentation site opened with the API reference.** The first two navigation entries
   were *API reference* and *Developer guide*; *Getting started* came third, and the user
   guide, the plugins and the tutorials were far below. Nobody had decided that: the site's

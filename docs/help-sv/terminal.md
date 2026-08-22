@@ -1,7 +1,7 @@
 ---
 title: Den inbyggda terminalen
 slug: terminal
-section: Plugins
+section: Insticksprogram
 order: 127
 related: [plugins, opening-files, macos-integration, keyboard-shortcuts]
 ---

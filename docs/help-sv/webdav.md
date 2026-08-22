@@ -1,7 +1,7 @@
 ---
 title: WebDAV-servrar
 slug: webdav
-section: Plugins
+section: Insticksprogram
 order: 130
 related: [plugins, ftp-and-sftp, network-shares]
 ---

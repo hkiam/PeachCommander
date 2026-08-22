@@ -1,7 +1,7 @@
 ---
 title: A naplónéző
 slug: log-viewer
-section: Plugins
+section: Bővítmények
 order: 128
 related: [plugins, viewing-files, searching]
 ---

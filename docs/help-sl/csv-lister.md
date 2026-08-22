@@ -1,7 +1,7 @@
 ---
 title: Datoteke CSV kot razpredelnica
 slug: csv-lister
-section: Plugins
+section: Vtičniki
 order: 129
 related: [plugins, viewing-files, log-viewer]
 ---

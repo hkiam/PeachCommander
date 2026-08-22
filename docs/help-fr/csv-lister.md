@@ -1,7 +1,7 @@
 ---
 title: Les fichiers CSV en tableau
 slug: csv-lister
-section: Plugins
+section: Extensions
 order: 129
 related: [plugins, viewing-files, log-viewer]
 ---

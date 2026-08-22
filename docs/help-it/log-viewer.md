@@ -1,7 +1,7 @@
 ---
 title: Il visualizzatore di log
 slug: log-viewer
-section: Plugins
+section: Plugin
 order: 128
 related: [plugins, viewing-files, searching]
 ---

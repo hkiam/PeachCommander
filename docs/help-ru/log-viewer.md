@@ -1,7 +1,7 @@
 ---
 title: Просмотр логов
 slug: log-viewer
-section: Plugins
+section: Плагины
 order: 128
 related: [plugins, viewing-files, searching]
 ---

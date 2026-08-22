@@ -1,7 +1,7 @@
 ---
 title: 로그 뷰어
 slug: log-viewer
-section: Plugins
+section: 플러그인
 order: 128
 related: [plugins, viewing-files, searching]
 ---

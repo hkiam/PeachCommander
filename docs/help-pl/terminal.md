@@ -1,7 +1,7 @@
 ---
 title: Wbudowany terminal
 slug: terminal
-section: Plugins
+section: Wtyczki
 order: 127
 related: [plugins, opening-files, macos-integration, keyboard-shortcuts]
 ---

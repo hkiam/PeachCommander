@@ -1,7 +1,7 @@
 ---
 title: Images de systèmes de fichiers
 slug: filesystem-images
-section: Plugins
+section: Extensions
 order: 122
 related: [plugins, archives, settings, viewing-files]
 ---

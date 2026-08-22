@@ -1,7 +1,7 @@
 ---
 title: Java와 .NET 디컴파일
 slug: decompilers
-section: Plugins
+section: 플러그인
 order: 131
 related: [plugins, viewing-files, searching]
 ---

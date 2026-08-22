@@ -1,7 +1,7 @@
 ---
 title: CSV-bestanden als tabel
 slug: csv-lister
-section: Plugins
+section: Plug-ins
 order: 129
 related: [plugins, viewing-files, log-viewer]
 ---
