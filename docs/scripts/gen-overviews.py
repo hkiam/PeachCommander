@@ -56,8 +56,8 @@ def gen_features():
 
 
 def gen_glossary():
-    lines = ["---", "title: Glossary", "slug: glossary", "section: Reference", "order: 100",
-             "related: [introduction]", "---", "",
+    lines = ["---", "title: Glossary", "slug: glossary", "group: Reference & help",
+             "section: Reference", "order: 100", "related: [introduction]", "---", "",
              "_Generated from `docs/metadata/terminology.yml`. These are the canonical terms "
              "used throughout the documentation._", ""]
     for t in sorted(TERMS, key=lambda x: x["term"].lower()):

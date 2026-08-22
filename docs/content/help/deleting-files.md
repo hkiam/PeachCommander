@@ -1,6 +1,7 @@
 ---
 title: Deleting files
 slug: deleting-files
+group: Using Peach Commander
 section: Files & folders
 order: 28
 related: [copying-files]

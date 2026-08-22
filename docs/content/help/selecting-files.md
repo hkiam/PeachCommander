@@ -1,6 +1,7 @@
 ---
 title: Selecting files
 slug: selecting-files
+group: Using Peach Commander
 section: Files & folders
 order: 22
 related: [copying-files, searching]

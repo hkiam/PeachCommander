@@ -1,6 +1,7 @@
 ---
 title: The button bar
 slug: toolbar
+group: Customise
 section: Customizing
 order: 110
 related: [keyboard-shortcuts, settings]

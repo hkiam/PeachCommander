@@ -1,6 +1,7 @@
 ---
 title: Keyboard & shortcuts
 slug: keyboard-shortcuts
+group: Customise
 section: Customizing
 order: 112
 related: [keyboard-shortcuts-reference, settings]

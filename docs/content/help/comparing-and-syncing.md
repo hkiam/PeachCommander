@@ -1,6 +1,7 @@
 ---
 title: Comparing & synchronizing
 slug: comparing-and-syncing
+group: Using Peach Commander
 section: Power tools
 order: 90
 related: [multi-rename]

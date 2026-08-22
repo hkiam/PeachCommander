@@ -1,6 +1,7 @@
 ---
 title: "Concurrency, persistence & errors"
 slug: arch-concurrency-data
+group: Develop
 section: Architecture
 order: 40
 related: [architecture-overview]

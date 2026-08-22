@@ -1,6 +1,7 @@
 ---
 title: Appearance
 slug: appearance
+group: Customise
 section: Customizing
 order: 114
 related: [settings]

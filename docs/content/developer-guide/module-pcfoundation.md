@@ -1,6 +1,7 @@
 ---
 title: "PCFoundation"
 slug: module-pcfoundation
+group: Develop
 section: Modules
 order: 51
 related: [architecture-overview]

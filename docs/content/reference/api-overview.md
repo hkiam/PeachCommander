@@ -1,8 +1,9 @@
 ---
 title: Plugin API reference
 slug: api-overview
+group: Develop
 section: API reference
-order: 5
+order: 199
 related: [sdk-overview]
 ---
 

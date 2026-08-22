@@ -1,6 +1,7 @@
 ---
 title: Task Manager
 slug: task-manager
+group: Plugins
 section: Plugins
 order: 125
 related: [plugins, viewing-files, deleting-files]

@@ -1,6 +1,7 @@
 ---
 title: Network shares
 slug: network-shares
+group: Using Peach Commander
 section: Network & remote
 order: 104
 related: [ftp-and-sftp]

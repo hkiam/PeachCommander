@@ -1,6 +1,7 @@
 ---
 title: "Tutorial: Install and use a plugin"
 slug: tutorial-plugins
+group: Tutorials
 section: tutorials
 order: 120
 related: [plugins]

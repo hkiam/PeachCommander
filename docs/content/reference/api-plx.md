@@ -1,8 +1,9 @@
 ---
 title: "API: Lister plugins (PLX)"
 slug: api-plx
+group: Develop
 section: API reference
-order: 50
+order: 240
 related: [sdk-overview, plugin-architecture-guide]
 ---
 

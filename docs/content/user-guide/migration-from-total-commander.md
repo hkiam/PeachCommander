@@ -1,6 +1,7 @@
 ---
 title: Migrating from Total Commander
 slug: migration-from-total-commander
+group: Get started
 section: user-guide
 order: 20
 related: [keyboard-shortcuts, ftp-and-sftp, settings]

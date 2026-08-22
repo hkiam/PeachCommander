@@ -1,6 +1,7 @@
 ---
 title: Finding files
 slug: searching
+group: Using Peach Commander
 section: Finding files
 order: 60
 related: [selecting-files, quick-search-and-filter]

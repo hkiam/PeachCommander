@@ -1,6 +1,7 @@
 ---
 title: Developer onboarding
 slug: dev-getting-started
+group: Develop
 section: Developer guide
 order: 20
 related: [dev-overview, architecture-overview]

@@ -1,6 +1,7 @@
 ---
 title: Welcome to Peach Commander
 slug: introduction
+group: Get started
 section: Getting started
 order: 10
 related: [interface-overview, navigating]

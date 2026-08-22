@@ -1,6 +1,7 @@
 ---
 title: SDK overview
 slug: sdk-overview
+group: Develop
 section: SDK & plugins
 order: 10
 related: [plugin-architecture-guide, api-overview, plugin-tutorials]

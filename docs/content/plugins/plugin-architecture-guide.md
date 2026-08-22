@@ -1,6 +1,7 @@
 ---
 title: Plugin architecture
 slug: plugin-architecture-guide
+group: Develop
 section: SDK & plugins
 order: 20
 related: [sdk-overview, plugin-tutorials, api-overview]

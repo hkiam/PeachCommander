@@ -36,6 +36,27 @@ Peach Commander puts two folders side by side and every operation under your fin
 ![Peach Commander main window with two file panels](screenshots/main-window.png)
 *Two folders side by side — the whole workflow lives in one window, and the keyboard drives all of it.*
 
+<div class="pc-doors">
+  <a class="pc-door" href="migration-from-total-commander.html">
+    <span class="pc-door__eyebrow">Coming from Total Commander</span>
+    <span class="pc-door__title">Bring your muscle memory</span>
+    <span class="pc-door__hint">Switch on the TC-classic key scheme, import your <code>wincmd.ini</code>, and see what maps one-to-one — and what macOS does differently.</span>
+    <span class="pc-door__go">Start the switch &rarr;</span>
+  </a>
+  <a class="pc-door" href="introduction.html">
+    <span class="pc-door__eyebrow">New to two-panel managers</span>
+    <span class="pc-door__title">Why two panels?</span>
+    <span class="pc-door__hint">What the second panel is for, what the function keys do, and the five minutes it takes to stop reaching for the mouse.</span>
+    <span class="pc-door__go">Take the tour &rarr;</span>
+  </a>
+  <a class="pc-door" href="sdk-overview.html">
+    <span class="pc-door__eyebrow">Building something</span>
+    <span class="pc-door__title">Write a plugin</span>
+    <span class="pc-door__hint">Five kinds of plugin over one C11 ABI — archives, file systems, viewers, columns, and whole docked views.</span>
+    <span class="pc-door__go">Read the SDK &rarr;</span>
+  </a>
+</div>
+
 <div class="pc-grid">
   <div class="pc-card">
     <div class="pc-card__icon">⚡️</div>

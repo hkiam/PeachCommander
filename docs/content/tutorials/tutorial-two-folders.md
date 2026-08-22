@@ -1,6 +1,7 @@
 ---
 title: "Tutorial: Work between two folders"
 slug: tutorial-two-folders
+group: Tutorials
 section: tutorials
 order: 110
 related: [copying-files, moving-and-renaming, selecting-files]

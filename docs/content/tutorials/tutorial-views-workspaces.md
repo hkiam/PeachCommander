@@ -1,6 +1,7 @@
 ---
 title: "Tutorial: Set up views and workspaces"
 slug: tutorial-views-workspaces
+group: Tutorials
 section: tutorials
 order: 114
 related: [view-modes-and-sorting, workspaces, panels-and-tabs]

@@ -1,6 +1,7 @@
 ---
 title: CSV files as a table
 slug: csv-lister
+group: Plugins
 section: Plugins
 order: 129
 related: [plugins, viewing-files, log-viewer]

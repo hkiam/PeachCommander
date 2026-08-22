@@ -1,6 +1,7 @@
 ---
 title: Copying files
 slug: copying-files
+group: Using Peach Commander
 section: Files & folders
 order: 24
 related: [moving-and-renaming, background-transfers]

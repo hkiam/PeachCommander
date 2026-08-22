@@ -1,6 +1,7 @@
 ---
 title: Favorites & hotlist
 slug: favorites
+group: Using Peach Commander
 section: Organizing your view
 order: 46
 related: [navigating, panels-and-tabs]

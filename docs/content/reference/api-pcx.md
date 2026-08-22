@@ -1,8 +1,9 @@
 ---
 title: "API: Packer plugins (PCX)"
 slug: api-pcx
+group: Develop
 section: API reference
-order: 20
+order: 210
 related: [sdk-overview, plugin-architecture-guide]
 ---
 

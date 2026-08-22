@@ -1,8 +1,9 @@
 ---
 title: "API: File-system plugins (PFX)"
 slug: api-pfx
+group: Develop
 section: API reference
-order: 40
+order: 230
 related: [sdk-overview, plugin-architecture-guide]
 ---
 

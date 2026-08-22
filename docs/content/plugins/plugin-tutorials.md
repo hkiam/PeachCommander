@@ -1,6 +1,7 @@
 ---
 title: Plugin tutorials
 slug: plugin-tutorials
+group: Develop
 section: SDK & plugins
 order: 30
 related: [sdk-overview, plugin-architecture-guide, api-overview]

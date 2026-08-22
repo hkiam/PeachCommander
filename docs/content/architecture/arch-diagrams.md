@@ -1,6 +1,7 @@
 ---
 title: Architecture diagrams
 slug: arch-diagrams
+group: Develop
 section: Architecture
 order: 35
 related: [architecture-overview]

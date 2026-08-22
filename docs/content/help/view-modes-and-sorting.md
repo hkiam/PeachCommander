@@ -1,6 +1,7 @@
 ---
 title: View modes & sorting
 slug: view-modes-and-sorting
+group: Using Peach Commander
 section: Organizing your view
 order: 42
 related: [panels-and-tabs, quick-search-and-filter]

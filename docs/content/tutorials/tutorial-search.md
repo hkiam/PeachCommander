@@ -1,6 +1,7 @@
 ---
 title: "Tutorial: Find files fast"
 slug: tutorial-search
+group: Tutorials
 section: tutorials
 order: 112
 related: [searching, quick-search-and-filter]

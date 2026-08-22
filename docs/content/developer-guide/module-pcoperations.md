@@ -1,6 +1,7 @@
 ---
 title: "PCOperations"
 slug: module-pcoperations
+group: Develop
 section: Modules
 order: 54
 related: [architecture-overview]

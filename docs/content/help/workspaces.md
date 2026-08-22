@@ -1,6 +1,7 @@
 ---
 title: Workspaces
 slug: workspaces
+group: Customise
 section: Customizing
 order: 118
 related: [settings, panels-and-tabs]

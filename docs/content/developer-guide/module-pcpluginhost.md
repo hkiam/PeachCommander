@@ -1,6 +1,7 @@
 ---
 title: "PCPluginHost"
 slug: module-pcpluginhost
+group: Develop
 section: Modules
 order: 56
 related: [architecture-overview]

@@ -1,6 +1,7 @@
 ---
 title: Version notes
 slug: version-notes
+group: Get started
 section: user-guide
 order: 90
 related: [known-limitations]

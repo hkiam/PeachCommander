@@ -1,6 +1,7 @@
 ---
 title: Working with archives
 slug: archives
+group: Using Peach Commander
 section: Archives
 order: 80
 related: [copying-files]

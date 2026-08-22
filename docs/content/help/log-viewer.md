@@ -1,6 +1,7 @@
 ---
 title: The log viewer
 slug: log-viewer
+group: Plugins
 section: Plugins
 order: 128
 related: [plugins, viewing-files, searching]

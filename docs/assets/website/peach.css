@@ -281,3 +281,69 @@
   .pc-hero__icon { width: 104px; height: 104px; }
   .pc-btn { width: 100%; justify-content: center; }
 }
+
+/* --- The three doors (landing page) ---------------------------------------- */
+
+/* Deliberately not .pc-grid: those cards are features to read, these are a decision to
+   make. Accent colours come from the Material tokens mapped above, so both schemes follow
+   without a second rule.
+   `auto-fit` rather than three fixed columns and a viewport media query: what matters is
+   the width of the CONTENT column, and that depends on the sidebar and the table of
+   contents, not on the window. Three fixed columns were measurably too tight — the middle
+   door's title broke across three lines with both sidebars open. */
+.pc-doors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: .9rem;
+  margin: 1.8rem 0 2.2rem;
+}
+
+.pc-door {
+  display: block;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-left: 3px solid var(--md-accent-fg-color);
+  border-radius: .7rem;
+  background: var(--md-default-bg-color);
+  color: inherit !important;
+  text-decoration: none !important;
+  transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+
+.pc-door:hover,
+.pc-door:focus-visible {
+  border-color: var(--md-accent-fg-color);
+  transform: translateY(-2px);
+  box-shadow: 0 .4rem 1.1rem rgba(0, 0, 0, .09);
+}
+
+.pc-door__eyebrow {
+  display: block;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--md-accent-fg-color);
+}
+
+.pc-door__title {
+  display: block;
+  margin: .4rem 0 .3rem;
+  font-size: .95rem;
+  font-weight: 700;
+}
+
+.pc-door__hint {
+  display: block;
+  font-size: .78rem;
+  line-height: 1.45;
+  opacity: .8;
+}
+
+.pc-door__go {
+  display: block;
+  margin-top: .7rem;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--md-accent-fg-color);
+}

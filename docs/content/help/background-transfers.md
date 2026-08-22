@@ -1,6 +1,7 @@
 ---
 title: Background transfers
 slug: background-transfers
+group: Using Peach Commander
 section: Files & folders
 order: 32
 related: [copying-files, downloading-from-url]

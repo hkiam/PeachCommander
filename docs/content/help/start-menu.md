@@ -1,6 +1,7 @@
 ---
 title: The Start menu & custom commands
 slug: start-menu
+group: Customise
 section: Customizing
 order: 111
 related: [toolbar, keyboard-shortcuts]

@@ -1,6 +1,7 @@
 ---
 title: Project overview
 slug: dev-overview
+group: Develop
 section: Developer guide
 order: 10
 related: [dev-getting-started, architecture-overview]

@@ -1,6 +1,7 @@
 ---
 title: Viewing files
 slug: viewing-files
+group: Using Peach Commander
 section: Viewing & editing
 order: 70
 related: [editing-files, searching]

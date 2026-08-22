@@ -1,6 +1,7 @@
 ---
 title: Attributes & permissions
 slug: attributes-and-permissions
+group: Using Peach Commander
 section: Power tools
 order: 96
 related: [file-utilities]

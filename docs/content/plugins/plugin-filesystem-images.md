@@ -1,6 +1,7 @@
 ---
 title: Linux filesystem images
-slug: filesystem-images
+slug: plugin-filesystem-images
+group: Develop
 section: SDK & plugins
 order: 40
 related: [plugin-architecture-guide, plugin-tutorials]

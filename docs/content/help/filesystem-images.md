@@ -1,6 +1,7 @@
 ---
 title: Filesystem Images
 slug: filesystem-images
+group: Plugins
 section: Plugins
 order: 122
 related: [plugins, archives, settings, viewing-files]

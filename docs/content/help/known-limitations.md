@@ -1,6 +1,7 @@
 ---
 title: Known limitations
 slug: known-limitations
+group: Reference & help
 section: Help & troubleshooting
 order: 144
 related: [troubleshooting]

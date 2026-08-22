@@ -1,6 +1,7 @@
 ---
 title: Moving & renaming
 slug: moving-and-renaming
+group: Using Peach Commander
 section: Files & folders
 order: 26
 related: [copying-files, multi-rename]

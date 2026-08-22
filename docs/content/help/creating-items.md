@@ -1,6 +1,7 @@
 ---
 title: New folders & files
 slug: creating-items
+group: Using Peach Commander
 section: Files & folders
 order: 30
 related: [opening-files]

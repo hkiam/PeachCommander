@@ -1,6 +1,7 @@
 ---
 title: "Tutorial: Speed up repetitive actions"
 slug: tutorial-automate
+group: Tutorials
 section: tutorials
 order: 116
 related: [toolbar, start-menu, keyboard-shortcuts]

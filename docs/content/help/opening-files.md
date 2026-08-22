@@ -1,6 +1,7 @@
 ---
 title: Opening files & folders
 slug: opening-files
+group: Using Peach Commander
 section: Files & folders
 order: 20
 related: [viewing-files, selecting-files]

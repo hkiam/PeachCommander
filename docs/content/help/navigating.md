@@ -1,6 +1,7 @@
 ---
 title: Moving around
 slug: navigating
+group: Get started
 section: Getting started
 order: 14
 related: [interface-overview, favorites]

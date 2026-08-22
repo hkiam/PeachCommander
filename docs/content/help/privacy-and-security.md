@@ -1,6 +1,7 @@
 ---
 title: Privacy & security
 slug: privacy-and-security
+group: Using Peach Commander
 section: macOS & privacy
 order: 132
 related: [ftp-and-sftp, troubleshooting]

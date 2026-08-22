@@ -1,6 +1,7 @@
 ---
 title: Tabs
 slug: panels-and-tabs
+group: Using Peach Commander
 section: Organizing your view
 order: 40
 related: [view-modes-and-sorting, favorites]

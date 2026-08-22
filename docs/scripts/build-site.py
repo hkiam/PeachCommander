@@ -9,7 +9,23 @@ Help, published as a subsite at /de/ with a Material language switcher between t
 
 Strategy: stage each language's pages FLAT into its own MkDocs workspace (slugs are
 unique, so the bare `slug.md` cross-links resolve); rewrite `screenshots/<id>.png`
-image refs to `assets/screenshots/`; generate nav from each page's `section` + `order`.
+image refs to `assets/screenshots/`; generate nav from each page's `group` + `section`
++ `order`.
+
+Navigation is TWO levels on the English site: `group:` is the tab bar, `section:` the
+collapsible sidebar group beneath it. `group:` is a website-only key — the Help Book
+generator does not read it, so the shipped in-app help keeps its own one-level
+`section`/`order` structure untouched (F-437).
+
+Group order comes from GROUP_ORDER below, deliberately explicit. It used to be
+`min(order)` across a section's pages, which made the top level an accident: four
+sections tied at `order: 10` and the tie fell to alphabetical directory order, so
+`developer-guide/` outranked `help/` and the generated `order: 5` of the API reference
+put a symbol dump first on a page meant to welcome newcomers.
+
+Pages carrying no `group:` (every translated Help subsite) keep the old one-level nav,
+and only the grouped site gets `navigation.tabs` — so the 18 subsites render exactly as
+they did before.
 
 Usage: python3 docs/scripts/build-site.py [--serve]
 """
@@ -32,9 +48,34 @@ REPO_URL = f"https://github.com/{REPO_SLUG}"
 FRONT_RE = re.compile(r'^---\s*\n(.*?)\n---\s*\n', re.DOTALL)
 IMG_RE = re.compile(r'(!\[[^\]]*\]\()screenshots/([^)]+)(\))')
 
+# The tab bar, in reading order: what the app is, then using it, then bending it to your
+# will, then the deep end. A newcomer needs the first two; the API reference lives in the
+# last one and is reached on purpose rather than by accident.
+GROUP_ORDER = [
+    "Get started",
+    "Using Peach Commander",
+    "Customise",
+    "Plugins",
+    "Tutorials",
+    "Reference & help",
+    "Develop",
+]
+
 SECTION_LABEL = {
-    "user-guide": "Guide", "tutorials": "Tutorials", "troubleshooting": "Troubleshooting & FAQ",
+    "user-guide": "Install & migrate", "troubleshooting": "Troubleshooting & FAQ",
 }
+
+
+def section_label(sec: str) -> str:
+    """Human label for a `section:` value.
+
+    Only slug-shaped sections get prettified. The old rule ran `sec[:1].upper()` over
+    everything, which is why the site said "MacOS & privacy" while the Help Book — which
+    never touched the string — said "macOS & privacy" correctly.
+    """
+    if sec in SECTION_LABEL:
+        return SECTION_LABEL[sec]
+    return sec.replace("-", " ").capitalize() if sec.islower() else sec
 
 MKDOCS_YML = """site_name: {site_name}
 site_description: A fast, keyboard-driven, dual-panel file manager for macOS.
@@ -49,8 +90,7 @@ theme:
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       toggle: {{ icon: material/weather-sunny, name: Switch to light mode }}
-  features: [navigation.instant, navigation.tracking, navigation.top, navigation.sections,
-             search.suggest, search.highlight, content.code.copy, toc.follow]
+  features: [{features}]
 use_directory_urls: false
 extra_css:
   - assets/website/peach.css
@@ -124,7 +164,8 @@ def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
         shutil.copy2(ASSETS / "peachcommander-icon.png", docs / "assets")
 
     md_files = sorted(sources.rglob("*.md")) if recursive else sorted(sources.glob("*.md"))
-    pages = []  # (section, order, title, out_name)
+    pages = []  # (group, section, order, title, out_name)
+    staged: dict[str, Path] = {}
     have_index = False
     for md_path in md_files:
         if md_path.name.startswith("."):
@@ -133,6 +174,14 @@ def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
         slug = meta.get("slug") or md_path.stem
         is_home = home_from_website and md_path.parent.name == "website" and md_path.stem == "index"
         out_name = "index.md" if is_home else f"{slug}.md"
+        # Staging is flat, so two pages with the same slug used to overwrite each other in
+        # silence while BOTH kept a nav entry — that is how the user-facing Filesystem Images
+        # help page vanished from the site behind the developer page of the same slug, with a
+        # green build the whole time. Refuse it instead (F-437).
+        if out_name in staged:
+            sys.exit(f"slug collision: {md_path.relative_to(REPO)} and {staged[out_name]} both "
+                     f"stage as {out_name} — one would silently overwrite the other")
+        staged[out_name] = md_path.relative_to(REPO)
         if out_name == "index.md":
             have_index = True
         body = IMG_RE.sub(r"\1assets/screenshots/\2\3", body)
@@ -140,26 +189,58 @@ def build_one(*, workspace: str, out_dir: Path, site_name: str, sources: Path,
         fm_text = "---\n" + yaml.safe_dump(fm, sort_keys=False, allow_unicode=True) + "---\n\n" if fm else ""
         (docs / out_name).write_text(fm_text + body, encoding="utf-8")
         if not is_home:
-            pages.append((meta.get("section", "Other"), meta.get("order", 999),
-                          meta.get("title", slug), out_name))
+            pages.append((meta.get("group"), meta.get("section", "Other"),
+                          meta.get("order", 999), meta.get("title", slug), out_name))
     if not have_index and synth_index is not None:
         (docs / "index.md").write_text(synth_index, encoding="utf-8")
 
-    groups: dict[str, list] = {}
-    for sec, order, title, name in pages:
-        groups.setdefault(sec, []).append((order, title, name))
-    ordered_secs = sorted(groups, key=lambda s: min(o for o, _, _ in groups[s]))
+    # group -> section -> pages, with anything ungrouped kept on one level as before.
+    grouped: dict[str, dict[str, list]] = {}
+    flat: dict[str, list] = {}
+    for grp, sec, order, title, name in pages:
+        entry = (order, title, name)
+        if grp:
+            grouped.setdefault(grp, {}).setdefault(sec, []).append(entry)
+        else:
+            flat.setdefault(sec, []).append(entry)
+
+    def by_min_order(bucket: dict[str, list]) -> list[str]:
+        return sorted(bucket, key=lambda s: min(o for o, _, _ in bucket[s]))
+
     nav_lines = ["  - Home: index.md"]
-    for sec in ordered_secs:
-        label = SECTION_LABEL.get(sec, sec[:1].upper() + sec[1:])
-        nav_lines.append(f"  - {label}:")
-        for _, title, name in sorted(groups[sec]):
+    # GROUP_ORDER first and in its stated order; a group nobody listed still appears, at the
+    # end and named, rather than disappearing from the site without a word.
+    for grp in [g for g in GROUP_ORDER if g in grouped] + sorted(g for g in grouped
+                                                                 if g not in GROUP_ORDER):
+        nav_lines.append(f"  - {grp}:")
+        secs = grouped[grp]
+        if len(secs) == 1:
+            # One section in the group: its label would only repeat the tab ("Plugins > Plugins",
+            # "Tutorials > Tutorials"), so the pages hang directly off the tab.
+            for _, title, name in sorted(next(iter(secs.values()))):
+                nav_lines.append(f'    - "{title}": {name}')
+            continue
+        for sec in by_min_order(secs):
+            nav_lines.append(f"    - {section_label(sec)}:")
+            for _, title, name in sorted(secs[sec]):
+                nav_lines.append(f'      - "{title}": {name}')
+    for sec in by_min_order(flat):
+        nav_lines.append(f"  - {section_label(sec)}:")
+        for _, title, name in sorted(flat[sec]):
             nav_lines.append(f'    - "{title}": {name}')
+
+    # Tabs only where there is a tab bar to show. Turning them on for the flat Help subsites
+    # would promote their twelve sections to twelve tabs and change 18 sites nobody asked to
+    # change; those keep `navigation.sections` exactly as before.
+    features = ["navigation.instant", "navigation.tracking", "navigation.top"]
+    features += ["navigation.tabs", "navigation.indexes"] if grouped else ["navigation.sections"]
+    features += ["search.suggest", "search.highlight", "content.code.copy", "toc.follow"]
 
     alt_lines = "\n".join(
         f"    - name: {n}\n      link: {link}\n      lang: {lang}" for n, link, lang in alternate)
     (work / "mkdocs.yml").write_text(
         MKDOCS_YML.format(site_name=site_name, nav="\n".join(nav_lines), alternate=alt_lines,
+                          features=", ".join(features),
                           repo_url=REPO_URL, repo_slug=REPO_SLUG),
         encoding="utf-8")
 

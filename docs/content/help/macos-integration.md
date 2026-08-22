@@ -1,6 +1,7 @@
 ---
 title: macOS integration
 slug: macos-integration
+group: Using Peach Commander
 section: macOS & privacy
 order: 130
 related: [opening-files, privacy-and-security]

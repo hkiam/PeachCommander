@@ -1,6 +1,7 @@
 ---
 title: Security & permissions
 slug: arch-security
+group: Develop
 section: Architecture
 order: 45
 related: [architecture-overview, privacy-and-security]

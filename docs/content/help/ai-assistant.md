@@ -1,6 +1,7 @@
 ---
 title: AI Assistant
 slug: ai-assistant
+group: Plugins
 section: Plugins
 order: 122
 related: [plugins, settings, privacy-and-security]

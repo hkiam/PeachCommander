@@ -1,6 +1,7 @@
 ---
 title: "PCNet"
 slug: module-pcnet
+group: Develop
 section: Modules
 order: 57
 related: [architecture-overview]

@@ -1,8 +1,9 @@
 ---
 title: "API: Contributions ABI (contrib)"
 slug: api-contrib
+group: Develop
 section: API reference
-order: 60
+order: 250
 related: [sdk-overview, plugin-architecture-guide]
 ---
 

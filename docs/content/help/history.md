@@ -1,6 +1,7 @@
 ---
 title: Global history
 slug: history
+group: Using Peach Commander
 section: Organizing your view
 order: 47
 related: [favorites, navigating]

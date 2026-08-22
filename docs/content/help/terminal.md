@@ -1,6 +1,7 @@
 ---
 title: The built-in terminal
 slug: terminal
+group: Plugins
 section: Plugins
 order: 127
 related: [plugins, opening-files, macos-integration, keyboard-shortcuts]

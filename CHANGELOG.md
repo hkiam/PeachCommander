@@ -115,6 +115,36 @@ does not have.
 
 ### Fixed
 
+- **The documentation site opened with the API reference.** The first two navigation entries
+  were *API reference* and *Developer guide*; *Getting started* came third, and the user
+  guide, the plugins and the tutorials were far below. Nobody had decided that: the site's
+  navigation is derived from each page's `order:`, a section ranks by the lowest `order:` of
+  its pages, four sections tied at `10` — and the tie fell to alphabetical directory order.
+  The API reference won outright because its generator wrote `order: 5`, the smallest number
+  in the corpus. The site now has seven tabs in reading order — Get started, Using Peach
+  Commander, Customise, Plugins, Tutorials, Reference & help, Develop — with the twenty-one
+  former sections as collapsible groups beneath them, so no more than a handful of entries
+  is ever on screen at once. The API reference is in the last tab. The landing page opens
+  with three doors instead of a wall of prose: coming from Total Commander, new to two-panel
+  managers, or here to write a plugin.
+
+  This is a website-only key, so the in-app Help Book keeps its own structure and is
+  byte-for-byte unchanged, and the eighteen translated Help subsites are untouched.
+
+- **A user help page was invisible on the website.** `help/filesystem-images.md` and
+  `plugins/filesystem-images.md` declared the same slug. Pages are staged flat, so the
+  developer page overwrote the user page while the navigation kept an entry for both — two
+  titles, one file, and the user-facing Filesystem Images help was not published at all. The
+  developer page is renamed, and a duplicate slug now stops the build instead of quietly
+  winning. Also: the site said "MacOS & privacy" because section labels were auto-capitalised.
+
+- **266 dead links in the shipped in-app help.** Seven topics link to each other as
+  `](slug.md)`, which resolves on the website; an Apple Help Book bundle contains no Markdown
+  at all, so every one of them was a dead href — fourteen links in each of the nineteen
+  languages. The table of contents was always correct, which is why nothing looked wrong from
+  the outside.
+
+
 - **Toggling hidden files could kill the app, and switching panels showed the wrong thing first.**
   Both commands ran their handler on a background thread and reached straight into AppKit from there:
   `cm_SwitchHidSys` called `NSTableView.reloadData` while the main thread was drawing, and AppKit's

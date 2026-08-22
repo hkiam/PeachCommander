@@ -1,6 +1,7 @@
 ---
 title: "Tutorial: Copy a release to a remote server"
 slug: tutorial-remote-deploy
+group: Tutorials
 section: tutorials
 order: 118
 related: [ftp-and-sftp, downloading-from-url, background-transfers]

@@ -1,6 +1,7 @@
 ---
 title: Disk Map
 slug: disk-map
+group: Plugins
 section: Plugins
 order: 121
 related: [plugins, deleting-files, settings]

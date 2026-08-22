@@ -1,6 +1,7 @@
 ---
 title: "PCCommands"
 slug: module-pccommands
+group: Develop
 section: Modules
 order: 53
 related: [architecture-overview]

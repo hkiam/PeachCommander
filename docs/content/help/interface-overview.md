@@ -1,6 +1,7 @@
 ---
 title: The main window
 slug: interface-overview
+group: Get started
 section: Getting started
 order: 12
 related: [navigating, panels-and-tabs]

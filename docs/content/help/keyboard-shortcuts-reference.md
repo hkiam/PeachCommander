@@ -1,6 +1,7 @@
 ---
 title: Keyboard shortcut reference
 slug: keyboard-shortcuts-reference
+group: Reference & help
 section: Help & troubleshooting
 order: 142
 related: [keyboard-shortcuts]

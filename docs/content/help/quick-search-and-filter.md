@@ -1,6 +1,7 @@
 ---
 title: Quick search & filter
 slug: quick-search-and-filter
+group: Using Peach Commander
 section: Organizing your view
 order: 44
 related: [searching, view-modes-and-sorting]

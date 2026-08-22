@@ -1,6 +1,7 @@
 ---
 title: "PCApp"
 slug: module-pcapp
+group: Develop
 section: Modules
 order: 58
 related: [architecture-overview]

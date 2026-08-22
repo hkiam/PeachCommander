@@ -1,6 +1,7 @@
 ---
 title: Connecting to FTP & SFTP
 slug: ftp-and-sftp
+group: Using Peach Commander
 section: Network & remote
 order: 100
 related: [downloading-from-url, network-shares]

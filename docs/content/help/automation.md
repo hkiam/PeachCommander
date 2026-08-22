@@ -1,6 +1,7 @@
 ---
 title: Automation (AppleScript & Shortcuts)
 slug: automation
+group: Using Peach Commander
 section: Power tools
 order: 98
 related: [start-menu, settings]

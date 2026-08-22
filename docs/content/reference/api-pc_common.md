@@ -1,8 +1,9 @@
 ---
 title: "API: Common ABI (pc_common)"
 slug: api-pc_common
+group: Develop
 section: API reference
-order: 10
+order: 200
 related: [sdk-overview, plugin-architecture-guide]
 ---
 

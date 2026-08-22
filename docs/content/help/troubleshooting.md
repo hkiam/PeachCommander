@@ -1,6 +1,7 @@
 ---
 title: Troubleshooting
 slug: troubleshooting
+group: Reference & help
 section: Help & troubleshooting
 order: 140
 related: [privacy-and-security, known-limitations]

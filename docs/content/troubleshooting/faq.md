@@ -1,6 +1,7 @@
 ---
 title: Frequently asked questions
 slug: faq
+group: Reference & help
 section: troubleshooting
 order: 30
 related: [troubleshooting, known-limitations, privacy-and-security]

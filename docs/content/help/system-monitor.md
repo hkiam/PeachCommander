@@ -1,6 +1,7 @@
 ---
 title: System Monitor
 slug: system-monitor
+group: Plugins
 section: Plugins
 order: 124
 related: [plugins, settings]

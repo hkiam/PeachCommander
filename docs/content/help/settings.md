@@ -1,6 +1,7 @@
 ---
 title: Settings
 slug: settings
+group: Customise
 section: Customizing
 order: 116
 related: [appearance, keyboard-shortcuts]

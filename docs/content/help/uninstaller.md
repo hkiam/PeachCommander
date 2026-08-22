@@ -1,6 +1,7 @@
 ---
 title: Uninstaller
 slug: uninstaller
+group: Plugins
 section: Plugins
 order: 126
 related: [plugins, deleting-files]

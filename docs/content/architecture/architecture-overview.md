@@ -1,6 +1,7 @@
 ---
 title: Architecture overview
 slug: architecture-overview
+group: Develop
 section: Architecture
 order: 30
 related: [dev-overview, arch-diagrams, arch-concurrency-data]

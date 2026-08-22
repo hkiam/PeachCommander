@@ -1,6 +1,7 @@
 ---
 title: Downloading from a URL
 slug: downloading-from-url
+group: Using Peach Commander
 section: Network & remote
 order: 102
 related: [ftp-and-sftp]

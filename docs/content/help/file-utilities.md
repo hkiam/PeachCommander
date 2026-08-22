@@ -1,6 +1,7 @@
 ---
 title: File utilities
 slug: file-utilities
+group: Using Peach Commander
 section: Power tools
 order: 94
 related: [comparing-and-syncing]

@@ -1,6 +1,7 @@
 ---
 title: "PCArchive"
 slug: module-pcarchive
+group: Develop
 section: Modules
 order: 55
 related: [architecture-overview]

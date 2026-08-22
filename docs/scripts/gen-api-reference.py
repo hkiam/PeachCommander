@@ -21,12 +21,12 @@ SDK = REPO / "Plugins/SDK"
 OUT = REPO / "docs/content/reference"
 
 HEADERS = [
-    ("pc_common.h", "Common ABI (pc_common)", "Shared types, return codes, capability flags and callback typedefs used by all plugin ABIs.", 10),
-    ("pcx.h", "Packer plugins (PCX)", "Browse, extract and create archives — the WCX-style packer ABI.", 20),
-    ("pdx.h", "Content plugins (PDX)", "Compute typed content fields (custom columns, search criteria, rename placeholders) — the WDX-style ABI.", 30),
-    ("pfx.h", "File-system plugins (PFX)", "Expose a remote or virtual file system mounted like a drive — the WFX-style ABI.", 40),
-    ("plx.h", "Lister plugins (PLX)", "Render a file into a custom view for the viewer / Quick View — the WLX-style ABI.", 50),
-    ("contrib.h", "Contributions ABI (contrib)", "Run declared commands and build declared views; unified host-services table. Orthogonal to the file-op ABIs.", 60),
+    ("pc_common.h", "Common ABI (pc_common)", "Shared types, return codes, capability flags and callback typedefs used by all plugin ABIs.", 200),
+    ("pcx.h", "Packer plugins (PCX)", "Browse, extract and create archives — the WCX-style packer ABI.", 210),
+    ("pdx.h", "Content plugins (PDX)", "Compute typed content fields (custom columns, search criteria, rename placeholders) — the WDX-style ABI.", 220),
+    ("pfx.h", "File-system plugins (PFX)", "Expose a remote or virtual file system mounted like a drive — the WFX-style ABI.", 230),
+    ("plx.h", "Lister plugins (PLX)", "Render a file into a custom view for the viewer / Quick View — the WLX-style ABI.", 240),
+    ("contrib.h", "Contributions ABI (contrib)", "Run declared commands and build declared views; unified host-services table. Orthogonal to the file-op ABIs.", 250),
 ]
 
 # The header's leading /* … */ block is the page intro. Skip any `//` line comments
@@ -63,7 +63,8 @@ def gen(header, title, blurb, order) -> str:
             protos.add(pm.group(1))
 
     out = [f"---\ntitle: \"API: {title}\"\nslug: api-{Path(header).stem}\n"
-           f"section: API reference\norder: {order}\nrelated: [sdk-overview, plugin-architecture-guide]\n---\n",
+           f"group: Develop\nsection: API reference\norder: {order}\n"
+           f"related: [sdk-overview, plugin-architecture-guide]\n---\n",
            f"# {title}", "",
            f"> Source: `Plugins/SDK/{header}` — this page is generated from that header "
            f"by `docs/scripts/gen-api-reference.py`; edit the header, not this page.", "",
@@ -100,8 +101,10 @@ def main():
         print(f"✓ api-{Path(header).stem}.md")
 
     # index
-    idx = ["---\ntitle: Plugin API reference\nslug: api-overview\nsection: API reference\norder: 5\n"
-           "related: [sdk-overview]\n---\n", "# Plugin API reference", "",
+    # `group:` is what puts this in the last tab. `order: 5` is kept because the Help Book
+    # and the in-group section order still read it; it no longer decides the top level.
+    idx = ["---\ntitle: Plugin API reference\nslug: api-overview\ngroup: Develop\n"
+           "section: API reference\norder: 199\nrelated: [sdk-overview]\n---\n", "# Plugin API reference", "",
            "The Peach Commander plugin ABI is C11, UTF-8, and versioned via `PcGetApiVersion`. "
            "Each page below is generated directly from the canonical header in `Plugins/SDK/`.", ""]
     for header, title, order in sorted(generated, key=lambda x: x[2]):

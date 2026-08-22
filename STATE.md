@@ -15,7 +15,7 @@
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
 | Last updated | 2026-08-22 |
 | Released | **0.7.1 (build 12), 2026-08-18** — the defect round above; unsigned, as every build so far. Previously **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
-| Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
+| Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1383 keys × 19) + all shipping plugins + the **full in-app Help Book (51 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green — and it prints the numbers above, so read them from there rather than counting by hand (languages=19 · help_topics=51 · ui_strings=1383 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
 
 **Harness: two failures that were mine.** A flaky test — `DirectoryWatcher` expectations were fulfilled
@@ -99,6 +99,82 @@ A deliberate trade — a violation becomes a loud precondition failure instead o
 
 Measured rather than assumed: 26 warnings before, 23 after, exactly those three gone and no new ones.
 Full `AllTests` green (PCPerfTests skipped — the `/tmp` fixture flake, not this work).
+
+
+## 2026-08-22 (F-437) — The docs site opened with the API reference
+
+Reported plainly: the site is hard to digest because it *starts* too hard. The first two
+navigation entries were **API reference** and **Developer guide**, *Getting started* came
+third, and the user guide, plugins and tutorials were far below. A reference work answers a
+question the newcomer does not have yet.
+
+**Nobody decided that order.** `build-site.py` derives the nav from each page's front matter:
+`section:` groups, and a section's rank is `min(order)` of its pages. Four sections tied at
+`order: 10`, and the tie fell to `sorted(rglob("*.md"))` — alphabetical directory order — so
+`developer-guide/` outranked `help/`. The API reference won outright because
+`gen-api-reference.py` wrote `order: 5`, the smallest number in the corpus. Measured at the
+generated `mkdocs.yml`, not inferred: one of the three exploring passes reasoned it out from
+the front matter instead and got it backwards, which is why the artefact was checked.
+
+Second problem, independent of order: **21 sections on one level**, because the nav builder
+knew only one level of grouping. Sorted perfectly it would still be unreadable.
+
+**The lever: a new `group:` key rather than rewritten `order:` values.** The obvious move —
+renumbering — is expensive, because the same front matter feeds the Apple Help Book and
+`docs.yml:87` byte-compares the shipped bundle: every renumbering would mean rebuilding 19
+languages and translating 18 sets of section names. `group:` is read by the website only.
+Verified at both consumers before writing anything: `check-docs.py` checks required fields
+for *presence* and rejects no extra key, and `build-helpbook.py` reads only `title`, `slug`,
+`section`, `order`, `related`, `anchor`. Proof after the fact: **`index.html` changed in none
+of the 19 lproj bundles**, and `check-translation-drift.py` reports `drifted=0`.
+
+Seven tabs in reading order — Get started · Using Peach Commander · Customise · Plugins ·
+Tutorials · Reference & help · Develop — with the 21 former sections as collapsible groups
+beneath. Groups holding a single section are flattened, so no tab says "Plugins ▸ Plugins".
+`navigation.tabs` is switched on **only** where a group exists: enabling it globally would
+have promoted the translated subsites' twelve sections to twelve tabs and changed 18 sites
+nobody asked to change. The API reference moved from first to last, by moving its generated
+`order:` into a 200-band — those pages live outside `docs/content/help/`, so the Help Book
+never reads them.
+
+Landing page: it already existed and was good (hero, six feature cards, a key-cap strip, a
+release-aware download button). It gained **three doors** — coming from Total Commander, new
+to two-panel managers, here to write a plugin — built from the `## Who it is for` prose that
+was buried at position eleven. The plan also said to trim the long tail of list sections;
+looking at them, that would have destroyed substantive positioning copy, so they stayed.
+`auto-fit` rather than three fixed columns after the picture showed the middle door's title
+breaking across three lines: what constrains the cards is the content column, which depends
+on the sidebar and the ToC, not on the window.
+
+**Two defects fixed on the way.** `help/filesystem-images.md` and
+`plugins/filesystem-images.md` shared a slug; staging is flat, so the developer page
+overwrote the user page while the nav kept an entry for each — two titles, one file, and the
+user-facing Filesystem Images help was **not on the site at all**. The developer page was the
+one renamed, because only `help/` topics are translation-gated. A duplicate slug now aborts
+the build. And the site said "MacOS & privacy" because `sec[:1].upper()` ran over every
+section label, including ones that were already correct.
+
+Nothing pins the nav order — no golden file, no check. That is how this could happen and how
+it can return; a gate over the generated `mkdocs.yml` is the obvious guard and is not built.
+
+## 2026-08-22 (F-438) — 266 dead links in the shipped Help Book
+
+Seven help topics link to each other as `](slug.md)`, which is right for the website. An
+Apple Help Book bundle contains no Markdown at all, so each of those was a dead href in the
+in-app help: 14 links × 19 languages. `build-helpbook.py` rewrote image paths and never body
+links, and `build_index()` always emitted correct `.html` for the table of contents — so the
+help *looked* fine from the outside and `check-docs.py` accepts both forms by design.
+
+Fixed in the generator, with anchors preserved (`editing-files.md#formatting-a-file` →
+`.html#formatting-a-file`), and a link to an unknown slug now prints a warning instead of
+being rewritten into a different dead end — the English corpus is gated by `check-docs.py`,
+the 18 translations by nothing at all.
+
+Regenerating surfaced something else: **the committed bundle was stale.** Of 154 changed
+topic pages, 152 changed only their link targets; `en/de.lproj/ai-assistant.html` also gained
+content, because `62255c0` changed those sources and the bundle was last built in `7a7d3d2`.
+The byte-comparison gate should have caught that at the time. Local `markdown 3.9` /
+`pygments 2.21.0` match the pins in `docs.yml:30`, so the diff carries no formatting noise.
 
 
 ## 2026-08-18 (VM) — The five new scenarios, on the VM

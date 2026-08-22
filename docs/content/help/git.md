@@ -1,6 +1,7 @@
 ---
 title: Git
 slug: git
+group: Plugins
 section: Plugins
 order: 123
 related: [plugins, view-modes-and-sorting]

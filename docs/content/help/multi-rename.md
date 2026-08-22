@@ -1,6 +1,7 @@
 ---
 title: Renaming many files
 slug: multi-rename
+group: Using Peach Commander
 section: Power tools
 order: 92
 related: [moving-and-renaming]

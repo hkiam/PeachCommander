@@ -1,6 +1,7 @@
 ---
 title: Glossary
 slug: glossary
+group: Reference & help
 section: Reference
 order: 100
 related: [introduction]

@@ -1,6 +1,7 @@
 ---
 title: Plugins
 slug: plugins
+group: Plugins
 section: Plugins
 order: 120
 related: [disk-map, ai-assistant, git, system-monitor, task-manager, uninstaller, filesystem-images, archives, ftp-and-sftp]

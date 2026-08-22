@@ -1,6 +1,7 @@
 ---
 title: Installing Peach Commander
 slug: installation
+group: Get started
 section: user-guide
 order: 10
 related: [introduction, privacy-and-security]

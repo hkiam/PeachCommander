@@ -1,8 +1,9 @@
 ---
 title: "API: Content plugins (PDX)"
 slug: api-pdx
+group: Develop
 section: API reference
-order: 30
+order: 220
 related: [sdk-overview, plugin-architecture-guide]
 ---
 
