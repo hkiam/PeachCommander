@@ -27,10 +27,11 @@ Peach Commander si zapomni mape, ki ste jih obiskali v vsakem podoknu, tako kot 
 Vrstica poti na vrhu vsakega podokna prikazuje, kje se nahajate, hkrati pa je hiter način, da pridete drugam.
 
 ![Vrstica poti, ki prikazuje trenutno mapo kot segmente, po katerih lahko klikate](screenshots/path-bar-crop.png)
-*(Slika: Vrstica poti. Kliknite kateri koli segment, da skočite v tisto mapo, ali svinčnik, da vnesete celotno pot.)*
+*(Slika: Vrstica poti. Kliknite kateri koli segment, da skočite v tisto mapo, ali desno od poti, da vnesete celotno pot.)*
 
 - Kliknite kateri koli segment poti (na primer ime nadrejene mape), da skočite naravnost vanjo.
-- Kliknite svinčnik na desni strani vrstice poti, da jo spremenite v besedilno polje, nato vnesite ali prilepite poljubno pot in pritisnite Enter.
+- Kliknite kamor koli v prazen prostor desno od poti — vključno s svinčnikom —, da vrstico spremenite v besedilno polje, nato vnesite ali prilepite poljubno pot in pritisnite Enter. Svinčnika samega vam ni treba zadeti.
+- Klik na vrstico poti to podokno tudi aktivira.
 - Lahko pa od kjer koli vnesete pot z izbiro **Datoteka ▸ Pojdi v mapo …** (**Cmd+Shift+G**).
 
 ## Skok na pogosta mesta

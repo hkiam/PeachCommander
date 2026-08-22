@@ -27,10 +27,11 @@ Peach Commander kommer ihåg de mappar du har besökt i varje panel, precis som 
 Sökvägsraden överst i varje panel visar var du är och fungerar även som ett snabbt sätt att ta dig någonstans.
 
 ![Redigerbar sökvägsrad som visar den aktuella mappen som klickbara segment](screenshots/path-bar-crop.png)
-*(Bild: Sökvägsraden. Klicka på ett segment för att hoppa till den mappen, eller på pennan för att skriva en fullständig sökväg.)*
+*(Bild: Sökvägsraden. Klicka på ett segment för att hoppa till den mappen, eller till höger om sökvägen för att skriva en fullständig sökväg.)*
 
 - Klicka på ett segment av sökvägen (t.ex. en överordnad mapps namn) för att hoppa direkt dit.
-- Klicka på pennan till höger på sökvägsraden för att göra den till ett textfält, skriv eller klistra sedan in valfri sökväg och tryck på Enter.
+- Klicka var som helst i det tomma utrymmet till höger om sökvägen — pennan inkluderad — för att göra raden till ett textfält, skriv eller klistra sedan in valfri sökväg och tryck på Enter. Du behöver inte träffa pennan.
+- Ett klick på en sökvägsrad gör också den panelen aktiv.
 - Eller välj **Arkiv ▸ Gå till mapp…** (**Cmd+Shift+G**) för att skriva en sökväg var som helst ifrån.
 
 ## Hoppa till vanliga platser

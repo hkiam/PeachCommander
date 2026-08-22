@@ -27,10 +27,11 @@ Peach Commander merkt sich die Ordner, die Sie in jedem Panel besucht haben, gen
 Die Pfadleiste am oberen Rand jedes Panels zeigt, wo Sie sich befinden, und dient zugleich als Möglichkeit, schnell irgendwohin zu gelangen.
 
 ![Bearbeitbare Pfadleiste, die den aktuellen Ordner als anklickbare Segmente zeigt](screenshots/path-bar-crop.png)
-*(Abbildung: Die Pfadleiste. Klicken Sie auf ein beliebiges Segment, um zu diesem Ordner zu springen, oder auf den Stift, um einen vollständigen Pfad einzugeben.)*
+*(Abbildung: Die Pfadleiste. Klicken Sie auf ein beliebiges Segment, um zu diesem Ordner zu springen, oder rechts neben den Pfad, um einen vollständigen Pfad einzugeben.)*
 
 - Klicken Sie auf ein beliebiges Segment des Pfades (zum Beispiel den Namen eines übergeordneten Ordners), um direkt dorthin zu springen.
-- Klicken Sie auf den Stift rechts an der Pfadleiste, um sie in ein Textfeld zu verwandeln, geben Sie dann einen beliebigen Pfad ein oder fügen Sie ihn ein und drücken Sie Enter.
+- Klicken Sie irgendwo in die freie Fläche rechts des Pfades — den Stift eingeschlossen —, um die Leiste in ein Textfeld zu verwandeln, geben Sie dann einen beliebigen Pfad ein oder fügen Sie ihn ein und drücken Sie Enter. Den Stift selbst müssen Sie nicht treffen.
+- Ein Klick auf eine Pfadleiste macht dieses Panel außerdem zum aktiven.
 - Oder wählen Sie **Datei ▸ Gehe zu Ordner…** (**Cmd+Shift+G**), um von überall aus einen Pfad einzugeben.
 
 ## Zu gängigen Orten springen

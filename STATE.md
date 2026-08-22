@@ -361,6 +361,61 @@ bar you just imported from elsewhere is not ours to add to. All three cases run:
 line — still holds. The menu titles were checked in the running app in de, fr, ru and zh-Hans rather
 than only in the catalogue.
 
+## 2026-08-22 (F-444) — The file said you could click the empty space. You could not.
+
+Reported: the pencil at the right end of the path bar is an 18-point target, and the empty space
+beside it means nothing. Make the whole area right of the path open the editor.
+
+`PathBarView.swift`'s own header comment had claimed exactly that behaviour — "Clicking empty space —
+or double-clicking anywhere — turns the bar into a free-text edit field" — for as long as the file has
+existed. Only the double-click was ever implemented; `mouseDown` navigated on a segment and did
+nothing otherwise. So this closed a documented behaviour rather than adding one.
+
+The decision moved to `PCFoundation/PathBarHit.swift` for the same reason `PathSegments` is there — it
+decides where a click goes, and the view around it needs a theme, a tracking area and an AppKit event
+to ask the question. Segment first, then the trailing area, then nothing: the three-pixel gaps
+*between* segments stay inert, because a click that just misses a folder name is a miss and not a
+request to type a path. `contentEndX` is nil until the first draw, so a bar nobody has seen cannot be
+clicked into edit mode.
+
+**The promise needed the dead property to stop being dead.** `contentTrailingInset` (30 pt) was
+written to keep the segments off the pencil and then never read, so a long path drew its deepest
+folders underneath the button. Stopping the pen at the limit was not enough either: the segment that
+*crossed* the limit still overhung it, its hit rect reached into the trailing area, and the first run
+of this showed the bug plainly — a click in the free space of a deep path navigated to a parent
+instead of opening the editor. A segment that does not fit *whole* is now not drawn at all, which is
+what makes "everything past `contentEndX` is free space" true rather than nearly true. The visible
+cost is up to 30 pt less breadcrumb on a path too long for the bar, whose deepest segments were
+already being clipped by the right edge.
+
+**A click on a path bar now activates that panel** — it did not, and neither do the tab bar or the
+drive bar. Without it the editor could open on the panel that does not have the focus. Order matters
+and only works one way round: `activateLeftPanel` makes the file list the first responder, while
+`beginEditing` focuses its field on the next runloop tick, so activate first. Confirmed by the
+responder: `NSTextView` after the click, on the panel that was inactive when it started.
+
+**And the three indicators over the bar were eating the clicks.** `filterLabel`, `typeAheadLabel` and
+`messageLabel` are constrained *over* the path bar, and a plain `NSTextField` answers `hitTest`
+whether or not it can use the click. While the quick filter was showing, its indicator sat on the
+pencil and **the pencil could not be clicked at all** — older than this change, and invisible, because
+the indicator looks like part of the bar. `ClickThroughLabel` returns nil from `hitTest`. The gate is
+the new `pathbarclick` verb's `hitTest=` line, asked of the window *before* the click: `NSButton` at
+the pencil and `PathBarView` beside it, with the filter up. Asking after the click only ever reported
+the edit field, which is how the first version of this check passed while proving nothing.
+
+**Two DEBUG verbs, because there was no other way to look.** `pathbardump` reports whether the bar is
+editing, the field's text, the breadcrumb and where the content ends; `pathbarclick <side>|<region>|
+<clicks>|<out>` clicks a named region (first/last/gap/trailing/pencil/x:n) with a synthesised
+`NSEvent` through `mouseDown`, so the coordinates the bar draws with and the ones it hit-tests against
+have to agree — the half a direct call to `pathBarHit` would have assumed. A screenshot cannot say
+where the segments ended, which is the only number that matters here.
+
+**VM.** Zero Auto Layout conflicts in `main-window`, `keys-main` and `accessibility`, and the keyboard
+loop is still closed: 32 stops, all reachable and all labelled. `ClickThroughLabel` was the thing to
+watch there — a view that stops answering `hitTest` could in principle drop out of what a screen reader
+reaches by position, and the labels are still in the tree because accessibility traverses subviews, not
+hit tests.
+
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 
 Run with `--only menu-file,viewer-md-outline,csv-no-header,jsonl,viewer-long-lines`, which is the debt both

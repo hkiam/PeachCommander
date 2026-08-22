@@ -27,10 +27,11 @@ Peach Commander ricorda le cartelle che hai visitato in ciascun pannello, propri
 La barra del percorso in cima a ciascun pannello mostra dove ti trovi e funge anche da modo per arrivare rapidamente da qualche parte.
 
 ![Barra del percorso modificabile che mostra la cartella corrente come segmenti cliccabili](screenshots/path-bar-crop.png)
-*(Figura: la barra del percorso. Fai clic su un segmento per saltare a quella cartella, o sulla matita per digitare un percorso completo.)*
+*(Figura: la barra del percorso. Fai clic su un segmento per saltare a quella cartella, o a destra del percorso per digitare un percorso completo.)*
 
 - Fai clic su un segmento del percorso (per esempio il nome di una cartella superiore) per saltare direttamente a esso.
-- Fai clic sulla matita a destra della barra del percorso per trasformarla in un campo di testo, poi digita o incolla un percorso e premi Invio.
+- Fai clic in qualsiasi punto dello spazio vuoto a destra del percorso — matita compresa — per trasformare la barra in un campo di testo, poi digita o incolla un percorso e premi Invio. Non devi centrare la matita.
+- Fare clic su una barra del percorso rende anche attivo quel pannello.
 - Oppure scegli **File ▸ Vai alla cartella…** (**Cmd+Maiusc+G**) per digitare un percorso da qualsiasi punto.
 
 ## Salta a luoghi comuni

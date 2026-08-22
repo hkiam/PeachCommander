@@ -27,10 +27,11 @@ Peach Commander mémorise les dossiers que vous avez visités dans chaque pannea
 La barre de chemin en haut de chaque panneau indique où vous vous trouvez et sert aussi à vous rendre quelque part rapidement.
 
 ![Barre de chemin éditable affichant le dossier courant sous forme de segments cliquables](screenshots/path-bar-crop.png)
-*(Figure : la barre de chemin. Cliquez sur un segment pour accéder à ce dossier, ou sur le crayon pour saisir un chemin complet.)*
+*(Figure : la barre de chemin. Cliquez sur un segment pour accéder à ce dossier, ou à droite du chemin pour saisir un chemin complet.)*
 
 - Cliquez sur n'importe quel segment du chemin (par exemple le nom d'un dossier parent) pour y accéder directement.
-- Cliquez sur le crayon à droite de la barre de chemin pour la transformer en champ de texte, puis saisissez ou collez n'importe quel chemin et appuyez sur Enter.
+- Cliquez n'importe où dans l'espace libre à droite du chemin — le crayon compris — pour transformer la barre en champ de texte, puis saisissez ou collez n'importe quel chemin et appuyez sur Enter. Il n'est pas nécessaire d'atteindre le crayon lui-même.
+- Cliquer sur une barre de chemin rend également ce panneau actif.
 - Ou choisissez **Fichier ▸ Aller au dossier…** (**Cmd+Shift+G**) pour saisir un chemin depuis n'importe où.
 
 ## Accéder aux emplacements courants

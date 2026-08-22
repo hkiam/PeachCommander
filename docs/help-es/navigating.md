@@ -27,10 +27,11 @@ Peach Commander recuerda las carpetas que has visitado en cada panel, igual que 
 La barra de ruta en la parte superior de cada panel muestra dónde estás y también sirve para llegar rápido a un sitio.
 
 ![Barra de ruta editable que muestra la carpeta actual como segmentos en los que se puede hacer clic](screenshots/path-bar-crop.png)
-*(Figura: La barra de ruta. Haz clic en cualquier segmento para saltar a esa carpeta, o en el lápiz para escribir una ruta completa.)*
+*(Figura: La barra de ruta. Haz clic en cualquier segmento para saltar a esa carpeta, o a la derecha de la ruta para escribir una ruta completa.)*
 
 - Haz clic en cualquier segmento de la ruta (por ejemplo, el nombre de una carpeta principal) para saltar directamente a él.
-- Haz clic en el lápiz a la derecha de la barra de ruta para convertirla en un campo de texto, luego escribe o pega cualquier ruta y pulsa Enter.
+- Haz clic en cualquier punto del espacio vacío a la derecha de la ruta —el lápiz incluido— para convertir la barra en un campo de texto, luego escribe o pega cualquier ruta y pulsa Enter. No hace falta acertar en el lápiz.
+- Hacer clic en una barra de ruta también activa ese panel.
 - O elige **Archivo ▸ Ir a la carpeta…** (**Cmd+Shift+G**) para escribir una ruta desde cualquier sitio.
 
 ## Saltar a lugares comunes

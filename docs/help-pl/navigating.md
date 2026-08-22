@@ -27,10 +27,11 @@ Peach Commander pamięta foldery, które odwiedziłeś w każdym panelu, zupełn
 Pasek ścieżki na górze każdego panelu pokazuje, gdzie się znajdujesz, i służy zarazem jako sposób na szybkie dotarcie gdzieś.
 
 ![Edytowalny pasek ścieżki pokazujący bieżący folder jako klikalne segmenty](screenshots/path-bar-crop.png)
-*(Rysunek: Pasek ścieżki. Kliknij dowolny segment, aby przejść do tego folderu, lub ołówek, aby wpisać pełną ścieżkę.)*
+*(Rysunek: Pasek ścieżki. Kliknij dowolny segment, aby przejść do tego folderu, lub obszar po prawej stronie ścieżki, aby wpisać pełną ścieżkę.)*
 
 - Kliknij dowolny segment ścieżki (na przykład nazwę folderu nadrzędnego), aby przejść bezpośrednio do niego.
-- Kliknij ołówek po prawej stronie paska ścieżki, aby zmienić go w pole tekstowe, a następnie wpisz lub wklej dowolną ścieżkę i naciśnij Enter.
+- Kliknij w dowolnym miejscu wolnej przestrzeni po prawej stronie ścieżki — wraz z ołówkiem — aby zmienić pasek w pole tekstowe, a następnie wpisz lub wklej dowolną ścieżkę i naciśnij Enter. Nie musisz trafić w sam ołówek.
+- Kliknięcie paska ścieżki czyni też ten panel aktywnym.
 - Albo wybierz **Plik ▸ Przejdź do folderu…** (**Cmd+Shift+G**), aby wpisać ścieżkę z dowolnego miejsca.
 
 ## Przechodzenie do typowych miejsc

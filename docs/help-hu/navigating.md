@@ -27,10 +27,11 @@ A Peach Commander megjegyzi az egyes panelekben meglátogatott mappákat, akárc
 Az útvonalsáv minden panel tetején mutatja, hol van, és egyben gyors odajutás módjaként is szolgál.
 
 ![Szerkeszthető útvonalsáv, amely az aktuális mappát kattintható szakaszokként mutatja](screenshots/path-bar-crop.png)
-*(Ábra: az útvonalsáv. Kattintson egy szakaszra az arra a mappára ugráshoz, vagy a ceruzára egy teljes útvonal beírásához.)*
+*(Ábra: az útvonalsáv. Kattintson egy szakaszra az arra a mappára ugráshoz, vagy az útvonaltól jobbra egy teljes útvonal beírásához.)*
 
 - Kattintson az útvonal bármely szakaszára (például egy szülőmappa nevére) az egyenesen odaugráshoz.
-- Kattintson az útvonalsáv jobb oldalán lévő ceruzára, hogy szövegmezővé alakítsa, majd írjon be vagy illesszen be egy útvonalat és nyomja meg az Entert.
+- Kattintson bárhová az útvonal jobb oldalán lévő üres területre — a ceruzát is beleértve —, hogy a sávot szövegmezővé alakítsa, majd írjon be vagy illesszen be egy útvonalat és nyomja meg az Entert. Magát a ceruzát nem kell eltalálnia.
+- Az útvonalsávra kattintás egyben aktívvá is teszi azt a panelt.
 - Vagy válassza a **Fájl ▸ Ugrás mappára…** (**Cmd+Shift+G**) lehetőséget egy útvonal bárhonnan beírásához.
 
 ## Ugrás gyakori helyekre

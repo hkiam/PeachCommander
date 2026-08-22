@@ -26,6 +26,8 @@
 //   filter <text>         apply the quick filter to the active panel
 //   viewdump <file>       cursor, first visible row and scroll offset of the active panel
 //   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
+//   pathbardump <side>|<out>   the path bar's state: editing, its text, the breadcrumb, where it ends
+//   pathbarclick <side>|<region>|<clicks>|<out>   click a path bar region (first/last/gap/trailing/pencil)
 //   theme <id>            select a colour palette ("system", "norton", …)
 //   quit                  terminate the app
 //   # …                   comment / blank lines are ignored
@@ -562,6 +564,30 @@ extension MainWindowController {
                 let responder = window?.firstResponder.map { String(describing: type(of: $0)) } ?? "<none>"
                 try? "active=\(side)\nleft=\(l)\nright=\(r)\nresponder=\(responder)\n"
                     .write(toFile: arg, atomically: true, encoding: .utf8)
+            case "pathbardump":                        // pathbardump <left|right>|<out> (F-444)
+                // The path bar draws its breadcrumb and handles its own clicks, so whether it is in edit
+                // mode is readable nowhere else — not through a control, and not from a screenshot that
+                // cannot say where the segments ended.
+                let pd = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                if pd.count == 2 {
+                    let panel = pd[0] == "right" ? rightPanelController : leftPanelController
+                    try? (panel?.view.pathBarStateForAutomation ?? "ERROR: no panel\n")
+                        .write(toFile: pd[1], atomically: true, encoding: .utf8)
+                }
+            case "pathbarclick":                       // pathbarclick <side>|<region>|<clicks>|<out> (F-444)
+                // Regions: first, last, gap, trailing, pencil, x:<n>. A real synthesised event through
+                // `mouseDown`, so the coordinates the bar draws with and the ones it hit-tests against
+                // have to agree — the half a direct call to the decision function would assume.
+                let pc = arg.split(separator: "|").map(String.init)
+                if pc.count == 4, let clicks = Int(pc[2]) {
+                    let panel = pc[0] == "right" ? rightPanelController : leftPanelController
+                    let hit = panel?.view.pathBarHitTestForAutomation(pc[1]) ?? "<no panel>"   // first
+                    let x = panel?.view.clickPathBarForAutomation(pc[1], clickCount: clicks)
+                    let at = x.map { String(format: "%.0f", $0) } ?? "<no such region>"
+                    try? ("clickedAt=\(at)\nhitTest=\(hit)\n"
+                          + (panel?.view.pathBarStateForAutomation ?? ""))
+                        .write(toFile: pc[3], atomically: true, encoding: .utf8)
+                }
             case "sortcol":                            // sortcol <fieldID> (F-392): sort by a plugin column
                 activePanel?.tableView.automationSortByPluginColumn(arg)
             case "filter":                             // filter <text> (F-395): apply the quick filter

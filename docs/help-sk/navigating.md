@@ -27,10 +27,11 @@ Peach Commander si pamätá priečinky, ktoré ste v každom paneli navštívili
 Lišta cesty v hornej časti každého panela zobrazuje, kde sa nachádzate, a zároveň slúži ako spôsob, ako sa niekam rýchlo dostať.
 
 ![Upraviteľná lišta cesty zobrazujúca aktuálny priečinok ako klikateľné segmenty](screenshots/path-bar-crop.png)
-*(Obrázok: Lišta cesty. Kliknutím na ktorýkoľvek segment prejdete do daného priečinka alebo kliknutím na ceruzku zadáte úplnú cestu.)*
+*(Obrázok: Lišta cesty. Kliknutím na ktorýkoľvek segment prejdete do daného priečinka alebo kliknutím vpravo od cesty zadáte úplnú cestu.)*
 
 - Kliknutím na ktorýkoľvek segment cesty (napríklad názov nadradeného priečinka) naň prejdete priamo.
-- Kliknutím na ceruzku vpravo na lište cesty ju zmeníte na textové pole, potom napíšte alebo vložte ľubovoľnú cestu a stlačte Enter.
+- Kliknutím kamkoľvek do prázdneho miesta vpravo od cesty — vrátane ceruzky — zmeníte lištu na textové pole, potom napíšte alebo vložte ľubovoľnú cestu a stlačte Enter. Do samotnej ceruzky nemusíte trafiť.
+- Kliknutie na lištu cesty zároveň spraví daný panel aktívnym.
 - Prípadne zvoľte **Súbor ▸ Prejsť do priečinka…** (**Cmd+Shift+G**) a zadajte cestu odkiaľkoľvek.
 
 ## Prechod na bežné miesta

@@ -8083,16 +8083,26 @@ final class PanelView: NSView {
     var chromeForAutomation: (tabs: String, crumb: String) {
         (tabBar.titlesForAutomation, pathBar.crumbForAutomation)
     }
+    #if DEBUG
+    /// Diagnostic: the path bar's own state, and a way to click one of its regions (F-444).
+    var pathBarStateForAutomation: String { pathBar.stateForAutomation }
+    func clickPathBarForAutomation(_ region: String, clickCount: Int) -> CGFloat? {
+        pathBar.clickRegionForAutomation(region, clickCount: clickCount)
+    }
+    func pathBarHitTestForAutomation(_ region: String) -> String { pathBar.hitTestForAutomation(region) }
+    #endif
     let statusBar: StatusBarView
-    private let filterLabel = NSTextField(labelWithString: "")
+    // `ClickThroughLabel`, not `NSTextField`: all three are constrained over the path bar and a plain
+    // label answers the click instead of letting it through (F-444).
+    private let filterLabel = ClickThroughLabel(labelWithString: "")
     /// What is currently being typed to jump the cursor, and which match it landed on.
     ///
     /// Its own label rather than the filter's: the two are different searches and can be running at
     /// the same time — you can filter a folder and then type to jump within what is left — so one
     /// label would have to choose which of them to lie about.
-    private let typeAheadLabel = NSTextField(labelWithString: "")
+    private let typeAheadLabel = ClickThroughLabel(labelWithString: "")
     /// A short-lived failure message, over the path bar (F-214).
-    private let messageLabel = NSTextField(labelWithString: "")
+    private let messageLabel = ClickThroughLabel(labelWithString: "")
     /// Counts message postings so a later one cannot be cleared by an earlier one's timer.
     private var messageGeneration = 0
     weak var controller: PanelController?
@@ -8251,6 +8261,13 @@ final class PanelView: NSView {
 
         pathBar.onPathClick = { [weak controller] path in
             Task { @MainActor in await controller?.loadDirectory(path) }
+        }
+        // Clicking a panel's path bar makes that panel the active one (F-444) — the same shape as
+        // `tableView.onActivate` below. Without it the path editor could open on the panel that does
+        // not have the focus, and typing a path there navigated a panel while the other stayed lit.
+        pathBar.onActivate = { [weak self] in
+            guard let self, let wc = self.window?.windowController as? MainWindowController else { return }
+            self.position == .left ? wc.activateLeftPanel() : wc.activateRightPanel()
         }
 
         // Header right-click column menu — context-aware (mount vs file system).

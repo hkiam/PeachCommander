@@ -2,11 +2,16 @@
 // PathBarView.swift - Editable breadcrumb path bar for Peach Commander.
 //
 // Shows the current directory as clickable breadcrumb segments (each navigates
-// to that ancestor). Clicking empty space — or double-clicking anywhere — turns
-// the bar into a free-text edit field (Total Commander style): type any path,
-// Enter navigates if it's a valid directory, otherwise (or on Esc / focus loss)
-// the last valid path is kept. Volume name / free space are intentionally NOT
-// shown here — that information lives in the status bar.
+// to that ancestor). Clicking the area right of the last segment — the pencil
+// button included — or double-clicking anywhere turns the bar into a free-text
+// edit field (Total Commander style): type any path, Enter navigates if it's a
+// valid directory, otherwise (or on Esc / focus loss) the last valid path is
+// kept. Volume name / free space are intentionally NOT shown here — that
+// information lives in the status bar.
+//
+// The paragraph above described the empty-space click for a long time before
+// anything implemented it: only the double-click was real, so the pencil was
+// the sole way in and it is 18 points wide (F-444).
 
 import AppKit
 import PCFoundation
@@ -38,6 +43,13 @@ class PathBarView: NSView, NSTextFieldDelegate {
 
     /// Callback with an absolute directory path to navigate to.
     var onPathClick: ((String) -> Void)?
+    /// Make this panel the active one. A click here used to leave the focus where it was, so the path
+    /// editor could belong to the panel the user was not looking at (F-444).
+    var onActivate: (() -> Void)?
+
+    /// Right edge of the last segment as drawn — everything from here to the panel's edge opens the
+    /// editor. `nil` until the first draw, when there is nothing on screen to have aimed at.
+    private var contentEndX: CGFloat?
 
     private let position: PanelPosition
 
@@ -72,7 +84,12 @@ class PathBarView: NSView, NSTextFieldDelegate {
         editField?.frame = bounds.insetBy(dx: 3, dy: 3)
     }
 
-    @objc private func editButtonClicked() { beginEditing() }
+    @objc private func editButtonClicked() {
+        // A real NSButton subview: its clicks never reach `mouseDown`, so the activation is repeated
+        // here rather than being lost.
+        onActivate?()
+        beginEditing()
+    }
 
     /// Trailing space reserved for the edit button so segments don't run under it.
     private var contentTrailingInset: CGFloat { 30 }
@@ -124,16 +141,25 @@ class PathBarView: NSView, NSTextFieldDelegate {
         let yOffset: CGFloat = 4
         let height = bounds.height - 8
         hitFrames.removeAll(keepingCapacity: true)
+        // `contentTrailingInset` had been written for exactly this and then ignored, so a long path
+        // drew its deepest folders underneath the pencil and left no free space at all (F-444).
+        let contentLimit = max(6, bounds.width - contentTrailingInset)
 
         for (index, segment) in segments.enumerated() {
+            let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: textColor]
+            let attrString = NSAttributedString(string: segment.name, attributes: attrs)
+            let textSize = attrString.size()
+            // A segment that does not fit *whole* is not drawn at all. Stopping when the pen has
+            // already crossed the limit is not enough — the segment that crossed it overhangs, and its
+            // hit rect then reaches into the trailing area and answers the clicks meant for the editor.
+            // That is exactly what the first run of this showed: a click in the free space navigated.
+            let advance = (index > 0 ? 5 : 0) + textSize.width + 4
+            if xOffset + advance > contentLimit { break }
             if index > 0 {
                 separatorColor.setStroke()
                 context.stroke(NSMakeRect(xOffset, yOffset + 4, 1, height - 8))
                 xOffset += 5
             }
-            let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: textColor]
-            let attrString = NSAttributedString(string: segment.name, attributes: attrs)
-            let textSize = attrString.size()
             let rect = NSMakeRect(xOffset - 2, yOffset, textSize.width + 4, height)
 
             if hoverPath == segment.path {
@@ -145,18 +171,26 @@ class PathBarView: NSView, NSTextFieldDelegate {
             hitFrames.append((rect, segment.path))
             xOffset += textSize.width + 4
         }
+        // Every segment drawn fits inside the limit, so this really is the right edge of the content
+        // and everything beyond it is free space.
+        contentEndX = xOffset
     }
 
     // MARK: - Mouse
 
     override func mouseDown(with event: NSEvent) {
         guard !isEditing else { return }
-        // Single-click a segment → navigate; double-click anywhere → edit. The
-        // right-edge pencil button is the primary way into the edit mode.
-        if event.clickCount >= 2 { beginEditing(); return }
+        // Activate first, then edit: `activate…Panel` makes the file list the first responder, while
+        // `beginEditing` focuses its field on the next runloop tick — so the field wins, in that order
+        // and only in that order.
+        onActivate?()
         let loc = convert(event.locationInWindow, from: nil)
-        if let hit = hitFrames.first(where: { NSPointInRect(loc, $0.rect) }) {
-            onPathClick?(hit.path)
+        let frames = hitFrames.map { PathBarSegmentFrame(rect: $0.rect, path: $0.path) }
+        switch pathBarHit(at: loc, segments: frames, contentEndX: contentEndX,
+                          clickCount: event.clickCount) {
+        case .navigate(let path): onPathClick?(path)
+        case .edit:               beginEditing()
+        case .none:               break
         }
     }
 
@@ -291,4 +325,86 @@ class PathBarView: NSView, NSTextFieldDelegate {
         get { _backgroundColor }
         set { _backgroundColor = newValue; needsDisplay = true }
     }
+
+    #if DEBUG
+    /// Diagnostic: the state a click left behind (F-444).
+    ///
+    /// The bar draws its own segments and handles its own clicks, so nothing about it is readable
+    /// through a control: without this, "the empty space opens the editor" could only be checked by
+    /// looking at a picture and guessing where the picture's edges were.
+    var stateForAutomation: String {
+        let end = contentEndX.map { String(format: "%.0f", $0) } ?? "<undrawn>"
+        return "editing=\(isEditing ? 1 : 0)\n"
+            + "text=\(editField?.stringValue ?? "<none>")\n"
+            + "crumb=\(crumbForAutomation)\n"
+            + "contentEnd=\(end)\n"
+            + "width=\(String(format: "%.0f", bounds.width))\n"
+    }
+
+    /// Where a named region is, in view coordinates. One resolver, so the click and the hit test can
+    /// never end up asking about two different points — which would make the hit test's reassurance
+    /// worthless exactly when it mattered.
+    ///
+    /// Regions: `first`, `last` (a breadcrumb segment), `gap` (between two of them), `trailing` (the
+    /// free space), `pencil` (the button) and `x:<n>` (an exact coordinate).
+    private func regionCentreForAutomation(_ region: String) -> CGFloat? {
+        switch region {
+        case "pencil":   return editButton.frame.midX
+        case "first":    return hitFrames.first?.rect.midX
+        case "last":     return hitFrames.last?.rect.midX
+        case "gap":
+            // Between two segments: just past the first one's right edge, where the separator is.
+            guard hitFrames.count >= 2 else { return nil }
+            let gap = hitFrames[1].rect.minX - hitFrames[0].rect.maxX
+            guard gap > 1 else { return nil }
+            return hitFrames[0].rect.maxX + gap / 2
+        case "trailing":
+            guard let end = contentEndX, end < bounds.width - 2 else { return nil }
+            return (end + bounds.width) / 2
+        default:
+            guard region.hasPrefix("x:"), let v = Double(region.dropFirst(2)) else { return nil }
+            return CGFloat(v)
+        }
+    }
+
+    /// Diagnostic: click one of the bar's regions, as a real mouse would (F-444).
+    ///
+    /// A synthesised `NSEvent` through `mouseDown`, not a call to the decision function — the point is
+    /// that the coordinates the view draws with and the ones it hit-tests against agree, which a direct
+    /// call to `pathBarHit` would assume rather than check.
+    ///
+    /// Returns the x it aimed at, or nil when the region does not exist right now.
+    func clickRegionForAutomation(_ region: String, clickCount: Int = 1) -> CGFloat? {
+        guard let x = regionCentreForAutomation(region) else { return nil }
+        // The pencil is an `NSButton` subview, so its clicks never reach `mouseDown` — pressing the
+        // button is what a real click there does.
+        if region == "pencil" { editButton.performClick(nil); return x }
+        let point = NSPoint(x: x, y: bounds.midY)
+        guard let event = NSEvent.mouseEvent(with: .leftMouseDown,
+                                            location: convert(point, to: nil),
+                                            modifierFlags: [], timestamp: ProcessInfo.processInfo.systemUptime,
+                                            windowNumber: window?.windowNumber ?? 0, context: nil,
+                                            eventNumber: 0, clickCount: clickCount, pressure: 1)
+        else { return nil }
+        mouseDown(with: event)
+        return x
+    }
+
+    /// Diagnostic: which view a real click at `region` would actually land on (F-444).
+    ///
+    /// `clickRegionForAutomation` calls `mouseDown` directly, so it cannot see a *sibling* view lying on
+    /// top: the panel keeps three indicator labels — the quick filter, type-ahead and a message —
+    /// constrained over this bar, and they sit in exactly the region being made clickable. This asks the
+    /// window the question instead, and the answer must be the path bar itself or its pencil.
+    ///
+    /// Ask it BEFORE clicking: once the click has opened the editor, the field covers the bar and the
+    /// answer is about the field rather than about what a real mouse would have reached.
+    func hitTestForAutomation(_ region: String) -> String {
+        guard let x = regionCentreForAutomation(region) else { return "<no such region>" }
+        let inWindow = convert(NSPoint(x: x, y: bounds.midY), to: nil)
+        guard let root = window?.contentView else { return "<no window>" }
+        let hit = root.hitTest(root.convert(inWindow, from: nil))
+        return hit.map { String(describing: type(of: $0)) } ?? "<none>"
+    }
+    #endif
 }

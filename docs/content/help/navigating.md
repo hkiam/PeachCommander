@@ -28,10 +28,11 @@ Peach Commander remembers the folders you have visited in each panel, just like 
 The path bar across the top of each panel shows where you are and doubles as a way to get somewhere fast.
 
 ![Editable path bar showing the current folder as clickable segments](screenshots/path-bar-crop.png)
-*(Figure: The path bar. Click any segment to jump to that folder, or the pencil to type a full path.)*
+*(Figure: The path bar. Click any segment to jump to that folder, or the space to its right to type a full path.)*
 
 - Click any segment of the path (for example a parent folder name) to jump straight to it.
-- Click the pencil at the right of the path bar to turn it into a text field, then type or paste any path and press Enter.
+- Click anywhere in the empty space to the right of the path — the pencil included — to turn the bar into a text field, then type or paste any path and press Enter. You do not have to hit the pencil itself.
+- Clicking a path bar also makes that panel the active one.
 - Or choose **File ▸ Go to Folder…** (**Cmd+Shift+G**) to type a path from anywhere.
 
 ## Jump to common places

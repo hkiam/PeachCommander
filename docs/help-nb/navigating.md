@@ -27,10 +27,11 @@ Peach Commander husker mappene du har besøkt i hvert panel, akkurat som en nett
 Stilinjen øverst i hvert panel viser hvor du er og fungerer også som en måte å komme raskt et sted på.
 
 ![Redigerbar stilinje som viser gjeldende mappe som klikkbare segmenter](screenshots/path-bar-crop.png)
-*(Figur: Stilinjen. Klikk på et segment for å hoppe til den mappen, eller på blyanten for å skrive inn en full sti.)*
+*(Figur: Stilinjen. Klikk på et segment for å hoppe til den mappen, eller til høyre for stien for å skrive inn en full sti.)*
 
 - Klikk på et segment av stien (for eksempel navnet på en overordnet mappe) for å hoppe rett til den.
-- Klikk på blyanten til høyre i stilinjen for å gjøre den om til et tekstfelt, og skriv eller lim deretter inn en hvilken som helst sti og trykk Enter.
+- Klikk hvor som helst i det tomme området til høyre for stien — blyanten inkludert — for å gjøre linjen om til et tekstfelt, og skriv eller lim deretter inn en sti og trykk Enter. Du trenger ikke treffe blyanten.
+- Et klikk på en stilinje gjør også det panelet aktivt.
 - Eller velg **Fil ▸ Gå til mappe…** (**Cmd+Shift+G**) for å skrive inn en sti hvor som helst fra.
 
 ## Hopp til vanlige steder

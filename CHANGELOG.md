@@ -23,6 +23,11 @@ does not have.
   things depending on where the focus happens to be. These name the side outright. An existing button
   bar gains the two buttons once; remove them and they stay removed.
 
+- **The whole empty space at the right of a path bar opens the path for typing.** Not just the pencil,
+  which is eighteen points wide. Clicking a folder in the breadcrumb still goes there, and the narrow
+  gaps between folder names still do nothing, so a click that just misses a name is a miss rather than
+  a mode change. A click on a path bar now also makes that panel the active one.
+
 - **The assistant summarises a whole file, however long.** Its on-device model takes in a few
   thousand words at a time, so "summarise this report" failed outright on anything past about six
   kilobytes — measured on this machine: a four-kilobyte slice is answered, an eight-kilobyte one is

@@ -27,10 +27,11 @@ Peach Commander onthoudt de mappen die je in elk paneel hebt bezocht, net als ee
 De padbalk boven aan elk paneel toont waar je bent en fungeert tegelijk als een manier om ergens snel te komen.
 
 ![Bewerkbare padbalk die de huidige map als klikbare segmenten toont](screenshots/path-bar-crop.png)
-*(Afbeelding: De padbalk. Klik op een segment om naar die map te springen, of op het potlood om een volledig pad te typen.)*
+*(Afbeelding: De padbalk. Klik op een segment om naar die map te springen, of rechts van het pad om een volledig pad te typen.)*
 
 - Klik op een segment van het pad (bijvoorbeeld de naam van een bovenliggende map) om er direct naartoe te springen.
-- Klik op het potlood rechts van de padbalk om er een tekstveld van te maken, typ of plak vervolgens een pad en druk op Enter.
+- Klik ergens in de lege ruimte rechts van het pad — het potlood inbegrepen — om de balk in een tekstveld te veranderen, typ of plak vervolgens een pad en druk op Enter. Je hoeft het potlood zelf niet te raken.
+- Op een padbalk klikken maakt dat paneel ook actief.
 - Of kies **Bestand ▸ Ga naar map…** (**Cmd+Shift+G**) om overal vandaan een pad te typen.
 
 ## Naar veelgebruikte plekken springen

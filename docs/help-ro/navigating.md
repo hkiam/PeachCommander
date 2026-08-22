@@ -27,10 +27,11 @@ Peach Commander reține folderele pe care le-ați vizitat în fiecare panou, exa
 Bara de cale din partea de sus a fiecărui panou arată unde vă aflați și servește în același timp ca modalitate de a ajunge rapid undeva.
 
 ![Bara de cale editabilă care afișează folderul curent sub formă de segmente pe care se poate face clic](screenshots/path-bar-crop.png)
-*(Figura: Bara de cale. Faceți clic pe orice segment pentru a sări la acel folder sau pe creion pentru a tasta o cale completă.)*
+*(Figura: Bara de cale. Faceți clic pe orice segment pentru a sări la acel folder sau în dreapta căii pentru a tasta o cale completă.)*
 
 - Faceți clic pe orice segment al căii (de exemplu numele unui folder părinte) pentru a sări direct la el.
-- Faceți clic pe creionul din dreapta barei de cale pentru a o transforma într-un câmp de text, apoi tastați sau lipiți orice cale și apăsați Enter.
+- Faceți clic oriunde în spațiul liber din dreapta căii — inclusiv pe creion — pentru a transforma bara într-un câmp de text, apoi tastați sau lipiți orice cale și apăsați Enter. Nu trebuie să nimeriți creionul.
+- Un clic pe o bară de cale face totodată activ panoul respectiv.
 - Sau alegeți **Fișier ▸ Salt la folder…** (**Cmd+Shift+G**) pentru a tasta o cale de oriunde.
 
 ## Salt la locurile obișnuite
