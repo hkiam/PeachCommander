@@ -138,6 +138,15 @@ public enum AuditInverse {
             }
             return ("move", ["sources": moved,
                              "destination": (first as NSString).deletingLastPathComponent])
+        case "rename_batch":
+            // The same batch with the lists swapped. Sound for the whole batch precisely because the
+            // batch is all-or-nothing: every pair either happened or none did, so swapping them cannot
+            // describe a state the folder was never in.
+            guard let old = arguments["old_names"] as? [String],
+                  let new = arguments["new_names"] as? [String], old.count == new.count else { return nil }
+            var swapped: [String: Any] = ["old_names": new, "new_names": old]
+            if let directory = arguments["directory"] as? String { swapped["directory"] = directory }
+            return ("rename_batch", swapped)
         case "set_comment":
             // The previous comment is not in the arguments; the caller records it if it wants
             // this undoable. Nothing to build here.
@@ -150,7 +159,7 @@ public enum AuditInverse {
     /// Why an action of this kind cannot be taken back. `nil` when it can.
     public static func unavailableReason(tool: String) -> String? {
         switch tool {
-        case "rename", "move":
+        case "rename", "move", "rename_batch":
             return nil
         case "write_file":
             return "the previous contents were not kept"

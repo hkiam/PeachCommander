@@ -14,6 +14,7 @@
 import AppKit
 import Foundation
 import PCAutomation
+import PCFoundation
 import PCOperations
 import NaturalLanguage
 import CryptoKit
@@ -134,6 +135,96 @@ final class HostAutomationBridge: AutomationHostBridge {
     ///
     /// The embedding follows the query's own language. It was pinned to English, so a German
     /// query fell back to counting shared tokens and the "semantic" part quietly did nothing.
+    /// Rename a batch in one folder, all or nothing (F-447).
+    ///
+    /// Checked against the folder's actual names before anything moves, so a table the model got wrong
+    /// comes back as reasons rather than as half a rename. The engine underneath is the one the
+    /// Multi-Rename window uses, which is what makes a swap work — it stages through temporary names —
+    /// and what makes the whole batch one entry in the action log rather than forty.
+    nonisolated func renameBatch(directory: String, oldNames: [String], newNames: [String])
+        async throws -> (renamed: Int, directory: String, problems: [RenameBatchPlan.Problem]) {
+        let planned = await plannedRenameBatch(directory: directory, oldNames: oldNames,
+                                               newNames: newNames)
+        guard planned.problems.isEmpty else { return (0, planned.folder, planned.problems) }
+
+        let outcome = RenameBatchEngine.apply(dir: planned.folder,
+                                              pairs: planned.pairs.map { (old: $0.old, new: $0.new) })
+        // The engine can still refuse one — a file that vanished between the check and the move. That
+        // is reported rather than swallowed, and the ones that did happen are counted.
+        let failures = outcome.failed.map { RenameBatchPlan.Problem(name: $0.name, reason: $0.reason) }
+        // The same refresh the bridge's other writes do, so the panel does not keep showing the old
+        // names until something else happens to reload it.
+        await host?.activePanel?.reload()
+        return (outcome.log.count, planned.folder, failures)
+    }
+
+    nonisolated func renameBatchProblems(directory: String, oldNames: [String],
+                                         newNames: [String]) async -> [RenameBatchPlan.Problem] {
+        await plannedRenameBatch(directory: directory, oldNames: oldNames, newNames: newNames).problems
+    }
+
+    /// The batch resolved against the folder it will run in — one place, so the check the Core makes
+    /// before proposing and the check made before applying cannot drift apart.
+    private nonisolated func plannedRenameBatch(directory: String, oldNames: [String], newNames: [String])
+        async -> (folder: String, pairs: [RenameBatchPlan.Pair], problems: [RenameBatchPlan.Problem]) {
+        let folder = directory.isEmpty || directory == "."
+            ? await MainActor.run { self.host?.activePanel?.directoryPath ?? "" }
+            : directory
+        guard !folder.isEmpty else {
+            return ("", [], [RenameBatchPlan.Problem(name: "(the batch)",
+                                                     reason: "no folder to work in")])
+        }
+        switch RenameBatchPlan.pair(old: oldNames, new: newNames) {
+        case .failure(let problem):
+            return (folder, [], [problem])
+        case .success(let pairs):
+            let existing = Set((try? FileManager.default.contentsOfDirectory(atPath: folder)) ?? [])
+            return (folder, pairs, RenameBatchPlan.problems(in: pairs, existing: existing))
+        }
+    }
+
+    /// Find files through Spotlight — macOS's own index, so there is nothing of ours to build or keep
+    /// current, and no warm-up to wait for (F-446).
+    ///
+    /// The scope travels back with the result. Without it "nothing found" cannot be read: the model
+    /// cannot tell "not anywhere on this disk" from "I only looked in one folder", and neither can the
+    /// user. And Spotlight honours the privacy exclusions and the places macOS keeps to itself, so an
+    /// empty answer is never proof that a file is absent.
+    nonisolated func findFiles(nameMask: String, contentText: String?, kind: String?, withinDays: Int?,
+                               largerThanBytes: Int64?, smallerThanBytes: Int64?,
+                               scope: String, limit: Int)
+        async throws -> (entries: [AutomationEntry], scope: String) {
+        var query = SpotlightQuery(nameMask: nameMask,
+                                   contentText: (contentText?.isEmpty ?? true) ? nil : contentText,
+                                   kind: kind.flatMap { SpotlightQuery.Kind(loose: $0) },
+                                   modifiedWithinDays: withinDays,
+                                   largerThanBytes: largerThanBytes,
+                                   smallerThanBytes: smallerThanBytes)
+        // A kind that was asked for and not understood must not silently widen the search to
+        // everything: answering about every file when the user said "PDFs" is worse than saying so.
+        if let kind, !kind.isEmpty, query.kind == nil {
+            return ([], "unknown kind \"\(kind)\" — use one of: "
+                    + SpotlightQuery.Kind.allCases.map(\.rawValue).joined(separator: ", "))
+        }
+        if query.isEmpty {
+            return ([], "nothing to look for — give a name, a word inside the files, a kind, "
+                    + "a time window or a size")
+        }
+        let active = await MainActor.run { self.host?.activePanel?.directoryPath ?? "" }
+        let resolved = SpotlightSearch.Scope(scope, activeFolder: active)
+        // A folder scope with no folder to stand on would search the volume root by accident.
+        if case .folder(let p) = resolved, p.isEmpty {
+            return ([], "no folder to search in")
+        }
+        let search = await MainActor.run { SpotlightSearch() }
+        let hits = await search.find(query, scope: resolved, limit: max(1, min(limit, 500)))
+        let entries = hits.map {
+            AutomationEntry(name: ($0.path as NSString).lastPathComponent, path: $0.path,
+                            isDirectory: $0.isDirectory, size: $0.size, modified: $0.modified)
+        }
+        return (entries, resolved.described)
+    }
+
     nonisolated func semanticSearch(query: String, path: String?, limit: Int) async throws -> [AutomationEntry] {
         let folder: String
         if let path, !path.isEmpty { folder = path }

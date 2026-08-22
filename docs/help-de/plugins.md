@@ -15,7 +15,7 @@ Plugins gibt es in mehreren Ausprägungen: Einige fügen ein **Panel oder eine S
 Mehrere Plugins haben ihr eigenes ausführliches Hilfethema — folgen Sie dem Link für die vollständige Geschichte:
 
 - **[Disk Map](disk-map.md)** — visualisiert, was einen Ordner oder ein Volume füllt, als Treemap oder Sunburst, abgeglichen mit freiem, bereinigbarem und verborgenem Speicher, mit einem Sammler zum Aufräumen.
-- **[AI Assistant](ai-assistant.md)** — ein optionaler, entfernbarer Assistent, der Dateien in einfacher Sprache zusammenfasst, umbenennt, übersetzt, tabelliert und aufräumt, auf dem Gerät oder über ein Cloud-Modell.
+- **[AI Assistant](ai-assistant.md)** — ein optionaler, entfernbarer Assistent, der Dateien in einfacher Sprache zusammenfasst, umbenennt, übersetzt, tabelliert und aufräumt, auf dem Gerät oder über ein Cloud-Modell. Abgeschaltet, bis Sie ihn einschalten — er ist Beta und kann Dateien für Sie verändern.
 - **[Git](git.md)** — zeigt den Arbeitsbaum-Status jeder Datei und den aktuellen Branch als Panel-Spalten und fügt ein **Git**-Menü für Status, bereitstellen, committen, pull und push hinzu.
 - **[System Monitor](system-monitor.md)** — eine Live-Anzeige von CPU, Speicher, Festplatte, Netzwerk (und, sofern verfügbar, GPU, Batterie, Sensoren) in der Fenster-Titelleiste, mit anklickbaren Detaildiagrammen.
 - **[Task Manager](task-manager.md)** — bindet Ihre laufenden Prozesse als durchsuchbares Laufwerk **TaskManager** ein; sortieren Sie sie, untersuchen Sie sie wie Dateien oder beenden Sie sie mit Löschen.
@@ -29,7 +29,7 @@ Die übrigen eingebauten Plugins sind kleiner und brauchen keine eigene Seite:
 - **Notes** — bewahren Sie eine Notiz neben jeder Datei oder jedem Ordner auf. Ein kleines **●**-Abzeichen markiert Elemente, die eine haben; bearbeiten Sie Notizen in einer angedockten **Notes**-Seitenleiste oder einem vollständigen Rich-Text-Editor (**Befehle ▸ Notiz bearbeiten…**) und durchsuchen Sie sie alle mit **Notizübersicht…**.
 - **Log Viewer** — öffnen Sie eine Datei als farbcodiertes, nach Ebene klassifiziertes, live mitlaufendes Protokoll (**Datei ▸ Als Protokoll ansehen…**), mit Filtern pro Ebene, Suche und Unterstützung für gängige Protokollformate sowie Ihre eigenen Regex-Formate. Verarbeitet mehrere Gigabyte große Protokolle sofort.
 - **CSV Lister** — drücken Sie F3 auf einer `.csv`- oder `.tsv`-Datei, und sie öffnet sich als echte Tabelle mit sortierbaren Spalten statt als Rohtext. Das Trennzeichen wird automatisch erkannt, semikolongetrennte Exporte richten sich also ebenfalls aus, und die Suche des Viewers findet Werte Zelle für Zelle.
-- **AI Column** — fügt eine Spalte *AI Language* hinzu, die die vorherrschende Sprache jeder Textdatei auf dem Gerät erkennt (mithilfe von Apples NaturalLanguage-Framework — kein Cloud-Modell).
+- **AI Column** — fügt eine Spalte *AI Language* hinzu, die die vorherrschende Sprache jeder Textdatei auf dem Gerät erkennt (mithilfe von Apples NaturalLanguage-Framework — kein Cloud-Modell). Abgeschaltet, bis Sie sie einschalten, gemeinsam mit dem Assistenten.
 - **Archivformate** — bringt der App bei, weitere Archivtypen zu durchsuchen und zu entpacken (7z, tar-Familie, gzip/bzip2/xz/zstd sowie RAR, sofern ein Hilfsprogramm installiert ist), die dann wie Ordner geöffnet werden.
 
 ## Plugins ein- oder ausschalten

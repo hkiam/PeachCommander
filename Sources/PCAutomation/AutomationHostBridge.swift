@@ -6,6 +6,7 @@
 // AppKit and makes it unit-testable against a fake bridge.
 
 import Foundation
+import PCFoundation
 
 /// What a `cm_*` command does, from the policy's point of view.
 ///
@@ -77,6 +78,29 @@ public protocol AutomationHostBridge: Sendable {
     /// names to `query`, best first. Default: unsupported (empty).
     func semanticSearch(query: String, path: String?, limit: Int) async throws -> [AutomationEntry]
 
+    /// Find files through the system's own file index, anywhere it reaches (F-446).
+    ///
+    /// The counterpart to `search`, which walks a directory tree: this asks macOS's index instead, so
+    /// it can answer about the whole disk without a walk and can match words *inside* files. The
+    /// arguments are the structured form of a description — kind, name, a modification window, a size
+    /// range — because the translation from language belongs to the model and the finding does not.
+    /// Returns the matches and a description of where it looked, for a caller that has to explain an
+    /// empty result.
+    func findFiles(nameMask: String, contentText: String?, kind: String?, withinDays: Int?,
+                   largerThanBytes: Int64?, smallerThanBytes: Int64?,
+                   scope: String, limit: Int) async throws -> (entries: [AutomationEntry], scope: String)
+
+    /// Rename many files in one folder as one all-or-nothing step (F-447).
+    ///
+    /// Returns the refusals instead of applying part of the batch: a model-proposed table with one bad
+    /// row is usually a systematic mistake, and half of it applied is a folder to untangle by hand.
+    func renameBatch(directory: String, oldNames: [String], newNames: [String])
+        async throws -> (renamed: Int, directory: String, problems: [RenameBatchPlan.Problem])
+
+    /// The same checks without doing anything, so the Core can refuse a batch before proposing it.
+    func renameBatchProblems(directory: String, oldNames: [String],
+                             newNames: [String]) async -> [RenameBatchPlan.Problem]
+
     /// Long-term memory (persists across chats). Defaults: no-op / empty.
     func remember(_ text: String) async throws
     func recall(_ query: String, limit: Int) async throws -> [String]
@@ -109,6 +133,21 @@ public extension AutomationHostBridge {
         return String(decoding: bytes[offset..<min(bytes.count, offset + maxBytes)], as: UTF8.self)
     }
     func semanticSearch(query: String, path: String?, limit: Int) async throws -> [AutomationEntry] { [] }
+    /// A bridge with no system index answers "nothing, and here is where I did not look" rather than
+    /// throwing: the tool is optional, and a caller must be able to fall back to `search`.
+    func findFiles(nameMask: String, contentText: String?, kind: String?, withinDays: Int?,
+                   largerThanBytes: Int64?, smallerThanBytes: Int64?,
+                   scope: String, limit: Int) async throws -> (entries: [AutomationEntry], scope: String) {
+        ([], "no system file index on this host")
+    }
+    func renameBatch(directory: String, oldNames: [String], newNames: [String])
+        async throws -> (renamed: Int, directory: String, problems: [RenameBatchPlan.Problem]) {
+        (0, directory, [RenameBatchPlan.Problem(name: "(the batch)",
+                                                reason: "this host cannot rename files")])
+    }
+    /// No opinion by default: a host that cannot rename says so when asked to, not when asked about it.
+    func renameBatchProblems(directory: String, oldNames: [String],
+                             newNames: [String]) async -> [RenameBatchPlan.Problem] { [] }
     func remember(_ text: String) async throws {}
     func recall(_ query: String, limit: Int) async throws -> [String] { [] }
     func hashFile(_ path: String, algorithm: String) async throws -> (hash: String, algorithm: String) {

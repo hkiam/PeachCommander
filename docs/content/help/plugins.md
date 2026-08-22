@@ -16,7 +16,7 @@ Plugins come in a few flavors: some add a **panel or sidebar** (a view), some ad
 Several plugins have their own detailed help topic — follow the link for the full story:
 
 - **[Disk Map](disk-map.md)** — visualizes what fills a folder or volume as a treemap or sunburst, reconciled against free, purgeable, and hidden space, with a cleanup collector.
-- **[AI Assistant](ai-assistant.md)** — an optional, removable assistant that summarizes, renames, translates, tabulates, and tidies files in plain language, on-device or via a cloud model.
+- **[AI Assistant](ai-assistant.md)** — an optional, removable assistant that summarizes, renames, translates, tabulates, and tidies files in plain language, on-device or via a cloud model. Off until you switch it on, because it is in beta and can change files for you.
 - **[Git](git.md)** — shows each file's working-tree status and the current branch as panel columns, and adds a **Git** menu for status, stage, commit, pull, and push.
 - **[System Monitor](system-monitor.md)** — a live readout of CPU, memory, disk, network (and, where available, GPU, battery, sensors) in the window title bar, with click-through detail graphs.
 - **[Task Manager](task-manager.md)** — mounts your running processes as a browsable **TaskManager** drive; sort them, inspect them like files, or end them with Delete.
@@ -30,7 +30,7 @@ The remaining built-in plugins are smaller and don't need a page of their own:
 - **Notes** — keep a note beside any file or folder. A small **●** badge marks items that have one; edit notes in a docked **Notes** sidebar or a full rich-text editor (**Commands ▸ Edit Note…**), and browse them all with **Notes Overview…**.
 - **Log Viewer** — open a file as a color-coded, level-classified, live-tailing log (**File ▸ View as Log…**), with per-level filters, search, and support for common log formats plus your own regex formats. Handles multi-gigabyte logs instantly.
 - **CSV Lister** — press F3 on a `.csv` or `.tsv` file and it opens as a real table with sortable columns instead of raw text. The delimiter is detected automatically, so semicolon-separated exports line up too, and the viewer's search finds values cell by cell.
-- **AI Column** — adds an *AI Language* column that detects each text file's dominant language on-device (using Apple's NaturalLanguage framework — not a cloud model).
+- **AI Column** — adds an *AI Language* column that detects each text file's dominant language on-device (using Apple's NaturalLanguage framework — not a cloud model). Off until you switch it on, along with the assistant.
 - **Archive formats** — teaches the app to browse and extract more archive types (7z, tar family, gzip/bzip2/xz/zstd, and RAR where a helper tool is installed), which then open like folders.
 
 ## Turn plugins on or off

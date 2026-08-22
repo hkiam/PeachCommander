@@ -1150,7 +1150,16 @@ features:
     source: { modules: [AIAssistant, PCAutomation], types: [AIChatViewController, RemoteAutomationCore, DefaultAutomationCore] }
     documentation: { integrated_help: true, website: true }
     screenshots: [ai-chat, settings-ai]
-    notes: "Optional/removable .ptxplugin. On-device Apple Intelligence or OpenAI-compatible cloud; AI ▸ context actions (each opens its own chat); plan-then-confirm writes; unified AI settings page; optional MCP server. Automation core lives in PCAutomation."
+    notes: >-
+      Optional/removable .ptxplugin, and it ships SWITCHED OFF along with AIColumn (F-448): beta, and its
+      catalogue holds writes, permanent deletion and a shell. On-device Apple Intelligence or OpenAI-compatible cloud; AI ▸
+      context actions (each opens its own chat); plan-then-confirm writes; unified AI settings page;
+      optional MCP server. Automation core lives in PCAutomation. `find_files` (F-446) asks Spotlight
+      rather than walking a tree, so "the PDF from last month" and "all my node_modules folders" are
+      answerable without knowing the folder, and words *inside* files are searchable — the index is
+      macOS's own, always current, and nothing of ours to maintain. The model translates language into
+      a structured query (name, kind, time window, size, scope) and Spotlight does the finding, so an
+      empty result can be read rather than guessed at.
 
   - id: plugin-architecture
     name: Plugin-Architektur

@@ -14,6 +14,16 @@ does not have.
 
 ## [Unreleased]
 
+### Changed
+
+- **The AI assistant now arrives switched off.** Turn it on in **Configuration ▸ Plugins…**; leave it
+  off and nothing about it appears — no AI ▸ menu, no chat, no column. It is in beta, and it can rename,
+  move and delete files and run shell commands for you, each behind a plan you approve. That is a lot of
+  reach to hand a new feature by default, and it is the same standard the filesystem-image and
+  decompiler plugins already ship under. Without an API key it works entirely on your Mac, so this is
+  about the reach and not about anything leaving the machine. The **AI Column** plugin, which fills a
+  panel column from the same model, arrives switched off with it.
+
 ### Fixed
 
 - **A folder that cannot be opened no longer moves the panel there.** Opening one that macOS keeps
@@ -29,6 +39,15 @@ does not have.
   *macOS keeps <folder> private — see Commands ▸ Full Disk Access…*.
 
 ### Added
+
+- **Ask the assistant to find a file and it looks through your whole disk.** *"Find the PDF invoice from
+  last month"*, *"where are all my node_modules folders?"*, *"which file mentions the Aachen contract?"*
+  — including words **inside** files, which the ordinary search can only do once you point it at a
+  folder. It uses the index macOS already keeps, so there is nothing to build and no waiting for it to
+  catch up, and it tells you where it looked: your home folder, the whole computer, or just the folder a
+  panel is showing. Two honest limits: macOS keeps some places out of its index, so "nothing found" is
+  not proof a file is absent, and a file created moments ago may not be indexed yet — **Find Files**
+  walks the folders itself and will still see it.
 
 - **One click puts one panel's folder in the other, and says which side.** **Go ▸ Left = Right** shows
   the right panel's folder on the left, **Go ▸ Right = Left** does the reverse, and both are on the

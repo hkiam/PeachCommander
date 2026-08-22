@@ -6,7 +6,7 @@ order: 122
 related: [plugins, settings, privacy-and-security]
 ---
 
-Der KI-Assistent ist ein optionales, entfernbares Plugin, das Ihnen dabei hilft, in natürlicher Sprache mit Ihren Dateien zu arbeiten. Er kann ein Dokument zusammenfassen oder erläutern, einen besseren Dateinamen vorschlagen, Text übersetzen oder Korrektur lesen, Daten in eine Tabelle umwandeln und sogar einen Ordner organisieren – und er kann Dateiaktionen für Sie ausführen, nachdem er Ihnen zuvor einen Plan gezeigt hat. Er läuft direkt auf dem Gerät mit Apple Intelligence, sofern verfügbar, oder Sie können ihn auf ein Cloud-Modell verweisen. Da es sich um ein Plugin handelt, können Sie es über **Konfiguration ▸ Plugins…** vollständig deaktivieren oder entfernen.
+Der KI-Assistent ist ein optionales, entfernbares Plugin, das Ihnen dabei hilft, in natürlicher Sprache mit Ihren Dateien zu arbeiten. Er kann ein Dokument zusammenfassen oder erläutern, einen besseren Dateinamen vorschlagen, Text übersetzen oder Korrektur lesen, Daten in eine Tabelle umwandeln und sogar einen Ordner organisieren – und er kann Dateiaktionen für Sie ausführen, nachdem er Ihnen zuvor einen Plan gezeigt hat. Er läuft direkt auf dem Gerät mit Apple Intelligence, sofern verfügbar, oder Sie können ihn auf ein Cloud-Modell verweisen. **Er kommt abgeschaltet.** Schalten Sie ihn in **Konfiguration ▸ Plugins…** ein und starten Sie neu — oder lassen Sie ihn aus, dann erscheint nichts von ihm: kein KI-Menü, kein Chat, keine Spalte. Das ist Absicht, solange er Beta ist: er kann Dateien umbenennen, verschieben und löschen und Shell-Befehle für Sie ausführen, jeweils hinter einem Plan, dem Sie zustimmen — und das ist viel Reichweite, um sie einer neuen Funktion von vornherein zu geben. Ohne API-Schlüssel arbeitet er vollständig auf Ihrem Mac; es geht hier also um die Reichweite und nicht darum, dass etwas das Gerät verlässt. Das Plugin **KI-Spalte**, das eine Panel-Spalte aus demselben Modell füllt, kommt mit ihm abgeschaltet. Beide können Sie auf derselben Seite auch ganz entfernen.
 
 **Auf dem Gerät oder in der Cloud.** Das Modell auf dem Gerät ist privat und kostenlos — und es ist klein: es nimmt einige tausend Wörter auf einmal auf. Eine *ganze* lange Datei wird deshalb anders gelesen: der Assistent liest sie in Abschnitten und fasst die Ergebnisse zusammen, was mit der Dateilänge länger dauert. Für viel Arbeit über viele Dateien oder für lange Gespräche ist ein Cloud-Modell schneller und behält mehr im Blick; die Wahl treffen Sie in **Einstellungen ▸ KI**, und der Assistent stellt sofort um.
 
@@ -36,6 +36,18 @@ Jede **KI ▸**-Aktion öffnet ihren **eigenen benannten Chat** (zum Beispiel *Z
 Was jede Aktion das Modell fragt, ist eine Textdatei, die Sie ändern können: `aichat/skills.json` für die Datei-Aktionen und `aichat/folder-skills.json` für die Ordner-Aktionen, in Ihrem Konfigurationsordner. Beide werden beim ersten Start mit den eingebauten Formulierungen angelegt, damit das Format sichtbar ist. `{name}` und `{path}` stehen für die Datei. Löschen Sie eine Datei, gilt wieder die eingebaute Formulierung.
 
 **Eigene Aktionen.** Legen Sie einen Eintrag mit einer `id` Ihrer Wahl an — er lässt sich dann wie jeder andere Befehl aufrufen, indem Sie `plugin.ai.skill.<id>` benennen: im Benutzermenü, in der Buttonbar oder auf einem Tastenkürzel. (Für eine Ordner-Aktion `plugin.ai.folderskill.<id>`.) Das Untermenü **KI ▸** selbst zeigt die eingebauten Aktionen: es wird aus dem Manifest des Plugins gebaut, ohne das Plugin zu laden — damit ein deaktiviertes Plugin nichts beiträgt. Deshalb platzieren Sie eigene Aktionen selbst, statt dass sie dort erscheinen. Benennen Sie eine id, die es nicht gibt, sagt der Assistent das, statt nichts zu tun.
+
+## Eine Datei finden lassen
+
+Sie müssen nicht wissen, wo eine Datei liegt. Beschreiben Sie sie, und der Assistent sieht in dem Index nach, den macOS von Ihrer Platte ohnehin führt — es ist also nichts aufzubauen und auf nichts zu warten.
+
+- *„Finde die PDF-Rechnung von letztem Monat"* — eine Art, ein Wort im Namen und ein Zeitfenster.
+- *„Wo sind alle meine node_modules-Ordner?"* — Ordner, nach Namen, überall in Ihrem Benutzerordner.
+- *„Welche Datei erwähnt den Aachener Vertrag?"* — Wörter **in** Dateien, was die gewöhnliche Dateisuche nur kann, wenn Sie ihr vorher einen Ordner nennen.
+
+Sie können steuern, wo gesucht wird: standardmäßig im Benutzerordner, auf dem ganzen Rechner oder nur in dem Ordner, den ein Panel zeigt. Der Assistent sagt, welches davon er genommen hat — damit ist auch eine leere Antwort lesbar und nicht bloß ein Schulterzucken.
+
+Zwei Grenzen, die man kennen sollte. macOS hält manche Orte aus seinem Index heraus — und ohne Festplattenvollzugriff aus der Reichweite jeder App —, „nichts gefunden" ist also kein Beweis, dass es die Datei nicht gibt; siehe [Fehlerbehebung](troubleshooting). Und eine gerade erst erzeugte Datei ist möglicherweise noch nicht indiziert; dann findet sie **Dateien suchen** (Alt+F7), das die Ordner selbst durchläuft.
 
 ## Ihre Chats verwalten
 

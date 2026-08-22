@@ -28,6 +28,15 @@
 <h3 id="your-own-wording">Your own wording</h3>
 <p>What each action asks the model is a text file you can edit: <code>aichat/skills.json</code> for the file actions and <code>aichat/folder-skills.json</code> for the folder ones, in your configuration folder. Both are written out with the built-in wording the first time the assistant runs, so you can see the format. <code>{name}</code> and <code>{path}</code> stand for the file. Delete a file to go back to the built-in wording.</p>
 <p><strong>Actions of your own.</strong> Add an entry with an <code>id</code> of your choosing, and it can be run like any other command by naming <code>plugin.ai.skill.&lt;id&gt;</code> — in the user menu, on the button bar, or on a keyboard shortcut. (For a folder action, <code>plugin.ai.folderskill.&lt;id&gt;</code>.) The <strong>AI ▸</strong> submenu itself lists the built-in actions: it is built from the plugin's manifest without loading the plugin, so that a disabled plugin contributes nothing, which is why your own actions are placed by you rather than appearing there. Name an id that does not exist and the assistant says so instead of doing nothing.</p>
+<h2 id="ask-it-to-find-a-file">Ask it to find a file</h2>
+<p>You do not have to know where a file is. Describe it and the assistant looks it up in the index macOS already keeps of your disk — so there is nothing to build and no waiting for it to catch up.</p>
+<ul>
+<li><em>"Find the PDF invoice from last month"</em> — a kind, a word in the name, and a time window.</li>
+<li><em>"Where are all my node_modules folders?"</em> — folders, by name, anywhere in your home folder.</li>
+<li><em>"Which file mentions the Aachen contract?"</em> — words <strong>inside</strong> files, which the ordinary Find Files search cannot do unless you point it at a folder first.</li>
+</ul>
+<p>You can steer where it looks: your home folder by default, the whole computer, or just the folder a panel is showing. It tells you which of those it used, so an empty answer is readable rather than a shrug.</p>
+<p>Two limits worth knowing. macOS keeps some places out of its index — and out of reach of any app without Full Disk Access — so "nothing found" is not proof that a file does not exist; see <a href="troubleshooting">Troubleshooting</a>. And a file only just created may not be indexed yet, in which case <strong>Find Files</strong> (Alt+F7), which walks folders itself, will still find it.</p>
 <h2 id="manage-your-chats">Manage your chats</h2>
 <ul>
 <li>Use the chat switcher at the top of the panel to move between conversations.</li>

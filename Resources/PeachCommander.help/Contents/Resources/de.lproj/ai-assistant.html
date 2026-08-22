@@ -28,6 +28,15 @@
 <h3 id="eigene-formulierungen">Eigene Formulierungen</h3>
 <p>Was jede Aktion das Modell fragt, ist eine Textdatei, die Sie ändern können: <code>aichat/skills.json</code> für die Datei-Aktionen und <code>aichat/folder-skills.json</code> für die Ordner-Aktionen, in Ihrem Konfigurationsordner. Beide werden beim ersten Start mit den eingebauten Formulierungen angelegt, damit das Format sichtbar ist. <code>{name}</code> und <code>{path}</code> stehen für die Datei. Löschen Sie eine Datei, gilt wieder die eingebaute Formulierung.</p>
 <p><strong>Eigene Aktionen.</strong> Legen Sie einen Eintrag mit einer <code>id</code> Ihrer Wahl an — er lässt sich dann wie jeder andere Befehl aufrufen, indem Sie <code>plugin.ai.skill.&lt;id&gt;</code> benennen: im Benutzermenü, in der Buttonbar oder auf einem Tastenkürzel. (Für eine Ordner-Aktion <code>plugin.ai.folderskill.&lt;id&gt;</code>.) Das Untermenü <strong>KI ▸</strong> selbst zeigt die eingebauten Aktionen: es wird aus dem Manifest des Plugins gebaut, ohne das Plugin zu laden — damit ein deaktiviertes Plugin nichts beiträgt. Deshalb platzieren Sie eigene Aktionen selbst, statt dass sie dort erscheinen. Benennen Sie eine id, die es nicht gibt, sagt der Assistent das, statt nichts zu tun.</p>
+<h2 id="eine-datei-finden-lassen">Eine Datei finden lassen</h2>
+<p>Sie müssen nicht wissen, wo eine Datei liegt. Beschreiben Sie sie, und der Assistent sieht in dem Index nach, den macOS von Ihrer Platte ohnehin führt — es ist also nichts aufzubauen und auf nichts zu warten.</p>
+<ul>
+<li><em>„Finde die PDF-Rechnung von letztem Monat"</em> — eine Art, ein Wort im Namen und ein Zeitfenster.</li>
+<li><em>„Wo sind alle meine node_modules-Ordner?"</em> — Ordner, nach Namen, überall in Ihrem Benutzerordner.</li>
+<li><em>„Welche Datei erwähnt den Aachener Vertrag?"</em> — Wörter <strong>in</strong> Dateien, was die gewöhnliche Dateisuche nur kann, wenn Sie ihr vorher einen Ordner nennen.</li>
+</ul>
+<p>Sie können steuern, wo gesucht wird: standardmäßig im Benutzerordner, auf dem ganzen Rechner oder nur in dem Ordner, den ein Panel zeigt. Der Assistent sagt, welches davon er genommen hat — damit ist auch eine leere Antwort lesbar und nicht bloß ein Schulterzucken.</p>
+<p>Zwei Grenzen, die man kennen sollte. macOS hält manche Orte aus seinem Index heraus — und ohne Festplattenvollzugriff aus der Reichweite jeder App —, „nichts gefunden" ist also kein Beweis, dass es die Datei nicht gibt; siehe <a href="troubleshooting">Fehlerbehebung</a>. Und eine gerade erst erzeugte Datei ist möglicherweise noch nicht indiziert; dann findet sie <strong>Dateien suchen</strong> (Alt+F7), das die Ordner selbst durchläuft.</p>
 <h2 id="ihre-chats-verwalten">Ihre Chats verwalten</h2>
 <ul>
 <li>Verwenden Sie den Chat-Umschalter oben im Panel, um zwischen Konversationen zu wechseln.</li>

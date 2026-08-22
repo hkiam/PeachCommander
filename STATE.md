@@ -544,6 +544,128 @@ counters. Nothing in `regress.py` dismisses or pre-answers it, so it obscures sc
 the key window in any scenario. Fixing it is golden-image work (a seeded TCC decision), not a scenario
 change.
 
+## 2026-08-22 (F-446) — The assistant could not reach the index the app already uses
+
+Asked to compare against Cmdr, whose headline AI feature is natural-language file search over a
+whole-disk index it builds in about four minutes. We do not need that index: the app already queries
+**Spotlight** through `NSMetadataQuery` in Find Files. The assistant did not. Its `search` walks a
+directory tree, and `semantic_search` is capped at one folder, 300 entries, the first 2 KB of each,
+recomputed per query. So the gap was wiring, not indexing — the best value-to-effort ratio of the three
+gaps the comparison found.
+
+**The split.** `find_files` takes a *structured* query — name, words inside files, kind, a modification
+window, a size range, a scope — and the model translates language into it. Spotlight does the finding.
+That is deliberate: nothing in the tool guesses at language, so the fields are inspectable and "nothing
+found" reads as "it looked for a PDF named *contract* modified in the last 30 days" instead of being a
+shrug. The scope travels back with the result for the same reason — a model cannot otherwise tell "not
+anywhere on this disk" from "I looked in one folder", and neither can the reader.
+
+**A relative window instead of dates.** `within_days`, not `modified_after`. The system prompt carries
+no date at all, so a model cannot resolve "last month" — and rather than add a date to the context and
+a date parser to the tool, the window needs no arithmetic. Both of Cmdr's advertised examples are
+expressible without it. Absolute ranges are a second increment; `AutomationContext` deliberately did
+*not* grow a `today` field nothing yet consumes.
+
+**Refusals that say something.** An empty query would match the volume, so it is refused with what to
+supply rather than answered with a hundred thousand paths. A `kind` that was asked for and not
+understood is refused with the list of kinds — silently widening "PDFs" to every file is a wrong answer,
+which is worse than a complaint. `Kind` parses loosely ("PDFs", "photos", "video", "folders") because
+that is what a model sends; every value maps to a real system UTI, and `kMDItemContentTypeTree` matches
+by conformance, so `image` finds a HEIC without anyone naming HEIC.
+
+**Verified against the live index**, at Cmdr's own examples: `node_modules` + kind=folder returns five
+real folders, newest first, typed as directories; kind=pdf returns real PDFs with size and date; the
+same query with `within_days: 3` narrows 200 hits to 7; and a content search for `cm_LeftEqualsRight`
+— a symbol that exists only in this week's own source — returns ten files, which is the capability
+`search` never had. `within_days` sent as the string `"3"` gives the same seven, because a model asked
+for an integer sometimes sends one quoted.
+
+**A new DEBUG verb, because there was no other way to look.** `aitool <tool>|<json>|<out>` runs one
+assistant tool through the Automation Core and writes its payload. Without it a tool can only be
+exercised by talking to a model, which makes the tool and the model's willingness to call it one
+untestable lump — and a read tool returning the wrong thing looks exactly like a model that phrased the
+question badly.
+
+**What this is not.** Not an index of our own: Cmdr builds one because it is going cross-platform, and a
+second index here would be permanent maintenance for a worse result than the one macOS keeps current
+for free. And Spotlight's limits are inherited rather than papered over — it honours the privacy
+exclusions and the places macOS keeps to itself, so an empty answer is never proof of absence (F-445 is
+the same wall from the other side), and a file created moments ago may not be indexed, where Find Files
+still walks.
+
+**Still open from the same comparison**, in the order I would take them: a natural-language batch rename
+that produces a *table* and hands it to the existing Multi-Rename engine rather than looping `rename`;
+and a reviewable operation plan — `needsConfirmation` carries one string today, and "clean up my
+Downloads" wants a list whose rows can be unticked.
+
+## 2026-08-22 (F-447) — Forty renames, one question, one undo
+
+The second gap the Cmdr comparison found: it advertises natural-language batch rename, and the
+assistant could only call `rename` once per file — forty confirmations, forty entries in the action log,
+and forty separate things to take back. `rename_batch` takes the whole table.
+
+**The machinery was already here.** `RenameBatchEngine.apply` stages through temporary names, so a swap
+or a rotation works, and it reports per-item refusals; `RenameValidator` judges a name. What was missing
+is the *shape*: two parallel lists rather than a list of pairs, because that is what a small on-device
+model fills in reliably — and the price of that choice, a length mismatch, is caught rather than
+silently truncating a batch into "some files renamed".
+
+**All or nothing, unlike the Multi-Rename window.** There, applying what works and reporting what does
+not is right: the user wrote the rule and saw the preview. For a table a model proposed, one bad row is
+usually a systematic mistake, and half of it applied is a folder to untangle by hand. So
+`RenameBatchPlan` refuses the batch with *every* reason at once — two files aimed at one name, a name
+already taken by a file that is staying, an unusable name, a missing source — which is also what lets a
+model fix it in one more turn instead of ten.
+
+**The defect the first measurement found.** My first version showed the table for approval and validated
+afterwards, so a batch naming one file twice was presented as something to agree to and only the
+confirmation reported the collision. Asking someone to approve what will then fail spends the one moment
+of their attention on a dead end. The Core now has a pre-flight: a gated action that cannot work is
+refused instead of proposed, sharing one code path with the check made before applying so the two cannot
+drift. Only for what can be decided cheaply and definitely — a copy whose destination fills up halfway
+cannot be foreseen, a rename table naming one file twice can.
+
+**Undo is the batch reversed**, which is sound only because the batch is all-or-nothing: every pair
+either happened or none did, so swapping the two lists cannot describe a state the folder was never in.
+Verified end to end: three files renamed after one question, `undo_last_action` put all three back in one
+step, and the panel and the disk agreed at every point.
+
+**The plan is a table, not a count.** "Rename 40 files" is not something anybody can agree to. Capped at
+thirty rows with the remainder stated, because a confirmation nobody reads is not a confirmation.
+
+## 2026-08-22 (F-448) — The assistant shipped switched on, and nothing said so
+
+Asked whether the AI plugin is disabled on a first install. It was not: `Plugins/AIAssistant/Info.plist`
+carried no `PCPluginEnabledByDefault`, and `PluginManifest` reads that key with a default of `true`. So
+a beta assistant whose catalogue holds `write_file`, `delete_permanently` and `run_shell` was on for
+everyone who installed, and the help page said only that it *can* be disabled.
+
+**The inconsistency is what settles it.** Three plugins already ship off, and for weaker reasons: the
+two decompilers are merely useless without an engine the user installs, and Filesystem Images is
+read-only (it is off because its parsers are reachable from a crafted image). By that standard an
+assistant that renames, moves, deletes and runs shell commands — each behind a plan, but present — is
+the better candidate. Both AI plugins now carry `PCPluginEnabledByDefault` = false, AIColumn along with
+the assistant it shares a model with: a column calling that model once per visible row while the
+assistant is off would be the inconsistent half.
+
+Worth saying plainly: without an API key the assistant works entirely on-device, so this is about the
+*reach* handed over by default and not about anything leaving the machine.
+
+**Verified both directions**, in a bundle holding only these two plugins so the comparison is exact.
+Fresh configuration: `list_plugins` returns `[]`, no AI in the menu dump, no view, no column, nothing
+about either plugin in the log, no crash. With `[Plugins] Enabled=AI Assistant;AI Column`: both load and
+`AI Assistant [plugin.ai.toggle]` is in the menu.
+
+**A consequence that did not bite, and would have.** Several VM scenarios sweep every mounted plugin
+view, so `surface-colours` had been auditing the AI tab and counting it — and its expectation used to
+pin `windows=32`. Turning the plugin off would have moved that number again and failed the scenario for
+a third unrelated reason. It does not, because the same day's harness work had already replaced the
+count with the *named* surfaces the scenario deliberately puts on screen (Settings, the Git panel, the
+dock's terminal), none of which is the assistant. `regress.py` never names the AI plugin at all.
+
+**Not changed:** the on-device/cloud choice, the autonomy gating, or anything the assistant does once
+it is on. Only whether it is there to begin with.
+
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 
 Run with `--only menu-file,viewer-md-outline,csv-no-header,jsonl,viewer-long-lines`, which is the debt both

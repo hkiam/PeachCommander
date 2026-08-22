@@ -620,6 +620,56 @@ struct NTSemanticSearch: Tool {
 }
 
 @available(macOS 26, *)
+struct NTFindFiles: Tool {
+    let ctx: NativeToolContext
+    var name: String { "find_files" }
+    var description: String {
+        "THE tool for finding a file when you do not know which folder it is in: it asks the system's "
+        + "own file index, so it covers the whole disk or the home folder without walking it. "
+        + "\"that PDF from last month\" is kind=pdf with within_days=30; \"all my node_modules "
+        + "folders\" is kind=folder with name=node_modules. Leave a field empty to not narrow by it."
+    }
+    @Generable struct Arguments {
+        @Guide(description: "Words or wildcards in the FILE NAME; empty to not filter by name") var name: String
+        @Guide(description: "Words to find INSIDE the files; empty to not search contents") var text: String
+        @Guide(description: "pdf, image, movie, audio, text, source, archive, folder or application; empty for any")
+        var kind: String
+        @Guide(description: "Modified in the last N days; 0 for any time")
+        var withinDays: Int
+        @Guide(description: "Where: home, disk, here, or an absolute path. Empty means home")
+        var scope: String
+    }
+    func call(arguments a: Arguments) async throws -> String {
+        // A zero window means "no window", not "the last zero days": the tool argument is optional and
+        // `@Generable` has no absent value, so zero is how absence arrives here.
+        var args = ntArgs(["name": a.name, "text": a.text, "kind": a.kind, "scope": a.scope])
+        if a.withinDays > 0 { args["within_days"] = a.withinDays }
+        return await ctx.run("find_files", args)
+    }
+}
+
+@available(macOS 26, *)
+struct NTRenameBatch: Tool {
+    let ctx: NativeToolContext
+    var name: String { "rename_batch" }
+    var description: String {
+        "Rename MANY files in one step. Build the new names yourself and pass the two lists in the same "
+        + "order; the user sees them as a table and agrees once, and undo takes the whole batch back. "
+        + "Use this instead of calling rename over and over — that asks the user once per file."
+    }
+    @Generable struct Arguments {
+        @Guide(description: "The current file names, without a folder") var oldNames: [String]
+        @Guide(description: "The new names, in the same order as oldNames") var newNames: [String]
+        @Guide(description: "Folder the files are in; empty for the active folder") var directory: String
+    }
+    func call(arguments a: Arguments) async throws -> String {
+        var args: [String: Any] = ["old_names": a.oldNames, "new_names": a.newNames]
+        if !a.directory.isEmpty { args["directory"] = a.directory }
+        return await ctx.run("rename_batch", args)
+    }
+}
+
+@available(macOS 26, *)
 struct NTRemember: Tool {
     let ctx: NativeToolContext
     var name: String { "remember" }
@@ -1027,10 +1077,12 @@ extension AppleNativeToolSession: NativeTurnRunner {
     static func allTools(_ ctx: NativeToolContext) -> [any Tool] {
         [NTGetContext(ctx: ctx), NTListDirectory(ctx: ctx), NTStatPath(ctx: ctx), NTReadFile(ctx: ctx),
          NTSummarizeFile(ctx: ctx), NTHashFile(ctx: ctx), NTSemanticSearch(ctx: ctx), NTSearch(ctx: ctx),
+         NTFindFiles(ctx: ctx),
          NTGetConfig(ctx: ctx), NTRemember(ctx: ctx), NTRecall(ctx: ctx),
          NTGetComment(ctx: ctx), NTRecentActions(ctx: ctx), NTListCommands(ctx: ctx), NTListPlugins(ctx: ctx),
          NTOpenPath(ctx: ctx), NTOpenInPanel(ctx: ctx), NTSetSelection(ctx: ctx),
          NTCopy(ctx: ctx), NTMove(ctx: ctx), NTRename(ctx: ctx), NTMakeDirectory(ctx: ctx),
+         NTRenameBatch(ctx: ctx),
          NTWriteFile(ctx: ctx), NTMergeFiles(ctx: ctx), NTSetComment(ctx: ctx),
          NTSetConfig(ctx: ctx), NTMoveToTrash(ctx: ctx), NTDeletePermanently(ctx: ctx),
          NTUndoLast(ctx: ctx), NTRunCommand(ctx: ctx), NTRunShell(ctx: ctx)]

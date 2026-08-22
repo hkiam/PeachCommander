@@ -7,6 +7,7 @@
 // unit-tested against a fake bridge; PCApp supplies the real bridge.
 
 import Foundation
+import PCFoundation
 
 public actor DefaultAutomationCore: AutomationCore {
     /// Executes a plugin-contributed tool by name + JSON args (KI-06). Returns nil if
@@ -74,6 +75,15 @@ public actor DefaultAutomationCore: AutomationCore {
             capability = info.capability
             commandLabel = info.label
         }
+        // A gated action that cannot work must not be *proposed*. Asking the user to approve a rename
+        // that will then fail spends the one moment of their attention on a dead end — and for a batch
+        // the plan is a table they would have read carefully first. Measured: a table naming one file
+        // twice was presented for approval, and only the confirmation reported the collision.
+        if let refusal = await refusalBeforeAsking(tool: name, arguments: arguments) {
+            let outcome = AutomationOutcome.failed(error: refusal)
+            record(name, arguments, outcome, capability: capability, isUndo: isUndo)
+            return outcome
+        }
         switch policy.decision(for: capability) {
         case .refuse:
             // The effective capability, not the tool's declared one: refusing `run_command` because it
@@ -92,6 +102,25 @@ public actor DefaultAutomationCore: AutomationCore {
         case .allow:
             return await execute(name, arguments, isUndo: isUndo)
         }
+    }
+
+    /// Why a gated action should be refused instead of proposed, or nil to go ahead.
+    ///
+    /// Only for what can be decided cheaply and definitely. A copy whose destination fills up halfway
+    /// cannot be foreseen, so it is not checked here; a rename table that aims two files at one name
+    /// can, so it is.
+    private func refusalBeforeAsking(tool name: String, arguments: Data?) async -> String? {
+        guard name == "rename_batch" else { return nil }
+        let a = Args(arguments)
+        let problems = await bridge.renameBatchProblems(
+            directory: (try? a.string("directory")) ?? "",
+            oldNames: (try? a.strings("old_names")) ?? [],
+            newNames: (try? a.strings("new_names")) ?? [])
+        guard !problems.isEmpty else { return nil }
+        // Every reason at once: a model's mistake in a batch is usually systematic, and one message per
+        // row is what lets it be fixed in one more turn instead of ten.
+        return "Nothing was renamed. "
+            + problems.map { "\($0.name): \($0.reason)" }.joined(separator: "; ")
     }
 
     public func confirm(token: String) async throws -> AutomationOutcome {
@@ -233,6 +262,34 @@ public actor DefaultAutomationCore: AutomationCore {
                 return .ok(payload: try encode(try await bridge.semanticSearch(query: try a.string("query"),
                                                                                path: try? a.string("path"),
                                                                                limit: a.int("limit", default: 10))))
+            case "find_files":
+                let found = try await bridge.findFiles(nameMask: (try? a.string("name")) ?? "",
+                                                       contentText: try? a.string("text"),
+                                                       kind: try? a.string("kind"),
+                                                       withinDays: a.optionalInt("within_days"),
+                                                       largerThanBytes: a.optionalInt("larger_than_bytes")
+                                                           .map(Int64.init),
+                                                       smallerThanBytes: a.optionalInt("smaller_than_bytes")
+                                                           .map(Int64.init),
+                                                       scope: (try? a.string("scope")) ?? "",
+                                                       limit: a.int("limit", default: 50))
+                // The scope travels with the result. Without it "nothing found" is unreadable: the
+                // model cannot tell "not on this disk" from "I looked in one folder", and neither can
+                // the reader (F-446).
+                return .ok(payload: try json(["scope": found.scope,
+                                              "count": found.entries.count,
+                                              "entries": found.entries.map { e -> [String: Any] in
+                                                  var row: [String: Any] = ["name": e.name, "path": e.path,
+                                                                            "isDirectory": e.isDirectory,
+                                                                            "size": e.size]
+                                                  // The date is the point of "from last month", so it
+                                                  // travels with the row rather than costing a stat_path
+                                                  // per hit.
+                                                  if let d = e.modified {
+                                                      row["modified"] = ISO8601DateFormatter().string(from: d)
+                                                  }
+                                                  return row
+                                              }]))
             case "get_config":
                 let v = try await bridge.getConfig(try a.string("key"))
                 return .ok(payload: try json(["value": v ?? ""]))
@@ -268,6 +325,18 @@ public actor DefaultAutomationCore: AutomationCore {
             case "copy":          try await bridge.copy(sources: try a.strings("sources"), destination: try a.string("destination")); return .ok(payload: nil)
             case "move":          try await bridge.move(sources: try a.strings("sources"), destination: try a.string("destination")); return .ok(payload: nil)
             case "rename":        try await bridge.rename(path: try a.string("path"), newName: try a.string("new_name")); return .ok(payload: nil)
+            case "rename_batch":
+                let outcome = try await bridge.renameBatch(directory: (try? a.string("directory")) ?? "",
+                                                           oldNames: try a.strings("old_names"),
+                                                           newNames: try a.strings("new_names"))
+                // The refusals travel back as the tool's result, so the model can fix the batch and
+                // try again rather than being told only that it failed.
+                if !outcome.problems.isEmpty {
+                    return .failed(error: "Nothing was renamed. "
+                                   + outcome.problems.map { "\($0.name): \($0.reason)" }
+                                       .joined(separator: "; "))
+                }
+                return .ok(payload: try json(["renamed": outcome.renamed, "directory": outcome.directory]))
             case "make_directory": try await bridge.makeDirectory(try a.string("path")); return .ok(payload: nil)
             case "set_config":    try await bridge.setConfig(try a.string("key"), try a.string("value")); return .ok(payload: nil)
             case "move_to_trash": try await bridge.moveToTrash(try a.strings("paths")); return .ok(payload: nil)
@@ -313,6 +382,16 @@ public actor DefaultAutomationCore: AutomationCore {
         case "copy":  return "Copy \((try? a.strings("sources").count) ?? 0) item(s) to \((try? a.string("destination")) ?? "?")."
         case "move":  return "Move \((try? a.strings("sources").count) ?? 0) item(s) to \((try? a.string("destination")) ?? "?")."
         case "rename": return "Rename \((try? a.string("path")) ?? "?") to \((try? a.string("new_name")) ?? "?")."
+        case "rename_batch":
+            // A table, not a count. "Rename 40 files" is not something anybody can agree to, and this
+            // is the one gated action whose whole value is that the user sees the pairing before it
+            // happens (F-447).
+            let old = (try? a.strings("old_names")) ?? []
+            let new = (try? a.strings("new_names")) ?? []
+            guard case .success(let pairs) = RenameBatchPlan.pair(old: old, new: new) else {
+                return "Rename \(old.count) file(s) — but the two lists do not line up."
+            }
+            return RenameBatchPlan.table(pairs)
         case "make_directory": return "Create folder \((try? a.string("path")) ?? "?")."
         case "write_file":
             let p = (try? a.string("path")) ?? "?"
@@ -367,6 +446,17 @@ private struct Args {
         return v
     }
     func int(_ k: String, default d: Int) -> Int { (dict[k] as? Int) ?? d }
+    /// Nil when the key is absent — which is a different filter from "zero" and has to stay one
+    /// (`within_days: 0` would mean "modified in the last no days").
+    ///
+    /// A number that arrives as a string is accepted too: a model asked for an integer sometimes sends
+    /// "30", and refusing that would fail the request on JSON typing rather than on substance.
+    func optionalInt(_ k: String) -> Int? {
+        if let n = dict[k] as? Int { return n }
+        if let d = dict[k] as? Double { return Int(d) }
+        if let s = dict[k] as? String { return Int(s.trimmingCharacters(in: .whitespaces)) }
+        return nil
+    }
     func object(_ k: String) throws -> Data {
         guard let v = dict[k] else { throw AutomationError.missingArgument(k) }
         return try JSONSerialization.data(withJSONObject: v)

@@ -68,6 +68,13 @@
 			</dict>
 		</array>
 	</dict>
+	<!-- Ships switched off (F-448). The assistant is beta and its tool catalogue includes writes,
+	     permanent deletion and a shell — gated by plan-then-confirm, but present — and it can be
+	     pointed at a cloud model. The three other plugins that ship off do so for weaker reasons: the
+	     two decompilers are merely useless without an engine the user installs, and FSImage is
+	     read-only. Turn it on in Configuration ▸ Plugins…. Without an API key it works entirely
+	     on-device, so this is about the capability, not about anything leaving the machine. -->
+	<key>PCPluginEnabledByDefault</key><false/>
 	<key>PCPluginAPIVersion</key>
 	<integer>1</integer>
 	<key>PCPluginMinHostVersion</key>

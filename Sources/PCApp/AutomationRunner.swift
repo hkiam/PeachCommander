@@ -26,6 +26,8 @@
 //   filter <text>         apply the quick filter to the active panel
 //   viewdump <file>       cursor, first visible row and scroll offset of the active panel
 //   scrollto <row>        scroll the active panel to a row WITHOUT moving the cursor
+//   aitool <tool>|<json>|<out>  run one assistant tool through the Automation Core, write its payload
+//                               (append ":confirm" to the tool name to agree to a gated plan at once)
 //   pathbardump <side>|<out>   the path bar's state: editing, its text, the breadcrumb, where it ends
 //   pathbarclick <side>|<region>|<clicks>|<out>   click a path bar region (first/last/gap/trailing/pencil)
 //   theme <id>            select a colour palette ("system", "norton", …)
@@ -564,6 +566,40 @@ extension MainWindowController {
                 let responder = window?.firstResponder.map { String(describing: type(of: $0)) } ?? "<none>"
                 try? "active=\(side)\nleft=\(l)\nright=\(r)\nresponder=\(responder)\n"
                     .write(toFile: arg, atomically: true, encoding: .utf8)
+            case "aitool":                             // aitool <tool>|<json-args>|<out> (F-446)
+                // Run one assistant tool through the Automation Core and write its payload. Without
+                // this a tool can only be exercised by talking to a model, which makes the *tool* and
+                // the model's willingness to call it one untestable lump — and a read tool that
+                // returns the wrong thing looks exactly like a model that phrased the question badly.
+                let at = arg.split(separator: "|", maxSplits: 2).map(String.init)
+                if at.count == 3 {
+                    let args = at[1].data(using: .utf8)
+                    // `.standard` is the policy the assistant itself runs under, so a read answers and
+                    // a write asks — the same answer the model would get.
+                    // A ":confirm" suffix on the tool name agrees to the plan straight away, which is
+                    // the only way to exercise a gated action from a script — and the plan is written
+                    // out either way, so the table a user would have read is still in the report.
+                    let wantsConfirm = at[0].hasSuffix(":confirm")
+                    let tool = wantsConfirm ? String(at[0].dropLast(":confirm".count)) : at[0]
+                    var outcome = try? await automationCore.invoke(tool: tool, arguments: args,
+                                                                   policy: .standard)
+                    var plan: String?
+                    if wantsConfirm, case .needsConfirmation(let p, let token) = outcome {
+                        plan = p
+                        outcome = try? await automationCore.confirm(token: token)
+                    }
+                    let text: String
+                    switch outcome {
+                    case .ok(let payload):
+                        let body = payload.flatMap { String(data: $0, encoding: .utf8) } ?? "(no payload)"
+                        text = plan.map { "confirmed: \($0)\n" + body } ?? body
+                    case .needsConfirmation(let plan, _): text = "needsConfirmation: \(plan)"
+                    case .refused(let reason):            text = "refused: \(reason)"
+                    case .failed(let error):              text = "failed: \(error)"
+                    case nil:                             text = "ERROR: the tool threw"
+                    }
+                    try? (text + "\n").write(toFile: at[2], atomically: true, encoding: .utf8)
+                }
             case "pathbardump":                        // pathbardump <left|right>|<out> (F-444)
                 // The path bar draws its breadcrumb and handles its own clicks, so whether it is in edit
                 // mode is readable nowhere else — not through a control, and not from a screenshot that

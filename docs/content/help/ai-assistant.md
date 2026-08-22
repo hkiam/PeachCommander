@@ -7,7 +7,7 @@ order: 122
 related: [plugins, settings, privacy-and-security]
 ---
 
-The AI assistant is an optional, removable plugin that helps you work with your files in plain language. It can summarize or explain a document, suggest a better file name, translate or proofread text, turn data into a table, and even organize a folder — and it can carry out file actions for you after showing you a plan first. It runs on-device with Apple Intelligence when available, or you can point it at a cloud model. Because it is a plugin, you can disable or remove it entirely from **Configuration ▸ Plugins…**.
+The AI assistant is an optional, removable plugin that helps you work with your files in plain language. It can summarize or explain a document, suggest a better file name, translate or proofread text, turn data into a table, and even organize a folder — and it can carry out file actions for you after showing you a plan first. It runs on-device with Apple Intelligence when available, or you can point it at a cloud model. **It arrives switched off.** Turn it on in **Configuration ▸ Plugins…** and restart, or leave it off and nothing about it appears — no AI ▸ menu, no chat, no column. That is deliberate while it is in beta: it can rename, move and delete files and run shell commands for you, each behind a plan you approve, and that is a lot of reach to hand a new feature by default. Without an API key it works entirely on your Mac, so this is about the reach and not about anything leaving the machine. The **AI Column** plugin, which fills a panel column from the same model, arrives switched off with it. You can also remove either one entirely from the same page.
 
 **On-device or cloud.** The on-device model is private and free, and it is small: it takes in a few thousand words at a time. Reading a *whole* long file therefore works differently — the assistant reads it in slices and folds the results together, which takes longer the longer the file is. For heavy work across many files, or long conversations, a cloud model is faster and holds more at once; you choose in **Settings ▸ AI** and the assistant switches over straight away.
 
@@ -36,6 +36,18 @@ Each **AI ▸** action opens its **own titled chat** (for example, *Summarize �
 What each action asks the model is a text file you can edit: `aichat/skills.json` for the file actions and `aichat/folder-skills.json` for the folder ones, in your configuration folder. Both are written out with the built-in wording the first time the assistant runs, so you can see the format. `{name}` and `{path}` stand for the file. Delete a file to go back to the built-in wording.
 
 **Actions of your own.** Add an entry with an `id` of your choosing, and it can be run like any other command by naming `plugin.ai.skill.<id>` — in the user menu, on the button bar, or on a keyboard shortcut. (For a folder action, `plugin.ai.folderskill.<id>`.) The **AI ▸** submenu itself lists the built-in actions: it is built from the plugin's manifest without loading the plugin, so that a disabled plugin contributes nothing, which is why your own actions are placed by you rather than appearing there. Name an id that does not exist and the assistant says so instead of doing nothing.
+
+## Ask it to find a file
+
+You do not have to know where a file is. Describe it and the assistant looks it up in the index macOS already keeps of your disk — so there is nothing to build and no waiting for it to catch up.
+
+- *"Find the PDF invoice from last month"* — a kind, a word in the name, and a time window.
+- *"Where are all my node_modules folders?"* — folders, by name, anywhere in your home folder.
+- *"Which file mentions the Aachen contract?"* — words **inside** files, which the ordinary Find Files search cannot do unless you point it at a folder first.
+
+You can steer where it looks: your home folder by default, the whole computer, or just the folder a panel is showing. It tells you which of those it used, so an empty answer is readable rather than a shrug.
+
+Two limits worth knowing. macOS keeps some places out of its index — and out of reach of any app without Full Disk Access — so "nothing found" is not proof that a file does not exist; see [Troubleshooting](troubleshooting). And a file only just created may not be indexed yet, in which case **Find Files** (Alt+F7), which walks folders itself, will still find it.
 
 ## Manage your chats
 
