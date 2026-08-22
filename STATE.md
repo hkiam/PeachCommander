@@ -293,6 +293,39 @@ is why `check-translation-drift.py` still reports `drifted=0`. Help Book rebuilt
 pages changed, plus a copy of each PNG per lproj.
 
 
+## 2026-08-22 (F-442) — Documentation that described itself wrongly
+
+Three leftovers from the site work, plus one claim of mine that did not survive checking.
+
+**`pages.yml` is fine.** I had said an SDK header change regenerates the API reference without
+redeploying the site, so the published reference could lag. It cannot: `docs/content/reference/`
+is a *committed* artefact and `docs.yml:31-38` fails until it is regenerated and committed — and
+that commit touches `docs/**`, which is exactly what triggers the deploy. Adding
+`Plugins/SDK/**` to the trigger would only deploy redundantly. Not changed.
+
+**`FEATURES.md` had two `## Archives` sections** because one record of eighty-eight — `zip64` —
+carried `category: archives` where every other archive feature says `archive`. `CAT_LABEL` has
+no entry for the plural, so `gen-overviews.py` fell back to `cat.title()`, which renders
+"archives" as "Archives" — the same label the singular already produces. One mistyped plural,
+two identical headings, every gate green. Record fixed, and the generator now exits non-zero on
+a category that is not in `features.yml`'s own `meta.categories` list rather than inventing a
+label for it. Verified by mistyping one.
+
+**`docs/metadata/navigation.yml` is gone.** A stub containing `nav: []` that nothing has ever
+read. The navigation is derived at build time from front matter and `GROUP_ORDER`; there is no
+navigation file, and `DOCUMENTATION.md` now says so instead of listing `gen-nav.py` as pending.
+
+**`DOCUMENTATION.md` was describing a different project.** Its §4 table marked
+`build-helpbook.py`, `gen-api-reference.py` and `check-docs.py` as _(planned)_ — all three are
+built and CI-enforced — and it named two generators that were never written: `gen-features.py`
+(the real one is `gen-overviews.py`) and `gen-readme.py` (the README is hand-written, and
+`Tools/check-readme.py` checks its checkable claims). §8's "add a feature" recipe told the reader
+to run `capture-screenshots.py` and `mkdocs build`, neither of which exists. All corrected, the
+two abandoned ideas are marked abandoned rather than left looking pending, and §8 now also says
+the thing that actually bites: a new help topic must exist in all 19 languages in the same
+commit.
+
+
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 
 Run with `--only menu-file,viewer-md-outline,csv-no-header,jsonl,viewer-long-lines`, which is the debt both

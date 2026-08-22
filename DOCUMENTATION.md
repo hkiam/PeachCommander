@@ -6,9 +6,13 @@ the in-app macOS Help Book, the documentation website, the product homepage, the
 GitHub README, feature overviews, the developer & architecture guide, and the
 SDK / plugin / API reference.
 
-> **Status:** this document defines the system. Sections marked _(planned)_ are
-> part of the design but not yet wired; everything else is in place. The build
-> report in `docs/generated/coverage-report.md` tracks what is implemented.
+> **Status:** this document defines the system, and it is meant to describe what
+> exists. It drifted once: most of §4 sat marked _(planned)_ long after the scripts
+> were written and wired into CI, and it named two generators — `gen-readme.py` and
+> `gen-features.py` — that were never written at all. Corrected 2026-08-22. What is
+> still genuinely ahead says so, and §4 names the two ideas that were abandoned
+> rather than leaving them looking pending. The coverage report in
+> `docs/generated/coverage-report.md` tracks feature documentation, not this file.
 
 ---
 
@@ -58,8 +62,9 @@ docs/
 │   └── animations/
 ├── metadata/
 │   ├── features.yml         #   canonical feature registry (see §6)
-│   ├── navigation.yml       #   site/help navigation tree
 │   ├── terminology.yml      #   glossary (canonical term → definition + forbidden synonyms)
+│   ├── nav-groups.yml       #   per-language label for the one umbrella nav group
+│   ├── languages.yml        #   the 19 supported languages, read by every doc script
 │   └── screenshot-index.yml #   screenshot registry (see §5)
 ├── templates/               #   Help Book HTML shell, website overrides, page templates
 ├── scripts/                 #   generators & checks (see §4)
@@ -79,10 +84,11 @@ iteration logs) rather than being duplicated.
 | Output | From | Tool | Command |
 |--------|------|------|---------|
 | **In-app macOS Help Book** (`PeachCommander.help`) | `content/help/` + `content/shared/` | custom generator + `hiutil` index | `docs/scripts/build-helpbook.py` |
-| **Documentation website** (user + dev + SDK + plugins + reference) | `content/**` | MkDocs Material | `mkdocs build` |
-| **Product homepage** | `content/website/` | MkDocs (landing template) | `mkdocs build` |
-| **GitHub README** | `content/shared/` + `features.yml` | generator | `docs/scripts/gen-readme.py` |
-| **FEATURES.md** (feature overview) | `features.yml` | generator | `docs/scripts/gen-features.py` |
+| **Documentation website** (user + dev + SDK + plugins + reference) | `content/**` | MkDocs Material | `docs/scripts/build-site.py` |
+| **Translated Help subsites** (18 languages at `/<code>/`) | `docs/help-<code>/` | MkDocs Material | `docs/scripts/build-site.py` |
+| **Product homepage** | `content/website/index.md` | MkDocs + `docs/assets/website/peach.css` | `docs/scripts/build-site.py` |
+| **GitHub README** | hand-written; its checkable claims are gated | — | `Tools/check-readme.py` |
+| **FEATURES.md** (feature overview) + glossary | `features.yml`, `terminology.yml` | generator | `docs/scripts/gen-overviews.py` |
 | **API reference** | Swift/C sources + doc-comments | generator | `docs/scripts/gen-api-reference.py` |
 | **Offline HTML** | `content/**` | MkDocs (`mkdocs build` output is self-contained) | `mkdocs build` |
 | **PDF** _(planned)_ | `content/**` | MkDocs + `mkdocs-with-pdf` | `ENABLE_PDF=1 mkdocs build` |
@@ -109,12 +115,18 @@ iteration logs) rather than being duplicated.
 
 | Script | Purpose | Status |
 |--------|---------|--------|
-| `build-helpbook.py` | Render `content/help/` → `PeachCommander.help` bundle, run `hiutil` | _(planned — Priority 1)_ |
-| `gen-api-reference.py` | Extract public Swift/C API + doc-comments → `content/reference/` | _(planned — Priority 5)_ |
-| `gen-readme.py` / `gen-features.py` | Generate README / FEATURES from `features.yml` | _(planned)_ |
-| `gen-nav.py` | Build `navigation.yml` / `mkdocs.yml` nav from front-matter | _(planned)_ |
-| `check-docs.py` | Link check, missing/unreferenced images, term consistency, Mermaid validation, undocumented-feature check | _(planned — §7)_ |
-| `capture-screenshots.py` | Drive `Tools/vm/` to (re)generate indexed screenshots | _(planned — §5)_ |
+| `build-helpbook.py` | Render `content/help/` → `PeachCommander.help` bundle, run `hiutil`; `--all` for every language | built · gated |
+| `build-site.py` | Stage `content/**` and each `help-<code>/` into MkDocs workspaces, generate `mkdocs.yml` and the nav, render 19 sites | built · gated |
+| `gen-api-reference.py` | Extract public C API + doc-comments from `Plugins/SDK/*.h` → `content/reference/` | built · gated |
+| `gen-overviews.py` | Generate `FEATURES.md` from `features.yml` and the glossary from `terminology.yml` | built · gated |
+| `check-docs.py` | Front-matter completeness, `slug` == filename, `related`/link resolution, missing and unreferenced screenshots, terminology | built · gated |
+| `check-translations.py` | Every language has one `.md` per English help topic, and a translated value per UI string | built · gated |
+| `check-translation-drift.py` | Translated pages keep the English skeleton — headings, paragraph/list counts, image targets, code | built · gated |
+| `check-nav-order.py` | Every page has a `group:`, every group is known, first tab is the entry and last is the deep end | built · gated |
+| `i18n_help_status.py` | Authoring helper: which slugs a language is missing, and its section map | built |
+| `Tools/vm/capture.py` | Drive the VM harness to (re)generate the indexed screenshots | built |
+| `gen-nav.py` | ~~Build `navigation.yml` from front-matter~~ | **abandoned** — the nav is derived at build time by `build-site.py` from `group:`/`section:`/`order:` plus its `GROUP_ORDER`. There is no navigation file. |
+| `gen-readme.py` | ~~Generate the README from `features.yml`~~ | **abandoned** — the README is written by hand; `Tools/check-readme.py` checks the claims in it that have a machine-readable counterpart. |
 
 ---
 
@@ -190,13 +202,21 @@ Run on every docs change (and in CI on pull requests):
 
 1. Add or update the feature's record in `docs/metadata/features.yml`.
 2. Write/adjust the user topic in `docs/content/help/` (and it flows to the
-   website automatically). Add developer notes under `content/developer-guide/`
-   or `content/architecture/` if it has architectural impact; SDK/plugin notes
-   under `content/sdk/` or `content/plugins/` if it adds an extension point.
-3. Add a screenshot capture spec and run `capture-screenshots.py`; register the
-   image in `screenshot-index.yml`.
-4. Run `docs/scripts/check-docs.py` and fix any reported gaps.
-5. Rebuild: `docs/scripts/build-helpbook.py` and `mkdocs build`.
+   website automatically) — with `group:` as well as `section:`/`order:`, or
+   `check-nav-order.py` will tell you it would land outside the tabs. Add developer
+   notes under `content/developer-guide/` or `content/architecture/` if it has
+   architectural impact; SDK/plugin notes under `content/sdk/` or `content/plugins/`
+   if it adds an extension point.
+3. **A new or renamed help topic has to exist in all 19 languages in the same
+   commit** — `docs/help-<code>/<slug>.md`, same slug, same skeleton.
+   `docs/scripts/i18n_help_status.py <code>` lists what a language is missing.
+4. Add a spec to `docs/metadata/screenshot-specs.yml` and run
+   `python3 Tools/vm/capture.py --only <id>`; it registers the image in
+   `screenshot-index.yml` itself.
+5. Run `check-docs.py`, `check-translations.py`, `check-translation-drift.py` and
+   `check-nav-order.py`, and fix what they report.
+6. Rebuild and commit both outputs: `docs/scripts/build-helpbook.py --all` (CI
+   byte-compares the shipped bundle) and `docs/scripts/build-site.py`.
 
 See `CONTRIBUTING.md` for the full contributor workflow.
 

@@ -17,7 +17,9 @@ except ImportError:
     sys.exit("need pyyaml")
 
 REPO = Path(__file__).resolve().parents[2]
-FEATURES = yaml.safe_load((REPO / "docs/metadata/features.yml").read_text())["features"]
+_FEATURES_YML = yaml.safe_load((REPO / "docs/metadata/features.yml").read_text())
+FEATURES = _FEATURES_YML["features"]
+META = _FEATURES_YML.get("meta") or {}
 TERMS = yaml.safe_load((REPO / "docs/metadata/terminology.yml").read_text())["terms"]
 
 CAT_LABEL = {
@@ -30,6 +32,16 @@ STATUS_MARK = {"stable": "✅", "beta": "🅱️", "planned": "🔜", "experimen
 
 
 def gen_features():
+    # A category outside meta.categories used to pass silently and produce a SECOND heading with
+    # the same label, because CAT_LABEL misses it and `cat.title()` renders "archives" as
+    # "Archives" — exactly what `archive` already resolves to. FEATURES.md carried two
+    # "## Archives" sections for one mistyped plural, with every gate green.
+    allowed = set(META.get("categories") or [])
+    if allowed:
+        stray = sorted({f["category"] for f in FEATURES} - allowed)
+        if stray:
+            sys.exit(f"gen-overviews.py: category not in features.yml meta.categories: "
+                     f"{', '.join(stray)} — fix the record, or add the category to meta")
     by_cat = {}
     for f in FEATURES:
         by_cat.setdefault(f["category"], []).append(f)

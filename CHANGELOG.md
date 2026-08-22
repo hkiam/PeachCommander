@@ -139,6 +139,13 @@ does not have.
 
 ### Fixed
 
+- **`FEATURES.md` listed "Archives" twice.** One feature record of eighty-eight said
+  `category: archives` where the rest say `archive`; the label table has no plural, so the
+  generator fell back to capitalising the raw value — which produces the same heading the
+  singular already produces. The record is fixed, and the generator now refuses a category that
+  is not in the registry's own list instead of inventing a heading for it.
+
+
 - **The other eighteen languages got the same site, and a front page.** The translated help
   was published as a flat list of twelve sections with a three-line stub for a landing page —
   seventeen of the eighteen languages had a heading and the name of their language, nothing
