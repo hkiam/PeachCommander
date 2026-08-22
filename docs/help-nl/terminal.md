@@ -12,6 +12,9 @@ Dit is niet hetzelfde als **Open Terminal hier**, dat Apple's Terminal-app in de
 
 Het is een plug-in: wilt u hem niet, schakel hem dan uit of verwijder hem via **Configuratie ▸ Plug-ins…**, en het dock gaat mee.
 
+![De ingebouwde terminal, vastgezet onder de twee bestandspanelen](screenshots/terminal.png)
+*(Afbeelding: de shell draait in de map die het actieve paneel toont.)*
+
 ## Openen en verplaatsen
 
 Druk op **Ctrl** samen met de toets links van de ‘1’ om het toetsenbord tussen het bestandspaneel en de terminal te verplaatsen. Die sneltoets is aan de *positie* van de toets gebonden, niet aan het teken, dus het is dezelfde fysieke toets hoe uw indeling hem ook noemt: het accent grave op een US-toetsenbord, `^` op een Duits, `@` op een Frans.

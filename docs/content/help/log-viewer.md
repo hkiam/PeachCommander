@@ -11,6 +11,9 @@ Put the cursor on a log file and choose **View as Log…** to open it in a windo
 
 It is a plugin, so you can turn it off or remove it in **Configuration ▸ Plugins…**. Without it, F3 shows a log the way it shows any other text file.
 
+![The log viewer showing a service log with each level in its own colour](screenshots/log-viewer.png)
+*(Figure: each level gets its own colour, and the view keeps following the file.)*
+
 ## Why it opens instantly
 
 The file is memory-mapped and only an index of where each line begins is built, in the background. Nothing is loaded into memory as text until it is on screen, and only the lines actually visible are decoded. A multi-gigabyte log opens as fast as a small one, and scrolling to the end does not read the middle.

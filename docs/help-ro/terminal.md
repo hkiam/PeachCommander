@@ -12,6 +12,9 @@ Nu este același lucru cu **Deschide Terminal aici**, care lansează aplicația 
 
 Este o extensie: dacă nu o doriți, dezactivați-o sau eliminați-o din **Configurare ▸ Extensii…**, iar docul pleacă odată cu ea.
 
+![Terminalul încorporat, andocat sub cele două panouri de fișiere](screenshots/terminal.png)
+*(Figura: shell-ul rulează în dosarul afișat de panoul activ.)*
+
 ## Deschiderea și deplasarea
 
 Apăsați **Ctrl** împreună cu tasta din stânga lui „1” pentru a muta tastatura între panoul de fișiere și terminal. Scurtătura este legată de *poziția* tastei, nu de caracterul ei, deci este aceeași tastă fizică oricum ar numi-o aranjamentul dumneavoastră: accentul grav pe o tastatură US, `^` pe una germană, `@` pe una franceză.

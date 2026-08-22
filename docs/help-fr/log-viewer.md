@@ -10,6 +10,9 @@ Placez le curseur sur un fichier journal et choisissez **Afficher comme journal�
 
 C’est une extension : vous pouvez la désactiver ou la supprimer dans **Configuration ▸ Extensions…**. Sans elle, F3 affiche un journal comme n’importe quel autre fichier texte.
 
+![La visionneuse de journaux affichant un journal de service, chaque niveau dans sa propre couleur](screenshots/log-viewer.png)
+*(Figure : chaque niveau a sa propre couleur, et la vue continue de suivre le fichier.)*
+
 ## Pourquoi elle s’ouvre instantanément
 
 Le fichier est mappé en mémoire et seul un index du début de chaque ligne est construit, en arrière-plan. Rien n’est chargé sous forme de texte avant d’être à l’écran, et seules les lignes réellement visibles sont décodées. Un journal de plusieurs gigaoctets s’ouvre aussi vite qu’un petit, et aller à la fin ne lit pas le milieu.

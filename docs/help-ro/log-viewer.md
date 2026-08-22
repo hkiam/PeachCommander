@@ -10,6 +10,9 @@ Puneți cursorul pe un fișier de jurnal și alegeți **Arată ca jurnal…** pe
 
 Este o extensie: o puteți dezactiva sau elimina din **Configurare ▸ Extensii…**. Fără ea, F3 arată un jurnal ca pe orice alt fișier text.
 
+![Vizualizatorul de jurnale cu un jurnal de serviciu, fiecare nivel cu propria culoare](screenshots/log-viewer.png)
+*(Figura: fiecare nivel primește propria culoare, iar vizualizarea continuă să urmărească fișierul.)*
+
 ## De ce se deschide instantaneu
 
 Fișierul este mapat în memorie și se construiește doar un index cu locul unde începe fiecare linie, în fundal. Nimic nu este încărcat ca text înainte de a fi pe ecran, iar doar liniile efectiv vizibile sunt decodate. Un jurnal de mai mulți gigaocteți se deschide la fel de repede ca unul mic, iar saltul la sfârșit nu citește mijlocul.

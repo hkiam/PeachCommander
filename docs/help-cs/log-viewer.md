@@ -10,6 +10,9 @@ Umístěte kurzor na soubor s logem a zvolte **Zobrazit jako log…**, aby se ot
 
 Je to plugin: můžete jej vypnout nebo odstranit v **Konfigurace ▸ Pluginy…**. Bez něj zobrazí F3 log jako každý jiný textový soubor.
 
+![Prohlížeč logů s protokolem služby, každá úroveň ve vlastní barvě](screenshots/log-viewer.png)
+*(Obrázek: každá úroveň má vlastní barvu a zobrazení dál sleduje soubor.)*
+
 ## Proč se otevře okamžitě
 
 Soubor se namapuje do paměti a na pozadí se vytvoří pouze index, kde který řádek začíná. Nic se nenačítá jako text, dokud to není na obrazovce, a dekódují se jen skutečně viditelné řádky. Log o několika gigabajtech se otevře stejně rychle jako malý a skok na konec nečte prostředek.

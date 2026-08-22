@@ -12,6 +12,9 @@ Ce n’est pas la même chose que **Ouvrir un terminal ici**, qui lance l’app 
 
 C’est une extension : si vous n’en voulez pas, désactivez-la ou supprimez-la dans **Configuration ▸ Extensions…**, et le dock s’en va avec elle.
 
+![Le terminal intégré, ancré sous les deux panneaux de fichiers](screenshots/terminal.png)
+*(Figure : le shell s’exécute dans le dossier affiché par le panneau actif.)*
+
 ## L’ouvrir et s’y déplacer
 
 Appuyez sur **Ctrl** avec la touche à gauche du « 1 » pour déplacer le clavier entre le panneau de fichiers et le terminal. Ce raccourci est lié à la *position* de la touche, pas à son caractère : c’est donc la même touche physique quel que soit le nom que lui donne votre disposition : l’accent grave sur un clavier US, `^` sur un allemand, `@` sur un français.

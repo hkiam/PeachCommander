@@ -10,6 +10,9 @@ Sæt markøren på en logfil, og vælg **Vis som log…** for at åbne den i et 
 
 Det er et plugin: du kan slå det fra eller fjerne det under **Konfiguration ▸ Plugins…**. Uden det viser F3 en logfil som enhver anden tekstfil.
 
+![Logfremviseren med en servicelog, hvert niveau i sin egen farve](screenshots/log-viewer.png)
+*(Figur: hvert niveau får sin egen farve, og visningen følger filen videre.)*
+
 ## Hvorfor den åbner med det samme
 
 Filen lægges i hukommelsen, og der bygges kun et indeks over, hvor hver linje begynder — i baggrunden. Intet indlæses som tekst, før det er på skærmen, og kun de linjer, der faktisk er synlige, afkodes. En logfil på flere gigabyte åbner lige så hurtigt som en lille, og at gå til slutningen læser ikke midten.

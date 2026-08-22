@@ -12,6 +12,9 @@ Det här är inte samma sak som **Öppna Terminal här**, som startar Apples Ter
 
 Det är ett tillägg: vill du inte ha det, stäng av eller ta bort det under **Konfiguration ▸ Tillägg…**, så försvinner dockan med det.
 
+![Den inbyggda terminalen, fäst under de två filpanelerna](screenshots/terminal.png)
+*(Figur: skalet körs i mappen som den aktiva panelen visar.)*
+
 ## Öppna den och flytta dig
 
 Tryck **Ctrl** tillsammans med tangenten till vänster om ”1” för att flytta tangentbordet mellan filpanelen och terminalen. Det kortkommandot är bundet till tangentens *position*, inte till dess tecken, så det är samma fysiska tangent vad än din layout kallar den: grav accent på ett US-tangentbord, `^` på ett tyskt, `@` på ett franskt.

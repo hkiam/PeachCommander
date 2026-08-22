@@ -12,6 +12,9 @@ Ez nem ugyanaz, mint a **Terminál megnyitása itt**, amely az Apple Terminál a
 
 Bővítmény: ha nem kéri, kapcsolja ki vagy távolítsa el a **Konfiguráció ▸ Bővítmények…** alatt, és a dok is vele megy.
 
+![A beépített terminál a két fájlpanel alatt dokkolva](screenshots/terminal.png)
+*(Ábra: a shell abban a mappában fut, amelyet az aktív panel mutat.)*
+
 ## Megnyitás és váltás
 
 Nyomja meg a **Ctrl** billentyűt az „1”-től balra lévővel együtt, hogy a billentyűzet a fájlpanel és a terminál között váltson. Ez a gyorsbillentyű a billentyű *helyzetéhez* kötődik, nem a karakteréhez, tehát ugyanaz a fizikai billentyű, bárhogy is hívja azt a kiosztása: tompa ékezet amerikai billentyűzeten, `^` németen, `@` francián.

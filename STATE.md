@@ -281,10 +281,16 @@ attempt was a picture of an idle prompt. One command, generously timed.
 duly reported both new images as unreferenced. The strip is Markdown inside `markdown="1"` now,
 one paragraph per picture, and the gate is quiet.
 
-Still open: neither `terminal.md` nor `log-viewer.md` embeds its screenshot, unlike every other
-plugin help page. Adding them means the same image line in all 19 languages (the drift gate
-compares image targets) with a translated alt text and caption in each — 72 strings that no
-translator has seen — plus a Help Book rebuild. Not done, and not done quietly.
+**Both help pages now embed their screenshot, in all 19 languages** — the decision was to do it
+in full rather than leave 17 languages behind an allowlist entry. Two things kept the invented
+share down: the caption format was read out of each language's existing figure captions rather
+than guessed (`*(Abbildung: …)*`, `*(Figure : …)*` with the French space, `*（图：…）*` with
+full-width punctuation), and each alt text names the plugin by the title that language's own page
+already uses — `Der Log-Betrachter`, `La visionneuse de journaux`, `일지 뷰어`. What remains
+genuinely new is 38 alt texts and 38 captions that I wrote and no translator has reviewed. The
+image goes in at the same structural position everywhere — directly before the first `##` — which
+is why `check-translation-drift.py` still reports `drifted=0`. Help Book rebuilt: exactly 38 topic
+pages changed, plus a copy of each PNG per lproj.
 
 
 ## 2026-08-18 (VM) — The five new scenarios, on the VM

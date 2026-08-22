@@ -10,6 +10,9 @@ Ustaw kursor na pliku logu i wybierz **Pokaż jako log…**, aby otworzyć go w 
 
 To wtyczka: możesz ją wyłączyć lub usunąć w **Konfiguracja ▸ Wtyczki…**. Bez niej F3 pokazuje log tak jak każdy inny plik tekstowy.
 
+![Przeglądarka logów z logiem usługi, każdy poziom we własnym kolorze](screenshots/log-viewer.png)
+*(Rysunek: każdy poziom ma własny kolor, a widok nadal śledzi plik.)*
+
 ## Dlaczego otwiera się natychmiast
 
 Plik jest mapowany w pamięci, a w tle budowany jest jedynie indeks tego, gdzie zaczyna się każdy wiersz. Nic nie jest wczytywane jako tekst, zanim nie znajdzie się na ekranie, i dekodowane są tylko wiersze rzeczywiście widoczne. Log o wielkości kilku gigabajtów otwiera się tak szybko jak mały, a przejście na koniec nie czyta środka.

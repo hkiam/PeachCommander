@@ -98,7 +98,9 @@ does not have.
 - **The terminal and the log viewer are shown, not just listed.** Two of the most visual bundled
   plugins had no screenshot anywhere. Both are captured now — the terminal with the shell sitting
   in the folder the panel above it shows, the log viewer with a service log colour-coded by level
-  — and the showcase strip on the landing page carries five pictures instead of three.
+  — and the showcase strip on the landing page carries five pictures instead of three. Both help
+  pages embed theirs too, in all nineteen languages, so they are no longer the only plugin pages
+  without a picture.
 
 ### Changed
 

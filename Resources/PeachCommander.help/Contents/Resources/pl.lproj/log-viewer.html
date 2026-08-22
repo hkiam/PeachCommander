@@ -12,6 +12,8 @@
 <h1>Przeglądarka logów</h1>
 <p>Ustaw kursor na pliku logu i wybierz <strong>Pokaż jako log…</strong>, aby otworzyć go w oknie zbudowanym dla logów, a nie dla tekstu: jeden wiersz na wiersz, poziom każdego rozpoznany i pokolorowany, filtr oraz śledzenie, które nadąża, gdy plik wciąż jest zapisywany.</p>
 <p>To wtyczka: możesz ją wyłączyć lub usunąć w <strong>Konfiguracja ▸ Wtyczki…</strong>. Bez niej F3 pokazuje log tak jak każdy inny plik tekstowy.</p>
+<p><img alt="Przeglądarka logów z logiem usługi, każdy poziom we własnym kolorze" src="images/log-viewer.png" />
+<em>(Rysunek: każdy poziom ma własny kolor, a widok nadal śledzi plik.)</em></p>
 <h2 id="dlaczego-otwiera-sie-natychmiast">Dlaczego otwiera się natychmiast</h2>
 <p>Plik jest mapowany w pamięci, a w tle budowany jest jedynie indeks tego, gdzie zaczyna się każdy wiersz. Nic nie jest wczytywane jako tekst, zanim nie znajdzie się na ekranie, i dekodowane są tylko wiersze rzeczywiście widoczne. Log o wielkości kilku gigabajtów otwiera się tak szybko jak mały, a przejście na koniec nie czyta środka.</p>
 <h2 id="poziomy-i-kolor">Poziomy i kolor</h2>

@@ -12,6 +12,8 @@
 <h1>The log viewer</h1>
 <p>Put the cursor on a log file and choose <strong>View as Log…</strong> to open it in a window built for logs rather than for text: one row per line, the level of each line recognised and coloured, a filter, and a tail that keeps up while the file is still being written.</p>
 <p>It is a plugin, so you can turn it off or remove it in <strong>Configuration ▸ Plugins…</strong>. Without it, F3 shows a log the way it shows any other text file.</p>
+<p><img alt="The log viewer showing a service log with each level in its own colour" src="images/log-viewer.png" />
+<em>(Figure: each level gets its own colour, and the view keeps following the file.)</em></p>
 <h2 id="why-it-opens-instantly">Why it opens instantly</h2>
 <p>The file is memory-mapped and only an index of where each line begins is built, in the background. Nothing is loaded into memory as text until it is on screen, and only the lines actually visible are decoded. A multi-gigabyte log opens as fast as a small one, and scrolling to the end does not read the middle.</p>
 <h2 id="levels-and-colour">Levels and colour</h2>

@@ -10,6 +10,9 @@ Coloca el cursor sobre un archivo de registro y elige **Ver como registro…** p
 
 Es un plugin: puedes desactivarlo o eliminarlo en **Configuración ▸ Plugins…**. Sin él, F3 muestra un registro como cualquier otro archivo de texto.
 
+![El visor de registros mostrando un registro de servicio, cada nivel con su propio color](screenshots/log-viewer.png)
+*(Figura: cada nivel recibe su propio color y la vista sigue leyendo el archivo.)*
+
 ## Por qué se abre al instante
 
 El archivo se mapea en memoria y solo se construye un índice de dónde empieza cada línea, en segundo plano. Nada se carga como texto antes de estar en pantalla, y solo se descodifican las líneas realmente visibles. Un registro de varios gigabytes se abre tan rápido como uno pequeño, e ir al final no lee el medio.

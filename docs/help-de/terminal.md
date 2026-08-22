@@ -12,6 +12,9 @@ Das ist nicht dasselbe wie **Terminal hier öffnen**, das Apples Terminal im akt
 
 Es ist ein Plugin: Wenn Sie es nicht wollen, schalten Sie es unter **Konfiguration ▸ Plugins…** ab oder entfernen es, und der Dock geht mit.
 
+![Das eingebaute Terminal, angedockt unter den beiden Dateipanels](screenshots/terminal.png)
+*(Abbildung: die Shell läuft in dem Ordner, den das aktive Panel zeigt.)*
+
 ## Öffnen und bewegen
 
 Drücken Sie **Ctrl** zusammen mit der Taste links neben der „1“, um die Tastatur zwischen Dateipanel und Terminal zu bewegen. Dieses Kürzel ist an die *Position* der Taste gebunden, nicht an ihr Zeichen; es ist also dieselbe physische Taste, wie Ihr Layout sie auch nennt: das Backtick auf einer US-Tastatur, `^` auf einer deutschen, `@` auf einer französischen.

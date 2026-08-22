@@ -10,6 +10,9 @@ Mettete il cursore su un file di log e scegliete **Mostra come log…** per apri
 
 È un plugin: potete disattivarlo o rimuoverlo in **Configurazione ▸ Plugin…**. Senza di esso, F3 mostra un log come qualsiasi altro file di testo.
 
+![Il visualizzatore di log con un log di servizio, ogni livello con il proprio colore](screenshots/log-viewer.png)
+*(Figura: ogni livello ha il proprio colore e la vista continua a seguire il file.)*
+
 ## Perché si apre all’istante
 
 Il file viene mappato in memoria e si costruisce solo un indice di dove comincia ogni riga, in background. Nulla viene caricato come testo prima di essere sullo schermo, e solo le righe realmente visibili vengono decodificate. Un log di più gigabyte si apre veloce quanto uno piccolo, e andare alla fine non legge il mezzo.

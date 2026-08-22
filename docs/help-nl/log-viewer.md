@@ -10,6 +10,9 @@ Zet de cursor op een logbestand en kies **Tonen als log…** om het te openen in
 
 Het is een plug-in: u kunt hem uitschakelen of verwijderen via **Configuratie ▸ Plug-ins…**. Zonder hem toont F3 een log zoals elk ander tekstbestand.
 
+![De logviewer met een servicelog, elk niveau in zijn eigen kleur](screenshots/log-viewer.png)
+*(Afbeelding: elk niveau krijgt zijn eigen kleur en de weergave blijft het bestand volgen.)*
+
 ## Waarom het meteen opent
 
 Het bestand wordt in het geheugen gekoppeld en er wordt alleen een index gebouwd van waar elke regel begint, op de achtergrond. Er wordt niets als tekst geladen voordat het op het scherm staat, en alleen de daadwerkelijk zichtbare regels worden gedecodeerd. Een log van meerdere gigabytes opent even snel als een klein, en naar het einde springen leest het midden niet.

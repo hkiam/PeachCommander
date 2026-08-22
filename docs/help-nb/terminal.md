@@ -12,6 +12,9 @@ Dette er ikke det samme som **Åpne Terminal her**, som starter Apples Terminal 
 
 Det er et programtillegg: vil du ikke ha det, slå det av eller fjern det under **Konfigurasjon ▸ Programtillegg…**, så følger dokken med.
 
+![Den innebygde terminalen, festet under de to filpanelene](screenshots/terminal.png)
+*(Figur: skallet kjører i mappen det aktive panelet viser.)*
+
 ## Åpne den og flytte deg
 
 Trykk **Ctrl** sammen med tasten til venstre for «1» for å flytte tastaturet mellom filpanelet og terminalen. Snarveien er bundet til tastens *posisjon*, ikke tegnet, så det er den samme fysiske tasten uansett hva oppsettet ditt kaller den: gravaksent på et US-tastatur, `^` på et tysk, `@` på et fransk.

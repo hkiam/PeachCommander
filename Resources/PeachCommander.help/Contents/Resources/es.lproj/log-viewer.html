@@ -12,6 +12,8 @@
 <h1>El visor de registros</h1>
 <p>Coloca el cursor sobre un archivo de registro y elige <strong>Ver como registro…</strong> para abrirlo en una ventana pensada para registros y no para texto: una fila por línea, el nivel de cada una reconocido y coloreado, un filtro, y un seguimiento que va al día mientras el archivo se sigue escribiendo.</p>
 <p>Es un plugin: puedes desactivarlo o eliminarlo en <strong>Configuración ▸ Plugins…</strong>. Sin él, F3 muestra un registro como cualquier otro archivo de texto.</p>
+<p><img alt="El visor de registros mostrando un registro de servicio, cada nivel con su propio color" src="images/log-viewer.png" />
+<em>(Figura: cada nivel recibe su propio color y la vista sigue leyendo el archivo.)</em></p>
 <h2 id="por-que-se-abre-al-instante">Por qué se abre al instante</h2>
 <p>El archivo se mapea en memoria y solo se construye un índice de dónde empieza cada línea, en segundo plano. Nada se carga como texto antes de estar en pantalla, y solo se descodifican las líneas realmente visibles. Un registro de varios gigabytes se abre tan rápido como uno pequeño, e ir al final no lee el medio.</p>
 <h2 id="niveles-y-color">Niveles y color</h2>

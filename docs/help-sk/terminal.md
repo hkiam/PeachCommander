@@ -12,6 +12,9 @@ Nie je to to isté ako **Otvoriť terminál tu**, ktoré spustí Apple Terminál
 
 Je to plugin: ak ho nechcete, vypnite ho alebo odstráňte v **Konfigurácia ▸ Pluginy…** a dok zmizne s ním.
 
+![Vstavaný terminál ukotvený pod dvoma panelmi súborov](screenshots/terminal.png)
+*(Obrázok: shell beží v adresári, ktorý zobrazuje aktívny panel.)*
+
 ## Otvorenie a prepínanie
 
 Stlačte **Ctrl** spolu s klávesom vľavo od „1“ a klávesnica sa presunie medzi súborový panel a terminál. Táto skratka je viazaná na *pozíciu* klávesu, nie na jeho znak, takže je to ten istý fyzický kláves, nech ho vaše rozloženie nazýva akokoľvek: obrátený apostrof na americkej klávesnici, `^` na nemeckej, `@` na francúzskej.

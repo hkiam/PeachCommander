@@ -10,6 +10,9 @@ Setzen Sie den Cursor auf eine Logdatei und wählen Sie **Als Log anzeigen…**,
 
 Es ist ein Plugin, Sie können es also unter **Konfiguration ▸ Plugins…** abschalten oder entfernen. Ohne es zeigt F3 ein Log so wie jede andere Textdatei.
 
+![Der Log-Betrachter zeigt ein Dienstprotokoll, jede Stufe in eigener Farbe](screenshots/log-viewer.png)
+*(Abbildung: jede Stufe erhält ihre eigene Farbe, und die Ansicht folgt der Datei weiter.)*
+
 ## Warum es sofort öffnet
 
 Die Datei wird in den Speicher eingeblendet, und aufgebaut wird nur ein Index, wo jede Zeile beginnt — im Hintergrund. Nichts wird als Text geladen, bevor es auf dem Bildschirm ist, und nur die tatsächlich sichtbaren Zeilen werden dekodiert. Ein Log von mehreren Gigabyte öffnet so schnell wie ein kleines, und ans Ende zu springen liest nicht die Mitte.

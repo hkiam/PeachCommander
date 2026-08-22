@@ -12,6 +12,9 @@ Non è la stessa cosa di **Apri Terminale qui**, che avvia l’app Terminale di 
 
 È un plugin: se non lo volete, disattivatelo o rimuovetelo in **Configurazione ▸ Plugin…**, e il dock se ne va con lui.
 
+![Il terminale integrato, agganciato sotto i due pannelli dei file](screenshots/terminal.png)
+*(Figura: la shell gira nella cartella mostrata dal pannello attivo.)*
+
 ## Aprirlo e spostarsi
 
 Premete **Ctrl** insieme al tasto a sinistra dell’«1» per spostare la tastiera fra il pannello dei file e il terminale. Quella scorciatoia è legata alla *posizione* del tasto, non al suo carattere: è quindi lo stesso tasto fisico comunque lo chiami la vostra disposizione: l’accento grave su una tastiera US, `^` su una tedesca, `@` su una francese.

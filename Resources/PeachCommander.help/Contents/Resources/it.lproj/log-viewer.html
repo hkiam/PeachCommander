@@ -12,6 +12,8 @@
 <h1>Il visualizzatore di log</h1>
 <p>Mettete il cursore su un file di log e scegliete <strong>Mostra come log…</strong> per aprirlo in una finestra pensata per i log e non per il testo: una riga per riga, il livello di ciascuna riconosciuto e colorato, un filtro, e un inseguimento che tiene il passo mentre il file è ancora in scrittura.</p>
 <p>È un plugin: potete disattivarlo o rimuoverlo in <strong>Configurazione ▸ Plugin…</strong>. Senza di esso, F3 mostra un log come qualsiasi altro file di testo.</p>
+<p><img alt="Il visualizzatore di log con un log di servizio, ogni livello con il proprio colore" src="images/log-viewer.png" />
+<em>(Figura: ogni livello ha il proprio colore e la vista continua a seguire il file.)</em></p>
 <h2 id="perche-si-apre-allistante">Perché si apre all’istante</h2>
 <p>Il file viene mappato in memoria e si costruisce solo un indice di dove comincia ogni riga, in background. Nulla viene caricato come testo prima di essere sullo schermo, e solo le righe realmente visibili vengono decodificate. Un log di più gigabyte si apre veloce quanto uno piccolo, e andare alla fine non legge il mezzo.</p>
 <h2 id="livelli-e-colore">Livelli e colore</h2>

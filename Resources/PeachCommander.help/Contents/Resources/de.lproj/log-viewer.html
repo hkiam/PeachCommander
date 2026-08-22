@@ -12,6 +12,8 @@
 <h1>Der Log-Betrachter</h1>
 <p>Setzen Sie den Cursor auf eine Logdatei und wählen Sie <strong>Als Log anzeigen…</strong>, um sie in einem Fenster zu öffnen, das für Logs gebaut ist statt für Text: eine Zeile pro Zeile, die Stufe jeder Zeile erkannt und eingefärbt, ein Filter, und ein Mitlesen, das Schritt hält, während die Datei noch geschrieben wird.</p>
 <p>Es ist ein Plugin, Sie können es also unter <strong>Konfiguration ▸ Plugins…</strong> abschalten oder entfernen. Ohne es zeigt F3 ein Log so wie jede andere Textdatei.</p>
+<p><img alt="Der Log-Betrachter zeigt ein Dienstprotokoll, jede Stufe in eigener Farbe" src="images/log-viewer.png" />
+<em>(Abbildung: jede Stufe erhält ihre eigene Farbe, und die Ansicht folgt der Datei weiter.)</em></p>
 <h2 id="warum-es-sofort-offnet">Warum es sofort öffnet</h2>
 <p>Die Datei wird in den Speicher eingeblendet, und aufgebaut wird nur ein Index, wo jede Zeile beginnt — im Hintergrund. Nichts wird als Text geladen, bevor es auf dem Bildschirm ist, und nur die tatsächlich sichtbaren Zeilen werden dekodiert. Ein Log von mehreren Gigabyte öffnet so schnell wie ein kleines, und ans Ende zu springen liest nicht die Mitte.</p>
 <h2 id="stufen-und-farbe">Stufen und Farbe</h2>

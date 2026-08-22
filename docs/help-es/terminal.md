@@ -12,6 +12,9 @@ No es lo mismo que **Abrir Terminal aquí**, que lanza la app Terminal de Apple 
 
 Es un plugin: si no lo quieres, desactívalo o elimínalo en **Configuración ▸ Plugins…**, y el dock se va con él.
 
+![La terminal integrada, anclada bajo los dos paneles de archivos](screenshots/terminal.png)
+*(Figura: el shell se ejecuta en la carpeta que muestra el panel activo.)*
+
 ## Abrirla y moverse
 
 Pulsa **Ctrl** junto con la tecla a la izquierda del «1» para mover el teclado entre el panel de archivos y la terminal. Ese atajo está ligado a la *posición* de la tecla, no a su carácter, así que es la misma tecla física la llame como la llame tu distribución: el acento grave en un teclado US, `^` en uno alemán, `@` en uno francés.

@@ -10,6 +10,9 @@ Vigye a kurzort egy naplófájlra, és válassza a **Megjelenítés naplóként�
 
 Bővítmény: kikapcsolhatja vagy eltávolíthatja a **Konfiguráció ▸ Bővítmények…** alatt. Nélküle az F3 úgy mutat egy naplót, mint bármely más szövegfájlt.
 
+![A naplónéző egy szolgáltatásnaplóval, minden szint saját színnel](screenshots/log-viewer.png)
+*(Ábra: minden szint saját színt kap, a nézet pedig tovább követi a fájlt.)*
+
 ## Miért nyílik meg azonnal
 
 A fájl a memóriába kerül leképezve, és a háttérben csak arról épül index, hol kezdődik az egyes sorok. Semmi sem töltődik be szövegként, amíg nincs a képernyőn, és csak a ténylegesen látható sorok kerülnek dekódolásra. Egy több gigabájtos napló ugyanolyan gyorsan nyílik meg, mint egy kicsi, és a végére ugrás nem olvassa el a közepét.

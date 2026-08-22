@@ -12,6 +12,9 @@ To nie to samo co **Otwórz Terminal tutaj**, które uruchamia Terminal firmy Ap
 
 To wtyczka: jeśli jej nie chcesz, wyłącz ją lub usuń w **Konfiguracja ▸ Wtyczki…**, a dok zniknie razem z nią.
 
+![Wbudowany terminal zadokowany pod dwoma panelami plików](screenshots/terminal.png)
+*(Rysunek: powłoka działa w katalogu pokazywanym przez aktywny panel.)*
+
 ## Otwieranie i przechodzenie
 
 Naciśnij **Ctrl** razem z klawiszem na lewo od „1”, aby przenieść klawiaturę między panelem plików a terminalem. Ten skrót jest przypisany do *pozycji* klawisza, nie do jego znaku, więc jest to ten sam fizyczny klawisz, jakkolwiek nazywa go twój układ: akcent słaby na klawiaturze US, `^` na niemieckiej, `@` na francuskiej.

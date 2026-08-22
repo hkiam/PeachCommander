@@ -10,6 +10,9 @@ Postavite kazalec na datoteko dnevnika in izberite **Pokaži kot dnevnik…**, d
 
 To je vtičnik: izklopite ali odstranite ga lahko v **Konfiguracija ▸ Vtičniki…**. Brez njega F3 pokaže dnevnik tako kot vsako drugo besedilno datoteko.
 
+![Pregledovalnik dnevnikov s storitvenim dnevnikom, vsaka raven v svoji barvi](screenshots/log-viewer.png)
+*(Slika: vsaka raven ima svojo barvo, pogled pa še naprej sledi datoteki.)*
+
 ## Zakaj se odpre takoj
 
 Datoteka se preslika v pomnilnik, v ozadju pa se zgradi le kazalo, kje se začne posamezna vrstica. Nič se ne naloži kot besedilo, dokler ni na zaslonu, in dekodirajo se le dejansko vidne vrstice. Dnevnik z več gigabajti se odpre enako hitro kot majhen, skok na konec pa ne prebere sredine.

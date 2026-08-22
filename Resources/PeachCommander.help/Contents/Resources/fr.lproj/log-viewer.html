@@ -12,6 +12,8 @@
 <h1>La visionneuse de journaux</h1>
 <p>Placez le curseur sur un fichier journal et choisissez <strong>Afficher comme journal…</strong> pour l’ouvrir dans une fenêtre conçue pour les journaux plutôt que pour du texte : une ligne par ligne, le niveau de chacune reconnu et coloré, un filtre, et un suivi qui tient le rythme pendant que le fichier s’écrit encore.</p>
 <p>C’est une extension : vous pouvez la désactiver ou la supprimer dans <strong>Configuration ▸ Extensions…</strong>. Sans elle, F3 affiche un journal comme n’importe quel autre fichier texte.</p>
+<p><img alt="La visionneuse de journaux affichant un journal de service, chaque niveau dans sa propre couleur" src="images/log-viewer.png" />
+<em>(Figure : chaque niveau a sa propre couleur, et la vue continue de suivre le fichier.)</em></p>
 <h2 id="pourquoi-elle-souvre-instantanement">Pourquoi elle s’ouvre instantanément</h2>
 <p>Le fichier est mappé en mémoire et seul un index du début de chaque ligne est construit, en arrière-plan. Rien n’est chargé sous forme de texte avant d’être à l’écran, et seules les lignes réellement visibles sont décodées. Un journal de plusieurs gigaoctets s’ouvre aussi vite qu’un petit, et aller à la fin ne lit pas le milieu.</p>
 <h2 id="niveaux-et-couleur">Niveaux et couleur</h2>

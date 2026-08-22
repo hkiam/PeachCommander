@@ -12,6 +12,9 @@ Det er ikke det samme som **Åbn Terminal her**, som starter Apples Terminal i d
 
 Det er et plugin: vil du ikke have det, så slå det fra eller fjern det under **Konfiguration ▸ Plugins…**, og dokken følger med.
 
+![Den indbyggede terminal, forankret under de to filpaneler](screenshots/terminal.png)
+*(Figur: shellen kører i den mappe, det aktive panel viser.)*
+
 ## Åbn den og flyt dig
 
 Tryk **Ctrl** sammen med tasten til venstre for “1” for at flytte tastaturet mellem filpanelet og terminalen. Genvejen er bundet til tastens *position*, ikke dens tegn, så det er den samme fysiske tast, uanset hvad dit layout kalder den: accent grave på et US-tastatur, `^` på et tysk, `@` på et fransk.

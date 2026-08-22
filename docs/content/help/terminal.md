@@ -13,6 +13,9 @@ This is not the same thing as **Open Terminal Here**, which launches Apple's Ter
 
 It is a plugin, so if you do not want it, turn it off or remove it in **Configuration ▸ Plugins…** and the dock goes with it.
 
+![The built-in terminal docked below the two file panels](screenshots/terminal.png)
+*(Figure: the shell runs in the folder the active panel shows.)*
+
 ## Open it and move around
 
 Press **Ctrl** together with the key to the left of the "1" to move the keyboard between the file panel and the terminal. That shortcut is bound to the key's *position*, not its character, so it is the same physical key whatever your layout calls it: the backtick on a US keyboard, `^` on a German one, `@` on a French one.

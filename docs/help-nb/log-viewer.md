@@ -10,6 +10,9 @@ Sett markøren på en loggfil og velg **Vis som logg…** for å åpne den i et 
 
 Det er et programtillegg: du kan slå det av eller fjerne det under **Konfigurasjon ▸ Programtillegg…**. Uten det viser F3 en logg som enhver annen tekstfil.
 
+![Loggviseren med en tjenestelogg, hvert nivå i sin egen farge](screenshots/log-viewer.png)
+*(Figur: hvert nivå får sin egen farge, og visningen følger filen videre.)*
+
 ## Hvorfor den åpnes umiddelbart
 
 Filen legges i minnet, og det bygges bare en indeks over hvor hver linje begynner — i bakgrunnen. Ingenting lastes inn som tekst før det er på skjermen, og bare linjene som faktisk er synlige, dekodes. En logg på flere gigabyte åpnes like raskt som en liten, og å gå til slutten leser ikke midten.

@@ -12,6 +12,9 @@ To ni isto kot **Odpri Terminal tukaj**, ki zažene Applov Terminal v trenutni m
 
 Je vtičnik: če ga nočete, ga izklopite ali odstranite v **Konfiguracija ▸ Vtičniki…**, in dok gre z njim.
 
+![Vgrajeni terminal, zasidran pod obema podoknoma z datotekami](screenshots/terminal.png)
+*(Slika: lupina teče v mapi, ki jo prikazuje aktivno podokno.)*
+
 ## Odpiranje in premikanje
 
 Pritisnite **Ctrl** skupaj s tipko levo od »1«, da premaknete tipkovnico med ploščo z datotekami in terminalom. Ta bližnjica je vezana na *položaj* tipke, ne na njen znak, zato je to ista fizična tipka, kakor koli jo že imenuje vaša razporeditev: krativec na ameriški tipkovnici, `^` na nemški, `@` na francoski.
