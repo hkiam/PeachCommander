@@ -154,8 +154,18 @@ one renamed, because only `help/` topics are translation-gated. A duplicate slug
 the build. And the site said "MacOS & privacy" because `sec[:1].upper()` ran over every
 section label, including ones that were already correct.
 
-Nothing pins the nav order — no golden file, no check. That is how this could happen and how
-it can return; a gate over the generated `mkdocs.yml` is the obvious guard and is not built.
+Nothing pinned the nav order — no golden file, no check — which is how this could happen at
+all. `docs/scripts/check-nav-order.py` now does, wired into `docs.yml` after the quality gate.
+It holds the two failure modes `group:` introduces (a page without one becomes a stray
+top-level entry; a typo becomes an eighth tab) and the rule the restructure exists for, stated
+in the reader's terms rather than as a number: **first tab is where you start, last tab is the
+deep end.** Each of the four regression shapes was verified by producing it.
+
+`docs/product/vision.md` was brought in line with the public positioning in the same pass: it
+opened with "a Total Commander clone … functional parity as the explicit goal" and claimed
+four plugin kinds, against README/website/API-reference saying "not a clone that copies pixels"
+and five. Capability parity, not appearance, and the target-user section now names the same
+four audiences the website does. It is the file somebody copies marketing copy out of.
 
 ## 2026-08-22 (F-438) — 266 dead links in the shipped Help Book
 

@@ -40,6 +40,15 @@ jobs:
       - name: Quality gate
         run: python3 docs/scripts/check-docs.py
 
+      # Nothing used to pin the navigation, which is how the site came to open with the API
+      # reference and the developer guide while "Getting started" was third — derived from
+      # front-matter numbers, decided by nobody, green the whole time (F-437). This holds the
+      # two failure modes the new `group:` key introduces (a page without one becomes a stray
+      # top-level entry; a typo becomes an eighth tab) and the rule the restructure exists
+      # for: first tab is where you start, last tab is the deep end.
+      - name: Navigation order gate
+        run: python3 docs/scripts/check-nav-order.py
+
       # The README is the first thing anybody reads and was the one user-facing document nothing
       # looked at: it spent a week contradicting the in-app help it points at — ZIP64, SFTP
       # attributes, a refresh delay that had never existed — with every job green, because prose has
