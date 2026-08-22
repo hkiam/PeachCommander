@@ -1323,6 +1323,51 @@ SCENARIOS = [
       # Last, because the guest waits for this scenario's own report.
       "historyflush", "historyfilter 0|/Users/admin/history-palette.txt", "wait 400"], 14),
 
+    # F-435, the crash a user hit mid-session. A named `cm_*_handler` func does NOT inherit the
+    # `@MainActor` on `CommandHandler` — that reaches closure literals only — and
+    # `WindowControllerProtocol`'s requirements were synchronous, so their witnesses had nowhere to
+    # hop. Both commands below therefore ran on the cooperative pool and reached straight into
+    # AppKit: `cm_SwitchHidSys` into `NSTableView.reloadData`, `cm_SwitchPanel` into
+    # `NSMenu.itemArray` under `markActiveViewMode`. The panel had been showing the wrong content
+    # for a while before it aborted, which is why the dump matters as much as the survival.
+    #
+    # Twenty pairs, not one: it is a race against whatever the main thread is drawing, and a single
+    # toggle passes on a buggy build about as often as not. Locally the pre-fix binary died with
+    # SIGABRT inside these; the fixed one runs all forty. The count is EVEN on purpose — hidden files
+    # are persisted to `Configuration/ShowHiddenSystem` and the active panel is remembered, so an odd
+    # count would hand every scenario after this one a different world.
+    #
+    # Its own directory rather than pc-demo, with one visible file and one dotfile, so the "hidden
+    # files ended up off again" half is asserted against something this scenario controls instead of
+    # leaving a dotfile in the tree every other scenario dumps.
+    ("hidden-files-race",
+     ["probe /Users/admin/hf-race-seed.txt|"
+      "mkdir -p ~/hf-race && touch ~/hf-race/visible.txt ~/hf-race/.dotfile && ls -a ~/hf-race | wc -l",
+      "active left", "left /Users/admin/hf-race", "wait 1200",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      "cmd cm_SwitchHidSys", "cmd cm_SwitchPanel",
+      # Last, because the guest waits for this scenario's own report — and because a crash means it
+      # never arrives, which is exactly how this scenario fails.
+      "wait 1500", "dump /Users/admin/hidden-files-race.txt", "wait 500"], 12),
+
 ]
 
 # Labels that must appear in the accessibility dump. Each one is a control that draws itself and would
@@ -1433,6 +1478,12 @@ KEYBOARD_REPORTS = {
 # report is checked before it has run: name new scenarios so they are not a prefix-extension of an
 # existing one. (Cost a run: "notes-sidebar-tc" passed alone and failed in company.)
 REPORTS = {
+    # F-435: survival is half of it — a crash means this file never appears and the scenario fails on
+    # its absence. The other half is the panel still showing what it was on, because wrong panel
+    # content was the symptom that came *before* the crash. After an even number of toggles hidden
+    # files are off again, so the seeded dotfile must NOT be listed.
+    "hidden-files-race": ("/Users/admin/hidden-files-race.txt",
+                          ["path=/Users/admin/hf-race", "visible.txt", "!.dotfile"]),
     # F-402: the palette lists what the session actually did — a file that was copied, the folders both
     # panels visited, and the copy itself as an operation. The search half is a separate report because
     # the ordering is the thing that was wrong first: a long path matched "data" everywhere.

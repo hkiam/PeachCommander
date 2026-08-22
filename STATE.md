@@ -13,7 +13,7 @@
 | Build status | ✅ builds; app launches |
 | Test status | ✅ ALL suites green incl. PCPerfTests after `Tools/make-fixtures.sh` (fixtures at /tmp/pc_fixtures). Perf targets validated 2026-07-23: list 100k < 1s, sort 100k < 150ms, filter 10k < 50ms — all met with wide margin. VM regression: **98 scenarios with reports** (`viewer-esc`, `menu-key-guard`, `swift-outline`, `go-outline`, `markdown-outline` and `html-outline` are new with F-110/F-404/F-405; `find-history` with F-406, `find-seeded-viewer`, `find-seed-off`, `find-text-field` with F-407 and `search-settings` with F-408 and `theme-system` with F-409 — **all six now run on the VM and green**, see the harness entry below for the five measurement defects that run caught) (was 59; the seven `keys-*` scenarios had no file for the guest to wait for and had been writing nothing at all — fixed 2026-08-10, and the first working run found a missing accessibility label). New: `tree-colours`, `surface-colours` (colour audit over every window and plugin view in every palette), `plugin-theme-switch` (a theme change with a plugin view open used to kill the app). The harness now collects crash reports; it used to leave only an empty report and a screenshot of the desktop. |
 | Parity inventory | Fully re-audited against evidence 2026-08-04: **161 done · 9 partial · 2 todo · 7 n/a-macos · 2 post-1.0** (181 rows as audited; **206 rows** today, F-404 and F-405 added since). The line before this claimed 59/70/43; the audit went through every `todo` row and then every `partial` one at P1, P2 and P3. Of 18 `todo` rows 16 were implemented, of 50 P1 `partial` rows 46 were, and of 19 P2/P3 `partial` rows 16 were — most "missing" sub-parts were missing only from a first grep. **Still open:** F-212 upload resume, F-213 explicit FTPS (needs a transport that can start TLS on a live connection — Network.framework cannot), F-099 privileged copy/move, F-139 non-zip archive targets, F-015 a shared tree, F-216 FXP (P3), F-297 Trash put-back (no public API), F-237 SFTP as a PFX plugin (a design decision), and F-310/F-312 blocked on Apple credentials. 237 `ev:` pointers must resolve for `Tools/check-inventory.py` to pass; **67** older `done` rows still carry none (was 87 before the evidence sweep of 2026-08-07/08 — see the ten batch entries below). **The sweep found a defect behind roughly four of every five rows it checked**, most of them in the same few shapes: a CRLF file from Windows, an input a dialog really receives, an untrusted name reaching a shell, and two names for one file. Where a row held up, that is recorded too. |
-| Last updated | 2026-08-20 |
+| Last updated | 2026-08-22 |
 | Released | **0.7.1 (build 12), 2026-08-18** — the defect round above; unsigned, as every build so far. Previously **0.7.0 (build 11), 2026-08-16** — filesystem images browse like archives, including firmware that carries no partition table, with a layout report under Commands. The plugin ships switched off. Alongside it, a crash guard that had been blind to the way Swift plugins actually crash now catches them and quarantines the plugin instead of the app. Unsigned, as every build so far. Previously **0.6.4 (build 10), 2026-08-15** — three requests from one user and the four defects they uncovered. Previously **0.6.2 (build 8), 2026-08-13** — the FTP/SFTP/WebDAV side: an open connection is a drive of its own and can be hung up from its chip, the connection dialog refuses combinations that cannot work, SFTP takes a key file and a passphrase, and three site settings that had round-tripped through ftp-sites.ini and reached nothing (`encoding`, `localDir`) are finally read. Plus the keyboard-shortcut recorder, which took no keys at all. Unsigned, as every build so far. |
 | Localization | 🌐 **19 languages COMPLETE** (en, de, fr, zh-Hans, da, nl, it, ko, nb, pl, sv, sk, sl, es, cs, uk, hu, ro, ru). App String Catalog (1172 keys × 19) + all shipping plugins + the **full in-app Help Book (44 topics × 19)**. Coverage gate `docs/scripts/check-translations.py` green (languages=19 · help_topics=44 · ui_strings=1172 · behind=0). Adding a language = 1 UI translations file + `knownRegions` + a `docs/help-<code>/` set (+ optional plugin `<lang>.lproj`). |
 | Documentation | 📚 SSOT docs (`docs/content/`) → **Apple Help Book** (`Resources/PeachCommander.help`, 19 lproj) + **MkDocs site** (`build-site.py`, en at root + 18 at `/<code>/`) + generated `FEATURES.md`/overviews. New project **README.md**. Detailed plugin help pages (Git, System Monitor, Task Manager, Uninstaller) added, each with a real **English** screenshot; AI documented as a removable plugin. Screenshots English-only by design (VM harness forces guest locale to en; `pfxmount` verb + demo Git repo/apps/leftovers make the plugin UIs reachable). |
@@ -25,6 +25,53 @@ empty reports, which I spent half an hour reading as a product defect: I had reb
 harness was copying it to the guest*, so the VM ran a half-written bundle that launched and then did
 nothing at all. `regress.py` now compares the binary before and after the copy and stops with that
 sentence rather than letting it look like something else.
+
+## 2026-08-22 (F-435) — "it just crashed": a handler on the wrong thread
+
+Reported from a live session: switching panels started showing the wrong content, then toggling hidden
+files took the app down. One cause for both. The crash report puts `-[NSTableView reloadData]` on
+`com.apple.root.user-initiated-qos.cooperative` while the main thread was drawing the System Monitor
+titlebar; AppKit's layout engine raised an `NSException` nobody catches, and `abort()` followed.
+
+**The annotation that does less than it reads like.** `CommandHandler` is
+`@MainActor (CommandContext) async throws -> Void`, and its comment claimed that isolating the *type*
+makes "every handler — present and future — run on the main actor automatically". That is true for a
+closure **literal** at a `handler:` argument, which infers isolation from the contextual type and hops
+on entry — 112 registrations, all of them safe the whole time. It is false for a reference to a
+separately declared `func`: that keeps its own isolation, and converting it to a `@MainActor` function
+type inserts no hop. All 37 named `cm_*_handler` functions were nonisolated and ran wherever
+`CommandRegistry.execute` — a nonisolated `async` method on an actor — had its continuation.
+
+**The compounding half.** `WindowControllerProtocol`'s ~140 requirements were *synchronous* and
+nonisolated, while `MainWindowController` is main-actor-isolated implicitly, through
+`NSWindowController`. A synchronous nonisolated witness has nowhere to hop, so the witness thunk ran
+main-actor AppKit code on the background thread. That is exactly why only window-controller commands
+were affected and every panel command was fine: `PanelControllerProtocol`'s requirements are `async`,
+and an async witness *can* hop.
+
+Both symptoms fall out of it. `cm_SwitchPanel_handler` → `toggleActivePanel()` → `markActiveViewMode()`
+→ `-[NSMenu itemArray]` off the main thread is the wrong panel content; `cm_SwitchHidSys_handler` →
+`toggleHiddenFiles()` → `PanelListView.applyHiddenChange` → `reloadData` is the abort.
+
+**Fix.** `@MainActor` on all 37 named handlers, so they hop in their own prologue, and on
+`WindowControllerProtocol`, so the compiler holds the rule. Zero call-site churn: a main-actor handler
+calling a main-actor protocol method needs no `await`.
+
+**Why the build never said anything, and the gate that now does.** The project compiles in the Swift 5
+language mode, where this is a warning at worst. Worse than that: the "conformance … crosses into main
+actor-isolated code" warning is only emitted for types annotated `@MainActor` **explicitly**. Three
+such warnings existed in the tree and none of them was this one — `MainWindowController` inherits its
+isolation from AppKit, so the most dangerous conformance in the codebase was completely silent. So the
+rule is mechanical now: `Tools/check-command-handler-isolation.py` fails if a named handler loses its
+`@MainActor`, if either protocol loses its own, or if the typealias stops being a `@MainActor` function
+type (which would take the 112 closures down with it). Verified by breaking each of the three in turn.
+
+**Evidence, before and after.** An automation script issuing 40 × `cmd cm_SwitchHidSys` interleaved
+with `cmd cm_SwitchPanel`, with the plugins copied into the config root so the titlebar monitor keeps
+the main thread drawing: the pre-fix binary exits 134 with a fresh `.ips`, the fixed one exits 0 and
+runs all forty. On the guest as the `hidden-files-race` scenario — its own directory holding one
+visible file and one dotfile, so the report proves the app survived, the panel still shows what it was
+on, and hidden files ended up off again. Passes with 0 Auto Layout conflicts.
 
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 

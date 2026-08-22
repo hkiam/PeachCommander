@@ -160,7 +160,14 @@ public protocol PanelControllerProtocol: AnyObject {
     func toggleLockTab() async
 }
 
-/// Protocol for window controller (defined in PCApp)
+/// Protocol for window controller (defined in PCApp).
+///
+/// `@MainActor`-isolated: nearly every requirement here drives AppKit directly
+/// (opens windows, reloads panel table views, mutates the split view). The
+/// requirements are synchronous, and a synchronous nonisolated witness has no
+/// place to hop — so without this annotation a handler running off the main
+/// thread reaches straight into AppKit (F-435).
+@MainActor
 public protocol WindowControllerProtocol: AnyObject {
     func toggleActivePanel()
     /// Toggle hidden-file visibility globally (both panels) and persist it.
@@ -346,11 +353,16 @@ public protocol WindowControllerProtocol: AnyObject {
 
 /// Command handler closure type.
 ///
-/// Handlers are `@MainActor`-isolated: command dispatch happens on the
+/// Handlers must run on the main actor: command dispatch happens on the
 /// `CommandRegistry` actor (a background executor), but handlers routinely touch
 /// AppKit (open windows, alerts, panels), which must run on the main thread.
-/// Isolating the handler type means every handler — present and future — runs on
-/// the main actor automatically, so no individual handler needs to hop threads.
+///
+/// The `@MainActor` on this *type* only carries over to closure literals written
+/// at a `handler:` argument — those are inferred main-actor-isolated and hop on
+/// entry. A reference to a separately declared `func` keeps that function's own
+/// isolation, so a nonisolated `cm_*_handler` runs wherever the registry's
+/// continuation happens to be. Every named handler therefore carries its own
+/// `@MainActor` (F-435).
 public typealias CommandHandler = @MainActor (CommandContext) async throws -> Void
 
 /// Context passed to command handlers
@@ -596,49 +608,60 @@ public actor CommandRegistry {
 
     // MARK: - Command Handlers
 
+    @MainActor
     private static func cm_GoToParent_handler(_ context: CommandContext) async throws {
         // Go up / leave the archive, placing the cursor on the folder we came from.
         await context.activePanel?.goToParent()
     }
 
+    @MainActor
     private static func cm_OpenDirUnderCursor_handler(_ context: CommandContext) async throws {
         // Enter the directory, or open any file as an archive by content (.jar etc.).
         await context.activePanel?.openDirUnderCursor()
     }
 
+    @MainActor
     private static func cm_SwitchPanel_handler(_ context: CommandContext) async throws {
         guard let windowController = context.windowController else { return }
         windowController.toggleActivePanel()
     }
 
+    @MainActor
     private static func cm_SortByName_handler(_ context: CommandContext) async throws {
         try await sortPanel(.name, ascending: true, context: context)
     }
 
+    @MainActor
     private static func cm_SortByNameDesc_handler(_ context: CommandContext) async throws {
         try await sortPanel(.name, ascending: false, context: context)
     }
 
+    @MainActor
     private static func cm_SortByExt_handler(_ context: CommandContext) async throws {
         try await sortPanel(.ext, ascending: true, context: context)
     }
 
+    @MainActor
     private static func cm_SortByExtDesc_handler(_ context: CommandContext) async throws {
         try await sortPanel(.ext, ascending: false, context: context)
     }
 
+    @MainActor
     private static func cm_SortBySize_handler(_ context: CommandContext) async throws {
         try await sortPanel(.size, ascending: true, context: context)
     }
 
+    @MainActor
     private static func cm_SortBySizeDesc_handler(_ context: CommandContext) async throws {
         try await sortPanel(.size, ascending: false, context: context)
     }
 
+    @MainActor
     private static func cm_SortByDate_handler(_ context: CommandContext) async throws {
         try await sortPanel(.date, ascending: true, context: context)
     }
 
+    @MainActor
     private static func cm_SortByDateDesc_handler(_ context: CommandContext) async throws {
         try await sortPanel(.date, ascending: false, context: context)
     }
@@ -1200,11 +1223,13 @@ public actor CommandRegistry {
 
     // MARK: - Volume Command Handlers
 
+    @MainActor
     private static func cm_DriveCombo_handler(_ context: CommandContext) async throws {
         // This will be implemented in T04 with the actual dropdown UI
         PCFoundationLogger.info("cm_DriveCombo: Drive selection dropdown")
     }
 
+    @MainActor
     private static func cm_FreeSpaceLabel_handler(_ context: CommandContext) async throws {
         // This will be implemented in T04 with the actual free space display
         PCFoundationLogger.info("cm_FreeSpaceLabel: Free space label")
@@ -1269,54 +1294,67 @@ public actor CommandRegistry {
 
 // MARK: - Selection Command Handlers
 
+@MainActor
 private func cm_ToggleMark_handler(_ context: CommandContext) async throws {
     await context.activePanel?.toggleMarkAtCursor()
 }
 
+@MainActor
 private func cm_MarkAll_handler(_ context: CommandContext) async throws {
     await context.activePanel?.markAll()
 }
 
+@MainActor
 private func cm_UnmarkAll_handler(_ context: CommandContext) async throws {
     await context.activePanel?.unmarkAll()
 }
 
+@MainActor
 private func cm_InvertMarks_handler(_ context: CommandContext) async throws {
     await context.activePanel?.invertSelection()
 }
 
+@MainActor
 private func cm_RestoreSelection_handler(_ context: CommandContext) async throws {
     await context.activePanel?.restoreSelection()
 }
 
+@MainActor
 private func cm_SelectSameExt_handler(_ context: CommandContext) async throws {
     await context.activePanel?.selectSameExtension()
 }
 
+@MainActor
 private func cm_SelectByMask_handler(_ context: CommandContext) async throws {
     await context.activePanel?.showSelectByMask()
 }
 
+@MainActor
 private func cm_UnselectByMask_handler(_ context: CommandContext) async throws {
     await context.activePanel?.showUnselectByMask()
 }
 
+@MainActor
 private func cm_SwitchHidSys_handler(_ context: CommandContext) async throws {
     context.windowController?.toggleHiddenFiles()
 }
 
+@MainActor
 private func cm_Properties_handler(_ context: CommandContext) async throws {
     await context.activePanel?.showProperties()
 }
 
+@MainActor
 private func cm_CalcAllDirSizes_handler(_ context: CommandContext) async throws {
     await context.activePanel?.calculateAllDirectorySizes()
 }
 
+@MainActor
 private func cm_Options_handler(_ context: CommandContext) async throws {
     context.windowController?.showSettings()
 }
 
+@MainActor
 private func cm_Copy_handler(_ context: CommandContext) async throws {
     guard let active = context.activePanel, let inactive = context.inactivePanel else { return }
     let target = await inactive.currentDirectory()
@@ -1339,11 +1377,13 @@ private func cm_Copy_handler(_ context: CommandContext) async throws {
 ///
 /// Only the active panel is involved, which is the whole difference from `cm_Copy`: there is no
 /// "other side" to read, so it works with one panel maximised as well.
+@MainActor
 private func cm_CopySamepanel_handler(_ context: CommandContext) async throws {
     guard let active = context.activePanel else { return }
     await active.copySelectionSamePanel()
 }
 
+@MainActor
 private func cm_RenMov_handler(_ context: CommandContext) async throws {
     guard let active = context.activePanel, let inactive = context.inactivePanel else { return }
     let target = await inactive.currentDirectory()
@@ -1362,18 +1402,22 @@ private func cm_RenMov_handler(_ context: CommandContext) async throws {
     }
 }
 
+@MainActor
 private func cm_MkDir_handler(_ context: CommandContext) async throws {
     await context.activePanel?.makeDirectory()
 }
 
+@MainActor
 private func cm_Delete_handler(_ context: CommandContext) async throws {
     await context.activePanel?.deleteSelection(permanent: false)
 }
 
+@MainActor
 private func cm_DeleteReal_handler(_ context: CommandContext) async throws {
     await context.activePanel?.deleteSelection(permanent: true)
 }
 
+@MainActor
 private func cm_PackFiles_handler(_ context: CommandContext) async throws {
     guard let active = context.activePanel, let inactive = context.inactivePanel else { return }
     let target = await inactive.currentDirectory()
@@ -1381,22 +1425,27 @@ private func cm_PackFiles_handler(_ context: CommandContext) async throws {
     await inactive.reload()
 }
 
+@MainActor
 private func cm_CopyToClipboard_handler(_ context: CommandContext) async throws {
     await context.activePanel?.copyToClipboard()
 }
 
+@MainActor
 private func cm_CutToClipboard_handler(_ context: CommandContext) async throws {
     await context.activePanel?.cutToClipboard()
 }
 
+@MainActor
 private func cm_PasteFromClipboard_handler(_ context: CommandContext) async throws {
     await context.activePanel?.pasteFromClipboard()
 }
 
+@MainActor
 private func cm_Edit_handler(_ context: CommandContext) async throws {
     context.windowController?.showEditorForCursor()
 }
 
+@MainActor
 private func cm_EditNewFile_handler(_ context: CommandContext) async throws {
     context.windowController?.showEditorForNewFile()
 }

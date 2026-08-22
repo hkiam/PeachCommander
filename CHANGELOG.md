@@ -113,6 +113,22 @@ does not have.
   `History…` next to `File History…`, `Branches, Stashes & Tags…` and `Blame (list)…` beside the new
   `Blame in the Editor` — and the entries are in a sensible order instead of the order they were added in.
 
+### Fixed
+
+- **Toggling hidden files could kill the app, and switching panels showed the wrong thing first.**
+  Both commands ran their handler on a background thread and reached straight into AppKit from there:
+  `cm_SwitchHidSys` called `NSTableView.reloadData` while the main thread was drawing, and AppKit's
+  layout engine raised an exception nobody catches — an abort, mid-session, with the panel already
+  showing the wrong directory for a while beforehand through `cm_SwitchPanel`. The cause was one
+  annotation that does less than it reads like: `CommandHandler` is a `@MainActor` function type, but
+  that only isolates the closure *literals* written at a `handler:` argument. A reference to a
+  separately declared `func` keeps its own isolation, so all 37 named `cm_*_handler` functions were
+  running wherever the command registry's continuation happened to be. They are main-actor-isolated
+  in their own right now, and `WindowControllerProtocol` says so too, so the compiler will hold the
+  rule instead of a comment claiming it. `Tools/check-command-handler-isolation.py` is the gate: the
+  build could not catch this one, because the project compiles in the Swift 5 language mode and the
+  conformance that crashed produced no warning at all.
+
 ## [0.7.2] — 2026-08-19
 
 The Git plugin, from a first pass into something worth reaching for — and the host change that

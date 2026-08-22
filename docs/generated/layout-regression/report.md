@@ -6,5 +6,4 @@ only go down.
 
 | View | Conflicts | Baseline | Views involved | Screenshot |
 | --- | --- | --- | --- | --- |
-| menu-key-guard | 0 | — | — | `menu-key-guard.png` |
-| tree-colours | 0 | — | — | `tree-colours.png` |
+| hidden-files-race | 0 | — | — | `hidden-files-race.png` |
