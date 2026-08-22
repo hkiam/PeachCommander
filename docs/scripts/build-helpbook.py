@@ -191,6 +191,30 @@ def rewrite_images(body: str) -> tuple[str, set[str]]:
     return IMG_RE.sub(repl, body), refs
 
 
+# Body links are authored as `](slug.md)` because these Markdown sources are shared with the
+# website, where that form resolves. An lproj bundle contains no Markdown at all, so every one
+# of them shipped as a dead href in the in-app help — 14 links across 7 topics, once per
+# language, 266 in total. The TOC links in build_index() were always correct `.html`, which is
+# why nothing looked wrong from the outside (F-438).
+TOPIC_LINK_RE = re.compile(r'(?<!!)(\[[^\]]*\]\()([A-Za-z0-9._-]+)\.md((?:#[^)]*)?\))')
+
+
+def rewrite_topic_links(body: str, by_slug: dict) -> tuple[str, set[str]]:
+    """`](slug.md)` -> `](slug.html)` for topics this bundle actually holds."""
+    unknown: set[str] = set()
+
+    def repl(m):
+        slug = m.group(2)
+        if slug not in by_slug:
+            # Leave it be and say so. English is gated by check-docs.py; the translations are
+            # not gated at all, so this print is the only thing that would ever notice.
+            unknown.add(slug)
+            return m.group(0)
+        return f"{m.group(1)}{slug}.html{m.group(3)}"
+
+    return TOPIC_LINK_RE.sub(repl, body), unknown
+
+
 def all_language_codes() -> list[str]:
     """en first, then every other language that has a docs/help-<code>/ source dir."""
     langs_yml = REPO / "docs/metadata/languages.yml"
@@ -233,14 +257,19 @@ def build_language(out: str, lang: str, no_index: bool):
     by_slug = {m["slug"]: m for m, _ in topics}
 
     all_refs: set[str] = set()
+    dangling: set[str] = set()
     for meta, body in topics:
         body, refs = rewrite_images(body)
+        body, unknown = rewrite_topic_links(body, by_slug)
         all_refs |= refs
+        dangling |= unknown
         (lproj / f'{meta["slug"]}.html').write_text(
             build_page(meta, body, by_slug, lang), encoding="utf-8")
     (lproj / "index.html").write_text(build_index(topics, lang), encoding="utf-8")
     copy_assets(lproj, all_refs)
 
+    if dangling:
+        print(f"  ⚠️  [{lang}] link(s) to unknown topic(s), left as-is: {', '.join(sorted(dangling))}")
     print(f"✓ [{lang}] {len(topics)} topics → {book}")
 
     if not no_index:

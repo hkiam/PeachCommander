@@ -11,6 +11,7 @@
 <main class="pc-help">
 <h1>AI Assistant</h1>
 <p>The AI assistant is an optional, removable plugin that helps you work with your files in plain language. It can summarize or explain a document, suggest a better file name, translate or proofread text, turn data into a table, and even organize a folder — and it can carry out file actions for you after showing you a plan first. It runs on-device with Apple Intelligence when available, or you can point it at a cloud model. Because it is a plugin, you can disable or remove it entirely from <strong>Configuration ▸ Plugins…</strong>.</p>
+<p><strong>On-device or cloud.</strong> The on-device model is private and free, and it is small: it takes in a few thousand words at a time. Reading a <em>whole</em> long file therefore works differently — the assistant reads it in slices and folds the results together, which takes longer the longer the file is. For heavy work across many files, or long conversations, a cloud model is faster and holds more at once; you choose in <strong>Settings ▸ AI</strong> and the assistant switches over straight away.</p>
 <h2 id="open-the-assistant">Open the assistant</h2>
 <p>Choose <strong>Commands ▸ AI Assistant</strong> to show the assistant in a docked panel on the right of the window. Type a request and press Return; the assistant can read files, look things up, and — with your confirmation — make changes.</p>
 <p><img alt="The AI assistant chat docked beside the file panels" src="images/ai-chat.png" />
@@ -22,13 +23,27 @@
 <li><strong>On the panel background</strong> — Organize this folder and Find likely duplicates.</li>
 </ul>
 <p>Each <strong>AI ▸</strong> action opens its <strong>own titled chat</strong> (for example, <em>Summarize – report.txt</em>), so different tasks stay separate instead of piling into one long conversation. When you type into the input field yourself, that request continues the current chat.</p>
+<p><strong>Several files at once.</strong> Mark a selection and the action runs over every marked file, one after another, with the progress in the status line. <strong>Stop</strong> ends the run between files, so you can look at the first few results and call it off.</p>
+<p><strong>Suggest a name</strong> ends in a button rather than a sentence: the proposed name appears in a bar under the conversation with a <strong>Rename</strong> button beside it. Pressing it is the approval — you are not asked twice.</p>
+<h3 id="your-own-wording">Your own wording</h3>
+<p>What each action asks the model is a text file you can edit: <code>aichat/skills.json</code> for the file actions and <code>aichat/folder-skills.json</code> for the folder ones, in your configuration folder. Both are written out with the built-in wording the first time the assistant runs, so you can see the format. <code>{name}</code> and <code>{path}</code> stand for the file. Delete a file to go back to the built-in wording.</p>
+<p><strong>Actions of your own.</strong> Add an entry with an <code>id</code> of your choosing, and it can be run like any other command by naming <code>plugin.ai.skill.&lt;id&gt;</code> — in the user menu, on the button bar, or on a keyboard shortcut. (For a folder action, <code>plugin.ai.folderskill.&lt;id&gt;</code>.) The <strong>AI ▸</strong> submenu itself lists the built-in actions: it is built from the plugin's manifest without loading the plugin, so that a disabled plugin contributes nothing, which is why your own actions are placed by you rather than appearing there. Name an id that does not exist and the assistant says so instead of doing nothing.</p>
 <h2 id="manage-your-chats">Manage your chats</h2>
 <ul>
 <li>Use the chat switcher at the top of the panel to move between conversations.</li>
 <li>The <strong>Delete ▾</strong> menu offers <strong>Delete this chat</strong> and <strong>Delete all chats</strong>, so you can clear everything at once when the list gets long. Empty chats are cleaned up automatically when you close the panel.</li>
 </ul>
 <h2 id="changes-are-confirmed-first">Changes are confirmed first</h2>
-<p>For anything that modifies files — moving, renaming, writing, deleting — the assistant shows a <strong>plan and waits for your confirmation</strong> before acting. You can change this in Settings by raising the assistant's autonomy, or lower it to read-only so it never changes anything.</p>
+<p>For anything that modifies files — moving, renaming, writing, deleting — the assistant shows a <strong>plan and waits for your confirmation</strong> before acting. You can change this in Settings by raising the assistant's autonomy, or lower it to read-only so it never changes anything. A copy or a move is reported as done when it is done: the assistant waits for the transfer to finish, and you can follow it in the Transfer Manager as with any other operation.</p>
+<h2 id="what-the-assistant-did-and-taking-it-back">What the assistant did, and taking it back</h2>
+<p><strong>Actions ▾</strong> in the chat has two entries:</p>
+<ul>
+<li><strong>Show what the assistant did…</strong> lists every change, newest first, with what was asked of it and how it turned out — including attempts the autonomy setting refused. An external agent connected over MCP is in the same list.</li>
+<li><strong>Undo the last change</strong> takes back the most recent change that has an inverse: a rename is renamed back, a move is moved back. Where nothing can be taken back, the list says why — an overwritten file was not kept anywhere, and items in the Trash are restored from the Finder.</li>
+</ul>
+<p>You can also just ask: <em>"undo that"</em> and <em>"what did you change?"</em> reach the same two functions.</p>
+<h2 id="panel-columns">Panel columns</h2>
+<p>The assistant's summaries are available as a panel column. Add <strong>AI Summary</strong> from the column set editor: it shows the first line of the summary for each file the assistant has already summarized, and stays empty for the rest — the column shows work already done and never starts the model itself. <strong>Language</strong> in the same plugin detects the language a text file is written in, without a model.</p>
 <h2 id="settings">Settings</h2>
 <p>Open <strong>Configuration ▸ Settings ▸ AI</strong> to configure the assistant on a single page:</p>
 <ul>
