@@ -27,8 +27,8 @@ for types annotated `@MainActor` explicitly, and `MainWindowController` inherits
 So the rule is held mechanically, and it is three rules:
 
   1. every named `cm_*_handler` func carries its own `@MainActor`,
-  2. `WindowControllerProtocol` is `@MainActor` — its synchronous requirements have nowhere to hop
-     otherwise,
+  2. `WindowControllerProtocol` and `PanelControllerProtocol` are `@MainActor` — their synchronous
+     requirements (including the three `var`s on the panel protocol) have nowhere to hop otherwise,
   3. `CommandHandler` is still `@MainActor`, or the closure-literal half loses its isolation too.
 
 Usage: Tools/check-command-handler-isolation.py
@@ -66,8 +66,8 @@ if handlers == 0:
     print(f"{REL}: found no *_handler funcs at all — this check has stopped checking anything")
     problems += 1
 
-# ---- 2. The protocol whose witnesses are synchronous.
-for proto in ("WindowControllerProtocol",):
+# ---- 2. The two protocols whose witnesses are synchronous.
+for proto in ("WindowControllerProtocol", "PanelControllerProtocol"):
     m = re.search(r"^(.*)\npublic protocol " + proto + r"\b", SRC, re.M)
     if not m:
         print(f"{REL}: protocol {proto} not found — check needs updating")

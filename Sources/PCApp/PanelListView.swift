@@ -2618,12 +2618,21 @@ extension PanelListView: NSServicesMenuRequestor {
         return super.validRequestor(forSendType: sendType, returnType: returnType)
     }
 
-    func writeSelection(to pboard: NSPasteboard, types: [NSPasteboard.PasteboardType]) -> Bool {
-        let urls = serviceFileURLs()
-        guard !urls.isEmpty else { return false }
-        pboard.clearContents()
-        return pboard.writeObjects(urls.map { $0 as NSURL })
+    /// `nonisolated` + `assumeIsolated`: `NSServicesMenuRequestor` carries no `@MainActor` in the
+    /// SDK, so a main-actor witness "crosses into main actor-isolated code" — a warning today, an
+    /// error in the Swift 6 language mode. AppKit only ever sends these from the main thread, and
+    /// asserting that beats a nonisolated witness that reads panel state from wherever it is
+    /// called: the same shape that crashed the hidden-files toggle (F-436).
+    nonisolated func writeSelection(to pboard: NSPasteboard, types: [NSPasteboard.PasteboardType]) -> Bool {
+        MainActor.assumeIsolated {
+            let urls = serviceFileURLs()
+            guard !urls.isEmpty else { return false }
+            pboard.clearContents()
+            return pboard.writeObjects(urls.map { $0 as NSURL })
+        }
     }
 
-    func readSelection(from pboard: NSPasteboard) -> Bool { false }
+    /// Nothing isolated to reach, so no assertion is needed — the panel accepts no incoming
+    /// service data.
+    nonisolated func readSelection(from pboard: NSPasteboard) -> Bool { false }
 }

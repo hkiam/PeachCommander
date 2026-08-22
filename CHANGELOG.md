@@ -129,6 +129,19 @@ does not have.
   build could not catch this one, because the project compiles in the Swift 5 language mode and the
   conformance that crashed produced no warning at all.
 
+- **Two panel properties and two macOS callbacks crossed the same boundary.**
+  `PanelControllerProtocol` looked safe because its methods are `async` — an async witness hops — but
+  it also had three synchronous `var` requirements that did not. `NSServicesMenuRequestor` and
+  `QLPreviewPanelDataSource` are ObjC protocols with no isolation of their own, so their witnesses
+  now assert the main thread they are actually called on rather than assuming it quietly.
+
+- **A crash used to make the next automated run hang instead of report.** The launch-time crash-report
+  prompt and the Full Disk Access prompt are both modal, and a modal owns the main queue an automation
+  script is driven from: the script ran on inside the nested runloop, wrote its files, and then never
+  quit. Both are skipped under `-AutomationScript`. The crash watermark is deliberately left alone, so
+  the report still greets the user on their next ordinary launch.
+
+
 ## [0.7.2] — 2026-08-19
 
 The Git plugin, from a first pass into something worth reaching for — and the host change that

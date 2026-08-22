@@ -29,10 +29,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Let the Services menu offer services that act on file selections; the
         // active panel supplies the URLs via NSServicesMenuRequestor.
         NSApp.registerServicesMenuSendTypes([.fileURL], returnTypes: [])
-        // Surface any crash report that appeared since we last looked (F-313).
-        crashReports.checkForNewReports()
-        // Guide the user to grant Full Disk Access if it's missing (F-299).
-        FullDiskAccessGuide.checkAndPromptIfNeeded()
+        // Both prompts below are `runModal`, and a modal owns the main queue that an automation
+        // script is driven from: the script still runs inside the modal's nested runloop, but its
+        // `quit` never lands and the run hangs until someone clicks the dialog. A crash is exactly
+        // when both of them want to fire, so a verification run straight after one was unrunnable.
+        // The crash watermark is deliberately NOT advanced here — the report still greets the user
+        // on their next ordinary launch (F-436).
+        if LaunchOptions.parse(CommandLine.arguments).automationScript == nil {
+            // Surface any crash report that appeared since we last looked (F-313).
+            crashReports.checkForNewReports()
+            // Guide the user to grant Full Disk Access if it's missing (F-299).
+            FullDiskAccessGuide.checkAndPromptIfNeeded()
+        }
         // Per-window menu swapping lives in MainWindowController (it owns the command
         // target + the cached full menu bar).
     }

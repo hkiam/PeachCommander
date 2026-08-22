@@ -26,7 +26,14 @@ public enum PanelSortColumn: String {
     }
 }
 
-/// Protocol for panel controller (defined in PCApp)
+/// Protocol for panel controller (defined in PCApp).
+///
+/// `@MainActor`-isolated for the same reason as `WindowControllerProtocol`: the methods are
+/// `async` and their witnesses can hop, but `currentArchiveZipPath`, `currentFileSystem` and
+/// `isOnNetworkFilesystem` are *synchronous* requirements, and a synchronous nonisolated
+/// witness has nowhere to hop — it reads main-actor panel state from whatever thread asks
+/// (F-436).
+@MainActor
 public protocol PanelControllerProtocol: AnyObject {
     func getCurrentPath() async -> String
     func loadDirectory(_ path: String) async

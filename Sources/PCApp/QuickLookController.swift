@@ -28,9 +28,15 @@ final class QuickLookController: NSObject, QLPreviewPanelDataSource {
 
     // MARK: - QLPreviewPanelDataSource
 
-    func numberOfPreviewItems(in panel: QLPreviewPanel) -> Int { urls.count }
+    // `nonisolated` + `assumeIsolated` for the same reason as the panel's services witnesses:
+    // `QLPreviewPanelDataSource` is an unannotated ObjC protocol, so a main-actor witness crosses
+    // an isolation boundary the compiler only warns about today. Quick Look drives its data source
+    // from the main thread; this asserts it rather than reading `urls` from anywhere (F-436).
+    nonisolated func numberOfPreviewItems(in panel: QLPreviewPanel) -> Int {
+        MainActor.assumeIsolated { urls.count }
+    }
 
-    func previewPanel(_ panel: QLPreviewPanel, previewItemAt index: Int) -> QLPreviewItem {
-        urls[index] as NSURL
+    nonisolated func previewPanel(_ panel: QLPreviewPanel, previewItemAt index: Int) -> QLPreviewItem {
+        MainActor.assumeIsolated { urls[index] as NSURL }
     }
 }

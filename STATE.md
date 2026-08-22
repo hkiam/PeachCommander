@@ -73,6 +73,34 @@ runs all forty. On the guest as the `hidden-files-race` scenario — its own dir
 visible file and one dotfile, so the report proves the app survived, the panel still shows what it was
 on, and hidden files ended up off again. Passes with 0 Auto Layout conflicts.
 
+## 2026-08-22 (F-436) — The three side findings behind F-435
+
+**A crash used to make the next automated run hang rather than fail.** `applicationDidFinishLaunching`
+called the crash-report prompt (F-313) and the Full Disk Access prompt (F-299), both `NSAlert.runModal`.
+A modal owns the main queue an automation script is driven from, so the script *keeps running* inside
+the nested runloop and writes its dumps — and then `quit` never lands. The run looks fine and hangs
+forever, and the moment it happens is right after a crash, i.e. exactly when someone is trying to
+verify a fix. Both are skipped under `-AutomationScript` now; the crash watermark is deliberately not
+advanced, so the report still greets the user on their next ordinary launch. Two runs were spent on
+this before it was understood — one of them on the *system's* own "reopen windows?" dialog, which after
+two crashes in a row blocks inside `promptToIgnorePersistentStateWithCrashHistory` before any app code
+runs and so looks like a launch that died silently. `-ApplePersistenceIgnoreState YES` gets past it;
+`/usr/bin/sample` on the hung process names the culprit in one shot.
+
+**The two conformance warnings that were left, and one that was mis-called harmless.**
+`PanelControllerProtocol` was written off as safe because its methods are `async` — but it also carries
+three *synchronous* `var` requirements (`currentArchiveZipPath`, `currentFileSystem`,
+`isOnNetworkFilesystem`), which is the same hazard as F-435 in a shape that is easy to miss when
+scanning for `func`. It is `@MainActor` now. `NSServicesMenuRequestor` and `QLPreviewPanelDataSource`
+are ObjC protocols carrying no isolation, and their isolation is not ours to change, so those witnesses
+are `nonisolated` with a `MainActor.assumeIsolated` body: AppKit and Quick Look only send them from the
+main thread, and asserting that is better than reading main-actor state from wherever the call arrives.
+A deliberate trade — a violation becomes a loud precondition failure instead of a silent race.
+
+Measured rather than assumed: 26 warnings before, 23 after, exactly those three gone and no new ones.
+Full `AllTests` green (PCPerfTests skipped — the `/tmp` fixture flake, not this work).
+
+
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 
 Run with `--only menu-file,viewer-md-outline,csv-no-header,jsonl,viewer-long-lines`, which is the debt both
