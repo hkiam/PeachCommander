@@ -46,6 +46,7 @@ Il menu **Vai** porta il pannello attivo alle cartelle che usi di più:
 - La barra dei dischi sopra ogni pannello elenca i volumi montati con lo spazio libero; fai clic su un volume per passarci quel pannello.
 - Premi **Ctrl+U** per scambiare i due pannelli (le loro cartelle si scambiano di lato); **Ctrl+Maiusc+U** li scambia insieme alle loro schede.
 - Premi **Ctrl+=** per puntare l'altro pannello sulla stessa cartella di quello attivo (*destinazione = origine*) — comodo appena prima di una copia o uno spostamento.
+- **Vai ▸ Sinistra = Destra** e **Vai ▸ Destra = Sinistra** fanno la stessa cosa ma nominano il lato esplicitamente: il primo mostra a sinistra la cartella del pannello destro, il secondo mostra a destra la cartella del pannello sinistro. A differenza di *destinazione = origine* non dipendono da quale pannello è attivo, quindi i loro due pulsanti sulla barra dei pulsanti significano sempre la stessa cosa.
 
 ## Scorciatoie
 

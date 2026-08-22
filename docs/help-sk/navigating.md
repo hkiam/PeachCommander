@@ -46,6 +46,7 @@ Ponuka **Prejsť** presunie aktívny panel do priečinkov, ktoré používate na
 - Lišta jednotiek nad každým panelom zobrazuje pripojené zväzky s voľným miestom; kliknutím na zväzok naň prepnete daný panel.
 - Stlačením **Ctrl+U** vymeníte oba panely (ich priečinky si vymenia strany); **Ctrl+Shift+U** ich vymení spolu s ich kartami.
 - Stlačením **Ctrl+=** nasmerujete druhý panel na rovnaký priečinok ako aktívny (*cieľ = zdroj*) — praktické tesne pred kopírovaním alebo presunom.
+- **Prejsť ▸ Ľavý = pravý** a **Prejsť ▸ Pravý = ľavý** robia to isté, ale stranu pomenujú výslovne: prvé zobrazí priečinok pravého panela vľavo, druhé priečinok ľavého panela vpravo. Na rozdiel od *cieľ = zdroj* nezávisia od toho, ktorý panel je aktívny, takže ich dve tlačidlá na lište tlačidiel znamenajú vždy to isté.
 
 ## Klávesové skratky
 

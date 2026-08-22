@@ -46,6 +46,7 @@ Meniul **Salt** duce panoul activ la folderele pe care le folosiți cel mai des:
 - Bara de discuri de deasupra fiecărui panou listează volumele montate cu spațiul liber; faceți clic pe un volum pentru a comuta acel panou la el.
 - Apăsați **Ctrl+U** pentru a interschimba cele două panouri (folderele lor schimbă locurile); **Ctrl+Shift+U** le interschimbă împreună cu filele lor.
 - Apăsați **Ctrl+=** pentru a îndrepta celălalt panou spre același folder ca cel activ (*țintă = sursă*) — util chiar înainte de o copiere sau mutare.
+- **Salt ▸ Stânga = Dreapta** și **Salt ▸ Dreapta = Stânga** fac același lucru, dar numesc partea explicit: primul arată în stânga folderul panoului drept, al doilea arată în dreapta folderul panoului stâng. Spre deosebire de *țintă = sursă*, nu depind de panoul activ, așa că cele două butoane ale lor din bara de butoane înseamnă mereu același lucru.
 
 ## Scurtături
 

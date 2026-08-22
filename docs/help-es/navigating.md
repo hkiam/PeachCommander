@@ -46,6 +46,7 @@ El menú **Ir** lleva el panel activo a las carpetas que más usas:
 - La barra de unidades encima de cada panel lista tus volúmenes montados con el espacio libre; haz clic en un volumen para cambiar ese panel a él.
 - Pulsa **Ctrl+U** para intercambiar los dos paneles (sus carpetas cambian de lado); **Ctrl+Shift+U** los intercambia junto con sus pestañas.
 - Pulsa **Ctrl+=** para apuntar el otro panel a la misma carpeta que el activo (*destino = origen*): útil justo antes de una copia o un traslado.
+- **Ir ▸ Izquierda = derecha** e **Ir ▸ Derecha = izquierda** hacen lo mismo, pero nombran el lado sin rodeos: el primero muestra la carpeta del panel derecho a la izquierda, el segundo muestra la carpeta del panel izquierdo a la derecha. A diferencia de *destino = origen*, no dependen de qué panel esté activo, así que sus dos botones de la barra de botones siempre significan lo mismo.
 
 ## Atajos
 

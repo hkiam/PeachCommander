@@ -46,6 +46,7 @@ Nabídka **Přejít** přenese aktivní panel do složek, které používáte ne
 - Lišta disků nad každým panelem uvádí připojené svazky s volným místem; klepnutím na svazek na něj panel přepnete.
 - Stiskem **Ctrl+U** prohodíte oba panely (jejich složky si vymění strany); **Ctrl+Shift+U** je prohodí i s jejich kartami.
 - Stiskem **Ctrl+=** namíříte druhý panel na stejnou složku jako aktivní (*cíl = zdroj*) — praktické těsně před kopírováním nebo přesunem.
+- **Přejít ▸ Levý = pravý** a **Přejít ▸ Pravý = levý** dělají totéž, ale stranu pojmenují výslovně: první zobrazí složku pravého panelu vlevo, druhý složku levého panelu vpravo. Na rozdíl od *cíl = zdroj* nezávisí na tom, který panel je aktivní, takže jejich dvě tlačítka na liště tlačítek znamenají vždy totéž.
 
 ## Zkratky
 

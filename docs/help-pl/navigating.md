@@ -46,6 +46,7 @@ Menu **Przejdź** przenosi aktywny panel do folderów, których używasz najczę
 - Pasek dysków nad każdym panelem wyświetla zamontowane woluminy wraz z wolnym miejscem; kliknij wolumin, aby przełączyć na niego dany panel.
 - Naciśnij **Ctrl+U**, aby zamienić oba panele miejscami (ich foldery zamieniają się stronami); **Ctrl+Shift+U** zamienia je razem z ich kartami.
 - Naciśnij **Ctrl+=**, aby skierować drugi panel na ten sam folder co aktywny (*cel = źródło*) — przydatne tuż przed kopiowaniem lub przenoszeniem.
+- **Przejdź ▸ Lewy = Prawy** i **Przejdź ▸ Prawy = Lewy** robią to samo, ale wskazują stronę wprost: pierwsze pokazuje folder prawego panelu po lewej, drugie folder lewego panelu po prawej. W odróżnieniu od *cel = źródło* nie zależą od tego, który panel jest aktywny, więc ich dwa przyciski na pasku przycisków zawsze znaczą to samo.
 
 ## Skróty
 

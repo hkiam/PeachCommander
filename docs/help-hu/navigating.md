@@ -46,6 +46,7 @@ Az **Ugrás** menü az aktív panelt a leggyakrabban használt mappákhoz viszi:
 - Az egyes panelek fölötti meghajtósáv felsorolja a csatolt köteteit a szabad hellyel; kattintson egy kötetre, hogy arra váltsa a panelt.
 - Nyomja meg a **Ctrl+U**-t a két panel felcseréléséhez (mappáik oldalt cserélnek); a **Ctrl+Shift+U** a lapjaikkal együtt cseréli fel őket.
 - Nyomja meg a **Ctrl+=**-t, hogy a másik panelt az aktívval megegyező mappára irányítsa (*cél = forrás*) — hasznos közvetlenül másolás vagy áthelyezés előtt.
+- Az **Ugrás ▸ Bal = Jobb** és az **Ugrás ▸ Jobb = Bal** ugyanezt teszi, de kimondja az oldalt: az első a jobb panel mappáját mutatja a bal oldalon, a második a bal panel mappáját a jobb oldalon. A *cél = forrás*-szal ellentétben nem függenek attól, melyik panel aktív, így a gombsávon lévő két gombjuk mindig ugyanazt jelenti.
 
 ## Billentyűparancsok
 

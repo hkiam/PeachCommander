@@ -46,6 +46,7 @@ Le menu **Aller** amène le panneau actif vers les dossiers que vous utilisez le
 - La barre de lecteurs au-dessus de chaque panneau répertorie vos volumes montés avec leur espace libre ; cliquez sur un volume pour y basculer ce panneau.
 - Appuyez sur **Ctrl+U** pour échanger les deux panneaux (leurs dossiers changent de côté) ; **Ctrl+Shift+U** les échange avec leurs onglets.
 - Appuyez sur **Ctrl+=** pour pointer l'autre panneau vers le même dossier que le panneau actif (*cible = source*) — pratique juste avant une copie ou un déplacement.
+- **Aller ▸ Gauche = Droite** et **Aller ▸ Droite = Gauche** font la même chose mais nomment le côté explicitement : le premier affiche le dossier du panneau droit à gauche, le second affiche le dossier du panneau gauche à droite. Contrairement à *cible = source*, ils ne dépendent pas du panneau actif ; leurs deux boutons sur la barre de boutons signifient donc toujours la même chose.
 
 ## Raccourcis
 

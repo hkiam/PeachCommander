@@ -188,6 +188,14 @@ public protocol WindowControllerProtocol: AnyObject {
     /// Point the OTHER panel at the active panel's current directory (F-064,
     /// TC's "target = source").
     func targetEqualsSource() async
+    /// Point the LEFT panel at the right panel's current directory (F-443).
+    ///
+    /// The absolute counterpart to `targetEqualsSource`, which is relative to whichever panel is
+    /// active: a toolbar button has to say which side it changes without the user first checking
+    /// where the focus is.
+    func leftEqualsRight() async
+    /// Point the RIGHT panel at the left panel's current directory (F-443).
+    func rightEqualsLeft() async
     /// Show the directory hotlist popup (Ctrl+D).
     func showHotlist()
     /// Open the Lister (file viewer) for the active panel's cursor file (F3).
@@ -737,6 +745,8 @@ public actor CommandRegistry {
         register(Self.cm_HistoryForward)
         register(Self.cm_Exchange)
         register(Self.cm_TargetEqualSource)
+        register(Self.cm_LeftEqualsRight)
+        register(Self.cm_RightEqualsLeft)
         register(Self.cm_ExchangeWithTabs)
         register(Self.cm_GoToHome)
         register(Self.cm_GoToRoot)
@@ -1103,6 +1113,12 @@ public actor CommandRegistry {
     static let cm_TargetEqualSource = PCCommand(id: 30028, name: "cm_TargetEqualSource", category: "Navigation",
         help: "Show the active panel's folder in the other panel (target = source)",
         handler: { ctx in await ctx.windowController?.targetEqualsSource() })
+    static let cm_LeftEqualsRight = PCCommand(id: 30124, name: "cm_LeftEqualsRight", category: "Navigation",
+        help: "Show the right panel's folder in the left panel (left = right)",
+        handler: { ctx in await ctx.windowController?.leftEqualsRight() })
+    static let cm_RightEqualsLeft = PCCommand(id: 30125, name: "cm_RightEqualsLeft", category: "Navigation",
+        help: "Show the left panel's folder in the right panel (right = left)",
+        handler: { ctx in await ctx.windowController?.rightEqualsLeft() })
     static let cm_ExchangeWithTabs = PCCommand(id: 30029, name: "cm_ExchangeWithTabs", category: "Navigation",
         help: "Swap panels including all tabs (Ctrl+Shift+U)",
         handler: { ctx in ctx.windowController?.swapPanelsIncludingTabs() })

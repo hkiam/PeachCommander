@@ -16,6 +16,13 @@ does not have.
 
 ### Added
 
+- **One click puts one panel's folder in the other, and says which side.** **Go ▸ Left = Right** shows
+  the right panel's folder on the left, **Go ▸ Right = Left** does the reverse, and both are on the
+  button bar by default. *Target = source* (Ctrl+=) has always done this relative to whichever panel is
+  active — which is the wrong shape for a button, because the same click then means two different
+  things depending on where the focus happens to be. These name the side outright. An existing button
+  bar gains the two buttons once; remove them and they stay removed.
+
 - **The assistant summarises a whole file, however long.** Its on-device model takes in a few
   thousand words at a time, so "summarise this report" failed outright on anything past about six
   kilobytes — measured on this machine: a four-kilobyte slice is answered, an eight-kilobyte one is

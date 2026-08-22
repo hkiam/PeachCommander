@@ -93,9 +93,16 @@ features:
     audiences: [expert]
     status: stable
     ui: { shortcuts: ["Ctrl+U", "Ctrl+Shift+U", "Ctrl+="],
-          commands: [cm_Exchange, cm_ExchangeWithTabs, cm_TargetEqualSource] }
+          commands: [cm_Exchange, cm_ExchangeWithTabs, cm_TargetEqualSource,
+                     cm_LeftEqualsRight, cm_RightEqualsLeft] }
     source: { modules: [PCApp], types: [MainWindowController] }
     documentation: { integrated_help: true, website: true }
+    notes: >-
+      "Target = source" is relative to whichever panel is active, which is the wrong shape for a button:
+      the same click means two different things depending on where the focus happens to be. "Left =
+      Right" and "Right = Left" name the side they change outright and are on the button bar by default
+      (F-443). They are the same one line of work either way — the panel that changes loads the other's
+      current directory.
 
   # ───────────────────────── Panels ─────────────────────────
   - id: tabs

@@ -46,6 +46,7 @@ Menyn **Gå** tar den aktiva panelen till de mappar du använder mest:
 - Enhetsraden ovanför varje panel listar dina monterade volymer med ledigt utrymme; klicka på en volym för att växla den panelen till den.
 - Tryck på **Ctrl+U** för att byta plats på de två panelerna (deras mappar byter sida); **Ctrl+Shift+U** byter dem tillsammans med deras flikar.
 - Tryck på **Ctrl+=** för att rikta den andra panelen mot samma mapp som den aktiva (*mål = källa*) — behändigt strax före en kopiering eller flytt.
+- **Gå ▸ Vänster = Höger** och **Gå ▸ Höger = Vänster** gör samma sak men namnger sidan rakt ut: den första visar höger panels mapp till vänster, den andra visar vänster panels mapp till höger. Till skillnad från *mål = källa* beror de inte på vilken panel som är aktiv, så deras två knappar på knappraden betyder alltid samma sak.
 
 ## Kortkommandon
 

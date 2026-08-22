@@ -46,6 +46,7 @@ Stilinjen øverst i hvert panel viser hvor du er og fungerer også som en måte 
 - Disklinjen over hvert panel lister opp de monterte volumene dine med ledig plass; klikk på et volum for å bytte panelet til det.
 - Trykk **Ctrl+U** for å bytte om de to panelene (mappene deres bytter side); **Ctrl+Shift+U** bytter dem om sammen med fanene deres.
 - Trykk **Ctrl+=** for å peke det andre panelet mot samme mappe som det aktive (*mål = kilde*) — praktisk rett før en kopiering eller flytting.
+- **Gå ▸ Venstre = høyre** og **Gå ▸ Høyre = venstre** gjør det samme, men navngir siden direkte: det første viser høyre panels mappe til venstre, det andre viser venstre panels mappe til høyre. I motsetning til *mål = kilde* er de uavhengige av hvilket panel som er aktivt, så de to knappene for dem på knappelinjen betyr alltid det samme.
 
 ## Snarveier
 

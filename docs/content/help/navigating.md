@@ -47,6 +47,7 @@ The **Go** menu takes the active panel to the folders you use most:
 - The drive bar above each panel lists your mounted volumes with free space; click a volume to switch that panel to it.
 - Press **Ctrl+U** to swap the two panels (their folders trade sides); **Ctrl+Shift+U** swaps them together with their tabs.
 - Press **Ctrl+=** to point the other panel at the same folder as the active one (*target = source*) — handy just before a copy or move.
+- **Go ▸ Left = Right** and **Go ▸ Right = Left** do the same thing but name the side outright: the first shows the right panel's folder on the left, the second shows the left panel's folder on the right. Unlike *target = source* they do not depend on which panel has the focus, so the two buttons for them on the button bar always mean the same thing.
 
 ## Shortcuts
 

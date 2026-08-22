@@ -46,6 +46,7 @@ Het menu **Ga** brengt het actieve paneel naar de mappen die je het meest gebrui
 - De schijfbalk boven elk paneel toont je gekoppelde volumes met vrije ruimte; klik op een volume om dat paneel ernaartoe te schakelen.
 - Druk op **Ctrl+U** om de twee panelen te verwisselen (hun mappen wisselen van kant); **Ctrl+Shift+U** verwisselt ze samen met hun tabbladen.
 - Druk op **Ctrl+=** om het andere paneel op dezelfde map te richten als het actieve (*bestemming = bron*) — handig vlak voor een kopieer- of verplaatsactie.
+- **Ga ▸ Links = Rechts** en **Ga ▸ Rechts = Links** doen hetzelfde maar noemen de kant hardop: de eerste toont de map van het rechterpaneel links, de tweede die van het linkerpaneel rechts. Anders dan *bestemming = bron* hangen ze niet af van welk paneel actief is, dus hun twee knoppen op de knoppenbalk betekenen altijd hetzelfde.
 
 ## Sneltoetsen
 

@@ -326,6 +326,41 @@ the thing that actually bites: a new help topic must exist in all 19 languages i
 commit.
 
 
+## 2026-08-22 (F-443) — A sync button has to know which side it is
+
+Requested: one click to put the left panel's folder in the right panel, and the other way round. The
+app already had `cm_TargetEqualSource` (Ctrl+=), and it is the wrong shape for a button — it is
+relative to whichever panel is active, so the *same* button does two different things depending on
+where the focus happens to be, and you have to look before you click.
+
+So two absolute commands, named for the panel they change, the way "target = source" is:
+`cm_LeftEqualsRight` (30124) and `cm_RightEqualsLeft` (30125), in **Go**, and two buttons on the
+default button bar. Both are one line over `leftPanelController` / `rightPanelController`, which
+`transferCursorItem(toRight:)` already reaches the same way. Verified against exactly the confusion
+they exist to remove: with the **left** panel active, `cm_LeftEqualsRight` changed the **left** one —
+target = source would have changed the right.
+
+**No keyboard shortcut, deliberately.** Ctrl+Shift+Left/Right are free in both schemes and in
+`menu.txt`, and they still would be the wrong thing to add blind: `PanelListView.keyDown` handles the
+arrow keys itself (`case 123/124`) and looks only for Alt there, so that is its own question with
+`check-hotkeys.py` as the judge. Both commands are assignable in Settings from the day they exist.
+
+**A default button reaches nobody who has already run the app.** `loadButtonBar` writes
+`defaultButtonBar()` only when there is no `default.bar` at all, so on any existing installation the
+bar on disk is the one from the release before the button existed — and adding to the template alone
+would have shipped a feature that only new users see. Hence `seedSyncBarButtonsIfNeeded`, once, with
+`[Layout] SyncBarButtonsSeeded` recording that the offer was made: the flag is set on the first run
+whether or not anything was added, so deleting the buttons afterwards sticks. It is called from the
+startup path only, *not* from `loadButtonBar`, whose second caller is the Total Commander import — a
+bar you just imported from elsewhere is not ours to add to. All three cases run: fresh config seeds
+11 buttons, an eight-button bar from before becomes ten, and a hand-emptied bar stays at eight.
+
+**VM.** `menu.txt` regenerated to 220 lines with both items and no key equivalent, and
+`check-hotkeys.py` reads that dump: `problems=0` unchanged. `toolbar-drop` went from 10 buttons to 12
+(the ten defaults plus the dropped Calculator) and its own assertion — one `Calculator.app` command
+line — still holds. The menu titles were checked in the running app in de, fr, ru and zh-Hans rather
+than only in the catalogue.
+
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 
 Run with `--only menu-file,viewer-md-outline,csv-no-header,jsonl,viewer-long-lines`, which is the debt both

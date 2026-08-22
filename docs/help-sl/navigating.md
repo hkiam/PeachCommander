@@ -46,6 +46,7 @@ Meni **Pojdi** aktivno podokno popelje v mape, ki jih uporabljate najpogosteje:
 - Vrstica pogonov nad vsakim podoknom navaja priklopljene nosilce s prostorom; kliknite nosilec, da nanj preklopite dano podokno.
 - Pritisnite **Ctrl+U**, da zamenjate podokni (njuni mapi zamenjata strani); **Ctrl+Shift+U** ju zamenja skupaj z njunimi zavihki.
 - Pritisnite **Ctrl+=**, da drugo podokno usmerite v isto mapo kot aktivno (*cilj = vir*) — priročno tik pred kopiranjem ali premikom.
+- **Pojdi ▸ Levo = desno** in **Pojdi ▸ Desno = levo** naredita isto, a stran poimenujeta izrecno: prvi pokaže mapo desnega podokna na levi, drugi mapo levega podokna na desni. Drugače kot *cilj = vir* nista odvisna od tega, katero podokno je aktivno, zato njuna dva gumba v vrstici z gumbi vedno pomenita isto.
 
 ## Bližnjice
 

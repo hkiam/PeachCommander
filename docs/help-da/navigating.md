@@ -46,6 +46,7 @@ Menuen **Gå** fører det aktive panel til de mapper, du bruger mest:
 - Drevlinjen over hvert panel viser dine monterede diske med ledig plads; klik på en disk for at skifte det panel til den.
 - Tryk på **Ctrl+U** for at bytte de to paneler (deres mapper bytter side); **Ctrl+Shift+U** bytter dem sammen med deres faner.
 - Tryk på **Ctrl+=** for at rette det andet panel mod samme mappe som det aktive (*mål = kilde*) — praktisk lige før en kopiering eller flytning.
+- **Gå ▸ Venstre = højre** og **Gå ▸ Højre = venstre** gør det samme, men nævner siden direkte: den første viser højre panels mappe til venstre, den anden viser venstre panels mappe til højre. I modsætning til *mål = kilde* afhænger de ikke af, hvilket panel der er aktivt, så deres to knapper på knaplinjen betyder altid det samme.
 
 ## Genveje
 

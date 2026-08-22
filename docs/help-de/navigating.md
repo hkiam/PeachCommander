@@ -46,6 +46,7 @@ Das Menü **Gehe zu** bringt das aktive Panel zu den Ordnern, die Sie am häufig
 - Die Laufwerksleiste über jedem Panel listet Ihre eingebundenen Volumes mit freiem Speicherplatz auf; klicken Sie auf ein Volume, um dieses Panel dorthin zu wechseln.
 - Drücken Sie **Ctrl+U**, um die beiden Panels zu vertauschen (ihre Ordner tauschen die Seiten); **Ctrl+Shift+U** vertauscht sie zusammen mit ihren Tabs.
 - Drücken Sie **Ctrl+=**, um das andere Panel auf denselben Ordner wie das aktive zu richten (*Ziel = Quelle*) — praktisch kurz vor einem Kopier- oder Verschiebevorgang.
+- **Gehe zu ▸ Links = Rechts** und **Gehe zu ▸ Rechts = Links** tun dasselbe, benennen die Seite aber ausdrücklich: das erste zeigt den Ordner des rechten Panels links, das zweite den Ordner des linken Panels rechts. Anders als *Ziel = Quelle* hängen sie nicht davon ab, welches Panel aktiv ist — die beiden Schaltflächen dafür auf der Schaltflächenleiste bedeuten also immer dasselbe.
 
 ## Kurzbefehle
 

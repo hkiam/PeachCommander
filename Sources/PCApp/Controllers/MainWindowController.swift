@@ -481,6 +481,7 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         installMainMenu()
         loadUserCommands()
         loadButtonBar()
+        seedSyncBarButtonsIfNeeded()
         loadPlugins()
         Task { @MainActor in
             await self.commandRegistry.registerDefaultCommands()
@@ -3191,6 +3192,22 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     func targetEqualsSource() async {
         guard let active = activePanel, let target = getInactivePanel() else { return }
         await target.loadDirectory(await active.getCurrentPath())
+    }
+
+    /// "Left = Right": the left panel takes the right panel's folder (F-443).
+    ///
+    /// Named for the panel it *changes*, like `targetEqualsSource`. The difference is that this pair
+    /// says which side outright, so a toolbar button means the same thing whichever panel has the
+    /// focus — the reason to have them at all.
+    func leftEqualsRight() async {
+        guard let left = leftPanelController, let right = rightPanelController else { return }
+        await left.loadDirectory(await right.getCurrentPath())
+    }
+
+    /// "Right = Left": the right panel takes the left panel's folder (F-443).
+    func rightEqualsLeft() async {
+        guard let left = leftPanelController, let right = rightPanelController else { return }
+        await right.loadDirectory(await left.getCurrentPath())
     }
 
     /// Ctrl+Left/Right: point the target panel at the folder under the active
@@ -6348,7 +6365,43 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             b("cm_SearchFor", "Find Files", "magnifyingglass"),
             b("cm_MultiRenameFiles", "Multi-Rename", "character.cursor.ibeam"),
             b("cm_SyncDirs", "Synchronize", "arrow.triangle.2.circlepath"),
-        ])
+            BarButton(),
+        ] + syncBarButtons)
+    }
+
+    /// The path-sync buttons (F-443) — one list, because `defaultButtonBar` seeds them into a new
+    /// configuration and `seedSyncBarButtonsIfNeeded` adds them to an old one, and two copies of an
+    /// icon name and a caption would eventually disagree about which button is which.
+    ///
+    /// The arrow points at the panel that *changes*, which is also what the caption says: "Left =
+    /// Right" takes the right panel's folder to the left one.
+    private static let syncBarButtons = [
+        BarButton(icon: "sf:arrow.left.to.line", cmd: "cm_LeftEqualsRight",
+                  menu: "Left = Right", iconic: true),
+        BarButton(icon: "sf:arrow.right.to.line", cmd: "cm_RightEqualsLeft",
+                  menu: "Right = Left", iconic: true),
+    ]
+    private static let syncBarSeededKey = "SyncBarButtonsSeeded"
+
+    /// Add the two path-sync buttons to a bar that predates them, once (F-443).
+    ///
+    /// `loadButtonBar` writes `defaultButtonBar()` only when there is no `default.bar` at all, so a
+    /// new default button reaches nobody who has already run the app — the bar on disk is from the
+    /// release before it existed. Hence a migration, and hence a flag: it is set on the first run
+    /// whether or not anything was added, so removing the buttons afterwards is a decision that
+    /// sticks rather than something undone at the next launch.
+    ///
+    /// Deliberately *not* inside `loadButtonBar`, which also runs after a Total Commander import
+    /// (`wincmd.ini`) — a bar the user just imported from elsewhere is not ours to add to.
+    private func seedSyncBarButtonsIfNeeded() {
+        guard !startupConfig.bool("Layout", Self.syncBarSeededKey, default: false) else { return }
+        Task { await mainConfig.setBool(true, "Layout", Self.syncBarSeededKey); await mainConfig.flush() }
+        let present = Set(buttonBar.buttons.map(\.cmd))
+        let missing = Self.syncBarButtons.filter { !present.contains($0.cmd) }
+        guard !missing.isEmpty else { return }
+        buttonBar.buttons.append(contentsOf: missing)
+        saveButtonBar()   // writes the file and reloads the strip
+        logger.info("Button bar: added \(missing.count) path-sync button(s) (F-443)")
     }
 
     func runBarButton(_ button: BarButton) {

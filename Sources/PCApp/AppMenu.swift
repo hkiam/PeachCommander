@@ -342,6 +342,14 @@ enum AppMenu {
                                key: "u", mask: [.control, .shift], target: target, action: commandAction))
         goMenu.addItem(command(String(localized: "Target = Source"), cmd: "cm_TargetEqualSource",
                                key: "=", mask: .control, target: target, action: commandAction))
+        // No key equivalent for either (F-443). Ctrl+Shift+Left/Right read as the obvious pair and are
+        // free in both schemes, but `PanelListView.keyDown` handles the arrow keys itself and only
+        // looks for Alt there — binding them is its own question, with `Tools/check-hotkeys.py` as the
+        // judge. Both commands are assignable in Settings ▸ Keyboard from the day they exist.
+        goMenu.addItem(command(String(localized: "Left = Right"), cmd: "cm_LeftEqualsRight",
+                               key: "", mask: [], target: target, action: commandAction))
+        goMenu.addItem(command(String(localized: "Right = Left"), cmd: "cm_RightEqualsLeft",
+                               key: "", mask: [], target: target, action: commandAction))
         goMenu.addItem(.separator())
         goMenu.addItem(command(String(localized: "Workspaces…"), cmd: "cm_Workspaces",
                                key: "", mask: [], target: target, action: commandAction))
