@@ -479,3 +479,80 @@ screenshots:
       - wait 4000
       - enter
       - wait 3000
+
+  # The two bundled plugins that are most obviously a picture and had none (F-441). Both are
+  # docked views, so the shot has to show the panels AND the view — no crop.
+  - id: terminal
+    feature: terminal
+    alt: "The built-in terminal docked below the two file panels, its prompt already in the panel's directory"
+    caption: "Terminal — your login shell inside the window; \"Go to the Panel's Folder\" puts it where you are looking."
+    pages: [terminal]
+    # 20s: a pseudo-terminal takes noticeably longer to come up than a view that only draws,
+    # which is why regress.py's terminal scenarios wait this long too.
+    settle: 20
+    script:
+      - left /Users/admin/pc-demo/Projects/peach-app/src
+      - right /Users/admin/pc-demo/Documents
+      - active l
+      - wait 800
+      # Placement is persisted, so it is asserted rather than inherited — `dock on` alone would
+      # depend on where a previous spec left the view.
+      - placeview plugin.terminal.view|default
+      - wait 800
+      - dock on
+      - wait 4000
+      # The shell does NOT start in the panel's directory — it is a login shell and starts at
+      # home. "Go to the Panel's Folder" is the feature that connects the two, so the shot shows
+      # that command having been used rather than implying something the app does not do.
+      - cmd cm_TerminalCdHere
+      - wait 1500
+      # One command, generously timed. Two `termsend`s 1.2s apart lost the second one, and the
+      # first attempt shipped a picture of an idle prompt. `ls -l` lists exactly what the panel
+      # above it lists, which is the point.
+      - termsend plugin.terminal.view|ls -l\n
+      - wait 3000
+
+  - id: log-viewer
+    feature: log-viewer
+    alt: "The Log Viewer plugin showing a service log with each level in its own colour"
+    caption: "Log Viewer — levels coloured, errors findable, and it keeps tailing while you read."
+    pages: [log-viewer]
+    settle: 16
+    script:
+      # Its own directory outside pc-demo, written by the spec: a log file inside the demo tree
+      # would turn up in every other spec's and scenario's panel listing.
+      - >-
+        probe /Users/admin/logdemo.txt|mkdir -p ~/pc-logs && printf '%s\n'
+        '2026-08-22 09:14:02.114 INFO  boot     peach-service 1.4.2 starting (pid 4711)'
+        '2026-08-22 09:14:02.140 DEBUG config   read /etc/peach/service.toml (412 bytes)'
+        '2026-08-22 09:14:02.201 INFO  store    opened catalog, 128441 entries'
+        '2026-08-22 09:14:02.318 INFO  net      listening on 0.0.0.0:8443 (TLS)'
+        '2026-08-22 09:14:07.006 DEBUG net      client 10.0.4.12 handshake ok, ALPN h2'
+        '2026-08-22 09:14:07.052 INFO  api      GET /v1/catalog 200 in 41ms'
+        '2026-08-22 09:14:09.771 WARN  store    slow query 1284ms: catalog.scan(prefix=/assets)'
+        '2026-08-22 09:14:11.402 INFO  api      POST /v1/import 202 in 96ms'
+        '2026-08-22 09:14:11.480 DEBUG import   queued job 8812, 2394 items'
+        '2026-08-22 09:14:14.913 WARN  import   job 8812: 3 items skipped, unreadable source'
+        '2026-08-22 09:14:19.220 ERROR net      client 10.0.4.51 dropped mid-upload (broken pipe)'
+        '2026-08-22 09:14:19.221 DEBUG net      closing session 0x3f2a, 41MB transferred'
+        '2026-08-22 09:14:22.640 INFO  import   job 8812 finished: 2391 ok, 3 skipped'
+        '2026-08-22 09:14:25.109 DEBUG store    compacting segment 14 (88MB)'
+        '2026-08-22 09:14:31.884 INFO  store    compaction done in 6775ms, reclaimed 22MB'
+        '2026-08-22 09:14:40.002 WARN  auth     token for svc-backup expires in 36h'
+        '2026-08-22 09:14:44.517 ERROR store    write failed: no space left on device (/var/peach)'
+        '2026-08-22 09:14:44.518 ERROR api      PUT /v1/assets/9931 500 in 8ms'
+        '2026-08-22 09:14:45.001 INFO  store    switched to spill volume /mnt/peach-spill'
+        '2026-08-22 09:14:52.330 INFO  api      PUT /v1/assets/9931 201 in 63ms'
+        '2026-08-22 09:15:01.117 DEBUG health   heartbeat ok, rss 412MB, threads 24'
+        '2026-08-22 09:15:14.909 INFO  api      GET /v1/catalog 200 in 38ms'
+        > ~/pc-logs/service.log && printf 'rotated\n' > ~/pc-logs/service.log.1 &&
+        printf 'installer\n' > ~/pc-logs/install.log && wc -l < ~/pc-logs/service.log
+      - wait 800
+      - left /Users/admin/pc-logs
+      - right /Users/admin/pc-demo/Documents
+      - active l
+      - wait 800
+      - focus service.log
+      - wait 500
+      - contribcmd plugin.logviewer.view
+      - wait 3500

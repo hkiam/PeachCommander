@@ -421,17 +421,23 @@
   margin: 1.2rem 0 2rem;
 }
 
-.pc-shots figure { margin: 0; }
+/* Each item is one Markdown paragraph — image, soft break, italic caption — so the images go
+   through the builder's `screenshots/… -> assets/screenshots/…` rewrite and count as referenced
+   for check-docs. Hand-written <img src="assets/…"> bypassed both. */
+.pc-shots > p {
+  margin: 0 !important;
+  font-size: .72rem;
+  line-height: 1.4;
+}
 
 .pc-shots img {
   width: 100%;
+  margin-bottom: .35rem;
   border: 1px solid var(--md-default-fg-color--lightest);
   border-radius: .5rem;
 }
 
-.pc-shots figcaption {
-  margin-top: .4rem;
-  font-size: .72rem;
-  line-height: 1.4;
+.pc-shots em {
+  font-style: italic;
   opacity: .75;
 }

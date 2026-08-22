@@ -255,6 +255,38 @@ the three doors two-across, and the six feature cards, which predate this work. 
 now use px minimums; gaps stay in rem, where scaling with type is what you want.
 
 
+## 2026-08-22 (F-441) — Terminal and Log Viewer, photographed
+
+Two of the most visual bundled plugins had no screenshot at all, so the F-440 showcase could
+only name them. Both are now captured through the VM harness (`docs/metadata/screenshot-specs.yml`
++ `Tools/vm/capture.py --only …`), registered in the index, and on the landing page — the strip
+carries five pictures instead of three.
+
+**The first terminal shot was wrong and the picture is what said so.** The spec assumed the
+shell starts in the panel's directory; `pwd` printed `/Users/admin`, and the caption I had
+written ("already in the folder you are looking at") would have shipped as a plain untruth. The
+help page has it the other way round: the shell is a *login* shell starting at home, the panel
+can be made to follow the shell (off by default, and it needs an OSC 7 snippet in `~/.zshrc`),
+and **Go to the Panel's Folder** (`cm_TerminalCdHere`) is the command that connects them. The
+spec now runs that command, so the shot shows the feature instead of implying one that does not
+exist, and the plugin card on the landing page was corrected the same way — it had claimed the
+terminal follows the panel.
+
+Second defect in the same shot: two `termsend`s 1.2 s apart lost the second one, and the first
+attempt was a picture of an idle prompt. One command, generously timed.
+
+**A convention I had broken.** The showcase's image strip was hand-written
+`<img src="assets/screenshots/…">`, which bypasses two things at once: the builder's
+`screenshots/… → assets/screenshots/…` rewrite, and `check-docs.py`'s reference tracking — which
+duly reported both new images as unreferenced. The strip is Markdown inside `markdown="1"` now,
+one paragraph per picture, and the gate is quiet.
+
+Still open: neither `terminal.md` nor `log-viewer.md` embeds its screenshot, unlike every other
+plugin help page. Adding them means the same image line in all 19 languages (the drift gate
+compares image targets) with a translated alt text and caption in each — 72 strings that no
+translator has seen — plus a Help Book rebuild. Not done, and not done quietly.
+
+
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 
 Run with `--only menu-file,viewer-md-outline,csv-no-header,jsonl,viewer-long-lines`, which is the debt both

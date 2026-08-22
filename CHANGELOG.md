@@ -94,6 +94,12 @@ does not have.
   columns silently rendered two in an 826px content column. The minimums are in px now; the
   gaps stay in rem, because spacing should scale with type.
 
+
+- **The terminal and the log viewer are shown, not just listed.** Two of the most visual bundled
+  plugins had no screenshot anywhere. Both are captured now — the terminal with the shell sitting
+  in the folder the panel above it shows, the log viewer with a service log colour-coded by level
+  — and the showcase strip on the landing page carries five pictures instead of three.
+
 ### Changed
 
 - **The assistant is offered only the tools it is allowed to use.** Under "read-only" the write and

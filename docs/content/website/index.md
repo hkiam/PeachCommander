@@ -108,7 +108,7 @@ be switched off again in **Configuration ▸ Plugins…**. Nothing to download, 
   </a>
   <a class="pc-plugin" href="terminal.html">
     <span class="pc-plugin__name">Terminal</span>
-    <span class="pc-plugin__what">A real login shell docked across the bottom of the window — tabs, splits, and it follows the panel you are in.</span>
+    <span class="pc-plugin__what">Your login shell in a strip across the bottom — tabs, splits, and Cmd-click a path in its output to send the panel there.</span>
   </a>
   <a class="pc-plugin" href="disk-map.html">
     <span class="pc-plugin__name">Disk Map</span>
@@ -172,21 +172,25 @@ be switched off again in **Configuration ▸ Plugins…**. Nothing to download, 
   </a>
 </div>
 
-Three of them are easier shown than described:
+Five of them are easier shown than described:
 
-<div class="pc-shots">
-  <figure>
-    <img src="assets/screenshots/disk-map.png" alt="The Disk Map plugin showing a treemap of a volume">
-    <figcaption>Disk Map — where the space actually went.</figcaption>
-  </figure>
-  <figure>
-    <img src="assets/screenshots/git-status.png" alt="Git status and branch shown as columns in a file panel">
-    <figcaption>Git — status and branch as ordinary panel columns.</figcaption>
-  </figure>
-  <figure>
-    <img src="assets/screenshots/uninstaller.png" alt="The uninstaller listing an application's leftover files with their sizes">
-    <figcaption>Uninstaller — the leftovers, with sizes, before anything goes.</figcaption>
-  </figure>
+<div class="pc-shots" markdown="1">
+
+![The Disk Map plugin showing a treemap of a volume](screenshots/disk-map.png)
+*Disk Map — where the space actually went.*
+
+![Git status and branch shown as columns in a file panel](screenshots/git-status.png)
+*Git — status and branch as ordinary panel columns.*
+
+![The built-in terminal docked below the panels, its prompt in the folder the panel shows](screenshots/terminal.png)
+*Terminal — one command puts the shell where you are looking.*
+
+![The Log Viewer showing a service log with each level in its own colour](screenshots/log-viewer.png)
+*Log Viewer — levels coloured, and it keeps tailing while you read.*
+
+![The uninstaller listing an application's leftover files with their sizes](screenshots/uninstaller.png)
+*Uninstaller — the leftovers, with sizes, before anything goes.*
+
 </div>
 
 ---
