@@ -67,7 +67,7 @@ only go down.
 | terminal-elsewhere | 0 | — | — | `terminal-elsewhere.png` |
 | terminal-move | 0 | — | — | `terminal-move.png` |
 | tree-colours | 0 | — | — | `tree-colours.png` |
-| surface-colours | 1 | — | PanelTreeView | `surface-colours.png` |
+| surface-colours | 0 | — | — | `surface-colours.png` |
 | plugin-theme-switch | 0 | — | — | `plugin-theme-switch.png` |
 | keys-probe | 0 | — | — | `keys-probe.png` |
 | eject-menu | 0 | — | — | `eject-menu.png` |

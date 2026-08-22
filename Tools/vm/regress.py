@@ -820,9 +820,15 @@ SCENARIOS = [
     # As much as possible on screen first, because the audit can only see what is mounted: both trees,
     # the preview panel, the bottom area with its terminal, and the settings window, which is a second
     # window and so a second chance for a palette to have been forgotten.
+    # Set, not toggled — the same lesson `tree-colours` above already learned, and unlearning it here
+    # cost a full-suite failure. `cm_TreeShared` and `cm_SrcTree` flip a state the guest's peachcmd.ini
+    # remembers, so after `tree-colours` (which switches both trees ON) these two switched them back
+    # OFF. A hidden tree is a zero-width `PanelTreeView` with a scroll view pinned to both its edges,
+    # which is an Auto Layout conflict — so this scenario reported one conflict in the full suite and
+    # none when run alone, on any build.
     ("surface-colours", ["active left", "left /Users/admin/pc-demo", "wait 1200",
-                         "cmd cm_TreeShared", "wait 800",
-                         "cmd cm_SrcTree", "wait 800",
+                         "treevisible shared|1", "wait 800",
+                         "treevisible panel|1", "wait 800",
                          "previewpanel on", "wait 1000",
                          # The Git panel is mounted on purpose (F-431): it was white in every dark palette
                          # for four commits, with white labels on top, and the audit had been saying so —
@@ -1780,12 +1786,25 @@ REPORTS = {
                       "midnight/shared/opened", "!WRONG"]),
     # Every finding of the first run has been judged: the bright surfaces were AppKit helper views at
     # zero alpha, the cursor-row contrast was the audit reading the wrong background, and the one real
-    # defect (the terminal status line, black on Norton blue) is fixed. So the expectation is now
-    # "nothing" — and the window count is asserted with it, because nothing found by looking at
-    # nothing is not the same claim.
-    # `windows=32` stays part of the expectation: `findings=0` alone is also true of a run that audited
-    # nothing, and mounting the Git panel adds a *view*, not a window — so the count is unchanged (F-431).
-    "surface-colours": ("/Users/admin/surfaces.txt", ["windows=32", "findings=0"]),
+    # defect (the terminal status line, black on Norton blue) is fixed. So the expectation is
+    # "nothing" — plus proof that the nothing was found by looking, because `findings=0` is also true
+    # of a run that audited no surface at all.
+    #
+    # That proof used to be `windows=32`, and a count was the wrong shape for it. The number is
+    # palettes × (visible windows + hidden plugin views), so it moves whenever a palette, a window or
+    # a plugin view is added — and it did, to 40, for reasons that had nothing to do with this audit.
+    # It was measured at 40 on a build with none of the work that was suspected of moving it, so the
+    # pin had simply gone stale and the scenario had been failing on arithmetic.
+    #
+    # The surfaces are named instead. These three are the ones the scenario goes out of its way to put
+    # on screen, so each is a claim rather than a tally: the Settings window (a second window, and a
+    # second chance for a palette to have been forgotten), the Git panel (F-431 — white in every dark
+    # palette for four commits, because nobody had asked the audit about a view that has to be opened
+    # first), and the dock's terminal. `windows=` stays in the dump, where it is worth reading and
+    # costs nothing when it moves.
+    "surface-colours": ("/Users/admin/surfaces.txt",
+                        ["findings=0", "audited: Settings", "audited: side:Git",
+                         "audited: dock:plugin.terminal.view"]),
     # The dump is written last and only by a living app: if the theme change killed it, this file is
     # never written and the scenario fails with an empty report, which is the whole question.
     "plugin-theme-switch": ("/Users/admin/still-alive.txt", ["left="]),

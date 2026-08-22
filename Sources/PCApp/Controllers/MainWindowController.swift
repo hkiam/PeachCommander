@@ -5830,13 +5830,19 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
             for (name, tree) in [("shared", sharedTree),
                                  ("panel", leftPanelController?.view.treeForAutomation)] {
                 guard let tree else { continue }
+                // `<no row>`, not a colour, when the probe found nothing to read. The two answers used
+                // to be the same string: the fallback was `.labelColor`, which resolves to #000000
+                // outside a dark appearance — so "no rows" was reported as black, the light palette
+                // expected black and passed, and the dark ones failed as if the tree were painted
+                // wrongly. Whatever this line says now, it cannot be mistaken for a palette.
                 let actual = tree.automationColours
-                let ok = hex(actual.background) == expectedBackground && hex(actual.text) == expectedText
+                let gotText = actual.text.map(hex) ?? "<no row>"
+                let ok = hex(actual.background) == expectedBackground && gotText == expectedText
                 lines.append("\(palette.id)/\(name) want=\(expectedBackground)/\(expectedText) "
-                             + "got=\(hex(actual.background))/\(hex(actual.text)) \(ok ? "ok" : "WRONG")")
+                             + "got=\(hex(actual.background))/\(gotText) \(ok ? "ok" : "WRONG")")
                 // And a row opened after the switch, which is vended from the reuse pool rather than
                 // rebuilt by the reload — the half of the fix the visible rows do not exercise.
-                let opened = hex(tree.automationColourOfRowOpenedLater)
+                let opened = tree.automationColourOfRowOpenedLater.map(hex) ?? "<no row>"
                 lines.append("\(palette.id)/\(name)/opened want=\(expectedText) got=\(opened) "
                              + "\(opened == expectedText ? "ok" : "WRONG")")
             }
@@ -5889,6 +5895,12 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
         let original = themeId
         var lines: [String] = []
         var audited = 0
+        // What was looked at, by name. `windows=` is palettes × (visible windows + hidden plugin
+        // views), so it moves whenever a palette, a window or a plugin view is added — three reasons
+        // that have nothing to do with this audit, and it pinned the scenario to a stale number twice.
+        // A name is stable, and it is the claim the count was standing in for: not "forty of
+        // something" but "the settings window was among them".
+        var names: Set<String> = []
         for palette in Theme.palettes {
             themeId = palette.id
             applyAppearance(appearanceSetting)
@@ -5899,20 +5911,24 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
                 window.contentView?.layoutSubtreeIfNeeded()
                 let name = window.title.isEmpty ? String(describing: type(of: window)) : window.title
                 audited += 1
+                names.insert(name)
                 lines += SurfaceColourAudit.audit(window: window,
                                                   label: "\(palette.id)/\(name)").map(\.line)
             }
             // Both container tab strips show one view at a time, so a single pass sees one plugin
             // view and misses every other installed one. Visiting each in turn is the difference
             // between "the terminal is fine" and "the plugin views are fine".
-            lines += auditHiddenTabs(palette: palette.id, audited: &audited)
+            lines += auditHiddenTabs(palette: palette.id, audited: &audited, names: &names)
         }
         themeId = original
         applyAppearance(appearanceSetting)
-        // Last line, and it carries the window count: an empty findings list means "nothing found"
-        // only if something was actually looked at, and a scenario that opened no window would
-        // otherwise produce a clean report by doing nothing.
+        // The count and the findings first: an empty findings list means "nothing found" only if
+        // something was actually looked at, and a scenario that opened no window would otherwise
+        // produce a clean report by doing nothing.
         lines.append("windows=\(audited) findings=\(lines.count)")
+        // Then the names, after `findings` has been counted — these lines are not findings. One per
+        // line rather than one joined line, so a check can name a single surface it insists on.
+        lines += names.sorted().map { "audited: \($0)" }
         try? (lines.joined(separator: "\n") + "\n").write(toFile: file, atomically: true, encoding: .utf8)
     }
 
@@ -5921,15 +5937,17 @@ final class MainWindowController: NSWindowController, WindowControllerProtocol, 
     ///
     /// The selection is put back afterwards, so the scenario's screenshot shows what it would have
     /// shown anyway and a later step is not surprised by a tab it did not choose.
-    private func auditHiddenTabs(palette: String, audited: inout Int) -> [String] {
+    private func auditHiddenTabs(palette: String, audited: inout Int,
+                                 names: inout Set<String>) -> [String] {
         guard let window else { return [] }
         var lines: [String] = []
 
-        func sweep(_ names: [String], label: String, select: (String) -> Void) {
-            for name in names {
+        func sweep(_ titles: [String], label: String, select: (String) -> Void) {
+            for name in titles {
                 select(name)
                 window.contentView?.layoutSubtreeIfNeeded()
                 audited += 1
+                names.insert("\(label):\(name)")
                 lines += SurfaceColourAudit.audit(window: window,
                                                   label: "\(palette)/\(label):\(name)").map(\.line)
             }

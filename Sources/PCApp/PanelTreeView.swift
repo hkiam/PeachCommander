@@ -102,15 +102,31 @@ final class PanelTreeView: NSView, NSOutlineViewDataSource, NSOutlineViewDelegat
     /// The row colour is read from a row rather than from the class, because that is where the defect
     /// lived: cells are made once and reused, so what the theme says and what the user sees are two
     /// different questions.
-    var automationColours: (background: NSColor, text: NSColor) {
+    /// `text` is nil when there is no row view to read — which is a different answer from a colour and
+    /// has to stay one (F-445 follow-up).
+    ///
+    /// It used to fall back to `.labelColor`, and that is not a neutral default: outside a dark drawing
+    /// appearance it resolves to exactly `#000000`. So a probe that found nothing reported black, the
+    /// light palette *expects* black and passed, and every dark palette failed with a number that looked
+    /// like a painting defect. The full suite said the tree was black for four palettes; the tree was
+    /// fine and the probe had found no rows.
+    var automationColours: (background: NSColor, text: NSColor?) {
         // Lay out first. `reloadData` only marks the rows as needing rebuilding; on screen that
         // happens before the next frame, but this reads in the same turn it was called from and
-        // would otherwise find no row views at all and report the default colour as if it were the
-        // theme's — a red herring that cost an hour once already.
+        // would otherwise find no row views at all — a red herring that cost an hour once already.
         outline.layoutSubtreeIfNeeded()
-        let text = (outline.view(atColumn: 0, row: 0, makeIfNecessary: false) as? NSTableCellView)?
-            .textField?.textColor
-        return (outline.backgroundColor, text ?? .labelColor)
+        // The first *visible* row, not row 0. NSTableView only vends views for rows inside the visible
+        // rect, and a tree that has revealed the current folder is scrolled — which the panel's tree
+        // almost always is, while the shared one usually still shows "/" at the top. So row 0 had no
+        // view, the probe answered with its fallback, and which of the two trees failed depended on
+        // where the previous scenario had left them. `makeIfNecessary: false` stays: the point is to
+        // read a row that already existed when the palette changed, because a freshly made cell is
+        // correctly coloured by construction and proves nothing.
+        let visible = outline.rows(in: outline.visibleRect)
+        guard visible.length > 0 else { return (outline.backgroundColor, nil) }
+        let text = (outline.view(atColumn: 0, row: visible.location,
+                                makeIfNecessary: false) as? NSTableCellView)?.textField?.textColor
+        return (outline.backgroundColor, text)
     }
 
     /// Diagnostic: the colour of a row the user opens *after* the theme changed (F-015).
@@ -123,13 +139,14 @@ final class PanelTreeView: NSView, NSOutlineViewDataSource, NSOutlineViewDelegat
     /// read the right colour — after a reload the pool hands back nothing stale here. So it is not
     /// evidence for the current arrangement, it is a guard on the case that would break if a later
     /// change dropped the reload or started reusing across one.
-    var automationColourOfRowOpenedLater: NSColor {
-        guard outline.numberOfRows > 0, let first = outline.item(atRow: 0) else { return .labelColor }
+    /// Nil for the same reason as `automationColours`: "there was no row to open" is not a colour.
+    var automationColourOfRowOpenedLater: NSColor? {
+        guard outline.numberOfRows > 0, let first = outline.item(atRow: 0) else { return nil }
         outline.expandItem(first)
         outline.layoutSubtreeIfNeeded()
-        guard outline.numberOfRows > 1 else { return .labelColor }
+        guard outline.numberOfRows > 1 else { return nil }
         return (outline.view(atColumn: 0, row: 1, makeIfNecessary: true) as? NSTableCellView)?
-            .textField?.textColor ?? .labelColor
+            .textField?.textColor
     }
     #endif
 
