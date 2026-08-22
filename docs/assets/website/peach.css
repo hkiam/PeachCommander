@@ -192,11 +192,17 @@
   font-weight: 700;
 }
 
+/* Track minimums are in px, not rem, on purpose. Material sets `html { font-size: 125% }`, so
+   1rem follows the reader's browser: measured 24px on one machine and 20px on a default one.
+   A rem minimum therefore decides the number of columns by font size rather than by available
+   width — which is why a `minmax(14rem, …)` meant for three columns silently rendered two in
+   an 826px content column. The gaps stay in rem: spacing SHOULD scale with type. */
+
 /* --- Feature grid ---------------------------------------------------------- */
 
 .pc-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: .9rem;
   margin: 1.6rem 0 2rem;
 }
@@ -293,7 +299,7 @@
    door's title broke across three lines with both sidebars open. */
 .pc-doors {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: .9rem;
   margin: 1.8rem 0 2.2rem;
 }
@@ -346,4 +352,86 @@
   font-size: .78rem;
   font-weight: 700;
   color: var(--md-accent-fg-color);
+}
+
+/* --- Plugin showcase (landing page) --------------------------------------- */
+
+/* Denser than .pc-grid on purpose: seventeen of these have to read as an inventory —
+   "look how much is already here" — rather than as seventeen things to study. Narrower
+   minimum, tighter padding, name and one line each. */
+.pc-plugins {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: .6rem;
+  margin: 1.4rem 0 2rem;
+}
+
+.pc-plugin {
+  display: block;
+  padding: .8rem .9rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: .55rem;
+  background: var(--md-default-bg-color);
+  color: inherit !important;
+  text-decoration: none !important;
+  transition: border-color .15s ease, transform .15s ease;
+}
+
+.pc-plugin:hover,
+.pc-plugin:focus-visible {
+  border-color: var(--md-accent-fg-color);
+  transform: translateY(-1px);
+}
+
+.pc-plugin__name {
+  display: block;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--md-accent-fg-color);
+}
+
+.pc-plugin__what {
+  display: block;
+  margin-top: .3rem;
+  font-size: .74rem;
+  line-height: 1.45;
+  opacity: .82;
+}
+
+/* "off by default" is said out loud rather than left for the reader to discover after
+   switching one on and finding nothing. */
+.pc-plugin__off {
+  display: inline-block;
+  margin-left: .35rem;
+  padding: .05rem .35rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: .5rem;
+  font-size: .62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--md-default-fg-color--light);
+}
+
+/* Three screenshots abreast, so the showcase ends on a picture instead of a list. */
+.pc-shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: .9rem;
+  margin: 1.2rem 0 2rem;
+}
+
+.pc-shots figure { margin: 0; }
+
+.pc-shots img {
+  width: 100%;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: .5rem;
+}
+
+.pc-shots figcaption {
+  margin-top: .4rem;
+  font-size: .72rem;
+  line-height: 1.4;
+  opacity: .75;
 }

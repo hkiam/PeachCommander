@@ -78,6 +78,22 @@ does not have.
   opens that commit against its parent in the compare window. The mechanism is a new host service, so any
   plugin can annotate lines this way — coverage, a linter, anything per line.
 
+
+- **The bundled plugins are the pitch now, not a footnote.** Seventeen plugins ship inside the
+  app and the landing page said so in one run-on sentence, two thirds of the way down, under a
+  heading about the SDK — while the feature card above it advertised the *ability* to write
+  plugins rather than the fourteen that are switched on the moment you launch. There is now a
+  showcase near the top: what each one does in a line, the three that are off by default marked
+  as such, the plugins window as proof that every one of them is there and individually
+  switchable, and Disk Map, Git and the Uninstaller shown rather than described. The SDK keeps
+  its own section further down, where it belongs.
+
+- **Card grids were choosing their column count by font size.** Every grid on the landing page
+  used a `rem` track minimum, and Material sets `html { font-size: 125% }` — so 1rem is 20px on
+  a default browser and was measured at 24px on another. A `minmax(14rem, …)` meant for three
+  columns silently rendered two in an 826px content column. The minimums are in px now; the
+  gaps stay in rem, because spacing should scale with type.
+
 ### Changed
 
 - **The assistant is offered only the tools it is allowed to use.** Under "read-only" the write and

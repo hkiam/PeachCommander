@@ -85,9 +85,108 @@ Peach Commander puts two folders side by side and every operation under your fin
   </div>
   <div class="pc-card">
     <div class="pc-card__icon">🧩</div>
-    <h3>Five kinds of plugins</h3>
-    <p>Packers, file systems, viewers, content columns, and tools — with a Swift/C SDK to write your own.</p>
+    <h3>Seventeen plugins included</h3>
+    <p>Git, a real terminal, a disk-usage map, process list, uninstaller, log and CSV viewers — in the box, not on a shop page.</p>
   </div>
+</div>
+
+---
+
+## Seventeen plugins, already in the box
+
+Plugins here are not a promise about what you could build — they are what you get. **Seventeen
+ship inside the app**, fourteen of them switched on the moment you launch it, and every one can
+be switched off again in **Configuration ▸ Plugins…**. Nothing to download, nothing to buy.
+
+![The plugins window listing the bundled plugins, each with its own switch](screenshots/plugins-window.png)
+*Every one of them arrives with the app, and each is independently switchable.*
+
+<div class="pc-plugins">
+  <a class="pc-plugin" href="git.html">
+    <span class="pc-plugin__name">Git</span>
+    <span class="pc-plugin__what">Working-tree status and branch as panel columns, plus stage, commit, push, pull, log, blame, branches, stashes, a conflict resolver and a bounded rebase.</span>
+  </a>
+  <a class="pc-plugin" href="terminal.html">
+    <span class="pc-plugin__name">Terminal</span>
+    <span class="pc-plugin__what">A real login shell docked across the bottom of the window — tabs, splits, and it follows the panel you are in.</span>
+  </a>
+  <a class="pc-plugin" href="disk-map.html">
+    <span class="pc-plugin__name">Disk Map</span>
+    <span class="pc-plugin__what">What is actually filling a folder or a whole volume, as a treemap or sunburst, with a collector for the things you decide to delete.</span>
+  </a>
+  <a class="pc-plugin" href="system-monitor.html">
+    <span class="pc-plugin__name">System Monitor</span>
+    <span class="pc-plugin__what">Live CPU, memory, disk and network in the title bar — click a chip for its history graph.</span>
+  </a>
+  <a class="pc-plugin" href="task-manager.html">
+    <span class="pc-plugin__name">Task Manager</span>
+    <span class="pc-plugin__what">Running processes mounted as a drive you browse: sort them, look inside, end one with Delete.</span>
+  </a>
+  <a class="pc-plugin" href="uninstaller.html">
+    <span class="pc-plugin__name">Application Uninstaller</span>
+    <span class="pc-plugin__what">Removes an app <em>and</em> its caches, preferences and containers — after showing you the list with sizes.</span>
+  </a>
+  <a class="pc-plugin" href="ai-assistant.html">
+    <span class="pc-plugin__name">AI Assistant</span>
+    <span class="pc-plugin__what">Summarise, rename, translate or tidy in plain language, on-device or in the cloud. It shows its plan first, and it is removable.</span>
+  </a>
+  <a class="pc-plugin" href="log-viewer.html">
+    <span class="pc-plugin__name">Log Viewer</span>
+    <span class="pc-plugin__what">Opens a log colour-coded by level and tails it live — a multi-gigabyte file opens straight away.</span>
+  </a>
+  <a class="pc-plugin" href="csv-lister.html">
+    <span class="pc-plugin__name">CSV Lister</span>
+    <span class="pc-plugin__what">F3 on a .csv or .tsv gives you a sortable, filterable table instead of a wall of commas. Delimiter detected for you.</span>
+  </a>
+  <a class="pc-plugin" href="webdav.html">
+    <span class="pc-plugin__name">WebDAV Client</span>
+    <span class="pc-plugin__what">Nextcloud, Synology or any WebDAV server as an ordinary folder, with the password in the Keychain.</span>
+  </a>
+  <a class="pc-plugin" href="archives.html">
+    <span class="pc-plugin__name">libarchive Reader</span>
+    <span class="pc-plugin__what">Teaches the app 7z, the tar family, gz/bz2/xz/zstd and rar — after which they open like folders.</span>
+  </a>
+  <a class="pc-plugin" href="plugins.html">
+    <span class="pc-plugin__name">Notes</span>
+    <span class="pc-plugin__what">A note beside any file or folder, a dot in the panel where one exists, and a docked sidebar to read them.</span>
+  </a>
+  <a class="pc-plugin" href="plugins.html">
+    <span class="pc-plugin__name">AI Column</span>
+    <span class="pc-plugin__what">An <em>AI Language</em> column that works out which language each text file is written in, on device.</span>
+  </a>
+  <a class="pc-plugin" href="plugins.html">
+    <span class="pc-plugin__name">iCloud Drive</span>
+    <span class="pc-plugin__what">Puts iCloud Drive in the drive bar, where the rest of your volumes are.</span>
+  </a>
+  <a class="pc-plugin" href="filesystem-images.html">
+    <span class="pc-plugin__name">Filesystem Images <span class="pc-plugin__off">off by default</span></span>
+    <span class="pc-plugin__what">Walk into a disk or firmware image the way you walk into an archive: SquashFS, ext2/3/4, Btrfs, JFFS2, UBIFS, cramfs, initramfs, FAT, exFAT, NTFS, MBR and GPT.</span>
+  </a>
+  <a class="pc-plugin" href="decompilers.html">
+    <span class="pc-plugin__name">Java Decompiler <span class="pc-plugin__off">off by default</span></span>
+    <span class="pc-plugin__what">F3 on a .class, .jar, .apk or .dex shows source. Needs a decompiler engine you install yourself.</span>
+  </a>
+  <a class="pc-plugin" href="decompilers.html">
+    <span class="pc-plugin__name">.NET Decompiler <span class="pc-plugin__off">off by default</span></span>
+    <span class="pc-plugin__what">The same for .dll, .exe, .winmd and .netmodule, with its own engine to install.</span>
+  </a>
+</div>
+
+Three of them are easier shown than described:
+
+<div class="pc-shots">
+  <figure>
+    <img src="assets/screenshots/disk-map.png" alt="The Disk Map plugin showing a treemap of a volume">
+    <figcaption>Disk Map — where the space actually went.</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/screenshots/git-status.png" alt="Git status and branch shown as columns in a file panel">
+    <figcaption>Git — status and branch as ordinary panel columns.</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/screenshots/uninstaller.png" alt="The uninstaller listing an application's leftover files with their sizes">
+    <figcaption>Uninstaller — the leftovers, with sizes, before anything goes.</figcaption>
+  </figure>
 </div>
 
 ---
@@ -162,14 +261,15 @@ Peach Commander is a native AppKit app that respects the platform end to end. Pa
 
 ---
 
-## Extensible, with five kinds of plugins
+## And five kinds of plugin you can write yourself
 
-Packers, file systems, viewers, content columns, and tools all plug in, and a distributable Swift/C SDK lets you write your own — you can even source-port Total Commander WCX/WFX/WLX/WDX plugins.
+The bundled set above is built on the same public interface you get: five plugin kinds —
+packers, file systems, viewers, content columns and whole docked views — over one C11 ABI, with
+a Swift/C SDK. Four of them mirror Total Commander's WCX/WFX/WLX/WDX, so an existing TC plugin
+can be source-ported rather than rewritten; the fifth has no TC equivalent and is how the Git
+panel, the terminal and the system monitor exist at all.
 
-Turn on the Git plugin to get status columns and commit commands right in the panel, or open Disk Map to see a treemap of what is eating your storage. Bundled plugins also include System Monitor, Task Manager, Uninstaller, WebDAV, iCloud, Notes, Log Viewer, and extra archive formats.
-
-![The plugins management window](screenshots/plugins-window.png)
-*Five plugin types plus an SDK — the bundled set spans Git, Disk Map, System Monitor, and more.*
+If that is what brought you here, the [SDK overview](sdk-overview.md) is the place to start.
 
 ---
 

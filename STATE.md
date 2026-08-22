@@ -229,6 +229,32 @@ in English must be one section in every language, and an umbrella group needs a 
 every language. Both verified by reproducing the defect.
 
 
+## 2026-08-22 (F-440) — The bundled plugins, said out loud
+
+"Gerade die bereits enthaltenen sind ein großer USP und das muss rüberkommen." Right: seventeen
+plugins ship inside the app — verified in `PeachCommander.app/Contents/PlugIns`, fourteen of
+them enabled by default — and the landing page mentioned them in one run-on sentence two thirds
+of the way down, under a heading about the *SDK*. The feature card near the top sold the
+*ability* to write plugins. Somebody skimming the page would never learn what the thing already
+does.
+
+There is now a showcase directly after the six feature cards: a line each for all seventeen,
+the three that are off by default (Filesystem Images, and the two decompilers that need an
+engine you install yourself) marked as such rather than left to be discovered, the plugins
+window as evidence that they are all there and each independently switchable, and Disk Map, Git
+and the Uninstaller shown instead of described. Each card links to that plugin's own help page,
+so the entry feeds the funnel. The later section keeps the SDK story — five plugin kinds over
+one C11 ABI, four of them TC-shaped — and no longer repeats the inventory.
+
+**A measurement worth keeping.** The plugin cards came out two-across when three were intended,
+and rather than guess a third time I measured the page: the content column is 826 px, the root
+font-size **24 px**. Material sets `html { font-size: 125% }`, so a `rem` track minimum decides
+the column count by the reader's font size rather than by available width — `minmax(11.5rem, …)`
+was asking for 276 px tracks. Three columns needed 857 px of 826. The same bug had quietly made
+the three doors two-across, and the six feature cards, which predate this work. All four grids
+now use px minimums; gaps stay in rem, where scaling with type is what you want.
+
+
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 
 Run with `--only menu-file,viewer-md-outline,csv-no-header,jsonl,viewer-long-lines`, which is the debt both
