@@ -14,6 +14,20 @@ does not have.
 
 ## [Unreleased]
 
+### Fixed
+
+- **A folder that cannot be opened no longer moves the panel there.** Opening one that macOS keeps
+  private, or that permissions refuse, used to leave the panel claiming to be in it: the tab and the
+  path said the new folder, the path bar said the old one, and the file list belonged to neither. The
+  folder was even written to the session, so the next launch started somewhere it could not read. The
+  panel now stays where it was, and everything on screen agrees about where that is.
+
+- **And it says why, when macOS is the reason.** A location such as your iOS device backups is visible,
+  belongs to you, and its permissions say you may read it — and opening it is still refused, because
+  macOS gates it on the *app* rather than on you. No amount of administrator rights helps, so "could
+  not open" sent you looking for a permission that was never the problem. The panel now names it:
+  *macOS keeps <folder> private — see Commands ▸ Full Disk Access…*.
+
 ### Added
 
 - **One click puts one panel's folder in the other, and says which side.** **Go ▸ Left = Right** shows

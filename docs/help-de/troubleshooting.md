@@ -12,6 +12,8 @@ Dieses Thema behandelt die Probleme, auf die Menschen am häufigsten stoßen: ma
 
 Einige Orte — etwa Ihr `~/Library`-Ordner, die Ordner anderer Benutzer und Systembereiche — sind von macOS geschützt und bleiben verborgen, bis Sie den Zugriff gewähren. Peach Commander erkennt, wenn dies geschieht, und bietet an, Sie zur richtigen Einstellung zu führen.
 
+Ein solcher Ordner wird nicht leer angezeigt, sondern verweigert, und das Panel sagt es: *macOS hält <Ordner> privat — siehe Befehle ▸ Festplattenvollzugriff…*. Das ist es wert, benannt zu werden, denn nichts daran sieht nach einem Rechteproblem aus — der Ordner ist sichtbar, er gehört Ihnen, und seine Rechte sagen, dass Sie ihn lesen dürfen. Im Weg steht allein macOS selbst, und daran ändern auch Administratorrechte nichts. Das Panel bleibt in dem Ordner, den es schon zeigte.
+
 1. Wählen Sie bei der Nachfrage, die Systemeinstellungen zu öffnen, oder öffnen Sie sie selbst.
 2. Gehen Sie zu Datenschutz & Sicherheit und dann zu Festplattenvollzugriff.
 3. Schalten Sie den Schalter neben Peach Commander ein. Falls es nicht aufgeführt ist, verwenden Sie die Schaltfläche Hinzufügen, um es hinzuzufügen.

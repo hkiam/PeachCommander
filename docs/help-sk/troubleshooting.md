@@ -12,6 +12,8 @@ Táto téma pokrýva problémy, na ktoré ľudia narážajú najčastejšie: mac
 
 Niektoré umiestnenia — ako váš priečinok `~/Library`, priečinky iných používateľov a systémové oblasti — sú chránené macOS a zostávajú skryté, kým neudelíte prístup. Peach Commander zistí, keď sa to stane, a ponúkne, že vás nasmeruje na správne nastavenie.
 
+Takýto priečinok sa nezobrazí prázdny, ale je odmietnutý, a panel to povie: *macOS ponecháva <priečinok> ako súkromné — pozri Príkazy ▸ Plný prístup k disku…*. Stojí to za pomenovanie, pretože nič z toho nevypadá ako problém s právami — priečinok je viditeľný, patrí vám a jeho práva hovoria, že ho môžete čítať. V ceste stojí iba samotný macOS a práva správcu s tým nič neurobia. Panel zostane v priečinku, ktorý už zobrazoval.
+
 1. Keď budete vyzvaní, vyberte otvoriť Systémové nastavenia, alebo ich otvorte sami.
 2. Prejdite na Súkromie a bezpečnosť, potom Úplný prístup k disku.
 3. Zapnite prepínač vedľa Peach Commanderu. Ak nie je v zozname, použite tlačidlo Pridať na jeho pridanie.

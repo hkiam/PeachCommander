@@ -7117,7 +7117,9 @@ final class PanelController: NSObject, PanelControllerProtocol {
             await switchToActiveTab()
             return
         }
-        await loadPath(path, recordHistory: recordHistory, focusName: nil)
+        // The tab keeps the folder it is showing, so it may only move once the listing has arrived
+        // (F-445): the panel stays where it was, and so does the session.
+        guard await loadPath(path, recordHistory: recordHistory, focusName: nil) else { return }
         tabs.updateActive { $0.path = path; $0.cursorName = nil }
         refreshTabBar()
     }
@@ -7125,7 +7127,7 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// Navigate to `path` and place the cursor on `name` (used to reveal a file
     /// after jumping to its parent folder).
     func loadDirectory(_ path: String, selecting name: String?) async {
-        await loadPath(path, recordHistory: true, focusName: name)
+        guard await loadPath(path, recordHistory: true, focusName: name) else { return }
         tabs.updateActive { $0.path = path; $0.cursorName = name }
         refreshTabBar()
     }
@@ -7138,8 +7140,11 @@ final class PanelController: NSObject, PanelControllerProtocol {
     /// dragged the view back to the cursor row every two seconds — scroll somewhere to read
     /// something and it was gone before you had — and back to the very top when the cursor sat on
     /// "..", which is where it sits until you move it.
+    /// Returns false when the listing failed, so a caller that also records the path — the tab, and
+    /// through it the session — does not record one the panel never reached (F-445).
+    @discardableResult
     private func loadPath(_ path: String, recordHistory: Bool, focusName: String?,
-                          preserveViewport: Bool = false) async {
+                          preserveViewport: Bool = false) async -> Bool {
         do {
             let snapshot = try await model.load(path, fs: fs)
             let volume = isInArchive ? nil : await volumeManager.getVolume(for: path)
@@ -7168,9 +7173,11 @@ final class PanelController: NSObject, PanelControllerProtocol {
             scheduleStatusRefresh()
             onStateChanged?()
             startWatching(path)
+            return true
         } catch {
             logger.error("Failed to load directory \(path): \(error)")
             await reportLoadFailure(path, error)
+            return false
         }
     }
 
@@ -7189,8 +7196,18 @@ final class PanelController: NSObject, PanelControllerProtocol {
             // Everything else is about the directory, not the connection: a local folder that was
             // deleted or refused. Said once, in the panel's own status line, rather than as a modal
             // interruption to a navigation the user may already have moved on from.
-            view.showTransientMessage(String(format: String(localized: "Could not open %@"),
-                                             (path as NSString).lastPathComponent))
+            let name = (path as NSString).lastPathComponent
+            // A location macOS keeps private is worth naming, because nothing about it is guessable:
+            // the folder is visible, you own it, the mode bits say you may read it, and the listing is
+            // still refused. "Could not open MobileSync" sends the reader looking for a permission
+            // that is not the problem (F-445).
+            if PrivateLocation.isPrivacyRefusal(error, path: path) {
+                view.showTransientMessage(String(
+                    format: String(localized: "macOS keeps %@ private — see Commands ▸ Full Disk Access…"),
+                    name))
+            } else {
+                view.showTransientMessage(String(format: String(localized: "Could not open %@"), name))
+            }
             return
         }
         guard isInArchive else { return }

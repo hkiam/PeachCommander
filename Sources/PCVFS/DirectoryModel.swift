@@ -109,23 +109,34 @@ public actor DirectoryModel {
 
     /// Load entries from a path (legacy lister path; retained for tests).
     public func load(_ path: String, lister: LocalDirectoryLister) async throws -> DirectorySnapshot {
-        self.path = path
-        entries = []
         let batch = try await lister.listDirectory(path)
-        entries = batch.entries
+        commit(path: path, entries: batch.entries)
         return createSnapshot()
     }
 
     /// Load entries from a filesystem through the VFS streaming protocol (I08).
     public func load(_ path: String, fs: VirtualFileSystem) async throws -> DirectorySnapshot {
-        self.path = path
         var collected: [VFSEntry] = []
         let dir = VFSPath(filesystemId: fs.scheme, path: path)
         for try await batch in fs.list(dir) {
             collected.append(contentsOf: batch.entries)
         }
-        entries = collected
+        commit(path: path, entries: collected)
         return createSnapshot()
+    }
+
+    /// The new listing and the path it came from, together — the invariant this type has to keep
+    /// (F-445).
+    ///
+    /// Both assignments used to happen around the enumeration rather than after it: `self.path` first,
+    /// `entries` at the end. A listing that threw — a directory macOS keeps private, a permission, a
+    /// connection that died — therefore left the model holding the new path with the *previous*
+    /// directory's entries, and `getPath()` has twenty-odd callers that then disagreed with the list
+    /// on screen. The panel's tab and breadcrumb ended up naming different folders, and the path was
+    /// written to the session, so the next launch opened somewhere it could not list.
+    private func commit(path: String, entries: [VFSEntry]) {
+        self.path = path
+        self.entries = entries
     }
 
     /// Create an immutable snapshot with sorting and filtering applied

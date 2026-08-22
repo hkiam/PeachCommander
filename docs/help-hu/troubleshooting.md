@@ -12,6 +12,8 @@ Ez a téma azokat a problémákat fedi le, amelyekkel az emberek a leggyakrabban
 
 Egyes helyek — mint a `~/Library` mappája, más felhasználók mappái és rendszerterületek — a macOS által védettek, és rejtve maradnak, amíg nem ad hozzáférést. A Peach Commander észleli, amikor ez történik, és felajánlja, hogy a megfelelő beállításhoz vezeti.
 
+Az ilyen mappa nem üresen jelenik meg, hanem elutasításra kerül, és a panel meg is mondja: *A macOS zárva tartja: <mappa> — lásd Parancsok ▸ Teljes lemez-hozzáférés…*. Érdemes kimondani, mert semmi sem tűnik jogosultsági hibának: a mappa látható, az Öné, és az engedélyei szerint olvashatja. Egyedül a macOS áll az útban, és ezen a rendszergazdai jog sem változtat. A panel abban a mappában marad, amelyet addig is mutatott.
+
 1. Amikor kéri, válassza a Rendszerbeállítások megnyitását, vagy nyissa meg maga.
 2. Menjen az Adatvédelem és biztonság, majd a Teljes lemez-hozzáférés részhez.
 3. Kapcsolja be a kapcsolót a Peach Commander mellett. Ha nincs a listán, használja a Hozzáadás gombot a hozzáadásához.

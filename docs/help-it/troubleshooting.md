@@ -12,6 +12,8 @@ Questo argomento copre i problemi che le persone incontrano più spesso: macOS c
 
 Alcune posizioni — come la tua cartella `~/Library`, le cartelle di altri utenti e le aree di sistema — sono protette da macOS e restano nascoste finché non concedi l'accesso. Peach Commander rileva quando questo accade e si offre di guidarti all'impostazione giusta.
 
+Una cartella così viene rifiutata invece di essere mostrata vuota, e il pannello lo dice: *macOS mantiene <cartella> privato — vedi Comandi ▸ Accesso completo al disco…*. Vale la pena dirlo, perché niente sembra un problema di permessi: la cartella è visibile, è tua e i suoi permessi dicono che puoi leggerla. Solo macOS è di mezzo, e i diritti di amministratore non cambiano nulla. Il pannello resta nella cartella che stava già mostrando.
+
 1. Quando richiesto, scegli di aprire Impostazioni di Sistema, o aprile tu stesso.
 2. Vai su Privacy e sicurezza, poi Accesso completo al disco.
 3. Attiva l'interruttore accanto a Peach Commander. Se non è elencato, usa il pulsante Aggiungi per aggiungerlo.

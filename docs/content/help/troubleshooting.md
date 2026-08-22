@@ -13,6 +13,8 @@ This topic covers the problems people hit most often: macOS blocking access to c
 
 Some locations — such as your `~/Library` folder, other users' folders, and system areas — are protected by macOS and stay hidden until you grant access. Peach Commander detects when this happens and offers to guide you to the right setting.
 
+Opening such a folder is refused rather than shown empty, and the panel says so: *macOS keeps <folder> private — see Commands ▸ Full Disk Access…*. It is worth naming, because nothing about it looks like a permission problem — the folder is visible, it belongs to you, and its permissions say you may read it. Only macOS itself is in the way, and no amount of administrator rights changes that. The panel stays in the folder it was already showing.
+
 1. When prompted, choose to open System Settings, or open it yourself.
 2. Go to Privacy & Security, then Full Disk Access.
 3. Turn on the switch next to Peach Commander. If it is not listed, use the Add button to add it.

@@ -12,6 +12,8 @@ Dit onderwerp behandelt de problemen die mensen het vaakst tegenkomen: macOS dat
 
 Sommige locaties — zoals je map `~/Library`, mappen van andere gebruikers en systeemgebieden — worden door macOS beschermd en blijven verborgen totdat je toegang verleent. Peach Commander merkt dit op en biedt aan je naar de juiste instelling te begeleiden.
 
+Zo'n map wordt geweigerd in plaats van leeg weergegeven, en het paneel zegt het: *macOS houdt <map> privé — zie Opdrachten ▸ Volledige schijftoegang…*. Dat is het benoemen waard, want niets eraan lijkt op een rechtenprobleem: de map is zichtbaar, hij is van jou, en zijn rechten zeggen dat je hem mag lezen. Alleen macOS zelf staat in de weg, en beheerdersrechten veranderen daar niets aan. Het paneel blijft in de map die het al toonde.
+
 1. Kies bij de vraag om Systeeminstellingen te openen, of open het zelf.
 2. Ga naar Privacy en beveiliging en vervolgens Volledige schijftoegang.
 3. Zet de schakelaar naast Peach Commander aan. Staat het er niet bij, gebruik dan de knop Voeg toe.

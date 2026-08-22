@@ -12,6 +12,8 @@ Acest subiect acoperă problemele pe care oamenii le întâlnesc cel mai des: ma
 
 Unele locații — precum folderul dvs. `~/Library`, folderele altor utilizatori și zonele de sistem — sunt protejate de macOS și rămân ascunse până când acordați acces. Peach Commander detectează când se întâmplă asta și se oferă să vă ghideze la setarea corectă.
 
+Un astfel de folder este refuzat în loc să fie afișat gol, iar panoul o spune: *macOS păstrează <folder> privat — vedeți Comenzi ▸ Acces complet la disc…*. Merită numit, pentru că nimic nu arată ca o problemă de permisiuni: folderul este vizibil, vă aparține, iar permisiunile lui spun că îl puteți citi. Numai macOS stă în cale, iar drepturile de administrator nu schimbă nimic. Panoul rămâne în folderul pe care îl afișa deja.
+
 1. Când vi se cere, alegeți să deschideți Setări de sistem, sau deschideți-le singur.
 2. Mergeți la Confidențialitate și securitate, apoi Acces complet la disc.
 3. Activați comutatorul de lângă Peach Commander. Dacă nu este listat, folosiți butonul Adaugă pentru a-l adăuga.

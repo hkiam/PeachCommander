@@ -12,6 +12,8 @@ Ta tema pokriva težave, na katere ljudje najpogosteje naletijo: macOS blokira d
 
 Nekatere lokacije — kot so vaša mapa `~/Library`, mape drugih uporabnikov in sistemska območja — so zaščitene z macOS in ostanejo skrite, dokler ne podelite dostopa. Peach Commander zazna, kdaj se to zgodi, in ponudi, da vas usmeri k pravi nastavitvi.
 
+Takšna mapa ni prikazana kot prazna, temveč je zavrnjena, in podokno to pove: *macOS ohranja <mapo> zasebno — glejte Ukazi ▸ Polni dostop do diska…*. To je vredno poimenovati, saj nič pri tem ni videti kot težava z dovoljenji: mapa je vidna, vaša je in njena dovoljenja pravijo, da jo lahko berete. Na poti je le macOS sam, in skrbniške pravice tega ne spremenijo. Podokno ostane v mapi, ki jo je že prikazovalo.
+
 1. Ko ste pozvani, izberite odpiranje Sistemskih nastavitev, ali jih odprite sami.
 2. Pojdite v Zasebnost in varnost, nato Popolni dostop do diska.
 3. Vklopite stikalo ob Peach Commander. Če ni na seznamu, uporabite gumb Dodaj, da ga dodate.

@@ -49,9 +49,15 @@ features:
     status: stable
     ui: { shortcuts: ["Enter", "Ctrl+PageUp/Down", "Alt+Left/Right", "Backspace"],
           commands: [cm_OpenDirUnderCursor, cm_GoToParent, cm_HistoryBack, cm_HistoryForward] }
-    source: { modules: [PCVFS], types: [VFSNavigator] }
+    source: { modules: [PCVFS], types: [VFSNavigator, DirectoryModel] }
     documentation: { integrated_help: true, website: true }
     screenshots: [path-bar-crop]
+    notes: >-
+      A folder that cannot be listed leaves the panel where it was. It used not to: the model set its
+      path before enumerating and its entries after, so a refused listing left the new path with the
+      previous folder's entries — tab and path bar naming different folders, and the unreachable one
+      written to the session, where the next launch opened it again (F-445). Where macOS itself is the
+      reason, the panel says so rather than reporting a permission that is not the problem.
 
   - id: path-bar
     name: Editierbare Pfadleiste

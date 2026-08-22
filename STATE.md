@@ -455,6 +455,51 @@ unchanged.
 Nothing is fixed here — the three findings are recorded so they can be argued with rather than
 rediscovered. Fixing them is a harness change, not an app change.
 
+## 2026-08-22 (F-445) — A listing that failed wrote the path down anyway
+
+Found while answering "why can't I open ~/Library/Application Support/MobileSync?" — which turned out
+to be macOS TCC and not a permission at all: the mode bits say `drwxr-xr-x` and you own it, and the
+kernel still answers EPERM. The app said "Could not open MobileSync" and then behaved as though it had
+gone there.
+
+**One assignment on the wrong side of the enumeration.** `DirectoryModel.load` set `self.path` first
+and `entries` at the end, so a listing that threw left the model holding the new path with the
+*previous* directory's entries. `getPath()` has twenty-odd callers, and they then described a folder
+whose contents were not on screen. Measured, all four readers at once:
+
+    path=…/Application Support/MobileSync      (the model)
+    tabs=*MobileSync                           (the tab)
+    crumb=/ > Users > maik1 > … > Application Support   (the path bar — the OLD folder)
+    count=97                                   (the list — the parent's 97 entries)
+
+Two readers said one thing, one said another, and the list belonged to neither. Worse, it was
+persisted: `Tab0Path=…/MobileSync` reached `session.ini`, so the next launch opened in a folder it
+could not list. And child paths are built as `<model path>/<name>`, so Enter on any row addressed a
+file that does not exist.
+
+**Fixed in three places.** `DirectoryModel` commits the path and the entries together or not at all
+(both overloads — `load(_:lister:)` had the same shape and additionally cleared `entries` up front, so
+*its* failure left the new path with an empty list). `loadPath` now reports whether the listing
+happened, and the two `loadDirectory` overloads that also record the path into the tab — and through it
+the session — return early when it did not. After the fix, on a `chmod 000` directory: model, tab,
+breadcrumb, list and `session.ini` all name the folder the panel is actually showing.
+
+**And the message names the cause, because nothing about it is guessable.** A privacy refusal is the
+one failure where the folder is visible, belongs to you, and its mode bits say you may read it — and
+elevation cannot help, because the gate is on the *application*. `PrivateLocation` (PCVFS) reads the
+distinction `VFSError` already carries: `fromErrno` sets `needsElevation` for EPERM and clears it for
+EACCES. That name is a poor fit here — elevation is the one thing that does not help — so it is read
+for what it records rather than what it is called. EPERM together with mode bits that *would* have
+allowed the read is the contradiction only the privacy gate produces; the panel then says "macOS keeps
+%@ private — see Commands ▸ Full Disk Access…" instead of the generic line.
+
+**The reproduction is gone from this machine.** Full Disk Access was granted partway through the work,
+and `MobileSync` now lists normally, so the numbers above are the recorded ones from before. That is
+also why `PrivateLocation` is a pure rule with the `stat` lookup separated out: a protected location
+cannot be created for a fixture — the list is macOS's own — so the rule is what gets pinned, over both
+refusals and both ownership cases. The model fix is verified against a `chmod 000` directory, which
+produces EACCES and therefore takes the ordinary message, exactly as it should.
+
 ## 2026-08-18 (VM) — The five new scenarios, on the VM
 
 Run with `--only menu-file,viewer-md-outline,csv-no-header,jsonl,viewer-long-lines`, which is the debt both

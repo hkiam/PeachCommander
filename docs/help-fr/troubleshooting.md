@@ -12,6 +12,8 @@ Cette rubrique couvre les problèmes les plus fréquents : macOS bloquant l'acc�
 
 Certains emplacements — comme votre dossier `~/Library`, les dossiers d'autres utilisateurs et les zones système — sont protégés par macOS et restent masqués jusqu'à ce que vous accordiez l'accès. Peach Commander détecte quand cela se produit et propose de vous guider vers le bon réglage.
 
+Un tel dossier est refusé plutôt qu'affiché vide, et le panneau le dit : *macOS garde <dossier> privé — voir Commandes ▸ Accès complet au disque…*. Cela mérite d'être nommé, car rien n'y ressemble à un problème de droits : le dossier est visible, il vous appartient, et ses permissions disent que vous pouvez le lire. Seul macOS lui-même bloque, et aucun droit d'administrateur n'y change quoi que ce soit. Le panneau reste dans le dossier qu'il affichait déjà.
+
 1. Lorsqu'on vous y invite, choisissez d'ouvrir les Réglages Système, ou ouvrez-les vous-même.
 2. Allez dans Confidentialité et sécurité, puis Accès complet au disque.
 3. Activez l'interrupteur à côté de Peach Commander. S'il n'est pas listé, utilisez le bouton Ajouter pour l'ajouter.

@@ -12,6 +12,8 @@ Dette emne dækker de problemer, folk oftest støder på: macOS der blokerer adg
 
 Nogle placeringer — såsom din `~/Library`-mappe, andre brugeres mapper og systemområder — er beskyttet af macOS og forbliver skjult, indtil du giver adgang. Peach Commander opdager, når dette sker, og tilbyder at vejlede dig til den rigtige indstilling.
 
+En sådan mappe bliver afvist i stedet for vist tom, og panelet siger det: *macOS holder <mappe> privat — se Kommandoer ▸ Fuld diskadgang…*. Det er værd at nævne, for intet ved det ser ud som et rettighedsproblem — mappen er synlig, den er din, og dens rettigheder siger, at du må læse den. Kun macOS selv er i vejen, og administratorrettigheder ændrer intet. Panelet bliver i den mappe, det allerede viste.
+
 1. Når du bliver bedt om det, vælg at åbne Systemindstillinger, eller åbn det selv.
 2. Gå til Anonymitet og sikkerhed, derefter Fuld diskadgang.
 3. Slå kontakten til ved siden af Peach Commander. Hvis den ikke er på listen, brug Tilføj-knappen for at tilføje den.

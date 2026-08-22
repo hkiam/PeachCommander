@@ -12,6 +12,8 @@ Este tema cubre los problemas que la gente encuentra con más frecuencia: macOS 
 
 Algunas ubicaciones —como tu carpeta `~/Library`, las carpetas de otros usuarios y las áreas del sistema— están protegidas por macOS y permanecen ocultas hasta que concedes acceso. Peach Commander detecta cuándo ocurre esto y se ofrece a guiarte al ajuste correcto.
 
+Una carpeta así se rechaza en lugar de mostrarse vacía, y el panel lo dice: *macOS mantiene <carpeta> en privado: consulta Comandos ▸ Acceso total al disco…*. Merece nombrarse, porque nada de ello parece un problema de permisos: la carpeta es visible, es tuya y sus permisos dicen que puedes leerla. Solo macOS se interpone, y los derechos de administrador no cambian nada. El panel permanece en la carpeta que ya mostraba.
+
 1. Cuando se te pida, elige abrir Ajustes del Sistema, o ábrelos tú mismo.
 2. Ve a Privacidad y seguridad y luego a Acceso total al disco.
 3. Activa el interruptor junto a Peach Commander. Si no aparece en la lista, usa el botón Añadir para añadirlo.

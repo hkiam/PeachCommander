@@ -12,6 +12,8 @@ Toto téma pokrývá problémy, na které lidé narážejí nejčastěji: macOS 
 
 Některá umístění — jako vaše složka `~/Library`, složky jiných uživatelů a systémové oblasti — jsou chráněna macOS a zůstávají skryta, dokud neudělíte přístup. Peach Commander zjistí, kdy k tomu dochází, a nabídne, že vás nasměruje ke správnému nastavení.
 
+Taková složka není zobrazena prázdná, ale odepřena, a panel to řekne: *macOS udržuje <složku> v privátním režimu — viz Příkazy ▸ Plný přístup k disku…*. Vyplatí se to pojmenovat, protože nic z toho nevypadá jako problém s právy — složka je vidět, patří vám a její práva říkají, že ji smíte čísti. V cestě stojí jen samotný macOS a práva správce s tím nic neudělají. Panel zůstane ve složce, kterou už zobrazoval.
+
 1. Když budete vyzváni, zvolte otevřít Nastavení systému, nebo je otevřete sami.
 2. Přejděte na Soukromí a zabezpečení, poté Úplný přístup k disku.
 3. Zapněte přepínač vedle Peach Commanderu. Pokud tam není uveden, použijte tlačítko Přidat pro jeho přidání.

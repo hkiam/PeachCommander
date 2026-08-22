@@ -12,6 +12,8 @@ Ten temat obejmuje problemy, na które ludzie natrafiają najczęściej: macOS b
 
 Niektóre lokalizacje — jak Twój folder `~/Library`, foldery innych użytkowników i obszary systemowe — są chronione przez macOS i pozostają ukryte, dopóki nie przyznasz dostępu. Peach Commander wykrywa, kiedy to się dzieje, i oferuje poprowadzenie Cię do właściwego ustawienia.
 
+Taki folder zostaje odrzucony, a nie pokazany jako pusty, i panel to mówi: *macOS zachowuje <folder> jako prywatne — zobacz Polecenia ▸ Pełny dostęp do dysku…*. Warto to nazwać, bo nic tu nie wygląda na problem z uprawnieniami: folder jest widoczny, należy do ciebie, a jego uprawnienia mówią, że możesz go czytać. Na drodze stoi wyłącznie sam macOS, a prawa administratora nic tu nie zmienią. Panel zostaje w folderze, który już pokazywał.
+
 1. Gdy zostaniesz poproszony, wybierz otwarcie Ustawień systemowych, lub otwórz je sam.
 2. Przejdź do Prywatność i bezpieczeństwo, a następnie Pełny dostęp do dysku.
 3. Włącz przełącznik obok Peach Commandera. Jeśli nie jest wymieniony, użyj przycisku Dodaj, aby go dodać.
