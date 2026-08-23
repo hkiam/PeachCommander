@@ -26,6 +26,9 @@ pfx.h — Peach Commander file-system plugins (PFX ↔ Total Commander WFX).
                         (e.g. iCloud Drive). Uses PfxGetVolumeCount/Info only.
    • Connectable FS  — an interactive "connect" (e.g. WebDAV: prompt for URL)
                         that returns a connection handle, then serves file ops.
+                        A plugin whose static volumes are themselves saved
+                        connections also implements PfxConnectVolume, so that
+                        clicking one connects it instead of re-asking.
 
  Self-contained C11 on top of pc_common.h. All char* are UTF-8; sizes are
  int64; times are Unix epoch seconds; opaque handles are void* (NULL = invalid).
@@ -38,6 +41,7 @@ pfx.h — Peach Commander file-system plugins (PFX ↔ Total Commander WFX).
 ## Entry points & functions
 
 - `PfxConnect`
+- `PfxConnectVolume`
 - `PfxConnectionId`
 - `PfxContentField`
 - `PfxContentFieldCount`
@@ -100,6 +104,9 @@ pfx.h — Peach Commander file-system plugins (PFX ↔ Total Commander WFX).
  *                        (e.g. iCloud Drive). Uses PfxGetVolumeCount/Info only.
  *   • Connectable FS  — an interactive "connect" (e.g. WebDAV: prompt for URL)
  *                        that returns a connection handle, then serves file ops.
+ *                        A plugin whose static volumes are themselves saved
+ *                        connections also implements PfxConnectVolume, so that
+ *                        clicking one connects it instead of re-asking.
  *
  * Self-contained C11 on top of pc_common.h. All char* are UTF-8; sizes are
  * int64; times are Unix epoch seconds; opaque handles are void* (NULL = invalid).
@@ -240,6 +247,23 @@ int  PfxGetConnectTitle(char *outTitle, int maxlen);
    return an opaque connection handle (non-NULL) on success, or NULL on
    cancel/failure. `services` stays valid for the connection's lifetime. */
 void *PfxConnect(const PfxHostServices *services);
+
+/* Connect the specific static volume the user clicked, instead of asking.
+
+   OPTIONAL, and the reason it exists is a defect rather than a convenience. `PfxConnect` takes no
+   argument, so a plugin that publishes SEVERAL connectable volumes cannot be told which chip was
+   clicked — it can only fall back to its own connect UI. For a plugin whose volumes are saved
+   connections that is exactly wrong: the chip promises a shortcut and delivers a dialog. Plugins with
+   one volume (TaskManager) never met this, and plugins whose volumes are local paths (iCloud Drive)
+   never connect at all, so it stayed hidden until a plugin had a chip per saved profile.
+
+   `volumeId` is the `PfxVolumeInfo.id` the plugin itself published, so a plugin recognises its own
+   token and the host invents nothing. Return an opaque connection handle exactly as `PfxConnect`
+   does, or NULL on cancel/failure — including when `volumeId` is not one this plugin knows, which is
+   what an id left over from an older configuration looks like.
+
+   A plugin that does not export this keeps the old behaviour: the host calls `PfxConnect`. */
+void *PfxConnectVolume(const char *volumeId, const PfxHostServices *services);
 
 /* Why the last call on `conn` failed — a PC_E_* code, or PC_OK if the plugin does not
    track it (which is also what an absent entry point means).

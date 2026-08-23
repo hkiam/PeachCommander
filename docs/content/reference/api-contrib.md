@@ -65,6 +65,8 @@ contrib.h — Peach Commander plugin contributions, behavior ABI (SPEC-013).
 - `updateProgress`
 - `endProgress`
 - `annotateLines`
+- `automationPlanItems`
+- `automationConfirmRejecting`
 
 
 ## Full header
@@ -245,6 +247,23 @@ typedef struct PcHostServices {
        compatibility. */
     int (*annotateLines)(void *host, const char *path, const char *annotations,
                          const char *title, const char *commandId);
+    /* The rows of a pending plan, and confirming it with some of them struck out (F-450).
+
+       `automationConfirm` agrees to a plan whole. That is the right shape for one action, and the wrong
+       one for "clean up my Downloads", where the answer is usually "yes, except those three" — and
+       without rows the only answers are all and nothing, so a user who wants all-but-three has to reject
+       the plan and describe the exception in prose for the model to get right on a second attempt.
+
+       `automationPlanItems` returns a JSON array of {"id":..,"text":..} for the token, or `[]` when the
+       action cannot sensibly be divided (a single file, a `write_file`) — an empty array means "show the
+       plan as you always did", not an error. `automationConfirmRejecting` takes a JSON array of the ids
+       to leave out and returns the same outcome envelope as `automationConfirm`; rejecting every row is
+       reported as a failure rather than as an action that touched nothing. The ids are the argument
+       values the rows stand for, so what the user strikes out is what the tool skips.
+
+       Appended at the end for ABI compatibility. */
+    char *(*automationPlanItems)(void *host, const char *token);
+    char *(*automationConfirmRejecting)(void *host, const char *token, const char *rejectedIdsJson);
 } PcHostServices;
 
 /* ---- Behavior entry points --------------------------------------------- */
