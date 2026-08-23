@@ -177,7 +177,12 @@ final class S3TransferDelegate: NSObject, URLSessionDownloadDelegate, URLSession
             if (error as NSError).code == NSURLErrorCancelled { job.aborted = true }
             // `status` stays 0 for a transport failure, which is what the caller maps onto
             // "the connection is gone" — the same meaning it has for a metadata request.
-            if job.status == 0, let http = task.response as? HTTPURLResponse {
+            //
+            // NOT for an abort, though. The response headers have long since arrived on a transfer
+            // that got far enough to report progress, so filling the status in from them put 200 on
+            // an aborted download — and 200 reads as success to every caller, for a file that is not
+            // there. An abort is not an HTTP outcome and must not borrow one.
+            if job.status == 0, !job.aborted, let http = task.response as? HTTPURLResponse {
                 job.status = http.statusCode
             }
         }

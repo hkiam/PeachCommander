@@ -543,8 +543,11 @@ public func PfxGetFile(_ conn: UnsafeMutableRawPointer?, _ remote: UnsafePointer
     let response = mount.connection.download(bucket: bucket, key: s3.key,
                                              to: URL(fileURLWithPath: String(cString: local)),
                                              name: s3.leaf)
-    if response.ok { return Int32(PC_OK) }
+    // The abort is asked about BEFORE success. A cancelled transfer can carry a 2xx — the headers
+    // arrived long before the user pressed Cancel — and checking `ok` first reported an aborted
+    // download as complete, for a file that was never written.
     if mount.connection.lastError == Int32(PC_E_EABORTED) { return Int32(PC_E_EABORTED) }
+    if response.ok { return Int32(PC_OK) }
     // status -1 is this plugin's own marker for "the bytes arrived and could not be written here".
     if response.status == -1 { return Int32(PC_E_ECREATE) }
     var message = ""
@@ -578,8 +581,11 @@ public func PfxPutFile(_ conn: UnsafeMutableRawPointer?, _ local: UnsafePointer<
 
     let response = mount.connection.putObject(bucket: bucket, key: s3.key,
                                               from: source, name: s3.leaf)
-    if response.ok { return Int32(PC_OK) }
+    // Abort before success, for the same reason as the download: a cancelled upload can carry a 2xx
+    // from headers that arrived before the cancel, and reporting it as done would leave a truncated
+    // object in the bucket described as complete.
     if mount.connection.lastError == Int32(PC_E_EABORTED) { return Int32(PC_E_EABORTED) }
+    if response.ok { return Int32(PC_OK) }
     var message = ""
     let code = S3Connection.pcError(response, message: &message)
     return code == Int32(PC_OK) ? Int32(PC_E_EWRITE) : code

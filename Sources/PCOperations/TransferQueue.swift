@@ -14,8 +14,15 @@ public enum OperationKind: Sendable {
     /// An app-supplied operation (e.g. pack/unpack) run through the same queue so
     /// it backgrounds + shows in the transfer manager. Throw OperationError.cancelled
     /// to report a user cancel. Returns the processed source paths.
+    /// An operation the caller implements.
+    ///
+    /// `progress` is `@escaping` because an operation that hands a transfer to a backend has to give
+    /// that backend somewhere to report to: a plugin mount's progress callback fires from inside a
+    /// blocking call, and the only way a percentage gets out of it is a closure the operation stored
+    /// before it started.
     case custom(run: @Sendable (_ control: OperationControl,
-                                _ progress: @Sendable (OpProgress) -> Void) async throws -> [String])
+                                _ progress: @escaping @Sendable (OpProgress) -> Void)
+                                async throws -> [String])
 }
 
 /// Throttles progress events to <= `hz` per second, thread-safely.

@@ -290,6 +290,27 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem,
     /// than this parameter.
     private let progressSink: PFXProgressSink?
 
+    /// Somebody watching the transfer currently running here, who may also stop it.
+    ///
+    /// This is how a percentage gets from inside a single `PfxPutFile` to a progress bar. Without it
+    /// the best a caller can do is count *files*, which for one large object is a bar that sits at 0
+    /// and then jumps to 100 — and a Cancel button that does nothing until the object has finished
+    /// arriving.
+    ///
+    /// Returns false to abort. Set and cleared by whoever is running the transfer; guarded by a lock
+    /// of its own because it is written from the main actor and read on the connection's queue.
+    private var observer: ((String, Int) -> Bool)?
+    private let observerLock = NSLock()
+
+    public func setTransferObserver(_ observer: ((String, Int) -> Bool)?) {
+        observerLock.lock(); self.observer = observer; observerLock.unlock()
+    }
+
+    private func currentObserver() -> ((String, Int) -> Bool)? {
+        observerLock.lock(); defer { observerLock.unlock() }
+        return observer
+    }
+
     /// Content columns this mount publishes, and the qualifier under which the
     /// host exposes them (fieldID = "<qualifier>.<leaf>"). Empty if none.
     public let contentFields: [PFXContentField]
@@ -728,8 +749,15 @@ public final class PFXFileSystem: VirtualFileSystem, DisconnectableFileSystem,
         guard let sink = progressSink else { return try await run(body) }
         let aborted = CancelFlag()
         return try await withTaskCancellationHandler {
-            try await run {
-                sink.begin { _, _ in !aborted.isSet }
+            try await run { [self] in
+                sink.begin { name, pct in
+                    // Task cancellation first: it is the one that means "nobody wants this any more"
+                    // regardless of who is watching. Then the observer, which is how a Cancel button
+                    // in the transfer window reaches a plugin mid-file — `OperationControl.cancel()`
+                    // sets a flag rather than cancelling the task, so it cannot arrive any other way.
+                    if aborted.isSet { return false }
+                    return currentObserver()?(name, pct) ?? true
+                }
                 defer { sink.end() }
                 return try body()
             }

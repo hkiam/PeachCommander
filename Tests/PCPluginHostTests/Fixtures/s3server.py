@@ -26,6 +26,7 @@ import os
 import re
 import shutil
 import sys
+import time
 import urllib.parse
 import xml.sax.saxutils
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -45,6 +46,11 @@ DIE_AFTER_LISTINGS = int(os.environ.get("PC_S3_FIXTURE_DIE_AFTER_LISTINGS", "0")
 # Refuse this part number of every multipart upload, so that "the upload failed halfway" is a thing a
 # test can arrange. An orphaned multipart is billed and invisible, so the cleanup needs proving.
 FAIL_PART = int(os.environ.get("PC_S3_FIXTURE_FAIL_PART", "0"))
+# Send an object's body in chunks, with a pause between them. Without this a small object arrives in
+# one write, the client's progress callback fires exactly once — at 100% — and "cancel a transfer that
+# is still running" is not a state a test can arrange at all.
+CHUNK_SIZE = int(os.environ.get("PC_S3_FIXTURE_CHUNK_SIZE", "0"))
+CHUNK_DELAY_MS = int(os.environ.get("PC_S3_FIXTURE_CHUNK_DELAY_MS", "0"))
 # Answer the first N requests of the named methods with 503, so a retry policy can be tested rather
 # than assumed. The counters are written to PC_S3_FIXTURE_STATS_FILE after every request, because a
 # test needs to see how many attempts actually arrived — proving that POST is NOT retried is only
@@ -501,8 +507,34 @@ class Handler(BaseHTTPRequestHandler):
             "x-amz-storage-class": "STANDARD",
             "Accept-Ranges": "bytes",
         }
+        if CHUNK_SIZE and not head_only and len(data) > CHUNK_SIZE:
+            return self._send_chunked(data, extra)
         self._send(200, data, content_type="application/octet-stream",
                    extra=extra, head_only=head_only)
+
+    def _send_chunked(self, data, extra):
+        """Send `data` in CHUNK_SIZE pieces, pausing between them.
+
+        Content-Length is still exact, so this is an ordinary response as far as the client is
+        concerned — it simply arrives over several reads, which is what a large object does anyway and
+        what makes a progress callback fire more than once.
+        """
+        self.send_response(200)
+        self.send_header("Content-Type", "application/octet-stream")
+        self.send_header("Content-Length", str(len(data)))
+        for key, value in extra.items():
+            self.send_header(key, value)
+        self.end_headers()
+        delay = CHUNK_DELAY_MS / 1000.0
+        for start in range(0, len(data), CHUNK_SIZE):
+            try:
+                self.wfile.write(data[start:start + CHUNK_SIZE])
+                self.wfile.flush()
+            except (BrokenPipeError, ConnectionResetError):
+                # The client hung up — which is exactly what an aborted transfer looks like from here.
+                return
+            if delay:
+                time.sleep(delay)
 
 
     def do_PUT(self):

@@ -26,6 +26,15 @@ does not have.
 
 ### Fixed
 
+- **Uploading to a server now shows progress and can be cancelled.** Copying files into an FTP,
+  SFTP, WebDAV or plugin panel used to run with no progress window and nothing to press — for one
+  large file, an application that looked hung — and reported only a count at the end. It now uses the
+  same transfer window as a local copy, with Cancel, pause and the speed limit. On a plugin drive the
+  bar moves within a single file; on FTP and SFTP it advances a file at a time.
+
+- **A cancelled download no longer reports success.** Stopping a transfer on a plugin drive could
+  report it as complete for a file that was never written.
+
 - **Columns a plugin adds are no longer blank.** A plugin can contribute extra columns for its own
   entries — the Task Manager's CPU and PID, an S3 drive's storage class. For a drive whose name
   contains a dot, which is every server address, the column stayed empty however it was configured.

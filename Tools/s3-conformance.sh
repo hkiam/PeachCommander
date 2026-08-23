@@ -105,8 +105,12 @@ grep -E "Test Case|error:|\*\* TEST|Executed .* tests" "$LOG" || true
 
 # A suite that skipped everything is not a pass. Without this the script's own success meant nothing:
 # it would report green with MinIO running and not a single request made to it.
-PASSED="$(grep -c "' passed (" "$LOG" || true)"
-SKIPPED="$(grep -c "' skipped (" "$LOG" || true)"
+# Both output shapes: xcodebuild used to print "Test Case '-[X y]' passed (0.1 seconds)" and now
+# prints "Test case 'X.y()' passed on 'My Mac - xctest (123)' (0.1 seconds)". Counting only the old one
+# made this report zero tests on a run that was entirely green — and since zero is treated as a
+# failure, the script cried wolf instead of lying, which is the better half of the two.
+PASSED="$(grep -cE "' passed (on |\()" "$LOG" || true)"
+SKIPPED="$(grep -cE "' skipped (on |\()" "$LOG" || true)"
 echo "==> passed=$PASSED skipped=$SKIPPED"
 if [ "$PASSED" -eq 0 ]; then
   echo "FAILED: no conformance test actually ran (skipped=$SKIPPED)." >&2

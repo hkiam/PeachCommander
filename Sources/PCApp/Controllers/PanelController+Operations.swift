@@ -9,6 +9,7 @@ import AppKit
 import PCFoundation
 import PCVFS
 import PCOperations
+import PCPluginHost
 import PCArchive
 
 extension PanelController {
@@ -86,31 +87,98 @@ extension PanelController {
                                                    count: items.count, initial: targetDir) else { return }
         let (dest, mask) = splitTargetMask(rawDest, relativeTo: targetDir)
 
-        var uploaded = 0, failed = 0, resumed = 0
+        // Sorted out before the transfer starts, so the progress bar knows its total from the first
+        // byte instead of growing as it goes. A folder is still refused — a recursive upload needs
+        // directory creation on the far side, and half-copying a tree is worse than saying no.
+        struct Job { let local: URL; let remote: VFSPath; let size: Int64; let name: String }
+        var jobs: [Job] = []
+        var refused = 0
         for item in items {
             var isDir: ObjCBool = false
-            guard FileManager.default.fileExists(atPath: item, isDirectory: &isDir) else { failed += 1; continue }
-            if isDir.boolValue {
-                // One level only for now: a recursive upload needs directory creation and progress
-                // reporting, and saying so is better than half-copying a tree.
-                failed += 1
-                continue
-            }
+            guard FileManager.default.fileExists(atPath: item, isDirectory: &isDir),
+                  !isDir.boolValue else { refused += 1; continue }
             let leaf = (item as NSString).lastPathComponent
             let name = mask.map { CopyRenameMask.apply($0, to: leaf) } ?? leaf
-            let remote = VFSPath(filesystemId: targetFS.scheme,
-                                 path: (dest as NSString).appendingPathComponent(name))
-            do {
-                let result = try await uploader.uploadFile(URL(fileURLWithPath: item), to: remote,
-                                                           resume: true)
-                uploaded += 1
-                if result.resumedAt > 0 { resumed += 1 }
-            } catch {
-                failed += 1
-                logger.error("upload of \(leaf, privacy: .public) failed: \(error)")
-            }
+            let size = (try? FileManager.default.attributesOfItem(atPath: item)[.size])
+                .flatMap { $0 as? NSNumber }?.int64Value ?? 0
+            jobs.append(Job(local: URL(fileURLWithPath: item),
+                            remote: VFSPath(filesystemId: targetFS.scheme,
+                                            path: (dest as NSString).appendingPathComponent(name)),
+                            size: size, name: name))
         }
-        let note = failed > 0 ? String(format: String(localized: ", %d failed (folders are not uploaded yet)"), failed) : ""
+        guard !jobs.isEmpty else {
+            if refused > 0 {
+                presentError(String(localized: "Upload"),
+                             detail: String(localized: "Folders are not uploaded yet."))
+            }
+            return
+        }
+
+        // Through `runTransfer`, which is where the transfer window, the Cancel button, the pause and
+        // the speed limit already live. This used to be a bare loop with a summary at the end: no
+        // progress, nothing to press, and a large upload that looked like a hung application.
+        let totalBytes = jobs.reduce(Int64(0)) { $0 + $1.size }
+        let mount = targetFS as? PFXFileSystem
+        let counters = UploadCounters()
+        await runTransfer(.custom { control, report in
+            var bytesDone: Int64 = 0
+            var processed: [String] = []
+
+            // `OperationControl.cancel()` sets a flag; it does not cancel this task. So a plugin mount
+            // cannot learn about a Cancel press through task cancellation, and for one large object
+            // that would mean a Cancel button that does nothing until the object has finished
+            // arriving. Polled into a synchronous flag the plugin's progress callback can read.
+            let stop = TransferStopFlag()
+            let watcher = Task {
+                while !Task.isCancelled {
+                    if await control.isCancelled { stop.set(); return }
+                    try? await Task.sleep(nanoseconds: 100_000_000)
+                }
+            }
+            defer { watcher.cancel(); mount?.setTransferObserver(nil) }
+
+            for (index, job) in jobs.enumerated() {
+                try await control.checkpoint()
+                let startedAt = bytesDone
+                report(OpProgress(filesTotal: jobs.count, filesDone: index,
+                                  bytesTotal: totalBytes, bytesDone: bytesDone,
+                                  currentItem: job.name, bytesPerSecond: 0))
+                // Intra-file progress, for a mount that can report it. FTP and SFTP cannot yet, so
+                // there the bar advances a file at a time — stated rather than faked.
+                mount?.setTransferObserver { _, percent in
+                    if stop.isSet { return false }
+                    report(OpProgress(filesTotal: jobs.count, filesDone: index,
+                                      bytesTotal: totalBytes,
+                                      bytesDone: startedAt + job.size * Int64(percent) / 100,
+                                      currentItem: job.name, bytesPerSecond: 0))
+                    return true
+                }
+                do {
+                    let result = try await uploader.uploadFile(job.local, to: job.remote, resume: true)
+                    await counters.uploaded(resumed: result.resumedAt > 0)
+                    processed.append(job.local.path)
+                } catch {
+                    // One file that will not go must not abandon the rest: the summary names how many
+                    // failed, and the log says which.
+                    await counters.failed()
+                    // The shared logger directly rather than the panel's property: capturing `self`
+                    // into a closure the transfer queue runs off this actor is what the compiler is
+                    // objecting to, and it is right to.
+                    PCFoundationLogger.logger.error(
+                        "upload of \(job.name, privacy: .public) failed: \(error)")
+                }
+                bytesDone += job.size
+            }
+            report(OpProgress(filesTotal: jobs.count, filesDone: jobs.count,
+                              bytesTotal: totalBytes, bytesDone: totalBytes,
+                              currentItem: "", bytesPerSecond: 0))
+            return processed
+        }, title: String(localized: "Uploading"))
+
+        let (uploaded, failed, resumed) = await counters.read()
+        let total = failed + refused
+        let note = total > 0
+            ? String(format: String(localized: ", %d failed (folders are not uploaded yet)"), total) : ""
         let continued = resumed > 0 ? String(format: String(localized: ", %d continued"), resumed) : ""
         presentInfo(String(localized: "Upload"),
                     String(format: String(localized: "%1$d file(s) uploaded%2$@%3$@."), uploaded, continued, note))
@@ -1077,5 +1145,39 @@ extension PanelController {
         alert.informativeText = detail
         alert.addButton(withTitle: String(localized: "OK"))
         alert.runModal()
+    }
+}
+
+/// A one-shot flag readable without `await`.
+///
+/// Needed because `OperationControl.cancel()` sets a flag on an actor, and a plugin's progress
+/// callback — the only place a transfer can be stopped mid-file — is synchronous and runs on the
+/// connection's queue. Something has to carry "cancelled" across that boundary without suspending.
+final class TransferStopFlag: @unchecked Sendable {
+    private var flag = false
+    private let lock = NSLock()
+    var isSet: Bool { lock.lock(); defer { lock.unlock() }; return flag }
+    func set() { lock.lock(); flag = true; lock.unlock() }
+}
+
+/// Upload tallies, counted from inside a `@Sendable` transfer closure.
+///
+/// An actor rather than captured `var`s: the closure the transfer queue runs is `@Sendable` and runs
+/// off this actor, so counting into local variables and reading them afterwards is a data race that
+/// happens to work most of the time.
+actor UploadCounters {
+    private var succeeded = 0
+    private var refusedCount = 0
+    private var resumedCount = 0
+
+    func uploaded(resumed: Bool) {
+        succeeded += 1
+        if resumed { resumedCount += 1 }
+    }
+
+    func failed() { refusedCount += 1 }
+
+    func read() -> (uploaded: Int, failed: Int, resumed: Int) {
+        (succeeded, refusedCount, resumedCount)
     }
 }

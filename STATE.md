@@ -1329,6 +1329,74 @@ separate pieces rather than leftovers — the progress one is a host feature tha
 today (the upload path has no progress, no cancel and no overwrite dialog for FTP and SFTP either),
 and a presigned-link command needs the contrib ABI to carry a panel selection.
 
+## 2026-08-23 (F-458) — A transfer you can watch and stop, and an aborted one that reported success
+
+The last big piece of the S3 wave, and it is a host feature rather than a plugin one: uploading into a
+network or plugin panel now goes through the transfer machinery, so it has a progress bar, a Cancel
+button and the speed limit. It had none of those for *any* backend — FTP and SFTP included. It was a
+bare loop with a summary at the end, which for one large file is an application that looks hung.
+
+**Through `runTransfer`, which already had all of it.** The progress window, the Cancel button, the
+pause, the speed limit and the skipped-files log live there and are used by every local copy. The
+upload path now builds an `OperationKind.custom` and hands it over, so nothing new was drawn.
+
+**Two things had to change to make a percentage reach the bar.**
+
+`OperationKind.custom`'s progress closure is now `@escaping`. An operation that hands a transfer to a
+backend has to give that backend somewhere to report to, and a plugin's progress callback fires from
+inside a blocking call — the only way a number gets out of it is a closure the operation stored before
+it started.
+
+`PFXFileSystem` gained `setTransferObserver`, which is that closure's other end. It is consulted from
+inside `PfxGetFile`/`PfxPutFile` and can also stop the transfer, and that second part is not a
+convenience: `OperationControl.cancel()` sets a flag on an actor and does **not** cancel the task, so
+task cancellation — the mechanism F-452 built — never fires from a Cancel press. The custom operation
+polls `control.isCancelled` into a synchronous flag the plugin's callback can read. Without that, a
+Cancel on a four-gigabyte upload does nothing until the upload has finished.
+
+FTP and SFTP have no equivalent to report from, so there the bar advances a file at a time. Stated
+rather than faked.
+
+### An aborted download reported success
+
+The abort test failed with the observer having seen exactly one report — 6% — and the download
+completing. Both halves were mine.
+
+`didCompleteWithError` filled a missing status in from the response, which is right for a transport
+failure and wrong for an abort: on a transfer that got far enough to report progress the headers
+arrived long ago, so an aborted download came back carrying **200**. And `PfxGetFile` asked
+`response.ok` *before* asking whether it had been aborted. So a cancelled transfer was reported as
+complete, for a file that was never written — the same shape as every other defect this month, where
+the failure is that nothing looks like a failure. The status is no longer borrowed on an abort, and
+both `PfxGetFile` and `PfxPutFile` ask about the abort first.
+
+**The fixture had to be able to send slowly.** A small object arrives in one write, the progress
+callback fires exactly once — at 100% — and "cancel a transfer that is still running" is not a state a
+test can arrange at all. `PC_S3_FIXTURE_CHUNK_SIZE` and `PC_S3_FIXTURE_CHUNK_DELAY_MS` make the body
+arrive over many reads, which is also what a large object does anyway.
+
+**And the test's stub host had to grow a `progress` callback.** The first version measured an empty
+list: the services table the tests hand the plugin carried only `getContext`, so the plugin never
+reported anything. The stub now wires the same trampoline `PFXHostBridge` does — so what the tests
+exercise is plugin → C callback → sink → observer, not a shortcut past it.
+
+**My own conformance script cried wolf, which was the good outcome.** `Tools/s3-conformance.sh`
+counted the old `Test Case '-[X y]' passed (…)` output; xcodebuild now prints
+`Test case 'X.y()' passed on '…'`. It found zero tests in an entirely green run — and because zero is
+treated as a failure, it reported FAILED rather than a false green. Both shapes counted now.
+
+**Evidence.** Three new tests: a transfer reports ascending percentages ending at 100 and names its
+file; an observer that says stop gets a `.cancelled` transfer and no partial file left where the panel
+would list it; and an observer is not consulted after its own transfer ends, because the slot is reused
+for the next one. **1,074 tests, 0 failures, 12 skipped** across PCPluginHostTests, PCVFSTests,
+PCOperationsTests and PCCommandsTests; 8 conformance tests green against MinIO after the change; two
+new strings in the catalogue in all 18 translations.
+
+**Not done, and not a leftover.** Overwrite prompting on upload needs a remote stat per file — a HEAD
+per object on S3 — and silently overwriting is what every backend does today; changing that is a
+product decision rather than a defect. Recursive folder upload still refuses, and now says so in one
+place. Presigned links need the contrib ABI to carry a panel selection.
+
 ## 2026-08-20 (F-433) — The assistant's error message named the wrong cause
 
 Reported: the AI assistant answers "um was geht die aktuell markierte Datei?" with "the on-device model

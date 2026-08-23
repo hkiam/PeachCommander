@@ -19,6 +19,13 @@ import CPFX
 /// callback cannot capture, and this has to be readable from inside one.
 private nonisolated(unsafe) var s3StubConfigRoot = ""
 
+/// The sink the stub host's `progress` callback forwards to.
+///
+/// File-scope for the same reason as the config root: a `@convention(c)` callback cannot capture. This
+/// is what `PFXHostBridge` does in the app — without it the services table has no `progress`, the
+/// plugin never reports anything, and a test about progress measures an empty list.
+private nonisolated(unsafe) var s3StubSink: PFXProgressSink?
+
 final class S3PluginTests: XCTestCase {
     private var dir: URL!
     private var serving: URL!
@@ -62,6 +69,7 @@ final class S3PluginTests: XCTestCase {
     }
 
     override func tearDownWithError() throws {
+        s3StubSink = nil
         for name in ["PC_S3_ENDPOINT", "PC_S3_REGION", "PC_S3_ACCESS_KEY",
                      "PC_S3_SECRET_KEY", "PC_S3_PATH_STYLE", "PC_S3_PROFILE"] {
             unsetenv(name)
@@ -144,7 +152,9 @@ final class S3PluginTests: XCTestCase {
                             region: String = "us-east-1",
                             flaky: Int? = nil,
                             flakyMethods: String? = nil,
-                            statsFile: URL? = nil) throws -> (Process, Int) {
+                            statsFile: URL? = nil,
+                            chunkSize: Int? = nil,
+                            chunkDelayMs: Int? = nil) throws -> (Process, Int) {
         let python = "/usr/bin/python3"
         try XCTSkipUnless(FileManager.default.isExecutableFile(atPath: python), "python3 unavailable")
         let chosen = try Self.freePort()
@@ -162,6 +172,8 @@ final class S3PluginTests: XCTestCase {
         if let flaky { env["PC_S3_FIXTURE_FLAKY"] = String(flaky) }
         if let flakyMethods { env["PC_S3_FIXTURE_FLAKY_METHODS"] = flakyMethods }
         if let statsFile { env["PC_S3_FIXTURE_STATS_FILE"] = statsFile.path }
+        if let chunkSize { env["PC_S3_FIXTURE_CHUNK_SIZE"] = String(chunkSize) }
+        if let chunkDelayMs { env["PC_S3_FIXTURE_CHUNK_DELAY_MS"] = String(chunkDelayMs) }
         p.environment = env
         p.standardOutput = Pipe(); p.standardError = Pipe()
         try p.run()
@@ -224,12 +236,21 @@ final class S3PluginTests: XCTestCase {
             _ = s3StubConfigRoot.withCString { strlcpy(out, $0, Int(maxlen)) }
             return 1
         }
+        // The same wiring `PFXHostBridge` does, and deliberately NOT main-actor isolated: the plugin
+        // reports from the queue its transfer runs on, so a hop here would trap rather than hop.
+        s.progress = { _, name, pct in
+            let carryOn = s3StubSink?.report(name.map { String(cString: $0) } ?? "", Int(pct)) ?? true
+            return carryOn ? Int32(PC_CONTINUE) : Int32(PC_ABORT)
+        }
         let plugin = PFXPlugin(library: lib)
         plugin.initialize(services: s)
         inited = plugin
     }
 
-    private func makeFS() throws -> PFXFileSystem {
+    private func makeFS(progressSink: PFXProgressSink? = nil) throws -> PFXFileSystem {
+        // The plugin's C callback reaches the sink through a file-scope pointer, so the one the mount
+        // is given has to be the one the trampoline sees.
+        s3StubSink = progressSink
         typealias ConnectFn = @convention(c) (UnsafeMutableRawPointer?) -> UnsafeMutableRawPointer?
         let connect = try XCTUnwrap(lib.symbol("PfxConnect"))
         let conn = try XCTUnwrap(unsafeBitCast(connect, to: ConnectFn.self)(nil),
@@ -241,7 +262,7 @@ final class S3PluginTests: XCTestCase {
         // pass by asking about a field that does not exist.
         return PFXFileSystem(plugin: plugin, conn: conn, fsID: fsID,
                              capabilities: plugin.capabilities, retaining: nil,
-                             contentQualifier: fsID)
+                             contentQualifier: fsID, progressSink: progressSink)
     }
 
     private func vpath(_ path: String) -> VFSPath { VFSPath(filesystemId: "s3", path: path) }
@@ -950,6 +971,91 @@ final class S3PluginTests: XCTestCase {
         XCTAssertEqual(fs.scheme, "s3:127.0.0.1:\(port)")
     }
 
+    // MARK: - Transfer progress and mid-transfer cancel
+
+    /// A slow, chunked fixture with a big enough object that progress fires more than once.
+    private func startSlowServer(bytes: Int) throws -> (Process, Int) {
+        let root = dir.appendingPathComponent("slow")
+        try FileManager.default.createDirectory(at: root.appendingPathComponent("bucket"),
+                                                withIntermediateDirectories: true)
+        try Data(repeating: 0x5A, count: bytes)
+            .write(to: root.appendingPathComponent("bucket/big.bin"))
+        // 16 KiB a chunk with 4 ms between them: a 1 MiB object is ~64 writes over a quarter of a
+        // second, which is enough callbacks to cancel inside one and short enough for a test suite.
+        let started = try startServer(root: root, maxKeys: nil, chunkSize: 16 * 1024, chunkDelayMs: 4)
+        setenv("PC_S3_ENDPOINT", "http://127.0.0.1:\(started.1)", 1)
+        return started
+    }
+
+    func test_aTransferReportsItsProgressToAnObserver() async throws {
+        // How a percentage gets from inside one `PfxGetFile` to a progress bar. Without it the best a
+        // caller can do is count files, which for a single large object is a bar that sits at 0 and
+        // then jumps to 100.
+        let (slow, _) = try startSlowServer(bytes: 512 * 1024)
+        defer { slow.terminate() }
+
+        let sink = PFXProgressSink()
+        let fs = try makeFS(progressSink: sink)
+        let seen = ProgressRecorder()
+        fs.setTransferObserver { name, percent in seen.record(name: name, percent: percent); return true }
+
+        let dest = dir.appendingPathComponent("landed.bin")
+        _ = try await fs.downloadFile(vpath("/bucket/big.bin"), to: dest, resume: false)
+
+        XCTAssertEqual(try Data(contentsOf: dest).count, 512 * 1024)
+        XCTAssertGreaterThan(seen.count, 1,
+                             "only one progress report arrived, so nothing could be shown mid-transfer")
+        XCTAssertEqual(seen.lastName, "big.bin", "the report did not name the file")
+        XCTAssertTrue(seen.percentsAreAscending, "percentages went backwards: \(seen.percents)")
+        XCTAssertEqual(seen.percents.last, 100)
+    }
+
+    func test_anObserverThatSaysStopStopsTheTransfer() async throws {
+        // The Cancel button, reaching a plugin mid-file. `OperationControl.cancel()` sets a flag and
+        // does NOT cancel the task, so this is the only route: the observer answers false and the
+        // plugin's own progress callback turns that into PC_ABORT.
+        let (slow, _) = try startSlowServer(bytes: 1024 * 1024)
+        defer { slow.terminate() }
+
+        let sink = PFXProgressSink()
+        let fs = try makeFS(progressSink: sink)
+        // Stop at the first report that is not already the end.
+        let seen = ProgressRecorder()
+        fs.setTransferObserver { name, percent in
+            seen.record(name: name, percent: percent)
+            return percent >= 100
+        }
+
+        let dest = dir.appendingPathComponent("aborted.bin")
+        do {
+            _ = try await fs.downloadFile(vpath("/bucket/big.bin"), to: dest, resume: false)
+            XCTFail("a transfer the observer stopped ran to completion; reports were \(seen.percents)")
+        } catch let error as VFSError {
+            XCTAssertEqual(error, .cancelled)
+        }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: dest.path),
+                       "an aborted download left a partial file where the panel would list it")
+    }
+
+    func test_theObserverIsNotConsultedAfterItsTransferEnds() async throws {
+        // One slot, reused for every transfer on the connection. An observer left behind would answer
+        // for the next transfer — and one that had said "stop" would stop a transfer nobody cancelled.
+        let (slow, _) = try startSlowServer(bytes: 256 * 1024)
+        defer { slow.terminate() }
+
+        let sink = PFXProgressSink()
+        let fs = try makeFS(progressSink: sink)
+        fs.setTransferObserver { _, _ in true }
+        _ = try await fs.downloadFile(vpath("/bucket/big.bin"),
+                                      to: dir.appendingPathComponent("first.bin"), resume: false)
+
+        // Cleared by whoever ran the transfer; a second one with nothing watching must still work.
+        fs.setTransferObserver(nil)
+        let second = dir.appendingPathComponent("second.bin")
+        _ = try await fs.downloadFile(vpath("/bucket/big.bin"), to: second, resume: false)
+        XCTAssertEqual(try Data(contentsOf: second).count, 256 * 1024)
+    }
+
     // MARK: - Content columns
 
     func test_thePluginPublishesTheColumnsItsListingsAlreadyKnow() throws {
@@ -1099,5 +1205,27 @@ final class S3PluginTests: XCTestCase {
             XCTAssertEqual(e, .connectionLost(retryable: false))
         }
         await fs.disconnect()   // must not free the connection a second time
+    }
+}
+
+/// Collects what a transfer observer was told. Locked, because the reports arrive on the connection's
+/// queue while the test waits on the main one.
+private final class ProgressRecorder: @unchecked Sendable {
+    private let lock = NSLock()
+    private var seen: [(String, Int)] = []
+
+    func record(name: String, percent: Int) {
+        lock.lock(); seen.append((name, percent)); lock.unlock()
+    }
+
+    var count: Int { lock.lock(); defer { lock.unlock() }; return seen.count }
+    var percents: [Int] { lock.lock(); defer { lock.unlock() }; return seen.map(\.1) }
+    var lastName: String? { lock.lock(); defer { lock.unlock() }; return seen.last?.0 }
+
+    /// Never decreasing. A percentage that went backwards would mean the total was recomputed
+    /// mid-transfer, which is what a progress bar that jitters looks like.
+    var percentsAreAscending: Bool {
+        let values = percents
+        return zip(values, values.dropFirst()).allSatisfy { $0 <= $1 }
     }
 }
